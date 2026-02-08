@@ -1,18 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { supabase } from './db-supabase.js';
-import { JWT_SECRET } from './config/secrets.js';
-
-/**
- * Centralized list of premium plan types.
- * Used by all premium gate middleware to ensure consistency.
- */
-export const PREMIUM_PLAN_TYPES = [
-    'premium_monthly',
-    'premium_yearly',
-    'premium_pro',
-    'exclusive_monthly',
-    'vip'
-];
+import { JWT_SECRET } from './config/jwt.js';
 
 /**
  * Standard JWT authentication middleware
@@ -60,7 +48,7 @@ export const requirePremium = async (req, res, next) => {
 
         const isActive = subscription.status === 'active';
         const notExpired = new Date(subscription.current_period_end) > new Date();
-        const isPremium = PREMIUM_PLAN_TYPES.includes(subscription.plan_type);
+        const isPremium = ['premium_monthly', 'exclusive_monthly', 'vip'].includes(subscription.plan_type);
 
         if (!isActive || !notExpired || !isPremium) {
             return res.status(402).json({
@@ -94,7 +82,7 @@ export const requirePremiumSoft = async (req, res, next) => {
     try {
         const { data: subscription } = await supabase
             .from('subscriptions')
-            .select('plan_type, status, current_period_end')
+            .select('plan_type, status, current_period_end, credits')
             .eq('user_id', userId)
             .single();
 
@@ -106,7 +94,7 @@ export const requirePremiumSoft = async (req, res, next) => {
 
         const isActive = subscription.status === 'active';
         const notExpired = new Date(subscription.current_period_end) > new Date();
-        const isPremium = PREMIUM_PLAN_TYPES.includes(subscription.plan_type);
+        const isPremium = ['premium_monthly', 'exclusive_monthly', 'vip'].includes(subscription.plan_type);
 
         req.isPremium = isActive && notExpired && isPremium;
         req.isLimited = !req.isPremium;
@@ -122,15 +110,18 @@ export const requirePremiumSoft = async (req, res, next) => {
 };
 
 /**
- * Admin Gate - Allows only specific admin users.
- * Reads admin emails from ADMIN_EMAILS env var (comma-separated).
+ * Admin Gate - Allows only users whose email is in ADMIN_EMAILS env var
  */
+const ADMIN_EMAILS_RAW = process.env.ADMIN_EMAILS || '';
+const ADMIN_EMAILS = ADMIN_EMAILS_RAW.split(',').map(e => e.trim()).filter(Boolean);
+
+if (ADMIN_EMAILS.length === 0) {
+    console.warn('⚠️ No admin emails configured (set ADMIN_EMAILS env var)');
+}
+
 export const requireAdmin = (req, res, next) => {
     const userId = req.user?.id;
     const email = req.user?.email;
-
-    const adminEmailsEnv = process.env.ADMIN_EMAILS || '';
-    const ADMIN_EMAILS = adminEmailsEnv.split(',').map(e => e.trim());
 
     if (!userId || !email || !ADMIN_EMAILS.includes(email)) {
         console.warn(`Unauthorized Admin Access Attempt: ${email} (${userId})`);

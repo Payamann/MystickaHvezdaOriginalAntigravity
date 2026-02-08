@@ -110,6 +110,12 @@
             }
         },
 
+        _escapeHTML(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        },
+
         showToast(title, message, type = 'info') {
             let container = document.querySelector('.toast-container');
             if (!container) {
@@ -125,24 +131,16 @@
             if (type === 'success') icon = '✅';
             if (type === 'error') icon = '❌';
 
-            const iconEl = document.createElement('div');
-            iconEl.className = 'toast__icon';
-            iconEl.textContent = icon;
+            const safeTitle = this._escapeHTML(title);
+            const safeMessage = this._escapeHTML(message);
 
-            const titleEl = document.createElement('div');
-            titleEl.className = 'toast__title';
-            titleEl.textContent = title;
-
-            const msgEl = document.createElement('div');
-            msgEl.className = 'toast__message';
-            msgEl.textContent = message;
-
-            const textWrapper = document.createElement('div');
-            textWrapper.appendChild(titleEl);
-            textWrapper.appendChild(msgEl);
-
-            toast.appendChild(iconEl);
-            toast.appendChild(textWrapper);
+            toast.innerHTML = `
+            <div class="toast__icon">${icon}</div>
+            <div>
+                <div class="toast__title">${safeTitle}</div>
+                <div class="toast__message">${safeMessage}</div>
+            </div>
+        `;
 
             container.appendChild(toast);
 

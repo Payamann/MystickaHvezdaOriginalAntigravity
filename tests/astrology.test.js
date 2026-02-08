@@ -13,15 +13,14 @@ jest.unstable_mockModule('../server/middleware.js', () => ({
     },
     requirePremium: (req, res, next) => next(),
     requirePremiumSoft: (req, res, next) => next(),
-    requireAdmin: (req, res, next) => next(),
-    PREMIUM_PLAN_TYPES: ['premium_monthly', 'premium_yearly', 'premium_pro', 'exclusive_monthly', 'vip']
+    requireAdmin: (req, res, next) => next()
 }));
 
 jest.unstable_mockModule('../server/payment.js', () => ({
     __esModule: true,
-    default: jest.fn(),
-    isPremiumUser: jest.fn(),
-    handleStripeWebhook: jest.fn()
+    default: jest.fn((req, res, next) => next()),
+    handleStripeWebhook: jest.fn(),
+    isPremiumUser: jest.fn()
 }));
 
 global.fetch = jest.fn();
@@ -57,7 +56,7 @@ describe('Astrology APIs', () => {
 
             const res = await request(app)
                 .post('/api/synastry')
-                .send({ person1: { name: 'A', birthDate: '1990-01-01' }, person2: { name: 'B', birthDate: '1992-05-15' } });
+                .send({ person1: { name: 'A' }, person2: { name: 'B' } });
 
             expect(res.status).toBe(200);
             expect(res.body.isTeaser).toBe(true);
@@ -70,7 +69,7 @@ describe('Astrology APIs', () => {
 
             const res = await request(app)
                 .post('/api/synastry')
-                .send({ person1: { name: 'A', birthDate: '1990-01-01' }, person2: { name: 'B', birthDate: '1992-05-15' } });
+                .send({ person1: { name: 'A' }, person2: { name: 'B' } });
 
             expect(res.status).toBe(200);
             expect(res.body.isTeaser).toBe(false);
@@ -91,7 +90,7 @@ describe('Astrology APIs', () => {
 
             const res = await request(app)
                 .post('/api/numerology')
-                .send({ name: 'Test', birthDate: '1990-01-01', lifePath: 1 });
+                .send({ name: 'Test', birthDate: '1990-01-01', lifePath: 1, destiny: 2, soul: 3, personality: 4 });
 
             expect(res.status).toBe(200);
             expect(res.body.cached).toBe(true);
@@ -103,7 +102,7 @@ describe('Astrology APIs', () => {
         it('should return astrocartography analysis', async () => {
             const res = await request(app)
                 .post('/api/astrocartography')
-                .send({ birthDate: '1990-01-01', birthPlace: 'Prague' });
+                .send({ birthDate: '1990-01-01', birthTime: '12:00', birthPlace: 'Prague', name: 'Test' });
 
             expect(res.status).toBe(200);
             expect(res.body.success).toBe(true);

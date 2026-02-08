@@ -9,6 +9,13 @@ jest.unstable_mockModule('../server/db-supabase.js', () => ({
     }
 }));
 
+jest.unstable_mockModule('../server/payment.js', () => ({
+    __esModule: true,
+    default: jest.fn((req, res, next) => next()),
+    handleStripeWebhook: jest.fn(),
+    isPremiumUser: jest.fn().mockResolvedValue(false)
+}));
+
 jest.unstable_mockModule('../server/middleware.js', () => ({
     authenticateToken: (req, res, next) => {
         req.user = { id: 'test-user-id' };
@@ -16,15 +23,7 @@ jest.unstable_mockModule('../server/middleware.js', () => ({
     },
     requirePremium: (req, res, next) => next(),
     requirePremiumSoft: (req, res, next) => next(),
-    requireAdmin: (req, res, next) => next(),
-    PREMIUM_PLAN_TYPES: ['premium_monthly', 'premium_yearly', 'premium_pro', 'exclusive_monthly', 'vip']
-}));
-
-jest.unstable_mockModule('../server/payment.js', () => ({
-    __esModule: true,
-    default: jest.fn((req, res, next) => next()),
-    isPremiumUser: jest.fn(),
-    handleStripeWebhook: jest.fn()
+    requireAdmin: (req, res, next) => next()
 }));
 
 const { supabase } = await import('../server/db-supabase.js');

@@ -7,6 +7,12 @@
  * @returns {boolean}
  */
 window.Premium = {
+    _escapeHTML(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    },
+
     async checkStatus() {
         // 1. Check local state first (Optimistic & Offline-friendly)
         if (window.Auth && typeof window.Auth.isPremium === 'function') {
@@ -64,34 +70,31 @@ window.Premium = {
         // Track analytics
         this.trackPaywallHit(featureName);
 
-        // Create overlay (safe DOM construction to prevent XSS)
+        // Escape user-influenced content to prevent XSS
+        const safeMessage = this._escapeHTML(displayMessage);
+
+        // Create overlay
         const overlay = document.createElement('div');
         overlay.className = 'paywall-overlay';
-
-        const content = document.createElement('div');
-        content.className = 'paywall-content';
-
-        content.innerHTML = `
-            <div class="paywall-icon">✨</div>
-            <h3 class="paywall-title">Odemkněte plný potenciál</h3>
-            <p class="paywall-message"></p>
-            <div class="paywall-benefits">
-                <div class="benefit-item">✓ Neomezené výklady</div>
-                <div class="benefit-item">✓ Detailní předpovědi</div>
-                <div class="benefit-item">✓ Osobní průvodce</div>
+        overlay.innerHTML = `
+            <div class="paywall-content">
+                <div class="paywall-icon">✨</div>
+                <h3 class="paywall-title">Odemkněte plný potenciál</h3>
+                <p class="paywall-message">${safeMessage}</p>
+                <div class="paywall-benefits">
+                    <div class="benefit-item">✓ Neomezené výklady</div>
+                    <div class="benefit-item">✓ Detailní předpovědi</div>
+                    <div class="benefit-item">✓ Osobní průvodce</div>
+                </div>
+                <div class="paywall-actions">
+                    <button class="btn btn--primary paywall-upgrade">
+                        Získat Premium
+                    </button>
+                    <button class="btn btn--ghost paywall-close">Zavřít</button>
+                </div>
+                <p class="paywall-footer">Kdykoliv zrušitelné • Žádné závazky</p>
             </div>
-            <div class="paywall-actions">
-                <button class="btn btn--primary paywall-upgrade">
-                    Získat Premium
-                </button>
-                <button class="btn btn--ghost paywall-close">Zavřít</button>
-            </div>
-            <p class="paywall-footer">Kdykoliv zrušitelné • Žádné závazky</p>
         `;
-
-        // Set message via textContent to prevent XSS
-        content.querySelector('.paywall-message').textContent = displayMessage;
-        overlay.appendChild(content);
 
         document.body.appendChild(overlay);
 

@@ -16,15 +16,14 @@ jest.unstable_mockModule('../server/middleware.js', () => ({
     },
     requirePremium: (req, res, next) => next(), // Skip premium check
     requirePremiumSoft: (req, res, next) => next(),
-    requireAdmin: (req, res, next) => next(),
-    PREMIUM_PLAN_TYPES: ['premium_monthly', 'premium_yearly', 'premium_pro', 'exclusive_monthly', 'vip']
+    requireAdmin: (req, res, next) => next()
 }));
 
 jest.unstable_mockModule('../server/payment.js', () => ({
     __esModule: true,
     default: jest.fn((req, res, next) => next()),
-    isPremiumUser: jest.fn(),
-    handleStripeWebhook: jest.fn()
+    handleStripeWebhook: jest.fn(),
+    isPremiumUser: jest.fn().mockResolvedValue(false)
 }));
 
 // Mock Global Fetch (for Gemini)

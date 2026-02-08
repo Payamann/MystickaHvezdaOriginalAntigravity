@@ -1,28 +1,44 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import rateLimit from 'express-rate-limit';
 import { supabase } from './db-supabase.js';
-import { JWT_SECRET } from './config/secrets.js';
+import { JWT_SECRET } from './config/jwt.js';
+import { authenticateToken } from './middleware.js';
 
 const router = express.Router();
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 const APP_URL = process.env.APP_URL || 'http://localhost:3001';
 
-// Rate limit for auth endpoints (prevent brute force)
-const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 10, // 10 attempts per window
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: { error: 'Příliš mnoho pokusů. Zkuste to za 15 minut.' }
-});
-router.use('/login', authLimiter);
-router.use('/register', authLimiter);
-
 const logDebug = (msg) => {
     if (IS_PRODUCTION) return;
     console.log(`[DEBUG] ${msg}`);
 };
+
+// Activate Premium (Simulation for MVP)
+router.post('/activate-premium', authenticateToken, async (req, res) => {
+    try {
+        const user = req.user;
+
+        // Supabase Update on 'subscriptions' table
+        const { error } = await supabase
+            .from('subscriptions')
+            .update({
+                plan_type: 'premium_monthly',
+                status: 'active',
+                current_period_end: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString()
+            })
+            .eq('user_id', user.id);
+
+        if (error) throw error;
+
+        // Return new token with premium status
+        const newToken = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '30d' });
+        res.json({ success: true, token: newToken, subscription_status: 'premium_monthly' });
+
+    } catch (e) {
+        console.error('Premium Activation Error:', e);
+        res.status(500).json({ error: 'Failed to activate premium' });
+    }
+});
 
 // Register (Supabase Auth)
 router.post('/register', async (req, res) => {
@@ -33,10 +49,13 @@ router.post('/register', async (req, res) => {
     }
 
     try {
+        // 1. Sign Up via Supabase Auth
+        // This triggers the confirmation email automatically.
         const { data, error } = await supabase.auth.signUp({
             email,
             password,
             options: {
+                // Use APP_URL from environment for production flexibility
                 emailRedirectTo: APP_URL,
                 data: {
                     first_name,
@@ -49,13 +68,21 @@ router.post('/register', async (req, res) => {
 
         if (error) {
             console.error('Supabase Auth Error:', error);
-            if (error.code === 'weak_password') {
-                return res.status(400).json({ error: 'Heslo musí mít alespoň 8 znaků.' });
+            // Handle specific Supabase errors
+            if (error.message.includes('already registered') || error.message.includes('User already registered')) {
+                return res.status(400).json({ error: 'Uživatel s tímto emailem již existuje.' });
             }
-            // Generic message to prevent user enumeration
-            return res.status(400).json({ error: 'Registrace se nezdařila. Zkontrolujte email a heslo.' });
+            if (error.status === 400 || error.code === 400) {
+                return res.status(400).json({ error: 'Chyba registrace: ' + error.message });
+            }
+            if (error.code === 'weak_password') {
+                return res.status(400).json({ error: 'Heslo musí mít alespoň 6 znaků.' });
+            }
+            throw error;
         }
 
+        // 2. Success - Tell user to check email
+        // We DO NOT return a token here anymore. Login is blocked until verification.
         res.json({
             success: true,
             message: 'Registrace úspěšná. Zkontrolujte prosím svůj email pro potvrzení účtu.',
@@ -73,6 +100,7 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
+        // 1. Sign In via Supabase Auth
         const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
             email,
             password,
@@ -86,15 +114,22 @@ router.post('/login', async (req, res) => {
         const authUser = authData.user;
         logDebug(`Login attempt for: ${authUser.email} (ID: ${authUser.id})`);
 
-        // Fetch our internal user data (single join query)
+        // 2. Fetch our internal user data
         const { data: users, error: dbError } = await supabase
             .from('users')
-            .select('*, subscriptions(plan_type, status, credits)')
+            .select('*')
             .eq('id', authUser.id);
 
         let user = null;
         if (users && users.length > 0) {
             user = users[0];
+            // Fetch subs separately to be safe
+            const { data: sub } = await supabase
+                .from('subscriptions')
+                .select('plan_type, status, credits')
+                .eq('user_id', user.id)
+                .single();
+            if (sub) user.subscriptions = sub;
         }
 
         if (dbError) {
@@ -109,6 +144,7 @@ router.post('/login', async (req, res) => {
         if (dbError || !user) {
             logDebug(`User missing/error. Attempting JIT repair...`);
 
+            // JIT REPAIR: Manually insert the user
             const { error: insertError } = await supabase
                 .from('users')
                 .insert({
@@ -123,9 +159,11 @@ router.post('/login', async (req, res) => {
 
             if (insertError) {
                 logDebug(`JIT Repair failed: ${JSON.stringify(insertError)}`);
+                // NOW we fail
                 return res.status(400).json({ error: 'Uživatel nenalezen v databázi. Kontaktujte podporu.' });
             }
 
+            // Retry fetching
             const { data: retryUser, error: retryError } = await supabase
                 .from('users')
                 .select('*')
@@ -135,6 +173,7 @@ router.post('/login', async (req, res) => {
             if (retryUser) {
                 logDebug(`JIT Repair successful.`);
                 user = retryUser;
+                // Create default subscription
                 await supabase
                     .from('subscriptions')
                     .insert({ user_id: user.id, plan_type: 'free' });
@@ -143,14 +182,13 @@ router.post('/login', async (req, res) => {
             }
         }
 
-        // Issue our JWT
+        // 3. Issue our JWT (Bridge)
         const sub = (Array.isArray(user.subscriptions) ? user.subscriptions[0] : user.subscriptions) || {};
         const status = sub.plan_type || 'free';
 
         const token = jwt.sign({
             id: user.id,
             email: user.email,
-            subscription_status: status
         }, JWT_SECRET, { expiresIn: '30d' });
 
         res.json({
@@ -173,13 +211,9 @@ router.post('/login', async (req, res) => {
 });
 
 // Get User Profile
-router.get('/profile', async (req, res) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    if (!token) return res.sendStatus(401);
-
+router.get('/profile', authenticateToken, async (req, res) => {
     try {
-        const user = jwt.verify(token, JWT_SECRET);
+        const user = req.user;
 
         const { data, error } = await supabase
             .from('users')
@@ -197,6 +231,7 @@ router.get('/profile', async (req, res) => {
 
         if (error) throw error;
 
+        // Flatten subscription status for frontend consistency
         const sub = (data.subscriptions && data.subscriptions.length > 0) ? data.subscriptions[0] : (data.subscriptions || {});
         const userProfile = {
             ...data,
@@ -207,23 +242,15 @@ router.get('/profile', async (req, res) => {
         res.json({ success: true, user: userProfile });
 
     } catch (e) {
-        if (e.name === 'JsonWebTokenError' || e.name === 'TokenExpiredError') {
-            return res.sendStatus(403);
-        }
         console.error('Get Profile Error:', e);
         res.status(500).json({ error: 'Failed to fetch profile' });
     }
 });
 
 // Update User Profile
-router.put('/profile', async (req, res) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    if (!token) return res.sendStatus(401);
-
+router.put('/profile', authenticateToken, async (req, res) => {
     try {
-        const user = jwt.verify(token, JWT_SECRET);
-
+        const user = req.user;
         const { first_name, birth_date, birth_time, birth_place } = req.body;
 
         const updateData = {
@@ -245,9 +272,6 @@ router.put('/profile', async (req, res) => {
         res.json({ success: true, user: data });
 
     } catch (e) {
-        if (e.name === 'JsonWebTokenError' || e.name === 'TokenExpiredError') {
-            return res.sendStatus(403);
-        }
         console.error('Update Profile Error:', e);
         res.status(500).json({ error: 'Failed to update profile' });
     }
