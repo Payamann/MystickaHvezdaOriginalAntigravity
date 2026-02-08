@@ -77,7 +77,7 @@ function initCrystalBall() {
         if (isThinking || !question.trim()) return;
 
         if (question.length > 200) {
-            alert("Otázka je příliš dlouhá. Prosím, zkraťte ji.");
+            window.Auth?.showToast?.('Příliš dlouhá', 'Otázka je příliš dlouhá. Prosím, zkraťte ji.', 'info');
             return;
         }
 
@@ -96,9 +96,13 @@ function initCrystalBall() {
         if (navigator.vibrate) navigator.vibrate(200);
 
         try {
+            const cbToken = localStorage.getItem('auth_token') || window.Auth?.token;
             const response = await fetch(`${window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api'}/crystal-ball`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(cbToken ? { 'Authorization': `Bearer ${cbToken}` } : {})
+                },
                 body: JSON.stringify({
                     question: question.trim(),
                     history: questionHistory.slice(-5)
@@ -204,7 +208,11 @@ function initCrystalBall() {
 
     if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-            if (answerContainer) answerContainer.classList.remove('visible');
+            if (answerContainer) {
+                answerContainer.classList.remove('visible');
+                // Remove accumulated favorite buttons
+                answerContainer.querySelectorAll('.text-center').forEach(el => el.remove());
+            }
             if (questionInput) {
                 questionInput.value = '';
                 questionInput.focus();

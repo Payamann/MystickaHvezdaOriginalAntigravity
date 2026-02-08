@@ -48,6 +48,12 @@ async function handlePaymentClick(planId, btn) {
             body: JSON.stringify({ planId })
         });
 
+        if (!response.ok) {
+            let errorMsg = 'Nepodařilo se vytvořit platební relaci';
+            try { errorMsg = (await response.json()).error || errorMsg; } catch {}
+            throw new Error(errorMsg);
+        }
+
         const result = await response.json();
 
         if (result.url) {

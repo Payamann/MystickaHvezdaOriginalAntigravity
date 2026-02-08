@@ -199,10 +199,12 @@ async function handleFormSubmit(e) {
     showLoading();
 
     try {
+        const authToken = localStorage.getItem('auth_token') || window.Auth?.token;
         const response = await fetch(`${API_URL}/astrocartography`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
             },
             body: JSON.stringify({
                 name,
@@ -288,18 +290,19 @@ function displayResults(response) {
     */
 
     if (resultsContainer) {
-        // Parse markdown-like bold to html bold if raw text
-        // Assuming response is text. We can do simple formatting.
-        let formattedResponse = response;
-        if (!response.includes('<')) {
-            formattedResponse = response.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        }
+        // Sanitize AI response: escape HTML first, then apply safe markdown bold
+        let safeResponse = response
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n/g, '<br>');
 
         resultsContainer.innerHTML = `
             <div class="astro-result-card" data-animate>
                 <h3 class="result-title">🗺️ Vaše Astrokartografická Mapa</h3>
                 <div class="result-content">
-                    ${formattedResponse}
+                    ${safeResponse}
                 </div>
                 ${tipHtml}
             </div>
@@ -316,12 +319,22 @@ function showError(message) {
     hideLoading();
 
     if (resultsContainer) {
-        resultsContainer.innerHTML = `
-            <div class="astro-error">
-                <span class="error-icon">⚠️</span>
-                <p>${message}</p>
-            </div>
-        `;
+        resultsContainer.textContent = '';
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'astro-error';
+        // If message is a safe HTML string from our code (premium gate), allow it
+        // Otherwise use textContent for user-facing strings
+        if (message.includes('class="btn')) {
+            errorDiv.innerHTML = `<span class="error-icon">⚠️</span>${message}`;
+        } else {
+            const icon = document.createElement('span');
+            icon.className = 'error-icon';
+            icon.textContent = '⚠️';
+            const p = document.createElement('p');
+            p.textContent = message;
+            errorDiv.append(icon, p);
+        }
+        resultsContainer.appendChild(errorDiv);
         resultsContainer.style.display = 'block';
     }
 }

@@ -20,7 +20,7 @@ const isValidEmail = (email) => {
 
 // POST /subscribe
 router.post('/subscribe', newsletterLimiter, async (req, res) => {
-    const { email, source = 'web_footer' } = req.body;
+    let { email, source = 'web_footer' } = req.body;
 
     // 1. Validate Input
     if (!email || !isValidEmail(email)) {
@@ -28,6 +28,13 @@ router.post('/subscribe', newsletterLimiter, async (req, res) => {
             success: false,
             error: 'Zadejte prosím platnou emailovou adresu.'
         });
+    }
+
+    // Normalize email and validate source
+    email = email.trim().toLowerCase();
+    const VALID_SOURCES = ['web_footer', 'web_popup', 'web_cenik', 'web_landing'];
+    if (!VALID_SOURCES.includes(source)) {
+        source = 'web_footer';
     }
 
     try {
