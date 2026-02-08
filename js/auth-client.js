@@ -1,9 +1,20 @@
 (() => {
     const API_URL = window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api';
 
+    function safeParseJSON(key, fallback = null) {
+        try {
+            const val = localStorage.getItem(key);
+            return val ? JSON.parse(val) : fallback;
+        } catch (e) {
+            console.warn(`Corrupted localStorage key "${key}", clearing.`);
+            localStorage.removeItem(key);
+            return fallback;
+        }
+    }
+
     const Auth = {
         token: localStorage.getItem('auth_token'),
-        user: JSON.parse(localStorage.getItem('auth_user')),
+        user: safeParseJSON('auth_user'),
 
         init() {
             this.injectModal();
@@ -404,16 +415,21 @@
                 throw new Error('Auth Required');
             }
 
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000);
             const res = await fetch(`${API_URL}/${endpoint}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${this.token}`
                 },
-                body: JSON.stringify(body)
+                body: JSON.stringify(body),
+                signal: controller.signal
             });
+            clearTimeout(timeoutId);
 
             if (res.status === 401) {
+                this.showToast('Relace vypršela', 'Vaše přihlášení vypršelo. Prosím, přihlaste se znovu.', 'error');
                 this.logout();
                 throw new Error('Session expired');
             }
@@ -458,14 +474,31 @@
         async getProfile() {
             if (!this.token) return null;
             try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
                 const res = await fetch(`${API_URL}/auth/profile`, {
-                    headers: { 'Authorization': `Bearer ${this.token}` }
+                    headers: { 'Authorization': `Bearer ${this.token}` },
+                    signal: controller.signal
                 });
+                clearTimeout(timeoutId);
+                if (res.status === 401 || res.status === 403) {
+                    // Token expired — clear state silently during refresh
+                    this.token = null;
+                    this.user = null;
+                    localStorage.removeItem('auth_token');
+                    localStorage.removeItem('auth_user');
+                    this.updateUI();
+                    return null;
+                }
                 const data = await res.json();
                 if (data.success) return data.user;
                 return null;
             } catch (e) {
-                console.error('getProfile failed', e);
+                if (e.name === 'AbortError') {
+                    console.warn('getProfile timed out');
+                } else {
+                    console.error('getProfile failed', e);
+                }
                 return null;
             }
         }

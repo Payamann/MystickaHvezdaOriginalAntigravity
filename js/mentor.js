@@ -49,9 +49,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     chatInput.focus();
 });
 
+function safeParseJSON(key, fallback = {}) {
+    try {
+        return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
+    } catch (e) {
+        console.warn(`Corrupted localStorage key "${key}", resetting.`);
+        localStorage.removeItem(key);
+        return fallback;
+    }
+}
+
 function initUsageTracking() {
     const today = new Date().toISOString().split('T')[0];
-    const usage = JSON.parse(localStorage.getItem('mentor_usage') || '{}');
+    const usage = safeParseJSON('mentor_usage');
 
     if (usage.date !== today) {
         localStorage.setItem('mentor_usage', JSON.stringify({ date: today, count: 0 }));
@@ -233,7 +243,7 @@ async function sendMessage() {
 
 function checkUsageLimit() {
     const today = new Date().toISOString().split('T')[0];
-    const usage = JSON.parse(localStorage.getItem('mentor_usage') || '{}');
+    const usage = safeParseJSON('mentor_usage');
 
     // Allow 3 messages, trigger gate on 4th
     if (usage.date === today && usage.count >= 3) {
@@ -244,7 +254,7 @@ function checkUsageLimit() {
 
 function incrementUsage() {
     const today = new Date().toISOString().split('T')[0];
-    const usage = JSON.parse(localStorage.getItem('mentor_usage') || '{}');
+    const usage = safeParseJSON('mentor_usage');
     let count = usage.count || 0;
 
     if (usage.date !== today) {

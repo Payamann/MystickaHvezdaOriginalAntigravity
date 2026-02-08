@@ -67,19 +67,35 @@ app.use(helmet({
             imgSrc: ["'self'", "data:", "blob:", "https:"],
             connectSrc: ["'self'", "https://generativelanguage.googleapis.com", "https://api.stripe.com"],
             frameSrc: ["'self'", "https://js.stripe.com"],
+            upgradeInsecureRequests: [],
         },
     },
-    crossOriginEmbedderPolicy: false
+    crossOriginEmbedderPolicy: false,
+    strictTransportSecurity: {
+        maxAge: 31536000,
+        includeSubDomains: true
+    }
 }));
 
-// Rate Limiting
+// Rate Limiting - General API
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // Limit each IP to 100 requests per windowMs
-    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
 });
 app.use('/api/', limiter);
+
+// Stricter rate limiting for auth endpoints (brute-force protection)
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    message: { error: 'Příliš mnoho pokusů o přihlášení. Zkuste to za 15 minut.' },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
 
 // AI-generation endpoints - expensive, limit more aggressively
 const aiLimiter = rateLimit({

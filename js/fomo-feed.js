@@ -78,13 +78,26 @@
     function createNotification(data) {
         const notification = document.createElement('div');
         notification.className = 'fomo-notification';
-        notification.innerHTML = `
-      <div class="fomo-icon">✨</div>
-      <div class="fomo-content">
-        <div class="fomo-text">${data.name} z ${data.city}</div>
-        <div class="fomo-action">${data.action}</div>
-      </div>
-    `;
+
+        const icon = document.createElement('div');
+        icon.className = 'fomo-icon';
+        icon.textContent = '✨';
+
+        const content = document.createElement('div');
+        content.className = 'fomo-content';
+
+        const text = document.createElement('div');
+        text.className = 'fomo-text';
+        text.textContent = `${data.name} z ${data.city}`;
+
+        const action = document.createElement('div');
+        action.className = 'fomo-action';
+        action.textContent = data.action;
+
+        content.appendChild(text);
+        content.appendChild(action);
+        notification.appendChild(icon);
+        notification.appendChild(content);
         return notification;
     }
 
@@ -115,20 +128,31 @@
         currentIndex = (currentIndex + 1) % fomoData.length;
     }
 
+    let fomoTimeoutId = null;
+
     function scheduleNextNotification() {
         // Random delay between 60s (60000ms) and 90s (90000ms)
         const minDelay = 60000;
         const maxDelay = 90000;
         const randomDelay = Math.floor(Math.random() * (maxDelay - minDelay + 1)) + minDelay;
 
-        setTimeout(() => {
+        fomoTimeoutId = setTimeout(() => {
             if (!isVisible) {
                 showNotification();
             }
-            // Schedule the next one recursively
             scheduleNextNotification();
         }, randomDelay);
     }
+
+    // Cleanup when page is hidden to prevent memory leak
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden && fomoTimeoutId) {
+            clearTimeout(fomoTimeoutId);
+            fomoTimeoutId = null;
+        } else if (!document.hidden) {
+            scheduleNextNotification();
+        }
+    });
 
     function init() {
         // Don't show on mobile (would overlap with bottom nav)

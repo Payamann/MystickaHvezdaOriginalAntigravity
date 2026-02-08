@@ -270,15 +270,23 @@ async function displayInterpretation(name, birthDate, birthTime, lifePath, desti
 
         const data = await response.json();
 
-        // Display AI interpretation
-        interpretationContainer.innerHTML = `
-            <div class="interpretation-section">
-                ${data.fromCache ? '<span class="badge badge--cache">📦 Z cache (deterministic result)</span>' : ''}
-                <div class="interpretation-content">
-                    ${data.response.replace(/```html/g, '').replace(/```/g, '')}
-                </div>
-            </div>
-        `;
+        // Display AI interpretation (sanitized to prevent XSS)
+        const section = document.createElement('div');
+        section.className = 'interpretation-section';
+        if (data.fromCache) {
+            const badge = document.createElement('span');
+            badge.className = 'badge badge--cache';
+            badge.textContent = '📦 Z cache (deterministic result)';
+            section.appendChild(badge);
+        }
+        const contentEl = document.createElement('div');
+        contentEl.className = 'interpretation-content';
+        const cleanResponse = data.response.replace(/```html/g, '').replace(/```/g, '');
+        contentEl.textContent = cleanResponse;
+        contentEl.innerHTML = contentEl.innerHTML.replace(/\n/g, '<br>');
+        section.appendChild(contentEl);
+        interpretationContainer.innerHTML = '';
+        interpretationContainer.appendChild(section);
 
         // Save reading to history (with birth time)
         if (window.Auth && window.Auth.saveReading) {

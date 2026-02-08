@@ -97,7 +97,8 @@ function initTarot() {
 
                     // Check daily limit for free teaser
                     const today = new Date().toISOString().split('T')[0];
-                    const usage = JSON.parse(localStorage.getItem('tarot_free_usage') || '{}');
+                    let usage = {};
+                    try { usage = JSON.parse(localStorage.getItem('tarot_free_usage') || '{}'); } catch (e) { localStorage.removeItem('tarot_free_usage'); }
 
                     if (usage.date === today && usage.count >= 1) {
                         window.Auth.showToast('Limit vyčerpán 🔒', 'Dnešní ukázka zdarma již byla vyčerpána. Získejte Premium pro neomezené výklady.', 'error');
@@ -381,9 +382,14 @@ async function generateAiSummary(cards, spreadType) {
 
         if (data.success) {
             const text = data.response;
-            const formattedText = text.split('\n').filter(line => line.trim().length > 0).map(line => `<p class="mb-md">${line}</p>`).join('');
-
-            summaryContainer.innerHTML = formattedText;
+            // Sanitize AI response to prevent XSS
+            summaryContainer.innerHTML = '';
+            text.split('\n').filter(line => line.trim().length > 0).forEach(line => {
+                const p = document.createElement('p');
+                p.className = 'mb-md';
+                p.textContent = line;
+                summaryContainer.appendChild(p);
+            });
 
             // Save to history if logged in and store reading ID
             if (window.Auth && window.Auth.saveReading) {

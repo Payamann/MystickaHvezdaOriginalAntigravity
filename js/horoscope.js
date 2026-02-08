@@ -201,7 +201,12 @@ function initHoroscope() {
                 if (detailWork) {
                     // Prefer API affirmation, then extracted, then fallback
                     const affirmationText = predictionData.affirmation || extractedAffirmation || 'Jsem v souladu s vesmírem.';
-                    detailWork.innerHTML = `<strong style="color: var(--color-starlight);">✨ Afirmace:</strong> ${affirmationText}`;
+                    detailWork.innerHTML = '';
+                    const strong = document.createElement('strong');
+                    strong.style.color = 'var(--color-starlight)';
+                    strong.textContent = '✨ Afirmace:';
+                    detailWork.appendChild(strong);
+                    detailWork.appendChild(document.createTextNode(' ' + affirmationText));
                 }
                 if (detailRelationships) detailRelationships.style.display = 'none';
 

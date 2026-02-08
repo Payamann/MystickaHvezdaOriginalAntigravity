@@ -1,17 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { supabase } from './db-supabase.js';
-
-// Security: Unified JWT secret handling - no hardcoded fallback
-const IS_PRODUCTION = process.env.NODE_ENV === 'production';
-let JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
-    if (IS_PRODUCTION) {
-        console.error('FATAL: JWT_SECRET is required in production!');
-        process.exit(1);
-    }
-    console.warn('WARNING: JWT_SECRET missing. Using dev-only placeholder.');
-    JWT_SECRET = 'dev-insecure-secret-placeholder';
-}
+import { JWT_SECRET } from './config/secrets.js';
 
 /**
  * Standard JWT authentication middleware
@@ -184,21 +173,39 @@ export const trackPaywallHit = async (userId, feature) => {
 /**
  * Admin Gate - Allows only specific users
  */
-export const requireAdmin = (req, res, next) => {
+export const requireAdmin = async (req, res, next) => {
     const userId = req.user?.id;
     const email = req.user?.email;
 
-    // Admin Emails (consider moving to database for production)
-    const ADMIN_EMAILS = [
-        'pavel.hajek1989@gmail.com'
-    ];
-
-    if (!userId || !email || !ADMIN_EMAILS.includes(email)) {
-        console.warn(`Unauthorized Admin Access Attempt: ${email} (${userId})`);
+    if (!userId || !email) {
         return res.status(403).json({ error: 'Access Denied: Admin privileges required.' });
     }
 
-    next();
+    try {
+        // Check database for admin role
+        const { data: user, error } = await supabase
+            .from('users')
+            .select('role')
+            .eq('id', userId)
+            .single();
+
+        if (error || !user || user.role !== 'admin') {
+            // Fallback: check env-configured admin emails
+            const adminEmails = process.env.ADMIN_EMAILS
+                ? process.env.ADMIN_EMAILS.split(',').map(e => e.trim())
+                : [];
+
+            if (!adminEmails.includes(email)) {
+                console.warn(`Unauthorized Admin Access Attempt: ${email} (${userId})`);
+                return res.status(403).json({ error: 'Access Denied: Admin privileges required.' });
+            }
+        }
+
+        next();
+    } catch (err) {
+        console.error('Admin check error:', err);
+        return res.status(500).json({ error: 'Failed to verify admin status.' });
+    }
 };
 
 export const billCredits = async (req, res, next) => {
