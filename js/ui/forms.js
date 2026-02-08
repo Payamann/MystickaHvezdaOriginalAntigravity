@@ -81,8 +81,10 @@ export function initEmailForms() {
                     button.classList.remove('btn--error');
                     button.disabled = false;
                     input.disabled = false;
-                    input.focus(); // Focus back to try again
-                    alert(error.message); // Simple feedback for now
+                    input.focus();
+                    if (window.Auth?.showToast) {
+                        window.Auth.showToast('Chyba', error.message, 'error');
+                    }
                 }, 3000);
             }
         });

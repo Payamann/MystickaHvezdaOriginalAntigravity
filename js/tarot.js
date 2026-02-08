@@ -246,10 +246,7 @@ async function startReading(spreadType, isSoftGated = false) {
         await new Promise(r => setTimeout(r, 600)); // Delay between flips
         flipCards[i].classList.add('flipped');
 
-        // Play a subtle sound effect (optional - won't error if no audio)
-        try {
-            const flipSound = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU');
-        } catch (e) { }
+        // Sound effect removed (invalid audio data)
     }
 
     // 5. After all cards flipped, show interpretations

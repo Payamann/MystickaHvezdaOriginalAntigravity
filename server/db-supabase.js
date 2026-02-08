@@ -15,20 +15,27 @@ const projectUrl = process.env.SUPABASE_URL && !process.env.SUPABASE_URL.startsW
 
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-import fs from 'fs';
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
-// Warn but don't crash yet (keys might be added later)
 if (!projectUrl || !serviceKey) {
-    console.warn('⚠️ WARNING: Supabase credentials missing in .env (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)');
+    if (IS_PRODUCTION) {
+        console.error('FATAL: Supabase credentials missing (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY). Exiting.');
+        process.exit(1);
+    } else {
+        console.warn('⚠️ WARNING: Supabase credentials missing in .env (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)');
+    }
 } else {
     console.log('✅ Supabase initialized.');
 }
 
-// Create Supabase client
-// We use the SERVICE_ROLE_KEY because this runs on the server and needs admin rights (bypass RLS)
-export const supabase = createClient(projectUrl, serviceKey, {
-    auth: {
-        autoRefreshToken: false,
-        persistSession: false
+// Create Supabase client (SERVICE_ROLE_KEY for server-side admin access, bypasses RLS)
+export const supabase = createClient(
+    projectUrl || 'https://placeholder.supabase.co',
+    serviceKey || 'placeholder-key',
+    {
+        auth: {
+            autoRefreshToken: false,
+            persistSession: false
+        }
     }
-});
+);

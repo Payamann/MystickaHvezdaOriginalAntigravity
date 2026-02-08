@@ -170,10 +170,16 @@ async function calculateCompatibility() {
         // Call AI for detailed analysis
         btn.textContent = 'Generuji hlubokou analýzu...';
 
-        // Call API via Auth Wrapper (Protected)
-        const response = await Auth.fetchProtected('synastry', {
-            person1,
-            person2
+        // Call API with auth token
+        const token = window.Auth?.token || localStorage.getItem('auth_token');
+        const apiUrl = window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api';
+        const response = await fetch(`${apiUrl}/synastry`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ person1, person2 })
         });
         const data = await response.json();
 

@@ -26,11 +26,15 @@ function initCrystalBall() {
 
     // Check availability based on last usage
     function getRemainingCooldown() {
-        const lastUsage = localStorage.getItem('crystalBall_lastUsage');
-        if (!lastUsage) return 0;
+        try {
+            const lastUsage = localStorage.getItem('crystalBall_lastUsage');
+            if (!lastUsage) return 0;
 
-        const elapsed = (Date.now() - parseInt(lastUsage)) / 1000;
-        return Math.max(0, Math.ceil(COOLDOWN_SECONDS - elapsed));
+            const elapsed = (Date.now() - parseInt(lastUsage)) / 1000;
+            return Math.max(0, Math.ceil(COOLDOWN_SECONDS - elapsed));
+        } catch (e) {
+            return 0;
+        }
     }
 
     // Update UI based on cooldown
@@ -77,7 +81,7 @@ function initCrystalBall() {
         if (isThinking || !question.trim()) return;
 
         if (question.length > 200) {
-            alert("Otázka je příliš dlouhá. Prosím, zkraťte ji.");
+            window.Auth?.showToast?.('Příliš dlouhá otázka', 'Prosím, zkraťte otázku na max 200 znaků.', 'error');
             return;
         }
 
@@ -110,7 +114,7 @@ function initCrystalBall() {
             ballContainer.classList.remove('shaking');
 
             // Record usage time for cooldown
-            localStorage.setItem('crystalBall_lastUsage', Date.now().toString());
+            try { localStorage.setItem('crystalBall_lastUsage', Date.now().toString()); } catch (e) { /* private browsing */ }
             updateCooldownUI();
 
             if (data.success) {

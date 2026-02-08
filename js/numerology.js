@@ -95,7 +95,7 @@ async function handleFormSubmit(e) {
     const birthTime = document.getElementById('num-time').value;
 
     if (!name || !birthDate) {
-        alert('Vyplňte prosím jméno a datum narození');
+        window.Auth?.showToast?.('Chybějící údaje', 'Vyplňte prosím jméno a datum narození.', 'error');
         return;
     }
 
@@ -190,7 +190,7 @@ async function displayInterpretation(name, birthDate, birthTime, lifePath, desti
     // ==============================================
     // PREMIUM GATE: AI Interpretation
     // ==============================================
-    const isPremium = await window.Premium.checkStatus();
+    const isPremium = window.Auth && window.Auth.isLoggedIn() && window.Auth.isPremium();
 
     if (!isPremium) {
         // FREE: Show numbers only + paywall for AI interpretation
@@ -225,13 +225,13 @@ async function displayInterpretation(name, birthDate, birthTime, lifePath, desti
                 <div class="premium-lock-overlay">
                     <div class="lock-icon">🔒</div>
                     <p class="lock-text">Detailní rozbor je Premium funkce</p>
-                    <button class="btn btn--gold unlock-btn" onclick="window.Premium.showPaywall('numerology')">💎 Odemknout Premium</button>
+                    <a href="cenik.html" class="btn btn--gold unlock-btn">💎 Odemknout Premium</a>
                 </div>
             </div>
         `;
 
-        // Track paywall hit
-        window.Premium.trackPaywallHit('numerology');
+        // Track paywall hit (if premium-gates.js is loaded)
+        if (window.Premium?.trackPaywallHit) window.Premium.trackPaywallHit('numerology');
         return;
     }
 

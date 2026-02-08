@@ -40,7 +40,7 @@ router.post('/user/:userId/subscription', authenticateToken, requireAdmin, async
         const { plan_type } = req.body;
 
         const expiryDate = new Date();
-        expiryDate.setFullYear(expiryDate.getFullYear() + 10); // Standard override is long-term
+        expiryDate.setFullYear(expiryDate.getFullYear() + 1); // Admin override: 1-year expiry
 
         const subData = {
             user_id: userId,

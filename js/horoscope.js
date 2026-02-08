@@ -55,10 +55,8 @@ function initHoroscope() {
                 }
 
                 if (!window.Auth.isPremium()) {
-                    // Check if there is a trial or soft gate? No, price list says Premium.
-                    if (confirm('Tato funkce je dostupná pouze pro Premium uživatele.\n\nChcete vyzkoušet Premium na 7 dní zdarma?')) {
-                        window.location.href = 'cenik.html';
-                    }
+                    window.Auth?.showToast?.('Premium funkce', 'Týdenní a měsíční horoskopy jsou dostupné pouze pro Premium uživatele.', 'info');
+                    setTimeout(() => { window.location.href = 'cenik.html'; }, 1500);
                     return;
                 }
             }

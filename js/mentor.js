@@ -27,11 +27,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Check Premium Status
     try {
-        const userProfile = await window.Auth.getProfile();
-        // Allow everyone to enter, but track status
-        // Fix: Use window.Auth instead of authClient
-        // Fix: Use subscription_status instead of subscription_tier
-        window.isPremium = userProfile && (userProfile.subscription_status === 'premium' || userProfile.subscription_status === 'vip');
+        const userProfile = await window.Auth?.getProfile();
+        // Use Auth.isPremium() for consistent premium checking
+        window.isPremium = window.Auth?.isPremium?.() || false;
 
         // Initialize usage tracking for free users
         if (!window.isPremium) {
@@ -50,11 +48,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function initUsageTracking() {
-    const today = new Date().toISOString().split('T')[0];
-    const usage = JSON.parse(localStorage.getItem('mentor_usage') || '{}');
+    try {
+        const today = new Date().toISOString().split('T')[0];
+        const usage = JSON.parse(localStorage.getItem('mentor_usage') || '{}');
 
-    if (usage.date !== today) {
-        localStorage.setItem('mentor_usage', JSON.stringify({ date: today, count: 0 }));
+        if (usage.date !== today) {
+            localStorage.setItem('mentor_usage', JSON.stringify({ date: today, count: 0 }));
+        }
+    } catch (e) {
+        console.warn('Usage tracking init failed:', e);
     }
 }
 
@@ -276,9 +278,12 @@ function addMessage(text, type, shouldScroll = true) {
     const div = document.createElement('div');
     div.className = `message message--${type}`;
 
-    // Convert newlines to breaks for proper display
-    const formattedText = text.replace(/\n/g, '<br>');
-    div.innerHTML = formattedText;
+    // Safely render text: escape HTML, then convert newlines to breaks
+    const escaped = text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    div.innerHTML = escaped.replace(/\n/g, '<br>');
 
     // Insert before typing indicator
     messagesContainer.insertBefore(div, typingIndicator);

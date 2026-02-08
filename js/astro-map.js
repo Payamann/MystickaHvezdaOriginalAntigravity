@@ -288,18 +288,20 @@ function displayResults(response) {
     */
 
     if (resultsContainer) {
-        // Parse markdown-like bold to html bold if raw text
-        // Assuming response is text. We can do simple formatting.
-        let formattedResponse = response;
-        if (!response.includes('<')) {
-            formattedResponse = response.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        }
+        // Sanitize response: escape HTML, then apply safe bold formatting
+        let safeResponse = response
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+        safeResponse = safeResponse.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        safeResponse = safeResponse.replace(/\n/g, '<br>');
 
         resultsContainer.innerHTML = `
             <div class="astro-result-card" data-animate>
                 <h3 class="result-title">🗺️ Vaše Astrokartografická Mapa</h3>
                 <div class="result-content">
-                    ${formattedResponse}
+                    ${safeResponse}
                 </div>
                 ${tipHtml}
             </div>

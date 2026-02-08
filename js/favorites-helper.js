@@ -8,11 +8,12 @@ async function toggleFavorite(readingId, buttonId) {
     if (!btn || !readingId) return;
 
     try {
-        const response = await fetch(`/api/user/readings/${readingId}/favorite`, {
+        const apiUrl = window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api';
+        const response = await fetch(`${apiUrl}/user/readings/${readingId}/favorite`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                'Authorization': `Bearer ${window.Auth?.token || localStorage.getItem('auth_token')}`
             }
         });
 

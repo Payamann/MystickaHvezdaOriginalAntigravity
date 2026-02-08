@@ -323,7 +323,7 @@ async function loadReadings() {
         console.error('Error loading readings:', error);
         container.innerHTML = `
             <p class="text-center" style="opacity: 0.6;">
-                Nepodařilo se načíst historii. <a href="javascript:location.reload()">Zkusit znovu</a>
+                Nepodařilo se načíst historii. <a href="#" onclick="event.preventDefault(); location.reload();">Zkusit znovu</a>
             </p>
         `;
         return [];
@@ -735,7 +735,8 @@ async function saveSettings() {
         if (res.ok) {
             const updatedUser = await res.json();
             // Update local storage
-            const currentUser = JSON.parse(localStorage.getItem('auth_user') || '{}');
+            let currentUser = {};
+            try { currentUser = JSON.parse(localStorage.getItem('auth_user') || '{}'); } catch (e) { /* corrupted data */ }
             const newUser = { ...currentUser, ...updatedUser.user };
             localStorage.setItem('auth_user', JSON.stringify(newUser));
             window.Auth.user = newUser; // Update in memory

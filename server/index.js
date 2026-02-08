@@ -32,7 +32,13 @@ const PORT = process.env.PORT || 3001;
 // MIDDLEWARE
 // ============================================
 
-app.use(cors());
+const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+    : undefined; // undefined = allow all in dev
+app.use(cors({
+    origin: ALLOWED_ORIGINS || true,
+    credentials: true
+}));
 
 // Stripe Webhook MUST be before express.json() to get raw body
 app.post('/webhook/stripe', express.raw({ type: 'application/json' }), async (req, res) => {
@@ -579,8 +585,8 @@ app.put('/api/user/password', authenticateToken, async (req, res) => {
     try {
         const { password } = req.body;
 
-        if (!password || password.length < 6) {
-            return res.status(400).json({ success: false, error: 'Heslo musí mít alespoň 6 znaků.' });
+        if (!password || password.length < 8) {
+            return res.status(400).json({ success: false, error: 'Heslo musí mít alespoň 8 znaků.' });
         }
 
         const { error } = await supabase.auth.admin.updateUserById(
