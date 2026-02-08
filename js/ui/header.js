@@ -8,9 +8,8 @@ export function initHeader() {
     if (!header) return;
 
     // Throttled scroll handler for better performance
-    // Throttled scroll handler for better performance
     const handleScroll = throttle(() => {
-        const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+        const currentScroll = window.scrollY || document.documentElement.scrollTop;
 
         if (currentScroll > 50) {
             header.classList.add('scrolled');

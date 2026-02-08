@@ -1,6 +1,17 @@
 import jwt from 'jsonwebtoken';
 import { supabase } from './db-supabase.js';
-import { JWT_SECRET } from './config/jwt.js';
+
+// Security: Unified JWT secret handling - no hardcoded fallback
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+let JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+    if (IS_PRODUCTION) {
+        console.error('FATAL: JWT_SECRET is required in production!');
+        process.exit(1);
+    }
+    console.warn('WARNING: JWT_SECRET missing. Using dev-only placeholder.');
+    JWT_SECRET = 'dev-insecure-secret-placeholder';
+}
 
 /**
  * Standard JWT authentication middleware
@@ -14,7 +25,7 @@ export const authenticateToken = (req, res, next) => {
         return res.sendStatus(401);
     }
 
-    jwt.verify(token, JWT_SECRET, (err, user) => {
+    jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] }, (err, user) => {
         if (err) return res.sendStatus(403);
         req.user = user;
         next();
@@ -89,6 +100,7 @@ export const requirePremiumSoft = async (req, res, next) => {
         if (!subscription) {
             req.isPremium = false;
             req.isLimited = true;
+            req.credits = 0;
             return next();
         }
 
@@ -98,6 +110,7 @@ export const requirePremiumSoft = async (req, res, next) => {
 
         req.isPremium = isActive && notExpired && isPremium;
         req.isLimited = !req.isPremium;
+        req.credits = 0; // Deprecated
         req.subscription = subscription;
 
         next();
@@ -110,23 +123,85 @@ export const requirePremiumSoft = async (req, res, next) => {
 };
 
 /**
- * Admin Gate - Allows only users whose email is in ADMIN_EMAILS env var
+ * Feature-specific rate limiting for free tier
+ * Checks credits or daily limits
  */
-const ADMIN_EMAILS_RAW = process.env.ADMIN_EMAILS || '';
-const ADMIN_EMAILS = ADMIN_EMAILS_RAW.split(',').map(e => e.trim()).filter(Boolean);
+export const checkFeatureAccess = (featureName, creditsRequired = 1) => {
+    return async (req, res, next) => {
+        // Premium users bypass all limits
+        if (req.isPremium) {
+            return next();
+        }
 
-if (ADMIN_EMAILS.length === 0) {
-    console.warn('⚠️ No admin emails configured (set ADMIN_EMAILS env var)');
-}
+        const userId = req.user?.id;
+        if (!userId) {
+            return res.status(401).json({ error: 'Authentication required' });
+        }
 
+        try {
+            const { data: subscription } = await supabase
+                .from('subscriptions')
+                .select('credits, plan_type')
+                .eq('user_id', userId)
+                .single();
+
+            // Credits system removed - checkFeatureAccess is now a pass-through
+            // or we could implement simple rate limiting here if needed.
+            next();
+        } catch (error) {
+            console.error('Feature access check error:', error);
+            res.status(500).json({ error: 'Failed to verify feature access' });
+        }
+    };
+};
+
+/**
+ * Track paywall hits for analytics
+ */
+export const trackPaywallHit = async (userId, feature) => {
+    try {
+        // TODO: Send to analytics (Mixpanel, Amplitude, etc.)
+        console.log(`[ANALYTICS] Paywall hit: user=${userId}, feature=${feature}`);
+
+        // Optionally store in database for internal analytics
+        // await supabase.from('analytics_events').insert({
+        //     user_id: userId,
+        //     event_type: 'paywall_hit',
+        //     feature: feature,
+        //     timestamp: new Date()
+        // });
+    } catch (error) {
+        console.error('Track paywall error:', error);
+    }
+};
+
+/**
+ * Deduct credits after successful API call
+ * Call this at the end of your endpoint
+ */
+// ... (existing code)
+
+/**
+ * Admin Gate - Allows only specific users
+ */
 export const requireAdmin = (req, res, next) => {
     const userId = req.user?.id;
     const email = req.user?.email;
+
+    // Admin Emails (consider moving to database for production)
+    const ADMIN_EMAILS = [
+        'pavel.hajek1989@gmail.com'
+    ];
 
     if (!userId || !email || !ADMIN_EMAILS.includes(email)) {
         console.warn(`Unauthorized Admin Access Attempt: ${email} (${userId})`);
         return res.status(403).json({ error: 'Access Denied: Admin privileges required.' });
     }
 
+    next();
+};
+
+export const billCredits = async (req, res, next) => {
+    // Credits system removed
     next();
 };

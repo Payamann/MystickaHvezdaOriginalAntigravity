@@ -16,20 +16,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.Auth?.showToast?.('Přihlášení vyžadováno', 'Pro vstup do Hvězdného Průvodce se prosím přihlaste.', 'info');
         window.Auth?.openModal?.('login');
 
-        // Reload on login to initialize chat
+        // Reload on login to initialize chat (once only to prevent listener leak)
         document.addEventListener('auth:changed', () => {
             if (localStorage.getItem('auth_token')) {
                 window.location.reload();
             }
-        });
+        }, { once: true });
         return;
     }
 
     // Check Premium Status
     try {
-        const userProfile = await window.Auth?.getProfile();
-        // Use Auth.isPremium() for consistent premium checking
-        window.isPremium = window.Auth?.isPremium?.() || false;
+        const userProfile = await window.Auth.getProfile();
+        // Allow everyone to enter, but track status
+        // Fix: Use window.Auth instead of authClient
+        // Fix: Use subscription_status instead of subscription_tier
+        window.isPremium = userProfile && (userProfile.subscription_status === 'premium' || userProfile.subscription_status === 'vip');
 
         // Initialize usage tracking for free users
         if (!window.isPremium) {
@@ -48,15 +50,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function initUsageTracking() {
-    try {
-        const today = new Date().toISOString().split('T')[0];
-        const usage = JSON.parse(localStorage.getItem('mentor_usage') || '{}');
+    const today = new Date().toISOString().split('T')[0];
+    const usage = JSON.parse(localStorage.getItem('mentor_usage') || '{}');
 
-        if (usage.date !== today) {
-            localStorage.setItem('mentor_usage', JSON.stringify({ date: today, count: 0 }));
-        }
-    } catch (e) {
-        console.warn('Usage tracking init failed:', e);
+    if (usage.date !== today) {
+        localStorage.setItem('mentor_usage', JSON.stringify({ date: today, count: 0 }));
     }
 }
 
@@ -278,12 +276,9 @@ function addMessage(text, type, shouldScroll = true) {
     const div = document.createElement('div');
     div.className = `message message--${type}`;
 
-    // Safely render text: escape HTML, then convert newlines to breaks
-    const escaped = text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-    div.innerHTML = escaped.replace(/\n/g, '<br>');
+    // Safely render text: escape HTML first, then convert newlines to <br>
+    div.textContent = text;
+    div.innerHTML = div.innerHTML.replace(/\n/g, '<br>');
 
     // Insert before typing indicator
     messagesContainer.insertBefore(div, typingIndicator);

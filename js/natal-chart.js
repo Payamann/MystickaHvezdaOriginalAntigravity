@@ -401,9 +401,7 @@ async function generateNatalChart(planetsGroup) {
         // Keep other planets random/demo for now as we don't have an ephemeris library client-side
         // But we MUST fix the Sun as it defines the "Sign" user sees.
 
-        // Regenerate planets with the SUN fixed at the correct angle
-        // We need to override the first planet (Sun) in the generated group
-        generatePlanets(planetsGroup, seed); // Generate base structure
+        // Planets already generated above with the same seed - no need to regenerate
 
         // Hack: Update the Sun's rotation to match the calculated sign
         const sunOrbit = planetsGroup.querySelector('.planet-node').parentElement;
@@ -447,10 +445,12 @@ async function generateNatalChart(planetsGroup) {
         btn.innerHTML = '<span class="loading-spinner"></span> Navazuji spojení s hvězdami...';
 
         // Call API
+        const authToken = localStorage.getItem('auth_token') || window.Auth?.token;
         const response = await fetch(`${window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api'}/natal-chart`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
             },
             body: JSON.stringify({
                 birthDate,
@@ -507,14 +507,13 @@ async function generateNatalChart(planetsGroup) {
     } catch (error) {
         console.error('Natal Chart Error:', error);
         aiResultsDiv.style.display = 'block';
-        // DEBUG: Show actual error to user
-        aiResultsDiv.querySelector('.ai-content').innerHTML =
-            `<strong>Chyba:</strong> ${error.message || error}<br><br>Hvězdy momentálně odmítají odhalit svá tajemství. Zkuste to prosím později.`;
+        aiResultsDiv.querySelector('.ai-content').textContent =
+            'Hvězdy momentálně odmítají odhalit svá tajemství. Zkuste to prosím později.';
     }
 
     btn.innerHTML = originalHTML; // Restore full HTML
     btn.disabled = false;
-    btn.classList.remove('btn--loading');
+    btn.classList.remove('btn--processing');
     document.getElementById('chart-results').scrollIntoView({ behavior: 'smooth' });
 }
 

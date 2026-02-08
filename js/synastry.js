@@ -46,7 +46,7 @@ function initSynastry() {
                             } else {
                                 dateInput.value = user.birth_date;
                             }
-                        } catch (e) {
+                        } catch (parseErr) {
                             dateInput.value = user.birth_date;
                         }
                     }
@@ -116,7 +116,13 @@ async function calculateCompatibility() {
     }
 
     // Detailed Scores - Gated
-    const detailCard = document.querySelector('.card__title').closest('.card');
+    const cardTitle = document.querySelector('.card__title');
+    const detailCard = cardTitle ? cardTitle.closest('.card') : null;
+    if (!detailCard) {
+        btn.textContent = originalText;
+        btn.disabled = false;
+        return;
+    }
 
     // Reset previous state
     const existingOverlay = detailCard.querySelector('.premium-lock-overlay');
@@ -170,16 +176,10 @@ async function calculateCompatibility() {
         // Call AI for detailed analysis
         btn.textContent = 'Generuji hlubokou analýzu...';
 
-        // Call API with auth token
-        const token = window.Auth?.token || localStorage.getItem('auth_token');
-        const apiUrl = window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api';
-        const response = await fetch(`${apiUrl}/synastry`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ person1, person2 })
+        // Call API via Auth Wrapper (Protected)
+        const response = await window.Auth.fetchProtected('synastry', {
+            person1,
+            person2
         });
         const data = await response.json();
 
@@ -314,9 +314,14 @@ function animateValue(id, start, end, duration) {
     if (!obj) return;
 
     const range = end - start;
+    if (range === 0) {
+        obj.textContent = end + "%";
+        return;
+    }
+
     let current = start;
     const increment = end > start ? 1 : -1;
-    const stepTime = Math.abs(Math.floor(duration / range));
+    const stepTime = Math.max(1, Math.abs(Math.floor(duration / range)));
 
     const timer = setInterval(function () {
         current += increment;

@@ -1,53 +1,22 @@
+// Native fetch is used in Node 18+
+
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-
+const REQUEST_TIMEOUT_MS = 30000; // 30 second timeout
 const MAX_RETRIES = 2;
-const RETRY_DELAYS = [1000, 3000];
 
-// Simple circuit breaker
-let consecutiveFailures = 0;
-let circuitOpenUntil = 0;
-
-/**
- * Validates the API key presence.
- */
-function getApiKey() {
+// Cache API key at module load (not per-request)
+const API_KEY = (() => {
     const key = process.env.GEMINI_API_KEY;
     if (!key) {
-        throw new Error('GEMINI_API_KEY is not defined in environment variables.');
+        console.error('WARNING: GEMINI_API_KEY is not defined in environment variables.');
     }
     return key;
-}
-
-/**
- * Fetch with retry and exponential backoff for transient errors.
- */
-async function fetchWithRetry(url, options) {
-    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-        try {
-            const response = await fetch(url, options);
-
-            // Retry on rate limit or server errors
-            if ((response.status === 429 || response.status >= 500) && attempt < MAX_RETRIES) {
-                console.warn(`[Gemini] Retrying (${attempt + 1}/${MAX_RETRIES}) after status ${response.status}...`);
-                await new Promise(r => setTimeout(r, RETRY_DELAYS[attempt]));
-                continue;
-            }
-
-            return response;
-        } catch (error) {
-            if (attempt < MAX_RETRIES) {
-                console.warn(`[Gemini] Network error, retrying (${attempt + 1}/${MAX_RETRIES})...`);
-                await new Promise(r => setTimeout(r, RETRY_DELAYS[attempt]));
-                continue;
-            }
-            throw error;
-        }
-    }
-}
+})();
 
 /**
  * Calls the Gemini API with a given system instruction and user message/history.
  * Supports both simple text generation and structured chat history.
+ * Includes timeout and retry logic for reliability.
  *
  * @param {string} systemPrompt - The system instruction/persona.
  * @param {string|Array} messageOrHistory - The user prompt string OR an array of message objects {role, content}.
@@ -55,12 +24,9 @@ async function fetchWithRetry(url, options) {
  * @returns {Promise<string>} - The generated response text.
  */
 export async function callGemini(systemPrompt, messageOrHistory, contextData = null) {
-    // Circuit breaker check
-    if (Date.now() < circuitOpenUntil) {
-        throw new Error('Gemini API temporarily unavailable. Please try again later.');
+    if (!API_KEY) {
+        throw new Error('GEMINI_API_KEY is not defined in environment variables.');
     }
-
-    const apiKey = getApiKey();
 
     // Construct the full system instruction with context if provided
     let fullSystemInstruction = systemPrompt;
@@ -80,16 +46,16 @@ export async function callGemini(systemPrompt, messageOrHistory, contextData = n
     let contents = [];
 
     if (Array.isArray(messageOrHistory)) {
-        // Chat History Mode
+        // Chat History Mode (History + New Message)
         contents = messageOrHistory.map(msg => ({
             role: msg.role === 'mentor' || msg.role === 'model' ? 'model' : 'user',
-            parts: [{ text: String(msg.content || '').substring(0, 2000) }]
+            parts: [{ text: msg.content }]
         }));
     } else {
-        // Single Turn Mode
+        // Single Turn Mode (User Message only)
         contents = [{
             role: 'user',
-            parts: [{ text: String(messageOrHistory || '').substring(0, 2000) }]
+            parts: [{ text: messageOrHistory }]
         }];
     }
 
@@ -106,37 +72,62 @@ export async function callGemini(systemPrompt, messageOrHistory, contextData = n
         }
     };
 
-    try {
-        const response = await fetchWithRetry(`${GEMINI_API_URL}?key=${apiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(requestBody)
-        });
+    // Retry loop with exponential backoff for transient errors
+    let lastError;
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            consecutiveFailures++;
-            if (consecutiveFailures >= 5) {
-                circuitOpenUntil = Date.now() + 60000;
-                console.error('[Gemini] Circuit breaker OPEN for 60s after 5 consecutive failures.');
+            const response = await fetch(`${GEMINI_API_URL}?key=${API_KEY}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody),
+                signal: controller.signal
+            });
+
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+                const status = response.status;
+                // Retry on 429 (rate limit) and 503 (service unavailable)
+                if ((status === 429 || status === 503) && attempt < MAX_RETRIES) {
+                    const delay = Math.pow(2, attempt + 1) * 1000; // 2s, 4s
+                    console.warn(`[Gemini Service] ${status} error, retrying in ${delay}ms (attempt ${attempt + 1}/${MAX_RETRIES})`);
+                    await new Promise(r => setTimeout(r, delay));
+                    continue;
+                }
+                const errorText = await response.text();
+                throw new Error(`Gemini API Error (${status}): ${errorText}`);
             }
-            throw new Error(`Gemini API Error (${response.status}): ${errorText}`);
+
+            const data = await response.json();
+            const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+            if (!text) {
+                throw new Error('No content returned from Gemini.');
+            }
+
+            return text;
+
+        } catch (error) {
+            lastError = error;
+            if (error.name === 'AbortError') {
+                console.error('[Gemini Service] Request timed out');
+                if (attempt < MAX_RETRIES) {
+                    const delay = Math.pow(2, attempt + 1) * 1000;
+                    console.warn(`[Gemini Service] Retrying after timeout (attempt ${attempt + 1}/${MAX_RETRIES})`);
+                    await new Promise(r => setTimeout(r, delay));
+                    continue;
+                }
+                throw new Error('Gemini API request timed out');
+            }
+            if (attempt >= MAX_RETRIES) {
+                console.error('[Gemini Service] Error:', error.message);
+                throw error;
+            }
         }
-
-        // Reset circuit breaker on success
-        consecutiveFailures = 0;
-
-        const data = await response.json();
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-        if (!text) {
-            throw new Error('No content returned from Gemini.');
-        }
-
-        return text;
-
-    } catch (error) {
-        console.error('[Gemini Service] Error:', error.message);
-        throw error;
     }
+
+    throw lastError;
 }

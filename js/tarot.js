@@ -209,7 +209,7 @@ async function startReading(spreadType, isSoftGated = false) {
                                     </div>
                                     <img src="img/tarot-back.webp" style="filter: blur(5px); opacity: 0.5;" alt="Locked">
                                 ` : (card.image ? `
-                                    <img src="${card.image}?v=${Date.now()}" onerror="this.onerror=null;this.src='img/tarot/tarot_placeholder.webp'" alt="${escapeHtml(card.name)}" class="tarot-card-image">
+                                    <img src="${card.image}" onerror="this.onerror=null;this.src='img/tarot/tarot_placeholder.webp'" alt="${escapeHtml(card.name)}" class="tarot-card-image" loading="lazy">
                                 ` : `
                                     <div class="tarot-card-content">
                                         <span class="tarot-card-emoji">${card.emoji}</span>
@@ -364,10 +364,12 @@ async function generateAiSummary(cards, spreadType) {
             };
         });
 
+        const authToken = window.Auth?.token;
         const response = await fetch('/api/tarot-summary', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
             },
             body: JSON.stringify({
                 spreadType,

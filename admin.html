@@ -153,7 +153,7 @@
             const errorMsg = document.getElementById('error-msg');
 
             try {
-                const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/users`, {
+                const response = await fetch(`${API_CONFIG.BASE_URL}/admin/users`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
@@ -182,20 +182,41 @@
                 const sub = (user.subscriptions && user.subscriptions.length > 0) ? user.subscriptions[0] : (typeof user.subscriptions === 'object' ? user.subscriptions : {});
                 const plan = sub.plan_type || 'free';
                 const credits = sub.credits || 0;
+                const safeClass = plan.split('_')[0].replace(/[^a-z]/g, '');
 
                 const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${user.email}</td>
-                    <td style="font-family:monospace; font-size:0.8rem;">${user.id.substring(0, 8)}...</td>
-                    <td><span class="status-badge status-${plan.split('_')[0]}">${plan}</span></td>
-                    <td>${credits}</td>
-                    <td>${new Date(user.created_at).toLocaleDateString()}</td>
-                    <td>
-                        <button class="action-btn btn-promote" onclick="updateSub('${user.id}', 'premium_monthly')">Premium</button>
-                        <button class="action-btn" onclick="updateSub('${user.id}', 'vip')">VIP</button>
-                        <button class="action-btn btn-demote" onclick="updateSub('${user.id}', 'free')">Free</button>
-                    </td>
-                `;
+
+                // Build cells safely using textContent to prevent XSS
+                const tdEmail = document.createElement('td');
+                tdEmail.textContent = user.email;
+
+                const tdId = document.createElement('td');
+                tdId.style.fontFamily = 'monospace';
+                tdId.style.fontSize = '0.8rem';
+                tdId.textContent = user.id.substring(0, 8) + '...';
+
+                const tdPlan = document.createElement('td');
+                const badge = document.createElement('span');
+                badge.className = `status-badge status-${safeClass}`;
+                badge.textContent = plan;
+                tdPlan.appendChild(badge);
+
+                const tdCredits = document.createElement('td');
+                tdCredits.textContent = credits;
+
+                const tdDate = document.createElement('td');
+                tdDate.textContent = new Date(user.created_at).toLocaleDateString();
+
+                const tdActions = document.createElement('td');
+                ['premium_monthly', 'vip', 'free'].forEach((p, i) => {
+                    const btn = document.createElement('button');
+                    btn.className = `action-btn${i === 0 ? ' btn-promote' : (i === 2 ? ' btn-demote' : '')}`;
+                    btn.textContent = i === 0 ? 'Premium' : (i === 1 ? 'VIP' : 'Free');
+                    btn.addEventListener('click', () => updateSub(user.id, p));
+                    tdActions.appendChild(btn);
+                });
+
+                tr.append(tdEmail, tdId, tdPlan, tdCredits, tdDate, tdActions);
                 tbody.appendChild(tr);
             });
         }
@@ -205,7 +226,7 @@
 
             const token = window.Auth.token || localStorage.getItem('auth_token');
             try {
-                const response = await fetch(`${API_CONFIG.BASE_URL}/api/admin/user/${userId}/subscription`, {
+                const response = await fetch(`${API_CONFIG.BASE_URL}/admin/user/${userId}/subscription`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
