@@ -107,10 +107,10 @@
 .paywall-icon {
     font-size: 4rem;
     margin-bottom: 1rem;
-    animation: float 3s ease-in-out infinite;
+    animation: float-icon 3s ease-in-out infinite;
 }
 
-@keyframes float {
+@keyframes float-icon {
 
     0%,
     100% {
@@ -206,10 +206,10 @@
 .lock-icon {
     font-size: 3rem;
     margin-bottom: 0.5rem;
-    animation: shake 0.5s ease;
+    animation: shake-icon 0.5s ease;
 }
 
-@keyframes shake {
+@keyframes shake-icon {
 
     0%,
     100% {

@@ -286,9 +286,14 @@ function addMessage(text, type, shouldScroll = true) {
     const div = document.createElement('div');
     div.className = `message message--${type}`;
 
-    // Safely render text: escape HTML first, then convert newlines to <br>
-    div.textContent = text;
-    div.innerHTML = div.innerHTML.replace(/\n/g, '<br>');
+    // Safely render text with line breaks using DOM API
+    const lines = text.split('\n');
+    lines.forEach((line, i) => {
+        div.appendChild(document.createTextNode(line));
+        if (i < lines.length - 1) {
+            div.appendChild(document.createElement('br'));
+        }
+    });
 
     // Insert before typing indicator
     messagesContainer.insertBefore(div, typingIndicator);

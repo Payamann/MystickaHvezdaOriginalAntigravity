@@ -3985,15 +3985,7 @@ body {
   vertical-align: text-bottom;
 }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
+/* spin keyframes defined at line ~2937 */
 
 
 .btn--processing {
@@ -4006,4 +3998,17 @@ body {
 
 .btn--processing::after {
   display: none;
+}
+
+/* Accessibility: Respect user motion preferences */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

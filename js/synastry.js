@@ -297,13 +297,21 @@ function renderTeaser(container) {
     if (!container.querySelector('.teaser-overlay')) {
         const overlay = document.createElement('div');
         overlay.className = 'teaser-overlay';
-        overlay.innerHTML = `
-            <div style="background: rgba(10, 10, 26, 0.9); padding: 2rem; border-radius: 12px; border: 1px solid var(--color-mystic-gold); box-shadow: 0 0 20px rgba(212, 175, 55, 0.2); display: inline-block;">
-                <h3 style="color: var(--color-mystic-gold); margin-bottom: 1rem;">Odemkněte tajemství vašeho vztahu</h3>
-                <p style="color: #ccc; margin-bottom: 1.5rem;">Zjistěte, proč máte ${document.getElementById('total-score').textContent} shodu a co vás čeká.</p>
-                <a href="cenik.html" class="btn btn--primary">Odemknout plný rozbor (199 Kč)</a>
-            </div>
-        `;
+        const innerDiv = document.createElement('div');
+        innerDiv.style.cssText = 'background: rgba(10, 10, 26, 0.9); padding: 2rem; border-radius: 12px; border: 1px solid var(--color-mystic-gold); box-shadow: 0 0 20px rgba(212, 175, 55, 0.2); display: inline-block;';
+        const h3 = document.createElement('h3');
+        h3.style.cssText = 'color: var(--color-mystic-gold); margin-bottom: 1rem;';
+        h3.textContent = 'Odemkněte tajemství vašeho vztahu';
+        const p = document.createElement('p');
+        p.style.cssText = 'color: #ccc; margin-bottom: 1.5rem;';
+        const scoreEl = document.getElementById('total-score');
+        p.textContent = 'Zjistěte, proč máte ' + (scoreEl ? scoreEl.textContent : '') + ' shodu a co vás čeká.';
+        const a = document.createElement('a');
+        a.href = 'cenik.html';
+        a.className = 'btn btn--primary';
+        a.textContent = 'Odemknout plný rozbor (199 Kč)';
+        innerDiv.append(h3, p, a);
+        overlay.appendChild(innerDiv);
         container.style.position = 'relative'; // Ensure positioning context
         container.appendChild(overlay);
     }

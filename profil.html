@@ -131,6 +131,7 @@
                         <!-- Manifestation Journal -->
                         <div class="card glass-card">
                             <h3 class="card-title">📖 Manifestační Deník</h3>
+                            <label for="journal-input" class="sr-only">Manifestační přání</label>
                             <textarea id="journal-input" class="form-input" rows="3"
                                 placeholder="Napište své přání Vesmíru... (např. Cítím vděčnost za...)"></textarea>
                             <button id="journal-submit" class="btn btn--primary journal-submit-btn">✨ Vyslat
@@ -195,20 +196,20 @@
                                     style="color: var(--color-mystic-gold); margin-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
                                     Osobní údaje</h4>
                                 <div>
-                                    <label class="form-label">Jméno / Přezdívka</label>
+                                    <label class="form-label" for="settings-name">Jméno / Přezdívka</label>
                                     <input type="text" id="settings-name" class="form-input" placeholder="Vaše jméno">
                                 </div>
                                 <div>
-                                    <label class="form-label">Datum narození</label>
+                                    <label class="form-label" for="settings-birthdate">Datum narození</label>
                                     <input type="date" id="settings-birthdate" class="form-input">
                                 </div>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                                     <div>
-                                        <label class="form-label">Čas narození</label>
+                                        <label class="form-label" for="settings-birthtime">Čas narození</label>
                                         <input type="time" id="settings-birthtime" class="form-input">
                                     </div>
                                     <div>
-                                        <label class="form-label">Místo narození</label>
+                                        <label class="form-label" for="settings-birthplace">Místo narození</label>
                                         <input type="text" id="settings-birthplace" class="form-input"
                                             placeholder="Např. Praha">
                                     </div>
@@ -218,11 +219,11 @@
                                     style="color: var(--color-mystic-gold); margin: 1rem 0 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
                                     Účet</h4>
                                 <div>
-                                    <label class="form-label">Email</label>
+                                    <label class="form-label" for="settings-email">Email</label>
                                     <input type="email" id="settings-email" class="form-input" disabled>
                                 </div>
                                 <div>
-                                    <label class="form-label">Nové heslo</label>
+                                    <label class="form-label" for="settings-password">Nové heslo</label>
                                     <input type="password" id="settings-password" class="form-input"
                                         placeholder="Ponechte prázdné pro zachování">
                                 </div>
@@ -248,7 +249,7 @@
         style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(10px); overflow-y: auto; padding: 2rem;">
         <div class="modal__content"
             style="background: var(--color-cosmic-purple); padding: 2rem; border-radius: 15px; border: 1px solid rgba(155, 89, 182, 0.3); width: 100%; max-width: 700px; position: relative; margin: auto;">
-            <button class="modal__close" onclick="closeReadingModal()"
+            <button class="modal__close" onclick="closeReadingModal()" aria-label="Zavřít detail"
                 style="position: absolute; top: 1rem; right: 1rem; cursor: pointer; color: white; background: none; border: none; font-size: 1.5rem;">✕</button>
             <div id="reading-modal-content">
                 <p style="text-align: center; opacity: 0.6;">Načítání...</p>
