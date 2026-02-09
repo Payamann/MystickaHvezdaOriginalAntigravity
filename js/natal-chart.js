@@ -8,30 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initNatalChart();
 });
 
-const ZODIAC_SIGNS = [
-    { symbol: '♈', name: 'Beran', angle: 0 },
-    { symbol: '♉', name: 'Býk', angle: 30 },
-    { symbol: '♊', name: 'Blíženci', angle: 60 },
-    { symbol: '♋', name: 'Rak', angle: 90 },
-    { symbol: '♌', name: 'Lev', angle: 120 },
-    { symbol: '♍', name: 'Panna', angle: 150 },
-    { symbol: '♎', name: 'Váhy', angle: 180 },
-    { symbol: '♏', name: 'Štír', angle: 210 },
-    { symbol: '♐', name: 'Střelec', angle: 240 },
-    { symbol: '♑', name: 'Kozoroh', angle: 270 },
-    { symbol: '♒', name: 'Vodnář', angle: 300 },
-    { symbol: '♓', name: 'Ryby', angle: 330 }
-];
-
-const PLANETS = [
-    { symbol: '☀️', name: 'Slunce', color: '#FFD700', img: 'img/planets/sun.webp', size: 60, desc: 'Vaše základní podstata a ego.' },
-    { symbol: '🌙', name: 'Měsíc', color: '#C0C0C0', img: 'img/planets/moon.webp', size: 40, desc: 'Emoce, intuice a vnitřní svět.' },
-    { symbol: '☿️', name: 'Merkur', color: '#B0C4DE', img: 'img/planets/mercury.webp', size: 30, desc: 'Komunikace a myšlení.' },
-    { symbol: '♀️', name: 'Venuše', color: '#FFB6C1', img: 'img/planets/venus.webp', size: 35, desc: 'Láska, krása a hodnoty.' },
-    { symbol: '♂️', name: 'Mars', color: '#FF4500', img: 'img/planets/mars.webp', size: 32, desc: 'Energie, akce a touha.' },
-    { symbol: '♃', name: 'Jupiter', color: '#E6E6FA', img: 'img/planets/jupiter.webp', size: 55, desc: 'Štěstí, expanze a růst.' },
-    { symbol: '♄', name: 'Saturn', color: '#708090', img: 'img/planets/saturn_rings.webp', size: 50, hasRing: true, desc: 'Disciplína a zkoušky.' }
-];
+// ZODIAC_SIGNS and PLANETS are loaded from js/utils/astrology-constants.js
 
 function initNatalChart() {
     const zodiacGroup = document.getElementById('zodiac-ring');

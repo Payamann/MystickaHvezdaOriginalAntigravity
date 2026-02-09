@@ -57,19 +57,7 @@ const CITY_POSITIONS = {
     'havaj': { x: 3, y: 45, aliases: ['havaj', 'hawaii', 'honolulu'] }
 };
 
-// Planet colors for visualization
-const PLANET_COLORS = {
-    'slunce': '#f1c40f',
-    'měsíc': '#bdc3c7',
-    'merkur': '#9b59b6',
-    'venuše': '#e91e8c',
-    'mars': '#e74c3c',
-    'jupiter': '#d4af37',
-    'saturn': '#7f8c8d',
-    'uran': '#00d9ff',
-    'neptun': '#3498db',
-    'pluto': '#2c3e50'
-};
+// PLANET_COLORS loaded from js/utils/astrology-constants.js
 
 /**
  * Initialize the astrocartography feature
