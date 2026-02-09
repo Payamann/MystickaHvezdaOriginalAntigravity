@@ -54,7 +54,7 @@ app.post('/webhook/stripe', express.raw({ type: 'application/json' }), async (re
 
 // Increase payload limit for complex requests (e.g. detailed tarot spreads if needed)
 app.use(express.json({ limit: '10kb' }));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 // Security Headers with Content Security Policy
 app.use(helmet({
@@ -262,13 +262,24 @@ app.post('/api/synastry', authenticateToken, async (req, res) => {
     }
 });
 
+// Valid zodiac signs whitelist
+const VALID_ZODIAC_SIGNS = ['Beran','Býk','Blíženci','Rak','Lev','Panna','Váhy','Štír','Střelec','Kozoroh','Vodnář','Ryby'];
+
 // Horoscope (Daily, Weekly, Monthly) - WITH DATABASE CACHING
 app.post('/api/horoscope', async (req, res) => {
     try {
         const { sign, period = 'daily', context = [] } = req.body;
 
+        if (!sign || !VALID_ZODIAC_SIGNS.includes(sign)) {
+            return res.status(400).json({ success: false, error: 'Neplatné znamení zvěrokruhu.' });
+        }
+
+        if (!['daily', 'weekly', 'monthly'].includes(period)) {
+            return res.status(400).json({ success: false, error: 'Neplatné období.' });
+        }
+
         // Generate cache key (include context hash to avoid stale cache if context changes)
-        const contextHash = context.length > 0 ? Buffer.from(context.join('')).toString('base64').substring(0, 10) : 'nocontext';
+        const contextHash = Array.isArray(context) && context.length > 0 ? Buffer.from(context.join('')).toString('base64').substring(0, 10) : 'nocontext';
         const cacheKey = getHoroscopeCacheKey(sign, period) + `-${contextHash}`;
 
         // Check database cache first
@@ -290,11 +301,19 @@ app.post('/api/horoscope', async (req, res) => {
         let periodLabel;
         let contextInstruction = "";
 
-        if (context && context.length > 0) {
-            contextInstruction = `
+        if (context && Array.isArray(context) && context.length > 0) {
+            // Sanitize context: strip control chars, limit length, cap items
+            const sanitized = context
+                .slice(0, 5)
+                .map(c => String(c).replace(/[\r\n\t]/g, ' ').substring(0, 300))
+                .filter(c => c.trim().length > 0);
+
+            if (sanitized.length > 0) {
+                contextInstruction = `
 CONTEXT (Z uživatelova deníku):
-"${context.join('", "')}"
+"${sanitized.join('", "')}"
 INSTRUKCE PRO SYNERGII: Pokud je to relevantní, jemně a nepřímo nawazuj na témata z deníku. Neříkej "V deníku vidím...", ale spíše "Hvězdy naznačují posun v tématech, která tě trápí...". Buď empatický.`;
+            }
         }
 
         if (period === 'weekly') {

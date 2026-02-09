@@ -1,9 +1,19 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import rateLimit from 'express-rate-limit';
 import { supabase } from './db-supabase.js';
 
 const router = express.Router();
 import fs from 'fs';
+
+// Strict rate limiting on auth endpoints to prevent brute force / credential stuffing
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10, // 10 attempts per window
+    message: { error: 'Příliš mnoho pokusů. Zkuste to za 15 minut.' },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
 // Security: Enforce strong secret in production
@@ -38,7 +48,7 @@ router.post('/activate-premium', (req, res) => {
 });
 
 // Register (Supabase Auth)
-router.post('/register', async (req, res) => {
+router.post('/register', authLimiter, async (req, res) => {
     const { email, password, first_name, birth_date, birth_time, birth_place } = req.body;
 
     if (!email || !password) {
@@ -69,15 +79,15 @@ router.post('/register', async (req, res) => {
 
         if (error) {
             console.error('Supabase Auth Error:', error);
-            // Handle specific Supabase errors
+            // Return generic error to prevent user enumeration
             if (error.message.includes('already registered') || error.message.includes('User already registered')) {
-                return res.status(400).json({ error: 'Uživatel s tímto emailem již existuje.' });
-            }
-            if (error.status === 400 || error.code === 400) {
-                return res.status(400).json({ error: 'Chyba registrace: ' + error.message });
+                return res.status(400).json({ error: 'Registrace se nezdařila. Zkontrolujte email a heslo.' });
             }
             if (error.code === 'weak_password') {
-                return res.status(400).json({ error: 'Heslo musí mít alespoň 6 znaků.' });
+                return res.status(400).json({ error: 'Heslo musí mít alespoň 8 znaků.' });
+            }
+            if (error.status === 400 || error.code === 400) {
+                return res.status(400).json({ error: 'Registrace se nezdařila. Zkontrolujte email a heslo.' });
             }
             throw error;
         }
@@ -97,7 +107,7 @@ router.post('/register', async (req, res) => {
 });
 
 // Login (Supabase Auth)
-router.post('/login', async (req, res) => {
+router.post('/login', authLimiter, async (req, res) => {
     const { email, password } = req.body;
 
     try {

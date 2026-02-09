@@ -1,6 +1,9 @@
 import jwt from 'jsonwebtoken';
 import { supabase } from './db-supabase.js';
 
+// Centralized premium plan type list - used by both hard and soft gates
+const PREMIUM_PLAN_TYPES = ['premium_monthly', 'premium_yearly', 'premium_pro', 'exclusive_monthly', 'vip'];
+
 // Security: Unified JWT secret handling - no hardcoded fallback
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 let JWT_SECRET = process.env.JWT_SECRET;
@@ -59,7 +62,7 @@ export const requirePremium = async (req, res, next) => {
 
         const isActive = subscription.status === 'active';
         const notExpired = new Date(subscription.current_period_end) > new Date();
-        const isPremium = ['premium_monthly', 'exclusive_monthly', 'vip'].includes(subscription.plan_type);
+        const isPremium = PREMIUM_PLAN_TYPES.includes(subscription.plan_type);
 
         if (!isActive || !notExpired || !isPremium) {
             return res.status(402).json({
@@ -106,7 +109,7 @@ export const requirePremiumSoft = async (req, res, next) => {
 
         const isActive = subscription.status === 'active';
         const notExpired = new Date(subscription.current_period_end) > new Date();
-        const isPremium = ['premium_monthly', 'exclusive_monthly', 'vip'].includes(subscription.plan_type);
+        const isPremium = PREMIUM_PLAN_TYPES.includes(subscription.plan_type);
 
         req.isPremium = isActive && notExpired && isPremium;
         req.isLimited = !req.isPremium;

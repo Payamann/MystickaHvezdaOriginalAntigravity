@@ -27,9 +27,8 @@ export async function isPremiumUser(userId) {
 
         const isActive = subscription.status === 'active';
         const notExpired = new Date(subscription.current_period_end) > new Date();
-        const isPremium = ['premium_monthly', 'exclusive_monthly', 'vip', 'premium_yearly', 'premium_pro'].some(p =>
-            subscription.plan_type && subscription.plan_type.toLowerCase().includes(p)
-        );
+        const isPremium = ['premium_monthly', 'premium_yearly', 'premium_pro', 'exclusive_monthly', 'vip']
+            .includes(subscription.plan_type);
 
         return isActive && notExpired && isPremium;
     } catch (e) {

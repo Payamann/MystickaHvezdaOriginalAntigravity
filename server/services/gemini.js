@@ -79,9 +79,12 @@ export async function callGemini(systemPrompt, messageOrHistory, contextData = n
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
-            const response = await fetch(`${GEMINI_API_URL}?key=${API_KEY}`, {
+            const response = await fetch(GEMINI_API_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-goog-api-key': API_KEY
+                },
                 body: JSON.stringify(requestBody),
                 signal: controller.signal
             });

@@ -23,6 +23,11 @@ router.post('/chat', authenticateToken, requirePremiumSoft, async (req, res) => 
             return res.status(400).json({ error: 'Zpráva je příliš dlouhá (max 2000 znaků).' });
         }
 
+        // Sanitize: strip control characters that could be used for prompt injection
+        const sanitizedMessage = message
+            .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+            .trim();
+
         console.log(`[Mentor] Request received from user ${userId}`);
 
         // 1. Fetch User Profile
@@ -125,7 +130,7 @@ ${contextItems.join('\n')}
             await supabase.from('mentor_messages').insert({
                 user_id: userId,
                 role: 'user',
-                content: message
+                content: sanitizedMessage
             });
         } catch (dbError) { }
 
@@ -134,7 +139,7 @@ ${contextItems.join('\n')}
         const systemPrompt = SYSTEM_PROMPTS.mentor;
         const responseText = await callGemini(
             systemPrompt,
-            [...history, { role: 'user', content: message }],
+            [...history, { role: 'user', content: sanitizedMessage }],
             { userContext, appContext }
         );
 
