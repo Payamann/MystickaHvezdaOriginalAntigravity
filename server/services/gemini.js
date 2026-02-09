@@ -68,7 +68,7 @@ export async function callGemini(systemPrompt, messageOrHistory, contextData = n
             temperature: 0.9,
             topK: 40,
             topP: 0.95,
-            maxOutputTokens: 1024,
+            maxOutputTokens: 2048,
         }
     };
 

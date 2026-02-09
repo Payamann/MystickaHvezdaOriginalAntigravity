@@ -49,9 +49,16 @@ router.post('/user/:userId/subscription', authenticateToken, requireAdmin, async
             return res.status(400).json({ success: false, error: 'Typ plánu je povinný.' });
         }
 
+        // Set expiry based on plan type
         const expiryDate = new Date();
-        expiryDate.setFullYear(expiryDate.getFullYear() + 10); // Standard override is long-term
-        console.log(`[ADMIN] Subscription override: user=${userId}, plan=${plan_type}, by admin=${req.user.email}`);
+        if (plan_type.includes('yearly')) {
+            expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+        } else if (plan_type === 'free') {
+            expiryDate.setFullYear(expiryDate.getFullYear() + 100);
+        } else {
+            expiryDate.setMonth(expiryDate.getMonth() + 1);
+        }
+        console.log(`[ADMIN] Subscription override: user=${userId}, plan=${plan_type}, expires=${expiryDate.toISOString()}, by admin=${req.user.email}`);
 
         const subData = {
             user_id: userId,

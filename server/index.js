@@ -90,6 +90,15 @@ const aiLimiter = rateLimit({
     legacyHeaders: false,
 });
 
+// Sensitive account operations - strict limit
+const sensitiveOpLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 5,
+    message: { error: 'Příliš mnoho pokusů. Zkuste to za hodinu.' },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
 
 // Gzip Compression
 app.use(compression());
@@ -691,7 +700,7 @@ app.delete('/api/user/readings/:id', authenticateToken, async (req, res) => {
 });
 
 // Change user password (requires current password verification)
-app.put('/api/user/password', authenticateToken, async (req, res) => {
+app.put('/api/user/password', sensitiveOpLimiter, authenticateToken, async (req, res) => {
     try {
         const { currentPassword, password } = req.body;
 

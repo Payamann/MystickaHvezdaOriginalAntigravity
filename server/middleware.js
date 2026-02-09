@@ -126,39 +126,6 @@ export const requirePremiumSoft = async (req, res, next) => {
 };
 
 /**
- * Feature-specific rate limiting for free tier
- * Checks credits or daily limits
- */
-export const checkFeatureAccess = (featureName, creditsRequired = 1) => {
-    return async (req, res, next) => {
-        // Premium users bypass all limits
-        if (req.isPremium) {
-            return next();
-        }
-
-        const userId = req.user?.id;
-        if (!userId) {
-            return res.status(401).json({ error: 'Authentication required' });
-        }
-
-        try {
-            const { data: subscription } = await supabase
-                .from('subscriptions')
-                .select('credits, plan_type')
-                .eq('user_id', userId)
-                .single();
-
-            // Credits system removed - checkFeatureAccess is now a pass-through
-            // or we could implement simple rate limiting here if needed.
-            next();
-        } catch (error) {
-            console.error('Feature access check error:', error);
-            res.status(500).json({ error: 'Failed to verify feature access' });
-        }
-    };
-};
-
-/**
  * Track paywall hits for analytics
  */
 export const trackPaywallHit = async (userId, feature) => {
@@ -179,22 +146,16 @@ export const trackPaywallHit = async (userId, feature) => {
 };
 
 /**
- * Deduct credits after successful API call
- * Call this at the end of your endpoint
- */
-// ... (existing code)
-
-/**
  * Admin Gate - Allows only specific users
  */
 export const requireAdmin = (req, res, next) => {
     const userId = req.user?.id;
     const email = req.user?.email;
 
-    // Admin Emails (consider moving to database for production)
-    const ADMIN_EMAILS = [
-        'pavel.hajek1989@gmail.com'
-    ];
+    // Admin emails from environment variable, with fallback for development
+    const ADMIN_EMAILS = process.env.ADMIN_EMAILS
+        ? process.env.ADMIN_EMAILS.split(',').map(e => e.trim())
+        : (IS_PRODUCTION ? [] : ['pavel.hajek1989@gmail.com']);
 
     if (!userId || !email || !ADMIN_EMAILS.includes(email)) {
         console.warn(`Unauthorized Admin Access Attempt: ${email} (${userId})`);
@@ -204,7 +165,3 @@ export const requireAdmin = (req, res, next) => {
     next();
 };
 
-export const billCredits = async (req, res, next) => {
-    // Credits system removed
-    next();
-};
