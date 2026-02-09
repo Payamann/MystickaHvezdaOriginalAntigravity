@@ -113,10 +113,14 @@
     bottom: 0;
     left: 0;
     right: 0;
+    width: 100%;
+    /* Prevent overflow */
     background: linear-gradient(to top, rgba(10, 10, 26, 0.98), rgba(10, 10, 26, 0.95));
     backdrop-filter: blur(20px);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding: 8px 0;
+    padding-bottom: env(safe-area-inset-bottom, 8px);
+    /* Safe area for iPhone notch */
     z-index: 10000;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
 }
