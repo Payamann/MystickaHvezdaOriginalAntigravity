@@ -83,7 +83,7 @@
         isPremium() {
             if (!this.user || !this.user.subscription_status) return false;
             const s = this.user.subscription_status.toLowerCase();
-            return s.includes('premium') || s === 'vip';
+            return s.includes('premium') || s.includes('exclusive') || s === 'vip';
         },
 
         async register(email, password, additionalData = {}) {

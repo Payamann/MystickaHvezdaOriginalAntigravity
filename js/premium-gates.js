@@ -35,9 +35,9 @@ window.Premium = {
             if (!response.ok) return false;
 
             const data = await response.json();
-            const isPremium = ['premium_monthly', 'exclusive_monthly', 'vip', 'premium_yearly'].includes(data.planType);
-            const isActive = data.status === 'active';
-            const notExpired = new Date(data.currentPeriodEnd) > new Date();
+            const isPremium = ['premium_monthly', 'exclusive_monthly', 'vip', 'premium_yearly', 'premium_pro'].includes(data.planType);
+            const isActive = data.status === 'active' || data.status === 'trialing' || data.status === 'cancel_pending';
+            const notExpired = !data.currentPeriodEnd || new Date(data.currentPeriodEnd) > new Date();
 
             return isPremium && isActive && notExpired;
         } catch (error) {

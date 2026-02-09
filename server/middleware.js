@@ -60,7 +60,7 @@ export const requirePremium = async (req, res, next) => {
             });
         }
 
-        const isActive = subscription.status === 'active';
+        const isActive = subscription.status === 'active' || subscription.status === 'trialing' || subscription.status === 'cancel_pending';
         const notExpired = new Date(subscription.current_period_end) > new Date();
         const isPremium = PREMIUM_PLAN_TYPES.includes(subscription.plan_type);
 
@@ -107,7 +107,7 @@ export const requirePremiumSoft = async (req, res, next) => {
             return next();
         }
 
-        const isActive = subscription.status === 'active';
+        const isActive = subscription.status === 'active' || subscription.status === 'trialing' || subscription.status === 'cancel_pending';
         const notExpired = new Date(subscription.current_period_end) > new Date();
         const isPremium = PREMIUM_PLAN_TYPES.includes(subscription.plan_type);
 
