@@ -138,6 +138,7 @@ app.use('/api/admin', adminRoutes);
 // Helper function to call Gemini API
 import { callGemini } from './services/gemini.js';
 import { isPremiumUser } from './payment.js';
+import { supabase } from './db-supabase.js';
 import crypto from 'crypto';
 
 // ============================================
@@ -203,10 +204,20 @@ app.post('/api/tarot', authenticateToken, async (req, res) => {
 // Tarot Summary (requires auth to prevent API cost abuse)
 app.post('/api/tarot-summary', authenticateToken, async (req, res) => {
     try {
-        const { cards, spreadType } = req.body; // cards expects array of objects { name, position, meaning }
+        const { cards, spreadType } = req.body;
 
-        let cardContext = cards.map(c => `${c.position}: ${c.name} (${c.meaning})`).join(', ');
-        const message = `Typ výkladu: ${spreadType}\n\nKarty v kontextu pozic:\n${cardContext}\n\nVytvoř krásný, hluboký souhrn tohoto výkladu.`;
+        if (!Array.isArray(cards) || cards.length === 0 || cards.length > 20) {
+            return res.status(400).json({ success: false, error: 'Neplatná data karet.' });
+        }
+
+        const safeSpreadType = String(spreadType || 'obecný').substring(0, 100);
+        let cardContext = cards.map(c => {
+            const pos = String(c?.position || '').substring(0, 100);
+            const name = String(c?.name || '').substring(0, 100);
+            const meaning = String(c?.meaning || '').substring(0, 200);
+            return `${pos}: ${name} (${meaning})`;
+        }).join(', ');
+        const message = `Typ výkladu: ${safeSpreadType}\n\nKarty v kontextu pozic:\n${cardContext}\n\nVytvoř krásný, hluboký souhrn tohoto výkladu.`;
 
         const response = await callGemini(SYSTEM_PROMPTS.tarotSummary, message);
         res.json({ success: true, response });
@@ -250,7 +261,7 @@ app.post('/api/synastry', authenticateToken, async (req, res) => {
 
         // If NOT premium, return simplified response (Teaser Mode)
         if (!userIsPremium) {
-            console.log(`[Synastry] Free user ${userId} - returning teaser`);
+            console.log('[Synastry] Free user - returning teaser');
             // We return success, but with a flag. The frontend calculates scores locally anyway.
             // We do NOT call Gemini to save costs.
             return res.json({
@@ -475,25 +486,31 @@ Vytvoř komplexní interpretaci tohoto numerologického profilu.${birthTime ? ' 
 
 // Astrocartography (requires auth)
 app.post('/api/astrocartography', authenticateToken, async (req, res) => {
-    console.log('📍 Astrocartography request received:', req.body);
     try {
         const { birthDate, birthTime, birthPlace, name, intention = 'obecný' } = req.body;
 
-        const message = `Jméno: ${name || 'Tazatel'}
-Datum narození: ${birthDate}
-Čas narození: ${birthTime}
-Místo narození: ${birthPlace}
-Záměr analýzy: ${intention}
+        if (!birthDate || typeof birthDate !== 'string') {
+            return res.status(400).json({ success: false, error: 'Datum narození je povinné.' });
+        }
+
+        const safeName = String(name || 'Tazatel').substring(0, 100);
+        const safeBirthDate = String(birthDate).substring(0, 30);
+        const safeBirthTime = String(birthTime || '').substring(0, 20);
+        const safeBirthPlace = String(birthPlace || '').substring(0, 200);
+        const safeIntention = String(intention).substring(0, 200);
+
+        const message = `Jméno: ${safeName}
+Datum narození: ${safeBirthDate}
+Čas narození: ${safeBirthTime}
+Místo narození: ${safeBirthPlace}
+Záměr analýzy: ${safeIntention}
 
 Vytvoř personalizovanou astrokartografickou mapu s doporučenými lokalitami.`;
 
-        console.log('📍 Calling Gemini with message:', message.substring(0, 100) + '...');
         const response = await callGemini(SYSTEM_PROMPTS.astrocartography, message);
-        console.log('📍 Gemini response received, length:', response.length);
         res.json({ success: true, response });
     } catch (error) {
-        console.error('📍 Astrocartography Error Details:', error.message);
-        console.error('📍 Full error:', error);
+        console.error('Astrocartography Error:', error.message);
         res.status(500).json({ success: false, error: 'Planetární linie jsou momentálně zahaleny mlhou...' });
     }
 });
@@ -504,65 +521,7 @@ Vytvoř personalizovanou astrokartografickou mapu s doporučenými lokalitami.`;
 
 // Duplicate route registrations removed - all routes use /api/ prefix with rate limiting
 
-// ============================================
-// ADMIN ROUTES
-// ============================================
-import { requireAdmin } from './middleware.js';
-
-// Get All Users (Admin)
-app.get('/api/admin/users', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { data: users, error } = await supabase
-            .from('users')
-            .select(`
-                *,
-                subscriptions (
-                    plan_type,
-                    status,
-                    current_period_end,
-                    credits
-                )
-            `)
-            .order('created_at', { ascending: false });
-
-        if (error) throw error;
-        res.json({ success: true, users });
-    } catch (error) {
-        console.error('Admin Users Error:', error);
-        res.status(500).json({ error: 'Failed to fetch users' });
-    }
-});
-
-// Update User Subscription (Admin)
-app.post('/api/admin/user/:id/subscription', authenticateToken, requireAdmin, async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { plan_type, credits } = req.body; // e.g., 'premium_monthly', 'free'
-
-        // Update subscription
-        const updateData = {
-            plan_type,
-            status: 'active',
-            credits: credits || (plan_type === 'free' ? 3 : 100),
-            current_period_end: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString()
-        };
-
-        const { error } = await supabase
-            .from('subscriptions')
-            .update(updateData)
-            .eq('user_id', id);
-
-        if (error) throw error;
-
-        res.json({ success: true, message: `Subscription updated to ${plan_type}` });
-    } catch (error) {
-        console.error('Admin Update Error:', error);
-        res.status(500).json({ error: 'Failed to update user' });
-    }
-});
-
-// Supabase Initialization
-import { supabase } from './db-supabase.js';
+// Admin routes handled by adminRoutes module (mounted at /api/admin above)
 
 // ============================================
 // USER READINGS API
