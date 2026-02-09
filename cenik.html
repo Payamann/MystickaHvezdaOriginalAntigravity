@@ -21,9 +21,32 @@
     {
         "@context": "https://schema.org",
         "@type": "WebApplication",
-        "name": "Ceník Služeb",
+        "name": "Mystická Hvězda",
         "applicationCategory": "LifestyleApplication",
-        "operatingSystem": "Web"
+        "operatingSystem": "Web",
+        "offers": [
+            {
+                "@type": "Offer",
+                "name": "Poutník (Zdarma)",
+                "price": "0",
+                "priceCurrency": "CZK",
+                "description": "Denní horoskop, tarot ukázka, 3 zprávy denně"
+            },
+            {
+                "@type": "Offer",
+                "name": "Hvězdný Průvodce",
+                "price": "199",
+                "priceCurrency": "CZK",
+                "description": "Neomezené tarotové výklady, detailní horoskopy, analýza vztahů, neomezený osobní průvodce"
+            },
+            {
+                "@type": "Offer",
+                "name": "Osvícení",
+                "price": "499",
+                "priceCurrency": "CZK",
+                "description": "Osobní konzultace, roční předpověď, natální horoskop na míru, prioritní podpora"
+            }
+        ]
     }
     </script>
 
@@ -46,6 +69,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="css/style.v2.css?v=4">
     <script src="https://js.stripe.com/v3/" async></script>
+    <link rel="canonical" href="https://mystickahvezda.cz/cenik.html">
 </head>
 
 <body>

@@ -131,6 +131,8 @@
 
             const toast = document.createElement('div');
             toast.className = `toast toast--${type}`;
+            toast.setAttribute('role', 'alert');
+            toast.setAttribute('aria-live', 'assertive');
 
             let icon = 'ℹ️';
             if (type === 'success') icon = '✅';

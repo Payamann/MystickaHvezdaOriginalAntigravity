@@ -25,13 +25,23 @@ async function toggleFavorite(readingId, buttonId) {
         // Update button
         const icon = btn.querySelector('.favorite-icon');
         if (isFavorite) {
-            icon.textContent = '⭐';
-            btn.innerHTML = `<span class="favorite-icon">⭐</span> Oblíbené`;
+            if (icon) icon.textContent = '\u2B50';
+            btn.textContent = '';
+            const span = document.createElement('span');
+            span.className = 'favorite-icon';
+            span.textContent = '\u2B50';
+            btn.appendChild(span);
+            btn.appendChild(document.createTextNode(' Oblíbené'));
             btn.classList.remove('btn--glass');
             btn.classList.add('btn--primary');
         } else {
-            icon.textContent = '☆';
-            btn.innerHTML = `<span class="favorite-icon">☆</span> Přidat do oblíbených`;
+            if (icon) icon.textContent = '\u2606';
+            btn.textContent = '';
+            const span = document.createElement('span');
+            span.className = 'favorite-icon';
+            span.textContent = '\u2606';
+            btn.appendChild(span);
+            btn.appendChild(document.createTextNode(' Přidat do oblíbených'));
             btn.classList.remove('btn--primary');
             btn.classList.add('btn--glass');
         }

@@ -4012,3 +4012,14 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* Accessibility: Visible focus styles for keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--color-mystic-gold);
+  outline-offset: 2px;
+}
+
+/* Remove default outline only when :focus-visible is supported */
+:focus:not(:focus-visible) {
+  outline: none;
+}

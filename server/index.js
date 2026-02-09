@@ -727,9 +727,16 @@ app.put('/api/user/password', authenticateToken, async (req, res) => {
 
 // Health Check Endpoint (for monitoring/load balancers)
 app.get('/api/health', (req, res) => {
+    const mem = process.memoryUsage();
     res.json({
         status: 'ok',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        uptime: Math.floor(process.uptime()),
+        memory: {
+            rss: Math.round(mem.rss / 1024 / 1024) + 'MB',
+            heapUsed: Math.round(mem.heapUsed / 1024 / 1024) + 'MB'
+        },
+        version: process.env.npm_package_version || '1.0.0'
     });
 });
 
