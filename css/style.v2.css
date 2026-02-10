@@ -139,6 +139,9 @@ html {
   scroll-behavior: smooth;
   font-size: 16px;
   background-color: var(--color-deep-space);
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
 }
 
 body {
@@ -656,6 +659,7 @@ body.page-mentor .header {
   background: none;
   border: none;
   cursor: pointer;
+  z-index: 10;
 }
 
 .nav__toggle span {
@@ -664,6 +668,20 @@ body.page-mentor .header {
   height: 2px;
   background: var(--color-starlight);
   transition: all var(--transition-fast);
+  transform-origin: center;
+}
+
+/* Hamburger → X animation */
+.nav__toggle.active span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.nav__toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.nav__toggle.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
 }
 
 /* ============================================
@@ -1879,7 +1897,18 @@ body.page-mentor .header {
     --text-4xl: 1.5rem;
   }
 
-  /* ===== MOBILE HEADER FIXES ===== */
+  /* ===== GLOBAL MOBILE SAFETY ===== */
+  .container {
+    padding-left: 16px;
+    padding-right: 16px;
+    max-width: 100%;
+  }
+
+  .section {
+    padding: var(--space-xl) 0;
+  }
+
+  /* ===== MOBILE HEADER ===== */
   .header {
     padding: var(--space-sm) 0;
   }
@@ -1891,7 +1920,11 @@ body.page-mentor .header {
     flex-wrap: nowrap;
   }
 
-  /* Compact logo on mobile */
+  .header.scrolled {
+    padding: var(--space-xs) 0;
+  }
+
+  /* Compact logo */
   .logo {
     font-size: 0.9rem;
     gap: var(--space-xs);
@@ -1909,21 +1942,19 @@ body.page-mentor .header {
 
   .logo__text {
     display: none;
-    /* Hide text on mobile, keep only logo image */
   }
 
-  /* Hide desktop auth buttons on mobile (use bottom nav instead) */
+  /* Hide desktop auth buttons on mobile */
   .auth-buttons {
     display: none;
   }
 
-  /* Hide desktop nav on mobile */
+  /* Hide desktop nav links */
   .nav {
     position: static;
-    /* Remove absolute positioning context */
   }
 
-  /* Hamburger is now outside .nav, so it needs specific mobile display */
+  /* Hamburger toggle - OUTSIDE .nav, always visible */
   .nav__toggle {
     display: flex;
     min-width: 44px;
@@ -1931,10 +1962,9 @@ body.page-mentor .header {
     align-items: center;
     justify-content: center;
     order: 2;
-    /* Push hamburger to the right */
   }
 
-  /* Mobile nav dropdown - positioned from header, not nav */
+  /* Mobile nav dropdown */
   .nav__list {
     display: none;
     position: absolute;
@@ -1943,10 +1973,14 @@ body.page-mentor .header {
     right: 0;
     background: rgba(10, 10, 26, 0.98);
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     flex-direction: column;
-    padding: var(--space-xl);
-    gap: var(--space-md);
+    padding: var(--space-lg) var(--space-md);
+    gap: 0;
     z-index: 1000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    max-height: 70vh;
+    overflow-y: auto;
   }
 
   .nav__list.open {
@@ -1954,30 +1988,36 @@ body.page-mentor .header {
   }
 
   .nav__link {
-    padding: var(--space-md);
-    font-size: var(--text-lg);
+    display: block;
+    padding: 14px var(--space-md);
+    font-size: var(--text-base);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    min-height: 44px;
+    line-height: 1.2;
   }
 
-  /* Compact header buttons for mobile (if shown) */
+  .nav__list li:last-child .nav__link {
+    border-bottom: none;
+  }
+
+  /* Header buttons inside mobile (if any shown) */
   .header .btn {
     padding: 0.5rem 0.75rem;
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     min-width: auto;
-  }
-
-  /* ===== ENSURE HEADER SCROLL EFFECT WORKS ===== */
-  .header.scrolled {
-    padding: var(--space-xs) 0;
+    min-height: 36px;
   }
 
   /* ===== GENERAL MOBILE LAYOUT ===== */
   .grid-3,
   .grid-2 {
     grid-template-columns: 1fr;
+    gap: var(--space-md);
   }
 
   .zodiac-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
   }
 
   .steps {
@@ -1994,17 +2034,66 @@ body.page-mentor .header {
     width: 100%;
   }
 
+  /* ===== CARDS & GLASS CARDS ===== */
+  .card,
+  .glass-card {
+    padding: var(--space-lg);
+  }
+
+  /* ===== HERO SECTION ===== */
+  .hero {
+    padding-top: 80px;
+    min-height: auto;
+    text-align: center;
+  }
+
+  .hero__title {
+    font-size: var(--text-4xl);
+    line-height: 1.2;
+  }
+
+  .hero__subtitle {
+    font-size: var(--text-base);
+    line-height: 1.6;
+  }
+
   .hero__cta {
     flex-direction: column;
     align-items: center;
+    gap: var(--space-md);
+  }
+
+  /* ===== FORMS ===== */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  input[type="time"],
+  input[type="search"],
+  input[type="tel"],
+  textarea,
+  select {
+    font-size: 16px !important;
+    min-height: 48px;
+    padding: 12px 16px;
   }
 
   .email-form {
     flex-direction: column;
   }
 
+  /* ===== TOUCH-FRIENDLY BUTTONS ===== */
+  .btn {
+    min-height: 44px;
+    padding: var(--space-md) var(--space-lg);
+    font-size: var(--text-sm);
+  }
+
+  /* ===== FOOTER ===== */
   .footer__grid {
     grid-template-columns: 1fr;
+    gap: var(--space-lg);
   }
 
   .footer__bottom {
@@ -2013,34 +2102,47 @@ body.page-mentor .header {
     text-align: center;
   }
 
+  /* ===== TAROT ===== */
   .tarot-deck {
     flex-wrap: wrap;
     gap: var(--space-md);
+    justify-content: center;
   }
 
   .tarot-card {
     transform: none !important;
+    width: calc(50% - var(--space-md));
   }
 
-  /* ===== TOUCH-FRIENDLY BUTTONS ===== */
-  .btn {
-    min-height: 44px;
-    padding: var(--space-md) var(--space-lg);
+  /* ===== DISABLE HEAVY ANIMATIONS ===== */
+  .cursor-canvas,
+  .comet-cursor {
+    display: none !important;
   }
 
-  /* ===== HERO SECTION MOBILE ===== */
-  .hero {
-    padding-top: 80px;
-    /* Account for fixed header */
-    min-height: auto;
+  /* Reduce animation intensity */
+  .fade-in-up {
+    animation-duration: 0.3s !important;
   }
 
-  .hero__title {
-    font-size: var(--text-4xl);
+  /* ===== MODALS ===== */
+  .modal__content {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 100vh;
+    border-radius: 0 !important;
+    padding: var(--space-lg) !important;
   }
 
-  .hero__subtitle {
-    font-size: var(--text-base);
+  .modal .modal__close {
+    top: var(--space-md);
+    right: var(--space-md);
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
   }
 }
 
@@ -2051,6 +2153,38 @@ body.page-mentor .header {
 
   .tabs {
     flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+
+  .tab {
+    flex: 1 1 auto;
+    text-align: center;
+    min-width: calc(50% - var(--space-xs));
+  }
+
+  .hero__title {
+    font-size: 1.5rem;
+  }
+
+  .tarot-card {
+    width: 100%;
+  }
+
+  .section__title {
+    font-size: var(--text-2xl);
+  }
+}
+
+/* ===== ACCESSIBILITY: Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 

@@ -246,8 +246,16 @@ body.is-premium .upgrade-cta-btn {
 
 /* Responsive */
 @media (max-width: 768px) {
+    .paywall-overlay {
+        padding: 1rem;
+        align-items: flex-start;
+        padding-top: 10vh;
+    }
+
     .paywall-content {
         padding: 2rem 1.5rem;
+        max-height: 80vh;
+        overflow-y: auto;
     }
 
     .paywall-title {
@@ -260,5 +268,16 @@ body.is-premium .upgrade-cta-btn {
 
     .paywall-icon {
         font-size: 3rem;
+    }
+
+    .paywall-upgrade {
+        min-height: 48px;
+        font-size: 1rem;
+    }
+
+    .premium-lock-overlay {
+        width: 90%;
+        max-width: 300px;
+        padding: 1.5rem;
     }
 }

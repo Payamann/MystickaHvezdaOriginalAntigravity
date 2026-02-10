@@ -7,6 +7,10 @@ export function initHeader() {
     const header = document.querySelector('.header');
     if (!header) return;
 
+    // Prevent double initialization
+    if (header.dataset.initialized === 'true') return;
+    header.dataset.initialized = 'true';
+
     // Throttled scroll handler for better performance
     const handleScroll = throttle(() => {
         const currentScroll = window.scrollY || document.documentElement.scrollTop;

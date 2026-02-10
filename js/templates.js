@@ -173,18 +173,18 @@ class Templates {
 
     static renderAuthModal() {
         return `
-  <div id="auth-modal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
-    <div class="modal__content" style="background: #1a0a2e; padding: 2rem; border-radius: 15px; border: 1px solid rgba(155, 89, 182, 0.3); width: 100%; max-width: 400px; position: relative;">
-        <span class="modal__close" style="position: absolute; top: 1rem; right: 1rem; cursor: pointer; color: white;">✕</span>
+  <div id="auth-modal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); overflow-y: auto; padding: 1rem;">
+    <div class="modal__content" style="background: #1a0a2e; padding: 2rem; border-radius: 15px; border: 1px solid rgba(155, 89, 182, 0.3); width: 100%; max-width: 400px; position: relative; margin: auto;">
+        <span class="modal__close" style="position: absolute; top: 1rem; right: 1rem; cursor: pointer; color: white; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">✕</span>
         <h2 id="auth-title" style="text-align: center; color: var(--color-mystic-gold); margin-bottom: 1.5rem;">Přihlášení</h2>
         <form id="login-form">
             <div style="margin-bottom: 1rem;">
                 <label style="display: block; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem;">Email</label>
-                <input type="email" name="email" required style="width: 100%; padding: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 5px;">
+                <input type="email" name="email" required autocomplete="email" inputmode="email" style="width: 100%; padding: 14px 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; font-size: 16px; min-height: 48px;">
             </div>
             <div style="margin-bottom: 1.5rem;">
                 <label style="display: block; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem;">Heslo</label>
-                <input type="password" name="password" required style="width: 100%; padding: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 5px;">
+                <input type="password" name="password" required autocomplete="current-password" style="width: 100%; padding: 14px 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; font-size: 16px; min-height: 48px;">
             </div>
 
             <!-- Optional Register Fields -->
@@ -192,27 +192,27 @@ class Templates {
                 <p style="text-align: center; color: var(--color-mystic-gold); font-size: 0.9rem; margin-bottom: 1rem;">Doplňující údaje (nepovinné)</p>
                 <div style="margin-bottom: 1rem;">
                     <label style="display: block; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem;">Jméno</label>
-                    <input type="text" name="first_name" style="width: 100%; padding: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 5px;">
+                    <input type="text" name="first_name" autocomplete="given-name" style="width: 100%; padding: 14px 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; font-size: 16px; min-height: 48px;">
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem;">
                     <div>
                         <label style="display: block; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem; font-size: 0.8rem;">Datum narození</label>
-                        <input type="date" name="birth_date" style="width: 100%; padding: 0.8rem 0.5rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 5px;">
+                        <input type="date" name="birth_date" style="width: 100%; padding: 12px 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; font-size: 16px; min-height: 48px;">
                     </div>
                      <div>
                         <label style="display: block; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem; font-size: 0.8rem;">Čas narození</label>
-                        <input type="time" name="birth_time" style="width: 100%; padding: 0.8rem 0.5rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 5px;">
+                        <input type="time" name="birth_time" style="width: 100%; padding: 12px 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; font-size: 16px; min-height: 48px;">
                     </div>
                 </div>
                 <div style="margin-bottom: 1rem;">
                     <label style="display: block; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem;">Místo narození</label>
-                    <input type="text" name="birth_place" placeholder="Např. Praha" style="width: 100%; padding: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 5px;">
+                    <input type="text" name="birth_place" placeholder="Např. Praha" autocomplete="address-level2" style="width: 100%; padding: 14px 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; font-size: 16px; min-height: 48px;">
                 </div>
             </div>
 
-            <button type="submit" id="auth-submit" class="btn btn--primary" style="width: 100%;">Přihlásit se</button>
+            <button type="submit" id="auth-submit" class="btn btn--primary" style="width: 100%; min-height: 48px;">Přihlásit se</button>
             <p style="text-align: center; margin-top: 1rem;">
-                <a href="#" id="auth-mode-toggle" style="color: var(--color-text-light); font-size: 0.9rem;">Nemáte účet? Zaregistrujte se</a>
+                <a href="#" id="auth-mode-toggle" style="color: var(--color-text-light); font-size: 0.9rem; min-height: 44px; display: inline-block; line-height: 44px;">Nemáte účet? Zaregistrujte se</a>
             </p>
         </form>
     </div>

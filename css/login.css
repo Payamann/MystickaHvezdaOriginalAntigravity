@@ -62,3 +62,27 @@
     outline: none;
     background: rgba(255, 255, 255, 0.08);
 }
+
+/* Mobile login form */
+@media (max-width: 768px) {
+    .login-section {
+        padding: 2rem 1rem;
+        min-height: auto;
+    }
+
+    .login-card {
+        padding: 1.5rem;
+        border-radius: 16px;
+        max-width: 100%;
+    }
+
+    .login-icon {
+        font-size: 2.5rem;
+    }
+
+    .form-input {
+        font-size: 16px;
+        min-height: 48px;
+        padding: 14px 16px;
+    }
+}

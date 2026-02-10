@@ -167,11 +167,10 @@
 @media (max-width: 768px) {
     .mobile-bottom-nav {
         display: flex;
-        /* Show on mobile */
     }
 
     /* Add bottom padding to body to prevent content from being hidden */
     body {
-        padding-bottom: 70px;
+        padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px));
     }
 }
