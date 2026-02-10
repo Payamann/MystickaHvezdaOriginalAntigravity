@@ -2064,6 +2064,30 @@ body.page-mentor .header {
     gap: var(--space-md);
   }
 
+  .hero__visual {
+    order: -1;
+    margin-bottom: var(--space-sm);
+  }
+
+  .hero__image {
+    max-width: 55%;
+    margin: 0 auto;
+    display: block;
+    -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, rgba(0, 0, 0, 1) 40%, transparent 100%);
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, rgba(0, 0, 0, 1) 40%, transparent 100%);
+  }
+
+  .hero__glow-effect {
+    width: 200px;
+    height: 200px;
+    opacity: 0.3;
+  }
+
+  /* Reduce floating animation on mobile for performance */
+  .floating-anim {
+    animation-duration: 8s;
+  }
+
   /* ===== FORMS ===== */
   input[type="text"],
   input[type="email"],

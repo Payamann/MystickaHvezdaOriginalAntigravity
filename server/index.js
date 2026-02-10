@@ -103,8 +103,8 @@ const sensitiveOpLimiter = rateLimit({
 // Gzip Compression
 app.use(compression());
 
-// XSS Protection
-app.use(xss());
+// XSS Protection - only for API routes (not static files)
+app.use('/api', xss());
 
 // ============================================
 // HOROSCOPE CACHE SYSTEM (Database-backed)
