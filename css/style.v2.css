@@ -610,23 +610,23 @@ body.page-mentor .header {
 .nav__list {
   display: flex;
   list-style: none;
-  gap: var(--space-md);
-  /* Reduced gap from lg */
-  margin-right: var(--space-md);
+  gap: var(--space-sm);
+  margin-right: var(--space-sm);
+  flex-wrap: nowrap;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 .nav__link {
   color: var(--color-silver-mist);
-  font-size: 0.95rem;
-  /* Increased size for better readability */
+  font-size: 0.8rem;
   font-weight: 600;
-  /* Increased weight slightly */
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  /* Reduced spacing */
+  letter-spacing: 0.02em;
   position: relative;
   padding: var(--space-sm) 0;
   white-space: nowrap;
+  transition: color var(--transition-fast);
 }
 
 .nav__link::after {
@@ -3132,10 +3132,7 @@ body.page-mentor .header {
 /* ============================================
    25. OPTIMIZED CURSOR
    ============================================ */
-body {
-  cursor: none;
-  /* Hide default cursor */
-}
+/* cursor: none is handled by .cursor-active class (added by JS) */
 
 .cursor-canvas {
   pointer-events: none;
