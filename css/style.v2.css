@@ -500,7 +500,9 @@ input:focus-visible {
   z-index: var(--z-sticky);
   padding: var(--space-lg) 0;
   transition: all var(--transition-base);
-  background: transparent;
+  background: rgba(10, 10, 26, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .header.scrolled {
@@ -521,7 +523,7 @@ body.page-mentor .header {
 .header__inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: var(--space-lg);
   position: relative;
   width: 100%;
@@ -567,11 +569,8 @@ body.page-mentor .header {
   display: flex;
   align-items: center;
   gap: var(--space-md);
-  /* Significantly reduced gap from 2xl to md */
-  flex: 0 1 auto;
-  /* Allow nav to be intrinsic width */
+  flex: 1 1 auto;
   justify-content: center;
-  /* Align to center */
 }
 
 /* Specific Header Button Style - More elegant */
