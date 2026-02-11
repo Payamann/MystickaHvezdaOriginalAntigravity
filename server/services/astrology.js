@@ -40,12 +40,12 @@ export function getHoroscopeCacheKey(sign, period) {
         const startOfYear = new Date(now.getFullYear(), 0, 1);
         const days = Math.floor((now - startOfYear) / (24 * 60 * 60 * 1000));
         const week = Math.ceil((days + startOfYear.getDay() + 1) / 7);
-        return `${signNormalized}_weekly_${now.getFullYear()}-W${String(week).padStart(2, '0')}`;
+        return `${signNormalized}_weekly_${now.getFullYear()}-W${String(week).padStart(2, '0')}_v2`;
     } else if (period === 'monthly') {
-        return `${signNormalized}_monthly_${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        return `${signNormalized}_monthly_${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}_v2`;
     } else {
         // Daily (default)
-        return `${signNormalized}_daily_${now.toISOString().split('T')[0]}`;
+        return `${signNormalized}_daily_${now.toISOString().split('T')[0]}_v2`;
     }
 }
 
