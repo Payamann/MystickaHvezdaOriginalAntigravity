@@ -32,7 +32,7 @@ function initHoroscope() {
     loadingState.innerHTML = `
         <div class="text-center">
             <span class="loading-spinner" style="width: 30px; height: 30px; border-width: 3px;"></span>
-            <p class="fade-in-text" style="display: block; margin-top: 10px;">Naladění na energii vašeho znamení...</p>
+            <p class="fade-in-text" style="display: block; margin-top: 10px; transition: opacity 0.3s ease;">Naladění na energii vašeho znamení...</p>
         </div>
     `;
 
@@ -115,6 +115,33 @@ function initHoroscope() {
             // Show loading, hide content
             if (contentContainer) contentContainer.classList.add('hidden');
             loadingState.classList.remove('hidden');
+
+            // Mystical loading messages
+            const loadingMessages = [
+                "Navazuji spojení s Vesmírem...",
+                "Čtu postavení vašich hvězd...",
+                "Analyzuji planetární vlivy...",
+                "Překládám zprávy osudu...",
+                "Finalizuji vaši předpověď..."
+            ];
+
+            const loadingText = loadingState.querySelector('p');
+            let msgIndex = 0;
+
+            // Reset to first message
+            if (loadingText) loadingText.innerText = loadingMessages[0];
+
+            // Cycle messages every 2.5 seconds
+            const loadingInterval = setInterval(() => {
+                msgIndex = (msgIndex + 1) % loadingMessages.length;
+                if (loadingText) {
+                    loadingText.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingText.innerText = loadingMessages[msgIndex];
+                        loadingText.style.opacity = '1';
+                    }, 300); // Wait for fade out
+                }
+            }, 2500);
 
             try {
                 // PHASE 3: Fetch Journal Context (AI Synergy)
@@ -261,6 +288,7 @@ function initHoroscope() {
                     contentContainer.classList.remove('hidden');
                     contentContainer.classList.add('fade-in');
                 }
+                if (typeof loadingInterval !== 'undefined') clearInterval(loadingInterval);
             }
         });
     });
