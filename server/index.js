@@ -352,36 +352,39 @@ INSTRUKCE PRO SYNERGII: Pokud je to relevantní, jemně a nepřímo nawazuj na t
         if (period === 'weekly') {
             periodLabel = 'Týdenní horoskop';
             periodPrompt = `Jsi inspirativní astrologický průvodce.
-Napiš týdenní horoskop pro dané znamení (PŘESNĚ 5-6 vět).
-Zaměř se na:
-1. Hlavní energii týdne
-2. Oblasti lásky/vztahů
-3. Kariéry a financí
-4. Jednu výzvu a jednu příležitost
-5. Povzbudivou mantru týdne
-Odpověď česky, poeticky a povzbudivě.${contextInstruction}`;
+Generuj týdenní horoskop ve formátu JSON.
+Odpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).
+Struktura:
+{
+  "prediction": "Text horoskopu (5-6 vět). Zaměř se na hlavní energii, lásku, kariéru a jednu výzvu.",
+  "affirmation": "Krátká, úderná afirmace pro tento týden.",
+  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]
+}
+Text piš česky, poeticky a povzbudivě.${contextInstruction}`;
         } else if (period === 'monthly') {
             periodLabel = 'Měsíční horoskop';
             periodPrompt = `Jsi moudrý astrologický průvodce.
-Napiš měsíční horoskop pro dané znamení (PŘESNĚ 7-8 vět).
-Zahrnuj:
-1. Úvodní téma měsíce a celkovou energii
-2. Oblast lásky, vztahů a emocí
-3. Kariéru, finance a materiální záležitosti
-4. Zdraví a vitalitu
-5. Duchovní růst a osobní rozvoj
-6. Klíčová data nebo období (konkrétní dny)
-7. Inspirativní zakončení s afirmací
-Odpověď česky, inspirativně, hluboce a prakticky.${contextInstruction}`;
+Generuj měsíční horoskop ve formátu JSON.
+Odpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).
+Struktura:
+{
+  "prediction": "Text horoskopu (7-8 vět). Zahrň úvod, lásku, kariéru, zdraví a klíčová data.",
+  "affirmation": "Silná afirmace pro tento měsíc.",
+  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]
+}
+Text piš česky, inspirativně a hluboce.${contextInstruction}`;
         } else {
             periodLabel = 'Denní inspirace';
             periodPrompt = `Jsi laskavý astrologický průvodce.
-Napiš denní horoskop pro dané znamení (PŘESNĚ 3-4 věty).
-Zahrnuj:
-1. Hlavní energii dne
-2. Jednu konkrétní radu nebo tip
-3. Krátkou afirmaci nebo povzbuzení
-Odpověď česky, poeticky a povzbudivě.${contextInstruction}`;
+Generuj denní horoskop ve formátu JSON.
+Odpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).
+Struktura:
+{
+  "prediction": "Text horoskopu (3-4 věty). Hlavní energie dne a jedna konkrétní rada.",
+  "affirmation": "Krátká pozitivní afirmace pro dnešek.",
+  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]
+}
+Text piš česky, poeticky a povzbudivě.${contextInstruction}`;
         }
 
         const today = new Date();
