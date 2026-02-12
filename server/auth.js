@@ -8,9 +8,9 @@ import fs from 'fs';
 
 // Strict rate limiting on auth endpoints to prevent brute force / credential stuffing
 const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 10, // 10 attempts per window
-    message: { error: 'Příliš mnoho pokusů. Zkuste to za 15 minut.' },
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 10, // 10 attempts per hour (strict brute-force protection)
+    message: { error: 'Příliš mnoho pokusů. Zkuste to za hodinu.' },
     standardHeaders: true,
     legacyHeaders: false,
 });

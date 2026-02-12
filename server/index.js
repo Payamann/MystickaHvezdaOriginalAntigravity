@@ -69,7 +69,8 @@ app.use(helmet({
             frameSrc: ["'self'", "https://js.stripe.com"],
         },
     },
-    crossOriginEmbedderPolicy: false
+    crossOriginEmbedderPolicy: false,
+    frameguard: { action: 'deny' } // Prevent Clickjacking
 }));
 
 // Rate Limiting
@@ -82,18 +83,19 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 
 // AI-generation endpoints - expensive, limit more aggressively
+// AI-generation endpoints - expensive, limit abuse
 const aiLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 30,
-    message: { error: 'Příliš mnoho požadavků. Zkuste to za chvíli.' },
+    windowMs: 24 * 60 * 60 * 1000, // 24 hours
+    max: 50, // 50 AI requests per IP per day (approx 2/hour avg)
+    message: { error: 'Překročen denní limit pro AI generování. Zkuste to zítra.' },
     standardHeaders: true,
     legacyHeaders: false,
 });
 
-// Sensitive account operations - strict limit
+// Sensitive account operations - strict limit (Brute force protection)
 const sensitiveOpLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
-    max: 5,
+    max: 10, // 10 attempts per hour
     message: { error: 'Příliš mnoho pokusů. Zkuste to za hodinu.' },
     standardHeaders: true,
     legacyHeaders: false,
@@ -159,7 +161,7 @@ import crypto from 'crypto';
 // ============================================
 
 // Crystal Ball Oracle
-app.post('/api/crystal-ball', async (req, res) => {
+app.post('/api/crystal-ball', aiLimiter, async (req, res) => {
     try {
         const { question, history = [] } = req.body;
 
@@ -187,7 +189,7 @@ app.post('/api/crystal-ball', async (req, res) => {
 });
 
 // Tarot Reading (FREEMIUM LIMITS)
-app.post('/api/tarot', authenticateToken, async (req, res) => {
+app.post('/api/tarot', authenticateToken, aiLimiter, async (req, res) => {
     try {
         const { question, cards, spreadType = 'tříkartový' } = req.body;
         const userId = req.user.id;
@@ -215,7 +217,7 @@ app.post('/api/tarot', authenticateToken, async (req, res) => {
 });
 
 // Tarot Summary (requires auth to prevent API cost abuse)
-app.post('/api/tarot-summary', authenticateToken, async (req, res) => {
+app.post('/api/tarot-summary', authenticateToken, aiLimiter, async (req, res) => {
     try {
         const { cards, spreadType } = req.body;
 
@@ -264,7 +266,7 @@ app.post('/api/natal-chart', aiLimiter, async (req, res) => {
 });
 
 // Synastry / Compatibility (FREEMIUM TEASER)
-app.post('/api/synastry', authenticateToken, async (req, res) => {
+app.post('/api/synastry', authenticateToken, aiLimiter, async (req, res) => {
     try {
         const { person1, person2 } = req.body;
         const userId = req.user.id;
@@ -299,7 +301,7 @@ app.post('/api/synastry', authenticateToken, async (req, res) => {
 const VALID_ZODIAC_SIGNS = ['Beran', 'Býk', 'Blíženci', 'Rak', 'Lev', 'Panna', 'Váhy', 'Štír', 'Střelec', 'Kozoroh', 'Vodnář', 'Ryby'];
 
 // Horoscope (Daily, Weekly, Monthly) - WITH DATABASE CACHING
-app.post('/api/horoscope', async (req, res) => {
+app.post('/api/horoscope', aiLimiter, async (req, res) => {
     try {
         const { sign, period = 'daily', context = [] } = req.body;
 
