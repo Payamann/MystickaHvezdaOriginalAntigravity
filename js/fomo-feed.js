@@ -107,7 +107,7 @@
         if (!container) return;
 
         // Clear existing
-        container.innerHTML = '';
+        container.replaceChildren();
 
         // Create new notification
         const notification = createNotification(fomoData[currentIndex]);

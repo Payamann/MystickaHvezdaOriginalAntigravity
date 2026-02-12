@@ -3,7 +3,6 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit'; // Security: Rate Limiting
 import helmet from 'helmet'; // Security: HTTP Headers
-import xss from 'xss-clean'; // Security: Input Sanitization
 import compression from 'compression'; // Performance: Gzip compression
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -102,9 +101,6 @@ const sensitiveOpLimiter = rateLimit({
 
 // Gzip Compression
 app.use(compression());
-
-// XSS Protection - only for API routes (not static files)
-app.use('/api', xss());
 
 // ============================================
 // HOROSCOPE CACHE SYSTEM (Database-backed)
