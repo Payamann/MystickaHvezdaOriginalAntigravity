@@ -20,8 +20,8 @@ import fs from 'fs';
 // Validate credentials - crash in production if missing
 if (!projectUrl || !serviceKey) {
     if (process.env.NODE_ENV === 'production') {
-        console.error('FATAL: Supabase credentials missing (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY). Cannot start in production.');
-        process.exit(1);
+        console.warn('WARNING: Supabase credentials missing (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY). Database features will fail.');
+        // process.exit(1); // Removed to prevent restart loop, allowing app to start even if DB is misconfigured
     }
     console.warn('⚠️ WARNING: Supabase credentials missing in .env (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)');
 } else {
