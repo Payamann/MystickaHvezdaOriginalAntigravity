@@ -306,26 +306,60 @@ export async function handleStripeWebhook(rawBody, sig) {
         throw new Error('Webhook signature verification failed');
     }
 
-    console.log(`[STRIPE] Webhook received: ${event.type}`);
+    console.log(`[STRIPE] Webhook received: ${event.type} (ID: ${event.id})`);
 
-    switch (event.type) {
-        case 'checkout.session.completed':
-            await handleCheckoutCompleted(event.data.object);
-            break;
-        case 'invoice.paid':
-            await handleInvoicePaid(event.data.object);
-            break;
-        case 'invoice.payment_failed':
-            await handleInvoicePaymentFailed(event.data.object);
-            break;
-        case 'customer.subscription.updated':
-            await handleSubscriptionUpdated(event.data.object);
-            break;
-        case 'customer.subscription.deleted':
-            await handleSubscriptionDeleted(event.data.object);
-            break;
-        default:
-            console.log(`[STRIPE] Unhandled event type: ${event.type}`);
+    // IDEMPOTENCY CHECK
+    try {
+        const { data: existingEvent } = await supabase
+            .from('payment_events')
+            .select('event_id')
+            .eq('event_id', event.id)
+            .single();
+
+        if (existingEvent) {
+            console.log(`[STRIPE] Event ${event.id} already processed. Skipping.`);
+            return;
+        }
+    } catch (e) {
+        // Ignore "row not found" error, real errors will be caught later or table missing issue
+        // If table missing, this check fails but we proceed (safe failure mode? No, better to warn)
+        if (e.code !== 'PGRST116') { // PGRST116 is "Row not found" (good)
+            console.warn(`[STRIPE] Idempotency check failed (Table missing?): ${e.message}`);
+        }
+    }
+
+    try {
+        switch (event.type) {
+            case 'checkout.session.completed':
+                await handleCheckoutCompleted(event.data.object);
+                break;
+            case 'invoice.paid':
+                await handleInvoicePaid(event.data.object);
+                break;
+            case 'invoice.payment_failed':
+                await handleInvoicePaymentFailed(event.data.object);
+                break;
+            case 'customer.subscription.updated':
+                await handleSubscriptionUpdated(event.data.object);
+                break;
+            case 'customer.subscription.deleted':
+                await handleSubscriptionDeleted(event.data.object);
+                break;
+            default:
+                console.log(`[STRIPE] Unhandled event type: ${event.type}`);
+        }
+
+        // RECORD PROCESSED EVENT
+        await supabase.from('payment_events').insert({
+            event_id: event.id,
+            event_type: event.type,
+            status: 'success'
+        });
+
+    } catch (err) {
+        console.error(`[STRIPE] Error processing event ${event.id}:`, err);
+        // We do NOT record failure in payment_events so Stripe can retry later
+        throw err; // Re-throw to make Stripe retry
     }
 }
 
