@@ -62,9 +62,14 @@ app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 // Security Headers with Content Security Policy
 // app.use(helmet({ ... })); // TEMPORARILY DISABLED FOR TROUBLESHOOTING
 
-// Rate Limiting
-// const limiter = rateLimit({ ... });
-// app.use('/api/', limiter); // TEMPORARILY DISABLED FOR TROUBLESHOOTING
+// Rate Limiting (Relaxed to 300 req/15min)
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 300, // Increased from 100 to 300 to be safe
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+app.use('/api/', limiter);
 
 // AI-generation endpoints - expensive, limit more aggressively
 // AI-generation endpoints - expensive, limit abuse
@@ -93,7 +98,22 @@ const sensitiveOpLimiter = rateLimit({
 app.use(compression());
 
 // XSS Protection - only for API routes (not static files)
-// app.use('/api', xss()); // TEMPORARILY DISABLED
+app.use('/api', xss());
+
+// Health Check Endpoint (Moved UP to bypass Rate Limiting)
+app.get('/api/health', (req, res) => {
+    res.json({
+        status: 'ok',
+        timestamp: new Date().toISOString()
+    });
+});
+
+// Security Headers (CSP Disabled for stability)
+app.use(helmet({
+    contentSecurityPolicy: false, // Disabled to prevent UI breakage
+    crossOriginEmbedderPolicy: false,
+    frameguard: { action: 'deny' } // Prevent Clickjacking
+}));
 
 // ============================================
 // HOROSCOPE CACHE SYSTEM (Database-backed)
@@ -722,13 +742,7 @@ app.put('/api/user/password', sensitiveOpLimiter, authenticateToken, async (req,
     }
 });
 
-// Health Check Endpoint (for monitoring/load balancers)
-app.get('/api/health', (req, res) => {
-    res.json({
-        status: 'ok',
-        timestamp: new Date().toISOString()
-    });
-});
+// Health Check Endpoint - MOVED TO TOP (See above)
 
 // Start server ONLY if run directly (not imported for tests)
 // Start server ONLY if run directly (not imported for tests)
