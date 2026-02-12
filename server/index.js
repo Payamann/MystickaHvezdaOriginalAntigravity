@@ -60,33 +60,16 @@ app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 // Security Headers with Content Security Policy
-app.use(helmet({
-    contentSecurityPolicy: {
-        directives: {
-            defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "https://js.stripe.com"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-            fontSrc: ["'self'", "https://fonts.gstatic.com"],
-            imgSrc: ["'self'", "data:", "blob:", "https:"],
-            connectSrc: ["'self'", "https://generativelanguage.googleapis.com", "https://api.stripe.com"],
-            frameSrc: ["'self'", "https://js.stripe.com"],
-        },
-    },
-    crossOriginEmbedderPolicy: false,
-    frameguard: { action: 'deny' } // Prevent Clickjacking
-}));
+// app.use(helmet({ ... })); // TEMPORARILY DISABLED FOR TROUBLESHOOTING
 
 // Rate Limiting
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // Limit each IP to 100 requests per windowMs
-    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-});
-app.use('/api/', limiter);
+// const limiter = rateLimit({ ... });
+// app.use('/api/', limiter); // TEMPORARILY DISABLED FOR TROUBLESHOOTING
 
 // AI-generation endpoints - expensive, limit more aggressively
 // AI-generation endpoints - expensive, limit abuse
+const aiLimiter = (req, res, next) => next(); // TEMPORARILY DISABLED - PASS THROUGH
+/*
 const aiLimiter = rateLimit({
     windowMs: 24 * 60 * 60 * 1000, // 24 hours
     max: 50, // 50 AI requests per IP per day (approx 2/hour avg)
@@ -94,22 +77,23 @@ const aiLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
 });
+*/
 
 // Sensitive account operations - strict limit (Brute force protection)
+const sensitiveOpLimiter = (req, res, next) => next(); // TEMPORARILY DISABLED
+/*
 const sensitiveOpLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
     max: 10, // 10 attempts per hour
-    message: { error: 'Příliš mnoho pokusů. Zkuste to za hodinu.' },
-    standardHeaders: true,
-    legacyHeaders: false,
+    //...
 });
-
+*/
 
 // Gzip Compression
 app.use(compression());
 
 // XSS Protection - only for API routes (not static files)
-app.use('/api', xss());
+// app.use('/api', xss()); // TEMPORARILY DISABLED
 
 // ============================================
 // HOROSCOPE CACHE SYSTEM (Database-backed)
