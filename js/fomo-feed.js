@@ -78,13 +78,27 @@
     function createNotification(data) {
         const notification = document.createElement('div');
         notification.className = 'fomo-notification';
-        notification.innerHTML = `
-      <div class="fomo-icon">✨</div>
-      <div class="fomo-content">
-        <div class="fomo-text">${data.name} z ${data.city}</div>
-        <div class="fomo-action">${data.action}</div>
-      </div>
-    `;
+
+        const iconDiv = document.createElement('div');
+        iconDiv.className = 'fomo-icon';
+        iconDiv.textContent = '✨';
+
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'fomo-content';
+
+        const textDiv = document.createElement('div');
+        textDiv.className = 'fomo-text';
+        textDiv.textContent = `${data.name} z ${data.city}`;
+
+        const actionDiv = document.createElement('div');
+        actionDiv.className = 'fomo-action';
+        actionDiv.textContent = data.action;
+
+        contentDiv.appendChild(textDiv);
+        contentDiv.appendChild(actionDiv);
+        notification.appendChild(iconDiv);
+        notification.appendChild(contentDiv);
+
         return notification;
     }
 

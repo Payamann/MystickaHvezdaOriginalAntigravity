@@ -2,9 +2,10 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import rateLimit from 'express-rate-limit';
 import { supabase } from './db-supabase.js';
+import { JWT_SECRET } from './config/jwt.js';
+import { authenticateToken } from './middleware.js';
 
 const router = express.Router();
-import fs from 'fs';
 
 // Strict rate limiting on auth endpoints to prevent brute force / credential stuffing
 const authLimiter = rateLimit({
@@ -15,28 +16,10 @@ const authLimiter = rateLimit({
     legacyHeaders: false,
 });
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
-
-// Security: Enforce strong secret in production
-let JWT_SECRET = process.env.JWT_SECRET;
-if (IS_PRODUCTION && !JWT_SECRET) {
-    console.error('❌ FATAL ERROR: JWT_SECRET is missing in production environment!');
-    process.exit(1); // Fail secure
-}
-if (!JWT_SECRET) {
-    console.warn('⚠️ WARNING: JWT_SECRET is missing in environment variables!');
-    if (IS_PRODUCTION) {
-        console.error('❌ FATAL ERROR: JWT_SECRET is required in production!');
-        process.exit(1);
-    } else {
-        console.warn('⚠️ Development mode: Using temporary insecure secret. DO NOT USE IN PRODUCTION.');
-        JWT_SECRET = 'dev-insecure-secret-placeholder';
-    }
-}
 const APP_URL = process.env.APP_URL || 'http://localhost:3001';
 
 const logDebug = (msg) => {
-    if (IS_PRODUCTION) return; // Skip debug logging in production
-    // fs.appendFileSync('debug.log', `[${time}] ${msg}\n`); // Removed to prevent lock issues
+    if (IS_PRODUCTION) return;
     console.log(`[DEBUG] ${msg}`);
 };
 
@@ -199,9 +182,8 @@ router.post('/login', authLimiter, async (req, res) => {
 
         const token = jwt.sign({
             id: user.id,
-            email: user.email,
-            subscription_status: status
-        }, JWT_SECRET, { expiresIn: '30d' });
+            email: user.email
+        }, JWT_SECRET, { algorithm: 'HS256', expiresIn: '7d' });
 
         res.json({
             token,
@@ -254,14 +236,8 @@ router.post('/forgot-password', authLimiter, async (req, res) => {
 });
 
 // Get User Profile
-router.get('/profile', async (req, res) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    if (!token) return res.sendStatus(401);
-
+router.get('/profile', authenticateToken, async (req, res) => {
     try {
-        const user = jwt.verify(token, JWT_SECRET);
-
         const { data, error } = await supabase
             .from('users')
             .select(`
@@ -273,7 +249,7 @@ router.get('/profile', async (req, res) => {
                     current_period_end
                 )
             `)
-            .eq('id', user.id)
+            .eq('id', req.user.id)
             .single();
 
         if (error) throw error;
@@ -289,24 +265,14 @@ router.get('/profile', async (req, res) => {
         res.json({ success: true, user: userProfile });
 
     } catch (e) {
-        if (e.name === 'JsonWebTokenError' || e.name === 'TokenExpiredError') {
-            return res.sendStatus(403);
-        }
         console.error('Get Profile Error:', e);
         res.status(500).json({ error: 'Failed to fetch profile' });
     }
 });
 
 // Update User Profile
-router.put('/profile', async (req, res) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    if (!token) return res.sendStatus(401);
-
+router.put('/profile', authenticateToken, async (req, res) => {
     try {
-        // Verify token synchronously
-        const user = jwt.verify(token, JWT_SECRET);
-
         const { first_name, birth_date, birth_time, birth_place } = req.body;
 
         const updateData = {
@@ -319,7 +285,7 @@ router.put('/profile', async (req, res) => {
         const { data, error } = await supabase
             .from('users')
             .update(updateData)
-            .eq('id', user.id)
+            .eq('id', req.user.id)
             .select()
             .single();
 
@@ -328,9 +294,6 @@ router.put('/profile', async (req, res) => {
         res.json({ success: true, user: data });
 
     } catch (e) {
-        if (e.name === 'JsonWebTokenError' || e.name === 'TokenExpiredError') {
-            return res.sendStatus(403);
-        }
         console.error('Update Profile Error:', e);
         res.status(500).json({ error: 'Failed to update profile' });
     }

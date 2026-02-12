@@ -1,6 +1,6 @@
 import express from 'express';
 import { supabase } from './db-supabase.js';
-import { authenticateToken, requireAdmin } from './middleware.js';
+import { authenticateToken, requireAdmin, PREMIUM_PLAN_TYPES } from './middleware.js';
 
 const router = express.Router();
 
@@ -47,6 +47,11 @@ router.post('/user/:userId/subscription', authenticateToken, requireAdmin, async
 
         if (!plan_type || typeof plan_type !== 'string') {
             return res.status(400).json({ success: false, error: 'Typ plánu je povinný.' });
+        }
+
+        const VALID_PLAN_TYPES = ['free', ...PREMIUM_PLAN_TYPES];
+        if (!VALID_PLAN_TYPES.includes(plan_type)) {
+            return res.status(400).json({ success: false, error: `Neplatný typ plánu. Povolené: ${VALID_PLAN_TYPES.join(', ')}` });
         }
 
         // Set expiry based on plan type

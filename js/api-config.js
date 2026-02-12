@@ -12,8 +12,8 @@ const API_CONFIG = {
         window.location.protocol === 'file:' // Handle Opening index.html directly
     ) ? 'http://localhost:3001/api' : '/api',
 
-    // Stripe Configuration
-    STRIPE_PUBLISHABLE_KEY: 'pk_test_51SvhkJPMTdHJh4NOR3GEkWs2lPjTEDURmFrYru5pcU6K90ZczeXUEGiQWoyxPe3W5xlzGmIjSL8Pr0hWbLzvMhOK00hVke56SN',
+    // Stripe publishable key - loaded from server via /api/config
+    STRIPE_PUBLISHABLE_KEY: null,
 
     // API Endpoints
     ENDPOINTS: {
@@ -24,6 +24,21 @@ const API_CONFIG = {
         HOROSCOPE: '/horoscope'
     }
 };
+
+// Load runtime config from server (Stripe key, etc.)
+(async function loadConfig() {
+    try {
+        const res = await fetch(`${API_CONFIG.BASE_URL}/config`);
+        if (res.ok) {
+            const config = await res.json();
+            if (config.stripePublishableKey) {
+                API_CONFIG.STRIPE_PUBLISHABLE_KEY = config.stripePublishableKey;
+            }
+        }
+    } catch (e) {
+        console.warn('Could not load server config:', e.message);
+    }
+})();
 
 /**
  * Helper function to call API endpoints

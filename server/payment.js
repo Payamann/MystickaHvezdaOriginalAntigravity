@@ -1,6 +1,6 @@
 import express from 'express';
 import { supabase } from './db-supabase.js';
-import { authenticateToken } from './middleware.js';
+import { authenticateToken, PREMIUM_PLAN_TYPES } from './middleware.js';
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -14,8 +14,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 const APP_URL = process.env.APP_URL || 'http://localhost:3001';
 const router = express.Router();
-
-const PREMIUM_PLAN_TYPES = ['premium_monthly', 'premium_yearly', 'premium_pro', 'exclusive_monthly', 'vip'];
 
 // Plan definitions (consistent with cenik.html)
 const PLANS = {
@@ -50,7 +48,7 @@ export async function isPremiumUser(userId) {
 
         if (!subscription) return false;
 
-        const isActive = subscription.status === 'active' || subscription.status === 'trialing';
+        const isActive = subscription.status === 'active' || subscription.status === 'trialing' || subscription.status === 'cancel_pending';
         const notExpired = new Date(subscription.current_period_end) > new Date();
         const isPremium = PREMIUM_PLAN_TYPES.includes(subscription.plan_type);
 

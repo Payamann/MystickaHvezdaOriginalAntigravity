@@ -61,7 +61,7 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "https://js.stripe.com"],
+            scriptSrc: ["'self'", "https://js.stripe.com"],
             styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
             fontSrc: ["'self'", "https://fonts.gstatic.com"],
             imgSrc: ["'self'", "data:", "blob:", "https:"],
@@ -158,8 +158,8 @@ import crypto from 'crypto';
 // API ENDPOINTS
 // ============================================
 
-// Crystal Ball Oracle
-app.post('/api/crystal-ball', async (req, res) => {
+// Crystal Ball Oracle (AI endpoint - apply stricter rate limit)
+app.post('/api/crystal-ball', aiLimiter, async (req, res) => {
     try {
         const { question, history = [] } = req.body;
 
@@ -192,6 +192,11 @@ app.post('/api/tarot', authenticateToken, async (req, res) => {
         const { question, cards, spreadType = 'tříkartový' } = req.body;
         const userId = req.user.id;
 
+        // Validate cards array
+        if (!Array.isArray(cards) || cards.length === 0 || cards.length > 20) {
+            return res.status(400).json({ success: false, error: 'Neplatná data karet (1-20 karet).' });
+        }
+
         // Check limits
         const userIsPremium = await isPremiumUser(userId);
 
@@ -204,7 +209,10 @@ app.post('/api/tarot', authenticateToken, async (req, res) => {
             });
         }
 
-        const message = `Typ výkladu: ${spreadType}\nOtázka: "${question}"\nVytažené karty: ${cards.join(', ')}`;
+        const safeSpreadType = String(spreadType || 'tříkartový').substring(0, 100);
+        const safeQuestion = String(question || '').substring(0, 1000);
+        const safeCards = cards.map(c => String(c).substring(0, 100));
+        const message = `Typ výkladu: ${safeSpreadType}\nOtázka: "${safeQuestion}"\nVytažené karty: ${safeCards.join(', ')}`;
 
         const response = await callGemini(SYSTEM_PROMPTS.tarot, message);
         res.json({ success: true, response });
@@ -284,8 +292,17 @@ app.post('/api/synastry', authenticateToken, async (req, res) => {
             });
         }
 
+        // Validate and sanitize input
+        if (!person1 || !person2 || typeof person1 !== 'object' || typeof person2 !== 'object') {
+            return res.status(400).json({ success: false, error: 'Údaje obou osob jsou povinné.' });
+        }
+
         // Premium Logic (Full Analysis)
-        const message = `Osoba A: ${person1.name}, narozena ${person1.birthDate}\nOsoba B: ${person2.name}, narozena ${person2.birthDate}`;
+        const safePerson1Name = String(person1.name || 'Osoba A').substring(0, 100);
+        const safePerson1Birth = String(person1.birthDate || '').substring(0, 30);
+        const safePerson2Name = String(person2.name || 'Osoba B').substring(0, 100);
+        const safePerson2Birth = String(person2.birthDate || '').substring(0, 30);
+        const message = `Osoba A: ${safePerson1Name}, narozena ${safePerson1Birth}\nOsoba B: ${safePerson2Name}, narozena ${safePerson2Birth}`;
         const response = await callGemini(SYSTEM_PROMPTS.synastry, message);
 
         res.json({ success: true, response, isTeaser: false });
@@ -731,6 +748,13 @@ app.put('/api/user/password', sensitiveOpLimiter, authenticateToken, async (req,
         console.error('Password Change Error:', error);
         res.status(500).json({ success: false, error: 'Nepodařilo se změnit heslo.' });
     }
+});
+
+// Public config endpoint - serves non-secret configuration to frontend
+app.get('/api/config', (req, res) => {
+    res.json({
+        stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY || '',
+    });
 });
 
 // Health Check Endpoint (for monitoring/load balancers)
