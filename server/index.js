@@ -44,6 +44,19 @@ app.use(cors({
     credentials: true
 }));
 
+// Middleware - Restrict CORS to same-origin by default
+// ... existing CORS setup ...
+
+// Performance Logging Middleware
+app.use((req, res, next) => {
+    const start = Date.now();
+    res.on('finish', () => {
+        const duration = Date.now() - start;
+        console.log(`[PERF] ${req.method} ${req.originalUrl} took ${duration}ms [${res.statusCode}]`);
+    });
+    next();
+});
+
 // Stripe Webhook MUST be before express.json() to get raw body
 app.post('/webhook/stripe', express.raw({ type: 'application/json' }), async (req, res) => {
     try {
