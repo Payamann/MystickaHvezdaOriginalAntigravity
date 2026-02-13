@@ -105,9 +105,21 @@ async function initProfile() {
     const readings = await loadReadings();
     updateStats(readings);
 
-    // NEW: Load Journal and Biorhythms
+    // Load Journal and Biorhythms
     if (user && user.birth_date) {
         initBiorhythms(user.birth_date);
+    } else {
+        // Show prompt to set birth date
+        const bioContainer = document.getElementById('biorhythm-container');
+        if (bioContainer) {
+            bioContainer.style.display = 'block';
+            bioContainer.innerHTML = `
+                <h3 class="card-title">📉 Osobní Biorytmy</h3>
+                <p style="text-align: center; opacity: 0.6; padding: 2rem;">
+                    Vyplňte datum narození v Nastavení pro zobrazení biorytmů.
+                </p>
+            `;
+        }
     }
     loadJournal();
 
@@ -778,11 +790,39 @@ function initBiorhythms(birthDate) {
 
     container.style.display = 'block';
 
+    // Wait for Chart.js to be available before proceeding
+    if (typeof Chart === 'undefined') {
+        if (!window._bioRetries) window._bioRetries = 0;
+        if (window._bioRetries < 10) {
+            window._bioRetries++;
+            console.log(`Waiting for Chart.js... attempt ${window._bioRetries}`);
+            setTimeout(() => initBiorhythms(birthDate), 300);
+            return;
+        }
+        console.error('Chart.js failed to load after retries');
+        container.innerHTML = `
+            <h3 class="card-title">📉 Osobní Biorytmy</h3>
+            <p style="text-align: center; opacity: 0.6; padding: 2rem; color: #e74c3c;">
+                Nepodařilo se načíst knihovnu grafu. Zkuste obnovit stránku.
+            </p>
+        `;
+        return;
+    }
+    window._bioRetries = 0;
+
     try {
-        // Calculate days since birth
+        // Validate birth date
         const birth = new Date(birthDate);
+        if (isNaN(birth.getTime())) {
+            throw new Error('INVALID_DATE');
+        }
+
         const today = new Date();
         const daysSinceBirth = Math.floor((today - birth) / (1000 * 60 * 60 * 24));
+
+        if (daysSinceBirth < 0) {
+            throw new Error('FUTURE_DATE');
+        }
 
         // Generate chart data for ±15 days
         const labels = [];
@@ -806,13 +846,23 @@ function initBiorhythms(birthDate) {
             intellectual.push(Math.sin(2 * Math.PI * days / 33) * 100);
         }
 
-        // Render Chart.js
-        const canvas = document.getElementById('bio-canvas');
+        // Ensure canvas element exists; recreate if missing (e.g. after error replaced innerHTML)
+        let canvas = document.getElementById('bio-canvas');
+        if (!canvas) {
+            container.innerHTML = `
+                <h3 class="card-title">📉 Osobní Biorytmy</h3>
+                <div class="biorhythm-chart"><canvas id="bio-canvas"></canvas></div>
+                <div id="bio-summary"></div>
+            `;
+            canvas = document.getElementById('bio-canvas');
+        }
+
         const ctx = canvas.getContext('2d');
 
         // Destroy previous chart if exists
         if (window.biorhythmChart) {
             window.biorhythmChart.destroy();
+            window.biorhythmChart = null;
         }
 
         window.biorhythmChart = new Chart(ctx, {
@@ -852,6 +902,7 @@ function initBiorhythms(birthDate) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                animation: { duration: 600 },
                 plugins: {
                     legend: {
                         display: true,
@@ -938,23 +989,17 @@ function initBiorhythms(birthDate) {
     } catch (error) {
         console.error('Error initializing biorhythms:', error);
 
-        let errorMessage = 'Nepodařilo se načíst biorytmy.';
-
-        if (error instanceof ReferenceError && error.message.includes('Chart')) {
-            errorMessage += ' (Chyba načítání grafu)';
-            // Retry mechanism if Chart is not loaded yet
-            if (!window.chartRetries) window.chartRetries = 0;
-            if (window.chartRetries < 3) {
-                window.chartRetries++;
-                console.log('Retrying biorhythm init in 500ms...');
-                setTimeout(() => initBiorhythms(birthDate), 500);
-                return;
-            }
+        let errorMessage;
+        if (error.message === 'INVALID_DATE') {
+            errorMessage = 'Neplatné datum narození. Zkontrolujte nastavení.';
+        } else if (error.message === 'FUTURE_DATE') {
+            errorMessage = 'Datum narození nemůže být v budoucnosti.';
         } else {
-            errorMessage += ' Ujistěte se, že máte vyplněné datum narození.';
+            errorMessage = 'Nepodařilo se načíst biorytmy. Zkuste obnovit stránku.';
         }
 
         container.innerHTML = `
+            <h3 class="card-title">📉 Osobní Biorytmy</h3>
             <p style="text-align: center; opacity: 0.6; padding: 2rem; color: #e74c3c;">
                 ${errorMessage}
             </p>
