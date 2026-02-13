@@ -4559,6 +4559,157 @@ body.page-mentor .header {
   }
 }
 
+/* ==========================================
+   AVATAR PICKER
+   ========================================== */
+.profile-avatar {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 2px solid transparent;
+}
+
+.profile-avatar:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+  border-color: var(--color-mystic-gold);
+}
+
+.avatar-picker {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.avatar-picker__label {
+  font-size: 0.85rem;
+  opacity: 0.7;
+  margin-bottom: 0.75rem;
+}
+
+.avatar-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+  gap: 0.5rem;
+}
+
+.avatar-option {
+  width: 48px;
+  height: 48px;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.avatar-option:hover {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: rgba(212, 175, 55, 0.4);
+  transform: scale(1.15);
+}
+
+.avatar-option--active {
+  background: rgba(212, 175, 55, 0.2);
+  border-color: var(--color-mystic-gold);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+/* ==========================================
+   SUBSCRIPTION MANAGEMENT
+   ========================================== */
+.subscription-card {
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.subscription-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.subscription-plan {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.subscription-plan__name {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--color-starlight);
+}
+
+.subscription-period {
+  opacity: 0.8;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.subscription-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+/* Badge variants for subscription status */
+.badge--success {
+  background: rgba(46, 204, 113, 0.2);
+  color: #2ecc71;
+  border: 1px solid rgba(46, 204, 113, 0.3);
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+}
+
+.badge--info {
+  background: rgba(52, 152, 219, 0.2);
+  color: #3498db;
+  border: 1px solid rgba(52, 152, 219, 0.3);
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+}
+
+.badge--warning {
+  background: rgba(241, 196, 15, 0.2);
+  color: #f1c40f;
+  border: 1px solid rgba(241, 196, 15, 0.3);
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+}
+
+.badge--danger {
+  background: rgba(231, 76, 60, 0.2);
+  color: #e74c3c;
+  border: 1px solid rgba(231, 76, 60, 0.3);
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 480px) {
+  .avatar-picker__grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .subscription-actions {
+    flex-direction: column;
+  }
+
+  .subscription-actions .btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
 /* Focus visible for accessibility */
 .btn:focus-visible,
 .form-input:focus-visible,

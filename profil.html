@@ -31,7 +31,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="css/style.v2.css?v=10">
+    <link rel="stylesheet" href="css/style.v2.css?v=11">
 
     <!-- Chart.js for biorhythms -->
     <script src="js/vendor/chart.js" defer></script>
@@ -41,7 +41,7 @@
 
 
 
-    <script src="js/profile.js?v=9" defer></script>
+    <script src="js/profile.js?v=10" defer></script>
 </head>
 
 <body>
@@ -76,7 +76,7 @@
                     <div class="card glass-card profile-user-card" style="margin-bottom: 2rem;">
                         <div class="profile-user-info">
                             <div class="profile-user-left">
-                                <div id="user-avatar" class="profile-avatar">👤</div>
+                                <button id="user-avatar" class="profile-avatar" aria-label="Změnit avatar" title="Klikněte pro změnu avataru">👤</button>
                                 <div class="profile-user-details">
                                     <h2 class="profile-user-email"><span id="user-email">-</span></h2>
                                     <p class="profile-user-plan">
@@ -87,6 +87,30 @@
                             </div>
                             <div class="profile-user-right">
                                 <button id="logout-btn" class="btn btn--secondary btn--sm">Odhlásit</button>
+                            </div>
+                        </div>
+                        <!-- Avatar Picker (hidden by default) -->
+                        <div id="avatar-picker" class="avatar-picker" style="display: none;">
+                            <p class="avatar-picker__label">Vyberte si avatar:</p>
+                            <div class="avatar-picker__grid">
+                                <button class="avatar-option" data-avatar="🌟">🌟</button>
+                                <button class="avatar-option" data-avatar="🔮">🔮</button>
+                                <button class="avatar-option" data-avatar="🌙">🌙</button>
+                                <button class="avatar-option" data-avatar="⭐">⭐</button>
+                                <button class="avatar-option" data-avatar="🌕">🌕</button>
+                                <button class="avatar-option" data-avatar="✨">✨</button>
+                                <button class="avatar-option" data-avatar="🦋">🦋</button>
+                                <button class="avatar-option" data-avatar="🌸">🌸</button>
+                                <button class="avatar-option" data-avatar="🐉">🐉</button>
+                                <button class="avatar-option" data-avatar="🦄">🦄</button>
+                                <button class="avatar-option" data-avatar="🌊">🌊</button>
+                                <button class="avatar-option" data-avatar="🔥">🔥</button>
+                                <button class="avatar-option" data-avatar="💎">💎</button>
+                                <button class="avatar-option" data-avatar="🌈">🌈</button>
+                                <button class="avatar-option" data-avatar="🦅">🦅</button>
+                                <button class="avatar-option" data-avatar="🐺">🐺</button>
+                                <button class="avatar-option" data-avatar="🌿">🌿</button>
+                                <button class="avatar-option" data-avatar="👤">👤</button>
                             </div>
                         </div>
                     </div>
@@ -243,12 +267,12 @@
                             </div>
                         </div>
 
-                        <!-- Upgrade Card -->
-                        <div class="card glass-card"
-                            style="margin-top: 2rem; border: 1px solid var(--color-mystic-gold);" id="upgrade-card">
-                            <h3>🚀 Upgrade na Premium</h3>
-                            <p>Získejte neomezený přístup ke všem funkcím, bez kreditů.</p>
-                            <a href="cenik.html" class="btn btn--gold">Zobrazit plány</a>
+                        <!-- Subscription Management Card -->
+                        <div class="card glass-card subscription-card" style="margin-top: 2rem;" id="subscription-card">
+                            <h3>💳 Správa předplatného</h3>
+                            <div id="subscription-details" class="subscription-details">
+                                <p style="opacity: 0.6;">Načítání...</p>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -212,7 +212,8 @@ router.post('/login', authLimiter, async (req, res) => {
                 first_name: user.first_name,
                 birth_date: user.birth_date,
                 birth_time: user.birth_time,
-                birth_place: user.birth_place
+                birth_place: user.birth_place,
+                avatar: user.avatar || null
             }
         });
 
@@ -307,7 +308,7 @@ router.put('/profile', async (req, res) => {
         // Verify token synchronously
         const user = jwt.verify(token, JWT_SECRET);
 
-        const { first_name, birth_date, birth_time, birth_place } = req.body;
+        const { first_name, birth_date, birth_time, birth_place, avatar } = req.body;
 
         const updateData = {
             first_name: first_name || null,
@@ -315,6 +316,11 @@ router.put('/profile', async (req, res) => {
             birth_time: birth_time || null,
             birth_place: birth_place || null
         };
+
+        // Only update avatar if explicitly provided
+        if (avatar !== undefined) {
+            updateData.avatar = avatar || null;
+        }
 
         const { data, error } = await supabase
             .from('users')
