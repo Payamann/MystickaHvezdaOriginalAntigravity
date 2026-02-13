@@ -1,14 +1,19 @@
 /**
  * Mystická Hvězda - Profile Page Logic
- * Handles user dashboard, reading history, and settings
+ * Handles user dashboard, reading history, settings, biorhythms, and journal
  */
 
 // Track if listeners are already attached to prevent duplicates
 let listenersAttached = false;
 
+// Reading state
+let allReadings = [];
+let currentFilter = 'all';
+let displayedCount = 0;
+const PAGE_SIZE = 10;
+
 document.addEventListener('DOMContentLoaded', () => {
     initProfile();
-    // Re-run init when auth state changes (e.g. login via modal)
     document.addEventListener('auth:changed', () => initProfile());
 });
 
@@ -20,10 +25,22 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+// Helper: API base URL
+function apiUrl() {
+    return window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api';
+}
+
+// Helper: Auth headers
+function authHeaders(json = false) {
+    const headers = { 'Authorization': `Bearer ${window.Auth?.token}` };
+    if (json) headers['Content-Type'] = 'application/json';
+    return headers;
+}
+
 async function initProfile() {
     // Wait for Auth to be ready with retry
     let retries = 0;
-    while (!window.Auth && retries < 10) {
+    while (!window.Auth && retries < 20) {
         await new Promise(r => setTimeout(r, 100));
         retries++;
     }
@@ -36,12 +53,10 @@ async function initProfile() {
     const greeting = document.getElementById('profile-greeting');
 
     if (!isLoggedIn) {
-        // Not logged in
         if (loginRequired) loginRequired.style.display = 'block';
         if (dashboard) dashboard.style.display = 'none';
         if (greeting) greeting.textContent = 'Přihlaste se pro zobrazení vašeho profilu';
 
-        // Use event delegation or one-time listener to prevent duplicates
         const loginBtn = document.getElementById('profile-login-btn');
         if (loginBtn && !loginBtn.dataset.listenerAttached) {
             loginBtn.addEventListener('click', (e) => {
@@ -59,37 +74,44 @@ async function initProfile() {
 
     // Populate user info
     if (user) {
-        if (greeting) greeting.textContent = `Vítejte zpět, ${user.email.split('@')[0]}! ✨`;
+        const displayName = user.first_name || user.email.split('@')[0];
+        if (greeting) greeting.textContent = `Vítejte zpět, ${displayName}! ✨`;
         const emailEl = document.getElementById('user-email');
         if (emailEl) emailEl.textContent = user.email;
 
         const planEl = document.getElementById('user-plan');
         if (planEl) planEl.textContent = formatPlan(user.subscription_status);
 
-        // Credits removed
-        // const creditsEl = document.getElementById('user-credits');
-        // if (creditsEl) creditsEl.textContent = `${user.credits ?? '∞'} kreditů`;
+        // Show zodiac sign if birth date available
+        if (user.birth_date) {
+            showZodiacSign(user.birth_date);
+        }
 
+        // Populate settings form
         const settingsEmail = document.getElementById('settings-email');
         if (settingsEmail) settingsEmail.value = user.email;
 
-        // Populate personal info
-        if (document.getElementById('settings-name')) document.getElementById('settings-name').value = user.first_name || '';
+        if (document.getElementById('settings-name')) {
+            document.getElementById('settings-name').value = user.first_name || '';
+        }
 
         if (document.getElementById('settings-birthdate')) {
             let val = user.birth_date || '';
             if (val && val.includes('T')) val = val.split('T')[0];
             document.getElementById('settings-birthdate').value = val;
+            // Set max date to today
+            document.getElementById('settings-birthdate').max = new Date().toISOString().split('T')[0];
         }
 
         if (document.getElementById('settings-birthtime')) {
             let val = user.birth_time || '';
-            // Ensure HH:mm (remove seconds)
             if (val && val.length > 5) val = val.substring(0, 5);
             document.getElementById('settings-birthtime').value = val;
         }
 
-        if (document.getElementById('settings-birthplace')) document.getElementById('settings-birthplace').value = user.birth_place || '';
+        if (document.getElementById('settings-birthplace')) {
+            document.getElementById('settings-birthplace').value = user.birth_place || '';
+        }
 
         // Hide upgrade card for premium users
         if (user.subscription_status?.includes('premium')) {
@@ -101,72 +123,144 @@ async function initProfile() {
     // Setup tabs (only once)
     initTabs();
 
-    // Load reading history and stats
-    const readings = await loadReadings();
+    // Load data in parallel for performance
+    const [readings] = await Promise.all([
+        loadReadings(),
+        loadJournal()
+    ]);
     updateStats(readings);
 
-    // Load Journal and Biorhythms
+    // Load biorhythms (depends on Chart.js, not API)
     if (user && user.birth_date) {
         initBiorhythms(user.birth_date);
     } else {
-        // Show prompt to set birth date
         const bioContainer = document.getElementById('biorhythm-container');
         if (bioContainer) {
             bioContainer.style.display = 'block';
             bioContainer.innerHTML = `
                 <h3 class="card-title">📉 Osobní Biorytmy</h3>
-                <p style="text-align: center; opacity: 0.6; padding: 2rem;">
-                    Vyplňte datum narození v Nastavení pro zobrazení biorytmů.
-                </p>
+                <div class="empty-state">
+                    <div class="empty-state__icon">📉</div>
+                    <p class="empty-state__text">Vyplňte datum narození v Nastavení pro zobrazení biorytmů.</p>
+                </div>
             `;
         }
     }
-    loadJournal();
 
     // Setup event listeners ONLY ONCE
     if (!listenersAttached) {
-        const logoutBtn = document.getElementById('logout-btn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', handleLogout);
-        }
+        // Logout
+        document.getElementById('logout-btn')?.addEventListener('click', handleLogout);
 
-        const saveBtn = document.getElementById('save-settings-btn');
-        if (saveBtn) {
-            saveBtn.addEventListener('click', saveSettings);
-        }
+        // Save settings
+        document.getElementById('save-settings-btn')?.addEventListener('click', saveSettings);
+
+        // Journal submit
+        document.getElementById('journal-submit')?.addEventListener('click', saveJournalEntry);
+
+        // Reading filter
+        document.getElementById('readings-filter')?.addEventListener('change', handleFilterChange);
+
+        // Load more pagination
+        document.getElementById('readings-load-more')?.addEventListener('click', showMoreReadings);
+
+        // Modal buttons (replace inline onclick)
+        document.getElementById('reading-modal-close')?.addEventListener('click', closeReadingModal);
+        document.getElementById('modal-favorite-btn')?.addEventListener('click', toggleFavoriteModal);
+        document.getElementById('modal-delete-btn')?.addEventListener('click', deleteReading);
+
+        // Close modal on backdrop click
+        document.getElementById('reading-modal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'reading-modal') closeReadingModal();
+        });
+
+        // Close modal on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('reading-modal');
+                if (modal && modal.style.display !== 'none') {
+                    closeReadingModal();
+                }
+            }
+        });
 
         listenersAttached = true;
     }
 }
 
-// Named handler to allow proper cleanup
+// ==========================================
+// ZODIAC SIGN
+// ==========================================
+function getZodiacSign(dateStr) {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return null;
+
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+
+    const signs = [
+        { name: 'Kozoroh', symbol: '♑', start: [1, 1], end: [1, 19] },
+        { name: 'Vodnář', symbol: '♒', start: [1, 20], end: [2, 18] },
+        { name: 'Ryby', symbol: '♓', start: [2, 19], end: [3, 20] },
+        { name: 'Beran', symbol: '♈', start: [3, 21], end: [4, 19] },
+        { name: 'Býk', symbol: '♉', start: [4, 20], end: [5, 20] },
+        { name: 'Blíženci', symbol: '♊', start: [5, 21], end: [6, 20] },
+        { name: 'Rak', symbol: '♋', start: [6, 21], end: [7, 22] },
+        { name: 'Lev', symbol: '♌', start: [7, 23], end: [8, 22] },
+        { name: 'Panna', symbol: '♍', start: [8, 23], end: [9, 22] },
+        { name: 'Váhy', symbol: '♎', start: [9, 23], end: [10, 22] },
+        { name: 'Štír', symbol: '♏', start: [10, 23], end: [11, 21] },
+        { name: 'Střelec', symbol: '♐', start: [11, 22], end: [12, 21] },
+        { name: 'Kozoroh', symbol: '♑', start: [12, 22], end: [12, 31] }
+    ];
+
+    for (const sign of signs) {
+        const [sm, sd] = sign.start;
+        const [em, ed] = sign.end;
+        if ((month === sm && day >= sd) || (month === em && day <= ed)) {
+            return sign;
+        }
+    }
+    return null;
+}
+
+function showZodiacSign(birthDate) {
+    const zodiacEl = document.getElementById('user-zodiac');
+    if (!zodiacEl) return;
+
+    const sign = getZodiacSign(birthDate);
+    if (sign) {
+        zodiacEl.textContent = `${sign.symbol} ${sign.name}`;
+        zodiacEl.style.display = 'block';
+    }
+}
+
+// ==========================================
+// NAMED HANDLERS
+// ==========================================
 function handleLogout() {
     if (confirm('Opravdu se chcete odhlásit?')) {
         window.Auth?.logout();
     }
 }
 
-// Stats calculation and display
+// ==========================================
+// STATS
+// ==========================================
 function updateStats(readings) {
     if (!readings) readings = [];
 
-    // Total readings
     const total = readings.length;
 
-    // This month
     const now = new Date();
     const thisMonth = readings.filter(r => {
         const date = new Date(r.created_at);
         return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
     }).length;
 
-    // Favorites (if field exists)
     const favorites = readings.filter(r => r.is_favorite).length;
-
-    // Calculate streak (consecutive days with readings)
     const streak = calculateStreak(readings);
 
-    // Animate counters
     animateCounter('stat-total', total);
     animateCounter('stat-month', thisMonth);
     animateCounter('stat-favorites', favorites);
@@ -183,7 +277,6 @@ function calculateStreak(readings) {
     const today = new Date().toDateString();
     const yesterday = new Date(Date.now() - 86400000).toDateString();
 
-    // Check if there's a reading today or yesterday
     if (uniqueDates[0] !== today && uniqueDates[0] !== yesterday) {
         return 0;
     }
@@ -205,15 +298,20 @@ function animateCounter(elementId, target) {
     const el = document.getElementById(elementId);
     if (!el) return;
 
+    // Respect prefers-reduced-motion
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        el.textContent = target;
+        return;
+    }
+
     const duration = 1000;
-    const start = 0;
     const startTime = performance.now();
 
     function update(currentTime) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
-        el.textContent = Math.round(start + (target - start) * eased);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(target * eased);
 
         if (progress < 1) {
             requestAnimationFrame(update);
@@ -232,13 +330,14 @@ function formatPlan(plan) {
     return plans[plan] || plan || 'Zdarma';
 }
 
-// Track if tabs are initialized to prevent duplicate listeners
+// ==========================================
+// TABS
+// ==========================================
 let tabsInitialized = false;
 
 function initTabs() {
     if (tabsInitialized) return;
 
-    // Support both old (.tab) and new (.profile-tab) class names
     const tabs = document.querySelectorAll('.tab[data-tab], .profile-tab[data-tab]');
     const contents = document.querySelectorAll('.tab-content');
 
@@ -246,7 +345,6 @@ function initTabs() {
         tab.addEventListener('click', () => {
             const targetId = tab.dataset.tab;
 
-            // Update tabs
             tabs.forEach(t => {
                 t.classList.remove('active');
                 t.setAttribute('aria-selected', 'false');
@@ -254,12 +352,10 @@ function initTabs() {
             tab.classList.add('active');
             tab.setAttribute('aria-selected', 'true');
 
-            // Update content
             contents.forEach(c => {
                 c.style.display = c.id === `tab-${targetId}` ? 'block' : 'none';
             });
 
-            // Load favorites when that tab is clicked
             if (targetId === 'favorites') {
                 loadFavorites();
             }
@@ -269,81 +365,131 @@ function initTabs() {
     tabsInitialized = true;
 }
 
+// ==========================================
+// READINGS - LOAD, FILTER, PAGINATE
+// ==========================================
 async function loadReadings() {
     const container = document.getElementById('readings-list');
 
     try {
-        const response = await fetch(`${window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api'}/user/readings`, {
-            headers: {
-                'Authorization': `Bearer ${window.Auth?.token}`
-            }
+        const response = await fetch(`${apiUrl()}/user/readings`, {
+            headers: authHeaders()
         });
 
-        if (!response.ok) {
-            throw new Error('Failed to load readings');
-        }
+        if (!response.ok) throw new Error('Failed to load readings');
 
         const data = await response.json();
-        const readings = data.readings || [];
+        allReadings = data.readings || [];
+        displayedCount = 0;
 
-        if (readings.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state" style="text-align: center; padding: 3rem 1rem;">
-                    <div style="font-size: 4rem; margin-bottom: 1rem;">🔮</div>
-                    <h4 style="margin-bottom: 0.5rem; color: var(--color-starlight);">Zatím nemáte žádné výklady</h4>
-                    <p style="opacity: 0.6; margin-bottom: 1.5rem;">Vydejte se na cestu za poznáním hvězd!</p>
-                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                        <a href="tarot.html" class="btn btn--primary btn--sm">🃏 Tarot</a>
-                        <a href="kristalova-koule.html" class="btn btn--glass btn--sm">🔮 Křišťálová koule</a>
-                        <a href="horoskopy.html" class="btn btn--glass btn--sm">⭐ Horoskop</a>
-                    </div>
-                </div>
-            `;
-            return readings;
-        }
-
-        container.innerHTML = readings.map(reading => `
-            <div class="reading-item card" style="margin-bottom: 1rem; padding: 1rem; cursor: pointer;" onclick="viewReading('${escapeHtml(reading.id)}')">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <span style="font-size: 2rem;">${getReadingIcon(reading.type)}</span>
-                        <div>
-                            <strong>${escapeHtml(getReadingTitle(reading.type))}</strong>
-                            <p style="margin: 0.25rem 0 0; opacity: 0.7; font-size: 0.85rem;">
-                                ${new Date(reading.created_at).toLocaleDateString('cs-CZ', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        })}
-                            </p>
-                        </div>
-                    </div>
-                    <div style="display: flex; gap: 0.5rem; align-items: center;">
-                        <button class="btn btn--sm btn--glass" onclick="event.stopPropagation(); toggleFavorite('${escapeHtml(reading.id)}', this)" title="${reading.is_favorite ? 'Odebrat z oblíbených' : 'Přidat do oblíbených'}">
-                            ${reading.is_favorite ? '⭐' : '☆'}
-                        </button>
-                        <button class="btn btn--sm btn--glass" onclick="event.stopPropagation(); viewReading('${escapeHtml(reading.id)}')">Zobrazit</button>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-
-        return readings;
+        renderReadings();
+        return allReadings;
 
     } catch (error) {
         console.error('Error loading readings:', error);
-        container.innerHTML = `
-            <p class="text-center" style="opacity: 0.6;">
-                Nepodařilo se načíst historii. <a href="#" onclick="event.preventDefault(); location.reload();">Zkusit znovu</a>
-            </p>
-        `;
+        if (container) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state__icon">⚠️</div>
+                    <p class="empty-state__text">Nepodařilo se načíst historii.</p>
+                    <button class="btn btn--glass btn--sm" onclick="location.reload()">Zkusit znovu</button>
+                </div>
+            `;
+        }
         return [];
     }
 }
 
-// NEW: Load favorite readings
+function handleFilterChange(e) {
+    currentFilter = e.target.value;
+    displayedCount = 0;
+    renderReadings();
+}
+
+function getFilteredReadings() {
+    if (currentFilter === 'all') return allReadings;
+    return allReadings.filter(r => r.type === currentFilter);
+}
+
+function renderReadings() {
+    const container = document.getElementById('readings-list');
+    if (!container) return;
+
+    const filtered = getFilteredReadings();
+
+    if (filtered.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state__icon">🔮</div>
+                <h4 class="empty-state__title">${currentFilter === 'all' ? 'Zatím nemáte žádné výklady' : 'Žádné výklady tohoto typu'}</h4>
+                <p class="empty-state__text">${currentFilter === 'all' ? 'Vydejte se na cestu za poznáním hvězd!' : 'Zkuste jiný typ výkladu.'}</p>
+                ${currentFilter === 'all' ? `
+                    <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem;">
+                        <a href="tarot.html" class="btn btn--primary btn--sm">🃏 Tarot</a>
+                        <a href="kristalova-koule.html" class="btn btn--glass btn--sm">🔮 Křišťálová koule</a>
+                        <a href="horoskopy.html" class="btn btn--glass btn--sm">⭐ Horoskop</a>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+        updatePagination(0, 0);
+        return;
+    }
+
+    // Show paginated results
+    const toShow = filtered.slice(0, displayedCount + PAGE_SIZE);
+    displayedCount = toShow.length;
+
+    container.innerHTML = toShow.map(reading => `
+        <div class="reading-item card" onclick="viewReading('${escapeHtml(reading.id)}')">
+            <div class="reading-item__inner">
+                <div class="reading-item__left">
+                    <span class="reading-item__icon" aria-hidden="true">${getReadingIcon(reading.type)}</span>
+                    <div>
+                        <strong>${escapeHtml(getReadingTitle(reading.type))}</strong>
+                        <p class="reading-item__date">
+                            ${new Date(reading.created_at).toLocaleDateString('cs-CZ', {
+                                day: 'numeric', month: 'long', year: 'numeric',
+                                hour: '2-digit', minute: '2-digit'
+                            })}
+                        </p>
+                    </div>
+                </div>
+                <div class="reading-item__actions">
+                    <button class="btn btn--sm btn--glass" onclick="event.stopPropagation(); toggleFavorite('${escapeHtml(reading.id)}', this)"
+                        title="${reading.is_favorite ? 'Odebrat z oblíbených' : 'Přidat do oblíbených'}"
+                        aria-label="${reading.is_favorite ? 'Odebrat z oblíbených' : 'Přidat do oblíbených'}">
+                        ${reading.is_favorite ? '⭐' : '☆'}
+                    </button>
+                    <button class="btn btn--sm btn--glass" onclick="event.stopPropagation(); viewReading('${escapeHtml(reading.id)}')" aria-label="Zobrazit detail">Zobrazit</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+    updatePagination(displayedCount, filtered.length);
+}
+
+function showMoreReadings() {
+    renderReadings();
+}
+
+function updatePagination(shown, total) {
+    const paginationEl = document.getElementById('readings-pagination');
+    if (!paginationEl) return;
+
+    if (shown < total) {
+        paginationEl.style.display = 'block';
+        const btn = document.getElementById('readings-load-more');
+        if (btn) btn.textContent = `Načíst další (${total - shown} zbývá)`;
+    } else {
+        paginationEl.style.display = 'none';
+    }
+}
+
+// ==========================================
+// FAVORITES
+// ==========================================
 async function loadFavorites() {
     const container = document.getElementById('favorites-list');
     if (!container) return;
@@ -351,10 +497,8 @@ async function loadFavorites() {
     container.innerHTML = '<p style="text-align: center; opacity: 0.6;">Načítání...</p>';
 
     try {
-        const response = await fetch(`${window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api'}/user/readings`, {
-            headers: {
-                'Authorization': `Bearer ${window.Auth?.token}`
-            }
+        const response = await fetch(`${apiUrl()}/user/readings`, {
+            headers: authHeaders()
         });
 
         if (!response.ok) throw new Error('Failed to load readings');
@@ -364,34 +508,32 @@ async function loadFavorites() {
 
         if (favorites.length === 0) {
             container.innerHTML = `
-                <div class="empty-state" style="text-align: center; padding: 3rem 1rem;">
-                    <div style="font-size: 4rem; margin-bottom: 1rem;">⭐</div>
-                    <h4 style="margin-bottom: 0.5rem; color: var(--color-starlight);">Žádné oblíbené výklady</h4>
-                    <p style="opacity: 0.6;">Klikněte na ☆ u výkladu pro přidání do oblíbených</p>
+                <div class="empty-state">
+                    <div class="empty-state__icon">⭐</div>
+                    <h4 class="empty-state__title">Žádné oblíbené výklady</h4>
+                    <p class="empty-state__text">Klikněte na ☆ u výkladu pro přidání do oblíbených</p>
                 </div>
             `;
             return;
         }
 
         container.innerHTML = favorites.map(reading => `
-            <div class="reading-item card" style="margin-bottom: 1rem; padding: 1rem; cursor: pointer;" onclick="viewReading('${escapeHtml(reading.id)}')">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <span style="font-size: 2rem;">${getReadingIcon(reading.type)}</span>
+            <div class="reading-item card" onclick="viewReading('${escapeHtml(reading.id)}')">
+                <div class="reading-item__inner">
+                    <div class="reading-item__left">
+                        <span class="reading-item__icon" aria-hidden="true">${getReadingIcon(reading.type)}</span>
                         <div>
                             <strong>${escapeHtml(getReadingTitle(reading.type))}</strong>
-                            <p style="margin: 0.25rem 0 0; opacity: 0.7; font-size: 0.85rem;">
+                            <p class="reading-item__date">
                                 ${new Date(reading.created_at).toLocaleDateString('cs-CZ', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
-        })}
+                                    day: 'numeric', month: 'long', year: 'numeric'
+                                })}
                             </p>
                         </div>
                     </div>
-                    <div style="display: flex; gap: 0.5rem; align-items: center;">
-                        <button class="btn btn--sm btn--glass" onclick="event.stopPropagation(); toggleFavorite('${escapeHtml(reading.id)}', this)" title="Odebrat z oblíbených">⭐</button>
-                        <button class="btn btn--sm btn--glass" onclick="event.stopPropagation(); viewReading('${escapeHtml(reading.id)}')">Zobrazit</button>
+                    <div class="reading-item__actions">
+                        <button class="btn btn--sm btn--glass" onclick="event.stopPropagation(); toggleFavorite('${escapeHtml(reading.id)}', this)" title="Odebrat z oblíbených" aria-label="Odebrat z oblíbených">⭐</button>
+                        <button class="btn btn--sm btn--glass" onclick="event.stopPropagation(); viewReading('${escapeHtml(reading.id)}')" aria-label="Zobrazit detail">Zobrazit</button>
                     </div>
                 </div>
             </div>
@@ -399,57 +541,56 @@ async function loadFavorites() {
 
     } catch (error) {
         console.error('Error loading favorites:', error);
-        container.innerHTML = '<p style="text-align: center; opacity: 0.6;">Nepodařilo se načíst oblíbené.</p>';
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state__icon">⚠️</div>
+                <p class="empty-state__text">Nepodařilo se načíst oblíbené.</p>
+            </div>
+        `;
     }
 }
 
+// ==========================================
+// READING TYPES
+// ==========================================
 function getReadingIcon(type) {
     const icons = {
-        'tarot': '🃏',
-        'horoscope': '♈',
-        'natal': '🌌',
-        'natal-chart': '🌌',
-        'numerology': '🔢',
-        'synastry': '💕',
-        'crystal': '🔮',
-        'journal': '📖'
+        'tarot': '🃏', 'horoscope': '♈', 'natal': '🌌', 'natal-chart': '🌌',
+        'numerology': '🔢', 'synastry': '💕', 'crystal': '🔮', 'journal': '📖'
     };
     return icons[type] || '✨';
 }
 
 function getReadingTitle(type) {
     const titles = {
-        'tarot': 'Tarotový výklad',
-        'horoscope': 'Horoskop',
-        'natal': 'Natální karta',
-        'natal-chart': 'Natální karta',
-        'numerology': 'Numerologie',
-        'synastry': 'Partnerská shoda',
-        'crystal': 'Křišťálová koule',
-        'journal': 'Manifestační deník'
+        'tarot': 'Tarotový výklad', 'horoscope': 'Horoskop', 'natal': 'Natální karta',
+        'natal-chart': 'Natální karta', 'numerology': 'Numerologie',
+        'synastry': 'Partnerská shoda', 'crystal': 'Křišťálová koule', 'journal': 'Manifestační deník'
     };
     return titles[type] || 'Výklad';
 }
 
-// Current reading being viewed (for modal actions)
+// ==========================================
+// READING MODAL
+// ==========================================
 let currentReadingId = null;
 let currentReadingIsFavorite = false;
 
 async function viewReading(id) {
     const modal = document.getElementById('reading-modal');
     const content = document.getElementById('reading-modal-content');
-
     if (!modal || !content) return;
 
     currentReadingId = id;
     modal.style.display = 'flex';
     content.innerHTML = '<p style="text-align: center; opacity: 0.6;">Načítání...</p>';
 
+    // Trap focus inside modal
+    trapFocus(modal);
+
     try {
-        const response = await fetch(`${window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api'}/user/readings/${id}`, {
-            headers: {
-                'Authorization': `Bearer ${window.Auth?.token}`
-            }
+        const response = await fetch(`${apiUrl()}/user/readings/${id}`, {
+            headers: authHeaders()
         });
 
         if (!response.ok) throw new Error('Failed to fetch reading');
@@ -460,7 +601,6 @@ async function viewReading(id) {
         currentReadingIsFavorite = reading.is_favorite;
         updateFavoriteButton();
 
-        // Render reading content based on type
         content.innerHTML = renderReadingContent(reading);
 
     } catch (error) {
@@ -471,50 +611,40 @@ async function viewReading(id) {
 
 function renderReadingContent(reading) {
     const date = new Date(reading.created_at).toLocaleDateString('cs-CZ', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+        day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
     });
 
     let contentHtml = `
         <div style="text-align: center; margin-bottom: 1.5rem;">
-            <span style="font-size: 3rem;">${getReadingIcon(reading.type)}</span>
+            <span style="font-size: 3rem;" aria-hidden="true">${getReadingIcon(reading.type)}</span>
             <h2 style="margin: 0.5rem 0;">${escapeHtml(getReadingTitle(reading.type))}</h2>
             <p style="opacity: 0.6; font-size: 0.9rem;">${date}</p>
         </div>
         <div class="reading-content" style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 10px; max-height: 400px; overflow-y: auto;">
     `;
 
-    // Safely parse and display the reading data with null check
     const data = reading.data || {};
 
-    // Helper to get image path from card name
     function getTarotImageByName(name) {
         if (!name) return 'img/tarot/tarot_placeholder.webp';
-
-        // Transform "Čtyřka pentáklů" -> "ctyrka_pentaklu"
         const normalized = name.normalize('NFD')
             .replace(/[\u0300-\u036f]/g, '')
             .toLowerCase()
             .replace(/ /g, '_');
-
         return `img/tarot/tarot_${normalized}.webp`;
     }
 
     if (reading.type === 'tarot' && data.cards) {
         contentHtml += `<div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-bottom: 1.5rem;">`;
         data.cards.forEach(card => {
-            // Use dynamic mapping first, then fallback to saved image, then placeholder
             const imagePath = getTarotImageByName(card.name);
-
             contentHtml += `
                 <div style="text-align: center; width: 100px; display: flex; flex-direction: column; align-items: center;">
-                    <div style="position: relative; width: 80px; height: 120px; margin-bottom: 0.5rem; transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
-                         <img src="${escapeHtml(imagePath)}" 
-                              alt="${escapeHtml(card.name)}" 
-                              onerror="this.onerror=null;this.src='img/tarot/tarot_placeholder.webp';this.parentElement.style.border='1px solid rgba(255,255,255,0.1)';"
+                    <div style="position: relative; width: 80px; height: 120px; margin-bottom: 0.5rem;">
+                         <img src="${escapeHtml(imagePath)}"
+                              alt="${escapeHtml(card.name)}"
+                              loading="lazy"
+                              onerror="this.onerror=null;this.src='img/tarot/tarot_placeholder.webp';"
                               style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
                     </div>
                     <p style="font-size: 0.75rem; margin: 0; font-weight: 600; color: var(--color-mystic-gold); line-height: 1.2;">${escapeHtml(card.name)}</p>
@@ -559,7 +689,6 @@ function renderReadingContent(reading) {
             `;
         }
     } else if (data.answer) {
-        // Crystal Ball or generic Q&A format
         if (data.question) {
             contentHtml += `
                 <div style="margin-bottom: 1.5rem; padding: 1rem; border-left: 3px solid var(--color-mystic-gold); background: rgba(255,255,255,0.03);">
@@ -576,18 +705,14 @@ function renderReadingContent(reading) {
     } else if (data.interpretation || data.text || data.result) {
         let content = data.interpretation || data.text || data.result;
 
-        // Check if content looks like HTML (contains tags)
         if (typeof content === 'string' && /<[a-z][\s\S]*>/i.test(content)) {
-            // Sanitize: strip dangerous tags/attributes but keep formatting
             content = content.replace(/<\/?(?:html|head|body|script|iframe|object|embed|form|input|link|meta|style)[^>]*>/gi, '');
-            content = content.replace(/\s*on\w+\s*=\s*["'][^"']*["']/gi, ''); // Strip event handlers
+            content = content.replace(/\s*on\w+\s*=\s*["'][^"']*["']/gi, '');
             contentHtml += `<div class="formatted-content" style="line-height: 1.7; color: var(--color-starlight);">${content}</div>`;
         } else {
-            // It's plain text - escape it
             contentHtml += `<p style="line-height: 1.7;">${escapeHtml(content)}</p>`;
         }
     } else {
-        // Generic JSON display for unknown formats - escaped
         contentHtml += `<pre style="white-space: pre-wrap; font-size: 0.85rem;">${escapeHtml(JSON.stringify(data, null, 2))}</pre>`;
     }
 
@@ -599,12 +724,14 @@ function closeReadingModal() {
     const modal = document.getElementById('reading-modal');
     if (modal) modal.style.display = 'none';
     currentReadingId = null;
+    releaseFocus();
 }
 
 function updateFavoriteButton() {
     const btn = document.getElementById('modal-favorite-btn');
     if (btn) {
         btn.textContent = currentReadingIsFavorite ? '⭐ V oblíbených' : '☆ Přidat do oblíbených';
+        btn.setAttribute('aria-label', currentReadingIsFavorite ? 'Odebrat z oblíbených' : 'Přidat do oblíbených');
     }
 }
 
@@ -617,28 +744,27 @@ async function toggleFavoriteModal() {
 
 async function toggleFavorite(id, buttonEl = null) {
     try {
-        const response = await fetch(`${window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api'}/user/readings/${id}/favorite`, {
+        const response = await fetch(`${apiUrl()}/user/readings/${id}/favorite`, {
             method: 'PATCH',
-            headers: {
-                'Authorization': `Bearer ${window.Auth?.token}`
-            }
+            headers: authHeaders()
         });
 
         if (!response.ok) throw new Error('Failed to toggle favorite');
 
         const data = await response.json();
 
-        // Update button if provided
         if (buttonEl) {
             buttonEl.textContent = data.is_favorite ? '⭐' : '☆';
             buttonEl.title = data.is_favorite ? 'Odebrat z oblíbených' : 'Přidat do oblíbených';
+            buttonEl.setAttribute('aria-label', data.is_favorite ? 'Odebrat z oblíbených' : 'Přidat do oblíbených');
         }
 
-        // Refresh stats and favorites
-        const readings = await loadReadings();
-        updateStats(readings);
+        // Update local data and re-render
+        const reading = allReadings.find(r => r.id === id);
+        if (reading) reading.is_favorite = data.is_favorite;
+        updateStats(allReadings);
 
-        // Also refresh favorites tab if visible
+        // Refresh favorites tab if visible
         const favoritesTab = document.getElementById('tab-favorites');
         if (favoritesTab && favoritesTab.style.display !== 'none') {
             loadFavorites();
@@ -658,11 +784,9 @@ async function deleteReading() {
     }
 
     try {
-        const response = await fetch(`${window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api'}/user/readings/${currentReadingId}`, {
+        const response = await fetch(`${apiUrl()}/user/readings/${currentReadingId}`, {
             method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${window.Auth?.token}`
-            }
+            headers: authHeaders()
         });
 
         if (!response.ok) throw new Error('Failed to delete reading');
@@ -670,9 +794,11 @@ async function deleteReading() {
         closeReadingModal();
         window.Auth?.showToast?.('Smazáno', 'Výklad byl úspěšně smazán.', 'success');
 
-        // Refresh readings
-        const readings = await loadReadings();
-        updateStats(readings);
+        // Remove from local data and re-render without re-fetching
+        allReadings = allReadings.filter(r => r.id !== currentReadingId);
+        displayedCount = Math.max(0, displayedCount - 1);
+        renderReadings();
+        updateStats(allReadings);
 
     } catch (error) {
         console.error('Error deleting reading:', error);
@@ -680,28 +806,70 @@ async function deleteReading() {
     }
 }
 
-// Close modal on outside click
-document.addEventListener('click', (e) => {
-    const modal = document.getElementById('reading-modal');
-    if (e.target === modal) {
-        closeReadingModal();
+// ==========================================
+// FOCUS TRAP (Accessibility)
+// ==========================================
+let previousFocus = null;
+
+function trapFocus(modal) {
+    previousFocus = document.activeElement;
+    const closeBtn = modal.querySelector('.modal__close');
+    if (closeBtn) closeBtn.focus();
+}
+
+function releaseFocus() {
+    if (previousFocus) {
+        previousFocus.focus();
+        previousFocus = null;
     }
-});
+}
 
-// Bind Journal Button
-document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('journal-submit');
-    if (btn) btn.addEventListener('click', saveJournalEntry);
-});
-
+// ==========================================
+// SETTINGS
+// ==========================================
 async function saveSettings() {
     const saveBtn = document.getElementById('save-settings-btn');
     const newPassword = document.getElementById('settings-password').value;
+    const currentPassword = document.getElementById('settings-current-password')?.value || '';
 
     // Add loading state
     if (saveBtn) {
         saveBtn.classList.add('btn--loading');
         saveBtn.disabled = true;
+    }
+
+    // Validate password change
+    if (newPassword) {
+        if (!currentPassword) {
+            window.Auth?.showToast?.('Chyba', 'Pro změnu hesla vyplňte aktuální heslo.', 'error');
+            if (saveBtn) { saveBtn.classList.remove('btn--loading'); saveBtn.disabled = false; }
+            return;
+        }
+        if (newPassword.length < 8) {
+            window.Auth?.showToast?.('Chyba', 'Nové heslo musí mít alespoň 8 znaků.', 'error');
+            if (saveBtn) { saveBtn.classList.remove('btn--loading'); saveBtn.disabled = false; }
+            return;
+        }
+
+        try {
+            const res = await fetch(`${apiUrl()}/user/password`, {
+                method: 'PUT',
+                headers: authHeaders(true),
+                body: JSON.stringify({ currentPassword, password: newPassword })
+            });
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.error || 'Password update failed');
+            }
+            // Clear password fields on success
+            document.getElementById('settings-password').value = '';
+            document.getElementById('settings-current-password').value = '';
+        } catch (e) {
+            console.error(e);
+            window.Auth?.showToast?.('Chyba hesla', e.message || 'Heslo se nepodařilo změnit.', 'error');
+            if (saveBtn) { saveBtn.classList.remove('btn--loading'); saveBtn.disabled = false; }
+            return;
+        }
     }
 
     const data = {
@@ -711,58 +879,36 @@ async function saveSettings() {
         birth_place: document.getElementById('settings-birthplace').value
     };
 
-    if (newPassword) {
-        // Change password separately
-        try {
-            const res = await fetch(`${window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api'}/user/password`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${window.Auth?.token}`
-                },
-                body: JSON.stringify({ currentPassword: document.getElementById('settings-current-password')?.value || '', password: newPassword })
-            });
-            if (!res.ok) throw new Error('Password update failed');
-        } catch (e) {
-            console.error(e);
-            window.Auth?.showToast?.('Chyba hesla', 'Heslo se nepodařilo změnit (min. 6 znaků).', 'error');
-            // Re-enable button and return on password error
-            if (saveBtn) {
-                saveBtn.classList.remove('btn--loading');
-                saveBtn.disabled = false;
-            }
-            return;
-        }
-    }
-
     try {
-        const res = await fetch(`${window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api'}/auth/profile`, {
+        const res = await fetch(`${apiUrl()}/auth/profile`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${window.Auth?.token}`
-            },
+            headers: authHeaders(true),
             body: JSON.stringify(data)
         });
 
         if (res.ok) {
             const updatedUser = await res.json();
-            // Update local storage
+            // Update local storage and in-memory state (no page reload needed)
             let currentUser = {};
-            try { currentUser = JSON.parse(localStorage.getItem('auth_user') || '{}'); } catch (e) { /* corrupted data */ }
+            try { currentUser = JSON.parse(localStorage.getItem('auth_user') || '{}'); } catch (e) { /* corrupted */ }
             const newUser = { ...currentUser, ...updatedUser.user };
             localStorage.setItem('auth_user', JSON.stringify(newUser));
-            window.Auth.user = newUser; // Update in memory
+            if (window.Auth) window.Auth.user = newUser;
 
             window.Auth?.showToast?.('Uloženo', 'Profil byl úspěšně aktualizován.', 'success');
 
-            // Re-init biorhythms if date changed
-            if (data.birth_date) {
-                initBiorhythms(data.birth_date);
+            // Update greeting with new name
+            const greeting = document.getElementById('profile-greeting');
+            if (greeting) {
+                const displayName = newUser.first_name || newUser.email.split('@')[0];
+                greeting.textContent = `Vítejte zpět, ${displayName}! ✨`;
             }
 
-            // Reload page to refresh Auth user data (simplest way to sync)
-            setTimeout(() => location.reload(), 1500);
+            // Update zodiac sign
+            if (data.birth_date) {
+                showZodiacSign(data.birth_date);
+                initBiorhythms(data.birth_date);
+            }
         } else {
             throw new Error('Update failed');
         }
@@ -770,7 +916,6 @@ async function saveSettings() {
         console.error(e);
         window.Auth?.showToast?.('Chyba', 'Nepodařilo se uložit nastavení.', 'error');
     } finally {
-        // Remove loading state
         if (saveBtn) {
             saveBtn.classList.remove('btn--loading');
             saveBtn.disabled = false;
@@ -795,36 +940,28 @@ function initBiorhythms(birthDate) {
         if (!window._bioRetries) window._bioRetries = 0;
         if (window._bioRetries < 10) {
             window._bioRetries++;
-            console.log(`Waiting for Chart.js... attempt ${window._bioRetries}`);
             setTimeout(() => initBiorhythms(birthDate), 300);
             return;
         }
-        console.error('Chart.js failed to load after retries');
         container.innerHTML = `
             <h3 class="card-title">📉 Osobní Biorytmy</h3>
-            <p style="text-align: center; opacity: 0.6; padding: 2rem; color: #e74c3c;">
-                Nepodařilo se načíst knihovnu grafu. Zkuste obnovit stránku.
-            </p>
+            <div class="empty-state">
+                <div class="empty-state__icon">⚠️</div>
+                <p class="empty-state__text">Nepodařilo se načíst knihovnu grafu. Zkuste obnovit stránku.</p>
+            </div>
         `;
         return;
     }
     window._bioRetries = 0;
 
     try {
-        // Validate birth date
         const birth = new Date(birthDate);
-        if (isNaN(birth.getTime())) {
-            throw new Error('INVALID_DATE');
-        }
+        if (isNaN(birth.getTime())) throw new Error('INVALID_DATE');
 
         const today = new Date();
         const daysSinceBirth = Math.floor((today - birth) / (1000 * 60 * 60 * 24));
+        if (daysSinceBirth < 0) throw new Error('FUTURE_DATE');
 
-        if (daysSinceBirth < 0) {
-            throw new Error('FUTURE_DATE');
-        }
-
-        // Generate chart data for ±15 days
         const labels = [];
         const physical = [];
         const emotional = [];
@@ -840,13 +977,12 @@ function initBiorhythms(birthDate) {
                 labels.push(`${date.getDate()}.${date.getMonth() + 1}.`);
             }
 
-            // Biorhythm formulas (23, 28, 33 day cycles)
             physical.push(Math.sin(2 * Math.PI * days / 23) * 100);
             emotional.push(Math.sin(2 * Math.PI * days / 28) * 100);
             intellectual.push(Math.sin(2 * Math.PI * days / 33) * 100);
         }
 
-        // Ensure canvas element exists; recreate if missing (e.g. after error replaced innerHTML)
+        // Ensure canvas exists
         let canvas = document.getElementById('bio-canvas');
         if (!canvas) {
             container.innerHTML = `
@@ -859,7 +995,6 @@ function initBiorhythms(birthDate) {
 
         const ctx = canvas.getContext('2d');
 
-        // Destroy previous chart if exists
         if (window.biorhythmChart) {
             window.biorhythmChart.destroy();
             window.biorhythmChart = null;
@@ -875,94 +1010,60 @@ function initBiorhythms(birthDate) {
                         data: physical,
                         borderColor: '#e74c3c',
                         backgroundColor: 'rgba(231, 76, 60, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.4,
-                        fill: false
+                        borderWidth: 2, tension: 0.4, fill: false
                     },
                     {
                         label: '❤️ Emocionální',
                         data: emotional,
                         borderColor: '#3498db',
                         backgroundColor: 'rgba(52, 152, 219, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.4,
-                        fill: false
+                        borderWidth: 2, tension: 0.4, fill: false
                     },
                     {
                         label: '🧠 Intelektuální',
                         data: intellectual,
                         borderColor: '#2ecc71',
                         backgroundColor: 'rgba(46, 204, 113, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.4,
-                        fill: false
+                        borderWidth: 2, tension: 0.4, fill: false
                     }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: { duration: 600 },
+                animation: { duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 600 },
                 plugins: {
                     legend: {
                         display: true,
-                        labels: {
-                            color: '#fff',
-                            font: { size: 11 },
-                            usePointStyle: true
-                        }
+                        labels: { color: '#fff', font: { size: 11 }, usePointStyle: true }
                     },
                     tooltip: {
-                        mode: 'index',
-                        intersect: false,
+                        mode: 'index', intersect: false,
                         backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                        titleColor: '#d4af37',
-                        bodyColor: '#fff',
-                        borderColor: 'rgba(212, 175, 55, 0.3)',
-                        borderWidth: 1
+                        titleColor: '#d4af37', bodyColor: '#fff',
+                        borderColor: 'rgba(212, 175, 55, 0.3)', borderWidth: 1
                     }
                 },
                 scales: {
                     y: {
-                        min: -100,
-                        max: 100,
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)',
-                            drawBorder: false
-                        },
+                        min: -100, max: 100,
+                        grid: { color: 'rgba(255, 255, 255, 0.1)', drawBorder: false },
                         ticks: {
                             color: 'rgba(255, 255, 255, 0.6)',
                             font: { size: 10 },
-                            callback: function (value) {
-                                if (value === 0) return '0';
-                                if (value === 100) return '+100';
-                                if (value === -100) return '-100';
-                                return '';
-                            }
+                            callback: (value) => value === 0 ? '0' : value === 100 ? '+100' : value === -100 ? '-100' : ''
                         }
                     },
                     x: {
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.05)',
-                            drawBorder: false
-                        },
-                        ticks: {
-                            color: 'rgba(255, 255, 255, 0.6)',
-                            font: { size: 9 },
-                            maxRotation: 45,
-                            minRotation: 0
-                        }
+                        grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
+                        ticks: { color: 'rgba(255, 255, 255, 0.6)', font: { size: 9 }, maxRotation: 45, minRotation: 0 }
                     }
                 },
-                interaction: {
-                    mode: 'nearest',
-                    axis: 'x',
-                    intersect: false
-                }
+                interaction: { mode: 'nearest', axis: 'x', intersect: false }
             }
         });
 
-        // Add summary text
+        // Summary
         const summaryDiv = document.getElementById('bio-summary');
         if (summaryDiv) {
             const todayPhysical = physical[15];
@@ -977,11 +1078,11 @@ function initBiorhythms(birthDate) {
             };
 
             summaryDiv.innerHTML = `
-                <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 8px; font-size: 0.85rem;">
-                    <p style="margin: 0.25rem 0; opacity: 0.8;"><strong>Dnes:</strong></p>
-                    <p style="margin: 0.25rem 0;">💪 Fyzicky: ${getLevel(todayPhysical)}</p>
-                    <p style="margin: 0.25rem 0;">❤️ Emoce: ${getLevel(todayEmotional)}</p>
-                    <p style="margin: 0.25rem 0;">🧠 Intelekt: ${getLevel(todayIntellectual)}</p>
+                <div class="bio-summary-card">
+                    <p class="bio-summary-label"><strong>Dnes:</strong></p>
+                    <p>💪 Fyzicky: ${getLevel(todayPhysical)}</p>
+                    <p>❤️ Emoce: ${getLevel(todayEmotional)}</p>
+                    <p>🧠 Intelekt: ${getLevel(todayIntellectual)}</p>
                 </div>
             `;
         }
@@ -1000,38 +1101,42 @@ function initBiorhythms(birthDate) {
 
         container.innerHTML = `
             <h3 class="card-title">📉 Osobní Biorytmy</h3>
-            <p style="text-align: center; opacity: 0.6; padding: 2rem; color: #e74c3c;">
-                ${errorMessage}
-            </p>
+            <div class="empty-state">
+                <div class="empty-state__icon">⚠️</div>
+                <p class="empty-state__text">${errorMessage}</p>
+            </div>
         `;
     }
 }
 
 // ==========================================
-// MANIFESTATION JOURNAL LOGIC
+// MANIFESTATION JOURNAL
 // ==========================================
 async function loadJournal() {
     const list = document.getElementById('journal-entries');
     if (!list) return;
 
     try {
-        const response = await fetch(`${window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api'}/user/readings`, {
-            headers: { 'Authorization': `Bearer ${window.Auth?.token}` }
+        const response = await fetch(`${apiUrl()}/user/readings`, {
+            headers: authHeaders()
         });
         const data = await response.json();
         const entries = (data.readings || []).filter(r => r.type === 'journal');
 
         if (entries.length === 0) {
-            list.innerHTML = `<p style="opacity: 0.5; text-align: center;">Zatím žádné záznamy. Napište své první přání...</p>`;
+            list.innerHTML = `<p class="journal-empty">Zatím žádné záznamy. Napište své první přání...</p>`;
             return;
         }
 
-        list.innerHTML = entries.map(e => `
-            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; margin-bottom: 0.5rem; border-left: 3px solid var(--color-mystic-gold);">
-                <p style="font-size: 0.8rem; opacity: 0.6; margin-bottom: 0.3rem;">${new Date(e.created_at).toLocaleDateString()}</p>
-                <p style="font-style: italic;">"${escapeHtml(e.data.text)}"</p>
-            </div>
-        `).join('');
+        list.innerHTML = entries.map(e => {
+            const text = e.data?.text || '';
+            return `
+                <div class="journal-entry">
+                    <p class="journal-entry__date">${new Date(e.created_at).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                    <p class="journal-entry__text">"${escapeHtml(text)}"</p>
+                </div>
+            `;
+        }).join('');
 
     } catch (e) {
         console.error('Journal load error', e);
@@ -1050,33 +1155,27 @@ async function saveJournalEntry() {
         btn.disabled = true;
     }
 
-    // Animation Effect
-    input.style.transition = 'all 1s';
-    input.style.transform = 'scale(0.95)';
+    input.style.transition = 'all 0.5s';
+    input.style.transform = 'scale(0.98)';
     input.style.opacity = '0.5';
 
     try {
         const savedEntry = await window.Auth.saveReading('journal', { text });
-
         if (!savedEntry) throw new Error('Failed to save');
 
-        if (window.Auth && window.Auth.showToast) {
-            window.Auth.showToast('Odesláno', 'Vaše přání bylo vysláno do Vesmíru ✨', 'success');
-        }
+        window.Auth?.showToast?.('Odesláno', 'Vaše přání bylo vysláno do Vesmíru ✨', 'success');
 
-        // Optimistic UI Update (Immediate Feedback)
+        // Optimistic UI update
         const list = document.getElementById('journal-entries');
         if (list) {
-            const emptyState = list.querySelector('p');
-            if (emptyState && emptyState.textContent.includes('Zatím žádné záznamy')) {
-                list.innerHTML = '';
-            }
+            const emptyState = list.querySelector('.journal-empty');
+            if (emptyState) list.innerHTML = '';
 
             const newEntryHtml = `
-            <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; margin-bottom: 0.5rem; border-left: 3px solid var(--color-mystic-gold); animation: fadeIn 0.5s;">
-                <p style="font-size: 0.8rem; opacity: 0.6; margin-bottom: 0.3rem;">${new Date().toLocaleDateString('cs-CZ')}</p>
-                <p style="font-style: italic;">"${escapeHtml(text)}"</p>
-            </div>
+                <div class="journal-entry journal-entry--new">
+                    <p class="journal-entry__date">${new Date().toLocaleDateString('cs-CZ', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                    <p class="journal-entry__text">"${escapeHtml(text)}"</p>
+                </div>
             `;
             list.insertAdjacentHTML('afterbegin', newEntryHtml);
         }
@@ -1085,12 +1184,13 @@ async function saveJournalEntry() {
         input.style.transform = 'scale(1)';
         input.style.opacity = '1';
 
-        // Background refresh to be sure
-        setTimeout(loadJournal, 1000);
+        setTimeout(loadJournal, 1500);
 
     } catch (e) {
         console.error(e);
         window.Auth?.showToast?.('Chyba', 'Nepodařilo se uložit záznam.', 'error');
+        input.style.transform = 'scale(1)';
+        input.style.opacity = '1';
     } finally {
         if (btn) {
             btn.innerHTML = '✨ Vyslat přání';
@@ -1098,4 +1198,3 @@ async function saveJournalEntry() {
         }
     }
 }
-// Duplicate journal binding removed (already bound above)
