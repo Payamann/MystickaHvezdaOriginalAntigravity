@@ -66,8 +66,9 @@ async function initProfile() {
         const planEl = document.getElementById('user-plan');
         if (planEl) planEl.textContent = formatPlan(user.subscription_status);
 
-        const creditsEl = document.getElementById('user-credits');
-        if (creditsEl) creditsEl.textContent = `${user.credits ?? '∞'} kreditů`;
+        // Credits removed
+        // const creditsEl = document.getElementById('user-credits');
+        // if (creditsEl) creditsEl.textContent = `${user.credits ?? '∞'} kreditů`;
 
         const settingsEmail = document.getElementById('settings-email');
         if (settingsEmail) settingsEmail.value = user.email;
@@ -936,9 +937,26 @@ function initBiorhythms(birthDate) {
 
     } catch (error) {
         console.error('Error initializing biorhythms:', error);
+
+        let errorMessage = 'Nepodařilo se načíst biorytmy.';
+
+        if (error instanceof ReferenceError && error.message.includes('Chart')) {
+            errorMessage += ' (Chyba načítání grafu)';
+            // Retry mechanism if Chart is not loaded yet
+            if (!window.chartRetries) window.chartRetries = 0;
+            if (window.chartRetries < 3) {
+                window.chartRetries++;
+                console.log('Retrying biorhythm init in 500ms...');
+                setTimeout(() => initBiorhythms(birthDate), 500);
+                return;
+            }
+        } else {
+            errorMessage += ' Ujistěte se, že máte vyplněné datum narození.';
+        }
+
         container.innerHTML = `
-            <p style="text-align: center; opacity: 0.6; padding: 2rem;">
-                Nepodařilo se načíst biorytmy. Ujistěte se, že máte vyplněné datum narození.
+            <p style="text-align: center; opacity: 0.6; padding: 2rem; color: #e74c3c;">
+                ${errorMessage}
             </p>
         `;
     }
