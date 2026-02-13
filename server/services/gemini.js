@@ -1,6 +1,6 @@
 // Native fetch is used in Node 18+
 
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent';
 const REQUEST_TIMEOUT_MS = 30000; // 30 second timeout
 const MAX_RETRIES = 2;
 
