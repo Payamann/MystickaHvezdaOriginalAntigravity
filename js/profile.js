@@ -938,26 +938,13 @@ function initBiorhythms(birthDate) {
     } catch (error) {
         console.error('Error initializing biorhythms:', error);
 
-        let errorMessage = 'Nepodařilo se načíst biorytmy.';
-
-        if (error instanceof ReferenceError && error.message.includes('Chart')) {
-            errorMessage += ' (Chyba načítání grafu)';
-            // Retry mechanism if Chart is not loaded yet
-            if (!window.chartRetries) window.chartRetries = 0;
-            if (window.chartRetries < 3) {
-                window.chartRetries++;
-                console.log('Retrying biorhythm init in 500ms...');
-                setTimeout(() => initBiorhythms(birthDate), 500);
-                return;
-            }
-        } else {
-            errorMessage += ' Ujistěte se, že máte vyplněné datum narození.';
-        }
-
         container.innerHTML = `
-            <p style="text-align: center; opacity: 0.6; padding: 2rem; color: #e74c3c;">
-                ${errorMessage}
-            </p>
+            <div style="text-align: center; padding: 2rem; color: #e74c3c;">
+                <p>Nepodařilo se načíst biorytmy.</p>
+                <p style="font-size: 0.8em; margin-top: 0.5rem; color: #aaa;">Chyba: ${error.message}</p>
+                 <p style="font-size: 0.8em; color: #aaa;">Typ chyby: ${error.name}</p>
+                <p style="font-size: 0.8em; color: #aaa;">Datum narození: "${birthDate}"</p>
+            </div>
         `;
     }
 }
@@ -977,7 +964,11 @@ async function loadJournal() {
         const entries = (data.readings || []).filter(r => r.type === 'journal');
 
         if (entries.length === 0) {
-            list.innerHTML = `<p style="opacity: 0.5; text-align: center;">Zatím žádné záznamy. Napište své první přání...</p>`;
+            list.innerHTML = `<p style="opacity: 0.5; text-align: center;">Zatím žádné záznamy. Napište své první přání...</p>
+            <!-- Debug Info -->
+            <p style="font-size: 0.7rem; color: #666; text-align: center; margin-top: 1rem;">
+                (Debug: Loaded ${data.readings?.length || 0} readings, ${entries.length} journal entries)
+            </p>`;
             return;
         }
 
