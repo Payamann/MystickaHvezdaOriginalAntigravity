@@ -72,4 +72,49 @@ router.post('/subscribe', newsletterLimiter, async (req, res) => {
     }
 });
 
+// POST /unsubscribe (GDPR compliance)
+router.post('/unsubscribe', async (req, res) => {
+    let { email } = req.body;
+
+    if (!email || !isValidEmail(email)) {
+        return res.status(400).json({
+            success: false,
+            error: 'Zadejte prosím platnou emailovou adresu.'
+        });
+    }
+
+    email = email.trim().toLowerCase();
+
+    try {
+        const { data, error } = await supabase
+            .from('newsletter_subscribers')
+            .update({ is_active: false })
+            .eq('email', email)
+            .select();
+
+        if (error) {
+            throw error;
+        }
+
+        if (!data || data.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'Email nebyl nalezen v databázi odběratelů.'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Úspěšně odhlášeno z odběru newsletteru.'
+        });
+
+    } catch (e) {
+        console.error('Newsletter Unsubscribe Error:', e);
+        res.status(500).json({
+            success: false,
+            error: 'Omlouváme se, došlo k chybě serveru. Zkuste to prosím později.'
+        });
+    }
+});
+
 export default router;

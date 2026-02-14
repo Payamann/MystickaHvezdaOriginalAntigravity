@@ -13,6 +13,7 @@ import Stripe from 'stripe';
 // Auth & DB
 import authRoutes from './auth.js';
 import newsletterRoutes from './newsletter.js';
+import contactRoutes from './contact.js';
 import paymentRoutes, { handleStripeWebhook } from './payment.js';
 import mentorRoutes from './mentor.js';
 import adminRoutes from './admin.js';
@@ -84,10 +85,7 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// AI-generation endpoints - expensive, limit more aggressively
 // AI-generation endpoints - expensive, limit abuse
-const aiLimiter = (req, res, next) => next(); // TEMPORARILY DISABLED - PASS THROUGH
-/*
 const aiLimiter = rateLimit({
     windowMs: 24 * 60 * 60 * 1000, // 24 hours
     max: 50, // 50 AI requests per IP per day (approx 2/hour avg)
@@ -95,17 +93,15 @@ const aiLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
 });
-*/
 
 // Sensitive account operations - strict limit (Brute force protection)
-const sensitiveOpLimiter = (req, res, next) => next(); // TEMPORARILY DISABLED
-/*
 const sensitiveOpLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
     max: 10, // 10 attempts per hour
-    //...
+    message: { error: 'Příliš mnoho pokusů. Zkuste to prosím později.' },
+    standardHeaders: true,
+    legacyHeaders: false,
 });
-*/
 
 // Gzip Compression
 app.use(compression());
@@ -164,8 +160,10 @@ app.use('/js', express.static(path.join(rootDir, 'js'), {
     }
 }));
 
+
 app.use('/api/auth', authRoutes);
 app.use('/api/newsletter', newsletterRoutes);
+app.use('/api/contact', contactRoutes);
 app.use('/api/mentor', mentorRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/admin', adminRoutes);
@@ -341,6 +339,12 @@ app.post('/api/synastry', authenticateToken, aiLimiter, async (req, res) => {
         const { person1, person2 } = req.body;
         const userId = req.user.id;
 
+        // Sanitize inputs
+        const safeName1 = String(person1?.name || '').substring(0, 100);
+        const safeDate1 = String(person1?.birthDate || '').substring(0, 30);
+        const safeName2 = String(person2?.name || '').substring(0, 100);
+        const safeDate2 = String(person2?.birthDate || '').substring(0, 30);
+
         // Check premium status
         const userIsPremium = await isPremiumUser(userId);
 
@@ -357,7 +361,7 @@ app.post('/api/synastry', authenticateToken, aiLimiter, async (req, res) => {
         }
 
         // Premium Logic (Full Analysis)
-        const message = `Osoba A: ${person1.name}, narozena ${person1.birthDate}\nOsoba B: ${person2.name}, narozena ${person2.birthDate}`;
+        const message = `Osoba A: ${safeName1}, narozena ${safeDate1}\nOsoba B: ${safeName2}, narozena ${safeDate2}`;
         const response = await callGemini(SYSTEM_PROMPTS.synastry, message);
 
         res.json({ success: true, response, isTeaser: false });

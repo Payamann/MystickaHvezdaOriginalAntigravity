@@ -254,6 +254,42 @@ router.post('/forgot-password', authLimiter, async (req, res) => {
     }
 });
 
+// Reset Password - update password with reset token
+router.post('/reset-password', async (req, res) => {
+    const { password } = req.body;
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ error: 'Chybí autorizační token.' });
+    }
+
+    if (!password || password.length < 8) {
+        return res.status(400).json({ error: 'Heslo musí mít alespoň 8 znaků.' });
+    }
+
+    try {
+        // Update password using Supabase Auth
+        const { data, error } = await supabase.auth.updateUser(
+            { password },
+            { accessToken: token }
+        );
+
+        if (error) {
+            console.error('Reset password error:', error);
+            return res.status(400).json({ error: 'Nepodařilo se obnovit heslo. Odkaz může být neplatný nebo vypršel.' });
+        }
+
+        res.json({
+            success: true,
+            message: 'Heslo bylo úspěšně změněno.'
+        });
+    } catch (e) {
+        console.error('Reset Password Error:', e);
+        res.status(500).json({ error: 'Chyba při obnově hesla.' });
+    }
+});
+
 // Get User Profile
 router.get('/profile', async (req, res) => {
     const authHeader = req.headers['authorization'];
