@@ -126,6 +126,60 @@ export const requirePremiumSoft = async (req, res, next) => {
 };
 
 /**
+ * OPTIONAL Premium Check - Allows anonymous access but checks premium if logged in
+ * Use for endpoints that should work without login but have premium features
+ */
+export const optionalPremiumCheck = async (req, res, next) => {
+    // Try to extract token, but don't fail if missing
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.split(' ')[1];
+
+    if (!token) {
+        // No token = treat as free tier
+        req.isPremium = false;
+        req.isLimited = true;
+        req.user = null;
+        return next();
+    }
+
+    // Token exists - verify and check premium status
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        req.user = { id: decoded.userId, email: decoded.email };
+
+        // Check subscription status
+        const { data: subscription } = await supabase
+            .from('subscriptions')
+            .select('plan_type, status, current_period_end')
+            .eq('user_id', decoded.userId)
+            .single();
+
+        if (!subscription) {
+            req.isPremium = false;
+            req.isLimited = true;
+            return next();
+        }
+
+        const isActive = subscription.status === 'active' || subscription.status === 'trialing' || subscription.status === 'cancel_pending';
+        const notExpired = new Date(subscription.current_period_end) > new Date();
+        const isPremium = PREMIUM_PLAN_TYPES.includes(subscription.plan_type);
+
+        req.isPremium = isActive && notExpired && isPremium;
+        req.isLimited = !req.isPremium;
+        req.subscription = subscription;
+
+        next();
+    } catch (error) {
+        // Invalid token = treat as free tier (don't block request)
+        console.warn('Optional premium check - invalid token:', error.message);
+        req.isPremium = false;
+        req.isLimited = true;
+        req.user = null;
+        next();
+    }
+};
+
+/**
  * Track paywall hits for analytics
  */
 export const trackPaywallHit = async (userId, feature) => {

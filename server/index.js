@@ -16,7 +16,7 @@ import newsletterRoutes from './newsletter.js';
 import paymentRoutes, { handleStripeWebhook } from './payment.js';
 import mentorRoutes from './mentor.js';
 import adminRoutes from './admin.js';
-import { authenticateToken, requirePremium, requirePremiumSoft } from './middleware.js';
+import { authenticateToken, requirePremium, requirePremiumSoft, optionalPremiumCheck } from './middleware.js';
 import { SYSTEM_PROMPTS } from './config/prompts.js';
 import { calculateMoonPhase, getHoroscopeCacheKey, getCachedHoroscope, saveCachedHoroscope } from './services/astrology.js';
 
@@ -181,12 +181,51 @@ import crypto from 'crypto';
 // ============================================
 
 // Crystal Ball Oracle
-app.post('/api/crystal-ball', aiLimiter, async (req, res) => {
+app.post('/api/crystal-ball', optionalPremiumCheck, aiLimiter, async (req, res) => {
     try {
         const { question, history = [] } = req.body;
 
         if (!question || typeof question !== 'string' || question.length > 1000) {
             return res.status(400).json({ success: false, error: 'Otázka je povinná (max 1000 znaků).' });
+        }
+
+        // PREMIUM GATE: Free users limited to 3 questions per day
+        if (!req.isPremium) {
+            const identifier = req.user?.id || req.ip || 'anonymous';
+            const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+            const cacheKey = `crystal_ball_limit_${identifier}_${today}`;
+
+            try {
+                // Check existing count in a simple way (using Supabase or in-memory cache)
+                // For now, we'll use a simple query to count today's questions
+                let count = 0;
+
+                if (req.user?.id) {
+                    // For logged-in users, count from readings table
+                    const { data, error } = await supabase
+                        .from('readings')
+                        .select('id', { count: 'exact', head: true })
+                        .eq('user_id', req.user.id)
+                        .eq('type', 'crystal-ball')
+                        .gte('created_at', `${today}T00:00:00`);
+
+                    count = data?.length || 0;
+                }
+                // Note: IP-based limiting would require a separate tracking table
+                // For MVP, we'll only enforce for logged-in free users
+
+                if (count >= 3) {
+                    return res.status(402).json({
+                        success: false,
+                        error: 'Denní limit 3 otázek byl vyčerpán. Upgrade na Premium pro neomezený přístup.',
+                        code: 'PREMIUM_REQUIRED',
+                        feature: 'crystal_ball_unlimited'
+                    });
+                }
+            } catch (limitError) {
+                console.warn('Crystal Ball limit check failed:', limitError);
+                // Continue on error to avoid blocking users
+            }
         }
 
         // Limit history to prevent abuse
@@ -263,7 +302,7 @@ app.post('/api/tarot-summary', authenticateToken, aiLimiter, async (req, res) =>
 });
 
 // Natal Chart Analysis
-app.post('/api/natal-chart', aiLimiter, async (req, res) => {
+app.post('/api/natal-chart', optionalPremiumCheck, aiLimiter, async (req, res) => {
     try {
         const { birthDate, birthTime, birthPlace, name } = req.body;
 
@@ -271,6 +310,17 @@ app.post('/api/natal-chart', aiLimiter, async (req, res) => {
             return res.status(400).json({ success: false, error: 'Datum narození je povinné.' });
         }
 
+        // PREMIUM GATE: Free users get teaser (no AI interpretation)
+        if (!req.isPremium) {
+            return res.json({
+                success: true,
+                isTeaser: true,
+                response: null, // No AI interpretation
+                message: 'Detailní interpretace natální karty je dostupná pouze pro Premium uživatele.'
+            });
+        }
+
+        // Premium users get full AI analysis
         const safeName = String(name || 'Tazatel').substring(0, 100);
         const safeBirthDate = String(birthDate).substring(0, 30);
         const safeBirthTime = String(birthTime || '').substring(0, 20);
@@ -278,7 +328,7 @@ app.post('/api/natal-chart', aiLimiter, async (req, res) => {
         const message = `Jméno: ${safeName}\\nDatum narození: ${safeBirthDate}\\nČas narození: ${safeBirthTime}\\nMísto narození: ${safeBirthPlace}`;
 
         const response = await callGemini(SYSTEM_PROMPTS.natalChart, message);
-        res.json({ success: true, response });
+        res.json({ success: true, response, isTeaser: false });
     } catch (error) {
         console.error('Natal Chart Error:', error);
         res.status(500).json({ success: false, error: 'Hvězdy nejsou v tuto chvíli čitelné...' });
@@ -321,7 +371,7 @@ app.post('/api/synastry', authenticateToken, aiLimiter, async (req, res) => {
 const VALID_ZODIAC_SIGNS = ['Beran', 'Býk', 'Blíženci', 'Rak', 'Lev', 'Panna', 'Váhy', 'Štír', 'Střelec', 'Kozoroh', 'Vodnář', 'Ryby'];
 
 // Horoscope (Daily, Weekly, Monthly) - WITH DATABASE CACHING
-app.post('/api/horoscope', aiLimiter, async (req, res) => {
+app.post('/api/horoscope', optionalPremiumCheck, aiLimiter, async (req, res) => {
     try {
         const { sign, period = 'daily', context = [] } = req.body;
 
@@ -331,6 +381,16 @@ app.post('/api/horoscope', aiLimiter, async (req, res) => {
 
         if (!['daily', 'weekly', 'monthly'].includes(period)) {
             return res.status(400).json({ success: false, error: 'Neplatné období.' });
+        }
+
+        // PREMIUM GATE: Free users can only access daily horoscope
+        if (!req.isPremium && period !== 'daily') {
+            return res.status(402).json({
+                success: false,
+                error: 'Týdenní a měsíční horoskopy jsou dostupné pouze pro Premium uživatele.',
+                code: 'PREMIUM_REQUIRED',
+                feature: 'horoscope_extended'
+            });
         }
 
         // Generate cache key (include context hash to avoid stale cache if context changes)
@@ -523,7 +583,7 @@ Vytvoř komplexní interpretaci tohoto numerologického profilu.${birthTime ? ' 
 });
 
 // Astrocartography (requires auth)
-app.post('/api/astrocartography', authenticateToken, async (req, res) => {
+app.post('/api/astrocartography', authenticateToken, requirePremium, async (req, res) => {
     try {
         const { birthDate, birthTime, birthPlace, name, intention = 'obecný' } = req.body;
 

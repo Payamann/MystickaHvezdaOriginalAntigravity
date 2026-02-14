@@ -32,10 +32,10 @@ const PLANS = {
         interval: 'month'
     },
     'osviceni': {
-        name: 'Osviceni (Rocni)',
-        price: 119000, // 1190 CZK in halere
-        type: 'premium_yearly',
-        interval: 'year'
+        name: 'Osviceni (Mesicni)',
+        price: 49900, // 499 Kč in haléře
+        type: 'exclusive_monthly',
+        interval: 'month'
     }
 };
 

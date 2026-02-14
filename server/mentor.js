@@ -23,6 +23,31 @@ router.post('/chat', authenticateToken, requirePremiumSoft, async (req, res) => 
             return res.status(400).json({ error: 'Zpráva je příliš dlouhá (max 2000 znaků).' });
         }
 
+        // PREMIUM GATE: Free users limited to 3 messages per day
+        if (!req.isPremium) {
+            const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+
+            const { data: todayMessages, error: countError } = await supabase
+                .from('mentor_messages')
+                .select('id', { count: 'exact', head: true })
+                .eq('user_id', userId)
+                .eq('role', 'user') // Only count user messages, not AI responses
+                .gte('created_at', `${today}T00:00:00`);
+
+            if (countError) {
+                console.error('Mentor message count error:', countError);
+            } else {
+                const messageCount = todayMessages?.length || 0;
+                if (messageCount >= 3) {
+                    return res.status(402).json({
+                        error: 'Denní limit 3 zpráv byl vyčerpán. Upgrade na Premium pro neomezený přístup.',
+                        code: 'PREMIUM_REQUIRED',
+                        feature: 'mentor_unlimited'
+                    });
+                }
+            }
+        }
+
         // Sanitize: strip control characters that could be used for prompt injection
         const sanitizedMessage = message
             .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
