@@ -1889,6 +1889,17 @@ body.page-mentor .header {
     --text-4xl: 1.5rem;
   }
 
+  /* ===== MOBILE BACKGROUND ===== */
+  body {
+    background-image: url('../img/bg-cosmic-mobile.webp');
+  }
+
+  /* Disable aurora overlays on mobile for clarity */
+  body::before,
+  body::after {
+    display: none;
+  }
+
   /* ===== GLOBAL MOBILE SAFETY ===== */
   .container {
     padding-left: 16px;
@@ -1898,6 +1909,18 @@ body.page-mentor .header {
 
   .section {
     padding: var(--space-xl) 0;
+    text-align: center;
+  }
+
+  /* Center hero--mini sections on mobile */
+  .hero--mini {
+    text-align: center;
+    padding-top: 120px;
+  }
+
+  /* Center section titles on mobile */
+  .section__title {
+    text-align: center;
   }
 
   /* ===== MOBILE HEADER ===== */
