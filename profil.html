@@ -41,7 +41,7 @@
 
 
 
-    <script src="js/profile.js?v=10" defer></script>
+    <script type="module" src="js/profile/dashboard.js?v=10" defer></script>
 </head>
 
 <body>
@@ -76,7 +76,8 @@
                     <div class="card glass-card profile-user-card" style="margin-bottom: 2rem;">
                         <div class="profile-user-info">
                             <div class="profile-user-left">
-                                <button id="user-avatar" class="profile-avatar" aria-label="Změnit avatar" title="Klikněte pro změnu avataru">👤</button>
+                                <button id="user-avatar" class="profile-avatar" aria-label="Změnit avatar"
+                                    title="Klikněte pro změnu avataru">👤</button>
                                 <div class="profile-user-details">
                                     <h2 class="profile-user-email"><span id="user-email">-</span></h2>
                                     <p class="profile-user-plan">
@@ -169,15 +170,18 @@
 
                     <!-- Tabs -->
                     <div class="profile-tabs" role="tablist" aria-label="Sekce profilu">
-                        <button class="profile-tab active" role="tab" id="tab-btn-history" data-tab="history" aria-selected="true" aria-controls="tab-history">
+                        <button class="profile-tab active" role="tab" id="tab-btn-history" data-tab="history"
+                            aria-selected="true" aria-controls="tab-history">
                             <span class="profile-tab-icon" aria-hidden="true">📜</span>
                             <span class="profile-tab-label">Historie výkladů</span>
                         </button>
-                        <button class="profile-tab" role="tab" id="tab-btn-favorites" data-tab="favorites" aria-selected="false" aria-controls="tab-favorites">
+                        <button class="profile-tab" role="tab" id="tab-btn-favorites" data-tab="favorites"
+                            aria-selected="false" aria-controls="tab-favorites">
                             <span class="profile-tab-icon" aria-hidden="true">⭐</span>
                             <span class="profile-tab-label">Oblíbené</span>
                         </button>
-                        <button class="profile-tab" role="tab" id="tab-btn-settings" data-tab="settings" aria-selected="false" aria-controls="tab-settings">
+                        <button class="profile-tab" role="tab" id="tab-btn-settings" data-tab="settings"
+                            aria-selected="false" aria-controls="tab-settings">
                             <span class="profile-tab-icon" aria-hidden="true">⚙️</span>
                             <span class="profile-tab-label">Nastavení</span>
                         </button>
@@ -188,7 +192,8 @@
                         <div class="card glass-card">
                             <div class="readings-header">
                                 <h3>Vaše poslední výklady</h3>
-                                <select id="readings-filter" class="form-input readings-filter" aria-label="Filtrovat podle typu">
+                                <select id="readings-filter" class="form-input readings-filter"
+                                    aria-label="Filtrovat podle typu">
                                     <option value="all">Vše</option>
                                     <option value="tarot">🃏 Tarot</option>
                                     <option value="horoscope">♈ Horoskop</option>
@@ -208,7 +213,8 @@
                     </div>
 
                     <!-- Favorites Tab -->
-                    <div class="tab-content" id="tab-favorites" style="display: none;" role="tabpanel" aria-labelledby="tab-btn-favorites">
+                    <div class="tab-content" id="tab-favorites" style="display: none;" role="tabpanel"
+                        aria-labelledby="tab-btn-favorites">
                         <div class="card glass-card">
                             <h3>Uložené výklady</h3>
                             <div id="favorites-list">
@@ -222,7 +228,8 @@
                     </div>
 
                     <!-- Settings Tab -->
-                    <div class="tab-content" id="tab-settings" style="display: none;" role="tabpanel" aria-labelledby="tab-btn-settings">
+                    <div class="tab-content" id="tab-settings" style="display: none;" role="tabpanel"
+                        aria-labelledby="tab-btn-settings">
                         <div class="card glass-card">
                             <h3>Nastavení účtu</h3>
                             <div class="settings-form">
@@ -291,7 +298,8 @@
             <div class="reading-modal__actions">
                 <button id="modal-favorite-btn" class="btn btn--secondary btn--sm" aria-label="Přidat do oblíbených">⭐
                     Přidat do oblíbených</button>
-                <button id="modal-delete-btn" class="btn btn--sm btn--danger" aria-label="Smazat výklad">🗑️ Smazat</button>
+                <button id="modal-delete-btn" class="btn btn--sm btn--danger" aria-label="Smazat výklad">🗑️
+                    Smazat</button>
             </div>
         </div>
     </div>
