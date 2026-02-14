@@ -1891,7 +1891,11 @@ body.page-mentor .header {
 
   /* ===== MOBILE BACKGROUND ===== */
   body {
-    background-image: url('../img/bg-cosmic-mobile.webp');
+    background-image: url('../img/bg-cosmic-hd.webp');
+    background-size: cover;
+    background-position: center top;
+    image-rendering: auto;
+    -webkit-image-rendering: auto;
   }
 
   /* Disable aurora overlays on mobile for clarity */
@@ -1956,7 +1960,9 @@ body.page-mentor .header {
   }
 
   .logo__text {
-    display: none;
+    display: inline;
+    font-size: 0.8rem;
+    white-space: nowrap;
   }
 
   /* Hide desktop auth buttons on mobile */
