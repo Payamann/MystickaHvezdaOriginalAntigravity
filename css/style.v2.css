@@ -1889,17 +1889,33 @@ body.page-mentor .header {
     --text-4xl: 1.5rem;
   }
 
-  /* ===== MOBILE BACKGROUND ===== */
+  /* ===== MOBILE BACKGROUND FIX =====
+     On mobile, background-attachment:scroll + background-size:cover
+     stretches the image over the ENTIRE body scroll height (5000+px),
+     causing extreme blurriness. Fix: remove body bg, use a fixed
+     pseudo-element that only covers the viewport. */
   body {
-    background-image: url('../img/bg-cosmic-hd.webp');
-    background-size: cover;
-    background-position: center top;
-    image-rendering: auto;
-    -webkit-image-rendering: auto;
+    background-image: none !important;
+    background-attachment: scroll;
   }
 
-  /* Disable aurora overlays on mobile for clarity */
-  body::before,
+  /* Fixed viewport-size background via pseudo-element */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../img/bg-cosmic-hd.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -10;
+    pointer-events: none;
+  }
+
+  /* Disable aurora overlay on mobile */
   body::after {
     display: none;
   }
