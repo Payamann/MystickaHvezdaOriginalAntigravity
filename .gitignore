@@ -23,6 +23,8 @@ Thumbs.db
 *.log
 debug.log
 npm-debug.log*
+*.sqlite
+*.db
 
 # Temporary
 temp_*/
