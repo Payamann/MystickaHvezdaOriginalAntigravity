@@ -153,5 +153,6 @@ async function generateAll() {
     console.log('✨ All cards generated!');
 }
 
-generateAll();
+// generateAll();
+listModels();
 

@@ -45,9 +45,14 @@ async function run() {
     }
 
     // 3. User Readings (DB Access)
-    await measure('Fetch Readings (DB)', () => fetch(`${BASE_URL}/api/user/readings?limit=5`, {
+    const readingsRes = await measure('Fetch Readings (DB)', () => fetch(`${BASE_URL}/api/user/readings?limit=5`, {
         headers: { 'Authorization': `Bearer ${token}` }
     }));
+
+    if (readingsRes.ok) {
+        const rData = await readingsRes.json();
+        console.log(`📚 Found ${rData.readings?.length || 0} readings`);
+    }
 
     // 4. Horoscope (AI + Cache)
     // We use a random sign to maybe trigger a cache miss/hit logic or just check general speed
