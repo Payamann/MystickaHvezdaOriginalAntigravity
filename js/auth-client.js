@@ -191,48 +191,53 @@
         },
 
         updateUI() {
-            // Debug Phase: Check if elements exist
+            // Desktop auth buttons
             const authBtn = document.getElementById('auth-btn');
             const regBtn = document.getElementById('auth-register-btn');
             const profileLink = document.getElementById('profile-link');
 
-            console.log('Auth.updateUI running. LoggedIn:', this.isLoggedIn());
-            console.log('Elements found:', {
-                authBtn: !!authBtn,
-                regBtn: !!regBtn,
-                profileLink: !!profileLink
-            });
+            // Mobile auth buttons (inside hamburger menu)
+            const mobileAuthBtn = document.getElementById('mobile-auth-btn');
+            const mobileRegBtn = document.getElementById('mobile-auth-register-btn');
+            const mobileProfileLink = document.getElementById('mobile-profile-link');
 
-            if (!authBtn) return;
+            if (!authBtn && !mobileAuthBtn) return;
 
             if (this.isLoggedIn()) {
-                authBtn.textContent = 'Odhlásit';
-                authBtn.onclick = (e) => { e.preventDefault(); this.logout(); };
-
-                // Hide register button when logged in
-                if (regBtn) {
-                    regBtn.style.display = 'none';
-                    console.log('Hiding register button');
-                } else {
-                    console.warn('Register button not found during updateUI (LoggedIn)');
+                // Desktop
+                if (authBtn) {
+                    authBtn.textContent = 'Odhlásit';
+                    authBtn.onclick = (e) => { e.preventDefault(); this.logout(); };
+                    if (this.isPremium()) {
+                        authBtn.innerHTML = `Odhlásit <span style="font-size:0.8em; color:gold;">(Premium)</span>`;
+                    }
                 }
-
+                if (regBtn) regBtn.style.display = 'none';
                 if (profileLink) profileLink.style.display = 'inline-flex';
 
-                // Add premium badge if needed
-                if (this.isPremium()) {
-                    authBtn.innerHTML = `Odhlásit <span style="font-size:0.8em; color:gold;">(Premium)</span>`;
+                // Mobile
+                if (mobileAuthBtn) {
+                    mobileAuthBtn.textContent = 'Odhlásit se';
+                    mobileAuthBtn.onclick = (e) => { e.preventDefault(); this.logout(); };
                 }
+                if (mobileRegBtn) mobileRegBtn.style.display = 'none';
+                if (mobileProfileLink) mobileProfileLink.style.display = 'inline-flex';
             } else {
-                authBtn.textContent = 'Přihlásit';
-                authBtn.onclick = (e) => { e.preventDefault(); this.openModal(); };
-
-                // Show register button when logged out
-                if (regBtn) {
-                    regBtn.style.display = 'inline-flex';
-                    console.log('Showing register button');
+                // Desktop
+                if (authBtn) {
+                    authBtn.textContent = 'Přihlásit';
+                    authBtn.onclick = (e) => { e.preventDefault(); this.openModal(); };
                 }
+                if (regBtn) regBtn.style.display = 'inline-flex';
                 if (profileLink) profileLink.style.display = 'none';
+
+                // Mobile
+                if (mobileAuthBtn) {
+                    mobileAuthBtn.textContent = 'Přihlásit se';
+                    mobileAuthBtn.onclick = (e) => { e.preventDefault(); this.openModal('login'); };
+                }
+                if (mobileRegBtn) mobileRegBtn.style.display = 'inline-flex';
+                if (mobileProfileLink) mobileProfileLink.style.display = 'none';
             }
 
             // Hero CTA Logic
@@ -247,10 +252,10 @@
 
         // Modal Logic
         setupListeners() {
-            // Global Delegation for dynamic elements (Header buttons)
+            // Global Delegation for dynamic elements (Header + Mobile buttons)
             document.body.addEventListener('click', (e) => {
-                // Register Button (Header)
-                const registerBtn = e.target.closest('#auth-register-btn');
+                // Register Button (Header or Mobile)
+                const registerBtn = e.target.closest('#auth-register-btn, #mobile-auth-register-btn');
                 if (registerBtn) {
                     e.preventDefault();
                     this.openModal('register');
@@ -265,8 +270,8 @@
                     return;
                 }
 
-                // Login/Logout Button (Header)
-                const authBtn = e.target.closest('#auth-btn');
+                // Login/Logout Button (Header or Mobile)
+                const authBtn = e.target.closest('#auth-btn, #mobile-auth-btn');
                 if (authBtn) {
                     e.preventDefault();
                     if (this.isLoggedIn()) {

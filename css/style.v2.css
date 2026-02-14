@@ -556,6 +556,11 @@ body.page-mentor .header {
   align-items: center;
 }
 
+/* Mobile auth buttons are hidden on desktop */
+.mobile-auth-buttons {
+  display: none !important;
+}
+
 .nav {
   display: flex;
   align-items: center;
@@ -1934,6 +1939,25 @@ body.page-mentor .header {
   /* Hide desktop auth buttons on mobile */
   .auth-buttons {
     display: none;
+  }
+
+  /* Show mobile auth buttons inside hamburger menu */
+  .mobile-auth-buttons {
+    display: flex !important;
+    flex-direction: column;
+    gap: 10px;
+    padding: var(--space-lg) var(--space-md);
+    margin-top: var(--space-sm);
+    border-top: 1px solid rgba(212, 175, 55, 0.2);
+  }
+
+  .mobile-auth-buttons .btn {
+    width: 100%;
+    text-align: center;
+    padding: 12px var(--space-lg);
+    font-size: var(--text-sm);
+    border-radius: var(--radius-full);
+    min-height: 44px;
   }
 
   /* Hide desktop nav links */
