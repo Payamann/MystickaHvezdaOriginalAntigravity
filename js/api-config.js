@@ -5,15 +5,14 @@
 
 const API_CONFIG = {
     // Use environment-appropriate URL
-    // Change this when deploying to production
     BASE_URL: (
         window.location.hostname === 'localhost' ||
         window.location.hostname === '127.0.0.1' ||
         window.location.protocol === 'file:' // Handle Opening index.html directly
     ) ? 'http://localhost:3001/api' : '/api',
 
-    // Stripe Configuration
-    STRIPE_PUBLISHABLE_KEY: 'pk_test_51SvhkJPMTdHJh4NOR3GEkWs2lPjTEDURmFrYru5pcU6K90ZczeXUEGiQWoyxPe3W5xlzGmIjSL8Pr0hWbLzvMhOK00hVke56SN',
+    // Stripe publishable key — loaded from server at runtime (see initConfig)
+    STRIPE_PUBLISHABLE_KEY: null,
 
     // API Endpoints
     ENDPOINTS: {
@@ -24,6 +23,24 @@ const API_CONFIG = {
         HOROSCOPE: '/horoscope'
     }
 };
+
+/**
+ * Loads client-safe config from the server (e.g. Stripe publishable key).
+ * Call this once on page load before using STRIPE_PUBLISHABLE_KEY.
+ */
+async function initConfig() {
+    try {
+        const res = await fetch(`${API_CONFIG.BASE_URL}/config`);
+        if (res.ok) {
+            const data = await res.json();
+            if (data.stripePublishableKey) {
+                API_CONFIG.STRIPE_PUBLISHABLE_KEY = data.stripePublishableKey;
+            }
+        }
+    } catch (e) {
+        console.warn('Could not load remote config:', e.message);
+    }
+}
 
 /**
  * Helper function to call API endpoints
@@ -61,3 +78,7 @@ async function callAPI(endpoint, data) {
 // Make available globally
 window.API_CONFIG = API_CONFIG;
 window.callAPI = callAPI;
+window.initConfig = initConfig;
+
+// Auto-initialize config on load
+initConfig();

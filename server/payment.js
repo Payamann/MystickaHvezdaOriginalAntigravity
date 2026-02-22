@@ -20,19 +20,19 @@ const PREMIUM_PLAN_TYPES = ['premium_monthly', 'premium_yearly', 'premium_pro', 
 // Plan definitions (consistent with cenik.html)
 const PLANS = {
     'poutnik': {
-        name: 'Poutnik (Zaklad)',
+        name: 'Poutník (Základ)',
         price: 0,
         type: 'free',
         interval: null
     },
     'pruvodce': {
-        name: 'Hvezdny Pruvodce (Mesicni)',
+        name: 'Hvězdný Průvodce (Měsíční)',
         price: 19900, // 199 CZK in halere
         type: 'premium_monthly',
         interval: 'month'
     },
     'osviceni': {
-        name: 'Osviceni (Mesicni)',
+        name: 'Osvícení (Měsíční)',
         price: 49900, // 499 Kč in haléře
         type: 'exclusive_monthly',
         interval: 'month'
@@ -50,7 +50,7 @@ export async function isPremiumUser(userId) {
 
         if (!subscription) return false;
 
-        const isActive = subscription.status === 'active' || subscription.status === 'trialing';
+        const isActive = subscription.status === 'active' || subscription.status === 'trialing' || subscription.status === 'cancel_pending';
         const notExpired = new Date(subscription.current_period_end) > new Date();
         const isPremium = PREMIUM_PLAN_TYPES.includes(subscription.plan_type);
 
@@ -151,7 +151,7 @@ router.post('/create-checkout-session', authenticateToken, async (req, res) => {
                     currency: 'czk',
                     product_data: {
                         name: plan.name,
-                        description: 'Pristup ke vsem premiovym funkcim Mysticke Hvezdy',
+                        description: 'Přístup ke všem prémiovým funkcím Mystické Hvězdy',
                     },
                     unit_amount: plan.price,
                     recurring: {

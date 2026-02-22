@@ -2,9 +2,9 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import rateLimit from 'express-rate-limit';
 import { supabase } from './db-supabase.js';
+import { JWT_SECRET } from './config/jwt.js';
 
 const router = express.Router();
-import fs from 'fs';
 
 // Strict rate limiting on auth endpoints to prevent brute force / credential stuffing
 const authLimiter = rateLimit({
@@ -15,23 +15,6 @@ const authLimiter = rateLimit({
     legacyHeaders: false,
 });
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
-
-// Security: Enforce strong secret in production
-let JWT_SECRET = process.env.JWT_SECRET;
-if (IS_PRODUCTION && !JWT_SECRET) {
-    console.error('❌ FATAL ERROR: JWT_SECRET is missing in production environment!');
-    process.exit(1); // Fail secure
-}
-if (!JWT_SECRET) {
-    console.warn('⚠️ WARNING: JWT_SECRET is missing in environment variables!');
-    if (IS_PRODUCTION) {
-        console.error('❌ FATAL ERROR: JWT_SECRET is required in production!');
-        process.exit(1);
-    } else {
-        console.warn('⚠️ Development mode: Using temporary insecure secret. DO NOT USE IN PRODUCTION.');
-        JWT_SECRET = 'dev-insecure-secret-placeholder';
-    }
-}
 const APP_URL = process.env.APP_URL || 'http://localhost:3001';
 
 const logDebug = (msg) => {
@@ -40,7 +23,6 @@ const logDebug = (msg) => {
     console.log(`[DEBUG] ${msg}`);
 };
 
-// ... (register and login routes remain similar, just ensuring no changes there unless necessary) ...
 
 // Premium activation removed - use Stripe payment flow instead
 router.post('/activate-premium', (req, res) => {

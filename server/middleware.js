@@ -1,20 +1,11 @@
 import jwt from 'jsonwebtoken';
 import { supabase } from './db-supabase.js';
+import { JWT_SECRET } from './config/jwt.js';
+
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
 // Centralized premium plan type list - used by both hard and soft gates
 const PREMIUM_PLAN_TYPES = ['premium_monthly', 'premium_yearly', 'premium_pro', 'exclusive_monthly', 'vip'];
-
-// Security: Unified JWT secret handling - no hardcoded fallback
-const IS_PRODUCTION = process.env.NODE_ENV === 'production';
-let JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
-    if (IS_PRODUCTION) {
-        console.error('FATAL: JWT_SECRET is required in production!');
-        process.exit(1);
-    }
-    console.warn('WARNING: JWT_SECRET missing. Using dev-only placeholder.');
-    JWT_SECRET = 'dev-insecure-secret-placeholder';
-}
 
 /**
  * Standard JWT authentication middleware

@@ -1,4 +1,4 @@
-import express from 'express';
+﻿import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit'; // Security: Rate Limiting
@@ -20,6 +20,16 @@ import adminRoutes from './admin.js';
 import { authenticateToken, requirePremium, requirePremiumSoft, optionalPremiumCheck } from './middleware.js';
 import { SYSTEM_PROMPTS } from './config/prompts.js';
 import { calculateMoonPhase, getHoroscopeCacheKey, getCachedHoroscope, saveCachedHoroscope } from './services/astrology.js';
+import { callGemini } from './services/gemini.js';
+import { isPremiumUser } from './payment.js';
+import { supabase } from './db-supabase.js';
+import crypto from 'crypto';
+
+// Route modules
+import oracleRoutes from './routes/oracle.js';
+import horoscopeRoutes from './routes/horoscope.js';
+import numerologyRoutes from './routes/numerology.js';
+import userRoutes from './routes/user.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -45,8 +55,6 @@ app.use(cors({
     credentials: true
 }));
 
-// Middleware - Restrict CORS to same-origin by default
-// ... existing CORS setup ...
 
 // Performance Logging Middleware
 app.use((req, res, next) => {
@@ -89,7 +97,7 @@ app.use('/api/', limiter);
 const aiLimiter = rateLimit({
     windowMs: 24 * 60 * 60 * 1000, // 24 hours
     max: 50, // 50 AI requests per IP per day (approx 2/hour avg)
-    message: { error: 'Překročen denní limit pro AI generování. Zkuste to zítra.' },
+    message: { error: 'PĹ™ekroÄŤen dennĂ­ limit pro AI generovĂˇnĂ­. Zkuste to zĂ­tra.' },
     standardHeaders: true,
     legacyHeaders: false,
 });
@@ -98,7 +106,7 @@ const aiLimiter = rateLimit({
 const sensitiveOpLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
     max: 10, // 10 attempts per hour
-    message: { error: 'Příliš mnoho pokusů. Zkuste to prosím později.' },
+    message: { error: 'PĹ™Ă­liĹˇ mnoho pokusĹŻ. Zkuste to prosĂ­m pozdÄ›ji.' },
     standardHeaders: true,
     legacyHeaders: false,
 });
@@ -117,18 +125,48 @@ app.get('/api/health', (req, res) => {
     });
 });
 
-// Security Headers (CSP Disabled for stability)
+// Security Headers with proper Content Security Policy
 app.use(helmet({
-    contentSecurityPolicy: false, // Disabled to prevent UI breakage
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: [
+                "'self'",
+                "'unsafe-inline'",   // Needed for inline event handlers in current HTML
+                "'unsafe-eval'",     // Needed for some dynamic JS (can be removed after refactor)
+            ],
+            styleSrc: [
+                "'self'",
+                "'unsafe-inline'",   // Needed for inline styles
+                'https://fonts.googleapis.com',
+            ],
+            fontSrc: [
+                "'self'",
+                'https://fonts.gstatic.com',
+                'data:',
+            ],
+            imgSrc: [
+                "'self'",
+                'data:',             // Base64 images (natal chart canvas)
+                'blob:',
+            ],
+            connectSrc: [
+                "'self'",
+                process.env.SUPABASE_URL ? `https://${process.env.SUPABASE_URL.replace(/^https?:\/\//, '')}` : '',
+            ].filter(Boolean),
+            frameSrc: ["'none'"],
+            objectSrc: ["'none'"],
+            upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null,
+        },
+    },
     crossOriginEmbedderPolicy: false,
-    frameguard: { action: 'deny' } // Prevent Clickjacking
+    frameguard: { action: 'deny' }, // Prevent Clickjacking
 }));
 
 // ============================================
 // HOROSCOPE CACHE SYSTEM (Database-backed)
 // ============================================
 
-console.log(`🔮 Horoscope cache: Using database storage (persistent)`);
 // Helper functions moved to services/astrology.js
 
 // DEVELOPMENT: Disable caching for all static files
@@ -143,7 +181,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 // Serve static files from the parent directory (MystickaHvezda root)
 const rootDir = path.resolve(__dirname, '../');
-console.log(`📂 Serving static files from: ${rootDir}`);
+console.log(`đź“‚ Serving static files from: ${rootDir}`);
 
 const staticOptions = process.env.NODE_ENV === 'production'
     ? { maxAge: '1y', immutable: true }
@@ -168,675 +206,36 @@ app.use('/api/mentor', mentorRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/admin', adminRoutes);
 
-// Helper function to call Gemini API
-import { callGemini } from './services/gemini.js';
-import { isPremiumUser } from './payment.js';
-import { supabase } from './db-supabase.js';
-import crypto from 'crypto';
-
-// ============================================
-// API ENDPOINTS
-// ============================================
-
-// Crystal Ball Oracle
-app.post('/api/crystal-ball', optionalPremiumCheck, aiLimiter, async (req, res) => {
-    try {
-        const { question, history = [] } = req.body;
-
-        if (!question || typeof question !== 'string' || question.length > 1000) {
-            return res.status(400).json({ success: false, error: 'Otázka je povinná (max 1000 znaků).' });
-        }
-
-        // PREMIUM GATE: Free users limited to 3 questions per day
-        if (!req.isPremium) {
-            const identifier = req.user?.id || req.ip || 'anonymous';
-            const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-            const cacheKey = `crystal_ball_limit_${identifier}_${today}`;
-
-            try {
-                // Check existing count in a simple way (using Supabase or in-memory cache)
-                // For now, we'll use a simple query to count today's questions
-                let count = 0;
-
-                if (req.user?.id) {
-                    // For logged-in users, count from readings table
-                    const { data, error } = await supabase
-                        .from('readings')
-                        .select('id', { count: 'exact', head: true })
-                        .eq('user_id', req.user.id)
-                        .eq('type', 'crystal-ball')
-                        .gte('created_at', `${today}T00:00:00`);
-
-                    count = data?.length || 0;
-                }
-                // Note: IP-based limiting would require a separate tracking table
-                // For MVP, we'll only enforce for logged-in free users
-
-                if (count >= 3) {
-                    return res.status(402).json({
-                        success: false,
-                        error: 'Denní limit 3 otázek byl vyčerpán. Upgrade na Premium pro neomezený přístup.',
-                        code: 'PREMIUM_REQUIRED',
-                        feature: 'crystal_ball_unlimited'
-                    });
-                }
-            } catch (limitError) {
-                console.warn('Crystal Ball limit check failed:', limitError);
-                // Continue on error to avoid blocking users
-            }
-        }
-
-        // Limit history to prevent abuse
-        const safeHistory = Array.isArray(history) ? history.slice(0, 10) : [];
-
-        let contextMessage = question;
-        if (safeHistory.length > 0) {
-            contextMessage = `Předchozí otázky v této seanci: ${safeHistory.join(', ')}\n\nNová otázka: ${question}`;
-        }
-
-        const moonPhase = calculateMoonPhase();
-        const systemPrompt = SYSTEM_PROMPTS.crystalBall.replace('{MOON_PHASE}', moonPhase);
-
-        const response = await callGemini(systemPrompt, contextMessage);
-        res.json({ success: true, response });
-    } catch (error) {
-        console.error('Crystal Ball Error:', error);
-        res.status(500).json({ success: false, error: 'Křišťálová koule je zahalena mlhou...' });
-    }
+// Public config endpoint â€” safely exposes only client-safe env vars
+app.get('/api/config', (req, res) => {
+    res.json({
+        stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY || null,
+    });
 });
 
-// Tarot Reading (FREEMIUM LIMITS)
-app.post('/api/tarot', authenticateToken, aiLimiter, async (req, res) => {
-    try {
-        const { question, cards, spreadType = 'tříkartový' } = req.body;
-        const userId = req.user.id;
+// AI Oracle routes (crystal-ball, tarot, natal-chart, synastry, astrocartography)
+app.use('/api', aiLimiter, oracleRoutes);
 
-        // Check limits
-        const userIsPremium = await isPremiumUser(userId);
+// Horoscope with DB caching
+app.use('/api/horoscope', aiLimiter, horoscopeRoutes);
 
-        // Free users can only do 1-card spreads
-        if (!userIsPremium && cards.length > 1) {
-            return res.status(403).json({
-                success: false,
-                error: 'Komplexní výklady jsou dostupné pouze pro Hvězdné Průvodce (Premium).',
-                code: 'PREMIUM_REQUIRED'
-            });
-        }
+// Numerology with DB caching (Premium only)
+app.use('/api/numerology', aiLimiter, numerologyRoutes);
 
-        const message = `Typ výkladu: ${spreadType}\nOtázka: "${question}"\nVytažené karty: ${cards.join(', ')}`;
+// User readings CRUD + password change
+app.use('/api/user', userRoutes);
 
-        const response = await callGemini(SYSTEM_PROMPTS.tarot, message);
-        res.json({ success: true, response });
-    } catch (error) {
-        console.error('Tarot Error:', error);
-        res.status(500).json({ success: false, error: 'Karty odmítají promluvit...' });
-    }
-});
+// Health Check - registered above rate limiter (see top of file)
+// Admin comment: duplicate route registrations removed
 
-// Tarot Summary (requires auth to prevent API cost abuse)
-app.post('/api/tarot-summary', authenticateToken, aiLimiter, async (req, res) => {
-    try {
-        const { cards, spreadType } = req.body;
-
-        if (!Array.isArray(cards) || cards.length === 0 || cards.length > 20) {
-            return res.status(400).json({ success: false, error: 'Neplatná data karet.' });
-        }
-
-        const safeSpreadType = String(spreadType || 'obecný').substring(0, 100);
-        let cardContext = cards.map(c => {
-            const pos = String(c?.position || '').substring(0, 100);
-            const name = String(c?.name || '').substring(0, 100);
-            const meaning = String(c?.meaning || '').substring(0, 200);
-            return `${pos}: ${name} (${meaning})`;
-        }).join(', ');
-        const message = `Typ výkladu: ${safeSpreadType}\n\nKarty v kontextu pozic:\n${cardContext}\n\nVytvoř krásný, hluboký souhrn tohoto výkladu.`;
-
-        const response = await callGemini(SYSTEM_PROMPTS.tarotSummary, message);
-        res.json({ success: true, response });
-    } catch (error) {
-        console.error('Tarot Summary Error:', error);
-        res.status(500).json({ success: false, error: 'Hlas vesmíru je nyní tichý...' });
-    }
-});
-
-// Natal Chart Analysis
-app.post('/api/natal-chart', optionalPremiumCheck, aiLimiter, async (req, res) => {
-    try {
-        const { birthDate, birthTime, birthPlace, name } = req.body;
-
-        if (!birthDate || typeof birthDate !== 'string') {
-            return res.status(400).json({ success: false, error: 'Datum narození je povinné.' });
-        }
-
-        // PREMIUM GATE: Free users get teaser (no AI interpretation)
-        if (!req.isPremium) {
-            return res.json({
-                success: true,
-                isTeaser: true,
-                response: null, // No AI interpretation
-                message: 'Detailní interpretace natální karty je dostupná pouze pro Premium uživatele.'
-            });
-        }
-
-        // Premium users get full AI analysis
-        const safeName = String(name || 'Tazatel').substring(0, 100);
-        const safeBirthDate = String(birthDate).substring(0, 30);
-        const safeBirthTime = String(birthTime || '').substring(0, 20);
-        const safeBirthPlace = String(birthPlace || '').substring(0, 200);
-        const message = `Jméno: ${safeName}\\nDatum narození: ${safeBirthDate}\\nČas narození: ${safeBirthTime}\\nMísto narození: ${safeBirthPlace}`;
-
-        const response = await callGemini(SYSTEM_PROMPTS.natalChart, message);
-        res.json({ success: true, response, isTeaser: false });
-    } catch (error) {
-        console.error('Natal Chart Error:', error);
-        res.status(500).json({ success: false, error: 'Hvězdy nejsou v tuto chvíli čitelné...' });
-    }
-});
-
-// Synastry / Compatibility (FREEMIUM TEASER)
-app.post('/api/synastry', authenticateToken, aiLimiter, async (req, res) => {
-    try {
-        const { person1, person2 } = req.body;
-        const userId = req.user.id;
-
-        // Sanitize inputs
-        const safeName1 = String(person1?.name || '').substring(0, 100);
-        const safeDate1 = String(person1?.birthDate || '').substring(0, 30);
-        const safeName2 = String(person2?.name || '').substring(0, 100);
-        const safeDate2 = String(person2?.birthDate || '').substring(0, 30);
-
-        // Check premium status
-        const userIsPremium = await isPremiumUser(userId);
-
-        // If NOT premium, return simplified response (Teaser Mode)
-        if (!userIsPremium) {
-            console.log('[Synastry] Free user - returning teaser');
-            // We return success, but with a flag. The frontend calculates scores locally anyway.
-            // We do NOT call Gemini to save costs.
-            return res.json({
-                success: true,
-                isTeaser: true,
-                response: null // No text analysis
-            });
-        }
-
-        // Premium Logic (Full Analysis)
-        const message = `Osoba A: ${safeName1}, narozena ${safeDate1}\nOsoba B: ${safeName2}, narozena ${safeDate2}`;
-        const response = await callGemini(SYSTEM_PROMPTS.synastry, message);
-
-        res.json({ success: true, response, isTeaser: false });
-    } catch (error) {
-        console.error('Synastry Error:', error);
-        res.status(500).json({ success: false, error: 'Hvězdná spojení jsou dočasně zahalena...' });
-    }
-});
-
-// Valid zodiac signs whitelist
-const VALID_ZODIAC_SIGNS = ['Beran', 'Býk', 'Blíženci', 'Rak', 'Lev', 'Panna', 'Váhy', 'Štír', 'Střelec', 'Kozoroh', 'Vodnář', 'Ryby'];
-
-// Horoscope (Daily, Weekly, Monthly) - WITH DATABASE CACHING
-app.post('/api/horoscope', optionalPremiumCheck, aiLimiter, async (req, res) => {
-    try {
-        const { sign, period = 'daily', context = [] } = req.body;
-
-        if (!sign || !VALID_ZODIAC_SIGNS.includes(sign)) {
-            return res.status(400).json({ success: false, error: 'Neplatné znamení zvěrokruhu.' });
-        }
-
-        if (!['daily', 'weekly', 'monthly'].includes(period)) {
-            return res.status(400).json({ success: false, error: 'Neplatné období.' });
-        }
-
-        // PREMIUM GATE: Free users can only access daily horoscope
-        if (!req.isPremium && period !== 'daily') {
-            return res.status(402).json({
-                success: false,
-                error: 'Týdenní a měsíční horoskopy jsou dostupné pouze pro Premium uživatele.',
-                code: 'PREMIUM_REQUIRED',
-                feature: 'horoscope_extended'
-            });
-        }
-
-        // Generate cache key (include context hash to avoid stale cache if context changes)
-        const contextHash = Array.isArray(context) && context.length > 0 ? Buffer.from(context.join('')).toString('base64').substring(0, 10) : 'nocontext';
-        const cacheKey = getHoroscopeCacheKey(sign, period) + `-${contextHash}`;
-
-        // Check database cache first
-        const cachedData = await getCachedHoroscope(cacheKey);
-        if (cachedData) {
-            console.log(`📦 Horoscope Cache HIT: ${cacheKey}`);
-            return res.json({
-                success: true,
-                response: cachedData.response,
-                period: cachedData.period_label,
-                cached: true
-            });
-        }
-
-        console.log(`🔄 Horoscope Cache MISS: ${cacheKey} - Generating new...`);
-
-        // Dynamic prompt based on period
-        let periodPrompt;
-        let periodLabel;
-        let contextInstruction = "";
-
-        if (context && Array.isArray(context) && context.length > 0) {
-            // Sanitize context: strip control chars, limit length, cap items
-            const sanitized = context
-                .slice(0, 5)
-                .map(c => String(c).replace(/[\r\n\t]/g, ' ').substring(0, 300))
-                .filter(c => c.trim().length > 0);
-
-            if (sanitized.length > 0) {
-                contextInstruction = `
-CONTEXT (Z uživatelova deníku):
-"${sanitized.join('", "')}"
-INSTRUKCE PRO SYNERGII: Pokud je to relevantní, jemně a nepřímo nawazuj na témata z deníku. Neříkej "V deníku vidím...", ale spíše "Hvězdy naznačují posun v tématech, která tě trápí...". Buď empatický.`;
-            }
-        }
-
-        if (period === 'weekly') {
-            periodLabel = 'Týdenní horoskop';
-            periodPrompt = `Jsi inspirativní astrologický průvodce.
-Generuj týdenní horoskop ve formátu JSON.
-Odpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).
-Struktura:
-{
-  "prediction": "Text horoskopu (5-6 vět). Zaměř se na hlavní energii, lásku, kariéru a jednu výzvu.",
-  "affirmation": "Krátká, úderná afirmace pro tento týden.",
-  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]
-}
-Text piš česky, poeticky a povzbudivě.${contextInstruction}`;
-        } else if (period === 'monthly') {
-            periodLabel = 'Měsíční horoskop';
-            periodPrompt = `Jsi moudrý astrologický průvodce.
-Generuj měsíční horoskop ve formátu JSON.
-Odpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).
-Struktura:
-{
-  "prediction": "Text horoskopu (7-8 vět). Zahrň úvod, lásku, kariéru, zdraví a klíčová data.",
-  "affirmation": "Silná afirmace pro tento měsíc.",
-  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]
-}
-Text piš česky, inspirativně a hluboce.${contextInstruction}`;
-        } else {
-            periodLabel = 'Denní inspirace';
-            periodPrompt = `Jsi laskavý astrologický průvodce.
-Generuj denní horoskop ve formátu JSON.
-Odpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).
-Struktura:
-{
-  "prediction": "Text horoskopu (3-4 věty). Hlavní energie dne a jedna konkrétní rada.",
-  "affirmation": "Krátká pozitivní afirmace pro dnešek.",
-  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]
-}
-Text piš česky, poeticky a povzbudivě.${contextInstruction}`;
-        }
-
-        const today = new Date();
-        const message = `Znamení: ${sign}\nDatum: ${today.toLocaleDateString('cs-CZ')}`;
-
-        const response = await callGemini(periodPrompt, message);
-
-        // Save to database cache
-        await saveCachedHoroscope(cacheKey, sign, period, response, periodLabel);
-        console.log(`💾 Horoscope cached in DB: ${cacheKey}`);
-
-        res.json({ success: true, response, period: periodLabel });
-    } catch (error) {
-        console.error('Horoscope Error:', error);
-        res.status(500).json({ success: false, error: 'Předpověď není dostupná...' });
-    }
-});
-
-// Numerology (PREMIUM ONLY) - WITH DATABASE CACHING
-console.log(`🔢 Numerology cache: Using database storage (persistent)`);
-
-// Get cached numerology from database
-async function getCachedNumerology(cacheKey) {
-    try {
-        const { data, error } = await supabase
-            .from('cache_numerology')
-            .select('*')
-            .eq('cache_key', cacheKey)
-            .single();
-
-        if (error) {
-            if (error.code === 'PGRST116') return null; // Not found
-            throw error;
-        }
-
-        return data;
-    } catch (e) {
-        console.warn('Numerology cache get error:', e.message);
-        return null;
-    }
-}
-
-// Save numerology to database cache
-async function saveCachedNumerology(cacheKey, inputs, response) {
-    try {
-        const { error } = await supabase
-            .from('cache_numerology')
-            .upsert({
-                cache_key: cacheKey,
-                name: inputs.name,
-                birth_date: inputs.birthDate,
-                birth_time: inputs.birthTime,
-                life_path: inputs.lifePath,
-                destiny: inputs.destiny,
-                soul: inputs.soul,
-                personality: inputs.personality,
-                response,
-                generated_at: new Date().toISOString()
-            }, {
-                onConflict: 'cache_key'
-            });
-
-        if (error) throw error;
-    } catch (e) {
-        console.warn('Numerology cache save error:', e.message);
-    }
-}
-
-app.post('/api/numerology', authenticateToken, requirePremium, async (req, res) => {
-    try {
-        const { name, birthDate, birthTime, lifePath, destiny, soul, personality } = req.body;
-
-        // Create cache key from inputs (deterministic)
-        const cacheKey = crypto.createHash('md5')
-            .update(`${name}_${birthDate}_${birthTime || 'notime'}_${lifePath}_${destiny}_${soul}_${personality}`)
-            .digest('hex');
-
-        // Check database cache first
-        const cachedData = await getCachedNumerology(cacheKey);
-        if (cachedData) {
-            console.log(`📦 Numerology Cache HIT (DB): ${cacheKey}`);
-            return res.json({
-                success: true,
-                response: cachedData.response,
-                cached: true
-            });
-        }
-
-        console.log(`🔄 Numerology Cache MISS: ${cacheKey} - Generating new interpretation...`);
-
-        const message = `Jméno: ${name}
-Datum narození: ${birthDate}${birthTime ? `\nČas narození: ${birthTime}` : ''}
-
-Vypočítaná čísla:
-- Číslo životní cesty: ${lifePath}
-- Číslo osudu: ${destiny}
-- Číslo duše: ${soul}
-- Číslo osobnosti: ${personality}
-
-Vytvoř komplexní interpretaci tohoto numerologického profilu.${birthTime ? ' Vezmi v potaz i čas narození pro hlubší výklad.' : ''}`;
-
-        const response = await callGemini(SYSTEM_PROMPTS.numerology, message);
-
-        // Save to database cache
-        const inputs = { name, birthDate, birthTime, lifePath, destiny, soul, personality };
-        await saveCachedNumerology(cacheKey, inputs, response);
-        console.log(`💾 Numerology cached in DB: ${cacheKey}`);
-
-        res.json({ success: true, response });
-    } catch (error) {
-        console.error('Numerology Error:', error);
-        res.status(500).json({ success: false, error: 'Čísla momentálně nemohou promluvit...' });
-    }
-});
-
-// Astrocartography (requires auth)
-app.post('/api/astrocartography', authenticateToken, requirePremium, async (req, res) => {
-    try {
-        const { birthDate, birthTime, birthPlace, name, intention = 'obecný' } = req.body;
-
-        if (!birthDate || typeof birthDate !== 'string') {
-            return res.status(400).json({ success: false, error: 'Datum narození je povinné.' });
-        }
-
-        const safeName = String(name || 'Tazatel').substring(0, 100);
-        const safeBirthDate = String(birthDate).substring(0, 30);
-        const safeBirthTime = String(birthTime || '').substring(0, 20);
-        const safeBirthPlace = String(birthPlace || '').substring(0, 200);
-        const safeIntention = String(intention).substring(0, 200);
-
-        const message = `Jméno: ${safeName}
-Datum narození: ${safeBirthDate}
-Čas narození: ${safeBirthTime}
-Místo narození: ${safeBirthPlace}
-Záměr analýzy: ${safeIntention}
-
-Vytvoř personalizovanou astrokartografickou mapu s doporučenými lokalitami.`;
-
-        const response = await callGemini(SYSTEM_PROMPTS.astrocartography, message);
-        res.json({ success: true, response });
-    } catch (error) {
-        console.error('Astrocartography Error:', error.message);
-        res.status(500).json({ success: false, error: 'Planetární linie jsou momentálně zahaleny mlhou...' });
-    }
-});
-
-// ============================================
-// ROUTES
-// ============================================
-
-// Duplicate route registrations removed - all routes use /api/ prefix with rate limiting
-
-// Admin routes handled by adminRoutes module (mounted at /api/admin above)
-
-// ============================================
-// USER READINGS API
-// ============================================
-
-// Get user's reading history (with pagination)
-app.get('/api/user/readings', authenticateToken, async (req, res) => {
-    try {
-        const page = Math.max(1, parseInt(req.query.page) || 1);
-        const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 20));
-        const offset = (page - 1) * limit;
-
-        // Get total count for pagination metadata
-        const { count, error: countError } = await supabase
-            .from('readings')
-            .select('*', { count: 'exact', head: true })
-            .eq('user_id', req.user.id);
-
-        if (countError) throw countError;
-
-        const { data, error } = await supabase
-            .from('readings')
-            .select('*')
-            .eq('user_id', req.user.id)
-            .order('created_at', { ascending: false })
-            .range(offset, offset + limit - 1);
-
-        if (error) throw error;
-
-        res.json({
-            success: true,
-            readings: data || [],
-            pagination: {
-                page,
-                limit,
-                total: count || 0,
-                totalPages: Math.ceil((count || 0) / limit)
-            }
-        });
-    } catch (error) {
-        console.error('Get Readings Error:', error);
-        res.status(500).json({ success: false, error: 'Nepodařilo se načíst historii.' });
-    }
-});
-
-// Save a new reading
-app.post('/api/user/readings', authenticateToken, async (req, res) => {
-    try {
-        const { type, data: readingData } = req.body;
-
-        if (!type || !readingData) {
-            return res.status(400).json({ error: 'Type and data are required.' });
-        }
-
-        const { data, error } = await supabase
-            .from('readings')
-            .insert({
-                user_id: req.user.id,
-                type,
-                data: readingData
-            })
-            .select()
-            .single();
-
-        if (error) throw error;
-
-        res.json({ success: true, reading: data });
-    } catch (error) {
-        console.error('Save Reading Error:', error);
-        res.status(500).json({ success: false, error: 'Nepodařilo se uložit výklad.' });
-    }
-});
-
-// Get single reading by ID
-app.get('/api/user/readings/:id', authenticateToken, async (req, res) => {
-    try {
-        const { id } = req.params;
-
-        const { data, error } = await supabase
-            .from('readings')
-            .select('*')
-            .eq('id', id)
-            .eq('user_id', req.user.id)
-            .single();
-
-        if (error) throw error;
-
-        if (!data) {
-            return res.status(404).json({ success: false, error: 'Výklad nenalezen.' });
-        }
-
-        res.json({ success: true, reading: data });
-    } catch (error) {
-        console.error('Get Reading Error:', error);
-        res.status(500).json({ success: false, error: 'Nepodařilo se načíst výklad.' });
-    }
-});
-
-// Toggle reading favorite status
-app.patch('/api/user/readings/:id/favorite', authenticateToken, async (req, res) => {
-    try {
-        const { id } = req.params;
-
-        // First get current state
-        const { data: current, error: fetchError } = await supabase
-            .from('readings')
-            .select('is_favorite')
-            .eq('id', id)
-            .eq('user_id', req.user.id)
-            .single();
-
-        if (fetchError) throw fetchError;
-
-        if (!current) {
-            return res.status(404).json({ success: false, error: 'Výklad nenalezen.' });
-        }
-
-        // Toggle the favorite status
-        const newStatus = !current.is_favorite;
-
-        const { data, error } = await supabase
-            .from('readings')
-            .update({ is_favorite: newStatus })
-            .eq('id', id)
-            .eq('user_id', req.user.id)
-            .select()
-            .single();
-
-        if (error) throw error;
-
-        res.json({ success: true, is_favorite: data.is_favorite });
-    } catch (error) {
-        console.error('Toggle Favorite Error:', error);
-        res.status(500).json({ success: false, error: 'Nepodařilo se změnit oblíbené.' });
-    }
-});
-
-// Delete a reading
-app.delete('/api/user/readings/:id', authenticateToken, async (req, res) => {
-    try {
-        const { id } = req.params;
-
-        const { error } = await supabase
-            .from('readings')
-            .delete()
-            .eq('id', id)
-            .eq('user_id', req.user.id); // Ensure user owns the reading
-
-        if (error) throw error;
-
-        res.json({ success: true });
-    } catch (error) {
-        console.error('Delete Reading Error:', error);
-        res.status(500).json({ success: false, error: 'Nepodařilo se smazat výklad.' });
-    }
-});
-
-// Change user password (requires current password verification)
-app.put('/api/user/password', sensitiveOpLimiter, authenticateToken, async (req, res) => {
-    try {
-        const { currentPassword, password } = req.body;
-
-        if (!currentPassword) {
-            return res.status(400).json({ success: false, error: 'Zadejte prosím aktuální heslo.' });
-        }
-
-        if (!password || password.length < 8) {
-            return res.status(400).json({ success: false, error: 'Nové heslo musí mít alespoň 8 znaků.' });
-        }
-
-        // Verify current password first
-        const { error: authError } = await supabase.auth.signInWithPassword({
-            email: req.user.email,
-            password: currentPassword
-        });
-
-        if (authError) {
-            return res.status(403).json({ success: false, error: 'Aktuální heslo je nesprávné.' });
-        }
-
-        // Use Supabase Admin to update password
-        const { error } = await supabase.auth.admin.updateUserById(
-            req.user.id,
-            { password: password }
-        );
-
-        if (error) throw error;
-
-        res.json({ success: true, message: 'Heslo bylo úspěšně změněno.' });
-    } catch (error) {
-        console.error('Password Change Error:', error);
-        res.status(500).json({ success: false, error: 'Nepodařilo se změnit heslo.' });
-    }
-});
-
-// Health Check Endpoint - MOVED TO TOP (See above)
 
 // Start server ONLY if run directly (not imported for tests)
-// Start server ONLY if run directly (not imported for tests)
-// We compare the resolved paths to be safe on Windows
 if (process.argv[1] === __filename) {
     app.listen(PORT, () => {
-        console.log(`✨ Mystická Hvězda API running on http://localhost:${PORT}`);
-        console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-        console.log(`🔮 Endpoints available:`);
-        console.log(`   POST /api/crystal-ball`);
-        console.log(`   POST /api/tarot`);
-        console.log(`   POST /api/natal-chart`);
-        console.log(`   POST /api/synastry`);
-        console.log(`   POST /api/horoscope`);
-        console.log(`   POST /api/astrocartography`);
-        console.log(`   GET  /api/health`);
+        console.log(`âś¨ MystickĂˇ HvÄ›zda API running on http://localhost:${PORT}`);
+        console.log(`đźŚŤ Environment: ${process.env.NODE_ENV || 'development'}`);
     });
 }
 
 export default app;
+
