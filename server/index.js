@@ -57,6 +57,15 @@ if (process.env.APP_URL) {
     if (!ALLOWED_ORIGINS.includes(wwwVariant)) ALLOWED_ORIGINS.push(wwwVariant);
     if (!ALLOWED_ORIGINS.includes(noWwwVariant)) ALLOWED_ORIGINS.push(noWwwVariant);
 }
+// Hardcoded production fallback — ensures the live domain always works
+const PRODUCTION_DOMAINS = [
+    'https://mystickahvezda.cz',
+    'https://www.mystickahvezda.cz',
+];
+PRODUCTION_DOMAINS.forEach(domain => {
+    if (!ALLOWED_ORIGINS.includes(domain)) ALLOWED_ORIGINS.push(domain);
+});
+
 
 app.use(cors({
     origin: (origin, callback) => {
