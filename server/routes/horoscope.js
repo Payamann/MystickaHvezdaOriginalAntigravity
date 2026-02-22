@@ -86,10 +86,14 @@ router.post('/', optionalPremiumCheck, async (req, res) => {
 
         const response = await callGemini(periodPrompt, message);
 
-        await saveCachedHoroscope(cacheKey, sign, period, response, periodLabel);
+        // Strip markdown code fences if Gemini wraps JSON in ```json ... ```
+        const cleanResponse = response.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '').trim();
+
+        await saveCachedHoroscope(cacheKey, sign, period, cleanResponse, periodLabel);
         console.log(`💾 Horoscope cached in DB: ${cacheKey}`);
 
-        res.json({ success: true, response, period: periodLabel });
+        res.json({ success: true, response: cleanResponse, period: periodLabel });
+
     } catch (error) {
         console.error('Horoscope Error:', error);
         res.status(500).json({ success: false, error: 'Předpověď není dostupná...' });
