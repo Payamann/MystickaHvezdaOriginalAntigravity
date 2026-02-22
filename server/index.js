@@ -45,15 +45,30 @@ const PORT = process.env.PORT || 3001;
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',')
     : ['http://localhost:3001', 'http://localhost:3000'];
+
+// Always allow APP_URL in production (even if ALLOWED_ORIGINS is misconfigured)
+if (process.env.APP_URL && !ALLOWED_ORIGINS.includes(process.env.APP_URL)) {
+    ALLOWED_ORIGINS.push(process.env.APP_URL);
+}
+// Always allow www variant too
+if (process.env.APP_URL) {
+    const wwwVariant = process.env.APP_URL.replace('https://', 'https://www.').replace('http://', 'http://www.');
+    const noWwwVariant = process.env.APP_URL.replace('https://www.', 'https://').replace('http://www.', 'http://');
+    if (!ALLOWED_ORIGINS.includes(wwwVariant)) ALLOWED_ORIGINS.push(wwwVariant);
+    if (!ALLOWED_ORIGINS.includes(noWwwVariant)) ALLOWED_ORIGINS.push(noWwwVariant);
+}
+
 app.use(cors({
     origin: (origin, callback) => {
-        // Allow requests with no origin (server-to-server, mobile apps)
+        // Allow requests with no origin (server-to-server, mobile apps, same-origin)
         if (!origin) return callback(null, true);
         if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+        console.warn(`[CORS] Blocked origin: ${origin}. Allowed: ${ALLOWED_ORIGINS.join(', ')}`);
         callback(new Error('CORS not allowed'));
     },
     credentials: true
 }));
+
 
 
 // Performance Logging Middleware
@@ -132,8 +147,10 @@ app.use(helmet({
             defaultSrc: ["'self'"],
             scriptSrc: [
                 "'self'",
-                "'unsafe-inline'",   // Needed for inline event handlers in current HTML
-                "'unsafe-eval'",     // Needed for some dynamic JS (can be removed after refactor)
+                "'unsafe-inline'",          // Needed for inline event handlers in current HTML
+                "'unsafe-eval'",             // Needed for some dynamic JS
+                'https://js.stripe.com',     // Stripe.js
+                'https://cdn.jsdelivr.net',  // CDN scripts
             ],
             styleSrc: [
                 "'self'",
