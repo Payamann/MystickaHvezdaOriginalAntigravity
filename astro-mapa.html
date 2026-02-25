@@ -43,7 +43,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="css/style.v2.css">
+    <link rel="stylesheet" href="css/style.v2.min.css">
     <style>
         /* Map Container */
         /* Map Container */
@@ -379,7 +379,7 @@
 
                     <!-- Map Visualization -->
                     <div class="map-container" id="astro-map-container" data-animate>
-                        <img src="img/world-map-flat.webp" class="map-bg" alt="Astrokartografická mapa světa">
+                        <img loading="lazy" src="img/world-map-flat.webp" class="map-bg" alt="Astrokartografická mapa světa">
                         <!-- Markers added by JS -->
                         <div id="map-tooltip" class="map-tooltip">
                             <p></p>
@@ -404,7 +404,7 @@
             <div class="container">
                 <div class="grid grid-3" data-animate>
                     <div class="card card--service">
-                        <img src="img/icon-astrocartography.webp" alt="" class="card__icon-img"
+                        <img loading="lazy" src="img/icon-astrocartography.webp" alt="" class="card__icon-img"
                             style="width: 80px; height: 80px; border-radius: 50%;">
                         <h3 class="card__title">Co je Astrokartografie?</h3>
                         <p class="card__text">
@@ -413,7 +413,7 @@
                         </p>
                     </div>
                     <div class="card card--service">
-                        <img src="img/icon-relocation.webp" alt="" class="card__icon-img"
+                        <img loading="lazy" src="img/icon-relocation.webp" alt="" class="card__icon-img"
                             style="width: 80px; height: 80px; border-radius: 50%;">
                         <h3 class="card__title">Relokace</h3>
                         <p class="card__text">
@@ -422,7 +422,7 @@
                         </p>
                     </div>
                     <div class="card card--service">
-                        <img src="img/icon-travel.webp" alt="" class="card__icon-img"
+                        <img loading="lazy" src="img/icon-travel.webp" alt="" class="card__icon-img"
                             style="width: 80px; height: 80px; border-radius: 50%;">
                         <h3 class="card__title">Cestování</h3>
                         <p class="card__text">
@@ -443,7 +443,7 @@
 
 
 
-    <script src="js/astro-map.js"></script>
+    <script src="js/astro-map.js" defer></script>
 
     <!-- Service Worker Registration -->
     <script>

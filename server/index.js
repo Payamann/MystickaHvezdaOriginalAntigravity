@@ -97,7 +97,7 @@ app.post('/webhook/stripe', express.raw({ type: 'application/json' }), async (re
         res.sendStatus(200);
     } catch (err) {
         console.error('[STRIPE] Webhook error:', err.message);
-        res.status(400).send('Webhook Error');
+        res.status(400).json({ success: false, error: 'Webhook processing failed' });
     }
 });
 

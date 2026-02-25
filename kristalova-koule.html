@@ -41,7 +41,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="css/style.v2.css">
+    <link rel="stylesheet" href="css/style.v2.min.css">
     <style>
         /* Crystal Ball Specific Styles */
         .ball-container {
@@ -193,7 +193,7 @@
                 </h1>
 
                 <div id="crystal-ball" class="ball-container">
-                    <img src="img/crystal-ball-3d.webp" alt="Magická Křišťálová Koule" class="ball-image">
+                    <img loading="lazy" src="img/crystal-ball-3d.webp" alt="Magická Křišťálová Koule" class="ball-image">
 
                     <!-- Glow effect behind -->
                     <div class="ball-glow"></div>
@@ -234,7 +234,7 @@
 
 
     <script src="js/favorites-helper.js" defer></script>
-    <script src="js/crystal-ball.js"></script>
+    <script src="js/crystal-ball.js" defer></script>
 
     <!-- Service Worker Registration -->
     <script>
