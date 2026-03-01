@@ -47,13 +47,34 @@ export function initMobileNav() {
         navList.setAttribute('aria-hidden', !isOpen);
     });
 
-    // Close menu on link click
-    navList.querySelectorAll('a').forEach(link => {
+    // Dropdown toggles (accordion effect)
+    const dropdownToggles = navList.querySelectorAll('.nav__link--dropdown-toggle');
+    dropdownToggles.forEach(toggleBtn => {
+        toggleBtn.addEventListener('click', (e) => {
+            // Only act like an accordion on mobile view (where dropdown is static)
+            if (window.innerWidth <= 992) {
+                e.preventDefault();
+                const parentItem = toggleBtn.closest('.nav__item--has-dropdown');
+
+                // Close other open dropdowns for a clean accordion effect
+                navList.querySelectorAll('.nav__item--has-dropdown.is-active').forEach(item => {
+                    if (item !== parentItem) item.classList.remove('is-active');
+                });
+
+                parentItem.classList.toggle('is-active');
+            }
+        });
+    });
+
+    // Close menu on normal link click (ignore dropdown toggles)
+    navList.querySelectorAll('a:not(.nav__link--dropdown-toggle)').forEach(link => {
         link.addEventListener('click', () => {
             navList.classList.remove('open');
             toggle.classList.remove('active');
             toggle.setAttribute('aria-expanded', 'false');
             navList.setAttribute('aria-hidden', 'true');
+            // Reset dropdowns
+            navList.querySelectorAll('.nav__item--has-dropdown.is-active').forEach(item => item.classList.remove('is-active'));
         });
     });
 
@@ -64,6 +85,8 @@ export function initMobileNav() {
             toggle.classList.remove('active');
             toggle.setAttribute('aria-expanded', 'false');
             navList.setAttribute('aria-hidden', 'true');
+            // Reset dropdowns
+            navList.querySelectorAll('.nav__item--has-dropdown.is-active').forEach(item => item.classList.remove('is-active'));
             toggle.focus();
         }
     });
@@ -75,6 +98,8 @@ export function initMobileNav() {
             toggle.classList.remove('active');
             toggle.setAttribute('aria-expanded', 'false');
             navList.setAttribute('aria-hidden', 'true');
+            // Reset dropdowns
+            navList.querySelectorAll('.nav__item--has-dropdown.is-active').forEach(item => item.classList.remove('is-active'));
         }
     });
 }

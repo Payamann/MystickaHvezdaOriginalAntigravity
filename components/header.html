@@ -16,18 +16,50 @@
 
             <nav class="nav">
                 <ul class="nav__list">
-                    <li><a href="index.html" class="nav__link">Domů</a></li>
-                    <li><a href="horoskopy.html" class="nav__link">Horoskopy</a></li>
-                    <li><a href="tarot.html" class="nav__link">Tarot</a></li>
-                    <li><a href="natalni-karta.html" class="nav__link">Natální Karta</a></li>
-                    <li><a href="partnerska-shoda.html" class="nav__link">Shoda</a></li>
-                    <li><a href="numerologie.html" class="nav__link">Numerologie</a></li>
-                    <li><a href="astro-mapa.html" class="nav__link">Mapa</a></li>
-                    <li><a href="kristalova-koule.html" class="nav__link">Orákulum</a></li>
-                    <li><a href="mentor.html" class="nav__link" data-premium="true">Průvodce</a></li>
-                    <li><a href="cenik.html" class="nav__link">Ceník</a></li>
+                    <li class="nav__item"><a href="index.html" class="nav__link">Domů</a></li>
+
+                    <li class="nav__item nav__item--has-dropdown">
+                        <a href="#" class="nav__link nav__link--dropdown-toggle">Astrologie <span
+                                class="dropdown-icon">▾</span></a>
+                        <ul class="nav__dropdown">
+                            <li><a href="horoskopy.html" class="nav__dropdown-link">Horoskopy</a></li>
+                            <li><a href="natalni-karta.html" class="nav__dropdown-link">Natální Karta</a></li>
+                            <li><a href="astro-mapa.html" class="nav__dropdown-link">Astro Mapa</a></li>
+                            <li><a href="partnerska-shoda.html" class="nav__dropdown-link">Partnerská Shoda</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav__item nav__item--has-dropdown">
+                        <a href="#" class="nav__link nav__link--dropdown-toggle">Věštění & Tarot <span
+                                class="dropdown-icon">▾</span></a>
+                        <ul class="nav__dropdown">
+                            <li><a href="tarot.html" class="nav__dropdown-link">Tarot</a></li>
+                            <li><a href="andelske-karty.html" class="nav__dropdown-link">Andělské Karty</a></li>
+                            <li><a href="kristalova-koule.html" class="nav__dropdown-link">Křišťálová Koule</a></li>
+                            <li><a href="snar.html" class="nav__dropdown-link">Lexikon Snů (Snář)</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav__item nav__item--has-dropdown">
+                        <a href="#" class="nav__link nav__link--dropdown-toggle">Čísla & Energie <span
+                                class="dropdown-icon">▾</span></a>
+                        <ul class="nav__dropdown">
+                            <li><a href="numerologie.html" class="nav__dropdown-link">Numerologie</a></li>
+                            <li><a href="biorytmy.html" class="nav__dropdown-link">Biorytmy</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav__item nav__item--has-dropdown">
+                        <a href="#" class="nav__link nav__link--dropdown-toggle">Premium <span
+                                class="dropdown-icon">▾</span></a>
+                        <ul class="nav__dropdown">
+                            <li><a href="mentor.html" class="nav__dropdown-link" data-premium="true">Průvodce</a></li>
+                            <li><a href="cenik.html" class="nav__dropdown-link">Ceník</a></li>
+                        </ul>
+                    </li>
+
                     <!-- Mobile-only auth buttons (shown inside hamburger menu) -->
-                    <li class="mobile-auth-buttons">
+                    <li class="nav__item mobile-auth-buttons">
                         <a href="profil.html" id="mobile-profile-link" class="btn btn--glass btn--sm"
                             style="display: none;">👤 Profil</a>
                         <a href="#" id="mobile-auth-register-btn" class="btn btn--secondary">Registrace</a>

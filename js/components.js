@@ -7,8 +7,8 @@
 document.addEventListener('DOMContentLoaded', async () => {
     // Load header and footer in parallel for faster initial paint
     await Promise.all([
-        loadComponent('header-placeholder', 'components/header.html'),
-        loadComponent('footer-placeholder', 'components/footer.html')
+        loadComponent('header-placeholder', 'components/header.html?v=2'),
+        loadComponent('footer-placeholder', 'components/footer.html?v=2')
     ]);
 
     // Dispatch event to signal that UI shells are ready

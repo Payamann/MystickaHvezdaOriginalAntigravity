@@ -4,286 +4,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Hvězdný Průvodce | Mystická Hvězda</title>
-    <meta name="description" content="Váš osobní duchovní mentor. Ptejte se na osud, vztahy a životní směr.">
+    <meta name="description"
+        content="Zjistěte své osobní biorytmy. Fyzický, emoční a intelektuální cyklus na základě vašeho data narození zdarma a online.">
+    <meta name="keywords"
+        content="biorytmy, osobní biorytmy, výpočet biorytmů, fyzický cyklus, emoční cyklus, intelektuální cyklus">
+    <meta name="theme-color" content="#0a0a1a">
 
-    <!-- Fonts -->
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Osobní Biorytmy Online | Mystická Hvězda">
+    <meta property="og:description"
+        content="Odhalte své silné a slabé dny! Výpočet osobních biorytmů zdarma na Mystická Hvězda.">
+    <meta property="og:image" content="img/hero-3d.webp">
+    <meta property="og:locale" content="cs_CZ">
+
+    <!-- SEO Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Výpočet Biorytmů Online",
+        "applicationCategory": "LifestyleApplication",
+        "operatingSystem": "Web"
+    }
+    </script>
+    <title>Osobní Biorytmy | Mystická Hvězda</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📉</text></svg>">
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="img/icon-192.webp">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="css/style.v2.css?v=3">
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="css/style.v2.css?v=2">
+    <!-- Chart.js for biorhythms -->
+    <script src="js/vendor/chart.js" defer></script>
+
+    <script src="js/biorhythms.js?v=2" defer></script>
+
     <style>
-        /* Specific Styles for Mentor Chat */
-        .chat-container {
-            max-width: 800px;
-            margin: 2rem auto;
-            height: 70vh;
-            display: flex;
-            flex-direction: column;
-            background: rgba(10, 10, 26, 0.8);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: 16px;
-            backdrop-filter: blur(10px);
-            overflow: hidden;
-            box-shadow: 0 0 30px rgba(155, 89, 182, 0.1);
+        .bio-form {
+            max-width: 500px;
+            margin: 0 auto;
         }
 
-        .chat-header {
-            padding: 1.5rem;
-            background: rgba(212, 175, 55, 0.05);
-            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .mentor-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--color-mystic-gold), #9b59b6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        .biorhythm-chart {
+            width: 100%;
+            height: 300px;
+            margin-top: var(--space-lg);
             position: relative;
         }
 
-        .mentor-avatar::after {
-            content: '';
-            position: absolute;
-            bottom: 0px;
-            right: 0px;
+        .bio-legend {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-md);
+            margin-top: var(--space-xl);
+            flex-wrap: wrap;
+        }
+
+        .bio-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: var(--text-sm);
+        }
+
+        .bio-color {
             width: 12px;
             height: 12px;
-            background: #4CAF50;
-            border: 2px solid #0a0a1a;
             border-radius: 50%;
+            display: inline-block;
         }
 
-        .chat-messages {
-            flex: 1;
-            padding: 1.5rem;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            scroll-behavior: smooth;
+        .bio-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-md);
+            margin-top: var(--space-lg);
         }
 
-        .message {
-            max-width: 80%;
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            line-height: 1.6;
+        .bio-stat-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            text-align: center;
+        }
+
+        .bio-stat-label {
+            font-size: var(--text-xs);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-silver-mist);
+            margin-bottom: 4px;
+        }
+
+        .bio-stat-value {
+            font-size: var(--text-lg);
+            font-weight: 700;
+            font-family: var(--font-heading);
+        }
+
+        /* Date Input Styling Override */
+        .bio-date-wrapper {
             position: relative;
-            animation: fadeIn 0.3s ease-out;
+            max-width: 300px;
+            margin: 0 auto;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .message--mentor {
-            align-self: flex-start;
+        .bio-date-input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1.2rem;
+            color: #ffffff;
             background: rgba(255, 255, 255, 0.05);
-            border-bottom-left-radius: 2px;
-            color: var(--color-starlight);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .message--user {
-            align-self: flex-end;
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(155, 89, 182, 0.2));
-            border-bottom-right-radius: 2px;
-            color: #fff;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-        }
-
-        .chat-input-area {
-            padding: 1.5rem;
-            background: rgba(10, 10, 26, 0.95);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            gap: 1rem;
-            align-items: flex-end;
-        }
-
-        .chat-input {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(212, 175, 55, 0.3);
             border-radius: 12px;
-            padding: 1rem;
-            color: #fff;
-            font-family: inherit;
-            resize: none;
-            min-height: 50px;
-            max-height: 120px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            font-family: var(--font-body);
             transition: all 0.3s ease;
-            cursor: text !important;
-            caret-color: white !important;
-            /* Force white caret for visibility */
+            cursor: pointer;
         }
 
-        .chat-input:focus {
+        .bio-date-input:focus {
             outline: none;
             border-color: var(--color-mystic-gold);
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3), inset 0 2px 5px rgba(0, 0, 0, 0.5);
         }
 
-        .send-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--color-mystic-gold);
-            border: none;
-            color: #0a0a1a;
-            font-size: 1.2rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .send-btn:hover:not(:disabled) {
-            transform: scale(1.1);
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
-        }
-
-        .send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            background: #444;
-        }
-
-        .typing-indicator {
-            display: flex;
-            gap: 4px;
-            padding: 0.5rem 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            align-self: flex-start;
-            margin-bottom: 1rem;
-            display: none;
-        }
-
-        .typing-dot {
-            width: 6px;
-            height: 6px;
-            background: var(--color-mystic-gold);
-            border-radius: 50%;
-            animation: bounce 1.4s infinite ease-in-out both;
-        }
-
-        .typing-dot:nth-child(1) {
-            animation-delay: -0.32s;
-        }
-
-        .typing-dot:nth-child(2) {
-            animation-delay: -0.16s;
-        }
-
-        @keyframes bounce {
-
-            0%,
-            80%,
-            100% {
-                transform: scale(0);
-            }
-
-            40% {
-                transform: scale(1);
-            }
-        }
-
-        /* Paywall Overlay */
-        .limit-reached-overlay {
+        /* Hide the default calendar icon and make the whole input clickable */
+        .bio-date-input::-webkit-calendar-picker-indicator {
             position: absolute;
-            bottom: 0;
+            top: 0;
             left: 0;
+            right: 0;
+            bottom: 0;
             width: 100%;
             height: 100%;
-            background: rgba(10, 10, 26, 0.8);
-            backdrop-filter: blur(5px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            z-index: 10;
-            display: none;
-            /* Hidden by default */
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .bio-date-input::-webkit-datetime-edit {
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .bio-stats {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 
-<body class="page-mentor">
+<body>
+    <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
     <div class="stars" aria-hidden="true"></div>
 
-    <!-- Headers Placeholder -->
+    <!-- HEADER (loaded dynamically) -->
     <div id="header-placeholder"></div>
 
-    <main class="section section--hero" style="min-height: 100vh; padding-top: 180px;">
-        <div class="container">
-            <div style="text-align: center; margin-bottom: 2rem; position: relative; z-index: 2;" data-animate>
-                <h1 class="hero__title">Hvězdný <span class="text-gradient">Průvodce</span></h1>
-                <p class="hero__subtitle">Váš osobní duchovní mentor, který zná váš osud.</p>
+    <main id="main-content">
+        <!-- HERO -->
+        <section class="section section--hero" style="min-height: auto; padding-bottom: 0;">
+            <div class="container text-center">
+                <h1 class="hero__title">
+                    Osobní <span class="text-gradient">Biorytmy</span>
+                </h1>
+                <p class="hero__subtitle" style="max-width: 600px; margin: 0 auto;">
+                    Poznejte své silné a slabé dny. Vypočítejte si svůj fyzický, emoční a intelektuální cyklus na
+                    základě data narození.
+                </p>
             </div>
+        </section>
 
-            <div class="chat-container box-shadow-glow" data-animate>
-                <!-- Chat Header -->
-                <div class="chat-header">
-                    <div class="mentor-avatar">🧙‍♂️</div>
-                    <div>
-                        <h3 style="margin: 0; color: var(--color-mystic-gold);">Mentor</h3>
-                        <span style="font-size: 0.8rem; color: var(--color-silver-mist);">Online • Zde pro tvé životní
-                            otázky</span>
-                    </div>
-                </div>
-
-                <!-- Messages Area -->
-                <div class="chat-messages" id="chat-messages">
-                    <!-- Welcome Message -->
-                    <div class="message message--mentor">
-                        Vítej, poutníku. Cítím tvou energii. Jsem zde, abych ti pomohl nahlédnout za oponu reality
-                        pomocí moudrosti hvězd. Na co se chceš dnes zeptat? 🦉
+        <!-- CALCULATOR -->
+        <section class="section">
+            <div class="container">
+                <div class="card" style="max-width: 800px; margin: 0 auto;" data-animate>
+                    <div class="text-center mb-xl">
+                        <h3 class="card__title" style="margin: 0;">Zadejte datum narození</h3>
                     </div>
 
-                    <!-- Typing Indicator -->
-                    <div class="typing-indicator" id="typing-indicator">
-                        <div class="typing-dot"></div>
-                        <div class="typing-dot"></div>
-                        <div class="typing-dot"></div>
+                    <form id="biorhythm-form" class="bio-form">
+                        <div class="form-group bio-date-wrapper">
+                            <input type="date" id="birthdate" class="bio-date-input" required max="">
+                        </div>
+                        <div class="text-center" style="margin-top: var(--space-xl);">
+                            <button type="submit" class="btn btn--primary btn--lg"
+                                style="letter-spacing: 1px; min-width: 250px;">Vypočítat mé biorytmy</button>
+                        </div>
+                    </form>
+
+                    <!-- RESULTS SECTION (Hidden initially) -->
+                    <div id="biorhythm-results" style="display: none; margin-top: var(--space-xxl);">
+                        <hr style="border-color: rgba(255,255,255,0.1); margin-bottom: var(--space-xl);">
+
+                        <h3 class="text-center">Vaše biorytmy pro dnešní den</h3>
+
+                        <div class="bio-stats" id="bio-stats-container">
+                            <!-- Populated by JS -->
+                        </div>
+
+                        <div class="biorhythm-chart">
+                            <canvas id="bio-canvas"></canvas>
+                        </div>
+
+                        <div class="bio-legend">
+                            <div class="bio-legend-item"><span class="bio-color"
+                                    style="background: var(--color-danger);"></span> Fyzický (23 dní)</div>
+                            <div class="bio-legend-item"><span class="bio-color"
+                                    style="background: var(--color-success);"></span> Emoční (28 dní)</div>
+                            <div class="bio-legend-item"><span class="bio-color"
+                                    style="background: var(--color-info);"></span> Intelektuální (33 dní)</div>
+                        </div>
+
+                        <!-- CONVERSION CTA -->
+                        <div class="card glass-card text-center"
+                            style="margin-top: var(--space-xl); background: rgba(212, 175, 55, 0.05); border-color: rgba(212, 175, 55, 0.2);">
+                            <h4 style="color: var(--color-mystic-gold); margin-bottom: 1rem;">🌟 Chcete si uložit své
+                                biorytmy?</h4>
+                            <p style="margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--color-silver-mist);">
+                                Založte si bezplatný profil na Mystické Hvězdě. Budete mít přístup k osobnímu
+                                dashboardu, astrologickým výkladům a uložení vašeho data narození.
+                            </p>
+                            <a href="profil.html" class="btn btn--secondary">Vytvořit profil zdarma</a>
+                        </div>
                     </div>
-                </div>
-
-                <!-- Input Area -->
-                <div class="chat-input-area">
-                    <textarea id="chat-input" class="chat-input"
-                        placeholder="Napiš svou otázku... (např. Co mě čeká v lásce?)" rows="1"></textarea>
-                    <button id="send-btn" class="send-btn" disabled>
-                        ➤
-                    </button>
-
-                    <!-- Limit Overlay (Inside Input Area for FREE users) -->
-                    <!-- Logic handled in JS -->
                 </div>
             </div>
-        </div>
+        </section>
     
     <!-- CROSS-LINKING SEKCE -->
     <section class="section" style="padding-top: 0; padding-bottom: 3rem;">
@@ -310,7 +271,11 @@
                     <div style="color: #fff; font-weight: 500; font-size: 0.95rem;">Denní horoskop</div>
                     <div style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 0.25rem;">Vaše znamení dnes</div>
                 </a>
-                
+                <a href="mentor.html" class="card" style="text-decoration: none; padding: 1.5rem; text-align: center; border-radius: 16px; background: rgba(20,15,30,0.6); border: 1px solid rgba(235,192,102,0.2); transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(235,192,102,0.5)'" onmouseout="this.style.transform='';this.style.borderColor='rgba(235,192,102,0.2)'">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌟</div>
+                    <div style="color: #fff; font-weight: 500; font-size: 0.95rem;">Hvězdný Průvodce</div>
+                    <div style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 0.25rem;">AI duchovní mentor</div>
+                </a>
                 <a href="natalni-karta.html" class="card" style="text-decoration: none; padding: 1.5rem; text-align: center; border-radius: 16px; background: rgba(20,15,30,0.6); border: 1px solid rgba(235,192,102,0.2); transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(235,192,102,0.5)'" onmouseout="this.style.transform='';this.style.borderColor='rgba(235,192,102,0.2)'">
                     <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚛️</div>
                     <div style="color: #fff; font-weight: 500; font-size: 0.95rem;">Natální karta</div>
@@ -336,25 +301,14 @@
                     <div style="color: #fff; font-weight: 500; font-size: 0.95rem;">Lexikon snů</div>
                     <div style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 0.25rem;">Analýza vašeho snu</div>
                 </a>
-                <a href="biorytmy.html" class="card" style="text-decoration: none; padding: 1.5rem; text-align: center; border-radius: 16px; background: rgba(20,15,30,0.6); border: 1px solid rgba(235,192,102,0.2); transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(235,192,102,0.5)'" onmouseout="this.style.transform='';this.style.borderColor='rgba(235,192,102,0.2)'">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">〰️</div>
-                    <div style="color: #fff; font-weight: 500; font-size: 0.95rem;">Biorytmy</div>
-                    <div style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 0.25rem;">Dnešní křivky energie</div>
-                </a>
+                
             </div>
         </div>
     </section>
     </main>
 
-    <!-- Footer Placeholder -->
+    <!-- Footer -->
     <div id="footer-placeholder"></div>
-
-    <!-- Scripts -->
-
-
-
-    <!-- Added for header scroll effect -->
-    <script type="module" src="js/mentor.js"></script>
 
     <script src="js/api-config.js?v=5" defer></script>
     <script src="js/templates.js?v=5" defer></script>

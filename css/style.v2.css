@@ -642,6 +642,124 @@ body.page-mentor .header {
   width: 100%;
 }
 
+/* Dropdown Base Styles */
+.nav__item {
+  position: relative;
+}
+
+.nav__item--has-dropdown>.nav__link {
+  padding-right: 15px;
+  /* space for icon */
+}
+
+.dropdown-icon {
+  font-size: 0.7rem;
+  margin-left: 2px;
+  transition: transform var(--transition-fast);
+  display: inline-block;
+}
+
+.nav__dropdown {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: rgba(15, 10, 30, 0.95);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  padding: var(--space-sm) 0;
+  min-width: 200px;
+  list-style: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-base);
+  z-index: 100;
+  pointer-events: none;
+}
+
+/* Desktop Hover Interaction */
+@media (min-width: 993px) {
+  .nav__item--has-dropdown:hover .nav__dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+  }
+
+  .nav__item--has-dropdown:hover .dropdown-icon {
+    transform: rotate(180deg);
+  }
+}
+
+.nav__dropdown-link {
+  display: block;
+  padding: var(--space-sm) var(--space-lg);
+  color: var(--color-silver-mist);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.nav__dropdown-link:hover {
+  color: var(--color-mystic-gold);
+  background: rgba(212, 175, 55, 0.1);
+  padding-left: calc(var(--space-lg) + 5px);
+  /* small indentaion effect */
+}
+
+/* Mobile Accordion Interaction */
+@media (max-width: 992px) {
+  .nav__item--has-dropdown>.nav__link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .nav__dropdown {
+    position: static;
+    transform: none;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin-left: var(--space-md);
+    min-width: unset;
+    /* Initially hidden via max-height and overflow */
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-base);
+    /* Remove list styles for mobile accordion */
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .nav__dropdown-link {
+    padding: var(--space-xs) 0;
+    font-size: 0.8rem;
+  }
+
+  /* When JS toggles .is-active on .nav__item */
+  .nav__item.is-active .nav__dropdown {
+    max-height: 500px;
+    opacity: 1;
+    visibility: visible;
+    margin-top: var(--space-sm);
+    margin-bottom: var(--space-sm);
+    pointer-events: auto;
+  }
+
+  .nav__item.is-active .dropdown-icon {
+    transform: rotate(180deg);
+  }
+}
+
 /* Mobile menu toggle */
 .nav__toggle {
   display: none;

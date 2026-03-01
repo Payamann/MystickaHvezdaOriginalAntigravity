@@ -2,10 +2,10 @@
  * Main dashboard controller for Profile page
  */
 
-import { formatPlan, getZodiacSign, showZodiacSign } from './shared.js'; // These will be moved to shared or kept here
+import { getReadingIcon, getReadingTitle } from './shared.js';
 import { loadReadings, showMoreReadings, handleFilterChange, renderReadings } from './readings.js';
 import { loadFavorites } from './favorites.js';
-import { toggleAvatarPicker, selectAvatar, loadSubscriptionStatus, renderSubscriptionCard } from './settings.js';
+import { toggleAvatarPicker, selectAvatar, loadSubscriptionStatus } from './settings.js';
 import { viewReading, closeReadingModal, toggleFavoriteModal, deleteReading } from './modal.js';
 
 // Re-export utility functions that were originally in dashboard but fit better here or shared
@@ -125,15 +125,7 @@ function updateStats(readings) {
     animateCounter('stat-streak', streak);
 }
 
-// Biorhythms placeholder (if logic existed it would be imported)
-function initBiorhythms(birthDate) {
-    const bioContainer = document.getElementById('biorhythm-container');
-    if (bioContainer) {
-        // Simple implementation or placeholder
-        // In original file it depended on external lib, we'll keep it simple for now
-        // If the original file had logic, we'd move it to journal.js
-    }
-}
+
 
 // ZODIAC logic moved here as per original file structure
 function getZodiacSignLocal(dateStr) {

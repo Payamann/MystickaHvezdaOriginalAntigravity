@@ -1,0 +1,310 @@
+[
+    {
+        "id": "archangel_michael",
+        "name": "Archanděl Michael",
+        "theme": "Odvaha a Ochrana",
+        "short_message": "Jste v bezpečí. Andělé vás chrání před nižšími energiemi. Mějte odvahu jít za svým cílem.",
+        "archetype": "strength"
+    },
+    {
+        "id": "archangel_raphael",
+        "name": "Archanděl Rafael",
+        "theme": "Uzdravení",
+        "short_message": "Andělé léčitelů pracují s vámi. Odevzdejte jim v modlitbě všechny obavy o zdraví své i svých blízkých.",
+        "archetype": "healing"
+    },
+    {
+        "id": "archangel_gabriel",
+        "name": "Archanděl Gabriel",
+        "theme": "Komunikace a Jasnost",
+        "short_message": "Vyjádřete svou pravdu s láskou a sebedůvěrou. Máte důležité poselství, které svět potřebuje slyšet.",
+        "archetype": "guidance"
+    },
+    {
+        "id": "archangel_uriel",
+        "name": "Archanděl Uriel",
+        "theme": "Moudrost a Náhlá vnuknutí",
+        "short_message": "Vaše nápady jsou odpověďmi na vaše modlitby. Důvěřujte své intuici a podnikněte příslušné kroky.",
+        "archetype": "guidance"
+    },
+    {
+        "id": "archangel_chamuel",
+        "name": "Archanděl Chamuel",
+        "theme": "Mír a Hledání",
+        "short_message": "To, co hledáte, hledá vás. Láska a klid jsou přítomny v této situaci, stačí jen otevřít srdce.",
+        "archetype": "peace"
+    },
+    {
+        "id": "archangel_jophiel",
+        "name": "Archanděl Jofiel",
+        "theme": "Radost a Krása",
+        "short_message": "Oprostěte svůj život od negativních myšlenek. Zaměřte se na krásu kolem sebe i uvnitř vás.",
+        "archetype": "peace"
+    },
+    {
+        "id": "archangel_ariel",
+        "name": "Archanděl Ariel",
+        "theme": "Odvaha a Hojnost",
+        "short_message": "Jste hluboce spojeni s přírodou a její hojností. Nebojte se roztáhnout křídla a letět.",
+        "archetype": "abundance"
+    },
+    {
+        "id": "archangel_metatron",
+        "name": "Archanděl Metatron",
+        "theme": "Duchovní pochopení",
+        "short_message": "Zaměřte se nejprve na své duchovní priority. Věci se začnou samy úžasně skládat dohromady.",
+        "archetype": "purpose"
+    },
+    {
+        "id": "archangel_azrael",
+        "name": "Archanděl Azrael",
+        "theme": "Útěcha a Transformace",
+        "short_message": "Jsem s vámi v dobách zármutku. Pomáhám vám uzdravit vaše srdce a najít klid v nové situaci.",
+        "archetype": "peace"
+    },
+    {
+        "id": "guardian_angel",
+        "name": "Strážný Anděl",
+        "theme": "Neustálá přítomnost",
+        "short_message": "Nikdy nejste sami. Jsem stále s vámi, chráním vás a vedu vaše kroky. Důvěřujte mi.",
+        "archetype": "nature"
+    },
+    {
+        "id": "angel_of_love",
+        "name": "Anděl Lásky",
+        "theme": "Láska k sobě i druhým",
+        "short_message": "Otevřete své srdce k dávání i přijímání lásky. Všechny vaše modlitby za lásku byly vyslyšeny.",
+        "archetype": "love"
+    },
+    {
+        "id": "angel_of_abundance",
+        "name": "Anděl Hojnosti",
+        "theme": "Prosperita",
+        "short_message": "Finanční bloky se odstraňují. Očekávejte nečekané požehnání a podporu z mnoha stran.",
+        "archetype": "abundance"
+    },
+    {
+        "id": "angel_of_peace",
+        "name": "Anděl Míru",
+        "theme": "Harmonie",
+        "short_message": "Hluboký mír zalévá vaši duši. S klidnou myslí přijdou odpovědi na všechny vaše otázky.",
+        "archetype": "love"
+    },
+    {
+        "id": "angel_of_strength",
+        "name": "Anděl Síly",
+        "theme": "Vnitřní síla",
+        "short_message": "Jste mnohem silnější, než si myslíte. Tuto situaci zvládnete s laskavostí a grácií.",
+        "archetype": "strength"
+    },
+    {
+        "id": "angel_of_forgiveness",
+        "name": "Anděl Odpuštění",
+        "theme": "Propuštění minulosti",
+        "short_message": "Odpuštění neznamená slabost. Je to cesta, jak se osvobodit od pout minulosti a začít žít naplno.",
+        "archetype": "love"
+    },
+    {
+        "id": "angel_of_joy",
+        "name": "Anděl Radosti",
+        "theme": "Smích a hra",
+        "short_message": "Berete život příliš vážně. Udělejte si dnes čas na hru, smích a čistou ničím nerušenou radost.",
+        "archetype": "peace"
+    },
+    {
+        "id": "angel_of_patience",
+        "name": "Anděl Trpělivosti",
+        "theme": "Božské načasování",
+        "short_message": "Vaše přání se plní, ale věci potřebují svůj čas dozrát. Nesnažte se tlačit řeku, teče sama.",
+        "archetype": "peace"
+    },
+    {
+        "id": "angel_of_miracles",
+        "name": "Anděl Zázraků",
+        "theme": "Víra v nemožné",
+        "short_message": "Očekávejte zázrak. Vesmír pro vás pracuje na řešení způsobem, který si teď ani neumíte představit.",
+        "archetype": "abundance"
+    },
+    {
+        "id": "angel_of_truth",
+        "name": "Anděl Pravdy",
+        "theme": "Autenticita",
+        "short_message": "Buďte k sobě upřímní. Naslouchejte svému vnitřnímu hlasu a žijte svou pravdu jasně a nahlas.",
+        "archetype": "guidance"
+    },
+    {
+        "id": "angel_of_guidance",
+        "name": "Anděl Vedení",
+        "theme": "Znamení na cestě",
+        "short_message": "Znamení, o která jste prosili, přicházejí. Všímejte si opakujících se čísel, myšlenek nebo i pírek na cestě.",
+        "archetype": "guidance"
+    },
+    {
+        "id": "angel_of_courage",
+        "name": "Anděl Odvahy",
+        "theme": "Hrdinství ducha",
+        "short_message": "Jste připraveni udělat další krok, i když se bojíte. Máte naši plnou podporu, skočte.",
+        "archetype": "strength"
+    },
+    {
+        "id": "angel_of_purpose",
+        "name": "Anděl Životního Poslání",
+        "theme": "Smysl života",
+        "short_message": "Pusťte se do díla, které naplňuje vaše srdce radostí. To je první krok k vašemu životnímu cíli.",
+        "archetype": "purpose"
+    },
+    {
+        "id": "angel_of_balance",
+        "name": "Anděl Rovnováhy",
+        "theme": "Střed",
+        "short_message": "Propojte čas pro práci a čas pro odpočinek. V rovnováze naleznete skutečný klid a efektivitu.",
+        "archetype": "nature"
+    },
+    {
+        "id": "angel_of_trust",
+        "name": "Anděl Důvěry",
+        "theme": "Důvěra ve Vesmír",
+        "short_message": "Všechno má svůj hlubší smysl. Důvěřujte procesu života a vzdejte se snahy mít všechno pod kontrolou.",
+        "archetype": "peace"
+    },
+    {
+        "id": "angel_of_dreams",
+        "name": "Anděl Snů",
+        "theme": "Neviditelný svět",
+        "short_message": "Během spánku dostáváte důležité informace. Věnujte pozornost svým snům a intuici hned po probuzení.",
+        "archetype": "guidance"
+    },
+    {
+        "id": "angel_of_nature",
+        "name": "Anděl Přírody",
+        "theme": "Spojení se Zemí",
+        "short_message": "Běžte načerpat energii do přírody. Čerstvý vzduch a ticho lesa zklidní vaši roztěkanou mysl.",
+        "archetype": "nature"
+    },
+    {
+        "id": "angel_of_creativity",
+        "name": "Anděl Kreativity",
+        "theme": "Tvoření",
+        "short_message": "Vaše duše volá po sebevyjádření prostřednictvím umění. Začněte psát, malovat, tvořit. Otevře to nové cesty.",
+        "archetype": "guidance"
+    },
+    {
+        "id": "angel_of_grace",
+        "name": "Anděl Milosti",
+        "theme": "Laskavost",
+        "short_message": "Místo boje a vzdoru zkuste věci vyřešit laskavostí a pochopením. Ukáže to vaši skutečnou velikost.",
+        "archetype": "peace"
+    },
+    {
+        "id": "angel_of_harmony",
+        "name": "Anděl Harmonie",
+        "theme": "Soulad ve vztazích",
+        "short_message": "Odstraňte bariéry a začněte otevřeně komunikovat. Konflikt se díky tomu rozpustí ve větší harmonii.",
+        "archetype": "love"
+    },
+    {
+        "id": "angel_of_hope",
+        "name": "Anděl Naděje",
+        "theme": "Světlo v tunelu",
+        "short_message": "Nevzdávejte to. I když situace zvenčí vypadá složitě, už nyní se v pozadí připravuje velmi dobré řešení.",
+        "archetype": "peace"
+    },
+    {
+        "id": "angel_of_freedom",
+        "name": "Anděl Svobody",
+        "theme": "Odpoutání",
+        "short_message": "Pusťte se toho, co už vám neslouží. Zbavte se omezujících návyků nebo nefunkčních vztahů.",
+        "archetype": "guidance"
+    },
+    {
+        "id": "angel_of_gratitude",
+        "name": "Anděl Vděčnosti",
+        "theme": "Magnet na zázraky",
+        "short_message": "Poděkujte za všechno dobré ve svém životě. Síla vděčnosti je jako magnet, který k vám přitáhne ještě více dobra.",
+        "archetype": "abundance"
+    },
+    {
+        "id": "angel_of_health",
+        "name": "Anděl Zdraví",
+        "theme": "Péče o sebe",
+        "short_message": "Soustřeďte se na podporu svého fyzického zdraví. Změna návyků přinese okamžitý vzestup energie a vitality.",
+        "archetype": "healing"
+    },
+    {
+        "id": "angel_of_new_beginnings",
+        "name": "Anděl Nových Začátků",
+        "theme": "Znovuzrození",
+        "short_message": "Před vámi se otevírá nová čistá kapitola. Neohlížejte se zpět s lítostí, ale vykročte vpřed s nadšením.",
+        "archetype": "purpose"
+    },
+    {
+        "id": "angel_of_intuition",
+        "name": "Anděl Intuice",
+        "theme": "Vnitřní zrak",
+        "short_message": "Víte, co máte udělat. Slyšíte tichý hlas v sobě? Následujte ho, i když rozum říká něco jiného.",
+        "archetype": "guidance"
+    },
+    {
+        "id": "angel_of_focus",
+        "name": "Anděl Soustředění",
+        "theme": "Správný cíl",
+        "short_message": "Netříštěte svou energii do mnoha stran. Určete si jednu jedinou prioritu a plně se na ni soustřeďte.",
+        "archetype": "purpose"
+    },
+    {
+        "id": "angel_of_romance",
+        "name": "Anděl Romantiky",
+        "theme": "Partnerství",
+        "short_message": "Andělé romantiky pracují na vaší milostné situaci. Udržujte si vize krásného a láskyplného vztahu.",
+        "archetype": "love"
+    },
+    {
+        "id": "angel_of_friendship",
+        "name": "Anděl Přátelství",
+        "theme": "Spojení s ostatními",
+        "short_message": "Najděte si čas na ty, které máte rádi. Vaše přátelství potřebují vyživit. Stejně tak se nebojte budovat nová.",
+        "archetype": "love"
+    },
+    {
+        "id": "angel_of_learning",
+        "name": "Anděl Učení",
+        "theme": "Nové obzory",
+        "short_message": "Tato situace je pro vás důležitou životní lekcí. Až ji pochopíte, už ji nebudete muset nikdy opakovat.",
+        "archetype": "purpose"
+    },
+    {
+        "id": "angel_of_celebration",
+        "name": "Anděl Oslav",
+        "theme": "Pozitivní výsledky",
+        "short_message": "Úspěch je blízko! Brzy nastane velmi radostná událost nebo úleva z vyřešení problému.",
+        "archetype": "guidance"
+    },
+    {
+        "id": "angel_of_letting_go",
+        "name": "Anděl Odpuštění a Puštění",
+        "theme": "Flow",
+        "short_message": "Přestaňte situaci tak křečovitě držet. Nechte věci plynout a uvidíte, jak se vyvinou samy od sebe k vaší spokojenosti.",
+        "archetype": "love"
+    },
+    {
+        "id": "angel_of_wealth",
+        "name": "Anděl Bohatství",
+        "theme": "Zdroje a peníze",
+        "short_message": "Soustřeďte se nyní na vytváření pevných základů. Vaše nápady jsou zlatým dolem, pokud u nich vydržíte.",
+        "archetype": "abundance"
+    },
+    {
+        "id": "angel_of_destiny",
+        "name": "Anděl Osudu",
+        "theme": "Karmické setkání",
+        "short_message": "Náhody neexistují. Právě zažíváte situaci přesně tak, jak ji vaše duše potřebuje pro svůj růst. Přijměte to.",
+        "archetype": "purpose"
+    },
+    {
+        "id": "angel_of_presence",
+        "name": "Anděl Přítomnosti",
+        "theme": "Tady a teď",
+        "short_message": "Trávíte příliš mnoho času v minulosti, nebo ve strachu z budoucnosti. Vraťte svou pozornost plně do přítomného okamžiku.",
+        "archetype": "nature"
+    }
+]

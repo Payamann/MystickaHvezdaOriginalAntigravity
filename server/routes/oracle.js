@@ -64,6 +64,37 @@ router.post('/crystal-ball', optionalPremiumCheck, async (req, res) => {
     }
 });
 
+// ─── Lexikon Snů ──────────────────────────────────────────────────────────────
+
+router.post('/dream', authenticateToken, async (req, res) => {
+    try {
+        const { dream } = req.body;
+        const userId = req.user.id;
+
+        if (!dream || typeof dream !== 'string' || dream.length > 3000) {
+            return res.status(400).json({ success: false, error: 'Popis snu je vyžadován (max 3000 znaků).' });
+        }
+
+        const userIsPremium = await isPremiumUser(userId);
+
+        if (!userIsPremium) {
+            return res.status(403).json({
+                success: false,
+                error: 'Komplexní noční vhledy jsou dostupné pouze pro Hvězdné Průvodce (Premium).',
+                code: 'PREMIUM_REQUIRED'
+            });
+        }
+
+        const message = `Sen: "${dream}"\nProsím o hlubokou analýzu tohoto snu.`;
+        const response = await callGemini(SYSTEM_PROMPTS.dreamAnalysis, message);
+        res.json({ success: true, response });
+
+    } catch (error) {
+        console.error('Dream Analysis Error:', error);
+        res.status(500).json({ success: false, error: 'Nepodařilo se navázat spojení se snovou sférou...' });
+    }
+});
+
 // ─── Tarot ────────────────────────────────────────────────────────────────────
 
 router.post('/tarot', authenticateToken, async (req, res) => {
@@ -190,6 +221,45 @@ router.post('/astrocartography', authenticateToken, requirePremium, async (req, 
     } catch (error) {
         console.error('Astrocartography Error:', error.message);
         res.status(500).json({ success: false, error: 'Planetární linie jsou momentálně zahaleny mlhou...' });
+    }
+});
+
+// ─── Angel Cards ──────────────────────────────────────────────────────────────
+
+router.post('/angel-card', optionalPremiumCheck, async (req, res) => {
+    try {
+        const { card, intention = 'obecný vhled do dnešního dne' } = req.body;
+
+        if (!card || !card.name || !card.theme) {
+            return res.status(400).json({ success: false, error: 'Karta je povinná.' });
+        }
+
+        // If the user is unauthenticated or Free tier and just wants the static card, we could theoretically
+        // just return the static message, but the frontend will probably handle that.
+        // This endpoint will be called when the user actually clicks "Získat hluboký AI výklad"
+
+        // PREMIUM GATE: We decided Angel Card deep interpretation is for Premium only, 
+        // to drive subscriptions, while the static pull is Free.
+        if (!req.isPremium) {
+            return res.json({
+                success: true,
+                isTeaser: true,
+                response: null,
+                message: 'Hluboká AI interpretace Andělské karty je dostupná pouze pro Premium uživatele.'
+            });
+        }
+
+        const safeCardName = String(card.name).substring(0, 100);
+        const safeCardTheme = String(card.theme).substring(0, 100);
+        const safeIntention = String(intention).substring(0, 200);
+
+        const message = `Vytažená karta: ${safeCardName}\nTéma karty: ${safeCardTheme}\nZáměr / Otázka uživatele: ${safeIntention}\n\nVytvoř laskavé spojení, vysvětli poselství této karty pro tuto situaci a poraď praktický laskavý krok.`;
+
+        const response = await callGemini(SYSTEM_PROMPTS.angelCard, message);
+        res.json({ success: true, response, isTeaser: false });
+    } catch (error) {
+        console.error('Angel Card Error:', error.message);
+        res.status(500).json({ success: false, error: 'Andělská křídla jsou momentálně zavinutá...' });
     }
 });
 
