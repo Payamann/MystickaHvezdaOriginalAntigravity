@@ -313,6 +313,40 @@
       </div>
     </section>
 
+    <!-- KARTA DNE WIDGET -->
+    <section class="section" style="padding: 4rem 0; background: linear-gradient(135deg, rgba(15,10,35,0.95), rgba(25,10,50,0.95));">
+      <div class="container">
+        <div class="section__header" data-animate>
+          <span class="section__badge">Každý den nová</span>
+          <h2 class="section__title">Karta dne</h2>
+          <p class="section__text">Dnešní andělské poselství připravené hvězdami právě pro vás.</p>
+        </div>
+        <div id="karta-dne-widget" style="max-width:480px;margin:0 auto;text-align:center;" data-animate>
+          <div id="kdd-card" style="perspective:1000px;cursor:pointer;margin-bottom:1.5rem;" onclick="revealKartaDne()" title="Klikněte pro odhalení">
+            <div id="kdd-inner" style="position:relative;width:200px;height:320px;margin:0 auto;transform-style:preserve-3d;transition:transform 0.8s cubic-bezier(0.4,0,0.2,1);border-radius:16px;">
+              <div style="position:absolute;inset:0;background:linear-gradient(135deg,#2d1b69,#1a0a2e);border:2px solid rgba(212,175,55,0.4);border-radius:16px;display:flex;align-items:center;justify-content:center;backface-visibility:hidden;box-shadow:0 20px 60px rgba(155,89,182,0.3);">
+                <div style="font-size:4rem;animation:float 3s ease-in-out infinite;">✨</div>
+              </div>
+              <div id="kdd-front" style="position:absolute;inset:0;background:linear-gradient(135deg,#1e1040,#2d1060);border:2px solid var(--color-mystic-gold);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;transform:rotateY(180deg);padding:1.5rem;box-shadow:0 20px 60px rgba(212,175,55,0.2);">
+                <div id="kdd-emoji" style="font-size:3.5rem;margin-bottom:0.5rem;"></div>
+                <div id="kdd-name" style="font-family:'Cinzel',serif;color:var(--color-mystic-gold);font-size:1.1rem;font-weight:600;margin-bottom:0.5rem;"></div>
+                <div id="kdd-keyword" style="color:rgba(255,255,255,0.6);font-size:0.85rem;letter-spacing:1px;text-transform:uppercase;"></div>
+              </div>
+            </div>
+          </div>
+          <p id="kdd-hint" style="color:rgba(255,255,255,0.4);font-size:0.9rem;">✨ Klikněte pro odhalení dnešní karty</p>
+          <div id="kdd-message" style="display:none;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:1.5rem;margin-top:1rem;text-align:left;">
+            <p id="kdd-text" style="color:rgba(255,255,255,0.8);line-height:1.7;font-size:0.95rem;"></p>
+            <div style="margin-top:1rem;display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;">
+              <a href="andelske-karty.html" class="btn btn--ghost" style="font-size:.85rem;padding:.5rem 1.2rem;">Celý výklad →</a>
+              <a href="tarot.html" class="btn btn--ghost" style="font-size:.85rem;padding:.5rem 1.2rem;">🃏 Tarot výklad</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
     <!-- ============================================
          HOW IT WORKS (DIVI: Number Counter Module)
          ============================================ -->
