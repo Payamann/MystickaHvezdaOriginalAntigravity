@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vítejte v Mystické Hvězdě | Nastavení</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.v2.min.css?v=4">
+    <style>
+        body {
+            background: #0a0a1a;
+        }
+
+        .onboarding {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .onboarding__card {
+            max-width: 560px;
+            width: 100%;
+            background: rgba(15, 10, 30, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .onboarding__card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at center, rgba(155, 89, 182, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .progress-bar__step {
+            flex: 1;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: background 0.4s;
+        }
+
+        .progress-bar__step.active {
+            background: var(--color-mystic-gold);
+        }
+
+        .progress-bar__step.done {
+            background: rgba(212, 175, 55, 0.4);
+        }
+
+        /* Steps */
+        .step-view {
+            display: none;
+        }
+
+        .step-view.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .step-icon {
+            font-size: 3.5rem;
+            display: block;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .step-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            text-align: center;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.55);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        /* Zodiac grid */
+        .zodiac-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.6rem;
+            margin-bottom: 2rem;
+        }
+
+        .zodiac-btn {
+            padding: 0.75rem 0.4rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .zodiac-btn span {
+            display: block;
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .zodiac-btn:hover,
+        .zodiac-btn.selected {
+            border-color: var(--color-mystic-gold);
+            background: rgba(212, 175, 55, 0.12);
+            color: white;
+        }
+
+        /* Interest chips */
+        .interest-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-bottom: 2rem;
+        }
+
+        .interest-chip {
+            padding: 0.55rem 1.1rem;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.04);
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            font-size: 0.88rem;
+            transition: all 0.2s;
+        }
+
+        .interest-chip:hover,
+        .interest-chip.selected {
+            border-color: #9b59b6;
+            background: rgba(155, 89, 182, 0.15);
+            color: white;
+        }
+
+        .btn-full {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .step-back {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            margin-bottom: 1.5rem;
+            padding: 0;
+        }
+
+        .step-back:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="stars" aria-hidden="true"></div>
+
+    <div class="onboarding">
+        <div class="onboarding__card">
+            <!-- Progress -->
+            <div class="progress-bar">
+                <div class="progress-bar__step active" id="prog-1"></div>
+                <div class="progress-bar__step" id="prog-2"></div>
+                <div class="progress-bar__step" id="prog-3"></div>
+            </div>
+
+            <!-- Step 1: Welcome -->
+            <div class="step-view active" id="step-1">
+                <span class="step-icon">✨</span>
+                <h1 class="step-title">Vítejte v Mystické Hvězdě</h1>
+                <p class="step-subtitle">Za chvíli přizpůsobíme zkušenost přesně vám.<br>Jen 2 rychlé otázky.</p>
+                <button class="btn btn--primary btn-full" onclick="goStep(2)">Začít nastavení →</button>
+                <p style="text-align:center;margin-top:1rem;font-size:0.82rem;color:rgba(255,255,255,0.3);">Přeskočit a
+                    přejít rovnou do aplikace → <a href="index.html" style="color:rgba(255,255,255,0.5);">pokračovat</a>
+                </p>
+            </div>
+
+            <!-- Step 2: Zodiac -->
+            <div class="step-view" id="step-2">
+                <button class="step-back" onclick="goStep(1)">← Zpět</button>
+                <span class="step-icon">♈️</span>
+                <h2 class="step-title">Vaše hvězdné znamení</h2>
+                <p class="step-subtitle">Vybereme pro vás relevantní horoskopy a obsah.</p>
+                <div class="zodiac-grid" id="zodiac-grid">
+                    <button class="zodiac-btn" data-sign="beran" onclick="selectSign(this)"><span>♈</span>Beran</button>
+                    <button class="zodiac-btn" data-sign="byk" onclick="selectSign(this)"><span>♉</span>Byk</button>
+                    <button class="zodiac-btn" data-sign="blizenci"
+                        onclick="selectSign(this)"><span>♊</span>Blíženci</button>
+                    <button class="zodiac-btn" data-sign="rak" onclick="selectSign(this)"><span>♋</span>Rak</button>
+                    <button class="zodiac-btn" data-sign="lev" onclick="selectSign(this)"><span>♌</span>Lev</button>
+                    <button class="zodiac-btn" data-sign="panna" onclick="selectSign(this)"><span>♍</span>Panna</button>
+                    <button class="zodiac-btn" data-sign="vahy" onclick="selectSign(this)"><span>♎</span>Váhy</button>
+                    <button class="zodiac-btn" data-sign="stir" onclick="selectSign(this)"><span>♏</span>Štír</button>
+                    <button class="zodiac-btn" data-sign="strelec"
+                        onclick="selectSign(this)"><span>♐</span>Střelec</button>
+                    <button class="zodiac-btn" data-sign="kozoroh"
+                        onclick="selectSign(this)"><span>♑</span>Kozoroh</button>
+                    <button class="zodiac-btn" data-sign="vodnar"
+                        onclick="selectSign(this)"><span>♒</span>Vodnář</button>
+                    <button class="zodiac-btn" data-sign="ryby" onclick="selectSign(this)"><span>♓</span>Ryby</button>
+                </div>
+                <button class="btn btn--primary btn-full" id="btn-step2" onclick="goStep(3)" disabled
+                    style="opacity:.4;cursor:not-allowed;">Pokračovat →</button>
+            </div>
+
+            <!-- Step 3: Interests -->
+            <div class="step-view" id="step-3">
+                <button class="step-back" onclick="goStep(2)">← Zpět</button>
+                <span class="step-icon">🌟</span>
+                <h2 class="step-title">Co vás zajímá?</h2>
+                <p class="step-subtitle">Vybereme pro vás relevantní obsah a doporučení.</p>
+                <div class="interest-grid">
+                    <button class="interest-chip" onclick="toggleInterest(this)">🌌 Horoskopy</button>
+                    <button class="interest-chip" onclick="toggleInterest(this)">🃏 Tarot</button>
+                    <button class="interest-chip" onclick="toggleInterest(this)">🔢 Numerologie</button>
+                    <button class="interest-chip" onclick="toggleInterest(this)">❤️ Vztahy</button>
+                    <button class="interest-chip" onclick="toggleInterest(this)">⭐ Natální karta</button>
+                    <button class="interest-chip" onclick="toggleInterest(this)">🌙 Sny</button>
+                    <button class="interest-chip" onclick="toggleInterest(this)">💫 Spiritualita</button>
+                    <button class="interest-chip" onclick="toggleInterest(this)">🔮 Věštění</button>
+                    <button class="interest-chip" onclick="toggleInterest(this)">💼 Kariéra</button>
+                    <button class="interest-chip" onclick="toggleInterest(this)">🌍 Astrokartografie</button>
+                </div>
+                <button class="btn btn--primary btn-full" onclick="finishOnboarding()">Hotovo, vstoupit do aplikace
+                    ✨</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedSign = null;
+
+        function goStep(n) {
+            document.querySelectorAll('.step-view').forEach(s => s.classList.remove('active'));
+            document.getElementById('step-' + n).classList.add('active');
+            // Update progress
+            for (let i = 1; i <= 3; i++) {
+                const p = document.getElementById('prog-' + i);
+                p.classList.toggle('active', i === n);
+                p.classList.toggle('done', i < n);
+            }
+        }
+
+        function selectSign(btn) {
+            document.querySelectorAll('.zodiac-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedSign = btn.dataset.sign;
+            const nextBtn = document.getElementById('btn-step2');
+            nextBtn.disabled = false;
+            nextBtn.style.opacity = '1';
+            nextBtn.style.cursor = 'pointer';
+        }
+
+        function toggleInterest(btn) {
+            btn.classList.toggle('selected');
+        }
+
+        function finishOnboarding() {
+            // Save to localStorage
+            const interests = [...document.querySelectorAll('.interest-chip.selected')].map(c => c.textContent.trim());
+            if (selectedSign) localStorage.setItem('mh_zodiac', selectedSign);
+            if (interests.length) localStorage.setItem('mh_interests', JSON.stringify(interests));
+            localStorage.setItem('mh_onboarded', '1');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+
+</html>

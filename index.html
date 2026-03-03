@@ -974,6 +974,47 @@
     <script src="js/newsletter-popup.js" defer></script>
     <script src="js/personalization.js" defer></script>
     <script src="js/push-notifications.js" defer></script>
+
+    <!-- KARTA DNE SCRIPT -->
+    <script>
+    (function() {
+        const CARDS = [
+            { name: 'Andělé Ochránci', emoji: '👼', keyword: 'Ochrana', text: 'Dnes jste obklopeni neviditelnou ochranou. Důvěřujte svému vnitřnímu hlasu a nebojte se udělat první krok. Andělé vás provázejí.' },
+            { name: 'Hojnost', emoji: '🌟', keyword: 'Prosperita', text: 'Energie hojnosti proudí vaším životem. Otevřete se přijímání – ať už jde o lásku, příležitosti nebo uznání. Jste toho hodni.' },
+            { name: 'Nový začátek', emoji: '🌱', keyword: 'Obnova', text: 'Jitrní energie nese poselství čerstvého startu. Co jste odkládali, nyní dostává zelenou. Důvěřujte procesu a jděte vpřed.' },
+            { name: 'Vnitřní mír', emoji: '☮️', keyword: 'Klid', text: 'Dnešní den volá po ztišení. Věnujte chvíli sobě, svému dechu a vnitřnímu prostoru. Z klidu vychází ta nejlepší rozhodnutí.' },
+            { name: 'Odvaha', emoji: '🦁', keyword: 'Síla', text: 'Hvězdy vám dnes přidávají na odvaze. Je čas říct ano věcem, které jste se dosud báli. Vaše srdce zná správný směr.' },
+            { name: 'Láska', emoji: '❤️', keyword: 'Spojení', text: 'Energie dne je prodchnuta láskou. Ať jde o vztah, přátelství nebo vztah k sobě – otevřete své srdce a lásku přijměte i dejte.' },
+            { name: 'Intuice', emoji: '🔮', keyword: 'Vhled', text: 'Váš šestý smysl je dnes obzvláště aktivní. Věřte prvním pocitům a nalézejte odpovědi uvnitř sebe, ne jen ve vnějším světě.' },
+        ];
+
+        // Denni seed - vybere kartu podle dne v roce
+        const today = new Date();
+        const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86400000);
+        const card = CARDS[dayOfYear % CARDS.length];
+
+        // Naplnit front karty
+        const el = id => document.getElementById(id);
+        if (el('kdd-emoji')) {
+            el('kdd-emoji').textContent = card.emoji;
+            el('kdd-name').textContent = card.name;
+            el('kdd-keyword').textContent = card.keyword;
+            el('kdd-text').textContent = card.text;
+        }
+
+        window.revealKartaDne = function() {
+            const inner = el('kdd-inner');
+            if (inner.style.transform === 'rotateY(180deg)') return;
+            inner.style.transform = 'rotateY(180deg)';
+            setTimeout(() => {
+                const hint = el('kdd-hint');
+                const msg = el('kdd-message');
+                if (hint) hint.style.display = 'none';
+                if (msg) { msg.style.display = 'block'; msg.style.animation = 'fadeIn 0.5s ease'; }
+            }, 400);
+        };
+    })();
+    </script>
 </body>
 
 </html>

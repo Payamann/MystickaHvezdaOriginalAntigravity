@@ -104,6 +104,10 @@
 
                 this.loginSuccess(data);
                 this.showToast('Vítejte!', 'Registrace proběhla úspěšně. 🌟', 'success');
+                // Redirect new users to onboarding
+                if (!localStorage.getItem('mh_onboarded')) {
+                    setTimeout(() => { window.location.href = 'onboarding.html'; }, 800);
+                }
                 return { success: true };
             } catch (e) {
                 return { success: false, error: e.message };
