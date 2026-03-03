@@ -1,0 +1,93 @@
+/**
+ * share-result.js — Web Share API helper pro sdílení výsledků
+ * Automaticky přidá share button když najde výsledek na stránce
+ */
+
+(function () {
+    'use strict';
+
+    const SHARE_BTN_HTML = `
+        <button class="share-result-btn" aria-label="Sdílet výsledek" style="
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.65rem 1.4rem;
+            background: transparent;
+            border: 1px solid rgba(212,175,55,0.5);
+            border-radius: 50px;
+            color: var(--color-mystic-gold, #d4af37);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        " onmouseover="this.style.background='rgba(212,175,55,0.1)'" onmouseout="this.style.background='transparent'">
+            <span>🔗</span> Sdílet výsledek
+        </button>
+        <div class="share-toast" style="
+            display: none; position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+            background: rgba(20,15,40,0.95); border: 1px solid rgba(212,175,55,0.4);
+            padding: 0.75rem 1.5rem; border-radius: 50px; color: white;
+            font-size: 0.9rem; z-index: 9999; backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+        ">✅ Odkaz zkopírován do schránky!</div>
+    `;
+
+    function addShareButton(container, title, text) {
+        if (!container || container.querySelector('.share-result-btn')) return;
+
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = SHARE_BTN_HTML;
+        container.appendChild(wrapper);
+
+        const btn = wrapper.querySelector('.share-result-btn');
+        const toast = wrapper.querySelector('.share-toast');
+
+        btn.addEventListener('click', async () => {
+            const shareText = text || document.querySelector('.reading-text, .result-text, [data-share-text]')?.innerText?.slice(0, 200) || '';
+            const shareUrl = window.location.href;
+            const shareTitle = title || document.title;
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
+                    return;
+                } catch (e) { /* fallback */ }
+            }
+
+            // Fallback: clipboard
+            try {
+                await navigator.clipboard.writeText(`${shareTitle}\n\n${shareUrl}`);
+                showToast(toast);
+            } catch (e) {
+                prompt('Zkopírujte odkaz:', shareUrl);
+            }
+        });
+    }
+
+    function showToast(toast) {
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 3000);
+    }
+
+    // Observer — čeká na zobrazení výsledků a přidá share button
+    function observeResults() {
+        const selectors = [
+            '.reading-result', '.ai-result', '.result-section',
+            '.crystal-result', '#tarot-result', '#horoscope-result',
+            '.natal-result', '.numerology-result', '.synastry-result',
+            '.mentor-result', '#ai-reading', '.oracle-response'
+        ];
+
+        const observer = new MutationObserver(() => {
+            selectors.forEach(sel => {
+                const el = document.querySelector(sel);
+                if (el && el.children.length > 0 && !el.querySelector('.share-result-btn')) {
+                    const pageTitle = document.title.replace(' | Mystická Hvězda', '');
+                    addShareButton(el, `Můj výsledek: ${pageTitle} | Mystická Hvězda`);
+                }
+            });
+        });
+
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    document.addEventListener('DOMContentLoaded', observeResults);
+})();
