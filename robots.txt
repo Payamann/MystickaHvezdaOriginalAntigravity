@@ -5,5 +5,8 @@ Disallow: /api/
 Disallow: /profil.html
 Disallow: /prihlaseni.html
 Disallow: /profil/
+Disallow: /onboarding.html
+Disallow: /offline.html
+Disallow: /404.html
 
 Sitemap: https://mystickahvezda.cz/sitemap.xml
