@@ -111,6 +111,11 @@
             color: #e74c3c;
         }
 
+        .heart-btn:active {
+            transform: scale(1.2);
+            transition: transform 0.1s;
+        }
+
         .heart-btn.liked {
             color: #e74c3c;
         }
@@ -309,7 +314,16 @@
             msgEl.textContent = '✨ Váš vzkaz byl odeslán andělům!';
             msgEl.style.display = 'block';
             setTimeout(() => { msgEl.style.display = 'none'; }, 4000);
-        };
+
+            // Odskrolovani dolu k prirozenemu pohledu na odeslany prispevek v ramci boardu
+            setTimeout(() => {
+                const wall = document.querySelector('.messages-wall');
+                if (wall) {
+                    const y = wall.getBoundingClientRect().top + window.scrollY - 100;
+                    window.scrollTo({ top: y, behavior: 'smooth' });
+                }
+            }, 300);
+        }
 
         // Load real messages from API
         async function loadMessages() {
@@ -347,7 +361,9 @@
                     if (btn) {
                         const index = parseInt(btn.getAttribute('data-index'));
                         if (!isNaN(index)) {
-                            likeMessage(index);
+                            // Pridavame animaci rucne, nebot classList je prepisovan funkci renderMessages
+                            btn.style.transform = "scale(1.3)";
+                            setTimeout(() => likeMessage(index), 100);
                         }
                     }
                 });
