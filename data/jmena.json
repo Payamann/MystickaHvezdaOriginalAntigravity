@@ -1,0 +1,222 @@
+{
+  "Tereza": {
+    "origin": "řecký",
+    "meaning": "lovkyně, ta která sbírá",
+    "nameday": "15.10",
+    "numerology": 7,
+    "aura": "fialová",
+    "element": "Vzduch",
+    "personality": "Tereza je přemýšllivá, kreativní a hluboce empatická. Má výborný vkus a smysl pro krásu. Je věrnou přítelkyní a intuitivní poradkyní.",
+    "love": "V lásce je oddaná a romantická. Hledá hluboké emocionální spojení.",
+    "career": "Psychologie, umění, medicína, pedagogika."
+  },
+  "Lucie": {
+    "origin": "latinský",
+    "meaning": "světlonosná, ta která přináší světlo",
+    "nameday": "13.12",
+    "numerology": 3,
+    "aura": "žlutá",
+    "element": "Vzduch",
+    "personality": "Lucie je optimistická, společenská a kreativní. Přirozená komunikátorka, která osvětluje každou místnost svou přítomností.",
+    "love": "V lásce je hravá a spontánní. Potřebuje partnera s humorem.",
+    "career": "Média, PR, marketing, umění, pedagogika."
+  },
+  "Markéta": {
+    "origin": "latinský",
+    "meaning": "perla",
+    "nameday": "13.7",
+    "numerology": 8,
+    "aura": "zlatá",
+    "element": "Země",
+    "personality": "Markéta je spolehlivá, ambiciózní a má přirozené vůdcovské schopnosti. Je pilná a cílevědomá.",
+    "love": "V lásce je věrná a oddaná. Hledá stabilní a bezpečný vztah.",
+    "career": "Management, podnikání, finance, právo."
+  },
+  "Jana": {
+    "origin": "hebrejský",
+    "meaning": "Bůh je milostivý",
+    "nameday": "24.5",
+    "numerology": 2,
+    "aura": "modrá",
+    "element": "Voda",
+    "personality": "Jana je klidná, harmonická a diplomatická. Je přirozenou mírotvorkyní s hlubokým smyslem pro spravedlnost.",
+    "love": "V lásce je věrná a pečlivá. Přikládá velkou váhu rodině a partnerství.",
+    "career": "Sociální práce, diplomacie, medicína, psychologie."
+  },
+  "Petra": {
+    "origin": "řecký",
+    "meaning": "skála, pevný jako kámen",
+    "nameday": "29.6",
+    "numerology": 5,
+    "aura": "modrá",
+    "element": "Země",
+    "personality": "Petra je silná, sebevědomá a odhodlaná. Je přirozená vůdkyně s pevnými hodnotami a spolehlivostí.",
+    "love": "V lásce je věrná, ale potřebuje partnera, který respektuje její nezávislost.",
+    "career": "Podnikání, sport, právo, architektura."
+  },
+  "Eva": {
+    "origin": "hebrejský",
+    "meaning": "živoucí, zdroj života",
+    "nameday": "24.12",
+    "numerology": 6,
+    "aura": "zelená",
+    "element": "Země",
+    "personality": "Eva je laskavá, pečující a výjimečně empatická. Má přirozený dar pro péči o ostatní.",
+    "love": "V lásce je hluboce oddaná a pečlivá. Rodina je pro ni vším.",
+    "career": "Medicína, pedagogika, sociální práce, výživa."
+  },
+  "Monika": {
+    "origin": "latinský",
+    "meaning": "jediná, raditelka",
+    "nameday": "27.8",
+    "numerology": 4,
+    "aura": "zelená",
+    "element": "Voda",
+    "personality": "Monika je praktická, věrná a ochotná pomáhat. Má výborné organizační schopnosti.",
+    "love": "V lásce je věrná a spolehlivá. Vytváří bezpečný a harmonický domov.",
+    "career": "Organizace, administrativa, péče o ostatní, výuka."
+  },
+  "Barbora": {
+    "origin": "řecký",
+    "meaning": "cizinec, ta z jiného světa",
+    "nameday": "4.12",
+    "numerology": 9,
+    "aura": "fialová",
+    "element": "Vzduch",
+    "personality": "Barbora je duchaplná, kreativní a trochu tajemná. Přitahují ji hlubší otázky existence.",
+    "love": "V lásce je intenzivní a hluboce citová. Hledá duchovní spojení.",
+    "career": "Umění, duchovní práce, psychologie, filozofie."
+  },
+  "Alena": {
+    "origin": "řecký",
+    "meaning": "jasná, světlá",
+    "nameday": "15.1",
+    "numerology": 3,
+    "aura": "žlutá",
+    "element": "Oheň",
+    "personality": "Alena je veselá, komunikativní a optimistická. Miluje lidi a přináší světlo do jejich životů.",
+    "love": "V lásce je hravá a láskyplná. Potřebuje partnera s radostným přístupem k životu.",
+    "career": "Pedagogika, kultura, PR, sociální práce."
+  },
+  "Klára": {
+    "origin": "latinský",
+    "meaning": "jasná, průzračná",
+    "nameday": "12.8",
+    "numerology": 1,
+    "aura": "bílá",
+    "element": "Vzduch",
+    "personality": "Klára je přímočará, čestná a jasná ve svých záměrech. Je přirozeným vůdcem s výjimečnou integritou.",
+    "love": "V lásce je upřímná a jasná. Nesnáší hry a zákulisní manévry.",
+    "career": "Právo, medicína, věda, leadership."
+  },
+  "Tomáš": {
+    "origin": "aramejský",
+    "meaning": "dvojče",
+    "nameday": "7.3",
+    "numerology": 4,
+    "aura": "zelená",
+    "element": "Země",
+    "personality": "Tomáš je analytický, spolehlivý a praktický. Má výborné technické myšlení a smysl pro detail.",
+    "love": "V lásce je věrný a stabilní. Preferuje hluboký vztah před povrchními flirty.",
+    "career": "Technika, věda, IT, stavebnictví, finance."
+  },
+  "Jan": {
+    "origin": "hebrejský",
+    "meaning": "Bůh je milostivý",
+    "nameday": "24.6",
+    "numerology": 2,
+    "aura": "modrá",
+    "element": "Voda",
+    "personality": "Jan je klidný, moudrý a adaptabilní. Má přirozený dar pro naslouchání a porozumění druhým.",
+    "love": "V lásce je věrný a trpělivý. Buduje vztahy pomalu, ale pevně.",
+    "career": "Psychologie, pedagogika, duchovní práce, medicína."
+  },
+  "Jiří": {
+    "origin": "řecký",
+    "meaning": "zemědělec, oráč",
+    "nameday": "24.4",
+    "numerology": 5,
+    "aura": "modrá",
+    "element": "Země",
+    "personality": "Jiří je praktický, odhodlaný a tvrdě pracující. Miluje přírodu a má přirozené podnikatelské myšlení.",
+    "love": "V lásce je stabilní a věrný. Buduje solidní zázemí pro svou rodinu.",
+    "career": "Zemědělství, podnikání, sport, technika."
+  },
+  "Pavel": {
+    "origin": "latinský",
+    "meaning": "malý, skromný",
+    "nameday": "29.6",
+    "numerology": 6,
+    "aura": "zelená",
+    "element": "Vzduch",
+    "personality": "Pavel je skromný, moudrý a hluboce empatický. Má dar pro duchovní vedení a inspiraci ostatních.",
+    "love": "V lásce je hluboce oddaný a pečující. Partnerka je jeho přirozeným středem světa.",
+    "career": "Duchovní práce, pedagogika, psychologie, medicína."
+  },
+  "Michal": {
+    "origin": "hebrejský",
+    "meaning": "Kdo je jako Bůh?",
+    "nameday": "29.9",
+    "numerology": 7,
+    "aura": "fialová",
+    "element": "Oheň",
+    "personality": "Michal je vizionář a přirozený vůdce s duchovní dimenzí. Má silnou intuici a schopnost inspirovat masy.",
+    "love": "V lásce je intenzivní a oddaný. Hledá duši, nikoliv jen tělo.",
+    "career": "Leadership, duchovní práce, muzika, umění."
+  },
+  "Martin": {
+    "origin": "latinský",
+    "meaning": "zasvěcený Martovi, bojovník",
+    "nameday": "11.11",
+    "numerology": 8,
+    "aura": "zlatá",
+    "element": "Oheň",
+    "personality": "Martin je odvážný, přirozený vůdce s ambicemi. Má výborný talent pro strategii a vedení.",
+    "love": "V lásce je vášnivý a ochranný. Miluje s celým srdcem.",
+    "career": "Management, podnikání, armáda, politika."
+  },
+  "Petr": {
+    "origin": "řecký",
+    "meaning": "skála, pevný základ",
+    "nameday": "29.6",
+    "numerology": 5,
+    "aura": "modrá",
+    "element": "Země",
+    "personality": "Petr je pevný, spolehlivý a přísný na sebe i druhé. Je pilířem každé skupiny.",
+    "love": "V lásce je věrný, solidní a ochranný. Buduje bezpečný přístav pro rodinu.",
+    "career": "Stavebnictví, managenent, právo, věda."
+  },
+  "Jakub": {
+    "origin": "hebrejský",
+    "meaning": "ten který drží za patu, uchvacovač",
+    "nameday": "25.7",
+    "numerology": 3,
+    "aura": "žlutá",
+    "element": "Vzduch",
+    "personality": "Jakub je charismatický, komunikativní a přirozený vypravěč. Má výborný smysl pro humor.",
+    "love": "V lásce je hravý a romantický. Potřebuje stimulaci a vzrušení.",
+    "career": "Média, herectví, PR, obchod, vzdělávání."
+  },
+  "Lukáš": {
+    "origin": "latinský",
+    "meaning": "světlo, ten ze světla",
+    "nameday": "18.10",
+    "numerology": 1,
+    "aura": "bílá",
+    "element": "Oheň",
+    "personality": "Lukáš je originální, kreativní a průkopnický. Přirozený vizionář s touhou měnit svět.",
+    "love": "V lásce hledá partnerku, která sdílí jeho vize a touhu po dobrodružství.",
+    "career": "Technologie, umění, podnikání, inovace."
+  },
+  "David": {
+    "origin": "hebrejský",
+    "meaning": "milovaný",
+    "nameday": "30.12",
+    "numerology": 4,
+    "aura": "zelená",
+    "element": "Voda",
+    "personality": "David je laskavý, kreativní a hluboce citový. Má výjimečný dar pro umění a hudbu.",
+    "love": "V lásce je romanticke a hluboce oddaný. Jeho city jsou hluboké jako oceán.",
+    "career": "Hudba, umění, psychologie, medicína."
+  }
+}

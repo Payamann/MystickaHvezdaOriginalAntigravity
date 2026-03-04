@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Čínský horoskop 2026 — Zjistěte své čínské znamení | Mystická Hvězda</title>
+    <meta name="description"
+        content="Čínský horoskop 2026 — zadejte rok narození a zjistěte své čínské zvěrokruhové znamení. Krysa, Bůvol, Tygr, Drak a dalších 8 zvířat s prognózou na rok 2026.">
+    <link rel="canonical" href="https://mystickahvezda.cz/cinsky-horoskop.html">
+    <meta property="og:title" content="Čínský horoskop 2026 | Mystická Hvězda">
+    <meta property="og:description" content="Zjistěte své čínské zvěrokruhové znamení a prognózu na rok 2026.">
+    <meta property="og:image" content="https://mystickahvezda.cz/img/hero-3d.webp">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.v2.min.css?v=4">
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"WebPage","name":"Čínský horoskop 2026","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Domů","item":"https://mystickahvezda.cz/"},{"@type":"ListItem","position":2,"name":"Čínský horoskop","item":"https://mystickahvezda.cz/cinsky-horoskop.html"}]}}
+    </script>
+    <style>
+        .animal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 0.75rem;
+            max-width: 800px;
+            margin: 2rem auto;
+        }
+
+        .animal-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 1rem 0.5rem;
+            cursor: pointer;
+            transition: all 0.25s;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 0.82rem;
+            font-family: inherit;
+        }
+
+        .animal-btn:hover,
+        .animal-btn.active {
+            background: rgba(212, 175, 55, 0.12);
+            border-color: rgba(212, 175, 55, 0.4);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .animal-btn span {
+            display: block;
+            font-size: 2rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .result-section {
+            max-width: 700px;
+            margin: 2rem auto;
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .result-hero {
+            padding: 2.5rem 2rem;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-card h3 {
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .compat-grid {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .compat-badge {
+            padding: 0.3rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.82rem;
+        }
+
+        .compat-good {
+            background: rgba(46, 204, 113, 0.15);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            color: #2ecc71;
+        }
+
+        .compat-bad {
+            background: rgba(231, 76, 60, 0.12);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            color: #ff6b6b;
+        }
+
+        .year-input {
+            padding: 0.85rem 1.25rem;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            width: 140px;
+            text-align: center;
+        }
+
+        .year-input:focus {
+            border-color: rgba(212, 175, 55, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="stars" aria-hidden="true"></div>
+    <div id="header-placeholder"></div>
+
+    <main>
+        <section class="section" style="padding-top:5rem;text-align:center;">
+            <div class="container" style="max-width:800px;">
+                <div data-animate>
+                    <span class="section__badge">12-letý cyklus</span>
+                    <h1 class="section__title">Čínský <span class="text-gradient">Horoskop</span> 2026</h1>
+                    <p class="section__text">Zadejte rok svého narození nebo vyberte zvíře přímo ze seznamu.</p>
+                </div>
+
+                <!-- Rok zadání -->
+                <div style="margin:2rem 0 1rem;display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;"
+                    data-animate>
+                    <input type="number" id="birth-year" class="year-input" placeholder="Rok nar." min="1900" max="2024"
+                        aria-label="Rok narození">
+                    <button onclick="calculateAnimal()" class="btn btn--primary">🐉 Zjistit mé znamení</button>
+                </div>
+
+                <!-- Mřížka zvířat -->
+                <div class="animal-grid" data-animate>
+                    <button class="animal-btn" onclick="showAnimal('krysa')"
+                        id="btn-krysa"><span>🐭</span>Krysa</button>
+                    <button class="animal-btn" onclick="showAnimal('buvol')"
+                        id="btn-buvol"><span>🐂</span>Bůvol</button>
+                    <button class="animal-btn" onclick="showAnimal('tygr')" id="btn-tygr"><span>🐯</span>Tygr</button>
+                    <button class="animal-btn" onclick="showAnimal('zajic')"
+                        id="btn-zajic"><span>🐰</span>Zajíc</button>
+                    <button class="animal-btn" onclick="showAnimal('drak')" id="btn-drak"><span>🐲</span>Drak</button>
+                    <button class="animal-btn" onclick="showAnimal('had')" id="btn-had"><span>🐍</span>Had</button>
+                    <button class="animal-btn" onclick="showAnimal('kun')" id="btn-kun"><span>🐴</span>Kůň</button>
+                    <button class="animal-btn" onclick="showAnimal('koza')" id="btn-koza"><span>🐐</span>Koza</button>
+                    <button class="animal-btn" onclick="showAnimal('opice')"
+                        id="btn-opice"><span>🐒</span>Opice</button>
+                    <button class="animal-btn" onclick="showAnimal('kohout')"
+                        id="btn-kohout"><span>🐓</span>Kohout</button>
+                    <button class="animal-btn" onclick="showAnimal('pes')" id="btn-pes"><span>🐕</span>Pes</button>
+                    <button class="animal-btn" onclick="showAnimal('prase')"
+                        id="btn-prase"><span>🐷</span>Prase</button>
+                </div>
+
+                <!-- Výsledek -->
+                <div class="result-section" id="result-section">
+                    <div class="result-hero" id="result-hero">
+                        <div id="result-emoji" style="font-size:5rem;margin-bottom:0.75rem;"></div>
+                        <h2 id="result-name"
+                            style="font-family:'Cinzel',serif;font-size:2rem;color:white;margin-bottom:0.25rem;"></h2>
+                        <p id="result-years" style="color:rgba(255,255,255,0.5);font-size:0.9rem;margin-bottom:0.5rem;">
+                        </p>
+                        <p id="result-element" style="color:#d4af37;font-size:0.95rem;"></p>
+                    </div>
+
+                    <div class="detail-card">
+                        <h3>🌟 Charakteristika</h3>
+                        <p id="result-desc" style="color:rgba(255,255,255,0.8);line-height:1.8;"></p>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                        <div class="detail-card">
+                            <h3>❤️ V lásce</h3>
+                            <p id="result-love" style="color:rgba(255,255,255,0.75);line-height:1.6;font-size:0.92rem;">
+                            </p>
+                        </div>
+                        <div class="detail-card">
+                            <h3>💼 V kariéře</h3>
+                            <p id="result-career"
+                                style="color:rgba(255,255,255,0.75);line-height:1.6;font-size:0.92rem;"></p>
+                        </div>
+                    </div>
+                    <div class="detail-card">
+                        <h3>🔮 Prognóza 2026 — Rok Koně</h3>
+                        <p id="result-2026" style="color:rgba(255,255,255,0.8);line-height:1.8;"></p>
+                    </div>
+                    <div class="detail-card">
+                        <h3>🤝 Kompatibilita</h3>
+                        <p style="color:rgba(255,255,255,0.5);font-size:0.85rem;margin-bottom:0.75rem;">Ideální
+                            partneři:</p>
+                        <div class="compat-grid" id="compat-good"></div>
+                        <p style="color:rgba(255,255,255,0.5);font-size:0.85rem;margin:0.75rem 0 0.5rem;">Náročné
+                            kombinace:</p>
+                        <div class="compat-grid" id="compat-bad"></div>
+                    </div>
+                    <div
+                        style="text-align:center;margin-top:1.5rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+                        <a href="horoskopy.html" class="btn btn--primary">🌌 Západní horoskop</a>
+                        <a href="partnerska-shoda.html" class="btn btn--ghost">💕 Shoda znamení</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="footer-placeholder"></div>
+    <script src="js/api-config.js?v=5" defer></script>
+    <script src="js/auth-client.js?v=5" defer></script>
+    <script src="js/components.js?v=5" defer></script>
+    <script src="js/nameday.js" defer></script>
+    <script src="js/exit-intent.js" defer></script>
+    <script type="module" src="js/main.js?v=5"></script>
+    <script>
+        const animals = {
+            krysa: {
+                name: 'Krysa', emoji: '🐭', element: 'Voda', years: '1900,1912,1924,1936,1948,1960,1972,1984,1996,2008,2020',
+                desc: 'Krysy jsou chytré, přizpůsobivé a obratné. Mají přirozený dar pro obchod a vyjednávání. Jsou věrní přátelé, i když se navenek tváří rezervovaně.',
+                love: 'V lásce jsou nesmírně věrní a oddaní. Hledají partnera, s nímž sdílí intelektuální spojení. Ideálně Drak nebo Opice.',
+                career: 'Podnikání, finance, politika, věda — kdekoli se uplatní jejich bystrost a adaptabilita.',
+                y2026: 'Rok Koně přináší Krysám dynamiku a příležitosti k expanzi. Je to čas odvážných kroků, zvláště v kariéře. Pozor na impulzivní finanční rozhodnutí.',
+                good: ['🐲 Drak', '🐒 Opice', '🐂 Bůvol'], bad: ['🐴 Kůň', '🐓 Kohout']
+            },
+            buvol: {
+                name: 'Bůvol', emoji: '🐂', element: 'Země', years: '1901,1913,1925,1937,1949,1961,1973,1985,1997,2009,2021',
+                desc: 'Bůvolové jsou spolehliví, pracovití a trpěliví. Dosahují cílů vytrvalostí a pečlivostí. Jsou pilíři svých komunit a rodin.',
+                love: 'V lásce jsou věrní, ale potřebují čas otevřít se. Ideálně Had nebo Kohout, kteří ocení jejich stabilitu.',
+                career: 'Zemědělství, stavebnictví, medicina, právo — vse co vyžaduje pečlivost a systematičnost.',
+                y2026: 'Rok Koně přináší Bůvolům potřebu flexibility — což není jejich silná stránka. Ale ti, kteří se otevřou novým přístupům, zažijí průlom.',
+                good: ['🐍 Had', '🐓 Kohout', '🐭 Krysa'], bad: ['🐐 Koza', '🐕 Pes']
+            },
+            tygr: {
+                name: 'Tygr', emoji: '🐯', element: 'Dřevo', years: '1902,1914,1926,1938,1950,1962,1974,1986,1998,2010,2022',
+                desc: 'Tygři jsou odvážní, charismatičtí a přiroznení vůdci. Jsou ochotni bojovat za to, v co věří. Jejich přítomnost je neodmyslitelná.',
+                love: 'Vynší jsou vášniví a intenzivní. Hledají partnera silného ducha. Nejlepší shoda: Kůň nebo Pes.',
+                career: 'Armáda, sport, podnikání, herectví — ve všem kde je potřeba odvaha a charisma.',
+                y2026: 'Rok Koně je pro Tygry příznivý — oba sdílejí energii a touhu po svobodě. Je ideální čas na realizaci dlouholetých ambicí.',
+                good: ['🐴 Kůň', '🐕 Pes', '🐲 Drak'], bad: ['🐒 Opice', '🐂 Bůvol']
+            },
+            zajic: {
+                name: 'Zajíc', emoji: '🐰', element: 'Dřevo', years: '1903,1915,1927,1939,1951,1963,1975,1987,1999,2011,2023',
+                desc: 'Zajíci jsou klidní, empatičtí a diplomatičtí. Mají jemný smysl pro krásu a estetiku. Jsou přirozenými mírotvorci a vyhýbají se konfliktu.',
+                love: 'V lásce jsou romantiční a nežní. Hledají harmonický vztah. Nejlepší shoda: Koza nebo Prase.',
+                career: 'Umění, diplomacie, medicína, zahradnictví, psychologie — vše kde je potřeba jemnost a empatie.',
+                y2026: 'Rok Koně může Zajícům připadat příliš rychlý a hlasitý. Je důležité udržet si svůj klid a nespěchat. Příležitosti přijdou pro trpělivé.',
+                good: ['🐐 Koza', '🐷 Prase', '🐕 Pes'], bad: ['🐓 Kohout', '🐲 Drak']
+            },
+            drak: {
+                name: 'Drak', emoji: '🐲', element: 'Země', years: '1904,1916,1928,1940,1952,1964,1976,1988,2000,2012,2024',
+                desc: 'Draci jsou nejenergetičtějším a nejcharismatičtějším ze všech čínských znamení. Mají přirozenou autoritu a velkorysost. Jsou narozeni pro velké věci.',
+                love: 'V lásce jsou vášniví a oddaní, i když někdy dominantní. Ideální partner: Krysa, Opice nebo Kůň.',
+                career: 'Politika, podnikání, umění, věda — Draci excelují tam, kde mohou být středem pozornosti.',
+                y2026: 'Rok Koně přináší Drakům dynamiku a příležitosti pro expanzi. Je to jejich rok pro velké investice a odvážné projekty. Energie je na vaší straně.',
+                good: ['🐭 Krysa', '🐒 Opice', '🐴 Kůň'], bad: ['🐕 Pes', '🐰 Zajíc']
+            },
+            had: {
+                name: 'Had', emoji: '🐍', element: 'Oheň', years: '1905,1917,1929,1941,1953,1965,1977,1989,2001,2013,2025',
+                desc: 'Hadi jsou moudré, intuitivní a tajemné bytosti. Mají přirozený dar pro analýzu situací a vidí za povrch věcí. Jsou přitažliví svou záhadností.',
+                love: 'V lásce jsou intenzivní a věrní, ale i žárliví. Ideální: Bůvol nebo Kohout — pro jejich stabilitu.',
+                career: 'Filozofie, věda, finance, astrologie, medicína — vše co vyžaduje hloubku a analytické myšlení.',
+                y2026: 'Rok Koně přináší Hadům výzvy ve formě rychlosti — Koně chvátají tam, kde Had preferuje promyšlené kroky. Buďte trpěliví a nedejte se strhnout.',
+                good: ['🐂 Bůvol', '🐓 Kohout', '🐲 Drak'], bad: ['🐯 Tygr', '🐷 Prase']
+            },
+            kun: {
+                name: 'Kůň', emoji: '🐴', element: 'Oheň', years: '1906,1918,1930,1942,1954,1966,1978,1990,2002,2014,2026',
+                desc: 'Koně jsou svobodnými dušemi — energičtí, nezávislí a charismatičtí. Milují pohyb, cestování a nové dobrodružství. Jsou přirozenými optimisty.',
+                love: 'V lásce jsou vášniví, ale potřebují svobodu. Ideální: Tygr nebo Koza, kteří jim tu svobodu dají.',
+                career: 'Sport, cestovní ruch, obchod, politika, herectví — vše kde mohou projevit svou energii a charismus.',
+                y2026: 'Rok 2026 je rok Koně — to je pro vás výjimečně příznivé! Toto je váš velký rok. Energie, příležitosti a láska jsou na vaší straně. Jednejte odvážně!',
+                good: ['🐯 Tygr', '🐐 Koza', '🐲 Drak'], bad: ['🐭 Krysa', '🐂 Bůvol']
+            },
+            koza: {
+                name: 'Koza', emoji: '🐐', element: 'Země', years: '1907,1919,1931,1943,1955,1967,1979,1991,2003,2015,2027',
+                desc: 'Kozy jsou kreativní, empatické a umělecky nadané bytosti. Jsou přirozenými estetiky s hlubokým smyslem pro krásu. Potřebují harmonické prostředí.',
+                love: 'V lásce jsou romantické a idealistické. Ideální: Zajíc nebo Prase — kteří ocení jejich jemnost.',
+                career: 'Umění, móda, zahradnictví, péče o ostatní, muzika — vše kde se uplatní kreativita a smysl pro krásu.',
+                y2026: 'Rok Koně přináší Kozám velkou energii a příležitosti, ale také potřebu ukotvit se. Nesklouzněte k impulzivním rozhodnutím. Partnertví přináší stabilitu.',
+                good: ['🐰 Zajíc', '🐷 Prase', '🐴 Kůň'], bad: ['🐂 Bůvol', '🐕 Pes']
+            },
+            opice: {
+                name: 'Opice', emoji: '🐒', element: 'Kov', years: '1908,1920,1932,1944,1956,1968,1980,1992,2004,2016,2028',
+                desc: 'Opice jsou inteligentní, vtipné a přizpůsobivé. Jsou mistry improvizace a mají dar řešit komplikované problémy s lehkostí a humorem.',
+                love: 'V lásce jsou hravé a stimulující. Potřebují partnera, který drží krok s jejich energií. Ideální: Krysa nebo Drak.',
+                career: 'Věda, technologie, humor, obchod, marketing — ovšem tam kde mohou využít svůj bystrý intelekt.',
+                y2026: 'Rok Koně přináší Opicím příležitosti v kariéře, zvláště v technologiích a komunikaci. Finanční situace se zlepší, ale pozor na přehnaný optimismus.',
+                good: ['🐭 Krysa', '🐲 Drak', '🐯 Tygr'], bad: ['🐷 Prase', '🐍 Had']
+            },
+            kohout: {
+                name: 'Kohout', emoji: '🐓', element: 'Kov', years: '1909,1921,1933,1945,1957,1969,1981,1993,2005,2017,2029',
+                desc: 'Kohouti jsou precizní, spolehliví a estetičtí. Mají přirozený smysl pro detail a organizaci. Jsou hrdí na svůj vzhled a výkon.',
+                love: 'V lásce jsou oddaní, ale perfekcionisticky nároční. Ideální: Bůvol nebo Had, kteří ocení jejich preciznost.',
+                career: 'Armáda, medicína, účetnictví, móda, gastronomie — vše co vyžaduje precisnost a pečlivost.',
+                y2026: 'Rok Koně přináší Kohoutům potřebu flexibility — ale flexibilita není jejich nejsilnější stránka. Zaměřte se na spolupráci a diplomacii.',
+                good: ['🐂 Bůvol', '🐍 Had', '🐲 Drak'], bad: ['🐰 Zajíc', '🐴 Kůň']
+            },
+            pes: {
+                name: 'Pes', emoji: '🐕', element: 'Země', years: '1910,1922,1934,1946,1958,1970,1982,1994,2006,2018,2030',
+                desc: 'Psi jsou věrní, upřímní a spravedliví. Jsou přirozenými ochránci a bojovníky za spravedlnost. Jejich loajalita je legendární.',
+                love: 'V lásce jsou věrní jako žádné jiné znamení. Hledají výhradně čestné a věrné partnery. Ideální: Tygr nebo Zajíc.',
+                career: 'Právo, záchranáři, armáda, sociální práce, aktivismus — vše kde se bojuje za spravedlnost.',
+                y2026: 'Rok Koně je pro Psy aktivní a plný příležitostí k sociálnímu angažmá. Je to čas bojovat za věci, na nichž záleží. Zdraví si zaslouží pozornost.',
+                good: ['🐯 Tygr', '🐰 Zajíc', '🐴 Kůň'], bad: ['🐲 Drak', '🐐 Koza']
+            },
+            prase: {
+                name: 'Prase', emoji: '🐷', element: 'Voda', years: '1911,1923,1935,1947,1959,1971,1983,1995,2007,2019,2031',
+                desc: 'Prasata jsou laskavá, velkorysá a upřímná. Jsou přirozenými poskytovateli a mají velké srdce. Milují komfort a sdílení radostí se svými blízkými.',
+                love: 'V lásce jsou hluboce oddaní a romantičtí. Ideální: Zajíc nebo Koza — jako romantičtí idealisté se dobře doplní.',
+                career: 'Gastronomie, umění, léčitelství, finance — zvláště v rolích kde mohou pečovat a sdílet hojnost.',
+                y2026: 'Rok Koně přináší Prasatům příležitosti v oblasti financí a rodinného života. Je to čas investovat do vztahů a do sebe. Cestování může přinést klíčové setkání.',
+                good: ['🐰 Zajíc', '🐐 Koza', '🐯 Tygr'], bad: ['🐍 Had', '🐒 Opice']
+            },
+        };
+
+        const order = ['krysa', 'buvol', 'tygr', 'zajic', 'drak', 'had', 'kun', 'koza', 'opice', 'kohout', 'pes', 'prase'];
+
+        function getAnimalByYear(year) {
+            const idx = ((year - 1900) % 12 + 12) % 12;
+            return order[idx];
+        }
+
+        function calculateAnimal() {
+            const year = parseInt(document.getElementById('birth-year').value);
+            if (!year || year < 1900 || year > 2024) {
+                document.getElementById('birth-year').style.borderColor = 'rgba(212,175,55,0.8)';
+                return;
+            }
+            const slug = getAnimalByYear(year);
+            showAnimal(slug);
+        }
+
+        window.showAnimal = function (slug) {
+            const data = animals[slug];
+            if (!data) return;
+
+            document.querySelectorAll('.animal-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + slug)?.classList.add('active');
+
+            const hero = document.getElementById('result-hero');
+            hero.style.background = 'linear-gradient(135deg, rgba(212,175,55,0.1), rgba(155,89,182,0.1))';
+            hero.style.border = '1px solid rgba(212,175,55,0.25)';
+
+            document.getElementById('result-emoji').textContent = data.emoji;
+            document.getElementById('result-name').textContent = data.name;
+            document.getElementById('result-years').textContent = 'Roky: ' + data.years;
+            document.getElementById('result-element').textContent = '🌿 Živel: ' + data.element;
+            document.getElementById('result-desc').textContent = data.desc;
+            document.getElementById('result-love').textContent = data.love;
+            document.getElementById('result-career').textContent = data.career;
+            document.getElementById('result-2026').textContent = data.y2026;
+
+            document.getElementById('compat-good').innerHTML = data.good.map(a =>
+                `<span class="compat-badge compat-good">${a}</span>`).join('');
+            document.getElementById('compat-bad').innerHTML = data.bad.map(a =>
+                `<span class="compat-badge compat-bad">${a}</span>`).join('');
+
+            const result = document.getElementById('result-section');
+            result.classList.add('show');
+            result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        };
+
+        document.getElementById('birth-year').addEventListener('keydown', e => {
+            if (e.key === 'Enter') calculateAnimal();
+        });
+    </script>
+</body>
+
+</html>

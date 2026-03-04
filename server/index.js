@@ -31,6 +31,7 @@ import horoscopeRoutes from './routes/horoscope.js';
 import numerologyRoutes from './routes/numerology.js';
 import userRoutes from './routes/user.js';
 import pushRoutes from './routes/push.js';
+import angelPostRoutes from './routes/angel-post.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -250,6 +251,9 @@ app.use('/api/numerology', aiLimiter, numerologyRoutes);
 
 // User readings CRUD + password change
 app.use('/api/user', userRoutes);
+
+// Andělská pošta — komunita
+app.use('/api/angel-post', angelPostRoutes);
 
 // Health Check - registered above rate limiter (see top of file)
 // Admin comment: duplicate route registrations removed
