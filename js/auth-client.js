@@ -83,7 +83,13 @@
         isPremium() {
             if (!this.user || !this.user.subscription_status) return false;
             const s = this.user.subscription_status.toLowerCase();
-            return s.includes('premium') || s.includes('exclusive') || s === 'vip';
+            if (!s.includes('premium') && !s.includes('exclusive') && s !== 'vip') return false;
+            // Check expiration if available
+            if (this.user.subscription_expires_at) {
+                const expires = new Date(this.user.subscription_expires_at);
+                if (expires < new Date()) return false;
+            }
+            return true;
         },
 
         async register(email, password, additionalData = {}) {
@@ -246,8 +252,12 @@
 
             // Hero CTA Logic
             const heroCta = document.getElementById('hero-cta-container');
+            const heroCtaLoggedIn = document.getElementById('hero-cta-logged-in');
             if (heroCta) {
                 heroCta.style.display = this.isLoggedIn() ? 'none' : 'block';
+            }
+            if (heroCtaLoggedIn) {
+                heroCtaLoggedIn.style.display = this.isLoggedIn() ? 'flex' : 'none';
             }
 
             // Notify other components (like profile.js) that auth state changed
@@ -314,9 +324,17 @@
                 if (e.target.id === 'login-form') {
                     e.preventDefault();
                     const form = e.target;
+                    const btn = document.getElementById('auth-submit');
+
+                    // Password reset mode
+                    if (btn && btn.dataset.mode === 'reset') {
+                        const resetEmail = form.reset_email?.value || form.email.value;
+                        if (resetEmail) await this.resetPassword(resetEmail);
+                        return;
+                    }
+
                     const email = form.email.value;
                     const password = form.password.value;
-                    const btn = document.getElementById('auth-submit');
                     const isRegister = btn && btn.textContent === 'Zaregistrovat';
 
                     if (isRegister) {
@@ -337,14 +355,57 @@
             });
 
 
+
             // Toggle Button inside Modal
             document.body.addEventListener('click', (e) => {
                 if (e.target.id === 'auth-mode-toggle') {
                     e.preventDefault();
                     this.toggleMode();
                 }
+                // Forgot Password Link
+                if (e.target.id === 'auth-forgot-password') {
+                    e.preventDefault();
+                    this.openForgotPassword();
+                }
             });
         },
+
+        openForgotPassword() {
+            const title = document.getElementById('auth-title');
+            const btn = document.getElementById('auth-submit');
+            const toggleBtn = document.getElementById('auth-mode-toggle');
+            const pwField = document.getElementById('password-field-wrapper');
+            const forgotLink = document.getElementById('forgot-password-link');
+            const resetFields = document.getElementById('reset-password-fields');
+            const registerFields = document.getElementById('register-fields');
+
+            if (title) title.textContent = 'Obnovení hesla';
+            if (btn) { btn.textContent = 'Odeslat odkaz'; btn.dataset.mode = 'reset'; }
+            if (toggleBtn) toggleBtn.textContent = 'Zpět na přihlášení';
+            if (pwField) pwField.style.display = 'none';
+            if (forgotLink) forgotLink.style.display = 'none';
+            if (resetFields) resetFields.style.display = 'block';
+            if (registerFields) registerFields.style.display = 'none';
+        },
+
+        async resetPassword(email) {
+            try {
+                const res = await fetch(`${API_URL}/auth/reset-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                if (res.ok) {
+                    this.showToast('Email odeslán ✉️', 'Zkontrolujte svou schránku – odkaz pro obnovení hesla byl odeslán.', 'success');
+                    this.closeModal();
+                } else {
+                    this.showToast('Chyba', 'Nepodařilo se odeslat email. Zkuste to prosím znovu.', 'error');
+                }
+            } catch (e) {
+                this.showToast('Chyba připojení', 'Zkontrolujte připojení k internetu.', 'error');
+            }
+        },
+
 
         toggleMode() {
             const title = document.getElementById('auth-title');
@@ -352,6 +413,23 @@
             const toggleBtn = document.getElementById('auth-mode-toggle');
 
             if (!title || !btn || !toggleBtn) return;
+
+            // If in reset mode, go back to login
+            if (btn.dataset.mode === 'reset') {
+                delete btn.dataset.mode;
+                const pwField = document.getElementById('password-field-wrapper');
+                const forgotLink = document.getElementById('forgot-password-link');
+                const resetFields = document.getElementById('reset-password-fields');
+                const registerFields = document.getElementById('register-fields');
+                title.textContent = 'Přihlášení';
+                btn.textContent = 'Přihlásit se';
+                toggleBtn.textContent = 'Nemáte účet? Zaregistrujte se';
+                if (pwField) pwField.style.display = 'block';
+                if (forgotLink) forgotLink.style.display = 'block';
+                if (resetFields) resetFields.style.display = 'none';
+                if (registerFields) registerFields.style.display = 'none';
+                return;
+            }
 
             const isLogin = btn.textContent === 'Přihlásit se';
 
@@ -369,6 +447,7 @@
                 if (fields) fields.style.display = 'none';
             }
         },
+
 
         openModal(mode = 'login') {
             // Auto-inject if missing

@@ -193,6 +193,28 @@ body::after {
   }
 }
 
+/* Prefers-reduced-motion: disable non-essential animations */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  body::before,
+  body::after {
+    animation: none;
+  }
+
+  .floating-anim,
+  .hero__image {
+    animation: none !important;
+  }
+}
+
 /* ============================================
    11. COMET CURSOR
    ============================================ */
@@ -4910,4 +4932,85 @@ body.page-mentor .header {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ============================================
+   ADDITIONS: Carousel pagination dots
+   ============================================ */
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  padding: 0;
+}
+
+.carousel-dot.active {
+  background: var(--color-mystic-gold);
+  transform: scale(1.3);
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
+}
+
+/* ============================================
+   ADDITIONS: Steps visual connector
+   ============================================ */
+.steps {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-xl);
+  position: relative;
+}
+
+.steps::before {
+  content: '';
+  position: absolute;
+  top: 2rem;
+  left: calc(16.667% + 1.5rem);
+  right: calc(16.667% + 1.5rem);
+  height: 2px;
+  background: linear-gradient(to right, var(--color-mystic-gold), var(--color-ethereal-violet), var(--color-mystic-gold));
+  opacity: 0.3;
+  z-index: 0;
+}
+
+@media (max-width: 768px) {
+  .steps {
+    grid-template-columns: 1fr;
+  }
+
+  .steps::before {
+    display: none;
+  }
+}
+
+/* ============================================
+   ADDITIONS: Cookie banner wider for GDPR checkboxes
+   ============================================ */
+.cookie-banner {
+  max-width: 700px !important;
+}
+
+.cookie-banner__actions {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+/* ============================================
+   ADDITIONS: Auth Modal forgot password transition
+   ============================================ */
+#password-field-wrapper,
+#reset-password-fields,
+#forgot-password-link {
+  transition: opacity var(--transition-base);
 }

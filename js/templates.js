@@ -171,6 +171,86 @@ class Templates {
         `;
     }
 
+    /**
+     * Renders a multi-step AI progress indicator
+     * @param {string[]} steps - Array of step labels
+     * @param {string} containerId - ID to use for the container
+     */
+    static renderAiProgress(steps = [], containerId = 'ai-progress') {
+        const stepsHtml = steps.map((step, i) => `
+            <div class="ai-progress-step${i === 0 ? ' active' : ''}" data-step="${i}">
+                <div class="ai-progress-step__dot"></div>
+                <span class="ai-progress-step__label">${this.escapeHtml(step)}</span>
+            </div>
+        `).join('<div class="ai-progress-connector"></div>');
+
+        return `
+            <div class="ai-progress" id="${containerId}" style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0;
+                margin: 1.5rem 0;
+                flex-wrap: wrap;
+            ">
+                ${stepsHtml}
+            </div>
+            <style>
+            .ai-progress-step { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
+            .ai-progress-step__dot {
+                width: 28px; height: 28px;
+                border-radius: 50%;
+                background: rgba(255,255,255,0.1);
+                border: 2px solid rgba(255,255,255,0.2);
+                transition: all 0.4s ease;
+                position: relative;
+            }
+            .ai-progress-step.active .ai-progress-step__dot {
+                background: var(--color-ethereal-violet);
+                border-color: var(--color-ethereal-violet);
+                box-shadow: 0 0 12px rgba(157,78,221,0.6);
+                animation: pulse-dot 1.2s ease-in-out infinite;
+            }
+            .ai-progress-step.done .ai-progress-step__dot {
+                background: var(--color-mystic-gold);
+                border-color: var(--color-mystic-gold);
+                box-shadow: 0 0 8px rgba(212,175,55,0.4);
+            }
+            .ai-progress-step.done .ai-progress-step__dot::after {
+                content: '✓';
+                position: absolute;
+                inset: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.8rem;
+                color: #000;
+                font-weight: 700;
+            }
+            .ai-progress-step__label { font-size: 0.7rem; color: rgba(255,255,255,0.5); text-align: center; max-width: 80px; line-height: 1.3; }
+            .ai-progress-step.active .ai-progress-step__label { color: var(--color-starlight); }
+            .ai-progress-step.done .ai-progress-step__label { color: var(--color-mystic-gold); }
+            .ai-progress-connector { width: 40px; height: 2px; background: rgba(255,255,255,0.1); margin: 14px 0 0; }
+            @keyframes pulse-dot { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+            </style>
+        `;
+    }
+
+    /**
+     * Updates which step is active in the AI progress indicator
+     * @param {string} containerId 
+     * @param {number} activeIndex 
+     */
+    static updateAiProgress(containerId, activeIndex) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.querySelectorAll('.ai-progress-step').forEach((step, i) => {
+            step.classList.remove('active', 'done');
+            if (i < activeIndex) step.classList.add('done');
+            else if (i === activeIndex) step.classList.add('active');
+        });
+    }
+
     static renderAuthModal() {
         return `
   <div id="auth-modal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); overflow-y: auto; padding: 1rem;">
@@ -182,9 +262,17 @@ class Templates {
                 <label style="display: block; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem;">Email</label>
                 <input type="email" name="email" required autocomplete="email" inputmode="email" style="width: 100%; padding: 14px 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; font-size: 16px; min-height: 48px;">
             </div>
-            <div style="margin-bottom: 1.5rem;">
+            <div id="password-field-wrapper" style="margin-bottom: 0.5rem;">
                 <label style="display: block; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem;">Heslo</label>
                 <input type="password" name="password" required autocomplete="current-password" style="width: 100%; padding: 14px 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; font-size: 16px; min-height: 48px;">
+            </div>
+            <div id="forgot-password-link" style="text-align: right; margin-bottom: 1rem;">
+                <a href="#" id="auth-forgot-password" style="color: rgba(255,255,255,0.4); font-size: 0.8rem;">Zapomněli jste heslo?</a>
+            </div>
+
+            <!-- Reset Password Fields (hidden by default) -->
+            <div id="reset-password-fields" style="display: none; margin-bottom: 1rem;">
+                <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.5;">Zadejte svůj email a pošleme vám odkaz pro obnovení hesla.</p>
             </div>
 
             <!-- Optional Register Fields -->
