@@ -451,6 +451,11 @@
           <p class="section__text">Dnešní andělské poselství připravené hvězdami právě pro vás.</p>
         </div>
         <div id="karta-dne-widget" style="max-width:480px;margin:0 auto;text-align:center;" data-animate>
+          <div id="kdd-streak-badge"
+            style="display:none; background:rgba(212,175,55,0.1); border:1px solid var(--color-mystic-gold); color:var(--color-mystic-gold); font-size:0.8rem; padding:4px 12px; border-radius:20px; margin-bottom:1.5rem; font-weight:bold;">
+            🔥 Série: <span id="kdd-streak-count">1</span> dny/dní
+          </div>
+
           <div id="kdd-card" style="perspective:1000px;cursor:pointer;margin-bottom:1.5rem;"
             title="Klikněte pro odhalení">
             <div id="kdd-inner"
@@ -476,11 +481,14 @@
           <div id="kdd-message"
             style="display:none;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:1.5rem;margin-top:1rem;text-align:left;">
             <p id="kdd-text" style="color:rgba(255,255,255,0.8);line-height:1.7;font-size:0.95rem;"></p>
-            <div style="margin-top:1rem;display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;">
-              <a href="andelske-karty.html" class="btn btn--ghost" style="font-size:.85rem;padding:.5rem 1.2rem;">Celý
-                výklad →</a>
-              <a href="tarot.html" class="btn btn--ghost" style="font-size:.85rem;padding:.5rem 1.2rem;">🃏 Tarot
-                výklad</a>
+            <div style="margin-top:1.5rem;display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;">
+              <button id="kdd-share-btn" class="btn btn--ghost"
+                style="font-size:.85rem;padding:.5rem 1.2rem; display:none;">🔗 Sdílet</button>
+              <a href="tarot.html" class="btn btn--primary"
+                style="font-size:.85rem;padding:.5rem 1.2rem; background:var(--gradient-gold); color:#000; border:none; border-radius:24px;">✨
+                Hlubší význam (Premium)</a>
+              <a id="kdd-lexicon-link" href="#" class="btn btn--ghost" style="font-size:.85rem;padding:.5rem 1.2rem;">📖
+                Detail</a>
             </div>
           </div>
         </div>
@@ -1197,82 +1205,7 @@
   <script src="js/personalization.js?v=5" defer></script>
   <script src="js/push-notifications.js?v=5" defer></script>
 
-  <!-- KARTA DNE SCRIPT -->
-  <script>
-    (function () {
-      const CARDS = [
-        { name: 'Andělé Ochránci', emoji: '👼', keyword: 'Ochrana', text: 'Dnes jste obklopeni neviditelnou ochranou. Důvěřujte svému vnitřnímu hlasu a nebojte se udělat první krok. Andělé vás provázejí.' },
-        { name: 'Hojnost', emoji: '🌟', keyword: 'Prosperita', text: 'Energie hojnosti proudí vaším životem. Otevřete se přijímání – ať už jde o lásku, příležitosti nebo uznání. Jste toho hodni.' },
-        { name: 'Nový začátek', emoji: '🌱', keyword: 'Obnova', text: 'Jitrní energie nese poselství čerstvého startu. Co jste odkládali, nyní dostává zelenou. Důvěřujte procesu a jděte vpřed.' },
-        { name: 'Vnitřní mír', emoji: '☮️', keyword: 'Klid', text: 'Dnešní den volá po ztišení. Věnujte chvíli sobě, svému dechu a vnitřnímu prostoru. Z klidu vychází ta nejlepší rozhodnutí.' },
-        { name: 'Odvaha', emoji: '🦁', keyword: 'Síla', text: 'Hvězdy vám dnes přidávají na odvaze. Je čas říct ano věcem, které jste se dosud báli. Vaše srdce zná správný směr.' },
-        { name: 'Láska', emoji: '❤️', keyword: 'Spojení', text: 'Energie dne je prodchnuta láskou. Ať jde o vztah, přátelství nebo vztah k sobě – otevřete své srdce a lásku přijměte i dejte.' },
-        { name: 'Intuice', emoji: '🔮', keyword: 'Vhled', text: 'Váš šestý smysl je dnes obzvláště aktivní. Věřte prvním pocitům a nalézejte odpovědi uvnitř sebe, ne jen ve vnějším světě.' },
-        { name: 'Transformace', emoji: '🦋', keyword: 'Změna', text: 'Jako motýl procházíte proměnou. Nenechte se vystrašit tím, co se rozpadá – to, co přichází, je krásnější. Přijměte změnu s otevřenou náručí.' },
-        { name: 'Vděčnost', emoji: '🙏', keyword: 'Hojnost', text: 'Zastavte se a všimněte si všeho, za co můžete být vděční. Vděčnost otevírá dveře dalším darům. Dnešní den ocení i ty nejmenší věci.' },
-        { name: 'Harmonie', emoji: '⚖️', keyword: 'Rovnováha', text: 'Hledejte rovnováhu ve všech oblastech svého života. Harmonie přichází z vyrovnání vnitřního a vnějšího světa. Nenásilí a klid jsou vaše síla.' },
-        { name: 'Vůdce', emoji: '👑', keyword: 'Vedení', text: 'Dnes vás ostatní přirozeně sledují. Vaše slova a činy mají větší váhu, než si myslíte. Buďte lídrem, jakým byste chtěli mít vzor.' },
-        { name: 'Propojení', emoji: '🌐', keyword: 'Síť', text: 'Dnešní energia posiluje vaše vztahy a propojení s druhými. Nebojte se oslovit starého přítele nebo navázat nové kontakty – vesmír to podporuje.' },
-        { name: 'Hojení', emoji: '💚', keyword: 'Uzdravení', text: 'Zelená energie hojení prostupuje vaším tělem i duší. Je čas pustit staré rány a dovolit si plně se uzdravit. Jste na správné cestě.' },
-        { name: 'Moudrost', emoji: '🦉', keyword: 'Poznání', text: 'Dnes vám jsou k dispozici hluboká moudrost a vhled. Naslouchejte starším, čtěte mezi řádky a hledejte smysl za povrchem věcí.' },
-        { name: 'Radost', emoji: '😊', keyword: 'Lehkost', text: 'Dnes si dovolte být lehcí a radostní. Hrej si, smějte se, užijte si okamžik. Radost je vaším přirozeným stavem a právem.' },
-        { name: 'Průlom', emoji: '⚡', keyword: 'Zjevení', text: 'Dnes může přijít nečekané zjevení nebo průlom v situaci, která se zdála zablokovaná. Buďte otevření a pozorní – osvícení přichází náhle.' },
-        { name: 'Důvěra', emoji: '🤝', keyword: 'Víra', text: 'Důvěřujte procesu, i když nevidíte celý obraz. Vesmír pracuje za kulisami ve váš prospěch. Pusťte kontrolu a uvěřte, že vše dopadne dobře.' },
-        { name: 'Kreativita', emoji: '🎨', keyword: 'Tvorba', text: 'Vaše kreativní energie je dnes na vrcholu. Vraťte se k projektu, který jste odkládali, nebo vyzkoušejte něco zcela nového. Tvořte!' },
-        { name: 'Uvolnění', emoji: '🌊', keyword: 'Tok', text: 'Přestaňte zadržovat dech a plavte s proudem. Uvolnění napětí a odporu vám otvírá cestu k snadnějšímu a radostnějšímu životu.' },
-        { name: 'Záměr', emoji: '🎯', keyword: 'Fokus', text: 'Jasně si definujte, co chcete. Dnešní energie podporuje záměry a manifesty. Napište si cíl nebo ho vyslovte nahlas – vesmír naslouchá.' },
-        { name: 'Kořeny', emoji: '🌳', keyword: 'Stabilita', text: 'Ukotví se ke svým kořenům – rodině, hodnotám, tradici. Síla vyrůstá ze stability a hlubokého zakotvení. Dnes océňte, odkud pocházíte.' },
-        { name: 'Zrcadlo', emoji: '🪞', keyword: 'Reflexe', text: 'Cokoliv vás dnes na druhých dráždí nebo nadchne, je zrcadlem vašeho vlastního nitra. Den pro sebereflexi a hluboké pochopení sebe sama.' },
-        { name: 'Přijetí', emoji: '🌸', keyword: 'Soucit', text: 'Přijměte sebe i druhé přesně takovými, jací jsou. Dnešní den volá po soucitu namísto souzení. Z přijetí roste skutečná láska.' },
-        { name: 'Zázrak', emoji: '✨', keyword: 'Požehnání', text: 'Otevřete oči pro malé zázraky kolem sebe. Dnes je den, kdy se vesmír dává o sobě vědět skrze synchronicity a náhody. Žádné není.' },
-        { name: 'Přátelství', emoji: '🤗', keyword: 'Komunita', text: 'Vaši přátelé jsou vaší rodinou, kterou si sami volíte. Dnes se ozvěte těm, na které myslíte. Jedno upřímné slovo může změnit celý den.' },
-        { name: 'Ohraničení', emoji: '🛡️', keyword: 'Hranice', text: 'Naučit se říkat ne je akt lásky k sobě samému. Dnes posilujte zdravé hranice – bez viny, bez omluv. Vaše energie je darem, ne poviností.' },
-        { name: 'Vizionář', emoji: '🔭', keyword: 'Vize', text: 'Povzneste pohled nad každodennost. Jaká je vaše velká vize? Dnešní den přeje snění, plánování a nastavování smělých cílů.' },
-        { name: 'Hravost', emoji: '🎭', keyword: 'Spontánnost', text: 'Je čas přerušit rutinu a vnést do dne trochu překvapení. Buďte spontánní, hraví, nebojte se vypadat trochu bláznivě. Život je příliš krátký na vážnost.' },
-        { name: 'Propojení se zemí', emoji: '🌍', keyword: 'Zemění', text: 'Vyjděte ven, dotkněte se přírody, zhluboka dýchejte. Zemský magnetismus vám dodá sílu a jasnost mysli. Příroda je vaším nejlepším lékem.' },
-        { name: 'Paradox', emoji: '🌙', keyword: 'Tajemství', text: 'Ne vše musí být ihned vysvětleno. Dnes se smiřte s nejistotou a mysteriem. Pravda má mnoho vrstev – ponořte se do hlubiny bez strachu.' },
-        { name: 'Vítěz', emoji: '🏆', keyword: 'Úspěch', text: 'Vaše vytrvalost byla oceněna. Dnes celebrujte svůj pokrok – i ten nejmenší úspěch si zaslouží uznání. Jste na správné cestě k vítězství.' },
-      ];
-
-
-      // Denni seed - vybere kartu podle dne v roce
-      const today = new Date();
-      const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86400000);
-      const card = CARDS[dayOfYear % CARDS.length];
-
-      // Inicializace pomoci Event Listeneru (místo globalni fce)
-      document.addEventListener('DOMContentLoaded', () => {
-        const el = id => document.getElementById(id);
-        const cardContainer = el('kdd-card');
-        const inner = el('kdd-inner');
-
-        if (el('kdd-emoji')) {
-          el('kdd-emoji').textContent = card.emoji;
-          el('kdd-name').textContent = card.name;
-          el('kdd-keyword').textContent = card.keyword;
-          el('kdd-text').textContent = card.text;
-        }
-
-        if (cardContainer && inner) {
-          cardContainer.addEventListener('click', () => {
-            // Kontrola jestli uz neni otocena
-            if (inner.style.transform.includes('rotateY(180deg)')) return;
-
-            inner.style.transform = 'rotateY(180deg)';
-            setTimeout(() => {
-              const hint = el('kdd-hint');
-              const msg = el('kdd-message');
-              if (hint) hint.style.display = 'none';
-              if (msg) {
-                msg.style.display = 'block';
-                msg.style.animation = 'fadeIn 0.5s ease';
-              }
-            }, 400);
-          });
-        }
-      });
-    })();
-  </script>
+  <script src="js/daily-card.js?v=5" defer></script>
 
   <!-- Carousel Pagination Dots -->
   <script>
