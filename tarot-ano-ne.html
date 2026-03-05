@@ -195,23 +195,23 @@
 
                 <!-- Karty -->
                 <div class="cards-area" id="cards-area" aria-label="Tarotové karty — vyberte jednu">
-                    <div class="tarot-card" onclick="flipCard(this, 0)" role="button" aria-label="Karta 1">
+                    <div class="tarot-card" data-index="0" role="button" aria-label="Karta 1">
                         <div class="card-back card-face"></div>
                         <div class="card-front card-face"></div>
                     </div>
-                    <div class="tarot-card" onclick="flipCard(this, 1)" role="button" aria-label="Karta 2">
+                    <div class="tarot-card" data-index="1" role="button" aria-label="Karta 2">
                         <div class="card-back card-face"></div>
                         <div class="card-front card-face"></div>
                     </div>
-                    <div class="tarot-card" onclick="flipCard(this, 2)" role="button" aria-label="Karta 3">
+                    <div class="tarot-card" data-index="2" role="button" aria-label="Karta 3">
                         <div class="card-back card-face"></div>
                         <div class="card-front card-face"></div>
                     </div>
-                    <div class="tarot-card" onclick="flipCard(this, 3)" role="button" aria-label="Karta 4">
+                    <div class="tarot-card" data-index="3" role="button" aria-label="Karta 4">
                         <div class="card-back card-face"></div>
                         <div class="card-front card-face"></div>
                     </div>
-                    <div class="tarot-card" onclick="flipCard(this, 4)" role="button" aria-label="Karta 5">
+                    <div class="tarot-card" data-index="4" role="button" aria-label="Karta 5">
                         <div class="card-back card-face"></div>
                         <div class="card-front card-face"></div>
                     </div>
@@ -224,7 +224,7 @@
                     </h2>
                     <p id="result-text" style="color:rgba(255,255,255,0.75);line-height:1.8;font-size:1rem;"></p>
                     <div style="margin-top:1.5rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-                        <button onclick="resetCards()" class="btn btn--primary">🔄 Zeptat se znovu</button>
+                        <button id="btn-reset" class="btn btn--primary">🔄 Zeptat se znovu</button>
                         <a href="tarot.html" class="btn btn--ghost">🃏 Plný tarotový výklad</a>
                     </div>
                 </div>
@@ -363,6 +363,27 @@
                 front.innerHTML = '';
             });
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const cardsArea = document.getElementById('cards-area');
+            const btnReset = document.getElementById('btn-reset');
+
+            if (cardsArea) {
+                cardsArea.addEventListener('click', (e) => {
+                    const card = e.target.closest('.tarot-card');
+                    if (card) {
+                        const idx = card.getAttribute('data-index');
+                        if (idx !== null) {
+                            flipCard(card, parseInt(idx));
+                        }
+                    }
+                });
+            }
+
+            if (btnReset) {
+                btnReset.addEventListener('click', resetCards);
+            }
+        });
     </script>
 </body>
 
