@@ -4,95 +4,87 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const projectRoot = path.resolve(__dirname, '../../');
 
-// Mapping of corrupted characters to correct Czech characters
-const ENCODING_FIXES = {
-    // Common corrupted patterns -> correct UTF-8
-    'á': 'á',
-    'č': 'č',
-    'ď': 'ď',
-    'é': 'é',
-    'ě': 'ě',
-    'í': 'í',
-    'ň': 'ň',
-    'ó': 'ó',
-    'ř': 'ř',
-    'š': 'š',
-    'ť': 'ť',
-    'ú': 'ú',
-    'ů': 'ů',
-    'ý': 'ý',
-    'ž': 'ž',
-    'Á': 'Á',
-    'Č': 'Č',
-    'Ď': 'Ď',
-    'É': 'É',
-    'Ě': 'Ě',
-    'Í': 'Í',
-    'Ň': 'Ň',
-    'Ó': 'Ó',
-    'Ř': 'Ř',
-    'Š': 'Š',
-    'Ť': 'Ť',
-    'Ú': 'Ú',
-    'Ů': 'Ů',
-    'Ý': 'Ý',
-    'Ž': 'Ž',
-    // Replacement character
-    '�': ''
+const rawReplacements = {
+    // Zodiac explicit mappings with precise unicode sequences
+    '\u00E2\u2122\u0088': '♈', // â™\x88
+    '\u00E2\u2122\u0089': '♉', // â™\x89
+
+    // Punctuation & Other Emojis
+    '\u00F0\u009F\u0093\u0085': '📅', // đź“…
+    'â€“': '–', // en dash (E2 80 93)
+    'â€”': '—', // em dash 
+    'â€ž': '„', // low quote 
+    'â€ś': '“', // left quote 
+    'â€™': '’', // right single quote 
+    'â€ť': '”', // right quote 
+
+    // Lowcase czech
+    'Ăˇ': 'á',
+    'Ă©': 'é',
+    'Ă\xAD': 'í',  // \xAD is correctly read in regex
+    'Ăł': 'ó',
+    'Ăş': 'ú',
+    'Ă˝': 'ý',
+    'ÄŤ': 'č',
+    'ÄŹ': 'ď',
+    'Ä›': 'ě',
+    'Ĺˆ': 'ň',
+    'Ĺ™': 'ř',
+    'Ĺˇ': 'š',
+    'Ĺ\x88': 'ň',
+    'ĹĄ': 'ť',
+    'ĹŻ': 'ů',
+    'Ĺľ': 'ž',
+
+    // Uppercase czech
+    'Ă\x81': 'Á',
+    'Ă\x89': 'É',
+    'Ă\x8D': 'Í',
+    'Ă\x93': 'Ó',
+    'Ă\x9A': 'Ú',
+    'Ă\x9D': 'Ý',
+    'Ä\x8C': 'Č',
+    'Ä\x8E': 'Ď',
+    'Ä\x9A': 'Ě',
+    'Ĺ\x87': 'Ň',
+    'Ĺ\x98': 'Ř',
+    'Ĺ\xA0': 'Š',
+    'Ĺ\xA4': 'Ť',
+    'Ĺ\xAE': 'Ů',
+    'Ĺ\xBD': 'Ž'
 };
 
-const htmlFiles = [
-    'tarot.html',
-    'horoskopy.html',
-    'natalni-karta.html',
-    'numerologie.html',
-    'partnerska-shoda.html',
-    'astro-mapa.html',
-    'kristalova-koule.html',
-    'cenik.html',
-    'o-nas.html',
-    'faq.html',
-    'kontakt.html',
-    'index.html'
-];
+const sortedKeys = Object.keys(rawReplacements).sort((a, b) => b.length - a.length);
 
-async function fixEncoding() {
-    console.log('🔧 Fixing UTF-8 encoding in HTML files...\n');
+const dir = path.join(__dirname, '../../horoskop');
+const files = fs.readdirSync(dir).filter(f => f.endsWith('.html'));
 
-    for (const filename of htmlFiles) {
-        const filepath = path.join(projectRoot, filename);
+let totalFixed = 0;
 
-        if (!fs.existsSync(filepath)) {
-            console.log(`⏩ Skipping ${filename} (not found)`);
-            continue;
-        }
+for (const file of files) {
+    const filePath = path.join(dir, file);
+    let content = fs.readFileSync(filePath, 'utf8');
 
-        // Read as binary buffer first
-        let content = fs.readFileSync(filepath);
+    if (content.charCodeAt(0) === 0xFEFF) {
+        content = content.slice(1);
+    }
 
-        // Try to detect if it's already valid UTF-8
-        let contentStr = content.toString('utf8');
-
-        // Check for common corruption patterns
-        if (contentStr.includes('�') || contentStr.includes('Ã')) {
-            console.log(`🔧 Fixing: ${filename}`);
-
-            // Apply fixes
-            for (const [corrupted, correct] of Object.entries(ENCODING_FIXES)) {
-                contentStr = contentStr.split(corrupted).join(correct);
-            }
-
-            // Write back as UTF-8
-            fs.writeFileSync(filepath, contentStr, { encoding: 'utf8' });
-            console.log(`✅ Fixed: ${filename}`);
-        } else {
-            console.log(`✓ OK: ${filename}`);
+    let changed = false;
+    for (const bad of sortedKeys) {
+        if (content.includes(bad)) {
+            content = content.split(bad).join(rawReplacements[bad]);
+            changed = true;
         }
     }
 
-    console.log('\n🎉 Encoding fix complete!');
+    if (changed) {
+        fs.writeFileSync(filePath, content, 'utf8');
+        console.log(`✅ Opraveno: ${file}`);
+        totalFixed++;
+    } else {
+        console.log(`⏩ Přeskočeno (v pořádku): ${file}`);
+    }
 }
 
-fixEncoding();
+console.log(`Opraveno celkem ${totalFixed} souborů.`);
