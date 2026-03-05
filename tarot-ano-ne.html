@@ -169,6 +169,35 @@
         .question-input::placeholder {
             color: rgba(255, 255, 255, 0.35);
         }
+
+        .shake {
+            animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+            transform: translate3d(0, 0, 0);
+        }
+
+        @keyframes shake {
+
+            10%,
+            90% {
+                transform: translate3d(-1px, 0, 0);
+            }
+
+            20%,
+            80% {
+                transform: translate3d(2px, 0, 0);
+            }
+
+            30%,
+            50%,
+            70% {
+                transform: translate3d(-4px, 0, 0);
+            }
+
+            40%,
+            60% {
+                transform: translate3d(4px, 0, 0);
+            }
+        }
     </style>
 </head>
 
@@ -250,141 +279,7 @@
     <script src="js/nameday.js" defer></script>
     <script src="js/exit-intent.js" defer></script>
     <script type="module" src="js/main.js?v=5"></script>
-    <script>
-        const answers = {
-            ano: {
-                label: 'ANO', emoji: '✅', class: 'ano',
-                texts: [
-                    'Hvězdy hovoří jasně — ano, je to správná cesta. Důvěřujte svému instinktu.',
-                    'Karty naznačují pozitivní výsledek. Jednejte s důvěrou.',
-                    'Energie je příznivá. Toto je správný čas pro váš záměr.',
-                    'Vesmír vám dává zelenou. Vaše intuice vás vede správně.',
-                    'Ano — ale pamatujte, že akce jsou v rukou vaší svobodné vůle.',
-                    'Výsledek bude pozitivní, pokud jednat s upřímností a odvahou.',
-                    'Karty vidí příznivou cestu. Máte vnitřní sílu to uskutečnit.',
-                    'Ano. Připravte se přijmout to, o co jste žádali.',
-                    'Tarot souhlasí. Vaše srdce zná odpověď.',
-                    'Ano — a brzké kroky tuto šanci posílí.',
-                ]
-            },
-            spise_ano: {
-                label: 'SPÍŠE ANO', emoji: '🌟', class: 'mozna',
-                texts: [
-                    'Znamení ukazují spíše pozitivní výsledek, ale záleží na vašich dalších krocích.',
-                    'Pravděpodobně ano — i když cesta nemusí být přímočará.',
-                    'Šance je na vaší straně, ale buďte trpěliví.',
-                    'Karty vidí naději. Věci se vyvíjejí správným směrem.',
-                    'Spíše ano, pokud zachováte jasnou mysl a otevřenost.',
-                ]
-            },
-            nejasne: {
-                label: 'NEJASNÉ', emoji: '🔮', class: 'mozna',
-                texts: [
-                    'Budoucnost je zatím otevřená. Otázka možná ještě není zralá.',
-                    'Karty vidí mlhu. Zkuste se zeptat znovu jinou cestou nebo jindy.',
-                    'Energie jsou nevyvážené. Počkejte a pak se znovu zeptejte.',
-                    'Odpověď není ještě pevná — záleží na mehrých faktorech.',
-                    'Výsledek závisí na vašich příštích rozhodnutích.',
-                ]
-            },
-            spise_ne: {
-                label: 'SPÍŠE NE', emoji: '⚠️', class: 'ne',
-                texts: [
-                    'Karty varují před touto cestou. Zvažte alternativy.',
-                    'Spíše ne — ale není to definitivní. Okolnosti se mohou změnit.',
-                    'Energie není příznivá pro tento záměr v tuto chvíli.',
-                    'Tarot doporučuje opatrnost a přehodnocení situace.',
-                    'Možná není vhodný čas. Zeptejte se, co vás brzdí.',
-                ]
-            },
-            ne: {
-                label: 'NE', emoji: '🚨', class: 'ne',
-                texts: [
-                    'Karty jasně varují. Tato cesta není pro vás to pravé.',
-                    'Ne — ale každá zavřená brána vede k jiným možnostem.',
-                    'Tarot vidí překážky. Přijměte tuto odpověď jako vedení, ne jako trest.',
-                    'Tento záměr nenese dobré ovoce. Hledejte jinou cestu.',
-                    'Ne. Vaše intuice vám možná říká totéž.',
-                ]
-            }
-        };
-
-        // Distribuce: 25% ANO, 20% SPÍŠE ANO, 20% NEJASNÉ, 20% SPÍŠE NE, 15% NE
-        const pool = ['ano', 'ano', 'ano', 'ano', 'ano', 'spise_ano', 'spise_ano', 'spise_ano', 'spise_ano', 'nejasne', 'nejasne', 'nejasne', 'nejasne', 'spise_ne', 'spise_ne', 'spise_ne', 'spise_ne', 'ne', 'ne', 'ne'];
-
-        let used = false;
-
-        function flipCard(card, index) {
-            if (used) return;
-            const q = document.getElementById('question-input').value.trim();
-            if (!q) {
-                document.getElementById('question-input').focus();
-                document.getElementById('question-input').style.borderColor = 'rgba(212,175,55,0.8)';
-                return;
-            }
-            used = true;
-
-            // Disable all other cards
-            document.querySelectorAll('.tarot-card').forEach(c => c.style.cursor = 'default');
-
-            // Pick result
-            const key = pool[Math.floor(Math.random() * pool.length)];
-            const ans = answers[key];
-            const text = ans.texts[Math.floor(Math.random() * ans.texts.length)];
-
-            // Fill card front
-            const front = card.querySelector('.card-front');
-            front.classList.add(ans.class);
-            front.innerHTML = `<span class="card-emoji">${ans.emoji}</span><span class="answer-label">${ans.label}</span>`;
-
-            card.classList.add('flipped');
-
-            // Show result after flip
-            setTimeout(() => {
-                document.getElementById('result-emoji').textContent = ans.emoji;
-                document.getElementById('result-title').textContent = ans.label;
-                document.getElementById('result-title').style.color = ans.class === 'ano' ? '#2ed573' : ans.class === 'ne' ? '#ff6b6b' : '#d4af37';
-                document.getElementById('result-text').textContent = text;
-                const panel = document.getElementById('result-panel');
-                panel.classList.add('show');
-                panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }, 800);
-        }
-
-        function resetCards() {
-            used = false;
-            document.getElementById('question-input').value = '';
-            document.getElementById('result-panel').classList.remove('show');
-            document.querySelectorAll('.tarot-card').forEach(c => {
-                c.classList.remove('flipped');
-                c.style.cursor = 'pointer';
-                const front = c.querySelector('.card-front');
-                front.className = 'card-front card-face';
-                front.innerHTML = '';
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const cardsArea = document.getElementById('cards-area');
-            const btnReset = document.getElementById('btn-reset');
-
-            if (cardsArea) {
-                cardsArea.addEventListener('click', (e) => {
-                    const card = e.target.closest('.tarot-card');
-                    if (card) {
-                        const idx = card.getAttribute('data-index');
-                        if (idx !== null) {
-                            flipCard(card, parseInt(idx));
-                        }
-                    }
-                });
-            }
-
-            if (btnReset) {
-                btnReset.addEventListener('click', resetCards);
-            }
-        });
-    </script>
+    <script src="js/tarot-ano-ne.js?v=6" defer></script>
 </body>
 
 </html>
