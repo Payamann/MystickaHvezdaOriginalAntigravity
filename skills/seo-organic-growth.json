@@ -1,0 +1,82 @@
+{
+  "name": "seo-organic-growth",
+  "displayName": "SEO & Organic Growth Optimization",
+  "description": "Optimize Mystická Hvězda for maximum organic traffic, SEO rankings, and new user engagement through analytics, schema markup, internal linking, and conversion optimization",
+  "keywords": ["seo", "organic", "traffic", "analytics", "conversion", "engagement"],
+  "triggers": [
+    "optimize seo",
+    "improve organic traffic",
+    "setup analytics",
+    "add schema markup",
+    "optimize for search",
+    "improve conversion rate"
+  ],
+  "actions": [
+    {
+      "name": "setup-google-analytics",
+      "description": "Initialize Google Analytics 4 with proper tracking and event configuration",
+      "command": "node server/scripts/setup-analytics.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    },
+    {
+      "name": "add-schema-markup",
+      "description": "Generate and add JSON-LD schema markup (Organization, BreadcrumbList, Article, FAQPage, LocalService)",
+      "command": "node server/scripts/add-schema-markup.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    },
+    {
+      "name": "build-internal-links",
+      "description": "Build contextual internal linking strategy between blog posts, features, and related content",
+      "command": "node server/scripts/build-internal-links.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    },
+    {
+      "name": "create-rss-feed",
+      "description": "Generate RSS feed for blog posts to boost discoverability and syndication",
+      "command": "node server/scripts/generate-rss-feed.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    },
+    {
+      "name": "optimize-landing-pages",
+      "description": "Create dedicated, high-converting landing pages for key search terms",
+      "command": "node server/scripts/create-landing-pages.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    },
+    {
+      "name": "add-testimonial-schema",
+      "description": "Add customer reviews and testimonial schema markup with star ratings",
+      "command": "node server/scripts/add-testimonials.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    },
+    {
+      "name": "setup-email-automation",
+      "description": "Configure email automation sequences for newsletter subscribers and trial users",
+      "command": "node server/scripts/setup-email-automation.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    },
+    {
+      "name": "analyze-conversion-funnel",
+      "description": "Generate conversion funnel analysis (visits → trial → paid conversion)",
+      "command": "node server/scripts/analyze-conversion-funnel.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    },
+    {
+      "name": "optimize-seo-keywords",
+      "description": "Analyze and optimize for target keywords with proper density and positioning",
+      "command": "node server/scripts/optimize-keywords.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    },
+    {
+      "name": "setup-ab-testing",
+      "description": "Initialize A/B testing framework for CTAs, headlines, and conversion optimization",
+      "command": "node server/scripts/setup-ab-testing.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    }
+  ],
+  "context": {
+    "category": "growth-marketing",
+    "estimatedTime": "Varies - 1 hour to 2 weeks depending on action",
+    "dependencies": ["build-mystickahvezda"],
+    "criticalForGrowth": true
+  }
+}
