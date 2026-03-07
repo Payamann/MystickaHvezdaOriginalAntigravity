@@ -6,13 +6,13 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { SkillAction } from '../skills/skill-framework.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '../..');
 
 // Schema markup generators
 const schemas = {
-  // Organization schema - for homepage
   organization: {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -24,7 +24,7 @@ const schemas = {
       "https://facebook.com/mystickahvezda",
       "https://instagram.com/mystickahvezda"
     ],
-    "contact": {
+    "contactPoint": {
       "@type": "ContactPoint",
       "contactType": "Customer Service",
       "email": "info@mystickahvezda.cz"
@@ -36,7 +36,6 @@ const schemas = {
     }
   },
 
-  // BreadcrumbList schema - for navigation hierarchy
   breadcrumbs: (items) => ({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -48,7 +47,6 @@ const schemas = {
     }))
   }),
 
-  // Article schema - for blog posts
   article: (article) => ({
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -75,7 +73,6 @@ const schemas = {
     }
   }),
 
-  // FAQPage schema - for FAQ sections
   faqPage: (faqs) => ({
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -89,7 +86,6 @@ const schemas = {
     }))
   }),
 
-  // Service schema - for premium services
   service: (service) => ({
     "@context": "https://schema.org",
     "@type": "Service",
@@ -102,23 +98,11 @@ const schemas = {
     "offers": {
       "@type": "Offer",
       "price": service.price,
-      "priceCurrency": "INR",
+      "priceCurrency": "CZK",
       "availability": "https://schema.org/InStock"
     }
   }),
 
-  // Review schema - for testimonials
-  review: (reviews) => ({
-    "@context": "https://schema.org",
-    "@type": "AggregateRating",
-    "ratingValue": reviews.averageRating || 4.8,
-    "bestRating": "5",
-    "worstRating": "1",
-    "ratingCount": reviews.count || 0,
-    "reviewCount": reviews.count || 0
-  }),
-
-  // WebApplication schema - for PWA
   webApplication: {
     "@context": "https://schema.org",
     "@type": "WebApplication",
@@ -128,136 +112,99 @@ const schemas = {
     "offers": {
       "@type": "Offer",
       "price": "0",
-      "priceCurrency": "INR"
+      "priceCurrency": "CZK"
     }
-  },
-
-  // SoftwareApplication schema - for app features
-  features: {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "Mystická Hvězda",
-    "description": "Kompletní průvodce astrologií, tarotem, numerologií a více",
-    "operatingSystem": "Web",
-    "applicationCategory": "LifestyleApplication",
-    "featureList": [
-      "Denní horoskopy",
-      "Čtení tarot",
-      "Numerologická kalkulačka",
-      "Natalitní mapa",
-      "Sladěnost partnerů",
-      "Andělská čísla",
-      "Astrální mapy",
-      "Runy"
-    ]
   }
 };
 
-// Function to inject schema into HTML
+// Inject schema JSON-LD into HTML <head>
 function injectSchemaIntoHTML(filePath, schemaMarkup, schemaType) {
   try {
     let content = fs.readFileSync(filePath, 'utf8');
 
-    // Check if schema already exists
     const schemaId = `data-schema-type="${schemaType}"`;
     if (content.includes(schemaId)) {
-      console.log(`⏭️  ${path.basename(filePath)} - Schema already exists`);
-      return;
+      console.log(`⏭️  ${path.basename(filePath)} - ${schemaType} already exists`);
+      return false;
     }
 
-    // Create schema script tag
-    const schemaScript = `<script type="application/ld+json" ${schemaId}>
-${JSON.stringify(schemaMarkup, null, 2)}
-</script>`;
+    const schemaScript = `<script type="application/ld+json" ${schemaId}>\n${JSON.stringify(schemaMarkup, null, 2)}\n</script>`;
 
-    // Inject before closing </head> tag
     if (content.includes('</head>')) {
       content = content.replace('</head>', schemaScript + '\n</head>');
       fs.writeFileSync(filePath, content, 'utf8');
-      console.log(`✅ ${path.basename(filePath)} - Added ${schemaType} schema`);
-    } else {
-      console.log(`⚠️  ${path.basename(filePath)} - No </head> tag found`);
+      console.log(`✅ ${path.basename(filePath)} — ${schemaType}`);
+      return true;
     }
+
+    console.log(`⚠️  ${path.basename(filePath)} — no </head> found`);
+    return false;
   } catch (error) {
-    console.error(`❌ Error processing ${filePath}:`, error.message);
+    console.error(`❌ ${filePath}: ${error.message}`);
+    return false;
   }
 }
 
-// Main execution
-console.log('🔍 Adding JSON-LD Schema Markup to pages...\n');
+// Main logic extracted into a reusable function
+function runSchemaMarkup() {
+  let added = 0;
 
-try {
-  // Add Organization schema to homepage
   const indexPath = path.join(rootDir, 'index.html');
-  injectSchemaIntoHTML(indexPath, schemas.organization, 'organization');
+  if (injectSchemaIntoHTML(indexPath, schemas.organization, 'organization')) added++;
+  if (injectSchemaIntoHTML(indexPath, schemas.webApplication, 'webApplication')) added++;
 
-  // Add WebApplication schema to homepage
-  injectSchemaIntoHTML(indexPath, schemas.webApplication, 'webApplication');
-
-  // Add schema to key pages
-  const pagesToOptimize = [
-    { file: 'tarot.html', type: 'service', schema: schemas.service({
-      name: 'Čtení tarotu',
-      description: 'Online čtení tarotu s interpetací',
-      price: '0'
-    })},
-    { file: 'horoskopy.html', type: 'service', schema: schemas.service({
-      name: 'Denní horoskop',
-      description: 'Personalizovaný denní horoskop pro vaše znamení',
-      price: '0'
-    })},
-    { file: 'numerologie.html', type: 'service', schema: schemas.service({
-      name: 'Numerologická analýza',
-      description: 'Kalkulačka čísel osudu a životního čísla',
-      price: '99'
-    })},
-    { file: 'natalni-karta.html', type: 'service', schema: schemas.service({
-      name: 'Natalitní mapa',
-      description: 'Přesná analýza vaší natalitní mapy',
-      price: '199'
-    })},
-    { file: 'partnerska-shoda.html', type: 'service', schema: schemas.service({
-      name: 'Sladěnost partnerů',
-      description: 'Astrologická analýza kompatibility',
-      price: '149'
-    })}
-  ];
-
-  pagesToOptimize.forEach(page => {
-    const filePath = path.join(rootDir, page.file);
-    if (fs.existsSync(filePath)) {
-      injectSchemaIntoHTML(filePath, page.schema, page.type);
-    }
-  });
-
-  // Add BreadcrumbList to navigation pages
-  const navBreadcrumbs = [
+  const breadcrumbSchema = schemas.breadcrumbs([
     { name: 'Domů', url: '/' },
-    { name: 'Astrologie', url: '/horoskopy.html' },
+    { name: 'Horoskop', url: '/horoskopy.html' },
     { name: 'Tarot', url: '/tarot.html' },
     { name: 'Numerologie', url: '/numerologie.html' }
+  ]);
+  if (injectSchemaIntoHTML(indexPath, breadcrumbSchema, 'breadcrumbs')) added++;
+
+  const pages = [
+    { file: 'tarot.html', name: 'Čtení tarotu', desc: 'Online čtení tarotu s hlubokou interpretací', price: '0' },
+    { file: 'horoskopy.html', name: 'Denní horoskop', desc: 'Personalizovaný denní horoskop pro vaše znamení', price: '0' },
+    { file: 'numerologie.html', name: 'Numerologická analýza', desc: 'Kalkulačka čísel osudu a životního čísla', price: '99' },
+    { file: 'natalni-karta.html', name: 'Natalitní mapa', desc: 'Přesná analýza vaší natalitní mapy', price: '199' },
+    { file: 'partnerska-shoda.html', name: 'Sladěnost partnerů', desc: 'Astrologická analýza kompatibility', price: '149' }
   ];
 
-  const breadcrumbSchema = schemas.breadcrumbs(navBreadcrumbs);
-  injectSchemaIntoHTML(path.join(rootDir, 'index.html'), breadcrumbSchema, 'breadcrumbs');
+  for (const p of pages) {
+    const fp = path.join(rootDir, p.file);
+    if (fs.existsSync(fp)) {
+      if (injectSchemaIntoHTML(fp, schemas.service({ name: p.name, description: p.desc, price: p.price }), 'service')) added++;
+    }
+  }
 
-  console.log('\n✨ Schema markup configuration:');
-  console.log('   - Organization: Identifies your business');
-  console.log('   - WebApplication: Describes PWA capabilities');
-  console.log('   - Service: Shows services in search results');
-  console.log('   - BreadcrumbList: Improves navigation in search');
-
-  console.log('\n📊 Expected improvements:');
-  console.log('   - Rich snippets in search results');
-  console.log('   - Better CTR (click-through rate)');
-  console.log('   - Improved SERP appearance');
-  console.log('   - Enhanced schema.org validation');
-
-  console.log('\n🔗 Validate schemas at: https://schema.org/validator');
-
-} catch (error) {
-  console.error('❌ Fatal error:', error.message);
-  process.exit(1);
+  return added;
 }
 
-console.log('\n✅ Schema markup setup complete!\n');
+/**
+ * SKILL ACTION export
+ */
+export const addSchemaMarkupAction = new SkillAction({
+  id: 'add-schema-markup',
+  name: 'Add JSON-LD Schema Markup',
+  description: 'Inject Organization, Service, WebApplication and BreadcrumbList schemas into HTML pages for rich search snippets',
+  category: 'seo',
+  priority: 'quick-win',
+  estimatedTime: '15min',
+  dependencies: [],
+  metrics: ['search_ctr', 'rich_snippets', 'serp_appearance'],
+  requirements: {
+    files: ['index.html']
+  },
+  handler: async () => {
+    console.log('\n📐 Adding JSON-LD Schema Markup\n');
+    const added = runSchemaMarkup();
+    console.log(`\n✅ ${added} schemas added`);
+    console.log('   Validate at: https://schema.org/validator\n');
+    return {
+      schemas_added: added,
+      pages_targeted: ['index.html', 'tarot.html', 'horoskopy.html', 'numerologie.html', 'natalni-karta.html', 'partnerska-shoda.html'],
+      expected_impact: '20-30% CTR improvement via rich snippets'
+    };
+  }
+});
+
+export default addSchemaMarkupAction;

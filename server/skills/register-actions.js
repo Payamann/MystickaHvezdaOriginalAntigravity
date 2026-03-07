@@ -7,6 +7,9 @@ import { ActionRegistry, SEQUENCES } from './skill-framework.js';
 
 // Import all actions
 import { setupAnalyticsAction } from '../scripts/setup-analytics-action.js';
+import { addSchemaMarkupAction } from '../scripts/add-schema-markup.js';
+import { createLandingPagesAction } from '../scripts/create-landing-pages.js';
+import { generateRSSFeedAction } from '../scripts/generate-rss-feed.js';
 import {
   auditBrandIntegrityAction,
   fixBrandIntegrityAction,
@@ -23,11 +26,21 @@ export function initializeSkillRegistry() {
 
   console.log('\n📋 Registering SEO & Growth Skill Actions...\n');
 
-  // Analytics Actions
+  // Analytics
   registry.register(setupAnalyticsAction);
   console.log('✓ setup-google-analytics');
 
-  // Brand Integrity Actions
+  // SEO
+  registry.register(addSchemaMarkupAction);
+  console.log('✓ add-schema-markup');
+
+  registry.register(createLandingPagesAction);
+  console.log('✓ create-landing-pages');
+
+  registry.register(generateRSSFeedAction);
+  console.log('✓ generate-rss-feed');
+
+  // Brand Integrity
   registry.register(auditBrandIntegrityAction);
   console.log('✓ audit-brand-integrity');
 
