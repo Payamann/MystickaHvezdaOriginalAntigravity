@@ -27,26 +27,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (drawBtn) {
         drawBtn.addEventListener('click', drawCard);
 
-        // Add ambient light effect to mouse move
         drawBtn.addEventListener('mousemove', handleMouseMove);
         drawBtn.addEventListener('mouseleave', () => {
             const inner = drawBtn.querySelector('.angel-card-inner');
             if (inner && !drawBtn.classList.contains('is-flipped')) {
                 inner.style.transform = `rotateX(0deg) rotateY(0deg)`;
             }
-        });
-    }
-
-    const deepReadBtn = document.getElementById('btn-deep-read');
-    if (deepReadBtn) {
-        deepReadBtn.addEventListener('click', requestDeepReading);
-    }
-
-    // 4. Action buttons
-    const saveBtn = document.getElementById('btn-save-reading');
-    if (saveBtn) {
-        saveBtn.addEventListener('click', () => {
-            alert('Tato funkce se právě připravuje. Brzy si budete moci ukládat výklady přímo do svého Hvězdného Deníku! ⭐');
         });
     }
 
@@ -269,74 +255,4 @@ function drawCard() {
             });
         }
     }, 800);
-}
-
-/**
- * Requests deep AI reading from the backend
- */
-async function requestDeepReading() {
-    if (!drawnCard) return;
-
-    if (!window.Auth || !window.Auth.isLoggedIn()) {
-        window.Auth?.openModal();
-        return;
-    }
-
-    const aiResultContainer = document.getElementById('angel-ai-result');
-    const aiContent = document.getElementById('ai-reading-content');
-    const btn = document.getElementById('btn-deep-read');
-
-    // Show loading state
-    aiResultContainer.style.display = 'block';
-    aiContent.innerHTML = `
-        <div class="text-center p-xl">
-            <div class="loading-spinner"></div>
-            <p class="mt-md" style="color: var(--color-silver-mist);">Andělé připravují vaše poselství...</p>
-        </div>
-    `;
-    btn.disabled = true;
-
-    try {
-        const response = await fetch(`${window.apiUrl()}/oracle/angel-card`, {
-            method: 'POST',
-            headers: window.authHeaders(true),
-            body: JSON.stringify({
-                card: {
-                    name: drawnCard.name,
-                    theme: drawnCard.theme
-                },
-                intention: document.getElementById('user-intention')?.value?.trim() || 'obecný vhled do dnešního dne'
-            })
-        });
-
-        const data = await response.json();
-
-        // Handle Non-Premium Teaser View
-        if (data.isTeaser) {
-            window.Auth?.showToast('Premium vyžadováno', 'Pro získání hlubokého duchovního vhledu z Vaší Andělské karty potřebujete členství Hvězdný Průvodce.', 'info');
-            window.Auth?.openModal('login');
-            aiResultContainer.style.display = 'none';
-            return;
-        }
-
-        if (data.success && data.response) {
-            // Parse HTML response and inject
-            aiContent.innerHTML = data.response;
-            btn.style.display = 'none'; // Hide the deep read button since we already have it
-        } else {
-            throw new Error(data.error || 'Neznámá chyba při komunikaci s nebem.');
-        }
-
-    } catch (error) {
-        console.error('Deep reading error:', error);
-        aiContent.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state__icon">⚠️</div>
-                <p class="empty-state__text">${error.message}</p>
-                <button class="btn btn--glass btn--sm mt-md" onclick="location.reload()">Zkusit znovu</button>
-            </div>
-        `;
-    } finally {
-        btn.disabled = false;
-    }
 }
