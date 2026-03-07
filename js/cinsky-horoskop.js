@@ -241,6 +241,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Hlavní tlačítko "Zjistit mé znamení"
+    const btnCalculate = document.getElementById('btn-calculate');
+    if (btnCalculate) {
+        btnCalculate.addEventListener('click', () => window.calculateAnimal());
+    }
+
+    // Zvířecí tlačítka
+    document.querySelectorAll('.animal-btn[data-slug]').forEach(btn => {
+        btn.addEventListener('click', () => window.showAnimal(btn.dataset.slug));
+    });
+
     // Synastrie button (prevence CSP onclick z HTML)
     const btnSynastry = document.getElementById('btn-synastry');
     if (btnSynastry) {

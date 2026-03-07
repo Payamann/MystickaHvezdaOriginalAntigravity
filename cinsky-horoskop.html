@@ -162,29 +162,23 @@
                     data-animate>
                     <input type="number" id="birth-year" class="year-input" placeholder="Rok nar." min="1900" max="2100"
                         aria-label="Rok narození">
-                    <button onclick="calculateAnimal()" class="btn btn--primary">🐉 Zjistit mé znamení</button>
+                    <button id="btn-calculate" class="btn btn--primary">🐉 Zjistit mé znamení</button>
                 </div>
 
                 <!-- Mřížka zvířat -->
                 <div class="animal-grid" data-animate>
-                    <button class="animal-btn" onclick="showAnimal('krysa')"
-                        id="btn-krysa"><span>🐭</span>Krysa</button>
-                    <button class="animal-btn" onclick="showAnimal('buvol')"
-                        id="btn-buvol"><span>🐂</span>Buvol</button>
-                    <button class="animal-btn" onclick="showAnimal('tygr')" id="btn-tygr"><span>🐯</span>Tygr</button>
-                    <button class="animal-btn" onclick="showAnimal('zajic')"
-                        id="btn-zajic"><span>🐰</span>Zajíc</button>
-                    <button class="animal-btn" onclick="showAnimal('drak')" id="btn-drak"><span>🐲</span>Drak</button>
-                    <button class="animal-btn" onclick="showAnimal('had')" id="btn-had"><span>🐍</span>Had</button>
-                    <button class="animal-btn" onclick="showAnimal('kun')" id="btn-kun"><span>🐴</span>Kůň</button>
-                    <button class="animal-btn" onclick="showAnimal('koza')" id="btn-koza"><span>🐐</span>Koza</button>
-                    <button class="animal-btn" onclick="showAnimal('opice')"
-                        id="btn-opice"><span>🐒</span>Opice</button>
-                    <button class="animal-btn" onclick="showAnimal('kohout')"
-                        id="btn-kohout"><span>🐓</span>Kohout</button>
-                    <button class="animal-btn" onclick="showAnimal('pes')" id="btn-pes"><span>🐕</span>Pes</button>
-                    <button class="animal-btn" onclick="showAnimal('prase')"
-                        id="btn-prase"><span>🐷</span>Prase</button>
+                    <button class="animal-btn" id="btn-krysa" data-slug="krysa"><span>🐭</span>Krysa</button>
+                    <button class="animal-btn" id="btn-buvol" data-slug="buvol"><span>🐂</span>Buvol</button>
+                    <button class="animal-btn" id="btn-tygr" data-slug="tygr"><span>🐯</span>Tygr</button>
+                    <button class="animal-btn" id="btn-zajic" data-slug="zajic"><span>🐰</span>Zajíc</button>
+                    <button class="animal-btn" id="btn-drak" data-slug="drak"><span>🐲</span>Drak</button>
+                    <button class="animal-btn" id="btn-had" data-slug="had"><span>🐍</span>Had</button>
+                    <button class="animal-btn" id="btn-kun" data-slug="kun"><span>🐴</span>Kůň</button>
+                    <button class="animal-btn" id="btn-koza" data-slug="koza"><span>🐐</span>Koza</button>
+                    <button class="animal-btn" id="btn-opice" data-slug="opice"><span>🐒</span>Opice</button>
+                    <button class="animal-btn" id="btn-kohout" data-slug="kohout"><span>🐓</span>Kohout</button>
+                    <button class="animal-btn" id="btn-pes" data-slug="pes"><span>🐕</span>Pes</button>
+                    <button class="animal-btn" id="btn-prase" data-slug="prase"><span>🐷</span>Prase</button>
                 </div>
 
                 <!-- Výsledek -->
