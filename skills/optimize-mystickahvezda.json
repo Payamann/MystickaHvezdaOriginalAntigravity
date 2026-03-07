@@ -1,0 +1,49 @@
+{
+  "name": "optimize-mystickahvezda",
+  "displayName": "Optimize Mystická Hvězda",
+  "description": "Run optimization scripts for HTML, CSS, images, and content in the Mystická Hvězda project",
+  "keywords": ["optimize", "css", "html", "images", "performance", "mystickahvezda"],
+  "triggers": [
+    "optimize mystickahvezda",
+    "optimize html",
+    "compress css",
+    "optimize images",
+    "fix css"
+  ],
+  "actions": [
+    {
+      "name": "optimize-html",
+      "description": "Optimize all HTML files",
+      "command": "node scripts/optimize-html.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    },
+    {
+      "name": "compress-css",
+      "description": "Compress and optimize CSS files",
+      "command": "node scripts/compress-css.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    },
+    {
+      "name": "fix-css",
+      "description": "Fix CSS issues and inconsistencies",
+      "command": "node scripts/fix-css.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    },
+    {
+      "name": "optimize-background",
+      "description": "Optimize background images",
+      "command": "node server/scripts/optimize-bg.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    },
+    {
+      "name": "optimize-map",
+      "description": "Optimize map assets",
+      "command": "node server/scripts/optimize-map.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    }
+  ],
+  "context": {
+    "category": "performance",
+    "estimatedTime": "2-5 minutes"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "projectName": "Mystická Hvězda",
+  "projectDescription": "Astrology web application with horoscopes, tarot, numerology, and more",
+  "skillsRegistry": [
+    {
+      "name": "build-mystickahvezda",
+      "displayName": "Build Mystická Hvězda",
+      "description": "Build, test, and verify the Mystická Hvězda astrology web application",
+      "category": "development",
+      "file": "build-mystickahvezda.json",
+      "keywords": ["build", "test", "dev", "server"]
+    },
+    {
+      "name": "optimize-mystickahvezda",
+      "displayName": "Optimize Mystická Hvězda",
+      "description": "Run optimization scripts for HTML, CSS, images, and content",
+      "category": "performance",
+      "file": "optimize-mystickahvezda.json",
+      "keywords": ["optimize", "css", "html", "images", "performance"]
+    },
+    {
+      "name": "verify-mystickahvezda",
+      "displayName": "Verify Mystická Hvězda",
+      "description": "Verify database, content integrity, encoding, and other data",
+      "category": "quality-assurance",
+      "file": "verify-mystickahvezda.json",
+      "keywords": ["verify", "check", "database", "data", "integrity"],
+      "critical": true
+    },
+    {
+      "name": "generate-mystickahvezda",
+      "displayName": "Generate Content for Mystická Hvězda",
+      "description": "Generate SEO pages, blog content, and other dynamic content",
+      "category": "content-generation",
+      "file": "generate-mystickahvezda.json",
+      "keywords": ["generate", "content", "seo", "pages", "blog"]
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "createdDate": "2026-03-07",
+    "projectRoot": "/home/user/MystickaHvezdaOriginalAntigravity",
+    "mainFramework": "Express.js",
+    "testFramework": "Jest",
+    "totalSkills": 4
+  },
+  "quickStart": {
+    "development": ["build-mystickahvezda"],
+    "preDeployment": ["verify-mystickahvezda", "optimize-mystickahvezda", "build-mystickahvezda"],
+    "contentUpdate": ["generate-mystickahvezda", "verify-mystickahvezda"]
+  }
+}

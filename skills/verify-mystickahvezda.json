@@ -1,0 +1,49 @@
+{
+  "name": "verify-mystickahvezda",
+  "displayName": "Verify Mystická Hvězda",
+  "description": "Verify database, content integrity, encoding, and other data in the Mystická Hvězda project",
+  "keywords": ["verify", "check", "database", "data", "integrity", "mystickahvezda"],
+  "triggers": [
+    "verify mystickahvezda",
+    "check database",
+    "check encoding",
+    "verify data",
+    "verify horoscopes"
+  ],
+  "actions": [
+    {
+      "name": "check-database",
+      "description": "Check database integrity",
+      "command": "node server/scripts/db-check.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    },
+    {
+      "name": "check-encoding",
+      "description": "Check and fix Czech character encoding",
+      "command": "node server/scripts/fix-czech-encoding.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    },
+    {
+      "name": "verify-horoscopes",
+      "description": "Verify horoscope data integrity",
+      "command": "node server/scripts/verify-horoscope.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    },
+    {
+      "name": "verify-tarot-paths",
+      "description": "Verify tarot image paths",
+      "command": "node server/scripts/verify-tarot-paths.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    },
+    {
+      "name": "verify-production",
+      "description": "Verify production readiness",
+      "command": "node server/scripts/verify-production.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    }
+  ],
+  "context": {
+    "category": "verification",
+    "critical": true
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "name": "generate-mystickahvezda",
+  "displayName": "Generate Content for Mystická Hvězda",
+  "description": "Generate SEO pages, blog content, and other dynamic content for the Mystická Hvězda project",
+  "keywords": ["generate", "content", "seo", "pages", "blog", "mystickahvezda"],
+  "triggers": [
+    "generate content",
+    "generate pages",
+    "generate seo",
+    "generate blog",
+    "generate sitemap"
+  ],
+  "actions": [
+    {
+      "name": "generate-seo-pages",
+      "description": "Generate SEO-optimized pages",
+      "command": "node scripts/generate-seo-pages.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    },
+    {
+      "name": "generate-sitemap",
+      "description": "Generate XML sitemap",
+      "command": "node scripts/generate-sitemap.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    },
+    {
+      "name": "generate-blog",
+      "description": "Generate blog pages",
+      "command": "node server/scripts/generate-blog.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    },
+    {
+      "name": "generate-compatibility",
+      "description": "Generate compatibility pages",
+      "command": "node server/scripts/generate-compatibility.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    },
+    {
+      "name": "generate-dictionary",
+      "description": "Generate dictionary pages",
+      "command": "node server/scripts/generate-dictionary.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    },
+    {
+      "name": "generate-zodiac-pages",
+      "description": "Generate zodiac sign pages",
+      "command": "node server/scripts/generate-zodiac-pages.js",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    }
+  ],
+  "context": {
+    "category": "content-generation",
+    "estimatedTime": "3-10 minutes"
+  }
+}

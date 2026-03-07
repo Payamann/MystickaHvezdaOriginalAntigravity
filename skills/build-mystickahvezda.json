@@ -1,0 +1,39 @@
+{
+  "name": "build-mystickahvezda",
+  "displayName": "Build Mystická Hvězda",
+  "description": "Build, test, and verify the Mystická Hvězda astrology web application",
+  "keywords": ["build", "test", "dev", "server", "mystickahvezda"],
+  "triggers": [
+    "build mystickahvezda",
+    "run tests",
+    "start dev server",
+    "verify build",
+    "check tests"
+  ],
+  "actions": [
+    {
+      "name": "start-dev-server",
+      "description": "Start the development server with auto-reload",
+      "command": "npm run dev",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    },
+    {
+      "name": "run-tests",
+      "description": "Run all Jest tests",
+      "command": "npm test",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    },
+    {
+      "name": "start-production",
+      "description": "Start the production server",
+      "command": "npm start",
+      "cwd": "/home/user/MystickaHvezdaOriginalAntigravity"
+    }
+  ],
+  "context": {
+    "projectType": "Node.js/Express",
+    "framework": "Express",
+    "testFramework": "Jest",
+    "main": "server/index.js"
+  }
+}
