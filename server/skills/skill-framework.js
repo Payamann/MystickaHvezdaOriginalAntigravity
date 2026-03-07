@@ -17,6 +17,8 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { RollbackManager, withRollback } from './rollback-manager.js';
+import { MetricsSnapshot, withMetricsTracking } from './metrics-snapshot.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '../..');
@@ -88,15 +90,23 @@ class SkillAction {
  * Action Registry - Central management of all skill actions
  */
 class ActionRegistry {
-  constructor() {
+  constructor(enableRollback = true, enableMetrics = true) {
     this.actions = new Map();
     this.executionLog = [];
+    this.rollbackManager = enableRollback ? new RollbackManager() : null;
+    this.metricsSnapshot = enableMetrics ? new MetricsSnapshot() : null;
   }
 
   register(action) {
     if (this.actions.has(action.id)) {
       throw new Error(`Action already registered: ${action.id}`);
     }
+
+    // Wrap with rollback support
+    if (this.rollbackManager) {
+      withRollback(action, this.rollbackManager);
+    }
+
     this.actions.set(action.id, action);
     console.log(`✓ Registered action: ${action.id}`);
   }
@@ -159,6 +169,46 @@ class ActionRegistry {
       failed: this.executionLog.filter(r => !r.success).length,
       byAction: [...new Set(this.executionLog.map(r => r.action))].length
     };
+  }
+
+  /**
+   * Rollback management
+   */
+  async rollbackLastAction() {
+    if (!this.rollbackManager) {
+      console.log('❌ Rollback not enabled');
+      return false;
+    }
+    return this.rollbackManager.rollbackLast();
+  }
+
+  showRollbackHistory() {
+    if (!this.rollbackManager) {
+      console.log('❌ Rollback not enabled');
+      return;
+    }
+    this.rollbackManager.listSavepoints();
+  }
+
+  /**
+   * Metrics management
+   */
+  async captureMetricsSnapshot(label = 'manual-snapshot') {
+    if (!this.metricsSnapshot) {
+      console.log('❌ Metrics tracking not enabled');
+      return null;
+    }
+    return this.metricsSnapshot.capture(label);
+  }
+
+  showMetricsReport() {
+    if (!this.metricsSnapshot) {
+      console.log('❌ Metrics tracking not enabled');
+      return;
+    }
+    const report = this.metricsSnapshot.generateReport();
+    console.log('\n📊 METRICS REPORT\n');
+    console.log(JSON.stringify(report, null, 2));
   }
 }
 
@@ -450,5 +500,9 @@ export {
   ActionRegistry,
   SEQUENCES,
   skillConfig,
-  generateActionDocs
+  generateActionDocs,
+  RollbackManager,
+  MetricsSnapshot,
+  withRollback,
+  withMetricsTracking
 };
