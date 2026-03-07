@@ -3,9 +3,6 @@
  * Handles card drawing, 3D animations, and API communication for deep readings.
  */
 
-// Access global variables and functions exposed by api-config.js and auth-client.js
-const { apiUrl, authHeaders } = window;
-
 let angelCardsData = [];
 let drawnCard = null;
 
@@ -300,9 +297,9 @@ async function requestDeepReading() {
     btn.disabled = true;
 
     try {
-        const response = await fetch(`${apiUrl()}/oracle/angel-card`, {
+        const response = await fetch(`${window.apiUrl()}/oracle/angel-card`, {
             method: 'POST',
-            headers: authHeaders(true),
+            headers: window.authHeaders(true),
             body: JSON.stringify({
                 card: {
                     name: drawnCard.name,
