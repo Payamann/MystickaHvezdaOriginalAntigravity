@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEO Skills Dashboard – Mystická Hvězda</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    header h1 {
+      color: #667eea;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .card h2 {
+      color: #333;
+      font-size: 1.1rem;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .metric {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .metric:last-child {
+      border-bottom: none;
+    }
+
+    .metric-label {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .metric-value {
+      color: #333;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .metric-change {
+      font-size: 0.85rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-left: 8px;
+    }
+
+    .metric-change.up {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .metric-change.down {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status.pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status.failed {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #eee;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      transition: width 0.3s ease;
+    }
+
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .action-item {
+      background: #f9f7f4;
+      border-left: 4px solid #667eea;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    .action-item.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .action-name {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+    }
+
+    .action-time {
+      color: #999;
+      font-size: 0.85rem;
+    }
+
+    .recommendation {
+      background: #fff9e6;
+      border-left: 4px solid #ffc107;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+
+    .recommendation-title {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+    }
+
+    .recommendation-reason {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+
+    .recommendation-time {
+      color: #999;
+      font-size: 0.85rem;
+    }
+
+    .stat-large {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #667eea;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      color: #666;
+    }
+
+    .spinner {
+      border: 4px solid #eee;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      margin-right: 12px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .health-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .health-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .health-dot.healthy {
+      background: #28a745;
+    }
+
+    .health-dot.setup {
+      background: #ffc107;
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stat-number {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📊 SEO Skills Dashboard</h1>
+      <p>Real-time monitoring of skill actions, metrics, and recommendations</p>
+    </header>
+
+    <div id="app">
+      <div class="loading">
+        <div class="spinner"></div>
+        Loading dashboard...
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = '/api';
+
+    async function loadDashboard() {
+      try {
+        const response = await fetch(`${API_BASE}/dashboard`);
+        const data = await response.json();
+        renderDashboard(data);
+      } catch (error) {
+        document.getElementById('app').innerHTML = `
+          <div class="card" style="background: #f8d7da; color: #721c24;">
+            <h2>⚠️ Error Loading Dashboard</h2>
+            <p>${error.message}</p>
+            <p style="font-size: 0.85rem; margin-top: 10px;">Make sure the API server is running at ${API_BASE}</p>
+          </div>
+        `;
+      }
+    }
+
+    function renderDashboard(data) {
+      const html = `
+        ${renderHealthCard(data.health)}
+        ${renderMetricsCards(data.metrics)}
+        ${renderActionsCard(data.actions)}
+        ${renderSequencesCard(data.sequences)}
+        ${renderRecommendationsCard(data.recommendations)}
+      `;
+      document.getElementById('app').innerHTML = html;
+    }
+
+    function renderHealthCard(health) {
+      const statusColor = health.status.includes('🟢') ? 'healthy' : 'setup';
+      return `
+        <div class="card">
+          <h2>
+            <span class="health-indicator">
+              <span class="health-dot ${statusColor}"></span>
+              System Health
+            </span>
+          </h2>
+          <div class="stat-large">
+            <div class="stat-number">${health.success_rate}%</div>
+            <div class="stat-label">Success Rate</div>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Actions Registered</span>
+            <span class="metric-value">${health.actions_registered}</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Executions</span>
+            <span class="metric-value">${health.successful_executions}/${health.total_executions}</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Rollback</span>
+            <span class="status ${health.rollback_available ? 'success' : 'pending'}">
+              ${health.rollback_available ? '✓ Available' : 'Disabled'}
+            </span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Metrics Tracking</span>
+            <span class="status ${health.metrics_tracking ? 'success' : 'pending'}">
+              ${health.metrics_tracking ? '✓ Active' : 'Disabled'}
+            </span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMetricsCards(metrics) {
+      const core = metrics.core_metrics;
+      return `
+        <div class="grid">
+          <div class="card">
+            <h2>📈 Core Metrics</h2>
+            <div class="metric">
+              <span class="metric-label">Organic Traffic</span>
+              <span class="metric-value">${core.organic_traffic}
+                <span class="metric-change up">${metrics.trends.organic_traffic}</span>
+              </span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Conversion Rate</span>
+              <span class="metric-value">${core.conversion_rate}%
+                <span class="metric-change up">${metrics.trends.conversion_rate}</span>
+              </span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">CTR (Click-Through)</span>
+              <span class="metric-value">${core.ctr}%</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Avg Session Duration</span>
+              <span class="metric-value">${core.avg_session_duration}m</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Bounce Rate</span>
+              <span class="metric-value">${core.bounce_rate}%</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>🎯 Engagement</h2>
+            <div class="metric">
+              <span class="metric-label">Email Subscribers</span>
+              <span class="metric-value">${core.email_subscribers}</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Brand Authenticity</span>
+              <span class="metric-value">${core.authenticity_score}/100</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${core.authenticity_score}%"></div>
+            </div>
+            <div style="margin-top: 16px;">
+              <h3 style="font-size: 0.95rem; margin-bottom: 8px; color: #333;">📊 Traffic Sources</h3>
+              ${metrics.traffic_sources.organic ? `
+                <div class="metric" style="border: none; padding: 0;">
+                  <span>Organic</span>
+                  <span style="color: #667eea; font-weight: 600;">${metrics.traffic_sources.organic}</span>
+                </div>
+              ` : ''}
+              ${metrics.traffic_sources.direct ? `
+                <div class="metric" style="border: none; padding: 0;">
+                  <span>Direct</span>
+                  <span style="color: #764ba2; font-weight: 600;">${metrics.traffic_sources.direct}</span>
+                </div>
+              ` : ''}
+              ${metrics.traffic_sources.referral ? `
+                <div class="metric" style="border: none; padding: 0;">
+                  <span>Referral</span>
+                  <span style="color: #a78bfa; font-weight: 600;">${metrics.traffic_sources.referral}</span>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderActionsCard(actions) {
+      const grouped = {
+        'quick-win': actions.filter(a => a.priority === 'quick-win'),
+        'medium': actions.filter(a => a.priority === 'medium'),
+        'strategic': actions.filter(a => a.priority === 'strategic')
+      };
+
+      let html = '<div class="card"><h2>⚙️ Registered Actions</h2>';
+
+      for (const [priority, items] of Object.entries(grouped)) {
+        if (items.length > 0) {
+          html += `<div style="margin-top: 16px;">
+            <h3 style="font-size: 0.9rem; text-transform: uppercase; color: #999; margin-bottom: 8px;">${priority === 'quick-win' ? '⚡ Quick Wins' : priority === 'medium' ? '📌 Medium Priority' : '🎯 Strategic'}</h3>
+            <div class="actions-grid">
+              ${items.map(action => `
+                <div class="action-item ${!action.can_execute ? 'disabled' : ''}">
+                  <div class="action-name">${action.id}</div>
+                  <div class="action-time">${action.estimatedTime}</div>
+                  <span class="status ${action.status === 'success' ? 'success' : action.status === 'pending' ? 'pending' : 'failed'}">
+                    ${action.status === 'success' ? '✓ Done' : action.status === 'pending' ? 'Pending' : 'Failed'}
+                  </span>
+                </div>
+              `).join('')}
+            </div>
+          </div>`;
+        }
+      }
+
+      html += '</div>';
+      return html;
+    }
+
+    function renderSequencesCard(sequences) {
+      return `
+        <div class="card">
+          <h2>🔄 Predefined Sequences</h2>
+          ${sequences.map(seq => `
+            <div style="margin-top: 16px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <div>
+                  <strong>${seq.name}</strong>
+                  <p style="color: #999; font-size: 0.85rem; margin-top: 2px;">${seq.description}</p>
+                </div>
+                <span style="color: #999; font-size: 0.9rem; white-space: nowrap;">${seq.completed}/${seq.total} done</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: ${seq.progress}%"></div>
+              </div>
+              <div style="margin-top: 6px; display: flex; justify-content: space-between; font-size: 0.85rem; color: #666;">
+                <span>⏱️ ${seq.estimated_time}</span>
+                <span>${seq.progress}% Complete</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function renderRecommendationsCard(recommendations) {
+      if (recommendations.length === 0) {
+        return `
+          <div class="card">
+            <h2>💡 Recommendations</h2>
+            <p style="color: #666;">All systems running optimally! No immediate actions needed.</p>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="card">
+          <h2>💡 Smart Recommendations</h2>
+          ${recommendations.map(rec => `
+            <div class="recommendation">
+              <div class="recommendation-title">${rec.action}</div>
+              <div class="recommendation-reason">💭 ${rec.reason}</div>
+              <div class="recommendation-time">⏱️ ~${rec.time}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    // Load dashboard on page load
+    document.addEventListener('DOMContentLoaded', loadDashboard);
+
+    // Refresh every 30 seconds
+    setInterval(loadDashboard, 30000);
+  </script>
+</body>
+</html>
