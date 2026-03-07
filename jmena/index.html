@@ -38,7 +38,7 @@
                 </div>
                 <div class="name-search" data-animate>
                     <input type="text" id="name-search" class="name-input" placeholder="Zadejte jméno..." aria-label="Hledejte jméno">
-                    <button onclick="searchName()" class="btn btn--primary">Hledat</button>
+                    <button id="btn-search-name" class="btn btn--primary">Hledat</button>
                 </div>
                 <div class="names-grid" id="names-grid" data-animate></div>
                 <div class="result" id="name-result">
@@ -79,7 +79,7 @@
 
     function renderGrid(names) {
         const grid = document.getElementById('names-grid');
-        grid.innerHTML = names.slice(0,40).map(n=>`<button class="name-btn" onclick="showName('${n}')">${n}</button>`).join('');
+        grid.innerHTML = names.slice(0,40).map(n=>`<button class="name-btn" data-name="${n}">${n}</button>`).join('');
     }
 
     window.searchName = function() {
@@ -111,7 +111,12 @@
         r.scrollIntoView({behavior:'smooth',block:'nearest'});
     };
 
+    document.getElementById('btn-search-name').addEventListener('click', searchName);
     document.getElementById('name-search').addEventListener('keydown',e=>{ if(e.key==='Enter') searchName(); });
+    document.getElementById('names-grid').addEventListener('click', e => {
+        const btn = e.target.closest('.name-btn[data-name]');
+        if (btn) showName(btn.dataset.name);
+    });
     </script>
 </body>
 </html>
