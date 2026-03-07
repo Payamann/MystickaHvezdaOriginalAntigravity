@@ -448,43 +448,65 @@
         </div>
         <div id="karta-dne-widget" style="max-width:480px;margin:0 auto;text-align:center;" data-animate>
           <div id="kdd-streak-badge"
-            style="display:none; background:rgba(212,175,55,0.1); border:1px solid var(--color-mystic-gold); color:var(--color-mystic-gold); font-size:0.8rem; padding:4px 12px; border-radius:20px; margin-bottom:1.5rem; font-weight:bold;">
+            style="display:none; background:rgba(10,5,25,0.8); border:1px solid rgba(212,175,55,0.4); color:var(--color-mystic-gold); font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; padding:6px 16px; border-radius:30px; margin-bottom:1.5rem; font-weight:600; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
             🔥 Série: <span id="kdd-streak-count">1</span> dny/dní
           </div>
 
-          <div id="kdd-card" style="perspective:1000px;cursor:pointer;margin-bottom:1.5rem;"
+          <div id="kdd-card" style="perspective:1200px;cursor:pointer;margin-bottom:1.5rem;"
             title="Klikněte pro odhalení">
             <div id="kdd-inner"
-              style="position:relative;width:200px;height:320px;margin:0 auto;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;transition:transform 0.8s cubic-bezier(0.4,0,0.2,1), -webkit-transform 0.8s cubic-bezier(0.4,0,0.2,1);border-radius:16px;">
+              style="position:relative;width:220px;height:360px;margin:0 auto;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;transition:transform 0.9s cubic-bezier(0.4,0,0.2,1), -webkit-transform 0.9s cubic-bezier(0.4,0,0.2,1);border-radius:12px;">
+              <!-- RUB KARTY -->
               <div
-                style="position:absolute;inset:0;background:linear-gradient(135deg,#2d1b69,#1a0a2e);border:2px solid rgba(212,175,55,0.4);border-radius:16px;display:flex;align-items:center;justify-content:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 20px 60px rgba(155,89,182,0.3);">
-                <div style="font-size:4rem;animation:float 3s ease-in-out infinite;">✨</div>
+                style="position:absolute;inset:0;background:linear-gradient(145deg,#1c0d2b,#0f0518);border:1px solid rgba(212,175,55,0.3);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:inset 0 0 20px rgba(212,175,55,0.05), 0 15px 40px rgba(0,0,0,0.5); overflow:hidden;">
+                <!-- Ozdobný rámeček na rubu -->
+                <div style="position:absolute; inset:8px; border:1px solid rgba(212,175,55,0.15); border-radius:6px;">
+                </div>
+                <div
+                  style="font-size:3.5rem; color:rgba(212,175,55,0.7); filter: drop-shadow(0 0 10px rgba(212,175,55,0.3));">
+                  👁️</div>
+                <div
+                  style="font-family:'Cinzel',serif; color:rgba(212,175,55,0.5); font-size:0.8rem; margin-top:1rem; letter-spacing:3px;">
+                  MYSTICKÁ HVĚZDA</div>
               </div>
+              <!-- LÍC KARTY -->
               <div id="kdd-front"
-                style="position:absolute;inset:0;background:linear-gradient(135deg,#1e1040,#2d1060);border:2px solid var(--color-mystic-gold);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(180deg);-webkit-transform:rotateY(180deg);padding:1.5rem;box-shadow:0 20px 60px rgba(212,175,55,0.2);">
-                <div id="kdd-emoji" style="font-size:3.5rem;margin-bottom:0.5rem;"></div>
+                style="position:absolute;inset:0;background:linear-gradient(145deg,#251442,#110724);border:2px solid var(--color-mystic-gold);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(180deg);-webkit-transform:rotateY(180deg);padding:2rem 1.5rem;box-shadow:inset 0 0 30px rgba(212,175,55,0.1), 0 20px 60px rgba(212,175,55,0.15);">
+                <div id="kdd-emoji"
+                  style="font-size:4rem;margin-bottom:1rem; filter: drop-shadow(0 0 15px rgba(255,255,255,0.2));"></div>
                 <div id="kdd-name"
-                  style="font-family:'Cinzel',serif;color:var(--color-mystic-gold);font-size:1.1rem;font-weight:600;margin-bottom:0.5rem;text-align:center;">
+                  style="font-family:'Cinzel',serif;color:var(--color-mystic-gold);font-size:1.3rem;font-weight:700;margin-bottom:0.5rem;text-align:center; line-height:1.2;">
                 </div>
                 <div id="kdd-keyword"
-                  style="color:rgba(255,255,255,0.6);font-size:0.85rem;letter-spacing:1px;text-transform:uppercase;text-align:center;">
+                  style="color:rgba(255,255,255,0.7);font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;text-align:center; border-top:1px solid rgba(212,175,55,0.3); padding-top:0.5rem; width:80%;">
                 </div>
               </div>
             </div>
           </div>
-          <p id="kdd-hint" style="color:rgba(255,255,255,0.4);font-size:0.9rem;">✨ Klikněte pro odhalení dnešní karty
-          </p>
+          <p id="kdd-hint" style="color:rgba(255,255,255,0.5);font-size:0.95rem; font-weight:300;">✨ Klikněte pro
+            odhalení vašeho dnešního poselství</p>
+
           <div id="kdd-message"
-            style="display:none;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:1.5rem;margin-top:1rem;text-align:left;">
-            <p id="kdd-text" style="color:rgba(255,255,255,0.8);line-height:1.7;font-size:0.95rem;"></p>
-            <div style="margin-top:1.5rem;display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;">
-              <button id="kdd-share-btn" class="btn btn--ghost"
-                style="font-size:.85rem;padding:.5rem 1.2rem; display:none;">🔗 Sdílet</button>
-              <a href="tarot.html" class="btn btn--primary"
-                style="font-size:.85rem;padding:.5rem 1.2rem; background:var(--gradient-gold); color:#000; border:none; border-radius:24px;">✨
-                Hlubší význam (Premium)</a>
-              <a id="kdd-lexicon-link" href="#" class="btn btn--ghost" style="font-size:.85rem;padding:.5rem 1.2rem;">📖
-                Detail</a>
+            style="display:none;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:16px;padding:2rem;margin-top:2rem;text-align:left; backdrop-filter:blur(10px);">
+            <p id="kdd-text"
+              style="color:rgba(255,255,255,0.9);line-height:1.8;font-size:1.05rem; font-weight:300; text-align:center; margin-bottom:0;">
+            </p>
+            <div style="margin-top:2rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+              <button id="kdd-share-btn" class="btn btn--outline"
+                style="font-size:0.85rem;padding:0.6rem 1.2rem; display:none; border-color:rgba(255,255,255,0.2); color:white;"><svg
+                  xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  style="margin-right:6px; vertical-align:text-bottom;">
+                  <circle cx="18" cy="5" r="3"></circle>
+                  <circle cx="6" cy="12" r="3"></circle>
+                  <circle cx="18" cy="19" r="3"></circle>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg> Sdílet poselství</button>
+              <a id="kdd-lexicon-link" href="#" class="btn btn--secondary"
+                style="font-size:.85rem;padding:.6rem 1.2rem;">📖 Detail karty</a>
+              <a href="tarot.html" class="btn btn--primary" style="font-size:.85rem;padding:.6rem 1.2rem;">✨ Úplný
+                výklad</a>
             </div>
           </div>
         </div>
@@ -1158,6 +1180,7 @@
   <script src="js/nameday.js?v=5" defer></script>
   <script src="js/exit-intent.js?v=5" defer></script>
   <script src="js/components.js?v=5" defer></script>
+  <script src="js/daily-card.js?v=5" defer></script>
   <script type="module">
     import { initPaymentButtons } from './js/platby.js';
     document.addEventListener('DOMContentLoaded', () => {
@@ -1166,9 +1189,6 @@
   </script>
 
   <script type="module" src="js/main.js?v=5"></script>
-
-  <!-- FOMO Live Activity Feed -->
-  <div id="fomo-container" class="fomo-container"></div>
 
   <!-- Mobile Bottom Navigation -->
   <nav class="mobile-bottom-nav">
@@ -1194,14 +1214,10 @@
     </a>
   </nav>
 
-  <script src="js/fomo-feed.js?v=5" defer></script>
   <script src="js/mobile-nav.js?v=5" defer></script>
-
   <script src="js/newsletter-popup.js?v=5" defer></script>
   <script src="js/personalization.js?v=5" defer></script>
   <script src="js/push-notifications.js?v=5" defer></script>
-
-  <script src="js/daily-card.js?v=5" defer></script>
 
   <!-- Carousel Pagination Dots -->
   <script>

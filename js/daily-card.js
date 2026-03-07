@@ -63,24 +63,19 @@
         let lastDate = localStorage.getItem(KEY_DATE);
         let streakCount = parseInt(localStorage.getItem(KEY_STREAK) || '0', 10);
         let cardIndex = -1;
-        let cardWasAlreadyRevealedToday = false;
+        // removed auto-reveal flag
 
         if (lastDate === todayStr) {
-            // Already drew today
+            // Already initialized today (user might not have flipped it yet, or they did)
             cardIndex = parseInt(localStorage.getItem(KEY_INDEX), 10);
-            cardWasAlreadyRevealedToday = true;
         } else {
-            // New day, new card!
+            // New day, assign a specific new card for today, but do NOT increment streak until flipped
             cardIndex = Math.floor(Math.random() * CARDS.length);
             localStorage.setItem(KEY_INDEX, cardIndex.toString());
+            // Intentionally not setting KEY_DATE here yet, so we know if they flipped it or not.
+            // If they just visit and don't flip, they might come back later today to flip.
+            // Actually, setting KEY_DATE is fine so they don't get a different card if they refresh without flipping.
             localStorage.setItem(KEY_DATE, todayStr);
-
-            if (lastDate === yesterdayStr) {
-                streakCount++;
-            } else {
-                streakCount = 1; // Reset streak
-            }
-            localStorage.setItem(KEY_STREAK, streakCount.toString());
         }
 
         // Safety fallback
@@ -123,41 +118,51 @@
         }
 
         // Reveal UI Logic
-        const revealCard = (isImmediate = false) => {
+        const revealCard = () => {
+            // If already flipped, do nothing
             if (inner.style.transform.includes('rotateY(180deg)')) return;
 
-            if (isImmediate) {
-                // Disable transition for instantaneous reveal on reload
-                const oldTransition = inner.style.transition;
-                inner.style.transition = 'none';
-                inner.style.transform = 'rotateY(180deg)';
-                inner.style.webkitTransform = 'rotateY(180deg)';
-                // Force reflow
-                void inner.offsetWidth;
-                inner.style.transition = oldTransition;
+            // They flipped it! Now increment the streak if appropriate.
+            // We need a separate flag so we don't increment multiple times a day if they refresh and flip again.
+            const KEY_LAST_FLIP_DATE = 'mh_kdd_last_flip_date';
+            let lastFlip = localStorage.getItem(KEY_LAST_FLIP_DATE);
 
-                const msg = el('kdd-message');
-                if (el('kdd-hint')) el('kdd-hint').style.display = 'none';
-                if (msg) msg.style.display = 'block';
-            } else {
-                inner.style.transform = 'rotateY(180deg)';
-                inner.style.webkitTransform = 'rotateY(180deg)';
-                setTimeout(() => {
-                    if (el('kdd-hint')) el('kdd-hint').style.display = 'none';
-                    const msg = el('kdd-message');
-                    if (msg) {
-                        msg.style.display = 'block';
-                        msg.style.animation = 'fadeIn 0.5s ease';
-                    }
-                }, 400);
+            if (lastFlip !== todayStr) {
+                // First flip of the day! Handle streak logic.
+                if (lastFlip === yesterdayStr) {
+                    streakCount++;
+                } else if (lastFlip !== todayStr) { // Only reset if they missed a day, and it's not today.
+                    streakCount = 1;
+                }
+                localStorage.setItem(KEY_STREAK, streakCount.toString());
+                localStorage.setItem(KEY_LAST_FLIP_DATE, todayStr);
+
+                // Update badge UI since it might have changed
+                const badge = el('kdd-streak-badge');
+                if (badge && streakCount > 0) {
+                    badge.style.display = 'inline-block';
+                    const streakCountEl = el('kdd-streak-count');
+                    if (streakCountEl) streakCountEl.textContent = streakCount;
+                }
             }
+
+            // Always animate the flip (no immediate reveal on page load)
+            inner.style.transform = 'rotateY(180deg)';
+            inner.style.webkitTransform = 'rotateY(180deg)';
+
+            setTimeout(() => {
+                if (el('kdd-hint')) el('kdd-hint').style.display = 'none';
+                const msg = el('kdd-message');
+                if (msg) {
+                    msg.style.display = 'block';
+                    msg.style.animation = 'fadeIn 0.5s ease';
+                }
+            }, 400);
         };
 
-        if (cardWasAlreadyRevealedToday) {
-            // If the user already drew a card today, reveal immediately to not lose state
-            revealCard(true);
-        }
+        // We removed auto-reveal "if (cardWasAlreadyRevealedToday) { revealCard(true); }"
+        // Card is always faced down on initial load.
 
-        cardContainer.addEventListener('click', () => revealCard(false));
+        cardContainer.addEventListener('click', () => revealCard());
     });
 })();
