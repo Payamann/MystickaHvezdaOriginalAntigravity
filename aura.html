@@ -160,7 +160,7 @@
                         style="display:block;color:rgba(255,255,255,0.5);font-size:0.85rem;margin-bottom:0.5rem;">Datum
                         narození</label>
                     <input type="date" id="birth-date" class="birth-input" aria-label="Datum narození">
-                    <button onclick="calculateAura()" class="btn btn--primary"
+                    <button id="btn-aura-calc" class="btn btn--primary"
                         style="width:100%;margin-top:1rem;font-size:1rem;">🌈 Zjistit mou auru →</button>
                 </div>
 
@@ -201,8 +201,7 @@
                     </div>
 
                     <div style="margin-top:2rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
-                        <button
-                            onclick="document.getElementById('birth-date').value='';document.getElementById('aura-orb').className='aura-orb';document.getElementById('aura-result').className='aura-result'"
+                        <button id="btn-aura-reset"
                             class="btn btn--ghost">🔄 Zkusit jiné datum</button>
                         <a href="numerologie.html" class="btn btn--primary">🔢 Numerologie</a>
                     </div>
@@ -345,6 +344,12 @@
             orb.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
+        document.getElementById('btn-aura-calc').addEventListener('click', calculateAura);
+        document.getElementById('btn-aura-reset').addEventListener('click', () => {
+            document.getElementById('birth-date').value = '';
+            document.getElementById('aura-orb').className = 'aura-orb';
+            document.getElementById('aura-result').className = 'aura-result';
+        });
         document.getElementById('birth-date').addEventListener('keydown', e => {
             if (e.key === 'Enter') calculateAura();
         });
