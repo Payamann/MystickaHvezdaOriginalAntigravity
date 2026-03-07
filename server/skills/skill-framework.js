@@ -230,7 +230,21 @@ const newActionTemplate = new SkillAction({
  * PREDEFINED ACTION SEQUENCES - Quick reference for common workflows
  */
 const SEQUENCES = {
-  // 45-minute quick wins
+  // 15-minute quick brand check
+  quickBrandCheck: [
+    'audit-brand-integrity',
+    'verify-conversion-optimization'
+  ],
+
+  // 1 hour brand overhaul
+  brandIntegrityOverhaul: [
+    'audit-brand-integrity',
+    'fix-brand-integrity',
+    'verify-conversion-optimization',
+    'optimize-premium-copy'
+  ],
+
+  // 45-minute quick wins (original)
   quickWinSetup: [
     'setup-google-analytics',
     'add-schema-markup',
@@ -249,11 +263,23 @@ const SEQUENCES = {
     'create-seo-pages'
   ],
 
+  // Brand + SEO combined (2 weeks)
+  brandAndSEO: [
+    'audit-brand-integrity',
+    'fix-brand-integrity',
+    'setup-google-analytics',
+    'add-schema-markup',
+    'create-landing-pages',
+    'generate-rss-feed'
+  ],
+
   // Conversion optimization (1 month)
   conversionOptimization: [
+    'audit-brand-integrity',
+    'fix-brand-integrity',
     'setup-google-analytics', // Prerequisite
     'create-landing-pages',
-    'optimize-copy',
+    'optimize-premium-copy',
     'setup-ab-testing',
     'track-paywall-events'
   ],
@@ -269,6 +295,10 @@ const SEQUENCES = {
 
   // Full implementation (3 months)
   fullImplementation: [
+    // Phase 0: Brand Integrity (CRITICAL FIRST)
+    'audit-brand-integrity',
+    'fix-brand-integrity',
+    'verify-conversion-optimization',
     // Phase 1: Analytics & Data
     'setup-google-analytics',
     'track-paywall-events',
@@ -282,6 +312,7 @@ const SEQUENCES = {
     'setup-email-service',
     'create-email-sequences',
     'setup-ab-testing',
+    'optimize-premium-copy',
     // Phase 4: Growth
     'optimize-keywords',
     'create-content-plan',
