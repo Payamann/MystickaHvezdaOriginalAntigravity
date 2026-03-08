@@ -1,0 +1,53 @@
+{
+  "version": "https://jsonfeed.org/version/1.1",
+  "title": "Mystická Hvězda – Blog",
+  "description": "Váš průvodce astrologií, tarotem a numerologií",
+  "home_page_url": "https://mystickahvezda.cz",
+  "feed_url": "https://mystickahvezda.cz/feed.json",
+  "icon": "https://mystickahvezda.cz/img/logo.webp",
+  "language": "cs",
+  "items": [
+    {
+      "id": "https://mystickahvezda.cz/blog/angel-numbers-1111.html",
+      "url": "https://mystickahvezda.cz/blog/angel-numbers-1111.html",
+      "title": "Andělská čísla 1111: Znamení Synchronicity a Duchovního Probuzení",
+      "summary": "Pochopte hluboký výnam andělského čísla 1111 a jak vás vaši strážní andělé provázejí.",
+      "image": "https://mystickahvezda.cz/img/og-default.webp",
+      "date_published": "2024-03-01T00:00:00.000Z",
+      "author": {
+        "name": "Mystická Hvězda"
+      },
+      "tags": [
+        "Andělé"
+      ]
+    },
+    {
+      "id": "https://mystickahvezda.cz/blog/mercury-retrograde.html",
+      "url": "https://mystickahvezda.cz/blog/mercury-retrograde.html",
+      "title": "Merkur v Retrográdě: Kompletní Průvodce",
+      "summary": "Zjistěte, jak klidně přeplout bouře Merkura v retrográdě a využít jeho energii.",
+      "image": "https://mystickahvezda.cz/img/og-default.webp",
+      "date_published": "2024-02-28T00:00:00.000Z",
+      "author": {
+        "name": "Mystická Hvězda"
+      },
+      "tags": [
+        "Astrologie"
+      ]
+    },
+    {
+      "id": "https://mystickahvezda.cz/blog/tarot-spreads.html",
+      "url": "https://mystickahvezda.cz/blog/tarot-spreads.html",
+      "title": "Průvodce Tarotovými Rozloženími: Od Jednokarta po Keltský Kříž",
+      "summary": "Naučte se nejpopulárnější tarotová rozložení a jak rozluštit jejich poselství.",
+      "image": "https://mystickahvezda.cz/img/og-default.webp",
+      "date_published": "2024-02-25T00:00:00.000Z",
+      "author": {
+        "name": "Mystická Hvězda"
+      },
+      "tags": [
+        "Tarot"
+      ]
+    }
+  ]
+}
