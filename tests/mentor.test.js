@@ -16,6 +16,10 @@ jest.unstable_mockModule('../server/middleware.js', () => ({
     },
     requirePremium: (req, res, next) => next(), // Skip premium check
     requirePremiumSoft: (req, res, next) => next(),
+    optionalPremiumCheck: (req, res, next) => {
+        req.isPremium = true;
+        next();
+    },
     requireAdmin: (req, res, next) => next()
 }));
 

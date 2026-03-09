@@ -6,8 +6,16 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '.env') });
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend = null;
 const FROM_EMAIL = 'noreply@mystickahvezda.cz';
+
+// Lazy-load Resend to avoid errors if API key is missing
+function getResend() {
+  if (!resend && process.env.RESEND_API_KEY) {
+    resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resend;
+}
 
 /**
  * EMAIL TEMPLATES
@@ -225,7 +233,12 @@ export async function sendEmail(emailConfig) {
 
     console.log(`[EMAIL] Sending ${template} to ${to}`);
 
-    const response = await resend.emails.send({
+    const resendClient = getResend();
+    if (!resendClient) {
+      throw new Error('Resend not initialized - missing RESEND_API_KEY');
+    }
+
+    const response = await resendClient.emails.send({
       from: FROM_EMAIL,
       to,
       subject: templateConfig.subject,

@@ -1,6 +1,5 @@
 import schedule from 'node-schedule';
 import { supabase } from '../db-supabase.js';
-import { sendEmail } from '../email-service.js';
 
 /**
  * EMAIL QUEUE JOB PROCESSOR
@@ -49,6 +48,9 @@ export async function processEmailQueue() {
         for (const emailRecord of emails) {
             try {
                 const { id, email_to, template, data } = emailRecord;
+
+                // Dynamically import sendEmail to avoid circular dependency
+                const { sendEmail } = await import('../email-service.js');
 
                 // Send email via Resend
                 const result = await sendEmail({
