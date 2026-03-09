@@ -371,6 +371,7 @@ async function handleCheckoutCompleted(session) {
     const planType = session.metadata?.planType || 'premium_monthly';
     const stripeSubscriptionId = session.subscription;
     const stripeCustomerId = session.customer;
+    const userEmail = session.customer_email || session.customer_details?.email;
 
     if (!userId) {
         console.error('[STRIPE] checkout.session.completed: no userId found');
@@ -423,7 +424,102 @@ async function handleCheckoutCompleted(session) {
         console.error('[STRIPE] Supabase upsert error:', error);
     } else {
         console.log(`[STRIPE] User ${userId} upgraded to ${planType}.`);
+
+        // RETENTION: Send onboarding emails
+        if (userEmail) {
+            try {
+                await sendOnboardingEmails(userId, userEmail, planType);
+            } catch (emailError) {
+                console.warn(`[RETENTION] Onboarding email failed for user ${userId}:`, emailError.message);
+                // Don't block subscription if emails fail
+            }
+        }
     }
+}
+
+/**
+ * RETENTION: Send onboarding email sequence to new premium subscriber
+ * Improves conversion retention and feature discovery
+ */
+async function sendOnboardingEmails(userId, email, planType) {
+    // Email 1: Welcome (immediate)
+    scheduleEmail(userId, email, {
+        type: 'onboarding_welcome',
+        delaySeconds: 5, // Small delay to ensure subscription is recorded
+        subject: 'Vítej v Mystické Hvězdě! 🌟',
+        template: 'onboarding_welcome',
+        data: { plan: planType }
+    });
+
+    // Email 2: Feature tutorial (24 hours)
+    scheduleEmail(userId, email, {
+        type: 'onboarding_feature_tutorial',
+        delaySeconds: 86400,
+        subject: 'Tvůj nový svět se otevírá ✨',
+        template: 'onboarding_features',
+        data: { plan: planType, features: getFeaturesByPlan(planType) }
+    });
+
+    // Email 3: Engagement nudge (72 hours)
+    scheduleEmail(userId, email, {
+        type: 'onboarding_nudge',
+        delaySeconds: 259200,
+        subject: 'Byly jsi tu? Tvůj AI mentor čeká... 🤖',
+        template: 'onboarding_nudge',
+        data: { plan: planType }
+    });
+
+    console.log(`[RETENTION] Onboarding email sequence scheduled for user ${userId}`);
+}
+
+/**
+ * Schedule an email to be sent after delay
+ * (Stub - requires email service integration like SendGrid/Resend)
+ */
+function scheduleEmail(userId, email, emailConfig) {
+    // TODO: Integrate with email service
+    // This would call SendGrid/Resend API with delayed delivery
+    // For now, just log intent
+    console.log(`[EMAIL] Scheduled: ${emailConfig.type} for ${email} after ${emailConfig.delaySeconds}s`);
+
+    // In production, call:
+    // await emailService.scheduleEmail({
+    //     to: email,
+    //     subject: emailConfig.subject,
+    //     template: emailConfig.template,
+    //     data: emailConfig.data,
+    //     sendAfter: new Date(Date.now() + emailConfig.delaySeconds * 1000)
+    // });
+}
+
+/**
+ * Get feature list based on subscription plan
+ */
+function getFeaturesByPlan(planType) {
+    const features = {
+        'premium_monthly': [
+            'Unlimited tarot readings',
+            'Weekly & monthly horoscopes',
+            'AI Mentor chat (unlimited)',
+            'Nativity chart interpretation',
+            'Numerology readings'
+        ],
+        'exclusive_monthly': [
+            'Everything in Premium, plus:',
+            'Priority AI responses',
+            'Exclusive premium content',
+            'Early access to new features',
+            'Dedicated email support'
+        ],
+        'vip': [
+            'Everything in Exclusive, plus:',
+            '1-on-1 expert consultations',
+            'Custom astrological reports',
+            'White-label options'
+        ]
+    };
+
+    return features[planType] || features['premium_monthly'];
 }
 
 /**
