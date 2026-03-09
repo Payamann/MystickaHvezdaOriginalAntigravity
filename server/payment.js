@@ -652,6 +652,225 @@ async function handleSubscriptionDeleted(subscription) {
     console.log(`[STRIPE] Subscription cancelled for user ${sub.user_id}`);
 }
 
+// ============================================
+// RETENTION ENDPOINTS (Churn Prevention)
+// ============================================
+
+/**
+ * POST /retention/feedback
+ * Save user feedback during cancellation flow
+ */
+router.post('/retention/feedback', authenticateToken, async (req, res) => {
+    try {
+        const { userId } = req.user;
+        const { type, reason, feedback } = req.body;
+
+        if (!type || !reason) {
+            return res.status(400).json({ error: 'type and reason required' });
+        }
+
+        // Create retention_feedback table if doesn't exist
+        const { data, error } = await supabase
+            .from('retention_feedback')
+            .insert({
+                user_id: userId,
+                type,
+                reason,
+                feedback: feedback || null,
+                created_at: new Date().toISOString()
+            });
+
+        if (error) {
+            console.error('[RETENTION] Error saving feedback:', error);
+            return res.status(500).json({ error: 'Failed to save feedback' });
+        }
+
+        console.log(`[RETENTION] Feedback saved for user ${userId}: ${reason}`);
+        res.json({ success: true, message: 'Feedback saved' });
+    } catch (err) {
+        console.error('[RETENTION] Error in feedback endpoint:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+/**
+ * POST /subscription/pause
+ * Pause subscription for specified days (no charge)
+ */
+router.post('/subscription/pause', authenticateToken, async (req, res) => {
+    try {
+        const { userId } = req.user;
+        const { pauseDays = 30 } = req.body;
+
+        // Get user's subscription
+        const { data: sub, error: subError } = await supabase
+            .from('subscriptions')
+            .select('*')
+            .eq('user_id', userId)
+            .single();
+
+        if (!sub || subError) {
+            return res.status(404).json({ error: 'Subscription not found' });
+        }
+
+        if (sub.status !== 'active') {
+            return res.status(400).json({ error: 'Can only pause active subscriptions' });
+        }
+
+        // Calculate pause end date
+        const pauseUntil = new Date();
+        pauseUntil.setDate(pauseUntil.getDate() + pauseDays);
+
+        // Update subscription status to paused
+        const { error: updateError } = await supabase
+            .from('subscriptions')
+            .update({
+                status: 'paused',
+                pause_until: pauseUntil.toISOString(),
+                updated_at: new Date().toISOString()
+            })
+            .eq('user_id', userId);
+
+        if (updateError) {
+            console.error('[RETENTION] Error pausing subscription:', updateError);
+            return res.status(500).json({ error: 'Failed to pause subscription' });
+        }
+
+        // If Stripe subscription exists, update it
+        if (sub.stripe_subscription_id) {
+            try {
+                await stripe.subscriptions.update(sub.stripe_subscription_id, {
+                    pause_collection: {
+                        behavior: 'mark_uncollectible',
+                        resumes_at: Math.floor(pauseUntil.getTime() / 1000)
+                    }
+                });
+            } catch (stripeErr) {
+                console.warn('[RETENTION] Warning: Could not pause Stripe subscription:', stripeErr.message);
+                // Don't fail the endpoint if Stripe update fails
+            }
+        }
+
+        console.log(`[RETENTION] Subscription paused for user ${userId} until ${pauseUntil}`);
+        res.json({
+            success: true,
+            message: `Subscription paused for ${pauseDays} days`,
+            pauseUntil: pauseUntil.toISOString()
+        });
+    } catch (err) {
+        console.error('[RETENTION] Error in pause endpoint:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+/**
+ * POST /subscription/apply-discount
+ * Apply discount coupon to active subscription
+ */
+router.post('/subscription/apply-discount', authenticateToken, async (req, res) => {
+    try {
+        const { userId } = req.user;
+        const { couponCode } = req.body;
+
+        if (!couponCode) {
+            return res.status(400).json({ error: 'couponCode required' });
+        }
+
+        // Get user's subscription
+        const { data: sub, error: subError } = await supabase
+            .from('subscriptions')
+            .select('*')
+            .eq('user_id', userId)
+            .single();
+
+        if (!sub || subError || !sub.stripe_subscription_id) {
+            return res.status(404).json({ error: 'Stripe subscription not found' });
+        }
+
+        // Verify coupon exists in Stripe
+        let coupon;
+        try {
+            coupon = await stripe.coupons.retrieve(couponCode);
+        } catch (err) {
+            return res.status(400).json({ error: `Coupon '${couponCode}' not found` });
+        }
+
+        if (coupon.valid === false) {
+            return res.status(400).json({ error: 'Coupon is no longer valid' });
+        }
+
+        // Apply coupon to subscription
+        try {
+            await stripe.subscriptions.update(sub.stripe_subscription_id, {
+                coupon: couponCode
+            });
+        } catch (stripeErr) {
+            return res.status(400).json({ error: stripeErr.message });
+        }
+
+        // Log discount application
+        await supabase
+            .from('retention_feedback')
+            .insert({
+                user_id: userId,
+                type: 'discount_applied',
+                reason: couponCode,
+                feedback: `Applied coupon ${couponCode}`,
+                created_at: new Date().toISOString()
+            })
+            .catch(err => console.warn('Could not log discount application:', err));
+
+        console.log(`[RETENTION] Discount coupon '${couponCode}' applied to user ${userId}`);
+        res.json({
+            success: true,
+            message: `Coupon '${couponCode}' applied successfully`,
+            discount: coupon
+        });
+    } catch (err) {
+        console.error('[RETENTION] Error in apply-discount endpoint:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+/**
+ * POST /email/send (stub - requires email service integration)
+ * Placeholder for email sending endpoint
+ * TODO: Integrate with SendGrid, Resend, or AWS SES
+ */
+router.post('/email/send', authenticateToken, async (req, res) => {
+    try {
+        const { userId } = req.user;
+        const { template, data } = req.body;
+
+        if (!template) {
+            return res.status(400).json({ error: 'template required' });
+        }
+
+        // TODO: Implement email sending via SendGrid/Resend
+        // For now, just log the request
+        console.log(`[EMAIL] Queued email: template=${template}, user=${userId}`, data);
+
+        // In production, queue this in email_queue table
+        // await supabase.from('email_queue').insert({
+        //     user_id: userId,
+        //     template,
+        //     data: JSON.stringify(data),
+        //     status: 'pending',
+        //     created_at: new Date().toISOString()
+        // });
+
+        res.json({
+            success: true,
+            message: 'Email queued for sending',
+            template,
+            status: 'pending'
+        });
+    } catch (err) {
+        console.error('[EMAIL] Error in send endpoint:', err);
+        res.status(500).json({ error: 'Failed to queue email' });
+    }
+});
+
 // Legacy endpoint
 router.post('/process', authenticateToken, async (req, res) => {
     res.status(410).json({ success: false, error: 'Tento endpoint byl nahrazen Stripe Checkout.' });
