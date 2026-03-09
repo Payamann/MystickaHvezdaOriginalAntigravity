@@ -4,8 +4,20 @@ import { supabase } from '../db-supabase.js';
 // MOON PHASE CALCULATIONS
 // ============================================
 
+// In-memory cache: store moon phase result for each day
+// This avoids recalculating the same phase multiple times per day
+let cachedMoonPhase = null;
+let cachedMoonDate = null;
+
 export function calculateMoonPhase() {
     const now = new Date();
+    const today = now.toISOString().split('T')[0]; // YYYY-MM-DD format
+
+    // Return cached result if it's still the same day
+    if (cachedMoonDate === today && cachedMoonPhase) {
+        return cachedMoonPhase;
+    }
+
     const synodic = 29.53058867; // Synodic month (new moon to new moon)
     const knownNewMoon = new Date('2024-01-11T11:57:00'); // Known New Moon reference
     const diffDays = (now - knownNewMoon) / (1000 * 60 * 60 * 24);
@@ -16,14 +28,21 @@ export function calculateMoonPhase() {
     if (currentPhase < 0) currentPhase += synodic;
 
     // Determine simplified phase name
-    if (currentPhase < 1.5 || currentPhase > 28) return 'Nov (Znovuzrození, nové začátky)';
-    if (currentPhase < 7) return 'Dorůstající srpek (Budování, sbírání sil)';
-    if (currentPhase < 9) return 'První čtvrť (Překonávání překážek)';
-    if (currentPhase < 14) return 'Dorůstající měsíc (Zdokonalování)';
-    if (currentPhase < 16) return 'Úplněk (Vyvrcholení, odhalení pravdy)';
-    if (currentPhase < 21) return 'Couvající měsíc (Uvolňování, vděčnost)';
-    if (currentPhase < 23) return 'Poslední čtvrť (Odpouštění)';
-    return 'Couvající srpek (Očista, odpočinek)';
+    let phaseName;
+    if (currentPhase < 1.5 || currentPhase > 28) phaseName = 'Nov (Znovuzrození, nové začátky)';
+    else if (currentPhase < 7) phaseName = 'Dorůstající srpek (Budování, sbírání sil)';
+    else if (currentPhase < 9) phaseName = 'První čtvrť (Překonávání překážek)';
+    else if (currentPhase < 14) phaseName = 'Dorůstající měsíc (Zdokonalování)';
+    else if (currentPhase < 16) phaseName = 'Úplněk (Vyvrcholení, odhalení pravdy)';
+    else if (currentPhase < 21) phaseName = 'Couvající měsíc (Uvolňování, vděčnost)';
+    else if (currentPhase < 23) phaseName = 'Poslední čtvrť (Odpouštění)';
+    else phaseName = 'Couvající srpek (Očista, odpočinek)';
+
+    // Cache the result for this day
+    cachedMoonPhase = phaseName;
+    cachedMoonDate = today;
+
+    return phaseName;
 }
 
 // ============================================

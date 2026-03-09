@@ -35,11 +35,26 @@ router.post('/crystal-ball', optionalPremiumCheck, async (req, res) => {
 
                 const count = data?.length || 0;
                 if (count >= 3) {
+                    // SOFT WALL: Show upgrade offer instead of hard block
                     return res.status(402).json({
                         success: false,
-                        error: 'Denní limit 3 otázek byl vyčerpán. Upgrade na Premium pro neomezený přístup.',
-                        code: 'PREMIUM_REQUIRED',
-                        feature: 'crystal_ball_unlimited'
+                        error: 'Denní limit 3 otázek byl vyčerpán.',
+                        code: 'LIMIT_REACHED',
+                        feature: 'crystal_ball_unlimited',
+                        upsell: {
+                            title: 'Chcete neomezený přístup k Křišťálové kouli?',
+                            message: 'Zažijte bez omezení. Hvězdný Průvodce vám otevře nekonečný přístup.',
+                            feature: 'crystal_ball_unlimited',
+                            plan: 'pruvodce',
+                            price: 179,
+                            priceLabel: 'Kč/měsíc',
+                            upgradeUrl: '/cenik?selected=pruvodce&utm_source=crystal_ball_upsell',
+                            features: [
+                                '✓ Neomezené otázky',
+                                '✓ Hlubší AI výklady',
+                                '✓ Uložit historii'
+                            ]
+                        }
                     });
                 }
             } catch (limitError) {
@@ -106,10 +121,25 @@ router.post('/tarot', authenticateToken, async (req, res) => {
 
         // Free users can only do 1-card spreads
         if (!userIsPremium && cards.length > 1) {
-            return res.status(403).json({
+            // SOFT WALL: Show upgrade offer
+            return res.status(402).json({
                 success: false,
-                error: 'Komplexní výklady jsou dostupné pouze pro Hvězdné Průvodce (Premium).',
-                code: 'PREMIUM_REQUIRED'
+                error: 'Komplexní výklady jsou dostupné pouze pro Hvězdné Průvodce.',
+                code: 'PREMIUM_REQUIRED',
+                upsell: {
+                    title: 'Odemknutí Tarotických Vhledi',
+                    message: 'Používejte vícekaretové výklady s hlubší interpretací. Jen pro Premium.',
+                    feature: 'tarot_advanced',
+                    plan: 'pruvodce',
+                    price: 179,
+                    priceLabel: 'Kč/měsíc',
+                    upgradeUrl: '/cenik?selected=pruvodce&utm_source=tarot_upsell',
+                    features: [
+                        '✓ Všechny tarotové výklady',
+                        '✓ Synastry & Natalní karty',
+                        '✓ AI interpretace'
+                    ]
+                }
             });
         }
 
