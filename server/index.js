@@ -25,6 +25,7 @@ import { isPremiumUser } from './payment.js';
 import { supabase } from './db-supabase.js';
 import crypto from 'crypto';
 import { initializeEmailQueueJob } from './jobs/email-queue.js';
+import { initializeAnalyticsJob } from './jobs/analytics-snapshot-job.js';
 
 // Route modules
 import oracleRoutes from './routes/oracle.js';
@@ -33,6 +34,8 @@ import numerologyRoutes from './routes/numerology.js';
 import userRoutes from './routes/user.js';
 import pushRoutes from './routes/push.js';
 import angelPostRoutes from './routes/angel-post.js';
+import abTestingRoutes from './routes/ab-testing.js';
+import userPreferencesRoutes from './routes/user-preferences.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -244,6 +247,8 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/mentor', mentorRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/ab-testing', abTestingRoutes);
+app.use('/api/preferences', userPreferencesRoutes);
 
 // Public config endpoint â€” safely exposes only client-safe env vars
 app.get('/api/config', (req, res) => {
@@ -277,8 +282,9 @@ if (process.argv[1] === __filename) {
         console.log(`âś¨ MystickĂˇ HvÄ›zda API running on http://localhost:${PORT}`);
         console.log(`đźŚŤ Environment: ${process.env.NODE_ENV || 'development'}`);
 
-        // Initialize email queue job processor
+        // Initialize background jobs
         initializeEmailQueueJob();
+        initializeAnalyticsJob();
     });
 }
 
