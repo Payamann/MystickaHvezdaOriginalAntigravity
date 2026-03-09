@@ -208,6 +208,18 @@
   <link rel="alternate" hreflang="cs" href="https://mystickahvezda.cz/index.html">
   <link rel="alternate" hreflang="sk" href="https://mystickahvezda.cz/sk/index.html">
   <link rel="alternate" hreflang="x-default" href="https://mystickahvezda.cz/index.html">
+
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-H22CGHF34K"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-H22CGHF34K', {
+      'page_path': window.location.pathname,
+      'anonymize_ip': true
+    });
+  </script>
 </head>
 
 <body>
@@ -1278,6 +1290,21 @@
         if (rejectBtn) rejectBtn.addEventListener('click', () => save(false, false));
       });
     })();
+  </script>
+
+  <!-- Analytics Initialization & Tracking -->
+  <script type="module">
+    import { initAnalytics, trackPageLoadMetrics } from './js/ga-tracking.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize analytics
+      initAnalytics();
+
+      // Track page load metrics
+      trackPageLoadMetrics();
+
+      console.log('[GA] Tracking initialized for:', window.location.pathname);
+    });
   </script>
 
 </body>
