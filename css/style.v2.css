@@ -5077,6 +5077,44 @@ body.page-mentor .header {
 }
 
 /* ============================================
+   STREAK BADGE - Retention Gamification
+   ============================================ */
+#mh-streak-badge {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #ff6b35, #ffd700);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: var(--text-base);
+  z-index: 1000;
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+  opacity: 1;
+  transition: opacity var(--transition-base);
+}
+
+#mh-streak-badge--milestone {
+  background: linear-gradient(135deg, #ffd700, #9d4edd);
+  box-shadow: 0 4px 20px rgba(157, 78, 221, 0.4);
+}
+
+@keyframes mh-streak-bounce {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ============================================
    SIGN PICKER WIDGET - Personalization
    ============================================ */
 .sign-picker {
