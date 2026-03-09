@@ -29,53 +29,37 @@ export const authenticateToken = (req, res, next) => {
 /**
  * HARD Premium Gate - Blocks access completely
  * Returns 402 Payment Required if not premium
+ * Uses JWT-cached premium status (NO database query)
  */
-export const requirePremium = async (req, res, next) => {
+export const requirePremium = (req, res, next) => {
     const userId = req.user?.id;
 
     if (!userId) {
         return res.status(401).json({ error: 'Authentication required' });
     }
 
-    try {
-        const { data: subscription } = await supabase
-            .from('subscriptions')
-            .select('plan_type, status, current_period_end')
-            .eq('user_id', userId)
-            .single();
+    // Check cached isPremium field from JWT token
+    const isPremium = req.user?.isPremium || false;
+    const premiumExpires = req.user?.premiumExpires;
 
-        if (!subscription) {
-            return res.status(402).json({
-                error: 'Premium subscription required',
-                code: 'PREMIUM_REQUIRED'
-            });
-        }
-
-        const isActive = subscription.status === 'active' || subscription.status === 'trialing' || subscription.status === 'cancel_pending';
-        const notExpired = new Date(subscription.current_period_end) > new Date();
-        const isPremium = PREMIUM_PLAN_TYPES.includes(subscription.plan_type);
-
-        if (!isActive || !notExpired || !isPremium) {
-            return res.status(402).json({
-                error: 'Active premium subscription required',
-                code: 'PREMIUM_REQUIRED',
-                currentPlan: subscription.plan_type
-            });
-        }
-
-        req.subscription = subscription;
-        next();
-    } catch (error) {
-        console.error('Premium check error:', error);
-        res.status(500).json({ error: 'Failed to verify subscription' });
+    // Verify premium status and expiration
+    if (!isPremium || (premiumExpires && new Date(premiumExpires) <= new Date())) {
+        return res.status(402).json({
+            error: 'Active premium subscription required',
+            code: 'PREMIUM_REQUIRED',
+            currentPlan: req.user?.subscription_status || null
+        });
     }
+
+    next();
 };
 
 /**
  * SOFT Premium Gate - Returns partial data for free users
  * Allows request to proceed but marks as limited
+ * Uses JWT-cached premium status (NO database query)
  */
-export const requirePremiumSoft = async (req, res, next) => {
+export const requirePremiumSoft = (req, res, next) => {
     const userId = req.user?.id;
 
     if (!userId) {
@@ -84,43 +68,25 @@ export const requirePremiumSoft = async (req, res, next) => {
         return next();
     }
 
-    try {
-        const { data: subscription } = await supabase
-            .from('subscriptions')
-            .select('plan_type, status, current_period_end, credits')
-            .eq('user_id', userId)
-            .single();
+    // Check cached isPremium field from JWT token
+    const isPremium = req.user?.isPremium || false;
+    const premiumExpires = req.user?.premiumExpires;
 
-        if (!subscription) {
-            req.isPremium = false;
-            req.isLimited = true;
-            req.credits = 0;
-            return next();
-        }
+    // Verify premium status and expiration
+    const isStillActive = !premiumExpires || new Date(premiumExpires) > new Date();
+    req.isPremium = isPremium && isStillActive;
+    req.isLimited = !req.isPremium;
+    req.credits = 0; // Deprecated
 
-        const isActive = subscription.status === 'active' || subscription.status === 'trialing' || subscription.status === 'cancel_pending';
-        const notExpired = new Date(subscription.current_period_end) > new Date();
-        const isPremium = PREMIUM_PLAN_TYPES.includes(subscription.plan_type);
-
-        req.isPremium = isActive && notExpired && isPremium;
-        req.isLimited = !req.isPremium;
-        req.credits = 0; // Deprecated
-        req.subscription = subscription;
-
-        next();
-    } catch (error) {
-        console.error('Premium soft check error:', error);
-        req.isPremium = false;
-        req.isLimited = true;
-        next();
-    }
+    next();
 };
 
 /**
  * OPTIONAL Premium Check - Allows anonymous access but checks premium if logged in
  * Use for endpoints that should work without login but have premium features
+ * Uses JWT-cached premium status (NO database query)
  */
-export const optionalPremiumCheck = async (req, res, next) => {
+export const optionalPremiumCheck = (req, res, next) => {
     // Try to extract token, but don't fail if missing
     const authHeader = req.headers.authorization;
     const token = authHeader?.split(' ')[1];
@@ -136,28 +102,22 @@ export const optionalPremiumCheck = async (req, res, next) => {
     // Token exists - verify and check premium status
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
-        req.user = { id: decoded.userId, email: decoded.email };
+        req.user = {
+            id: decoded.id,
+            email: decoded.email,
+            isPremium: decoded.isPremium,
+            premiumExpires: decoded.premiumExpires,
+            subscription_status: decoded.subscription_status
+        };
 
-        // Check subscription status
-        const { data: subscription } = await supabase
-            .from('subscriptions')
-            .select('plan_type, status, current_period_end')
-            .eq('user_id', decoded.userId)
-            .single();
+        // Check cached isPremium field from JWT token (NO database query!)
+        const isPremium = decoded.isPremium || false;
+        const premiumExpires = decoded.premiumExpires;
 
-        if (!subscription) {
-            req.isPremium = false;
-            req.isLimited = true;
-            return next();
-        }
-
-        const isActive = subscription.status === 'active' || subscription.status === 'trialing' || subscription.status === 'cancel_pending';
-        const notExpired = new Date(subscription.current_period_end) > new Date();
-        const isPremium = PREMIUM_PLAN_TYPES.includes(subscription.plan_type);
-
-        req.isPremium = isActive && notExpired && isPremium;
+        // Verify premium status and expiration
+        const isStillActive = !premiumExpires || new Date(premiumExpires) > new Date();
+        req.isPremium = isPremium && isStillActive;
         req.isLimited = !req.isPremium;
-        req.subscription = subscription;
 
         next();
     } catch (error) {
