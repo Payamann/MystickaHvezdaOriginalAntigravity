@@ -1,0 +1,67 @@
+<!--
+    GOOGLE ANALYTICS 4 SETUP
+
+    Přidej toto do <head> sekce tvého HTML (ve všech souborech)
+
+    DŮLEŽITÉ: Nahraď G-XXXXXXXXXX svým Measurement ID!
+    Najdeš ho v Google Analytics → Admin → Property → Data Streams
+-->
+
+<!-- Google Analytics 4 Tag -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX', {
+        'page_path': window.location.pathname,
+        'anonymize_ip': true
+    });
+</script>
+
+<!-- Konec GA snippet -->
+
+---
+
+<!--
+    PŘIDEJ TOTO NA KONEC <body> (před closing </body> tag)
+    Toto inicializuje analytics tracking na každé stránce
+-->
+
+<script type="module">
+    import { initAnalytics, trackPageLoadMetrics } from './js/ga-tracking.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Initialize analytics
+        initAnalytics();
+
+        // Track page load metrics
+        trackPageLoadMetrics();
+
+        console.log('[GA] Tracking initialized for page:', window.location.pathname);
+    });
+</script>
+
+---
+
+INSTRUKCE K IMPLEMENTACI:
+
+1. NAHRAĎ "G-XXXXXXXXXX" SVÝM MEASUREMENT ID
+   - Jdi do Google Analytics
+   - Admin → Property → Data Streams → Web
+   - Kopíruj Measurement ID (začíná s G-)
+
+2. PŘIDEJ PRVNÍ ČÁST do <head>:
+   Všechny HTML soubory (index.html, profil.html, etc.)
+
+3. PŘIDEJ DRUHOU ČÁST do <body> (na konci):
+   Alespoň do index.html a hlavních stránek
+
+4. ZKONTROLUJ že js/ga-tracking.js existuje v projektu
+
+5. TEST v Chrome DevTools:
+   - Otevři Network tab
+   - Hledej "google-analytics" requesty
+   - Měl by se poslat event do GA
+
+HOTOVO! 🎉
