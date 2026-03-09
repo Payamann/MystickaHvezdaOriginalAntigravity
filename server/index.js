@@ -139,6 +139,17 @@ const sensitiveOpLimiter = rateLimit({
 // Gzip Compression
 app.use(compression());
 
+// Force HTTPS in production
+if (process.env.NODE_ENV === 'production') {
+    app.use((req, res, next) => {
+        // Railway (and most proxies) use x-forwarded-proto header
+        if (req.headers['x-forwarded-proto'] !== 'https') {
+            return res.redirect(301, `https://${req.hostname}${req.url}`);
+        }
+        next();
+    });
+}
+
 // XSS Protection - only for API routes (not static files)
 app.use('/api', xss());
 

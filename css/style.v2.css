@@ -1044,7 +1044,7 @@ body.page-mentor .header {
 }
 
 .card--pricing.featured::before {
-  content: 'NEJOBLĂŤBENÄšJĹ ĂŤ';
+  content: 'NEJOBLÍBENĚJŠÍ';
   position: absolute;
   top: -12px;
   left: 50%;
@@ -1095,7 +1095,8 @@ body.page-mentor .header {
 }
 
 .card__features li::before {
-  content: 'âś¦';
+  content: '\2726';
+  /* ✦ Star symbol */
   color: var(--color-mystic-gold);
   font-size: 0.8rem;
 }
