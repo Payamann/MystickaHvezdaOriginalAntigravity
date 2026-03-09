@@ -5358,6 +5358,103 @@ body.page-mentor .header {
   }
 }
 
+/* RESPONSIVE: Retention Modal on Mobile */
+@media (max-width: 768px) {
+  .retention-modal-overlay {
+    padding: var(--space-md);
+  }
+
+  .retention-modal {
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+  }
+
+  .retention-modal__title {
+    font-size: var(--text-xl);
+  }
+
+  .retention-form__option {
+    padding: var(--space-sm) var(--space-md);
+  }
+
+  .retention-form__textarea {
+    font-size: var(--text-sm);
+  }
+
+  .retention-offer {
+    padding: var(--space-md);
+  }
+
+  .retention-toast {
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    max-width: none;
+    width: auto;
+  }
+}
+
+/* RESPONSIVE: Retention Modal on Small Phones */
+@media (max-width: 480px) {
+  .retention-modal {
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+  }
+
+  .retention-modal__title {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-sm);
+  }
+
+  .retention-modal__subtitle {
+    font-size: var(--text-sm);
+    margin-bottom: var(--space-md);
+  }
+
+  .retention-form__option {
+    padding: var(--space-xs) var(--space-sm);
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .retention-form__label {
+    font-size: var(--text-sm);
+  }
+
+  .retention-form__hint {
+    font-size: var(--text-xs);
+    margin-top: 2px;
+  }
+
+  .retention-form__textarea {
+    padding: var(--space-sm);
+    font-size: var(--text-xs);
+  }
+
+  .retention-form__actions {
+    gap: var(--space-sm);
+  }
+
+  .retention-offer h3 {
+    font-size: var(--text-base);
+  }
+
+  .retention-offer p {
+    font-size: var(--text-xs);
+  }
+
+  .retention-toast {
+    bottom: 5px;
+    left: 5px;
+    right: 5px;
+    max-width: none;
+    font-size: var(--text-sm);
+    padding: var(--space-sm) var(--space-md);
+  }
+}
+
 /* ============================================
    SIGN PICKER WIDGET - Personalization
    ============================================ */
