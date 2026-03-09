@@ -5052,13 +5052,24 @@ body.page-mentor .header {
 }
 
 /* ============================================
-   SIGN PICKER WIDGET - Personalization
-   ============================================ */
-/* ============================================
    PERSONALIZED GREETING - Main page hero
    ============================================ */
 #personalized-greeting {
   display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  font-size: var(--text-lg);
+  color: var(--color-mystic-gold-light);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+#personalized-greeting:hover {
+  color: var(--color-mystic-gold);
+  transform: translateX(4px);
 }
 
 #personalized-greeting.personalized-greeting--visible {
