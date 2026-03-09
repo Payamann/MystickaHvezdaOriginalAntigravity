@@ -33,6 +33,8 @@ tmp/
 # IDE
 .vscode/
 .idea/
+.claude/
+_agent/
 
 # Test outputs
 *.lcov
