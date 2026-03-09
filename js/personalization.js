@@ -107,29 +107,93 @@ function initSignPicker() {
 
     const current = MH_PERSONALIZATION.getSign();
 
-    picker.innerHTML = `
-        <div style="display:flex;flex-wrap:wrap;gap:0.4rem;justify-content:center;align-items:center;padding:0.75rem;">
-            <span style="color:rgba(255,255,255,0.5);font-size:0.85rem;margin-right:0.5rem;">Vaše znamení:</span>
-            ${Object.entries(SIGNS_CZ).map(([key, s]) => `
-                <button data-pick="${key}" style="
-                    padding:0.3rem 0.7rem;border-radius:50px;border:1px solid ${current === key ? '#d4af37' : 'rgba(255,255,255,0.15)'};
-                    background:${current === key ? 'rgba(212,175,55,0.15)' : 'transparent'};
-                    color:${current === key ? '#d4af37' : 'rgba(255,255,255,0.6)'};
+    if (current) {
+        // Show only selected sign with ability to change
+        const s = SIGNS_CZ[current];
+        picker.innerHTML = `
+            <div style="display:flex;justify-content:center;align-items:center;padding:0.75rem;gap:0.75rem;">
+                <span style="color:rgba(255,255,255,0.5);font-size:0.85rem;">Vaše znamení:</span>
+                <button id="sign-picker-toggle" style="
+                    padding:0.5rem 1rem;border-radius:50px;border:1px solid #d4af37;
+                    background:rgba(212,175,55,0.15);
+                    color:#d4af37;
+                    cursor:pointer;font-size:0.9rem;font-weight:500;transition:all 0.2s;
+                    display:flex;align-items:center;gap:0.4rem;
+                ">${s.emoji} ${s.label}</button>
+                <button id="sign-picker-change" style="
+                    padding:0.4rem 0.8rem;border-radius:50px;border:1px solid rgba(255,255,255,0.2);
+                    background:transparent;
+                    color:rgba(255,255,255,0.6);
                     cursor:pointer;font-size:0.8rem;transition:all 0.2s;
-                " title="${s.dates}">${s.emoji} ${s.label}</button>
-            `).join('')}
-        </div>
-    `;
+                " title="Změnit znamení">✎ Změnit</button>
+            </div>
+            <div id="sign-picker-expanded" style="display:none;flex-wrap:wrap;gap:0.4rem;justify-content:center;align-items:center;padding:0.75rem;border-top:1px solid rgba(235,192,102,0.15);">
+                ${Object.entries(SIGNS_CZ).map(([key, s]) => `
+                    <button data-pick="${key}" style="
+                        padding:0.3rem 0.7rem;border-radius:50px;border:1px solid ${current === key ? '#d4af37' : 'rgba(255,255,255,0.15)'};
+                        background:${current === key ? 'rgba(212,175,55,0.15)' : 'transparent'};
+                        color:${current === key ? '#d4af37' : 'rgba(255,255,255,0.6)'};
+                        cursor:pointer;font-size:0.8rem;transition:all 0.2s;
+                    " title="${s.dates}">${s.emoji} ${s.label}</button>
+                `).join('')}
+            </div>
+        `;
 
-    picker.querySelectorAll('[data-pick]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            MH_PERSONALIZATION.setSign(btn.dataset.pick);
-            // Refresh highlights
-            initHoroscopeHighlight();
-            // Re-render picker with new selection
-            initSignPicker();
+        const toggleBtn = document.getElementById('sign-picker-toggle');
+        const changeBtn = document.getElementById('sign-picker-change');
+        const expandedDiv = document.getElementById('sign-picker-expanded');
+
+        // Toggle expanded view
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                const isHidden = expandedDiv.style.display === 'none';
+                expandedDiv.style.display = isHidden ? 'flex' : 'none';
+            });
+        }
+
+        // Change button functionality
+        if (changeBtn) {
+            changeBtn.addEventListener('click', () => {
+                expandedDiv.style.display = expandedDiv.style.display === 'none' ? 'flex' : 'none';
+            });
+        }
+
+        // Handle sign selection from expanded view
+        picker.querySelectorAll('[data-pick]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                MH_PERSONALIZATION.setSign(btn.dataset.pick);
+                // Refresh highlights
+                initHoroscopeHighlight();
+                // Re-render picker with new selection
+                initSignPicker();
+            });
         });
-    });
+    } else {
+        // Show all signs if none selected
+        picker.innerHTML = `
+            <div style="display:flex;flex-wrap:wrap;gap:0.4rem;justify-content:center;align-items:center;padding:0.75rem;">
+                <span style="color:rgba(255,255,255,0.5);font-size:0.85rem;margin-right:0.5rem;">Vaše znamení:</span>
+                ${Object.entries(SIGNS_CZ).map(([key, s]) => `
+                    <button data-pick="${key}" style="
+                        padding:0.3rem 0.7rem;border-radius:50px;border:1px solid rgba(255,255,255,0.15);
+                        background:transparent;
+                        color:rgba(255,255,255,0.6);
+                        cursor:pointer;font-size:0.8rem;transition:all 0.2s;
+                    " title="${s.dates}">${s.emoji} ${s.label}</button>
+                `).join('')}
+            </div>
+        `;
+
+        picker.querySelectorAll('[data-pick]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                MH_PERSONALIZATION.setSign(btn.dataset.pick);
+                // Refresh highlights
+                initHoroscopeHighlight();
+                // Re-render picker with new selection
+                initSignPicker();
+            });
+        });
+    }
 }
 
 // Auto-init based on current page
