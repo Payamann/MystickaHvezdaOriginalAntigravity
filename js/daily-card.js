@@ -103,17 +103,30 @@
             if (streakCountEl) streakCountEl.textContent = streakCount;
         }
 
-        // Web Share API
+        // Improved Share logic
         const shareBtn = el('kdd-share-btn');
-        if (shareBtn && navigator.share) {
-            shareBtn.style.display = 'inline-block';
+        if (shareBtn) {
             shareBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                navigator.share({
+                const shareData = {
                     title: 'Mystická Hvězda - Moje Karta Dne',
                     text: `Moje dnešní karta je ${card.name} (${card.emoji}). Zjisti, jakou zprávu mají hvězdy připravenou pro tebe!`,
-                    url: 'https://mystickahvezda.cz'
-                }).catch(err => console.log('Share error:', err));
+                    url: window.location.origin + '?utm_source=share&utm_campaign=karta_dne'
+                };
+
+                if (navigator.share) {
+                    navigator.share(shareData).catch(err => console.log('Share error:', err));
+                } else {
+                    // Fallback: Copy to clipboard
+                    const shareText = `${shareData.text}\n\n${shareData.url}`;
+                    navigator.clipboard.writeText(shareText).then(() => {
+                        const originalText = shareBtn.innerHTML;
+                        shareBtn.innerHTML = '✅ Zkopírováno!';
+                        setTimeout(() => { shareBtn.innerHTML = originalText; }, 2000);
+                    }).catch(err => {
+                        console.error('Could not copy text: ', err);
+                    });
+                }
             });
         }
 
