@@ -116,9 +116,12 @@ function initHoroscopeHighlight() {
             newBadge.textContent = 'Vaše znamení';
             card.appendChild(newBadge);
 
-            // Auto-scroll if hash matches
+            // Auto-scroll if hash matches (bez delay - scroll po rendu stránky)
             if (window.location.hash === `#${sign}`) {
-                setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'center' }), 500);
+                // Použij requestAnimationFrame pro smooth scroll po repaintu
+                requestAnimationFrame(() => {
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                });
             }
         } else {
             card.classList.remove('zodiac-card--highlighted');
@@ -252,6 +255,16 @@ function toggleExpandedView(picker) {
 // Auto-init based on current page
 document.addEventListener('DOMContentLoaded', () => {
     initIndexGreeting();
-    initSignPicker();
-    initHoroscopeHighlight();
+
+    // Inicializuj sign picker pouze pokud existuje element
+    const picker = document.getElementById('mh-sign-picker');
+    if (picker) {
+        initSignPicker();
+    }
+
+    // Inicializuj highlight pouze pokud jsou zodiac cards (horoskopy.html)
+    const cards = document.querySelectorAll('.zodiac-card');
+    if (cards.length > 0) {
+        initHoroscopeHighlight();
+    }
 });
