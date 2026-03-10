@@ -128,6 +128,8 @@ html {
   -ms-text-size-adjust: 100%;
   overscroll-behavior-y: none;
   /* Prevents scroll elasticity / rubberbanding bounding on Chromium/Edge */
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 /* Global Fixed Background (solves scroll jank from background-attachment: fixed on body) */
@@ -165,7 +167,8 @@ body {
   background-color: transparent;
   position: relative;
   letter-spacing: normal;
-  overflow-x: clip;
+  overflow-x: hidden;
+  max-width: 100vw;
   /* Modern performant alternative to hidden that doesn't break scroll anchoring */
 }
 
@@ -183,11 +186,11 @@ body::after {
   position: fixed;
   top: 50%;
   left: 50%;
-  width: 120vw;
+  width: 140vw;
   /* Broader coverage */
-  height: 120vh;
+  height: 140vh;
   transform: translate(-50%, -50%);
-  background: radial-gradient(circle at center, rgba(157, 78, 221, 0.1), transparent 70%);
+  background: radial-gradient(circle at center, rgba(157, 78, 221, 0.08), transparent 85%);
   z-index: -2;
   pointer-events: none;
   animation: aurora-pulse 15s ease-in-out infinite alternate;
@@ -198,11 +201,11 @@ body::after {
 @media (max-width: 992px) {
   body::before,
   body::after {
-    width: 100vw;
-    height: 100vh;
-    opacity: 0.5;
+    width: 200vw; /* Massive size to ensure no edges are visible */
+    height: 200vh;
+    opacity: 0.3; /* Extremely subtle */
     /* Soften for mobile display */
-    background: radial-gradient(circle at center, rgba(157, 78, 221, 0.06), transparent 65%);
+    background: radial-gradient(circle at center, rgba(157, 78, 221, 0.04), transparent 85%);
   }
 }
 
@@ -572,6 +575,14 @@ body.page-mentor .header {
   width: 100%;
 }
 
+@media (max-width: 992px) {
+  .header__inner {
+    justify-content: space-between;
+    padding: 0 var(--space-md);
+    gap: 0;
+  }
+}
+
 .logo {
   font-family: var(--font-heading);
   font-size: var(--text-2xl);
@@ -580,10 +591,14 @@ body.page-mentor .header {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  margin-right: var(--space-lg);
-  /* Reduced separation from nav to save space */
+  margin-right: auto; /* Push navigation or toggle to the right */
   text-decoration: none;
   /* Ensure no underline on link */
+}
+@media (max-width: 992px) {
+  .logo {
+    margin-right: 0;
+  }
 }
 
 .logo__icon {
