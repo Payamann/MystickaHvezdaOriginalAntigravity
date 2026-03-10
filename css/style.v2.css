@@ -201,9 +201,10 @@ body::after {
 @media (max-width: 992px) {
   body::before,
   body::after {
-    width: 200vw; /* Massive size to ensure no edges are visible */
-    height: 200vh;
+    width: 100vw; /* Constrain to viewport width to prevent horizontal overflow */
+    height: 100vh;
     opacity: 0.3; /* Extremely subtle */
+    border-radius: 0; /* No rounded corners needed when viewport-sized */
     /* Soften for mobile display */
     background: radial-gradient(circle at center, rgba(157, 78, 221, 0.04), transparent 85%);
   }
@@ -844,7 +845,16 @@ body.page-mentor .header {
     display: flex !important;
   }
   .nav {
-    display: none; /* Hide desktop nav container */
+    /* Don't hide with display:none — nav__list inside must be togglable.
+       Instead, make the nav a zero-size static container so it doesn't
+       take layout space, while nav__list (position:absolute) can still appear. */
+    position: static;
+    display: block;
+    width: 0;
+    height: 0;
+    overflow: visible;
+    padding: 0;
+    margin: 0;
   }
 }
 
@@ -2227,9 +2237,15 @@ body.page-mentor .header {
     min-height: 44px;
   }
 
-  /* Hide desktop nav links */
+  /* Nav container: zero-size but overflow visible so nav__list can appear */
   .nav {
     position: static;
+    display: block;
+    width: 0;
+    height: 0;
+    overflow: visible;
+    padding: 0;
+    margin: 0;
   }
 
   /* Hamburger toggle - OUTSIDE .nav, always visible */
@@ -2356,9 +2372,7 @@ body.page-mentor .header {
   }
 
   .hero__glow-effect {
-    width: 200px;
-    height: 200px;
-    opacity: 0.3;
+    display: none; /* Remove decorative glow on mobile — appears as transparent circle artifact */
   }
 
   /* Reduce floating animation on mobile for performance */
