@@ -122,10 +122,24 @@ app.use('/api/', limiter);
 // AI-generation endpoints - expensive, limit abuse
 const aiLimiter = rateLimit({
     windowMs: 24 * 60 * 60 * 1000, // 24 hours
-    max: 50, // 50 AI requests per IP per day (approx 2/hour avg)
-    message: { error: 'Překročen denní limit pro AI generování. Zkuste to zítra.' },
+    max: (req, res) => {
+        // Premium users get higher limits
+        if (req.user?.isPremium) {
+            return 100; // 100 AI requests per day for premium
+        }
+        return 10; // 10 AI requests per day for free users
+    },
+    keyGenerator: (req, res) => {
+        // Use user ID if authenticated, otherwise use IP
+        return req.user?.id || req.ip;
+    },
+    message: { error: 'Překročen denní limit pro AI generování. Upgradujte na premium pro neomezený přístup.' },
     standardHeaders: true,
     legacyHeaders: false,
+    skip: (req, res) => {
+        // Skip rate limiting for health checks
+        return req.path === '/api/health';
+    }
 });
 
 // Sensitive account operations - strict limit (Brute force protection)
@@ -368,6 +382,41 @@ app.use('/api/angel-post', angelPostRoutes);
 // Health Check - registered above rate limiter (see top of file)
 // Admin comment: duplicate route registrations removed
 
+// Global Error Handler - Never expose internal details to clients
+app.use((err, req, res, next) => {
+    // Log detailed error server-side
+    console.error('[Error Handler]', {
+        method: req.method,
+        path: req.path,
+        statusCode: err.status || 500,
+        errorMessage: err.message,
+        errorStack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
+        userAgent: req.headers['user-agent'],
+        ip: req.ip,
+        timestamp: new Date().toISOString(),
+    });
+
+    // Return generic error to client (no internal details)
+    const statusCode = err.status || 500;
+    res.status(statusCode).json({
+        error: 'An error occurred. Please try again later.',
+        // Only include details in development mode
+        ...(process.env.NODE_ENV === 'development' && {
+            debug: {
+                message: err.message,
+                status: statusCode,
+            }
+        }),
+    });
+});
+
+// 404 Handler - for routes not found
+app.use((req, res) => {
+    console.warn(`[404] ${req.method} ${req.path}`);
+    res.status(404).json({
+        error: 'Not found',
+    });
+});
 
 // Start server ONLY if run directly (not imported for tests)
 if (process.argv[1] === __filename) {
