@@ -10,19 +10,20 @@ export function initStars() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const canvas = document.createElement('canvas');
-    canvas.style.position = 'absolute';
+    canvas.style.position = 'fixed';
     canvas.style.top = '0';
     canvas.style.left = '0';
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
+    canvas.style.width = '100vw';
+    canvas.style.height = '100vh';
     canvas.style.pointerEvents = 'none';
+    canvas.style.zIndex = '-1';
     starsContainer.appendChild(canvas);
 
     const ctx = canvas.getContext('2d');
 
     function drawStars() {
         const width = window.innerWidth;
-        const height = window.innerHeight * 2; // Extra height for scroll
+        const height = window.innerHeight; // Fixed to viewport
         canvas.width = width;
         canvas.height = height;
 

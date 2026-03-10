@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="cs">
 
 <head>
@@ -123,15 +123,17 @@
        ============================================= */
     @media (max-width: 768px) {
 
-      /* Aurora efekty na mobilu občas tvoří ošklivé čtverce, skryjeme je */
+      /* Re-enable and optimize Aurora effects for mobile */
       body::before,
       body::after {
-        display: none !important;
-        opacity: 0 !important;
-        visibility: hidden !important;
+        display: block !important;
+        opacity: 0.4 !important; /* Slightly softer on mobile */
+        visibility: visible !important;
+        width: 150vw !important; /* Wider coverage for mobile rotation */
+        height: 150vh !important;
       }
 
-      /* Fix zarovnání astrolábu na mobilu */
+      /* Fix alignment of hero grid on mobile */
       .hero__grid {
         display: flex !important;
         flex-direction: column !important;
@@ -151,8 +153,11 @@
         width: 100% !important;
       }
 
+      /* Re-enable hero glow for depth */
       .hero__glow-effect {
-        display: none !important;
+        display: block !important;
+        opacity: 0.5;
+        transform: scale(0.8);
       }
 
       .hero__image {
