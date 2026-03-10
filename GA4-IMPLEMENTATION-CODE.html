@@ -1,45 +1,45 @@
-<!--
-    GOOGLE ANALYTICS 4 IMPLEMENTATION
-    Measurement ID: G-H22CGHF34K
-
-    INSTRUKCE:
-    1. Přidej ČÁST A do <head> všech HTML souborů
-    2. Přidej ČÁST B před </body> tag hlavních stránek
-    3. Aktualizuj js/ga-config.js
--->
-
-<!-- ============================================================ -->
-<!-- ČÁST A: HEAD SNIPPET (Přidej do <head> všech HTML souborů) -->
-<!-- ============================================================ -->
-
-<!-- Google Analytics 4 -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-H22CGHF34K"></script>
-<script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-H22CGHF34K', {
-        'page_path': window.location.pathname,
-        'anonymize_ip': true
-    });
-</script>
-
-
-<!-- ============================================================ -->
-<!-- ČÁST B: BODY SNIPPET (Přidej před </body> tag)            -->
-<!-- ============================================================ -->
-
-<!-- Analytics Initialization & Tracking -->
-<script type="module">
-    import { initAnalytics, trackPageLoadMetrics } from './js/ga-tracking.js';
-
-    document.addEventListener('DOMContentLoaded', () => {
-        // Initialize analytics
-        initAnalytics();
-
-        // Track page load metrics
-        trackPageLoadMetrics();
-
-        console.log('[GA] Tracking initialized for:', window.location.pathname);
-    });
-</script>
+<!--
+    GOOGLE ANALYTICS 4 IMPLEMENTATION
+    Measurement ID: G-H22CGHF34K
+
+    INSTRUKCE:
+    1. Přidej ČÁST A do <head> všech HTML souborů
+    2. Přidej ČÁST B před </body> tag hlavních stránek
+    3. Aktualizuj js/ga-config.js
+-->
+
+<!-- ============================================================ -->
+<!-- ČÁST A: HEAD SNIPPET (Přidej do <head> všech HTML souborů) -->
+<!-- ============================================================ -->
+
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-H22CGHF34K"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-H22CGHF34K', {
+        'page_path': window.location.pathname,
+        'anonymize_ip': true
+    });
+</script>
+
+
+<!-- ============================================================ -->
+<!-- ČÁST B: BODY SNIPPET (Přidej před </body> tag)            -->
+<!-- ============================================================ -->
+
+<!-- Analytics Initialization & Tracking -->
+<script type="module">
+    import { initAnalytics, trackPageLoadMetrics } from './js/ga-tracking.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Initialize analytics
+        initAnalytics();
+
+        // Track page load metrics
+        trackPageLoadMetrics();
+
+        console.log('[GA] Tracking initialized for:', window.location.pathname);
+    });
+</script>

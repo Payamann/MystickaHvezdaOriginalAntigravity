@@ -1,580 +1,580 @@
-<!DOCTYPE html>
-<html lang="cs">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Dnešní Lunární Fáze ?? | Co øíká Mìsíc právì dnes | Mystická Hvìzda</title>
-    <meta name="description"
-        content="Zjistìte, v jaké fázi je dnes Mìsíc a co to znamená pro vaši energii, vztahy a duchovní praxi. Lunární fáze zdarma, bez registrace.">
-    <meta name="robots" content="index, follow">
-    <meta name="keywords"
-        content="lunární fáze, fáze mìsíce dnes, mìsíèní kalendáø, novoluní, úplnìk, první ètvr, poslední ètvr">
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="?? Dnešní Lunární Fáze a její esoterickı vıklad | Mystická Hvìzda">
-    <meta property="og:description"
-        content="Aktuální fáze Mìsíce a její vliv na energii, emoce a duchovní praxi. Zdarma, bez registrace.">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="https://mystickahvezda.cz/img/hero-bg-2.webp">
-    <meta property="og:url" content="https://mystickahvezda.cz/lunace.html">
-
-    <!-- Pinterest -->
-    <meta name="pinterest-rich-pin" content="true">
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="?? Dnešní Lunární Fáze | Mystická Hvìzda">
-    <meta name="twitter:description" content="Aktuální fáze Mìsíce a duchovní vıklad – zdarma.">
-    <meta name="twitter:image" content="img/hero-bg-2.webp">
-
-    <!-- Fonts & Styles -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="css/style.v2.min.css?v=9">
-
-    <!-- FAQ Schema -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-            {
-                "@type": "Question",
-                "name": "Co je lunární fáze?",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Lunární fáze je úhel, kterı Mìsíc svírá se Sluncem, vidìnı ze Zemì. Cyklus trvá pøiblinì 29,5 dne a zahrnuje pøechody od Novolunení (novı zaèátek) pøes Dorùstající srpek, První ètvr, Dorùstající gibbus, Úplnìk (vrchol energie), Ubıvající gibbus, Poslední ètvr a Ubıvající srpek zpátky k Novolunìní."
-                }
-            },
-            {
-                "@type": "Question",
-                "name": "Jak lunární fáze ovlivòují nás?",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Mìsíc ovládá oceánskı pøíliv a odliv. Lidské tìlo je ze 70% tvoøeno vodou, a esoterika i starovìká medicína proto pøidìlují Mìsíci pøímı vliv na emoce, intuici a energetické cykly. Novolunìní je ideálním èasem pro zámìry a nové zaèátky, zatímco Úplnìk amplifikuje emoce a pøináší vìci do svìtla."
-                }
-            },
-            {
-                "@type": "Question",
-                "name": "Kdy je nejlepší èas na meditaci a rituály?",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Novolunìní je nejsilnìjším èasem pro sázení zámìrù a nové zaèátky. Úplnìk je vrcholem lunárního cyklu – energeticky nejsilnìjším bodem, ideálním pro rituály vdìènosti, manifestace a propuštìní starého. Nedìle pøed Novoluním je naopak èasem k odpoèinku a introspekciprvní."
-                }
-            }
-        ]
-    }
-    </script>
-
-    <style>
-        .lunar-hero {
-            padding: 5rem 0 2rem;
-            text-align: center;
-        }
-
-        .moon-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin: 2rem auto;
-        }
-
-        .moon-display {
-            font-size: 10rem;
-            line-height: 1;
-            animation: moonPulse 4s ease-in-out infinite;
-            filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.4));
-        }
-
-        @keyframes moonPulse {
-
-            0%,
-            100% {
-                transform: scale(1);
-                filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.3));
-            }
-
-            50% {
-                transform: scale(1.05);
-                filter: drop-shadow(0 0 50px rgba(212, 175, 55, 0.6));
-            }
-        }
-
-        .phase-name {
-            font-family: 'Cinzel', serif;
-            font-size: 2.5rem;
-            color: var(--color-mystic-gold);
-            margin: 1.5rem 0 0.5rem;
-        }
-
-        .phase-date {
-            color: var(--color-text-mutated);
-            font-size: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .illumination-bar {
-            width: 300px;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50px;
-            overflow: hidden;
-            margin: 1rem auto;
-        }
-
-        .illumination-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #d4af37, #f5d776);
-            border-radius: 50px;
-            transition: width 1s ease;
-        }
-
-        .illumination-label {
-            font-size: 0.9rem;
-            color: var(--color-text-mutated);
-            text-align: center;
-            margin-top: 0.5rem;
-        }
-
-        .phase-card {
-            background: rgba(10, 10, 26, 0.8);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: 20px;
-            padding: 3rem;
-            max-width: 800px;
-            margin: 0 auto 2rem;
-            backdrop-filter: blur(10px);
-        }
-
-        .phase-card h2 {
-            color: var(--color-mystic-gold);
-            font-family: 'Cinzel', serif;
-            margin-top: 0;
-        }
-
-        .phase-card p {
-            line-height: 1.8;
-            font-size: 1.1rem;
-            color: var(--color-text-light);
-        }
-
-        .tags-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin: 1.5rem 0;
-        }
-
-        .tag {
-            padding: 0.4rem 1rem;
-            border-radius: 50px;
-            font-size: 0.9rem;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            background: rgba(212, 175, 55, 0.08);
-            color: #d4af37;
-        }
-
-        .lunar-cycle-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-
-        .cycle-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            border-radius: 12px;
-            padding: 1.2rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .cycle-item.active {
-            border-color: var(--color-mystic-gold);
-            background: rgba(212, 175, 55, 0.08);
-        }
-
-        .cycle-item:hover {
-            transform: translateY(-3px);
-            border-color: rgba(212, 175, 55, 0.5);
-        }
-
-        .cycle-emoji {
-            font-size: 2.5rem;
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-
-        .cycle-name {
-            font-size: 0.85rem;
-            color: var(--color-text-mutated);
-        }
-
-        .faq-section {
-            max-width: 800px;
-            margin: 0 auto 2rem;
-        }
-
-        .faq-item {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .faq-item summary {
-            padding: 1.2rem 0;
-            cursor: pointer;
-            font-weight: 600;
-            color: white;
-            list-style: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .faq-item summary::after {
-            content: '+';
-            color: var(--color-mystic-gold);
-            font-size: 1.5rem;
-            transition: transform 0.3s;
-        }
-
-        .faq-item[open] summary::after {
-            transform: rotate(45deg);
-        }
-
-        .faq-item p {
-            padding: 0 0 1.2rem;
-            color: var(--color-text-mutated);
-            line-height: 1.7;
-            margin: 0;
-        }
-
-        @media (max-width: 600px) {
-            .moon-display {
-                font-size: 7rem;
-            }
-
-            .phase-name {
-                font-size: 1.8rem;
-            }
-
-            .phase-card {
-                padding: 1.5rem;
-            }
-        }
-    </style>
-</head>
-
-<body>
-    <!-- Skip to main content -->
-    <a href="#main-content" class="skip-link">Pøeskoèit na obsah</a>
-
-    <div class="stars" aria-hidden="true"></div>
-
-    <!-- HEADER (loaded dynamically) -->
-    <div id="header-placeholder"></div>
-
-
-    <main id="main-content">
-        <section class="lunar-hero">
-            <div class="container">
-                <span class="section__badge">?? Mìsíèní Kalendáø</span>
-                <h1 class="hero__title">Dnešní <span class="text-gradient">Lunární Fáze</span></h1>
-                <p class="hero__subtitle" style="max-width: 600px; margin: 0 auto 2rem;">Zjistìte, co lunární energie
-                    øíká o vaší dnešní cestì.</p>
-
-                <div class="moon-container">
-                    <div class="moon-display" id="moonEmoji">??</div>
-                    <div class="phase-name" id="phaseName">Naèítám...</div>
-                    <div class="phase-date" id="phaseDate"></div>
-                    <div class="illumination-bar">
-                        <div class="illumination-fill" id="illuminationFill" style="width: 0%"></div>
-                    </div>
-                    <div class="illumination-label" id="illuminationLabel"></div>
-                        <!-- COUNTDOWN DO DALŠÍHO NOVOLUNÌNÍ / ÚPLÒKU -->
-        <div style="max-width:700px;margin:2rem auto 0;display:grid;grid-template-columns:1fr 1fr;gap:1rem;" id="lunar-countdown-wrap">
-            <div id="next-new-moon-box" style="background:rgba(10,10,26,0.7);border:1px solid rgba(212,175,55,0.2);border-radius:16px;padding:1.5rem;text-align:center;">
-                <div style="font-size:1.8rem;margin-bottom:0.3rem;">??</div>
-                <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:0.5rem;">Pøíští Novolunìní</div>
-                <div id="countdown-new" style="font-family:'Cinzel',serif;color:#ebc066;font-size:1.4rem;font-weight:600;">--</div>
-                <div id="countdown-new-date" style="font-size:0.8rem;color:rgba(255,255,255,0.4);margin-top:0.25rem;"></div>
-            </div>
-            <div id="next-full-moon-box" style="background:rgba(10,10,26,0.7);border:1px solid rgba(212,175,55,0.2);border-radius:16px;padding:1.5rem;text-align:center;">
-                <div style="font-size:1.8rem;margin-bottom:0.3rem;">??</div>
-                <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:0.5rem;">Pøíští Úplnìk</div>
-                <div id="countdown-full" style="font-family:'Cinzel',serif;color:#ebc066;font-size:1.4rem;font-weight:600;">--</div>
-                <div id="countdown-full-date" style="font-size:0.8rem;color:rgba(255,255,255,0.4);margin-top:0.25rem;"></div>
-            </div>
-        </div>
-        <script>
-        (function(){
-            const LUNAR_CYCLE = 29.530588853;
-            const KNOWN_NEW_MOON = new Date('2026-01-29T08:36:00Z');
-            
-            function getNextPhaseDate(targetFraction) {
-                const now = new Date();
-                const msPerDay = 86400000;
-                const age = ((now - KNOWN_NEW_MOON) / msPerDay % LUNAR_CYCLE + LUNAR_CYCLE) % LUNAR_CYCLE;
-                let daysUntil = (targetFraction * LUNAR_CYCLE) - age;
-                if (daysUntil <= 0.5) daysUntil += LUNAR_CYCLE;
-                return new Date(now.getTime() + daysUntil * msPerDay);
-            }
-            
-            function formatCountdown(target) {
-                const diff = target - new Date();
-                if (diff <= 0) return 'Dnes!';
-                const d = Math.floor(diff / 86400000);
-                const h = Math.floor((diff % 86400000) / 3600000);
-                const m = Math.floor((diff % 3600000) / 60000);
-                if (d > 0) return `Za ${d} dní ${h} h`;
-                if (h > 0) return `Za ${h} h ${m} min`;
-                return `Za ${m} minut`;
-            }
-            
-            function updateCountdowns() {
-                const nextNew = getNextPhaseDate(0);
-                const nextFull = getNextPhaseDate(0.5);
-                const fmt = d => d.toLocaleDateString('cs-CZ', {day:'numeric',month:'long'});
-                document.getElementById('countdown-new').textContent = formatCountdown(nextNew);
-                document.getElementById('countdown-new-date').textContent = fmt(nextNew);
-                document.getElementById('countdown-full').textContent = formatCountdown(nextFull);
-                document.getElementById('countdown-full-date').textContent = fmt(nextFull);
-            }
-            
-            updateCountdowns();
-            setInterval(updateCountdowns, 60000);
-        })();
-        </script>
-        </div>
-            </div>
-        </section>
-
-        <section class="section" style="padding-top: 0;">
-            <div class="container">
-                <!-- Main Phase Interpretation Card -->
-                <div class="phase-card" id="phaseCard">
-                    <h2 id="phaseIntroTitle">Vıklad fáze</h2>
-                    <div class="tags-row" id="phaseTags"></div>
-                    <p id="phaseInterpretation">Vıpoèet probíhá...</p>
-                    <p id="phaseAdvice"></p>
-                </div>
-
-                <!-- CTA Box -->
-                <div
-                    style="background: linear-gradient(135deg, rgba(155,89,182,0.15), rgba(10,10,26,0.9)); border: 1px solid rgba(155,89,182,0.3); border-radius: 20px; padding: 3rem; text-align: center; max-width: 800px; margin: 0 auto 3rem;">
-                    <h2 style="margin-top:0; font-family:'Cinzel',serif;">Mìsíc je jen zaèátek</h2>
-                    <p style="font-size: 1.1rem; line-height: 1.8; color: #cbd5e1; margin-bottom: 2rem;">Lunární fáze
-                        ovlivòuje vaši energii globálnì – ale vaše osobní Natální karta prozradí, ve kterém domì váš
-                        Mìsíc sídlí a co to øíká o vašich emocích a intuici.</p>
-                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                        <a href="natalni-karta.html" class="btn btn--primary" style="font-size: 1.1rem;">??? Vygenerovat
-                            Natální Kartu</a>
-                        <a href="horoskopy.html" class="btn btn--secondary" style="font-size: 1.1rem;">? Horoskopy</a>
-                    </div>
-                </div>
-
-                <!-- Full Lunar Cycle -->
-                <div style="max-width: 800px; margin: 0 auto 3rem;">
-                    <h2 style="text-align:center; color:var(--color-mystic-gold); font-family:'Cinzel',serif;">Kompletní
-                        Lunární Cyklus</h2>
-                    <div class="lunar-cycle-grid" id="lunarCycleGrid"></div>
-                </div>
-
-                <!-- FAQ Section -->
-                <div class="faq-section">
-                    <h2
-                        style="text-align:center; color:var(--color-mystic-gold); font-family:'Cinzel',serif; margin-bottom: 2rem;">
-                        ? Èasté otázky</h2>
-                    <details class="faq-item">
-                        <summary>Co je lunární fáze?</summary>
-                        <p>Lunární fáze je úhel, kterı Mìsíc svírá se Sluncem vidìnı ze Zemì. Cyklus trvá pøiblinì 29,5
-                            dne a prochází osmi fázemi – od Novolunìní pøes Úplnìk zpìt k Novolunìní.</p>
-                    </details>
-                    <details class="faq-item">
-                        <summary>Jak lunární fáze ovlivòují nás?</summary>
-                        <p>Mìsíc ovládá oceánskı pøíliv a odliv. Lidské tìlo je ze 70 % tvoøeno vodou, a esoterika i
-                            starovìká medicína proto pøidìlují Mìsíci vliv na emoce, intuici a energetické cykly.
-                            Novolunìní je ideálním èasem pro zámìry, Úplnìk amplifikuje emoce a pøináší vìci do svìtla.
-                        </p>
-                    </details>
-                    <details class="faq-item">
-                        <summary>Kdy je nejlepší èas pro rituály a meditaci?</summary>
-                        <p>Novolunìní je nejsilnìjším èasem pro sázení zámìrù a nové zaèátky. Úplnìk je vrcholem
-                            lunárního cyklu – ideálním pro rituály vdìènosti a manifestace. Dny tìsnì pøed Novoluním
-                            jsou naopak èasem pro odpoèinek a introspekci.</p>
-                    </details>
-                    <details class="faq-item">
-                        <summary>Jak se poèítá fáze Mìsíce?</summary>
-                        <p>Vıpoèet vychází z lunárního vìku – poètu dní od posledního Novolunìní. Kadá z 8 fází
-                            odpovídá pøiblinì 3,7 dne cyklu. Naše kalkulaèka provede vıpoèet pøímo ve vašem prohlíeèi
-                            bez potøeby internetu èi serveru.</p>
-                    </details>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- FOOTER (loaded dynamically) -->
-    <div id="footer-placeholder"></div>
-
-
-    <script src="js/api-config.js?v=5" defer></script>
-    <script src="js/templates.js?v=5" defer></script>
-    <script src="js/auth-client.js?v=5" defer></script>
-        <script src="js/share-result.js" defer></script>
-        <script src="js/nameday.js" defer></script>
-    <script src="js/exit-intent.js" defer></script>
-    <script src="js/components.js?v=5" defer></script>
-    <script src="js/retention.js?v=5" defer></script>
-    <script src="js/personalization.js?v=5" defer></script>
-    <script type="module" src="js/main.js?v=9"></script>
-
-    <script>
-        // ¦¦ Lunar Phase Calculation (pure JS, no external API) ¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦
-        const PHASES = [
-            {
-                name: 'Novolunìní',
-                emoji: '??',
-                minAge: 0,
-                maxAge: 1.85,
-                illumination: 0,
-                tags: ['Nové zaèátky', 'Zámìry', 'Introspekce', 'Ticho'],
-                interpretation: 'Novolunìní je kosmickım resetem. Mìsíc není na obloze vidìt – celá jeho plocha je osvìtlena ze strany, která se dívá pryè od nás. Tato tma není prázdnota, ale úrodná pùda. Je to nejsilnìjší moment pro formulování zámìrù, vizualizace a sázení semen toho, co chcete pøivést do svìta v prùbìhu nadcházejícího cyklu.',
-                advice: '?? Dnešní praxe: Zapište si tøi vìci, které si pøejete vytvoøit nebo pøitáhnout v pøíštích 29 dnech. Pak je puste – a sledujte, jak se vesmír zaène pohybovat.'
-            },
-            {
-                name: 'Dorùstající srpek',
-                emoji: '??',
-                minAge: 1.85,
-                maxAge: 7.38,
-                illumination: 25,
-                tags: ['Akce', 'Iniciativa', 'Víra', 'Nadšení'],
-                interpretation: 'Tenkı srpek Mìsíce se objevuje na veèerní obloze jako první viditelnı pøíslib. Energie tohoto období øíká: Je èas zaèít jednat na základì zámìrù, které jste zaseli pøi Novolunìní. Ještì plné svìtlo nepøišlo, ale smìr je jasnı. Toto není èas na pøemıšlení – je to èas na první kroky.',
-                advice: '?? Dnešní praxe: Udìlejte konkrétní první krok ke svému zámìru. Jakkoli malı. Kadı velkı projekt zaèíná jednou neohrabanou akcí.'
-            },
-            {
-                name: 'První ètvr',
-                emoji: '??',
-                minAge: 7.38,
-                maxAge: 11.08,
-                illumination: 50,
-                tags: ['Pøekáky', 'Rozhodnutí', 'Vùle', 'Konflikt'],
-                interpretation: 'Pøesnì polovina Mìsíce je osvìtlena – symbolická rovnováha a zároveò napìtí. Toto je bod, kdy se zámìry støetávají s realitou. Mùe pøijít první vnitøní nebo vnìjší odpor. Tyto pøekáky nejsou signálem k vzdání se – jsou zkouškou, zda chcete svùj cíl skuteènì naplnit.',
-                advice: '?? Dnešní praxe: Co vás brzdí? Pojmenujte jednu konkrétní pøekáku a rozhodnìte se, jak pøes ni projdete. Rozhodnutí je mocnìjší ne plán.'
-            },
-            {
-                name: 'Dorùstající gibbus',
-                emoji: '??',
-                minAge: 11.08,
-                maxAge: 14.77,
-                illumination: 75,
-                tags: ['Vytrvalost', 'Zdokonalování', 'Analıza', 'Dolaïování'],
-                interpretation: 'Mìsíc je témìø plnı a energie narùstá s témìø hmatatelnou intenzitou. Toto je èas peèlivé práce na detailech. Zámìr je ivı, první momentum je vytvoøeno – teï je tøeba vyladit, zdokonalit a vytrvat. Pøíprava vrcholí.',
-                advice: '?? Dnešní praxe: Prostudujte, co funguje a co ne. Proveïte jednu konkrétní korekci kurzu. Mistrovství leí ve vyladìní drobností.'
-            },
-            {
-                name: 'Úplnìk',
-                emoji: '??',
-                minAge: 14.77,
-                maxAge: 18.46,
-                illumination: 100,
-                tags: ['Vrchol', 'Manifestace', 'Emoce', 'Odhalení', 'Naplnìní'],
-                interpretation: 'Úplnìk je esoterickem posvátnım momentem lunárního cyklu. Mìsíc je plnì osvìtlen a na obloze záøí jako malé druhé slunce. Emoce jsou zesileny, intuice maximálnì naostøena. To, co bylo zaseto, se nyní plnì projevuje – dobré i špatné. Vìci se vynoøují na povrch. Toto je okamik skliznì, rituálù vdìènosti a propuštìní starého, co ji neslouí.',
-                advice: '??? Dnešní praxe: Vytvoøte prostor pro rituál vdìènosti. Napište si, co jste od posledního Novolunìní dosáhli, a poté vìdomì propuste vše, èeho je tøeba se vzdát.'
-            },
-            {
-                name: 'Ubıvající gibbus',
-                emoji: '??',
-                minAge: 18.46,
-                maxAge: 22.15,
-                illumination: 75,
-                tags: ['Sdílení', 'Moudrost', 'Gratitudine', 'Odpoèinek'],
-                interpretation: 'Svìtlo pomalu ustupuje, ale zkušenost a moudrost ze skliznì Úplòku zùstávají. Toto je èas sdílení – toho, co jste se nauèili, proili a vytvoøili. Energie pøirozenì volá k introverzi, k pøedávání vìdomostí a k ocenìní cesty.',
-                advice: '?? Dnešní praxe: Podìlte se o nìco, èemu jste se nauèili – a u s pøítelem, v deníku, nebo na sociálních sítích. Moudrost, která není sdílena, chøadne.'
-            },
-            {
-                name: 'Poslední ètvr',
-                emoji: '??',
-                minAge: 22.15,
-                maxAge: 25.84,
-                illumination: 50,
-                tags: ['Propuštìní', 'Èištìní', 'Transformace', 'Pøehodnocení'],
-                interpretation: 'Opìt polovina – ale tentokrát na sestupné èásti cyklu. Pøichází èas hlubokého úklidu: fyzického, emocionálního i mentálního. Co starého, pøebyteèného nebo ji nepotøebného je v mém ivotì? Toto je energie propuštìní, ne pøidávání.',
-                advice: '??? Dnešní praxe: Vyhoïte, darujte nebo propuste jednu vìc z fyzického prostoru i z mysli. Úklid energie vytváøí prostor pro nové.'
-            },
-            {
-                name: 'Ubıvající srpek',
-                emoji: '??',
-                minAge: 25.84,
-                maxAge: 29.53,
-                illumination: 10,
-                tags: ['Obnova', 'Odpoèinek', 'Ticho', 'Pøíprava'],
-                interpretation: 'Mìsíc se vrací k temnotì a cyklus se uzavírá. Toto je nejintrovertovanìjší fáze lunárního cyklu – èas skuteèného odpoèinku, regenerace a pøípravy na novı zaèátek. Nenutit se do akce. Spát víc. Meditovat. Bıt v tichu.',
-                advice: '?? Dnešní praxe: Dovolte si dnes odpoèinout bez vıèitek. Spánek a ticho jsou stejnì produktivní jako akce – jen jinım zpùsobem.'
-            }
-        ];
-
-        function getLunarAge(date) {
-            // Known new moon: 2026-01-29T08:36:00 UTC
-            const knownNewMoon = new Date('2026-01-29T08:36:00Z');
-            const LUNAR_CYCLE = 29.53058867; // days
-            const diffMs = date - knownNewMoon;
-            const diffDays = diffMs / (1000 * 60 * 60 * 24);
-            let age = diffDays % LUNAR_CYCLE;
-            if (age < 0) age += LUNAR_CYCLE;
-            return age;
-        }
-
-        function getPhase(age) {
-            return PHASES.find(p => age >= p.minAge && age < p.maxAge) || PHASES[0];
-        }
-
-        function formatDate(date) {
-            return date.toLocaleDateString('cs-CZ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        }
-
-        function renderCycleGrid(currentPhase) {
-            const grid = document.getElementById('lunarCycleGrid');
-            grid.innerHTML = PHASES.map(p => `
-            <div class="cycle-item ${p.name === currentPhase.name ? 'active' : ''}">
-                <span class="cycle-emoji">${p.emoji}</span>
-                <div class="cycle-name">${p.name}</div>
-            </div>
-        `).join('');
-        }
-
-        function renderPhase() {
-            const now = new Date();
-            const age = getLunarAge(now);
-            const phase = getPhase(age);
-            const illumination = Math.round(phase.illumination);
-
-            document.getElementById('moonEmoji').textContent = phase.emoji;
-            document.getElementById('phaseName').textContent = phase.name;
-            document.getElementById('phaseDate').textContent = formatDate(now) + ` · Vìk Mìsíce: ${age.toFixed(1)} dní`;
-            document.getElementById('illuminationFill').style.width = illumination + '%';
-            document.getElementById('illuminationLabel').textContent = `Osvícení: ${illumination} %`;
-
-            document.getElementById('phaseIntroTitle').textContent = `? ${phase.name}`;
-            document.getElementById('phaseTags').innerHTML = phase.tags.map(t => `<span class="tag">${t}</span>`).join('');
-            document.getElementById('phaseInterpretation').textContent = phase.interpretation;
-            document.getElementById('phaseAdvice').textContent = phase.advice;
-
-            document.title = `${phase.emoji} ${phase.name} – Dnešní Lunární Fáze | Mystická Hvìzda`;
-
-            renderCycleGrid(phase);
-        }
-
-        renderPhase();
-    </script>
-    <script src="js/newsletter-popup.js" defer></script>
-    <script src="js/push-notifications.js" defer></script>
-</body>
-
-</html>
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>DneÅ¡nÃ­ LunÃ¡rnÃ­ FÃ¡ze ?? | Co Å™Ã­kÃ¡ MÄ›sÃ­c prÃ¡vÄ› dnes | MystickÃ¡ HvÄ›zda</title>
+    <meta name="description"
+        content="ZjistÄ›te, v jakÃ© fÃ¡zi je dnes MÄ›sÃ­c a co to znamenÃ¡ pro vaÅ¡i energii, vztahy a duchovnÃ­ praxi. LunÃ¡rnÃ­ fÃ¡ze zdarma, bez registrace.">
+    <meta name="robots" content="index, follow">
+    <meta name="keywords"
+        content="lunÃ¡rnÃ­ fÃ¡ze, fÃ¡ze mÄ›sÃ­ce dnes, mÄ›sÃ­ÄnÃ­ kalendÃ¡Å™, novolunÃ­, ÃºplnÄ›k, prvnÃ­ ÄtvrÅ¥, poslednÃ­ ÄtvrÅ¥">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="?? DneÅ¡nÃ­ LunÃ¡rnÃ­ FÃ¡ze a jejÃ­ esoterickÃ½ vÃ½klad | MystickÃ¡ HvÄ›zda">
+    <meta property="og:description"
+        content="AktuÃ¡lnÃ­ fÃ¡ze MÄ›sÃ­ce a jejÃ­ vliv na energii, emoce a duchovnÃ­ praxi. Zdarma, bez registrace.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://mystickahvezda.cz/img/hero-bg-2.webp">
+    <meta property="og:url" content="https://mystickahvezda.cz/lunace.html">
+
+    <!-- Pinterest -->
+    <meta name="pinterest-rich-pin" content="true">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="?? DneÅ¡nÃ­ LunÃ¡rnÃ­ FÃ¡ze | MystickÃ¡ HvÄ›zda">
+    <meta name="twitter:description" content="AktuÃ¡lnÃ­ fÃ¡ze MÄ›sÃ­ce a duchovnÃ­ vÃ½klad â€“ zdarma.">
+    <meta name="twitter:image" content="img/hero-bg-2.webp">
+
+    <!-- Fonts & Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap&subset=latin,latin-ext"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.v2.min.css?v=9">
+
+    <!-- FAQ Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "Co je lunÃ¡rnÃ­ fÃ¡ze?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "LunÃ¡rnÃ­ fÃ¡ze je Ãºhel, kterÃ½ MÄ›sÃ­c svÃ­rÃ¡ se Sluncem, vidÄ›nÃ½ ze ZemÄ›. Cyklus trvÃ¡ pÅ™ibliÅ¾nÄ› 29,5 dne a zahrnuje pÅ™echody od NovolunenÃ­ (novÃ½ zaÄÃ¡tek) pÅ™es DorÅ¯stajÃ­cÃ­ srpek, PrvnÃ­ ÄtvrÅ¥, DorÅ¯stajÃ­cÃ­ gibbus, ÃšplnÄ›k (vrchol energie), UbÃ½vajÃ­cÃ­ gibbus, PoslednÃ­ ÄtvrÅ¥ a UbÃ½vajÃ­cÃ­ srpek zpÃ¡tky k NovolunÄ›nÃ­."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Jak lunÃ¡rnÃ­ fÃ¡ze ovlivÅˆujÃ­ nÃ¡s?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "MÄ›sÃ­c ovlÃ¡dÃ¡ oceÃ¡nskÃ½ pÅ™Ã­liv a odliv. LidskÃ© tÄ›lo je ze 70% tvoÅ™eno vodou, a esoterika i starovÄ›kÃ¡ medicÃ­na proto pÅ™idÄ›lujÃ­ MÄ›sÃ­ci pÅ™Ã­mÃ½ vliv na emoce, intuici a energetickÃ© cykly. NovolunÄ›nÃ­ je ideÃ¡lnÃ­m Äasem pro zÃ¡mÄ›ry a novÃ© zaÄÃ¡tky, zatÃ­mco ÃšplnÄ›k amplifikuje emoce a pÅ™inÃ¡Å¡Ã­ vÄ›ci do svÄ›tla."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Kdy je nejlepÅ¡Ã­ Äas na meditaci a rituÃ¡ly?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "NovolunÄ›nÃ­ je nejsilnÄ›jÅ¡Ã­m Äasem pro sÃ¡zenÃ­ zÃ¡mÄ›rÅ¯ a novÃ© zaÄÃ¡tky. ÃšplnÄ›k je vrcholem lunÃ¡rnÃ­ho cyklu â€“ energeticky nejsilnÄ›jÅ¡Ã­m bodem, ideÃ¡lnÃ­m pro rituÃ¡ly vdÄ›Änosti, manifestace a propuÅ¡tÄ›nÃ­ starÃ©ho. NedÄ›le pÅ™ed NovolunÃ­m je naopak Äasem k odpoÄinku a introspekciprvnÃ­."
+                }
+            }
+        ]
+    }
+    </script>
+
+    <style>
+        .lunar-hero {
+            padding: 5rem 0 2rem;
+            text-align: center;
+        }
+
+        .moon-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 2rem auto;
+        }
+
+        .moon-display {
+            font-size: 10rem;
+            line-height: 1;
+            animation: moonPulse 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.4));
+        }
+
+        @keyframes moonPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.3));
+            }
+
+            50% {
+                transform: scale(1.05);
+                filter: drop-shadow(0 0 50px rgba(212, 175, 55, 0.6));
+            }
+        }
+
+        .phase-name {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            color: var(--color-mystic-gold);
+            margin: 1.5rem 0 0.5rem;
+        }
+
+        .phase-date {
+            color: var(--color-text-mutated);
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .illumination-bar {
+            width: 300px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            overflow: hidden;
+            margin: 1rem auto;
+        }
+
+        .illumination-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #d4af37, #f5d776);
+            border-radius: 50px;
+            transition: width 1s ease;
+        }
+
+        .illumination-label {
+            font-size: 0.9rem;
+            color: var(--color-text-mutated);
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        .phase-card {
+            background: rgba(10, 10, 26, 0.8);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .phase-card h2 {
+            color: var(--color-mystic-gold);
+            font-family: 'Cinzel', serif;
+            margin-top: 0;
+        }
+
+        .phase-card p {
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: var(--color-text-light);
+        }
+
+        .tags-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .tag {
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            background: rgba(212, 175, 55, 0.08);
+            color: #d4af37;
+        }
+
+        .lunar-cycle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .cycle-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 12px;
+            padding: 1.2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cycle-item.active {
+            border-color: var(--color-mystic-gold);
+            background: rgba(212, 175, 55, 0.08);
+        }
+
+        .cycle-item:hover {
+            transform: translateY(-3px);
+            border-color: rgba(212, 175, 55, 0.5);
+        }
+
+        .cycle-emoji {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .cycle-name {
+            font-size: 0.85rem;
+            color: var(--color-text-mutated);
+        }
+
+        .faq-section {
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .faq-item summary {
+            padding: 1.2rem 0;
+            cursor: pointer;
+            font-weight: 600;
+            color: white;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-item summary::after {
+            content: '+';
+            color: var(--color-mystic-gold);
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+
+        .faq-item[open] summary::after {
+            transform: rotate(45deg);
+        }
+
+        .faq-item p {
+            padding: 0 0 1.2rem;
+            color: var(--color-text-mutated);
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        @media (max-width: 600px) {
+            .moon-display {
+                font-size: 7rem;
+            }
+
+            .phase-name {
+                font-size: 1.8rem;
+            }
+
+            .phase-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Skip to main content -->
+    <a href="#main-content" class="skip-link">PÅ™eskoÄit na obsah</a>
+
+    <div class="stars" aria-hidden="true"></div>
+
+    <!-- HEADER (loaded dynamically) -->
+    <div id="header-placeholder"></div>
+
+
+    <main id="main-content">
+        <section class="lunar-hero">
+            <div class="container">
+                <span class="section__badge">?? MÄ›sÃ­ÄnÃ­ KalendÃ¡Å™</span>
+                <h1 class="hero__title">DneÅ¡nÃ­ <span class="text-gradient">LunÃ¡rnÃ­ FÃ¡ze</span></h1>
+                <p class="hero__subtitle" style="max-width: 600px; margin: 0 auto 2rem;">ZjistÄ›te, co lunÃ¡rnÃ­ energie
+                    Å™Ã­kÃ¡ o vaÅ¡Ã­ dneÅ¡nÃ­ cestÄ›.</p>
+
+                <div class="moon-container">
+                    <div class="moon-display" id="moonEmoji">??</div>
+                    <div class="phase-name" id="phaseName">NaÄÃ­tÃ¡m...</div>
+                    <div class="phase-date" id="phaseDate"></div>
+                    <div class="illumination-bar">
+                        <div class="illumination-fill" id="illuminationFill" style="width: 0%"></div>
+                    </div>
+                    <div class="illumination-label" id="illuminationLabel"></div>
+                        <!-- COUNTDOWN DO DALÅ ÃHO NOVOLUNÄšNÃ / ÃšPLÅ‡KU -->
+        <div style="max-width:700px;margin:2rem auto 0;display:grid;grid-template-columns:1fr 1fr;gap:1rem;" id="lunar-countdown-wrap">
+            <div id="next-new-moon-box" style="background:rgba(10,10,26,0.7);border:1px solid rgba(212,175,55,0.2);border-radius:16px;padding:1.5rem;text-align:center;">
+                <div style="font-size:1.8rem;margin-bottom:0.3rem;">??</div>
+                <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:0.5rem;">PÅ™Ã­Å¡tÃ­ NovolunÄ›nÃ­</div>
+                <div id="countdown-new" style="font-family:'Cinzel',serif;color:#ebc066;font-size:1.4rem;font-weight:600;">--</div>
+                <div id="countdown-new-date" style="font-size:0.8rem;color:rgba(255,255,255,0.4);margin-top:0.25rem;"></div>
+            </div>
+            <div id="next-full-moon-box" style="background:rgba(10,10,26,0.7);border:1px solid rgba(212,175,55,0.2);border-radius:16px;padding:1.5rem;text-align:center;">
+                <div style="font-size:1.8rem;margin-bottom:0.3rem;">??</div>
+                <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:0.5rem;">PÅ™Ã­Å¡tÃ­ ÃšplnÄ›k</div>
+                <div id="countdown-full" style="font-family:'Cinzel',serif;color:#ebc066;font-size:1.4rem;font-weight:600;">--</div>
+                <div id="countdown-full-date" style="font-size:0.8rem;color:rgba(255,255,255,0.4);margin-top:0.25rem;"></div>
+            </div>
+        </div>
+        <script>
+        (function(){
+            const LUNAR_CYCLE = 29.530588853;
+            const KNOWN_NEW_MOON = new Date('2026-01-29T08:36:00Z');
+            
+            function getNextPhaseDate(targetFraction) {
+                const now = new Date();
+                const msPerDay = 86400000;
+                const age = ((now - KNOWN_NEW_MOON) / msPerDay % LUNAR_CYCLE + LUNAR_CYCLE) % LUNAR_CYCLE;
+                let daysUntil = (targetFraction * LUNAR_CYCLE) - age;
+                if (daysUntil <= 0.5) daysUntil += LUNAR_CYCLE;
+                return new Date(now.getTime() + daysUntil * msPerDay);
+            }
+            
+            function formatCountdown(target) {
+                const diff = target - new Date();
+                if (diff <= 0) return 'Dnes!';
+                const d = Math.floor(diff / 86400000);
+                const h = Math.floor((diff % 86400000) / 3600000);
+                const m = Math.floor((diff % 3600000) / 60000);
+                if (d > 0) return `Za ${d} dnÃ­ ${h} h`;
+                if (h > 0) return `Za ${h} h ${m} min`;
+                return `Za ${m} minut`;
+            }
+            
+            function updateCountdowns() {
+                const nextNew = getNextPhaseDate(0);
+                const nextFull = getNextPhaseDate(0.5);
+                const fmt = d => d.toLocaleDateString('cs-CZ', {day:'numeric',month:'long'});
+                document.getElementById('countdown-new').textContent = formatCountdown(nextNew);
+                document.getElementById('countdown-new-date').textContent = fmt(nextNew);
+                document.getElementById('countdown-full').textContent = formatCountdown(nextFull);
+                document.getElementById('countdown-full-date').textContent = fmt(nextFull);
+            }
+            
+            updateCountdowns();
+            setInterval(updateCountdowns, 60000);
+        })();
+        </script>
+        </div>
+            </div>
+        </section>
+
+        <section class="section" style="padding-top: 0;">
+            <div class="container">
+                <!-- Main Phase Interpretation Card -->
+                <div class="phase-card" id="phaseCard">
+                    <h2 id="phaseIntroTitle">VÃ½klad fÃ¡ze</h2>
+                    <div class="tags-row" id="phaseTags"></div>
+                    <p id="phaseInterpretation">VÃ½poÄet probÃ­hÃ¡...</p>
+                    <p id="phaseAdvice"></p>
+                </div>
+
+                <!-- CTA Box -->
+                <div
+                    style="background: linear-gradient(135deg, rgba(155,89,182,0.15), rgba(10,10,26,0.9)); border: 1px solid rgba(155,89,182,0.3); border-radius: 20px; padding: 3rem; text-align: center; max-width: 800px; margin: 0 auto 3rem;">
+                    <h2 style="margin-top:0; font-family:'Cinzel',serif;">MÄ›sÃ­c je jen zaÄÃ¡tek</h2>
+                    <p style="font-size: 1.1rem; line-height: 1.8; color: #cbd5e1; margin-bottom: 2rem;">LunÃ¡rnÃ­ fÃ¡ze
+                        ovlivÅˆuje vaÅ¡i energii globÃ¡lnÄ› â€“ ale vaÅ¡e osobnÃ­ NatÃ¡lnÃ­ karta prozradÃ­, ve kterÃ©m domÄ› vÃ¡Å¡
+                        MÄ›sÃ­c sÃ­dlÃ­ a co to Å™Ã­kÃ¡ o vaÅ¡ich emocÃ­ch a intuici.</p>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <a href="natalni-karta.html" class="btn btn--primary" style="font-size: 1.1rem;">??? Vygenerovat
+                            NatÃ¡lnÃ­ Kartu</a>
+                        <a href="horoskopy.html" class="btn btn--secondary" style="font-size: 1.1rem;">? Horoskopy</a>
+                    </div>
+                </div>
+
+                <!-- Full Lunar Cycle -->
+                <div style="max-width: 800px; margin: 0 auto 3rem;">
+                    <h2 style="text-align:center; color:var(--color-mystic-gold); font-family:'Cinzel',serif;">KompletnÃ­
+                        LunÃ¡rnÃ­ Cyklus</h2>
+                    <div class="lunar-cycle-grid" id="lunarCycleGrid"></div>
+                </div>
+
+                <!-- FAQ Section -->
+                <div class="faq-section">
+                    <h2
+                        style="text-align:center; color:var(--color-mystic-gold); font-family:'Cinzel',serif; margin-bottom: 2rem;">
+                        ? ÄŒastÃ© otÃ¡zky</h2>
+                    <details class="faq-item">
+                        <summary>Co je lunÃ¡rnÃ­ fÃ¡ze?</summary>
+                        <p>LunÃ¡rnÃ­ fÃ¡ze je Ãºhel, kterÃ½ MÄ›sÃ­c svÃ­rÃ¡ se Sluncem vidÄ›nÃ½ ze ZemÄ›. Cyklus trvÃ¡ pÅ™ibliÅ¾nÄ› 29,5
+                            dne a prochÃ¡zÃ­ osmi fÃ¡zemi â€“ od NovolunÄ›nÃ­ pÅ™es ÃšplnÄ›k zpÄ›t k NovolunÄ›nÃ­.</p>
+                    </details>
+                    <details class="faq-item">
+                        <summary>Jak lunÃ¡rnÃ­ fÃ¡ze ovlivÅˆujÃ­ nÃ¡s?</summary>
+                        <p>MÄ›sÃ­c ovlÃ¡dÃ¡ oceÃ¡nskÃ½ pÅ™Ã­liv a odliv. LidskÃ© tÄ›lo je ze 70 % tvoÅ™eno vodou, a esoterika i
+                            starovÄ›kÃ¡ medicÃ­na proto pÅ™idÄ›lujÃ­ MÄ›sÃ­ci vliv na emoce, intuici a energetickÃ© cykly.
+                            NovolunÄ›nÃ­ je ideÃ¡lnÃ­m Äasem pro zÃ¡mÄ›ry, ÃšplnÄ›k amplifikuje emoce a pÅ™inÃ¡Å¡Ã­ vÄ›ci do svÄ›tla.
+                        </p>
+                    </details>
+                    <details class="faq-item">
+                        <summary>Kdy je nejlepÅ¡Ã­ Äas pro rituÃ¡ly a meditaci?</summary>
+                        <p>NovolunÄ›nÃ­ je nejsilnÄ›jÅ¡Ã­m Äasem pro sÃ¡zenÃ­ zÃ¡mÄ›rÅ¯ a novÃ© zaÄÃ¡tky. ÃšplnÄ›k je vrcholem
+                            lunÃ¡rnÃ­ho cyklu â€“ ideÃ¡lnÃ­m pro rituÃ¡ly vdÄ›Änosti a manifestace. Dny tÄ›snÄ› pÅ™ed NovolunÃ­m
+                            jsou naopak Äasem pro odpoÄinek a introspekci.</p>
+                    </details>
+                    <details class="faq-item">
+                        <summary>Jak se poÄÃ­tÃ¡ fÃ¡ze MÄ›sÃ­ce?</summary>
+                        <p>VÃ½poÄet vychÃ¡zÃ­ z lunÃ¡rnÃ­ho vÄ›ku â€“ poÄtu dnÃ­ od poslednÃ­ho NovolunÄ›nÃ­. KaÅ¾dÃ¡ z 8 fÃ¡zÃ­
+                            odpovÃ­dÃ¡ pÅ™ibliÅ¾nÄ› 3,7 dne cyklu. NaÅ¡e kalkulaÄka provede vÃ½poÄet pÅ™Ã­mo ve vaÅ¡em prohlÃ­Å¾eÄi
+                            bez potÅ™eby internetu Äi serveru.</p>
+                    </details>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER (loaded dynamically) -->
+    <div id="footer-placeholder"></div>
+
+
+    <script src="js/api-config.js?v=5" defer></script>
+    <script src="js/templates.js?v=5" defer></script>
+    <script src="js/auth-client.js?v=5" defer></script>
+        <script src="js/share-result.js" defer></script>
+        <script src="js/nameday.js" defer></script>
+    <script src="js/exit-intent.js" defer></script>
+    <script src="js/components.js?v=5" defer></script>
+    <script src="js/retention.js?v=5" defer></script>
+    <script src="js/personalization.js?v=5" defer></script>
+    <script type="module" src="js/main.js?v=9"></script>
+
+    <script>
+        // Â¦Â¦ Lunar Phase Calculation (pure JS, no external API) Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦Â¦
+        const PHASES = [
+            {
+                name: 'NovolunÄ›nÃ­',
+                emoji: '??',
+                minAge: 0,
+                maxAge: 1.85,
+                illumination: 0,
+                tags: ['NovÃ© zaÄÃ¡tky', 'ZÃ¡mÄ›ry', 'Introspekce', 'Ticho'],
+                interpretation: 'NovolunÄ›nÃ­ je kosmickÃ½m resetem. MÄ›sÃ­c nenÃ­ na obloze vidÄ›t â€“ celÃ¡ jeho plocha je osvÄ›tlena ze strany, kterÃ¡ se dÃ­vÃ¡ pryÄ od nÃ¡s. Tato tma nenÃ­ prÃ¡zdnota, ale ÃºrodnÃ¡ pÅ¯da. Je to nejsilnÄ›jÅ¡Ã­ moment pro formulovÃ¡nÃ­ zÃ¡mÄ›rÅ¯, vizualizace a sÃ¡zenÃ­ semen toho, co chcete pÅ™ivÃ©st do svÄ›ta v prÅ¯bÄ›hu nadchÃ¡zejÃ­cÃ­ho cyklu.',
+                advice: '?? DneÅ¡nÃ­ praxe: ZapiÅ¡te si tÅ™i vÄ›ci, kterÃ© si pÅ™ejete vytvoÅ™it nebo pÅ™itÃ¡hnout v pÅ™Ã­Å¡tÃ­ch 29 dnech. Pak je pusÅ¥te â€“ a sledujte, jak se vesmÃ­r zaÄne pohybovat.'
+            },
+            {
+                name: 'DorÅ¯stajÃ­cÃ­ srpek',
+                emoji: '??',
+                minAge: 1.85,
+                maxAge: 7.38,
+                illumination: 25,
+                tags: ['Akce', 'Iniciativa', 'VÃ­ra', 'NadÅ¡enÃ­'],
+                interpretation: 'TenkÃ½ srpek MÄ›sÃ­ce se objevuje na veÄernÃ­ obloze jako prvnÃ­ viditelnÃ½ pÅ™Ã­slib. Energie tohoto obdobÃ­ Å™Ã­kÃ¡: Je Äas zaÄÃ­t jednat na zÃ¡kladÄ› zÃ¡mÄ›rÅ¯, kterÃ© jste zaseli pÅ™i NovolunÄ›nÃ­. JeÅ¡tÄ› plnÃ© svÄ›tlo nepÅ™iÅ¡lo, ale smÄ›r je jasnÃ½. Toto nenÃ­ Äas na pÅ™emÃ½Å¡lenÃ­ â€“ je to Äas na prvnÃ­ kroky.',
+                advice: '?? DneÅ¡nÃ­ praxe: UdÄ›lejte konkrÃ©tnÃ­ prvnÃ­ krok ke svÃ©mu zÃ¡mÄ›ru. Jakkoli malÃ½. KaÅ¾dÃ½ velkÃ½ projekt zaÄÃ­nÃ¡ jednou neohrabanou akcÃ­.'
+            },
+            {
+                name: 'PrvnÃ­ ÄtvrÅ¥',
+                emoji: '??',
+                minAge: 7.38,
+                maxAge: 11.08,
+                illumination: 50,
+                tags: ['PÅ™ekÃ¡Å¾ky', 'RozhodnutÃ­', 'VÅ¯le', 'Konflikt'],
+                interpretation: 'PÅ™esnÄ› polovina MÄ›sÃ­ce je osvÄ›tlena â€“ symbolickÃ¡ rovnovÃ¡ha a zÃ¡roveÅˆ napÄ›tÃ­. Toto je bod, kdy se zÃ¡mÄ›ry stÅ™etÃ¡vajÃ­ s realitou. MÅ¯Å¾e pÅ™ijÃ­t prvnÃ­ vnitÅ™nÃ­ nebo vnÄ›jÅ¡Ã­ odpor. Tyto pÅ™ekÃ¡Å¾ky nejsou signÃ¡lem k vzdÃ¡nÃ­ se â€“ jsou zkouÅ¡kou, zda chcete svÅ¯j cÃ­l skuteÄnÄ› naplnit.',
+                advice: '?? DneÅ¡nÃ­ praxe: Co vÃ¡s brzdÃ­? Pojmenujte jednu konkrÃ©tnÃ­ pÅ™ekÃ¡Å¾ku a rozhodnÄ›te se, jak pÅ™es ni projdete. RozhodnutÃ­ je mocnÄ›jÅ¡Ã­ neÅ¾ plÃ¡n.'
+            },
+            {
+                name: 'DorÅ¯stajÃ­cÃ­ gibbus',
+                emoji: '??',
+                minAge: 11.08,
+                maxAge: 14.77,
+                illumination: 75,
+                tags: ['Vytrvalost', 'ZdokonalovÃ¡nÃ­', 'AnalÃ½za', 'DolaÄovÃ¡nÃ­'],
+                interpretation: 'MÄ›sÃ­c je tÃ©mÄ›Å™ plnÃ½ a energie narÅ¯stÃ¡ s tÃ©mÄ›Å™ hmatatelnou intenzitou. Toto je Äas peÄlivÃ© prÃ¡ce na detailech. ZÃ¡mÄ›r je Å¾ivÃ½, prvnÃ­ momentum je vytvoÅ™eno â€“ teÄ je tÅ™eba vyladit, zdokonalit a vytrvat. PÅ™Ã­prava vrcholÃ­.',
+                advice: '?? DneÅ¡nÃ­ praxe: Prostudujte, co funguje a co ne. ProveÄte jednu konkrÃ©tnÃ­ korekci kurzu. MistrovstvÃ­ leÅ¾Ã­ ve vyladÄ›nÃ­ drobnostÃ­.'
+            },
+            {
+                name: 'ÃšplnÄ›k',
+                emoji: '??',
+                minAge: 14.77,
+                maxAge: 18.46,
+                illumination: 100,
+                tags: ['Vrchol', 'Manifestace', 'Emoce', 'OdhalenÃ­', 'NaplnÄ›nÃ­'],
+                interpretation: 'ÃšplnÄ›k je esoterickem posvÃ¡tnÃ½m momentem lunÃ¡rnÃ­ho cyklu. MÄ›sÃ­c je plnÄ› osvÄ›tlen a na obloze zÃ¡Å™Ã­ jako malÃ© druhÃ© slunce. Emoce jsou zesileny, intuice maximÃ¡lnÄ› naostÅ™ena. To, co bylo zaseto, se nynÃ­ plnÄ› projevuje â€“ dobrÃ© i Å¡patnÃ©. VÄ›ci se vynoÅ™ujÃ­ na povrch. Toto je okamÅ¾ik skliznÄ›, rituÃ¡lÅ¯ vdÄ›Änosti a propuÅ¡tÄ›nÃ­ starÃ©ho, co jiÅ¾ neslouÅ¾Ã­.',
+                advice: '??? DneÅ¡nÃ­ praxe: VytvoÅ™te prostor pro rituÃ¡l vdÄ›Änosti. NapiÅ¡te si, co jste od poslednÃ­ho NovolunÄ›nÃ­ dosÃ¡hli, a potÃ© vÄ›domÄ› propusÅ¥te vÅ¡e, Äeho je tÅ™eba se vzdÃ¡t.'
+            },
+            {
+                name: 'UbÃ½vajÃ­cÃ­ gibbus',
+                emoji: '??',
+                minAge: 18.46,
+                maxAge: 22.15,
+                illumination: 75,
+                tags: ['SdÃ­lenÃ­', 'Moudrost', 'Gratitudine', 'OdpoÄinek'],
+                interpretation: 'SvÄ›tlo pomalu ustupuje, ale zkuÅ¡enost a moudrost ze skliznÄ› ÃšplÅˆku zÅ¯stÃ¡vajÃ­. Toto je Äas sdÃ­lenÃ­ â€“ toho, co jste se nauÄili, proÅ¾ili a vytvoÅ™ili. Energie pÅ™irozenÄ› volÃ¡ k introverzi, k pÅ™edÃ¡vÃ¡nÃ­ vÄ›domostÃ­ a k ocenÄ›nÃ­ cesty.',
+                advice: '?? DneÅ¡nÃ­ praxe: PodÄ›lte se o nÄ›co, Äemu jste se nauÄili â€“ aÅ¥ uÅ¾ s pÅ™Ã­telem, v denÃ­ku, nebo na sociÃ¡lnÃ­ch sÃ­tÃ­ch. Moudrost, kterÃ¡ nenÃ­ sdÃ­lena, chÅ™adne.'
+            },
+            {
+                name: 'PoslednÃ­ ÄtvrÅ¥',
+                emoji: '??',
+                minAge: 22.15,
+                maxAge: 25.84,
+                illumination: 50,
+                tags: ['PropuÅ¡tÄ›nÃ­', 'ÄŒiÅ¡tÄ›nÃ­', 'Transformace', 'PÅ™ehodnocenÃ­'],
+                interpretation: 'OpÄ›t polovina â€“ ale tentokrÃ¡t na sestupnÃ© ÄÃ¡sti cyklu. PÅ™ichÃ¡zÃ­ Äas hlubokÃ©ho Ãºklidu: fyzickÃ©ho, emocionÃ¡lnÃ­ho i mentÃ¡lnÃ­ho. Co starÃ©ho, pÅ™ebyteÄnÃ©ho nebo jiÅ¾ nepotÅ™ebnÃ©ho je v mÃ©m Å¾ivotÄ›? Toto je energie propuÅ¡tÄ›nÃ­, ne pÅ™idÃ¡vÃ¡nÃ­.',
+                advice: '??? DneÅ¡nÃ­ praxe: VyhoÄte, darujte nebo propusÅ¥te jednu vÄ›c z fyzickÃ©ho prostoru i z mysli. Ãšklid energie vytvÃ¡Å™Ã­ prostor pro novÃ©.'
+            },
+            {
+                name: 'UbÃ½vajÃ­cÃ­ srpek',
+                emoji: '??',
+                minAge: 25.84,
+                maxAge: 29.53,
+                illumination: 10,
+                tags: ['Obnova', 'OdpoÄinek', 'Ticho', 'PÅ™Ã­prava'],
+                interpretation: 'MÄ›sÃ­c se vracÃ­ k temnotÄ› a cyklus se uzavÃ­rÃ¡. Toto je nejintrovertovanÄ›jÅ¡Ã­ fÃ¡ze lunÃ¡rnÃ­ho cyklu â€“ Äas skuteÄnÃ©ho odpoÄinku, regenerace a pÅ™Ã­pravy na novÃ½ zaÄÃ¡tek. Nenutit se do akce. SpÃ¡t vÃ­c. Meditovat. BÃ½t v tichu.',
+                advice: '?? DneÅ¡nÃ­ praxe: Dovolte si dnes odpoÄinout bez vÃ½Äitek. SpÃ¡nek a ticho jsou stejnÄ› produktivnÃ­ jako akce â€“ jen jinÃ½m zpÅ¯sobem.'
+            }
+        ];
+
+        function getLunarAge(date) {
+            // Known new moon: 2026-01-29T08:36:00 UTC
+            const knownNewMoon = new Date('2026-01-29T08:36:00Z');
+            const LUNAR_CYCLE = 29.53058867; // days
+            const diffMs = date - knownNewMoon;
+            const diffDays = diffMs / (1000 * 60 * 60 * 24);
+            let age = diffDays % LUNAR_CYCLE;
+            if (age < 0) age += LUNAR_CYCLE;
+            return age;
+        }
+
+        function getPhase(age) {
+            return PHASES.find(p => age >= p.minAge && age < p.maxAge) || PHASES[0];
+        }
+
+        function formatDate(date) {
+            return date.toLocaleDateString('cs-CZ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        function renderCycleGrid(currentPhase) {
+            const grid = document.getElementById('lunarCycleGrid');
+            grid.innerHTML = PHASES.map(p => `
+            <div class="cycle-item ${p.name === currentPhase.name ? 'active' : ''}">
+                <span class="cycle-emoji">${p.emoji}</span>
+                <div class="cycle-name">${p.name}</div>
+            </div>
+        `).join('');
+        }
+
+        function renderPhase() {
+            const now = new Date();
+            const age = getLunarAge(now);
+            const phase = getPhase(age);
+            const illumination = Math.round(phase.illumination);
+
+            document.getElementById('moonEmoji').textContent = phase.emoji;
+            document.getElementById('phaseName').textContent = phase.name;
+            document.getElementById('phaseDate').textContent = formatDate(now) + ` Â· VÄ›k MÄ›sÃ­ce: ${age.toFixed(1)} dnÃ­`;
+            document.getElementById('illuminationFill').style.width = illumination + '%';
+            document.getElementById('illuminationLabel').textContent = `OsvÃ­cenÃ­: ${illumination} %`;
+
+            document.getElementById('phaseIntroTitle').textContent = `? ${phase.name}`;
+            document.getElementById('phaseTags').innerHTML = phase.tags.map(t => `<span class="tag">${t}</span>`).join('');
+            document.getElementById('phaseInterpretation').textContent = phase.interpretation;
+            document.getElementById('phaseAdvice').textContent = phase.advice;
+
+            document.title = `${phase.emoji} ${phase.name} â€“ DneÅ¡nÃ­ LunÃ¡rnÃ­ FÃ¡ze | MystickÃ¡ HvÄ›zda`;
+
+            renderCycleGrid(phase);
+        }
+
+        renderPhase();
+    </script>
+    <script src="js/newsletter-popup.js" defer></script>
+    <script src="js/push-notifications.js" defer></script>
+</body>
+
+</html>

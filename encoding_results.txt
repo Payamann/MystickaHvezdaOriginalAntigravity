@@ -1,0 +1,10 @@
+﻿Checking c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\components\footer.html:
+  UTF-8: OK
+  Error: 'charmap' codec can't encode character '\ufeff' in position 18: character maps to <undefined>
+Checking c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\components\header.html:
+  UTF-8: OK
+    Line 6: Char 'ß' (U+00E1)
+Checking c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\css\style.v2.css:
+  UTF-8: OK
+    Line 2: Char '├' (U+0102)
+  Error: 'charmap' codec can't encode character '\x81' in position 18: character maps to <undefined>

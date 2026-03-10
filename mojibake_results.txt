@@ -1,0 +1,34 @@
+﻿COULD NOT DECODE c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\andelske-karty.html as UTF-8 (Binary or other encoding)
+COULD NOT DECODE c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\astro-mapa.html as UTF-8 (Binary or other encoding)
+COULD NOT DECODE c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\biorytmy.html as UTF-8 (Binary or other encoding)
+COULD NOT DECODE c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\blog.html as UTF-8 (Binary or other encoding)
+COULD NOT DECODE c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\cenik.html as UTF-8 (Binary or other encoding)
+COULD NOT DECODE c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\faq.html as UTF-8 (Binary or other encoding)
+COULD NOT DECODE c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\kontakt.html as UTF-8 (Binary or other encoding)
+COULD NOT DECODE c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\kristalova-koule.html as UTF-8 (Binary or other encoding)
+COULD NOT DECODE c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\lunace.html as UTF-8 (Binary or other encoding)
+COULD NOT DECODE c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\mentor.html as UTF-8 (Binary or other encoding)
+COULD NOT DECODE c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\natalni-karta.html as UTF-8 (Binary or other encoding)
+COULD NOT DECODE c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\numerologie.html as UTF-8 (Binary or other encoding)
+COULD NOT DECODE c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\o-nas.html as UTF-8 (Binary or other encoding)
+COULD NOT DECODE c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\ochrana-soukromi.html as UTF-8 (Binary or other encoding)
+COULD NOT DECODE c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\offline.html as UTF-8 (Binary or other encoding)
+COULD NOT DECODE c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\partnerska-shoda.html as UTF-8 (Binary or other encoding)
+COULD NOT DECODE c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\podminky.html as UTF-8 (Binary or other encoding)
+COULD NOT DECODE c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\prihlaseni.html as UTF-8 (Binary or other encoding)
+COULD NOT DECODE c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\profil.html as UTF-8 (Binary or other encoding)
+COULD NOT DECODE c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\runy.html as UTF-8 (Binary or other encoding)
+COULD NOT DECODE c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\slovnik.html as UTF-8 (Binary or other encoding)
+COULD NOT DECODE c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\snar.html as UTF-8 (Binary or other encoding)
+COULD NOT DECODE c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\soukromi.html as UTF-8 (Binary or other encoding)
+COULD NOT DECODE c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\tarot.html as UTF-8 (Binary or other encoding)
+FOUND MOJIBAKE in c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\.claude\worktrees\gallant-sammet\css\style.v2.css: ['├í', '─Ź', '├\xad', '├\x81']
+FOUND MOJIBAKE in c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\.claude\worktrees\gallant-sammet\css\style.v2.min.css: ['├í', '─Ź', '├\xad', '├\x81']
+FOUND MOJIBAKE in c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\.claude\worktrees\gallant-sammet\server\index.js: ['├í', '─Ť']
+FOUND MOJIBAKE in c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\.claude\worktrees\gallant-sammet\server\scripts\fix-encoding.js: ['├í', '─Ť', '─Ź', '┼í', '┼Ö', '┼ż', '├Ż', '├ę', '├│', '├║', '┼»']
+FOUND MOJIBAKE in c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\css\style.v2.css: ['├í', '─Ź', '├\xad', '├\x81']
+FOUND MOJIBAKE in c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\css\style.v2.min.css: ['├í', '─Ź', '├\xad', '├\x81']
+FOUND MOJIBAKE in c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\server\index.js: ['├í', '─Ť']
+FOUND MOJIBAKE in c:\Users\pavel\OneDrive\Desktop\MystickaHvezda\server\scripts\fix-encoding.js: ['├í', '─Ť', '─Ź', '┼í', '┼Ö', '┼ż', '├Ż', '├ę', '├│', '├║', '┼»']
+
+Total corrupted files found: 8
