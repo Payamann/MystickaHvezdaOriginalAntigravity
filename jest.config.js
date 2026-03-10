@@ -1,15 +1,26 @@
+/**
+ * Jest Configuration for Mystická Hvězda Security Tests
+ */
+
 export default {
     testEnvironment: 'node',
-    transform: {}, // Disable transforms for ES Modules
-    moduleNameMapper: {
-        '^(\\.{1,2}/.*)\\.js$': '$1', // Support extensionless imports if needed, or map .js
+    testTimeout: 30000,
+    collectCoverageFrom: [
+        'server/**/*.js',
+        '!server/tests/**',
+        '!server/node_modules/**'
+    ],
+    coverageThreshold: {
+        global: {
+            branches: 50,
+            functions: 50,
+            lines: 50,
+            statements: 50
+        }
     },
-    modulePaths: ['<rootDir>/server/node_modules'],
-    setupFiles: ['./tests/setup.js'], // Global mocks
-    testMatch: ['**/tests/**/*.test.js'],
-    verbose: true,
-    forceExit: true, // Force exit after tests finish (useful for Express)
-    clearMocks: true,
-    resetMocks: true,
-    restoreMocks: true
+    testMatch: [
+        '**/server/tests/**/*.test.js'
+    ],
+    setupFilesAfterEnv: ['./server/tests/setup.js'],
+    transform: {}
 };
