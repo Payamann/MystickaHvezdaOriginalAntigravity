@@ -6,6 +6,7 @@ import { sendEmail, sendPauseEmail, sendDiscountEmail, sendOnboardingSequence, s
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { validateString, validateNumber, validateUserId } from './utils/validation.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -145,7 +146,13 @@ router.post('/create-checkout-session', authenticateToken, async (req, res) => {
         const { planId } = req.body;
         const user = req.user;
 
-        const plan = PLANS[planId] || PLANS['pruvodce'];
+        // Validate planId - must be one of the defined plans
+        const validPlanIds = Object.keys(PLANS);
+        if (!planId || typeof planId !== 'string' || !validPlanIds.includes(planId)) {
+            return res.status(400).json({ error: 'Invalid plan selected' });
+        }
+
+        const plan = PLANS[planId];
 
         if (plan.price === 0) {
             return res.status(400).json({ error: 'Cannot create session for free plan' });
@@ -682,8 +689,22 @@ router.post('/retention/feedback', authenticateToken, async (req, res) => {
         const { userId } = req.user;
         const { type, reason, feedback } = req.body;
 
-        if (!type || !reason) {
-            return res.status(400).json({ error: 'type and reason required' });
+        // Validate inputs
+        const validTypes = ['churn', 'pause', 'downgrade'];
+        const validReasons = ['too_expensive', 'not_using', 'technical_issues', 'found_alternative', 'other'];
+
+        if (!type || !validTypes.includes(type)) {
+            return res.status(400).json({ error: 'Invalid feedback type' });
+        }
+
+        if (!reason || !validReasons.includes(reason)) {
+            return res.status(400).json({ error: 'Invalid feedback reason' });
+        }
+
+        // Validate optional feedback text
+        let validatedFeedback = null;
+        if (feedback) {
+            validatedFeedback = validateString(feedback, 'Feedback', 0, 500);
         }
 
         // Create retention_feedback table if doesn't exist
@@ -693,7 +714,7 @@ router.post('/retention/feedback', authenticateToken, async (req, res) => {
                 user_id: userId,
                 type,
                 reason,
-                feedback: feedback || null,
+                feedback: validatedFeedback,
                 created_at: new Date().toISOString()
             });
 
@@ -717,7 +738,14 @@ router.post('/retention/feedback', authenticateToken, async (req, res) => {
 router.post('/subscription/pause', authenticateToken, async (req, res) => {
     try {
         const { userId } = req.user;
-        const { pauseDays = 30 } = req.body;
+        let { pauseDays = 30 } = req.body;
+
+        // Validate pauseDays
+        try {
+            pauseDays = validateNumber(pauseDays || 30, 'Pause days', 1, 365);
+        } catch (err) {
+            return res.status(400).json({ error: err.message });
+        }
 
         // Get user's subscription
         const { data: sub, error: subError } = await supabase
@@ -804,8 +832,16 @@ router.post('/subscription/apply-discount', authenticateToken, async (req, res) 
         const { userId } = req.user;
         const { couponCode } = req.body;
 
-        if (!couponCode) {
-            return res.status(400).json({ error: 'couponCode required' });
+        // Validate coupon code
+        if (!couponCode || typeof couponCode !== 'string') {
+            return res.status(400).json({ error: 'Coupon code is required' });
+        }
+
+        const validatedCode = couponCode.trim().toUpperCase();
+
+        // Coupon codes should be alphanumeric and short (typically 10-50 chars max)
+        if (!/^[A-Z0-9\-]{3,50}$/.test(validatedCode)) {
+            return res.status(400).json({ error: 'Invalid coupon code format' });
         }
 
         // Get user's subscription
@@ -822,9 +858,9 @@ router.post('/subscription/apply-discount', authenticateToken, async (req, res) 
         // Verify coupon exists in Stripe
         let coupon;
         try {
-            coupon = await stripe.coupons.retrieve(couponCode);
+            coupon = await stripe.coupons.retrieve(validatedCode);
         } catch (err) {
-            return res.status(400).json({ error: `Coupon '${couponCode}' not found` });
+            return res.status(400).json({ error: `Coupon not found` });
         }
 
         if (coupon.valid === false) {
@@ -834,7 +870,7 @@ router.post('/subscription/apply-discount', authenticateToken, async (req, res) 
         // Apply coupon to subscription
         try {
             await stripe.subscriptions.update(sub.stripe_subscription_id, {
-                coupon: couponCode
+                coupon: validatedCode
             });
         } catch (stripeErr) {
             return res.status(400).json({ error: stripeErr.message });
