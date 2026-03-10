@@ -140,6 +140,87 @@ const sensitiveOpLimiter = rateLimit({
 // Gzip Compression
 app.use(compression());
 
+// CSRF Protection Middleware (Simple implementation)
+const csrfSecret = process.env.CSRF_SECRET || 'fallback-csrf-secret-change-in-production';
+
+// Generate CSRF token using HMAC
+function generateCSRFToken() {
+    const randomString = crypto.randomBytes(32).toString('hex');
+    const hmac = crypto.createHmac('sha256', csrfSecret);
+    hmac.update(randomString);
+    return `${randomString}.${hmac.digest('hex')}`;
+}
+
+// Verify CSRF token
+function verifyCSRFToken(token) {
+    if (!token || typeof token !== 'string') {
+        return false;
+    }
+
+    const [randomString, signature] = token.split('.');
+
+    if (!randomString || !signature) {
+        return false;
+    }
+
+    const hmac = crypto.createHmac('sha256', csrfSecret);
+    hmac.update(randomString);
+    const expectedSignature = hmac.digest('hex');
+
+    // Use constant-time comparison to prevent timing attacks
+    return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature));
+}
+
+const csrfProtection = (req, res, next) => {
+    // Skip CSRF for GET, HEAD, OPTIONS requests
+    if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+        return next();
+    }
+
+    // Skip CSRF for webhook endpoints
+    if (req.path.includes('/webhook/')) {
+        return next();
+    }
+
+    // Get token from headers or body
+    const token = req.headers['x-csrf-token'] || req.body?.csrfToken;
+
+    if (!token) {
+        return res.status(403).json({ error: 'CSRF token missing' });
+    }
+
+    try {
+        // Verify the CSRF token
+        const isValidToken = verifyCSRFToken(token);
+
+        if (!isValidToken) {
+            return res.status(403).json({ error: 'CSRF token invalid' });
+        }
+
+        next();
+    } catch (err) {
+        console.error('[CSRF] Token verification error:', err.message);
+        return res.status(403).json({ error: 'CSRF token verification failed' });
+    }
+};
+
+// Apply CSRF protection to state-changing API endpoints
+app.post('/api/*', csrfProtection);
+app.put('/api/*', csrfProtection);
+app.patch('/api/*', csrfProtection);
+app.delete('/api/*', csrfProtection);
+
+// Endpoint to get CSRF token (call this on page load)
+app.get('/api/csrf-token', (req, res) => {
+    try {
+        const token = generateCSRFToken();
+        res.json({ csrfToken: token });
+    } catch (err) {
+        console.error('[CSRF] Token creation error:', err.message);
+        res.status(500).json({ error: 'Failed to create CSRF token' });
+    }
+});
+
 // Force HTTPS in production
 if (process.env.NODE_ENV === 'production') {
     app.use((req, res, next) => {
