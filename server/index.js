@@ -104,20 +104,69 @@ app.post('/webhook/stripe', express.raw({ type: 'application/json' }), async (re
     }
 });
 
-// Increase payload limit for complex requests (e.g. detailed tarot spreads if needed)
-app.use(express.json({ limit: '10kb' }));
-app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+// Request Body Size Limits - Prevent large payload attacks
+// 10KB for JSON (enough for typical API requests)
+// 5KB for URL-encoded (form submissions)
+app.use(express.json({
+    limit: '10kb',
+    strict: true, // Only accept arrays and objects
+}));
+app.use(express.urlencoded({
+    extended: true,
+    limit: '5kb',
+    parameterLimit: 100 // Limit number of form parameters
+}));
+
+// Middleware: Validate request size and content-type
+app.use((req, res, next) => {
+    // Check content-length header
+    const contentLength = parseInt(req.headers['content-length'] || '0');
+    if (contentLength > 10240) { // 10KB in bytes
+        return res.status(413).json({
+            error: 'Payload too large',
+            maxSize: '10KB'
+        });
+    }
+    next();
+});
 
 // Security Headers with Content Security Policy
 
-// Rate Limiting (Relaxed to 300 req/15min)
-const limiter = rateLimit({
+// Global Rate Limiting (per IP/user)
+const globalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 300, // Increased from 100 to 300 to be safe
+    max: 300, // 300 requests per 15 minutes (20 req/min average)
+    keyGenerator: (req, res) => {
+        // Use user ID if authenticated, otherwise use IP
+        return req.user?.id || req.ip;
+    },
+    skip: (req, res) => {
+        // Don't count static file requests (images, CSS, JS)
+        return req.path.match(/\.(js|css|jpg|jpeg|png|gif|ico|svg|ttf|woff|woff2)$/);
+    },
     standardHeaders: true,
     legacyHeaders: false,
+    handler: (req, res) => {
+        res.status(429).json({
+            error: 'Příliš mnoho požadavků. Zkuste to prosím později.',
+            retryAfter: req.rateLimit.resetTime
+        });
+    }
 });
-app.use('/api/', limiter);
+app.use('/api/', globalLimiter);
+
+// Strict global rate limit for non-API routes (static files, etc.)
+const staticLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 60, // 60 requests per minute per IP
+    skip: (req, res) => {
+        // Skip for actual API routes (they have their own limiter)
+        return req.path.startsWith('/api/');
+    },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+app.use(staticLimiter);
 
 // AI-generation endpoints - expensive, limit abuse
 const aiLimiter = rateLimit({
