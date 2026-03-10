@@ -7,7 +7,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '.env') });
 
 let resend = null;
-const FROM_EMAIL = 'noreply@mystickahvezda.cz';
+const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@mystickahvezda.cz';
+
+// Validate email configuration on startup
+if (!process.env.FROM_EMAIL && process.env.NODE_ENV === 'production') {
+  console.warn('⚠️ WARNING: FROM_EMAIL not set in environment variables. Using fallback.');
+}
 
 // Lazy-load Resend to avoid errors if API key is missing
 function getResend() {
