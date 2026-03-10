@@ -82,11 +82,7 @@ router.post('/register', authLimiter, async (req, res) => {
         if (birth_date) {
             validatedBirthDate = validateBirthDate(birth_date);
         }
-    } catch (validationError) {
-        return res.status(400).json({ error: validationError.message });
-    }
 
-    try {
         // 1. Sign Up via Supabase Auth
         // This triggers the confirmation email automatically.
         const { data, error } = await supabase.auth.signUp({
@@ -128,6 +124,10 @@ router.post('/register', authLimiter, async (req, res) => {
         });
 
     } catch (e) {
+        // Return validation errors as 400, everything else as 500
+        if (e.message && (e.message.includes('must') || e.message.includes('Invalid') || e.message.includes('required') || e.message.includes('too'))) {
+            return res.status(400).json({ error: e.message });
+        }
         console.error('Register Error:', e);
         res.status(500).json({ error: 'Chyba při registraci. Zkuste to prosím později.' });
     }
@@ -229,7 +229,7 @@ router.post('/login', authLimiter, async (req, res) => {
         const status = sub.plan_type || 'free';
 
         // Check if premium (and not expired)
-        const isPremium = status && ['premium_monthly', 'premium_yearly', 'premium_pro', 'exclusive_monthly', 'vip'].includes(status) &&
+        const isPremium = status && ['premium_monthly', 'premium_yearly', 'premium_pro', 'exclusive_monthly', 'vip_majestrat', 'vip'].includes(status) &&
                          sub.status === 'active' &&
                          new Date(sub.current_period_end) > new Date();
 
@@ -273,6 +273,9 @@ router.post('/refresh-token', authenticateToken, async (req, res) => {
         // Generate new token with updated subscription info
         const newToken = await generateToken(userId);
 
+        // Decode fresh token to get updated claims
+        const decoded = jwt.decode(newToken);
+
         // Fetch fresh user data
         const { data: profile } = await supabase
             .from('users')
@@ -284,8 +287,8 @@ router.post('/refresh-token', authenticateToken, async (req, res) => {
             token: newToken,
             user: {
                 id: userId,
-                email: req.user.email,
-                subscription_status: req.user.subscription_status,
+                email: decoded?.email || profile?.email,
+                subscription_status: decoded?.subscription_status || 'free',
                 first_name: profile?.first_name,
                 birth_date: profile?.birth_date,
                 birth_time: profile?.birth_time,
@@ -365,13 +368,9 @@ router.post('/reset-password', async (req, res) => {
 });
 
 // Get User Profile
-router.get('/profile', async (req, res) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    if (!token) return res.sendStatus(401);
-
+router.get('/profile', authenticateToken, async (req, res) => {
     try {
-        const user = jwt.verify(token, JWT_SECRET);
+        const user = req.user;
 
         const { data, error } = await supabase
             .from('users')
@@ -400,23 +399,15 @@ router.get('/profile', async (req, res) => {
         res.json({ success: true, user: userProfile });
 
     } catch (e) {
-        if (e.name === 'JsonWebTokenError' || e.name === 'TokenExpiredError') {
-            return res.sendStatus(403);
-        }
         console.error('Get Profile Error:', e);
         res.status(500).json({ error: 'Failed to fetch profile' });
     }
 });
 
 // Update User Profile
-router.put('/profile', async (req, res) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    if (!token) return res.sendStatus(401);
-
+router.put('/profile', authenticateToken, async (req, res) => {
     try {
-        // Verify token synchronously
-        const user = jwt.verify(token, JWT_SECRET);
+        const user = req.user;
 
         const { first_name, birth_date, birth_time, birth_place, avatar } = req.body;
 
@@ -440,7 +431,8 @@ router.put('/profile', async (req, res) => {
         }
 
         if (birth_place !== undefined && birth_place !== null) {
-            updateData.birth_place = birth_place.substring(0, 100);
+            // Sanitize HTML characters and limit length
+            updateData.birth_place = String(birth_place).replace(/[<>{}[\]]/g, '').substring(0, 100);
         }
 
         // Only update avatar if explicitly provided (basic length check)
@@ -463,11 +455,8 @@ router.put('/profile', async (req, res) => {
         res.json({ success: true, user: data });
 
     } catch (e) {
-        if (e.name === 'JsonWebTokenError' || e.name === 'TokenExpiredError') {
-            return res.sendStatus(403);
-        }
         // Check if it's a validation error (thrown by our validators)
-        if (e.message && e.message.includes('must') || e.message.includes('Invalid') || e.message.includes('too')) {
+        if (e.message && (e.message.includes('must') || e.message.includes('Invalid') || e.message.includes('too') || e.message.includes('required'))) {
             return res.status(400).json({ error: e.message });
         }
         console.error('Update Profile Error:', e);

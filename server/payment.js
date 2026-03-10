@@ -686,7 +686,7 @@ async function handleSubscriptionDeleted(subscription) {
  */
 router.post('/retention/feedback', authenticateToken, async (req, res) => {
     try {
-        const { userId } = req.user;
+        const userId = req.user.id;
         const { type, reason, feedback } = req.body;
 
         // Validate inputs
@@ -737,7 +737,7 @@ router.post('/retention/feedback', authenticateToken, async (req, res) => {
  */
 router.post('/subscription/pause', authenticateToken, async (req, res) => {
     try {
-        const { userId } = req.user;
+        const userId = req.user.id;
         let { pauseDays = 30 } = req.body;
 
         // Validate pauseDays
@@ -829,7 +829,7 @@ router.post('/subscription/pause', authenticateToken, async (req, res) => {
  */
 router.post('/subscription/apply-discount', authenticateToken, async (req, res) => {
     try {
-        const { userId } = req.user;
+        const userId = req.user.id;
         const { couponCode } = req.body;
 
         // Validate coupon code
@@ -873,7 +873,8 @@ router.post('/subscription/apply-discount', authenticateToken, async (req, res) 
                 coupon: validatedCode
             });
         } catch (stripeErr) {
-            return res.status(400).json({ error: stripeErr.message });
+            console.error('[STRIPE] Discount error:', stripeErr.message);
+            return res.status(400).json({ error: 'Nepodařilo se použít slevu. Zkontrolujte kód a zkuste to znovu.' });
         }
 
         // Log discount application
@@ -909,7 +910,12 @@ router.post('/subscription/apply-discount', authenticateToken, async (req, res) 
         res.json({
             success: true,
             message: `Coupon '${couponCode}' applied successfully`,
-            discount: coupon
+            discount: {
+                name: coupon.name,
+                percent_off: coupon.percent_off,
+                amount_off: coupon.amount_off,
+                duration: coupon.duration
+            }
         });
     } catch (err) {
         console.error('[RETENTION] Error in apply-discount endpoint:', err);
@@ -923,7 +929,7 @@ router.post('/subscription/apply-discount', authenticateToken, async (req, res) 
  */
 router.post('/email/send', authenticateToken, async (req, res) => {
     try {
-        const { userId } = req.user;
+        const userId = req.user.id;
         const { template, data } = req.body;
 
         if (!template) {

@@ -33,36 +33,38 @@ export function validateName(name) {
     throw new Error('Name is required');
   }
 
-  if (name.length > 100) {
-    throw new Error('Name too long (max 100 characters)');
-  }
-
-  // Remove suspicious HTML/script characters
+  // Remove suspicious HTML/script characters first, then check length
   const sanitized = name.replace(/[<>{}[\]]/g, '').trim();
 
   if (sanitized.length === 0) {
     throw new Error('Name contains only invalid characters');
   }
 
+  if (sanitized.length > 100) {
+    throw new Error('Name too long (max 100 characters)');
+  }
+
   return sanitized;
 }
 
 export function validateEmail(email) {
-  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
   if (!email || typeof email !== 'string') {
     throw new Error('Email is required');
   }
 
-  if (!regex.test(email)) {
-    throw new Error('Invalid email format');
-  }
+  // Trim and lowercase first
+  const cleaned = email.toLowerCase().trim();
 
-  if (email.length > 254) {
+  if (cleaned.length > 254) {
     throw new Error('Email too long');
   }
 
-  return email.toLowerCase().trim();
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!regex.test(cleaned)) {
+    throw new Error('Invalid email format');
+  }
+
+  return cleaned;
 }
 
 export function validateZodiacSign(sign) {
@@ -103,11 +105,17 @@ export function validateCity(city) {
     throw new Error('City is required');
   }
 
-  if (city.length > 100) {
+  const sanitized = city.replace(/[<>{}[\]]/g, '').trim();
+
+  if (sanitized.length === 0) {
+    throw new Error('City contains only invalid characters');
+  }
+
+  if (sanitized.length > 100) {
     throw new Error('City name too long');
   }
 
-  return city.replace(/[<>{}[\]]/g, '').trim();
+  return sanitized;
 }
 
 export function validatePassword(password) {
@@ -134,7 +142,7 @@ export function validatePassword(password) {
 
   if (complexityScore < 3) {
     throw new Error(
-      'Password must contain: uppercase, lowercase, numbers, and special characters'
+      'Password must contain at least 3 of: uppercase, lowercase, numbers, special characters'
     );
   }
 
@@ -142,19 +150,22 @@ export function validatePassword(password) {
 }
 
 export function validateString(value, fieldName, minLength = 1, maxLength = 1000) {
-  if (!value || typeof value !== 'string') {
+  if (value === undefined || value === null || typeof value !== 'string') {
     throw new Error(`${fieldName} is required`);
   }
 
-  if (value.length < minLength) {
+  // Trim first, then check length against the trimmed value
+  const trimmed = value.trim();
+
+  if (trimmed.length < minLength) {
     throw new Error(`${fieldName} must be at least ${minLength} characters`);
   }
 
-  if (value.length > maxLength) {
+  if (trimmed.length > maxLength) {
     throw new Error(`${fieldName} must be at most ${maxLength} characters`);
   }
 
-  return value.trim();
+  return trimmed;
 }
 
 export function validateNumber(value, fieldName, min = null, max = null) {
@@ -196,19 +207,10 @@ export function validateUserId(userId) {
     throw new Error('Invalid user ID');
   }
 
-  // UUID v4 format check
-  if (!/^[a-f0-9\-]{36}$/.test(userId)) {
+  // UUID format: 8-4-4-4-12 hex characters
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId)) {
     throw new Error('Invalid user ID format');
   }
 
   return userId;
-}
-
-export function escapeSQL(value) {
-  // This is a basic escape function for use with parameterized queries
-  // When possible, use parameterized queries instead
-  if (typeof value === 'string') {
-    return value.replace(/'/g, "''");
-  }
-  return value;
 }

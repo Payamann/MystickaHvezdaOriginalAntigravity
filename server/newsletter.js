@@ -67,7 +67,7 @@ router.post('/subscribe', newsletterLimiter, async (req, res) => {
 });
 
 // POST /unsubscribe (GDPR compliance)
-router.post('/unsubscribe', async (req, res) => {
+router.post('/unsubscribe', newsletterLimiter, async (req, res) => {
     const { email: rawEmail } = req.body;
 
     try {
@@ -84,16 +84,10 @@ router.post('/unsubscribe', async (req, res) => {
             throw error;
         }
 
-        if (!data || data.length === 0) {
-            return res.status(404).json({
-                success: false,
-                error: 'Email nebyl nalezen v databázi odběratelů.'
-            });
-        }
-
+        // Always return success to prevent email enumeration (GDPR)
         res.status(200).json({
             success: true,
-            message: 'Úspěšně odhlášeno z odběru newsletteru.'
+            message: 'Pokud je email registrován, byl úspěšně odhlášen z odběru.'
         });
 
     } catch (validationError) {

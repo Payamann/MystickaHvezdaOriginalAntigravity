@@ -203,110 +203,7 @@ const sensitiveOpLimiter = rateLimit({
 // Gzip Compression
 app.use(compression());
 
-// CSRF Protection Middleware (Simple implementation)
-const csrfSecret = process.env.CSRF_SECRET || 'fallback-csrf-secret-change-in-production';
-
-// Generate CSRF token using HMAC
-function generateCSRFToken() {
-    const randomString = crypto.randomBytes(32).toString('hex');
-    const hmac = crypto.createHmac('sha256', csrfSecret);
-    hmac.update(randomString);
-    return `${randomString}.${hmac.digest('hex')}`;
-}
-
-// Verify CSRF token
-function verifyCSRFToken(token) {
-    if (!token || typeof token !== 'string') {
-        return false;
-    }
-
-    const [randomString, signature] = token.split('.');
-
-    if (!randomString || !signature) {
-        return false;
-    }
-
-    const hmac = crypto.createHmac('sha256', csrfSecret);
-    hmac.update(randomString);
-    const expectedSignature = hmac.digest('hex');
-
-    // Use constant-time comparison to prevent timing attacks
-    return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature));
-}
-
-const csrfProtection = (req, res, next) => {
-    // Skip CSRF for GET, HEAD, OPTIONS requests
-    if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
-        return next();
-    }
-
-    // Skip CSRF for webhook endpoints
-    if (req.path.includes('/webhook/')) {
-        return next();
-    }
-
-    // Get token from headers or body
-    const token = req.headers['x-csrf-token'] || req.body?.csrfToken;
-
-    if (!token) {
-        return res.status(403).json({ error: 'CSRF token missing' });
-    }
-
-    try {
-        // Verify the CSRF token
-        const isValidToken = verifyCSRFToken(token);
-
-        if (!isValidToken) {
-            return res.status(403).json({ error: 'CSRF token invalid' });
-        }
-
-        next();
-    } catch (err) {
-        console.error('[CSRF] Token verification error:', err.message);
-        return res.status(403).json({ error: 'CSRF token verification failed' });
-    }
-};
-
-// Apply CSRF protection to state-changing API endpoints
-app.post('/api/*', csrfProtection);
-app.put('/api/*', csrfProtection);
-app.patch('/api/*', csrfProtection);
-app.delete('/api/*', csrfProtection);
-
-// Endpoint to get CSRF token (call this on page load)
-app.get('/api/csrf-token', (req, res) => {
-    try {
-        const token = generateCSRFToken();
-        res.json({ csrfToken: token });
-    } catch (err) {
-        console.error('[CSRF] Token creation error:', err.message);
-        res.status(500).json({ error: 'Failed to create CSRF token' });
-    }
-});
-
-// Force HTTPS in production
-if (process.env.NODE_ENV === 'production') {
-    app.use((req, res, next) => {
-        // Railway (and most proxies) use x-forwarded-proto header
-        if (req.headers['x-forwarded-proto'] !== 'https') {
-            return res.redirect(301, `https://${req.hostname}${req.url}`);
-        }
-        next();
-    });
-}
-
-// XSS Protection - only for API routes (not static files)
-app.use('/api', xss());
-
-// Health Check Endpoint (Moved UP to bypass Rate Limiting)
-app.get('/api/health', (req, res) => {
-    res.json({
-        status: 'ok',
-        timestamp: new Date().toISOString()
-    });
-});
-
-// Security Headers with proper Content Security Policy
+// Security Headers with proper Content Security Policy (applied early so all responses get headers)
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
@@ -363,6 +260,119 @@ app.use(helmet({
     xssFilter: true, // X-XSS-Protection
 }));
 
+// Force HTTPS in production (early, before any routes)
+if (process.env.NODE_ENV === 'production') {
+    app.use((req, res, next) => {
+        if (req.headers['x-forwarded-proto'] !== 'https') {
+            return res.redirect(301, `https://${req.hostname}${req.url}`);
+        }
+        next();
+    });
+}
+
+// CSRF Protection Middleware (Simple implementation)
+if (process.env.NODE_ENV === 'production' && !process.env.CSRF_SECRET) {
+    console.error('[SECURITY] CSRF_SECRET environment variable is required in production!');
+    process.exit(1);
+}
+const csrfSecret = process.env.CSRF_SECRET || 'dev-csrf-secret-not-for-production';
+
+// Generate CSRF token using HMAC
+function generateCSRFToken() {
+    const randomString = crypto.randomBytes(32).toString('hex');
+    const hmac = crypto.createHmac('sha256', csrfSecret);
+    hmac.update(randomString);
+    return `${randomString}.${hmac.digest('hex')}`;
+}
+
+// Verify CSRF token
+function verifyCSRFToken(token) {
+    if (!token || typeof token !== 'string') {
+        return false;
+    }
+
+    const [randomString, signature] = token.split('.');
+
+    if (!randomString || !signature) {
+        return false;
+    }
+
+    const hmac = crypto.createHmac('sha256', csrfSecret);
+    hmac.update(randomString);
+    const expectedSignature = hmac.digest('hex');
+
+    // Buffers must be same length for timingSafeEqual
+    const sigBuffer = Buffer.from(signature);
+    const expectedBuffer = Buffer.from(expectedSignature);
+    if (sigBuffer.length !== expectedBuffer.length) {
+        return false;
+    }
+
+    // Use constant-time comparison to prevent timing attacks
+    return crypto.timingSafeEqual(sigBuffer, expectedBuffer);
+}
+
+const csrfProtection = (req, res, next) => {
+    // Skip CSRF for GET, HEAD, OPTIONS requests
+    if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+        return next();
+    }
+
+    // Skip CSRF for webhook endpoints
+    if (req.path.includes('/webhook/')) {
+        return next();
+    }
+
+    // Get token from headers or body
+    const token = req.headers['x-csrf-token'] || req.body?.csrfToken;
+
+    if (!token) {
+        return res.status(403).json({ error: 'CSRF token missing' });
+    }
+
+    try {
+        // Verify the CSRF token
+        const isValidToken = verifyCSRFToken(token);
+
+        if (!isValidToken) {
+            return res.status(403).json({ error: 'CSRF token invalid' });
+        }
+
+        next();
+    } catch (err) {
+        console.error('[CSRF] Token verification error:', err.message);
+        return res.status(403).json({ error: 'CSRF token verification failed' });
+    }
+};
+
+// Apply CSRF protection to state-changing API endpoints
+app.post('/api/*', csrfProtection);
+app.put('/api/*', csrfProtection);
+app.patch('/api/*', csrfProtection);
+app.delete('/api/*', csrfProtection);
+
+// Endpoint to get CSRF token (call this on page load)
+app.get('/api/csrf-token', (req, res) => {
+    try {
+        const token = generateCSRFToken();
+        res.json({ csrfToken: token });
+    } catch (err) {
+        console.error('[CSRF] Token creation error:', err.message);
+        res.status(500).json({ error: 'Failed to create CSRF token' });
+    }
+});
+
+// XSS Protection - only for API routes (not static files)
+app.use('/api', xss());
+
+// Health Check Endpoint (Moved UP to bypass Rate Limiting)
+app.get('/api/health', (req, res) => {
+    res.json({
+        status: 'ok',
+        timestamp: new Date().toISOString()
+    });
+});
+
 // ============================================
 // HOROSCOPE CACHE SYSTEM (Database-backed)
 // ============================================
@@ -399,6 +409,8 @@ app.use('/js', express.static(path.join(rootDir, 'js'), {
 }));
 
 
+// Apply sensitive operation limiter to password reset (stricter than authLimiter)
+app.use('/api/auth/reset-password', sensitiveOpLimiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/contact', contactRoutes);
