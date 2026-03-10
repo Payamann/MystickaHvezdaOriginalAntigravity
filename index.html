@@ -284,6 +284,8 @@
 
         width: 100% !important;
 
+        overflow: hidden !important;
+
       }
 
 
@@ -295,6 +297,26 @@
         max-width: 90% !important;
 
         height: auto !important;
+
+      }
+
+      /* Skrýt dekorativní glow element na mobilu — způsobuje průhledný artefakt */
+
+      .hero__glow-effect {
+
+        display: none !important;
+
+      }
+
+      /* Opravit aurora efekt na mobilu — border-radius: 0 způsoboval viditelný průhledný čtverec */
+
+      body::before,
+
+      body::after {
+
+        border-radius: 50% !important;
+
+        opacity: 0.15 !important;
 
       }
 
