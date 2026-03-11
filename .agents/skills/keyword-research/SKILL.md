@@ -304,16 +304,345 @@ When a user requests keyword research:
 - **Competitor Gap**: `What keywords do [competitor 1], [competitor 2] rank for that I'm missing?`
 - **Local Keywords**: `Research local keywords for [business type] in [city/region]`
 
+## Real-World Examples
+
+### Example 1: SaaS B2B — Project Management Software for Small Teams
+
+**Seed Keywords**: project management, team collaboration, task management
+
+**Keyword Expansion by Intent**:
+
+| Informational | Commercial | Transactional | GEO |
+|---|---|---|---|
+| What is agile project management | Best project management tools 2024 | Project management software free trial | How does project management work |
+| How to manage remote teams | Top 10 project management platforms | Buy project management software | Project management definition |
+| Agile vs Waterfall | Asana vs Monday vs Trello | Pricing for team collaboration | What does a project manager do |
+| How to use Gantt charts | Project management tools for SMBs | Start free project management tool | Project management frameworks |
+
+**Opportunity Scoring**:
+- "project management software" (Volume: 18K, KD: 72) → Lower priority (high difficulty)
+- "project management for small teams" (Volume: 1.2K, KD: 35) → High priority (volume × 2 / 35 = 0.068)
+- "how to manage a remote team" (Volume: 2.8K, KD: 22) → Very high priority (2.8K × 1 / 22 = 0.127)
+- "project management software free" (Volume: 850, KD: 18) → Quick win (0.85K × 3 / 18 = 0.141)
+
+**Recommended Content Cluster**:
+- **Pillar**: "The Complete Guide to Project Management for Small Teams" (2500+ words)
+  - Internal links to all cluster articles
+  - Covers frameworks (Agile, Kanban, Scrum), tools, best practices
+
+- **Cluster 1**: "How to Manage a Remote Team" (1200 words, "how to" intent)
+- **Cluster 2**: "Best Project Management Tools for Remote Teams" (1500 words, commercial intent)
+- **Cluster 3**: "Agile vs Waterfall: Which Framework is Right for You" (1000 words, comparison)
+- **Cluster 4**: "Project Management Tools Free Trial Guide" (800 words, transactional intent)
+
+---
+
+### Example 2: E-commerce — Pet Grooming Products
+
+**Seed Keywords**: pet grooming, dog grooming, cat grooming
+
+**Keyword Clustering**:
+
+| Category | Volume | KD | Priority | Example |
+|---|---|---|---|---|
+| Product-specific | 2.1K | 45 | High | Best dog grooming clippers for thick coat |
+| Use-case | 890 | 28 | Very High | How to groom a dog at home |
+| Problem-focused | 1.2K | 19 | Very High | Dog tangles and matting solutions |
+| Local + product | 320 | 8 | Quick win | Dog grooming supplies near me |
+| Tutorial | 450 | 15 | High | Step-by-step guide to grooming a German Shepherd |
+
+**Content Plan**:
+- Target quick wins first (low KD, any volume)
+- Build authority with problem-focused content (tangles, shedding, odor)
+- Create how-to guides with product recommendations (monetization via affiliate links)
+- Develop product comparison content (grooming clippers, shampoos, tools)
+
+---
+
+### Example 3: Local Service — Dentist Practice in Austin, TX
+
+**Geographic + Service Keywords**:
+
+| Type | Keyword | Volume | Intent | Strategy |
+|---|---|---|---|---|
+| Local branded | Dentist near me Austin | 1.8K | Commercial | High priority — immediate intent |
+| Local + service | Best cosmetic dentist Austin | 420 | Commercial | Service page + local content |
+| Problem-focused | Teeth whitening options | 2.2K | Informational | Blog post, then CTA to booking |
+| Question-based | How long do veneers last | 680 | Informational | FAQ targeting, featured snippet |
+| Procedure-specific | Root canal pain management | 890 | Informational/Commercial | Hybrid content (education + CTA) |
+
+**Local SEO Content Strategy**:
+- Create service pages for each procedure (root canals, cleanings, whitening)
+- Build neighborhood authority with "Best Dentist in [Neighborhood]" content
+- FAQ blog posts targeting "How long does [procedure] take?" style queries
+- Local schema markup on every page (LocalBusiness, Dental Practice)
+
+---
+
+## Frameworks
+
+### Keyword Classification Framework
+
+Use this to categorize and prioritize keywords systematically:
+
+```
+KEYWORD CLASSIFICATION MATRIX
+
+1. INTENT SCORING (1-3 points)
+   High (3) = Transactional/Commercial (buyer intent)
+   Medium (2) = Commercial (comparison/research)
+   Low (1) = Informational (learning only)
+
+2. VOLUME SCORING (1-3 points based on search volume)
+   High (3) = 5,000+ monthly searches
+   Medium (2) = 500-5,000 monthly
+   Low (1) = <500 monthly
+
+3. DIFFICULTY SCORING (Reverse 1-3 scale, high is good)
+   Easy (3) = KD 0-29
+   Medium (2) = KD 30-69
+   Hard (1) = KD 70+
+
+4. RELEVANCE SCORING (1-3 points)
+   High (3) = Perfect match for your product/service
+   Medium (2) = Related but tangential
+   Low (1) = Barely related
+
+PRIORITY = (Intent + Volume + Difficulty + Relevance) / 4
+```
+
+**Action Thresholds**:
+- Score 3.0+ = Top priority (Quick wins)
+- Score 2.5-2.9 = Secondary priority (Growth opportunities)
+- Score 2.0-2.4 = Long-term (Authority building)
+- Score <2.0 = Skip or deprioritize
+
+### Keyword Clustering Framework (CORE Model)
+
+```
+KEYWORD CLUSTER STRUCTURE
+
+CORE INTENT = What does the searcher fundamentally want?
+└─ Define this first before clustering
+
+OPPORTUNITY GAPS = Which intents do you own?
+└─ Map to your content inventory
+
+RANKING POTENTIAL = Can you win these keywords?
+└─ Score each keyword's ranking feasibility
+
+EXPANSION PATHS = How do keywords interconnect?
+└─ Create internal linking map
+```
+
+**Step-by-step clustering process**:
+1. List all keywords for your topic
+2. Group by primary intent (informational / commercial / transactional)
+3. Within each intent group, identify sub-clusters by topic angle
+4. Score each keyword by opportunity
+5. Assign content type (blog post, product page, comparison, FAQ, etc.)
+6. Design internal linking from low-volume to high-volume keywords
+
+---
+
+## Common Patterns
+
+| Pattern | Signals | Volume | Difficulty | Strategy |
+|---|---|---|---|---|
+| "What is [X]" | Definitional, high AI potential | Varies | Usually low | Blog post targeting featured snippet |
+| "[X] for [audience]" | Long-tail, specific use-case | Low-Med | Low | Best for niche targeting |
+| "Best [X] for [use-case]" | High commercial intent | Med-High | High | Create comparison/roundup post |
+| "[X] vs [Y]" | Comparison, consideration stage | Low-Med | Low-Med | Comparison post with pros/cons |
+| "How to [action]" | Tutorial, implementational | High | Low-Med | Step-by-step guide, video potential |
+| "[X] near me" | Local intent, geo-dependent | Varies | Low | Local SEO + service pages |
+| "[X] alternatives" | Intent to switch, high-value | Med | Med | Competitive analysis content |
+| "[X] free [qualifier]" | Free-tier seeking, price-sensitive | Low-Med | Low | Freemium product landing page |
+| "[X] [year]" | Freshness bias, trends | Low | Low-Med | Annual roundup content |
+| "Why is [X]" | Educational, trust-building | Low | Low | Blog post, builds authority |
+
+---
+
 ## Tips for Success
 
-1. **Start with seed keywords** that describe your core offering
-2. **Don't ignore long-tail** - they often have highest conversion rates
-3. **Match content to intent** - informational queries need guides, not sales pages
-4. **Group into clusters** for topical authority
-5. **Prioritize quick wins** to build momentum and credibility
-6. **Include GEO keywords** in your strategy for AI visibility
-7. **Review quarterly** - keyword dynamics change over time
+1. **Start with seed keywords** that describe your core offering, then expand systematically
+2. **Don't ignore long-tail** — they often have highest conversion rates and easiest ranking path
+3. **Match content to intent** — informational queries need guides, not sales pages (conversion won't happen)
+4. **Group into clusters** for topical authority (boosts hub page and all spokes)
+5. **Prioritize quick wins** to build momentum and credibility (low KD + decent volume)
+6. **Include GEO keywords** in your strategy for AI visibility (definitions, how-to, why questions)
+7. **Review quarterly** — keyword dynamics change over time, new opportunities emerge
+8. **Use the prioritization formula** — (Volume × Intent Value) / Difficulty gives you objective ranking
+9. **Create a keyword bank** — track keywords you rank for, keyword gaps, and trending queries
+10. **Test keyword assumptions** — what you think people search for often differs from reality; validate with tools or GSC data
 
+---
+
+## Success Metrics
+
+**How to validate your keyword research worked**:
+
+| Metric | Target | Timeline | How to Measure |
+|---|---|---|---|
+| Content Rankings | 50%+ of cluster keywords rank top 10 | 2-3 months | Monthly rank tracking |
+| Organic Traffic | 30%+ increase from keyword-targeted content | 3-6 months | Google Analytics |
+| Intent Alignment | 80%+ of visitors engage with CTA | 1 month | Behavior metrics (scroll depth, CTA clicks) |
+| Long-tail Performance | Long-tail keywords drive 40%+ of volume | 3+ months | Search Console keyword analysis |
+| Cluster Authority | Hub page ranks for primary keyword | 4-6 months | SERP position for pillar keyword |
+| AI Citations | Cluster content cited in AI responses | 2-3 months | Manual testing of GEO queries |
+| Conversion Rate | Keywords with high intent close at 2x+ rate | Ongoing | Track by keyword in analytics |
+| Topic Authority | Domain authority increases 5+ points | 6-12 months | Ahrefs, SEMrush DA tracking |
+
+---
+
+## Industry-Specific Keyword Research Examples
+
+### SaaS: Project Management Software Research
+
+**Seed Keywords** (starting point):
+- project management
+- team collaboration tools
+- task management software
+
+**Keyword expansion by category**:
+
+**Informational (Awareness stage)**:
+- What is agile project management
+- How to manage remote teams
+- Project management frameworks
+- Agile vs Waterfall vs Scrum
+- Project management best practices 2024
+
+**Commercial (Consideration stage)**:
+- Best project management tools
+- Top project management software
+- Project management tools for small teams
+- Project management tools for designers
+- Asana vs Monday vs Jira vs ClickUp
+
+**Transactional (Decision stage)**:
+- Project management software free trial
+- Project management tool pricing
+- Buy project management software
+- Free project management tools
+- Asana pricing vs Monday pricing
+
+**GEO (AI Answer potential)**:
+- What is project management
+- How does project management work
+- Why do teams need project management
+- Project management definition
+- Benefits of project management
+
+**Keyword Prioritization Output**:
+
+| Keyword | Volume | KD | Intent | Priority | Strategy |
+|---|---|---|---|---|---|
+| project management | 18K | 78 | Commercial | ⭐⭐ | Brand awareness; target via related keywords |
+| how to manage remote teams | 2.8K | 22 | Informational | ⭐⭐⭐⭐⭐ | QUICK WIN — blog post, builds authority |
+| project management software free | 850 | 18 | Transactional | ⭐⭐⭐⭐⭐ | QUICK WIN — free tier landing page |
+| project management for small teams | 1.2K | 35 | Commercial | ⭐⭐⭐⭐ | GROWTH — product page + case studies |
+| agile project management | 4.2K | 55 | Informational | ⭐⭐⭐ | AUTHORITY — comprehensive guide |
+| Asana alternative | 290 | 28 | Commercial | ⭐⭐⭐⭐ | Comparison post; capture switchers |
+
+---
+
+### E-commerce: Pet Grooming Products Research
+
+**Seed Keywords**:
+- dog grooming
+- pet grooming tools
+- pet grooming supplies
+
+**Keyword Clustering by Search Intent**:
+
+**Problem-focused** (highest conversion potential):
+- How to groom a dog at home
+- Dog grooming for thick coats
+- Pet grooming for matted fur
+- Dog shedding solutions
+- Pet grooming for sensitive skin
+
+**Product-specific**:
+- Best dog grooming clippers
+- Top rated dog grooming scissors
+- Slicker brush for dogs
+- Dog grooming glove pros and cons
+- Best undercoat rake for double coated dogs
+
+**Use-case specific**:
+- Dog grooming for Goldendoodles
+- How to groom a husky
+- Grooming guide for long haired cats
+- Quick dog grooming routine
+- Professional dog grooming tips
+
+**Affiliate/Review potential**:
+- Best dog grooming clippers reviews
+- Dog grooming kit comparison
+- FURminator vs similar tools
+- Most durable dog grooming shears
+
+**Content Plan**:
+
+1. **Target quick wins first** (low KD, decent volume)
+   - "How to groom a dog at home" → 1200 words + video
+   - "Dog grooming for [breed]" → Multiple breed-specific posts
+   - Product buying guides (clippers, brushes, shears)
+
+2. **Build authority content**
+   - "Complete dog grooming guide" → 3000+ word pillar
+   - Detailed breed grooming requirements
+   - Problem-solution content (matting, shedding, etc.)
+
+3. **Monetization content**
+   - Product roundups with affiliate links
+   - Comparison posts (tool A vs Tool B)
+   - Brand reviews (high product volume)
+
+---
+
+### Local Service: Dentist Practice Research
+
+**Geographic + Service Keywords**:
+
+**Local commercial intent** (immediate value):
+- Dentist near me
+- Cosmetic dentist Austin
+- Emergency dentist near me
+- Best dentist in Austin
+- Teeth whitening Austin
+
+**Informational with local intent**:
+- How long do dental implants last Austin
+- Root canal pain management
+- Teeth whitening options
+- Cost of dental implants Austin
+- Recovery time after oral surgery
+
+**Procedure-specific** (buyer consideration):
+- Teeth whitening procedures Austin
+- Dental implants cost Austin
+- Invisalign vs braces Austin
+- Smile makeover dentist Austin
+- Veneers cost Austin
+
+**Keyword Priority Matrix**:
+
+| Keyword | Volume | Intent | Local Pack Difficulty | Strategy |
+|---|---|---|---|---|
+| Dentist Austin | 1.8K | High | High (1-3) | Defend via Google Business Profile optimization |
+| Cosmetic dentist Austin | 420 | High | Medium | Create detailed service page + blog |
+| Emergency dentist near me | 890 | Very High | Low | Capture immediate need queries |
+| Teeth whitening Austin | 2.2K | Informational | Medium | Blog + service page combo |
+| Best cosmetic dentist reviews Austin | 180 | Commercial | Low | Testimonial-focused content |
+
+**Content Architecture**:
+- Service pages: Each procedure gets optimized service page + blog post
+- FAQ pages: "How long does [procedure] last," "Is [procedure] painful," "Cost of [procedure]"
+- Location pages: If expanding to multiple neighborhoods
+- Blog: Educational content + local authority building
+
+---
 
 ## Reference Materials
 

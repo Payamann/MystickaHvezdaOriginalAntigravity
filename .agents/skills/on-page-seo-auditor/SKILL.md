@@ -259,6 +259,234 @@ When a user requests an on-page SEO audit:
 
 > **Reference**: See [references/audit-example.md](./references/audit-example.md) for a full worked example (noise-cancelling headphones audit) and page-type checklists (blog post, product page, landing page).
 
+## On-Page SEO Scoring Methodology
+
+### Element-by-Element Scoring
+
+**Title Tag (Weight: 15%)**
+- Length 50-60 characters: 0-5 points
+- Primary keyword at front: 0-3 points
+- Unique across site: 0-2 points
+- Compelling/clickable: 0-5 points
+- **Total: 15 points**
+
+**Meta Description (Weight: 10%)**
+- Length 150-160 characters: 0-3 points
+- Keyword included naturally: 0-3 points
+- Call-to-action present: 0-2 points
+- Unique across site: 0-2 points
+- **Total: 10 points**
+
+**Header Structure (Weight: 15%)**
+- Single H1 present: 0-5 points
+- H1 includes primary keyword: 0-3 points
+- Logical H2-H3 hierarchy: 0-4 points
+- No skipped heading levels: 0-3 points
+- **Total: 15 points**
+
+**Content Quality (Weight: 25%)**
+- Word count appropriate for intent: 0-5 points
+- Covers main keyword thoroughly: 0-5 points
+- Answers related questions (LSI): 0-5 points
+- Data/citations present: 0-5 points
+- Readability and formatting: 0-5 points
+- **Total: 25 points**
+
+**Keyword Optimization (Weight: 10%)**
+- Primary keyword density (0.5-1.5%): 0-3 points
+- Keyword in first 100 words: 0-3 points
+- Secondary keywords used: 0-2 points
+- Natural keyword placement: 0-2 points
+- **Total: 10 points**
+
+**Internal Links (Weight: 10%)**
+- 5+ internal links present: 0-3 points
+- Descriptive anchor text: 0-3 points
+- Link to important pages: 0-2 points
+- No broken links: 0-2 points
+- **Total: 10 points**
+
+**Technical On-Page (Weight: 15%)**
+- URL structure clean: 0-3 points
+- Mobile-friendly: 0-3 points
+- Page speed acceptable: 0-3 points
+- HTTPS enabled: 0-2 points
+- Canonical tag correct: 0-2 points
+- Schema markup present: 0-2 points
+- **Total: 15 points**
+
+### Overall Scoring Scale
+
+- **90-100**: Excellent — Ready to publish or competitive
+- **75-89**: Good — Minor fixes needed
+- **60-74**: Fair — Significant optimization needed
+- **40-59**: Poor — Major revisions required
+- **0-39**: Critical — Rewrite recommended
+
+---
+
+## On-Page SEO Audit Checklist
+
+### Pre-Publishing Checklist
+
+**Content Foundation**:
+- [ ] Target keyword defined and aligned with search intent
+- [ ] Secondary keywords (3-5) identified for natural integration
+- [ ] Content angle unique (not just rewritten competitor content)
+- [ ] Word count appropriate for content type (1500+ for competitive keywords)
+- [ ] Outline created before writing
+
+**Title Tag**:
+- [ ] 50-60 characters (including spaces)
+- [ ] Primary keyword at front of title
+- [ ] Brand name included (if space allows)
+- [ ] Compelling and clickable (not just keyword stuffing)
+- [ ] Matches search intent (user will expect this content)
+
+**Meta Description**:
+- [ ] 150-160 characters written
+- [ ] Keyword included once naturally
+- [ ] Clear call-to-action ("Learn how," "Get guide," "Try free")
+- [ ] Accurately summarizes content above the fold
+- [ ] Unique across entire site
+
+**Headers**:
+- [ ] Single H1 on page (represents main topic)
+- [ ] H1 includes primary keyword
+- [ ] H2s support main argument (3-8 H2s typical)
+- [ ] H2s include related keywords where natural
+- [ ] H3s under relevant H2s (no orphaned subheadings)
+- [ ] Hierarchy is logical (no jumping from H1 → H3)
+
+**Content Body**:
+- [ ] First 150 words answer the main question
+- [ ] Each paragraph 3-5 sentences (scannable)
+- [ ] Section headers make page skimmable
+- [ ] At least 5 data points with attribution
+- [ ] At least 1 external link per 500 words
+- [ ] Bolded key terms and concepts
+- [ ] Numbered lists where sequential
+- [ ] Bullet points for feature/benefit lists
+
+**Keyword Integration**:
+- [ ] Primary keyword in: Title, H1, first paragraph, body (2-3x), conclusion
+- [ ] Secondary keywords distributed across H2s and body
+- [ ] LSI/synonym terms used naturally (no keyword stuffing)
+- [ ] Keyword density 0.5-1.5% (use tools to check)
+- [ ] No unnatural keyword placement (reads naturally)
+
+**Images**:
+- [ ] Every image has descriptive alt text
+- [ ] Alt text includes keyword where appropriate
+- [ ] Image filenames are descriptive (not image-123.jpg)
+- [ ] Images are compressed (not slowing page)
+- [ ] At least 1 image per 300 words
+- [ ] Images add value (not decorative filler)
+
+**Internal Linking**:
+- [ ] 5-10 internal links present (based on content length)
+- [ ] Anchor text is descriptive (not "click here")
+- [ ] Links point to high-value pages
+- [ ] Links are contextual (within paragraph, not just sidebar)
+- [ ] Related articles linked at end
+- [ ] No broken links to 404 pages
+
+**Technical Elements**:
+- [ ] URL is short, descriptive, keyword-relevant
+- [ ] URL uses hyphens (not underscores or spaces)
+- [ ] Lowercase only
+- [ ] Canonical tag is self-referencing
+- [ ] Mobile-friendly (responsive design)
+- [ ] Page speed acceptable (under 3 seconds)
+- [ ] HTTPS enabled (not HTTP)
+
+**Featured Snippet Optimization** (if applicable):
+- [ ] Definition/summary at top (40-60 words)
+- [ ] Question-based H2 matching common searches
+- [ ] Table with 3-4 columns (for comparison queries)
+- [ ] Numbered list (for how-to queries)
+- [ ] Bulleted list (for lists/categories)
+
+**Structured Data**:
+- [ ] Article schema (if blog post)
+- [ ] FAQ schema (if FAQ section)
+- [ ] BreadcrumbList schema (for hierarchy)
+- [ ] Organization schema (on homepage)
+- [ ] LocalBusiness schema (if local service)
+- [ ] Schema tested in Google Rich Results validator
+
+---
+
+## Example On-Page Audit Report Format
+
+```markdown
+## On-Page SEO Audit Report
+
+**Page**: Best Dog Grooming Clippers for Thick Coats
+**URL**: example.com/blog/dog-grooming-clippers-thick-coat
+**Target Keyword**: dog grooming clippers for thick coat
+**Current Ranking**: Not ranking (target position: Top 5)
+**Date Audited**: March 11, 2024
+
+### Executive Summary
+
+**Overall Score**: 68/100 (Fair - revisions recommended)
+
+| Element | Score | Status | Priority |
+|---------|-------|--------|----------|
+| Title Tag | 12/15 | Good | Low |
+| Meta Description | 7/10 | Poor | High |
+| Headers | 11/15 | Good | Low |
+| Content Quality | 18/25 | Fair | High |
+| Keyword Optimization | 7/10 | Fair | Medium |
+| Internal Links | 6/10 | Fair | Medium |
+| Technical | 12/15 | Good | Low |
+
+### Critical Issues (Fix First)
+
+1. **Meta Description Missing Primary Keyword**
+   - Current: "Guide to choosing the best dog clippers. Tips for grooming thick coat dogs."
+   - Issue: Keyword "dog grooming clippers for thick coat" not included
+   - Fix: "Best dog grooming clippers for thick coats—our top 5 picks reviewed and compared."
+   - Expected impact: +10-15% CTR from SERPs
+
+2. **Insufficient Data Points**
+   - Current: 2 statistics cited
+   - Issue: Competitors average 8+ data points with sources
+   - Fix: Add comparative data (clipper specs, price points, durability metrics)
+   - Expected impact: +5% authority score
+
+### Important Issues (Prioritize)
+
+3. **Keyword Density Below Optimal**
+   - Primary keyword appears 4x in 2000 words (0.2%)
+   - Recommendation: 8-10 mentions for competitive keyword
+   - Locations to add: H2 #3, conclusion paragraph, related articles section
+
+4. **Weak Internal Linking**
+   - Current: 3 internal links
+   - Recommendation: 8-10 for 2000-word article
+   - Suggested links: Related breed guides, other grooming tools, maintenance tips
+
+### Minor Issues (Address If Time)
+
+5. **Title Character Count**
+   - Current: 48 characters (slightly short)
+   - Could add modifier: "Best Dog Grooming Clippers for Thick Coats [2024 Reviews]"
+
+### Summary of Recommendations
+
+1. [ ] Rewrite meta description to include target keyword (5 min)
+2. [ ] Add 6+ data points with citations (20 min)
+3. [ ] Increase target keyword to 8-10 mentions naturally (15 min)
+4. [ ] Add 5 more internal links with proper anchor text (10 min)
+5. [ ] Extend title by 2 words for better CTR (2 min)
+
+**Estimated post-fix ranking improvement**: Current Not Ranking → Target Top 5 within 2-3 months
+```
+
+---
+
 ## Tips for Success
 
 1. **Prioritize issues by impact** - Fix critical issues first

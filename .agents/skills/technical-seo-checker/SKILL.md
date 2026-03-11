@@ -281,6 +281,302 @@ When a user requests a technical SEO audit:
 
 > **Reference**: See [references/technical-audit-example.md](./references/technical-audit-example.md) for a full worked example (cloudhosting.com technical audit) and the comprehensive technical SEO checklist.
 
+## Technical SEO Scoring Methodology
+
+### Health Score Breakdown (0-100 scale)
+
+**Crawlability (20%)**
+- robots.txt valid and not blocking content: 0-5 points
+- XML sitemap exists and is valid: 0-5 points
+- No crawl errors in ~~search console: 0-5 points
+- Crawl budget optimized: 0-5 points
+- **Subtotal: 20 points**
+
+**Indexability (20%)**
+- 90%+ pages indexed vs submitted: 0-5 points
+- No unintended noindex tags: 0-5 points
+- No duplicate content issues: 0-5 points
+- Canonical tags properly implemented: 0-5 points
+- **Subtotal: 20 points**
+
+**Core Web Vitals (20%)**
+- LCP < 2.5s (Largest Contentful Paint): 0-5 points
+- FID/INP < 100ms (Interaction response): 0-5 points
+- CLS < 0.1 (Cumulative Layout Shift): 0-5 points
+- TTFB < 600ms (Time to First Byte): 0-5 points
+- **Subtotal: 20 points**
+
+**Mobile-Friendliness (10%)**
+- Responsive design on all screen sizes: 0-5 points
+- Touch-friendly buttons/links (48px minimum): 0-5 points
+- **Subtotal: 10 points**
+
+**Security & HTTPS (10%)**
+- HTTPS enabled site-wide: 0-3 points
+- No mixed content warnings: 0-3 points
+- SSL certificate valid: 0-4 points
+- **Subtotal: 10 points**
+
+**URL Structure & Redirects (10%)**
+- URLs are clean and descriptive: 0-3 points
+- No redirect chains (>2 hops): 0-3 points
+- Redirect loop free: 0-2 points
+- No 404 errors on popular pages: 0-2 points
+- **Subtotal: 10 points**
+
+**Structured Data (5%)**
+- Schema markup validated: 0-3 points
+- No critical schema errors: 0-2 points
+- **Subtotal: 5 points**
+
+**International SEO (5%)**
+- Hreflang properly implemented (if multi-lang): 0-3 points
+- Language targeting configured in ~~search console: 0-2 points
+- **Subtotal: 5 points**
+
+### Overall Technical Health Scale
+
+- **90-100**: Excellent — Strong technical foundation
+- **75-89**: Good — Minor optimizations needed
+- **60-74**: Fair — Moderate issues requiring attention
+- **40-59**: Poor — Multiple critical issues
+- **0-39**: Critical — Requires urgent overhaul
+
+---
+
+## Technical SEO Audit Checklist
+
+### Crawlability Audit
+
+- [ ] robots.txt file exists at `/robots.txt`
+- [ ] robots.txt syntax is valid (no disallow errors)
+- [ ] Important pages are NOT blocked by robots.txt
+- [ ] CSS and JS files are NOT blocked (needed for rendering)
+- [ ] Sitemap URL is declared in robots.txt
+- [ ] XML sitemap exists and valid (`/sitemap.xml` or sitemap index)
+- [ ] Sitemap includes all important pages
+- [ ] Sitemap does NOT include noindex pages
+- [ ] No `<meta name="robots" content="nofollow">` on important pages
+- [ ] ~~Search console shows no "Blocked by robots.txt" errors
+- [ ] Crawl errors in ~~search console are <100 (aim for <10)
+- [ ] Redirect chains are 0 (or maximum 1-2)
+- [ ] No infinite loops or circular redirects
+
+### Indexability Audit
+
+- [ ] Index coverage ratio >90% (indexed/submitted pages)
+- [ ] No unintended noindex directives on important pages
+- [ ] Canonical tags are self-referencing (page → itself)
+- [ ] Canonicals point to HTTPS version (not HTTP)
+- [ ] Canonicals are consistent (www vs non-www)
+- [ ] No canonical pointing to 404 pages
+- [ ] Duplicate content identified and resolved
+- [ ] Parameter handling configured in ~~search console
+- [ ] Mobile-specific pages have correct rel="alternate" tags
+- [ ] International pages have hreflang if applicable
+
+### Core Web Vitals Audit
+
+**Largest Contentful Paint (LCP) < 2.5s**:
+- [ ] Server response time < 600ms (TTFB)
+- [ ] Images are optimized (compressed, modern formats)
+- [ ] Lazy loading used for below-fold images
+- [ ] Critical CSS loaded inline or prioritized
+- [ ] Large third-party scripts loaded asynchronously
+- [ ] CDN used for asset delivery
+
+**Interaction to Next Paint (INP) < 100ms**:
+- [ ] JavaScript execution time is minimal
+- [ ] Long tasks are broken into <50ms chunks
+- [ ] Third-party scripts don't block main thread
+- [ ] Input processing happens quickly
+
+**Cumulative Layout Shift (CLS) < 0.1**:
+- [ ] Images and videos have explicit dimensions
+- [ ] Ads/embeds have reserved space
+- [ ] Fonts don't cause layout shift (font-display: swap)
+- [ ] No unexpected layout shifts on interaction
+
+### Mobile Optimization Audit
+
+- [ ] Site is mobile-friendly (responsive design)
+- [ ] Text is readable without zooming
+- [ ] Buttons/links are 48px+ (touch-friendly)
+- [ ] No horizontal scrolling required
+- [ ] Viewport meta tag is set correctly
+- [ ] Mobile page speed is optimized
+- [ ] Mobile-first indexing enabled in ~~search console
+
+### Security Audit
+
+- [ ] HTTPS enabled on all pages
+- [ ] HTTP redirects to HTTPS
+- [ ] SSL certificate is valid and not expired
+- [ ] No mixed content (HTTP resources on HTTPS page)
+- [ ] Security headers implemented (CSP, X-Frame-Options, etc.)
+- [ ] No malware warnings in ~~search console
+
+### URL Structure Audit
+
+- [ ] URLs use hyphens (not underscores, spaces, or special chars)
+- [ ] URLs use lowercase only
+- [ ] URLs are descriptive (not /p/12345)
+- [ ] Date-based URLs avoided (if not necessary)
+- [ ] URL length is reasonable (<80 characters)
+- [ ] Query parameters are minimal
+- [ ] Session IDs not in URLs
+- [ ] No unnecessary subdirectories
+
+### Redirect Audit
+
+- [ ] Old URLs have 301 redirects to new URLs
+- [ ] Redirects are one-hop (not chains)
+- [ ] No redirect loops (A→B→A)
+- [ ] Redirects are permanent (301, not 302 temporary)
+- [ ] Redirected pages lose no authority
+
+### Structured Data Audit
+
+- [ ] Schema markup is valid JSON-LD
+- [ ] No critical errors in Google Rich Results validator
+- [ ] Article schema on blog posts
+- [ ] BreadcrumbList schema on hierarchical pages
+- [ ] Organization/LocalBusiness schema on homepage
+- [ ] Product schema on product pages
+- [ ] FAQ schema if FAQ section exists
+- [ ] Review schema if customer reviews present
+
+### International SEO Audit (if applicable)
+
+- [ ] Hreflang tags implemented on all language versions
+- [ ] Hreflang syntax is correct
+- [ ] Reciprocal hreflang (A points to B, B points to A)
+- [ ] x-default hreflang for default language
+- [ ] Language targeting set in ~~search console
+- [ ] No conflicting hreflang and rel="alternate" tags
+
+---
+
+## Technical Audit Report Template
+
+```markdown
+## Technical SEO Audit Report
+
+**Domain**: example.com
+**Audit Date**: March 11, 2024
+**Auditor**: [Name]
+**Site Type**: SaaS (marketing site)
+
+### Executive Summary
+
+**Technical Health Score**: 72/100 (Fair)
+
+| Category | Score | Status | Priority |
+|----------|-------|--------|----------|
+| Crawlability | 18/20 | Good | Low |
+| Indexability | 14/20 | Fair | Medium |
+| Core Web Vitals | 12/20 | Poor | High |
+| Mobile | 10/10 | Excellent | Low |
+| Security | 10/10 | Excellent | Low |
+| URL Structure | 8/10 | Good | Low |
+| Structured Data | 3/5 | Poor | Medium |
+| International | N/A | N/A | N/A |
+
+### Critical Issues (Fix Immediately)
+
+**1. Core Web Vitals Failing**
+- LCP: 3.2s (target <2.5s) ❌
+- INP: 150ms (target <100ms) ❌
+- CLS: 0.12 (target <0.1) ⚠️
+
+**Impact**: Pages will rank lower in Google results
+**Root Causes**:
+- Large images not optimized (2.4MB hero image)
+- Third-party analytics script blocking main thread
+- Font loading causes layout shift
+
+**Fix Timeline**:
+- Week 1: Compress images (save 70% size)
+- Week 2: Async load analytics + font preload
+- Week 3: Test and validate improvements
+
+**Expected Outcome**: LCP: 2.0s, INP: 80ms, CLS: 0.08
+
+---
+
+**2. Structured Data Missing on Key Pages**
+- Blog posts: No Article schema (0/45 posts)
+- Homepage: No Organization schema
+- Products: No Product schema
+
+**Impact**: Missing rich snippets in search results
+**Fix**: Add JSON-LD schema to all content types (2 hours)
+
+---
+
+### High Priority Issues (Next 2 weeks)
+
+**3. Indexability Coverage 85% (Target >90%)**
+- Submitted: 450 pages
+- Indexed: 382 pages
+- Missing: 68 pages
+
+**Cause**: Likely noindex on archived blog category pages
+
+**Fix**:
+- Audit noindex pages (why noindex?)
+- Remove noindex from indexable pages
+- Keep noindex only on true duplicate/low-value pages
+
+---
+
+**4. Crawl Errors: 34 404s**
+- 12 old blog post URLs
+- 15 broken internal links
+- 7 image URLs
+
+**Fix**:
+- Set 301 redirects for old URLs (1 hour)
+- Fix broken internal links (1 hour)
+- Update image URLs in HTML (30 min)
+
+---
+
+### Implementation Roadmap
+
+**Week 1**:
+- [ ] Image optimization (reduce LCP)
+- [ ] Async third-party scripts
+- [ ] Add Article schema to 20 top blog posts
+
+**Week 2**:
+- [ ] Font optimization (fix CLS)
+- [ ] Add Organization schema to homepage
+- [ ] Fix remaining blog posts (25 more)
+
+**Week 3**:
+- [ ] Test Core Web Vitals improvements
+- [ ] Add Product schema (if applicable)
+- [ ] Internal link audit and fixes
+
+**Week 4**:
+- [ ] Test all schema in Google Rich Results validator
+- [ ] Final CWV validation
+- [ ] Monitor ~~search console for improvements
+
+### Monitoring Plan
+
+**Track these metrics monthly**:
+- Core Web Vitals (via PageSpeed Insights)
+- Index coverage (via ~~search console)
+- Crawl errors (via ~~search console)
+- Ranking improvements for target keywords
+
+**Expected ranking improvement**: 2-4 position improvement within 6 weeks of fixes
+```
+
+---
+
 ## Tips for Success
 
 1. **Prioritize by impact** - Fix critical issues first

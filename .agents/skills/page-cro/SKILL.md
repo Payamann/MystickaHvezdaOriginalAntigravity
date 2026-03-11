@@ -195,6 +195,245 @@ When recommending experiments, consider tests for:
 
 ---
 
+## CRO Frameworks
+
+### AIDA Framework (Attention → Interest → Desire → Action)
+
+Structure page elements in this order:
+
+```
+ATTENTION (Hero section)
+├─ Headline: Grab attention in 3-5 words
+├─ Subheading: Clarify the benefit
+└─ Visual: Supporting image/video
+
+INTEREST (Value explanation)
+├─ Problem statement: "You struggle with..."
+├─ Features list: "Here's what we offer..."
+└─ Social proof: Logos, testimonials, stats
+
+DESIRE (Objection handling)
+├─ FAQ section: Answer "Is this right for me?"
+├─ Case studies: Show real results
+├─ Comparison table: Why we're different
+└─ Risk reduction: Money-back guarantee, free trial
+
+ACTION (CTA hierarchy)
+├─ Primary CTA: Main conversion goal (top right, sticky)
+├─ Secondary CTAs: Alternative paths (below fold, embedded)
+└─ Post-CTA: What happens next (shipping time, email confirmation details)
+```
+
+**Real example - SaaS homepage**:
+- ATTENTION: "Project management for distributed teams" + screenshot
+- INTEREST: "50%+ faster project delivery" + customer logos
+- DESIRE: "Works with Slack, GitHub, Jira" + comparison vs Monday/Asana + 14-day free trial
+- ACTION: "Start Free Trial" (primary) + "Book Demo" (secondary)
+
+---
+
+### PAS Framework (Problem → Agitate → Solution)
+
+Used for problem-focused landing pages:
+
+**Problem**: State their pain point clearly
+- "Managing remote team schedules is chaotic"
+- "You lose visibility into who's doing what"
+- "Time tracking tools are clunky and ignored"
+
+**Agitate**: Amplify the pain
+- "Chaos leads to missed deadlines"
+- "Without visibility, you can't manage effectively"
+- "Teams resent mandatory time tracking"
+
+**Solution**: Present your answer
+- "Our tool syncs with your calendar"
+- "Real-time dashboards show task progress"
+- "Automatic time logging—no manual entry"
+
+**Example conversion flow**:
+```
+Headline: "Stop wasting 3+ hours/week on manual time tracking"
+
+Problem paragraph:
+"Your team is scattered across time zones. Project managers have no visibility.
+Time-tracking software requires manual input and feels invasive."
+
+Agitate paragraph:
+"This lack of visibility means projects slip. Budgets overrun. You can't
+confidently say 'we'll deliver on time.' Clients lose trust. Revenue projections miss."
+
+Solution paragraph:
+"[Our software] automatically logs time while your team works. Real-time dashboards
+show project progress. No manual entry. No suspicion. Just clarity."
+
+CTA: "See how [Company] regained project visibility in 30 days"
+```
+
+---
+
+### Page Layout Templates
+
+**SaaS Landing Page (Conversion Focus)**:
+```
+1. Hero (headline + subheading + CTA + image)
+2. Problem statement + agitation
+3. Solution intro + 3 key benefits
+4. Feature showcase (with screenshots)
+5. Objection handling (FAQ)
+6. Customer logos + testimonial
+7. Case study snippet (results)
+8. Pricing preview or CTA
+9. FAQ expanded
+10. Final CTA + guarantee
+11. Footer
+```
+
+**Product Page (Engagement Focus)**:
+```
+1. Hero (product name + benefit)
+2. What it is / what it does
+3. Who it's for (use cases)
+4. Key features (tabs or sections)
+5. How it works (step-by-step or video)
+6. Customer results (metrics + quotes)
+7. Comparison table (vs alternatives)
+8. Integrations/add-ons
+9. Pricing
+10. CTA
+11. FAQ
+12. Footer
+```
+
+**Blog Post (Authority Focus)**:
+```
+1. Headline + meta description
+2. Author bio + publish date
+3. Table of contents
+4. Intro (hook + promise of value)
+5. Content sections (8-12 sections)
+6. Key takeaways box
+7. Contextual CTAs (mid-post, post-post)
+8. Related posts
+9. Call for comments
+10. Footer
+```
+
+---
+
+## Real CRO Optimization Examples
+
+### Example 1: SaaS Product Signup Page
+
+**Original State**:
+- Hero: "Project management software"
+- Form fields: Email, Name, Company, Company Size, Industry, Budget, Timeline
+- CTA: "Create Account"
+- Conversion rate: 2.3%
+
+**Issues identified**:
+1. Weak headline (generic, no benefit)
+2. Form too long (7 fields = friction)
+3. CTA vague (doesn't communicate value)
+4. No social proof visible
+5. No objection handling (free trial length? Commitment?)
+
+**Optimized version**:
+
+```
+Headline: "Manage projects 50% faster—start free"
+Subheading: "Join 5,000+ teams getting projects done on time"
+
+ABOVE fold visual: Screenshot of dashboard
+
+Social proof: "5,000+ teams" + customer logos
+
+Form (simplified):
+- Email only
+- Phone (optional)
+
+CTA: "Start 14-Day Free Trial"
+
+Below form text: "No credit card required. Full access to all features."
+
+FAQ micro-section:
+Q: "Do I need a credit card?"
+A: "No. Full access for 14 days, then you choose a plan."
+
+Q: "Can I import my projects?"
+A: "Yes. We support Asana, Monday, Jira, and 15+ other tools."
+```
+
+**Expected impact**:
+- Reduced form fields 7→2 = ~25% lower friction
+- Stronger headline + social proof = ~15% better CTR
+- Clearer CTA + FAQ = ~30% reduction in landing page abandonment
+- **Expected conversion lift: 2.3% → 3.5-4.0%**
+
+---
+
+### Example 2: E-commerce Product Page
+
+**Original State**:
+- Product image (small)
+- Technical specs (confusing jargon)
+- Price: $79.99
+- "Add to cart" button (grey)
+- Conversion rate: 1.8%
+
+**Issues**:
+1. No benefit-focused copy (only features)
+2. Small product images
+3. No social proof (reviews, ratings)
+4. CTA not prominent
+5. Shipping cost/time unclear
+6. No risk reduction (return policy, guarantee)
+
+**Optimized version**:
+
+```
+[Large product gallery + zoom]
+
+Benefit-focused headline:
+"Professional hair dryer for stylists—cuts dry time 40%"
+
+Rating: ⭐⭐⭐⭐⭐ (247 reviews)
+
+Price: $79.99
+  Below: "Free shipping on orders $50+"
+  Below: "30-day risk-free guarantee"
+
+Key benefits (with icons):
+✓ 40% faster drying time (ionic technology)
+✓ Salon-quality results (3 heat settings)
+✓ Lightweight & quiet (professional grade)
+
+Customer testimonials:
+"Cut my blowouts from 30 min to 15 min" - Sarah M.
+"Best investment for my home salon" - Jessica T.
+
+Specs (if relevant): Material, wattage, warranty
+
+Stock status: "In stock. Ships within 24 hours."
+
+CTA: "Get Yours Now" (green, prominent)
+
+Below CTA: "Risk-free guarantee · Free returns · 1-year warranty"
+
+FAQ:
+Q: "How does it compare to [competitor]?"
+A: [Direct comparison table]
+```
+
+**Expected impact**:
+- Better product images + reviews = ~20% CTR lift
+- Benefit-focused copy = ~15% relevance increase
+- Clear shipping/return info = ~10% doubt reduction
+- Prominent CTA + urgency signals = ~25% CTA lift
+- **Expected conversion lift: 1.8% → 2.8-3.2%**
+
+---
+
 ## Related Skills
 
 - **signup-flow-cro**: If the issue is in the signup process itself

@@ -355,6 +355,231 @@ Mermaid diagram showing page relationships and navigation zones. Use `graph TD` 
 
 ---
 
+## Real-World Site Architecture Examples
+
+### Example 1: SaaS Marketing Site (Slack-like)
+
+**Site Type**: SaaS Product
+**Primary Goals**: Product adoption, sales pipeline, documentation
+**Depth**: 3 levels
+
+```
+Homepage (/)
+├── Product (/product)
+│   ├── /product/features
+│   ├── /product/channels
+│   ├── /product/integrations
+│   ├── /product/security
+│   └── /product/for-[role] (multiple: managers, engineers, etc.)
+├── Customers (/customers)
+│   ├── /customers/case-studies
+│   ├── /customers/testimonials
+│   └── /customers/[customer-name]
+├── Pricing (/pricing)
+├── Enterprise (/enterprise)
+│   ├── /enterprise/contact
+│   └── /enterprise/security
+├── Resources (/resources)
+│   ├── /resources/templates
+│   ├── /resources/webinars
+│   ├── /resources/guides
+│   └── /resources/research
+├── Blog (/blog)
+│   ├── /blog/[slug]
+│   └── /blog/category/[category] (Engineering, Product, Culture)
+├── Docs (/docs)
+│   ├── /docs/getting-started
+│   ├── /docs/api
+│   ├── /docs/help
+│   └── /docs/integrations
+├── Company (/company)
+│   ├── /company/about
+│   ├── /company/careers
+│   ├── /company/press
+│   └── /company/contact
+└── Legal (/legal)
+    ├── /privacy
+    ├── /terms
+    └── /security
+```
+
+**Navigation Structure**:
+- **Header**: Product | Customers | Resources | Docs | Enterprise | Pricing | Contact (CTA)
+- **Footer**: Product, Company, Resources, Legal columns
+- **Mobile**: Hamburger menu with same structure
+
+**Key Internal Linking Patterns**:
+- Homepage → All main sections
+- Product feature pages → Related case studies
+- Blog posts → Relevant product pages
+- Docs → API reference, guides
+- Footer has full sitemap
+
+---
+
+### Example 2: E-commerce Store (Apparel)
+
+**Site Type**: E-commerce
+**Primary Goals**: Product discovery, conversions, categories
+**Depth**: 4 levels
+
+```
+Homepage (/)
+├── Shop (/shop)
+│   ├── /shop/mens
+│   │   ├── /shop/mens/t-shirts
+│   │   │   └── /shop/product/[sku]
+│   │   ├── /shop/mens/pants
+│   │   └── /shop/mens/jackets
+│   ├── /shop/womens
+│   │   ├── /shop/womens/tops
+│   │   ├── /shop/womens/dresses
+│   │   └── /shop/womens/accessories
+│   ├── /shop/kids
+│   └── /shop/sale
+├── Collections (/collections)
+│   ├── /collections/bestsellers
+│   ├── /collections/new-arrivals
+│   ├── /collections/sustainable
+│   └── /collections/gift-guide
+├── About (/about)
+├── Blog (/blog) — Style tips, outfit ideas, brand stories
+│   ├── /blog/[slug]
+│   └── /blog/category/[category]
+├── Customer Care (/help)
+│   ├── /help/shipping
+│   ├── /help/returns
+│   ├── /help/sizing
+│   └── /help/contact
+├── Account (/account)
+│   ├── /account/orders
+│   ├── /account/wishlists
+│   └── /account/settings
+└── Checkout (/checkout)
+    ├── /checkout/cart
+    ├── /checkout/shipping
+    └── /checkout/payment
+```
+
+**URL Patterns**:
+- Category pages FLAT: `/shop/mens` not `/shop/mens/clothing/tops`
+- Products use SKU: `/shop/product/sku-12345` or slug `/shop/product/nike-air-force-mens-white`
+- Avoid date-based or numeric URLs
+
+**Navigation**:
+- **Header**: Men | Women | Kids | Collections | Sale | Account
+- **Breadcrumbs**: Home > Category > Subcategory > Product
+- **Footer**: Help, About, Returns, Shipping, Size Guide
+
+**Category Page Linking**:
+Each category page should have:
+- 10-15 product links (grid view)
+- "Shop all [category]" breadcrumb
+- Related category links ("You might also like...")
+- Link to sizing guide
+- Link to relevant blog content
+
+---
+
+### Example 3: Content/Blog Site (Marketing blog)
+
+**Site Type**: Content/Blog
+**Primary Goals**: SEO traffic, thought leadership, newsletter signups
+**Depth**: 2-3 levels
+
+```
+Homepage (/)
+├── Blog (/blog)
+│   ├── /blog/[slug]
+│   ├── /blog/category/seo
+│   ├── /blog/category/content-strategy
+│   ├── /blog/category/cro
+│   ├── /blog/category/analytics
+│   └── /blog/tag/[tag] (Optional: less important than categories)
+├── Guides (/guides)
+│   ├── /guides/seo-guide (pillar)
+│   │   └─ (internally links to blog cluster)
+│   ├── /guides/content-strategy-guide
+│   └── /guides/cro-guide
+├── Tools & Resources (/resources)
+│   ├── /resources/templates
+│   ├── /resources/calculators
+│   ├── /resources/checklist
+│   └── /resources/webinars
+├── About (/about)
+├── Contact (/contact)
+└── Newsletter (/newsletter)
+```
+
+**URL Structure for Blog**:
+- `/blog/post-title` (flat, simple)
+- NOT: `/blog/2024/01/15/post-title` (dates make URLs long and fragile)
+- NOT: `/blog/category/seo/post-title` (category in path means category pages rank, not posts)
+
+**Content Linking Strategy**:
+```
+Pillar Page (/guides/seo-guide)
+   ↓ (links to all 8 cluster articles)
+├─ Cluster post: /blog/keyword-research
+├─ Cluster post: /blog/on-page-seo
+├─ Cluster post: /blog/technical-seo
+├─ Cluster post: /blog/link-building
+└─ [Each cluster post links back to pillar + to related clusters]
+```
+
+**Navigation**:
+- **Header**: Blog | Guides | Resources | About | Newsletter signup
+- **Footer**: All blog categories + popular posts
+
+---
+
+### Example 4: Local Service Site (Dentist)
+
+**Site Type**: Local Service
+**Primary Goals**: Local pack visibility, appointment bookings
+**Depth**: 2 levels
+
+```
+Homepage (/)
+├── Services (/services)
+│   ├── /services/general-dentistry
+│   ├── /services/cosmetic-dentistry
+│   ├── /services/invisalign
+│   ├── /services/implants
+│   └── /services/emergency
+├── About (/about)
+│   ├── /about/meet-the-team
+│   └── /about/credentials
+├── Blog (/blog)
+│   ├── /blog/[slug]
+│   └── /blog/category/[category]
+├── Patient Resources (/resources)
+│   ├── /resources/faq
+│   ├── /resources/new-patient-form
+│   ├── /resources/insurance
+│   └── /resources/payment-plans
+├── Contact (/contact)
+│   └── /contact/book-appointment
+└── Neighborhoods (If multi-location)
+    ├── /locations/downtown
+    ├── /locations/uptown
+    └── /locations/suburbs
+```
+
+**Key Elements**:
+- Service pages have: Description + Procedure steps + FAQ + CTA to book
+- Blog targets local + service keywords: "teeth whitening Austin," "emergency dentist near me"
+- Contact/appointment CTA on every page (sticky header button)
+- Google Business Profile optimization (address, hours, reviews)
+- LocalBusiness schema markup on homepage
+
+**Content Strategy**:
+- Service pages: Each procedure gets detailed page + blog post
+- Local authority: "Best dentist in [neighborhood]" content
+- FAQ targeting: "How long does [procedure] take?" "Is [procedure] painful?"
+
+---
+
 ## Task-Specific Questions
 
 1. Is this a new site or are you restructuring an existing one?
