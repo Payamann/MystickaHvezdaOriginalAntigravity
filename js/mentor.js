@@ -276,9 +276,23 @@ function addMessage(text, type, shouldScroll = true) {
     const div = document.createElement('div');
     div.className = `message message--${type}`;
 
-    // Safely render text: escape HTML first, then convert newlines to <br>
+    // Safely render text and simple markdown (bold/italic)
+    // 1. Escape HTML by setting textContent
     div.textContent = text;
-    div.innerHTML = div.innerHTML.replace(/\n/g, '<br>');
+    let html = div.innerHTML;
+
+    // 2. Convert newlines to <br>
+    html = html.replace(/\n/g, '<br>');
+
+    // 3. Render Markdown bold **text** or __text__
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
+
+    // 4. Render Markdown italic *text* or _text_ (ensure we don't catch bold parts)
+    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    html = html.replace(/(_)(.*?)(_)/g, '<em>$2</em>');
+
+    div.innerHTML = html;
 
     // Insert before typing indicator
     messagesContainer.insertBefore(div, typingIndicator);
