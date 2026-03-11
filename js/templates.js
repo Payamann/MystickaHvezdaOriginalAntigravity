@@ -275,28 +275,8 @@ class Templates {
                 <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.5;">Zadejte svůj email a pošleme vám odkaz pro obnovení hesla.</p>
             </div>
 
-            <!-- Optional Register Fields -->
-            <div id="register-fields" style="display: none; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem; margin-bottom: 1rem;">
-                <p style="text-align: center; color: var(--color-mystic-gold); font-size: 0.9rem; margin-bottom: 1rem;">Doplňující údaje (nepovinné)</p>
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem;">Jméno</label>
-                    <input type="text" name="first_name" autocomplete="given-name" style="width: 100%; padding: 14px 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; font-size: 16px; min-height: 48px;">
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem;">
-                    <div>
-                        <label style="display: block; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem; font-size: 0.8rem;">Datum narození</label>
-                        <input type="date" name="birth_date" style="width: 100%; padding: 12px 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; font-size: 16px; min-height: 48px;">
-                    </div>
-                     <div>
-                        <label style="display: block; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem; font-size: 0.8rem;">Čas narození</label>
-                        <input type="time" name="birth_time" style="width: 100%; padding: 12px 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; font-size: 16px; min-height: 48px;">
-                    </div>
-                </div>
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; color: rgba(255,255,255,0.7); margin-bottom: 0.5rem;">Místo narození</label>
-                    <input type="text" name="birth_place" placeholder="Např. Praha" autocomplete="address-level2" style="width: 100%; padding: 14px 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px; font-size: 16px; min-height: 48px;">
-                </div>
-            </div>
+            <!-- Optional Register Fields (Moved to onboarding) -->
+            <div id="register-fields" style="display: none;"></div>
 
             <button type="submit" id="auth-submit" class="btn btn--primary" style="width: 100%; min-height: 48px;">Přihlásit se</button>
             <p style="text-align: center; margin-top: 1rem;">

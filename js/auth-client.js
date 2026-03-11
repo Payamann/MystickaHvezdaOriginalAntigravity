@@ -338,13 +338,7 @@
                     const isRegister = btn && btn.textContent === 'Zaregistrovat';
 
                     if (isRegister) {
-                        const additionalData = {
-                            first_name: form.first_name?.value,
-                            birth_date: form.birth_date?.value,
-                            birth_time: form.birth_time?.value,
-                            birth_place: form.birth_place?.value
-                        };
-                        const res = await this.register(email, password, additionalData);
+                        const res = await this.register(email, password, {});
                         if (!res.success) this.showToast('Chyba registrace', res.error, 'error');
                     } else {
                         const res = await this.login(email, password);
