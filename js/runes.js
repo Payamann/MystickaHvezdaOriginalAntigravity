@@ -212,9 +212,12 @@ async function requestDeepReading() {
         // Hide upsell block
         originUpsell.style.display = 'none';
 
-        // Show response
+        // Show response safely
         aiContainer.style.display = 'block';
-        aiContainer.innerHTML = data.response;
+        const div = document.createElement('div');
+        div.textContent = data.response;
+        let safeHTML = div.innerHTML.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        aiContainer.innerHTML = safeHTML;
 
         aiContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 

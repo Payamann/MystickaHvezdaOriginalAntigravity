@@ -151,8 +151,14 @@ function initCrystalBall() {
                     }
                 }
             } else {
-                if (answerContainer) answerContainer.classList.add('visible');
-                if (answerText) answerText.textContent = data.error || 'Hvězdy mlčí...';
+                if (response.status === 402 || response.status === 403 || (data.error && data.error.toLowerCase().includes('limit'))) {
+                    if (answerContainer) answerContainer.classList.remove('visible');
+                    window.Auth?.showToast?.('Limit dosažen', 'Chceš neomezené odpovědi? Aktivuj si Hvězdného Průvodce.', 'info');
+                    window.Auth?.openModal?.('register');
+                } else {
+                    if (answerContainer) answerContainer.classList.add('visible');
+                    if (answerText) answerText.textContent = data.error || 'Hvězdy mlčí...';
+                }
             }
 
         } catch (error) {
