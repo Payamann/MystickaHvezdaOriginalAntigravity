@@ -1,8 +1,27 @@
 ---
 name: site-architecture
-description: When the user wants to plan, map, or restructure their website's page hierarchy, navigation, URL structure, or internal linking. Also use when the user mentions "sitemap," "site map," "visual sitemap," "site structure," "page hierarchy," "information architecture," "IA," "navigation design," "URL structure," "breadcrumbs," "internal linking strategy," "website planning," "what pages do I need," "how should I organize my site," or "site navigation." Use this whenever someone is planning what pages a website should have and how they connect. NOT for XML sitemaps (that's technical SEO — see seo-audit). For SEO audits, see seo-audit. For structured data, see schema-markup.
+description: "When the user wants to plan, map, or restructure their website's page\
+  \ hierarchy, navigation, URL structure, or internal linking. Also use when the user\
+  \ mentions \"sitemap,\" \"site map,\" \"visual sitemap,\" \"site structure,\" \"\
+  page hierarchy,\" \"information architecture,\" \"IA,\" \"navigation design,\" \"\
+  URL structure,\" \"breadcrumbs,\" \"internal linking strategy,\" \"website planning,\"\
+  \ \"what pages do I need,\" \"how should I organize my site,\" or \"site navigation.\"\
+  \ Use this whenever someone is planning what pages a website should have and how\
+  \ they connect. NOT for XML sitemaps (that's technical SEO \u2014 see seo-audit).\
+  \ For SEO audits, see seo-audit. For structured data, see schema-markup."
+version: 1.0.0
 metadata:
-  version: 1.1.0
+  author: internal-team
+  license: Internal
+  tags:
+  - seo
+  - technical
+  - strategy
+  triggers:
+  - site structure
+  - information architecture
+  - site organization
+  estimated-duration: Medium
 ---
 
 # Site Architecture

@@ -1,47 +1,27 @@
 ---
 name: alert-manager
-version: "3.0.0"
-description: 'This skill should be used when the user asks to "set up SEO alerts", "monitor rankings", "notify me when rankings drop", "traffic alerts", "watch competitor changes", "alert me if rankings drop", "notify me of traffic changes", or "watch my keywords for changes". Sets up and manages alerts for critical SEO and GEO metrics including ranking drops, traffic changes, technical issues, and competitor movements. Enables proactive monitoring and quick response to issues. For detailed rank analysis, see rank-tracker. For comprehensive reporting, see performance-reporter.'
-license: Apache-2.0
-compatibility: "Claude Code ≥1.0, skills.sh marketplace, ClawHub marketplace, Vercel Labs skills ecosystem. No system packages required. Optional: MCP network access for SEO tool integrations."
+description: This skill should be used when the user asks to "set up SEO alerts",
+  "monitor rankings", "notify me when rankings drop", "traffic alerts", "watch competitor
+  changes", "alert me if rankings drop", "notify me of traffic changes", or "watch
+  my keywords for changes". Sets up and manages alerts for critical SEO and GEO metrics
+  including ranking drops, traffic changes, technical issues, and competitor movements.
+  Enables proactive monitoring and quick response to issues. For detailed rank analysis,
+  see rank-tracker. For comprehensive reporting, see performance-reporter.
+version: 3.0.0
 metadata:
-  openclaw:
-    requires:
-      env: []
-      bins: []
-    primaryEnv: AMPLITUDE_API_KEY
-  author: aaron-he-zhu
-  version: "3.0.0"
-  geo-relevance: "low"
+  author: internal-team
+  license: Internal
   tags:
-    - seo
-    - geo
-    - alerts
-    - monitoring
-    - ranking alerts
-    - traffic monitoring
-    - competitor alerts
-    - seo notifications
-    - proactive monitoring
-    - seo-monitoring
-    - ranking-drop-alert
-    - traffic-drop-alert
-    - technical-monitoring
-    - seo-alerts
-    - automated-monitoring
-    - threshold-alerts
-    - anomaly-detection
+  - technical
+  - monitor
+  - automation
   triggers:
-    - "set up SEO alerts"
-    - "monitor rankings"
-    - "notify me when rankings drop"
-    - "traffic alerts"
-    - "watch competitor changes"
-    - "alert me"
-    - "ranking notifications"
-    - "alert me if rankings drop"
-    - "notify me of traffic changes"
-    - "watch my keywords for changes"
+  - set up alerts
+  - alert configuration
+  - monitoring system
+  - notification setup
+  estimated-duration: Quick
+  geo-relevance: low
 ---
 
 # Alert Manager

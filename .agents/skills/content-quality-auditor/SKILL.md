@@ -1,36 +1,30 @@
 ---
 name: content-quality-auditor
-version: "3.0.0"
-description: 'This skill should be used when the user asks to "audit content quality", "EEAT score", "E-E-A-T audit", "content quality check", "CORE-EEAT audit", "helpful content assessment", "experience expertise authoritativeness trust", "how good is my content", "is my content AI-citation worthy", "content improvement plan", "helpful content update impact", or "GEO quality score". Runs the full 80-item CORE-EEAT audit across 8 dimensions: Contextual Clarity, Organization, Referenceability, Exclusivity (CORE, GEO-focused) plus Experience, Expertise, Authoritativeness, Trust (EEAT, SEO-focused). Produces a GEO Score, SEO Score, content-type weighted total, per-item pass/partial/fail, and prioritized fix plan with veto item checks. For SEO page element audits, see on-page-seo-auditor. For domain-level authority, see domain-authority-auditor.'
-license: Apache-2.0
-allowed-tools: WebFetch
-compatibility: "Claude Code ≥1.0, skills.sh marketplace, ClawHub marketplace, Vercel Labs skills ecosystem. No system packages required. Optional: MCP network access for SEO tool integrations."
+description: 'This skill should be used when the user asks to "audit content quality",
+  "EEAT score", "E-E-A-T audit", "content quality check", "CORE-EEAT audit", "helpful
+  content assessment", "experience expertise authoritativeness trust", "how good is
+  my content", "is my content AI-citation worthy", "content improvement plan", "helpful
+  content update impact", or "GEO quality score". Runs the full 80-item CORE-EEAT
+  audit across 8 dimensions: Contextual Clarity, Organization, Referenceability, Exclusivity
+  (CORE, GEO-focused) plus Experience, Expertise, Authoritativeness, Trust (EEAT,
+  SEO-focused). Produces a GEO Score, SEO Score, content-type weighted total, per-item
+  pass/partial/fail, and prioritized fix plan with veto item checks. For SEO page
+  element audits, see on-page-seo-auditor. For domain-level authority, see domain-authority-auditor.'
+version: 3.0.0
 metadata:
-  author: aaron-he-zhu
-  version: "3.0.0"
-  geo-relevance: "high"
+  author: internal-team
+  license: Internal
   tags:
-    - seo
-    - geo
-    - e-e-a-t
-    - helpful-content
-    - content-quality
-    - content-scoring
-    - ai-quality
-    - core-eeat
-    - experience-expertise-authoritativeness-trust
-    - helpful-content-update
+  - seo
+  - content
+  - audit
   triggers:
-    - "audit content quality"
-    - "EEAT score"
-    - "content quality check"
-    - "CORE-EEAT audit"
-    - "how good is my content"
-    - "content assessment"
-    - "quality score"
-    - "is my content good enough to rank"
-    - "EEAT check"
-    - "rate my content quality"
+  - content quality
+  - audit content
+  - quality check
+  - content analysis
+  estimated-duration: Comprehensive
+  geo-relevance: high
 ---
 
 # Content Quality Auditor

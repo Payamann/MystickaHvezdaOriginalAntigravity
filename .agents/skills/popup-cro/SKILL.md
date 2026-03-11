@@ -1,8 +1,27 @@
 ---
 name: popup-cro
-description: When the user wants to create or optimize popups, modals, overlays, slide-ins, or banners for conversion purposes. Also use when the user mentions "exit intent," "popup conversions," "modal optimization," "lead capture popup," "email popup," "announcement banner," "overlay," "collect emails with a popup," "exit popup," "scroll trigger," "sticky bar," or "notification bar." Use this for any overlay or interrupt-style conversion element. For forms outside of popups, see form-cro. For general page conversion optimization, see page-cro.
+description: When the user wants to create or optimize popups, modals, overlays, slide-ins,
+  or banners for conversion purposes. Also use when the user mentions "exit intent,"
+  "popup conversions," "modal optimization," "lead capture popup," "email popup,"
+  "announcement banner," "overlay," "collect emails with a popup," "exit popup," "scroll
+  trigger," "sticky bar," or "notification bar." Use this for any overlay or interrupt-style
+  conversion element. For forms outside of popups, see form-cro. For general page
+  conversion optimization, see page-cro.
+version: 1.0.0
 metadata:
-  version: 1.1.0
+  author: internal-team
+  license: Internal
+  tags:
+  - cro
+  - optimize
+  - conversion
+  triggers:
+  - popup
+  - modal
+  - conversion popup
+  - cta popup
+  estimated-duration: Medium
+  geo-relevance: low
 ---
 
 # Popup CRO

@@ -1,9 +1,22 @@
 ---
 name: seo-page
-description: >
-  Deep single-page SEO analysis covering on-page elements, content quality,
-  technical meta tags, schema, images, and performance. Use when user says
-  "analyze this page", "check page SEO", or provides a single URL for review.
+description: Deep single-page SEO analysis covering on-page elements, content quality,
+  technical meta tags, schema, images, and performance. Use when user says "analyze
+  this page", "check page SEO", or provides a single URL for review.
+version: 1.0.0
+metadata:
+  author: internal-team
+  license: Internal
+  tags:
+  - seo
+  - audit
+  - optimize
+  triggers:
+  - page audit
+  - single page analysis
+  - page seo
+  estimated-duration: Medium
+  geo-relevance: high
 ---
 
 # Single Page Analysis
@@ -76,3 +89,12 @@ Ready-to-use JSON-LD code for detected opportunities
 ## DataForSEO Integration (Optional)
 
 If DataForSEO MCP tools are available, use `serp_organic_live_advanced` for real SERP positions and `backlinks_summary` for backlink data and spam scores.
+
+## Related Skills
+
+- [on-page-seo-auditor](../on-page-seo-auditor/) — Detailed on-page elements
+- [seo-content](../seo-content/) — Content quality and E-E-A-T
+- [schema-markup-generator](../schema-markup-generator/) — Structured data
+- [seo-images](../seo-images/) — Image optimization
+- [technical-seo-checker](../technical-seo-checker/) — Technical issues
+- [seo-audit](../seo-audit/) — Full site analysis

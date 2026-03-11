@@ -1,10 +1,24 @@
 ---
 name: seo-images
-description: >
-  Image optimization analysis for SEO and performance. Checks alt text, file
-  sizes, formats, responsive images, lazy loading, and CLS prevention. Use when
-  user says "image optimization", "alt text", "image SEO", "image size",
-  or "image audit".
+description: Image optimization analysis for SEO and performance. Checks alt text,
+  file sizes, formats, responsive images, lazy loading, and CLS prevention. Use when
+  user says "image optimization", "alt text", "image SEO", "image size", or "image
+  audit".
+version: 1.0.0
+metadata:
+  author: internal-team
+  license: Internal
+  tags:
+  - seo
+  - optimize
+  - content
+  triggers:
+  - image optimization
+  - image seo
+  - alt text
+  - image tags
+  estimated-duration: Medium
+  geo-relevance: high
 ---
 
 # Image Optimization Analysis
@@ -166,3 +180,11 @@ Sorted by file size impact (largest savings first):
 3. Add dimensions to X images
 4. Enable lazy loading on X below-fold images
 5. Compress X oversized images
+
+## Related Skills
+
+- [on-page-seo-auditor](../on-page-seo-auditor/) — Full on-page SEO analysis
+- [seo-page](../seo-page/) — Single page deep analysis
+- [technical-seo-checker](../technical-seo-checker/) — Technical SEO audit
+- [seo-content-writer](../seo-content-writer/) — SEO-optimized content
+- [seo-audit](../seo-audit/) — Full website audit

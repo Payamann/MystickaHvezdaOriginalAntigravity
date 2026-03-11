@@ -1,10 +1,24 @@
 ---
 name: seo-plan
-description: >
-  Strategic SEO planning for new or existing websites. Industry-specific
-  templates, competitive analysis, content strategy, and implementation
-  roadmap. Use when user says "SEO plan", "SEO strategy", "content strategy",
-  "site architecture", or "SEO roadmap".
+description: Strategic SEO planning for new or existing websites. Industry-specific
+  templates, competitive analysis, content strategy, and implementation roadmap. Use
+  when user says "SEO plan", "SEO strategy", "content strategy", "site architecture",
+  or "SEO roadmap".
+version: 1.0.0
+metadata:
+  author: internal-team
+  license: Internal
+  tags:
+  - seo
+  - strategy
+  - planning
+  triggers:
+  - seo strategy
+  - seo plan
+  - seo roadmap
+  - strategic seo
+  estimated-duration: Comprehensive
+  geo-relevance: high
 ---
 
 # Strategic SEO Planning
@@ -108,3 +122,11 @@ Load from `assets/` directory:
 ## DataForSEO Integration (Optional)
 
 If DataForSEO MCP tools are available, use `dataforseo_labs_google_competitors_domain` and `dataforseo_labs_google_domain_intersection` for real competitive intelligence, `dataforseo_labs_bulk_traffic_estimation` for traffic estimates, `kw_data_google_ads_search_volume` and `dataforseo_labs_bulk_keyword_difficulty` for keyword research, and `business_data_business_listings_search` for local business data.
+
+## Related Skills
+
+- [keyword-research](../keyword-research/) — Discover high-value keywords and search intent
+- [competitor-analysis](../competitor-analysis/) — Analyze competitor strategies and gaps
+- [content-strategy](../content-strategy/) — Plan content topics and publishing cadence
+- [site-architecture](../site-architecture/) — Design URL hierarchy and information architecture
+- [programmatic-seo](../programmatic-seo/) — Build SEO pages at scale from data sources

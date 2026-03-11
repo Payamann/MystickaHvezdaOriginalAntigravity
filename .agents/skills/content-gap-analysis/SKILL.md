@@ -1,45 +1,26 @@
 ---
 name: content-gap-analysis
-version: "3.0.0"
-description: 'This skill should be used when the user asks to "find content gaps", "what am I missing", "topics to cover", "content opportunities", "what do competitors write about that I do not", "what topics am I missing", "topics my competitors cover that I lack", or "where are my content blind spots". Identifies content opportunities by finding topics and keywords your competitors cover that you do not. Reveals untapped content potential and strategic gaps in your content strategy. For broader competitive intelligence, see competitor-analysis. For general keyword discovery, see keyword-research.'
-license: Apache-2.0
-compatibility: "Claude Code ≥1.0, skills.sh marketplace, ClawHub marketplace, Vercel Labs skills ecosystem. No system packages required. Optional: MCP network access for SEO tool integrations."
+description: This skill should be used when the user asks to "find content gaps",
+  "what am I missing", "topics to cover", "content opportunities", "what do competitors
+  write about that I do not", "what topics am I missing", "topics my competitors cover
+  that I lack", or "where are my content blind spots". Identifies content opportunities
+  by finding topics and keywords your competitors cover that you do not. Reveals untapped
+  content potential and strategic gaps in your content strategy. For broader competitive
+  intelligence, see competitor-analysis. For general keyword discovery, see keyword-research.
+version: 3.0.0
 metadata:
-  openclaw:
-    requires:
-      env: []
-      bins: []
-    primaryEnv: AHREFS_API_KEY
-  author: aaron-he-zhu
-  version: "3.0.0"
-  geo-relevance: "medium"
+  author: internal-team
+  license: Internal
   tags:
-    - seo
-    - geo
-    - content gaps
-    - content opportunities
-    - topic analysis
-    - content strategy
-    - competitive content
-    - content-gaps
-    - topic-gaps
-    - missing-content
-    - content-opportunities
-    - competitive-gap
-    - topic-coverage
-    - editorial-calendar
-    - content-strategy
+  - seo
+  - content
+  - research
   triggers:
-    - "find content gaps"
-    - "what am I missing"
-    - "topics to cover"
-    - "content opportunities"
-    - "what do competitors write about"
-    - "untapped topics"
-    - "content strategy gaps"
-    - "what topics am I missing"
-    - "they cover this but I don't"
-    - "where are my content blind spots"
+  - content gap
+  - find content opportunities
+  - topic analysis
+  estimated-duration: Medium
+  geo-relevance: high
 ---
 
 # Content Gap Analysis

@@ -1,45 +1,30 @@
 ---
 name: keyword-research
-version: "3.0.0"
-description: 'This skill should be used when the user asks to "find keywords", "keyword research", "what should I write about", "keyword difficulty score", "search volume data", "identify ranking opportunities", "topic ideas", "what are people searching for", "which keywords to target", "content ideas for [topic]", or "long-tail keyword suggestions". Discovers high-value keywords with search intent classification (informational/commercial/transactional/navigational), keyword difficulty (KD) scoring, monthly search volume (MSV), CPC estimates, and AI citation potential. Produces ranked keyword lists, topic clusters with pillar + cluster page assignments, and priority-scored content calendars. Works with Ahrefs, SEMrush, Google Keyword Planner, Google Search Console, or manual data input. For competitor keyword gaps, see competitor-analysis. For topic coverage gaps, see content-gap-analysis.'
-license: Apache-2.0
-compatibility: "Claude Code ≥1.0, skills.sh marketplace, ClawHub marketplace, Vercel Labs skills ecosystem. No system packages required. Optional: MCP network access for SEO tool integrations."
+description: This skill should be used when the user asks to "find keywords", "keyword
+  research", "what should I write about", "keyword difficulty score", "search volume
+  data", "identify ranking opportunities", "topic ideas", "what are people searching
+  for", "which keywords to target", "content ideas for [topic]", or "long-tail keyword
+  suggestions". Discovers high-value keywords with search intent classification (informational/commercial/transactional/navigational),
+  keyword difficulty (KD) scoring, monthly search volume (MSV), CPC estimates, and
+  AI citation potential. Produces ranked keyword lists, topic clusters with pillar
+  + cluster page assignments, and priority-scored content calendars. Works with Ahrefs,
+  SEMrush, Google Keyword Planner, Google Search Console, or manual data input. For
+  competitor keyword gaps, see competitor-analysis. For topic coverage gaps, see content-gap-analysis.
+version: 3.0.0
 metadata:
-  openclaw:
-    requires:
-      env: []
-      bins: []
-    primaryEnv: AHREFS_API_KEY
-  author: aaron-he-zhu
-  version: "3.0.0"
-  geo-relevance: "medium"
+  author: internal-team
+  license: Internal
   tags:
-    - seo
-    - geo
-    - keywords
-    - ahrefs
-    - semrush
-    - google-keyword-planner
-    - kd-score
-    - search-volume
-    - cpc
-    - topic-clusters
-    - pillar-pages
-    - long-tail-keywords
-    - content-calendar
-    - keyword-gap
-    - search-intent-classification
+  - seo
+  - research
+  - analysis
   triggers:
-    - "find keywords"
-    - "keyword research"
-    - "what should I write about"
-    - "identify ranking opportunities"
-    - "topic ideas"
-    - "search volume"
-    - "content opportunities"
-    - "what are people searching for"
-    - "which keywords should I target"
-    - "give me keyword ideas"
+  - keyword research
+  - find keywords
+  - keyword opportunities
+  - search volume
+  estimated-duration: Medium
+  geo-relevance: high
 ---
 
 # Keyword Research

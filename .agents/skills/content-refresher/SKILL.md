@@ -1,42 +1,28 @@
 ---
 name: content-refresher
-version: "3.0.0"
-description: 'This skill should be used when the user asks to "update old content", "refresh content", "content is outdated", "improve declining rankings", "revive old blog posts", "this post is outdated", "traffic is declining on this page", or "rankings dropped for this article". Identifies and updates outdated content to restore and improve search rankings. Analyzes content freshness, adds new information, updates statistics, and optimizes for current SEO and GEO best practices. For writing new content from scratch, see seo-content-writer. For auditing without rewriting, see on-page-seo-auditor.'
-license: Apache-2.0
-compatibility: "Claude Code ≥1.0, skills.sh marketplace, ClawHub marketplace, Vercel Labs skills ecosystem. No system packages required. Optional: MCP network access for SEO tool integrations."
+description: This skill should be used when the user asks to "update old content",
+  "refresh content", "content is outdated", "improve declining rankings", "revive
+  old blog posts", "this post is outdated", "traffic is declining on this page", or
+  "rankings dropped for this article". Identifies and updates outdated content to
+  restore and improve search rankings. Analyzes content freshness, adds new information,
+  updates statistics, and optimizes for current SEO and GEO best practices. For writing
+  new content from scratch, see seo-content-writer. For auditing without rewriting,
+  see on-page-seo-auditor.
+version: 3.0.0
 metadata:
-  author: aaron-he-zhu
-  version: "3.0.0"
-  geo-relevance: "medium"
+  author: internal-team
+  license: Internal
   tags:
-    - seo
-    - geo
-    - content refresh
-    - content update
-    - outdated content
-    - content decay
-    - ranking recovery
-    - content optimization
-    - content-update
-    - content-decay
-    - evergreen-content
-    - content-freshness
-    - content-revival
-    - refresh-content
-    - update-statistics
-    - republishing
-    - content-lifecycle
+  - content
+  - optimize
+  - seo
   triggers:
-    - "update old content"
-    - "refresh content"
-    - "content is outdated"
-    - "improve declining rankings"
-    - "revive old blog posts"
-    - "content decay"
-    - "ranking dropped"
-    - "this post is outdated"
-    - "traffic is declining on this page"
-    - "rankings dropped for this article"
+  - refresh content
+  - update content
+  - content refresh
+  - make evergreen
+  estimated-duration: Medium
+  geo-relevance: high
 ---
 
 # Content Refresher

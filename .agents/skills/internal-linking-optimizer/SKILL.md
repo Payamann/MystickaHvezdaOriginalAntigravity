@@ -1,47 +1,27 @@
 ---
 name: internal-linking-optimizer
-version: "3.0.0"
-description: 'This skill should be used when the user asks to "fix internal links", "improve site architecture", "link structure", "distribute page authority", "internal linking strategy", "orphan pages", "site architecture is messy", or "pages have no links pointing to them". Analyzes and optimizes internal link structure to improve site architecture, distribute page authority, and help search engines understand content relationships. Creates strategic internal linking plans. For a broader on-page audit, see on-page-seo-auditor. For external link analysis, see backlink-analyzer.'
-license: Apache-2.0
-compatibility: "Claude Code ≥1.0, skills.sh marketplace, ClawHub marketplace, Vercel Labs skills ecosystem. No system packages required. Optional: MCP network access for SEO tool integrations."
+description: This skill should be used when the user asks to "fix internal links",
+  "improve site architecture", "link structure", "distribute page authority", "internal
+  linking strategy", "orphan pages", "site architecture is messy", or "pages have
+  no links pointing to them". Analyzes and optimizes internal link structure to improve
+  site architecture, distribute page authority, and help search engines understand
+  content relationships. Creates strategic internal linking plans. For a broader on-page
+  audit, see on-page-seo-auditor. For external link analysis, see backlink-analyzer.
+version: 3.0.0
 metadata:
-  openclaw:
-    requires:
-      env: []
-      bins: []
-    primaryEnv: AHREFS_API_KEY
-  author: aaron-he-zhu
-  version: "3.0.0"
-  geo-relevance: "low"
+  author: internal-team
+  license: Internal
   tags:
-    - seo
-    - internal linking
-    - site architecture
-    - link structure
-    - page authority
-    - link equity
-    - content silos
-    - navigation optimization
-    - internal-links
-    - site-architecture
-    - link-equity
-    - orphan-pages
-    - topical-authority
-    - hub-and-spoke
-    - pillar-cluster
-    - anchor-text
-    - crawl-depth
+  - seo
+  - technical
+  - optimize
   triggers:
-    - "fix internal links"
-    - "improve site architecture"
-    - "link structure"
-    - "distribute page authority"
-    - "internal linking strategy"
-    - "site navigation"
-    - "link equity"
-    - "orphan pages"
-    - "site architecture is messy"
-    - "pages have no links pointing to them"
+  - internal linking
+  - link structure
+  - internal links
+  - link hierarchy
+  estimated-duration: Medium
+  geo-relevance: medium
 ---
 
 # Internal Linking Optimizer

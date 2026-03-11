@@ -1,52 +1,31 @@
 ---
 name: technical-seo-checker
-version: "3.0.0"
-description: 'This skill should be used when the user asks to "technical SEO audit", "check page speed", "Core Web Vitals", "LCP is slow", "CLS problem", "INP issues", "crawl errors", "indexing problems", "robots.txt check", "XML sitemap errors", "hreflang issues", "canonical tag problems", "HTTPS not working", "mobile SEO", "JavaScript rendering", or "site health check". Performs comprehensive technical SEO audits: Core Web Vitals (LCP/CLS/INP/TTFB), crawlability, indexability, mobile-friendliness, HTTPS/HSTS security, URL structure, redirect chains, robots.txt, XML sitemaps, hreflang, canonical tags, and structured data validation. Produces a scored technical health report (0–100) with critical/high/medium issue triage and a prioritized implementation roadmap. Works with Google PageSpeed Insights, Google Search Console, crawl tools, or manual audit. For content element issues, see on-page-seo-auditor. For link architecture, see internal-linking-optimizer.'
-license: Apache-2.0
-compatibility: "Claude Code ≥1.0, skills.sh marketplace, ClawHub marketplace, Vercel Labs skills ecosystem. No system packages required. Optional: MCP network access for SEO tool integrations."
-allowed-tools: WebFetch
+description: "This skill should be used when the user asks to \"technical SEO audit\"\
+  , \"check page speed\", \"Core Web Vitals\", \"LCP is slow\", \"CLS problem\", \"\
+  INP issues\", \"crawl errors\", \"indexing problems\", \"robots.txt check\", \"\
+  XML sitemap errors\", \"hreflang issues\", \"canonical tag problems\", \"HTTPS not\
+  \ working\", \"mobile SEO\", \"JavaScript rendering\", or \"site health check\"\
+  . Performs comprehensive technical SEO audits: Core Web Vitals (LCP/CLS/INP/TTFB),\
+  \ crawlability, indexability, mobile-friendliness, HTTPS/HSTS security, URL structure,\
+  \ redirect chains, robots.txt, XML sitemaps, hreflang, canonical tags, and structured\
+  \ data validation. Produces a scored technical health report (0\u2013100) with critical/high/medium\
+  \ issue triage and a prioritized implementation roadmap. Works with Google PageSpeed\
+  \ Insights, Google Search Console, crawl tools, or manual audit. For content element\
+  \ issues, see on-page-seo-auditor. For link architecture, see internal-linking-optimizer."
+version: 3.0.0
 metadata:
-  author: aaron-he-zhu
-  version: "3.0.0"
-  geo-relevance: "low"
+  author: internal-team
+  license: Internal
   tags:
-    - seo
-    - technical seo
-    - page speed
-    - core web vitals
-    - crawlability
-    - indexability
-    - mobile-friendly
-    - site speed
-    - security audit
-    - core-web-vitals
-    - page-speed
-    - lcp
-    - cls
-    - inp
-    - ttfb
-    - crawl-errors
-    - robots-txt
-    - xml-sitemap
-    - hreflang
-    - canonicalization
-    - https
-    - mobile-seo
-    - redirect-chains
-    - javascript-rendering
-    - site-health
+  - seo
+  - technical
+  - audit
   triggers:
-    - "technical SEO audit"
-    - "check page speed"
-    - "crawl issues"
-    - "Core Web Vitals"
-    - "site indexing problems"
-    - "mobile-friendly check"
-    - "site speed"
-    - "my site is slow"
-    - "Google can't crawl my site"
-    - "mobile issues"
-    - "indexing problems"
+  - technical seo
+  - crawl errors
+  - indexing issues
+  estimated-duration: Medium
+  geo-relevance: high
 ---
 
 # Technical SEO Checker

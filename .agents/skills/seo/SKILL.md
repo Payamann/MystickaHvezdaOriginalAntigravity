@@ -1,17 +1,31 @@
 ---
 name: seo
-description: >
-  Comprehensive SEO analysis for any website or business type. Performs full site
-  audits, single-page deep analysis, technical SEO checks (crawlability, indexability,
-  Core Web Vitals with INP), schema markup detection/validation/generation, content
-  quality assessment (E-E-A-T framework per Dec 2025 update extending to all
+description: 'Comprehensive SEO analysis for any website or business type. Performs
+  full site audits, single-page deep analysis, technical SEO checks (crawlability,
+  indexability, Core Web Vitals with INP), schema markup detection/validation/generation,
+  content quality assessment (E-E-A-T framework per Dec 2025 update extending to all
   competitive queries), image optimization, sitemap analysis, and Generative Engine
   Optimization (GEO) for AI Overviews, ChatGPT, and Perplexity citations. Analyzes
   AI crawler accessibility (GPTBot, ClaudeBot, PerplexityBot), llms.txt compliance,
   brand mention signals, and passage-level citability. Industry detection for SaaS,
-  e-commerce, local business, publishers, agencies. Triggers on: "SEO", "audit",
-  "schema", "Core Web Vitals", "sitemap", "E-E-A-T", "AI Overviews", "GEO",
-  "technical SEO", "content quality", "page speed", "structured data".
+  e-commerce, local business, publishers, agencies. Triggers on: "SEO", "audit", "schema",
+  "Core Web Vitals", "sitemap", "E-E-A-T", "AI Overviews", "GEO", "technical SEO",
+  "content quality", "page speed", "structured data".'
+version: 1.0.0
+metadata:
+  author: internal-team
+  license: Internal
+  tags:
+  - seo
+  - audit
+  - analysis
+  triggers:
+  - seo audit
+  - seo analysis
+  - technical seo
+  - content quality
+  estimated-duration: Comprehensive
+  geo-relevance: high
 ---
 
 # SEO — Universal SEO Analysis Skill
@@ -124,3 +138,13 @@ For parallel analysis during audits:
 - `seo-performance` — Core Web Vitals measurement
 - `seo-visual` — Screenshots, mobile testing, above-fold
 - `seo-dataforseo` — Live SERP, keyword, backlink, local SEO data (extension, optional)
+
+## Related Skills
+
+- [seo-audit](../seo-audit/) — Full website SEO audit
+- [seo-content-writer](../seo-content-writer/) — Write SEO-optimized content
+- [keyword-research](../keyword-research/) — Find search opportunities
+- [competitor-analysis](../competitor-analysis/) — Analyze competitors
+- [alert-manager](../alert-manager/) — Monitor SEO metrics
+- [programmatic-seo](../programmatic-seo/) — Build pages at scale
+- [content-strategy](../content-strategy/) — Plan content direction

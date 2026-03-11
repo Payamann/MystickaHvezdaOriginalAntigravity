@@ -1,38 +1,30 @@
 ---
 name: schema-markup-generator
-version: "3.0.0"
-description: 'This skill should be used when the user asks to "add schema markup", "generate structured data", "JSON-LD", "rich snippets", "FAQ schema", "HowTo schema", "Product schema", "Article schema", "LocalBusiness schema", "Organization schema", "BreadcrumbList", "I want star ratings in Google", "rich results", "voice search optimization", "event markup", or "structured data validation errors". Generates Schema.org JSON-LD for FAQPage, HowTo, Article/BlogPosting, Product, AggregateRating, LocalBusiness, Organization, BreadcrumbList, Event, and Recipe types. Produces validated markup targeting Google Rich Results, Bing structured data, and AI system understanding (FAQ schema improves AI citation chances). Validates against Google Rich Results Test requirements. For broader technical SEO, see technical-seo-checker. For meta tag optimization, see meta-tags-optimizer.'
-license: Apache-2.0
-compatibility: "Claude Code ≥1.0, skills.sh marketplace, ClawHub marketplace, Vercel Labs skills ecosystem. No system packages required. Optional: MCP network access for SEO tool integrations."
-allowed-tools: WebFetch
+description: This skill should be used when the user asks to "add schema markup",
+  "generate structured data", "JSON-LD", "rich snippets", "FAQ schema", "HowTo schema",
+  "Product schema", "Article schema", "LocalBusiness schema", "Organization schema",
+  "BreadcrumbList", "I want star ratings in Google", "rich results", "voice search
+  optimization", "event markup", or "structured data validation errors". Generates
+  Schema.org JSON-LD for FAQPage, HowTo, Article/BlogPosting, Product, AggregateRating,
+  LocalBusiness, Organization, BreadcrumbList, Event, and Recipe types. Produces validated
+  markup targeting Google Rich Results, Bing structured data, and AI system understanding
+  (FAQ schema improves AI citation chances). Validates against Google Rich Results
+  Test requirements. For broader technical SEO, see technical-seo-checker. For meta
+  tag optimization, see meta-tags-optimizer.
+version: 3.0.0
 metadata:
-  author: aaron-he-zhu
-  version: "3.0.0"
-  geo-relevance: "medium"
+  author: internal-team
+  license: Internal
   tags:
-    - seo
-    - structured-data
-    - json-ld
-    - rich-results
-    - rich-snippets
-    - faq-schema
-    - howto-schema
-    - product-schema
-    - article-schema
-    - localbusiness-schema
-    - schema-org
+  - seo
+  - technical
+  - create
   triggers:
-    - "add schema markup"
-    - "generate structured data"
-    - "JSON-LD"
-    - "rich snippets"
-    - "FAQ schema"
-    - "schema.org"
-    - "structured data markup"
-    - "add FAQ rich results"
-    - "I want star ratings in Google"
-    - "product markup"
-    - "recipe schema"
+  - generate schema
+  - create schema
+  - markup generator
+  estimated-duration: Quick
+  geo-relevance: high
 ---
 
 # Schema Markup Generator

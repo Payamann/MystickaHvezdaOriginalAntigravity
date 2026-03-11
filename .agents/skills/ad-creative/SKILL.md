@@ -1,8 +1,29 @@
 ---
 name: ad-creative
-description: "When the user wants to generate, iterate, or scale ad creative — headlines, descriptions, primary text, or full ad variations — for any paid advertising platform. Also use when the user mentions 'ad copy variations,' 'ad creative,' 'generate headlines,' 'RSA headlines,' 'bulk ad copy,' 'ad iterations,' 'creative testing,' 'ad performance optimization,' 'write me some ads,' 'Facebook ad copy,' 'Google ad headlines,' 'LinkedIn ad text,' or 'I need more ad variations.' Use this whenever someone needs to produce ad copy at scale or iterate on existing ads. For campaign strategy and targeting, see paid-ads. For landing page copy, see copywriting."
+description: "When the user wants to generate, iterate, or scale ad creative \u2014\
+  \ headlines, descriptions, primary text, or full ad variations \u2014 for any paid\
+  \ advertising platform. Also use when the user mentions 'ad copy variations,' 'ad\
+  \ creative,' 'generate headlines,' 'RSA headlines,' 'bulk ad copy,' 'ad iterations,'\
+  \ 'creative testing,' 'ad performance optimization,' 'write me some ads,' 'Facebook\
+  \ ad copy,' 'Google ad headlines,' 'LinkedIn ad text,' or 'I need more ad variations.'\
+  \ Use this whenever someone needs to produce ad copy at scale or iterate on existing\
+  \ ads. For campaign strategy and targeting, see paid-ads. For landing page copy,\
+  \ see copywriting."
+version: 1.0.0
 metadata:
-  version: 1.1.0
+  author: internal-team
+  license: Internal
+  tags:
+  - marketing
+  - content
+  - create
+  triggers:
+  - create ad copy
+  - write ad creative
+  - design ad
+  - ad campaign
+  - advertorial
+  estimated-duration: Medium
 ---
 
 # Ad Creative

@@ -1,13 +1,26 @@
 ---
 name: seo-geo
-description: >
-  Optimize content for AI Overviews (formerly SGE), ChatGPT web search,
-  Perplexity, and other AI-powered search experiences. Generative Engine
-  Optimization (GEO) analysis including brand mention signals, AI crawler
-  accessibility, llms.txt compliance, passage-level citability scoring, and
-  platform-specific optimization. Use when user says "AI Overviews", "SGE",
-  "GEO", "AI search", "LLM optimization", "Perplexity", "AI citations",
-  "ChatGPT search", or "AI visibility".
+description: Optimize content for AI Overviews (formerly SGE), ChatGPT web search,
+  Perplexity, and other AI-powered search experiences. Generative Engine Optimization
+  (GEO) analysis including brand mention signals, AI crawler accessibility, llms.txt
+  compliance, passage-level citability scoring, and platform-specific optimization.
+  Use when user says "AI Overviews", "SGE", "GEO", "AI search", "LLM optimization",
+  "Perplexity", "AI citations", "ChatGPT search", or "AI visibility".
+version: 1.0.0
+metadata:
+  author: internal-team
+  license: Internal
+  tags:
+  - seo
+  - technical
+  - optimize
+  triggers:
+  - geo seo
+  - hreflang
+  - international seo
+  - localization
+  estimated-duration: Medium
+  geo-relevance: high
 ---
 
 # AI Search / GEO Optimization (February 2026)
@@ -76,6 +89,15 @@ description: >
 - Inconsistent heading hierarchy
 - No lists or tables
 - Information buried in paragraphs
+
+## Related Skills
+
+- [geo-content-optimizer](../geo-content-optimizer/) — Create geo-targeted content
+- [seo-content](../seo-content/) — Content quality and E-E-A-T analysis
+- [schema-markup-generator](../schema-markup-generator/) — Add structured data
+- [seo-audit](../seo-audit/) — Full SEO audit
+- [content-quality-auditor](../content-quality-auditor/) — Content quality assessment
+- [ai-seo](../ai-seo/) — AI search optimization
 
 ### 3. Multi-Modal Content (15%)
 

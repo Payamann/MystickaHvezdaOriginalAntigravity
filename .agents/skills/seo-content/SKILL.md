@@ -1,9 +1,23 @@
 ---
 name: seo-content
-description: >
-  Content quality and E-E-A-T analysis with AI citation readiness assessment.
-  Use when user says "content quality", "E-E-A-T", "content analysis",
-  "readability check", "thin content", or "content audit".
+description: Content quality and E-E-A-T analysis with AI citation readiness assessment.
+  Use when user says "content quality", "E-E-A-T", "content analysis", "readability
+  check", "thin content", or "content audit".
+version: 1.0.0
+metadata:
+  author: internal-team
+  license: Internal
+  tags:
+  - seo
+  - content
+  - audit
+  triggers:
+  - seo content
+  - content quality
+  - e-e-a-t
+  - content audit
+  estimated-duration: Medium
+  geo-relevance: high
 ---
 
 # Content Quality & E-E-A-T Analysis
@@ -159,3 +173,12 @@ GEO is the emerging discipline of optimizing content specifically for AI-generat
 ## DataForSEO Integration (Optional)
 
 If DataForSEO MCP tools are available, use `kw_data_google_ads_search_volume` for real keyword volume data, `dataforseo_labs_bulk_keyword_difficulty` for difficulty scores, `dataforseo_labs_search_intent` for intent classification, and `content_analysis_summary` for content quality analysis.
+
+## Related Skills
+
+- [content-quality-auditor](../content-quality-auditor/) — Deep content quality and E-E-A-T audits
+- [seo-content-writer](../seo-content-writer/) — Write new SEO-optimized content
+- [copy-editing](../copy-editing/) — Polish and refine existing copy
+- [seo-geo](../seo-geo/) — Optimize for AI search and citations
+- [seo-audit](../seo-audit/) — Full site content analysis
+- [content-refresher](../content-refresher/) — Update outdated content

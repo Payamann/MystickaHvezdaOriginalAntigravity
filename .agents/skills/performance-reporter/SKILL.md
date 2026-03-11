@@ -1,48 +1,26 @@
 ---
 name: performance-reporter
-version: "3.0.0"
-description: 'This skill should be used when the user asks to "generate SEO report", "performance report", "traffic report", "SEO dashboard", "report to stakeholders", "show me the numbers", "monthly SEO report", or "present SEO results to my boss". Generates comprehensive SEO and GEO performance reports combining rankings, traffic, backlinks, and AI visibility metrics. Creates executive summaries and detailed analyses for stakeholder reporting. For detailed rank tracking, see rank-tracker. For link-specific analysis, see backlink-analyzer.'
-license: Apache-2.0
-compatibility: "Claude Code ≥1.0, skills.sh marketplace, ClawHub marketplace, Vercel Labs skills ecosystem. No system packages required. Optional: MCP network access for SEO tool integrations."
+description: This skill should be used when the user asks to "generate SEO report",
+  "performance report", "traffic report", "SEO dashboard", "report to stakeholders",
+  "show me the numbers", "monthly SEO report", or "present SEO results to my boss".
+  Generates comprehensive SEO and GEO performance reports combining rankings, traffic,
+  backlinks, and AI visibility metrics. Creates executive summaries and detailed analyses
+  for stakeholder reporting. For detailed rank tracking, see rank-tracker. For link-specific
+  analysis, see backlink-analyzer.
+version: 3.0.0
 metadata:
-  openclaw:
-    requires:
-      env: []
-      bins: []
-    primaryEnv: AMPLITUDE_API_KEY
-  author: aaron-he-zhu
-  version: "3.0.0"
-  geo-relevance: "medium"
+  author: internal-team
+  license: Internal
   tags:
-    - seo
-    - geo
-    - performance report
-    - seo report
-    - traffic analysis
-    - seo dashboard
-    - executive summary
-    - analytics report
-    - kpi tracking
-    - seo-reporting
-    - kpi-dashboard
-    - monthly-report
-    - traffic-report
-    - analytics-report
-    - stakeholder-report
-    - seo-metrics
-    - organic-traffic
-    - ctr-report
+  - analytics
+  - reporting
+  - monitor
   triggers:
-    - "generate SEO report"
-    - "performance report"
-    - "traffic report"
-    - "SEO dashboard"
-    - "report to stakeholders"
-    - "monthly report"
-    - "SEO analytics"
-    - "show me the numbers"
-    - "monthly SEO report"
-    - "present SEO results to my boss"
+  - performance report
+  - metrics report
+  - analytics reporting
+  estimated-duration: Quick
+  geo-relevance: medium
 ---
 
 # Performance Reporter

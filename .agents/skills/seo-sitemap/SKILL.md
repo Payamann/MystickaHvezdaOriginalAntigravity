@@ -1,9 +1,22 @@
 ---
 name: seo-sitemap
-description: >
-  Analyze existing XML sitemaps or generate new ones with industry templates.
-  Validates format, URLs, and structure. Use when user says "sitemap",
-  "generate sitemap", "sitemap issues", or "XML sitemap".
+description: Analyze existing XML sitemaps or generate new ones with industry templates.
+  Validates format, URLs, and structure. Use when user says "sitemap", "generate sitemap",
+  "sitemap issues", or "XML sitemap".
+version: 1.0.0
+metadata:
+  author: internal-team
+  license: Internal
+  tags:
+  - seo
+  - technical
+  - audit
+  triggers:
+  - sitemap
+  - xml sitemap
+  - site structure
+  estimated-duration: Quick
+  geo-relevance: high
 ---
 
 # Sitemap Analysis & Generation
@@ -102,3 +115,9 @@ description: >
 - `sitemap.xml` (or split files with index)
 - `STRUCTURE.md` — site architecture documentation
 - URL count and organization summary
+
+## Related Skills
+
+- [site-architecture](../site-architecture/) — Design URL hierarchy and information architecture
+- [technical-seo-checker](../technical-seo-checker/) — Technical SEO audit and validation
+- [seo-audit](../seo-audit/) — Comprehensive SEO audit and reporting

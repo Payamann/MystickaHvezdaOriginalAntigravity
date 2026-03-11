@@ -1,49 +1,26 @@
 ---
 name: serp-analysis
-version: "3.0.0"
-description: 'This skill should be used when the user asks to "analyze search results", "SERP analysis", "what ranks for", "SERP features", "why does this page rank", "what is on page one for this query", "who ranks for this keyword", or "what does Google show for". Analyzes search engine results pages (SERPs) to understand ranking factors, SERP features, user intent patterns, and AI overview triggers. Essential for understanding what it takes to rank. For tracking rankings over time, see rank-tracker. For keyword discovery, see keyword-research.'
-license: Apache-2.0
-compatibility: "Claude Code ≥1.0, skills.sh marketplace, ClawHub marketplace, Vercel Labs skills ecosystem. No system packages required. Optional: MCP network access for SEO tool integrations."
-allowed-tools: WebFetch
+description: This skill should be used when the user asks to "analyze search results",
+  "SERP analysis", "what ranks for", "SERP features", "why does this page rank", "what
+  is on page one for this query", "who ranks for this keyword", or "what does Google
+  show for". Analyzes search engine results pages (SERPs) to understand ranking factors,
+  SERP features, user intent patterns, and AI overview triggers. Essential for understanding
+  what it takes to rank. For tracking rankings over time, see rank-tracker. For keyword
+  discovery, see keyword-research.
+version: 3.0.0
 metadata:
-  openclaw:
-    requires:
-      env: []
-      bins: []
-    primaryEnv: AHREFS_API_KEY
-  author: aaron-he-zhu
-  version: "3.0.0"
-  geo-relevance: "high"
+  author: internal-team
+  license: Internal
   tags:
-    - seo
-    - geo
-    - serp
-    - search results
-    - ranking factors
-    - serp features
-    - ai overviews
-    - featured snippets
-    - search intent
-    - serp-features
-    - featured-snippet
-    - google-ai-overview
-    - ai-overview
-    - people-also-ask
-    - knowledge-panel
-    - serp-composition
-    - position-zero
-    - serp-intent
+  - seo
+  - research
+  - analysis
   triggers:
-    - "analyze search results"
-    - "SERP analysis"
-    - "what ranks for"
-    - "SERP features"
-    - "why does this page rank"
-    - "featured snippets"
-    - "AI overviews"
-    - "what's on page one for this query"
-    - "who ranks for this keyword"
-    - "what does Google show for"
+  - serp analysis
+  - search results
+  - ranking analysis
+  estimated-duration: Medium
+  geo-relevance: high
 ---
 
 # SERP Analysis

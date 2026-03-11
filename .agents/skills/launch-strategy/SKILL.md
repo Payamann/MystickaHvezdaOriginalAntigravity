@@ -1,8 +1,25 @@
 ---
 name: launch-strategy
-description: "When the user wants to plan a product launch, feature announcement, or release strategy. Also use when the user mentions 'launch,' 'Product Hunt,' 'feature release,' 'announcement,' 'go-to-market,' 'beta launch,' 'early access,' 'waitlist,' 'product update,' 'how do I launch this,' 'launch checklist,' 'GTM plan,' or 'we're about to ship.' Use this whenever someone is preparing to release something publicly. For ongoing marketing after launch, see marketing-ideas."
+description: When the user wants to plan a product launch, feature announcement, or
+  release strategy. Also use when the user mentions 'launch,' 'Product Hunt,' 'feature
+  release,' 'announcement,' 'go-to-market,' 'beta launch,' 'early access,' 'waitlist,'
+  'product update,' 'how do I launch this,' 'launch checklist,' 'GTM plan,' or 'we're
+  about to ship.' Use this whenever someone is preparing to release something publicly.
+  For ongoing marketing after launch, see marketing-ideas.
+version: 1.0.0
 metadata:
-  version: 1.1.0
+  author: internal-team
+  license: Internal
+  tags:
+  - marketing
+  - strategy
+  - planning
+  triggers:
+  - launch plan
+  - product launch
+  - go to market
+  - launch strategy
+  estimated-duration: Comprehensive
 ---
 
 # Launch Strategy

@@ -1,8 +1,28 @@
 ---
 name: programmatic-seo
-description: When the user wants to create SEO-driven pages at scale using templates and data. Also use when the user mentions "programmatic SEO," "template pages," "pages at scale," "directory pages," "location pages," "[keyword] + [city] pages," "comparison pages," "integration pages," "building many pages for SEO," "pSEO," "generate 100 pages," "data-driven pages," or "templated landing pages." Use this whenever someone wants to create many similar pages targeting different keywords or locations. For auditing existing SEO issues, see seo-audit. For content strategy planning, see content-strategy.
+description: When the user wants to create SEO-driven pages at scale using templates
+  and data. Also use when the user mentions "programmatic SEO," "template pages,"
+  "pages at scale," "directory pages," "location pages," "[keyword] + [city] pages,"
+  "comparison pages," "integration pages," "building many pages for SEO," "pSEO,"
+  "generate 100 pages," "data-driven pages," or "templated landing pages." Use this
+  whenever someone wants to create many similar pages targeting different keywords
+  or locations. For auditing existing SEO issues, see seo-audit. For content strategy
+  planning, see content-strategy.
+version: 1.0.0
 metadata:
-  version: 1.1.0
+  author: internal-team
+  license: Internal
+  tags:
+  - seo
+  - technical
+  - automation
+  triggers:
+  - programmatic seo
+  - pseo
+  - template pages
+  - scalable pages
+  estimated-duration: Comprehensive
+  geo-relevance: high
 ---
 
 # Programmatic SEO

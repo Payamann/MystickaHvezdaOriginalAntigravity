@@ -1,11 +1,24 @@
 ---
 name: seo-programmatic
-description: >
-  Programmatic SEO planning and analysis for pages generated at scale from data
-  sources. Covers template engines, URL patterns, internal linking automation,
-  thin content safeguards, and index bloat prevention. Use when user says
-  "programmatic SEO", "pages at scale", "dynamic pages", "template pages",
-  "generated pages", or "data-driven SEO".
+description: Programmatic SEO planning and analysis for pages generated at scale from
+  data sources. Covers template engines, URL patterns, internal linking automation,
+  thin content safeguards, and index bloat prevention. Use when user says "programmatic
+  SEO", "pages at scale", "dynamic pages", "template pages", "generated pages", or
+  "data-driven SEO".
+version: 1.0.0
+metadata:
+  author: internal-team
+  license: Internal
+  tags:
+  - seo
+  - technical
+  - automation
+  triggers:
+  - programmatic seo
+  - pseo
+  - scalable content
+  estimated-duration: Comprehensive
+  geo-relevance: high
 ---
 
 # Programmatic SEO Analysis & Planning
@@ -160,3 +173,10 @@ Measure against all other pages in the programmatic set. Shared headers, footers
 - Template modifications
 - URL pattern adjustments
 - Quality gate compliance actions
+
+## Related Skills
+
+- [programmatic-seo](../programmatic-seo/) — Build SEO pages at scale from data sources
+- [seo-plan](../seo-plan/) — Strategic SEO planning and competitive analysis
+- [site-architecture](../site-architecture/) — Design URL hierarchy and information architecture
+- [schema-markup-generator](../schema-markup-generator/) — Generate and validate schema markup

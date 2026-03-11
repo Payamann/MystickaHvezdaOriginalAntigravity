@@ -1,40 +1,26 @@
 ---
 name: memory-management
-version: "3.0.0"
-description: 'This skill should be used when the user asks to "remember project context", "save SEO data", "track campaign progress", "store keyword data", "manage project memory", "remember this for next time", "save my keyword data", or "keep track of this campaign". Manages a two-layer memory system (hot cache + cold storage) for SEO/GEO project context, tracking keywords, competitors, metrics, and campaign status with intelligent promotion/demotion.'
-license: Apache-2.0
-compatibility: "Claude Code ≥1.0, skills.sh marketplace, ClawHub marketplace, Vercel Labs skills ecosystem. No system packages required. Optional: MCP network access for SEO tool integrations."
+description: This skill should be used when the user asks to "remember project context",
+  "save SEO data", "track campaign progress", "store keyword data", "manage project
+  memory", "remember this for next time", "save my keyword data", or "keep track of
+  this campaign". Manages a two-layer memory system (hot cache + cold storage) for
+  SEO/GEO project context, tracking keywords, competitors, metrics, and campaign status
+  with intelligent promotion/demotion.
+version: 3.0.0
 metadata:
-  author: aaron-he-zhu
-  version: "3.0.0"
-  geo-relevance: "low"
+  author: internal-team
+  license: Internal
   tags:
-    - seo
-    - geo
-    - project memory
-    - context management
-    - campaign tracking
-    - data persistence
-    - keyword tracking
-    - project context
-    - context-memory
-    - project-memory
-    - seo-tracking
-    - campaign-tracking
-    - session-context
-    - hot-cache
-    - project-continuity
+  - technical
+  - optimization
+  - best-practices
   triggers:
-    - "remember project context"
-    - "save SEO data"
-    - "track campaign progress"
-    - "store keyword data"
-    - "manage project memory"
-    - "save progress"
-    - "project context"
-    - "remember this for next time"
-    - "save my keyword data"
-    - "keep track of this campaign"
+  - memory management
+  - memory optimization
+  - performance tuning
+  - memory leak
+  estimated-duration: Medium
+  geo-relevance: low
 ---
 
 # Memory Management

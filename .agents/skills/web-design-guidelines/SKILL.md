@@ -1,10 +1,22 @@
 ---
 name: web-design-guidelines
-description: Review UI code for Web Interface Guidelines compliance. Use when asked to "review my UI", "check accessibility", "audit design", "review UX", or "check my site against best practices".
+description: Review UI code for Web Interface Guidelines compliance. Use when asked
+  to "review my UI", "check accessibility", "audit design", "review UX", or "check
+  my site against best practices".
+version: 1.0.0
 metadata:
-  author: vercel
-  version: "1.0.0"
-  argument-hint: <file-or-pattern>
+  author: internal-team
+  license: Internal
+  tags:
+  - design
+  - ux
+  - best-practices
+  triggers:
+  - web design
+  - design guidelines
+  - ux principles
+  estimated-duration: Medium
+  geo-relevance: low
 ---
 
 # Web Interface Guidelines
@@ -37,3 +49,8 @@ When a user provides a file or pattern argument:
 4. Output findings using the format specified in the guidelines
 
 If no files specified, ask the user which files to review.
+
+## Related Skills
+
+- [page-cro](../page-cro/) — Optimize conversion rates through design and UX testing
+- [onboarding-cro](../onboarding-cro/) — Improve onboarding experience and conversion rates

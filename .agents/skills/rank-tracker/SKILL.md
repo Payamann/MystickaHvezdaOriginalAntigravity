@@ -1,46 +1,27 @@
 ---
 name: rank-tracker
-version: "3.0.0"
-description: 'This skill should be used when the user asks to "track rankings", "check keyword positions", "ranking changes", "monitor SERP positions", "how am I ranking", "where do I rank for this keyword", "did my rankings change", or "keyword position tracking". Tracks and analyzes keyword ranking positions over time for both traditional search results and AI-generated responses. Monitors ranking changes, identifies trends, and alerts on significant movements. For automated alerting, see alert-manager. For comprehensive reports, see performance-reporter.'
-license: Apache-2.0
-compatibility: "Claude Code ≥1.0, skills.sh marketplace, ClawHub marketplace, Vercel Labs skills ecosystem. No system packages required. Optional: MCP network access for SEO tool integrations."
+description: This skill should be used when the user asks to "track rankings", "check
+  keyword positions", "ranking changes", "monitor SERP positions", "how am I ranking",
+  "where do I rank for this keyword", "did my rankings change", or "keyword position
+  tracking". Tracks and analyzes keyword ranking positions over time for both traditional
+  search results and AI-generated responses. Monitors ranking changes, identifies
+  trends, and alerts on significant movements. For automated alerting, see alert-manager.
+  For comprehensive reports, see performance-reporter.
+version: 3.0.0
 metadata:
-  openclaw:
-    requires:
-      env: []
-      bins: []
-    primaryEnv: AHREFS_API_KEY
-  author: aaron-he-zhu
-  version: "3.0.0"
-  geo-relevance: "medium"
+  author: internal-team
+  license: Internal
   tags:
-    - seo
-    - geo
-    - rank tracking
-    - keyword positions
-    - serp monitoring
-    - ranking trends
-    - position tracking
-    - ai ranking
-    - keyword-rankings
-    - position-tracking
-    - ranking-changes
-    - serp-positions
-    - search-visibility
-    - ranking-drops
-    - ranking-improvements
-    - rank-monitoring
+  - seo
+  - monitor
+  - analytics
   triggers:
-    - "track rankings"
-    - "check keyword positions"
-    - "ranking changes"
-    - "monitor SERP positions"
-    - "how am I ranking"
-    - "keyword tracking"
-    - "position monitoring"
-    - "where do I rank for this keyword"
-    - "did my rankings change"
-    - "keyword position tracking"
+  - rank tracking
+  - keyword ranking
+  - serp rank
+  - position tracking
+  estimated-duration: Quick
+  geo-relevance: high
 ---
 
 # Rank Tracker

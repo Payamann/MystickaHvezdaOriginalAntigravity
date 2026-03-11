@@ -1,46 +1,26 @@
 ---
 name: competitor-analysis
-version: "3.0.0"
-description: 'This skill should be used when the user asks to "analyze competitors", "competitor SEO", "who ranks for", "competitive analysis", "what are my competitors doing", "what are they doing differently", "why do they rank higher", or "spy on competitor SEO". Analyzes competitor SEO and GEO strategies including their ranking keywords, content approaches, backlink profiles, and AI citation patterns. Reveals opportunities to outperform competition. For content-focused gap analysis, see content-gap-analysis. For link profile specifics, see backlink-analyzer.'
-license: Apache-2.0
-compatibility: "Claude Code ≥1.0, skills.sh marketplace, ClawHub marketplace, Vercel Labs skills ecosystem. No system packages required. Optional: MCP network access for SEO tool integrations."
+description: This skill should be used when the user asks to "analyze competitors",
+  "competitor SEO", "who ranks for", "competitive analysis", "what are my competitors
+  doing", "what are they doing differently", "why do they rank higher", or "spy on
+  competitor SEO". Analyzes competitor SEO and GEO strategies including their ranking
+  keywords, content approaches, backlink profiles, and AI citation patterns. Reveals
+  opportunities to outperform competition. For content-focused gap analysis, see content-gap-analysis.
+  For link profile specifics, see backlink-analyzer.
+version: 3.0.0
 metadata:
-  openclaw:
-    requires:
-      env: []
-      bins: []
-    primaryEnv: AHREFS_API_KEY
-  author: aaron-he-zhu
-  version: "3.0.0"
-  geo-relevance: "medium"
+  author: internal-team
+  license: Internal
   tags:
-    - seo
-    - geo
-    - competitor analysis
-    - competitive intelligence
-    - benchmarking
-    - market analysis
-    - ranking analysis
-    - competitive-seo
-    - competitor-keywords
-    - competitor-backlinks
-    - market-analysis
-    - battlecard
-    - serp-competition
-    - domain-comparison
-    - content-benchmarking
-    - gap-analysis
+  - research
+  - analysis
+  - strategy
   triggers:
-    - "analyze competitors"
-    - "competitor SEO"
-    - "who ranks for"
-    - "competitive analysis"
-    - "what are my competitors doing"
-    - "competitor keywords"
-    - "competitor backlinks"
-    - "what are they doing differently"
-    - "why do they rank higher"
-    - "spy on competitor SEO"
+  - analyze competitors
+  - competitor research
+  - competitive landscape
+  estimated-duration: Comprehensive
+  geo-relevance: medium
 ---
 
 # Competitor Analysis

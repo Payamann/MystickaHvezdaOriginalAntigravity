@@ -1,9 +1,23 @@
 ---
 name: deploy-to-vercel
-description: Deploy applications and websites to Vercel. Use when the user requests deployment actions like "deploy my app", "deploy and give me the link", "push this live", or "create a preview deployment".
+description: Deploy applications and websites to Vercel. Use when the user requests
+  deployment actions like "deploy my app", "deploy and give me the link", "push this
+  live", or "create a preview deployment".
+version: 3.0.0
 metadata:
   author: vercel
-  version: "3.0.0"
+  license: Internal
+  tags:
+  - technical
+  - deployment
+  - vercel
+  triggers:
+  - deploy to vercel
+  - deploy app
+  - push live
+  - preview deployment
+  estimated-duration: Quick
+  geo-relevance: low
 ---
 
 # Deploy to Vercel
@@ -294,3 +308,8 @@ the command with escalated permissions — want me to proceed?
 ### CLI Auth Failure
 
 If `vercel login` or `vercel deploy` fails with authentication errors, fall back to the no-auth deploy script (claude.ai or Codex variant, depending on the environment).
+
+## Related Skills
+
+- [vercel-composition-patterns](../vercel-composition-patterns/) — React composition patterns for scalable components
+- [vercel-react-best-practices](../vercel-react-best-practices/) — React and Next.js performance optimization

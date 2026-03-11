@@ -1,8 +1,30 @@
 ---
 name: seo-audit
-description: When the user wants to audit, review, or diagnose SEO issues on their site. Also use when the user mentions "SEO audit," "technical SEO," "why am I not ranking," "SEO issues," "on-page SEO," "meta tags review," "SEO health check," "my traffic dropped," "lost rankings," "not showing up in Google," "site isn't ranking," "Google update hit me," "page speed," "core web vitals," "crawl errors," or "indexing issues." Use this even if the user just says something vague like "my SEO is bad" or "help with SEO" — start with an audit. For building pages at scale to target keywords, see programmatic-seo. For adding structured data, see schema-markup. For AI search optimization, see ai-seo.
+description: "When the user wants to audit, review, or diagnose SEO issues on their\
+  \ site. Also use when the user mentions \"SEO audit,\" \"technical SEO,\" \"why\
+  \ am I not ranking,\" \"SEO issues,\" \"on-page SEO,\" \"meta tags review,\" \"\
+  SEO health check,\" \"my traffic dropped,\" \"lost rankings,\" \"not showing up\
+  \ in Google,\" \"site isn't ranking,\" \"Google update hit me,\" \"page speed,\"\
+  \ \"core web vitals,\" \"crawl errors,\" or \"indexing issues.\" Use this even if\
+  \ the user just says something vague like \"my SEO is bad\" or \"help with SEO\"\
+  \ \u2014 start with an audit. For building pages at scale to target keywords, see\
+  \ programmatic-seo. For adding structured data, see schema-markup. For AI search\
+  \ optimization, see ai-seo."
+version: 1.0.0
 metadata:
-  version: 1.1.0
+  author: internal-team
+  license: Internal
+  tags:
+  - seo
+  - audit
+  - technical
+  triggers:
+  - seo audit
+  - site audit
+  - comprehensive audit
+  - seo check
+  estimated-duration: Comprehensive
+  geo-relevance: high
 ---
 
 # SEO Audit

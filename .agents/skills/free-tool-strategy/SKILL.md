@@ -1,8 +1,27 @@
 ---
 name: free-tool-strategy
-description: When the user wants to plan, evaluate, or build a free tool for marketing purposes — lead generation, SEO value, or brand awareness. Also use when the user mentions "engineering as marketing," "free tool," "marketing tool," "calculator," "generator," "interactive tool," "lead gen tool," "build a tool for leads," "free resource," "ROI calculator," "grader tool," "audit tool," "should I build a free tool," or "tools for lead gen." Use this whenever someone wants to build something useful and give it away to attract leads or earn links. For content-based lead generation, see content-strategy.
+description: "When the user wants to plan, evaluate, or build a free tool for marketing\
+  \ purposes \u2014 lead generation, SEO value, or brand awareness. Also use when\
+  \ the user mentions \"engineering as marketing,\" \"free tool,\" \"marketing tool,\"\
+  \ \"calculator,\" \"generator,\" \"interactive tool,\" \"lead gen tool,\" \"build\
+  \ a tool for leads,\" \"free resource,\" \"ROI calculator,\" \"grader tool,\" \"\
+  audit tool,\" \"should I build a free tool,\" or \"tools for lead gen.\" Use this\
+  \ whenever someone wants to build something useful and give it away to attract leads\
+  \ or earn links. For content-based lead generation, see content-strategy."
+version: 1.0.0
 metadata:
-  version: 1.1.0
+  author: internal-team
+  license: Internal
+  tags:
+  - marketing
+  - strategy
+  - content
+  triggers:
+  - free tool
+  - tool strategy
+  - free resource
+  - lead magnet
+  estimated-duration: Comprehensive
 ---
 
 # Free Tool Strategy (Engineering as Marketing)

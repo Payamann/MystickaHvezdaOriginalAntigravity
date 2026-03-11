@@ -1,10 +1,23 @@
 ---
 name: seo-hreflang
-description: >
-  Hreflang and international SEO audit, validation, and generation. Detects
-  common mistakes, validates language/region codes, and generates correct
-  hreflang implementations. Use when user says "hreflang", "i18n SEO",
-  "international SEO", "multi-language", "multi-region", or "language tags".
+description: Hreflang and international SEO audit, validation, and generation. Detects
+  common mistakes, validates language/region codes, and generates correct hreflang
+  implementations. Use when user says "hreflang", "i18n SEO", "international SEO",
+  "multi-language", "multi-region", or "language tags".
+version: 1.0.0
+metadata:
+  author: internal-team
+  license: Internal
+  tags:
+  - seo
+  - technical
+  - international
+  triggers:
+  - hreflang
+  - alternate versions
+  - language targeting
+  estimated-duration: Medium
+  geo-relevance: high
 ---
 
 # Hreflang & International SEO
@@ -182,3 +195,11 @@ Key rules:
 - Missing implementations to add
 - Incorrect codes to fix
 - Method migration suggestions (e.g., HTML → sitemap for scale)
+
+## Related Skills
+
+- [site-architecture](../site-architecture/) — Site structure and URL organization
+- [programmatic-seo](../programmatic-seo/) — International multi-language pages
+- [technical-seo-checker](../technical-seo-checker/) — Technical SEO audit
+- [seo-audit](../seo-audit/) — Full website SEO audit
+- [seo-sitemap](../seo-sitemap/) — Sitemap analysis and generation

@@ -1,51 +1,27 @@
 ---
 name: backlink-analyzer
-version: "3.0.0"
-description: 'This skill should be used when the user asks to "analyze backlinks", "check link profile", "find toxic links", "link building opportunities", "off-page SEO", "who links to me", "I have spammy links", "how do I get more backlinks", or "disavow links". Analyzes backlink profiles to understand link authority, identify toxic links, discover link building opportunities, and monitor competitor link acquisition. Essential for off-page SEO strategy. For internal link analysis, see internal-linking-optimizer. For competitor link profiles, see competitor-analysis.'
-license: Apache-2.0
-compatibility: "Claude Code ≥1.0, skills.sh marketplace, ClawHub marketplace, Vercel Labs skills ecosystem. No system packages required. Optional: MCP network access for SEO tool integrations."
+description: This skill should be used when the user asks to "analyze backlinks",
+  "check link profile", "find toxic links", "link building opportunities", "off-page
+  SEO", "who links to me", "I have spammy links", "how do I get more backlinks", or
+  "disavow links". Analyzes backlink profiles to understand link authority, identify
+  toxic links, discover link building opportunities, and monitor competitor link acquisition.
+  Essential for off-page SEO strategy. For internal link analysis, see internal-linking-optimizer.
+  For competitor link profiles, see competitor-analysis.
+version: 3.0.0
 metadata:
-  openclaw:
-    requires:
-      env: []
-      bins: []
-    primaryEnv: AHREFS_API_KEY
-  author: aaron-he-zhu
-  version: "3.0.0"
-  geo-relevance: "low"
+  author: internal-team
+  license: Internal
   tags:
-    - seo
-    - backlinks
-    - link building
-    - link profile
-    - toxic links
-    - off-page seo
-    - link authority
-    - domain authority
-    - link acquisition
-    - link-building
-    - backlink-profile
-    - toxic-links
-    - link-audit
-    - referring-domains
-    - domain-rating
-    - link-outreach
-    - disavow
-    - dr-score
-    - link-quality
-    - lost-backlinks
+  - seo
+  - research
+  - analysis
   triggers:
-    - "analyze backlinks"
-    - "check link profile"
-    - "find toxic links"
-    - "link building opportunities"
-    - "off-page SEO"
-    - "backlink audit"
-    - "link quality"
-    - "who links to me"
-    - "I have spammy links"
-    - "how do I get more backlinks"
-    - "disavow links"
+  - analyze backlinks
+  - backlink profile
+  - link analysis
+  - domain authority
+  estimated-duration: Medium
+  geo-relevance: medium
 ---
 
 # Backlink Analyzer

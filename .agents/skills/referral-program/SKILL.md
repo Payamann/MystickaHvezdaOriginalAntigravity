@@ -1,8 +1,25 @@
 ---
 name: referral-program
-description: "When the user wants to create, optimize, or analyze a referral program, affiliate program, or word-of-mouth strategy. Also use when the user mentions 'referral,' 'affiliate,' 'ambassador,' 'word of mouth,' 'viral loop,' 'refer a friend,' 'partner program,' 'referral incentive,' 'how to get referrals,' 'customers referring customers,' or 'affiliate payout.' Use this whenever someone wants existing users or partners to bring in new customers. For launch-specific virality, see launch-strategy."
+description: When the user wants to create, optimize, or analyze a referral program,
+  affiliate program, or word-of-mouth strategy. Also use when the user mentions 'referral,'
+  'affiliate,' 'ambassador,' 'word of mouth,' 'viral loop,' 'refer a friend,' 'partner
+  program,' 'referral incentive,' 'how to get referrals,' 'customers referring customers,'
+  or 'affiliate payout.' Use this whenever someone wants existing users or partners
+  to bring in new customers. For launch-specific virality, see launch-strategy.
+version: 1.0.0
 metadata:
-  version: 1.1.0
+  author: internal-team
+  license: Internal
+  tags:
+  - marketing
+  - growth
+  - strategy
+  triggers:
+  - referral program
+  - referral system
+  - word of mouth
+  - viral growth
+  estimated-duration: Medium
 ---
 
 # Referral & Affiliate Programs

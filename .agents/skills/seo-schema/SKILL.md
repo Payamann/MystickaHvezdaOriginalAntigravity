@@ -1,9 +1,23 @@
 ---
 name: seo-schema
-description: >
-  Detect, validate, and generate Schema.org structured data. JSON-LD format
-  preferred. Use when user says "schema", "structured data", "rich results",
-  "JSON-LD", or "markup".
+description: Detect, validate, and generate Schema.org structured data. JSON-LD format
+  preferred. Use when user says "schema", "structured data", "rich results", "JSON-LD",
+  or "markup".
+version: 1.0.0
+metadata:
+  author: internal-team
+  license: Internal
+  tags:
+  - seo
+  - technical
+  - structured-data
+  triggers:
+  - schema
+  - structured data
+  - json-ld
+  - rich snippets
+  estimated-duration: Medium
+  geo-relevance: high
 ---
 
 # Schema Markup Analysis & Generation
@@ -149,3 +163,9 @@ When generating schema for a page:
 - Missing schema opportunities
 - Validation fixes needed
 - Generated code for implementation
+
+## Related Skills
+
+- [schema-markup-generator](../schema-markup-generator/) — Generate and validate schema markup
+- [on-page-seo-auditor](../on-page-seo-auditor/) — Analyze on-page SEO elements
+- [seo-audit](../seo-audit/) — Comprehensive SEO audit and reporting

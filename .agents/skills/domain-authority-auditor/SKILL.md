@@ -1,39 +1,27 @@
 ---
 name: domain-authority-auditor
-version: "3.0.0"
-description: 'This skill should be used when the user asks to "audit domain authority", "domain trust score", "CITE audit", "how authoritative is my site", "domain credibility check", "is my domain trustworthy", or "domain credibility score". Runs a full CITE 40-item domain authority audit, scoring domains across 4 dimensions with weighted scoring by domain type. Produces a detailed report with per-item scores, dimension analysis, veto checks, and a prioritized action plan. For content-level assessment, see content-quality-auditor. For link profile details, see backlink-analyzer.'
-license: Apache-2.0
-compatibility: "Claude Code ≥1.0, skills.sh marketplace, ClawHub marketplace, Vercel Labs skills ecosystem. No system packages required. Optional: MCP network access for SEO tool integrations."
+description: This skill should be used when the user asks to "audit domain authority",
+  "domain trust score", "CITE audit", "how authoritative is my site", "domain credibility
+  check", "is my domain trustworthy", or "domain credibility score". Runs a full CITE
+  40-item domain authority audit, scoring domains across 4 dimensions with weighted
+  scoring by domain type. Produces a detailed report with per-item scores, dimension
+  analysis, veto checks, and a prioritized action plan. For content-level assessment,
+  see content-quality-auditor. For link profile details, see backlink-analyzer.
+version: 3.0.0
 metadata:
-  author: aaron-he-zhu
-  version: "3.0.0"
-  geo-relevance: "medium"
+  author: internal-team
+  license: Internal
   tags:
-    - seo
-    - geo
-    - domain audit
-    - credibility
-    - domain scoring
-    - domain-authority
-    - domain-rating
-    - domain-trust
-    - trust-signals
-    - site-authority
-    - da-checker
-    - ahrefs-dr
-    - moz-da
-    - cite-framework
-    - domain-strength
+  - seo
+  - research
+  - analysis
   triggers:
-    - "audit domain authority"
-    - "domain trust score"
-    - "CITE audit"
-    - "how authoritative is my site"
-    - "domain credibility check"
-    - "domain rating"
-    - "site authority"
-    - "is my domain trustworthy"
-    - "domain credibility score"
+  - domain authority
+  - da score
+  - authority check
+  - domain strength
+  estimated-duration: Quick
+  geo-relevance: high
 ---
 
 # Domain Authority Auditor

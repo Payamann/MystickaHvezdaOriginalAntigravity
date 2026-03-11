@@ -1,34 +1,27 @@
 ---
 name: meta-tags-optimizer
-version: "3.0.0"
-description: 'This skill should be used when the user asks to "optimize title tag", "write meta description", "improve CTR", "Open Graph tags", "social media preview", "my title tag needs work", "low click-through rate", "fix my meta tags", or "OG tags not showing". Creates and optimizes meta tags including title tags, meta descriptions, Open Graph tags, and Twitter cards for maximum click-through rates and social sharing engagement. For a broader on-page audit, see on-page-seo-auditor. For structured data markup, see schema-markup-generator.'
-license: Apache-2.0
-compatibility: "Claude Code ≥1.0, skills.sh marketplace, ClawHub marketplace, Vercel Labs skills ecosystem. No system packages required. Optional: MCP network access for SEO tool integrations."
+description: This skill should be used when the user asks to "optimize title tag",
+  "write meta description", "improve CTR", "Open Graph tags", "social media preview",
+  "my title tag needs work", "low click-through rate", "fix my meta tags", or "OG
+  tags not showing". Creates and optimizes meta tags including title tags, meta descriptions,
+  Open Graph tags, and Twitter cards for maximum click-through rates and social sharing
+  engagement. For a broader on-page audit, see on-page-seo-auditor. For structured
+  data markup, see schema-markup-generator.
+version: 3.0.0
 metadata:
-  author: aaron-he-zhu
-  version: "3.0.0"
-  geo-relevance: "low"
+  author: internal-team
+  license: Internal
   tags:
-    - seo
-    - meta-tags
-    - title-tag
-    - meta-description
-    - open-graph
-    - twitter-card
-    - ctr
-    - social-sharing
+  - seo
+  - technical
+  - optimize
   triggers:
-    - "optimize title tag"
-    - "write meta description"
-    - "improve CTR"
-    - "Open Graph tags"
-    - "social media preview"
-    - "title optimization"
-    - "meta tags"
-    - "my title tag needs work"
-    - "low click-through rate"
-    - "fix my meta tags"
-    - "OG tags not showing"
+  - meta tags
+  - title tag
+  - meta description
+  - html head
+  estimated-duration: Quick
+  geo-relevance: high
 ---
 
 # Meta Tags Optimizer

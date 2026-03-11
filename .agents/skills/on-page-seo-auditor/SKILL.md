@@ -1,43 +1,27 @@
 ---
 name: on-page-seo-auditor
-version: "3.0.0"
-description: 'This skill should be used when the user asks to "audit page SEO", "on-page SEO check", "SEO score", "page optimization", "what SEO issues does this page have", "what is wrong with this page SEO", "score my page", or "why is this page not ranking". Performs comprehensive on-page SEO audits to identify optimization opportunities including title tags, meta descriptions, headers, content quality, internal linking, and image optimization. For server, speed, and crawl issues, see technical-seo-checker. For full EEAT content quality scoring, see content-quality-auditor.'
-license: Apache-2.0
-compatibility: "Claude Code ≥1.0, skills.sh marketplace, ClawHub marketplace, Vercel Labs skills ecosystem. No system packages required. Optional: MCP network access for SEO tool integrations."
-allowed-tools: WebFetch
+description: This skill should be used when the user asks to "audit page SEO", "on-page
+  SEO check", "SEO score", "page optimization", "what SEO issues does this page have",
+  "what is wrong with this page SEO", "score my page", or "why is this page not ranking".
+  Performs comprehensive on-page SEO audits to identify optimization opportunities
+  including title tags, meta descriptions, headers, content quality, internal linking,
+  and image optimization. For server, speed, and crawl issues, see technical-seo-checker.
+  For full EEAT content quality scoring, see content-quality-auditor.
+version: 3.0.0
 metadata:
-  author: aaron-he-zhu
-  version: "3.0.0"
-  geo-relevance: "medium"
+  author: internal-team
+  license: Internal
   tags:
-    - seo
-    - on-page audit
-    - page optimization
-    - seo audit
-    - content optimization
-    - header tags
-    - image optimization
-    - seo score
-    - page-audit
-    - seo-score
-    - on-page-optimization
-    - optimization-checklist
-    - seo-checklist
-    - page-score
-    - h1-optimization
-    - meta-audit
-    - content-audit
+  - seo
+  - audit
+  - technical
   triggers:
-    - "audit page SEO"
-    - "on-page SEO check"
-    - "SEO score"
-    - "page optimization"
-    - "what SEO issues"
-    - "check my page"
-    - "on-page audit"
-    - "what's wrong with this page's SEO"
-    - "score my page"
-    - "why isn't this page ranking"
+  - on-page seo
+  - on page audit
+  - page seo
+  - seo audit
+  estimated-duration: Medium
+  geo-relevance: high
 ---
 
 # On-Page SEO Auditor

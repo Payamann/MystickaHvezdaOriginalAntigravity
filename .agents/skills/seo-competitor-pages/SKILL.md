@@ -1,10 +1,23 @@
 ---
 name: seo-competitor-pages
-description: >
-  Generate SEO-optimized competitor comparison and alternatives pages. Covers
-  "X vs Y" layouts, "alternatives to X" pages, feature matrices, schema markup,
-  and conversion optimization. Use when user says "comparison page", "vs page",
-  "alternatives page", "competitor comparison", or "X vs Y".
+description: Generate SEO-optimized competitor comparison and alternatives pages.
+  Covers "X vs Y" layouts, "alternatives to X" pages, feature matrices, schema markup,
+  and conversion optimization. Use when user says "comparison page", "vs page", "alternatives
+  page", "competitor comparison", or "X vs Y".
+version: 1.0.0
+metadata:
+  author: internal-team
+  license: Internal
+  tags:
+  - seo
+  - competitor
+  - analysis
+  triggers:
+  - competitor pages
+  - competitive analysis
+  - compare pages
+  estimated-duration: Medium
+  geo-relevance: high
 ---
 
 # Competitor Comparison & Alternatives Pages
@@ -202,3 +215,12 @@ competitive intent keywords with accurate, structured content.
 - New comparison page opportunities
 - Schema markup additions
 - Conversion optimization suggestions
+
+## Related Skills
+
+- [programmatic-seo](../programmatic-seo/) — Build comparison pages at scale
+- [competitor-analysis](../competitor-analysis/) — Research competitors in depth
+- [seo-content-writer](../seo-content-writer/) — Write SEO-optimized content
+- [schema-markup-generator](../schema-markup-generator/) — Add structured data
+- [copywriting](../copywriting/) — Improve messaging and CTAs
+- [page-cro](../page-cro/) — Optimize conversion on comparison pages

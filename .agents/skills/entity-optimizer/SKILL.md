@@ -1,42 +1,27 @@
 ---
 name: entity-optimizer
-version: "3.0.0"
-description: 'This skill should be used when the user asks to "optimize entity presence", "build knowledge graph", "improve knowledge panel", "entity audit", "establish brand entity", "Google does not know my brand", "no knowledge panel", or "establish my brand as an entity". Works standalone with public search and AI query testing; supercharged when you connect ~~knowledge graph + ~~SEO tool + ~~AI monitor for automated entity analysis. For structured data implementation, see schema-markup-generator. For content-level AI optimization, see geo-content-optimizer.'
-license: Apache-2.0
-compatibility: "Claude Code ≥1.0, skills.sh marketplace, ClawHub marketplace, Vercel Labs skills ecosystem. No system packages required. Optional: MCP network access for SEO tool integrations."
+description: This skill should be used when the user asks to "optimize entity presence",
+  "build knowledge graph", "improve knowledge panel", "entity audit", "establish brand
+  entity", "Google does not know my brand", "no knowledge panel", or "establish my
+  brand as an entity". Works standalone with public search and AI query testing; supercharged
+  when you connect ~~knowledge graph + ~~SEO tool + ~~AI monitor for automated entity
+  analysis. For structured data implementation, see schema-markup-generator. For content-level
+  AI optimization, see geo-content-optimizer.
+version: 3.0.0
 metadata:
-  author: aaron-he-zhu
-  version: "3.0.0"
-  geo-relevance: "high"
+  author: internal-team
+  license: Internal
   tags:
-    - seo
-    - geo
-    - entity optimization
-    - knowledge graph
-    - knowledge panel
-    - brand entity
-    - entity disambiguation
-    - wikidata
-    - structured entities
-    - knowledge-graph
-    - google-knowledge-panel
-    - entity-seo
-    - brand-entity
-    - entity-recognition
-    - knowledge-base
-    - dbpedia
-    - brand-presence
+  - seo
+  - optimize
+  - technical
   triggers:
-    - "optimize entity presence"
-    - "build knowledge graph"
-    - "improve knowledge panel"
-    - "entity audit"
-    - "establish brand entity"
-    - "knowledge panel"
-    - "entity disambiguation"
-    - "Google doesn't know my brand"
-    - "no knowledge panel"
-    - "establish my brand as an entity"
+  - entity optimization
+  - entity seo
+  - brand entities
+  - semantic seo
+  estimated-duration: Medium
+  geo-relevance: high
 ---
 
 # Entity Optimizer

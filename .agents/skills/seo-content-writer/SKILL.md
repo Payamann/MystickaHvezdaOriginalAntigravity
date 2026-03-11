@@ -1,33 +1,31 @@
 ---
 name: seo-content-writer
-version: "3.0.0"
-description: 'This skill should be used when the user asks to "write SEO content", "create a blog post", "write an article", "content writing for SEO", "draft optimized content", "write a how-to guide", "create a product description", "write a landing page", "SEO copywriting", "draft content targeting [keyword]", or "write 2000-word article about [topic]". Creates keyword-optimized content using a 12-step workflow: CORE-EEAT pre-write checklist, keyword integration, title optimization (5 formula options), meta description, H1/H2/H3 hierarchy, featured snippet targeting, internal/external linking, and readability enhancement. Produces full drafts with embedded SEO elements, title variants, meta description, FAQ section with schema, and a self-scored CORE-EEAT checklist. For AI-citation optimization, see geo-content-optimizer. For updating existing content, see content-refresher.'
-license: Apache-2.0
-compatibility: "Claude Code ≥1.0, skills.sh marketplace, ClawHub marketplace, Vercel Labs skills ecosystem. No system packages required. Optional: MCP network access for SEO tool integrations."
+description: 'This skill should be used when the user asks to "write SEO content",
+  "create a blog post", "write an article", "content writing for SEO", "draft optimized
+  content", "write a how-to guide", "create a product description", "write a landing
+  page", "SEO copywriting", "draft content targeting [keyword]", or "write 2000-word
+  article about [topic]". Creates keyword-optimized content using a 12-step workflow:
+  CORE-EEAT pre-write checklist, keyword integration, title optimization (5 formula
+  options), meta description, H1/H2/H3 hierarchy, featured snippet targeting, internal/external
+  linking, and readability enhancement. Produces full drafts with embedded SEO elements,
+  title variants, meta description, FAQ section with schema, and a self-scored CORE-EEAT
+  checklist. For AI-citation optimization, see geo-content-optimizer. For updating
+  existing content, see content-refresher.'
+version: 3.0.0
 metadata:
-  author: aaron-he-zhu
-  version: "3.0.0"
-  geo-relevance: "medium"
+  author: internal-team
+  license: Internal
   tags:
-    - seo
-    - content-writing
-    - blog-writing
-    - seo-copywriting
-    - content-creation
-    - featured-snippet-optimization
-    - how-to-guide
+  - seo
+  - content
+  - create
   triggers:
-    - "write SEO content"
-    - "create blog post"
-    - "write an article"
-    - "content writing"
-    - "draft optimized content"
-    - "write for SEO"
-    - "blog writing"
-    - "write me an article"
-    - "create a blog post about"
-    - "help me write SEO content"
-    - "draft content for"
+  - seo content
+  - write optimized
+  - seo writing
+  - content creation
+  estimated-duration: Medium
+  geo-relevance: high
 ---
 
 # SEO Content Writer

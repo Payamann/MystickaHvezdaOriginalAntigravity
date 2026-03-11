@@ -1,10 +1,24 @@
 ---
 name: seo-technical
-description: >
-  Technical SEO audit across 9 categories: crawlability, indexability, security,
-  URL structure, mobile, Core Web Vitals, structured data, JavaScript rendering,
-  and IndexNow protocol. Use when user says "technical SEO", "crawl issues",
-  "robots.txt", "Core Web Vitals", "site speed", or "security headers".
+description: 'Technical SEO audit across 9 categories: crawlability, indexability,
+  security, URL structure, mobile, Core Web Vitals, structured data, JavaScript rendering,
+  and IndexNow protocol. Use when user says "technical SEO", "crawl issues", "robots.txt",
+  "Core Web Vitals", "site speed", or "security headers".'
+version: 1.0.0
+metadata:
+  author: internal-team
+  license: Internal
+  tags:
+  - seo
+  - technical
+  - audit
+  triggers:
+  - technical seo
+  - crawlability
+  - indexability
+  - robots
+  estimated-duration: Comprehensive
+  geo-relevance: high
 ---
 
 # Technical SEO Audit
@@ -151,3 +165,9 @@ Google updated its JavaScript SEO documentation in December 2025 with critical c
 ## DataForSEO Integration (Optional)
 
 If DataForSEO MCP tools are available, use `on_page_instant_pages` for real page analysis (status codes, page timing, broken links, on-page checks), `on_page_lighthouse` for Lighthouse audits (performance, accessibility, SEO scores), and `domain_analytics_technologies_domain_technologies` for technology stack detection.
+
+## Related Skills
+
+- [technical-seo-checker](../technical-seo-checker/) — Technical SEO audit and validation
+- [seo-audit](../seo-audit/) — Comprehensive SEO audit and reporting
+- [site-architecture](../site-architecture/) — Design URL hierarchy and information architecture

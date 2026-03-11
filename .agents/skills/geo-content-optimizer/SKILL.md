@@ -1,36 +1,32 @@
 ---
 name: geo-content-optimizer
-version: "3.0.0"
-description: 'This skill should be used when the user asks to "optimize for AI", "get cited by ChatGPT", "appear in AI answers", "GEO optimization", "generative engine optimization", "Google AI Overview optimization", "get mentioned by Perplexity AI", "appear in Gemini answers", "AI does not mention my brand", "make content AI-quotable", or "increase AI citation frequency". Optimizes content to increase citation frequency across AI systems: ChatGPT (Browse), Claude, Perplexity AI, Google AI Overviews, and Google Gemini. Adds quotable statements, structured Q&A, precise statistics with sources, expert attribution, and FAQ schema. Uses CORE-EEAT GEO-First items (C02, C09, O03, R01–R05, E01) as optimization targets. Produces a GEO score, rewritten content sections, and a citation-optimization checklist. For SEO-focused writing, see seo-content-writer. For entity and brand AI presence, see entity-optimizer.'
-license: Apache-2.0
-compatibility: "Claude Code ≥1.0, skills.sh marketplace, ClawHub marketplace, Vercel Labs skills ecosystem. No system packages required. Optional: MCP network access for SEO tool integrations."
+description: "This skill should be used when the user asks to \"optimize for AI\"\
+  , \"get cited by ChatGPT\", \"appear in AI answers\", \"GEO optimization\", \"generative\
+  \ engine optimization\", \"Google AI Overview optimization\", \"get mentioned by\
+  \ Perplexity AI\", \"appear in Gemini answers\", \"AI does not mention my brand\"\
+  , \"make content AI-quotable\", or \"increase AI citation frequency\". Optimizes\
+  \ content to increase citation frequency across AI systems: ChatGPT (Browse), Claude,\
+  \ Perplexity AI, Google AI Overviews, and Google Gemini. Adds quotable statements,\
+  \ structured Q&A, precise statistics with sources, expert attribution, and FAQ schema.\
+  \ Uses CORE-EEAT GEO-First items (C02, C09, O03, R01\u2013R05, E01) as optimization\
+  \ targets. Produces a GEO score, rewritten content sections, and a citation-optimization\
+  \ checklist. For SEO-focused writing, see seo-content-writer. For entity and brand\
+  \ AI presence, see entity-optimizer."
+version: 3.0.0
 metadata:
-  author: aaron-he-zhu
-  version: "3.0.0"
-  geo-relevance: "high"
+  author: internal-team
+  license: Internal
   tags:
-    - geo
-    - ai-citations
-    - chatgpt
-    - perplexity-ai
-    - google-ai-overview
-    - gemini
-    - llm-citations
-    - generative-engine-optimization
-    - ai-overview-optimization
-    - quotable-content
+  - seo
+  - content
+  - optimize
   triggers:
-    - "optimize for AI"
-    - "get cited by ChatGPT"
-    - "AI optimization"
-    - "appear in AI answers"
-    - "GEO optimization"
-    - "AI-friendly content"
-    - "LLM citations"
-    - "get cited by AI"
-    - "show up in ChatGPT answers"
-    - "AI doesn't mention my brand"
-    - "make content AI-quotable"
+  - geo content
+  - location targeting
+  - regional content
+  - geo seo
+  estimated-duration: Medium
+  geo-relevance: high
 ---
 
 # GEO Content Optimizer
