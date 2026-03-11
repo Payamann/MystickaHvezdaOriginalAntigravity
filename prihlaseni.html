@@ -88,11 +88,13 @@
 
                 <div class="login-header">
 
-                    <span class="login-icon">??</span>
+                    <span class="login-icon">🔮</span>
 
-                    <h1 class="hero__title" style="font-size: 2rem; margin-bottom: 0.5rem;">Vítejte zpět</h1>
+                    <h1 class="hero__title" id="login-page-title" style="font-size: 2rem; margin-bottom: 0.5rem;">Vítejte zpět</h1>
 
-                    <p class="hero__subtitle" style="font-size: 1rem;">Přihlaste se ke svému účtu</p>
+                    <p class="hero__subtitle" id="login-page-subtitle" style="font-size: 1rem;">Přihlaste se ke svému účtu</p>
+
+                    <p id="login-social-proof" style="font-size:0.82rem;color:rgba(255,255,255,0.35);margin-top:0.5rem;display:none;">⭐⭐⭐⭐⭐ Přidejte se k 12 000+ uživatelům</p>
 
                 </div>
 
@@ -222,7 +224,7 @@
 
                     <button id="auth-mode-toggle" class="btn btn--text" style="color: var(--color-mystic-gold);">
 
-                        Nemáte účet? Zaregistrujte se
+                        Nemáte účet? Zaregistrujte se zdarma →
 
                     </button>
 
@@ -656,7 +658,36 @@
 
     <script type="module" src="js/main.js?v=10"></script>
 
+    <!-- CRO: Update heading when toggling between login and register -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleBtn = document.getElementById('auth-mode-toggle');
+            const titleEl = document.getElementById('login-page-title');
+            const subtitleEl = document.getElementById('login-page-subtitle');
+            const socialProofEl = document.getElementById('login-social-proof');
+            let isRegisterMode = false;
 
+            toggleBtn?.addEventListener('click', () => {
+                isRegisterMode = !isRegisterMode;
+                if (isRegisterMode) {
+                    if (titleEl) titleEl.textContent = 'Začněte svou cestu';
+                    if (subtitleEl) subtitleEl.textContent = 'Registrace je zdarma – 7 dní Premium bez karty';
+                    if (socialProofEl) socialProofEl.style.display = 'block';
+                    toggleBtn.textContent = 'Máte účet? Přihlaste se';
+                } else {
+                    if (titleEl) titleEl.textContent = 'Vítejte zpět';
+                    if (subtitleEl) subtitleEl.textContent = 'Přihlaste se ke svému účtu';
+                    if (socialProofEl) socialProofEl.style.display = 'none';
+                    toggleBtn.textContent = 'Nemáte účet? Zaregistrujte se zdarma →';
+                }
+            });
+
+            // If URL has ?mode=register, auto-switch to register
+            if (new URLSearchParams(window.location.search).get('mode') === 'register') {
+                setTimeout(() => toggleBtn?.click(), 100);
+            }
+        });
+    </script>
 
 </body>
 

@@ -10,7 +10,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-    <meta name="description" content="Přehled cen a předplatných pro Premium funkce Mystické Hvězdy.">
+    <meta name="description" content="Vyzkoušejte Mystickou Hvězdu 7 dní zdarma – bez platební karty. Neomezené tarotové výklady, horoskopy, natální karta a AI mentor od 199 Kč/měsíc.">
 
     <meta name="keywords" content="ceník, předplatné, premium, služby">
 
@@ -24,7 +24,7 @@
 
     <meta property="og:title" content="Ceník Služeb | Mystická Hvězda">
 
-    <meta property="og:description" content="Přehled cen a předplatných pro Premium funkce Mystické Hvězdy.">
+    <meta property="og:description" content="7 dní Premium zdarma – bez karty. Neomezené výklady, horoskopy a AI mentor. Od 199 Kč/měsíc.">
 
     <meta property="og:image" content="https://mystickahvezda.cz/img/hero-3d.webp">
 
@@ -174,6 +174,22 @@
 
                 }
 
+            },
+
+            {
+
+                "@type": "Question",
+
+                "name": "Co se stane po skončení 7 dní zdarma?",
+
+                "acceptedAnswer": {
+
+                    "@type": "Answer",
+
+                    "text": "Po skončení trialu se automaticky vrátíte na bezplatný plán Poutník – bez poplatků. Platební karta není požadována. Pokud chcete Premium zachovat, aktivujete si předplatné ručně v nastavení profilu."
+
+                }
+
             }
 
         ]
@@ -238,15 +254,13 @@
 
                 <h1 class="hero__title">
 
-                    Jednoduchý a transparentní <span class="text-gradient">ceník</span>
+                    Začněte zdarma. <span class="text-gradient">Odemkněte hvězdy.</span>
 
                 </h1>
 
                 <p class="hero__subtitle">
 
-                    Vyberte si úroveň podpory, kterou potřebujete pro svou duchovní cestu.
-
-                    Můžete kdykoliv změnit nebo zrušit.
+                    7 dní Premium zdarma – bez platební karty. Zrušení kdykoliv jedním kliknutím.
 
                 </p>
 
@@ -264,11 +278,31 @@
 
                 <p style="color:rgba(255,255,255,0.45);font-size:0.9rem;letter-spacing:1px;">
 
-                    ????? &nbsp;Přes <strong style="color:rgba(255,255,255,0.7);">12 000 uživatelů</strong> hledá
+                    ⭐⭐⭐⭐⭐ &nbsp;Přes <strong style="color:rgba(255,255,255,0.7);">12 000 uživatelů</strong> hledá
 
                     odpovědi v hvězdách každý den
 
                 </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- BILLING TOGGLE -->
+
+        <section style="padding: 0 0 2rem; text-align: center;">
+
+            <div class="container">
+
+                <div style="display:inline-flex;align-items:center;gap:1rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:50px;padding:0.4rem 1rem;">
+
+                    <span id="toggle-monthly" style="cursor:pointer;padding:0.4rem 1.2rem;border-radius:30px;font-size:0.9rem;font-weight:600;background:var(--color-mystic-gold);color:#000;transition:all 0.3s;">Měsíčně</span>
+
+                    <span id="toggle-yearly" style="cursor:pointer;padding:0.4rem 1.2rem;border-radius:30px;font-size:0.9rem;font-weight:500;color:rgba(255,255,255,0.6);transition:all 0.3s;">Ročně <span style="background:rgba(46,204,113,0.2);color:#2ecc71;font-size:0.75rem;padding:2px 8px;border-radius:20px;margin-left:4px;">ušetřete 20 %</span></span>
+
+                </div>
 
             </div>
 
@@ -310,9 +344,7 @@
 
                         </ul>
 
-                        <a href="#" class="btn btn--secondary" data-plan="poutnik" style="width: 100%;">Vytvořit
-
-                            účet</a>
+                        <a href="#" class="btn btn--secondary" data-plan="poutnik" style="width: 100%;">Začít zdarma →</a>
 
                     </div>
 
@@ -332,15 +364,15 @@
 
                         <p class="card__text">Pro pravidelné vedení</p>
 
-                        <div class="card__price">
+                        <div class="card__price" data-price-plan="pruvodce">
 
                             <span
 
-                                style="font-size:0.85rem;color:var(--color-mystic-gold);display:block;margin-bottom:0.2rem;">??
+                                style="font-size:0.85rem;color:var(--color-mystic-gold);display:block;margin-bottom:0.2rem;">✨
 
                                 7 dní zdarma</span>
 
-                            199 Kč<span>/měsíc</span>
+                            <span class="price-amount">199 Kč</span><span class="price-suffix">/měsíc</span>
 
                         </div>
 
@@ -366,7 +398,7 @@
 
                         <p style="text-align:center;font-size:0.78rem;color:rgba(255,255,255,0.4);margin-top:0.5rem;">
 
-                            Bez platební karty • Zrušení kdykoliv</p>
+                            🔒 Bez platební karty • Zrušení kdykoliv</p>
 
                     </div>
 
@@ -380,7 +412,7 @@
 
                         <p class="card__text">Pro hlubokou transformaci</p>
 
-                        <div class="card__price">499 Kč<span>/měsíc</span></div>
+                        <div class="card__price" data-price-plan="osviceni"><span class="price-amount">499 Kč</span><span class="price-suffix">/měsíc</span></div>
 
                         <ul class="card__features">
 
@@ -398,9 +430,7 @@
 
                         </ul>
 
-                        <a href="#" class="btn btn--secondary" data-plan="osviceni" style="width: 100%;">Zakoupit
-
-                            předplatné</a>
+                        <a href="#" class="btn btn--secondary" data-plan="osviceni" style="width: 100%;">Začít 7 dní zdarma ›</a>
 
                     </div>
 
@@ -416,13 +446,13 @@
 
                             style="position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, var(--color-mystic-gold), #c9a227); color: #000; padding: 6px 16px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">
 
-                            ? Exkluzivní VIP</div>
+                            👑 Exkluzivní VIP</div>
 
                         <h4 class="card__title" style="color: var(--color-mystic-gold); margin-top: 1rem;">VIP Věštecký Majestát</h4>
 
                         <p class="card__text">Pro hluboký duchovní vývoj</p>
 
-                        <div class="card__price" style="color: var(--color-mystic-gold);">999 Kč<span>/měsíc</span></div>
+                        <div class="card__price" data-price-plan="vip" style="color: var(--color-mystic-gold);"><span class="price-amount">999 Kč</span><span class="price-suffix">/měsíc</span></div>
 
                         <ul class="card__features">
 
@@ -808,7 +838,7 @@
 
                     <div style="padding:2rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;">
 
-                        <div style="color:var(--color-mystic-gold);margin-bottom:1rem;">?????</div>
+                        <div style="color:var(--color-mystic-gold);margin-bottom:1rem;">★★★★★</div>
 
                         <p style="color:rgba(255,255,255,0.8);font-style:italic;line-height:1.7;margin-bottom:1rem;">&bdquo;Tarotové výklady jsou překvapivě přesné. Každé pondělí kontroluji horoskop a je to první věc, co ráno čtu.&ldquo;</p>
 
@@ -824,7 +854,7 @@
 
                     <div style="padding:2rem;background:rgba(255,255,255,0.03);border:1px solid rgba(212,175,55,0.25);border-radius:16px;">
 
-                        <div style="color:var(--color-mystic-gold);margin-bottom:1rem;">?????</div>
+                        <div style="color:var(--color-mystic-gold);margin-bottom:1rem;">★★★★★</div>
 
                         <p style="color:rgba(255,255,255,0.8);font-style:italic;line-height:1.7;margin-bottom:1rem;">&bdquo;Natální karta mě dostala. Popsala věci o mé osobnosti, které jsem nikdy nikomu neříkala. Stojí to za každou korunu.&ldquo;</p>
 
@@ -840,7 +870,7 @@
 
                     <div style="padding:2rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;">
 
-                        <div style="color:var(--color-mystic-gold);margin-bottom:1rem;">?????</div>
+                        <div style="color:var(--color-mystic-gold);margin-bottom:1rem;">★★★★★</div>
 
                         <p style="color:rgba(255,255,255,0.8);font-style:italic;line-height:1.7;margin-bottom:1rem;">&bdquo;Myslel jsem, že astrologie je blbost. Po měsíci jsem přesvědčený, že tohle má smysl. Partnerská shoda byla neuvěřitelně přesná.&ldquo;</p>
 
@@ -956,6 +986,52 @@
 
                     </div>
 
+
+
+                    <div class="faq-item">
+
+                        <button class="faq-question">
+
+                            Co se stane po skončení 7 dní zdarma?
+
+                            <span class="faq-icon">+</span>
+
+                        </button>
+
+                        <div class="faq-answer">
+
+                            <p>Po skončení trialu se vrátíte na bezplatný plán Poutník – automaticky, bez poplatků.
+
+                                Platební karta není potřeba. Pokud se rozhodnete pokračovat v Premium, aktivujete předplatné
+
+                                sami v nastavení profilu.</p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="faq-item">
+
+                        <button class="faq-question">
+
+                            Mohu používat aplikaci v angličtině nebo slovenštině?
+
+                            <span class="faq-icon">+</span>
+
+                        </button>
+
+                        <div class="faq-answer">
+
+                            <p>Ano – naše aplikace je dostupná v češtině a slovenštině. Slovenská verze je přístupná
+
+                                na <a href="/sk/" style="color:var(--color-mystic-gold);">mystickahvezda.cz/sk/</a>.</p>
+
+                        </div>
+
+                    </div>
+
                 </div>
 
             </div>
@@ -1064,7 +1140,61 @@
 
     <script type="module" src="js/main.js?v=10"></script>
 
+    <!-- Sticky mobile CTA -->
+    <div id="sticky-cta" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:999;background:rgba(10,5,25,0.97);border-top:1px solid rgba(212,175,55,0.3);padding:0.85rem 1rem;backdrop-filter:blur(12px);">
+        <div style="max-width:480px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+            <div>
+                <div style="font-size:0.78rem;color:rgba(255,255,255,0.5);margin-bottom:2px;">Hvězdný Průvodce</div>
+                <div style="font-size:1rem;font-weight:700;color:var(--color-mystic-gold);">199 Kč/měs <span style="font-size:0.75rem;font-weight:400;color:rgba(255,255,255,0.4);">• 7 dní zdarma</span></div>
+            </div>
+            <a href="#" class="btn btn--primary" data-plan="pruvodce" style="white-space:nowrap;padding:0.6rem 1.4rem;font-size:0.9rem;">Začít zdarma →</a>
+        </div>
+    </div>
+    <style>
+        @media (max-width: 768px) { #sticky-cta { display: block !important; } }
+    </style>
 
+    <!-- Annual billing toggle -->
+    <script>
+        const monthlyPrices = { pruvodce: '199 Kč', osviceni: '499 Kč', vip: '999 Kč' };
+        const yearlyPrices = { pruvodce: '159 Kč', osviceni: '399 Kč', vip: '799 Kč' };
+        let isYearly = false;
+
+        function setPrices(yearly) {
+            isYearly = yearly;
+            const prices = yearly ? yearlyPrices : monthlyPrices;
+            const suffix = yearly ? '/měsíc (účtováno ročně)' : '/měsíc';
+
+            // Update toggle UI
+            document.getElementById('toggle-monthly').style.cssText = yearly
+                ? 'cursor:pointer;padding:0.4rem 1.2rem;border-radius:30px;font-size:0.9rem;font-weight:500;color:rgba(255,255,255,0.6);transition:all 0.3s;'
+                : 'cursor:pointer;padding:0.4rem 1.2rem;border-radius:30px;font-size:0.9rem;font-weight:600;background:var(--color-mystic-gold);color:#000;transition:all 0.3s;';
+            document.getElementById('toggle-yearly').style.cssText = yearly
+                ? 'cursor:pointer;padding:0.4rem 1.2rem;border-radius:30px;font-size:0.9rem;font-weight:600;background:var(--color-mystic-gold);color:#000;transition:all 0.3s;'
+                : 'cursor:pointer;padding:0.4rem 1.2rem;border-radius:30px;font-size:0.9rem;font-weight:500;color:rgba(255,255,255,0.6);transition:all 0.3s;';
+
+            // Update price displays
+            const priceEls = document.querySelectorAll('[data-price-plan]');
+            priceEls.forEach(el => {
+                const plan = el.dataset.pricePlan;
+                if (prices[plan]) {
+                    el.querySelector('.price-amount').textContent = prices[plan];
+                    el.querySelector('.price-suffix').textContent = suffix;
+                }
+            });
+        }
+
+        document.getElementById('toggle-monthly').addEventListener('click', () => setPrices(false));
+        document.getElementById('toggle-yearly').addEventListener('click', () => setPrices(true));
+
+        // Hide sticky CTA once user scrolls past pricing section
+        const observer = new IntersectionObserver(([entry]) => {
+            const sticky = document.getElementById('sticky-cta');
+            if (sticky) sticky.style.display = entry.isIntersecting ? 'none' : '';
+        }, { threshold: 0.1 });
+        const pricingSection = document.querySelector('.grid.grid-4');
+        if (pricingSection) observer.observe(pricingSection);
+    </script>
 
 </body>
 
