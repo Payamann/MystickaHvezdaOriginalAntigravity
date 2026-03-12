@@ -104,7 +104,13 @@
 
     }
 
-    </script><title>Denní Horoskopy | Mystická Hvězda</title>
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://js.stripe.com">
+    <link rel="dns-prefetch" href="https://js.stripe.com">
+    <link rel="preload" as="image" href="img/bg-cosmic-hd.webp">
+    <title>Denní Horoskopy | Mystická Hvězda</title>
 
 
 
@@ -148,7 +154,15 @@
 
     <link rel="alternate" hreflang="pl" href="https://mystickahvezda.cz/pl/horoskopy.html">
 
-    <link rel="alternate" hreflang="x-default" href="https://mystickahvezda.cz/horoskopy.html"></head>
+    <link rel="alternate" hreflang="x-default" href="https://mystickahvezda.cz/horoskopy.html">
+    <style>
+    /* Critical Hero CSS */
+    .section--hero { min-height: 40vh !important; display: flex; align-items: center; justify-content: center; padding: 60px 0 20px !important; }
+    .hero__title { font-size: clamp(2rem, 7vw, 3.5rem); text-align: center; margin-bottom: 1rem; }
+    .zodiac-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px; margin-top: 20px; }
+    @media (max-width: 768px) { .zodiac-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; } }
+    </style>
+</head>
 
 
 

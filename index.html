@@ -71,6 +71,12 @@
 
 
 
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://js.stripe.com">
+  <link rel="dns-prefetch" href="https://js.stripe.com">
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
   <!-- Fonts -->
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -321,7 +327,15 @@
 
     }
 
-  </style>
+  
+    /* Critical Hero CSS */
+    .hero { position: relative; overflow: hidden; min-height: 80vh; display: flex; align-items: center; padding: 100px 0 60px; }
+    .hero__content { max-width: 800px; margin: 0 auto; text-align: center; position: relative; z-index: 5; }
+    .hero__title { font-size: clamp(2.5rem, 8vw, 4.5rem); line-height: 1.1; margin-bottom: 20px; font-family: 'Cinzel', serif; color: #fff; }
+    .hero__subtitle { font-size: clamp(1rem, 4vw, 1.25rem); color: rgba(255,255,255,0.7); margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto; }
+    .hero__image { width: 100%; max-width: 500px; height: auto; transform: translateZ(0); filter: drop-shadow(0 0 30px rgba(155,89,182,0.3)); }
+    @media (max-width: 768px) { .hero { padding: 80px 0 40px; min-height: 60vh; } }
+    </style>
 
 
 

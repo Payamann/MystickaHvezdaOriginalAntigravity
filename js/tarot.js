@@ -364,8 +364,14 @@ async function generateAiSummary(cards, spreadType) {
             };
         });
 
+        // Detect current language
+        const path = window.location.pathname;
+        let currentLang = 'cs';
+        if (path.includes('/sk/')) currentLang = 'sk';
+        else if (path.includes('/pl/')) currentLang = 'pl';
+
         const authToken = window.Auth?.token;
-        const response = await fetch('/api/tarot-summary', {
+        const response = await fetch(`${window.API_CONFIG?.BASE_URL || '/api'}/tarot-summary`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -373,7 +379,8 @@ async function generateAiSummary(cards, spreadType) {
             },
             body: JSON.stringify({
                 spreadType,
-                cards: cardsData
+                cards: cardsData,
+                lang: currentLang
             })
         });
 

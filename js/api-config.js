@@ -59,10 +59,19 @@ async function callAPI(endpoint, data) {
         const csrfToken = await getCSRFToken();
         if (csrfToken) headers['X-CSRF-Token'] = csrfToken;
 
+        // Detect current language from URL
+        const path = window.location.pathname;
+        let currentLang = 'cs';
+        if (path.includes('/sk/')) currentLang = 'sk';
+        else if (path.includes('/pl/')) currentLang = 'pl';
+
+        // Automatically inject lang if not provided
+        const finalData = { ...data, lang: data.lang || currentLang };
+
         const response = await fetch(`${API_CONFIG.BASE_URL}${endpoint}`, {
             method: 'POST',
             headers,
-            body: JSON.stringify(data)
+            body: JSON.stringify(finalData)
         });
 
         if (!response.ok) {

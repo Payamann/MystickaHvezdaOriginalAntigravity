@@ -13,9 +13,35 @@ export const router = express.Router();
 
 const VALID_ZODIAC_SIGNS = ['Beran', 'Býk', 'Blíženci', 'Rak', 'Lev', 'Panna', 'Váhy', 'Štír', 'Střelec', 'Kozoroh', 'Vodnář', 'Ryby'];
 
+// Normalization map from SK/PL to CZ
+const ZODIAC_NORMALIZATION = {
+    // Slovak
+    'Baran': 'Beran',
+    'Škorpión': 'Štír',
+    'Strelec': 'Střelec',
+    'Kozorožec': 'Kozoroh',
+    'Vodnár': 'Vodnář',
+    // Polish
+    'Byk': 'Býk',
+    'Bliźnięta': 'Blíženci',
+    'Lew': 'Lev',
+    'Waga': 'Váhy',
+    'Skorpion': 'Štír',
+    'Strzelec': 'Střelec',
+    'Koziorożec': 'Kozoroh',
+    'Wodnik': 'Vodnář'
+};
+
 router.post('/', optionalPremiumCheck, async (req, res) => {
     try {
-        const { sign, period = 'daily', context = [] } = req.body;
+        let { sign, period = 'daily', context = [], lang = 'cs' } = req.body;
+
+        // Try to normalize sign if it's not in the valid list
+        if (sign && !VALID_ZODIAC_SIGNS.includes(sign)) {
+            if (ZODIAC_NORMALIZATION[sign]) {
+                sign = ZODIAC_NORMALIZATION[sign];
+            }
+        }
 
         if (!sign || !VALID_ZODIAC_SIGNS.includes(sign)) {
             return res.status(400).json({ success: false, error: 'Neplatné znamení zvěrokruhu.' });
@@ -25,21 +51,34 @@ router.post('/', optionalPremiumCheck, async (req, res) => {
             return res.status(400).json({ success: false, error: 'Neplatné období.' });
         }
 
+        // Supported languages
+        const supportedLangs = ['cs', 'sk', 'pl'];
+        const targetLang = supportedLangs.includes(lang) ? lang : 'cs';
+
+        // Language names for the prompt
+        const langNames = { 'cs': 'česky', 'sk': 'slovensky', 'pl': 'polsky' };
+        const langName = langNames[targetLang];
+
         // PREMIUM GATE: Free users can only access daily horoscope
         if (!req.isPremium && period !== 'daily') {
+            const errorMsgs = {
+                'cs': 'Týdenní a měsíční horoskopy jsou dostupné pouze pro Premium uživatele.',
+                'sk': 'Týždenné a mesačné horoskopy sú dostupné iba pre Premium používateľov.',
+                'pl': 'Horoskopy tygodniowe i miesięczne są dostępne tylko pro użytkowników Premium.'
+            };
             return res.status(402).json({
                 success: false,
-                error: 'Týdenní a měsíční horoskopy jsou dostupné pouze pro Premium uživatele.',
+                error: errorMsgs[targetLang],
                 code: 'PREMIUM_REQUIRED',
                 feature: 'horoscope_extended'
             });
         }
 
-        // Generate cache key (include context hash to avoid stale cache if context changes)
+        // Generate cache key (include lang and context hash)
         const contextHash = Array.isArray(context) && context.length > 0
             ? Buffer.from(context.join('')).toString('base64').substring(0, 10)
             : 'nocontext';
-        const cacheKey = getHoroscopeCacheKey(sign, period) + `-${contextHash}`;
+        const cacheKey = `${getHoroscopeCacheKey(sign, period)}-${targetLang}-${contextHash}`;
 
         // Check database cache first
         const cachedData = await getCachedHoroscope(cacheKey);
@@ -53,11 +92,20 @@ router.post('/', optionalPremiumCheck, async (req, res) => {
             });
         }
 
-        console.log(`🔄 Horoscope Cache MISS: ${cacheKey} - Generating new...`);
+        console.log(`🔄 Horoscope Cache MISS: ${cacheKey} - Generating new for ${targetLang}...`);
 
         let periodPrompt;
         let periodLabel;
         let contextInstruction = '';
+
+        // Labels mapping
+        const labels = {
+            'cs': { 'daily': 'Denní inspirace', 'weekly': 'Týdenní horoskop', 'monthly': 'Měsíční horoskop' },
+            'sk': { 'daily': 'Denná inšpirácia', 'weekly': 'Týždenný horoskop', 'monthly': 'Mesačný horoskop' },
+            'pl': { 'daily': 'Dzienna inspiracja', 'weekly': 'Horoskop tygodniowy', 'monthly': 'Horoskop miesięczny' }
+        };
+
+        periodLabel = labels[targetLang][period];
 
         if (context && Array.isArray(context) && context.length > 0) {
             const sanitized = context
@@ -66,23 +114,27 @@ router.post('/', optionalPremiumCheck, async (req, res) => {
                 .filter(c => c.trim().length > 0);
 
             if (sanitized.length > 0) {
-                contextInstruction = `\nCONTEXT (Z uživatelova deníku):\n"${sanitized.join('", "')}"\nINSTRUKCE PRO SYNERGII: Pokud je to relevantní, jemně a nepřímo nawazuj na témata z deníku. Neříkej "V deníku vidím...", ale spíše "Hvězdy naznačují posun v tématech, která tě trápí...". Buď empatický.`;
+                if (targetLang === 'sk') {
+                    contextInstruction = `\nCONTEXT (Z užívateľovho denníka):\n"${sanitized.join('", "')}"\nINŠTRUKCIA PRE SYNERGIU: Ak je to relevantné, jemne a nepriamo nadväzuj na témy z denníka. Nehovor "V denníku vidím...", ale skôr "Hviezdy naznačujú posun v témach, ktoré ťa trápia...". Buď empatický.`;
+                } else if (targetLang === 'pl') {
+                    contextInstruction = `\nCONTEXT (Z dziennika użytkownika):\n"${sanitized.join('", "')}"\nINSTRUKCJA DLA SYNERGII: Jeśli to istotne, delikatnie i pośrednio nawiązuj do tematów z dziennika. Nie mów "Widzę w dzienniku...", ale raczej "Gwiazdy sugerują zmianę w tematach, które Cię martwią...". Bądź empatyczny.`;
+                } else {
+                    contextInstruction = `\nCONTEXT (Z uživatelova deníku):\n"${sanitized.join('", "')}"\nINSTRUKCE PRO SYNERGII: Pokud je to relevantní, jemně a nepřímo nawazuj na témata z deníku. Neříkej "V deníku vidím...", ale spíše "Hvězdy naznačují posun v tématech, která tě trápí...". Buď empatický.`;
+                }
             }
         }
 
         if (period === 'weekly') {
-            periodLabel = 'Týdenní horoskop';
-            periodPrompt = `Jsi inspirativní astrologický průvodce.\nGeneruj týdenní horoskop ve formátu JSON.\nOdpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).\nStruktura:\n{\n  "prediction": "Text horoskopu (5-6 vět). Zaměř se na hlavní energii, lásku, kariéru a jednu výzvu.",\n  "affirmation": "Krátká, úderná afirmace pro tento týden.",\n  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]\n}\nText piš česky, poeticky a povzbudivě.${contextInstruction}`;
+            periodPrompt = `Jsi inspirativní astrologický průvodce.\nGeneruj týdenní horoskop ve formátu JSON.\nOdpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).\nStruktura:\n{\n  "prediction": "Text horoskopu (5-6 vět). Zaměř se na hlavní energii, lásku, kariéru a jednu výzvu.",\n  "affirmation": "Krátká, úderná afirmace pro tento týden.",\n  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]\n}\nText piš ${langName}, poeticky a povzbudivě.${contextInstruction}`;
         } else if (period === 'monthly') {
-            periodLabel = 'Měsíční horoskop';
-            periodPrompt = `Jsi moudrý astrologický průvodce.\nGeneruj měsíční horoskop ve formátu JSON.\nOdpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).\nStruktura:\n{\n  "prediction": "Text horoskopu (7-8 vět). Zahrň úvod, lásku, kariéru, zdraví a klíčová data.",\n  "affirmation": "Silná afirmace pro tento měsíc.",\n  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]\n}\nText piš česky, inspirativně a hluboce.${contextInstruction}`;
+            periodPrompt = `Jsi moudrý astrologický průvodce.\nGeneruj měsíční horoskop ve formátu JSON.\nOdpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).\nStruktura:\n{\n  "prediction": "Text horoskopu (7-8 vět). Zahrň úvod, lásku, kariéru, zdraví a klíčová data.",\n  "affirmation": "Silná afirmace pro tento měsíc.",\n  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]\n}\nText piš ${langName}, inspirativně a hluboce.${contextInstruction}`;
         } else {
-            periodLabel = 'Denní inspirace';
-            periodPrompt = `Jsi laskavý astrologický průvodce.\nGeneruj denní horoskop ve formátu JSON.\nOdpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).\nStruktura:\n{\n  "prediction": "Text horoskopu (3-4 věty). Hlavní energie dne a jedna konkrétní rada.",\n  "affirmation": "Krátká pozitivní afirmace pro dnešek.",\n  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]\n}\nText piš česky, poeticky a povzbudivě.${contextInstruction}`;
+            periodPrompt = `Jsi laskavý astrologický průvodce.\nGeneruj denní horoskop ve formátu JSON.\nOdpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).\nStruktura:\n{\n  "prediction": "Text horoskopu (3-4 věty). Hlavní energie dne a jedna konkrétní rada.",\n  "affirmation": "Krátká pozitivní afirmace pro dnešek.",\n  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]\n}\nText piš ${langName}, poeticky a povzbudivě.${contextInstruction}`;
         }
 
+        const dateLocales = { 'cs': 'cs-CZ', 'sk': 'sk-SK', 'pl': 'pl-PL' };
         const today = new Date();
-        const message = `Znamení: ${sign}\nDatum: ${today.toLocaleDateString('cs-CZ')}`;
+        const message = `Znamení: ${sign}\nDatum: ${today.toLocaleDateString(dateLocales[targetLang])}`;
 
         const response = await callGemini(periodPrompt, message);
 

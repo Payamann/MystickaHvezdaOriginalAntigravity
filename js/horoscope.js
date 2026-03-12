@@ -112,32 +112,62 @@ function initHoroscope() {
                 document.getElementById('bg-symbol').innerText = signSymbol;
             }
 
+            // Detect current language
+            const path = window.location.pathname;
+            let currentLang = 'cs';
+            if (path.includes('/sk/')) currentLang = 'sk';
+            else if (path.includes('/pl/')) currentLang = 'pl';
+
+            // Update Date/Period label
+            const periodLabels = {
+                'cs': { 'daily': 'Dnes', 'weekly': 'Tento týden', 'monthly': 'Tento měsíc' },
+                'sk': { 'daily': 'Dnes', 'weekly': 'Tento týždeň', 'monthly': 'Tento mesiac' },
+                'pl': { 'daily': 'Dzisiaj', 'weekly': 'W tym tygodniu', 'monthly': 'W tym miesiącu' }
+            };
+
             // Show loading, hide content
             if (contentContainer) contentContainer.classList.add('hidden');
             loadingState.classList.remove('hidden');
 
             // Mystical loading messages
-            const loadingMessages = [
-                "Navazuji spojení s Vesmírem...",
-                "Čtu postavení vašich hvězd...",
-                "Analyzuji planetární vlivy...",
-                "Překládám zprávy osudu...",
-                "Finalizuji vaši předpověď..."
-            ];
+            const loadingMessages = {
+                'cs': [
+                    "Navazuji spojení s Vesmírem...",
+                    "Čtu postavení vašich hvězd...",
+                    "Analyzuji planetární vlivy...",
+                    "Překládám zprávy osudu...",
+                    "Finalizuji vaši předpověď..."
+                ],
+                'sk': [
+                    "Nadväzujem spojenie s Vesmírom...",
+                    "Čítam postavenie vašich hviezd...",
+                    "Analyzujem planetárne vplyvy...",
+                    "Prekladám správy osudu...",
+                    "Finalizujem vašu predpoveď..."
+                ],
+                'pl': [
+                    "Nawiązuję połączenie z Wszechświatem...",
+                    "Czytam układ Twoich gwiazd...",
+                    "Analizuję wpływy planetarne...",
+                    "Tłumaczę przesłania losu...",
+                    "Finalizuję Twoją przepowiednię..."
+                ]
+            };
 
+            const currentMsgs = loadingMessages[currentLang] || loadingMessages['cs'];
             const loadingText = loadingState.querySelector('p');
             let msgIndex = 0;
 
             // Reset to first message
-            if (loadingText) loadingText.innerText = loadingMessages[0];
+            if (loadingText) loadingText.innerText = currentMsgs[0];
 
             // Cycle messages every 2.5 seconds
             const loadingInterval = setInterval(() => {
-                msgIndex = (msgIndex + 1) % loadingMessages.length;
+                msgIndex = (msgIndex + 1) % currentMsgs.length;
                 if (loadingText) {
                     loadingText.style.opacity = '0';
                     setTimeout(() => {
-                        loadingText.innerText = loadingMessages[msgIndex];
+                        loadingText.innerText = currentMsgs[msgIndex];
                         loadingText.style.opacity = '1';
                     }, 300); // Wait for fade out
                 }
@@ -162,30 +192,27 @@ function initHoroscope() {
                     console.warn('Failed to fetch journal context:', e);
                 }
 
-                // Call Gemini AI via server with period AND context
+                // Call Gemini AI via server with period AND context AND lang
                 const response = await fetch(`${window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api'}/horoscope`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         sign: signName,
                         period: currentPeriod,
-                        context: context // Send context to API
+                        context: context,
+                        lang: currentLang
                     })
                 });
 
                 const data = await response.json();
 
-                // Update Date/Period label
-                const periodLabels = {
-                    'daily': 'Dnes',
-                    'weekly': 'Tento týden',
-                    'monthly': 'Tento měsíc'
-                };
-                const today = new Date().toLocaleDateString('cs-CZ', {
+                const dateLocales = { 'cs': 'cs-CZ', 'sk': 'sk-SK', 'pl': 'pl-PL' };
+                const today = new Date().toLocaleDateString(dateLocales[currentLang] || 'cs-CZ', {
                     day: 'numeric', month: 'long', year: 'numeric', weekday: 'long'
                 });
+
                 if (detailDate) {
-                    detailDate.innerText = `${periodLabels[currentPeriod] || 'Dnes'} • ${today}`;
+                    detailDate.innerText = `${periodLabels[currentLang][currentPeriod] || periodLabels['cs'][currentPeriod]} • ${today}`;
                 }
 
                 let predictionData;
@@ -200,12 +227,13 @@ function initHoroscope() {
                 }
 
                 // Clean prediction text: remove embedded affirmations
-                let cleanPrediction = predictionData.prediction || 'Energie jsou dnes nejasné...';
+                let cleanPrediction = predictionData.prediction || (currentLang === 'sk' ? 'Energie sú dnes nejasné...' : (currentLang === 'pl' ? 'Energie są dziś niejasne...' : 'Energie jsou dnes nejasné...'));
 
                 // Pattern to match *Afirmace: ...*  or **Afirmace:** ... or Afirmace: ...
+                // Including translations for "Afirmace"
                 const affirmationPatterns = [
-                    /\*\*?Afirmace:?\*?\*?\s*[^*]*\*?/gi,  // *Afirmace: text* or **Afirmace:** text
-                    /Afirmace:\s*.+$/gim                   // Afirmace: text at the end
+                    /\*\*?(?:Afirmace|Afirmácia|Afirmacja):?\*?\*?\s*[^*]*\*?/gi,
+                    /(?:Afirmace|Afirmácia|Afirmacja):\s*.+$/gim
                 ];
 
                 for (const pattern of affirmationPatterns) {
@@ -214,7 +242,7 @@ function initHoroscope() {
                         // Extract the affirmation text (remove markdown)
                         extractedAffirmation = match[0]
                             .replace(/\*+/g, '')
-                            .replace(/^Afirmace:?\s*/i, '')
+                            .replace(/^(?:Afirmace|Afirmácia|Afirmacja):?\s*/i, '')
                             .trim();
                     }
                     cleanPrediction = cleanPrediction.replace(pattern, '').trim();
@@ -226,9 +254,11 @@ function initHoroscope() {
 
                 // Update additional fields
                 if (detailWork) {
-                    // Prefer API affirmation, then extracted, then fallback
-                    const affirmationText = predictionData.affirmation || extractedAffirmation || 'Jsem v souladu s vesmírem.';
-                    detailWork.innerHTML = `<strong style="color: var(--color-starlight);">✨ Afirmace:</strong> ${affirmationText}`;
+                    const affLabel = { 'cs': 'Afirmace', 'sk': 'Afirmácia', 'pl': 'Afirmacja' }[currentLang] || 'Afirmace';
+                    const affFallback = { 'cs': 'Jsem v souladu s vesmírem.', 'sk': 'Som v súlade s vesmírom.', 'pl': 'Jestem w harmonii z wszechświatem.' }[currentLang] || 'Jsem v souladu s vesmírem.';
+                    
+                    const affirmationText = predictionData.affirmation || extractedAffirmation || affFallback;
+                    detailWork.innerHTML = `<strong style="color: var(--color-starlight);">✨ ${affLabel}:</strong> ${affirmationText}`;
                 }
                 if (detailRelationships) detailRelationships.style.display = 'none';
 

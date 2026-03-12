@@ -170,13 +170,21 @@ function initLanguageSwitcher() {
     if (path.includes('/sk/')) currentLang = 'sk';
     else if (path.includes('/pl/')) currentLang = 'pl';
 
+    console.log(`[components.js] Language detected: ${currentLang}`);
+
     // Update UI initial state
     const langMap = { 'cs': 'CZ', 'sk': 'SK', 'pl': 'PL' };
     if (currentText) currentText.textContent = langMap[currentLang];
 
     links.forEach(link => {
-        if (link.dataset.lang === currentLang) link.classList.add('active');
-        else link.classList.remove('active');
+        const linkLang = link.dataset.lang;
+        if (linkLang === currentLang) {
+            link.classList.add('active');
+            // Also update the button text to match the active language just in case
+            if (currentText) currentText.textContent = langMap[linkLang];
+        } else {
+            link.classList.remove('active');
+        }
     });
 
     // Toggle dropdown
