@@ -136,7 +136,7 @@ const globalLimiter = rateLimit({
     },
     skip: (req, res) => {
         // Don't count static file requests (images, CSS, JS)
-        return req.path.match(/\.(js|css|jpg|jpeg|png|gif|ico|svg|ttf|woff|woff2)$/);
+        return req.path.match(/\.(js|css|jpg|jpeg|png|gif|ico|svg|ttf|webp|woff|woff2)$/);
     },
     standardHeaders: true,
     legacyHeaders: false,
@@ -152,7 +152,7 @@ app.use('/api/', globalLimiter);
 // Strict global rate limit for non-API routes (static files, etc.)
 const staticLimiter = rateLimit({
     windowMs: 1 * 60 * 1000, // 1 minute
-    max: 60, // 60 requests per minute per IP
+    max: 500, // 500 requests per minute per IP (relaxed to prevent asset blocking)
     skip: (req, res) => {
         // Skip for actual API routes (they have their own limiter)
         return req.path.startsWith('/api/');
