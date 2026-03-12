@@ -495,7 +495,7 @@ app.use((req, res) => {
 const isMain = process.argv[1] && (
     path.resolve(process.argv[1]) === __filename ||
     path.resolve(process.argv[1]) === path.resolve(process.cwd(), 'server', 'index.js') ||
-    import.meta.url === `file://${process.argv[1]}`
+    (import.meta.url && import.meta.url === `file://${path.resolve(process.argv[1])}`)
 );
 
 if (isMain || process.env.NODE_ENV === 'production') {
