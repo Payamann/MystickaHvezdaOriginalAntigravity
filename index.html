@@ -332,9 +332,9 @@
 
   <!-- Preload Critical Assets -->
 
-  <link rel="preload" as="image" href="img/hero-3d.webp" fetchpriority="high">
+  <link rel="preload" as="image" href="img/hero-3d.webp" type="image/webp" fetchpriority="high" imagesrcset="img/hero-3d-mobile.webp 400w, img/hero-3d.webp 800w" imagesizes="(max-width: 500px) 55vw, 50vw">
 
-  <link rel="preload" as="image" href="img/bg-cosmic-hd.webp" fetchpriority="low">
+  <link rel="preload" as="image" href="img/bg-cosmic-hd.webp" type="image/webp" fetchpriority="low">
 
 
 
@@ -597,7 +597,7 @@
 
             <div class="hero__glow-effect"></div>
 
-            <img src="img/hero-3d.webp" alt="Mystická astrolab" class="hero__image floating-anim" fetchpriority="high" width="500" height="500">
+            <img src="img/hero-3d.webp" alt="Mystická astrolab" class="hero__image floating-anim" srcset="img/hero-3d-mobile.webp 400w, img/hero-3d.webp 800w" sizes="(max-width: 500px) 55vw, 50vw" fetchpriority="high" width="800" height="751">
 
           </div>
 
