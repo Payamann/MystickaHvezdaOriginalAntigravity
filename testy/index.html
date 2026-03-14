@@ -11,7 +11,58 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="../css/style.v2.min.css?v=9">
-    <link rel="stylesheet" href="../css/testy.css?v=1">
+    <link rel="stylesheet" href="../css/testy.css?v=2">
+
+    <!-- SEO & Social Media (Open Graph) -->
+    <link rel="canonical" href="https://mystickahvezda.cz/testy/index.html">
+    <meta property="og:title" content="Mystická Sebepoznání | Mystická Hvězda">
+    <meta property="og:description" content="Odhalte své skryté já skrze naše interaktivní astrologické a tarotové testy.">
+    <meta property="og:image" content="https://mystickahvezda.cz/img/og-testy.webp">
+    <meta property="og:url" content="https://mystickahvezda.cz/testy/index.html">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- Schema.org -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Mystická Sebepoznání",
+      "description": "Soubor interaktivních testů pro sebepoznání skrze astrologii a tarot.",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Archetyp vaší duše",
+          "url": "https://mystickahvezda.cz/testy/archetyp-duse.html"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Živlová rovnováha",
+          "url": "https://mystickahvezda.cz/testy/zivlova-rovnovaha.html"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Stín vašeho znamení",
+          "url": "https://mystickahvezda.cz/testy/stin-znameni.html"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "Totemový průvodce",
+          "url": "https://mystickahvezda.cz/testy/totem-pruvodce.html"
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "name": "Karmické dědictví",
+          "url": "https://mystickahvezda.cz/testy/karmicke-dedictvi.html"
+        }
+      ]
+    }
+    </script>
 </head>
 <body>
     <div class="stars" aria-hidden="true"></div>
@@ -44,23 +95,43 @@
                     </a>
 
                     <!-- TEST 2: ELEMENTS -->
-                    <a href="#" class="test-card" style="opacity: 0.7; pointer-events: none;">
+                    <a href="zivlova-rovnovaha.html" class="test-card">
                         <div class="test-card__content">
                             <div class="test-card__icon">🔥</div>
                             <h3 class="test-card__title">Živlová rovnováha</h3>
-                            <p class="test-card__desc">Máte v sobě více ohně nebo vody? Zjistěte, který živel tvoří vaši podstatu. <br><strong>(Již brzy)</strong></p>
+                            <p class="test-card__desc">Máte v sobě více ohně nebo vody? Zjistěte, který živel tvoří vaši podstatu a jak najít balanc.</p>
                         </div>
-                        <span class="btn btn--glass btn--sm">Připravujeme...</span>
+                        <span class="btn btn--secondary btn--sm">Zjistit rovnováhu →</span>
                     </a>
 
                     <!-- TEST 3: SHADOW WORK -->
-                    <a href="#" class="test-card" style="opacity: 0.7; pointer-events: none;">
+                    <a href="stin-znameni.html" class="test-card">
                         <div class="test-card__content">
                             <div class="test-card__icon">🌘</div>
                             <h3 class="test-card__title">Stín vašeho znamení</h3>
-                            <p class="test-card__desc">Ponořte se hlouběji. Odhalte skryté stránky svého znamení a jak je transformovat v sílu. <br><strong>(Již brzy)</strong></p>
+                            <p class="test-card__desc">Ponořte se hlouběji. Odhalte skryté stránky svého znamení a jak je transformovat v sílu.</p>
                         </div>
-                        <span class="btn btn--glass btn--sm">Připravujeme...</span>
+                        <span class="btn btn--secondary btn--sm">Odhalit stín →</span>
+                    </a>
+
+                    <!-- TEST 4: SPIRIT ANIMAL -->
+                    <a href="totem-pruvodce.html" class="test-card">
+                        <div class="test-card__content">
+                            <div class="test-card__icon">🐺</div>
+                            <h3 class="test-card__title">Totemový průvodce</h3>
+                            <p class="test-card__desc">Které zvíře zrcadlí vaši duši? Objevte svého totemového ochránce a jeho skryté poselství.</p>
+                        </div>
+                        <span class="btn btn--secondary btn--sm">Najít průvodce →</span>
+                    </a>
+
+                    <!-- TEST 5: KARMIC LEGACY -->
+                    <a href="karmicke-dedictvi.html" class="test-card">
+                        <div class="test-card__content">
+                            <div class="test-card__icon">⏳</div>
+                            <h3 class="test-card__title">Karmické dědictví</h3>
+                            <p class="test-card__desc">Odkud kráčí vaše duše? Odhalte vlivy minulých životů a své současné duchovní poslání.</p>
+                        </div>
+                        <span class="btn btn--secondary btn--sm">Odkrýt minulost →</span>
                     </a>
                 </div>
             </div>

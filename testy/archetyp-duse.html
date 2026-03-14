@@ -11,7 +11,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="../css/style.v2.min.css?v=9">
-    <link rel="stylesheet" href="../css/testy.css?v=1">
+    <link rel="stylesheet" href="../css/testy.css?v=2">
+
+    <!-- SEO & Open Graph -->
+    <link rel="canonical" href="https://mystickahvezda.cz/testy/archetyp-duse.html">
+    <meta property="og:title" content="Který tarotový archetyp vládne vaší duši?">
+    <meta property="og:description" content="Odhalte svou vnitřní kartu Velké Arkány v tomto interaktivním testu.">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="https://mystickahvezda.cz/img/og-archetyp.webp">
 </head>
 <body>
     <div class="stars" aria-hidden="true"></div>
@@ -136,7 +143,8 @@
                             <!-- Injected by JS -->
                         </div>
                         <div class="text-center mt-xl">
-                            <button class="btn btn--glass" onclick="location.reload()">Zkusit znovu ↺</button>
+                            <button class="btn btn--primary" id="share-btn" onclick="shareResult()">Sdílet archetyp 🔗</button>
+                            <button class="btn btn--glass ml-md" onclick="location.reload()">Zkusit znovu ↺</button>
                             <a href="index.html" class="btn btn--secondary ml-md">Zpět na přehled</a>
                         </div>
                     </div>
@@ -224,6 +232,9 @@
             function showResult() {
                 const winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
                 const data = resultsData[winner];
+                
+                // Store result for sharing
+                window.lastResult = data.title;
 
                 const resultHtml = `
                     <div class="result-card" style="border-color: var(--quiz-accent);">
@@ -260,6 +271,25 @@
                     showStep(currentStep);
                 });
             });
+
+            window.shareResult = () => {
+                const text = `Mým tarotovým archetypem je ${window.lastResult}! Odhal ten svůj na Mystické Hvězdě.`;
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Můj Tarotový Archetyp',
+                        text: text,
+                        url: window.location.href
+                    }).catch(console.error);
+                } else {
+                    const dummy = document.createElement('input');
+                    document.body.appendChild(dummy);
+                    dummy.value = text + ' ' + window.location.href;
+                    dummy.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(dummy);
+                    alert('Výsledek zkopírován do schránky!');
+                }
+            };
         });
     </script>
 

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Odhalte skryté stránky své osobnosti skrze stínovou práci. Interaktivní test pro pochopení a transformaci stínu vašeho znamení.">
+    <title>Stín vašeho znamení | Mystická Hvězda</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/style.v2.min.css?v=9">
+    <link rel="stylesheet" href="../css/testy.css?v=2">
+
+    <!-- SEO & Open Graph -->
+    <link rel="canonical" href="https://mystickahvezda.cz/testy/stin-znameni.html">
+    <meta property="og:title" content="Odhalte stín svého znamení | Mystická Hvězda">
+    <meta property="og:description" content="Pohleďte do temnoty, abyste našli světlo. Interaktivní test stínové práce.">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="https://mystickahvezda.cz/img/og-stin.webp">
+</head>
+<body>
+    <div class="stars" aria-hidden="true"></div>
+
+    <div id="header-placeholder"></div>
+
+    <main id="main-content">
+        <section class="section section--hero">
+            <div class="container text-center">
+                <span class="section__badge">Hlubinná Diagnostika</span>
+                <h1 class="hero__title">Stín vašeho <span class="text-gradient">znamení</span></h1>
+                <p class="hero__subtitle">
+                    Pohleďte do temnoty, abyste našli světlo. Odhalte, co se skrývá pod povrchem 
+                    vašeho slunečního znamení a jak tyto vlastnosti proměnit ve svou sílu.
+                </p>
+            </div>
+        </section>
+
+        <section class="section" style="padding-top: 0;">
+            <div class="container">
+                <div class="quiz-container" id="quiz-box">
+                    <div class="quiz-progress">
+                        <div class="quiz-progress__bar" id="progress-bar"></div>
+                    </div>
+
+                    <!-- STEP 1 -->
+                    <div class="question-step active" data-step="1">
+                        <h3>Co vás na ostatních lidech nejvíce irituje?</h3>
+                        <div class="options-list">
+                            <button class="option-btn" data-score="power">Neschopnost se prosadit a slabost.</button>
+                            <button class="option-btn" data-score="control">Chaos, nespolehlivost a povrchnost.</button>
+                            <button class="option-btn" data-score="attention">Sebe střednost a touha být neustále vidět.</button>
+                            <button class="option-btn" data-score="detachment">Chlad, nedostatek empatie a vypočítavost.</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2 -->
+                    <div class="question-step" data-step="2">
+                        <h3>Jak reagujete, když věci nejdou podle vašeho plánu?</h3>
+                        <div class="options-list">
+                            <button class="option-btn" data-score="power">Začnu být agresivní nebo velmi netrpělivý/á.</button>
+                            <button class="option-btn" data-score="control">Cítím úzkost a snažím se získat kontrolu nad každým detailem.</button>
+                            <button class="option-btn" data-score="attention">Cítím se nedoceněný/á a uražený/á.</button>
+                            <button class="option-btn" data-score="detachment">Citově se uzavřu a začnu situaci ignorovat.</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3 -->
+                    <div class="question-step" data-step="3">
+                        <h3>Čeho se v hloubi duše nejvíce bojíte?</h3>
+                        <div class="options-list">
+                            <button class="option-btn" data-score="power">Ztráty vlivu a toho, že budu ovládán/a ostatními.</button>
+                            <button class="option-btn" data-score="control">Toho, že udělám chybu a budu vypadat trapně.</button>
+                            <button class="option-btn" data-score="attention">Samoty a toho, že si mě nikdo nebude pamatovat.</button>
+                            <button class="option-btn" data-score="detachment">Přílišné blízkosti, která by mě mohla zranit.</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 4 -->
+                    <div class="question-step" data-step="4">
+                        <h3>Kterou vlastnost u sebe nejčastěji popíráte?</h3>
+                        <div class="options-list">
+                            <button class="option-btn" data-score="power">Skrytou touhu po moci a uznání.</button>
+                            <button class="option-btn" data-score="control">Svůj strach z neznáma a spontánnosti.</button>
+                            <button class="option-btn" data-score="attention">Svoji potřebu neustálého potvrzování od okolí.</button>
+                            <button class="option-btn" data-score="detachment">Svoji potlačenou zlost a temnější emoce.</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 5 -->
+                    <div class="question-step" data-step="5">
+                        <h3>Jak se chováte, když se cítíte ohroženi?</h3>
+                        <div class="options-list">
+                            <button class="option-btn" data-score="power">Útočím jako první, abych předešel/předešla zranění.</button>
+                            <button class="option-btn" data-score="control">Stanu se kritickým/kritickou a hledám chyby na druhých.</button>
+                            <button class="option-btn" data-score="attention">Snažím se získat pozornost jakýmkoliv způsobem.</button>
+                            <button class="option-btn" data-score="detachment">Zmizím do svého světa a nenechám nikoho nahlédnout dovnitř.</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 6 -->
+                    <div class="question-step" data-step="6">
+                        <h3>Co byste na sobě nejraději "vymazali"?</h3>
+                        <div class="options-list">
+                            <button class="option-btn" data-score="power">Svou vnitřní pýchu a aroganci.</button>
+                            <button class="option-btn" data-score="control">Svůj perfekcionismus, který mě ničí.</button>
+                            <button class="option-btn" data-score="attention">Svou závislost na tom, co si myslí druzí.</button>
+                            <button class="option-btn" data-score="detachment">Svou neschopnost plně se oddat druhým.</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 7 -->
+                    <div class="question-step" data-step="7">
+                        <h3>Jaký "příběh" o sobě nejčastěji vyprávíte světu?</h3>
+                        <div class="options-list">
+                            <button class="option-btn" data-score="power">Že jsem silný/á a nikoho nepotřebuji.</button>
+                            <button class="option-btn" data-score="control">Že mám vše pod kontrolou a vím, co dělám.</button>
+                            <button class="option-btn" data-score="attention">Že jsem vždy pozitivní a plný/á energie.</button>
+                            <button class="option-btn" data-score="detachment">Že mě nic nemůže vyvést z míry a jsem v pohodě.</button>
+                        </div>
+                    </div>
+
+                    <!-- LOADING -->
+                    <div class="question-step" id="loading-step">
+                        <div class="text-center">
+                            <div class="loader-shadow"></div>
+                            <h3 class="mt-xl">Ponořujeme se do hlubin podvědomí...</h3>
+                            <p class="color-silver-mist">Váš stín se začíná formovat.</p>
+                        </div>
+                    </div>
+
+                    <!-- RESULTS -->
+                    <div class="question-step" id="result-step">
+                        <div class="result-display" id="result-box">
+                            <!-- Injected by JS -->
+                        </div>
+                        <div class="text-center mt-xl">
+                            <button class="btn btn--primary" id="share-btn" onclick="shareResult()">Sdílet osvícení 🔗</button>
+                            <button class="btn btn--glass ml-md" onclick="location.reload()">Zkusit znovu ↺</button>
+                            <a href="index.html" class="btn btn--secondary ml-md">Zpět na přehled</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="../js/api-config.js?v=5" defer></script>
+    <script src="../js/components.js?v=11" defer></script>
+    <script type="module" src="../js/main.js?v=11"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const steps = document.querySelectorAll('.question-step[data-step]');
+            const progressBar = document.getElementById('progress-bar');
+            const scores = { power: 0, control: 0, attention: 0, detachment: 0 };
+            let currentStep = 1;
+            const totalSteps = steps.length;
+
+            const resultsData = {
+                power: {
+                    title: "Stín Moci",
+                    subtitle: "Kontrolor & Tyran",
+                    icon: "🌑",
+                    desc: "Váš stín se projevuje silnou potřebou dominance. Pod maskou síly se často skrývá strach z bezmoci. Máte tendenci věci lámat přes koleno.",
+                    advice: "Skutečná síla spočívá v laskavosti a přijetí zranitelnosti. Zkuste druhým občas předat otěže a uvidíte, že svět se nezřítí."
+                },
+                control: {
+                    title: "Stín Řádu",
+                    subtitle: "Perfekcionista & Kritik",
+                    icon: "🧱",
+                    desc: "Váš stín vás nutí být neustále v pozoru. Bojíte se chaosu a nedostatku disciplíny. Svou kritikou často zraňujete sebe i okolí.",
+                    advice: "Dovolte si dělat chyby. V nedokonalosti se skrývá lidskost a skutečná krása. Nechte věci občas jen tak plynout bez vašeho dozoru."
+                },
+                attention: {
+                    title: "Stín Lesku",
+                    subtitle: "Zabiják uznání",
+                    icon: "🕯️",
+                    desc: "Váš stín si žádá neustálý aplaus. Potřebujete být v centru dění, abyste se cítili cenní. Vaše hodnota však nezávisí na potlesku ostatních.",
+                    advice: "Najděte uznání v sobě. Vaše vnitřní světlo svítí i tehdy, když se na něj nikdo nedívá. Zkuste občas zářit potichu."
+                },
+                detachment: {
+                    title: "Stín Odstupu",
+                    subtitle: "Ledová maska",
+                    icon: "❄️",
+                    desc: "Váš stín vás izoluje od hlubokých emocí. Bojíte se zranění, a proto si udržujete bezpečný odstup. Tím ale přicházíte o skutečnou blízkost.",
+                    advice: "Rozpusťte ledy. Dovolte lidem, aby vás skutečně poznali – i s vašimi slabostmi. Intimita je bránou k uzdravení vaší duše."
+                }
+            };
+
+            function updateProgress() {
+                const percent = (currentStep / totalSteps) * 100;
+                progressBar.style.width = percent + '%';
+            }
+
+            function showStep(stepNum) {
+                steps.forEach(s => s.classList.remove('active'));
+                const nextStep = document.querySelector(`.question-step[data-step="${stepNum}"]`);
+                if (nextStep) {
+                    nextStep.classList.add('active');
+                    updateProgress();
+                } else {
+                    showLoading();
+                }
+            }
+
+            function showLoading() {
+                steps.forEach(s => s.classList.remove('active'));
+                document.getElementById('loading-step').classList.add('active');
+                progressBar.style.width = '100%';
+                
+                setTimeout(showResult, 2500);
+            }
+
+            function showResult() {
+                const winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+                const data = resultsData[winner];
+                
+                // Store result
+                window.lastResult = data.title;
+
+                const resultHtml = `
+                    <div class="result-card" style="border-color: #6a0dad;">
+                        <div class="result-card__header">
+                            <h4 class="result-card__title" style="color: #6a0dad;">${data.title}</h4>
+                            <p style="color: rgba(157,78,221,0.6); font-size: 0.8rem;">Váš potlačený archetyp</p>
+                        </div>
+                        <div class="result-card__image animate-shadow">${data.icon}</div>
+                        <div class="result-card__body">
+                            <h5 style="margin-bottom: 0.5rem; color: #fff;">${data.subtitle}</h5>
+                            <p style="font-size: 0.9rem; color: rgba(255,255,255,0.8); line-height: 1.4;">${data.desc}</p>
+                        </div>
+                        <div class="result-card__footer" style="margin-top: 1rem; border-top: 1px solid rgba(157,78,221,0.2); padding-top: 1rem;">
+                            <p style="font-style: italic; font-size: 0.85rem; color: #9d4edd;">"${data.advice}"</p>
+                        </div>
+                    </div>
+                    <div class="mt-xl">
+                        <h2 class="text-gradient">Stín byl osvětlen</h2>
+                        <p>Přijetí tohoto aspektu je prvním krokem k vaší celistvosti.</p>
+                    </div>
+                `;
+
+                document.getElementById('loading-step').classList.remove('active');
+                const resultStep = document.getElementById('result-step');
+                document.getElementById('result-box').innerHTML = resultHtml;
+                resultStep.classList.add('active');
+            }
+
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const scoreKey = btn.dataset.score;
+                    scores[scoreKey]++;
+                    currentStep++;
+                    showStep(currentStep);
+                });
+            });
+
+            window.shareResult = () => {
+                const text = `Odhalil/a jsem svůj stín: ${window.lastResult}. Poznej i ty skryté stránky svého znamení.`;
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Stín mého znamení',
+                        text: text,
+                        url: window.location.href
+                    }).catch(console.error);
+                } else {
+                    const dummy = document.createElement('input');
+                    document.body.appendChild(dummy);
+                    dummy.value = text + ' ' + window.location.href;
+                    dummy.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(dummy);
+                    alert('Výsledek zkopírován do schránky!');
+                }
+            };
+        });
+    </script>
+
+    <style>
+        .loader-shadow {
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #2a0a2e 0%, #050510 100%);
+            border: 2px solid #6a0dad;
+            border-radius: 50%;
+            margin: 0 auto;
+            position: relative;
+            animation: breathe 3s ease-in-out infinite;
+        }
+        .loader-shadow::after {
+            content: '🌗';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5rem;
+            filter: drop-shadow(0 0 10px #9d4edd);
+        }
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(106, 13, 173, 0.2); }
+            50% { transform: scale(1.1); box-shadow: 0 0 40px rgba(106, 13, 173, 0.6); }
+        }
+        .animate-shadow { animation: shadowPulse 4s infinite alternate; }
+        @keyframes shadowPulse {
+            from { filter: drop-shadow(0 0 5px #000); transform: scale(1); }
+            to { filter: drop-shadow(0 0 20px #6a0dad); transform: scale(1.1) rotate(5deg); }
+        }
+    </style>
+</body>
+</html>
