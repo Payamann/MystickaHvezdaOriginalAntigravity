@@ -103,13 +103,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 4. Filtering
     function filterByLetter(letter, btnTarget = null) {
+        console.log(`[snar.js] Filtering by letter: ${letter}`);
         // Reset limit when changing filter
         currentlyVisibleCount = INITIAL_VISIBLE_COUNT;
 
         document.querySelectorAll('.alphabet-btn').forEach(b => b.classList.remove('active'));
         if (btnTarget) {
             btnTarget.classList.add('active');
-        } else {
+        } else if (alphabetNav.firstChild) {
             alphabetNav.firstChild.classList.add('active'); // "Vše"
         }
 
@@ -117,12 +118,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (!letter) {
             filteredData = dreamsData;
-            renderDictionary(true); // Use limit for "All"
+            renderDictionary(true); 
             return;
         }
 
-        filteredData = dreamsData.filter(d => d.keyword.toUpperCase().startsWith(letter));
-        renderDictionary(false); // Show all results for specific letter
+        // Accent-insensitive matching for the first letter
+        const normalize = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+        const searchLetter = normalize(letter);
+        
+        filteredData = dreamsData.filter(d => {
+            if (!d.keyword) return false;
+            return normalize(d.keyword.charAt(0)) === searchLetter;
+        });
+        
+        renderDictionary(false); 
     }
 
     let searchDebounceTimer = null;
@@ -137,7 +146,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!query) {
                 filteredData = dreamsData;
                 renderDictionary(true);
-                alphabetNav.firstChild.classList.add('active');
+                if (alphabetNav.firstChild) alphabetNav.firstChild.classList.add('active');
                 return;
             }
 
@@ -145,7 +154,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 d.keyword.toLowerCase().includes(query) ||
                 d.description.toLowerCase().includes(query)
             );
-            renderDictionary(false); // Show all results for search
+            renderDictionary(false); 
         }, 200);
     });
 
@@ -155,6 +164,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             card.onclick = (e) => {
                 e.preventDefault();
                 const term = card.getAttribute('data-search');
+                console.log(`[snar.js] Popular card clicked: ${term}`);
                 if (term) {
                     searchInput.value = term;
                     // Reset letters
@@ -166,11 +176,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                         d.keyword.toLowerCase().includes(query) || 
                         d.description.toLowerCase().includes(query)
                     );
-                    renderDictionary(false); // Show all results for the specific term
+                    renderDictionary(false); 
 
                     // Scroll to search area or grid
-                    const target = document.querySelector('.dream-search-wrapper') || dictGrid;
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    const target = document.querySelector('.search-section') || dictGrid;
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
                 }
             };
         });
