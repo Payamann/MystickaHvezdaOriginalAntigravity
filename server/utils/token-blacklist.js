@@ -6,7 +6,6 @@
 
 import { supabase } from '../db-supabase.js';
 import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '../config/jwt.js';
 import crypto from 'crypto';
 
 /**
@@ -41,7 +40,7 @@ export async function blacklistToken(token) {
 }
 
 /**
- * Check if token is blacklisted
+ * Check if token is blacklisted (individual logout OR user-wide invalidation)
  * @param {string} token - JWT token to check
  * @returns {boolean} - true if token is blacklisted
  */
@@ -52,18 +51,39 @@ export async function isTokenBlacklisted(token) {
         const decoded = jwt.decode(token);
         if (!decoded) return false;
 
-        const { count, error } = await supabase
+        // Check 1: Individual token blacklist (exact token hash match)
+        const { count: exactCount, error: exactError } = await supabase
             .from('expired_tokens')
             .select('*', { count: 'exact', head: true })
             .eq('token_jti', generateTokenJti(token))
             .eq('user_id', decoded.id);
 
-        if (error) {
-            console.error('[BLACKLIST] Query error:', error);
+        if (exactError) {
+            console.error('[BLACKLIST] Query error:', exactError);
             return false;
         }
+        if (exactCount > 0) return true;
 
-        return count > 0;
+        // Check 2: User-wide invalidation (password change, security event)
+        // If any password_change record exists for this user that was created
+        // AFTER this token was issued, the token is invalid.
+        const tokenIssuedAt = decoded.iat ? new Date(decoded.iat * 1000) : null;
+        if (tokenIssuedAt) {
+            const { count: userWideCount, error: userWideError } = await supabase
+                .from('expired_tokens')
+                .select('*', { count: 'exact', head: true })
+                .eq('user_id', decoded.id)
+                .eq('reason', 'password_change')
+                .gt('created_at', tokenIssuedAt.toISOString());
+
+            if (userWideError) {
+                console.error('[BLACKLIST] User-wide query error:', userWideError);
+                return false;
+            }
+            if (userWideCount > 0) return true;
+        }
+
+        return false;
     } catch (e) {
         console.error('[BLACKLIST] Error checking blacklist:', e);
         return false;

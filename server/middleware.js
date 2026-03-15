@@ -23,18 +23,27 @@ const createLimiter = (max, windowMin = 15, message = 'Příliš mnoho požadavk
 // ============================================
 // AUTHENTICATION MIDDLEWARE
 // ============================================
+
+// Promise wrapper for jwt.verify to avoid async-in-callback pitfall
+function verifyToken(token) {
+    return new Promise((resolve, reject) => {
+        jwt.verify(token, JWT_SECRET, (err, decoded) => {
+            if (err) reject(err);
+            else resolve(decoded);
+        });
+    });
+}
+
 export const authenticateToken = async (req, res, next) => {
-    // Read token from HttpOnly cookie (preferred) or Authorization header (for fallback)
-    const token = req.cookies.auth_token || (req.headers['authorization'] && req.headers['authorization'].split(' ')[1]);
+    // Read token from HttpOnly cookie (preferred) or Authorization header (fallback)
+    const token = req.cookies?.auth_token || (req.headers['authorization'] && req.headers['authorization'].split(' ')[1]);
 
     if (!token) {
         return res.status(401).json({ error: 'Chybí přístupový token.' });
     }
 
-    jwt.verify(token, JWT_SECRET, async (err, user) => {
-        if (err) {
-            return res.status(403).json({ error: 'Neplatný nebo vypršený token.' });
-        }
+    try {
+        const user = await verifyToken(token);
 
         // Check if token is blacklisted (logout, password change, etc.)
         const blacklisted = await isTokenBlacklisted(token);
@@ -43,10 +52,11 @@ export const authenticateToken = async (req, res, next) => {
         }
 
         req.user = user;
-        // Ensure isPremium is explicitly available
         req.isPremium = !!user.isPremium;
         next();
-    });
+    } catch (err) {
+        return res.status(403).json({ error: 'Neplatný nebo vypršený token.' });
+    }
 };
 
 // ============================================
@@ -74,23 +84,21 @@ export const requirePremiumSoft = (req, res, next) => {
 
 export const optionalPremiumCheck = async (req, res, next) => {
     // Just ensures req.user is populated if token exists, but doesn't block
-    const token = req.cookies.auth_token || (req.headers['authorization'] && req.headers['authorization'].split(' ')[1]);
+    const token = req.cookies?.auth_token || (req.headers['authorization'] && req.headers['authorization'].split(' ')[1]);
 
     if (token) {
-        jwt.verify(token, JWT_SECRET, async (err, user) => {
-            if (!err) {
-                // Check blacklist for optional checks too
-                const blacklisted = await isTokenBlacklisted(token);
-                if (!blacklisted) {
-                    req.user = user;
-                    req.isPremium = !!user.isPremium;
-                }
+        try {
+            const user = await verifyToken(token);
+            const blacklisted = await isTokenBlacklisted(token);
+            if (!blacklisted) {
+                req.user = user;
+                req.isPremium = !!user.isPremium;
             }
-            next();
-        });
-    } else {
-        next();
+        } catch (err) {
+            // Token invalid — silently continue without user context
+        }
     }
+    next();
 };
 
 export const requireAdmin = (req, res, next) => {

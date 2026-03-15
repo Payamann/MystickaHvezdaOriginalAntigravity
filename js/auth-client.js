@@ -2,13 +2,8 @@
     const API_URL = window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api';
 
     const Auth = {
-        // Token is now stored in HttpOnly cookie (secure, XSS-proof)
-        // We don't store it in JS, but use it for presence checking
-        get token() {
-            // Check if we can read cookie (won't work for HttpOnly, but for fallback scenarios)
-            const cookies = document.cookie.split(';').find(c => c.trim().startsWith('auth_token='));
-            return cookies ? cookies.split('=')[1] : null;
-        },
+        // Token is stored in HttpOnly cookie (secure, XSS-proof)
+        // JS cannot read it - that's the point. We track login state via user data.
         user: JSON.parse(localStorage.getItem('auth_user')),
 
         init() {
@@ -87,7 +82,9 @@
         },
 
         isLoggedIn() {
-            return !!this.token;
+            // Token is in HttpOnly cookie (can't read from JS).
+            // We determine login state from cached user data.
+            return !!this.user;
         },
 
         isPremium() {
@@ -375,7 +372,10 @@
                             this.showToast('Chyba', 'Hesla se neshodují.', 'error');
                             return;
                         }
-                        const res = await this.register(email, password, { birth_date: birthDate });
+                        const res = await this.register(email, password, {
+                            birth_date: birthDate,
+                            password_confirm: confirmPassword
+                        });
                         if (!res.success) this.showToast('Chyba registrace', res.error, 'error');
                     } else {
                         const res = await this.login(email, password);
