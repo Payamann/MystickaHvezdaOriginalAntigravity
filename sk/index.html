@@ -24,10 +24,11 @@
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;600;700&display=swap&subset=latin,latin-ext" rel="stylesheet"  >
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;600;700&display=swap&subset=latin,latin-ext" rel="stylesheet"></noscript>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;600;700&display=swap&subset=latin,latin-ext" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;600;700&display=swap&subset=latin,latin-ext"></noscript>
 
-  <link rel="stylesheet" href="../css/style.v2.min.css?v=9">
+  <link rel="preload" href="../css/style.v2.min.css?v=9" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="../css/style.v2.min.css?v=9"></noscript>
   
   <link rel="canonical" href="https://mystickahvezda.cz/sk/index.html">
   <link rel="alternate" hreflang="cs" href="https://mystickahvezda.cz/index.html">
@@ -42,6 +43,32 @@
     gtag('js', new Date());
     gtag('config', 'G-H22CGHF34K');
   </script>
+
+  <style>
+    /* CRITICAL ABOVE-THE-FOLD CSS */
+    :root{--color-deep-space:#050510;--color-mystic-gold:#ffd700;--color-starlight:#fff;--color-silver-mist:#e0e1dd;--font-heading:'Cinzel',serif;--font-body:'Inter',sans-serif;--space-sm:.5rem;--space-md:1rem;--space-lg:1.5rem;--space-xl:3rem;--space-2xl:5rem;--radius-full:9999px;--text-sm:.875rem;--text-base:1rem;--text-xl:1.25rem;--text-6xl:clamp(3.5rem,5vw,4.5rem);--z-base:1;--transition-base:400ms cubic-bezier(.2,.8,.2,1)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    img{max-width:100%;height:auto}a,button,.btn{cursor:pointer}
+    html{font-size:16px;overflow-x:hidden;max-width:100vw;overscroll-behavior-y:none}
+    html::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;z-index:-100;background-color:#050510;background-image:url('../img/bg-cosmic-hd.webp');background-size:cover;background-position:center;background-repeat:no-repeat;pointer-events:none;height:100%;width:100%}
+    @media(max-width:768px){html::before{background-image:url('../img/bg-cosmic-mobile.webp')}}
+    body{font-family:'Inter',sans-serif;font-size:1rem;line-height:1.6;color:#fff;min-height:100vh;background-color:transparent;overflow-x:hidden;max-width:100vw}
+    .container{max-width:1200px;margin:0 auto;padding:0 1.5rem}.section{padding:3rem 0;position:relative}
+    .section--hero{min-height:auto;display:flex;align-items:center;padding-top:180px;padding-bottom:5rem;position:relative}
+    .header{position:fixed;top:0;left:0;right:0;z-index:999;padding:.75rem 0;background:rgba(10,10,26,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+    .header__inner{display:flex;align-items:center;justify-content:center;gap:1.5rem;width:100%}
+    @media(max-width:992px){.header__inner{justify-content:space-between;padding:0 1rem}}
+    .logo{font-family:'Cinzel',serif;font-weight:700;color:#fff;display:flex;align-items:center;gap:.5rem;margin-right:auto;text-decoration:none}
+    @media(max-width:992px){.logo{margin-right:0}}.logo__image{height:60px;width:auto}
+    .nav{display:flex;align-items:center;gap:1rem;flex:1 1 auto;justify-content:center}@media(max-width:992px){.nav{display:none}}
+    .nav__toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:.5rem;background:none;border:none}@media(max-width:992px){.nav__toggle{display:flex}}.nav__toggle span{width:24px;height:2px;background:#fff;border-radius:2px;display:block}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:1rem 3rem;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;border:none;border-radius:9999px;cursor:pointer;text-decoration:none}
+    .btn--primary{background:linear-gradient(135deg,#FFD700,#B8860B);color:#0F0F1A;font-weight:700}.btn--secondary{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff}
+    .hero{position:relative;overflow:hidden}.hero__content{max-width:800px;margin:0 auto;text-align:center;position:relative;z-index:1}
+    .hero__title{font-family:'Cinzel',serif;font-size:clamp(3.5rem,5vw,4.5rem);margin-bottom:1rem;line-height:1;color:#fff}
+    .hero__subtitle{font-size:1.25rem;color:#e0e1dd;margin-bottom:3rem;max-width:600px;margin-left:auto;margin-right:auto}
+    .hero__cta{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap}
+  </style>
 </head>
 
 <body>
