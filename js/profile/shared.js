@@ -25,10 +25,11 @@ export function authHeaders(json = false) {
 // Get icon for reading type
 export function getReadingIcon(type) {
     const icons = {
-        'tarot': '🃏', 'horoscope': '♈', 'natal': '🌌', 'natal-chart': '🌌',
-        'numerology': '🔢', 'synastry': '💕', 'crystal': '🔮', 'journal': '📖'
+        'tarot': 'book-marked', 'horoscope': 'sparkles', 'natal': 'map', 'natal-chart': 'map',
+        'numerology': 'hash', 'synastry': 'heart', 'crystal': 'crystal-ball', 'journal': 'pen-tool'
     };
-    return icons[type] || '✨';
+    const iconName = icons[type] || 'star';
+    return `<i data-lucide="${iconName}" class="reading-type-icon"></i>`;
 }
 
 // Get title for reading type
@@ -39,4 +40,45 @@ export function getReadingTitle(type) {
         'synastry': 'Partnerská shoda', 'crystal': 'Křišťálová koule', 'journal': 'Manifestační deník'
     };
     return titles[type] || 'Výklad';
+}
+// Get Zodiac Sign from birth date string
+export function getZodiacSign(dateStr) {
+    if (!dateStr) return null;
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return null;
+
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+
+    const signs = [
+        { name: 'Kozoroh', symbol: '♑', start: [1, 1], end: [1, 19] },
+        { name: 'Vodnář', symbol: '♒', start: [1, 20], end: [2, 18] },
+        { name: 'Ryby', symbol: '♓', start: [2, 19], end: [3, 20] },
+        { name: 'Beran', symbol: '♈', start: [3, 21], end: [4, 19] },
+        { name: 'Býk', symbol: '♉', start: [4, 20], end: [5, 20] },
+        { name: 'Blíženci', symbol: '♊', start: [5, 21], end: [6, 20] },
+        { name: 'Rak', symbol: '♋', start: [6, 21], end: [7, 22] },
+        { name: 'Lev', symbol: '♌', start: [7, 23], end: [8, 22] },
+        { name: 'Panna', symbol: '♍', start: [8, 23], end: [9, 22] },
+        { name: 'Váhy', symbol: '♎', start: [9, 23], end: [10, 22] },
+        { name: 'Štír', symbol: '♏', start: [10, 23], end: [11, 21] },
+        { name: 'Střelec', symbol: '♐', start: [11, 22], end: [12, 21] },
+        { name: 'Kozoroh', symbol: '♑', start: [12, 22], end: [12, 31] }
+    ];
+
+    return signs.find(s => 
+        (month === s.start[0] && day >= s.start[1]) || 
+        (month === s.end[0] && day <= s.end[1])
+    ) || signs[0];
+}
+
+// Get Lucide icon name for zodiac symbol
+export function getZodiacIconName(symbol) {
+    const map = {
+        '♈': 'ram', '♉': 'mountain', '♊': 'users', '♋': 'crab',
+        '♌': 'lion', '♍': 'leaf', '♎': 'scale', '♏': 'bug',
+        '♐': 'send', '♑': 'mountain', '♒': 'droplets', '♓': 'fish'
+    };
+    // Note: Lucide doesn't have all zodiac signs directly, using closest analogs
+    return map[symbol] || 'sparkles';
 }

@@ -1,0 +1,172 @@
+/* Profile Refresh Styles */
+
+/* Stats Cards Enhancements */
+.stat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1.5rem !important;
+    background: rgba(10, 17, 40, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(212, 175, 55, 0.4);
+    box-shadow: 0 10px 30px rgba(157, 78, 221, 0.2);
+    background: rgba(26, 10, 46, 0.6);
+}
+
+.stat-icon-wrapper {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: var(--color-mystic-gold);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    transition: all var(--transition-fast);
+}
+
+.stat-card:hover .stat-icon-wrapper {
+    background: rgba(212, 175, 55, 0.1);
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+
+.stat-icon-svg {
+    width: 28px;
+    height: 28px;
+}
+
+.stat-value {
+    font-size: 1.75rem !important;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    background: var(--gradient-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.stat-label {
+    font-size: 0.85rem !important;
+    color: var(--color-silver-mist);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+/* Journal Enhancements */
+.journal-entry {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-left: 3px solid var(--color-mystic-gold);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 0.75rem;
+    animation: fadeInSlide 0.5s ease-out forwards;
+}
+
+@keyframes fadeInSlide {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.journal-entry__date {
+    font-size: 0.75rem;
+    color: var(--color-mystic-gold);
+    margin-bottom: 0.25rem;
+    opacity: 0.8;
+}
+
+.journal-entry__text {
+    font-size: 0.95rem;
+    color: var(--color-starlight);
+    font-style: italic;
+    line-height: 1.5;
+}
+
+/* Avatar Picker Improvements */
+.avatar-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.75rem;
+    padding: 1rem;
+}
+
+.avatar-opt {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.avatar-opt:hover {
+    background: rgba(212, 175, 55, 0.1);
+    transform: scale(1.1);
+    border-color: var(--color-mystic-gold);
+}
+
+.avatar-opt.active {
+    background: rgba(212, 175, 55, 0.2);
+    border-color: var(--color-mystic-gold);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+}
+
+/* Lucide Icon Styling */
+.reading-type-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--color-mystic-gold);
+}
+
+.btn i[data-lucide] {
+    vertical-align: middle;
+}
+
+/* Stardust Animation */
+.stardust-particle {
+    position: absolute;
+    pointer-events: none;
+    background: radial-gradient(circle, #fff, transparent);
+    border-radius: 50%;
+    z-index: 1000;
+}
+
+@keyframes stardust-fade-out {
+    0% { transform: translate(0, 0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}
+
+/* Badge Enhancements */
+.badge--premium {
+    background: var(--gradient-gold);
+    color: var(--color-deep-space);
+    font-weight: 700;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+    border: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.badge--diamond {
+    background: linear-gradient(135deg, #e0e7ff, #ffffff, #e0e7ff);
+    color: #1e3a8a;
+    box-shadow: 0 0 20px rgba(224, 231, 255, 0.6);
+}

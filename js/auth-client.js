@@ -349,11 +349,18 @@
 
                     if (isRegister) {
                         const confirmPassword = form.confirm_password?.value;
+                        const birthDate = form.birth_date?.value;
+
+                        if (!birthDate) {
+                            this.showToast('Chyba', 'Datum narození je povinné.', 'error');
+                            return;
+                        }
+
                         if (password !== confirmPassword) {
                             this.showToast('Chyba', 'Hesla se neshodují.', 'error');
                             return;
                         }
-                        const res = await this.register(email, password, {});
+                        const res = await this.register(email, password, { birth_date: birthDate });
                         if (!res.success) this.showToast('Chyba registrace', res.error, 'error');
                     } else {
                         const res = await this.login(email, password);

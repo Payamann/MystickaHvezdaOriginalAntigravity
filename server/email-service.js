@@ -205,7 +205,6 @@ export const EMAIL_TEMPLATES = {
 
   onboarding_features: {
     subject: 'Tvůj nový svět se otevírá ✨',
-<<<<<<< HEAD
     getHtml: (data) => getBaseTemplate(`
       <h1 class="h1">Objevuj skryté možnosti</h1>
       <p>Včera jsi se připojil k naší komunitě. Dnes je čas podívat se hlouběji pod povrch...</p>
@@ -228,50 +227,8 @@ export const EMAIL_TEMPLATES = {
     `, 'Objevuj Mystickou Hvězdu')
   },
 
-  onboarding_nudge: {
-    subject: 'Tvůj Duchovní průvodce na tebe čeká... ✨',
-    getHtml: (data) => getBaseTemplate(`
-      <h1 class="h1">Nezapomněl jsi na něco?</h1>
-      <div style="background: rgba(155,89,182,0.1); border: 1px solid rgba(155,89,182,0.3); padding: 25px; border-radius: 12px; margin-bottom: 25px;">
-        <p>Tvůj Duchovní průvodce pro tebe má připravenu úvahu k tvému aktuálnímu plánu <span class="highlight">${data.plan === 'premium_monthly' ? 'Hvězdný Průvodce' : 'Osvícení'}</span>.</p>
-        
-        <blockquote style="font-style: italic; color: #d4af37; border-left: 2px solid #9b59b6; padding-left: 15px; margin: 20px 0;">
-          "Jaká je tvá největší životní otázka v tuto chvíli? Jsi připraven slyšet odpověď?"
-        </blockquote>
-        
-        <p>Nechej se vést a odhal tajemství, která na tebe čekají.</p>
-      </div>
-
-      <div class="cta-box">
-        <a href="${process.env.APP_URL}/mentor.html" class="btn" style="background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white !important;">Chatovat s Duchovním průvodcem →</a>
-      </div>
-    `, 'Ozvěna z vesmíru')
-=======
-    getHtml: (data) => `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <style>
-            body { font-family: 'Cinzel', serif; background: #0a0a1a; color: #fff; }
-            .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
-            .feature { background: rgba(212,175,55,0.1); border-left: 4px solid #d4af37;
-                       padding: 15px; margin: 15px 0; border-radius: 4px; }
-            .btn { background: #d4af37; color: #000; padding: 10px 20px;
-                   border-radius: 4px; text-decoration: none; font-weight: bold; }
-          </style>
-        </head>
-        <body>
-          <div style="display:none;max-height:0;overflow:hidden;">Nové funkce čekají — AI mentor, tarot a natální karta.</div>
-        </body>
-      </html>
-    `
->>>>>>> main
-  },
-
   subscription_paused: {
     subject: '⏸️ Tvé předplatné je pozastaveno',
-<<<<<<< HEAD
     getHtml: (data) => getBaseTemplate(`
       <h1 class="h1">Předplatné pozastaveno</h1>
       <p>Tvé předplatné jsme úspěšně pozastavili na <span class="highlight">${data.daysUntilResume || 30} dní</span>.</p>
@@ -291,46 +248,10 @@ export const EMAIL_TEMPLATES = {
         <a href="${process.env.APP_URL}/profil.html" class="btn">Správa profilu →</a>
       </div>
     `, 'Pozastavení předplatného')
-=======
-    getHtml: (data) => `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <style>
-            body { font-family: 'Cinzel', serif; background: #0a0a1a; color: #fff; }
-            .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
-            .info { background: rgba(76,201,240,0.1); border: 1px solid rgba(76,201,240,0.3);
-                    padding: 20px; border-radius: 8px; }
-          </style>
-        </head>
-        <body>
-          <div style="display:none;max-height:0;overflow:hidden;">Předplatné pozastaveno na 30 dní — vraťte se kdykoliv.</div>
-          <div class="container">
-            <h1 style="color: #4cc9f0;">⏸️ Předplatné pozastaveno</h1>
-            <div class="info">
-              <p>Tvé předplatné jsme úspěšně pozastavili na <strong>${data.daysUntilResume || 30} dní</strong>.</p>
-              <p style="font-size: 14px; color: rgba(255,255,255,0.7);">
-                ✓ Bez dodatečných poplatků<br>
-                ✓ Tvá data zůstávají zachována<br>
-                ✓ Automaticky se obnoví po ${data.daysUntilResume || 30} dnech
-              </p>
-              <p style="margin-top: 20px;">Pokud se změníš a chceš se vrátit dříve,
-                <a href="${process.env.APP_URL}/profil.html" style="color: #4cc9f0;">znovuaktivuj předplatné zde</a>.</p>
-            </div>
-            <p style="text-align: center; margin-top: 30px; color: rgba(255,255,255,0.5); font-size: 12px;">
-              Chceme se zlepšit. Zpětná vazba je vítaná: support@mystickahvezda.cz
-            </p>
-          </div>
-        </body>
-      </html>
-    `
->>>>>>> main
   },
 
   discount_applied: {
     subject: '💝 Skvělá zpráva - máš slevu!',
-<<<<<<< HEAD
     getHtml: (data) => getBaseTemplate(`
       <h1 class="h1">Dárek přímo z hvězd!</h1>
       <div style="text-align: center; margin-bottom: 30px;">
@@ -368,89 +289,10 @@ export const EMAIL_TEMPLATES = {
         <a href="${process.env.APP_URL}/cenik.html" class="btn">Upgradovat na Premium →</a>
       </div>
     `, 'Tvé možnosti se rozšiřují')
-=======
-    getHtml: (data) => `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <style>
-            body { font-family: 'Cinzel', serif; background: #0a0a1a; color: #fff; }
-            .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
-            .offer { background: linear-gradient(135deg, rgba(212,175,55,0.2), rgba(255,215,0,0.1));
-                     border: 2px solid #d4af37; padding: 30px; border-radius: 8px; text-align: center; }
-            .discount { font-size: 48px; color: #ffd700; font-weight: bold; margin: 20px 0; }
-          </style>
-        </head>
-        <body>
-          <div style="display:none;max-height:0;overflow:hidden;">50% sleva na 3 měsíce — speciálně pro vás.</div>
-          <div class="container">
-            <h1 style="color: #d4af37; text-align: center;">💝 Máš speciální nabídku!</h1>
-            <div class="offer">
-              <p>Abychom tě přiměli zůstat, máme pro tebe speciální nabídku:</p>
-              <div class="discount">${data.discount || 50}% SLEVA</div>
-              <p style="font-size: 18px; margin: 20px 0;">na <strong>${data.months || 3} měsíců</strong></p>
-              <p style="color: rgba(255,255,255,0.7); font-size: 14px;">
-                Sleva se automaticky aplikuje na tvůj účet.<br>
-                Zůstaň s námi a objevuj hloubku svého bytí! ✨
-              </p>
-            </div>
-            <div style="text-align: center; margin-top: 30px;">
-              <a href="${process.env.APP_URL}/profil.html" style="background: #d4af37; color: #000; padding: 12px 30px;
-                 border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;">
-                Pokračovat s Premium →
-              </a>
-            </div>
-          </div>
-        </body>
-      </html>
-    `
-  },
-  upgrade_reminder_day7: {
-    subject: 'Vidím, co ti chybí... 👀',
-    getHtml: (data) => `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <style>
-            body { font-family: 'Cinzel', serif; background: #0a0a1a; color: #fff; }
-            .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
-            .comparison { background: rgba(155,89,182,0.1); border: 1px solid rgba(155,89,182,0.3);
-                         padding: 20px; border-radius: 8px; margin: 20px 0; }
-            .feature { padding: 10px 0; border-bottom: 1px solid rgba(212,175,55,0.1); }
-            .feature:last-child { border-bottom: none; }
-            .feature strong { color: #d4af37; }
-          </style>
-        </head>
-        <body>
-          <div style="display:none;max-height:0;overflow:hidden;">Hvězdy se ptají — co vám chybí nejvíc?</div>
-          <div class="container">
-            <h1 style="color: #9b59b6;">Vidím, co ti chybí... 👀</h1>
-            <p>Používáš základní plán, ale tvoje otázky si zaslouží více...</p>
-            <div class="comparison">
-              <h3 style="color: #d4af37; margin-top: 0;">Co bys mohl dělat s Hvězdným Průvodcem:</h3>
-              <div class="feature">✨ <strong>Neomezené tarotové výklady</strong> (místo 1 za den)</div>
-              <div class="feature">📅 <strong>Týdenní a měsíční horoskopy</strong> (ne jen denní)</div>
-              <div class="feature">🤖 <strong>AI Mentor chat</strong> bez omezení</div>
-              <div class="feature">🔢 <strong>Numerologie a astrokartografie</strong></div>
-            </div>
-            <p style="text-align: center; margin-top: 30px;">
-              <a href="${process.env.APP_URL}/cenik.html" style="background: #9b59b6; color: white; padding: 12px 30px;
-                 border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;">
-                Upgradovat na Premium →
-              </a>
-            </p>
-          </div>
-        </body>
-      </html>
-    `
->>>>>>> main
   },
 
   upgrade_reminder_day14: {
     subject: '⏰ Poslední šance - 50% sleva na Premium!',
-<<<<<<< HEAD
     getHtml: (data) => getBaseTemplate(`
       <h1 class="h1">Hvězdná příležitost končí</h1>
       <div style="background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.3); padding: 25px; border-radius: 12px; text-align: center; margin-bottom: 25px;">
@@ -467,46 +309,10 @@ export const EMAIL_TEMPLATES = {
         <a href="${process.env.APP_URL}/cenik.html?utm_source=email&utm_campaign=upgrade_day14" class="btn" style="background: linear-gradient(135deg, #ff6b6b, #ee5253); color: white !important;">Aktivovat slevu 50% →</a>
       </div>
     `, 'Poslední šance')
-=======
-    getHtml: (data) => `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <style>
-            body { font-family: 'Cinzel', serif; background: #0a0a1a; color: #fff; }
-            .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
-            .offer { background: linear-gradient(135deg, rgba(255,107,107,0.2), rgba(212,175,55,0.2));
-                     border: 2px solid #ff6b6b; padding: 30px; border-radius: 8px; text-align: center; }
-            .price { font-size: 42px; color: #ff6b6b; font-weight: bold; margin: 20px 0; }
-          </style>
-        </head>
-        <body>
-          <div style="display:none;max-height:0;overflow:hidden;">Sleva 50% končí za 48 hodin — nečekejte.</div>
-          <div class="container">
-            <h1 style="color: #ff6b6b; text-align: center;">⏰ Poslední šance!</h1>
-            <div class="offer">
-              <p>Tato nabídka platí jen pro dalších 24 hodin:</p>
-              <div class="price">199 Kč → <span style="text-decoration: line-through;">99.50 Kč</span></div>
-              <p style="font-size: 16px;">🎁 <strong>50% SLEVA</strong> na Hvězdný Průvodce</p>
-            </div>
-            <div style="text-align: center; margin-top: 30px;">
-              <a href="${process.env.APP_URL}/cenik.html?utm_source=email&utm_campaign=upgrade_day14&utm_content=cta"
-                 style="background: #ff6b6b; color: white; padding: 12px 30px;
-                 border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;">
-                KOUPIT ZA 99.50 KČ →
-              </a>
-            </div>
-          </div>
-        </body>
-      </html>
-    `
->>>>>>> main
   },
 
   churn_recovery_day25: {
     subject: '💔 Chceme tě zpátky - 30% sleva čeká',
-<<<<<<< HEAD
     getHtml: (data) => getBaseTemplate(`
       <h1 class="h1">Chybíš nám...</h1>
       <p>Všimli jsme si, že jsi se na chvíli odmlčel. Víme, že cesta životem bývá klikatá a někdy potřebujeme pauzu.</p>
@@ -546,85 +352,6 @@ export const EMAIL_TEMPLATES = {
         <a href="${data.feature_url || process.env.APP_URL + '/profil.html'}" class="btn">Vyzkoušet nyní →</a>
       </div>
     `, 'Týdenní inspirace')
-=======
-    getHtml: (data) => `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <style>
-            body { font-family: 'Cinzel', serif; background: #0a0a1a; color: #fff; }
-            .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
-            .msg { background: rgba(52,152,219,0.1); border: 1px solid rgba(52,152,219,0.3);
-                   padding: 20px; border-radius: 8px; }
-            .discount { background: linear-gradient(135deg, rgba(52,152,219,0.2), rgba(212,175,55,0.1));
-                       border: 2px solid #3498db; padding: 20px; border-radius: 8px;
-                       text-align: center; margin: 20px 0; }
-          </style>
-        </head>
-        <body>
-          <div style="display:none;max-height:0;overflow:hidden;">30% sleva vás čeká — vraťte se ke hvězdám.</div>
-          <div class="container">
-            <h1 style="color: #3498db; text-align: center;">💔 Chceme tě zpátky!</h1>
-            <div class="msg">
-              <p>Všimli jsme si, že jsi chvíli nebyl aktivní. Víme, že se věci v životě mění...</p>
-              <p>Chceme ti dát jednu poslední šanci na objevování:</p>
-            </div>
-            <div class="discount">
-              <p style="margin: 0; color: #3498db; font-weight: bold;">SPECIÁLNÍ NABÍDKA PRO NÁVRAT</p>
-              <div style="font-size: 36px; color: #d4af37; font-weight: bold; margin: 10px 0;">30% SLEVA</div>
-              <p style="margin: 10px 0; color: rgba(255,255,255,0.8);">na prvních 3 měsíce Premium</p>
-            </div>
-            <div style="text-align: center; margin-top: 30px;">
-              <a href="${process.env.APP_URL}/cenik.html?utm_source=email&utm_campaign=churn_recovery&utm_content=cta"
-                 style="background: #3498db; color: white; padding: 12px 30px;
-                 border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;">
-                Vrátit se s 30% slevou →
-              </a>
-            </div>
-          </div>
-        </body>
-      </html>
-    `
-  },
-
-  feature_weekly: {
-    subject: 'Nový týden, nová funkce pro tebe ✨',
-    getHtml: (data) => `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <style>
-            body { font-family: 'Cinzel', serif; background: #0a0a1a; color: #fff; }
-            .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
-            .feature-box { background: rgba(212,175,55,0.1); border-left: 4px solid #d4af37;
-                          padding: 20px; border-radius: 8px; }
-          </style>
-        </head>
-        <body>
-          <div style="display:none;max-height:0;overflow:hidden;">Právě jsme přidali novou funkci — podívejte se!</div>
-          <div class="container">
-            <h1 style="color: #d4af37;">✨ Objev novou funkci</h1>
-            <div class="feature-box">
-              <h2 style="color: #d4af37; margin-top: 0;">${data.feature_title || 'Astrokartografia'}</h2>
-              <p>${data.feature_description || 'Zjistěte, kde na světě je vaše energie nejsilnější...'}</p>
-              <ul>
-                ${(data.benefits || []).map(b => `<li>${b}</li>`).join('')}
-              </ul>
-            </div>
-            <div style="text-align: center; margin-top: 30px;">
-              <a href="${data.feature_url || process.env.APP_URL + '/profil.html'}"
-                 style="background: #d4af37; color: #000; padding: 12px 30px;
-                 border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block;">
-                Zkusit nyní →
-              </a>
-            </div>
-          </div>
-        </body>
-      </html>
-    `
->>>>>>> main
   },
   admin_contact_notification: {
     subject: (data) => `[Kontakt] ${data.subject} — od ${data.name}`,

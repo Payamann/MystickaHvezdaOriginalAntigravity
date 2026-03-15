@@ -65,7 +65,9 @@
         rel="stylesheet"  >
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap&subset=latin,latin-ext" rel="stylesheet"></noscript>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.469.0/lucide.min.js"></script>
     <link rel="stylesheet" href="css/style.v2.min.css?v=9">
+    <link rel="stylesheet" href="css/profile-refresh.css?v=1">
 
 
 
@@ -199,7 +201,10 @@
 
                             <div class="profile-user-right">
 
-                                <button id="logout-btn" class="btn btn--secondary btn--sm">Odhlásit</button>
+                                <button id="logout-btn" class="btn btn--secondary btn--sm">
+                                    <i data-lucide="log-out" style="width: 16px; height: 16px; margin-right: 8px;"></i>
+                                    Odhlásit
+                                </button>
 
                             </div>
 
@@ -271,24 +276,32 @@
 
                     <!-- Stats Cards -->
 
-                                                            <div class="stats-grid">
+                    <div class="stats-grid">
                         <div class="stat-card card glass-card">
-                            <div class="stat-icon">📚</div>
+                            <div class="stat-icon-wrapper">
+                                <i data-lucide="book-open" class="stat-icon-svg"></i>
+                            </div>
                             <div id="stat-total" class="stat-value">0</div>
                             <div class="stat-label">Celkem výkladů</div>
                         </div>
                         <div class="stat-card card glass-card">
-                            <div class="stat-icon">📅</div>
+                            <div class="stat-icon-wrapper">
+                                <i data-lucide="calendar" class="stat-icon-svg"></i>
+                            </div>
                             <div id="stat-month" class="stat-value">0</div>
                             <div class="stat-label">Tento měsíc</div>
                         </div>
                         <div class="stat-card card glass-card">
-                            <div class="stat-icon">⭐</div>
+                            <div class="stat-icon-wrapper">
+                                <i data-lucide="star" class="stat-icon-svg"></i>
+                            </div>
                             <div id="stat-favorites" class="stat-value">0</div>
                             <div class="stat-label">Oblíbené</div>
                         </div>
                         <div class="stat-card card glass-card">
-                            <div class="stat-icon">🔥</div>
+                            <div class="stat-icon-wrapper">
+                                <i data-lucide="zap" class="stat-icon-svg"></i>
+                            </div>
                             <div id="stat-streak" class="stat-value">0</div>
                             <div class="stat-label">Denní série</div>
                         </div>
@@ -654,6 +667,10 @@
 
 
 
+    <!-- Initialize Lucide -->
+    <script>
+      lucide.createIcons();
+    </script>
 </body>
 
 

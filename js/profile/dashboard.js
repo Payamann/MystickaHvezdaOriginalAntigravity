@@ -2,7 +2,7 @@
  * Main dashboard controller for Profile page
  */
 
-import { getReadingIcon, getReadingTitle } from './shared.js';
+import { escapeHtml, apiUrl, authHeaders, getReadingIcon, getReadingTitle, getZodiacSign, getZodiacIconName } from './shared.js';
 import { loadReadings, showMoreReadings, handleFilterChange, renderReadings } from './readings.js';
 import { loadFavorites } from './favorites.js';
 import { toggleAvatarPicker, selectAvatar, loadSubscriptionStatus } from './settings.js';
@@ -218,8 +218,16 @@ async function initProfile() {
         const emailEl = document.getElementById('user-email');
         if (emailEl) emailEl.textContent = user.email;
 
-        const planEl = document.getElementById('user-plan');
-        if (planEl) planEl.textContent = formatPlanLocal(user.subscription_status);
+        const badgesContainer = document.getElementById('user-badges');
+        if (badgesContainer) {
+            const plan = user.subscription_plan || 'free';
+            const planLabels = {
+                'free': 'Poutník', 'poutnik': 'Poutník', 'hledac': 'Hledač',
+                'osviceny': 'Osvícený', 'vip': 'VIP'
+            };
+            const planClass = (plan !== 'free' && plan !== 'poutnik') ? 'badge--premium' : 'badge--secondary';
+            badgesContainer.innerHTML = `<span id="user-plan" class="badge ${planClass}">${planLabels[plan.split('_')[0]] || 'Poutník'}</span>`;
+        }
 
         const avatarEl = document.getElementById('user-avatar');
         if (avatarEl && user.avatar) {
@@ -227,13 +235,13 @@ async function initProfile() {
         }
 
         if (user.birth_date) {
-            showZodiacSignLocal(user.birth_date);
+            const sign = getZodiacSign(user.birth_date);
+            const zodiacEl = document.getElementById('user-zodiac');
+            if (zodiacEl && sign) {
+                zodiacEl.style.display = 'block';
+                zodiacEl.innerHTML = `<i data-lucide="${getZodiacIconName(sign.symbol)}" style="width: 14px; height: 14px; margin-right: 4px; vertical-align: middle;"></i> ${sign.name}`;
+            }
         }
-
-        // Settings form population... (simplified for brevity, can be moved to settings.js init)
-        if (document.getElementById('settings-email')) document.getElementById('settings-email').value = user.email;
-        if (document.getElementById('settings-name')) document.getElementById('settings-name').value = user.first_name || '';
-        // ... other fields
     }
 
     initTabs();
@@ -277,6 +285,44 @@ async function initProfile() {
             if (option) selectAvatar(option.dataset.avatar);
         });
 
+        // Journal listeners
+        const journalBtn = document.getElementById('journal-submit');
+        if (journalBtn) {
+            journalBtn.addEventListener('click', async () => {
+                const input = document.getElementById('journal-input');
+                const text = input?.value.trim();
+                if (!text) return;
+
+                // Simple implementation of journal submission
+                journalBtn.disabled = true;
+                journalBtn.innerHTML = '<span class="loading-spinner--sm"></span> Vysílám...';
+
+                try {
+                    const response = await fetch(`${apiUrl()}/user/journal`, {
+                        method: 'POST',
+                        headers: authHeaders(true),
+                        body: JSON.stringify({ entry: text })
+                    });
+                    
+                    if (response.ok) {
+                        input.value = '';
+                        window.showToast?.('Přání vysláno', 'Vaše slova se nesou ke hvězdám...', 'success');
+                        // Trigger stardust effect if exists
+                        if (window.createStardust) window.createStardust(journalBtn);
+                        // Refresh something? Maybe load readings if they include journal
+                        loadReadings();
+                    } else {
+                        window.showToast?.('Chyba', 'Vesmír momentálně neodpovídá.', 'error');
+                    }
+                } catch (e) {
+                    console.error('Journal error:', e);
+                } finally {
+                    journalBtn.disabled = false;
+                    journalBtn.innerHTML = '✨ Vyslat přání';
+                }
+            });
+        }
+
         // Listen for updates from other modules
         document.addEventListener('reading:updated', (e) => {
             if (e.detail && e.detail.readings) {
@@ -286,7 +332,48 @@ async function initProfile() {
 
         listenersAttached = true;
     }
+
+    // Always refresh icons after content load
+    if (window.lucide) {
+        window.lucide.createIcons();
+    }
 }
+
+// Magic Stardust Animation
+window.createStardust = function(element) {
+    if (!element) return;
+    const rect = element.getBoundingClientRect();
+    const count = 20;
+    
+    for (let i = 0; i < count; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'stardust-particle';
+        
+        const size = Math.random() * 4 + 2;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        
+        // Random starting position within element
+        const x = rect.left + Math.random() * rect.width;
+        const y = rect.top + Math.random() * rect.height;
+        
+        particle.style.left = `${x}px`;
+        particle.style.top = `${y}px`;
+        
+        // Random destination
+        const tx = (Math.random() - 0.5) * 200;
+        const ty = (Math.random() - 0.5) * 200 - 100; // Rise up
+        
+        particle.style.setProperty('--tx', `${tx}px`);
+        particle.style.setProperty('--ty', `${ty}px`);
+        
+        particle.style.animation = `stardust-fade-out ${Math.random() * 1 + 0.5}s ease-out forwards`;
+        
+        document.body.appendChild(particle);
+        
+        setTimeout(() => particle.remove(), 1500);
+    }
+};
 
 // Make functions available globally for HTML event handlers if needed
 // (Though typically we attach listeners in JS)
