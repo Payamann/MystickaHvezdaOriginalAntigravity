@@ -2,9 +2,13 @@
     const API_URL = window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api';
 
     const Auth = {
-        // Note: For future security hardening, move tokens to HttpOnly cookies.
-        // This client will then use document.cookie for presence check or rely on server headers.
-        token: localStorage.getItem('auth_token'),
+        // Token is now stored in HttpOnly cookie (secure, XSS-proof)
+        // We don't store it in JS, but use it for presence checking
+        get token() {
+            // Check if we can read cookie (won't work for HttpOnly, but for fallback scenarios)
+            const cookies = document.cookie.split(';').find(c => c.trim().startsWith('auth_token='));
+            return cookies ? cookies.split('=')[1] : null;
+        },
         user: JSON.parse(localStorage.getItem('auth_user')),
 
         init() {
@@ -34,6 +38,10 @@
                 }
             } catch (e) {
                 console.warn('Session refresh failed:', e);
+                // If profile fetch fails, user might be logged out (token expired)
+                if (e.message === 'Session expired') {
+                    this.logout();
+                }
             }
         },
 
@@ -99,6 +107,7 @@
                 const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
                 const res = await fetch(`${API_URL}/auth/register`, {
                     method: 'POST',
+                    credentials: 'include', // Send cookies (auth_token will be set by server)
                     headers: {
                         'Content-Type': 'application/json',
                         ...(csrfToken && { 'X-CSRF-Token': csrfToken })
@@ -171,6 +180,7 @@
                 const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
                 const res = await fetch(`${API_URL}/auth/login`, {
                     method: 'POST',
+                    credentials: 'include', // Send cookies (auth_token will be set by server)
                     headers: {
                         'Content-Type': 'application/json',
                         ...(csrfToken && { 'X-CSRF-Token': csrfToken })
@@ -188,18 +198,23 @@
         },
 
         loginSuccess(data) {
-            this.token = data.token;
+            // Token is now in HttpOnly cookie (set by server)
+            // We only store user data in localStorage
             this.user = data.user;
-            localStorage.setItem('auth_token', data.token);
             localStorage.setItem('auth_user', JSON.stringify(data.user));
             this.updateUI();
             this.closeModal();
         },
 
         logout() {
-            this.token = null;
+            // Call server logout endpoint to clear HttpOnly cookie
+            fetch(`${API_URL}/auth/logout`, {
+                method: 'POST',
+                credentials: 'include'
+            }).catch(e => console.warn('Logout API call failed:', e));
+
+            // Clear local state
             this.user = null;
-            localStorage.removeItem('auth_token');
             localStorage.removeItem('auth_user');
             this.updateUI();
             window.location.reload();
@@ -406,8 +421,9 @@
 
         async resetPassword(email) {
             try {
-                const res = await fetch(`${API_URL}/auth/reset-password`, {
+                const res = await fetch(`${API_URL}/auth/forgot-password`, {
                     method: 'POST',
+                    credentials: 'include',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email })
                 });
@@ -510,9 +526,10 @@
 
             const res = await fetch(`${API_URL}/${endpoint}`, {
                 method: 'POST',
+                credentials: 'include', // Send auth_token cookie
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.token}`
+                    'Content-Type': 'application/json'
+                    // No longer need Authorization header - token is in cookie
                 },
                 body: JSON.stringify(body)
             });
@@ -537,9 +554,9 @@
                 console.log(`💾 Saving reading (${type})...`);
                 const res = await fetch(`${API_URL}/user/readings`, {
                     method: 'POST',
+                    credentials: 'include', // Send auth_token cookie
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${this.token}`
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ type, data })
                 });
@@ -560,10 +577,11 @@
         },
 
         async getProfile() {
-            if (!this.token) return null;
+            if (!this.isLoggedIn()) return null;
             try {
                 const res = await fetch(`${API_URL}/auth/profile`, {
-                    headers: { 'Authorization': `Bearer ${this.token}` }
+                    credentials: 'include', // Send auth_token cookie
+                    headers: { 'Content-Type': 'application/json' }
                 });
                 const data = await res.json();
                 if (data.success) return data.user;
@@ -586,6 +604,28 @@
     // When components load, just update the UI state (buttons text)
     document.addEventListener('components:loaded', () => {
         Auth.updateUI();
+    });
+
+    // Cross-tab logout: Sync logout across browser tabs/windows
+    // When auth_user is removed from localStorage in another tab, log out here too
+    window.addEventListener('storage', (event) => {
+        if (event.key === 'auth_user') {
+            // Check if the key was removed (logout in another tab)
+            if (event.newValue === null && Auth.isLoggedIn()) {
+                console.log('🔄 Logout detected in another tab, logging out here...');
+                Auth.user = null;
+                Auth.updateUI();
+                // Optionally show a message
+                Auth.showToast('Sesselýjícího z jiného místa', 'Byli jste odhlášeni z jiného okna prohlížeče.', 'info');
+                // Don't reload - just update UI so user can login again if needed
+            }
+        }
+
+        // Handle onboarding completion in another tab
+        if (event.key === 'mh_onboarded' && event.newValue === '1') {
+            console.log('✅ Onboarding completed in another tab');
+            // Could redirect if needed
+        }
     });
 
 })();

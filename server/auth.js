@@ -6,8 +6,11 @@ import { JWT_SECRET } from './config/jwt.js';
 import { authenticateToken } from './middleware.js';
 import { validateEmail, validatePassword, validateName, validateBirthDate } from './utils/validation.js';
 import { PREMIUM_PLAN_TYPES } from './config/constants.js';
+import { blacklistToken } from './utils/token-blacklist.js';
+import { recordFailedAttempt, checkAccountLockout, recordSuccessfulLogin } from './utils/account-lockout.js';
 
 const router = express.Router();
+const LOCKOUT_DURATION_MINUTES = 15;
 
 // ============================================
 // Helper: Generate JWT Token
@@ -81,12 +84,21 @@ router.post('/activate-premium', (req, res) => {
 
 // Register (Supabase Auth)
 router.post('/register', authLimiter, async (req, res) => {
-    const { email, password, first_name, birth_date, birth_time, birth_place } = req.body;
+    const { email, password, password_confirm, first_name, birth_date, birth_time, birth_place } = req.body;
 
     try {
         // Validate input using centralized validators
         const validatedEmail = validateEmail(email);
         const validatedPassword = validatePassword(password);
+
+        // Validate password confirmation (server-side)
+        if (!password_confirm || typeof password_confirm !== 'string') {
+            return res.status(400).json({ error: 'Heslo potvrzení je povinné.' });
+        }
+        if (password !== password_confirm) {
+            return res.status(400).json({ error: 'Hesla se neshodují.' });
+        }
+
         const validatedFirstName = first_name ? validateName(first_name) : 'User';
 
         // Birth date is mandatory
@@ -145,13 +157,25 @@ router.post('/register', authLimiter, async (req, res) => {
 // Login (Supabase Auth)
 router.post('/login', authLimiter, async (req, res) => {
     const { email, password } = req.body;
+    const clientIp = req.ip || req.connection.remoteAddress;
+    const userAgent = req.headers['user-agent'] || 'unknown';
 
     try {
         // Validate input
         const validatedEmail = validateEmail(email);
         const validatedPassword = validatePassword(password);
 
-        // 1. Sign In via Supabase Auth
+        // 1. Check if account is locked before attempting auth
+        const lockout = await checkAccountLockout(validatedEmail);
+        if (lockout.isLocked) {
+            return res.status(429).json({
+                error: `Účet je dočasně uzamčen. Zkuste to prosím za ${lockout.minutesRemaining} minut.`,
+                lockedUntil: lockout.lockedUntil,
+                retryAfter: lockout.minutesRemaining * 60
+            });
+        }
+
+        // 2. Sign In via Supabase Auth
         const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
             email: validatedEmail,
             password: validatedPassword,
@@ -159,7 +183,19 @@ router.post('/login', authLimiter, async (req, res) => {
 
         if (authError) {
             console.error('Auth Error:', authError);
-            return res.status(400).json({ error: 'Nesprávné přihlášení nebo neověřený email.' });
+            // Record failed attempt
+            const lockoutStatus = await recordFailedAttempt(validatedEmail, clientIp, userAgent, 'invalid_password');
+            if (lockoutStatus.isLocked) {
+                return res.status(429).json({
+                    error: `Příliš mnoho neúspěšných pokusů. Účet je uzamčen na ${LOCKOUT_DURATION_MINUTES} minut.`,
+                    remainingAttempts: 0,
+                    lockedUntil: new Date(Date.now() + LOCKOUT_DURATION_MINUTES * 60 * 1000)
+                });
+            }
+            return res.status(400).json({
+                error: 'Nesprávné přihlášení nebo neověřený email.',
+                remainingAttempts: lockoutStatus.remainingAttempts
+            });
         }
 
         const authUser = authData.user;
@@ -250,8 +286,19 @@ router.post('/login', authLimiter, async (req, res) => {
             premiumExpires: sub.current_period_end || null
         }, JWT_SECRET, { expiresIn: '30d' });
 
+        // Set HttpOnly, Secure cookie (XSRF-safe)
+        res.cookie('auth_token', token, {
+            httpOnly: true,
+            secure: IS_PRODUCTION, // HTTPS only in production
+            sameSite: 'strict',
+            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+            path: '/'
+        });
+
+        // Record successful login (clears failed attempts)
+        await recordSuccessfulLogin(user.email, clientIp, userAgent);
+
         res.json({
-            token,
             user: {
                 id: user.id,
                 email: user.email,
@@ -292,8 +339,16 @@ router.post('/refresh-token', authenticateToken, sensitiveLimiter, async (req, r
             .eq('id', userId)
             .single();
 
+        // Set HttpOnly, Secure cookie
+        res.cookie('auth_token', newToken, {
+            httpOnly: true,
+            secure: IS_PRODUCTION,
+            sameSite: 'strict',
+            maxAge: 30 * 24 * 60 * 60 * 1000,
+            path: '/'
+        });
+
         res.json({
-            token: newToken,
             user: {
                 id: userId,
                 email: decoded?.email || profile?.email,
@@ -470,6 +525,64 @@ router.put('/profile', authenticateToken, async (req, res) => {
         }
         console.error('Update Profile Error:', e);
         res.status(500).json({ error: 'Failed to update profile' });
+    }
+});
+
+// Complete onboarding - Mark user as onboarded
+router.post('/onboarding/complete', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user?.id;
+
+        if (!userId) {
+            return res.status(401).json({ error: 'Authentication required' });
+        }
+
+        const { data, error } = await supabase
+            .from('users')
+            .update({
+                is_onboarded: true,
+                onboarded_at: new Date().toISOString()
+            })
+            .eq('id', userId)
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        res.json({
+            success: true,
+            message: 'Onboarding completed',
+            user: data
+        });
+    } catch (e) {
+        console.error('Onboarding Complete Error:', e);
+        res.status(500).json({ error: 'Nepodařilo se dokončit onboarding.' });
+    }
+});
+
+// Logout - Clear HttpOnly cookie and blacklist token
+router.post('/logout', authenticateToken, async (req, res) => {
+    try {
+        // Get token from cookie or header for blacklisting
+        const token = req.cookies.auth_token || (req.headers['authorization'] && req.headers['authorization'].split(' ')[1]);
+
+        // Blacklist the token to prevent reuse
+        if (token) {
+            await blacklistToken(token);
+        }
+
+        // Clear auth cookie on server side
+        res.clearCookie('auth_token', {
+            httpOnly: true,
+            secure: IS_PRODUCTION,
+            sameSite: 'strict',
+            path: '/'
+        });
+
+        res.json({ success: true, message: 'Odhlášeni bylo úspěšné.' });
+    } catch (e) {
+        console.error('Logout Error:', e);
+        res.status(500).json({ error: 'Nepodařilo se odhlásit.' });
     }
 });
 

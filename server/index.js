@@ -5,6 +5,7 @@ import rateLimit from 'express-rate-limit'; // Security: Rate Limiting
 import helmet from 'helmet'; // Security: HTTP Headers
 import xss from 'xss-clean'; // Security: Input Sanitization
 import compression from 'compression'; // Performance: Gzip compression
+import cookieParser from 'cookie-parser'; // Security: HttpOnly Cookie parsing
 import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs';
@@ -112,6 +113,9 @@ app.use(express.urlencoded({
     limit: '5kb',
     parameterLimit: 100 // Limit number of form parameters
 }));
+
+// Parse cookies (HttpOnly auth_token + CSRF token)
+app.use(cookieParser());
 
 // Middleware: Validate request size and content-type
 app.use((req, res, next) => {

@@ -9,6 +9,7 @@ import { authenticateToken } from '../middleware.js';
 import { supabase } from '../db-supabase.js';
 import rateLimit from 'express-rate-limit';
 import { validatePassword, validateString } from '../utils/validation.js';
+import { blacklistAllUserTokens } from '../utils/token-blacklist.js';
 
 export const router = express.Router();
 
@@ -163,11 +164,19 @@ router.delete('/readings/:id', authenticateToken, async (req, res) => {
 // Change user password
 router.put('/password', sensitiveOpLimiter, authenticateToken, async (req, res) => {
     try {
-        const { currentPassword, password } = req.body;
+        const { currentPassword, password, password_confirm } = req.body;
 
         // Validate currentPassword is provided
         if (!currentPassword || typeof currentPassword !== 'string') {
             return res.status(400).json({ success: false, error: 'Zadejte prosím aktuální heslo.' });
+        }
+
+        // Validate password confirmation
+        if (!password_confirm || typeof password_confirm !== 'string') {
+            return res.status(400).json({ success: false, error: 'Heslo potvrzení je povinné.' });
+        }
+        if (password !== password_confirm) {
+            return res.status(400).json({ success: false, error: 'Hesla se neshodují.' });
         }
 
         // Validate new password
@@ -190,7 +199,22 @@ router.put('/password', sensitiveOpLimiter, authenticateToken, async (req, res) 
         const { error } = await supabase.auth.admin.updateUserById(req.user.id, { password: validatedPassword });
         if (error) throw error;
 
-        res.json({ success: true, message: 'Heslo bylo úspěšně změněno.' });
+        // Blacklist all existing tokens for this user (force re-authentication on all devices)
+        await blacklistAllUserTokens(req.user.id);
+
+        // Clear auth cookie on this device as well
+        res.clearCookie('auth_token', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            path: '/'
+        });
+
+        res.json({
+            success: true,
+            message: 'Heslo bylo úspěšně změněno. Prosím přihlaste se znovu.',
+            requireReLogin: true
+        });
     } catch (error) {
         console.error('Password Change Error:', error);
         res.status(500).json({ success: false, error: 'Nepodařilo se změnit heslo.' });

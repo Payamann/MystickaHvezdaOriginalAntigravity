@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import rateLimit from 'express-rate-limit';
 import { JWT_SECRET } from './config/jwt.js';
+import { isTokenBlacklisted } from './utils/token-blacklist.js';
 
 // Common rate limiter options
 const createLimiter = (max, windowMin = 15, message = 'Příliš mnoho požadavků. Zkuste to prosím později.') => {
@@ -22,18 +23,25 @@ const createLimiter = (max, windowMin = 15, message = 'Příliš mnoho požadavk
 // ============================================
 // AUTHENTICATION MIDDLEWARE
 // ============================================
-export const authenticateToken = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+export const authenticateToken = async (req, res, next) => {
+    // Read token from HttpOnly cookie (preferred) or Authorization header (for fallback)
+    const token = req.cookies.auth_token || (req.headers['authorization'] && req.headers['authorization'].split(' ')[1]);
 
     if (!token) {
         return res.status(401).json({ error: 'Chybí přístupový token.' });
     }
 
-    jwt.verify(token, JWT_SECRET, (err, user) => {
+    jwt.verify(token, JWT_SECRET, async (err, user) => {
         if (err) {
             return res.status(403).json({ error: 'Neplatný nebo vypršený token.' });
         }
+
+        // Check if token is blacklisted (logout, password change, etc.)
+        const blacklisted = await isTokenBlacklisted(token);
+        if (blacklisted) {
+            return res.status(401).json({ error: 'Token byl zneplatněn. Prosím přihlaste se znovu.' });
+        }
+
         req.user = user;
         // Ensure isPremium is explicitly available
         req.isPremium = !!user.isPremium;
@@ -64,16 +72,19 @@ export const requirePremiumSoft = (req, res, next) => {
     next();
 };
 
-export const optionalPremiumCheck = (req, res, next) => {
+export const optionalPremiumCheck = async (req, res, next) => {
     // Just ensures req.user is populated if token exists, but doesn't block
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    const token = req.cookies.auth_token || (req.headers['authorization'] && req.headers['authorization'].split(' ')[1]);
 
     if (token) {
-        jwt.verify(token, JWT_SECRET, (err, user) => {
+        jwt.verify(token, JWT_SECRET, async (err, user) => {
             if (!err) {
-                req.user = user;
-                req.isPremium = !!user.isPremium;
+                // Check blacklist for optional checks too
+                const blacklisted = await isTokenBlacklisted(token);
+                if (!blacklisted) {
+                    req.user = user;
+                    req.isPremium = !!user.isPremium;
+                }
             }
             next();
         });

@@ -604,9 +604,9 @@
 
 
 
-        function finishOnboarding() {
+        async function finishOnboarding() {
 
-            // Save to localStorage
+            // Save to localStorage for immediate UI updates
 
             const interests = [...document.querySelectorAll('.interest-chip.selected')].map(c => c.textContent.trim());
 
@@ -615,6 +615,23 @@
             if (interests.length) localStorage.setItem('mh_interests', JSON.stringify(interests));
 
             localStorage.setItem('mh_onboarded', '1');
+
+            // Also notify backend that onboarding is complete
+            try {
+                const API_URL = window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api';
+                const res = await fetch(`${API_URL}/auth/onboarding/complete`, {
+                    method: 'POST',
+                    credentials: 'include', // Send auth cookie
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (!res.ok) {
+                    console.warn('Failed to notify backend of onboarding completion:', res.status);
+                }
+            } catch (e) {
+                console.warn('Error notifying backend of onboarding:', e);
+                // Don't block navigation if backend call fails
+            }
 
             window.location.href = 'index.html';
 
