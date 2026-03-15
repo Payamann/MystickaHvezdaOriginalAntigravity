@@ -1510,7 +1510,7 @@ body.page-mentor .header {
 
   visibility: hidden;
 
-  transition: all var(--transition-base);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s var(--transition-base);
 
   z-index: 100;
 
@@ -1527,6 +1527,8 @@ body.page-mentor .header {
   position: relative;
 
   margin-right: var(--space-md);
+
+  z-index: 101;
 
 }
 
@@ -1556,7 +1558,7 @@ body.page-mentor .header {
 
   font-weight: 600;
 
-  transition: all var(--transition-fast);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s var(--transition-fast);
 
 }
 
@@ -1576,25 +1578,26 @@ body.page-mentor .header {
 
   position: absolute;
 
-  top: 100%;
+  top: calc(100% + 8px);
 
   right: 0;
 
-  margin-top: 10px;
-
-  background: rgba(15, 10, 30, 0.95);
+  background: rgba(10, 5, 25, 0.98);
 
   backdrop-filter: blur(15px);
 
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  -webkit-backdrop-filter: blur(15px);
 
-  border-radius: var(--radius-md);
+  border: 1px solid rgba(212, 175, 55, 0.3);
 
-  padding: var(--space-xs) 0;
+  border-radius: 12px;
+
+  padding: 6px 0;
 
   list-style: none;
+  margin: 0;
 
-  min-width: 140px;
+  min-width: 150px;
 
   opacity: 0;
 
@@ -1602,9 +1605,23 @@ body.page-mentor .header {
 
   transform: translateY(10px);
 
-  transition: all var(--transition-base);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(155, 89, 182, 0.1);
 
   z-index: 200;
+
+}
+
+
+
+.lang-switcher__dropdown li {
+
+  list-style: none !important;
+
+  padding: 0;
+
+  margin: 0;
 
 }
 
@@ -1622,19 +1639,73 @@ body.page-mentor .header {
 
 
 
+/* Mobile Specific Tweaks for Lang Switcher */
+
+@media (max-width: 768px) {
+
+  .header__actions {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: var(--space-sm);
+
+  }
+
+
+
+  .lang-switcher {
+
+    margin-right: var(--space-xs);
+
+  }
+
+
+
+  .lang-switcher__dropdown {
+
+    position: fixed;
+
+    top: 70px;
+
+    right: 15px;
+
+    margin-top: 0;
+
+    width: auto;
+
+    min-width: 160px;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+  }
+
+}
+
+
+
 .lang-switcher__link {
 
-  display: block;
+  display: flex;
 
-  padding: 8px 16px;
+  align-items: center;
 
-  color: var(--color-silver-mist);
+  gap: 10px;
+
+  padding: 10px 16px;
+
+  color: rgba(255, 255, 255, 0.7);
 
   text-decoration: none;
 
-  font-size: 0.8rem;
+  font-size: 0.85rem;
 
-  transition: all var(--transition-fast);
+  font-family: var(--font-body, 'Inter', sans-serif);
+
+  transition: all 0.2s ease;
+
+  border-left: 2px solid transparent;
 
 }
 
@@ -1644,7 +1715,9 @@ body.page-mentor .header {
 
   background: rgba(212, 175, 55, 0.1);
 
-  color: var(--color-mystic-gold);
+  color: #fff;
+
+  border-left-color: var(--color-mystic-gold);
 
 }
 
@@ -1654,7 +1727,11 @@ body.page-mentor .header {
 
   color: var(--color-mystic-gold);
 
-  font-weight: 700;
+  font-weight: 600;
+
+  background: rgba(212, 175, 55, 0.05);
+
+  border-left-color: var(--color-mystic-gold);
 
 }
 
@@ -1700,7 +1777,7 @@ body.page-mentor .header {
 
   text-decoration: none;
 
-  transition: all var(--transition-fast);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s var(--transition-fast);
 
   white-space: nowrap;
 
@@ -1838,7 +1915,7 @@ body.page-mentor .header {
 
   cursor: pointer;
 
-  z-index: 1000; /* Higher than header background */
+  z-index: 1000;
 
 }
 
@@ -1890,7 +1967,7 @@ body.page-mentor .header {
 
   background: var(--color-starlight);
 
-  transition: all var(--transition-fast);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s var(--transition-fast);
 
   transform-origin: center;
 
@@ -1958,7 +2035,7 @@ body.page-mentor .header {
 
   cursor: pointer;
 
-  transition: all var(--transition-base);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s var(--transition-base);
 
   text-decoration: none;
 
@@ -2770,7 +2847,7 @@ body.page-mentor .header {
 
   -webkit-backdrop-filter: blur(8px);
 
-  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 
   min-height: 280px;
 
@@ -3098,7 +3175,7 @@ body.page-mentor .header {
 
   display: inline-flex;
 
-  transition: all var(--transition-base);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s var(--transition-base);
 
   border: 1px solid rgba(255, 255, 255, 0.05);
 
@@ -3570,7 +3647,7 @@ body.page-mentor .header {
 
   border-radius: 50%;
 
-  transition: all var(--transition-fast);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s var(--transition-fast);
 
 }
 
@@ -3678,9 +3755,11 @@ body.page-mentor .header {
 
   display: grid;
 
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
 
-  gap: var(--space-lg);
+  gap: var(--space-md);
+
+  margin-top: var(--space-xl);
 
 }
 
@@ -3688,17 +3767,31 @@ body.page-mentor .header {
 
 .zodiac-card {
 
-  background: var(--gradient-card);
+  background: rgba(255, 255, 255, 0.03);
+
+  backdrop-filter: blur(8px);
+
+  -webkit-backdrop-filter: blur(8px);
 
   border: 1px solid rgba(255, 255, 255, 0.1);
 
   border-radius: var(--radius-lg);
 
-  padding: var(--space-xl);
+  padding: var(--space-lg) var(--space-md);
 
   text-align: center;
 
   cursor: pointer;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: var(--space-xs);
+
+  text-decoration: none;
 
   transition: all var(--transition-base);
 
@@ -3720,9 +3813,15 @@ body.page-mentor .header {
 
 .zodiac-card__symbol {
 
-  font-size: var(--text-4xl);
+  font-size: 2.5rem;
 
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-xs);
+
+  display: block;
+
+  line-height: 1;
+
+  transition: transform 0.3s ease;
 
 }
 
@@ -3732,9 +3831,13 @@ body.page-mentor .header {
 
   font-family: var(--font-heading);
 
-  font-size: var(--text-lg);
+  font-size: 1.15rem;
 
-  margin-bottom: var(--space-xs);
+  color: var(--color-starlight);
+
+  margin-bottom: 2px;
+
+  letter-spacing: 0.5px;
 
 }
 
@@ -3838,7 +3941,7 @@ body.page-mentor .header {
 
   cursor: pointer;
 
-  transition: all var(--transition-base);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
 
   box-shadow: var(--shadow-card);
 
@@ -3928,7 +4031,7 @@ body.page-mentor .header {
 
   cursor: pointer;
 
-  transition: all var(--transition-fast);
+  transition: border-color var(--transition-fast), color var(--transition-fast), background var(--transition-fast);
 
 }
 
@@ -5728,7 +5831,7 @@ body.page-mentor .header {
 
   text-align: left;
 
-  transition: all 0.3s ease;
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s 0.3s ease;
 
 }
 
@@ -6130,7 +6233,7 @@ body.page-mentor .header {
 
   position: relative;
 
-  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 
   overflow: hidden;
 
@@ -6296,7 +6399,7 @@ body.page-mentor .header {
 
   color: var(--color-starlight);
 
-  transition: all 0.3s ease;
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s 0.3s ease;
 
 }
 
@@ -6632,7 +6735,7 @@ body.page-mentor .header {
 
   font-size: 1.2rem;
 
-  transition: all 0.3s ease;
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s 0.3s ease;
 
 }
 
@@ -7364,7 +7467,7 @@ body.page-mentor .header {
 
   cursor: pointer;
 
-  transition: all var(--transition-fast);
+  transition: border-color var(--transition-fast), color var(--transition-fast), background var(--transition-fast);
 
   white-space: nowrap;
 
@@ -8400,7 +8503,7 @@ body.page-mentor .header {
 
   cursor: pointer;
 
-  transition: all var(--transition-fast);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s var(--transition-fast);
 
   display: flex;
 
@@ -8576,7 +8679,7 @@ body.page-mentor .header {
 
   padding: 1.5rem !important;
 
-  transition: all var(--transition-base);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s var(--transition-base);
 
 }
 
@@ -8664,7 +8767,7 @@ body.page-mentor .header {
 
   padding: 1.25rem !important;
 
-  transition: all var(--transition-base);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s var(--transition-base);
 
   border: 1px solid rgba(255, 255, 255, 0.08);
 
@@ -8732,7 +8835,7 @@ body.page-mentor .header {
 
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
 
-  transition: all var(--transition-base);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s var(--transition-base);
 
   position: relative;
 
@@ -8806,7 +8909,7 @@ body.page-mentor .header {
 
   box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
 
-  transition: all var(--transition-base);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s var(--transition-base);
 
 }
 
@@ -8878,7 +8981,7 @@ body.page-mentor .header {
 
   font-size: 0.95rem !important;
 
-  transition: all var(--transition-base);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s var(--transition-base);
 
   border: 1px solid transparent;
 
@@ -8924,7 +9027,7 @@ body.page-mentor .header {
 
   border-left: 2px solid transparent;
 
-  transition: all var(--transition-fast);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s var(--transition-fast);
 
 }
 
@@ -8948,7 +9051,39 @@ body.page-mentor .header {
 
   border: 1px solid rgba(255, 255, 255, 0.08);
 
-  transition: all var(--transition-fast);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s var(--transition-fast);
+
+}
+
+
+
+select.form-input {
+
+  background-color: rgba(10, 10, 26, 0.8) !important;
+
+  color: var(--color-starlight);
+
+  appearance: none;
+
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23d4af37' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+
+  background-repeat: no-repeat;
+
+  background-position: right 1rem center;
+
+  padding-right: 2.5rem;
+
+  cursor: pointer;
+
+}
+
+
+
+select.form-input option {
+
+  background-color: var(--color-deep-space);
+
+  color: var(--color-starlight);
 
 }
 
@@ -9966,7 +10101,7 @@ body.page-mentor .header {
 
   cursor: pointer;
 
-  transition: all 0.2s;
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s 0.2s;
 
 }
 
@@ -10258,7 +10393,7 @@ body.page-mentor .header {
 
   cursor: pointer;
 
-  transition: all var(--transition-fast);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s var(--transition-fast);
 
   padding: 0;
 
@@ -10410,7 +10545,7 @@ body.page-mentor .header {
 
   text-decoration: none;
 
-  transition: all var(--transition-fast);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s var(--transition-fast);
 
   cursor: pointer;
 
@@ -10706,7 +10841,7 @@ body.page-mentor .header {
 
   cursor: pointer;
 
-  transition: all var(--transition-fast);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s var(--transition-fast);
 
 }
 
@@ -11258,7 +11393,7 @@ body.page-mentor .header {
 
   font-weight: 500;
 
-  transition: all var(--transition-fast);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s var(--transition-fast);
 
   display: flex;
 
@@ -11296,7 +11431,7 @@ body.page-mentor .header {
 
   font-size: var(--text-xs);
 
-  transition: all var(--transition-fast);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s var(--transition-fast);
 
 }
 
@@ -11356,7 +11491,7 @@ body.page-mentor .header {
 
   font-size: var(--text-xs);
 
-  transition: all var(--transition-fast);
+  transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s var(--transition-fast);
 
 }
 

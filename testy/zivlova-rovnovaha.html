@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Zjistěte, který ze čtyř živlů vládne vaší duši. Interaktivní test živlové rovnováhy pro nalezení vnitřní harmonie.">
+    <title>Živlová rovnováha | Mystická Hvězda</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/style.v2.min.css?v=9">
+    <link rel="stylesheet" href="../css/testy.css?v=2">
+
+    <!-- SEO & Open Graph -->
+    <link rel="canonical" href="https://mystickahvezda.cz/testy/zivlova-rovnovaha.html">
+    <meta property="og:title" content="Který živel vládne vaší duši? | Živlová rovnováha">
+    <meta property="og:description" content="Zjistěte, zda ve vás dřímá oheň, voda, vzduch nebo země.">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="https://mystickahvezda.cz/img/og-zivly.webp">
+</head>
+<body>
+    <div class="stars" aria-hidden="true"></div>
+
+    <div id="header-placeholder"></div>
+
+    <main id="main-content">
+        <section class="section section--hero">
+            <div class="container text-center">
+                <span class="section__badge">Živlová Diagnostika</span>
+                <h1 class="hero__title">Živlová <span class="text-gradient">rovnováha</span></h1>
+                <p class="hero__subtitle">
+                    Oheň, Voda, Vzduch nebo Země? Odhalte, který živel tvoří vaši podstatu 
+                    a jak nastolit harmonii ve svém životě skrze 7 osudových otázek.
+                </p>
+            </div>
+        </section>
+
+        <section class="section" style="padding-top: 0;">
+            <div class="container">
+                <div class="quiz-container" id="quiz-box">
+                    <div class="quiz-progress">
+                        <div class="quiz-progress__bar" id="progress-bar"></div>
+                    </div>
+
+                    <!-- STEP 1 -->
+                    <div class="question-step active" data-step="1">
+                        <h3>Co vás v životě nejvíce motivuje k pohybu vpřed?</h3>
+                        <div class="options-list">
+                            <button class="option-btn" data-score="fire">Silná vášeň, touha něco dokázat a vyhrát.</button>
+                            <button class="option-btn" data-score="water">Hluboké city, vztahy a touha někomu pomoci.</button>
+                            <button class="option-btn" data-score="air">Nové nápady, svoboda myšlení a touha poznat nepoznané.</button>
+                            <button class="option-btn" data-score="earth">Pocit bezpečí, stabilita a budování něčeho trvalého.</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2 -->
+                    <div class="question-step" data-step="2">
+                        <h3>Jak se nejčastěji projevuje vaše kreativita?</h3>
+                        <div class="options-list">
+                            <button class="option-btn" data-score="fire">Výbušným nadšením, rychlým startem a energií.</button>
+                            <button class="option-btn" data-score="water">Snovou inspirací, hudbou nebo hlubokým prožíváním.</button>
+                            <button class="option-btn" data-score="air">Sdílením myšlenek, psaním nebo vymýšlením teorií.</button>
+                            <button class="option-btn" data-score="earth">Manuální prací, vařením nebo prací s přírodními materiály.</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3 -->
+                    <div class="question-step" data-step="3">
+                        <h3>Které barvy ve vás vyvolávají největší pocit síly?</h3>
+                        <div class="options-list">
+                            <button class="option-btn" data-score="fire">Zářivá červená, oranžová a barva zlata.</button>
+                            <button class="option-btn" data-score="water">Hluboká modrá, tyrkysová a stříbřitá.</button>
+                            <button class="option-btn" data-score="air">Bledě modrá, bílá a barva ranní mlhy.</button>
+                            <button class="option-btn" data-score="earth">Smaragdově zelená, hnědá a barva úrodné půdy.</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 4 -->
+                    <div class="question-step" data-step="4">
+                        <h3>Jak obvykle řešíte konflikty?</h3>
+                        <div class="options-list">
+                            <button class="option-btn" data-score="fire">Přímo a energicky. Chci věci vyjasnit okamžitě.</button>
+                            <button class="option-btn" data-score="water">Emocionálně. Čekám, až se vlna citů uklidní a pak odpouštím.</button>
+                            <button class="option-btn" data-score="air">Racionální diskusí. Snažím se o objektivní pohled.</button>
+                            <button class="option-btn" data-score="earth">S velkou trpělivostí. Hledám praktické a trvalé řešení.</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 5 -->
+                    <div class="question-step" data-step="5">
+                        <h3>Co pro vás znamená ideální odpočinek?</h3>
+                        <div class="options-list">
+                            <button class="option-btn" data-score="fire">Sport, tanec nebo jakákoliv aktivita plná adrenalinu.</button>
+                            <button class="option-btn" data-score="water">Teplá koupel, blízkost vody nebo tiché snění.</button>
+                            <button class="option-btn" data-score="air">Dobrá kniha, podnětný rozhovor nebo sledování mraků.</button>
+                            <button class="option-btn" data-score="earth">Zahradničení, procházka v lese nebo péče o domov.</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 6 -->
+                    <div class="question-step" data-step="6">
+                        <h3>Která z těchto vlastností je vám nejvlastnější?</h3>
+                        <div class="options-list">
+                            <button class="option-btn" data-score="fire">Odvaha jít do rizika a charisma.</button>
+                            <button class="option-btn" data-score="water">Hluboká empatie a schopnost léčit slovem.</button>
+                            <button class="option-btn" data-score="air">Bystrá mysl a schopnost rychle se učit.</button>
+                            <button class="option-btn" data-score="earth">Spolehlivost a smysl pro realitu.</button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 7 -->
+                    <div class="question-step" data-step="7">
+                        <h3>Představte si, že jste živel. Čím byste chtěli být?</h3>
+                        <div class="options-list">
+                            <button class="option-btn" data-score="fire">Nezkrotným plamenem v krbu nebo sluncem.</button>
+                            <button class="option-btn" data-score="water">Tichým horským jezerem nebo širým oceánem.</button>
+                            <button class="option-btn" data-score="air">Svěžím horským větrem nebo bouřkovým mrakem.</button>
+                            <button class="option-btn" data-score="earth">Pevnou skálou nebo prastarým, mohutným stromem.</button>
+                        </div>
+                    </div>
+
+                    <!-- LOADING -->
+                    <div class="question-step" id="loading-step">
+                        <div class="text-center">
+                            <div class="loader-elemental"></div>
+                            <h3 class="mt-xl">Mícháme esence vaší bytosti...</h3>
+                            <p class="color-silver-mist">Živly se skládají do nové rovnováhy.</p>
+                        </div>
+                    </div>
+
+                    <!-- RESULTS -->
+                    <div class="question-step" id="result-step">
+                        <div class="result-display" id="result-box">
+                            <!-- Injected by JS -->
+                        </div>
+                        <div class="text-center mt-xl">
+                            <button class="btn btn--primary" id="share-btn" onclick="shareResult()">Sdílet živel 🔗</button>
+                            <button class="btn btn--glass ml-md" onclick="location.reload()">Zkusit znovu ↺</button>
+                            <a href="index.html" class="btn btn--secondary ml-md">Zpět na přehled</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="../js/api-config.js?v=5" defer></script>
+    <script src="../js/components.js?v=11" defer></script>
+    <script type="module" src="../js/main.js?v=11"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const steps = document.querySelectorAll('.question-step[data-step]');
+            const progressBar = document.getElementById('progress-bar');
+            const scores = { fire: 0, water: 0, air: 0, earth: 0 };
+            let currentStep = 1;
+            const totalSteps = steps.length;
+
+            const resultsData = {
+                fire: {
+                    title: "Oheň",
+                    subtitle: "Energie & Proměna",
+                    icon: "🔥",
+                    desc: "Vládne vám živel ohně. Jste vášniví, odvážní a plní životní síly. Máte přirozené charisma a dokážete inspirovat ostatní svou akčností.",
+                    advice: "Pozor na vyhoření. Nezapomeňte svůj oheň občas ztlumit a dopřát si klid. Voda nebo země vám pomohou najít rovnováhu."
+                },
+                water: {
+                    title: "Voda",
+                    subtitle: "Emoce & Intuice",
+                    icon: "💧",
+                    desc: "Vaše podstata je tekutá a hluboká jako oceán. Jste velmi empatičtí, vnímaví a vaše intuice je vaším nejsilnějším kompasem.",
+                    advice: "Nenechte se zaplavit emocemi ostatních. Budujte si pevné břehy (hranice), aby se váš dar empatie nestal vaším vězením."
+                },
+                air: {
+                    title: "Vzduch",
+                    subtitle: "Inspirace & Svoboda",
+                    icon: "🌬️",
+                    desc: "Jste jako vítr – svobodní, bystří a neustále v pohybu. Milujete nápady, komunikaci a pohled na svět z nadhledu.",
+                    advice: "Neztrácejte se v oblacích. Občas je potřeba sestoupit na zem a proměnit své vize v činy. Uzemnění je pro vás klíčové."
+                },
+                earth: {
+                    title: "Země",
+                    subtitle: "Stabilita & Manifestace",
+                    icon: "🌿",
+                    desc: "Jste pevně spojeni se zemí. Praktičnost, trpělivost a schopnost tvořit trvalé hodnoty jsou vašimi největšími dary.",
+                    advice: "Nebojte se občasných změn. Stabilita je skvělá, ale i skála se může vlivem větru a vody proměnit. Otevřete se novým myšlenkám."
+                }
+            };
+
+            function updateProgress() {
+                const percent = (currentStep / totalSteps) * 100;
+                progressBar.style.width = percent + '%';
+            }
+
+            function showStep(stepNum) {
+                steps.forEach(s => s.classList.remove('active'));
+                const nextStep = document.querySelector(`.question-step[data-step="${stepNum}"]`);
+                if (nextStep) {
+                    nextStep.classList.add('active');
+                    updateProgress();
+                } else {
+                    showLoading();
+                }
+            }
+
+            function showLoading() {
+                steps.forEach(s => s.classList.remove('active'));
+                document.getElementById('loading-step').classList.add('active');
+                progressBar.style.width = '100%';
+                
+                setTimeout(showResult, 2500);
+            }
+
+            function showResult() {
+                const winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+                const data = resultsData[winner];
+                
+                // Store result
+                window.lastResult = data.title;
+
+                const resultHtml = `
+                    <div class="result-card" style="border-color: var(--quiz-accent);">
+                        <div class="result-card__header">
+                            <h4 class="result-card__title">${data.title}</h4>
+                            <p style="color: rgba(255,215,0,0.6); font-size: 0.8rem;">Váš dominantní živel</p>
+                        </div>
+                        <div class="result-card__image animate-glow">${data.icon}</div>
+                        <div class="result-card__body">
+                            <h5 style="margin-bottom: 0.5rem; color: #fff;">${data.subtitle}</h5>
+                            <p style="font-size: 0.9rem; color: rgba(255,255,255,0.8); line-height: 1.4;">${data.desc}</p>
+                        </div>
+                        <div class="result-card__footer" style="margin-top: 1rem; border-top: 1px solid rgba(255,215,0,0.2); padding-top: 1rem;">
+                            <p style="font-style: italic; font-size: 0.85rem; color: var(--quiz-accent);">"${data.advice}"</p>
+                        </div>
+                    </div>
+                    <div class="mt-xl">
+                        <h2 class="text-gradient">Živly ve vás nalezly shodu</h2>
+                        <p>Dominance živlu <strong>${data.title}</strong> ovlivňuje vaše rozhodování i energii.</p>
+                    </div>
+                `;
+
+                document.getElementById('loading-step').classList.remove('active');
+                const resultStep = document.getElementById('result-step');
+                document.getElementById('result-box').innerHTML = resultHtml;
+                resultStep.classList.add('active');
+            }
+
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const scoreKey = btn.dataset.score;
+                    scores[scoreKey]++;
+                    currentStep++;
+                    showStep(currentStep);
+                });
+            });
+
+            window.shareResult = () => {
+                const text = `Mým dominantním živlem je ${window.lastResult}! Zjisti ten svůj na Mystické Hvězdě.`;
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Moje Živlová Rovnováha',
+                        text: text,
+                        url: window.location.href
+                    }).catch(console.error);
+                } else {
+                    const dummy = document.createElement('input');
+                    document.body.appendChild(dummy);
+                    dummy.value = text + ' ' + window.location.href;
+                    dummy.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(dummy);
+                    alert('Výsledek zkopírován do schránky!');
+                }
+            };
+        });
+    </script>
+
+    <style>
+        .loader-elemental {
+            width: 80px;
+            height: 80px;
+            border: 3px solid transparent;
+            border-top-color: #ff4500; /* Oheň */
+            border-right-color: #1e90ff; /* Voda */
+            border-bottom-color: #32cd32; /* Země */
+            border-left-color: #ffffff; /* Vzduch */
+            border-radius: 50%;
+            margin: 0 auto;
+            animation: spin 3s linear infinite;
+            position: relative;
+        }
+        .loader-elemental::after {
+            content: '💠';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            animation: pulse 1s ease-in-out infinite alternate;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes pulse { from { opacity: 0.5; transform: translate(-50%, -50%) scale(0.8); } to { opacity: 1; transform: translate(-50%, -50%) scale(1.2); } }
+        .animate-glow { animation: glowPulse 2s infinite alternate; }
+        @keyframes glowPulse { from { text-shadow: 0 0 10px rgba(255,215,0,0.3); } to { text-shadow: 0 0 30px rgba(255,215,0,0.8); transform: scale(1.05); } }
+    </style>
+</body>
+</html>

@@ -16,10 +16,19 @@ export const router = express.Router();
 
 router.post('/crystal-ball', optionalPremiumCheck, async (req, res) => {
     try {
-        const { question, history = [] } = req.body;
+        const { question, history = [], lang = 'cs' } = req.body;
+
+        const langMap = { 'cs': 'češtině (CZ)', 'sk': 'slovenčine (SK)', 'pl': 'poľštine (PL)' };
+        const targetLangName = langMap[lang] || langMap['cs'];
+
+        const errorMsgs = {
+            'cs': 'Otázka je povinná (max 1000 znaků).',
+            'sk': 'Otázka je povinná (max 1000 znakov).',
+            'pl': 'Pytanie jest wymagane (maks. 1000 znaków).'
+        };
 
         if (!question || typeof question !== 'string' || question.length > 1000) {
-            return res.status(400).json({ success: false, error: 'Otázka je povinná (max 1000 znaků).' });
+            return res.status(400).json({ success: false, error: errorMsgs[lang] || errorMsgs['cs'] });
         }
 
         // PREMIUM GATE: Free logged-in users limited to 3 questions per day
@@ -69,7 +78,7 @@ router.post('/crystal-ball', optionalPremiumCheck, async (req, res) => {
         }
 
         const moonPhase = calculateMoonPhase();
-        const systemPrompt = SYSTEM_PROMPTS.crystalBall.replace('{MOON_PHASE}', moonPhase);
+        const systemPrompt = SYSTEM_PROMPTS.crystalBall.replace('{MOON_PHASE}', moonPhase) + `\n\nRespond in ${targetLangName}.`;
 
         const response = await callGemini(systemPrompt, contextMessage);
         res.json({ success: true, response });
@@ -98,8 +107,13 @@ router.post('/dream', authenticateToken, requirePremiumSoft, async (req, res) =>
             });
         }
 
+        const lang = req.body.lang || 'cs';
+        const langMap = { 'cs': 'češtině (CZ)', 'sk': 'slovenčine (SK)', 'pl': 'poľštine (PL)' };
+        const targetLangName = langMap[lang] || langMap['cs'];
+
         const message = `Sen: "${dream}"\nProsím o hlubokou analýzu tohoto snu.`;
-        const response = await callGemini(SYSTEM_PROMPTS.dreamAnalysis, message);
+        const systemPrompt = SYSTEM_PROMPTS.dreamAnalysis + `\n\nRespond in ${targetLangName}.`;
+        const response = await callGemini(systemPrompt, message);
         res.json({ success: true, response });
 
     } catch (error) {
@@ -139,8 +153,13 @@ router.post('/tarot', authenticateToken, requirePremiumSoft, async (req, res) =>
             });
         }
 
+        const lang = req.body.lang || 'cs';
+        const langMap = { 'cs': 'češtině (CZ)', 'sk': 'slovenčine (SK)', 'pl': 'poľštine (PL)' };
+        const targetLangName = langMap[lang] || langMap['cs'];
+
         const message = `Typ výkladu: ${spreadType}\nOtázka: "${question}"\nVytažené karty: ${cards.join(', ')}`;
-        const response = await callGemini(SYSTEM_PROMPTS.tarot, message);
+        const systemPrompt = SYSTEM_PROMPTS.tarot + `\n\nRespond in ${targetLangName}.`;
+        const response = await callGemini(systemPrompt, message);
         res.json({ success: true, response });
     } catch (error) {
         console.error('Tarot Error:', error);
@@ -163,9 +182,14 @@ router.post('/tarot-summary', authenticateToken, async (req, res) => {
             const meaning = String(c?.meaning || '').substring(0, 200);
             return `${pos}: ${name} (${meaning})`;
         }).join(', ');
+        const lang = req.body.lang || 'cs';
+        const langMap = { 'cs': 'češtině (CZ)', 'sk': 'slovenčine (SK)', 'pl': 'poľštine (PL)' };
+        const targetLangName = langMap[lang] || langMap['cs'];
+
         const message = `Typ výkladu: ${safeSpreadType}\n\nKarty v kontextu pozic:\n${cardContext}\n\nVytvoř krásný, hluboký souhrn tohoto výkladu.`;
 
-        const response = await callGemini(SYSTEM_PROMPTS.tarotSummary, message);
+        const systemPrompt = SYSTEM_PROMPTS.tarotSummary + `\n\nRespond in ${targetLangName}.`;
+        const response = await callGemini(systemPrompt, message);
         res.json({ success: true, response });
     } catch (error) {
         console.error('Tarot Summary Error:', error);
@@ -183,7 +207,7 @@ router.post('/natal-chart', optionalPremiumCheck, async (req, res) => {
             return res.status(400).json({ success: false, error: 'Datum narození je povinné.' });
         }
 
-        if (!req.isPremium) {
+        if (!req.isPremium && process.env.NODE_ENV !== 'development') {
             return res.json({
                 success: true,
                 isTeaser: true,
@@ -192,10 +216,16 @@ router.post('/natal-chart', optionalPremiumCheck, async (req, res) => {
             });
         }
 
-        const safeName = String(name || 'Tazatel').substring(0, 100);
-        const message = `Jméno: ${safeName}\\nDatum narození: ${String(birthDate).substring(0, 30)}\\nČas narození: ${String(birthTime || '').substring(0, 20)}\\nMísto narození: ${String(birthPlace || '').substring(0, 200)}`;
+        const lang = req.body.lang || 'cs';
+        const langMap = { 'cs': 'češtině (CZ)', 'sk': 'slovenčine (SK)', 'pl': 'poľštine (PL)' };
+        const targetLangName = langMap[lang] || langMap['cs'];
 
-        const response = await callGemini(SYSTEM_PROMPTS.natalChart, message);
+        const safeName = String(name || 'Tazatel').substring(0, 100);
+        const sunSignInfo = req.body.sunSign ? `\\nSluneční znamení (vypočteno): ${req.body.sunSign}` : '';
+        const message = `Jméno: ${safeName}\\nDatum narození: ${String(birthDate).substring(0, 30)}\\nČas narození: ${String(birthTime || '').substring(0, 20)}\\nMísto narození: ${String(birthPlace || '').substring(0, 200)}${sunSignInfo}`;
+
+        const systemPrompt = SYSTEM_PROMPTS.natalChart + `\n\nRespond in ${targetLangName}.`;
+        const response = await callGemini(systemPrompt, message);
         res.json({ success: true, response, isTeaser: false });
     } catch (error) {
         console.error('Natal Chart Error:', error);
@@ -219,8 +249,13 @@ router.post('/synastry', authenticateToken, requirePremiumSoft, async (req, res)
             return res.json({ success: true, isTeaser: true, response: null });
         }
 
+        const lang = req.body.lang || 'cs';
+        const langMap = { 'cs': 'češtině (CZ)', 'sk': 'slovenčine (SK)', 'pl': 'poľštine (PL)' };
+        const targetLangName = langMap[lang] || langMap['cs'];
+
         const message = `Osoba A: ${safeName1}, narozena ${safeDate1}\nOsoba B: ${safeName2}, narozena ${safeDate2}`;
-        const response = await callGemini(SYSTEM_PROMPTS.synastry, message);
+        const systemPrompt = SYSTEM_PROMPTS.synastry + `\n\nRespond in ${targetLangName}.`;
+        const response = await callGemini(systemPrompt, message);
         res.json({ success: true, response, isTeaser: false });
     } catch (error) {
         console.error('Synastry Error:', error);
@@ -238,9 +273,14 @@ router.post('/astrocartography', authenticateToken, requirePremium, async (req, 
             return res.status(400).json({ success: false, error: 'Datum narození je povinné.' });
         }
 
+        const lang = req.body.lang || 'cs';
+        const langMap = { 'cs': 'češtině (CZ)', 'sk': 'slovenčine (SK)', 'pl': 'poľštine (PL)' };
+        const targetLangName = langMap[lang] || langMap['cs'];
+
         const message = `Jméno: ${String(name || 'Tazatel').substring(0, 100)}\nDatum narození: ${String(birthDate).substring(0, 30)}\nČas narození: ${String(birthTime || '').substring(0, 20)}\nMísto narození: ${String(birthPlace || '').substring(0, 200)}\nZáměr analýzy: ${String(intention).substring(0, 200)}\n\nVytvoř personalizovanou astrokartografickou mapu s doporučenými lokalitami.`;
 
-        const response = await callGemini(SYSTEM_PROMPTS.astrocartography, message);
+        const systemPrompt = SYSTEM_PROMPTS.astrocartography + `\n\nRespond in ${targetLangName}.`;
+        const response = await callGemini(systemPrompt, message);
         res.json({ success: true, response });
     } catch (error) {
         console.error('Astrocartography Error:', error.message);
@@ -277,9 +317,14 @@ router.post('/angel-card', optionalPremiumCheck, async (req, res) => {
         const safeCardTheme = String(card.theme).substring(0, 100);
         const safeIntention = String(intention).substring(0, 200);
 
+        const lang = req.body.lang || 'cs';
+        const langMap = { 'cs': 'češtině (CZ)', 'sk': 'slovenčine (SK)', 'pl': 'poľštine (PL)' };
+        const targetLangName = langMap[lang] || langMap['cs'];
+
         const message = `Vytažená karta: ${safeCardName}\nTéma karty: ${safeCardTheme}\nZáměr / Otázka uživatele: ${safeIntention}\n\nVytvoř laskavé spojení, vysvětli poselství této karty pro tuto situaci a poraď praktický laskavý krok.`;
 
-        const response = await callGemini(SYSTEM_PROMPTS.angelCard, message);
+        const systemPrompt = SYSTEM_PROMPTS.angelCard + `\n\nRespond in ${targetLangName}.`;
+        const response = await callGemini(systemPrompt, message);
         res.json({ success: true, response, isTeaser: false });
     } catch (error) {
         console.error('Angel Card Error:', error.message);
@@ -300,9 +345,14 @@ router.post('/runes', optionalPremiumCheck, async (req, res) => {
         const safeRuneMeaning = String(rune.meaning || '').substring(0, 200);
         const safeIntention = String(intention).substring(0, 500);
 
+        const lang = req.body.lang || 'cs';
+        const langMap = { 'cs': 'češtině (CZ)', 'sk': 'slovenčine (SK)', 'pl': 'poľštine (PL)' };
+        const targetLangName = langMap[lang] || langMap['cs'];
+
         let contextMessage = `Vytažená runa: ${safeRuneName}\nTradiční význam: ${safeRuneMeaning}\nZáměr / Otázka uživatele: ${safeIntention}\n\nVytvoř šamanský výklad a propojení energie této runy s životem tazatele.`;
 
-        const response = await callGemini(SYSTEM_PROMPTS.runes, contextMessage);
+        const systemPrompt = SYSTEM_PROMPTS.runes + `\n\nRespond in ${targetLangName}.`;
+        const response = await callGemini(systemPrompt, contextMessage);
         res.json({ success: true, response, isTeaser: false });
 
     } catch (error) {
