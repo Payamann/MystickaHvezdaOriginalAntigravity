@@ -140,9 +140,9 @@ export function validatePassword(password) {
   const complexityScore = [hasUppercase, hasLowercase, hasNumber, hasSpecialChar]
     .filter(Boolean).length;
 
-  if (complexityScore < 3) {
+  if (complexityScore < 3 || !hasUppercase) {
     throw new Error(
-      'Password must contain at least 3 of: uppercase, lowercase, numbers, special characters'
+      'Password must contain at least 3 of: lowercase, numbers, special characters, AND at least one uppercase letter'
     );
   }
 

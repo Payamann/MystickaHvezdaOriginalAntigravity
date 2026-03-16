@@ -266,11 +266,11 @@ function displayResults(response) {
     // Get current intention
     const intentionSelect = document.getElementById('astro-intention');
     const currentIntention = intentionSelect ? intentionSelect.value : 'obecny';
-    const intentionName = INTENTIONS[currentIntention] || 'Obecná analýza';
+    // const intentionName = INTENTIONS[currentIntention] || 'Obecná analýza';
 
     // Generate Tip - REMOVED per user request
-    const relevantPlanets = PLANET_INTENTIONS[currentIntention] || [];
-    let tipHtml = '';
+    // const relevantPlanets = PLANET_INTENTIONS[currentIntention] || [];
+    // let tipHtml = '';
 
     // Tip generation code removed
     /*

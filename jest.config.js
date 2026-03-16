@@ -19,7 +19,10 @@ export default {
         }
     },
     testMatch: [
-        '**/server/tests/**/*.test.js'
+        '<rootDir>/server/tests/**/*.test.js'
+    ],
+    modulePathIgnorePatterns: [
+        '<rootDir>/.claude/worktrees/'
     ],
     setupFilesAfterEnv: ['./server/tests/setup.js'],
     transform: {}

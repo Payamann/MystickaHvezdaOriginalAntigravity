@@ -1,13 +1,6 @@
 (() => {
     const API_URL = window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api';
 
-    // Decode JWT payload without library (base64url decode)
-    function decodeJwtPayload(token) {
-        try {
-            const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
-            return JSON.parse(atob(base64));
-        } catch { return null; }
-    }
 
     const Auth = {
         // Token is stored in HttpOnly cookie (secure, XSS-proof)
@@ -588,7 +581,7 @@
             if (!this.isLoggedIn()) return null;
 
             try {
-                console.log(`💾 Saving reading (${type})...`);
+                // console.log(`💾 Saving reading (${type})...`);
                 const res = await fetch(`${API_URL}/user/readings`, {
                     method: 'POST',
                     credentials: 'include', // Send auth_token cookie
@@ -604,7 +597,7 @@
                     return null;
                 } else {
                     const savedData = await res.json();
-                    console.log('✅ Reading saved successfully', savedData);
+                    // console.log('✅ Reading saved successfully', savedData);
                     return savedData; // Return saved reading with ID
                 }
             } catch (e) {
