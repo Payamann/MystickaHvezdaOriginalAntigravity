@@ -109,7 +109,7 @@ app.use((req, res, next) => {
     const start = Date.now();
     res.on('finish', () => {
         const duration = Date.now() - start;
-        console.log(`[PERF] ${req.method} ${req.originalUrl} took ${duration}ms [${res.statusCode}]`);
+        // console.warn(`[PERF] ${req.method} ${req.originalUrl} took ${duration}ms [${res.statusCode}]`);
     });
     next();
 });
@@ -384,7 +384,7 @@ app.get('/jmena/:name', (req, res) => {
 
 // Serve static files from the parent directory (MystickaHvezda root)
 const rootDir = path.resolve(__dirname, '../');
-console.log(`📂 Serving static files from: ${rootDir}`);
+console.warn(`📂 Serving static files from: ${rootDir}`);
 
 const staticOptions = process.env.NODE_ENV === 'production'
     ? {
@@ -409,12 +409,12 @@ app.use(express.static(rootDir, staticOptions));
 // Explicitly serve JS files with correct MIME type and caching
 app.use('/js', express.static(path.join(rootDir, 'js'), {
     ...staticOptions,
-    setHeaders: (res, path) => {
-        if (path.endsWith('.js')) {
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.js')) {
             res.setHeader('Content-Type', 'application/javascript');
         }
         if (staticOptions.setHeaders) {
-            staticOptions.setHeaders(res, path);
+            staticOptions.setHeaders(res, filePath);
         }
     }
 }));
@@ -510,8 +510,8 @@ const isMain = process.argv[1] && (
 
 if (isMain || process.env.NODE_ENV === 'production') {
     app.listen(PORT, () => {
-        console.log(`✨ Mystická Hvězda API running on port ${PORT}`);
-        console.log(`🚀 Environment: ${process.env.NODE_ENV || 'development'}`);
+        console.warn(`✨ Mystická Hvězda API running on port ${PORT}`);
+        console.warn(`🚀 Environment: ${process.env.NODE_ENV || 'development'}`);
 
         // Initialize email queue job processor
         try {

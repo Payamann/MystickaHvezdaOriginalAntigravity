@@ -45,7 +45,7 @@ document.addEventListener('components:loaded', () => {
 setTimeout(() => {
     const header = document.querySelector('.header');
     if (header && !header.dataset.initialized) {
-        console.log('[main.js] Fallback init for header');
+        console.warn('[main.js] Fallback init for header');
         safeInit('Header', initHeader);
         safeInit('MobileNav', initMobileNav);
         header.dataset.initialized = 'true';
