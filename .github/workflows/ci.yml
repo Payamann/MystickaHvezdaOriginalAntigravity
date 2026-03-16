@@ -78,3 +78,17 @@ jobs:
             css/style.v2.min.css
             js/dist/
           retention-days: 7
+
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to Railway
+    needs: [lint, test, build]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Railway
+        uses: railwayapp/deploy-action@v1
+        with:
+          token: ${{ secrets.RAILWAY_TOKEN }}
