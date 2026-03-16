@@ -11,6 +11,7 @@ async function toggleFavorite(readingId, buttonId) {
         const apiUrl = window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api';
         const response = await fetch(`${apiUrl}/user/readings/${readingId}/favorite`, {
             method: 'PATCH',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${window.Auth?.token || localStorage.getItem('auth_token')}`

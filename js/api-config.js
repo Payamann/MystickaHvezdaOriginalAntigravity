@@ -70,6 +70,7 @@ async function callAPI(endpoint, data) {
 
         const response = await fetch(`${API_CONFIG.BASE_URL}${endpoint}`, {
             method: 'POST',
+            credentials: 'include',
             headers,
             body: JSON.stringify(finalData)
         });

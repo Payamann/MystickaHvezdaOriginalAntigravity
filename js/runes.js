@@ -189,6 +189,7 @@ async function requestDeepReading() {
     try {
         const response = await fetch(`${apiUrl}/api/runes`, {
             method: 'POST',
+            credentials: 'include',
             headers: authHeaders(),
             body: JSON.stringify({
                 rune: drawnRune,

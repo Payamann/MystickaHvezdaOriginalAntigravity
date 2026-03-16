@@ -157,7 +157,7 @@ app.use(helmet({
             defaultSrc: ["'self'", "https://cdnjs.cloudflare.com"],
             scriptSrc: [
                 "'self'",
-                // 'unsafe-inline' REMOVED - using event delegation and CSP compliant scripts
+                "'unsafe-inline'",          // TODO: Remove after refactoring remaining 19 HTML files with inline onclick handlers (onboarding.html already done)
                 'https://js.stripe.com',     // Stripe.js
                 'https://cdn.jsdelivr.net',  // CDN scripts
                 'https://cdnjs.cloudflare.com', // Added for Three.js

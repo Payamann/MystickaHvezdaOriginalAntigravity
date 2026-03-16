@@ -39,6 +39,7 @@ export async function selectAvatar(emoji) {
     try {
         const res = await fetch(`${apiUrl()}/auth/profile`, {
             method: 'PUT',
+            credentials: 'include',
             headers: authHeaders(true),
             body: JSON.stringify({ avatar: emoji })
         });
@@ -70,6 +71,7 @@ export async function loadSubscriptionStatus() {
 
     try {
         const res = await fetch(`${apiUrl()}/payment/subscription/status`, {
+            credentials: 'include',
             headers: authHeaders()
         });
 

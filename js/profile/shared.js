@@ -15,11 +15,22 @@ export function apiUrl() {
     return window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api';
 }
 
-// Helper: Auth headers
+// Helper: Auth headers (Authorization kept as fallback during cookie migration)
 export function authHeaders(json = false) {
-    const headers = { 'Authorization': `Bearer ${window.Auth?.token}` };
+    const token = window.Auth?.token;
+    const headers = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
     if (json) headers['Content-Type'] = 'application/json';
     return headers;
+}
+
+// Helper: Fetch options with credentials for HttpOnly cookie auth
+export function authFetchOptions(opts = {}) {
+    return {
+        credentials: 'include',
+        headers: authHeaders(opts.json || false),
+        ...opts
+    };
 }
 
 // Get icon for reading type

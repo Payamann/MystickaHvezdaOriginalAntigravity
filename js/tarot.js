@@ -378,6 +378,7 @@ async function generateEtherealSummary(cards, spreadType) {
         const authToken = window.Auth?.token;
         const response = await fetch(`${window.API_CONFIG?.BASE_URL || '/api'}/tarot-summary`, {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})

@@ -12,6 +12,7 @@ export async function loadFavorites() {
 
     try {
         const response = await fetch(`${apiUrl()}/user/readings`, {
+            credentials: 'include',
             headers: authHeaders()
         });
 

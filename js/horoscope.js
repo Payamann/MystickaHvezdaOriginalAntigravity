@@ -178,6 +178,7 @@ function initHoroscope() {
             try {
                 if (window.Auth && window.Auth.isLoggedIn()) {
                     const journalRes = await fetch(`${window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api'}/user/readings`, {
+                        credentials: 'include',
                         headers: { 'Authorization': `Bearer ${window.Auth.token}` }
                     });
                     const jData = await journalRes.json();
