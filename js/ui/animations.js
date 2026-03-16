@@ -9,13 +9,13 @@ export function initScrollAnimations() {
     if (prefersReducedMotion) return;
 
     const animatedElements = document.querySelectorAll('[data-animate]');
-
     if (!animatedElements.length) return;
 
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('animate-fade-in');
+                entry.target.style.opacity = '1'; // Ensure it's visible
                 observer.unobserve(entry.target);
             }
         });
@@ -25,8 +25,18 @@ export function initScrollAnimations() {
     });
 
     animatedElements.forEach(el => {
-        el.style.opacity = '0';
-        observer.observe(el);
+        // Check if element is already in viewport
+        const rect = el.getBoundingClientRect();
+        const isInViewport = rect.top < window.innerHeight && rect.bottom > 0;
+
+        if (isInViewport) {
+            el.classList.add('animate-fade-in');
+            el.style.opacity = '1';
+        } else {
+            el.style.opacity = '0';
+            el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+            observer.observe(el);
+        }
     });
 }
 

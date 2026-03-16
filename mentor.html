@@ -33,430 +33,215 @@
 
     <!-- Styles -->
 
-    <link rel="stylesheet" href="css/style.v2.min.css?v=9">
+    <link rel="stylesheet" href="css/style.v2.min.css?v=11">
 
     <style>
 
         /* Specific Styles for Mentor Chat */
-
         .chat-container {
-
             max-width: 800px;
-
-            margin: 2rem auto;
-
-            height: 70vh;
-
+            margin: 1.5rem auto;
+            height: 75vh;
             display: flex;
-
             flex-direction: column;
-
             background: rgba(10, 10, 26, 0.8);
-
             border: 1px solid rgba(212, 175, 55, 0.2);
-
             border-radius: 16px;
-
             backdrop-filter: blur(10px);
-
             overflow: hidden;
-
             box-shadow: 0 0 30px rgba(155, 89, 182, 0.1);
-
+            position: relative;
+            z-index: 5;
         }
-
-
 
         .chat-header {
-
-            padding: 1.5rem;
-
+            padding: 1.25rem;
             background: rgba(212, 175, 55, 0.05);
-
             border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-
             display: flex;
-
             align-items: center;
-
             gap: 1rem;
-
         }
-
-
 
         .mentor-avatar {
-
-            width: 50px;
-
-            height: 50px;
-
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
             border-radius: 50%;
-
             background: linear-gradient(135deg, var(--color-mystic-gold), #9b59b6);
-
             display: flex;
-
             align-items: center;
-
             justify-content: center;
-
-            font-size: 1.5rem;
-
+            font-size: 1.3rem;
             box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
-
             position: relative;
-
         }
-
-
 
         .mentor-avatar::after {
-
             content: '';
-
             position: absolute;
-
-            bottom: 0px;
-
-            right: 0px;
-
-            width: 12px;
-
-            height: 12px;
-
+            bottom: 2px;
+            right: 2px;
+            width: 10px;
+            height: 10px;
             background: #4CAF50;
-
             border: 2px solid #0a0a1a;
-
             border-radius: 50%;
-
         }
-
-
 
         .chat-messages {
-
             flex: 1;
-
             padding: 1.5rem;
-
             overflow-y: auto;
-
             display: flex;
-
             flex-direction: column;
-
-            gap: 1.5rem;
-
+            gap: 1.25rem;
             scroll-behavior: smooth;
-
         }
-
-
 
         .message {
-
-            max-width: 80%;
-
-            padding: 1rem 1.5rem;
-
-            border-radius: 12px;
-
-            line-height: 1.6;
-
+            max-width: 85%;
+            padding: 0.85rem 1.25rem;
+            border-radius: 14px;
+            line-height: 1.55;
             position: relative;
-
             animation: fadeIn 0.3s ease-out;
-
+            font-size: 0.95rem;
         }
-
-
 
         @keyframes fadeIn {
-
-            from {
-
-                opacity: 0;
-
-                transform: translateY(10px);
-
-            }
-
-
-
-            to {
-
-                opacity: 1;
-
-                transform: translateY(0);
-
-            }
-
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-
 
         .message--mentor {
-
             align-self: flex-start;
-
             background: rgba(255, 255, 255, 0.05);
-
-            border-bottom-left-radius: 2px;
-
+            border-bottom-left-radius: 4px;
             color: var(--color-starlight);
-
             border: 1px solid rgba(255, 255, 255, 0.1);
-
         }
-
-
 
         .message--user {
-
             align-self: flex-end;
-
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(155, 89, 182, 0.2));
-
-            border-bottom-right-radius: 2px;
-
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(155, 89, 182, 0.15));
+            border-bottom-right-radius: 4px;
             color: #fff;
-
-            border: 1px solid rgba(212, 175, 55, 0.3);
-
+            border: 1px solid rgba(212, 175, 55, 0.2);
         }
-
-
 
         .chat-input-area {
-
-            padding: 1.5rem;
-
-            background: rgba(10, 10, 26, 0.95);
-
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-
+            padding: 1.25rem;
+            background: rgba(10, 10, 26, 0.98);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
-
-            gap: 1rem;
-
+            gap: 0.75rem;
             align-items: flex-end;
-
         }
-
-
 
         .chat-input {
-
             flex: 1;
-
-            background: rgba(255, 255, 255, 0.05);
-
+            background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.1);
-
             border-radius: 12px;
-
-            padding: 1rem;
-
+            padding: 0.85rem 1rem;
             color: #fff;
-
             font-family: inherit;
-
+            font-size: 1rem;
             resize: none;
-
-            min-height: 50px;
-
-            max-height: 120px;
-
-            transition: all 0.3s ease;
-
-            cursor: text !important;
-
-            caret-color: white !important;
-
-            /* Force white caret for visibility */
-
+            min-height: 48px;
+            max-height: 150px;
+            transition: all 0.2s ease;
+            caret-color: var(--color-mystic-gold);
         }
-
-
 
         .chat-input:focus {
-
             outline: none;
-
-            border-color: var(--color-mystic-gold);
-
-            background: rgba(255, 255, 255, 0.08);
-
+            border-color: rgba(212, 175, 55, 0.5);
+            background: rgba(255, 255, 255, 0.07);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.05);
         }
-
-
 
         .send-btn {
-
-            width: 50px;
-
-            height: 50px;
-
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
             border-radius: 50%;
-
             background: var(--color-mystic-gold);
-
             border: none;
-
             color: #0a0a1a;
-
             font-size: 1.2rem;
-
             cursor: pointer;
-
             display: flex;
-
             align-items: center;
-
             justify-content: center;
-
-            transition: all 0.3s ease;
-
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-
-
 
         .send-btn:hover:not(:disabled) {
-
-            transform: scale(1.1);
-
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
-
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
         }
-
-
 
         .send-btn:disabled {
-
-            opacity: 0.5;
-
+            opacity: 0.3;
             cursor: not-allowed;
-
-            background: #444;
-
+            background: #2a2a3a;
+            color: rgba(255,255,255,0.2);
         }
-
-
 
         .typing-indicator {
-
             display: flex;
-
             gap: 4px;
-
-            padding: 0.5rem 1rem;
-
-            background: rgba(255, 255, 255, 0.05);
-
+            padding: 0.65rem 1.15rem;
+            background: rgba(255, 255, 255, 0.03);
             border-radius: 12px;
-
             align-self: flex-start;
-
-            margin-bottom: 1rem;
-
+            margin-bottom: 0.5rem;
             display: none;
-
         }
-
-
 
         .typing-dot {
-
-            width: 6px;
-
-            height: 6px;
-
+            width: 5px;
+            height: 5px;
             background: var(--color-mystic-gold);
-
             border-radius: 50%;
-
             animation: bounce 1.4s infinite ease-in-out both;
-
         }
-
-
-
-        .typing-dot:nth-child(1) {
-
-            animation-delay: -0.32s;
-
-        }
-
-
-
-        .typing-dot:nth-child(2) {
-
-            animation-delay: -0.16s;
-
-        }
-
-
 
         @keyframes bounce {
-
-
-
-            0%,
-
-            80%,
-
-            100% {
-
-                transform: scale(0);
-
-            }
-
-
-
-            40% {
-
-                transform: scale(1);
-
-            }
-
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+            40% { transform: scale(1.2); opacity: 1; }
         }
 
-
+        /* Mobile specific fixes */
+        @media (max-width: 768px) {
+            .chat-container {
+                height: 65vh;
+                margin: 1rem 0;
+                border-radius: 12px;
+            }
+            .message {
+                max-width: 90%;
+                font-size: 0.9rem;
+            }
+            .hero__title { font-size: 2.2rem; }
+            .chat-header h3 { font-size: 1.1rem; }
+            .chat-header span { font-size: 0.75rem; }
+        }
 
         /* Paywall Overlay */
-
         .limit-reached-overlay {
-
             position: absolute;
-
-            bottom: 0;
-
-            left: 0;
-
-            width: 100%;
-
-            height: 100%;
-
-            background: rgba(10, 10, 26, 0.8);
-
-            backdrop-filter: blur(5px);
-
+            inset: 0;
+            background: rgba(10, 10, 26, 0.92);
+            backdrop-filter: blur(8px);
             display: flex;
-
             align-items: center;
-
             justify-content: center;
-
             flex-direction: column;
-
-            z-index: 10;
-
+            z-index: 20;
             display: none;
-
-            /* Hidden by default */
-
         }
 
     </style>
@@ -547,13 +332,12 @@
 
 
 
-    <main class="section section--hero" style="min-height: 100vh; padding-top: 180px;">
+    <main class="section hero--mini" style="padding-top: 100px; padding-bottom: 1rem;">
 
         <div class="container">
 
-            <div style="text-align: center; margin-bottom: 2rem; position: relative; z-index: 2;" data-animate>
-
-                <h1 class="hero__title">Hvězdný <span class="text-gradient">Průvodce</span></h1>
+            <div style="text-align: center; margin-bottom: 2rem; position: relative; z-index: 2; opacity: 1 !important;">
+                <h1 class="hero__title" style="opacity: 1 !important; transform: none !important;">Hvězdný <span class="text-gradient">Průvodce</span></h1>
 
                 <p class="hero__subtitle">
 
@@ -641,17 +425,12 @@
 
             </div>
 
+            </div>
         </div>
-
-    
-
-    
-
-    
+    </main>
 
     <!-- CROSS-LINKING SEKCE -->
-
-    <section class="section" style="padding-top: 0; padding-bottom: 3rem;">
+    <section class="section" style="padding-top: 2rem; padding-bottom: 4rem;">
 
         <div class="container" style="max-width: 860px;">
 
@@ -763,13 +542,13 @@
 
         <script src="js/share-result.js" defer></script>
 
-        <script src="js/nameday.js" defer></script>
+        
 
     <script src="js/exit-intent.js" defer></script>
 
     <script src="js/components.js?v=10" defer></script>
 
-    <script type="module" src="js/main.js?v=10"></script>
+    <script type="module" src="js/main.js?v=11"></script>
 
 
 

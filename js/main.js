@@ -15,16 +15,23 @@ function safeInit(name, fn) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    safeInit('Stars', initStars);
-    safeInit('ScrollAnimations', initScrollAnimations);
-    safeInit('FAQ', initFAQ);
-    safeInit('Tabs', initTabs);
-    safeInit('SmoothScroll', initSmoothScroll);
+    // Critical for first interaction
+    safeInit('Header', initHeader);
+    safeInit('MobileNav', initMobileNav);
     safeInit('EmailForms', initEmailForms);
-    safeInit('CustomCursor', initCustomCursor);
-    safeInit('DateValidation', initDateValidation);
-    safeInit('Carousel', initCarousel);
-    safeInit('CookieBanner', initCookieBanner);
+
+    // Non-critical or visual improvements (deferred)
+    setTimeout(() => {
+        safeInit('Stars', initStars);
+        safeInit('ScrollAnimations', initScrollAnimations);
+        safeInit('FAQ', initFAQ);
+        safeInit('Tabs', initTabs);
+        safeInit('SmoothScroll', initSmoothScroll);
+        safeInit('CustomCursor', initCustomCursor);
+        safeInit('DateValidation', initDateValidation);
+        safeInit('Carousel', initCarousel);
+        safeInit('CookieBanner', initCookieBanner);
+    }, 50);
 });
 
 // Listen for dynamically loaded components (Header/Footer)

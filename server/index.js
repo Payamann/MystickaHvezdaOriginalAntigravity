@@ -406,11 +406,15 @@ const staticOptions = process.env.NODE_ENV === 'production'
 
 app.use(express.static(rootDir, staticOptions));
 
-// Explicitly serve JS files with correct MIME type to avoid strict MIME checking issues
+// Explicitly serve JS files with correct MIME type and caching
 app.use('/js', express.static(path.join(rootDir, 'js'), {
+    ...staticOptions,
     setHeaders: (res, path) => {
         if (path.endsWith('.js')) {
             res.setHeader('Content-Type', 'application/javascript');
+        }
+        if (staticOptions.setHeaders) {
+            staticOptions.setHeaders(res, path);
         }
     }
 }));
