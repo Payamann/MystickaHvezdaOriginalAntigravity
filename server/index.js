@@ -157,7 +157,7 @@ app.use(helmet({
             defaultSrc: ["'self'", "https://cdnjs.cloudflare.com"],
             scriptSrc: [
                 "'self'",
-                // 'unsafe-inline' REMOVED - all 20 HTML files converted to event delegation
+                "'unsafe-inline'",          // Required: ~80 HTML files have inline <script> blocks (SW registration, analytics, event delegation). To remove: implement nonce-based CSP or externalize all inline scripts.
                 'https://js.stripe.com',     // Stripe.js
                 'https://cdn.jsdelivr.net',  // CDN scripts
                 'https://cdnjs.cloudflare.com', // Added for Three.js
