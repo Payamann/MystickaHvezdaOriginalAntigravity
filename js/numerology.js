@@ -249,6 +249,7 @@ async function displayInterpretation(name, birthDate, birthTime, lifePath, desti
         const apiUrl = window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api';
         const response = await fetch(`${apiUrl}/numerology`, {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`

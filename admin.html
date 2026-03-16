@@ -196,7 +196,7 @@
 
                     <p>Přihlášen jako: <span id="admin-email">...</span></p>
 
-                    <button class="btn btn--secondary" onclick="loadUsers()">🔄 Obnovit data</button>
+                    <button class="btn btn--secondary" data-action="loadUsers">🔄 Obnovit data</button>
 
                     <p id="error-msg" style="color:red; margin-top:1rem;"></p>
 
@@ -263,6 +263,14 @@
 
 
     <script>
+
+        // Event delegation for onclick handlers
+        document.addEventListener('click', (e) => {
+            const action = e.target.getAttribute('data-action');
+            if (action === 'loadUsers') {
+                loadUsers();
+            }
+        });
 
         document.addEventListener('DOMContentLoaded', async () => {
 

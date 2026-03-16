@@ -27,6 +27,7 @@ window.Premium = {
 
         try {
             const response = await fetch(`${API_CONFIG.BASE_URL}/payment/subscription/status`, {
+                credentials: 'include',
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }

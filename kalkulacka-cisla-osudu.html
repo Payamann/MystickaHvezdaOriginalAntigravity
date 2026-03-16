@@ -437,15 +437,15 @@
 
                             <div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;">
 
-                                <button onclick="shareResult('twitter')" class="btn btn--glass"
+                                <button data-action="shareResult" data-platform="twitter" class="btn btn--glass"
 
                                     style="font-size:0.82rem;padding:0.5rem 1rem;">𝕏 Twitter</button>
 
-                                <button onclick="shareResult('facebook')" class="btn btn--glass"
+                                <button data-action="shareResult" data-platform="facebook" class="btn btn--glass"
 
                                     style="font-size:0.82rem;padding:0.5rem 1rem;">Facebook</button>
 
-                                <button onclick="shareResult('copy')" class="btn btn--glass"
+                                <button data-action="shareResult" data-platform="copy" class="btn btn--glass"
 
                                     style="font-size:0.82rem;padding:0.5rem 1rem;" id="copy-btn">📋 Kopírovat</button>
 
@@ -794,6 +794,15 @@
         });
 
 
+
+        // Event delegation for share buttons
+        document.addEventListener('click', (e) => {
+            const action = e.target.getAttribute('data-action');
+            if (action === 'shareResult') {
+                const platform = e.target.getAttribute('data-platform');
+                shareResult(platform);
+            }
+        });
 
         function shareResult(platform) {
 

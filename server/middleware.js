@@ -23,7 +23,6 @@ const createLimiter = (max, windowMin = 15, message = 'Příliš mnoho požadavk
 // ============================================
 // AUTHENTICATION MIDDLEWARE
 // ============================================
-
 // Promise wrapper for jwt.verify to avoid async-in-callback pitfall
 function verifyToken(token) {
     return new Promise((resolve, reject) => {
@@ -43,14 +42,13 @@ export const authenticateToken = async (req, res, next) => {
     }
 
     try {
-        const user = await verifyToken(token);
-
         // Check if token is blacklisted (logout, password change, etc.)
         const blacklisted = await isTokenBlacklisted(token);
         if (blacklisted) {
             return res.status(401).json({ error: 'Token byl zneplatněn. Prosím přihlaste se znovu.' });
         }
 
+        const user = await verifyToken(token);
         req.user = user;
         req.isPremium = !!user.isPremium;
         next();
@@ -88,9 +86,9 @@ export const optionalPremiumCheck = async (req, res, next) => {
 
     if (token) {
         try {
-            const user = await verifyToken(token);
             const blacklisted = await isTokenBlacklisted(token);
             if (!blacklisted) {
+                const user = await verifyToken(token);
                 req.user = user;
                 req.isPremium = !!user.isPremium;
             }

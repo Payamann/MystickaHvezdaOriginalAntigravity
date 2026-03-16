@@ -84,7 +84,7 @@ Body:<br>
 
             <button class="btn btn--secondary"
 
-                onclick="window.Premium.showPaywall('test', 'Toto je testovací paywall')">
+                data-action="showPaywall" data-feature="test" data-message="Toto je testovací paywall">
 
                 Zobrazit Paywall
 
@@ -110,7 +110,7 @@ Body:<br>
 
             <button class="btn btn--ghost"
 
-                onclick="window.Premium.lockContent(document.getElementById('demo-content'), 'demo')">
+                data-action="lockContent" data-target="demo-content" data-feature="demo">
 
                 Zamknout Obsah
 
@@ -150,7 +150,7 @@ Body:<br>
 
                     <strong>Subscription Status:</strong>
 
-                    <button class="btn btn--sm" onclick="checkStatus()">Zkontrolovat Status</button>
+                    <button class="btn btn--sm" data-action="checkStatus">Zkontrolovat Status</button>
 
                     <span id="status-result"></span>
 
@@ -190,7 +190,23 @@ Body:<br>
 
     <script src="js/premium-gates.js"></script>
 
-
+    <script>
+        // Event delegation for premium test buttons
+        document.addEventListener('click', (e) => {
+            const action = e.target.getAttribute('data-action');
+            if (action === 'showPaywall') {
+                const feature = e.target.getAttribute('data-feature');
+                const message = e.target.getAttribute('data-message');
+                window.Premium.showPaywall(feature, message);
+            } else if (action === 'lockContent') {
+                const targetId = e.target.getAttribute('data-target');
+                const feature = e.target.getAttribute('data-feature');
+                window.Premium.lockContent(document.getElementById(targetId), feature);
+            } else if (action === 'checkStatus') {
+                checkStatus();
+            }
+        });
+    </script>
 
     <script>
 

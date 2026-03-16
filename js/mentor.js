@@ -62,6 +62,7 @@ async function loadHistory() {
     try {
         const token = localStorage.getItem('auth_token');
         const response = await fetch(`${API_CONFIG.BASE_URL}/mentor/history`, {
+            credentials: 'include',
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -101,6 +102,7 @@ async function checkGreeting() {
         const token = localStorage.getItem('auth_token');
         const response = await fetch(`${API_CONFIG.BASE_URL}/mentor/greeting`, {
             method: 'POST',
+            credentials: 'include',
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -195,6 +197,7 @@ async function sendMessage() {
         const token = localStorage.getItem('auth_token'); // Fixed key
         const response = await fetch(`${API_CONFIG.BASE_URL}/mentor/chat`, {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`

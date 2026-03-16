@@ -19,6 +19,7 @@ export async function callAPI(endpoint, data = {}) {
 
         const response = await fetch(endpoint, {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 ...(token && { 'Authorization': `Bearer ${token}` }),

@@ -41,6 +41,7 @@ async function handlePaymentClick(planId, btn) {
 
         const response = await fetch(`${baseUrl}/payment/create-checkout-session`, {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`

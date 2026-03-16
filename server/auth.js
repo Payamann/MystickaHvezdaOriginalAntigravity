@@ -2,7 +2,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import rateLimit from 'express-rate-limit';
 import { supabase } from './db-supabase.js';
-import { JWT_SECRET } from './config/jwt.js';
+import { JWT_SECRET, JWT_EXPIRY, COOKIE_OPTIONS, INDICATOR_COOKIE_OPTIONS } from './config/jwt.js';
 import { authenticateToken } from './middleware.js';
 import { validateEmail, validatePassword, validateName, validateBirthDate } from './utils/validation.js';
 import { PREMIUM_PLAN_TYPES } from './config/constants.js';
@@ -15,7 +15,7 @@ const LOCKOUT_DURATION_MINUTES = 15;
 // ============================================
 // Helper: Generate JWT Token
 // ============================================
-async function generateToken(userId) {
+export async function generateToken(userId) {
     try {
         // Fetch latest subscription info
         const { data: sub } = await supabase
@@ -39,7 +39,7 @@ async function generateToken(userId) {
             subscription_status: status,
             isPremium: isPremium,
             premiumExpires: sub?.current_period_end || null
-        }, JWT_SECRET, { expiresIn: '30d' });
+        }, JWT_SECRET, { expiresIn: JWT_EXPIRY });
 
         return token;
     } catch (err) {
@@ -72,7 +72,6 @@ const APP_URL = process.env.APP_URL || 'http://localhost:3001';
 
 const logDebug = (msg) => {
     if (IS_PRODUCTION) return; // Skip debug logging in production
-    // fs.appendFileSync('debug.log', `[${time}] ${msg}\n`); // Removed to prevent lock issues
     console.log(`[DEBUG] ${msg}`);
 };
 
@@ -84,18 +83,15 @@ router.post('/activate-premium', (req, res) => {
 
 // Register (Supabase Auth)
 router.post('/register', authLimiter, async (req, res) => {
-    const { email, password, password_confirm, first_name, birth_date, birth_time, birth_place } = req.body;
+    const { email, password, confirm_password, first_name, birth_date, birth_time, birth_place } = req.body;
 
     try {
         // Validate input using centralized validators
         const validatedEmail = validateEmail(email);
         const validatedPassword = validatePassword(password);
 
-        // Validate password confirmation (server-side)
-        if (!password_confirm || typeof password_confirm !== 'string') {
-            return res.status(400).json({ error: 'Heslo potvrzení je povinné.' });
-        }
-        if (password !== password_confirm) {
+        // Server-side password confirmation check
+        if (confirm_password !== undefined && password !== confirm_password) {
             return res.status(400).json({ error: 'Hesla se neshodují.' });
         }
 
@@ -165,17 +161,17 @@ router.post('/login', authLimiter, async (req, res) => {
         const validatedEmail = validateEmail(email);
         const validatedPassword = validatePassword(password);
 
-        // 1. Check if account is locked before attempting auth
-        const lockout = await checkAccountLockout(validatedEmail);
-        if (lockout.isLocked) {
+        // Check account lockout before attempting login
+        const lockoutStatus = await checkAccountLockout(validatedEmail);
+        if (lockoutStatus.isLocked) {
             return res.status(429).json({
-                error: `Účet je dočasně uzamčen. Zkuste to prosím za ${lockout.minutesRemaining} minut.`,
-                lockedUntil: lockout.lockedUntil,
-                retryAfter: lockout.minutesRemaining * 60
+                error: `Účet je dočasně uzamčen. Zkuste to prosím za ${lockoutStatus.minutesRemaining} minut.`,
+                lockedUntil: lockoutStatus.lockedUntil,
+                retryAfter: lockoutStatus.minutesRemaining * 60
             });
         }
 
-        // 2. Sign In via Supabase Auth
+        // 1. Sign In via Supabase Auth
         const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
             email: validatedEmail,
             password: validatedPassword,
@@ -184,8 +180,8 @@ router.post('/login', authLimiter, async (req, res) => {
         if (authError) {
             console.error('Auth Error:', authError);
             // Record failed attempt
-            const lockoutStatus = await recordFailedAttempt(validatedEmail, clientIp, userAgent, 'invalid_password');
-            if (lockoutStatus.isLocked) {
+            const lockoutRes = await recordFailedAttempt(validatedEmail, clientIp, userAgent, 'invalid_password');
+            if (lockoutRes.isLocked) {
                 return res.status(429).json({
                     error: `Příliš mnoho neúspěšných pokusů. Účet je uzamčen na ${LOCKOUT_DURATION_MINUTES} minut.`,
                     remainingAttempts: 0,
@@ -194,9 +190,12 @@ router.post('/login', authLimiter, async (req, res) => {
             }
             return res.status(400).json({
                 error: 'Nesprávné přihlášení nebo neověřený email.',
-                remainingAttempts: lockoutStatus.remainingAttempts
+                remainingAttempts: lockoutRes.remainingAttempts
             });
         }
+
+        // Successful login - clear lockout
+        clearLoginAttempts(validatedEmail);
 
         const authUser = authData.user;
         logDebug(`Login attempt for: ${authUser.email} (ID: ${authUser.id})`);
@@ -284,16 +283,11 @@ router.post('/login', authLimiter, async (req, res) => {
             subscription_status: status,
             isPremium: isPremium,
             premiumExpires: sub.current_period_end || null
-        }, JWT_SECRET, { expiresIn: '30d' });
+        }, JWT_SECRET, { expiresIn: JWT_EXPIRY });
 
-        // Set HttpOnly, Secure cookie (XSRF-safe)
-        res.cookie('auth_token', token, {
-            httpOnly: true,
-            secure: IS_PRODUCTION, // HTTPS only in production
-            sameSite: 'strict',
-            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-            path: '/'
-        });
+        // Set HttpOnly cookies with JWT
+        res.cookie('auth_token', token, COOKIE_OPTIONS);
+        res.cookie('logged_in', '1', INDICATOR_COOKIE_OPTIONS);
 
         // Record successful login (clears failed attempts)
         await recordSuccessfulLogin(user.email, clientIp, userAgent);
@@ -339,14 +333,9 @@ router.post('/refresh-token', authenticateToken, sensitiveLimiter, async (req, r
             .eq('id', userId)
             .single();
 
-        // Set HttpOnly, Secure cookie
-        res.cookie('auth_token', newToken, {
-            httpOnly: true,
-            secure: IS_PRODUCTION,
-            sameSite: 'strict',
-            maxAge: 30 * 24 * 60 * 60 * 1000,
-            path: '/'
-        });
+        // Set refreshed cookies
+        res.cookie('auth_token', newToken, COOKIE_OPTIONS);
+        res.cookie('logged_in', '1', INDICATOR_COOKIE_OPTIONS);
 
         res.json({
             user: {
@@ -363,6 +352,28 @@ router.post('/refresh-token', authenticateToken, sensitiveLimiter, async (req, r
     } catch (e) {
         console.error('Token Refresh Error:', e);
         res.status(500).json({ error: 'Failed to refresh token' });
+    }
+});
+
+// Logout - Blacklist current token and clear cookies
+router.post('/logout', authenticateToken, async (req, res) => {
+    try {
+        // Get token from cookie or header for blacklisting
+        const token = req.cookies?.auth_token || (req.headers['authorization'] && req.headers['authorization'].split(' ')[1]);
+
+        // Blacklist the token to prevent reuse
+        if (token) {
+            await blacklistToken(token);
+        }
+
+        // Clear auth cookies
+        res.clearCookie('auth_token', COOKIE_OPTIONS);
+        res.clearCookie('logged_in', INDICATOR_COOKIE_OPTIONS);
+
+        res.json({ success: true, message: 'Odhlášení úspěšné.' });
+    } catch (e) {
+        console.error('Logout Error:', e);
+        res.status(500).json({ error: 'Nepodařilo se odhlásit.' });
     }
 });
 
@@ -560,31 +571,6 @@ router.post('/onboarding/complete', authenticateToken, async (req, res) => {
     }
 });
 
-// Logout - Clear HttpOnly cookie and blacklist token
-router.post('/logout', authenticateToken, async (req, res) => {
-    try {
-        // Get token from cookie or header for blacklisting
-        const token = req.cookies.auth_token || (req.headers['authorization'] && req.headers['authorization'].split(' ')[1]);
-
-        // Blacklist the token to prevent reuse
-        if (token) {
-            await blacklistToken(token);
-        }
-
-        // Clear auth cookie on server side
-        res.clearCookie('auth_token', {
-            httpOnly: true,
-            secure: IS_PRODUCTION,
-            sameSite: 'strict',
-            path: '/'
-        });
-
-        res.json({ success: true, message: 'Odhlášeni bylo úspěšné.' });
-    } catch (e) {
-        console.error('Logout Error:', e);
-        res.status(500).json({ error: 'Nepodařilo se odhlásit.' });
-    }
-});
 
 // User readings endpoints consolidated in index.js (using authenticateToken middleware)
 

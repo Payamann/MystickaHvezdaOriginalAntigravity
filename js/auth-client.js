@@ -1,6 +1,14 @@
 (() => {
     const API_URL = window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api';
 
+    // Decode JWT payload without library (base64url decode)
+    function decodeJwtPayload(token) {
+        try {
+            const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+            return JSON.parse(atob(base64));
+        } catch { return null; }
+    }
+
     const Auth = {
         // Token is stored in HttpOnly cookie (secure, XSS-proof)
         // JS cannot read it - that's the point. We track login state via user data.
@@ -12,11 +20,15 @@
             this.setupListeners();
             this.handleRedirect();
             this.refreshSession(); // Auto-sync profile on load
+            // Auto-refresh token every hour
+            setInterval(() => this.refreshSession(), 3600000);
         },
 
         async refreshSession() {
             if (!this.isLoggedIn()) return;
             try {
+                // Session refresh now relies on HttpOnly cookies
+
                 const oldStatus = this.user?.subscription_status;
                 const user = await this.getProfile();
 
@@ -27,7 +39,6 @@
 
                     // Only emit if status changed to avoid infinite reload loops
                     if (oldStatus !== user.subscription_status) {
-                        console.log(`🔄 Status changed (${oldStatus} -> ${user.subscription_status}), triggering refresh...`);
                         document.dispatchEvent(new Event('auth:refreshed'));
                     }
                 }
@@ -37,6 +48,31 @@
                 if (e.message === 'Session expired') {
                     this.logout();
                 }
+            }
+        },
+
+        async _refreshToken() {
+            try {
+                const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+                const res = await fetch(`${API_URL}/auth/refresh-token`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+                    }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    this.user = data.user;
+                    localStorage.setItem('auth_user', JSON.stringify(data.user));
+                } else if (res.status === 401 || res.status === 403) {
+                    // Token invalid/expired, force logout
+                    this.logout();
+                }
+            } catch (e) {
+                // Network error, retry on next interval
+                console.warn('Token refresh failed:', e);
             }
         },
 
@@ -82,9 +118,8 @@
         },
 
         isLoggedIn() {
-            // Token is in HttpOnly cookie (can't read from JS).
-            // We determine login state from cached user data.
-            return !!this.user;
+            // Check indicator cookie (set by server) or cached user profile
+            return document.cookie.includes('logged_in=1') || !!this.user;
         },
 
         isPremium() {
@@ -373,7 +408,9 @@
                             return;
                         }
                         const res = await this.register(email, password, {
+                            first_name: form.first_name?.value || undefined,
                             birth_date: birthDate,
+                            birth_place: form.birth_place?.value || undefined,
                             password_confirm: confirmPassword
                         });
                         if (!res.success) this.showToast('Chyba registrace', res.error, 'error');
@@ -428,7 +465,7 @@
                     body: JSON.stringify({ email })
                 });
                 if (res.ok) {
-                    this.showToast('Email odeslán ✉️', 'Zkontrolujte svou schránku – odkaz pro obnovení hesla byl odeslán.', 'success');
+                    this.showToast('Email odeslán', 'Zkontrolujte svou schránku pro odkaz na obnovení hesla.', 'success');
                     this.closeModal();
                 } else {
                     this.showToast('Chyba', 'Nepodařilo se odeslat email. Zkuste to prosím znovu.', 'error');

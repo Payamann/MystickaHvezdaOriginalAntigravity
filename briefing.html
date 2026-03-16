@@ -105,7 +105,7 @@
                 <div id="briefing-text" class="briefing-content"></div>
 
                 <div class="briefing-footer">
-                    <button class="btn-share" onclick="window.location.href='/'">Zpět na bránu</button>
+                    <button class="btn-share" data-action="navigateHome">Zpět na bránu</button>
                     <div style="color: rgba(255,255,255,0.3); font-size: 0.8rem;">Vytvořeno s pomocí Vesmírné AI</div>
                 </div>
             </div>
@@ -113,6 +113,15 @@
     </div>
 
     <script src="js/error-boundary.js"></script>
+    <script>
+        // Event delegation for onclick handlers
+        document.addEventListener('click', (e) => {
+            const action = e.target.getAttribute('data-action');
+            if (action === 'navigateHome') {
+                window.location.href = '/';
+            }
+        });
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const dateEl = document.getElementById('date');

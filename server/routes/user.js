@@ -6,6 +6,7 @@
  */
 import express from 'express';
 import { authenticateToken } from '../middleware.js';
+import { blacklistToken, generateToken } from '../auth.js';
 import { supabase } from '../db-supabase.js';
 import rateLimit from 'express-rate-limit';
 import { validatePassword, validateString } from '../utils/validation.js';

@@ -99,6 +99,7 @@ function initCrystalBall() {
             const cbToken = localStorage.getItem('auth_token') || window.Auth?.token;
             const response = await fetch(`${window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api'}/crystal-ball`, {
                 method: 'POST',
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                     ...(cbToken ? { 'Authorization': `Bearer ${cbToken}` } : {})
