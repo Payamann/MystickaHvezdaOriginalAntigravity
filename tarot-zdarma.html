@@ -289,13 +289,13 @@
 
                     <div class="card-row">
 
-                        <div class="demo-card" onclick="flipCard(this)" title="Klikněte pro výklad">✨</div>
+                        <div class="demo-card" data-action="flipCard" title="Klikněte pro výklad">✨</div>
 
-                        <div class="demo-card" onclick="flipCard(this)" title="Klikněte pro výklad"
+                        <div class="demo-card" data-action="flipCard" title="Klikněte pro výklad"
 
                             style="transform:rotate(3deg); margin-top:-10px;">✨</div>
 
-                        <div class="demo-card" onclick="flipCard(this)" title="Klikněte pro výklad">✨</div>
+                        <div class="demo-card" data-action="flipCard" title="Klikněte pro výklad">✨</div>
 
                     </div>
 
@@ -562,6 +562,20 @@
     <div id="footer-placeholder"></div>
 
 
+
+    <script>
+        // Event delegation for flipCard function
+        document.addEventListener('click', (e) => {
+            const action = e.target.getAttribute('data-action');
+            if (action === 'flipCard') {
+                flipCard(e.target);
+            }
+        });
+
+        function flipCard(el) {
+            el.classList.toggle('flipped');
+        }
+    </script>
 
     <script src="js/api-config.js?v=5" defer></script>
 

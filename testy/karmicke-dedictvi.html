@@ -136,8 +136,8 @@
                             <!-- Injected by JS -->
                         </div>
                         <div class="text-center mt-xl">
-                            <button class="btn btn--primary" id="share-btn" onclick="shareResult()">Sdílet osvícení 🔗</button>
-                            <button class="btn btn--glass ml-md" onclick="location.reload()">Zkusit znovu ↺</button>
+                            <button class="btn btn--primary" id="share-btn" data-action="shareResult">Sdílet osvícení 🔗</button>
+                            <button class="btn btn--glass ml-md" data-action="reloadPage">Zkusit znovu ↺</button>
                             <a href="index.html" class="btn btn--secondary ml-md">Zpět na přehled</a>
                         </div>
                     </div>
@@ -258,6 +258,16 @@
                 });
             });
 
+
+            // Event delegation for share and reload buttons
+            document.addEventListener("click", (e) => {
+                const action = e.target.getAttribute("data-action");
+                if (action === "shareResult") {
+                    window.shareResult();
+                } else if (action === "reloadPage") {
+                    location.reload();
+                }
+            });
             window.shareResult = () => {
                 const text = `Můj karmický otisk je ${window.lastResult}! Odhal ten svůj na Mystické Hvězdě.`;
                 if (navigator.share) {

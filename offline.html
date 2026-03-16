@@ -57,9 +57,19 @@
 
         <p>Zdá se, že jste ztratili připojení k internetu. Hvězdy na vás počkají — vraťte se, až budete zpět online.</p>
 
-        <a href="/" class="btn" onclick="window.location.reload()">?? Zkusit znovu</a>
+        <a href="/" class="btn" data-action="reloadPage">?? Zkusit znovu</a>
 
     </div>
+
+    <script>
+        // Event delegation for reload button
+        document.addEventListener('click', (e) => {
+            const action = e.target.getAttribute('data-action');
+            if (action === 'reloadPage') {
+                window.location.reload();
+            }
+        });
+    </script>
 
     <script>
 

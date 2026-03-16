@@ -364,10 +364,10 @@
                     data-animate>
 
                     <div class="year-input-wrapper">
-                        <button class="ctrl-btn minus" type="button" onclick="this.parentNode.querySelector('input').stepDown(); this.parentNode.querySelector('input').dispatchEvent(new Event('change'));">−</button>
+                        <button class="ctrl-btn minus" type="button" data-action="stepDown">−</button>
                         <input type="number" id="birth-year" class="year-input" placeholder="Rok nar." min="1900" max="2100"
                             aria-label="Rok narození">
-                        <button class="ctrl-btn plus" type="button" onclick="this.parentNode.querySelector('input').stepUp(); this.parentNode.querySelector('input').dispatchEvent(new Event('change'));">+</button>
+                        <button class="ctrl-btn plus" type="button" data-action="stepUp">+</button>
                     </div>
 
                     <button id="btn-calculate" class="btn btn--primary">🐉 Zjistit mé znamení</button>
@@ -535,10 +535,10 @@
                                 rok narození</label>
 
                             <div class="year-input-wrapper" style="width:100%;">
-                                <button class="ctrl-btn minus" type="button" onclick="this.parentNode.querySelector('input').stepDown(); this.parentNode.querySelector('input').dispatchEvent(new Event('change'));">−</button>
+                                <button class="ctrl-btn minus" type="button" data-action="stepDown">−</button>
                                 <input type="number" id="synastry-year1" class="year-input" placeholder="Např. 1986"
                                     min="1900" max="2100" style="width:100%;">
-                                <button class="ctrl-btn plus" type="button" onclick="this.parentNode.querySelector('input').stepUp(); this.parentNode.querySelector('input').dispatchEvent(new Event('change'));">+</button>
+                                <button class="ctrl-btn plus" type="button" data-action="stepUp">+</button>
                             </div>
 
                         </div>
@@ -552,10 +552,10 @@
                                 partnera</label>
 
                             <div class="year-input-wrapper" style="width:100%;">
-                                <button class="ctrl-btn minus" type="button" onclick="this.parentNode.querySelector('input').stepDown(); this.parentNode.querySelector('input').dispatchEvent(new Event('change'));">−</button>
+                                <button class="ctrl-btn minus" type="button" data-action="stepDown">−</button>
                                 <input type="number" id="synastry-year2" class="year-input" placeholder="Např. 1990"
                                     min="1900" max="2100" style="width:100%;">
-                                <button class="ctrl-btn plus" type="button" onclick="this.parentNode.querySelector('input').stepUp(); this.parentNode.querySelector('input').dispatchEvent(new Event('change'));">+</button>
+                                <button class="ctrl-btn plus" type="button" data-action="stepUp">+</button>
                             </div>
 
                         </div>
@@ -661,6 +661,22 @@
     <!-- Nový dynamický skript pro čínský horoskop (Zvířata, Elementy podle ročníku a Synastrie) -->
 
     <script src="js/cinsky-horoskop.js?v=6" defer></script>
+
+    <script>
+        // Event delegation for +/- year input buttons
+        document.addEventListener('click', (e) => {
+            const action = e.target.getAttribute('data-action');
+            if (action === 'stepDown' || action === 'stepUp') {
+                const input = e.target.parentNode.querySelector('input');
+                if (action === 'stepDown') {
+                    input.stepDown();
+                } else {
+                    input.stepUp();
+                }
+                input.dispatchEvent(new Event('change'));
+            }
+        });
+    </script>
 
 </body>
 
