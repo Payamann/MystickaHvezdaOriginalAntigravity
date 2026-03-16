@@ -2,6 +2,7 @@
  * Jest Test Setup
  * Configures test environment and utilities
  */
+import { jest } from '@jest/globals';
 
 // Suppress console output during tests
 global.console = {
