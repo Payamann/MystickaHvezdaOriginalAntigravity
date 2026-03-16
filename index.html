@@ -2294,7 +2294,23 @@
 
   </script>
 
+  <!-- DOMPurify for XSS protection -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" defer></script>
 
+  <!-- Sentry for error tracking (Browser SDK) -->
+  <script src="https://browser.sentry-cdn.com/7.99.0/bundle.min.js" integrity="sha384-wVjNuGiBl9KGqSbK8t2BNohBZZPcVc3p4i8Ydv4eLhV8FNvB3L3RjmvEkP8yIjsB" crossorigin="anonymous" defer></script>
+  <script defer>
+    window.sentryLoaded = new Promise(resolve => {
+      if (window.Sentry) {
+        window.Sentry.init({
+          dsn: 'SENTRY_DSN_PLACEHOLDER',
+          environment: 'production',
+          tracesSampleRate: 0.1
+        });
+        resolve();
+      }
+    });
+  </script>
 
   <script src="js/csp-hover-handler.js?v=1" defer></script>
 

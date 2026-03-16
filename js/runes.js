@@ -218,7 +218,7 @@ async function requestDeepReading() {
         const div = document.createElement('div');
         div.textContent = data.response;
         let safeHTML = div.innerHTML.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        aiContainer.innerHTML = safeHTML;
+        aiContainer.innerHTML = DOMPurify.sanitize(safeHTML);
 
         aiContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 

@@ -250,9 +250,10 @@ function initHoroscope() {
             if (detailWork) {
                 const affLabel = { 'cs': 'Afirmace', 'sk': 'Afirmácia', 'pl': 'Afirmacja' }[currentLang] || 'Afirmace';
                 const affFallback = { 'cs': 'Jsem v souladu s vesmírem.', 'sk': 'Som v súlade s vesmírom.', 'pl': 'Jestem w harmonii z wszechświatem.' }[currentLang] || 'Jsem v souladu s vesmírem.';
-                
+
                 const affirmationText = predictionData.affirmation || extractedAffirmation || affFallback;
-                detailWork.innerHTML = `<strong style="color: var(--color-starlight);">✨ ${affLabel}:</strong> ${affirmationText}`;
+                const sanitized = DOMPurify.sanitize(`<strong style="color: var(--color-starlight);">✨ ${affLabel}:</strong> ${affirmationText}`);
+                detailWork.innerHTML = sanitized;
             }
             if (detailRelationships) detailRelationships.style.display = 'none';
 

@@ -247,10 +247,9 @@ function renderReadingContent(reading) {
     } else if (data.interpretation || data.text || data.result) {
         let content = data.interpretation || data.text || data.result;
 
-        if (typeof content === 'string' && /<[a-z][\s\S]*>/i.test(content)) {
-            content = content.replace(/<\/?(?:html|head|body|script|iframe|object|embed|form|input|link|meta|style)[^>]*>/gi, '');
-            content = content.replace(/\s*on\w+\s*=\s*["'][^"']*["']/gi, '');
-            contentHtml += `<div class="formatted-content" style="line-height: 1.7; color: var(--color-starlight);">${content}</div>`;
+        if (typeof content === 'string') {
+            const sanitized = DOMPurify.sanitize(content);
+            contentHtml += `<div class="formatted-content" style="line-height: 1.7; color: var(--color-starlight);">${sanitized}</div>`;
         } else {
             contentHtml += `<p style="line-height: 1.7;">${escapeHtml(content)}</p>`;
         }

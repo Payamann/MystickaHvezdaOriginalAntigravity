@@ -215,11 +215,17 @@ window.showAnimal = function (slugOverride, exactYear = null) {
     document.getElementById('result-career').textContent = data.career;
     document.getElementById('result-2026').textContent = data.y2026;
 
-    // Compatibility badges
+    // Compatibility badges (sanitized HTML)
     const elGood = document.getElementById('compat-good');
     const elBad = document.getElementById('compat-bad');
-    if (elGood) elGood.innerHTML = data.good.map(a => `<span class="compat-badge compat-good">${a}</span>`).join('');
-    if (elBad) elBad.innerHTML = data.bad.map(a => `<span class="compat-badge compat-bad">${a}</span>`).join('');
+    if (elGood) {
+        const sanitizedGood = DOMPurify.sanitize(data.good.map(a => `<span class="compat-badge compat-good">${a}</span>`).join(''));
+        elGood.innerHTML = sanitizedGood;
+    }
+    if (elBad) {
+        const sanitizedBad = DOMPurify.sanitize(data.bad.map(a => `<span class="compat-badge compat-bad">${a}</span>`).join(''));
+        elBad.innerHTML = sanitizedBad;
+    }
 
     // Vztahova analyza zobrazeni/schovani containeru "Rozsirena AI"
     const resultSec = document.getElementById('result-section');
