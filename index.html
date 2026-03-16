@@ -2285,8 +2285,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"></script>
 
   <!-- Sentry for error tracking (Browser SDK) -->
-  <script src="https://browser.sentry-cdn.com/7.99.0/bundle.min.js" integrity="sha384-wVjNuGiBl9KGqSbK8t2BNohBZZPcVc3p4i8Ydv4eLhV8FNvB3L3RjmvEkP8yIjsB" crossorigin="anonymous" defer></script>
-  <script defer>
+  <script src="https://browser.sentry-cdn.com/7.99.0/bundle.min.js" integrity="sha384-wVjNuGiBl9KGqSbK8t2BNohBZZPcVc3p4i8Ydv4eLhV8FNvB3L3RjmvEkP8yIjsB" crossorigin="anonymous" async></script>
+  <script>
     window.sentryLoaded = new Promise(resolve => {
       if (window.Sentry) {
         window.Sentry.init({
