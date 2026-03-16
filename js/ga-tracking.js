@@ -392,7 +392,7 @@ export function setUserProperty(propertyName, propertyValue) {
     if (!window.gtag) return;
 
     gtag('set', {
-        'user_property_' + propertyName: propertyValue
+        [`user_property_${propertyName}`]: propertyValue
     });
 
     console.log('[GA] User property set:', propertyName, propertyValue);
