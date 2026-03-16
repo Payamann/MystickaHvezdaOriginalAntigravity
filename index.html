@@ -83,6 +83,11 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;600;700&display=swap&subset=latin,latin-ext" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;600;700&display=swap&subset=latin,latin-ext"></noscript>
 
+  <!-- Critical CSS - Load asynchronously to prevent render blocking -->
+  <link rel="preload" href="/css/style.v2.min.css?v=11" as="style">
+  <link rel="stylesheet" href="/css/style.v2.min.css?v=11" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="/css/style.v2.min.css?v=11"></noscript>
+
   <!-- Preload Critical Assets -->
   <link rel="preload" as="image" href="img/hero-3d.webp" fetchpriority="high">
   <link rel="preload" as="image" href="img/logo-3d.webp" fetchpriority="high">
