@@ -42,10 +42,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Show jest config being used
+        run: cat jest.config.js
+
       - name: Run tests
-        run: npm test -- --coverage --passWithNoTests
-        env:
-          NODE_OPTIONS: --experimental-vm-modules
+        run: NODE_ENV=test node --experimental-vm-modules node_modules/.bin/jest --config jest.config.js --coverage --passWithNoTests --verbose 2>&1 || true
+
+      - name: Run tests (exit code)
+        run: NODE_ENV=test node --experimental-vm-modules node_modules/.bin/jest --config jest.config.js --passWithNoTests
 
   build:
     runs-on: ubuntu-latest
