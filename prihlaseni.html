@@ -118,13 +118,15 @@
 
 
                     <div class="form-group">
-
                         <label for="password" class="form-label">Heslo</label>
-
                         <input type="password" id="password" name="password" class="form-input" placeholder="••••••••"
-
                             required autocomplete="current-password">
+                    </div>
 
+                    <div class="form-group" id="confirm-password-field-wrapper" style="display: none;">
+                        <label for="confirm-password-reg" class="form-label">Potvrďte heslo</label>
+                        <input type="password" id="confirm-password-reg" name="confirm_password" class="form-input" placeholder="••••••••"
+                            autocomplete="new-password">
                     </div>
 
 
@@ -192,29 +194,19 @@
                 <form id="reset-password-form" style="display: none;">
 
                     <div class="form-group">
-
                         <label for="new-password" class="form-label">Nové heslo</label>
-
                         <input type="password" id="new-password" class="form-input" placeholder="••••••••" required
-
                             minlength="8">
-
                     </div>
 
                     <div class="form-group">
-
                         <label for="confirm-password" class="form-label">Potvrďte heslo</label>
-
                         <input type="password" id="confirm-password" class="form-input" placeholder="••••••••" required
-
                             minlength="8">
-
                     </div>
 
                     <button type="submit" class="btn btn--primary btn--glow" style="width: 100%; margin-top: 1rem;">
-
                         Nastavit nové heslo
-
                     </button>
 
                 </form>
@@ -236,11 +228,6 @@
                 <!-- Hidden Register Fields (Managed by auth-client.js toggleMode) -->
 
                 <div id="register-fields" style="display: none; text-align: left; margin-top: 1rem;">
-                    <div class="form-group">
-                        <label class="form-label" for="confirm-password-reg">Potvrďte heslo</label>
-                        <input type="password" id="confirm-password-reg" name="confirm_password" class="form-input" placeholder="••••••••" autocomplete="new-password">
-                    </div>
-
                     <div class="form-group">
                         <label class="form-label">Jméno</label>
                         <input type="text" name="first_name" class="form-input" placeholder="Vaše jméno">
@@ -490,20 +477,14 @@
 
 
                 if (newPassword !== confirmPassword) {
-
                     if (window.Auth?.showToast) {
-
                         window.Auth.showToast('Chyba', 'Hesla se neshodují', 'error');
-
                     } else {
-
                         alert('Hesla se neshodují');
-
                     }
-
                     return;
-
                 }
+
 
 
 
@@ -686,15 +667,18 @@
 
             toggleBtn?.addEventListener('click', () => {
                 isRegisterMode = !isRegisterMode;
+                const confirmPwWrapper = document.getElementById('confirm-password-field-wrapper');
                 if (isRegisterMode) {
                     if (titleEl) titleEl.textContent = 'Začněte svou cestu';
                     if (subtitleEl) subtitleEl.textContent = 'Registrace je zdarma – 7 dní Premium bez karty';
                     if (socialProofEl) socialProofEl.style.display = 'block';
+                    if (confirmPwWrapper) confirmPwWrapper.style.display = 'block';
                     toggleBtn.textContent = 'Máte účet? Přihlaste se';
                 } else {
                     if (titleEl) titleEl.textContent = 'Vítejte zpět';
                     if (subtitleEl) subtitleEl.textContent = 'Přihlaste se ke svému účtu';
                     if (socialProofEl) socialProofEl.style.display = 'none';
+                    if (confirmPwWrapper) confirmPwWrapper.style.display = 'none';
                     toggleBtn.textContent = 'Nemáte účet? Zaregistrujte se zdarma →';
                 }
             });

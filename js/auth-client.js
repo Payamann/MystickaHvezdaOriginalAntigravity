@@ -483,6 +483,7 @@
                 const forgotLink = document.getElementById('forgot-password-link');
                 const resetFields = document.getElementById('reset-password-fields');
                 const registerFields = document.getElementById('register-fields');
+                const confirmPwField = document.getElementById('confirm-password-field-wrapper');
                 title.textContent = 'Přihlášení';
                 btn.textContent = 'Přihlásit se';
                 toggleBtn.textContent = 'Nemáte účet? Zaregistrujte se';
@@ -490,23 +491,27 @@
                 if (forgotLink) forgotLink.style.display = 'block';
                 if (resetFields) resetFields.style.display = 'none';
                 if (registerFields) registerFields.style.display = 'none';
+                if (confirmPwField) confirmPwField.style.display = 'none';
                 return;
             }
 
             const isLogin = btn.textContent === 'Přihlásit se';
 
             const fields = document.getElementById('register-fields');
+            const confirmPwField = document.getElementById('confirm-password-field-wrapper');
 
             if (isLogin) {
                 title.textContent = 'Registrace';
                 btn.textContent = 'Zaregistrovat';
                 toggleBtn.textContent = 'Již máte účet? Přihlaste se';
                 if (fields) fields.style.display = 'block';
+                if (confirmPwField) confirmPwField.style.display = 'block';
             } else {
                 title.textContent = 'Přihlášení';
                 btn.textContent = 'Přihlásit se';
                 toggleBtn.textContent = 'Nemáte účet? Zaregistrujte se';
                 if (fields) fields.style.display = 'none';
+                if (confirmPwField) confirmPwField.style.display = 'none';
             }
         },
 
@@ -527,17 +532,20 @@
                 if (!title || !btn || !toggleBtn) return;
 
                 const fields = document.getElementById('register-fields');
+                const confirmPwField = document.getElementById('confirm-password-field-wrapper');
 
                 if (mode === 'register') {
                     title.textContent = 'Registrace';
                     btn.textContent = 'Zaregistrovat';
                     toggleBtn.textContent = 'Již máte účet? Přihlaste se';
                     if (fields) fields.style.display = 'block';
+                    if (confirmPwField) confirmPwField.style.display = 'block';
                 } else {
                     title.textContent = 'Přihlášení';
                     btn.textContent = 'Přihlásit se';
                     toggleBtn.textContent = 'Nemáte účet? Zaregistrujte se';
                     if (fields) fields.style.display = 'none';
+                    if (confirmPwField) confirmPwField.style.display = 'none';
                 }
             }
         },
