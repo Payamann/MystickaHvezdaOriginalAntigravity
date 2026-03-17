@@ -3,7 +3,7 @@
  * Provides offline caching with stale-while-revalidate strategy
  */
 
-const CACHE_NAME = 'mysticka-hvezda-v18';
+const CACHE_NAME = 'mysticka-hvezda-v19';
 const MAX_RUNTIME_CACHE_SIZE = 150;
 const STATIC_ASSETS = [
     '/',
@@ -31,30 +31,22 @@ const STATIC_ASSETS = [
 
 // Install - cache static assets
 self.addEventListener('install', (event) => {
-    console.log('[SW] Installing Service Worker...');
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then((cache) => {
-                console.log('[SW] Caching static assets');
-                return cache.addAll(STATIC_ASSETS);
-            })
+            .then((cache) => cache.addAll(STATIC_ASSETS))
             .then(() => self.skipWaiting())
     );
 });
 
 // Activate - clean old caches
 self.addEventListener('activate', (event) => {
-    console.log('[SW] Activating Service Worker...');
     event.waitUntil(
         caches.keys()
             .then((cacheNames) => {
                 return Promise.all(
                     cacheNames
                         .filter((name) => name !== CACHE_NAME)
-                        .map((name) => {
-                            console.log('[SW] Deleting old cache:', name);
-                            return caches.delete(name);
-                        })
+                        .map((name) => caches.delete(name))
                 );
             })
             .then(() => self.clients.claim())
