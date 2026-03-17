@@ -8,6 +8,12 @@
 - [Technical Debt Map](file:///c:/Users/pavel/OneDrive/Desktop/MystickaHvezda/tasks/debt.md)
 - [Impact Predictions](file:///c:/Users/pavel/OneDrive/Desktop/MystickaHvezda/tasks/prediction.md)
 
+## Completed This Session (2026-03-17)
+- [x] **P1 Tests**: 98 Jest tests passing — Stripe webhooks, auth, API validation, security
+- [x] **P1 OpenAPI**: 32 endpoints dokumentovány, Swagger UI na `/api/docs`
+- [x] **P2 PurgeCSS**: CSS 83KB → 77KB (-7.8%), `build:css` pipeline
+- [x] **CI fix**: Node 20 compat + health check assertions, deploy unblocked
+
 ## Task Checklist
 - [/] Names Database Overhaul
     - [x] Analyze current data & locate source
