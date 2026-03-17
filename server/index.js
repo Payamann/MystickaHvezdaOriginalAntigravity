@@ -31,6 +31,7 @@ import numerologyRoutes from './routes/numerology.js';
 import userRoutes from './routes/user.js';
 import angelPostRoutes from './routes/angel-post.js';
 import briefingRoutes from './routes/briefing.js';
+import docsRoutes from './routes/docs.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -496,6 +497,9 @@ app.use('/api/user', userRoutes);
 
 // Andělská pošta — komunita
 app.use('/api/angel-post', angelPostRoutes);
+
+// API Documentation (Swagger UI + OpenAPI spec)
+app.use('/api/docs', docsRoutes);
 
 // Health Check - registered above rate limiter (see top of file)
 // Admin comment: duplicate route registrations removed

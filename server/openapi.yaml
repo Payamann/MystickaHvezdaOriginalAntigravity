@@ -1,19 +1,531 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
   title: Mystická Hvězda API
-  description: API pro ezoterické služby, horoskopy a tarotové výklady.
   version: 1.0.0
+  description: |
+    REST API for the Mystická Hvězda astrology platform.
+    Provides horoscopes, tarot, numerology, oracle readings, and subscription management.
+
+    **Authentication**: JWT token stored in `auth_token` HttpOnly cookie (set on login).
+    **CSRF**: All non-GET requests to `/api/*` require an `X-CSRF-Token` header.
+    Get a token from `GET /api/csrf-token` (15-minute TTL).
+
 servers:
-  - url: http://localhost:3001/api
-    description: Lokální vývojový server
+  - url: /api
+    description: API base path (relative)
   - url: https://mystickahvezda.cz/api
-    description: Produkční server
+    description: Production
+
+tags:
+  - name: system
+    description: Health, CSRF, configuration
+  - name: auth
+    description: Registration, login, logout, profile
+  - name: oracle
+    description: AI-powered readings (crystal ball, tarot, natal chart, etc.)
+  - name: horoscope
+    description: Daily, weekly, monthly horoscopes
+  - name: numerology
+    description: Numerology readings (premium)
+  - name: payment
+    description: Stripe subscriptions and billing
+  - name: user
+    description: User readings CRUD and password management
+  - name: webhooks
+    description: Stripe webhook (raw body, no CSRF)
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: auth_token
+      description: HttpOnly JWT cookie set on successful login
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: An error occurred. Please try again later.
+
+    ValidationError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Invalid email format
+
+    CsrfToken:
+      type: object
+      properties:
+        csrfToken:
+          type: string
+          description: "3-part token: randomString.base36timestamp.hmac-sha256"
+          example: "abc123.m8k2f.a1b2c3d4e5f6789..."
+
+    HealthResponse:
+      type: object
+      required: [status, timestamp, checks]
+      properties:
+        status:
+          type: string
+          enum: [ok, degraded]
+        timestamp:
+          type: string
+          format: date-time
+        checks:
+          type: object
+          properties:
+            db:
+              type: string
+              enum: [ok, degraded, unknown]
+            ai:
+              type: string
+              enum: [ok, missing_key]
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        first_name:
+          type: string
+        birth_date:
+          type: string
+          format: date
+        birth_time:
+          type: string
+          example: "14:30"
+        birth_place:
+          type: string
+        subscription_status:
+          type: string
+          enum: [free, premium_monthly, exclusive_monthly, vip_majestrat]
+        avatar:
+          type: string
+          nullable: true
+
+    SubscriptionStatus:
+      type: object
+      properties:
+        planType:
+          type: string
+          enum: [free, premium_monthly, exclusive_monthly, vip_majestrat]
+        status:
+          type: string
+          enum: [active, trialing, cancel_pending, past_due, paused, cancelled]
+        currentPeriodEnd:
+          type: string
+          format: date-time
+          nullable: true
+        canCancel:
+          type: boolean
+
+    AiResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        response:
+          type: string
+
+    HoroscopeResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        response:
+          type: string
+          description: JSON string with prediction, affirmation, luckyNumbers
+        period:
+          type: string
+          example: "Denní inspirace"
+        cached:
+          type: boolean
+
+    Reading:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        type:
+          type: string
+        content:
+          type: string
+        title:
+          type: string
+        is_favorite:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+  parameters:
+    XCsrfToken:
+      name: X-CSRF-Token
+      in: header
+      required: true
+      schema:
+        type: string
+      description: CSRF token from GET /api/csrf-token (15-minute TTL)
 
 paths:
+
+  # ─── System ─────────────────────────────────────────────────────────────────
+
+  /health:
+    get:
+      tags: [system]
+      summary: Health check
+      description: Returns server status and dependency connectivity. No authentication required.
+      responses:
+        "200":
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        "503":
+          description: Server is degraded (DB or AI key unavailable)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /csrf-token:
+    get:
+      tags: [system]
+      summary: Get CSRF token
+      description: |
+        Issues a short-lived CSRF token (15-minute TTL, HMAC-SHA256 signed).
+        Include as `X-CSRF-Token` header on all state-changing requests.
+      responses:
+        "200":
+          description: CSRF token issued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CsrfToken'
+
+  /config:
+    get:
+      tags: [system]
+      summary: Public client configuration
+      description: Returns safe client-side environment variables only.
+      responses:
+        "200":
+          description: Configuration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  stripePublishableKey:
+                    type: string
+                    nullable: true
+
+  # ─── Auth ───────────────────────────────────────────────────────────────────
+
+  /auth/register:
+    post:
+      tags: [auth]
+      summary: Register new user
+      description: |
+        Creates a Supabase Auth account. Sends email confirmation.
+        User must verify email before logging in.
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, birth_date]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+                  description: Min 8 chars; must include uppercase, lowercase, digit or special char
+                confirm_password:
+                  type: string
+                first_name:
+                  type: string
+                birth_date:
+                  type: string
+                  format: date
+                birth_time:
+                  type: string
+                  example: "14:30"
+                birth_place:
+                  type: string
+      responses:
+        "200":
+          description: Registration successful — check email for verification link
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  requireEmailVerification:
+                    type: boolean
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        "403":
+          description: Missing or expired CSRF token
+        "429":
+          description: Rate limited (10 req/hour per IP)
+
+  /auth/login:
+    post:
+      tags: [auth]
+      summary: Log in
+      description: |
+        Authenticates via Supabase Auth.
+        On success, sets `auth_token` (HttpOnly JWT) and `logged_in` (readable) cookies.
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+        "400":
+          description: Invalid credentials or unverified email
+        "403":
+          description: Missing CSRF token
+        "429":
+          description: Account locked (brute-force protection) or rate limited
+
+  /auth/logout:
+    post:
+      tags: [auth]
+      summary: Log out
+      description: Blacklists current JWT and clears auth cookies.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      responses:
+        "200":
+          description: Logged out
+        "401":
+          description: Not authenticated
+
+  /auth/refresh-token:
+    post:
+      tags: [auth]
+      summary: Refresh JWT
+      description: Issues a new JWT with up-to-date subscription info.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      responses:
+        "200":
+          description: Refreshed token set in cookie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+        "401":
+          description: Not authenticated
+
+  /auth/forgot-password:
+    post:
+      tags: [auth]
+      summary: Request password reset email
+      description: Always returns success to prevent email enumeration.
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        "200":
+          description: Reset email sent (if account exists)
+
+  /auth/reset-password:
+    post:
+      tags: [auth]
+      summary: Reset password with token
+      description: Updates password using Supabase access token from reset email.
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [password]
+              properties:
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Password updated
+        "400":
+          description: Invalid or expired reset token
+
+  /auth/profile:
+    get:
+      tags: [auth]
+      summary: Get user profile
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Profile with subscription info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  user:
+                    $ref: '#/components/schemas/User'
+        "401":
+          description: Not authenticated
+    put:
+      tags: [auth]
+      summary: Update user profile
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                birth_date:
+                  type: string
+                  format: date
+                birth_time:
+                  type: string
+                birth_place:
+                  type: string
+                avatar:
+                  type: string
+      responses:
+        "200":
+          description: Profile updated
+        "400":
+          description: Validation error
+        "401":
+          description: Not authenticated
+
+  # ─── Oracle ─────────────────────────────────────────────────────────────────
+
   /crystal-ball:
     post:
-      summary: Dotaz na křišťálovou kouli
-      description: AI generovaná odpověď na konkrétní životní otázku.
+      tags: [oracle]
+      summary: Crystal ball reading
+      description: |
+        AI-powered oracle. Free users: 3 questions/day limit.
+        Returns 402 with upsell payload when limit reached.
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [question]
+              properties:
+                question:
+                  type: string
+                  maxLength: 1000
+                history:
+                  type: array
+                  items:
+                    type: string
+                  maxItems: 10
+                lang:
+                  type: string
+                  enum: [cs, sk, pl]
+                  default: cs
+      responses:
+        "200":
+          description: Oracle answer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AiResponse'
+        "400":
+          description: Missing or invalid question
+        "402":
+          description: Daily limit reached — premium required
+        "403":
+          description: Missing CSRF token
+
+  /tarot:
+    post:
+      tags: [oracle]
+      summary: Tarot reading interpretation
+      description: |
+        Interprets a tarot spread. Free users: 1-card spreads only.
+        Multi-card spreads require premium.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
       requestBody:
         required: true
         content:
@@ -23,37 +535,32 @@ paths:
               properties:
                 question:
                   type: string
-                  maxLength: 1000
-                history:
+                cards:
                   type: array
                   items:
                     type: string
+                spreadType:
+                  type: string
+                  default: tříkartový
                 lang:
                   type: string
                   enum: [cs, sk, pl]
       responses:
-        '200':
-          description: Úspěšná odpověď
+        "200":
+          description: Tarot interpretation
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  response:
-                    type: string
-        '400':
-          description: Neplatný požadavek (např. chybějící otázka)
-        '402':
-          description: Limit vyčerpán (vyžaduje Premium)
+                $ref: '#/components/schemas/AiResponse'
+        "402":
+          description: Multi-card spread requires premium
 
-  /dream:
+  /natal-chart:
     post:
-      summary: Výklad snu (Lexikon snů)
-      description: Výklad snu na základě popisu uživatele. Vyžaduje Premium.
-      security:
-        - bearerAuth: []
+      tags: [oracle]
+      summary: Natal chart interpretation
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
       requestBody:
         required: true
         content:
@@ -61,18 +568,547 @@ paths:
             schema:
               type: object
               properties:
+                birthDate:
+                  type: string
+                  format: date
+                birthTime:
+                  type: string
+                birthPlace:
+                  type: string
+                name:
+                  type: string
+                lang:
+                  type: string
+                  enum: [cs, sk, pl]
+      responses:
+        "200":
+          description: Natal chart interpretation
+
+  /dream:
+    post:
+      tags: [oracle]
+      summary: Dream analysis (premium)
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [dream]
+              properties:
                 dream:
                   type: string
                   maxLength: 3000
+                lang:
+                  type: string
+                  enum: [cs, sk, pl]
       responses:
-        '200':
-          description: Úspěšný výklad
-        '401':
-          description: Neautorizováno
+        "200":
+          description: Dream analysis
+        "403":
+          description: Premium required
 
-components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+  /synastry:
+    post:
+      tags: [oracle]
+      summary: Synastry compatibility (premium)
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Synastry analysis
+
+  /runes:
+    post:
+      tags: [oracle]
+      summary: Rune reading
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                question:
+                  type: string
+                lang:
+                  type: string
+                  enum: [cs, sk, pl]
+      responses:
+        "200":
+          description: Rune reading
+
+  /angel-card:
+    post:
+      tags: [oracle]
+      summary: Angel card message
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Angel card reading
+
+  /daily-wisdom:
+    post:
+      tags: [oracle]
+      summary: Daily wisdom message
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Daily wisdom
+
+  # ─── Horoscope ──────────────────────────────────────────────────────────────
+
+  /horoscope:
+    post:
+      tags: [horoscope]
+      summary: Get horoscope
+      description: |
+        Returns daily, weekly, or monthly horoscope.
+        Weekly/monthly are premium-only (free users get 402).
+        Results cached in DB by sign+period+lang.
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [sign]
+              properties:
+                sign:
+                  type: string
+                  enum: [Beran, Býk, Blíženci, Rak, Lev, Panna, Váhy, Štír, Střelec, Kozoroh, Vodnář, Ryby]
+                period:
+                  type: string
+                  enum: [daily, weekly, monthly]
+                  default: daily
+                context:
+                  type: array
+                  items:
+                    type: string
+                  maxItems: 5
+                lang:
+                  type: string
+                  enum: [cs, sk, pl]
+                  default: cs
+      responses:
+        "200":
+          description: Horoscope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HoroscopeResponse'
+        "400":
+          description: Invalid sign or period
+        "402":
+          description: Weekly/monthly requires premium
+
+  # ─── Numerology ─────────────────────────────────────────────────────────────
+
+  /numerology:
+    post:
+      tags: [numerology]
+      summary: Numerology reading (premium)
+      description: |
+        Generates a numerology reading from birth date and name.
+        Requires authentication and active premium subscription.
+        Results cached by input hash.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, birthDate]
+              properties:
+                name:
+                  type: string
+                birthDate:
+                  type: string
+                  format: date
+                birthTime:
+                  type: string
+                lifePath:
+                  type: integer
+                destiny:
+                  type: integer
+                soul:
+                  type: integer
+                personality:
+                  type: integer
+      responses:
+        "200":
+          description: Numerology reading
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AiResponse'
+        "401":
+          description: Not authenticated
+        "403":
+          description: Premium required
+
+  # ─── Payment ────────────────────────────────────────────────────────────────
+
+  /payment/subscription/status:
+    get:
+      tags: [payment]
+      summary: Get subscription status
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Subscription status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionStatus'
+        "401":
+          description: Not authenticated
+
+  /payment/create-checkout-session:
+    post:
+      tags: [payment]
+      summary: Create Stripe Checkout session
+      description: Returns a Stripe Checkout URL. Redirect user to it.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [planId]
+              properties:
+                planId:
+                  type: string
+                  enum: [pruvodce, osviceni, vip-majestrat]
+                  description: |
+                    pruvodce = 199 CZK/month (premium_monthly),
+                    osviceni = 499 CZK/month (exclusive_monthly),
+                    vip-majestrat = 999 CZK/month (vip_majestrat)
+      responses:
+        "200":
+          description: Session created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  url:
+                    type: string
+        "400":
+          description: Invalid planId or free plan
+        "401":
+          description: Not authenticated
+
+  /payment/cancel:
+    post:
+      tags: [payment]
+      summary: Cancel subscription at period end
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      responses:
+        "200":
+          description: Cancellation scheduled
+        "400":
+          description: No active subscription
+
+  /payment/reactivate:
+    post:
+      tags: [payment]
+      summary: Reactivate pending cancellation
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      responses:
+        "200":
+          description: Subscription reactivated
+
+  /payment/portal:
+    post:
+      tags: [payment]
+      summary: Open Stripe Customer Portal
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      responses:
+        "200":
+          description: Portal URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+
+  /payment/subscription/pause:
+    post:
+      tags: [payment]
+      summary: Pause subscription (1–365 days)
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pauseDays:
+                  type: integer
+                  minimum: 1
+                  maximum: 365
+                  default: 30
+      responses:
+        "200":
+          description: Subscription paused
+
+  /payment/retention/feedback:
+    post:
+      tags: [payment]
+      summary: Submit cancellation feedback
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type, reason]
+              properties:
+                type:
+                  type: string
+                  enum: [churn, pause, downgrade]
+                reason:
+                  type: string
+                  enum: [too_expensive, not_using, technical_issues, found_alternative, other]
+                feedback:
+                  type: string
+                  maxLength: 500
+      responses:
+        "200":
+          description: Feedback saved
+
+  # ─── User Readings ───────────────────────────────────────────────────────────
+
+  /user/readings:
+    get:
+      tags: [user]
+      summary: List saved readings
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Paginated readings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  readings:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Reading'
+                  total:
+                    type: integer
+        "401":
+          description: Not authenticated
+    post:
+      tags: [user]
+      summary: Save a reading
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type, content]
+              properties:
+                type:
+                  type: string
+                content:
+                  type: string
+                title:
+                  type: string
+      responses:
+        "201":
+          description: Reading saved
+
+  /user/readings/{id}:
+    get:
+      tags: [user]
+      summary: Get reading by ID
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Reading detail
+        "404":
+          description: Not found
+    delete:
+      tags: [user]
+      summary: Delete a reading
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/XCsrfToken'
+      responses:
+        "200":
+          description: Deleted
+
+  /user/readings/{id}/favorite:
+    patch:
+      tags: [user]
+      summary: Toggle favorite
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/XCsrfToken'
+      responses:
+        "200":
+          description: Favorite toggled
+
+  /user/password:
+    put:
+      tags: [user]
+      summary: Change password
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/XCsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [currentPassword, newPassword]
+              properties:
+                currentPassword:
+                  type: string
+                newPassword:
+                  type: string
+      responses:
+        "200":
+          description: Password changed
+        "400":
+          description: Wrong current password
+
+  # ─── Webhooks ───────────────────────────────────────────────────────────────
+
+/webhook/stripe:
+  post:
+    tags: [webhooks]
+    summary: Stripe webhook receiver
+    description: |
+      Receives Stripe webhook events (raw JSON body).
+      CSRF bypassed — server-to-server.
+      Handled events: checkout.session.completed, invoice.paid,
+      invoice.payment_failed, customer.subscription.updated,
+      customer.subscription.deleted.
+      Idempotent: duplicate event IDs are silently skipped.
+    parameters:
+      - name: stripe-signature
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Stripe HMAC-SHA256 signature (t=...,v1=...)
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            description: Raw Stripe event payload
+    responses:
+      "200":
+        description: Event processed
+      "400":
+        description: Invalid signature or processing error
