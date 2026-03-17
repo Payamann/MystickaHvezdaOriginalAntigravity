@@ -260,14 +260,17 @@ router.post('/login', authLimiter, async (req, res) => {
                 logDebug(`JIT Repair successful.`);
                 user = retryUser;
                 // Create 7-day trial subscription for new users
+                const trialEnd = new Date(Date.now() + TRIAL_DAYS * 24 * 60 * 60 * 1000).toISOString();
                 await supabase
                     .from('subscriptions')
                     .insert({
                         user_id: user.id,
                         plan_type: 'trialing',
                         status: 'trialing',
-                        current_period_end: new Date(Date.now() + TRIAL_DAYS * 24 * 60 * 60 * 1000).toISOString()
+                        current_period_end: trialEnd
                     });
+                // Populate subscriptions so JWT includes trial status
+                user.subscriptions = { plan_type: 'trialing', status: 'trialing', current_period_end: trialEnd };
             } else {
                 return res.status(500).json({ error: 'User sync failed after repair.' });
             }
@@ -302,6 +305,7 @@ router.post('/login', authLimiter, async (req, res) => {
                 id: user.id,
                 email: user.email,
                 subscription_status: status,
+                subscription_expires_at: sub.current_period_end || null,
                 first_name: user.first_name,
                 birth_date: user.birth_date,
                 birth_time: user.birth_time,
@@ -347,6 +351,7 @@ router.post('/refresh-token', authenticateToken, sensitiveLimiter, async (req, r
                 id: userId,
                 email: decoded?.email || profile?.email,
                 subscription_status: decoded?.subscription_status || 'free',
+                subscription_expires_at: decoded?.premiumExpires || null,
                 first_name: profile?.first_name,
                 birth_date: profile?.birth_date,
                 birth_time: profile?.birth_time,
