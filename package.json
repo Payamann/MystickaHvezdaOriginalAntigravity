@@ -4,6 +4,9 @@
   "description": "Mystická Hvězda — astrology web application",
   "main": "server/index.js",
   "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "start": "node server/index.js",
     "dev": "node --watch server/index.js",
