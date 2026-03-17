@@ -104,15 +104,6 @@ app.use(cors({
 
 
 
-// Performance Logging Middleware
-app.use((req, res, next) => {
-    const start = Date.now();
-    res.on('finish', () => {
-        const duration = Date.now() - start;
-        // console.warn(`[PERF] ${req.method} ${req.originalUrl} took ${duration}ms [${res.statusCode}]`);
-    });
-    next();
-});
 
 // Stripe Webhook MUST be before express.json() to get raw body
 app.post('/webhook/stripe', express.raw({ type: 'application/json' }), async (req, res) => {
@@ -258,28 +249,46 @@ if (process.env.NODE_ENV === 'production' && !process.env.CSRF_SECRET) {
 }
 const csrfSecret = process.env.CSRF_SECRET || 'dev-csrf-secret-fallback-2026';
 
-// Generate CSRF token using HMAC
+const CSRF_TOKEN_TTL_MS = 15 * 60 * 1000; // 15 minutes
+
+// Generate CSRF token using HMAC with embedded timestamp for expiry
 function generateCSRFToken() {
     const randomString = crypto.randomBytes(32).toString('hex');
+    const timestamp = Date.now().toString(36); // compact hex-like timestamp
+    const payload = `${randomString}.${timestamp}`;
     const hmac = crypto.createHmac('sha256', csrfSecret);
-    hmac.update(randomString);
-    return `${randomString}.${hmac.digest('hex')}`;
+    hmac.update(payload);
+    return `${payload}.${hmac.digest('hex')}`;
 }
 
-// Verify CSRF token
+// Verify CSRF token — checks signature AND 15-minute expiry
 function verifyCSRFToken(token) {
     if (!token || typeof token !== 'string') {
         return false;
     }
 
-    const [randomString, signature] = token.split('.');
-
-    if (!randomString || !signature) {
+    // Format: randomString.timestamp.signature
+    const parts = token.split('.');
+    if (parts.length !== 3) {
         return false;
     }
 
+    const [randomString, timestamp, signature] = parts;
+
+    if (!randomString || !timestamp || !signature) {
+        return false;
+    }
+
+    // Check expiry
+    const tokenTime = parseInt(timestamp, 36);
+    if (isNaN(tokenTime) || Date.now() - tokenTime > CSRF_TOKEN_TTL_MS) {
+        return false;
+    }
+
+    // Verify signature over the payload (randomString.timestamp)
+    const payload = `${randomString}.${timestamp}`;
     const hmac = crypto.createHmac('sha256', csrfSecret);
-    hmac.update(randomString);
+    hmac.update(payload);
     const expectedSignature = hmac.digest('hex');
 
     // Buffers must be same length for timingSafeEqual
@@ -347,10 +356,30 @@ app.get('/api/csrf-token', (req, res) => {
 app.use('/api', xss());
 
 // Health Check Endpoint (Moved UP to bypass Rate Limiting)
-app.get('/api/health', (req, res) => {
-    res.json({
-        status: 'ok',
-        timestamp: new Date().toISOString()
+app.get('/api/health', async (req, res) => {
+    const checks = { db: 'unknown', ai: 'unknown' };
+    let overallOk = true;
+
+    // Check Supabase connectivity
+    try {
+        const { supabase } = await import('./db-supabase.js');
+        const { error } = await supabase.from('horoscope_cache').select('id').limit(1);
+        checks.db = error ? 'degraded' : 'ok';
+        if (error) overallOk = false;
+    } catch {
+        checks.db = 'degraded';
+        overallOk = false;
+    }
+
+    // Check Gemini API key presence (no actual call to avoid cost/latency)
+    checks.ai = process.env.GEMINI_API_KEY ? 'ok' : 'missing_key';
+    if (!process.env.GEMINI_API_KEY) overallOk = false;
+
+    const status = overallOk ? 'ok' : 'degraded';
+    res.status(overallOk ? 200 : 503).json({
+        status,
+        timestamp: new Date().toISOString(),
+        checks
     });
 });
 
@@ -384,7 +413,7 @@ app.get('/jmena/:name', (req, res) => {
 
 // Serve static files from the parent directory (MystickaHvezda root)
 const rootDir = path.resolve(__dirname, '../');
-console.warn(`📂 Serving static files from: ${rootDir}`);
+console.info(`📂 Serving static files from: ${rootDir}`);
 
 const staticOptions = process.env.NODE_ENV === 'production'
     ? {
@@ -526,8 +555,8 @@ const isMain = process.argv[1] && (
 
 if (isMain || process.env.NODE_ENV === 'production') {
     app.listen(PORT, () => {
-        console.warn(`✨ Mystická Hvězda API running on port ${PORT}`);
-        console.warn(`🚀 Environment: ${process.env.NODE_ENV || 'development'}`);
+        console.info(`✨ Mystická Hvězda API running on port ${PORT}`);
+        console.info(`🚀 Environment: ${process.env.NODE_ENV || 'development'}`);
 
         // Initialize email queue job processor
         try {

@@ -55,7 +55,7 @@ router.post('/crystal-ball', optionalPremiumCheck, async (req, res) => {
                             message: 'Zažijte bez omezení. Hvězdný Průvodce vám otevře nekonečný přístup.',
                             feature: 'crystal_ball_unlimited',
                             plan: 'pruvodce',
-                            price: 179,
+                            price: 199,
                             priceLabel: 'Kč/měsíc',
                             upgradeUrl: '/cenik?selected=pruvodce&utm_source=crystal_ball_upsell',
                             features: [
@@ -141,7 +141,7 @@ router.post('/tarot', authenticateToken, requirePremiumSoft, async (req, res) =>
                     message: 'Používejte vícekaretové výklady s hlubší interpretací. Jen pro Premium.',
                     feature: 'tarot_advanced',
                     plan: 'pruvodce',
-                    price: 179,
+                    price: 199,
                     priceLabel: 'Kč/měsíc',
                     upgradeUrl: '/cenik?selected=pruvodce&utm_source=tarot_upsell',
                     features: [
