@@ -5,7 +5,7 @@ import { supabase } from './db-supabase.js';
 import { JWT_SECRET, JWT_EXPIRY, COOKIE_OPTIONS, INDICATOR_COOKIE_OPTIONS } from './config/jwt.js';
 import { authenticateToken } from './middleware.js';
 import { validateEmail, validatePassword, validateName, validateBirthDate } from './utils/validation.js';
-import { PREMIUM_PLAN_TYPES } from './config/constants.js';
+import { PREMIUM_PLAN_TYPES, TRIAL_DAYS } from './config/constants.js';
 import { blacklistToken } from './utils/token-blacklist.js';
 import { recordFailedAttempt, checkAccountLockout, recordSuccessfulLogin } from './utils/account-lockout.js';
 
@@ -26,7 +26,7 @@ export async function generateToken(userId) {
 
         const status = sub?.plan_type;
         const isPremium = status && PREMIUM_PLAN_TYPES.includes(status) &&
-                         sub.status === 'active' &&
+                         (sub.status === 'active' || sub.status === 'trialing') &&
                          new Date(sub.current_period_end) > new Date();
 
         // Fetch user email
@@ -259,10 +259,15 @@ router.post('/login', authLimiter, async (req, res) => {
             if (retryUser) {
                 logDebug(`JIT Repair successful.`);
                 user = retryUser;
-                // Create default subscription
+                // Create 7-day trial subscription for new users
                 await supabase
                     .from('subscriptions')
-                    .insert({ user_id: user.id, plan_type: 'free' });
+                    .insert({
+                        user_id: user.id,
+                        plan_type: 'trialing',
+                        status: 'trialing',
+                        current_period_end: new Date(Date.now() + TRIAL_DAYS * 24 * 60 * 60 * 1000).toISOString()
+                    });
             } else {
                 return res.status(500).json({ error: 'User sync failed after repair.' });
             }
@@ -274,7 +279,7 @@ router.post('/login', authLimiter, async (req, res) => {
 
         // Check if premium (and not expired)
         const isPremium = status && PREMIUM_PLAN_TYPES.includes(status) &&
-                         sub.status === 'active' &&
+                         (sub.status === 'active' || sub.status === 'trialing') &&
                          new Date(sub.current_period_end) > new Date();
 
         const token = jwt.sign({

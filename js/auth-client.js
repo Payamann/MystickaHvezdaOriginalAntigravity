@@ -118,7 +118,7 @@
         isPremium() {
             if (!this.user || !this.user.subscription_status) return false;
             const s = this.user.subscription_status.toLowerCase();
-            if (!s.includes('premium') && !s.includes('exclusive') && s !== 'vip') return false;
+            if (!s.includes('premium') && !s.includes('exclusive') && s !== 'vip' && s !== 'trialing') return false;
             // Check expiration if available
             if (this.user.subscription_expires_at) {
                 const expires = new Date(this.user.subscription_expires_at);
@@ -327,7 +327,7 @@
                 }
 
                 // Hero CTA Button (Index)
-                const heroBtn = e.target.closest('#hero-cta-btn');
+                const heroBtn = e.target.closest('#hero-cta-btn, #cta-banner-btn');
                 if (heroBtn) {
                     e.preventDefault();
                     this.openModal('register');
