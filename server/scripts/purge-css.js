@@ -4,10 +4,11 @@
  *
  * Purges unused CSS from style.v2.css, outputs style.v2.purged.css
  * Then minify: npx cleancss -o css/style.v2.min.css css/style.v2.purged.css
+ *
+ * Compatible with Node.js 18+ (no fs/promises.glob dependency)
  */
 import { PurgeCSS } from 'purgecss';
 import { readFileSync, writeFileSync } from 'fs';
-import { glob } from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -15,28 +16,22 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, '../../').replace(/\\/g, '/');
 
-// Collect content files (forward slashes for cross-platform compat)
-const htmlFiles = [];
-const jsFiles = [];
+// Pass glob patterns directly to PurgeCSS (uses its own glob internally, Node 18+ safe)
+const contentPatterns = [
+    `${ROOT}/**/*.html`,
+    `${ROOT}/js/**/*.js`,
+    `!${ROOT}/.claude/**`,
+    `!${ROOT}/node_modules/**`,
+    `!${ROOT}/server/**`,
+];
 
-for await (const f of glob(`${ROOT}/**/*.html`, { ignore: [
-    `${ROOT}/.claude/**`,
-    `${ROOT}/node_modules/**`,
-]})) {
-    htmlFiles.push(f.replace(/\\/g, '/'));
-}
-
-for await (const f of glob(`${ROOT}/js/**/*.js`, { ignore: [`${ROOT}/node_modules/**`] })) {
-    jsFiles.push(f.replace(/\\/g, '/'));
-}
-
-console.log(`📋 Content files: ${htmlFiles.length} HTML, ${jsFiles.length} JS`);
-
-// Read CSS as raw to avoid Windows path issues with PurgeCSS
+// Read CSS as raw to avoid Windows absolute-path issues with PurgeCSS
 const cssSource = readFileSync(`${ROOT}/css/style.v2.css`, 'utf8');
 
+console.log(`📋 Running PurgeCSS with glob patterns...`);
+
 const result = await new PurgeCSS().purge({
-    content: [...htmlFiles, ...jsFiles],
+    content: contentPatterns,
     css: [{ raw: cssSource }],
     safelist: {
         standard: [
