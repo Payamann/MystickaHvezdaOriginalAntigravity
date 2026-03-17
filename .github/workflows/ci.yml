@@ -17,7 +17,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -36,7 +36,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -57,7 +57,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -78,3 +78,25 @@ jobs:
             css/style.v2.min.css
             js/dist/
           retention-days: 7
+
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to Railway
+    needs: [lint, test, build]
+    if: (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/claude/')) && github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Railway
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy
+        run: railway up --service MystickaHvezdaOriginalAntigravity
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
