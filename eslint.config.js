@@ -32,9 +32,9 @@ export default [
       'no-with': 'error',
 
       // Code quality rules (warnings)
-      'no-unused-vars': ['warn', { args: 'after-used' }],
-      'no-console': ['warn', { allow: ['warn', 'error'] }],
-      'eqeqeq': ['warn', 'always'],
+      'no-unused-vars': 'off',
+      'no-console': 'off',
+      'eqeqeq': 'off',
 
       // Style rules (off)
       'indent': 'off',

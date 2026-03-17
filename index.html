@@ -71,17 +71,25 @@
 
 
 
+  <!-- DNS Prefetch for external resources -->
   <link rel="preconnect" href="https://js.stripe.com">
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+  <link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
+  <link rel="dns-prefetch" href="https://www.googletagmanager.com">
 
   <!-- Local Fonts - Eliminates 750ms Google Fonts CDN latency -->
   <link rel="preload" href="/fonts/local-fonts.css" as="style">
   <link rel="stylesheet" href="/fonts/local-fonts.css">
 
-  <!-- Preload critical font files for faster LCP -->
+  <!-- Critical CSS - Inline for instant rendering (FCP optimization) -->
+  <style>:root{--color-deep-space:#050510;--color-cosmic-purple:#1a0a2e;--color-mystic-gold:#ffd700;--color-ethereal-violet:#9d4edd;--color-starlight:#ffffff;--color-nebula-pink:#f72585;--font-heading:'Cinzel',serif;--font-body:'Inter',sans-serif;--text-2xl:clamp(1.5rem,2vw,1.75rem);--text-3xl:clamp(1.85rem,2.5vw,2.25rem);--space-md:1rem;--space-lg:1.5rem;--transition-fast:200ms}*{margin:0;padding:0;box-sizing:border-box}html{font-size:16px}body{background:var(--color-deep-space);color:var(--color-starlight);font-family:var(--font-body);line-height:1.5}h1,h2,h3,h4,h5,h6{font-family:var(--font-heading);font-weight:700;line-height:1.2}</style>
+
+  <!-- Preload critical font files for faster LCP (WOFF2 66% smaller than TTF) -->
   <link rel="preload" href="/fonts/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuFuYMZg.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high">
   <link rel="preload" href="/fonts/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuGKYMZg.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high">
 
-  <!-- Main CSS - Local fonts are loaded first, then apply styles -->
+  <!-- Main CSS -->
+  <link rel="preload" href="/css/style.v2.min.css?v=11" as="style">
   <link rel="stylesheet" href="/css/style.v2.min.css?v=11">
 
   <!-- Preload Critical Assets -->
@@ -315,8 +323,8 @@
 
             <p class="hero__subtitle">
 
-              Váš osobní průvodce na cestě sebepoznáním. Pomůžeme vám najít odpovědi v těžkých chvílích,
-              pochopit přítomnost a objevit váš skutečný potenciál.
+              Hvězdy neurčují budoucnost, ale ukazují směr.
+              Přijďte objevit, co vám hvězdy odhalují.
 
             </p>
 
