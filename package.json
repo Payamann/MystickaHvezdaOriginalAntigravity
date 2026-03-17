@@ -7,8 +7,8 @@
   "scripts": {
     "start": "node server/index.js",
     "dev": "node --watch server/index.js",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
-    "build:css": "cleancss -o css/style.v2.min.css css/style.v2.css",
+    "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-vm-modules jest",
+    "build:css": "node server/scripts/purge-css.js && cleancss -o css/style.v2.min.css css/style.v2.purged.css",
     "build:js": "esbuild js/*.js --minify --outdir=js/dist --bundle=false",
     "lint": "eslint server/ js/"
   },
@@ -38,6 +38,7 @@
     "eslint": "^8.57.0",
     "fontmin": "^1.1.1",
     "jest": "^30.2.0",
+    "purgecss": "^8.0.0",
     "supertest": "^7.2.2",
     "terser": "^5.46.1"
   }
