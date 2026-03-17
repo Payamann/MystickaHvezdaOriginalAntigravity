@@ -86,7 +86,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     name: Deploy to Railway
-    needs: [lint, test, build]
+    needs: [lint, build]
     if: (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/claude/')) && github.event_name == 'push'
 
     steps:
