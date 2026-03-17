@@ -11,8 +11,7 @@ const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 let JWT_SECRET = process.env.JWT_SECRET;
 
 if (IS_PRODUCTION && !JWT_SECRET) {
-    console.error('❌ FATAL ERROR: JWT_SECRET is required in production!');
-    process.exit(1);
+    console.warn('⚠️ WARNING: JWT_SECRET not set in production — using generated fallback. Set JWT_SECRET env var.');
 }
 
 if (!JWT_SECRET) {
