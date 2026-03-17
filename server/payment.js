@@ -12,7 +12,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '.env') });
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+// Lazy Stripe initialization — prevents server crash on missing key at module load time
+let _stripe = null;
+function getStripe() {
+    if (!_stripe) {
+        if (!process.env.STRIPE_SECRET_KEY) {
+            throw new Error('STRIPE_SECRET_KEY is not configured. Set it in Railway environment variables.');
+        }
+        _stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+    }
+    return _stripe;
+}
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 const APP_URL = process.env.APP_URL || 'http://localhost:3001';
 const router = express.Router();
@@ -89,7 +99,7 @@ async function getOrCreateStripeCustomer(userId, email) {
     }
 
     // Create new Stripe customer
-    const customer = await stripe.customers.create({
+    const customer = await getStripe().customers.create({
         email,
         metadata: { supabase_user_id: userId }
     });
@@ -161,7 +171,7 @@ router.post('/create-checkout-session', authenticateToken, async (req, res) => {
         // Get or create Stripe customer to link subscriptions
         const customerId = await getOrCreateStripeCustomer(user.id, user.email);
 
-        const session = await stripe.checkout.sessions.create({
+        const session = await getStripe().checkout.sessions.create({
             customer: customerId,
             payment_method_types: ['card'],
             line_items: [{
@@ -221,7 +231,7 @@ router.post('/cancel', authenticateToken, async (req, res) => {
         }
 
         // Cancel at period end (user keeps access until current period expires)
-        await stripe.subscriptions.update(subscription.stripe_subscription_id, {
+        await getStripe().subscriptions.update(subscription.stripe_subscription_id, {
             cancel_at_period_end: true
         });
 
@@ -261,7 +271,7 @@ router.post('/reactivate', authenticateToken, async (req, res) => {
         }
 
         // Remove cancellation
-        await stripe.subscriptions.update(subscription.stripe_subscription_id, {
+        await getStripe().subscriptions.update(subscription.stripe_subscription_id, {
             cancel_at_period_end: false
         });
 
@@ -295,7 +305,7 @@ router.post('/portal', authenticateToken, async (req, res) => {
             return res.status(400).json({ error: 'Nemáte propojený platební účet.' });
         }
 
-        const portalSession = await stripe.billingPortal.sessions.create({
+        const portalSession = await getStripe().billingPortal.sessions.create({
             customer: userData.stripe_customer_id,
             return_url: `${APP_URL}/profil.html`
         });
@@ -318,7 +328,7 @@ export async function handleStripeWebhook(rawBody, sig) {
         throw new Error('Webhook secret not configured');
     }
     try {
-        event = stripe.webhooks.constructEvent(rawBody, sig, STRIPE_WEBHOOK_SECRET);
+        event = getStripe().webhooks.constructEvent(rawBody, sig, STRIPE_WEBHOOK_SECRET);
     } catch (err) {
         console.error('[STRIPE] Webhook signature verification failed:', err.message);
         throw new Error('Webhook signature verification failed');
@@ -407,7 +417,7 @@ async function handleCheckoutCompleted(session) {
     } else if (stripeSubscriptionId) {
         // Fallback: fetch from Stripe if not in webhook
         try {
-            const stripeSub = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+            const stripeSub = await getStripe().subscriptions.retrieve(stripeSubscriptionId);
             currentPeriodEnd = new Date(stripeSub.current_period_end * 1000).toISOString();
         } catch (e) {
             console.error('[STRIPE] Failed to retrieve subscription details:', e.message);
@@ -572,7 +582,7 @@ async function handleInvoicePaid(invoice) {
 
     // Fetch updated period from Stripe
     try {
-        const stripeSub = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+        const stripeSub = await getStripe().subscriptions.retrieve(stripeSubscriptionId);
         const currentPeriodEnd = new Date(stripeSub.current_period_end * 1000).toISOString();
 
         await supabase
@@ -789,7 +799,7 @@ router.post('/subscription/pause', authenticateToken, async (req, res) => {
         // If Stripe subscription exists, update it
         if (sub.stripe_subscription_id) {
             try {
-                await stripe.subscriptions.update(sub.stripe_subscription_id, {
+                await getStripe().subscriptions.update(sub.stripe_subscription_id, {
                     pause_collection: {
                         behavior: 'mark_uncollectible',
                         resumes_at: Math.floor(pauseUntil.getTime() / 1000)
@@ -863,7 +873,7 @@ router.post('/subscription/apply-discount', authenticateToken, async (req, res) 
         // Verify coupon exists in Stripe
         let coupon;
         try {
-            coupon = await stripe.coupons.retrieve(validatedCode);
+            coupon = await getStripe().coupons.retrieve(validatedCode);
         } catch (err) {
             return res.status(400).json({ error: `Coupon not found` });
         }
@@ -874,7 +884,7 @@ router.post('/subscription/apply-discount', authenticateToken, async (req, res) 
 
         // Apply coupon to subscription
         try {
-            await stripe.subscriptions.update(sub.stripe_subscription_id, {
+            await getStripe().subscriptions.update(sub.stripe_subscription_id, {
                 coupon: validatedCode
             });
         } catch (stripeErr) {

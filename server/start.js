@@ -14,6 +14,8 @@ console.log('PORT:', process.env.PORT);
 console.log('CSRF_SECRET set:', !!process.env.CSRF_SECRET);
 console.log('JWT_SECRET set:', !!process.env.JWT_SECRET);
 console.log('SUPABASE_URL set:', !!process.env.SUPABASE_URL);
+console.log('STRIPE_SECRET_KEY set:', !!process.env.STRIPE_SECRET_KEY);
+console.log('GEMINI_API_KEY set:', !!process.env.GEMINI_API_KEY);
 console.log('Memory:', Math.round(process.memoryUsage().rss / 1024 / 1024), 'MB');
 console.log('==================================');
 
