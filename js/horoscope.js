@@ -252,7 +252,8 @@ function initHoroscope() {
                 const affFallback = { 'cs': 'Jsem v souladu s vesmírem.', 'sk': 'Som v súlade s vesmírom.', 'pl': 'Jestem w harmonii z wszechświatem.' }[currentLang] || 'Jsem v souladu s vesmírem.';
 
                 const affirmationText = predictionData.affirmation || extractedAffirmation || affFallback;
-                const sanitized = DOMPurify.sanitize(`<strong style="color: var(--color-starlight);">✨ ${affLabel}:</strong> ${affirmationText}`);
+                const rawHtml = `<strong style="color: var(--color-starlight);">✨ ${affLabel}:</strong> ${affirmationText}`;
+                const sanitized = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(rawHtml) : rawHtml;
                 detailWork.innerHTML = sanitized;
             }
             if (detailRelationships) detailRelationships.style.display = 'none';
