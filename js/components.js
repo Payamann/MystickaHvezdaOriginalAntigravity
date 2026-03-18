@@ -133,8 +133,8 @@ function initStandaloneHeader() {
         navList.setAttribute('aria-hidden', String(!isOpen));
     });
 
-    // Close menu when clicking a nav link
-    navList.querySelectorAll('.nav__link').forEach(link => {
+    // Close menu when clicking a nav link (ignore dropdown toggles)
+    navList.querySelectorAll('.nav__link:not(.nav__link--dropdown-toggle)').forEach(link => {
         link.addEventListener('click', () => {
             navList.classList.remove('open');
             toggle.classList.remove('active');
