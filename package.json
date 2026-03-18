@@ -9,7 +9,7 @@
     "dev": "node --watch server/index.js",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
     "build:css": "cleancss -o css/style.v2.min.css css/style.v2.css",
-    "build:js": "esbuild js/*.js --minify --outdir=js/dist --bundle=false",
+    "build:js": "esbuild js/*.js --minify --outdir=js/dist --bundle=false && esbuild js/main.js --bundle --minify --outfile=js/dist/main.js --platform=browser --format=esm",
     "lint": "eslint server/ js/"
   },
   "dependencies": {

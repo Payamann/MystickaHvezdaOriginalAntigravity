@@ -95,8 +95,8 @@ function initStandaloneHeader() {
     if (!header) return;
 
     // Prevent double-init if main.js already initialized
-    if (header.dataset.initialized === 'true') return;
-    header.dataset.initialized = 'true';
+    if (header.dataset.headerInitialized === 'true') return;
+    header.dataset.headerInitialized = 'true';
 
     // === SCROLL EFFECT ===
     let ticking = false;
@@ -120,6 +120,10 @@ function initStandaloneHeader() {
     const toggle = document.querySelector('.nav__toggle');
     const navList = document.querySelector('.nav__list');
     if (!toggle || !navList) return;
+
+    // Prevent double initialization of mobile nav
+    if (toggle.dataset.navInitialized === 'true') return;
+    toggle.dataset.navInitialized = 'true';
 
     toggle.addEventListener('click', function (e) {
         e.stopPropagation();

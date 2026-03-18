@@ -65,6 +65,7 @@ const sensitiveLimiter = rateLimit({
     keyGenerator: (req) => req.user?.id || req.ip, // Limit per user ID when authenticated
     standardHeaders: true,
     legacyHeaders: false,
+    validate: false,
 });
 
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
