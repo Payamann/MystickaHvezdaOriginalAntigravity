@@ -203,10 +203,10 @@ router.post('/send-weekly-feature', authenticateToken, requireAdmin, async (req,
       return res.status(400).json({ error: 'email and feature_title required' });
     }
 
-    // Get all users with weekly features enabled
+    // Fetch all active users with their email preferences in one query
     const { data: users, error: usersError } = await supabase
       .from('users')
-      .select('email')
+      .select('id, email, email_preferences(weekly_features, unsubscribe_all)')
       .eq('status', 'active');
 
     if (usersError) {
@@ -225,14 +225,12 @@ router.post('/send-weekly-feature', authenticateToken, requireAdmin, async (req,
 
     for (const user of users) {
       try {
-        // Check preferences
-        const { data: preferences } = await supabase
-          .from('email_preferences')
-          .select('weekly_features, unsubscribe_all')
-          .eq('user_id', user.id)
-          .single();
+        // Check preferences from the joined data
+        const prefs = Array.isArray(user.email_preferences)
+          ? user.email_preferences[0]
+          : user.email_preferences;
 
-        if (preferences?.unsubscribe_all || preferences?.weekly_features === false) {
+        if (prefs?.unsubscribe_all || prefs?.weekly_features === false) {
           continue;
         }
 
