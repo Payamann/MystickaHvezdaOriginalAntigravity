@@ -491,7 +491,7 @@ async function generateNatalChart(planetsGroup) {
                     return `<p>${para.replace(/\n/g, '<br>')}</p>`;
                 }).join('');
 
-            contentDiv.innerHTML = DOMPurify.sanitize(formattedContent);
+            contentDiv.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(formattedContent) : formattedContent;
             
             // --- STRUCTURED DATA EXTRACTION ---
             // Look for "DATA: Slunce=..., Měsíc=..., Ascendent=..."
@@ -507,7 +507,7 @@ async function generateNatalChart(planetsGroup) {
                 
                 // Remove the DATA block from visible content (sanitized)
                 const cleaned = contentDiv.innerHTML.replace(/DATA:\s*Slunce=[^<]+/i, '').replace(/<p><\/p>/g, '');
-                contentDiv.innerHTML = DOMPurify.sanitize(cleaned);
+                contentDiv.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(cleaned) : cleaned;
             } else {
                 // Fallback to strict sign names search in text if DATA block is missing
                 const signNames = ZODIAC_SIGNS.map(s => s.name).join('|');
@@ -617,7 +617,7 @@ function getSignFromAngle(angle) {
 
 async function typewriterEffect(element, htmlContent) {
     element.style.opacity = '0';
-    element.innerHTML = DOMPurify.sanitize(htmlContent);
+    element.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(htmlContent) : htmlContent;
 
     // Small delay to ensure DOM update
     await new Promise(r => setTimeout(r, 100));

@@ -396,7 +396,7 @@ async function generateEtherealSummary(cards, spreadType) {
             const text = data.response;
             const formattedText = text.split('\n').filter(line => line.trim().length > 0).map(line => `<p class="mb-md">${line}</p>`).join('');
 
-            summaryContainer.innerHTML = DOMPurify.sanitize(formattedText);
+            summaryContainer.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(formattedText) : formattedText;
 
             // Save to history if logged in and store reading ID
             if (window.Auth && window.Auth.saveReading) {
