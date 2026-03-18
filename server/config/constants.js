@@ -11,3 +11,5 @@ export const PREMIUM_PLAN_TYPES = [
     'vip_majestrat',
     'vip'
 ];
+
+export const TRIAL_DAYS = 7; // Free trial period in days
