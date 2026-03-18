@@ -72,7 +72,6 @@
 
 
   <!-- DNS Prefetch for external resources -->
-  <link rel="preconnect" href="https://js.stripe.com">
   <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
   <link rel="dns-prefetch" href="https://browser.sentry-cdn.com">
   <link rel="dns-prefetch" href="https://www.googletagmanager.com">
@@ -92,15 +91,16 @@
   <link rel="preload" href="/css/style.v2.min.css?v=11" as="style">
   <link rel="stylesheet" href="/css/style.v2.min.css?v=11">
 
-  <!-- Preload Critical Assets -->
-  <link rel="preload" as="image" href="img/hero-3d.webp" fetchpriority="high">
-  <link rel="preload" as="image" href="img/logo-3d.webp" fetchpriority="high">
-  <link rel="preload" as="image" href="img/bg-cosmic-mobile.webp" media="(max-width: 768px)" fetchpriority="high">
+  <!-- Preload Critical Assets - Hero image responsive (matches srcset in <img>) -->
+  <link rel="preload" as="image" imagesrcset="img/hero-3d-mobile.webp 400w, img/hero-3d.webp 800w" imagesizes="(max-width: 500px) 55vw, 50vw" fetchpriority="high">
+  <link rel="preload" as="image" href="img/bg-cosmic-mobile.webp" media="(max-width: 768px)" fetchpriority="low">
   <link rel="preload" as="image" href="img/bg-cosmic-hd.webp" type="image/webp" media="(min-width: 769px)" fetchpriority="low">
 
   <!-- Modulepreload for critical JS (parallel download with CSS/fonts) -->
   <link rel="modulepreload" href="/js/dist/main.js">
   <link rel="modulepreload" href="/js/dist/ui/header.js">
+  <link rel="modulepreload" href="/js/dist/personalization.js">
+  <link rel="modulepreload" href="/js/dist/utils/helpers.js">
 
   <!-- SEO Schema -->
 
@@ -2379,120 +2379,18 @@
 
 
   <!-- Carousel Pagination Dots -->
-
-  <script>
-
-    (function () {
-
-      document.addEventListener('DOMContentLoaded', function () {
-
-        const track = document.querySelector('.carousel-track');
-
-        const container = document.querySelector('.carousel-container');
-
-        if (!track || !container) return;
-
-        const slides = Array.from(track.querySelectorAll('.carousel-slide'));
-
-        if (!slides.length) return;
-
-        const dotsWrapper = document.createElement('div');
-
-        dotsWrapper.className = 'carousel-dots';
-
-        slides.forEach((_, i) => {
-
-          const dot = document.createElement('button');
-
-          dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
-
-          dot.setAttribute('aria-label', 'Slide ' + (i + 1));
-
-          dot.addEventListener('click', () => updateDots(i));
-
-          dotsWrapper.appendChild(dot);
-
-        });
-
-        container.after(dotsWrapper);
-
-        let current = 0;
-
-        function updateDots(idx) {
-
-          current = idx;
-
-          dotsWrapper.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
-
-        }
-
-        const prev = container.querySelector('.carousel-btn.prev');
-
-        const next = container.querySelector('.carousel-btn.next');
-
-        if (prev) prev.addEventListener('click', () => updateDots(Math.max(0, current - 1)));
-
-        if (next) next.addEventListener('click', () => updateDots(Math.min(slides.length - 1, current + 1)));
-
-      });
-
-    })();
-
-  </script>
+  <script src="js/dist/carousel-dots.js" defer></script>
 
 
 
   <!-- GDPR Cookie Save Handler -->
-
-  <script>
-
-    (function () {
-
-      const KEY = 'mh_cookie_prefs';
-
-      function hide() { const b = document.getElementById('cookie-banner'); if (b) b.style.display = 'none'; }
-
-      function save(analytics, marketing) {
-
-        localStorage.setItem(KEY, JSON.stringify({ analytics, marketing, ts: Date.now() }));
-
-        hide();
-
-      }
-
-      if (localStorage.getItem(KEY)) hide();
-
-      document.addEventListener('DOMContentLoaded', function () {
-
-        if (localStorage.getItem(KEY)) hide();
-
-        const saveBtn = document.getElementById('cookie-save');
-
-        const acceptBtn = document.getElementById('cookie-accept');
-
-        const rejectBtn = document.getElementById('cookie-reject');
-
-        if (saveBtn) saveBtn.addEventListener('click', function () {
-
-          save(!!document.getElementById('cookie-analytics')?.checked, !!document.getElementById('cookie-marketing')?.checked);
-
-        });
-
-        if (acceptBtn) acceptBtn.addEventListener('click', () => save(true, true));
-
-        if (rejectBtn) rejectBtn.addEventListener('click', () => save(false, false));
-
-      });
-
-    })();
-
-  </script>
+  <script src="js/dist/cookie-handler.js" defer></script>
 
 
 
   <!-- Analytics Initialization & Tracking -->
 
-  <script type="module">
+  <script type="module" async>
 
     import { initAnalytics, trackPageLoadMetrics } from './js/dist/ga-tracking.js?v=6';
 
