@@ -295,7 +295,7 @@ function addMessage(text, type, shouldScroll = true) {
     html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
     html = html.replace(/(_)(.*?)(_)/g, '<em>$2</em>');
 
-    div.innerHTML = DOMPurify.sanitize(html);
+    div.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(html) : html;
 
     // Insert before typing indicator
     messagesContainer.insertBefore(div, typingIndicator);

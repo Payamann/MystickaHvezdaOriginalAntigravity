@@ -248,7 +248,7 @@ function renderReadingContent(reading) {
         let content = data.interpretation || data.text || data.result;
 
         if (typeof content === 'string') {
-            const sanitized = DOMPurify.sanitize(content);
+            const sanitized = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(content) : content;
             contentHtml += `<div class="formatted-content" style="line-height: 1.7; color: var(--color-starlight);">${sanitized}</div>`;
         } else {
             contentHtml += `<p style="line-height: 1.7;">${escapeHtml(content)}</p>`;
