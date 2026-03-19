@@ -218,10 +218,13 @@
                         </div>
                         <ul class="card__features">
                             <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> Denní horoskop</li>
-                            <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> Tarot (1 karta)</li>
-                            <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> Křišťálová koule (3/d)</li>
-                            <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> Průvodce (3 zprávy)</li>
-                            <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> Partnerská shoda</li>
+                            <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> Tarot + Runy + Andělské karty (1×/den)</li>
+                            <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> Křišťálová koule (3 otázky/den)</li>
+                            <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> Duchovní průvodce (3 zprávy/den)</li>
+                            <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> Partnerská shoda (% skóre)</li>
+                            <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> Čínský horoskop + Biorytmy + Aura</li>
+                            <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> Afirmace + Snář + Numerologie</li>
+                            <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> Lunární rituály (96 kombinací)</li>
                         </ul>
                         <a href="registrace.html" class="btn btn--secondary btn-full">Začít zdarma</a>
                     </div>
@@ -298,68 +301,150 @@
                         <thead>
                             <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
                                 <th style="text-align:left; padding:1.25rem; color: var(--color-silver-mist);">Funkce</th>
-                                <th style="text-align:center; color: var(--color-starlight);">Poutník</th>
-                                <th style="text-align:center; color:var(--color-mystic-gold);">Průvodce</th>
-                                <th style="text-align:center; color: var(--color-starlight);">Osvícení</th>
-                                <th style="text-align:center; color:var(--color-mystic-gold); background: linear-gradient(to bottom, rgba(212, 175, 55, 0.3), rgba(212, 175, 55, 0.1)); border-top: 2px solid var(--color-mystic-gold); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);">👑 VIP Majestát</th>
+                                <th style="text-align:center; padding:1.25rem; color: var(--color-starlight);">Poutník</th>
+                                <th style="text-align:center; padding:1.25rem; color:var(--color-mystic-gold);">⭐ Průvodce</th>
+                                <th style="text-align:center; padding:1.25rem; color: var(--color-starlight);">Osvícení</th>
+                                <th style="text-align:center; padding:1.25rem; color:var(--color-mystic-gold); background: linear-gradient(to bottom, rgba(212, 175, 55, 0.3), rgba(212, 175, 55, 0.1)); border-top: 2px solid var(--color-mystic-gold); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);">👑 VIP Majestát</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Tarot</td>
-                                <td class="text-center">1 karta</td>
-                                <td class="text-center"><strong>Neomezený</strong></td>
-                                <td class="text-center">Neomezený</td>
-                                <td class="text-center"><strong>+ Sady</strong></td>
-                            </tr>
-                            <tr>
-                                <td>Horoskop</td>
-                                <td class="text-center">Denní</td>
-                                <td class="text-center"><strong>Všechny</strong></td>
-                                <td class="text-center">Všechny</td>
-                                <td class="text-center"><strong>Osobní</strong></td>
-                            </tr>
-                            <tr>
-                                <td>Duchovní chat</td>
-                                <td class="text-center">Limit 3/d</td>
-                                <td class="text-center"><strong>Neomezený</strong></td>
-                                <td class="text-center">Neomezený</td>
-                                <td class="text-center"><strong>Prioritní</strong></td>
+                            <!-- SEKCE: Základní nástroje -->
+                            <tr style="background: rgba(255,255,255,0.025); border-bottom: 1px solid rgba(255,255,255,0.06);">
+                                <td colspan="5" style="padding: 0.6rem 1.25rem; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.3); font-weight: 700;">Základní nástroje</td>
                             </tr>
                             <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                                <td style="padding: 1.25rem;">Partnerská Shoda</td>
-                                <td style="text-align: center;">Pouze % skóre</td>
-                                <td style="text-align: center;"><strong>Detailní analýza symbolů</strong></td>
-                                <td style="text-align: center;"><strong>Detailní analýza symbolů</strong></td>
-                                <td style="text-align: center; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>Detailní +</strong> <br><strong>Prognóza</strong></td>
+                                <td style="padding:1.25rem;">Runy</td>
+                                <td style="text-align:center; padding:1.25rem;">1×/den</td>
+                                <td style="text-align:center; padding:1.25rem;"><strong>Neomezeně</strong></td>
+                                <td style="text-align:center; padding:1.25rem;">Neomezeně</td>
+                                <td style="text-align:center; padding:1.25rem; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>Neomezeně</strong></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding:1.25rem;">Andělské karty</td>
+                                <td style="text-align:center; padding:1.25rem;">1×/den</td>
+                                <td style="text-align:center; padding:1.25rem;"><strong>Neomezeně</strong></td>
+                                <td style="text-align:center; padding:1.25rem;">Neomezeně</td>
+                                <td style="text-align:center; padding:1.25rem; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>Neomezeně</strong></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding:1.25rem;">Čínský horoskop</td>
+                                <td style="text-align:center; padding:1.25rem;">✓</td>
+                                <td style="text-align:center; padding:1.25rem;"><strong>✓</strong></td>
+                                <td style="text-align:center; padding:1.25rem;">✓</td>
+                                <td style="text-align:center; padding:1.25rem; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>✓</strong></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding:1.25rem;">Biorytmy + Aura</td>
+                                <td style="text-align:center; padding:1.25rem;">✓</td>
+                                <td style="text-align:center; padding:1.25rem;"><strong>✓</strong></td>
+                                <td style="text-align:center; padding:1.25rem;">✓</td>
+                                <td style="text-align:center; padding:1.25rem; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>✓</strong></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding:1.25rem;">Afirmace + Snář</td>
+                                <td style="text-align:center; padding:1.25rem;">✓</td>
+                                <td style="text-align:center; padding:1.25rem;"><strong>✓</strong></td>
+                                <td style="text-align:center; padding:1.25rem;">✓</td>
+                                <td style="text-align:center; padding:1.25rem; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>✓</strong></td>
+                            </tr>
+
+                            <!-- SEKCE: Věštění a výklady -->
+                            <tr style="background: rgba(255,255,255,0.025); border-bottom: 1px solid rgba(255,255,255,0.06);">
+                                <td colspan="5" style="padding: 0.6rem 1.25rem; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.3); font-weight: 700;">Věštění a výklady</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding:1.25rem;">Tarot</td>
+                                <td style="text-align:center; padding:1.25rem;">1 karta/den</td>
+                                <td style="text-align:center; padding:1.25rem;"><strong>Neomezený</strong></td>
+                                <td style="text-align:center; padding:1.25rem;">Neomezený</td>
+                                <td style="text-align:center; padding:1.25rem; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>Neomezený + Sady</strong></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding:1.25rem;">Horoskop</td>
+                                <td style="text-align:center; padding:1.25rem;">Denní</td>
+                                <td style="text-align:center; padding:1.25rem;"><strong>Denní + Týdenní + Měsíční</strong></td>
+                                <td style="text-align:center; padding:1.25rem;">Denní + Týdenní + Měsíční</td>
+                                <td style="text-align:center; padding:1.25rem; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>Všechny + Osobní výklad</strong></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding:1.25rem;">Křišťálová koule</td>
+                                <td style="text-align:center; padding:1.25rem;">3 otázky/den</td>
+                                <td style="text-align:center; padding:1.25rem;"><strong>Neomezeně</strong></td>
+                                <td style="text-align:center; padding:1.25rem;">Neomezeně</td>
+                                <td style="text-align:center; padding:1.25rem; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>Neomezeně + Priority</strong></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding:1.25rem;">Duchovní průvodce</td>
+                                <td style="text-align:center; padding:1.25rem;">3 zprávy/den</td>
+                                <td style="text-align:center; padding:1.25rem;"><strong>Neomezený chat</strong></td>
+                                <td style="text-align:center; padding:1.25rem;"><strong>Neomezený + Prioritní</strong></td>
+                                <td style="text-align:center; padding:1.25rem; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>Prioritní 24/7</strong></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 1.25rem;">Lunární rituály</td>
+                                <td style="text-align: center; padding:1.25rem;">96 kombinací</td>
+                                <td style="text-align: center; padding:1.25rem;"><strong>96 kombinací</strong></td>
+                                <td style="text-align: center; padding:1.25rem;"><strong>Exkluzivní obsah</strong></td>
+                                <td style="text-align: center; padding:1.25rem; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>VIP rituální sady 🌙</strong></td>
+                            </tr>
+
+                            <!-- SEKCE: Osobní analýzy -->
+                            <tr style="background: rgba(255,255,255,0.025); border-bottom: 1px solid rgba(255,255,255,0.06);">
+                                <td colspan="5" style="padding: 0.6rem 1.25rem; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.3); font-weight: 700;">Osobní analýzy</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 1.25rem;">Partnerská shoda</td>
+                                <td style="text-align: center; padding:1.25rem;">Pouze % skóre</td>
+                                <td style="text-align: center; padding:1.25rem;"><strong>Detailní analýza</strong></td>
+                                <td style="text-align: center; padding:1.25rem;"><strong>Detailní analýza</strong></td>
+                                <td style="text-align: center; padding:1.25rem; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>Detailní + Prognóza</strong></td>
                             </tr>
                             <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                                 <td style="padding: 1.25rem;">Numerologie</td>
-                                <td style="text-align: center;">—</td>
-                                <td style="text-align: center;"><strong>Hloubkový rozbor</strong></td>
-                                <td style="text-align: center;"><strong>Hloubkový rozbor</strong></td>
-                                <td style="text-align: center; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>Hloubkový +</strong> <br><strong>Roční 🔮</strong></td>
+                                <td style="text-align: center; padding:1.25rem;">Základní</td>
+                                <td style="text-align: center; padding:1.25rem;"><strong>Hloubkový rozbor</strong></td>
+                                <td style="text-align: center; padding:1.25rem;"><strong>Hloubkový rozbor</strong></td>
+                                <td style="text-align: center; padding:1.25rem; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>Hloubkový + Roční 🔮</strong></td>
                             </tr>
                             <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                                <td style="padding: 1.25rem;">Natální Karta</td>
-                                <td style="text-align: center;">Jen grafika</td>
-                                <td style="text-align: center;"><strong>Vhled experta</strong></td>
-                                <td style="text-align: center;"><strong>Vhled experta</strong></td>
-                                <td style="text-align: center; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>Komplexní interpretace</strong></td>
+                                <td style="padding: 1.25rem;">Natální karta</td>
+                                <td style="text-align: center; padding:1.25rem;">Jen grafika</td>
+                                <td style="text-align: center; padding:1.25rem;"><strong>Vhled experta</strong></td>
+                                <td style="text-align: center; padding:1.25rem;"><strong>Vhled experta</strong></td>
+                                <td style="text-align: center; padding:1.25rem; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>Komplexní interpretace</strong></td>
                             </tr>
                             <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                                 <td style="padding: 1.25rem;">Astrokartografie</td>
-                                <td style="text-align: center;">—</td>
-                                <td style="text-align: center;"><strong>Plný přístup</strong></td>
-                                <td style="text-align: center;"><strong>Plný přístup</strong></td>
-                                <td style="text-align: center; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>Plný +</strong> <br><strong>4 mapy/rok</strong></td>
+                                <td style="text-align: center; padding:1.25rem;">—</td>
+                                <td style="text-align: center; padding:1.25rem;">—</td>
+                                <td style="text-align: center; padding:1.25rem;"><strong>Plný přístup</strong></td>
+                                <td style="text-align: center; padding:1.25rem; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>Plný + 4 mapy/rok</strong></td>
+                            </tr>
+
+                            <!-- SEKCE: VIP služby -->
+                            <tr style="background: rgba(255,255,255,0.025); border-bottom: 1px solid rgba(255,255,255,0.06);">
+                                <td colspan="5" style="padding: 0.6rem 1.25rem; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.3); font-weight: 700;">VIP služby</td>
                             </tr>
                             <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                                <td style="padding: 1.25rem;">Křišťálová koule</td>
-                                <td style="text-align: center;">3 otázky/den</td>
-                                <td style="text-align: center;"><strong>Neomezeně</strong></td>
-                                <td style="text-align: center;"><strong>Neomezeně</strong></td>
-                                <td style="text-align: center; background: rgba(212, 175, 55, 0.1); color: var(--color-mystic-gold); font-weight: 600; border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>Neomezeně</strong> <br><strong>+ Priority</strong></td>
+                                <td style="padding: 1.25rem;">Soukromé konzultace</td>
+                                <td style="text-align: center; padding:1.25rem;">—</td>
+                                <td style="text-align: center; padding:1.25rem;">—</td>
+                                <td style="text-align: center; padding:1.25rem;">—</td>
+                                <td style="text-align: center; padding:1.25rem; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>✓ Zahrnuto</strong></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <td style="padding: 1.25rem;">Roční mapa osudu</td>
+                                <td style="text-align: center; padding:1.25rem;">—</td>
+                                <td style="text-align: center; padding:1.25rem;">—</td>
+                                <td style="text-align: center; padding:1.25rem;">—</td>
+                                <td style="text-align: center; padding:1.25rem; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>✓ Zahrnuto</strong></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 1.25rem;">Prioritní podpora</td>
+                                <td style="text-align: center; padding:1.25rem;">—</td>
+                                <td style="text-align: center; padding:1.25rem;">—</td>
+                                <td style="text-align: center; padding:1.25rem;"><strong>Přednostní přístup</strong></td>
+                                <td style="text-align: center; padding:1.25rem; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3); border-bottom: 2px solid var(--color-mystic-gold);"><strong>Priority do 2h 🏆</strong></td>
                             </tr>
                         </tbody>
                     </table>
