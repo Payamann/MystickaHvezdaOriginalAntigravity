@@ -173,14 +173,19 @@ async function handleFormSubmit(e) {
         return;
     }
 
-    if (!window.Auth.isPremium()) {
-        showError(`
-            <div class="text-center">
-                <h3>🔒 Premium Funkce</h3>
-                <p class="mb-lg">Astrokartografie je dostupná pouze pro Hvězdné Průvodce.</p>
-                <a href="cenik.html" class="btn btn--primary">Získat Premium</a>
-            </div>
-        `);
+    if (!window.Auth.isExclusive()) {
+        // Show Osvícení-tier paywall
+        if (window.Premium) {
+            window.Premium.showExclusivePaywall('astrocartography');
+        } else {
+            showError(`
+                <div class="text-center">
+                    <h3>🔭 Osvícení funkce</h3>
+                    <p class="mb-lg">Astrokartografie je dostupná od plánu Osvícení (499 Kč/měsíc).</p>
+                    <a href="cenik.html" class="btn btn--primary">Zobrazit plány</a>
+                </div>
+            `);
+        }
         return;
     }
 

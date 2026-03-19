@@ -59,11 +59,12 @@ window.Premium = {
             'numerology': '🔢 Vaše čísla skrývají víc, než čekáte – hluboký výklad čísel odemknete v plánu Hvězdný Průvodce',
             'weekly_horoscope': '🌟 Detailní týdenní průvodce planetami čeká na vás – odemkněte ho s Hvězdným Průvodcem',
             'monthly_horoscope': '📅 Celý měsíc pod hvězdami – kompletní měsíční předpověď patří Hvězdným Průvodcům',
-            'natal_chart': '⭐ Váš vesmírný plán čeká – plná interpretace natální karty je součástí Hvězdného Průvodce',
+            'natal_chart': '⭐ Váš vesmírný plán čeká – plná AI interpretace natální karty je součástí Hvězdného Průvodce',
             'synastry': '💫 Hloubková synastrie prozradí, zda jste pro sebe stvořeni – dostupná v Hvězdném Průvodci',
             'astrocartography': '🌍 Kde na světě vás hvězdy volají? Astrokartografie je jen pro Hvězdné Průvodce',
             'journal_insights': '📖 Hluboká analýza vzorců ve vašem deníku – funkce Hvězdného Průvodce',
-            'mentor': '🌙 Váš duchovní průvodce bez omezení zpráv – staňte se Hvězdným Průvodcem'
+            'mentor': '🌙 Váš duchovní průvodce bez omezení zpráv – staňte se Hvězdným Průvodcem',
+            'rituals': '🌙 Lunární rituály vás vedou hluboko do noci – plný přístup patří Hvězdným Průvodcům'
         };
 
         const displayMessage = message || defaultMessages[featureName] || 'Tato funkce vyžaduje Premium předplatné';
@@ -113,6 +114,69 @@ window.Premium = {
             if (e.target === overlay) {
                 overlay.remove();
             }
+        });
+    },
+
+    /**
+     * Show paywall for Osvícení tier (exclusive_monthly, vip)
+     * @param {string} featureName - Feature identifier
+     */
+    showExclusivePaywall(featureName) {
+        this.trackPaywallHit(featureName);
+
+        const overlay = document.createElement('div');
+        overlay.className = 'paywall-overlay';
+        overlay.innerHTML = `
+            <div class="paywall-content">
+                <div class="paywall-icon">🔭</div>
+                <h3 class="paywall-title">Osvícení</h3>
+                <p class="paywall-message">Tato funkce je dostupná od plánu Osvícení</p>
+                <div class="paywall-benefits">
+                    <div class="benefit-item">✓ Astrokartografie — vaše hvězdná mapa světa</div>
+                    <div class="benefit-item">✓ Pokročilá natální karta s AI výkladem</div>
+                    <div class="benefit-item">✓ Exkluzivní lunární rituály</div>
+                    <div class="benefit-item">✓ Prioritní odpovědi duchovního průvodce</div>
+                </div>
+                <div class="paywall-actions">
+                    <button class="btn btn--primary paywall-upgrade">
+                        🔭 Probudit se — 499 Kč/měsíc
+                    </button>
+                    <button class="btn btn--ghost paywall-close">Teď ne</button>
+                </div>
+                <p class="paywall-footer">Bez závazků • Zrušení jedním kliknutím</p>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        overlay.querySelector('.paywall-upgrade').addEventListener('click', () => {
+            window.location.href = '/cenik.html';
+        });
+        overlay.querySelector('.paywall-close').addEventListener('click', () => overlay.remove());
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+    },
+
+    /**
+     * Show login prompt gate (requires registration, not premium)
+     * @param {HTMLElement} container - Container element to show gate in
+     * @param {string} message - Optional custom message
+     */
+    showLoginGate(container, message = null) {
+        const defaultMsg = '⭐ Přihlaste se zdarma a získejte AI interpretaci';
+        const safeMsg = this._escapeHTML(message || defaultMsg);
+
+        const gate = document.createElement('div');
+        gate.className = 'login-gate';
+        gate.style.cssText = 'text-align:center;padding:2rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;margin-top:1.5rem;';
+        gate.innerHTML = `
+            <p style="color:var(--color-mystic-gold);font-size:1.05rem;margin-bottom:0.75rem;">${safeMsg}</p>
+            <p style="color:rgba(255,255,255,0.55);font-size:0.9rem;margin-bottom:1.5rem;">Registrace je zdarma, trvá 30 sekund</p>
+            <button class="btn btn--primary login-gate-btn" style="min-width:200px;">Přihlásit se zdarma →</button>
+        `;
+
+        container.appendChild(gate);
+        gate.querySelector('.login-gate-btn').addEventListener('click', () => {
+            window.Auth?.openModal('login');
         });
     },
 

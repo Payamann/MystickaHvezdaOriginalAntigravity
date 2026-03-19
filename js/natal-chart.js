@@ -461,6 +461,18 @@ async function generateNatalChart(planetsGroup) {
         const birthDateObj = new Date(birthDate);
         const localSunSign = getZodiacSign(birthDateObj)?.name || '';
 
+        // Login required for AI interpretation (chart graphic stays public)
+        if (!window.Auth || !window.Auth.isLoggedIn()) {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+            aiResultsDiv.style.display = 'block';
+            const contentDiv = aiResultsDiv.querySelector('.ai-content');
+            if (window.Premium) {
+                window.Premium.showLoginGate(contentDiv, '⭐ Přihlaste se zdarma a odhalte svůj vesmírný plán');
+            }
+            return;
+        }
+
         // Call API via centralized helper
         const data = await window.callAPI('/natal-chart', {
             birthDate,

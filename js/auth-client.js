@@ -127,6 +127,18 @@
             return true;
         },
 
+        // Osvícení or VIP level check (exclusive_monthly, vip)
+        isExclusive() {
+            if (!this.user || !this.user.subscription_status) return false;
+            const s = this.user.subscription_status.toLowerCase();
+            if (!s.includes('exclusive') && s !== 'vip') return false;
+            if (this.user.subscription_expires_at) {
+                const expires = new Date(this.user.subscription_expires_at);
+                if (expires < new Date()) return false;
+            }
+            return true;
+        },
+
         async register(email, password, additionalData = {}) {
             try {
                 const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;

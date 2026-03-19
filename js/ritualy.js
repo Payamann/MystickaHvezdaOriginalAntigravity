@@ -72,6 +72,24 @@
         document.querySelectorAll('.zodiac-btn[data-sign]').forEach(btn => {
             btn.addEventListener('click', () => showRitual(btn.dataset.sign));
         });
+
+        // Gate: "Vstoupit do rituálu" vyžaduje Hvězdný Průvodce+
+        const enterBtn = document.getElementById('btn-enter-ritual');
+        if (enterBtn) {
+            enterBtn.addEventListener('click', (e) => {
+                if (!window.Auth || !window.Auth.isLoggedIn()) {
+                    e.preventDefault();
+                    window.Auth?.openModal('login');
+                    return;
+                }
+                if (!window.Auth.isPremium()) {
+                    e.preventDefault();
+                    window.Premium?.showPaywall('rituals');
+                    return;
+                }
+                // Premium user — proceed to session normally
+            });
+        }
     }
 
     function markPreferredSign(sign) {

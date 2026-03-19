@@ -238,8 +238,8 @@ function checkUsageLimit() {
     const today = new Date().toISOString().split('T')[0];
     const usage = JSON.parse(localStorage.getItem('mentor_usage') || '{}');
 
-    // Allow 3 messages, trigger gate on 4th
-    if (usage.date === today && usage.count >= 3) {
+    // Allow 5 messages, trigger gate on 6th
+    if (usage.date === today && usage.count >= 5) {
         return true;
     }
     return false;
