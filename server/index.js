@@ -268,12 +268,14 @@ if (process.env.NODE_ENV === 'production' && !process.env.CSRF_SECRET) {
 }
 const csrfSecret = process.env.CSRF_SECRET || 'dev-csrf-secret-fallback-2026';
 
-// Generate CSRF token using HMAC
+// Generate CSRF token using HMAC: randomString.timestamp.signature
 function generateCSRFToken() {
     const randomString = crypto.randomBytes(32).toString('hex');
+    const timestamp = Date.now().toString(36);
+    const payload = `${randomString}.${timestamp}`;
     const hmac = crypto.createHmac('sha256', csrfSecret);
-    hmac.update(randomString);
-    return `${randomString}.${hmac.digest('hex')}`;
+    hmac.update(payload);
+    return `${payload}.${hmac.digest('hex')}`;
 }
 
 // Verify CSRF token
@@ -282,14 +284,26 @@ function verifyCSRFToken(token) {
         return false;
     }
 
-    const [randomString, signature] = token.split('.');
-
-    if (!randomString || !signature) {
+    const parts = token.split('.');
+    if (parts.length !== 3) {
         return false;
     }
 
+    const [randomString, timestamp, signature] = parts;
+
+    if (!randomString || !timestamp || !signature) {
+        return false;
+    }
+
+    // Check token expiry (15 minutes)
+    const tokenTime = parseInt(timestamp, 36);
+    if (Date.now() - tokenTime > 15 * 60 * 1000) {
+        return false;
+    }
+
+    const payload = `${randomString}.${timestamp}`;
     const hmac = crypto.createHmac('sha256', csrfSecret);
-    hmac.update(randomString);
+    hmac.update(payload);
     const expectedSignature = hmac.digest('hex');
 
     // Buffers must be same length for timingSafeEqual
@@ -358,9 +372,15 @@ app.use('/api', xss());
 
 // Health Check Endpoint (Moved UP to bypass Rate Limiting)
 app.get('/api/health', (req, res) => {
+    const dbOk = !!process.env.DATABASE_URL;
+    const aiOk = !!process.env.GEMINI_API_KEY;
     res.json({
         status: 'ok',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        checks: {
+            db: dbOk ? 'ok' : 'unavailable',
+            ai: aiOk ? 'ok' : 'unavailable'
+        }
     });
 });
 

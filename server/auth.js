@@ -143,7 +143,7 @@ router.post('/register', authLimiter, async (req, res) => {
 
     } catch (e) {
         // Return validation errors as 400, everything else as 500
-        if (e.message && (e.message.includes('must') || e.message.includes('Invalid') || e.message.includes('required') || e.message.includes('too'))) {
+        if (e.message && (e.message.includes('must') || e.message.includes('Invalid') || e.message.includes('required') || e.message.includes('too') || e.message.includes('cannot') || e.message.includes('after'))) {
             return res.status(400).json({ error: e.message });
         }
         console.error('Register Error:', e);
@@ -304,6 +304,10 @@ router.post('/login', authLimiter, async (req, res) => {
         });
 
     } catch (e) {
+        // Return validation errors as 400, everything else as 500
+        if (e.message && (e.message.includes('must') || e.message.includes('Invalid') || e.message.includes('required') || e.message.includes('too') || e.message.includes('cannot') || e.message.includes('after'))) {
+            return res.status(400).json({ error: e.message });
+        }
         console.error('Login Error:', e);
         res.status(500).json({ error: 'Server error during login' });
     }
