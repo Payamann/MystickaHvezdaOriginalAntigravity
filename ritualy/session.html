@@ -3,85 +3,519 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ritual Seance | Mystická Hvězda</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <title>Rituální Seance | Mystická Hvězda</title>
+    <meta name="description" content="Vedená lunární meditace — 6 kroků pro propojení s energií Měsíce.">
+    <meta name="robots" content="noindex, follow">
+    <link rel="canonical" href="https://mystickahvezda.cz/ritualy/">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap&subset=latin,latin-ext" rel="stylesheet">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap&subset=latin,latin-ext" rel="stylesheet"></noscript>
+
     <style>
-        body { overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; background: #05050dc7; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --gold:   #d4af37;
+            --gold2:  #f5d776;
+            --bg:     #05050d;
+            --white:  rgba(255,255,255,0.88);
+            --muted:  rgba(255,255,255,0.45);
+            --font-serif: 'Cinzel', serif;
+            --font-sans:  'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--white);
+            font-family: var(--font-sans);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        /* ── OVERLAY ATMOSPHERE ────────────────────────── */
         .session-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, rgba(30, 20, 50, 0.4) 0%, #050505 100%);
-            z-index: 1;
+            position: fixed; inset: 0;
+            background: radial-gradient(ellipse at 50% 30%, rgba(40,20,80,0.5) 0%, var(--bg) 70%);
+            z-index: 0;
+            pointer-events: none;
         }
-        .ritual-step {
-            position: relative; z-index: 10;
-            text-align: center; max-width: 700px; padding: 2rem;
-            color: white; font-family: 'Cinzel', serif;
-            opacity: 0; transform: translateY(20px);
-            transition: all 1.5s ease;
+        .stars-bg {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background-image:
+                radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.4) 0%, transparent 100%),
+                radial-gradient(1px 1px at 80% 10%, rgba(255,255,255,0.3) 0%, transparent 100%),
+                radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.25) 0%, transparent 100%),
+                radial-gradient(1px 1px at 40% 85%, rgba(255,255,255,0.2) 0%, transparent 100%),
+                radial-gradient(1px 1px at 90% 50%, rgba(255,255,255,0.3) 0%, transparent 100%);
         }
-        .ritual-step.active { opacity: 1; transform: translateY(0); }
-        .ritual-text { font-size: 2rem; color: var(--color-mystic-gold); line-height: 1.5; margin-bottom: 2rem; }
-        .ritual-subtext { font-family: 'Inter', sans-serif; opacity: 0.7; font-size: 1.1rem; }
+
+        /* ── PROGRESS BAR ──────────────────────────────── */
         .progress-bar {
-            position: fixed; bottom: 0; left: 0; height: 4px;
-            background: var(--color-mystic-gold); width: 0%;
-            transition: width 0.5s linear; z-index: 100;
+            position: fixed; bottom: 0; left: 0; height: 3px;
+            background: linear-gradient(90deg, var(--gold), var(--gold2));
+            width: 0%; transition: width 0.6s ease; z-index: 100;
         }
-        .candle {
-            width: 4px; height: 40px; background: #ffaa00; border-radius: 50%;
-            box-shadow: 0 0 20px #ff6600, 0 0 40px #ffaa00;
-            margin: 20px auto; animation: flicker 0.1s infinite;
+
+        /* ── HEADER STRIP ──────────────────────────────── */
+        .session-header {
+            position: fixed; top: 0; left: 0; right: 0;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.9rem 1.5rem;
+            background: rgba(5,5,13,0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            z-index: 50;
+        }
+        .session-header a {
+            color: var(--muted); text-decoration: none;
+            font-size: 0.82rem; transition: color 0.2s;
+        }
+        .session-header a:hover { color: var(--white); }
+        .session-step-counter {
+            font-family: var(--font-serif);
+            font-size: 0.78rem;
+            color: var(--gold);
+            letter-spacing: 2px;
+        }
+        .session-ritual-name {
+            font-size: 0.78rem;
+            color: var(--muted);
+            max-width: 200px;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+
+        /* ── MAIN PANEL ────────────────────────────────── */
+        .session-main {
+            position: relative; z-index: 10;
+            width: 100%; max-width: 660px;
+            padding: 7rem 1.5rem 3rem;
+            display: flex; flex-direction: column; align-items: center;
+            text-align: center;
+            min-height: 100vh;
+            justify-content: center;
+        }
+
+        /* ── CANDLE ────────────────────────────────────── */
+        .candle-wrap {
+            margin-bottom: 2.5rem;
+        }
+        .candle-flame {
+            width: 14px; height: 48px;
+            background: linear-gradient(to top, #ff6600, #ffcc00, #fff8e0);
+            border-radius: 50% 50% 30% 30% / 60% 60% 40% 40%;
+            margin: 0 auto 4px;
+            animation: flicker 0.08s ease-in-out infinite alternate;
+            filter: blur(0.5px);
+            box-shadow: 0 0 12px #ff8800, 0 0 30px rgba(255,150,0,0.4);
+        }
+        .candle-body {
+            width: 6px; height: 28px;
+            background: linear-gradient(to bottom, #f5d776, #c9a227);
+            margin: 0 auto;
+            border-radius: 3px;
         }
         @keyframes flicker {
-            0% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(1); opacity: 0.8; }
+            0%   { transform: scaleX(1)    scaleY(1)    rotate(-1deg); opacity: 0.92; }
+            100% { transform: scaleX(1.08) scaleY(0.96) rotate(1deg);  opacity: 1;   }
+        }
+
+        /* ── SCREENS ────────────────────────────────────── */
+        .screen {
+            display: none; width: 100%;
+            animation: fadeSlideUp 0.7s ease;
+        }
+        .screen.active { display: flex; flex-direction: column; align-items: center; }
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── CHECK-IN ────────────────────────────────────── */
+        .checkin-title {
+            font-family: var(--font-serif);
+            font-size: clamp(1.3rem, 4vw, 1.8rem);
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+        .checkin-sub {
+            color: var(--muted); font-size: 0.95rem; margin-bottom: 2rem;
+        }
+        .emoji-row {
+            display: flex; gap: 1rem; justify-content: center;
+            flex-wrap: wrap; margin-bottom: 1rem;
+        }
+        .emoji-btn {
+            background: none; border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 50%; width: 60px; height: 60px;
+            font-size: 1.6rem; cursor: pointer;
+            transition: all 0.25s; display: flex; align-items: center; justify-content: center;
+        }
+        .emoji-btn:hover {
+            border-color: var(--gold); transform: scale(1.15);
+            background: rgba(212,175,55,0.08);
+        }
+
+        /* ── STEP ────────────────────────────────────────── */
+        .step-label {
+            font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase;
+            color: var(--gold); margin-bottom: 0.5rem;
+            font-family: var(--font-serif);
+        }
+        .step-title {
+            font-family: var(--font-serif);
+            font-size: clamp(1.4rem, 4vw, 2rem);
+            color: white;
+            margin-bottom: 1.25rem;
+        }
+        .step-text {
+            font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+            line-height: 1.85;
+            color: var(--white);
+            max-width: 560px;
+            white-space: pre-line;
+        }
+        .step-text .mantra-text {
+            font-family: var(--font-serif);
+            font-size: clamp(1rem, 3vw, 1.25rem);
+            font-style: italic;
+            color: var(--gold2);
+            line-height: 1.6;
+        }
+        .step-subtext {
+            margin-top: 1.25rem;
+            font-size: 0.82rem; color: var(--muted);
+            font-style: italic; letter-spacing: 0.5px;
+        }
+
+        /* ── BREATHING GUIDE ─────────────────────────────── */
+        .breath-guide {
+            width: 120px; height: 120px;
+            border-radius: 50%;
+            border: 2px solid rgba(212,175,55,0.4);
+            display: flex; align-items: center; justify-content: center;
+            margin: 1.5rem auto;
+            position: relative;
+            transition: transform 0s, box-shadow 0s;
+        }
+        .breath-guide.inhale {
+            animation: breathIn 4s ease-in-out forwards;
+        }
+        .breath-guide.hold {
+            animation: breathHold 4s ease-in-out forwards;
+        }
+        .breath-guide.exhale {
+            animation: breathOut 6s ease-in-out forwards;
+        }
+        @keyframes breathIn {
+            from { transform: scale(1);    box-shadow: 0 0 0px rgba(212,175,55,0.2); }
+            to   { transform: scale(1.55); box-shadow: 0 0 40px rgba(212,175,55,0.5); }
+        }
+        @keyframes breathHold {
+            from { transform: scale(1.55); box-shadow: 0 0 40px rgba(212,175,55,0.5); }
+            to   { transform: scale(1.55); box-shadow: 0 0 40px rgba(212,175,55,0.5); }
+        }
+        @keyframes breathOut {
+            from { transform: scale(1.55); box-shadow: 0 0 40px rgba(212,175,55,0.5); }
+            to   { transform: scale(1);    box-shadow: 0 0 0px rgba(212,175,55,0.2); }
+        }
+        .breath-label {
+            font-family: var(--font-serif);
+            font-size: 0.85rem; color: var(--gold);
+            letter-spacing: 1px;
+        }
+        .breath-counter {
+            font-size: 1.4rem; color: var(--gold2);
+            font-family: var(--font-serif);
+        }
+
+        /* ── NEXT BUTTON ────────────────────────────────── */
+        .btn-next {
+            margin-top: 2.5rem;
+            background: transparent;
+            border: 1px solid rgba(212,175,55,0.4);
+            color: var(--gold);
+            font-family: var(--font-serif);
+            font-size: 0.9rem;
+            letter-spacing: 1.5px;
+            padding: 0.9rem 2.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-next:hover {
+            background: rgba(212,175,55,0.1);
+            border-color: var(--gold);
+            transform: translateY(-2px);
+        }
+        .btn-next:focus-visible {
+            outline: 2px solid var(--gold);
+            outline-offset: 4px;
+        }
+
+        /* ── COMPLETION SCREEN ──────────────────────────── */
+        .completion-icon {
+            font-size: 4rem; margin-bottom: 1rem;
+            animation: completionPop 0.6s cubic-bezier(0.175,0.885,0.32,1.275);
+        }
+        @keyframes completionPop {
+            from { transform: scale(0); opacity: 0; }
+            to   { transform: scale(1); opacity: 1; }
+        }
+        .completion-title {
+            font-family: var(--font-serif);
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+        .mood-shift {
+            display: inline-flex; align-items: center; gap: 0.75rem;
+            background: rgba(212,175,55,0.08);
+            border: 1px solid rgba(212,175,55,0.2);
+            border-radius: 50px;
+            padding: 0.6rem 1.5rem;
+            font-size: 1.2rem;
+            margin: 1rem 0 1.5rem;
+        }
+
+        .streak-badge {
+            background: linear-gradient(135deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05));
+            border: 1px solid rgba(212,175,55,0.3);
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            margin: 1.25rem 0;
+            text-align: center;
+        }
+        .streak-number {
+            font-family: var(--font-serif);
+            font-size: 2.5rem;
+            color: var(--gold);
+            line-height: 1;
+        }
+        .streak-label {
+            font-size: 0.82rem; color: var(--muted);
+            margin-top: 0.25rem;
+        }
+
+        /* ── JOURNAL ────────────────────────────────────── */
+        .journal-section {
+            width: 100%; max-width: 560px;
+            margin: 1.5rem auto 0;
+            text-align: left;
+        }
+        .journal-section h3 {
+            font-family: var(--font-serif);
+            font-size: 1rem; color: var(--gold);
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+        .journal-prompt {
+            font-size: 0.88rem; color: var(--muted);
+            margin-bottom: 0.6rem;
+            padding-left: 0.75rem;
+            border-left: 2px solid rgba(212,175,55,0.3);
+        }
+        .journal-textarea {
+            width: 100%;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: white;
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            padding: 0.9rem 1rem;
+            resize: vertical;
+            min-height: 100px;
+            margin-bottom: 1rem;
+            transition: border-color 0.2s;
+        }
+        .journal-textarea:focus {
+            outline: none;
+            border-color: rgba(212,175,55,0.4);
+        }
+        .journal-textarea::placeholder { color: rgba(255,255,255,0.25); }
+
+        .btn-save-journal {
+            width: 100%;
+            padding: 0.9rem;
+            background: linear-gradient(135deg, var(--gold), #c9a227);
+            color: #0a0a1a;
+            border: none;
+            border-radius: 12px;
+            font-family: var(--font-serif);
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.25s;
+            margin-bottom: 0.5rem;
+        }
+        .btn-save-journal:hover { filter: brightness(1.1); }
+        .journal-saved-msg {
+            text-align: center; font-size: 0.85rem;
+            color: #2ed573; display: none;
+        }
+        .journal-premium-gate {
+            background: rgba(155,89,182,0.08);
+            border: 1px solid rgba(155,89,182,0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.88rem;
+            color: var(--muted);
+        }
+        .journal-premium-gate a {
+            color: var(--gold); text-decoration: none;
+        }
+
+        /* ── CROSSLINKS ─────────────────────────────────── */
+        .crosslinks {
+            display: flex; gap: 0.75rem; justify-content: center;
+            flex-wrap: wrap; margin-top: 2rem;
+        }
+        .crosslink-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50px;
+            padding: 0.65rem 1.25rem;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.25s;
+        }
+        .crosslink-btn:hover {
+            background: rgba(212,175,55,0.1);
+            border-color: rgba(212,175,55,0.3);
+            color: white;
+        }
+
+        /* ── MOBILE ─────────────────────────────────────── */
+        @media (max-width: 480px) {
+            .session-main { padding: 6rem 1rem 2rem; }
+            .emoji-btn { width: 52px; height: 52px; font-size: 1.4rem; }
         }
     </style>
+
+    <!-- DOMPurify -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"></script>
 </head>
 <body>
-    <div class="session-overlay"></div>
-    <div class="progress-bar" id="progress"></div>
+    <div class="session-overlay" aria-hidden="true"></div>
+    <div class="stars-bg" aria-hidden="true"></div>
+    <div class="progress-bar" id="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
 
-    <div id="step-1" class="ritual-step active">
-        <div class="candle"></div>
-        <p class="ritual-text">Najděte si klidné místo a vydechněte.</p>
-        <p class="ritual-subtext">Příprava posvátného prostoru...</p>
-    </div>
+    <!-- Header strip -->
+    <header class="session-header">
+        <a href="index.html">← Zpět na rituály</a>
+        <span class="session-step-counter" id="step-counter" aria-live="polite">Příprava</span>
+        <span class="session-ritual-name" id="header-ritual-name"></span>
+    </header>
 
-    <div id="step-2" class="ritual-step">
-        <p class="ritual-text">Představte si stříbrné světlo měsíce, jak naplňuje vaše srdce.</p>
-        <p class="ritual-subtext">Vizualizace očistné energie...</p>
-    </div>
+    <main class="session-main" id="session-main" aria-live="polite">
 
-    <div id="step-3" class="ritual-step">
-        <p class="ritual-text">Dnes je čas pustit vše, co vám již neslouží.</p>
-        <p class="ritual-subtext">Uvolnění a transformace...</p>
-    </div>
+        <!-- ── SVÍČKA (vždy přítomná) ───────────────────── -->
+        <div class="candle-wrap" aria-hidden="true">
+            <div class="candle-flame"></div>
+            <div class="candle-body"></div>
+        </div>
 
-    <div id="step-4" class="ritual-step">
-        <p class="ritual-text">Vaše duše je připravena na novou cestu.</p>
-        <a href="/" class="btn btn--primary" style="margin-top: 2rem;">Dokončit seanci</a>
-    </div>
+        <!-- ══ SCREEN: BEFORE CHECK-IN ════════════════════ -->
+        <div class="screen active" id="screen-checkin-before">
+            <p class="checkin-title">Jak se nyní cítíš?</p>
+            <p class="checkin-sub">Před začátkem rituálu</p>
+            <div class="emoji-row" role="group" aria-label="Výběr nálady před rituálem">
+                <button class="emoji-btn" data-mood="1" aria-label="Unavený/á">😔</button>
+                <button class="emoji-btn" data-mood="2" aria-label="Neutrální">😐</button>
+                <button class="emoji-btn" data-mood="3" aria-label="Klidný/á">😌</button>
+                <button class="emoji-btn" data-mood="4" aria-label="Dobrý/á">🌟</button>
+                <button class="emoji-btn" data-mood="5" aria-label="Skvělý/á">✨</button>
+            </div>
+        </div>
 
-    <script>
-        const steps = document.querySelectorAll('.ritual-step');
-        const progress = document.getElementById('progress');
-        let currentStep = 0;
+        <!-- ══ SCREEN: KROKY 1–6 ══════════════════════════ -->
+        <div class="screen" id="screen-step">
+            <!-- Krok 1: dechový průvodce -->
+            <div id="breath-container" style="display:none;">
+                <div class="breath-guide" id="breath-circle" aria-hidden="true">
+                    <span class="breath-counter" id="breath-counter">3</span>
+                </div>
+                <div class="breath-label" id="breath-label" aria-live="polite">Nadechněte se…</div>
+            </div>
 
-        function nextStep() {
-            if (currentStep < steps.length - 1) {
-                steps[currentStep].classList.remove('active');
-                currentStep++;
-                setTimeout(() => {
-                    steps[currentStep].classList.add('active');
-                    progress.style.width = ((currentStep + 1) / steps.length * 100) + '%';
-                }, 500);
-            }
-        }
+            <div class="step-label" id="step-label">Krok 1 / 6</div>
+            <h2 class="step-title" id="step-title">Uzemění</h2>
+            <div class="step-text" id="step-text"></div>
+            <p class="step-subtext" id="step-subtext"></p>
 
-        setInterval(nextStep, 6000); // 6 seconds per step
-        progress.style.width = (1/steps.length * 100) + '%';
-    </script>
+            <button class="btn-next" id="btn-next" aria-label="Pokračovat na další krok">
+                Jsem připraven/a ›
+            </button>
+        </div>
+
+        <!-- ══ SCREEN: AFTER CHECK-IN ══════════════════════ -->
+        <div class="screen" id="screen-checkin-after">
+            <p class="checkin-title">Jak se cítíš nyní?</p>
+            <p class="checkin-sub">Po dokončení rituálu</p>
+            <div class="emoji-row" role="group" aria-label="Výběr nálady po rituálu">
+                <button class="emoji-btn" data-mood="1" aria-label="Unavený/á">😔</button>
+                <button class="emoji-btn" data-mood="2" aria-label="Neutrální">😐</button>
+                <button class="emoji-btn" data-mood="3" aria-label="Klidný/á">😌</button>
+                <button class="emoji-btn" data-mood="4" aria-label="Dobrý/á">🌟</button>
+                <button class="emoji-btn" data-mood="5" aria-label="Skvělý/á">✨</button>
+            </div>
+        </div>
+
+        <!-- ══ SCREEN: COMPLETION ══════════════════════════ -->
+        <div class="screen" id="screen-completion">
+            <div class="completion-icon">✦</div>
+            <h2 class="completion-title">Rituál dokončen</h2>
+            <p style="color:var(--muted);font-size:0.95rem;margin-bottom:0.5rem;" id="completion-subtitle"></p>
+
+            <!-- Posun nálady -->
+            <div class="mood-shift" id="mood-shift" style="display:none;" aria-label="Posun nálady"></div>
+
+            <!-- Streak -->
+            <div class="streak-badge" id="streak-badge">
+                <div class="streak-number" id="streak-number">1</div>
+                <div class="streak-label" id="streak-label">rituál v řadě 🔥</div>
+            </div>
+
+            <!-- Journaling -->
+            <div class="journal-section" id="journal-section">
+                <h3>✍ Zápisky z rituálu</h3>
+                <div id="journal-prompts-list"></div>
+                <textarea
+                    class="journal-textarea"
+                    id="journal-notes"
+                    placeholder="Napište své myšlenky, pocity nebo odpovědi na otázky výše…"
+                    rows="4"
+                    maxlength="2000"
+                ></textarea>
+                <div id="journal-action"></div>
+                <p class="journal-saved-msg" id="journal-saved">✓ Zápisky uloženy</p>
+            </div>
+
+            <!-- Crosslinks -->
+            <div class="crosslinks">
+                <a href="../tarot.html" class="crosslink-btn">🔮 Tarotový výklad</a>
+                <a href="../lunace.html" class="crosslink-btn">🌙 Lunární fáze</a>
+                <a href="../andelska-posta.html" class="crosslink-btn">💌 Andělská Pošta</a>
+            </div>
+
+            <a href="index.html" style="display:block;margin-top:2rem;font-size:0.82rem;color:var(--muted);text-decoration:none;">← Zpět na rituály</a>
+        </div>
+
+    </main>
+
+    <script src="../js/api-config.js?v=5"></script>
+    <script src="../js/auth-client.js?v=5"></script>
+    <script src="../js/ritualy-content.js"></script>
+    <script src="../js/ritualy-session.js"></script>
 </body>
 </html>
