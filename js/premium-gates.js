@@ -22,15 +22,14 @@ window.Premium = {
             }
         }
 
-        const token = localStorage.getItem('auth_token');
-        if (!token) return false;
+        // auth_token is HttpOnly cookie — not accessible via localStorage.
+        // We rely on credentials: 'include' to send the cookie automatically.
+        // Only skip the API call if user is clearly not logged in.
+        if (window.Auth && !window.Auth.isLoggedIn()) return false;
 
         try {
             const response = await fetch(`${API_CONFIG.BASE_URL}/payment/subscription/status`, {
-                credentials: 'include',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                credentials: 'include'
             });
 
             if (!response.ok) return false;
@@ -43,8 +42,6 @@ window.Premium = {
             return isPremium && isActive && notExpired;
         } catch (error) {
             console.error('Premium check error:', error);
-            // Fallback: If network error but localStorage says premium (handled above), we are good.
-            // If we are here, it means local wasn't premium usually.
             return false;
         }
     },

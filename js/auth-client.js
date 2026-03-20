@@ -120,8 +120,8 @@
             const s = this.user.subscription_status.toLowerCase();
             if (!s.includes('premium') && !s.includes('exclusive') && s !== 'vip') return false;
             // Check expiration if available
-            if (this.user.subscription_expires_at) {
-                const expires = new Date(this.user.subscription_expires_at);
+            if (this.user.premiumExpires) {
+                const expires = new Date(this.user.premiumExpires);
                 if (expires < new Date()) return false;
             }
             return true;
@@ -132,8 +132,8 @@
             if (!this.user || !this.user.subscription_status) return false;
             const s = this.user.subscription_status.toLowerCase();
             if (!s.includes('exclusive') && s !== 'vip') return false;
-            if (this.user.subscription_expires_at) {
-                const expires = new Date(this.user.subscription_expires_at);
+            if (this.user.premiumExpires) {
+                const expires = new Date(this.user.premiumExpires);
                 if (expires < new Date()) return false;
             }
             return true;

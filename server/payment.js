@@ -2,7 +2,7 @@ import express from 'express';
 import { supabase } from './db-supabase.js';
 import { authenticateToken } from './middleware.js';
 import Stripe from 'stripe';
-import { sendEmail, sendPauseEmail, sendDiscountEmail, sendOnboardingSequence, sendUpgradeReminders, sendChurnRecoveryEmail } from './email-service.js';
+import { sendEmail, sendPauseEmail, sendDiscountEmail, sendOnboardingSequence, sendUpgradeReminders, sendChurnRecoveryEmail, sendTrialReminderEmails } from './email-service.js';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -369,6 +369,9 @@ export async function handleStripeWebhook(rawBody, sig) {
             case 'customer.subscription.deleted':
                 await handleSubscriptionDeleted(event.data.object);
                 break;
+            case 'customer.subscription.trial_will_end':
+                await handleTrialWillEnd(event.data.object);
+                break;
             default:
                 console.log(`[STRIPE] Unhandled event type: ${event.type}`);
         }
@@ -703,6 +706,47 @@ async function handleSubscriptionDeleted(subscription) {
     await supabase.from('users').update({ is_premium: false }).eq('id', sub.user_id);
 
     console.log(`[STRIPE] Subscription cancelled for user ${sub.user_id}`);
+}
+
+/**
+ * Handle customer.subscription.trial_will_end
+ * Stripe sends this 3 days before trial ends — schedule reminder emails
+ */
+async function handleTrialWillEnd(subscription) {
+    const stripeSubscriptionId = subscription.id;
+    const trialEnd = subscription.trial_end
+        ? new Date(subscription.trial_end * 1000).toISOString()
+        : null;
+
+    if (!trialEnd) {
+        console.warn('[STRIPE] trial_will_end: no trial_end date on subscription');
+        return;
+    }
+
+    const { data: sub } = await supabase
+        .from('subscriptions')
+        .select('user_id')
+        .eq('stripe_subscription_id', stripeSubscriptionId)
+        .single();
+
+    if (!sub) {
+        console.log(`[STRIPE] trial_will_end: no local record for ${stripeSubscriptionId}`);
+        return;
+    }
+
+    const { data: user } = await supabase
+        .from('users')
+        .select('email')
+        .eq('id', sub.user_id)
+        .single();
+
+    if (!user?.email) {
+        console.warn(`[STRIPE] trial_will_end: no email for user ${sub.user_id}`);
+        return;
+    }
+
+    await sendTrialReminderEmails(sub.user_id, user.email, trialEnd);
+    console.log(`[STRIPE] Trial reminder emails scheduled for user ${sub.user_id}, trial ends: ${trialEnd}`);
 }
 
 // ============================================
