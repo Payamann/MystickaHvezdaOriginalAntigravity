@@ -2113,13 +2113,11 @@ body.page-mentor .header {
 
 .btn--secondary {
 
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.08);
 
   border: 1px solid rgba(255, 255, 255, 0.1);
 
   color: var(--color-starlight);
-
-  backdrop-filter: blur(5px);
 
 }
 
@@ -2148,8 +2146,6 @@ body.page-mentor .header {
   background: rgba(255, 255, 255, 0.1);
 
   color: var(--color-starlight);
-
-  backdrop-filter: blur(10px);
 
 }
 
@@ -2201,7 +2197,7 @@ body.page-mentor .header {
 
 .card {
 
-  background: rgba(10, 17, 40, 0.4);
+  background: rgba(10, 17, 40, 0.82);
 
   /* Darker tint for readability */
 
@@ -2217,11 +2213,7 @@ body.page-mentor .header {
 
   padding: var(--space-xl);
 
-  backdrop-filter: blur(12px);
-
-  -webkit-backdrop-filter: blur(12px);
-
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.35);
 
   transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
 
