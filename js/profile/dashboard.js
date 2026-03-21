@@ -5,7 +5,7 @@
 import { escapeHtml, apiUrl, authHeaders, getReadingIcon, getReadingTitle, getZodiacSign, getZodiacIconName } from './shared.js';
 import { loadReadings, showMoreReadings, handleFilterChange, renderReadings } from './readings.js';
 import { loadFavorites } from './favorites.js';
-import { toggleAvatarPicker, selectAvatar, loadSubscriptionStatus } from './settings.js';
+import { toggleAvatarPicker, selectAvatar, loadSubscriptionStatus, initSettingsForm, saveSettings } from './settings.js';
 import { viewReading, closeReadingModal, toggleFavoriteModal, deleteReading } from './modal.js';
 
 // Re-export utility functions that were originally in dashboard but fit better here or shared
@@ -172,6 +172,27 @@ function showZodiacSignLocal(birthDate) {
     }
 }
 
+function renderJournalEntries(readings) {
+    const container = document.getElementById('journal-entries');
+    if (!container) return;
+
+    const entries = (readings || [])
+        .filter(r => r.type === 'journal')
+        .slice(0, 5);
+
+    if (entries.length === 0) {
+        container.innerHTML = '<p class="journal-empty">Zatím prázdno...</p>';
+        return;
+    }
+
+    container.innerHTML = entries.map(e => `
+        <div class="journal-entry">
+            <span class="journal-entry__date">${new Date(e.created_at).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long' })}</span>
+            <p class="journal-entry__text">${escapeHtml(e.data)}</p>
+        </div>
+    `).join('');
+}
+
 // MAIN INIT
 let listenersAttached = false;
 
@@ -252,6 +273,7 @@ async function initProfile() {
     }
 
     initTabs();
+    initSettingsForm();
 
     // Parallel load
     const [readings] = await Promise.all([
@@ -260,6 +282,7 @@ async function initProfile() {
     ]);
 
     updateStats(readings);
+    renderJournalEntries(readings);
 
     // Event Listeners
     if (!listenersAttached) {
@@ -286,6 +309,7 @@ async function initProfile() {
             }
         });
 
+        document.getElementById('save-settings-btn')?.addEventListener('click', saveSettings);
         document.getElementById('user-avatar')?.addEventListener('click', toggleAvatarPicker);
         document.getElementById('avatar-picker')?.addEventListener('click', (e) => {
             const option = e.target.closest('.avatar-option');
@@ -300,29 +324,31 @@ async function initProfile() {
                 const text = input?.value.trim();
                 if (!text) return;
 
-                // Simple implementation of journal submission
                 journalBtn.disabled = true;
                 journalBtn.innerHTML = '<span class="loading-spinner--sm"></span> Vysílám...';
 
                 try {
-                    const response = await fetch(`${apiUrl()}/user/journal`, {
+                    const response = await fetch(`${apiUrl()}/user/readings`, {
                         method: 'POST',
+                        credentials: 'include',
                         headers: authHeaders(true),
-                        body: JSON.stringify({ entry: text })
+                        body: JSON.stringify({ type: 'journal', data: text })
                     });
-                    
+
                     if (response.ok) {
                         input.value = '';
-                        window.showToast?.('Přání vysláno', 'Vaše slova se nesou ke hvězdám...', 'success');
-                        // Trigger stardust effect if exists
+                        window.Auth?.showToast?.('Přání vysláno', 'Vaše slova se nesou ke hvězdám...', 'success');
                         if (window.createStardust) window.createStardust(journalBtn);
-                        // Refresh something? Maybe load readings if they include journal
-                        loadReadings();
+                        const readings = await loadReadings();
+                        updateStats(readings);
+                        renderJournalEntries(readings);
                     } else {
-                        window.showToast?.('Chyba', 'Vesmír momentálně neodpovídá.', 'error');
+                        const err = await response.json().catch(() => ({}));
+                        window.Auth?.showToast?.('Chyba', err.error || 'Vesmír momentálně neodpovídá.', 'error');
                     }
                 } catch (e) {
                     console.error('Journal error:', e);
+                    window.Auth?.showToast?.('Chyba', 'Vesmír momentálně neodpovídá.', 'error');
                 } finally {
                     journalBtn.disabled = false;
                     journalBtn.innerHTML = '✨ Vyslat přání';

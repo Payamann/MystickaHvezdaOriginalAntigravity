@@ -666,6 +666,42 @@ export async function sendTrialReminderEmails(userId, email, trialEndDate) {
   }
 }
 
+EMAIL_TEMPLATES.horoscope_subscription_confirm = {
+  subject: '🌟 Odběr denního horoskopu potvrzen',
+  getHtml: (data) => getBaseTemplate(`
+    <h1 class="h1">Hvězdy tě vítají!</h1>
+    <p>Tvůj odběr denního horoskopu pro znamení <span class="highlight">${data.sign}</span> byl úspěšně aktivován.</p>
+    <p>Každý den ráno ti přijde tvůj osobní horoskop přímo do emailu. Začni sledovat, jak tě hvězdy vedou...</p>
+    <div class="cta-box">
+      <a href="${process.env.APP_URL}/horoskopy.html" class="btn">Otevřít dnešní horoskop →</a>
+    </div>
+    <p style="font-size:13px;opacity:0.6;text-align:center;margin-top:2rem;">
+      Pokud si nepřeješ dostávat denní horoskop, můžeš se <a href="${process.env.APP_URL}/api/subscribe/horoscope/unsubscribe?token=${data.token}" style="color:#d4af37;">kdykoli odhlásit</a>.
+    </p>
+  `, 'Odběr potvrzen — Mystická Hvězda')
+};
+
+EMAIL_TEMPLATES.daily_horoscope = {
+  subject: (data) => `🌙 Tvůj denní horoskop — ${data.sign} — ${data.date}`,
+  getHtml: (data) => getBaseTemplate(`
+    <h1 class="h1">Horoskop pro ${data.sign}</h1>
+    <p style="text-align:center;opacity:0.7;margin-top:-10px;">${data.date}</p>
+
+    <div style="background:rgba(212,175,55,0.07);border-left:3px solid #d4af37;padding:20px 25px;border-radius:0 8px 8px 0;margin:25px 0;line-height:1.8;font-size:16px;">
+      ${data.horoscope_text}
+    </div>
+
+    <div class="cta-box">
+      <a href="${process.env.APP_URL}/horoskopy.html" class="btn">Celý horoskop na webu →</a>
+    </div>
+
+    <p style="font-size:12px;opacity:0.5;text-align:center;margin-top:2rem;">
+      Dostáváš tento email protože jsi přihlášen k odběru denního horoskopu Mystické Hvězdy.<br>
+      <a href="${process.env.APP_URL}/api/subscribe/horoscope/unsubscribe?token=${data.token}" style="color:#d4af37;">Odhlásit se z odběru</a>
+    </p>
+  `, `Denní horoskop — ${data.sign}`)
+};
+
 export default {
   sendEmail,
   sendOnboardingSequence,

@@ -227,9 +227,38 @@
                         Energie planet se mění každý den. Zjistěte, jak je dnes využít pro svůj prospěch a vnitřní klid.
                     </p>
                     <div class="hero__actions" style="margin-top: 1.5rem;">
-                        <button id="subscribe-push-btn" class="btn btn--glass" style="min-width: 250px;">
+                        <button id="horoscope-subscribe-toggle" class="btn btn--glass" style="min-width: 250px;">
                             🔔 Odebírat denní horoskop
                         </button>
+                        <div id="horoscope-subscribe-form" style="display:none; margin-top:1rem; max-width:400px; margin-left:auto; margin-right:auto;">
+                            <div style="background:rgba(15,10,31,0.85);border:1px solid rgba(212,175,55,0.3);border-radius:16px;padding:1.5rem;backdrop-filter:blur(10px);">
+                                <p style="color:#d4af37;font-weight:600;margin:0 0 1rem;text-align:center;">✨ Denní horoskop emailem</p>
+                                <input id="horoscope-email-input" type="email" placeholder="váš@email.cz"
+                                    style="width:100%;box-sizing:border-box;padding:0.75rem 1rem;background:rgba(255,255,255,0.07);border:1px solid rgba(212,175,55,0.3);border-radius:8px;color:#fff;font-size:1rem;margin-bottom:0.75rem;">
+                                <select id="horoscope-sign-select"
+                                    style="width:100%;box-sizing:border-box;padding:0.75rem 1rem;background:#0f0a1f;border:1px solid rgba(212,175,55,0.3);border-radius:8px;color:#fff;font-size:1rem;margin-bottom:1rem;cursor:pointer;">
+                                    <option value="">— Vyberte své znamení —</option>
+                                    <option value="Beran">♈ Beran (21.3–20.4)</option>
+                                    <option value="Býk">♉ Býk (21.4–20.5)</option>
+                                    <option value="Blíženci">♊ Blíženci (21.5–21.6)</option>
+                                    <option value="Rak">♋ Rak (22.6–22.7)</option>
+                                    <option value="Lev">♌ Lev (23.7–22.8)</option>
+                                    <option value="Panna">♍ Panna (23.8–22.9)</option>
+                                    <option value="Váhy">♎ Váhy (23.9–22.10)</option>
+                                    <option value="Štír">♏ Štír (23.10–21.11)</option>
+                                    <option value="Střelec">♐ Střelec (22.11–21.12)</option>
+                                    <option value="Kozoroh">♑ Kozoroh (22.12–19.1)</option>
+                                    <option value="Vodnář">♒ Vodnář (20.1–18.2)</option>
+                                    <option value="Ryby">♓ Ryby (19.2–20.3)</option>
+                                </select>
+                                <button id="horoscope-subscribe-btn" class="btn btn--primary" style="width:100%;">
+                                    ✨ Přihlásit k odběru
+                                </button>
+                                <p style="font-size:0.75rem;opacity:0.5;text-align:center;margin:0.75rem 0 0;">
+                                    Každý den ráno. Zdarma. Odhlásit se lze kdykoliv.
+                                </p>
+                            </div>
+                        </div>
                     </div>
 
                 </div>
@@ -705,7 +734,86 @@
 
   <script src="js/personalization.js" defer></script>
 
-    <script src="js/push-notifications.js" defer></script>
+<script>
+(function () {
+    var SUB_KEY = 'mh_horoscope_subscribed';
+    var toggle = document.getElementById('horoscope-subscribe-toggle');
+    var form = document.getElementById('horoscope-subscribe-form');
+    var btn = document.getElementById('horoscope-subscribe-btn');
+
+    if (!toggle) return;
+
+    // If already subscribed, show different state
+    if (localStorage.getItem(SUB_KEY)) {
+        toggle.innerHTML = '✅ Odběr aktivní';
+        toggle.classList.add('btn--active');
+    }
+
+    toggle.addEventListener('click', function () {
+        if (localStorage.getItem(SUB_KEY)) {
+            // Already subscribed — do nothing / inform
+            return;
+        }
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    });
+
+    if (!btn) return;
+    btn.addEventListener('click', async function () {
+        var email = document.getElementById('horoscope-email-input').value.trim();
+        var sign = document.getElementById('horoscope-sign-select').value;
+
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            alert('Zadejte platnou emailovou adresu.');
+            return;
+        }
+        if (!sign) {
+            alert('Vyberte své znamení zvěrokruhu.');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Přihlašuji...';
+
+        try {
+            var base = window.API_CONFIG?.BASE_URL || '/api';
+            var res = await fetch(base + '/subscribe/horoscope', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, zodiac_sign: sign })
+            });
+            var data = await res.json();
+
+            if (res.ok && data.success) {
+                localStorage.setItem(SUB_KEY, sign);
+                form.style.display = 'none';
+                toggle.innerHTML = '✅ Odběr aktivní';
+                toggle.classList.add('btn--active');
+                if (window.Auth?.showToast) {
+                    window.Auth.showToast('Hotovo!', 'Potvrzení přijde na tvůj email.', 'success');
+                } else {
+                    alert('Odběr aktivován! Potvrzení přijde na tvůj email.');
+                }
+            } else {
+                alert(data.error || 'Chyba při přihlašování. Zkuste to znovu.');
+                btn.disabled = false;
+                btn.textContent = '✨ Přihlásit k odběru';
+            }
+        } catch (e) {
+            alert('Chyba připojení. Zkuste to prosím znovu.');
+            btn.disabled = false;
+            btn.textContent = '✨ Přihlásit k odběru';
+        }
+    });
+
+    // Pre-fill sign from personalization if available
+    window.addEventListener('personalization:ready', function () {
+        var sign = window.MH_PERSONALIZATION?.getSign?.();
+        var signMap = { beran:'Beran', byk:'Býk', blizenci:'Blíženci', rak:'Rak', lev:'Lev', panna:'Panna', vahy:'Váhy', stir:'Štír', strelec:'Střelec', kozoroh:'Kozoroh', vodnar:'Vodnář', ryby:'Ryby' };
+        var sel = document.getElementById('horoscope-sign-select');
+        if (sign && signMap[sign] && sel) sel.value = signMap[sign];
+    });
+})();
+</script>
 
 </body>
 
