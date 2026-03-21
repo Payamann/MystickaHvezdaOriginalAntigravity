@@ -41,6 +41,7 @@ import numerologyRoutes from './routes/numerology.js';
 import userRoutes from './routes/user.js';
 import angelPostRoutes from './routes/angel-post.js';
 import briefingRoutes from './routes/briefing.js';
+import horoscopeSubscribeRoutes from './routes/horoscope-subscribe.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -497,6 +498,9 @@ app.use('/api/user', userRoutes);
 
 // Andělská pošta — komunita
 app.use('/api/angel-post', angelPostRoutes);
+
+// Horoscope email subscriptions
+app.use('/api/subscribe/horoscope', horoscopeSubscribeRoutes);
 
 // Health Check - registered above rate limiter (see top of file)
 // Admin comment: duplicate route registrations removed
