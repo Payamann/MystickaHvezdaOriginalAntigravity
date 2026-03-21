@@ -48,6 +48,11 @@
     height: 28px;
 }
 
+.stat-icon-emoji {
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
 .stat-value {
     font-size: 1.75rem !important;
     font-weight: 700;
