@@ -1,0 +1,1 @@
+(function(){const a="mh_daily_tarot_"+new Date().toDateString(),t=1,c=parseInt(localStorage.getItem(a)||"0"),d=Math.max(0,t-c),e=document.getElementById("freemium-banner"),n=document.getElementById("freemium-count");document.addEventListener("DOMContentLoaded",()=>{const o=window.Auth;(!o||!o.isPremium())&&(n&&(n.textContent=d+" / "+t),e&&(e.style.display="block"))})})();

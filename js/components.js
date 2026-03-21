@@ -32,12 +32,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadComponent('footer-placeholder', `${basePath}components/footer.html?v=11`, basePath, false)
     ]);
 
+    // STANDALONE: Init hamburger menu + header scroll (no module dependency)
+    // Must run BEFORE dispatching components:loaded, so navInitialized flag is set
+    // before main.js's components:loaded listener calls initMobileNav().
+    // This prevents the double-toggle bug caused by both handlers attaching a click listener.
+    initStandaloneHeader();
+
     // Dispatch event to signal that UI shells are ready
     document.dispatchEvent(new Event('components:loaded'));
-
-    // STANDALONE: Init hamburger menu + header scroll (no module dependency)
-    // This ensures menu works even if main.js module fails to load
-    initStandaloneHeader();
 });
 
 async function loadComponent(elementId, path, basePath = '', highPriority = false) {

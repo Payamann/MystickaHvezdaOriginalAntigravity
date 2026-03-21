@@ -1,0 +1,1 @@
+export function safeHTML(n){if(typeof DOMPurify<"u")return DOMPurify.sanitize(n,{RETURN_DOM:!1});const t=document.createElement("div");return t.textContent=n,t.innerHTML}export function setInnerHTML(n,t){n&&(n.innerHTML=safeHTML(t))}export function setTextContent(n,t){n&&(n.textContent=t)}

@@ -1,0 +1,1 @@
+document.addEventListener("DOMContentLoaded",()=>{window.lucide&&window.lucide.createIcons();const n=(o,t)=>{fetch(t).then(e=>e.text()).then(e=>{document.getElementById(o).innerHTML=e,window.lucide&&window.lucide.createIcons()})};n("header-placeholder","components/header.html"),n("footer-placeholder","components/footer.html")});
