@@ -220,7 +220,7 @@ async function initProfile() {
 
         const badgesContainer = document.getElementById('user-badges');
         if (badgesContainer) {
-            const plan = user.subscription_plan || 'free';
+            const plan = user.subscription_status || user.subscriptions?.plan_type || 'free';
             const planLabels = {
                 'free': 'Poutník', 'poutnik': 'Poutník', 'hledac': 'Hledač',
                 'osviceny': 'Osvícený', 'vip': 'VIP'
@@ -384,8 +384,15 @@ window.toggleFavorite = (id, el) => {
     import('./modal.js').then(m => m.toggleFavorite(id, el));
 };
 
-// Initialize
+// Initialize — guard against concurrent calls (auth:changed can fire multiple times)
+let _profileInitRunning = false;
+async function safeInitProfile() {
+    if (_profileInitRunning) return;
+    _profileInitRunning = true;
+    try { await initProfile(); } finally { _profileInitRunning = false; }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    initProfile();
-    document.addEventListener('auth:changed', () => initProfile());
+    safeInitProfile();
+    document.addEventListener('auth:changed', () => safeInitProfile());
 });
