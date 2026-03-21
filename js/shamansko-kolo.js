@@ -266,9 +266,9 @@
     }
 
     function setupShare(name, totem) {
-        const pageUrl = 'https://mystickahvezda.cz/medicinsko-kolecko.html';
+        const pageUrl = 'https://mystickahvezda.cz/shamansko-kolo.html';
         const firstName = name.split(' ')[0];
-        const shareText = '🧭 ' + firstName + ' zjistil/a své místo na Medicínském Kolečku! ' +
+        const shareText = '🧭 ' + firstName + ' zjistil/a své místo na Šamanském Kole! ' +
             'Totem: ' + totem.animal + ' ' + totem.name +
             ' · ' + totem.direction + ' · ' + totem.element +
             ' · Zjisti i svůj totem ↓';
@@ -298,7 +298,7 @@
             nativeBtn.style.display = 'inline-flex';
             nativeBtn.onclick = function () {
                 navigator.share({
-                    title: 'Mé Medicínské Kolečko — ' + totem.name,
+                    title: 'Mé Šamanské Kolo — ' + totem.name,
                     text: shareText,
                     url: pageUrl
                 }).catch(function () {});

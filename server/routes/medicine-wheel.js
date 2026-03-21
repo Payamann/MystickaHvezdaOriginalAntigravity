@@ -11,7 +11,7 @@ import { supabase } from '../db-supabase.js';
 
 export const router = express.Router();
 
-const SYSTEM_PROMPT = `Jsi moudrý šaman indiánských národů Severní Ameriky, který čte Medicínské Kolečko.
+const SYSTEM_PROMPT = `Jsi moudrý šaman indiánských národů Severní Ameriky, který čte Šamanské Kolo.
 Na základě jména, data narození a totemového zvířete odhal duchovní cestu dané osoby.
 
 Odpověz POUZE ve formátu JSON (bez markdown, bez backticks), přesně takto:
@@ -95,7 +95,7 @@ Přečti duchovní cestu tohoto člověka na Medicínském Kolečku.`;
             result = JSON.parse(jsonMatch ? jsonMatch[0] : raw);
         } catch (e) {
             console.error('[MedicineWheel] JSON parse error:', e.message, 'Raw:', raw?.substring(0, 200));
-            return res.status(500).json({ success: false, error: 'Medicínské Kolečko je dočasně nedostupné. Zkuste to prosím znovu.' });
+            return res.status(500).json({ success: false, error: 'Šamanské Kolo je dočasně nedostupné. Zkuste to prosím znovu.' });
         }
 
         const required = ['strengths', 'challenges', 'message'];
