@@ -218,15 +218,22 @@ async function initProfile() {
         const emailEl = document.getElementById('user-email');
         if (emailEl) emailEl.textContent = user.email;
 
+        const plan = user.subscription_status || user.subscriptions?.plan_type || 'free';
+        const planLabels = {
+            'free': 'Poutník', 'poutnik': 'Poutník', 'hledac': 'Hledač',
+            'osviceny': 'Osvícený', 'vip': 'VIP'
+        };
+        const planClass = (plan !== 'free' && plan !== 'poutnik') ? 'badge--premium' : 'badge--secondary';
+        const planLabel = planLabels[plan.split('_')[0]] || 'Poutník';
+        // Support both layout variants: wrapper #user-badges or direct #user-plan span
         const badgesContainer = document.getElementById('user-badges');
         if (badgesContainer) {
-            const plan = user.subscription_status || user.subscriptions?.plan_type || 'free';
-            const planLabels = {
-                'free': 'Poutník', 'poutnik': 'Poutník', 'hledac': 'Hledač',
-                'osviceny': 'Osvícený', 'vip': 'VIP'
-            };
-            const planClass = (plan !== 'free' && plan !== 'poutnik') ? 'badge--premium' : 'badge--secondary';
-            badgesContainer.innerHTML = `<span id="user-plan" class="badge ${planClass}">${planLabels[plan.split('_')[0]] || 'Poutník'}</span>`;
+            badgesContainer.innerHTML = `<span id="user-plan" class="badge ${planClass}">${planLabel}</span>`;
+        }
+        const planEl = document.getElementById('user-plan');
+        if (planEl) {
+            planEl.textContent = planLabel;
+            planEl.className = `badge ${planClass}`;
         }
 
         const avatarEl = document.getElementById('user-avatar');
