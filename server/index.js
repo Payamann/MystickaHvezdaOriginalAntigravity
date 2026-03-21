@@ -43,6 +43,7 @@ import userRoutes from './routes/user.js';
 import angelPostRoutes from './routes/angel-post.js';
 import briefingRoutes from './routes/briefing.js';
 import horoscopeSubscribeRoutes from './routes/horoscope-subscribe.js';
+import pastLifeRoutes from './routes/past-life.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -502,6 +503,9 @@ app.use('/api/angel-post', angelPostRoutes);
 
 // Horoscope email subscriptions
 app.use('/api/subscribe/horoscope', horoscopeSubscribeRoutes);
+
+// Past Life — premium feature
+app.use('/api/past-life', aiLimiter, pastLifeRoutes);
 
 // Health Check - registered above rate limiter (see top of file)
 // Admin comment: duplicate route registrations removed
