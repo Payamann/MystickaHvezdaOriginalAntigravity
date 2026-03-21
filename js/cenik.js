@@ -36,10 +36,14 @@
             if (btn) { btn.textContent = 'Přesměrovávám...'; btn.disabled = true; }
             try {
                 const baseUrl = (typeof API_CONFIG !== 'undefined' ? API_CONFIG.BASE_URL : null) || '/api';
+                const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
                 const res = await fetch(`${baseUrl}/payment/create-checkout-session`, {
                     method: 'POST',
                     credentials: 'include',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+                    },
                     body: JSON.stringify({ planId })
                 });
                 const data = await res.json();

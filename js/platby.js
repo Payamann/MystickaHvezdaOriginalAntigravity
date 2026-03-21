@@ -37,14 +37,16 @@ async function handlePaymentClick(planId, btn) {
         btn.innerHTML = '<span class="loading-spinner" style="width: 16px; height: 16px; border-width: 2px; vertical-align: middle; margin-right: 8px;"></span> Přesměrování...';
 
         const token = window.Auth.token || localStorage.getItem('auth_token');
-        const baseUrl = window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api';
+        const baseUrl = window.API_CONFIG?.BASE_URL || '/api';
+        const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
 
         const response = await fetch(`${baseUrl}/payment/create-checkout-session`, {
             method: 'POST',
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${token}`,
+                ...(csrfToken && { 'X-CSRF-Token': csrfToken })
             },
             body: JSON.stringify({ planId })
         });
