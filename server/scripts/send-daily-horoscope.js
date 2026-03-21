@@ -22,6 +22,7 @@ import { Resend } from 'resend';
 import { callGemini } from '../services/gemini.js';
 import { SYSTEM_PROMPTS } from '../config/prompts.js';
 import { EMAIL_TEMPLATES } from '../email-service.js';
+import { getHoroscopeCacheKey, getCachedHoroscope, saveCachedHoroscope } from '../services/astrology.js';
 
 const supabase = createClient(
     process.env.SUPABASE_URL,
@@ -29,28 +30,23 @@ const supabase = createClient(
 );
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = process.env.FROM_EMAIL || 'noreply@mystickahvezda.cz';
-const APP_URL = process.env.APP_URL || 'https://mystickahvezda.cz';
 
-const SIGNS = ['Beran', 'Býk', 'Blíženci', 'Rak', 'Lev', 'Panna', 'Váhy', 'Štír', 'Střelec', 'Kozoroh', 'Vodnář', 'Ryby'];
-
+// Get or generate horoscope — uses the SAME cache table as the website
 async function getOrGenerateHoroscope(sign) {
-    const today = new Date().toISOString().slice(0, 10);
+    const cacheKey = getHoroscopeCacheKey(sign, 'daily');
 
-    // Try DB cache first (reuse what the web already generated today)
-    const { data: cached } = await supabase
-        .from('horoscope_cache')
-        .select('content')
-        .eq('sign', sign)
-        .eq('period', 'daily')
-        .gte('created_at', `${today}T00:00:00Z`)
-        .maybeSingle();
+    // Try the same cache the website uses
+    const cached = await getCachedHoroscope(cacheKey);
+    if (cached?.response) return cached.response;
 
-    if (cached?.content) return cached.content;
-
-    // Generate fresh via Gemini
+    // Generate fresh via Gemini and save to cache (website will reuse it)
     const systemPrompt = SYSTEM_PROMPTS?.horoscope || 'Jsi astrologický asistent.';
     const userMsg = `Napiš denní horoskop pro znamení ${sign}. Buď inspirativní, konkrétní a osobní. Délka: 3-4 věty.`;
     const text = await callGemini(systemPrompt, userMsg);
+
+    const today = new Date().toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' });
+    await saveCachedHoroscope(cacheKey, sign, 'daily', text, today);
+
     return text;
 }
 
