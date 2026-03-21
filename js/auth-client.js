@@ -250,11 +250,16 @@
             }
         },
 
-        logout() {
+        async logout() {
             // Call server logout endpoint to clear HttpOnly cookie
-            fetch(`${API_URL}/auth/logout`, {
+            const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+            await fetch(`${API_URL}/auth/logout`, {
                 method: 'POST',
-                credentials: 'include'
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+                }
             }).catch(e => console.warn('Logout API call failed:', e));
 
             // Clear local state
