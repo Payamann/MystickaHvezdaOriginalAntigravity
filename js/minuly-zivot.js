@@ -79,6 +79,8 @@
                 document.getElementById('res-mission').textContent = r.mission || '';
                 document.getElementById('res-message').textContent = r.message || '';
 
+                setupShare(name, r);
+
                 document.getElementById('pl-result').classList.add('visible');
                 window.scrollTo({ top: document.getElementById('pl-result').offsetTop - 80, behavior: 'smooth' });
 
@@ -95,6 +97,74 @@
             document.getElementById('form-section').style.display = 'block';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
+    }
+
+    function setupShare(name, r) {
+        var pageUrl = 'https://mystickahvezda.cz/minuly-zivot.html';
+        var firstName = name.split(' ')[0];
+        var shareText = '\uD83D\uDD2E ' + firstName + ' odhalil/a sv\u016Fj minul\u00FD \u017Eivot: ' +
+            (r.era ? 'V \u00E9\u0159e \u201E' + r.era + '\u201C ' : '') +
+            (r.identity ? 'byl/a ' + r.identity.substring(0, 60) + (r.identity.length > 60 ? '\u2026' : '') + '. ' : '') +
+            'Zjisti sv\u00E9 akashick\u00E9 z\u00E1znamy \u2935\uFE0F';
+
+        // Facebook
+        var fbBtn = document.getElementById('share-fb');
+        fbBtn.href = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(pageUrl) +
+            '&quote=' + encodeURIComponent(shareText);
+
+        // X (Twitter)
+        var xBtn = document.getElementById('share-x');
+        xBtn.href = 'https://x.com/intent/tweet?text=' + encodeURIComponent(shareText + '\n' + pageUrl);
+
+        // Copy
+        var copyBtn = document.getElementById('share-copy');
+        var copyLabel = document.getElementById('copy-label');
+        copyBtn.onclick = function() {
+            var toCopy = shareText + '\n' + pageUrl;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(toCopy).then(function() {
+                    showCopied(copyBtn, copyLabel);
+                }).catch(function() {
+                    fallbackCopy(toCopy, copyBtn, copyLabel);
+                });
+            } else {
+                fallbackCopy(toCopy, copyBtn, copyLabel);
+            }
+        };
+
+        // Native share (mobile)
+        var nativeBtn = document.getElementById('share-native');
+        if (navigator.share) {
+            nativeBtn.style.display = 'inline-flex';
+            nativeBtn.onclick = function() {
+                navigator.share({
+                    title: 'M\u016Fj minul\u00FD \u017Eivot \u2014 Akashick\u00E9 Z\u00E1znamy',
+                    text: shareText,
+                    url: pageUrl
+                }).catch(function() {});
+            };
+        } else {
+            nativeBtn.style.display = 'none';
+        }
+    }
+
+    function showCopied(btn, label) {
+        btn.classList.add('copied');
+        label.textContent = 'Zkop\u00EDrov\u00E1no!';
+        setTimeout(function() {
+            btn.classList.remove('copied');
+            label.textContent = 'Kop\u00EDrovat odkaz';
+        }, 2200);
+    }
+
+    function fallbackCopy(text, btn, label) {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showCopied(btn, label); } catch(e) {}
+        document.body.removeChild(ta);
     }
 
     // Auth check

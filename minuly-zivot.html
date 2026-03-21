@@ -226,6 +226,52 @@
         .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
         .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
         @keyframes blink { 0%,80%,100%{opacity:0} 40%{opacity:1} }
+
+        /* SHARE */
+        .share-bar {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+        .share-bar__label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255,255,255,0.35);
+            margin-bottom: 0.9rem;
+        }
+        .share-bar__buttons {
+            display: flex;
+            justify-content: center;
+            gap: 0.65rem;
+            flex-wrap: wrap;
+        }
+        .share-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.6rem 1.1rem;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.8);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .share-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.25);
+            color: #fff;
+        }
+        .share-btn--fb  { border-color: rgba(24,119,242,0.4); }
+        .share-btn--fb:hover  { background: rgba(24,119,242,0.15); border-color: rgba(24,119,242,0.7); }
+        .share-btn--x   { border-color: rgba(255,255,255,0.2); }
+        .share-btn--copy { border-color: rgba(212,175,55,0.3); }
+        .share-btn--copy:hover { background: rgba(212,175,55,0.1); border-color: rgba(212,175,55,0.6); color: var(--color-mystic-gold); }
+        .share-btn--native { border-color: rgba(157,78,221,0.4); }
+        .share-btn--native:hover { background: rgba(157,78,221,0.15); border-color: rgba(157,78,221,0.7); }
+        .share-btn--copy.copied { border-color: rgba(80,200,120,0.6); color: #6ee7a0; background: rgba(80,200,120,0.1); }
     </style>
 </head>
 <body>
@@ -344,6 +390,33 @@
             </div>
 
             <div class="result-message" id="res-message"></div>
+
+            <!-- SHARE -->
+            <div class="share-bar" id="share-bar">
+                <div class="share-bar__label">✨ Sdílet výsledek</div>
+                <div class="share-bar__buttons">
+                    <!-- Native share (mobile) -->
+                    <button class="share-btn share-btn--native" id="share-native" style="display:none;" type="button">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                        Sdílet
+                    </button>
+                    <!-- Facebook -->
+                    <a class="share-btn share-btn--fb" id="share-fb" href="#" target="_blank" rel="noopener">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                        Facebook
+                    </a>
+                    <!-- X (Twitter) -->
+                    <a class="share-btn share-btn--x" id="share-x" href="#" target="_blank" rel="noopener">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        X
+                    </a>
+                    <!-- Kopírovat -->
+                    <button class="share-btn share-btn--copy" id="share-copy" type="button">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        <span id="copy-label">Kopírovat odkaz</span>
+                    </button>
+                </div>
+            </div>
 
             <div style="text-align:center; margin-top:2rem;">
                 <button id="pl-reset" class="btn btn--secondary">🔄 Hledat znovu</button>
