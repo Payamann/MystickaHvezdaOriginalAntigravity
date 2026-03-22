@@ -45,6 +45,7 @@ import briefingRoutes from './routes/briefing.js';
 import horoscopeSubscribeRoutes from './routes/horoscope-subscribe.js';
 import pastLifeRoutes from './routes/past-life.js';
 import medicineWheelRoutes from './routes/medicine-wheel.js';
+import { spawn } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -577,6 +578,41 @@ if (isMain || process.env.NODE_ENV === 'production') {
             initializeEmailQueueJob();
         } catch (jobErr) {
             console.error('[JOBS] Failed to init email queue:', jobErr.message);
+        }
+
+        // ============================================
+        // SOCIAL MEDIA AGENT SCHEDULER (Railway)
+        // ============================================
+
+        const runSocialAgent = (action) => {
+            const agentPath = path.resolve(rootDir, 'social-media-agent', 'railway_runner.py');
+            console.log(`[SOCIAL] Triggering agent: ${action}`);
+            
+            const pythonPath = process.env.PYTHON_PATH || 'python';
+            const child = spawn(pythonPath, [agentPath, action]);
+
+            child.stdout.on('data', (data) => console.log(`[SOCIAL-OUT] ${data}`));
+            child.stderr.on('data', (data) => console.error(`[SOCIAL-ERR] ${data}`));
+            
+            child.on('close', (code) => {
+                console.log(`[SOCIAL] Agent process finished with code ${code}`);
+            });
+        };
+
+        // 1. Generate new content daily (08:00 UTC)
+        if (process.env.GEMINI_API_KEY) {
+            schedule.scheduleJob('0 8 * * *', () => {
+                runSocialAgent('auto');
+            });
+
+            // 2. Sync comments and auto-reply every 6 hours
+            schedule.scheduleJob('0 */6 * * *', () => {
+                runSocialAgent('sync');
+            });
+
+            console.warn('📅 Social Media Agent schedules initialized.');
+        } else {
+            console.warn('⚠️ Social Media Agent skipped (missing GEMINI_API_KEY).');
         }
 
         // Daily horoscope emails — every day at 07:00 UTC
