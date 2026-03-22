@@ -1,11 +1,9 @@
-[phases.setup]
-nixPkgs = ['nodejs_20']
+[providers]
+  node = {}
+  python = {}
 
 [phases.install]
-cmds = ['npm install']
+  cmds = ["npm install", "pip install -r social-media-agent/requirements.txt"]
 
 [phases.build]
-cmds = ['npm run build:js && npm run build:css']
-
-[start]
-cmd = 'node server/index.js'
+  cmds = ["npm run build:js", "npm run build:css"]
