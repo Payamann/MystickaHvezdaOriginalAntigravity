@@ -1,7 +1,7 @@
 providers = ["node", "python"]
 
 [phases.setup]
-  nixPkgs = ["nodePackages.npm", "python3", "python311Packages.pip"]
+  nixPkgs = ["nodePackages.npm", "python311", "python311Packages.pip"]
 
 [phases.install]
   cmds = ["npm install", "python3 -m pip install -r social-media-agent/requirements.txt"]
