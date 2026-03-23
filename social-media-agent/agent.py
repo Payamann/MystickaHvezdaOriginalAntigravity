@@ -415,7 +415,13 @@ def cmd_batch(days: int = 3, platform: str = "instagram"):
                 today_used_types.append(post_type)
 
                 # Content intent
-                content_intent = slot["content_intent"] or pick_content_intent()
+                # Soft/direct promo jen pro témata s přímým nástrojem na webu
+                raw_intent = slot["content_intent"] or pick_content_intent()
+                if raw_intent in ("soft_promo", "direct_promo"):
+                    if topic not in config.PROMOTABLE_THEMES:
+                        raw_intent = "pure_value"
+                        log.info("Intent downgraded na pure_value — téma '%s' nemá nástroj na webu", topic)
+                content_intent = raw_intent
 
                 # ── Kontext pro prompt: co už dnes bylo použito ──
                 today_context = ""

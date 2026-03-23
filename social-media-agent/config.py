@@ -53,33 +53,52 @@ BLOG_INDEX_PATH = BASE_DIR.parent / "data" / "blog-index.json"
 # === CONTENT NASTAVENÍ ===
 # Témata pro posty (rotujeme automaticky)
 CONTENT_THEMES = [
-    # Systémy
+    # Systémy — přímé nástroje na webu
     "tarot",
     "numerologie",
     "astrologie",
     "runy",
-    "andělé a znamení",
-    # Praktiky
-    "meditace a mindfulness",
-    "energie a čakry",
-    "krystaly a minerály",
-    "rituály a svíčková magie",
-    "feng shui a energie prostoru",
-    # Životní cykly
-    "lunární cykly a úplňky",
-    "sezónní energie a sabbaty",
+    "andělé a andělské karty",
+    # Web nástroje
+    "lunární rituály a fáze měsíce",
+    "natální karta a birth chart",
+    "partnerská shoda a kompatibilita",
+    "minulé životy a karma",
+    "šamanské kolo a totemová zvířata",
+    "horoskopy a předpovědi",
     "sny a jejich výklad",
-    # Vztahy a self
+    "biorytmy a osobní cykly",
+    "aura a barvy energie",
+    "afirmace a denní záměry",
+    "astromapa a místa na světě",
+    "čínský horoskop",
+    # Životní témata (pure_value, bez přímého nástroje)
     "karmické vztahy a spřízněné duše",
-    "shadow work a vnitřní léčení",
-    "minulé životy",
-    "sebepoznání a životní účel",
-    # Rozšířené
-    "šamanismus",
     "synchronicita a znamení",
-    "hojnost a manifestace",
-    "afirmace a mantry",
+    "sebepoznání a životní účel",
     "duchovní rozvoj",
+    "sezónní energie a astrologie roku",
+]
+
+# Témata s přímým nástrojem na webu — vhodná pro soft_promo a direct_promo
+PROMOTABLE_THEMES = [
+    "tarot",
+    "numerologie",
+    "astrologie",
+    "runy",
+    "andělé a andělské karty",
+    "lunární rituály a fáze měsíce",
+    "natální karta a birth chart",
+    "partnerská shoda a kompatibilita",
+    "minulé životy a karma",
+    "šamanské kolo a totemová zvířata",
+    "horoskopy a předpovědi",
+    "sny a jejich výklad",
+    "biorytmy a osobní cykly",
+    "aura a barvy energie",
+    "afirmace a denní záměry",
+    "astromapa a místa na světě",
+    "čínský horoskop",
 ]
 
 # Typy postů (kompletní seznam)

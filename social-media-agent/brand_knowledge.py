@@ -754,8 +754,10 @@ def find_relevant_tool(topic: str) -> dict | None:
         "znamení": ["horoskop_denni", "partnerska_shoda_basic", "partnerska_synastrie"],
         "numerolog": ["numerologie_kalkulacka", "numerologicky_kod"],
         "číslo": ["numerologie_kalkulacka", "numerologicky_kod"],
-        "krystal": ["kristalova_koule", "kristalova_koule_neomezena"],
+        "křišťálová koule": ["kristalova_koule", "kristalova_koule_neomezena"],
+        "kristalova koule": ["kristalova_koule", "kristalova_koule_neomezena"],
         "koule": ["kristalova_koule", "kristalova_koule_neomezena"],
+        # POZOR: "krystal" (mineral) ≠ "křišťálová koule" (nástroj) — záměrně nenamapováno
         "partner": ["partnerska_shoda_basic", "partnerska_synastrie"],
         "vztah": ["partnerska_shoda_basic", "partnerska_synastrie"],
         "kompatibil": ["partnerska_shoda_basic", "partnerska_synastrie"],
