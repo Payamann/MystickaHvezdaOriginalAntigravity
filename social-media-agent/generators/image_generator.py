@@ -1,12 +1,22 @@
 """
-Image Generator — používá Imagen 3 (přes Gemini API)
-pro generování obrázků k postům
+Image Generator — generování obrázků k postům.
+
+Pořadí priorit:
+  1. Imagen 3 (Google Cloud) — nejvyšší kvalita, vyžaduje Google Cloud API
+  2. Pollinations.ai (FLUX)  — zdarma, bez API klíče, automatický fallback
+  3. Placeholder             — záložní tmavý obrázek s hvězdami
+
+Pollinations.ai: https://pollinations.ai — free, FLUX model, žádná registrace.
 """
 from google import genai
 from pathlib import Path
 from datetime import datetime
 import sys
 import os
+import urllib.request
+import urllib.parse
+import random
+
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 import config
 from logger import get_logger
@@ -86,21 +96,134 @@ No text, no letters, no watermarks in the image.
             },
         )
 
-        # Uložení obrázku
         if result.generated_images:
             image_data = result.generated_images[0].image
-            # image_data.image_bytes obsahuje PNG bytes
             with open(output_path, 'wb') as f:
                 f.write(image_data.image_bytes)
+            log.info("Imagen 3: obrázek vygenerován → %s", output_path.name)
             return output_path
         else:
-            return _create_placeholder_image(prompt, filename, platform)
+            raise ValueError("Imagen 3 nevrátil žádný obrázek")
 
     except Exception as e:
-        error_msg = str(e)
-        # Fallback na placeholder
-        log.warning("Imagen nedostupný (%s), vytvářím placeholder...", error_msg[:80])
-        return _create_placeholder_image(prompt, filename, platform)
+        log.warning("Imagen 3 nedostupný (%s) — zkouším fallback generátory...", str(e)[:80])
+
+        # Fallback 1: Hugging Face (FLUX.1-schnell) — rychlý, spolehlivý, zdarma s API klíčem
+        if config.HF_API_TOKEN:
+            try:
+                return _generate_huggingface(enhanced_prompt, filename, output_path)
+            except Exception as hfe:
+                log.warning("Hugging Face selhal (%s) — zkouším Pollinations.ai...", str(hfe)[:80])
+
+        # Fallback 2: Pollinations.ai — zdarma bez klíče, ale může být pomalejší
+        try:
+            return _generate_pollinations(enhanced_prompt, filename, post_type, output_path)
+        except Exception as pe:
+            log.warning("Pollinations.ai selhal (%s) — vytvářím placeholder...", str(pe)[:80])
+            return _create_placeholder_image(prompt, filename, platform)
+
+
+def _generate_huggingface(
+    prompt: str,
+    filename: str,
+    output_path: Path,
+) -> Path:
+    """
+    Generuje obrázek přes Hugging Face Inference API (FLUX.1-schnell).
+    Rychlý (~5s), spolehlivý, zdarma s HF účtem.
+
+    Token: https://huggingface.co/settings/tokens (Read token)
+    Model: black-forest-labs/FLUX.1-schnell
+    """
+    import json as _json
+
+    url = "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell"
+    headers = {
+        "Authorization": f"Bearer {config.HF_API_TOKEN}",
+        "Content-Type": "application/json",
+        "User-Agent": "MystickaHvezda-Agent/2.0",
+    }
+    payload = _json.dumps({"inputs": prompt}).encode("utf-8")
+
+    log.info("Hugging Face FLUX.1-schnell: generuji obrázek...")
+    req = urllib.request.Request(url, data=payload, headers=headers, method="POST")
+
+    with urllib.request.urlopen(req, timeout=60) as resp:
+        if resp.status != 200:
+            raise ValueError(f"HF API vrátilo HTTP {resp.status}")
+        image_bytes = resp.read()
+
+    # HF vrátí JSON chybu pokud model není načtený
+    if image_bytes[:1] == b"{":
+        try:
+            err = __import__("json").loads(image_bytes)
+            if "error" in err:
+                raise ValueError(f"HF chyba: {err['error']}")
+        except (__import__("json").JSONDecodeError, KeyError):
+            pass  # není JSON, je to obrázek
+
+    if len(image_bytes) < 5_000:
+        raise ValueError(f"HF vrátil příliš malý soubor ({len(image_bytes)} bajtů)")
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(output_path, "wb") as f:
+        f.write(image_bytes)
+
+    log.info("Hugging Face: obrázek uložen → %s (%d KB)", output_path.name, len(image_bytes) // 1024)
+    return output_path
+
+
+def _generate_pollinations(
+    prompt: str,
+    filename: str,
+    post_type: str,
+    output_path: Path,
+) -> Path:
+    """
+    Generuje obrázek přes Pollinations.ai (FLUX model).
+    Zdarma, bez API klíče, žádná registrace.
+
+    Dokumentace: https://pollinations.ai/
+    """
+    # Rozměry dle formátu postu
+    size_map = {
+        "square":    (1080, 1080),
+        "story":     (1080, 1920),
+        "landscape": (1200, 630),
+        "portrait":  (1080, 1350),
+    }
+    width, height = size_map.get(post_type, (1080, 1080))
+    seed = random.randint(1, 999999)
+
+    # Pollinations.ai endpoint — prostý GET request
+    encoded_prompt = urllib.parse.quote(prompt)
+    url = (
+        f"https://image.pollinations.ai/prompt/{encoded_prompt}"
+        f"?width={width}&height={height}"
+        f"&model=flux"
+        f"&seed={seed}"
+        f"&nologo=true"
+        f"&enhance=true"
+    )
+
+    log.info("Pollinations.ai: generuji obrázek (%dx%d, seed=%d)...", width, height, seed)
+
+    # Stáhni obrázek — může trvat 30-120s (závisí na vytížení serverů)
+    req = urllib.request.Request(url, headers={"User-Agent": "MystickaHvezda-Agent/2.0"})
+    with urllib.request.urlopen(req, timeout=120) as resp:
+        if resp.status != 200:
+            raise ValueError(f"Pollinations vrátil HTTP {resp.status}")
+        image_bytes = resp.read()
+
+    if len(image_bytes) < 10_000:
+        raise ValueError(f"Pollinations vrátil příliš malý soubor ({len(image_bytes)} bajtů)")
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(output_path, "wb") as f:
+        f.write(image_bytes)
+
+    log.info("Pollinations.ai: obrázek uložen → %s (%d KB)", output_path.name, len(image_bytes) // 1024)
+    return output_path
 
 
 def _create_placeholder_image(

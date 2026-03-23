@@ -38,5 +38,12 @@ tmp/
 .claude/
 _agent/
 
+# Python
+__pycache__/
+*.pyc
+
+# Social media agent outputs (local only)
+social-media-agent/output/
+
 # Test outputs
 *.lcov

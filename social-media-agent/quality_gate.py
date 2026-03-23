@@ -49,20 +49,46 @@ except ImportError:
 
 # Fráze zakázané v brand voice
 FORBIDDEN_PHRASES = [
+    # Generické klišé
     "věřte nebo ne",
     "fascinující",
     "neuvěřitelné",
     "ohromující",
-    "dnes vám přináším",
-    "sdílíme s vámi",
+    "úžasné",
     "nechte to vstřebat",
     "tohle změní váš život",
+    # Korporátní / influencer tón
+    "dnes vám přináším",
+    "sdílíme s vámi",
     "sledujte nás pro více",
     "sledujte nás",
     "follow us",
     "link in bio",
     "like and share",
     "lajkujte a sdílejte",
+    # Duchovní klišé (povrchní, bez hloubky)
+    "věř v sebe",
+    "věř si",
+    "všechno má svůj důvod",
+    "všechno se děje z nějakého důvodu",
+    "vesmír ti pošle",
+    "vesmír se o tebe postará",
+    "vibruj výš",
+    "zvyš svou vibraci",
+    "buď pozitivní",
+    "prostě věř",
+    "nech to na vesmír",
+    "to je karma",
+    "duchovní probuzení",
+    "procitni",
+    "otevři své třetí oko",
+    "poslouchej svou intuici",  # příliš generické bez kontextu
+    # Prázdné motivační fráze
+    "jsi dost",
+    "jsi perfektní tak jak jsi",
+    "svět tě potřebuje",
+    "jsi tu z nějakého důvodu",
+    "nikdy se nevzdávej",
 ]
 
 # Fráze prozrazující AI původ (KRITICKÁ CHYBA pokud se objeví)
@@ -100,12 +126,23 @@ AI_DISCLOSURE_PHRASES = [
 
 # Anglická slova, která nemají být v českém textu
 ENGLISH_LEAKS = [
+    # Generické anglické klišé
     "amazing", "beautiful", "incredible", "journey", "vibes",
     "energy flow", "self-care", "mindset", "healing power",
     "discover", "unlock", "transform your", "manifest your",
+    # New Age anglicismy
     "spiritual awakening", "universe has", "the stars say",
+    "divine timing", "higher self", "light worker", "lightworker",
+    "twin flame", "old soul", "soul mission", "soul purpose",
+    "ascension", "ascend", "align with", "activate your",
+    "raise your vibration", "high vibe", "low vibe",
+    "inner child", "shadow self",  # ok v češtině, ne v angličtině
+    "sacred feminine", "sacred masculine",
+    "starseed", "empath",
+    # Marketing anglicismy
     "check out", "click", "swipe up", "tap the link",
     "don't miss", "limited time", "act now", "buy now",
+    "game changer", "life changing", "must have",
 ]
 
 # Frázové vzorce, které jsou příliš "reklamní" / korporátní
@@ -366,6 +403,15 @@ def _check_cta(caption: str, call_to_action: str = "") -> list[dict]:
             "message": "Chybí CTA (výzva k akci) — post by měl čtenáře k něčemu pozvat",
         })
 
+    # Engagement check: otázka v caption výrazně zvyšuje interakci
+    has_question = "?" in caption
+    if not has_question:
+        issues.append({
+            "severity": "info",
+            "check": "engagement",
+            "message": "Caption neobsahuje otázku — přidání otázky zvyšuje engagement 2-3×",
+        })
+
     return issues
 
 
@@ -544,17 +590,19 @@ def _check_image_prompt(image_prompt: str) -> list[dict]:
             "message": "Image prompt neobsahuje brand stylistické prvky (mystical, cosmic, indigo, gold...)",
         })
 
-    # Nevhodný obsah v promptu
+    # Nevhodný obsah v promptu — hledáme přesná slova, ne podřetězce
+    # (aby "textured" nebo "surface" nespustily false alarm pro "text"/"face")
     forbidden_image_terms = [
-        "text", "words", "letters", "logo", "watermark",
-        "face", "person", "portrait", "selfie",
+        "no text", "with text", "add text", "include text",
+        "words on", "letters on", "logo on", "watermark",
+        "human face", "person's face", "portrait of", "selfie",
     ]
     for term in forbidden_image_terms:
         if term in prompt_lower:
             issues.append({
                 "severity": "warning",
                 "check": "image_prompt",
-                "message": f"Image prompt obsahuje '{term}' — Imagen 3 špatně generuje text/obličeje",
+                "message": f"Image prompt obsahuje '{term}' — může způsobit problémy s generátorem",
             })
 
     return issues
@@ -566,15 +614,14 @@ def _check_image_prompt(image_prompt: str) -> list[dict]:
 
 def ai_review(post_data: dict, platform: str = "instagram") -> dict:
     """
-    Hloubková AI kontrola kvality pomocí Gemini.
+    Hloubková AI kontrola kvality pomocí Claude.
     Vrací skóre 1-10 a konkrétní návrhy na zlepšení.
 
     Returns:
         dict: {score, verdict, strengths, improvements, rewritten_caption}
     """
     try:
-        from generators.text_generator import setup_gemini, _call_gemini, _parse_json_response, BRAND_VOICE
-        from google.genai import types as genai_types
+        from generators.text_generator import setup_claude, _call_claude, _parse_json_response, BRAND_VOICE
     except ImportError as e:
         return {
             "score": -1,
@@ -584,7 +631,7 @@ def ai_review(post_data: dict, platform: str = "instagram") -> dict:
             "rewritten_caption": None,
         }
 
-    client, model_name = setup_gemini()
+    client, model_name = setup_claude()
 
     caption = post_data.get("caption", "")
     hashtags = post_data.get("hashtags", [])
@@ -650,13 +697,7 @@ Odpověz STRIKTNĚ jako JSON:
 }}"""
 
     try:
-        response = _call_gemini(
-            client, model_name, prompt,
-            config_obj=genai_types.GenerateContentConfig(
-                temperature=0.3,  # Nízká teplota pro konzistentní hodnocení
-                response_mime_type="application/json",
-            ),
-        )
+        response = _call_claude(client, model_name, prompt, temperature=0.3)
         result = _parse_json_response(response.text)
 
         if result:
@@ -733,10 +774,19 @@ def validate_post(
     warnings = [i for i in issues if i["severity"] == "warning"]
     infos = [i for i in issues if i["severity"] == "info"]
 
-    # Rule-based skóre (10 - penalizace)
+    # Rule-based skóre (10 - vážené penalizace)
     rule_score = 10.0
     rule_score -= len(errors) * 2.0    # error = -2 body
-    rule_score -= len(warnings) * 0.5  # warning = -0.5 bodu
+
+    # Varování mají různou váhu podle důležitosti
+    HIGH_IMPACT_CHECKS = {"hook", "cta", "brand_voice", "ai_disclosure"}
+    for w in warnings:
+        check = w.get("check", "")
+        if check in HIGH_IMPACT_CHECKS:
+            rule_score -= 1.0   # hook/CTA/brand voice = -1.0
+        else:
+            rule_score -= 0.3   # ostatní = -0.3
+
     rule_score -= len(infos) * 0.1     # info = -0.1 bodu
     rule_score = max(0.0, min(10.0, rule_score))
 
