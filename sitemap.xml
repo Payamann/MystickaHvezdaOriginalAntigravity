@@ -3,145 +3,145 @@
 
   <!-- Hlavní stránky -->
   <url>
-    <loc>https://mystickahvezda.cz/</loc>
+    <loc>https://www.mystickahvezda.cz/</loc>
     <lastmod>2026-03-22</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog.html</loc>
     <lastmod>2026-04-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/horoskopy.html</loc>
+    <loc>https://www.mystickahvezda.cz/horoskopy.html</loc>
     <lastmod>2026-03-22</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/lunace.html</loc>
+    <loc>https://www.mystickahvezda.cz/lunace.html</loc>
     <lastmod>2026-03-22</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/tarot.html</loc>
+    <loc>https://www.mystickahvezda.cz/tarot.html</loc>
     <lastmod>2026-03-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/slovnik.html</loc>
+    <loc>https://www.mystickahvezda.cz/slovnik.html</loc>
     <lastmod>2026-03-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/natalni-karta.html</loc>
+    <loc>https://www.mystickahvezda.cz/natalni-karta.html</loc>
     <lastmod>2026-03-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/numerologie.html</loc>
+    <loc>https://www.mystickahvezda.cz/numerologie.html</loc>
     <lastmod>2026-03-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/partnerska-shoda.html</loc>
+    <loc>https://www.mystickahvezda.cz/partnerska-shoda.html</loc>
     <lastmod>2026-03-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/kalkulacka-cisla-osudu.html</loc>
+    <loc>https://www.mystickahvezda.cz/kalkulacka-cisla-osudu.html</loc>
     <lastmod>2026-03-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/jmena/</loc>
+    <loc>https://www.mystickahvezda.cz/jmena/</loc>
     <lastmod>2026-03-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/snar.html</loc>
+    <loc>https://www.mystickahvezda.cz/snar.html</loc>
     <lastmod>2026-03-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/runy.html</loc>
+    <loc>https://www.mystickahvezda.cz/runy.html</loc>
     <lastmod>2026-03-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/kristalova-koule.html</loc>
+    <loc>https://www.mystickahvezda.cz/kristalova-koule.html</loc>
     <lastmod>2026-03-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/biorytmy.html</loc>
+    <loc>https://www.mystickahvezda.cz/biorytmy.html</loc>
     <lastmod>2026-03-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/andelske-karty.html</loc>
+    <loc>https://www.mystickahvezda.cz/andelske-karty.html</loc>
     <lastmod>2026-03-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/astro-mapa.html</loc>
+    <loc>https://www.mystickahvezda.cz/astro-mapa.html</loc>
     <lastmod>2026-03-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/mentor.html</loc>
+    <loc>https://www.mystickahvezda.cz/mentor.html</loc>
     <lastmod>2026-03-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/faq.html</loc>
+    <loc>https://www.mystickahvezda.cz/faq.html</loc>
     <lastmod>2026-03-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/o-nas.html</loc>
+    <loc>https://www.mystickahvezda.cz/o-nas.html</loc>
     <lastmod>2026-03-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/cenik.html</loc>
+    <loc>https://www.mystickahvezda.cz/cenik.html</loc>
     <lastmod>2026-03-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/kontakt.html</loc>
+    <loc>https://www.mystickahvezda.cz/kontakt.html</loc>
     <lastmod>2026-03-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/ochrana-soukromi.html</loc>
+    <loc>https://www.mystickahvezda.cz/ochrana-soukromi.html</loc>
     <lastmod>2026-03-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/podminky.html</loc>
+    <loc>https://www.mystickahvezda.cz/podminky.html</loc>
     <lastmod>2026-03-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
@@ -149,319 +149,319 @@
 
   <!-- Blog články (53 článků, seřazeno od nejnovějšího) -->
   <url>
-    <loc>https://mystickahvezda.cz/blog/pentagramy-tarot-penize-kariera.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/pentagramy-tarot-penize-kariera.html</loc>
     <lastmod>2026-04-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/hulkove-karty-tarot-vyznam.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/hulkove-karty-tarot-vyznam.html</loc>
     <lastmod>2026-04-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/numerologie-jmena-krizni-jmeno.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/numerologie-jmena-krizni-jmeno.html</loc>
     <lastmod>2026-04-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/cakrove-leceni-navod.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/cakrove-leceni-navod.html</loc>
     <lastmod>2026-03-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/novy-mesic-ritual-zacatecnici.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/novy-mesic-ritual-zacatecnici.html</loc>
     <lastmod>2026-03-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/karta-soudce-tarot-vyznam.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/karta-soudce-tarot-vyznam.html</loc>
     <lastmod>2026-03-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/numerologie-kompatibilita-partneru.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/numerologie-kompatibilita-partneru.html</loc>
     <lastmod>2026-03-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/mecove-karty-tarot-vyznam.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/mecove-karty-tarot-vyznam.html</loc>
     <lastmod>2026-03-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/keltsky-kriz-tarot-rozlozeni.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/keltsky-kriz-tarot-rozlozeni.html</loc>
     <lastmod>2026-03-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/shamansko-kolo-totemove-zvire.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/shamansko-kolo-totemove-zvire.html</loc>
     <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/retrograde-venus-2026-co-cekat-v-lasce.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/retrograde-venus-2026-co-cekat-v-lasce.html</loc>
     <lastmod>2026-03-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/uplnek-v-panne-ritual-a-vyklad-pro-kazde-znameni.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/uplnek-v-panne-ritual-a-vyklad-pro-kazde-znameni.html</loc>
     <lastmod>2026-03-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/uplnek-v-kozorohovi-ritual-a-vyznam.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/uplnek-v-kozorohovi-ritual-a-vyznam.html</loc>
     <lastmod>2026-03-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/merkur-v-retrograde-co-to-znamena-pro-vase-znameni.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/merkur-v-retrograde-co-to-znamena-pro-vase-znameni.html</loc>
     <lastmod>2026-02-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/proc-vam-to-v-lasce-nevyhcazi.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/proc-vam-to-v-lasce-nevyhcazi.html</loc>
     <lastmod>2026-02-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/zivotni-cislo-odhaleni-kodu-vasi-duse.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/zivotni-cislo-odhaleni-kodu-vasi-duse.html</loc>
     <lastmod>2026-02-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/rozpoznejte-svou-astrologickou-signaturu.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/rozpoznejte-svou-astrologickou-signaturu.html</loc>
     <lastmod>2026-02-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/tajemstvi-12-astrologickych-domu.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/tajemstvi-12-astrologickych-domu.html</loc>
     <lastmod>2026-02-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/stir-muz-a-panna-zena-kompatibilita.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/stir-muz-a-panna-zena-kompatibilita.html</loc>
     <lastmod>2026-02-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/runy-severska-magie-v-modernim-svete.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/runy-severska-magie-v-modernim-svete.html</loc>
     <lastmod>2026-02-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/co-je-synastrie-jak-funguje-partnerska-astrologie.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/co-je-synastrie-jak-funguje-partnerska-astrologie.html</loc>
     <lastmod>2026-02-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/andelska-cisla-1111.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/andelska-cisla-1111.html</loc>
     <lastmod>2026-02-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/5-znaku-ze-potkavate-svou-spriznenou-dusi.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/5-znaku-ze-potkavate-svou-spriznenou-dusi.html</loc>
     <lastmod>2026-02-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/jak-zjistit-sve-logo-a-sestici-v-numerologii.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/jak-zjistit-sve-logo-a-sestici-v-numerologii.html</loc>
     <lastmod>2026-02-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/iluze-spriznene-duse-karmicke-vztahy.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/iluze-spriznene-duse-karmicke-vztahy.html</loc>
     <lastmod>2026-02-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/co-znamenaji-pohary-v-tarotu.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/co-znamenaji-pohary-v-tarotu.html</loc>
     <lastmod>2026-02-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/psychologie-snu-stici-stromy.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/psychologie-snu-stici-stromy.html</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/ascendent-vs-slunecni-znameni-jaky-je-rozdil.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/ascendent-vs-slunecni-znameni-jaky-je-rozdil.html</loc>
     <lastmod>2026-02-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/zaklady-sedmi-caker-anatomie.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/zaklady-sedmi-caker-anatomie.html</loc>
     <lastmod>2026-02-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/tajemstvi-kristalove-koule-scrying.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/tajemstvi-kristalove-koule-scrying.html</loc>
     <lastmod>2026-01-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/tajemstvi-snilku-jak-rozklivovat-nocni-vzazy.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/tajemstvi-snilku-jak-rozklivovat-nocni-vzazy.html</loc>
     <lastmod>2026-01-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/znameni-zverokruhu-a-penize.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/znameni-zverokruhu-a-penize.html</loc>
     <lastmod>2026-01-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/skryty-kod-biorytmu-energeticke-cykly.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/skryty-kod-biorytmu-energeticke-cykly.html</loc>
     <lastmod>2026-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/biorytmy-proc-se-vam-nedari.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/biorytmy-proc-se-vam-nedari.html</loc>
     <lastmod>2026-01-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/vidite-vsude-1111-poselstvi-andelu.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/vidite-vsude-1111-poselstvi-andelu.html</loc>
     <lastmod>2026-01-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/lekce-padajici-veze-tarot.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/lekce-padajici-veze-tarot.html</loc>
     <lastmod>2025-12-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/pruvodce-energie-ochrana.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/pruvodce-energie-ochrana.html</loc>
     <lastmod>2025-12-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/zatmeni-slunce-a-mesice-2026.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/zatmeni-slunce-a-mesice-2026.html</loc>
     <lastmod>2025-12-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/panna-a-beran-partnerska-shoda.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/panna-a-beran-partnerska-shoda.html</loc>
     <lastmod>2025-12-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/retrogradni-merkur-pruvodce.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/retrogradni-merkur-pruvodce.html</loc>
     <lastmod>2025-12-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/zakon-pritazlivosti-chyby.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/zakon-pritazlivosti-chyby.html</loc>
     <lastmod>2025-12-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/vyklad-tarotu-pro-zacatecniky.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/vyklad-tarotu-pro-zacatecniky.html</loc>
     <lastmod>2025-12-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/saturuv-navrat-29-rok-zivota.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/saturuv-navrat-29-rok-zivota.html</loc>
     <lastmod>2025-11-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/karta-hvezda-tarot-vyznam.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/karta-hvezda-tarot-vyznam.html</loc>
     <lastmod>2025-11-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/uzel-osudu-severni-jizni-uzel.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/uzel-osudu-severni-jizni-uzel.html</loc>
     <lastmod>2025-10-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/osobni-rok-numerologie-2026.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/osobni-rok-numerologie-2026.html</loc>
     <lastmod>2025-10-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/karta-mesic-tarot-vyznam.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/karta-mesic-tarot-vyznam.html</loc>
     <lastmod>2025-09-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/attachment-styly-vzorce-ve-vztazich.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/attachment-styly-vzorce-ve-vztazich.html</loc>
     <lastmod>2025-09-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/letani-ve-snu-vyznam.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/letani-ve-snu-vyznam.html</loc>
     <lastmod>2025-08-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/feng-shui-doma-energie-penizy-laska.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/feng-shui-doma-energie-penizy-laska.html</loc>
     <lastmod>2025-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/karta-slunce-tarot-vyznam.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/karta-slunce-tarot-vyznam.html</loc>
     <lastmod>2025-07-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/mistrovska-cisla-numerologie.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/mistrovska-cisla-numerologie.html</loc>
     <lastmod>2025-07-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mystickahvezda.cz/blog/jak-se-pripravit-na-uplnek.html</loc>
+    <loc>https://www.mystickahvezda.cz/blog/jak-se-pripravit-na-uplnek.html</loc>
     <lastmod>2025-07-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
