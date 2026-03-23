@@ -1105,13 +1105,13 @@ HASHTAGS ({min(max_hashtags, 20)} tagů, DYNAMICKÁ strategie dle tématu):
 
 IMAGE PROMPT (anglicky, pro Gemini Imagen):
 STYL POVINNÝ — kopíruj přesně vizuální identitu značky:
-  Premium 3D CGI render, icon-art style with GLASSMORPHISM elements. PORTRAIT FORMAT 4:5 (tall vertical, 1080x1350px).
-  Central mystical object glowing with violet/indigo energy, surrounded by ornate gold
-  metallic filigree or celtic engravings. Include frosted glass panels or translucent glass-like
-  surfaces with subtle blur, refraction and soft light passing through — glassmorphism aesthetic.
-  Deep cosmic space background: dark navy (#050510) starfield with purple nebula wisps.
-  Dramatic inner glow from the object (purple, blue, white), rich gold (#ffd700) accents.
-  High-production quality like a premium mobile game icon.
+  Premium 3D CGI render, icon-art style. PORTRAIT FORMAT 4:5 (tall vertical, 1080x1350px).
+  ONE central floating mystical 3D object, photorealistic render with subsurface scattering and dramatic lighting.
+  The object glows from within — violet/indigo/gold light radiating outward.
+  Background: deep dark cosmic space (#050510), soft purple nebula wisps, scattered stars. NO cards, NO frames, NO borders, NO tarot card layouts.
+  Optional: subtle frosted glass surface BEHIND or BENEATH the object (not framing it) — like light diffracting through glass, not a card or panel shape.
+  Gold metallic details ON the object itself (engravings, runes, accents) — not as a surrounding border.
+  Mood: mysterious, premium, otherworldly. Like a luxury app icon or high-end game asset, NOT a trading card.
   NO text, NO people, NO flat design, NO watercolor.
 
 BORDER PRO OŘEZ (POVINNÉ na konci každého promptu):
@@ -1123,21 +1123,26 @@ BORDER PRO OŘEZ (POVINNÉ na konci každého promptu):
   plain empty border."
 
 PŘÍKLADY správného stylu (rozviň dle tématu, VŽDY přidej border instrukci na konec):
-  - tarot: "Seven ornate tarot cards in Celtic cross spread, glowing golden backs with
-    mystical symbols, floating above cosmic space, purple nebula, gold filigree borders,
-    violet energy, premium 3D CGI render, portrait 4:5"
-  - měsíc/lunace: "Full silver moon surrounded by golden crescent moons orbiting it,
-    purple violet energy rings, deep space starfield, ornate gold metallic elements,
-    3D CGI icon style, portrait 4:5"
-  - numerologie: "Glowing golden number inside translucent cosmic sphere, ornate gold
-    circular frame with astrological markings, deep purple galaxy background, inner violet
-    light, 3D premium render, portrait 4:5"
-  - křišťál/energie: "Radiant crystal ball on golden ornate stand, swirling purple and
-    blue galaxy energy inside, dark cosmic background, gold metallic details, dramatic
-    inner glow, 3D CGI quality, portrait 4:5"
-  - vztahy/dualita: "Two cosmic spheres intertwined — one pulsing with crimson fire energy,
-    the other radiating soft silver-white light — bound by ornate golden chains with celtic
-    engravings, swirling purple nebula energy, deep navy starfield, portrait 4:5"
+  - tarot: "A single glowing 3D tarot card floating in deep cosmic space, face-up showing
+    a mystical golden eye symbol with violet energy radiating from it, gold engravings carved
+    directly on the card surface, deep navy starfield background with purple nebula wisps,
+    dramatic inner glow, premium 3D CGI render, NO frames NO borders around the scene, portrait 4:5"
+  - měsíc/lunace: "A single luminous 3D full moon floating in deep cosmic space, pearl-white
+    surface with gold crescent rune engravings carved into it, violet and silver energy
+    emanating outward, dark navy starfield background, soft purple nebula, dramatic subsurface
+    glow, premium 3D CGI icon-art style, NO frames NO borders, portrait 4:5"
+  - numerologie: "A single glowing 3D number made of translucent violet crystal floating in
+    deep space, gold celtic symbols engraved on its surface, inner violet-white light radiating
+    outward, dark navy cosmic background with faint nebula, stardust particles, premium 3D CGI
+    render, NO frames NO circular borders, portrait 4:5"
+  - křišťál/energie: "A single radiant 3D crystal ball floating in deep cosmic space, swirling
+    purple and blue galaxy energy visible inside the sphere, gold rune engravings on the glass
+    surface, dramatic inner glow illuminating surrounding stardust, dark navy background,
+    premium 3D CGI quality, NO stands NO frames NO borders, portrait 4:5"
+  - vztahy/dualita: "Two cosmic 3D spheres floating in deep space — one pulsing with crimson
+    fire energy, the other radiating soft silver-white light — gold celtic engravings carved
+    on each sphere's surface, swirling purple nebula between them, deep navy starfield,
+    NO frames NO borders around the scene, premium 3D CGI render, portrait 4:5"
 
 {var_instruction}"""
 
