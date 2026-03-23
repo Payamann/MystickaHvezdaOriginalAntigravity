@@ -32,6 +32,56 @@ a hook efektivita se nesleduje. Paměť je mozek agenta.
 
 ---
 
+## 📐 FORMÁT VÝSTUPU — povinný při generování postů v chatu
+
+Kdykoli generuješ 3 denní posty, VŽDY dodržuj tuto strukturu:
+
+### Slot struktura (POVINNÁ)
+```
+🌅 RÁNO 08:00   → typ: quote / daily_energy / tip      | intent: pure_value  | krátký, lehký
+☀️ POLEDNE 12:00 → typ: educational / story / blog_promo | intent: soft_promo  | hloubkový
+🌙 VEČER 19:00   → typ: question / challenge             | intent: pure_value  | engagement
+```
+
+### Pravidla rozmanitosti témat (POVINNÁ)
+- ❌ NIKDY 3 posty o stejném tématu (např. 3× Beran)
+- ✅ Každý post musí pokrývat JINÝ tematický okruh:
+  - Např.: lunární cyklus + aktuální astro sezóna + synchronicita/numerologie/tarot/krystaly…
+- ✅ Min. 1 ze 3 postů = `soft_promo` s přirozeným odkazem na mystickahvezda.cz
+
+### Formát každého postu (POVINNÝ)
+```markdown
+### 🌅 RÁNO 08:00 — typ | hook_formula | intent | CTA: typ CTA
+
+[caption text — inline, ne code block]
+
+`#mystickaHvezda #dalšíHashtagy`
+
+**🖼️ Image prompt:**
+\```
+[English image prompt včetně IMPORTANT FORMAT + IMPORTANT FRAMING na konci]
+\```
+```
+
+### Image prompt — POVINNÉ součásti každého promptu
+Každý image prompt MUSÍ končit:
+```
+IMPORTANT FORMAT: Tall portrait orientation, aspect ratio 4:5 (height significantly greater than width), optimized for Instagram feed post at 1080x1350px.
+
+IMPORTANT FRAMING: The entire illustration must be surrounded by a completely plain, empty, solid dark navy (#050510) border — approximately 20% margin on all four sides. The border is totally empty: no ornaments, no filigree, no stars, no decorations whatsoever. Just flat solid dark color. The illustration floats centered inside this plain empty border. The border bottom-right corner must remain completely blank.
+```
+
+### Souhrnná tabulka (POVINNÁ na konci)
+```
+| Slot | Téma | Typ | Hook | CTA | Intent |
+|------|------|-----|------|-----|--------|
+| 🌅 08:00 | ... | ... | ... | ... | pure_value |
+| ☀️ 12:00 | ... | ... | ... | ... | soft_promo |
+| 🌙 19:00 | ... | ... | ... | ... | pure_value |
+```
+
+---
+
 ## Social Media Agent — rychlý přehled
 
 - **Umístění:** `social-media-agent/`

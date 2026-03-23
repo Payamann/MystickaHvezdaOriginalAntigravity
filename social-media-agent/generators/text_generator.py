@@ -116,6 +116,40 @@ POVOLENÉ STRATEGIE (použij jednu nebo kombinaci):
 
 PREFEROVANÝ STYL: Lomené tvary (vstoupil/a) jsou na českém IG standardní a přirozené.
 Infinitivní konstrukce použij tam, kde lomený tvar zní neohrabaně.
+
+CTA VARIACE — POVINNÉ PRAVIDLO:
+NESMÍŠ opakovat stejný typ CTA ve více než 2 postech ze série.
+Typy CTA (střídej):
+  1. Otázka do komentáře ("Co ty? Napiš...")
+  2. Save trigger ("Ulož si tohle na...")
+  3. Share trigger ("Pošli to někomu, kdo...")
+  4. Binární volba ("A nebo B? Napiš do komentáře")
+  5. Screenshot/story ("Sdílej do story, pokud tě to trefilo")
+  6. Žádné CTA — nech post viset v tichu, bez výzvy. Občas je síla v tom, že se neptáš.
+  7. Web odkaz ("Vyzkoušej na mystickahvezda.cz/...")
+Pokud generuješ více postů na den, KAŽDÝ musí mít JINÝ typ CTA.
+
+HOOK REGISTRY — STŘÍDEJ TÓNY:
+Hooky nesmí být všechny ve stejném registru. V sérii 3 denních postů MUSÍ být:
+  - Minimálně 1 poetický/tichý ("Rovnodennost otevřela dveře, které necítíš.")
+  - Minimálně 1 ostrý/překvapivý/vtipný ("Merkur Rx za 11 dní. A ne, nemůžeš za to, že ti nefunguje Wi-Fi.")
+  - Minimálně 1 provokativní/přímý ("Tohle o Beranovi nikdo neříká.")
+NIKDY 3 posty se stejným emocionálním nábitem za den — monotónnost zabíjí engagement.
+
+MIKROPŘÍBĚHY — POVINNÉ v min. 1 ze 3 denních postů:
+Mikropříběh = konkrétní scéna (1-3 věty) z reálného života. Ne abstrakce.
+  ✓ "Znáš ten moment, kdy stojíš v kuchyni v 6 ráno a najednou ti dojde, proč ses včera pohádal/a?"
+  ✓ "Klientka minulý týden řekla: 'Věděla jsem to celou dobu. Jen jsem si to nechtěla přiznat.'"
+  ✓ "Pondělí ráno. Budík. První myšlenka: tohle nemůžu zvládnout. Druhá: ale co když ano?"
+  ✗ "Každý z nás někdy cítí tíhu" (obecná abstrakce, ne příběh)
+  ✗ "Energie dne přináší výzvy" (vágní, žádná scéna)
+Mikropříběh vytváří emocionální kotvu — čtenář se do scény přenese.
+
+ASTROLOGIE = FUNKČNÍ, NE DEKORATIVNÍ:
+Když zmiňuješ astro kontext (Měsíc v Beranovi, Slunce v Býku...), VŽDY odpověz na:
+"A co to znamená pro můj dnešek?" Nestačí říct že něco "je" — musíš říct CO S TÍM.
+  ✗ "Měsíc je v Býku" (dekorativní — a co?)
+  ✓ "Měsíc v Býku říká: zpomal s rozhodováním, ale věnuj se tomu, co ti dává smyslový požitek" (funkční)
 """
 
 
@@ -1173,6 +1207,22 @@ PŘÍKLADY správného stylu (rozviň dle tématu, VŽDY přidej border instrukc
 
     # Vždy přidej content_intent do výsledku (pro agent.py a post_saver)
     result["content_intent"] = content_intent
+
+    # ── Border framing — povinný suffix pro ořez vodoznaku ──
+    # Pokud LLM border instrukci vynechal, appendneme ji automaticky
+    BORDER_FRAMING = (
+        "\n\nIMPORTANT FORMAT: Tall portrait orientation, aspect ratio 4:5 "
+        "(height significantly greater than width), optimized for Instagram feed post at 1080x1350px.\n\n"
+        "IMPORTANT FRAMING: The entire illustration must be surrounded by a completely plain, "
+        "empty, solid dark navy (#050510) border — approximately 20% margin on all four sides. "
+        "The border is totally empty: no ornaments, no filigree, no stars, no decorations "
+        "whatsoever. Just flat solid dark color. The illustration floats centered inside this "
+        "plain empty border. The border bottom-right corner must remain completely blank."
+    )
+    img = result.get("image_prompt", "")
+    if img and "IMPORTANT FRAMING" not in img:
+        result["image_prompt"] = img + BORDER_FRAMING
+
     return result
 
 

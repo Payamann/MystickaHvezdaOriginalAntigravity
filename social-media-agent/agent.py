@@ -256,32 +256,37 @@ def _save_calendar_markdown(calendar: list, platform: str) -> "Path":
             score = post.get("qg_score", 0)
             score_emoji = "✅" if score >= 7.5 else "⚠️" if score >= 6.0 else "🔴"
             intent = post["post_data"].get("content_intent", "pure_value")
-            intent_cs = {"pure_value": "vzdělávací", "soft_promo": "soft promo", "direct_promo": "direct promo"}.get(intent, intent)
+            intent_cs = {"pure_value": "pure_value", "soft_promo": "soft_promo", "direct_promo": "direct_promo"}.get(intent, intent)
+            hook = post["post_data"].get("hook_formula", "—")
+            cta = post["post_data"].get("call_to_action", "")
+            # Zkrať CTA na max 40 znaků pro header
+            cta_short = (cta[:37] + "…") if len(cta) > 40 else cta
 
-            lines.append(f"### {slot['label']} {slot['time']}  |  `{post['post_type']}`  |  {post['topic']}")
-            lines.append(f"> {score_emoji} Kvalita: **{score:.1f}/10**  |  Záměr: {intent_cs}")
+            lines.append(f"### {slot['label']} {slot['time']} — `{post['post_type']}` | {hook} | {intent_cs}")
+            lines.append(f"> {score_emoji} Kvalita: **{score:.1f}/10**  ·  Téma: {post['topic']}")
+            if cta_short:
+                lines.append(f"> 💬 CTA: *{cta_short}*")
             lines.append("")
 
-            # Caption
+            # Caption — inline, ne code block
             caption = post["post_data"].get("caption", "")
             hashtags = post["post_data"].get("hashtags", [])
             hashtag_str = ("\n\n" + "  ".join(hashtags)) if hashtags else ""
-            lines.append("**📝 Caption (zkopíruj celý blok včetně hashtagů):**")
-            lines.append("```")
+            lines.append("**📝 Caption:**")
+            lines.append("")
             lines.append(caption + hashtag_str)
-            lines.append("```")
             lines.append("")
 
             # Image prompt
             image_prompt = post["post_data"].get("image_prompt", "")
             if image_prompt:
-                lines.append("**🎨 Image Prompt:**")
+                lines.append("**🖼️ Image Prompt:**")
                 lines.append("```")
                 lines.append(image_prompt)
                 lines.append("```")
                 lines.append("")
-                lines.append("> Brand barvy: Deep purple #4a0080 · Zlatá #c9a227 · Midnight blue #0a0a2e")
-                lines.append("> Styl: Mystical, ethereal, spiritual — žádný text, žádné tváře")
+                lines.append("> 🎨 Styl: Premium 3D CGI render · ONE central floating object · NO frames NO borders")
+                lines.append("> 📐 Formát: Portrait 4:5 · 1080×1350px · Plain dark navy border pro ořez vodoznaku")
                 lines.append("")
 
             lines.append("---")
