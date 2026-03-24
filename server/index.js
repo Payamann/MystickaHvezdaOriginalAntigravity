@@ -260,7 +260,11 @@ app.use(helmet({
 if (process.env.NODE_ENV === 'production') {
     app.use((req, res, next) => {
         if (req.headers['x-forwarded-proto'] !== 'https') {
-            return res.redirect(301, `https://${req.hostname}${req.url}`);
+            return res.redirect(301, `https://www.${req.hostname.replace(/^www\./, '')}${req.url}`);
+        }
+        // Redirect non-www to www
+        if (!req.hostname.startsWith('www.')) {
+            return res.redirect(301, `https://www.${req.hostname}${req.url}`);
         }
         next();
     });
