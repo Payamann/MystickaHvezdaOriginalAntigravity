@@ -87,10 +87,15 @@
         '#messages-container',
     ];
 
+    // Selectors that require explicit data-loaded flag before showing share button
+    const requireLoadedFlag = new Set(['#horoscope-detail-section']);
+
     function checkAll() {
         selectors.forEach(sel => {
             const el = document.querySelector(sel);
-            if (el && el.children.length > 0 && !el.querySelector('.share-result-btn')) {
+            if (!el || el.querySelector('.share-result-btn')) return;
+            if (requireLoadedFlag.has(sel) && !el.dataset.loaded) return;
+            if (el.children.length > 0) {
                 const pageTitle = document.title.replace(' | Mystická Hvězda', '');
                 addShareButton(el, `Můj výsledek: ${pageTitle} | Mystická Hvězda`);
             }

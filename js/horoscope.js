@@ -266,6 +266,9 @@ function initHoroscope() {
                 }
             }
 
+            // Mark section as loaded so share button appears only after actual horoscope
+            if (detailSection) detailSection.dataset.loaded = 'true';
+
             // Save reading and add favorite button (skip if already saved for same sign/period)
             const saveKey = `horoscope_saved_${signName}_${currentPeriod}_${new Date().toISOString().split('T')[0]}`;
             if (window.Auth && window.Auth.saveReading && !sessionStorage.getItem(saveKey)) {
