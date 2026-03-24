@@ -111,6 +111,9 @@ app.use(cors({
         // Allow requests with no origin (server-to-server, mobile apps, same-origin)
         if (!origin) return callback(null, true);
         if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+        // Allow any localhost port in development (Claude Preview, dev tools, etc.)
+        const localhostPattern = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+        if (process.env.NODE_ENV !== 'production' && localhostPattern.test(origin)) return callback(null, true);
         console.warn(`[CORS] Blocked origin: ${origin}. Allowed: ${ALLOWED_ORIGINS.join(', ')}`);
         callback(new Error('CORS not allowed'));
     },
