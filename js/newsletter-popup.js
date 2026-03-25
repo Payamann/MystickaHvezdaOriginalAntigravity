@@ -41,9 +41,16 @@
 
         try {
             const BASE = window.API_CONFIG?.BASE_URL || '/api';
+
+            // Fetch CSRF token first (required for all POST requests)
+            const csrfRes = await fetch(`${BASE}/csrf-token`, { credentials: 'include' });
+            const csrfData = await csrfRes.json();
+            const csrfToken = csrfData.csrfToken || csrfData.token || '';
+
             const res = await fetch(`${BASE}/newsletter/subscribe`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
                 body: JSON.stringify({ email, source: 'web_popup' })
             });
             const data = await res.json();
