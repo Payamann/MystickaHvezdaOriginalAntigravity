@@ -124,17 +124,19 @@ router.post('/', optionalPremiumCheck, async (req, res) => {
             }
         }
 
-        if (period === 'weekly') {
-            periodPrompt = `Jsi inspirativní astrologický průvodce.\nGeneruj týdenní horoskop ve formátu JSON.\nOdpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).\nStruktura:\n{\n  "prediction": "Text horoskopu (5-6 vět). Zaměř se na hlavní energii, lásku, kariéru a jednu výzvu.",\n  "affirmation": "Osobní týdenní mantra — silná, poetická, specifická pro toto znamení, jeho element a vládnoucí planetu. 15–25 slov, první osoba, přítomný čas. Nesmí být generická ani klišovitá. Příklad tónu: 'Má odvaha tvoří mosty tam, kde ostatní vidí propasti.'",\n  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]\n}\nText piš ${langName}, poeticky a povzbudivě.${contextInstruction}`;
-        } else if (period === 'monthly') {
-            periodPrompt = `Jsi moudrý astrologický průvodce.\nGeneruj měsíční horoskop ve formátu JSON.\nOdpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).\nStruktura:\n{\n  "prediction": "Text horoskopu (7-8 vět). Zahrň úvod, lásku, kariéru, zdraví a klíčová data.",\n  "affirmation": "Hluboká měsíční mantra — specifická pro toto znamení a jeho transformační energii v tomto měsíci. 20–30 slov, první osoba, přítomný čas. Poetická, osobní, bez klišé. Příklad tónu: 'Jsem průkopníkem ticha — v hloubce svého bytí nacházím sílu, která přetváří svět.'",\n  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]\n}\nText piš ${langName}, inspirativně a hluboce.${contextInstruction}`;
-        } else {
-            periodPrompt = `Jsi laskavý astrologický průvodce.\nGeneruj denní horoskop ve formátu JSON.\nOdpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).\nStruktura:\n{\n  "prediction": "Text horoskopu (3-4 věty). Hlavní energie dne a jedna konkrétní rada.",\n  "affirmation": "Osobní denní mantra — silná, poetická, specifická pro toto znamení a jeho element. 15–25 slov, první osoba, přítomný čas. Nesmí být generická ani klišovitá. Příklad tónu: 'Má intuice je dnes mým nejostřejším nástrojem — naslouchám jí a jednám.'",\n  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]\n}\nText piš ${langName}, poeticky a povzbudivě.${contextInstruction}`;
-        }
-
         const dateLocales = { 'cs': 'cs-CZ', 'sk': 'sk-SK', 'pl': 'pl-PL' };
         const today = new Date();
-        const message = `Znamení: ${sign}\nDatum: ${today.toLocaleDateString(dateLocales[targetLang])}`;
+        const dateStr = today.toLocaleDateString(dateLocales[targetLang]);
+
+        if (period === 'weekly') {
+            periodPrompt = `Jsi inspirativní astrologický průvodce. Generuješ týdenní horoskop pro znamení ${sign} na týden začínající ${dateStr}.\nOdpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).\nStruktura:\n{\n  "prediction": "Text horoskopu (5-6 vět) specifický pro ${sign}. Zaměř se na hlavní energii, lásku, kariéru a jednu výzvu charakteristickou pro toto znamení.",\n  "affirmation": "Osobní týdenní mantra — silná, poetická, specifická pro ${sign}, jeho element a vládnoucí planetu. 15–25 slov, první osoba, přítomný čas. Nesmí být generická ani klišovitá. Příklad tónu: 'Má odvaha tvoří mosty tam, kde ostatní vidí propasti.'",\n  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]\n}\nText piš ${langName}, poeticky a povzbudivě.${contextInstruction}`;
+        } else if (period === 'monthly') {
+            periodPrompt = `Jsi moudrý astrologický průvodce. Generuješ měsíční horoskop pro znamení ${sign} na aktuální měsíc (datum: ${dateStr}).\nOdpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).\nStruktura:\n{\n  "prediction": "Text horoskopu (7-8 vět) specifický pro ${sign}. Zahrň úvod, lásku, kariéru, zdraví a klíčová data s ohledem na charakter tohoto znamení.",\n  "affirmation": "Hluboká měsíční mantra — specifická pro ${sign} a jeho transformační energii v tomto měsíci. 20–30 slov, první osoba, přítomný čas. Poetická, osobní, bez klišé. Příklad tónu: 'Jsem průkopníkem ticha — v hloubce svého bytí nacházím sílu, která přetváří svět.'",\n  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]\n}\nText piš ${langName}, inspirativně a hluboce.${contextInstruction}`;
+        } else {
+            periodPrompt = `Jsi laskavý astrologický průvodce. Generuješ denní horoskop pro znamení ${sign} na den ${dateStr}.\nOdpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).\nStruktura:\n{\n  "prediction": "Text horoskopu (3-4 věty) specifický pro ${sign}. Hlavní energie dne a jedna konkrétní rada vycházející z vlastností tohoto znamení.",\n  "affirmation": "Osobní denní mantra — silná, poetická, specifická pro ${sign} a jeho element. 15–25 slov, první osoba, přítomný čas. Nesmí být generická ani klišovitá. Příklad tónu: 'Má intuice je dnes mým nejostřejším nástrojem — naslouchám jí a jednám.'",\n  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]\n}\nText piš ${langName}, poeticky a povzbudivě.${contextInstruction}`;
+        }
+
+        const message = `Vygeneruj horoskop pro znamení ${sign} na ${dateStr}.`;
 
         const response = await callGemini(periodPrompt, message);
 
@@ -156,18 +158,36 @@ router.post('/', optionalPremiumCheck, async (req, res) => {
         const signName = bodySign || 'neznámé znamení';
         const supportedLangs = ['cs', 'sk', 'pl'];
         const fallbackTargetLang = supportedLangs.includes(bodyLang) ? bodyLang : 'cs';
+
+        // Sign-specific fallback traits (element + keyword) to avoid identical fallbacks
+        const signTraits = {
+            'Beran': { cs: 'odvahu a průkopnický duch', sk: 'odvahu a priekopnícky duch', pl: 'odwagę i ducha pioniera' },
+            'Býk': { cs: 'trpělivost a pevnost', sk: 'trpezlivosť a pevnosť', pl: 'cierpliwość i wytrwałość' },
+            'Blíženci': { cs: 'zvídavost a komunikaci', sk: 'zvedavosť a komunikáciu', pl: 'ciekawość i komunikację' },
+            'Rak': { cs: 'intuici a hloubku citu', sk: 'intuíciu a hĺbku citu', pl: 'intuicję i głębię uczuć' },
+            'Lev': { cs: 'kreativitu a sebejistotu', sk: 'kreativitu a sebavedomie', pl: 'kreatywność i pewność siebie' },
+            'Panna': { cs: 'přesnost a analytické myšlení', sk: 'presnosť a analytické myslenie', pl: 'precyzję i analityczne myślenie' },
+            'Váhy': { cs: 'rovnováhu a harmonii', sk: 'rovnováhu a harmóniu', pl: 'równowagę i harmonię' },
+            'Štír': { cs: 'intenzitu a transformaci', sk: 'intenzitu a transformáciu', pl: 'intensywność i transformację' },
+            'Střelec': { cs: 'optimismus a svobodu', sk: 'optimizmus a slobodu', pl: 'optymizm i wolność' },
+            'Kozoroh': { cs: 'disciplínu a cílevědomost', sk: 'disciplínu a cieľavedomosť', pl: 'dyscyplinę i determinację' },
+            'Vodnář': { cs: 'originalitu a vizi', sk: 'originalitu a víziu', pl: 'oryginalność i wizję' },
+            'Ryby': { cs: 'empatii a duchovní hloubku', sk: 'empatiu a duchovnú hĺbku', pl: 'empatię i duchową głębię' },
+        };
+        const trait = signTraits[signName] || { cs: 'svou vnitřní sílu', sk: 'svoju vnútornú silu', pl: 'swoją wewnętrzną siłę' };
+
         const fallbackMessages = {
             'cs': {
-                prediction: `Hvězdy dnes pro znamení ${signName} naznačují čas pro introspekci a klid. Energie dne vás vede k tomu, abyste se zastavili a naslouchali svému vnitřnímu hlasu. Důvěřujte svým instinktům — budou vás vést správným směrem.`,
-                affirmation: 'Jsem v souladu s vesmírem a důvěřuji své cestě.',
+                prediction: `Hvězdy dnes pro ${signName} zdůrazňují ${trait.cs}. Energie dne vás vede k tomu, abyste se zastavili a naslouchali svému vnitřnímu hlasu. Důvěřujte svým instinktům — právě ony jsou dnes vaším nejspolehlivějším průvodcem.`,
+                affirmation: `Má ${trait.cs} mě dnes vede tam, kam mám jít.`,
             },
             'sk': {
-                prediction: `Hviezdy dnes pre znamenie ${signName} naznačujú čas pre introspekciu a pokoj. Energia dňa vás vedie k tomu, aby ste sa zastavili a počúvali svoj vnútorný hlas. Dôverujte svojim inštinktom — budú vás viesť správnym smerom.`,
-                affirmation: 'Som v súlade s vesmírom a dôverujem svojej ceste.',
+                prediction: `Hviezdy dnes pre ${signName} zdôrazňujú ${trait.sk}. Energia dňa vás vedie k tomu, aby ste sa zastavili a počúvali svoj vnútorný hlas. Dôverujte svojim inštinktom — práve ony sú dnes vaším najspoľahlivejším sprievodcom.`,
+                affirmation: `Moja ${trait.sk} ma dnes vedie tam, kam mám ísť.`,
             },
             'pl': {
-                prediction: `Gwiazdy dzisiaj dla znaku ${signName} wskazują czas na introspekcję i spokój. Energia dnia prowadzi Cię do zatrzymania się i wsłuchania w swój wewnętrzny głos. Zaufaj swoim instynktom — poprowadzą Cię we właściwym kierunku.`,
-                affirmation: 'Jestem w harmonii ze wszechświatem i ufam swojej drodze.',
+                prediction: `Gwiazdy dzisiaj dla ${signName} podkreślają ${trait.pl}. Energia dnia prowadzi Cię do zatrzymania się i wsłuchania w swój wewnętrzny głos. Zaufaj swoim instynktom — to właśnie one są dziś Twoim najpewniejszym przewodnikiem.`,
+                affirmation: `Moja ${trait.pl} prowadzi mnie dziś tam, gdzie powinienem być.`,
             }
         };
 
