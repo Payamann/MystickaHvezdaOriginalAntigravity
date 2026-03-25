@@ -106,7 +106,7 @@ async function getCSRFToken() {
         .then(data => {
             _csrfToken = data.csrfToken;
             _csrfFetchPromise = null;
-            setTimeout(() => { _csrfToken = null; }, 2 * 60 * 60 * 1000);
+            setTimeout(() => { _csrfToken = null; }, 10 * 60 * 1000); // 10 min (server expiry is 15 min)
             return _csrfToken;
         })
         .catch(() => { _csrfFetchPromise = null; return null; });
