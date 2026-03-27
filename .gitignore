@@ -47,3 +47,5 @@ social-media-agent/output/
 
 # Test outputs
 *.lcov
+playwright-report/
+test-results/
