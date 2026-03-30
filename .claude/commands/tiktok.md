@@ -132,10 +132,29 @@ optimized for TikTok/mobile viewing.
 - **Žádné lomené tvary** (šel/šla, viděl/a)
 - **Dokonavá slovesa přirozeně** ("zasmáš se" → "zasměješ se")
 - **Gramaticky bezchybný text** — před výstupem mentálně zkontroluj každou větu
-- **Celková délka:** 25–35 sekund mluvené řeči
-- **Styl:** intimní, klidný, důvěrný — jako by mluvil blízký přítel pozdě v noci
+- **Celková délka:** 25–35 sekund mluvené řeči (15s verze: 10–15s)
+- **Styl:** intimní, přímý, sebejistý — jako by mluvil někdo kdo ví víc než ty
 
-### 4b) Formátování pro ElevenLabs
+### 4b) HOOK PRAVIDLA — KRITICKÉ
+
+První 2 věty voiceoveru rozhodují o retenci. Musí splňovat:
+
+**Formule silného hooku (použij JEDNU):**
+1. **Odhalení tajemství:** "Tohle o [tématu] ti nikdo neřekl."
+2. **Přímý zásah:** "[Konkrétní věc] tě ovlivňuje víc, než si myslíš. A ty to necítíš."
+3. **Kontroverze:** "Většina lidí [dělá X] špatně. Včetně tebe, možná."
+4. **Urgence + čas:** "Právě teď, v [astro kontext], se děje něco co nesmíš přehlédnout."
+5. **Záhada + číslo:** "[Konkrétní číslo/fakt]. Co to znamená? Zůstaň."
+
+**ZAKÁZANÉ hooky (příliš pomalé, příliš obecné):**
+- ❌ "Hvězdy tam byly vždycky..." — popis, ne hook
+- ❌ "Vzpomínáš, kdy naposledy..." — reflexivní, palec scrollne
+- ❌ "Každá noc se nad námi..." — poetické, ale nefunguje jako hook
+- ❌ Jakákoliv věta delší než 8 slov jako první věta
+
+**Délka hook věty: MAX 5–7 slov. Pak pauza. Pak druhá věta.**
+
+### 4c) Formátování pro ElevenLabs
 
 Použij tyto značky:
 - `[softly]`, `[warmly]`, `[confidently]`, `[mysteriously]`, `[urgently]`, `[gently]`, `[clearly]`, `[inviting]`, `[calm]`, `[whispering]` — emoce/styl dané věty
@@ -143,13 +162,13 @@ Použij tyto značky:
 - `<break time="0.5s" />` — střední pauza (mezi větami)
 - `<break time="1.0s" />` — dlouhá pauza (přechod mezi slidy)
 
-### 4c) Šablona voiceover textu
+### 4d) Šablona voiceover textu
 
 ```
 [SLIDE 1 — HOOK]
-[urgently/mysteriously] První věta — hook.
-<break time="0.3s" />
-Druhá věta — posílení hooku.
+[urgently] Krátká věta. MAX 7 slov.
+<break time="0.5s" />
+[mysteriously] Druhá věta — prohlubuje záhadu nebo napětí.
 <break time="1.0s" />
 
 [SLIDE 2 — KONTEXT]
