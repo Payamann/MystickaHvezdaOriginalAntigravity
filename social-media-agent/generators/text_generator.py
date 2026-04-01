@@ -502,17 +502,32 @@ HOOK_AFFINITY = {
 # SETUP
 # ============================================================
 
+# Cachovaný system prompt — posílá se jednou, pak je v cache 5 minut
+# Obsahuje statické instrukce sdílené všemi generate funkcemi
+_BRAND_SYSTEM = [
+    {
+        "type": "text",
+        "text": BRAND_VOICE + "\n\n" + FORMATTING_RULES,
+        "cache_control": {"type": "ephemeral"},
+    }
+]
+
 # Singleton — jeden klient pro celou session
 _claude_client: anthropic.Anthropic | None = None
 
-def setup_claude(use_pro: bool = False):
+def setup_claude(use_pro: bool = False, use_fast: bool = False):
     """Inicializuje Claude klienta (singleton)"""
     global _claude_client
     if not config.ANTHROPIC_API_KEY:
         raise ValueError("ANTHROPIC_API_KEY není nastaven v .env souboru!")
     if _claude_client is None:
         _claude_client = anthropic.Anthropic(api_key=config.ANTHROPIC_API_KEY)
-    model_name = config.TEXT_MODEL_PRO if use_pro else config.TEXT_MODEL
+    if use_fast:
+        model_name = config.TEXT_MODEL_FAST
+    elif use_pro:
+        model_name = config.TEXT_MODEL_PRO
+    else:
+        model_name = config.TEXT_MODEL
     return _claude_client, model_name
 
 
@@ -521,17 +536,21 @@ def _call_claude(
     model: str,
     contents: str,
     temperature: float = 0.8,
-    max_tokens: int = 4096,
+    max_tokens: int = 2048,
     max_retries: int = 3,
+    system: list | None = None,
 ):
     """
     Volá Claude API s automatickým retry při dočasných chybách.
     Exponential backoff: 2s, 4s, 8s.
     Vrací objekt s atributem .text pro kompatibilitu s původním kódem.
+    System prompt je cachován — BRAND_VOICE se neposílá znovu při opakovaných voláních.
     """
     class _Response:
         def __init__(self, text: str):
             self.text = text
+
+    effective_system = system if system is not None else _BRAND_SYSTEM
 
     for attempt in range(max_retries):
         try:
@@ -539,6 +558,7 @@ def _call_claude(
                 model=model,
                 max_tokens=max_tokens,
                 temperature=temperature,
+                system=effective_system,
                 messages=[{"role": "user", "content": contents}],
             )
             return _Response(response.content[0].text)
@@ -1091,11 +1111,7 @@ Formát odpovědi (PŘESNĚ, JSON):
 }
 """
 
-    prompt = f"""{BRAND_VOICE}
-
-{FORMATTING_RULES}
-
-{POWER_WORDS}
+    prompt = f"""{POWER_WORDS}
 
 {FEW_SHOT_EXAMPLES}
 
@@ -1308,7 +1324,7 @@ Odpověz POUZE ve formátu JSON (bez markdown):
 Pokud text neobsahuje žádné chyby, vrať originál s had_errors: false a prázdným polem changes."""
 
     try:
-        response = _call_claude(client, model_name, prompt, temperature=0.1)
+        response = _call_claude(client, model_name, prompt, temperature=0.1, max_tokens=512)
         result = _parse_json_response(response.text)
         if result and "corrected" in result:
             return {
@@ -1387,9 +1403,7 @@ def refine_post(
     else:
         intent_instruction = "Post může přirozeně zmiňovat nástroje nebo obsah na mystickahvezda.cz."
 
-    refinement_prompt = f"""{BRAND_VOICE}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    refinement_prompt = f"""━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ÚKOL: VYLEPŠENÍ EXISTUJÍCÍHO POSTU (iterace {iteration})
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -1487,9 +1501,7 @@ def generate_story_sequence(
     if blogs:
         blog_tip = f"\nRelevantní článek: {blogs[0]['title']} ({config.WEBSITE_URL}/blog/{blogs[0]['slug']}.html)"
 
-    prompt = f"""{BRAND_VOICE}
-
-Vytvoř sérii {story_count} Instagram STORIES pro téma: **{topic}**
+    prompt = f"""Vytvoř sérii {story_count} Instagram STORIES pro téma: **{topic}**
 
 Aktuální kontext: {astro['content_brief']}
 {tool_tip}
@@ -1518,7 +1530,7 @@ Slide 2-4: obsah/hodnota
 Slide 5: reveal nebo shrnutí
 Slide {story_count}: CTA (přejdi na profil, link v biu, atd.)"""
 
-    response = _call_claude(client, model_name, prompt)
+    response = _call_claude(client, model_name, prompt, max_tokens=1024)
 
     text = response.text.strip()
     text = re.sub(r'```json\s*', '', text)
@@ -1562,9 +1574,7 @@ def generate_carousel(
             f"{b['title']} ({config.WEBSITE_URL}/blog/{b['slug']}.html)" for b in blogs
         )
 
-    prompt = f"""{BRAND_VOICE}
-
-Vytvoř KARUSEL obsah pro {platform.upper()} na téma: **{topic}**
+    prompt = f"""Vytvoř KARUSEL obsah pro {platform.upper()} na téma: **{topic}**
 Počet slidů: {slides}
 {tool_tip}
 {blog_tip}
@@ -1665,9 +1675,7 @@ def generate_comment_reply(
     if relevant_blogs:
         recommendation += "\nMůžeš odkázat na článek: " + relevant_blogs[0]['title'] + f" ({config.WEBSITE_URL}/blog/{relevant_blogs[0]['slug']}.html)"
 
-    prompt = f"""{BRAND_VOICE}
-
-{comment_knowledge}
+    prompt = f"""{comment_knowledge}
 
 Jsi community manager Mystické Hvězdy, odpovídáš na komentář.
 ZNÁŠ CELOU PLATFORMU — nástroje, ceník, blog články. Využij je v odpovědích.
@@ -1716,7 +1724,7 @@ ODKAZOVÁNÍ NA PLATFORMU:
 
 Odpověz POUZE textem odpovědi. Nic jiného."""
 
-    response = _call_claude(client, model_name, prompt, temperature=0.7)
+    response = _call_claude(client, model_name, prompt, temperature=0.7, max_tokens=256)
     return response.text.strip()
 
 
@@ -1775,9 +1783,7 @@ def generate_weekly_content_plan(
     # Znalostní báze — blog články a nástroje pro plánování obsahu
     blog_knowledge = get_blog_summary_for_prompt()
 
-    prompt = f"""{BRAND_VOICE}
-
-Vytvoř TÝDENNÍ PLÁN OBSAHU pro Instagram/Facebook, týden č. {week_number} ({year}).
+    prompt = f"""Vytvoř TÝDENNÍ PLÁN OBSAHU pro Instagram/Facebook, týden č. {week_number} ({year}).
 Začátek týdne: {week_start.isoformat()}
 
 {blog_knowledge}
@@ -1818,7 +1824,7 @@ Odpověz JSON pole 7 objektů:
   ...
 ]"""
 
-    response = _call_claude(client, model_name, prompt)
+    response = _call_claude(client, model_name, prompt, max_tokens=2048)
 
     text = response.text.strip()
     text = re.sub(r'```json\s*', '', text)

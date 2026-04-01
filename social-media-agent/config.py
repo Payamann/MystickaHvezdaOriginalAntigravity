@@ -34,9 +34,10 @@ WEBSITE_URL = os.getenv("WEBSITE_URL", "https://www.mystickahvezda.cz")
 LANGUAGE = os.getenv("LANGUAGE", "cs")
 
 # === CLAUDE MODELY ===
-TEXT_MODEL = "claude-sonnet-4-5"         # Pro texty, captions, hashtags
-TEXT_MODEL_PRO = "claude-opus-4-5"       # Pro složitější úlohy (refinement, weekly plan)
-IMAGE_MODEL = "imagen-3.0-generate-002"  # Imagen 3 pro obrázky (Gemini zůstává jen pro obrázky)
+TEXT_MODEL = "claude-sonnet-4-5"              # Pro texty, captions, hashtags
+TEXT_MODEL_PRO = "claude-opus-4-5"            # Pro složitější úlohy (refinement, weekly plan)
+TEXT_MODEL_FAST = "claude-haiku-4-5-20251001" # Pro rychlé úlohy (quality gate, scoring)
+IMAGE_MODEL = "imagen-3.0-generate-002"       # Imagen 3 pro obrázky (Gemini zůstává jen pro obrázky)
 
 # === META GRAPH API ===
 GRAPH_API_VERSION = "v22.0"

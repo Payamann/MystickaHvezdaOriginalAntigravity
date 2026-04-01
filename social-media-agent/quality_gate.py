@@ -621,7 +621,7 @@ def ai_review(post_data: dict, platform: str = "instagram") -> dict:
         dict: {score, verdict, strengths, improvements, rewritten_caption}
     """
     try:
-        from generators.text_generator import setup_claude, _call_claude, _parse_json_response, BRAND_VOICE
+        from generators.text_generator import setup_claude, _call_claude, _parse_json_response
     except ImportError as e:
         return {
             "score": -1,
@@ -631,7 +631,7 @@ def ai_review(post_data: dict, platform: str = "instagram") -> dict:
             "rewritten_caption": None,
         }
 
-    client, model_name = setup_claude()
+    client, model_name = setup_claude(use_fast=True)
 
     caption = post_data.get("caption", "")
     hashtags = post_data.get("hashtags", [])
@@ -642,8 +642,6 @@ def ai_review(post_data: dict, platform: str = "instagram") -> dict:
 
     prompt = f"""Jsi přísný ale férový editor obsahu pro značku Mystická Hvězda.
 Tvůj úkol je zhodnotit kvalitu postu pro {platform} a dát KONKRÉTNÍ zpětnou vazbu.
-
-{BRAND_VOICE}
 
 ═══ POST K HODNOCENÍ ═══
 Téma: {topic}
@@ -697,7 +695,7 @@ Odpověz STRIKTNĚ jako JSON:
 }}"""
 
     try:
-        response = _call_claude(client, model_name, prompt, temperature=0.3)
+        response = _call_claude(client, model_name, prompt, temperature=0.3, max_tokens=1024)
         result = _parse_json_response(response.text)
 
         if result:
