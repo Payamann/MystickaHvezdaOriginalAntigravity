@@ -1,40 +1,58 @@
 /**
- * Google Analytics 4 Initialization (Lazy-loaded)
- * Externalized from index.html to support strict CSP (no unsafe-inline).
- * Deferred until after page load to prevent blocking critical rendering path.
+ * Google Analytics 4 — Consent Mode v2
+ * Tag vždy přítomen (Google ho vidí), data se posílají jen po souhlasu (GDPR).
  */
 
 (function () {
     const GA_ID = 'G-VZ3J109ZYJ';
 
-    // GDPR: Only load GA4 if user has consented to analytics cookies
-    const prefs = JSON.parse(localStorage.getItem('mh_cookie_prefs') || '{}');
-    if (!prefs.analytics) {
-        console.log('[Analytics] GA4 not loaded — no analytics consent.');
-        return;
-    }
-
-    // Initialize dataLayer and gtag stub before script loads
+    // Inicializace dataLayer a gtag stub
     window.dataLayer = window.dataLayer || [];
-    function gtag() {
-        window.dataLayer.push(arguments);
-    }
+    function gtag() { window.dataLayer.push(arguments); }
     window.gtag = gtag;
 
-    // Stub gtag calls before GA loads
-    gtag('js', new Date());
-    gtag('config', GA_ID, {
-        'page_path': window.location.pathname,
-        'anonymize_ip': true
+    // Consent Mode v2 — výchozí stav: vše zamítnuto (GDPR)
+    gtag('consent', 'default', {
+        'analytics_storage': 'denied',
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'wait_for_update': 500
     });
 
-    // Lazy-load GA4 script after page resources are loaded
-    // This prevents 166 KiB of unused GA4 code from blocking FCP/LCP
-    window.addEventListener('load', () => {
-        const script = document.createElement('script');
+    gtag('js', new Date());
+    gtag('config', GA_ID, { 'anonymize_ip': true });
+
+    // Pokud uživatel již dříve souhlasil — okamžitě povol
+    try {
+        const prefs = JSON.parse(localStorage.getItem('mh_cookie_prefs') || '{}');
+        if (prefs.analytics) {
+            gtag('consent', 'update', {
+                'analytics_storage': 'granted',
+                'ad_storage': 'granted',
+                'ad_user_data': 'granted',
+                'ad_personalization': 'granted'
+            });
+        }
+    } catch (e) {}
+
+    // Načti GA4 skript po načtení stránky (neblokuje render)
+    window.addEventListener('load', function () {
+        var script = document.createElement('script');
         script.async = true;
-        script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
-        document.body.appendChild(script);
-        console.log('[Analytics] GA4 initialized (lazy-loaded after page load).');
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+        document.head.appendChild(script);
     }, { once: true });
+
+    // Naslouchej budoucím souhlasům (cookie banner)
+    window.addEventListener('mh_cookie_consent', function (e) {
+        if (e.detail && e.detail.analytics) {
+            gtag('consent', 'update', {
+                'analytics_storage': 'granted',
+                'ad_storage': 'granted',
+                'ad_user_data': 'granted',
+                'ad_personalization': 'granted'
+            });
+        }
+    });
 })();
