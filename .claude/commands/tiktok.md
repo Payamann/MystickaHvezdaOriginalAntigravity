@@ -899,16 +899,9 @@ Ke každému videu vygeneruj Suno prompt, který hudebně dokresluje atmosféru 
 ### Šablona Suno promptu:
 
 ```
-Instrumental only. [DÉLKA] seconds. [NÁLADA] ambient track.
-
-Starts with [INTRO POPIS — co je slyšet první 3-5 sekund].
-Slowly builds with [BUILD POPIS — jaké nástroje/textury přibývají].
-At [ČASOVÁ ZNAČKA] seconds, [CLIMAX POPIS — emocionální vrchol].
-Ends with [OUTRO POPIS — jak hudba dozní].
-
-No drums. No vocals. No beats.
+Instrumental only. 30 seconds. No drums, no vocals, no beats.
+[NÁLADA] ambient — [2-3 nástroje z knihovny nálad].
 Mood: [POČÁTEČNÍ NÁLADA] transforming into [KONCOVÁ NÁLADA].
-Style: [REFERENCE — např. "Hans Zimmer meets meditation music"].
 ```
 
 ### Knihovna nálad podle typu videa:
