@@ -114,3 +114,29 @@
     </div>
 
 </footer>
+
+<!-- GDPR Cookie Banner — injected on all pages via footer component -->
+<div class="cookie-banner" id="cookie-banner" style="display:none">
+  <div class="cookie-banner__content">
+    <p class="cookie-banner__text">Používáme cookies pro správný chod webu a analýzu návštěvnosti. 🍪</p>
+    <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin:0.75rem 0;justify-content:center;">
+      <label style="display:flex;align-items:center;gap:0.4rem;color:rgba(255,255,255,0.7);font-size:0.8rem;cursor:pointer;">
+        <input type="checkbox" id="cookie-necessary" checked disabled style="accent-color:var(--color-mystic-gold);">
+        Nezbytné
+      </label>
+      <label style="display:flex;align-items:center;gap:0.4rem;color:rgba(255,255,255,0.7);font-size:0.8rem;cursor:pointer;">
+        <input type="checkbox" id="cookie-analytics" style="accent-color:var(--color-mystic-gold);">
+        Analytické
+      </label>
+      <label style="display:flex;align-items:center;gap:0.4rem;color:rgba(255,255,255,0.7);font-size:0.8rem;cursor:pointer;">
+        <input type="checkbox" id="cookie-marketing" style="accent-color:var(--color-mystic-gold);">
+        Marketingové
+      </label>
+    </div>
+    <div class="cookie-banner__actions">
+      <button class="btn btn--sm btn--glass" id="cookie-reject">Odmítnout vše</button>
+      <button class="btn btn--sm" id="cookie-save" style="border:1px solid rgba(212,175,55,0.5);color:var(--color-mystic-gold);background:transparent;">Uložit nastavení</button>
+      <button class="btn btn--sm btn--gold" id="cookie-accept">Souhlasím se vším</button>
+    </div>
+  </div>
+</div>

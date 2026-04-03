@@ -4,15 +4,25 @@
  * ALSO includes standalone hamburger menu handler (no module dependencies).
  */
 
-// Load GA4 on every page (lazy, non-blocking)
+// Load GA4 + cookie handler on every page (lazy, non-blocking)
 (function () {
     const scriptTag = document.querySelector('script[src*="js/components.js"]');
     const basePath = scriptTag ? scriptTag.getAttribute('src').split('js/components.js')[0] : '';
+
+    // Analytics — always first (sets up dataLayer + consent stubs before banner loads)
     if (!window.gtag && !document.querySelector('script[src*="analytics-init.js"]')) {
         const s = document.createElement('script');
         s.src = basePath + 'js/analytics-init.js';
         s.defer = true;
         document.head.appendChild(s);
+    }
+
+    // Cookie handler — loads after analytics so consent update event is always caught
+    if (!window.MH_COOKIE_HANDLER_INIT && !document.querySelector('script[src*="cookie-handler.js"]')) {
+        const ch = document.createElement('script');
+        ch.src = basePath + 'js/dist/cookie-handler.js';
+        ch.defer = true;
+        document.head.appendChild(ch);
     }
 })();
 

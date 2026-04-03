@@ -188,29 +188,49 @@ export function initCarousel() {
    12. COOKIE BANNER
    ============================================ */
 export function initCookieBanner() {
+    // Delegate to cookie-handler.js (single source of truth).
+    // cookie-handler.js handles: show/hide, localStorage, GA event dispatch.
+    // This function is kept for backward compatibility with main.js import.
+    if (window.MH_COOKIE_HANDLER_INIT) return; // cookie-handler.js already running
+
     const banner = document.getElementById('cookie-banner');
     const acceptBtn = document.getElementById('cookie-accept');
     const rejectBtn = document.getElementById('cookie-reject');
 
     if (!banner || !acceptBtn || !rejectBtn) return;
 
-    // Check if user already acted
-    const consent = localStorage.getItem('cookieConsent');
+    const K = 'mh_cookie_prefs';
 
-    if (!consent) {
-        // Show banner after a slight delay
-        setTimeout(() => {
-            banner.classList.add('visible');
-        }, 1000);
+    function saveCookieConsent(analytics, marketing) {
+        localStorage.setItem(K, JSON.stringify({ analytics, marketing, ts: Date.now() }));
+        // Fire GA consent update immediately (not just on next page load)
+        window.dispatchEvent(new CustomEvent('mh_cookie_consent', {
+            detail: { analytics, marketing }
+        }));
+        banner.classList.remove('visible');
+        banner.style.display = 'none';
     }
 
-    acceptBtn.addEventListener('click', () => {
-        localStorage.setItem('cookieConsent', 'accepted');
-        banner.classList.remove('visible');
-    });
+    // Check if user already acted (support both old and new key)
+    const alreadyDone = localStorage.getItem(K) ||
+        localStorage.getItem('cookieConsent') === 'accepted' ||
+        localStorage.getItem('cookieConsent') === 'rejected';
 
-    rejectBtn.addEventListener('click', () => {
-        localStorage.setItem('cookieConsent', 'rejected');
-        banner.classList.remove('visible');
-    });
+    if (!alreadyDone) {
+        setTimeout(() => { banner.classList.add('visible'); }, 1000);
+    } else {
+        banner.style.display = 'none';
+    }
+
+    acceptBtn.addEventListener('click', () => saveCookieConsent(true, true));
+    rejectBtn.addEventListener('click', () => saveCookieConsent(false, false));
+
+    const saveBtn = document.getElementById('cookie-save');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', () => {
+            const a = document.getElementById('cookie-analytics');
+            const m = document.getElementById('cookie-marketing');
+            saveCookieConsent(!!(a && a.checked), !!(m && m.checked));
+        });
+    }
 }

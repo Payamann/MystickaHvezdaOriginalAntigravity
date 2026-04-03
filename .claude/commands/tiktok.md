@@ -402,16 +402,37 @@ KOMENTÁŘ → PROFIL → BIO LINK
 
 **⚠️ CAPTION LINK > BIO ODKAZ:** Na Facebooku/Instagramu je odkaz v caption přímo klikatelný (na rozdíl od TikToku). Proto do caption přidej přímý URL: `mystickahvezda.cz/[stránka]` — divák nemusí chodit přes profil.
 
+**🔴 POVINNÉ PRAVIDLO — KAŽDÝ CAPTION MUSÍ MÍT PŘÍMÝ URL:**
+```
+Šablona caption (VŽDY takto):
+[hook/první věta]
+[2-3 věty obsahu / komentářový trigger]
+👉 mystickahvezda.cz/[relevantní-stránka]
+[2-4 hashtagy]
+```
+
+Mapování téma → URL:
+| Téma videa | URL v caption |
+|-----------|---------------|
+| Horoskopy, znamení | mystickahvezda.cz/horoskopy.html |
+| Vztahy, partnerství | mystickahvezda.cz/partnerska-shoda.html |
+| Natální karta | mystickahvezda.cz/natalni-karta.html |
+| Tarot, karty | mystickahvezda.cz/tarot.html |
+| Numerologie | mystickahvezda.cz/numerologie.html |
+| Lunace, měsíc | mystickahvezda.cz/lunace.html |
+| Runy | mystickahvezda.cz/runy.html |
+| Obecná mystika | mystickahvezda.cz |
+
 **Nová CTA struktura pro voiceover (slide 3):**
 ```
 Věta 1: Komentářový trigger (priorita — engagement)
-Věta 2: Follow trigger NEBO curiosity o profilu (konverze)
+Věta 2: Zmínění webu přirozeně — konkrétní benefit, ne "odkaz v biu"
 ```
 
-**Příklady nového CTA:**
-- „Označ Štíra, co tohle dělá. Příště Beran — sleduj." — trigger + follow
-- „Napiš svoje znamení. Zítra řeknu, kdo to dělá nejhůř." — trigger + anticipace
-- „Označ Váhu, co tohle zná. Na profilu mám natální kartu zdarma." — trigger + profil visit
+**Příklady nového CTA (voiceover + caption):**
+- Voiceover: „Označ Štíra, co tohle dělá. Svoji natální kartu najdeš na mystickahvezda.cz." → Caption: `mystickahvezda.cz/natalni-karta.html`
+- Voiceover: „Napiš svoje znamení. Partnerskou shodu si ověříš na webu." → Caption: `mystickahvezda.cz/partnerska-shoda.html`
+- Voiceover: „Označ Váhu, co tohle zná. Celý horoskop zdarma na mystickahvezda.cz." → Caption: `mystickahvezda.cz/horoskopy.html`
 
 ---
 
