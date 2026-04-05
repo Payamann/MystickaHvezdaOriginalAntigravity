@@ -371,7 +371,19 @@ def main():
     target_date = args.date or str(date.today())
     print(f"\n=== Voiceover Generator | datum: {target_date} ===\n")
 
-    # 1. Vyber znamení
+    # 1. Prefetch — zajisti že všech 12 znamení je v cache
+    print("[*] Prefetch: kontroluji cache pro vsech 12 znameni...")
+    cached_all = fetch_from_cache(ALL_SIGNS, target_date)
+    missing = [s for s in ALL_SIGNS if s not in cached_all]
+    if missing:
+        print(f"  [!] Chybi v cache: {', '.join(missing)} — generuji...")
+        for sign in missing:
+            cached_all[sign] = generate_horoscope(sign, target_date)
+        print(f"[OK] Vsech 12 znameni pripraveno v cache.")
+    else:
+        print(f"[OK] Vsech 12 znameni uz v cache.")
+
+    # 2. Vyber znamení
     if args.signs:
         chosen = args.signs
         invalid = [s for s in chosen if s not in ALL_SIGNS]
@@ -392,19 +404,10 @@ def main():
     print(f"[*] Vybrana znameni: {', '.join(chosen)}")
     print(f"[*] Tento den celkem pouzito: {len(used_today)}/12 znameni")
 
-    # 2. Nacti z cache
-    print("[*] Hledam horoskopy v Supabase cache...")
-    cached = fetch_from_cache(chosen, target_date)
-    print(f"[OK] V cache nalezeno: {len(cached)}/4")
-
-    # 3. Chybejici vygeneruj
-    horoscopes = {}
+    # 3. Sestav horoskopy pro vybraná znamení (vše je už v cached_all)
+    horoscopes = {sign: cached_all[sign] for sign in chosen}
     for sign in chosen:
-        if sign in cached:
-            print(f"  [cache] {sign}")
-            horoscopes[sign] = cached[sign]
-        else:
-            horoscopes[sign] = generate_horoscope(sign, target_date)
+        print(f"  [cache] {sign}")
 
     # 4. Build voiceover + TikTok description + Suno prompt
     script = build_voiceover(horoscopes, target_date)
