@@ -70,6 +70,7 @@ Formát odpovědi MUSÍ být čistý JSON:
   "luckyNumbers": [1, 2, 3, 4]
 }
 V klíči 'prediction' NIKDY neuváděj text 'Afirmace:' ani samotnou afirmaci.
+DŮLEŽITÉ: Text piš VŽDY v tykání — 2. osoba jednotného čísla (ty/tě/ti/tvé/tvůj). NIKDY nepoužívej vykání (vás/vám/vaše/váš/buďte/věnujte/nebojte/využijte/jste).
 Text má být laskavý, mystický, ale praktický. Nepoužívej slovo "nehoda".`,
 
     numerology: `${ROLE_PREAMBLE}Jsi Strážce číselných kódů.

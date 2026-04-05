@@ -116,11 +116,12 @@ Generuj denní horoskop ve formátu JSON.
 Odpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné ```json).
 Struktura:
 {
-  "prediction": "Text horoskopu (3-4 věty). Hlavní energie dne a jedna konkrétní rada.",
+  "prediction": "Text horoskopu (přesně 2 věty). Hlavní energie dne a jedna konkrétní rada.",
   "affirmation": "Krátká pozitivní afirmace pro tento den.",
   "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]
 }
-Text piš česky, poeticky a povzbudivě."""
+Text piš česky, poeticky a povzbudivě.
+DŮLEŽITÉ: Text piš VŽDY v tykání — 2. osoba jednotného čísla (ty/tě/ti/tvé/tvůj). NIKDY nepoužívej vykání (vás/vám/vaše/váš/buďte/věnujte/nebojte/využijte/jste)."""
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -361,25 +362,46 @@ def build_voiceover(signs_data: dict, target_date: str) -> str:
             (r'\bNebojte se\b', 'Neboj se'),
             (r'\bjste\b', 'jsi'),
             (r'\bJste\b', 'Jsi'),
+            (r'\bvyužijte\b', 'využij'),
+            (r'\bVyužijte\b', 'Využij'),
+            (r'\bzkuste\b', 'zkus'),
+            (r'\bZkuste\b', 'Zkus'),
+            (r'\bpřijďte\b', 'přijď'),
+            (r'\bPřijďte\b', 'Přijď'),
+            (r'\bumíte\b', 'umíš'),
+            (r'\bUmíte\b', 'Umíš'),
+            (r'\bmůžete\b', 'můžeš'),
+            (r'\bMůžete\b', 'Můžeš'),
+            (r'\bmáte\b', 'máš'),
+            (r'\bMáte\b', 'Máš'),
+            (r'\bznáte\b', 'znáš'),
+            (r'\bZnáte\b', 'Znáš'),
+            (r'\bcítíte\b', 'cítíš'),
+            (r'\bCítíte\b', 'Cítíš'),
+            (r'\bvidíte\b', 'vidíš'),
+            (r'\bVidíte\b', 'Vidíš'),
+            (r'\bchcete\b', 'chceš'),
+            (r'\bChcete\b', 'Chceš'),
+            (r'\bpotřebujete\b', 'potřebuješ'),
+            (r'\bPotřebujete\b', 'Potřebuješ'),
+            (r'\bděláte\b', 'děláš'),
+            (r'\bDěláte\b', 'Děláš'),
+            (r'\bjdete\b', 'jdeš'),
+            (r'\bJdete\b', 'Jdeš'),
+            (r'\bvy\b', 'ty'),
+            (r'\bVy\b', 'Ty'),
         ]
         for pattern, replacement in replacements:
             text = re.sub(pattern, replacement, text)
         return text.strip()
 
-    def truncate_sentences(text: str, max_sentences: int = 2) -> str:
-        """Zkrátí text na max N vět."""
-        import re
-        sentences = re.split(r'(?<=[.!?])\s+', text.strip())
-        return ' '.join(sentences[:max_sentences])
-
-    # Sekce znamení — produkční text normalizovaný na tykání, max 2 věty
+    # Sekce znamení — produkční text normalizovaný na tykání
     sign_sections = []
     for sign, prediction in signs_data.items():
         vocative = SIGN_VOCATIVE.get(sign, sign)
         tag = SIGN_ALLOWED_TAGS.get(sign, ['warm'])[0]
         normalized = normalize_tykani(prediction)
-        truncated = truncate_sentences(normalized, max_sentences=2)
-        prediction_lower = truncated[0].lower() + truncated[1:] if truncated else truncated
+        prediction_lower = normalized[0].lower() + normalized[1:] if normalized else normalized
         sign_sections.append(f"[{tag}] {vocative}, {prediction_lower}")
     signs_block = "\n\n".join(sign_sections)
 
