@@ -395,53 +395,71 @@ def build_voiceover(signs_data: dict, target_date: str) -> str:
             text = re.sub(pattern, replacement, text)
         return text.strip()
 
-    # Sekce znamení — produkční text normalizovaný na tykání
-    sign_sections = []
+    # Připrav surová data znamení — normalizovaný text + metadata
+    signs_raw = []
     for sign, prediction in signs_data.items():
         vocative = SIGN_VOCATIVE.get(sign, sign)
-        tag = SIGN_ALLOWED_TAGS.get(sign, ['warm'])[0]
+        allowed_tags = SIGN_ALLOWED_TAGS.get(sign, ['warm'])
         normalized = normalize_tykani(prediction)
         prediction_lower = normalized[0].lower() + normalized[1:] if normalized else normalized
-        sign_sections.append(f"[{tag}] {vocative}, {prediction_lower}")
-    signs_block = "\n\n".join(sign_sections)
+        signs_raw.append({
+            "vocative": vocative,
+            "text": prediction_lower,
+            "allowed_tags": allowed_tags,
+        })
 
-    # Claude generuje jen hook (2 věty) a outro
+    # Claude generuje celý script — hook, sekce znamení s bohatými tagy, outro
     system = """Jsi copywriter pro českou mystickou stránku Mystická Hvězda.
-Píšeš části voiceover scriptu pro krátké video (Instagram Reel / TikTok).
+Píšeš voiceover script pro krátké video (Instagram Reel / TikTok).
 Tykáš, 2. os. j.č. — NIKDY žádný lomený tvar.
-Vystup JEN samotny text — zadne nadpisy, zadne labely, zadne hvezdicky."""
+Výstup JEN samotný text — žádné nadpisy, žádné labely, žádné hvězdičky."""
+
+    signs_input = "\n".join(
+        f'- {s["vocative"]}: "{s["text"]}" (dovolené tagy: {", ".join(s["allowed_tags"])})'
+        for s in signs_raw
+    )
 
     user = f"""Datum: {date_cs}
 
-Napiš POUZE:
-1) HOOK — přesně 2 věty, každá musí mít styl tag: "[tag] věta. [tag] věta."
-   Tagy: [mysterious] [intense] [warm] [gentle] [confident] [upbeat] [commanding] [soft]
-   PRAVIDLO: NIKDY nejmenuj konkrétní znamení — divák musí video dokoukat, aby zjistil která.
-   Hook musí vyvolat zvědavost: naznač, že NĚKTERÁ (ne všechna) znamení dostanou speciální energii/signál/průlom.
-   NIKDY: "Jsi mezi nimi?", "patříš mezi ně", žádný výčet znamení.
-   Zakonceni POKAZDE JINE a originalni.
+Napiš celý voiceover script ve třech částech:
 
-2) OUTRO — 3 věty s tagy, CTA na web + originální výzva ke sdílení
+1) HOOK — přesně 2 věty, každá s tagem: "[tag] věta. [tag] věta."
+   PRAVIDLO: NIKDY nejmenuj konkrétní znamení — divák musí video dokoukat, aby zjistil která.
+   Vyvolej zvědavost: naznač, že VYBRANÁ znamení dostanou speciální energii/průlom.
+   NIKDY nepiš číslo znamení (ne "tři", "čtyři"). NIKDY: "Jsi mezi nimi?", "patříš mezi ně".
+   Zakončení pokaždé jiné a originální.
+
+2) SEKCE ZNAMENÍ — pro každé znamení níže napiš jeho sekci:
+   - Začni oslovením: "[tag] {{vocative}},"
+   - Pak PROKLÁDEJ text dalšími tagy uvnitř vět — každá věta nebo výrazný obrat MUSÍ mít svůj tag.
+   - Vzor: "[intense] Berane, [commanding] dnes tě čeká průlom, [warm] který jsi dlouho hledal."
+   - Minimálně 2–3 tagy na sekci znamení, rozložené přirozeně v textu.
+   - Text věrně zachovej — jen obal tagy, nepřepisuj obsah.
+   - Povolené tagy pro každé znamení jsou uvedeny níže.
+   Tagy celkově: [mysterious] [intense] [warm] [gentle] [confident] [upbeat] [commanding] [soft]
+
+   Znamení:
+{signs_input}
+
+3) OUTRO — 3 věty s tagy, CTA na web + výzva ke sdílení.
    Vzor: "[upbeat] věta o webu. [warm] výzva ke sdílení. [gentle] důvod proč poslat dál."
    NIKDY: "Pošli to někomu komu to sedí" ani "Třeba mu to dnes změní den"
 
-Výstup ve formátu (nic jiného):
-HOOK: [hook]
-OUTRO: [outro]"""
+Výstup ve formátu (nic jiného — žádné nadpisy jako HOOK: nebo SEKCE:):
+[hook věta 1]. [hook věta 2].
 
-    print("[*] Generuji hook a outro...")
-    raw = claude_call(system, user, max_tokens=400)
+[sekce znamení 1]
 
-    # Parsuj hook a outro
-    hook = ""
-    outro = ""
-    for line in raw.splitlines():
-        if line.startswith("HOOK:"):
-            hook = line[5:].strip()
-        elif line.startswith("OUTRO:"):
-            outro = line[6:].strip()
+[sekce znamení 2]
 
-    return f"{hook}\n\n{signs_block}\n\n{outro}"
+[sekce znamení 3]
+
+[sekce znamení 4]
+
+[outro]"""
+
+    print("[*] Generuji voiceover script...")
+    return claude_call(system, user, max_tokens=800)
 
 # ─── Main ─────────────────────────────────────────────────────────────────────
 
