@@ -311,6 +311,29 @@ TOPICS = {
     ],
 }
 
+# ─── Follow CTA pool ─────────────────────────────────────────────────────────
+
+# Rotující follow CTA — přidává se na konec každého postu
+# Nikdy 2x stejný za sebou (tracked v paměti)
+FOLLOW_CTAS = [
+    "Sleduj, ať ti neunikne zítřejší energie 🔮",
+    "Sleduj stránku — každý den nový astrologický pohled 🌙",
+    "Chceš vědět co přinese zítra? Sleduj 👆",
+    "Přidej se — každý den tu najdeš něco pro svou duši ✨",
+    "Sleduj a dostávej denní dávku kosmické energie 🌠",
+    "Zítra tu bude další pohled na hvězdy — sleduj, ať ho nezmeškáš 🔮",
+    "Každý den nový obsah pro ty, kdo hledají hlubší pohled. Sleduj 🌙",
+    "Sleduj a buď první, kdo se dozví co hvězdy chystají ⭐",
+]
+
+def pick_follow_cta(mem: dict) -> str:
+    """Vybere follow CTA — nikdy stejný jako minule."""
+    last = mem.get("last_follow_cta", "")
+    available = [c for c in FOLLOW_CTAS if c != last]
+    chosen = random.choice(available)
+    mem["last_follow_cta"] = chosen
+    return chosen
+
 # ─── Blogové články ───────────────────────────────────────────────────────────
 
 BASE_BLOG_URL = "https://www.mystickahvezda.cz/blog/"
@@ -603,7 +626,9 @@ def claude_call(system: str, user: str, max_tokens: int = 800) -> str:
 # ─── Generování postu ─────────────────────────────────────────────────────────
 
 def generate_post(post_type: str, topic: str, category: str, target_date: str,
-                  blog_url: str = None, astro: dict = None) -> dict:
+                  blog_url: str = None, astro: dict = None, mem: dict = None) -> dict:
+    if mem is None:
+        mem = {}
     d = date.fromisoformat(target_date)
     months_cs = ["ledna","února","března","dubna","května","června",
                  "července","srpna","září","října","listopadu","prosince"]
@@ -619,45 +644,47 @@ def generate_post(post_type: str, topic: str, category: str, target_date: str,
                 web_url = url
                 break
 
+    # DŮLEŽITÉ: URL nikdy nepíšeme přímo do textu postu —
+    # Facebook algoritmus penalizuje posty s externími linky.
+    # URL jde do prvního komentáře, post odkazuje textem "Link v komentáři 👇"
+
     type_instructions = {
-        "educational": f"""Piš vzdělávací post — vysvětli jak věc SKUTEČNĚ funguje (mechanismus, výpočet, logika).
-Struktura: hook → vysvětlení → konkrétní příklad → CTA (save nebo web odkaz).
+        "educational": """Piš vzdělávací post — vysvětli jak věc SKUTEČNĚ funguje (mechanismus, výpočet, logika).
+Struktura: hook → vysvětlení → konkrétní příklad → CTA.
 Délka: 5–8 vět. Přidej 1 konkrétní příklad nebo analogii.
-CTA: "Ulož si ⬇️" nebo odkaz na web: {web_url}""",
+CTA: "Ulož si ⬇️" nebo "Celý článek v komentáři 👇" — NIKDY nepíš URL přímo do textu.""",
 
         "engagement": """Piš engagement post — otázka nebo A/B volba, která vyvolá komentáře.
 Struktura: provokativní tvrzení nebo otázka → krátký kontext (2–3 věty) → výzva k reakci.
 Délka: 3–5 vět. Konec vždy otázkou nebo výběrem.
-NIKDY nedávej odkaz na web — chceš komentáře, ne kliknutí.""",
+NIKDY nedávej URL — chceš komentáře, ne kliknutí.""",
 
         "myth_bust": """Piš myth-bust post — boř mýtus konkrétními fakty.
 Struktura: "Říká se, že X. To není pravda." → proč mýtus vznikl → jak to skutečně je → pointa.
 Délka: 5–7 vět. Buď odvážný a přímý.
-CTA: otázka do komentáře.""",
+CTA: otázka do komentáře. NIKDY nepíš URL.""",
 
-        "lunar": f"""Piš post o aktuální lunární fázi a co to znamená pro čtenáře dnes.
-Struktura: co fáze přináší → konkrétní rada co dělat/nedělat → odkaz na lunární kalendář.
+        "lunar": """Piš post o aktuální lunární fázi a co to znamená pro čtenáře dnes.
+Struktura: co fáze přináší → konkrétní rada co dělat/nedělat → CTA na lunární kalendář.
 Délka: 4–6 vět. Poetický ale praktický tón.
-CTA: odkaz {web_url}""",
+CTA: "Lunární kalendář najdeš v komentáři 👇" — NIKDY nepíš URL přímo do textu.""",
 
-        "feature_spotlight": f"""Piš soft-promo post o funkci webu — ale vzdělávací, ne reklamní.
+        "feature_spotlight": """Piš soft-promo post o funkci webu — ale vzdělávací, ne reklamní.
 Vysvětli CO funkce dělá a PROČ je to užitečné. Pak přirozeně odkaž.
 Délka: 5–7 vět. Nesmí znít jako reklama.
-CTA: odkaz {web_url}""",
+CTA: "Odkaz najdeš v komentáři 👇" — NIKDY nepíš URL přímo do textu.""",
 
-        "blog_promo": f"""Piš teaser post, který přiměje lidi kliknout na blogový článek a dočíst ho celý.
+        "blog_promo": f"""Piš teaser post, který přiměje lidi kliknout na blogový článek.
 Článek: "{topic}"
-URL článku: {blog_url}
 
 Struktura:
 1. Hook — překvapivé tvrzení nebo otázka, která cílí na bolest nebo zvědavost
-2. Teasující úvod (3–4 věty) — naznač o čem článek je, rozvij kontext, ALE nevyzraď vše
-3. "V článku se dozvíš:" + 3–4 odrážky s konkrétními výstupy (co čtenář získá)
+2. Teasující úvod (3–4 věty) — naznač o čem článek je, ALE nevyzraď vše
+3. "V článku se dozvíš:" + 3–4 odrážky s konkrétními výstupy
 4. Krátký odstavec (1–2 věty) — proč je téma důležité právě teď
-5. CTA: jasná výzva k akci + URL odkaz
+5. CTA: "Celý článek v komentáři 👇" — NIKDY nepíš URL přímo do textu
 
-Délka: 6–10 vět celkem (bez odrážek). Nesmí znít jako reklama — spíš jako doporučení od přítele.
-Vyzraď dost, aby čtenář chtěl víc. Nezacházej do detailů — to je v článku.""",
+Délka: 6–10 vět celkem (bez odrážek). Nesmí znít jako reklama.""",
     }
 
     # Astro kontext pro Claude
@@ -690,6 +717,17 @@ Formát výstupu:
     parts = caption_raw.strip().rsplit("\n\n", 1)
     caption = parts[0].strip() if len(parts) == 2 else caption_raw
     hashtags = parts[1].strip() if len(parts) == 2 else "#mystickaHvezda"
+
+    # Follow CTA — přidej na konec captionu (před hashtagy)
+    follow_cta = pick_follow_cta(mem)
+    caption = f"{caption}\n\n{follow_cta}"
+
+    # První komentář — URL jde sem, ne do postu (FB algoritmus penalizuje externí linky v postu)
+    display_url = blog_url if blog_url else web_url
+    if post_type == "engagement" or post_type == "myth_bust":
+        first_comment = None  # engagement posty nepotřebují link
+    else:
+        first_comment = display_url
 
     # Image prompt
     print("[*] Generuji image prompt...")
@@ -733,14 +771,11 @@ Be literal and specific — describe only what you SEE, not what you FEEL. No me
 
     image_prompt = claude_call(img_system, img_user, max_tokens=300)
 
-    # Výsledný odkaz: blog_url má přednost u blog_promo
-    display_url = blog_url if blog_url else web_url
-
     return {
         "caption": caption,
         "hashtags": hashtags,
         "image_prompt": image_prompt,
-        "web_url": display_url,
+        "first_comment": first_comment,
         "type": post_type,
         "topic": topic,
         "category": category,
@@ -812,7 +847,7 @@ def main():
     if blog_url:
         print(f"[*] Blog URL: {blog_url}")
 
-    result = generate_post(post_type, topic, category, target_date, blog_url, astro)
+    result = generate_post(post_type, topic, category, target_date, blog_url, astro, mem)
 
     # Výstup
     sep = "=" * 60
@@ -820,8 +855,10 @@ def main():
     print(f"📅 {date_cs} | 🌙 večerní post\n")
     print(result["caption"])
     print(f"\n{result['hashtags']}")
-    if result["web_url"]:
-        print(f"\n🔗 {result['web_url']}")
+    if result["first_comment"]:
+        print(f"\n{sep}")
+        print(f"💬 PRVNÍ KOMENTÁŘ (vlož ihned po zveřejnění):")
+        print(f"🔗 {result['first_comment']}")
     print(f"\n{sep}\n🖼️  IMAGE PROMPT\n{sep}")
     print(result["image_prompt"])
     print(sep)
@@ -847,8 +884,8 @@ def main():
         f"{result['caption']}\n\n"
         f"{result['hashtags']}\n"
     )
-    if result["web_url"]:
-        file_content += f"\n🔗 {result['web_url']}\n"
+    if result["first_comment"]:
+        file_content += f"\n💬 PRVNÍ KOMENTÁŘ:\n🔗 {result['first_comment']}\n"
     file_content += f"\nIMAGE PROMPT\n{sep}\n{result['image_prompt']}\n"
     out_path.write_text(file_content, encoding="utf-8")
 
