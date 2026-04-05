@@ -594,6 +594,24 @@ if (isMain || process.env.NODE_ENV === 'production') {
             console.warn('⚠️ Social Media Agent skipped (missing GEMINI_API_KEY).');
         }
 
+        // Prefill horoscope cache — every day at 05:00 UTC (6:00 CET)
+        // Hits all 12 sign URLs → Gemini generates & saves to _v2 cache
+        schedule.scheduleJob('0 5 * * *', async () => {
+            const today = new Date().toISOString().split('T')[0];
+            const signs = ['beran','byk','blizenci','rak','lev','panna','vahy','stir','strelec','kozoroh','vodnar','ryby'];
+            console.log(`[CRON] Prefilling horoscope cache for ${today}...`);
+            for (const sign of signs) {
+                try {
+                    await fetch(`https://mystickahvezda.cz/horoskop/${sign}/${today}`);
+                } catch (e) {
+                    console.error(`[CRON] Prefill failed for ${sign}: ${e.message}`);
+                }
+                await new Promise(r => setTimeout(r, 1000));
+            }
+            console.log(`[CRON] Horoscope prefill done for ${today}.`);
+        });
+        console.warn('📅 Horoscope prefill cron scheduled (05:00 UTC).');
+
         // Daily horoscope emails — every day at 07:00 UTC
         schedule.scheduleJob('0 7 * * *', async () => {
             try {
