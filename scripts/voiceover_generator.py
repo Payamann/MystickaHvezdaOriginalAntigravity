@@ -412,13 +412,14 @@ Tykáš, 2. os. j.č. — NIKDY žádný lomený tvar.
 Vystup JEN samotny text — zadne nadpisy, zadne labely, zadne hvezdicky."""
 
     user = f"""Datum: {date_cs}
-Znamení ve videu: {', '.join(signs_data.keys())}
 
 Napiš POUZE:
 1) HOOK — přesně 2 věty, každá musí mít styl tag: "[tag] věta. [tag] věta."
    Tagy: [mysterious] [intense] [warm] [gentle] [confident] [upbeat] [commanding] [soft]
-   NIKDY nepouzij variantu "Jsi mezi nimi?" ani "patříš mezi ně"
-   Zakonceni POKAZDE JINE a originalni
+   PRAVIDLO: NIKDY nejmenuj konkrétní znamení — divák musí video dokoukat, aby zjistil která.
+   Hook musí vyvolat zvědavost: naznač, že NĚKTERÁ (ne všechna) znamení dostanou speciální energii/signál/průlom.
+   NIKDY: "Jsi mezi nimi?", "patříš mezi ně", žádný výčet znamení.
+   Zakonceni POKAZDE JINE a originalni.
 
 2) OUTRO — 3 věty s tagy, CTA na web + originální výzva ke sdílení
    Vzor: "[upbeat] věta o webu. [warm] výzva ke sdílení. [gentle] důvod proč poslat dál."
