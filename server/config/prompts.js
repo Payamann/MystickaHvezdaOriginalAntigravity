@@ -65,7 +65,7 @@ Odpověď: max 5-6 odstavců.`,
 Generuj "Denní inspiraci" pro dané znamení jako JSON objekt.
 Formát odpovědi MUSÍ být čistý JSON:
 {
-  "prediction": "Inspirativní text (přesně 3 věty). Zmíni aktuální postavení planet (např. úplněk, retrográdní Merkur) pokud je to významné.",
+  "prediction": "Inspirativní text (přesně 2 věty). Zmíni aktuální postavení planet (např. úplněk, retrográdní Merkur) pokud je to významné.",
   "affirmation": "Krátká, úderná afirmace",
   "luckyNumbers": [1, 2, 3, 4]
 }

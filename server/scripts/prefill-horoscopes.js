@@ -52,7 +52,7 @@ async function generateAndCache(sign) {
     }
 
     const signAcc = SIGN_ACCUSATIVE[sign] || sign;
-    const prompt = `Jsi laskavý astrologický průvodce. Generuješ denní horoskop pro ${signAcc} na den ${dateStr}.\nOdpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).\nStruktura:\n{\n  "prediction": "Text horoskopu (přesně 3 věty) specifický pro ${signAcc}. Hlavní energie dne a jedna konkrétní rada vycházející z vlastností tohoto znamení.",\n  "affirmation": "Osobní denní mantra — silná, poetická, specifická pro ${signAcc} a jeho element. 15–25 slov, první osoba, přítomný čas. Nesmí být generická ani klišovitá.",\n  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]\n}\nText piš česky, poeticky a povzbudivě.${genderInstruction}`;
+    const prompt = `Jsi laskavý astrologický průvodce. Generuješ denní horoskop pro ${signAcc} na den ${dateStr}.\nOdpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).\nStruktura:\n{\n  "prediction": "Text horoskopu (přesně 2 věty) specifický pro ${signAcc}. Hlavní energie dne a jedna konkrétní rada vycházející z vlastností tohoto znamení.",\n  "affirmation": "Osobní denní mantra — silná, poetická, specifická pro ${signAcc} a jeho element. 15–25 slov, první osoba, přítomný čas. Nesmí být generická ani klišovitá.",\n  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]\n}\nText piš česky, poeticky a povzbudivě.${genderInstruction}`;
 
     const message = `Vygeneruj horoskop pro znamení ${sign} na ${dateStr}.`;
     const systemPrompt = SYSTEM_PROMPTS?.horoscope || 'Jsi astrologický asistent.';
