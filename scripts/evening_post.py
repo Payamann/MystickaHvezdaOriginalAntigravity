@@ -3,8 +3,16 @@
 Evening Post Generator pro Mystickou Hvězdu
 ============================================
 Generuje večerní příspěvek na Instagram/Facebook/TikTok.
-Střídá 5 typů obsahu, pamatuje si témata (neopakuje do 30 dní),
+Střídá 6 typů obsahu, pamatuje si témata (neopakuje do 30 dní),
 ladí se na základě manuálně zadaných skóre z Meta analytics.
+
+Typy:
+  educational      — vzdělávací, jak věc funguje
+  engagement       — otázka, A/B volba, komentáře
+  myth_bust        — boření mýtů (max 1x za 3 dny)
+  lunar            — aktuální lunární fáze (max 1x za 3 dny)
+  feature_spotlight — soft-promo funkce webu
+  blog_promo       — propagace blogového článku (min 1x za 5 dní)
 
 Usage:
     python evening_post.py                        # automatický výběr
@@ -19,6 +27,7 @@ import os
 import json
 import random
 import argparse
+import math
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -49,6 +58,162 @@ if not ANTHROPIC_KEY:
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
+# ─── Astronomický kontext (ephem) ─────────────────────────────────────────────
+
+ZODIAC_CS = [
+    "Beran", "Býk", "Blíženci", "Rak",
+    "Lev", "Panna", "Váhy", "Štír",
+    "Střelec", "Kozoroh", "Vodnář", "Ryby",
+]
+
+def _ecl_lon_deg(body, dt) -> float:
+    """Vrátí ekliptikální délku tělesa ve stupních (0–360)."""
+    import ephem
+    return math.degrees(float(ephem.Ecliptic(body, epoch=dt).lon)) % 360
+
+def _lon_to_sign(lon_deg: float) -> str:
+    return ZODIAC_CS[int(lon_deg / 30) % 12]
+
+def _is_retrograde(planet_cls, dt) -> bool:
+    """Vrátí True pokud planeta jde retrográdně (ekliptikální délka klesá)."""
+    import ephem
+    p1 = planet_cls(); p1.compute(dt)
+    p2 = planet_cls(); p2.compute(dt + 1)
+    l1 = math.degrees(float(ephem.Ecliptic(p1, epoch=dt).lon)) % 360
+    l2 = math.degrees(float(ephem.Ecliptic(p2, epoch=dt + 1).lon)) % 360
+    diff = l2 - l1
+    if diff > 180:  diff -= 360
+    if diff < -180: diff += 360
+    return diff < 0
+
+def _moon_phase_name(illuminated: float, waxing: bool) -> str:
+    """Přeloží % osvětlení + fázi na český název."""
+    if illuminated < 3:
+        return "Nový měsíc 🌑"
+    elif illuminated < 48:
+        return "Dorůstající srpek 🌒" if waxing else "Ubývající srpek 🌘"
+    elif illuminated < 52:
+        return "První čtvrť 🌓" if waxing else "Poslední čtvrť 🌗"
+    elif illuminated < 97:
+        return "Dorůstající gibbous 🌔" if waxing else "Ubývající gibbous 🌖"
+    else:
+        return "Úplněk 🌕"
+
+def _moon_phase_energy(phase_name: str) -> str:
+    """Krátký popis energie fáze pro promptování."""
+    mapping = {
+        "Nový měsíc":           "čas záměrů, nových začátků, ticha a setí semen",
+        "Dorůstající srpek":    "čas akce, prvních kroků, odvážného rozjezdu",
+        "První čtvrť":          "čas překonání překážek, rozhodnutí a tlaku dopředu",
+        "Dorůstající gibbous":  "čas doladění, koncentrace, přípravy na naplnění",
+        "Úplněk":               "čas kulminace, emocí, odhalení a naplnění záměrů",
+        "Ubývající gibbous":    "čas vděčnosti, sdílení, zpracování sklizně",
+        "Poslední čtvrť":       "čas odpuštění, vyhodnocení a uvolnění",
+        "Ubývající srpek":      "čas poklidného uzavírání, odpočinku a přípravy na nový cyklus",
+    }
+    for key, val in mapping.items():
+        if key in phase_name:
+            return val
+    return "čas introspekce a reflexe"
+
+def get_astro_context(target_date: str) -> dict:
+    """
+    Vrátí skutečný astronomický kontext pro dané datum pomocí ephem.
+    Zahrnuje: fázi Měsíce, znamení Měsíce, znamení Slunce,
+    retrográdní planety a znamení klíčových planet.
+    """
+    try:
+        import ephem
+        d = date.fromisoformat(target_date)
+        dt = ephem.Date(f"{d.year}/{d.month}/{d.day} 12:00:00")
+
+        # ── Měsíc ──
+        moon = ephem.Moon(); moon.compute(dt)
+        moon_lon = _ecl_lon_deg(moon, dt)
+        sun = ephem.Sun();   sun.compute(dt)
+        sun_lon  = _ecl_lon_deg(sun, dt)
+        moon_sun_angle = (moon_lon - sun_lon) % 360
+        waxing = moon_sun_angle < 180
+        phase_name = _moon_phase_name(moon.phase, waxing)
+        moon_sign  = _lon_to_sign(moon_lon)
+
+        # ── Slunce (astrologické znamení) ──
+        sun_sign = _lon_to_sign(sun_lon)
+
+        # ── Retrográdní planety ──
+        PLANET_CLASSES = {
+            "Merkur": ephem.Mercury,
+            "Venuše": ephem.Venus,
+            "Mars":   ephem.Mars,
+            "Jupiter": ephem.Jupiter,
+            "Saturn": ephem.Saturn,
+            "Uran":   ephem.Uranus,
+            "Neptun": ephem.Neptune,
+        }
+        retrogrades = [name for name, cls in PLANET_CLASSES.items() if _is_retrograde(cls, dt)]
+
+        # ── Znamení klíčových planet ──
+        planet_signs = {}
+        for name, cls in PLANET_CLASSES.items():
+            p = cls(); p.compute(dt)
+            planet_signs[name] = _lon_to_sign(_ecl_lon_deg(p, dt))
+
+        # ── Sestavení kontextového shrnutí ──
+        retro_str = (", ".join(f"{r} ℞" for r in retrogrades)) if retrogrades else "žádná"
+        planet_str = ", ".join(
+            f"{n} v {s}{' ℞' if n in retrogrades else ''}"
+            for n, s in planet_signs.items()
+        )
+
+        summary = (
+            f"Astrologický kontext ({target_date}):\n"
+            f"• Slunce: {sun_sign}\n"
+            f"• Měsíc: {phase_name} v {moon_sign} ({round(moon.phase)}% osvětlení)\n"
+            f"• Energie fáze: {_moon_phase_energy(phase_name)}\n"
+            f"• Retrográdní planety: {retro_str}\n"
+            f"• Planety: {planet_str}"
+        )
+
+        return {
+            "moon_phase": phase_name,
+            "moon_sign": moon_sign,
+            "moon_illuminated": round(moon.phase),
+            "waxing": waxing,
+            "sun_sign": sun_sign,
+            "retrogrades": retrogrades,
+            "planet_signs": planet_signs,
+            "summary": summary,
+        }
+
+    except Exception as e:
+        # Fallback — alespoň sluneční znamení ze data
+        d = date.fromisoformat(target_date)
+        sun_sign = _sun_sign_fallback(d)
+        return {
+            "moon_phase": "neznámá",
+            "moon_sign": "neznámé",
+            "moon_illuminated": 50,
+            "waxing": True,
+            "sun_sign": sun_sign,
+            "retrogrades": [],
+            "planet_signs": {},
+            "summary": f"Astrologický kontext: Slunce v {sun_sign} (ephem nedostupný: {e})",
+        }
+
+def _sun_sign_fallback(d: date) -> str:
+    """Fallback výpočet slunečního znamení z data (bez ephem)."""
+    boundaries = [
+        (3, 21, "Beran"), (4, 20, "Býk"), (5, 21, "Blíženci"), (6, 21, "Rak"),
+        (7, 23, "Lev"), (8, 23, "Panna"), (9, 23, "Váhy"), (10, 23, "Štír"),
+        (11, 22, "Střelec"), (12, 22, "Kozoroh"), (1, 20, "Vodnář"), (2, 19, "Ryby"),
+    ]
+    for month, day, sign in boundaries:
+        if d.month == month and d.day >= day:
+            return sign
+        if d.month == month + 1 and d.day < day:
+            return sign
+    return "Kozoroh"
 
 # ─── Paměť ────────────────────────────────────────────────────────────────────
 
@@ -146,35 +311,103 @@ TOPICS = {
     ],
 }
 
-# Typy postů a jejich rotační váhy
-POST_TYPES = ["educational", "engagement", "myth_bust", "lunar", "feature_spotlight"]
+# ─── Blogové články ───────────────────────────────────────────────────────────
+
+BASE_BLOG_URL = "https://www.mystickahvezda.cz/blog/"
+
+BLOG_ARTICLES = [
+    # Planety
+    {"title": "Průvodce retrográdním Merkurem",                 "slug": "retrogradni-merkur-pruvodce.html",                        "keywords": ["merkur", "retrográdní"],               "category": "planety"},
+    {"title": "Merkur v retrográdě — co to znamená pro tvé znamení", "slug": "merkur-v-retrograde-co-to-znamena-pro-vase-znameni.html", "keywords": ["merkur", "retrográdní", "znamení"],    "category": "planety"},
+    {"title": "Retrográdní Venuše 2026 — co čekat v lásce",    "slug": "retrograde-venus-2026-co-cekat-v-lasce.html",             "keywords": ["venuše", "retrográdní", "láska"],      "category": "planety"},
+    {"title": "Saturnův návrat: co přinese tvůj 29. rok",       "slug": "saturuv-navrat-29-rok-zivota.html",                       "keywords": ["saturn", "návrat", "29"],               "category": "planety"},
+    {"title": "Pluto ve Vodnáři 2024–2043",                     "slug": "pluto-ve-vodnari-2024-2043.html",                         "keywords": ["pluto", "vodnář", "transformace"],     "category": "planety"},
+    {"title": "Zatmění Slunce a Měsíce 2026",                   "slug": "zatmeni-slunce-a-mesice-2026.html",                       "keywords": ["zatmění", "eclipse", "lunární"],        "category": "lunární"},
+    {"title": "Měsíční uzly: uzel osudu a životní směr",        "slug": "uzel-osudu-severni-jizni-uzel.html",                      "keywords": ["měsíční uzly", "karma", "severní uzel"], "category": "planety"},
+    {"title": "Lilith v natální kartě",                         "slug": "lilith-v-natalni-karte.html",                             "keywords": ["lilith", "natální karta"],             "category": "planety"},
+    {"title": "Chiron — raněný léčitel v natální kartě",        "slug": "chiron-raneny-lecitel-natalni-karta.html",                 "keywords": ["chiron", "léčení"],                    "category": "planety"},
+    {"title": "Čínský horoskop 2026 — rok Ohnivého koně",       "slug": "cinsky-horoskop-2026-rok-ohniveho-kone.html",             "keywords": ["čínský horoskop", "2026"],              "category": "znamení"},
+    {"title": "Znamení zvěrokruhu a peníze",                    "slug": "znameni-zverokruhu-a-penize.html",                        "keywords": ["znamení", "peníze"],                   "category": "znamení"},
+    # Lunární
+    {"title": "Rituál novu Měsíce pro začátečníky",             "slug": "novy-mesic-ritual-zacatecnici.html",                      "keywords": ["nov", "nový měsíc", "rituál"],         "category": "lunární"},
+    {"title": "Jak se připravit na úplněk",                     "slug": "jak-se-pripravit-na-uplnek.html",                         "keywords": ["úplněk", "příprava"],                  "category": "lunární"},
+    {"title": "Úplněk v Kozorohu: rituál a výklad",             "slug": "uplnek-v-kozorohovi-ritual-a-vyznam.html",                "keywords": ["úplněk", "kozoroh"],                   "category": "lunární"},
+    {"title": "Úplněk v Panně: rituál pro každé znamení",       "slug": "uplnek-v-panne-ritual-a-vyklad-pro-kazde-znameni.html",   "keywords": ["úplněk", "panna"],                     "category": "lunární"},
+    # Natální karta & domy
+    {"title": "Jak číst natální kartu — kompletní průvodce",    "slug": "jak-cist-natalni-kartu-pruvodce.html",                    "keywords": ["natální karta", "průvodce"],            "category": "nástroje"},
+    {"title": "Měsíční znak v natální kartě",                   "slug": "mesicni-znak-natalni-karta.html",                         "keywords": ["natální karta", "měsíční znak"],        "category": "nástroje"},
+    {"title": "Tajemství 12 astrologických domů",               "slug": "tajemstvi-12-astrologickych-domu.html",                   "keywords": ["astrologické domy", "domy"],            "category": "nástroje"},
+    {"title": "Jak rozpoznat svou astrologickou signaturu",     "slug": "rozpoznejte-svou-astrologickou-signaturu.html",           "keywords": ["astrologická signatura"],               "category": "nástroje"},
+    {"title": "Ascendent vs. sluneční znamení: jaký je rozdíl?","slug": "ascendent-vs-slunecni-znameni-jaky-je-rozdil.html",       "keywords": ["ascendent", "sluneční znamení"],        "category": "znamení"},
+    # Tarot
+    {"title": "Výklad tarotu pro začátečníky",                  "slug": "vyklad-tarotu-pro-zacatecniky.html",                      "keywords": ["tarot", "výklad"],                     "category": "nástroje"},
+    {"title": "Keltský kříž — tarotové rozložení",              "slug": "keltsky-kriz-tarot-rozlozeni.html",                       "keywords": ["tarot", "keltský kříž"],               "category": "nástroje"},
+    {"title": "Pohárové karty v tarotu",                        "slug": "co-znamenaji-pohary-v-tarotu.html",                       "keywords": ["tarot", "pohárové karty"],             "category": "nástroje"},
+    {"title": "Mečové karty v tarotu",                          "slug": "mecove-karty-tarot-vyznam.html",                          "keywords": ["tarot", "mečové karty"],               "category": "nástroje"},
+    {"title": "Jak fungují andělské karty",                     "slug": "jak-funguji-andelske-karty.html",                         "keywords": ["andělské karty"],                      "category": "nástroje"},
+    {"title": "Andělská čísla 11:11 — poselství andělů",        "slug": "andelska-cisla-1111.html",                                "keywords": ["andělská čísla", "11:11", "1111"],     "category": "nástroje"},
+    {"title": "Andělská čísla 333, 444, 555",                   "slug": "andelska-cisla-333-444-555.html",                         "keywords": ["andělská čísla", "333", "444"],         "category": "nástroje"},
+    # Runy & Numerologie
+    {"title": "Runový výklad doma — průvodce",                  "slug": "runovy-vyklad-doma-pruvodce.html",                        "keywords": ["runy", "výklad"],                      "category": "nástroje"},
+    {"title": "Runy: severská magie v moderním světě",          "slug": "runy-severska-magie-v-modernim-svete.html",               "keywords": ["runy", "severská magie"],              "category": "nástroje"},
+    {"title": "Životní číslo — odhalení kódu tvé duše",         "slug": "zivotni-cislo-odhaleni-kodu-vasi-duse.html",              "keywords": ["numerologie", "životní číslo"],        "category": "numerologie"},
+    {"title": "Master čísla 11, 22, 33 v numerologii",          "slug": "mistrovska-cisla-numerologie.html",                       "keywords": ["numerologie", "master čísla"],         "category": "numerologie"},
+    {"title": "Numerologie jména: křestní jméno a osud",        "slug": "numerologie-jmena-krizni-jmeno.html",                     "keywords": ["numerologie", "jméno"],                "category": "numerologie"},
+    {"title": "Osobní rok v numerologii 2026",                  "slug": "osobni-rok-numerologie-2026.html",                        "keywords": ["numerologie", "osobní rok"],           "category": "numerologie"},
+    {"title": "Numerologie kompatibilita partnerů",             "slug": "numerologie-kompatibilita-partneru.html",                 "keywords": ["numerologie", "kompatibilita"],        "category": "numerologie"},
+    {"title": "Jak zjistit své logo a šestici v numerologii",   "slug": "jak-zjistit-sve-logo-a-sestici-v-numerologii.html",       "keywords": ["numerologie", "logo"],                 "category": "numerologie"},
+    # Vztahy & spiritualita
+    {"title": "Co je synastrie — partnerská astrologie",        "slug": "co-je-synastrie-jak-funguje-partnerska-astrologie.html",  "keywords": ["synastrie", "partnerská shoda"],       "category": "nástroje"},
+    {"title": "Proč ti to v lásce nevychází",                   "slug": "proc-vam-to-v-lasce-nevyhcazi.html",                      "keywords": ["láska", "vztahy"],                     "category": "znamení"},
+    {"title": "Iluze spřízněné duše a karmické vztahy",         "slug": "iluze-spriznene-duse-karmicke-vztahy.html",               "keywords": ["spřízněná duše", "karma", "vztahy"],   "category": "znamení"},
+    {"title": "5 znaků, že potkáváš svou spřízněnou duši",      "slug": "5-znaku-ze-potkavate-svou-spriznenou-dusi.html",          "keywords": ["spřízněná duše", "znamení"],           "category": "znamení"},
+    {"title": "Attachment styly — vzorce ve vztazích",          "slug": "attachment-styly-vzorce-ve-vztazich.html",                "keywords": ["vztahy", "attachment"],                "category": "znamení"},
+    # Ostatní
+    {"title": "Co je aura a jak ji vidět, číst a čistit",       "slug": "co-je-aura-jak-ji-videt-cist-cistit.html",                "keywords": ["aura", "energie"],                     "category": "nástroje"},
+    {"title": "Čakrové léčení — návod pro začátečníky",         "slug": "cakrove-leceni-navod.html",                               "keywords": ["čakry", "léčení"],                     "category": "nástroje"},
+    {"title": "Základy 7 čaker — anatomie energetického těla",  "slug": "zaklady-sedmi-caker-anatomie.html",                       "keywords": ["čakry", "energie"],                    "category": "nástroje"},
+    {"title": "Zákon přitažlivosti — nejčastější chyby",        "slug": "zakon-pritazlivosti-chyby.html",                          "keywords": ["zákon přitažlivosti", "manifestace"],  "category": "nástroje"},
+    {"title": "Křišťálová koule: tajemství scryingu",           "slug": "tajemstvi-kristalove-koule-scrying.html",                 "keywords": ["křišťálová koule"],                    "category": "nástroje"},
+    {"title": "Šamanské kolo a totemové zvíře",                 "slug": "shamansko-kolo-totemove-zvire.html",                      "keywords": ["šamanské kolo", "totem"],              "category": "nástroje"},
+    {"title": "Biorytmy — proč se ti někdy nedaří",             "slug": "biorytmy-proc-se-vam-nedari.html",                        "keywords": ["biorytmy", "energie", "cykly"],        "category": "nástroje"},
+    {"title": "Průvodce energií a ochranou",                    "slug": "pruvodce-energie-ochrana.html",                           "keywords": ["energie", "ochrana"],                  "category": "nástroje"},
+    {"title": "Psychologie snů — stromy a stíny",               "slug": "psychologie-snu-stici-stromy.html",                       "keywords": ["sny", "psychologie"],                  "category": "nástroje"},
+    {"title": "Létání ve snu — co to znamená",                  "slug": "letani-ve-snu-vyznam.html",                               "keywords": ["sny", "létání"],                       "category": "nástroje"},
+    {"title": "Feng shui doma: energie, peníze a láska",        "slug": "feng-shui-doma-energie-penizy-laska.html",                "keywords": ["feng shui", "energie", "doma"],        "category": "nástroje"},
+    {"title": "4 živly v astrologii: oheň, země, vzduch, voda", "slug": "ctyri-zivly-astrologie-ohen-zeme-vzduch-voda.html",       "keywords": ["prvky", "živly", "elementy"],          "category": "prvky"},
+]
+
+# ─── Typy a kategorie ─────────────────────────────────────────────────────────
+
+POST_TYPES = ["educational", "engagement", "myth_bust", "lunar", "feature_spotlight", "blog_promo"]
 
 TYPE_TO_CATEGORY = {
-    "educational": ["planety", "lunární", "prvky", "znamení", "numerologie"],
-    "engagement":  ["planety", "prvky", "znamení", "mýty"],
-    "myth_bust":   ["mýty"],
-    "lunar":       ["lunární"],
+    "educational":       ["planety", "lunární", "prvky", "znamení", "numerologie"],
+    "engagement":        ["planety", "prvky", "znamení", "mýty"],
+    "myth_bust":         ["mýty"],
+    "lunar":             ["lunární"],
     "feature_spotlight": ["nástroje"],
+    "blog_promo":        ["planety", "lunární", "prvky", "nástroje", "znamení", "numerologie"],
 }
 
 WEB_LINKS = {
     "nástroje": {
         "Natální karta": "https://www.mystickahvezda.cz/natalni-karta.html",
-        "Tarot": "https://www.mystickahvezda.cz/tarot.html",
-        "Runy": "https://www.mystickahvezda.cz/runy.html",
-        "Numerologie": "https://www.mystickahvezda.cz/numerologie.html",
+        "Tarot":         "https://www.mystickahvezda.cz/tarot.html",
+        "Runy":          "https://www.mystickahvezda.cz/runy.html",
+        "Numerologie":   "https://www.mystickahvezda.cz/numerologie.html",
         "Partnerská shoda": "https://www.mystickahvezda.cz/partnerska-shoda.html",
         "Lunární kalendář": "https://www.mystickahvezda.cz/lunace.html",
-        "Andělská čísla": "https://www.mystickahvezda.cz/andelske-karty.html",
-        "Šamanské kolo": "https://www.mystickahvezda.cz/shamanske-kolo.html",
-        "Minulý život": "https://www.mystickahvezda.cz/minuly-zivot.html",
+        "Andělská čísla":   "https://www.mystickahvezda.cz/andelske-karty.html",
+        "Šamanské kolo":    "https://www.mystickahvezda.cz/shamanske-kolo.html",
+        "Minulý život":     "https://www.mystickahvezda.cz/minuly-zivot.html",
         "Křišťálová koule": "https://www.mystickahvezda.cz/kristalova-koule.html",
     },
     "lunární": "https://www.mystickahvezda.cz/lunace.html",
     "default": "https://www.mystickahvezda.cz/horoskopy.html",
 }
 
-# ─── Výběr tématu ─────────────────────────────────────────────────────────────
+# ─── Výběr tématu a blogového článku ─────────────────────────────────────────
 
 def get_recent_topics(mem: dict, days: int = 30) -> set:
     cutoff = date.today() - timedelta(days=days)
@@ -183,26 +416,110 @@ def get_recent_topics(mem: dict, days: int = 30) -> set:
         if date.fromisoformat(p["date"]) >= cutoff
     }
 
-def get_recent_types(mem: dict, n: int = 3) -> list:
+def get_recent_types(mem: dict, n: int = 7) -> list:
     return [p["type"] for p in mem["posts"][-n:]]
+
+def _astro_topic_boost(topic: str, astro: dict) -> float:
+    """
+    Vrátí bonus skóre (0.0–3.0) pro téma na základě aktuálního astro kontextu.
+    Čím relevantnější téma k dnešní obloze, tím vyšší bonus.
+    """
+    boost = 0.0
+    t_lower = topic.lower()
+    retros  = [r.lower() for r in astro.get("retrogrades", [])]
+    moon_ph = astro.get("moon_phase", "").lower()
+    moon_sg = astro.get("moon_sign", "").lower()
+    sun_sg  = astro.get("sun_sign",  "").lower()
+    p_signs = {k.lower(): v.lower() for k, v in astro.get("planet_signs", {}).items()}
+
+    # Retrográdní planety → silný boost pro téma o té planetě
+    for r in retros:
+        if r in t_lower:
+            boost += 3.0
+            break
+
+    # Aktuální sluneční znamení → boost pro téma o tomto znamení
+    if sun_sg and sun_sg in t_lower:
+        boost += 2.0
+
+    # Měsíční fáze → boost pro lunární témata
+    if "nový měsíc" in moon_ph and any(x in t_lower for x in ["nov ", "nový měsíc", "záměr"]):
+        boost += 2.5
+    elif "úplněk" in moon_ph and any(x in t_lower for x in ["úplněk", "emoce", "kulminace"]):
+        boost += 2.5
+    elif "dorůstající" in moon_ph and any(x in t_lower for x in ["dorůstající", "budovat", "akce"]):
+        boost += 1.5
+    elif "ubývající" in moon_ph and any(x in t_lower for x in ["ubývající", "pustit", "uvolnit"]):
+        boost += 1.5
+
+    # Měsíc v daném znamení → boost pro téma o tomto znamení
+    if moon_sg and moon_sg in t_lower:
+        boost += 1.5
+
+    # Planeta v daném znamení → slabší boost
+    for planet, sign in p_signs.items():
+        if planet in t_lower and sign in t_lower:
+            boost += 1.0
+            break
+
+    return boost
+
+def pick_blog_article(mem: dict, recent_topics: set, astro: dict = None) -> dict:
+    """Vybere blogový článek, který nebyl nedávno použit.
+    Preferuje články relevantní k aktuálnímu astro kontextu."""
+    available = [a for a in BLOG_ARTICLES if a["title"] not in recent_topics]
+    if not available:
+        available = BLOG_ARTICLES[:]
+
+    scores = mem.get("category_scores", {})
+    weighted = []
+    for a in available:
+        base = scores.get(a["category"], {}).get("avg_score", 5.0)
+        # Astro boost — přidej boost podle klíčových slov článku
+        astro_boost = 0.0
+        if astro:
+            combined = a["title"] + " " + " ".join(a["keywords"])
+            astro_boost = _astro_topic_boost(combined, astro)
+        weighted.append((a, base + astro_boost))
+
+    weighted.sort(key=lambda x: -x[1])
+    # Náhodný výběr z top 8 (zachováme trochu variabilitu)
+    top = [a for a, _ in weighted[:8]]
+    return random.choice(top)
 
 def pick_type(mem: dict, force_type: str = None) -> str:
     if force_type:
         return force_type
 
-    recent = get_recent_types(mem, 3)
+    recent_posts = mem.get("posts", [])
+    recent_7 = get_recent_types(mem, 7)
+    recent_3 = get_recent_types(mem, 3)
+    last_type = recent_3[-1] if recent_3 else None
 
-    # Pravidla rotace
-    if recent and recent[-1] == "educational" and recent.count("educational") >= 2:
-        candidates = [t for t in POST_TYPES if t != "educational"]
-    elif recent.count("feature_spotlight") >= 2:
-        candidates = [t for t in POST_TYPES if t != "feature_spotlight"]
-    elif "myth_bust" not in recent[-7:] if len(recent) >= 7 else True:
-        candidates = POST_TYPES  # myth_bust dostane šanci
-    else:
-        candidates = POST_TYPES
+    excluded = set()
 
-    # Preferuj typy s vyšším průměrným skóre
+    # Pravidlo: max 2x stejný typ v řadě
+    if len(recent_3) >= 2 and recent_3[-1] == recent_3[-2]:
+        excluded.add(recent_3[-1])
+
+    # Pravidlo: max 1x myth_bust za 3 dny
+    if "myth_bust" in recent_3:
+        excluded.add("myth_bust")
+
+    # Pravidlo: max 1x lunar za 3 dny
+    if "lunar" in recent_3:
+        excluded.add("lunar")
+
+    candidates = [t for t in POST_TYPES if t not in excluded]
+    if not candidates:
+        candidates = POST_TYPES[:]
+
+    # Pravidlo: min 1x blog_promo za 5 dní — nudge
+    last_5_types = [p["type"] for p in recent_posts[-5:]]
+    if "blog_promo" not in last_5_types and "blog_promo" in candidates:
+        return "blog_promo"
+
+    # Skóre-váhový výběr
     scores = mem.get("category_scores", {})
     weighted = []
     for t in candidates:
@@ -211,34 +528,64 @@ def pick_type(mem: dict, force_type: str = None) -> str:
         weighted.append((t, avg))
 
     weighted.sort(key=lambda x: -x[1])
-    # Vezmi top 3 a náhodně vyber (variabilita)
+    # Top 3 — přidej náhodnost
     top = [t for t, _ in weighted[:3]]
     return random.choice(top)
 
-def pick_topic(mem: dict, post_type: str, force_topic: str = None) -> tuple:
-    """Vrátí (topic, category)."""
+def pick_topic(mem: dict, post_type: str, force_topic: str = None,
+               astro: dict = None) -> tuple:
+    """
+    Vrátí (topic, category, blog_url_or_None).
+    Pro blog_promo: topic = titulek článku, blog_url = URL článku.
+    Pro ostatní typy: blog_url = None.
+    Astro kontext zvyšuje váhu témat relevantních k aktuální obloze.
+    """
+    recent = get_recent_topics(mem)
+
+    # Blog promo — vyber z BLOG_ARTICLES
+    if post_type == "blog_promo":
+        if force_topic:
+            matches = [a for a in BLOG_ARTICLES
+                       if force_topic.lower() in a["title"].lower()
+                       or any(force_topic.lower() in kw.lower() for kw in a["keywords"])]
+            article = matches[0] if matches else pick_blog_article(mem, recent, astro)
+        else:
+            article = pick_blog_article(mem, recent, astro)
+        url = BASE_BLOG_URL + article["slug"]
+        return article["title"], article["category"], url
+
+    # Ostatní typy
     if force_topic:
         for cat, topics in TOPICS.items():
             for t in topics:
                 if force_topic.lower() in t.lower():
-                    return t, cat
-        return force_topic, "planety"
+                    return t, cat, None
+        return force_topic, "planety", None
 
-    recent = get_recent_topics(mem)
     cats = TYPE_TO_CATEGORY.get(post_type, ["planety"])
-
-    # Prioritizuj kategorie s vyšším skóre
     scores = mem.get("category_scores", {})
-    cats_sorted = sorted(cats, key=lambda c: -scores.get(c, {}).get("avg_score", 5.0))
 
-    for cat in cats_sorted:
-        available = [t for t in TOPICS.get(cat, []) if t not in recent]
-        if available:
-            return random.choice(available), cat
+    # Sbírej všechna dostupná témata z povolených kategorií s výsledným skóre
+    candidates = []
+    for cat in cats:
+        for t in TOPICS.get(cat, []):
+            if t in recent:
+                continue
+            base  = scores.get(cat, {}).get("avg_score", 5.0)
+            boost = _astro_topic_boost(t, astro) if astro else 0.0
+            candidates.append((t, cat, base + boost))
 
-    # Fallback — reset (všechna témata použita)
-    cat = random.choice(cats)
-    return random.choice(TOPICS.get(cat, ["Astrologie a ty"])), cat
+    if not candidates:
+        # Fallback — reset všech témat
+        cat = random.choice(cats)
+        t = random.choice(TOPICS.get(cat, ["Astrologie a ty"]))
+        return t, cat, None
+
+    candidates.sort(key=lambda x: -x[2])
+    # Náhodný výběr z top 5 (variabilita + astro relevance)
+    top = candidates[:5]
+    chosen = random.choice(top)
+    return chosen[0], chosen[1], None
 
 # ─── Claude API ───────────────────────────────────────────────────────────────
 
@@ -255,13 +602,14 @@ def claude_call(system: str, user: str, max_tokens: int = 800) -> str:
 
 # ─── Generování postu ─────────────────────────────────────────────────────────
 
-def generate_post(post_type: str, topic: str, category: str, target_date: str) -> dict:
+def generate_post(post_type: str, topic: str, category: str, target_date: str,
+                  blog_url: str = None, astro: dict = None) -> dict:
     d = date.fromisoformat(target_date)
     months_cs = ["ledna","února","března","dubna","května","června",
                  "července","srpna","září","října","listopadu","prosince"]
     date_cs = f"{d.day}. {months_cs[d.month-1]} {d.year}"
 
-    # Najdi relevantní web odkaz
+    # Najdi relevantní web odkaz (pro ne-blog typy)
     web_url = WEB_LINKS.get("default")
     if category == "lunární":
         web_url = WEB_LINKS["lunární"]
@@ -277,12 +625,12 @@ Struktura: hook → vysvětlení → konkrétní příklad → CTA (save nebo we
 Délka: 5–8 vět. Přidej 1 konkrétní příklad nebo analogii.
 CTA: "Ulož si ⬇️" nebo odkaz na web: {web_url}""",
 
-        "engagement": f"""Piš engagement post — otázka nebo A/B volba, která vyvolá komentáře.
+        "engagement": """Piš engagement post — otázka nebo A/B volba, která vyvolá komentáře.
 Struktura: provokativní tvrzení nebo otázka → krátký kontext (2–3 věty) → výzva k reakci.
 Délka: 3–5 vět. Konec vždy otázkou nebo výběrem.
 NIKDY nedávej odkaz na web — chceš komentáře, ne kliknutí.""",
 
-        "myth_bust": f"""Piš myth-bust post — boř mýtus konkrétními fakty.
+        "myth_bust": """Piš myth-bust post — boř mýtus konkrétními fakty.
 Struktura: "Říká se, že X. To není pravda." → proč mýtus vznikl → jak to skutečně je → pointa.
 Délka: 5–7 vět. Buď odvážný a přímý.
 CTA: otázka do komentáře.""",
@@ -296,7 +644,26 @@ CTA: odkaz {web_url}""",
 Vysvětli CO funkce dělá a PROČ je to užitečné. Pak přirozeně odkaž.
 Délka: 5–7 vět. Nesmí znít jako reklama.
 CTA: odkaz {web_url}""",
+
+        "blog_promo": f"""Piš teaser post, který přiměje lidi kliknout na blogový článek a dočíst ho celý.
+Článek: "{topic}"
+URL článku: {blog_url}
+
+Struktura:
+1. Hook — překvapivé tvrzení nebo otázka, která cílí na bolest nebo zvědavost
+2. Teasující úvod (3–4 věty) — naznač o čem článek je, rozvij kontext, ALE nevyzraď vše
+3. "V článku se dozvíš:" + 3–4 odrážky s konkrétními výstupy (co čtenář získá)
+4. Krátký odstavec (1–2 věty) — proč je téma důležité právě teď
+5. CTA: jasná výzva k akci + URL odkaz
+
+Délka: 6–10 vět celkem (bez odrážek). Nesmí znít jako reklama — spíš jako doporučení od přítele.
+Vyzraď dost, aby čtenář chtěl víc. Nezacházej do detailů — to je v článku.""",
     }
+
+    # Astro kontext pro Claude
+    astro_block = ""
+    if astro and astro.get("summary"):
+        astro_block = f"\n\n{astro['summary']}\n\nDůležité: Pokud je to přirozené, zakomponuj tento astrologický kontext do postu (fáze Měsíce, retrográdní planety, sluneční sezóna). Nevnucuj ho násilně — jen když to dává smysl pro téma."
 
     system = """Jsi copywriter pro českou mystickou stránku Mystická Hvězda.
 Píšeš večerní příspěvky na Instagram a Facebook.
@@ -305,7 +672,7 @@ Tykáš, 2. os. j.č. — NIKDY žádný lomený tvar (šel/šla).
 
     user = f"""Datum: {date_cs}
 Téma: {topic}
-Typ postu: {post_type}
+Typ postu: {post_type}{astro_block}
 
 {type_instructions[post_type]}
 
@@ -317,7 +684,7 @@ Formát výstupu:
 [hashtags]"""
 
     print(f"[*] Generuji {post_type} post: {topic}...")
-    caption_raw = claude_call(system, user, max_tokens=600)
+    caption_raw = claude_call(system, user, max_tokens=900 if post_type == "blog_promo" else 700)
 
     # Odděl caption od hashtagů
     parts = caption_raw.strip().rsplit("\n\n", 1)
@@ -329,30 +696,55 @@ Formát výstupu:
     img_system = """You are an expert at writing image generation prompts for mystical/cosmic brand Mystická Hvězda.
 Output ONLY the prompt — no comments, no explanations. Plain ASCII Latin characters only."""
 
+    # Přidej přesná měsíční data do image promptu
+    moon_data = ""
+    if astro:
+        moon_data = (
+            f"\nACTUAL MOON DATA for {target_date}: "
+            f"{astro['moon_phase']} ({astro['moon_illuminated']}% illuminated), "
+            f"moon in {astro['moon_sign']}. "
+            f"{'Waxing' if astro['waxing'] else 'Waning'} phase. "
+            f"If depicting the moon, it must match this exact phase visually — "
+            f"{astro['moon_illuminated']}% of the disc is lit."
+        )
+
     img_user = f"""Topic: {topic}
 Post type: {post_type}
-Date: {date_cs}
+Date: {date_cs}{moon_data}
 
-Write a Gemini/Midjourney image prompt for a Facebook/Instagram post visual.
-Style rules:
-- Single floating 3D CGI object relevant to the topic
-- Deep navy cosmic background (#050510)
-- Purple/gold nebula, stardust particles
-- Premium 3D CGI render, icon-art style
-- NO text, NO people, NO cards, NO frames, NO borders
-- Portrait 4:5 for Instagram OR square 1:1 for Facebook — pick what fits better
-- Plain solid #050510 border ~20% margin, object floats centered"""
+Write a Gemini image prompt for a Facebook/Instagram post visual.
+
+STRICT RULES:
+- Describe ONE single floating 3D CGI object only — pick the most iconic object for the topic
+- If depicting the moon, use the EXACT phase above ({astro['moon_illuminated'] if astro else '~50'}% illuminated) — NOT a generic crescent unless the actual phase is a crescent
+- Object: describe its shape, material, surface texture, and light color only — NO energy effects, NO waves, NO rings, NO trails, NO halos
+- Background: very dark navy #050510 (almost black), faint purple nebula, scattered stars
+- Style: premium 3D CGI render, icon-art style, photorealistic, octane render
+- NO complex scenes, NO actions, NO flowing shapes, NO multiple elements, NO text, NO people, NO frames, NO borders
+- Portrait 4:5, object centered, fills the canvas
+
+FORMAT: exactly 4 sentences, structured like this example:
+1. "A single [object] floating in center frame, [specific shape/size details and what is lit/shadowed]."
+2. "The [object]'s surface is [material], rendered in [colors] with [light details]."
+3. "Background is very dark navy #050510 with visible purple and violet nebula clouds softly glowing behind the object, scattered pinpoint stars."
+4. "Premium 3D CGI render, icon-art style, octane render, portrait 4:5 ratio, object centered and fills canvas. NO waves, NO rings, NO energy effects, NO borders, NO halos, NO trails."
+
+Be literal and specific — describe only what you SEE, not what you FEEL. No metaphors, no abstract concepts."""
 
     image_prompt = claude_call(img_system, img_user, max_tokens=300)
+
+    # Výsledný odkaz: blog_url má přednost u blog_promo
+    display_url = blog_url if blog_url else web_url
 
     return {
         "caption": caption,
         "hashtags": hashtags,
         "image_prompt": image_prompt,
-        "web_url": web_url,
+        "web_url": display_url,
         "type": post_type,
         "topic": topic,
         "category": category,
+        "blog_url": blog_url,
     }
 
 # ─── Skórování ────────────────────────────────────────────────────────────────
@@ -405,13 +797,22 @@ def main():
 
     print(f"\n=== Evening Post Generator | datum: {target_date} ===\n")
 
+    # Načti skutečný astronomický kontext
+    print("[*] Načítám astronomický kontext...")
+    astro = get_astro_context(target_date)
+    print(f"    {astro['summary'].splitlines()[0]}")
+    for line in astro['summary'].splitlines()[1:]:
+        print(f"    {line}")
+
     post_type = pick_type(mem, args.type)
-    topic, category = pick_topic(mem, post_type, args.topic)
+    topic, category, blog_url = pick_topic(mem, post_type, args.topic, astro)
 
-    print(f"[*] Typ: {post_type} | Kategorie: {category}")
+    print(f"\n[*] Typ: {post_type} | Kategorie: {category}")
     print(f"[*] Téma: {topic}")
+    if blog_url:
+        print(f"[*] Blog URL: {blog_url}")
 
-    result = generate_post(post_type, topic, category, target_date)
+    result = generate_post(post_type, topic, category, target_date, blog_url, astro)
 
     # Výstup
     sep = "=" * 60
@@ -419,29 +820,38 @@ def main():
     print(f"📅 {date_cs} | 🌙 večerní post\n")
     print(result["caption"])
     print(f"\n{result['hashtags']}")
+    if result["web_url"]:
+        print(f"\n🔗 {result['web_url']}")
     print(f"\n{sep}\n🖼️  IMAGE PROMPT\n{sep}")
     print(result["image_prompt"])
     print(sep)
 
     # Ulož do paměti
-    mem["posts"].append({
+    mem_entry = {
         "date": target_date,
         "type": post_type,
         "topic": topic,
         "category": category,
         "score": None,
-    })
+    }
+    if blog_url:
+        mem_entry["blog_url"] = blog_url
+    mem["posts"].append(mem_entry)
     save_memory(mem)
 
     # Ulož do souboru
     out_path = Path(__file__).parent / f"evening_{target_date}.txt"
-    out_path.write_text(
-        f"📅 {date_cs} | večerní post\n\n"
+    file_content = (
+        f"📅 {date_cs} | večerní post\n"
+        f"Typ: {post_type} | Kategorie: {category}\n\n"
         f"{result['caption']}\n\n"
-        f"{result['hashtags']}\n\n"
-        f"IMAGE PROMPT\n{sep}\n{result['image_prompt']}\n",
-        encoding="utf-8"
+        f"{result['hashtags']}\n"
     )
+    if result["web_url"]:
+        file_content += f"\n🔗 {result['web_url']}\n"
+    file_content += f"\nIMAGE PROMPT\n{sep}\n{result['image_prompt']}\n"
+    out_path.write_text(file_content, encoding="utf-8")
+
     print(f"\n[OK] Typ: {post_type} | Téma: {topic}")
     print(f"[OK] Uloženo: {out_path}")
     print(f"[TIP] Po zveřejnění ohodnoť post: python evening_post.py --score 8.5")
