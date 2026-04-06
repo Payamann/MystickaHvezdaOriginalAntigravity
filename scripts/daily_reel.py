@@ -4,7 +4,7 @@ Voiceover Generator pro Mystickou Hvězdu
 ==========================================
 1. Načte zítřejší denní horoskopy z Supabase cache
 2. Chybějící vygeneruje přes Claude API (stejný prompt jako web)
-3. Náhodně vybere 4 znamení
+3. Náhodně vybere 3 znamení
 4. Přes Claude API zformátuje do voiceover scriptu s [] stylovými tagy
 
 Usage:
@@ -92,18 +92,18 @@ def save_used_signs(data: dict):
     USED_SIGNS_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 def pick_signs(target_date: str) -> list:
-    """Vybere 4 znamení která v daný den ještě nebyla použita."""
+    """Vybere 3 znamení která v daný den ještě nebyla použita."""
     used = load_used_signs()
     already_used = used.get(target_date, [])
     remaining = [s for s in ALL_SIGNS if s not in already_used]
 
-    if len(remaining) < 4:
+    if len(remaining) < 3:
         # Všech 12 použito — reset pro tento den
         print(f"  [!] Vsechna znameni pro {target_date} uz pouzita — resetuji.")
         already_used = []
         remaining = ALL_SIGNS[:]
 
-    chosen = random.sample(remaining, 4)
+    chosen = random.sample(remaining, 3)
 
     # Ulož použitá znamení
     used[target_date] = already_used + chosen
@@ -293,7 +293,7 @@ PRAVIDLA:
 - Tykáš, 2. os. j.č., žádné lomené tvary (šel/šla)
 - Přesně 3 věty textu — záhadné, osobní, taháček na kliknutí
 - Hook v první větě — napětí nebo otázka, přidej přesně 2 emoji organicky do textu (ne na konci)
-- NEZMIŇUJ explicitně která 4 znamení jsou ve videu — zachovej záhadu
+- NEZMIŇUJ explicitně která 3 znamení jsou ve videu — zachovej záhadu
 - Třetí věta = odkaz na web přirozeně: "Celý výklad tě čeká tady → [URL]"
 - Za textem PRÁZDNÝ ŘÁDEK a pak hashtags na samostatném řádku
 - Hashtags: #mystickaHvezda + znamení s velkým počátečním písmenem + fixní tagy
@@ -454,8 +454,6 @@ Výstup ve formátu (nic jiného — žádné nadpisy jako HOOK: nebo SEKCE:):
 
 [sekce znamení 3]
 
-[sekce znamení 4]
-
 [outro]"""
 
     print("[*] Generuji voiceover script...")
@@ -486,8 +484,8 @@ Script:
 def main():
     parser = argparse.ArgumentParser(description="Voiceover generator pro Mystickou Hvězdu")
     parser.add_argument("--date", default=None, help="Datum videa (YYYY-MM-DD), default: zitra")
-    parser.add_argument("--signs", nargs=4, metavar="SIGN",
-                        help="4 konkretni znameni (default: nahodny vyber)")
+    parser.add_argument("--signs", nargs=3, metavar="SIGN",
+                        help="3 konkretni znameni (default: nahodny vyber)")
     args = parser.parse_args()
 
     target_date = args.date or str(date.today())
