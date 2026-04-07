@@ -1,5 +1,5 @@
 import express from 'express';
-import { callGemini } from '../services/gemini.js';
+import { callClaude } from '../services/claude.js';
 import { generalAICache } from '../services/cache.js';
 import { SYSTEM_PROMPTS } from '../config/prompts.js';
 
@@ -41,7 +41,7 @@ Pokyny pro text:
 5. Zakonč vzkaz jednou "Afirmací dne".
 6. Nepoužívej markdown formátování (hvězdičky atd.), jen čistý text s odstavci.`;
 
-        const text = await callGemini(systemPrompt, userMessage);
+        const text = await callClaude(systemPrompt, userMessage);
 
         generalAICache.set(cacheKey, text);
 

@@ -214,6 +214,7 @@ app.use(helmet({
                 'https://unpkg.com',
 
                 'https://www.google-analytics.com',
+                'https://region1.google-analytics.com',
                 'https://stats.g.doubleclick.net',
             ].filter(Boolean),
             frameSrc: ["'self'", 'https://js.stripe.com'], // Allow Stripe iframe
@@ -579,7 +580,7 @@ if (isMain || process.env.NODE_ENV === 'production') {
         };
 
         // 1. Generate new content daily (08:00 UTC)
-        if (process.env.GEMINI_API_KEY) {
+        if (process.env.ANTHROPIC_API_KEY) {
             schedule.scheduleJob('0 8 * * *', () => {
                 runSocialAgent('auto');
             });
@@ -591,7 +592,7 @@ if (isMain || process.env.NODE_ENV === 'production') {
 
             console.warn('📅 Social Media Agent schedules initialized.');
         } else {
-            console.warn('⚠️ Social Media Agent skipped (missing GEMINI_API_KEY).');
+            console.warn('⚠️ Social Media Agent skipped (missing ANTHROPIC_API_KEY).');
         }
 
         // Prefill horoscope cache — every day at 05:00 UTC (6:00 CET)

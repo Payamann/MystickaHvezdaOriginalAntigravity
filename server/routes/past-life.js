@@ -6,7 +6,7 @@
 import express from 'express';
 import crypto from 'crypto';
 import { authenticateToken, requirePremium } from '../middleware.js';
-import { callGemini } from '../services/gemini.js';
+import { callClaude } from '../services/claude.js';
 import { supabase } from '../db-supabase.js';
 
 export const router = express.Router();
@@ -96,7 +96,7 @@ Pohlaví: ${genderLabel}
 
 Odhal minulý život této duše.`;
 
-        const raw = await callGemini(SYSTEM_PROMPT, userMsg);
+        const raw = await callClaude(SYSTEM_PROMPT, userMsg);
 
         // Parse JSON from Gemini response
         let result;

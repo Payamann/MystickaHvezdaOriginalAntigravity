@@ -10,12 +10,15 @@ Opravy oproti předchozí verzi:
   - Spolehlivější detekce délky (format > stream fallback)
   - --quality CLI argument (CRF)
   - -movflags +faststart pro web delivery
+  - --xfade: crossfade dissolve na každém přechodu fwd↔rev (plynulý obrat)
 
 Usage:
     python loop.py input.mp4
     python loop.py input.mp4 output.mp4 --duration 60 --quality 20
+    python loop.py input.mp4 output.mp4 --duration 60 --xfade 0.5
 """
 
+import math
 import subprocess
 import sys
 import tempfile
@@ -158,22 +161,13 @@ def create_pingpong_loop(
         rev_cmd += ["-y", str(rev)]
         run_ff(rev_cmd, "Encoduji reverse (bez frame 0 originálu)")
 
-        # === Krok 3: Concat fwd + rev → jeden cyklus (copy, bez re-encode) ===
-        # Posix cesty — forward slashes, bezpečné na Windows i Linux
-        cycle_list = tmp / "cycle_list.txt"
-        cycle_list.write_text(
-            f"file '{fwd.as_posix()}'\nfile '{rev.as_posix()}'\n",
-            encoding="utf-8",
-        )
-        run_ff([
-            "ffmpeg", "-f", "concat", "-safe", "0", "-i", str(cycle_list),
-            "-c", "copy", "-y", str(cycle),
-        ], "Spojuji forward + reverse do cyklu")
-
-        # === Krok 4: Opakuj cyklus → finální video (copy + faststart) ===
+        # === Krok 3: Finální concat — přímo střídej fwd/rev bez mezikroku cycle.mp4 ===
         final_list = tmp / "final_list.txt"
         final_list.write_text(
-            "".join(f"file '{cycle.as_posix()}'\n" for _ in range(num_cycles)),
+            "".join(
+                f"file '{fwd.as_posix()}'\nfile '{rev.as_posix()}'\n"
+                for _ in range(num_cycles)
+            ),
             encoding="utf-8",
         )
 
@@ -200,6 +194,139 @@ def create_pingpong_loop(
         print(f"[OK] Výsledná délka: {out_dur:.2f}s ({out_frames} framů)")
 
 
+def create_smooth_pingpong_loop(
+    input_file: str,
+    output_file: str,
+    target_duration: float = 60.0,
+    crf: int = 20,
+    xfade_dur: float = 0.5,
+):
+    """
+    Ping-pong smyčka s xfade dissolve na každém přechodu fwd↔rev.
+
+    Princip: fwd končí na framu N-1, rev začíná na framu N-1 (totožný obsah).
+    Xfade dissolví mezi stejnými framy → vypadá jako přirozené "zpomalení" při obratu,
+    nikoliv jako abruptní střih. Stejně tak rev→fwd na framu 0.
+    """
+    input_path = Path(input_file)
+    if not input_path.exists():
+        raise FileNotFoundError(f"Soubor nenalezen: {input_file}")
+
+    print("[*] Analyzuji vstupní video...")
+    duration, fps_str, fps, frame_count, audio = get_video_info(input_file)
+    print(
+        f"[OK] Délka: {duration:.2f}s | FPS: {fps:.3f} ({fps_str}) "
+        f"| Framy: {frame_count} | Audio: {'ano' if audio else 'ne'}"
+    )
+
+    if xfade_dur >= duration:
+        raise ValueError(f"--xfade ({xfade_dur}s) musí být kratší než video ({duration:.2f}s).")
+    if xfade_dur < 0.1:
+        raise ValueError("--xfade musí být alespoň 0.1s.")
+
+    # Počet segmentů: N seg × duration − (N−1) × xfade_dur ≥ target_duration
+    # → N ≥ (target_duration − xfade_dur) / (duration − xfade_dur)
+    num_segs = math.ceil((target_duration - xfade_dur) / (duration - xfade_dur)) + 1
+    num_cycles = math.ceil(num_segs / 2)   # pro info
+    total_est = num_segs * duration - (num_segs - 1) * xfade_dur
+    print(
+        f"[*] xfade: {xfade_dur}s | Segmenty: {num_segs} ({num_cycles} fwd+rev cyklů) "
+        f"| Celkem ~{total_est:.1f}s → orez na {target_duration}s"
+    )
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp = Path(tmp_dir)
+        fwd = tmp / "fwd.mp4"
+        rev = tmp / "rev.mp4"
+
+        # Krok 1: Encode fwd (celé video)
+        fwd_cmd = [
+            "ffmpeg", "-i", input_file,
+            "-c:v", "libx264", "-crf", str(crf), "-preset", "fast",
+            "-pix_fmt", "yuv420p", "-r", fps_str,
+        ]
+        if audio:
+            fwd_cmd += ["-c:a", "aac", "-b:a", "128k", "-ar", "44100"]
+        else:
+            fwd_cmd += ["-an"]
+        fwd_cmd += ["-y", str(fwd)]
+        run_ff(fwd_cmd, "Encoduji forward")
+
+        # Krok 2: Encode rev (celé video, obrácené)
+        rev_cmd = [
+            "ffmpeg", "-i", input_file,
+            "-vf", "reverse",
+            "-c:v", "libx264", "-crf", str(crf), "-preset", "fast",
+            "-pix_fmt", "yuv420p", "-r", fps_str,
+        ]
+        if audio:
+            rev_cmd += ["-af", "areverse", "-c:a", "aac", "-b:a", "128k", "-ar", "44100"]
+        else:
+            rev_cmd += ["-an"]
+        rev_cmd += ["-y", str(rev)]
+        run_ff(rev_cmd, "Encoduji reverse")
+
+        # Krok 3: Sestavení filter_complex s xfade na každém přechodu
+        #
+        # Vstupy: [fwd, rev, fwd, rev, ...] — num_segs celkem
+        # Video: [0:v][1:v]xfade=fade:dur:offset=O0[cv1]; [cv1][2:v]xfade=...[cv2]; ...
+        # Audio: [0:a][1:a]acrossfade=d=dur[ca1]; [ca1][2:a]acrossfade=...[ca2]; ...
+        #
+        # Offset k-tého xfade = accumulated_duration_after_k_segments − xfade_dur
+        # kde acc_dur roste o (duration − xfade_dur) po každém segmentu.
+
+        input_args = []
+        seg_files = [fwd if i % 2 == 0 else rev for i in range(num_segs)]
+        for f in seg_files:
+            input_args += ["-i", str(f)]
+
+        fc_v, fc_a = [], []
+        prev_v = "[0:v]"
+        prev_a = "[0:a]" if audio else None
+        acc_dur = duration  # po prvním segmentu
+
+        for k in range(1, num_segs):
+            is_last = (k == num_segs - 1)
+            out_v = "[vout]" if is_last else f"[cv{k}]"
+            out_a = "[aout]" if (audio and is_last) else (f"[ca{k}]" if audio else None)
+
+            offset = acc_dur - xfade_dur
+            fc_v.append(
+                f"{prev_v}[{k}:v]xfade=transition=fade:duration={xfade_dur}:offset={offset:.4f}{out_v}"
+            )
+            if audio:
+                fc_a.append(f"{prev_a}[{k}:a]acrossfade=d={xfade_dur}:c1=tri:c2=tri{out_a}")
+
+            prev_v = out_v
+            prev_a = out_a
+            acc_dur += duration - xfade_dur
+
+        fc_str = ";".join(fc_v)
+        if audio:
+            fc_str += ";" + ";".join(fc_a)
+
+        print(f"[*] Generuji finální video ({num_segs - 1}× xfade přechod)...")
+        final_cmd = ["ffmpeg"] + input_args + [
+            "-filter_complex", fc_str,
+            "-map", "[vout]",
+        ]
+        if audio:
+            final_cmd += ["-map", "[aout]"]
+        final_cmd += [
+            "-t", str(target_duration),
+            "-c:v", "libx264", "-crf", str(crf), "-preset", "fast",
+            "-pix_fmt", "yuv420p",
+        ]
+        if audio:
+            final_cmd += ["-c:a", "aac", "-b:a", "128k"]
+        final_cmd += ["-movflags", "+faststart", "-y", output_file]
+        subprocess.run(final_cmd, check=True, capture_output=True)
+
+        out_dur, _, _, out_frames, _ = get_video_info(output_file)
+        print(f"[OK] Hotovo! → {output_file}")
+        print(f"[OK] Výsledná délka: {out_dur:.2f}s ({out_frames} framů)")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Ping-pong video loop: forward → reverse → forward → ..."
@@ -210,12 +337,20 @@ def main():
                         help="Cílová délka v sekundách (default: 60)")
     parser.add_argument("--quality", type=int, default=20,
                         help="CRF kvalita 0–51, nižší = lepší (default: 20)")
+    parser.add_argument("--xfade", type=float, default=0.0,
+                        help="Crossfade dissolve délka v sekundách na přechodech fwd↔rev "
+                             "(0 = bez dissolve, default; doporučeno 0.4–0.8)")
     args = parser.parse_args()
 
     output = args.output or f"{Path(args.input).stem}_loop.mp4"
 
     try:
-        create_pingpong_loop(args.input, output, args.duration, args.quality)
+        if args.xfade > 0:
+            create_smooth_pingpong_loop(
+                args.input, output, args.duration, args.quality, args.xfade
+            )
+        else:
+            create_pingpong_loop(args.input, output, args.duration, args.quality)
     except Exception as e:
         print(f"[CHYBA] {e}", file=sys.stderr)
         sys.exit(1)

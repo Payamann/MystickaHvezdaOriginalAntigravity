@@ -19,7 +19,7 @@ config({ path: path.join(__dirname, '../.env') });
 
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
-import { callGemini } from '../services/gemini.js';
+import { callClaude } from '../services/claude.js';
 import { SYSTEM_PROMPTS } from '../config/prompts.js';
 import { EMAIL_TEMPLATES } from '../email-service.js';
 import { getHoroscopeCacheKey, getCachedHoroscope, saveCachedHoroscope } from '../services/astrology.js';
@@ -39,10 +39,10 @@ async function getOrGenerateHoroscope(sign) {
     const cached = await getCachedHoroscope(cacheKey);
     if (cached?.response) return cached.response;
 
-    // Generate fresh via Gemini and save to cache (website will reuse it)
+    // Generate fresh via Claude and save to cache (website will reuse it)
     const systemPrompt = SYSTEM_PROMPTS?.horoscope || 'Jsi astrologický asistent.';
     const userMsg = `Napiš denní horoskop pro znamení ${sign}. Buď inspirativní, konkrétní a osobní. Délka: 3-4 věty.`;
-    const text = await callGemini(systemPrompt, userMsg);
+    const text = await callClaude(systemPrompt, userMsg);
 
     const today = new Date().toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' });
     await saveCachedHoroscope(cacheKey, sign, 'daily', text, today);

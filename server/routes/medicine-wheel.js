@@ -6,7 +6,7 @@
 import express from 'express';
 import crypto from 'crypto';
 import { authenticateToken, requirePremium } from '../middleware.js';
-import { callGemini } from '../services/gemini.js';
+import { callClaude } from '../services/claude.js';
 import { supabase } from '../db-supabase.js';
 
 export const router = express.Router();
@@ -87,7 +87,7 @@ Totemové zvíře: ${cleanTotem}
 
 Přečti duchovní cestu tohoto člověka na Medicínském Kolečku.`;
 
-        const raw = await callGemini(SYSTEM_PROMPT, userMsg);
+        const raw = await callClaude(SYSTEM_PROMPT, userMsg);
 
         let result;
         try {
