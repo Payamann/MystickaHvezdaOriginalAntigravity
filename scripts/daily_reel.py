@@ -304,11 +304,13 @@ Mood character: {mood_seed}
 Write a Suno song description. The music must:
 - Be instrumental (no vocals, no lyrics)
 - SHORT: exactly 60-90 seconds — mention this
-- Style: positive morning music — relaxing, uplifting, easy listening
-- Subtly mystical and cosmic but LIGHT — like a sunrise, not a storm
-- NO dark tones, NO tension, NO minor key, NO drama
-- Use the featured instruments: {instruments}
-- Evoke the visual texture: {texture}
+- Style: MORNING ENERGIZER — upbeat, driving, feel-good, makes you want to get up and move
+- Mystical and cosmic aesthetic but with ENERGY — think sunrise sprint, not sunset meditation
+- Bright tempo, forward momentum, punchy rhythm — NOT ambient, NOT background, NOT sleep music
+- Major key, uplifting chord progressions, clear beat
+- NO slow pads, NO drone, NO lullaby feel, NO "floating" or "drifting" atmosphere
+- Use the featured instruments: {instruments} — play them with energy, not softly
+- Evoke the visual texture: {texture} — but dynamic, like the scene is in motion
 - Feel unique to today while staying in this warm positive style
 - End with: "Short instrumental, 60-90 seconds, loop-ready." """
 
