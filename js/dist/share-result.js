@@ -132,7 +132,7 @@
         '.synastry-result', '.mentor-result', '#ai-reading', '.oracle-response',
         '#tarot-result', '#tarot-results',
         '#result-panel',
-        '#horoscope-result', '#horoscope-detail-section',
+        '#horoscope-result',
         '#chart-results',
         '#numerology-results',
         '#phaseCard',
@@ -143,7 +143,7 @@
         '#messages-container',
     ];
 
-    const requireLoadedFlag = new Set(['#horoscope-detail-section']);
+    const requireLoadedFlag = new Set([]);
 
     function checkAll() {
         selectors.forEach(sel => {
