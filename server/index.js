@@ -179,8 +179,9 @@ app.use(helmet({
                 'https://cdn.jsdelivr.net',
                 'https://cdnjs.cloudflare.com',
                 'https://unpkg.com',
-
                 'https://www.googletagmanager.com',
+                'https://browser.sentry-cdn.com',
+                '*.sentry.io',
             ],
             styleSrc: [
                 "'self'",
@@ -216,6 +217,7 @@ app.use(helmet({
                 'https://www.google-analytics.com',
                 'https://region1.google-analytics.com',
                 'https://stats.g.doubleclick.net',
+                'https://www.googletagmanager.com',
             ].filter(Boolean),
             frameSrc: ["'self'", 'https://js.stripe.com'], // Allow Stripe iframe
             objectSrc: ["'none'"],

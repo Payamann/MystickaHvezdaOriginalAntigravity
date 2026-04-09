@@ -74,8 +74,12 @@ async function trimCache(cacheName, maxItems) {
 
 // Fetch - stale-while-revalidate for cached content
 self.addEventListener('fetch', (event) => {
-    // Skip non-GET requests and API calls
-    if (event.request.method !== 'GET' || event.request.url.includes('/api/')) {
+    // Skip non-GET requests, API calls, and external domains (analytics, GTM, Stripe...)
+    if (
+        event.request.method !== 'GET' ||
+        event.request.url.includes('/api/') ||
+        !event.request.url.startsWith(self.location.origin)
+    ) {
         return;
     }
 
