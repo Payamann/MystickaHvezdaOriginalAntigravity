@@ -2171,34 +2171,22 @@
 
       <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin:0.75rem 0;justify-content:center;">
 
-        <label
-
+        <label for="cookie-necessary"
           style="display:flex;align-items:center;gap:0.4rem;color:rgba(255,255,255,0.7);font-size:0.8rem;cursor:pointer;">
-
           <input type="checkbox" id="cookie-necessary" checked disabled style="accent-color:var(--color-mystic-gold);">
-
           Nezbytné
-
         </label>
 
-        <label
-
+        <label for="cookie-analytics"
           style="display:flex;align-items:center;gap:0.4rem;color:rgba(255,255,255,0.7);font-size:0.8rem;cursor:pointer;">
-
           <input type="checkbox" id="cookie-analytics" checked style="accent-color:var(--color-mystic-gold);">
-
           Analytické
-
         </label>
 
-        <label
-
+        <label for="cookie-marketing"
           style="display:flex;align-items:center;gap:0.4rem;color:rgba(255,255,255,0.7);font-size:0.8rem;cursor:pointer;">
-
           <input type="checkbox" id="cookie-marketing" style="accent-color:var(--color-mystic-gold);">
-
           Marketingové
-
         </label>
 
       </div>
@@ -2236,7 +2224,7 @@
     <script src="/js/register-sw.js" defer></script>
 
   <!-- Sentry for error tracking (Browser SDK) -->
-  <script src="https://browser.sentry-cdn.com/7.99.0/bundle.min.js" integrity="sha384-wVjNuGiBl9KGqSbK8t2BNohBZZPcVc3p4i8Ydv4eLhV8FNvB3L3RjmvEkP8yIjsB" crossorigin="anonymous" async></script>
+  <script src="https://browser.sentry-cdn.com/7.99.0/bundle.min.js" integrity="sha384-KhWx6ggiGYQEFvq5iRp7UFjJ9dQcTepbcWs3UTfB6Kyg7E6A6HUmc6KOt808Y3yh" crossorigin="anonymous" async></script>
   <script src="js/sentry-init.js" defer></script>
 
   <script src="js/dist/analytics-init.js" defer></script>
@@ -2252,10 +2240,7 @@
 
   <script src="js/dist/daily-card.js" defer></script>
 
-  <script type="module" async>
-    import { initPaymentButtons } from './js/platby.js';
-    document.addEventListener('DOMContentLoaded', () => initPaymentButtons());
-  </script>
+  <script type="module" src="js/dist/platby-init.js" async></script>
 
 
 
@@ -2330,31 +2315,7 @@
 
   <!-- Analytics Initialization & Tracking -->
 
-  <script type="module" async>
-
-    import { initAnalytics, trackPageLoadMetrics } from './js/dist/ga-tracking.js?v=6';
-
-
-
-    document.addEventListener('DOMContentLoaded', () => {
-
-      // Initialize analytics
-
-      initAnalytics();
-
-
-
-      // Track page load metrics
-
-      trackPageLoadMetrics();
-
-
-
-      console.log('[GA] Tracking initialized for:', window.location.pathname);
-
-    });
-
-  </script>
+  <script type="module" src="js/dist/analytics-page-init.js" async></script>
 
   <!-- Hamburger menu failsafe (in case module chain fails) -->
   <script src="js/nav-failsafe.js" defer></script>
