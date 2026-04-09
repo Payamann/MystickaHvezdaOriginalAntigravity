@@ -294,34 +294,50 @@
         // Share URL — UTM + anchor (pro clipboard)
         const shareUrl = shareUrlWithUTM || canonicalUrl;
 
-        // Facebook share URL — URL s ?znak= pro server-side OG injection
-        const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(canonicalUrl)}`;
-
-        // Detekuj podporu nativního sdílení s obrázkem (mobile)
+        const fbUrl  = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(canonicalUrl)}`;
+        const waUrl  = `https://wa.me/?text=${encodeURIComponent(`${signSymbol} Můj dnešní horoskop pro ${signName}: ${shareUrl}`)}`;
         const canShareFiles = !!(navigator.canShare && navigator.canShare({ files: [new File([''], 'test.jpg', { type: 'image/jpeg' })] }));
-        const primaryBtnLabel = canShareFiles
-            ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Sdílet horoskop`
-            : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Uložit obrázek`;
-        const hintText = canShareFiles
-            ? 'Sdílej přímo do Stories, WhatsApp, TikToku nebo Messengeru'
-            : 'Ulož kartu a sdílej na Instagram, Pinterest nebo TikTok';
 
         panel.innerHTML = `
             <div class="hs-inner">
                 <p class="hs-title">✨ Sdílet horoskop ${signSymbol} ${signName}</p>
                 <div class="hs-preview-wrap"></div>
-                <p class="hs-hint">${hintText}</p>
-                <div class="hs-buttons">
+                <div class="hs-main-btn-wrap">
                     <button class="hs-btn hs-btn--primary" id="hs-share-btn">
-                        ${primaryBtnLabel}
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                        Sdílet horoskop
+                        <svg class="hs-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6,9 12,15 18,9"/></svg>
                     </button>
-                    <a class="hs-btn hs-btn--fb" href="${fbUrl}" target="_blank" rel="noopener">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-                        Sdílet na Facebook
+                </div>
+                <div class="hs-options" id="hs-options" aria-hidden="true">
+                    ${canShareFiles ? `
+                    <button class="hs-opt" id="hs-native-btn">
+                        <span class="hs-opt-icon">📲</span>
+                        <span>Instagram / TikTok / WhatsApp</span>
+                    </button>` : ''}
+                    <a class="hs-opt" href="${fbUrl}" target="_blank" rel="noopener">
+                        <span class="hs-opt-icon" style="background:#1877f2">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                        </span>
+                        <span>Facebook</span>
                     </a>
-                    <button class="hs-btn hs-btn--copy" id="hs-copy-btn">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        Kopírovat odkaz
+                    <a class="hs-opt" href="${waUrl}" target="_blank" rel="noopener">
+                        <span class="hs-opt-icon" style="background:#25d366">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                        </span>
+                        <span>WhatsApp</span>
+                    </a>
+                    <button class="hs-opt" id="hs-copy-btn">
+                        <span class="hs-opt-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        </span>
+                        <span>Kopírovat odkaz</span>
+                    </button>
+                    <button class="hs-opt" id="hs-download-btn">
+                        <span class="hs-opt-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        </span>
+                        <span>Uložit obrázek</span>
                     </button>
                 </div>
                 <div class="hs-toast" id="hs-toast" role="status" aria-live="polite">✅ Odkaz zkopírován!</div>
@@ -331,31 +347,32 @@
         // Vložit preview canvas
         panel.querySelector('.hs-preview-wrap').appendChild(previewCanvas);
 
-        // Primární tlačítko — nativní share na mobilu, download na desktopu
-        panel.querySelector('#hs-share-btn').addEventListener('click', async () => {
+        // Hlavní tlačítko — toggle možností
+        const shareBtn  = panel.querySelector('#hs-share-btn');
+        const optionsEl = panel.querySelector('#hs-options');
+        shareBtn.addEventListener('click', () => {
+            const open = optionsEl.classList.toggle('hs-options--open');
+            optionsEl.setAttribute('aria-hidden', String(!open));
+            shareBtn.querySelector('.hs-chevron').style.transform = open ? 'rotate(180deg)' : '';
+        });
+
+        // Nativní share (mobil) — Instagram / TikTok / WhatsApp
+        panel.querySelector('#hs-native-btn')?.addEventListener('click', async () => {
             const filename = `horoskop-${signName.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.jpg`;
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+            const dataUrl  = canvas.toDataURL('image/jpeg', 0.92);
+            try {
+                const res  = await fetch(dataUrl);
+                const blob = await res.blob();
+                const file = new File([blob], filename, { type: 'image/jpeg' });
+                await navigator.share({ files: [file], title: `Horoskop ${signName} — Mystická Hvězda`, text: `${signSymbol} Můj dnešní horoskop: ${shareUrl}` });
+            } catch (e) { /* uživatel zrušil nebo nepodporováno */ }
+        });
 
-            if (canShareFiles) {
-                // Mobil: nativní share sheet s obrázkem → Instagram Stories, WhatsApp, TikTok, Messenger
-                try {
-                    const res  = await fetch(dataUrl);
-                    const blob = await res.blob();
-                    const file = new File([blob], filename, { type: 'image/jpeg' });
-                    const shareTitle = `Horoskop ${signName} — Mystická Hvězda`;
-                    const shareText  = `${signSymbol} Můj dnešní horoskop: ${shareUrl}`;
-                    await navigator.share({ files: [file], title: shareTitle, text: shareText });
-                    return;
-                } catch (e) {
-                    if (e.name === 'AbortError') return; // uživatel zrušil
-                    // fallback na download
-                }
-            }
-
-            // Desktop fallback: download
+        // Download
+        panel.querySelector('#hs-download-btn').addEventListener('click', () => {
             const link = document.createElement('a');
-            link.download = filename;
-            link.href = dataUrl;
+            link.download = `horoskop-${signName.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.jpg`;
+            link.href = canvas.toDataURL('image/jpeg', 0.92);
             link.click();
         });
 
@@ -398,44 +415,70 @@
                 margin-bottom: 1.25rem;
                 letter-spacing: 0.03em;
             }
-            .hs-hint {
-                font-size: 0.85rem;
-                color: rgba(255,255,255,0.55);
-                margin-bottom: 1.25rem;
-                line-height: 1.5;
-            }
-            .hs-buttons {
-                display: flex;
-                flex-direction: column;
-                gap: 0.75rem;
-            }
+            .hs-main-btn-wrap { text-align: center; }
             .hs-btn {
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
                 gap: 0.6rem;
-                padding: 0.8rem 1.5rem;
+                padding: 0.8rem 1.8rem;
                 border-radius: 50px;
                 font-size: 0.95rem;
-                font-weight: 500;
+                font-weight: 600;
                 cursor: pointer;
                 transition: opacity 0.2s, transform 0.15s;
                 text-decoration: none;
                 border: none;
             }
-            .hs-btn:hover { opacity: 0.85; transform: translateY(-1px); }
             .hs-btn--primary {
                 background: linear-gradient(135deg, #ebc066, #c89b3c);
                 color: #0a0a1a;
             }
-            .hs-btn--fb {
-                background: #1877f2;
-                color: #fff;
+            .hs-btn--primary:hover { opacity: 0.9; transform: translateY(-1px); }
+            .hs-chevron { transition: transform 0.25s; margin-left: 2px; }
+
+            /* Rozbalovací možnosti */
+            .hs-options {
+                display: grid;
+                grid-template-rows: 0fr;
+                transition: grid-template-rows 0.3s ease, margin-top 0.3s ease;
+                margin-top: 0;
+                overflow: hidden;
             }
-            .hs-btn--copy {
-                background: transparent;
-                border: 1px solid rgba(235,192,102,0.4) !important;
-                color: #ebc066;
+            .hs-options > * { min-height: 0; }
+            .hs-options--open {
+                grid-template-rows: 1fr;
+                margin-top: 0.75rem;
+            }
+            .hs-opt {
+                display: flex;
+                align-items: center;
+                gap: 0.85rem;
+                width: 100%;
+                padding: 0.7rem 1rem;
+                border-radius: 12px;
+                background: rgba(255,255,255,0.04);
+                border: 1px solid rgba(255,255,255,0.07);
+                color: rgba(255,255,255,0.85);
+                font-size: 0.9rem;
+                cursor: pointer;
+                text-decoration: none;
+                transition: background 0.2s;
+                margin-bottom: 0.4rem;
+                text-align: left;
+            }
+            .hs-opt:last-child { margin-bottom: 0; }
+            .hs-opt:hover { background: rgba(255,255,255,0.09); }
+            .hs-opt-icon {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 30px;
+                height: 30px;
+                border-radius: 8px;
+                background: rgba(235,192,102,0.15);
+                flex-shrink: 0;
+                font-size: 16px;
             }
             .hs-toast {
                 display: none;
@@ -449,10 +492,6 @@
                 backdrop-filter: blur(10px);
             }
             .hs-toast.visible { display: inline-block; }
-            @media (min-width: 480px) {
-                .hs-buttons { flex-direction: row; flex-wrap: wrap; justify-content: center; }
-                .hs-btn { flex: 1 1 auto; min-width: 160px; }
-            }
         `;
         document.head.appendChild(s);
     }
