@@ -11,9 +11,10 @@
     function gtag() { window.dataLayer.push(arguments); }
     window.gtag = gtag;
 
-    // Consent Mode v2 — výchozí stav: vše zamítnuto (GDPR)
+    // Consent Mode v2 — analytika povolena (legitimate interest, anonymize_ip),
+    // reklamní cookies čekají na explicitní souhlas (GDPR)
     gtag('consent', 'default', {
-        'analytics_storage': 'denied',
+        'analytics_storage': 'granted',
         'ad_storage': 'denied',
         'ad_user_data': 'denied',
         'ad_personalization': 'denied',
