@@ -4,7 +4,7 @@
  */
 
 (function () {
-    const GA_ID = 'G-VZ3J109ZYJ';
+    const GA_ID = 'G-H22CGHF34K';
 
     // Inicializace dataLayer a gtag stub
     window.dataLayer = window.dataLayer || [];
