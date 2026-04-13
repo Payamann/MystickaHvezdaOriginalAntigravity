@@ -569,7 +569,8 @@ Napiš celý voiceover script ve třech částech:
    STRUKTURA SEKCE — pro každé ze tří znamení použij JINOU z těchto forem (střídej):
    - Forma A (výzva): "[tag] {{vocative}}, [tag] dnes přichází moment, který čekáš. [tag] Ne zítra. Dnes."
    - Forma B (varování): "[tag] {{vocative}}, [tag] pozor na jedno — dnešní energie může svést z cesty, pokud..."
-   - Forma C (příslib): "[tag] {{vocative}}, [tag] něco se dnes mění. [tag] Tiše, ale natrvalo."
+   - Forma C (mikropříběh): "[tag] {{vocative}}, [tag] stojíš u okna. Venku prší. Zavřeš oči a najednou to cítíš — něco se mění."
+   POVINNÉ: Alespoň JEDNA ze tří sekcí MUSÍ používat Formu C (mikropříběh) — přítomný čas, 2. os., konkrétní vizuální scéna z každodenního života ("Jdeš ulicí.", "Sedíš u stolu.", "Díváš se na telefon."). Ne abstraktní popisy energie.
    Tagy celkově: [mysterious] [intense] [warm] [gentle] [confident] [upbeat] [commanding] [soft]
 
    Znamení:
@@ -631,7 +632,8 @@ Výstup JEN opravený text — žádné komentáře, žádné vysvětlování zm
 4. Genderová neutralita — odstraň rodově specifické tvary: minulá příčestí jako "vykročil/vykročila", "toužila/toužil", "čekala/čekal", "hledal/hledala" → přeformuluj na přítomný/budoucí čas ("vykračuješ", "půjdeš", "toužíš", "čekáš"); "byl jsi/byla jsi" → "jsi"; "ten/ta" jako zájmeno osoby → "někdo", "člověk"; NIKDY lomené tvary. Toto platí OBZVLÁŠTĚ pro hook (první 2 věty scriptu).
 5. Slovenismy → čeština: kreatívní → kreativní, konštruktívní → konstruktivní, pozitívní → pozitivní, intuitívní → intuitivní, aktívní → aktivní, progresívní → progresivní, masívní → masivní, exkluzívní → exkluzivní. Obecně: -ívní → -ivní.
 6. Rodově zbarvené tvary v popisech (TikTok/FB texty mimo voiceover tagy) — oprav: "nebál" → "neodvažoval ses", "bála ses" → "neodvažoval ses", "toužil/toužila" → "toužíš". Platí i pro všechny minulé příčestí v 2. os. ("viděl jsi" → "vidíš", "šel jsi" → "jdeš").
-7. Jinak TEXT NEMĚŇ — zachovej přesné znění, styl, délku
+7. Mikropříběh — alespoň JEDNA ze tří sekcí znamení MUSÍ obsahovat konkrétní vizuální scénu v přítomném čase, 2. os. ("Stojíš u okna.", "Sedíš u stolu.", "Díváš se na telefon."). Pokud žádná sekce nemá mikropříběh, přidej ho do sekce s Formou C nebo do poslední sekce — přepiš začátek na vizuální scénu.
+8. Jinak TEXT NEMĚŇ — zachovej přesné znění, styl, délku
 
 Script:
 {script}"""

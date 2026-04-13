@@ -304,14 +304,15 @@ Mood character: {mood_seed}
 Write a Suno song description. The music must:
 - Be instrumental (no vocals, no lyrics)
 - SHORT: exactly 60-90 seconds — mention this
-- Style: SUBTLE MYSTICAL BACKGROUND — light, airy, atmospheric. Designed to sit UNDER a voiceover without competing with it.
-- Think: soft cosmic backdrop, like distant stars humming. Present but never distracting.
-- Low volume dynamics, gentle melodic hints — listener should feel the atmosphere, not notice the music
-- Minimal arrangement: sparse notes, breathing space, no busy passages or solos
-- Warm major key with a touch of mystery — hopeful and slightly ethereal
-- NO strong melody that draws attention, NO loud swells, NO dramatic builds, NO percussion that punches through
-- Use the featured instruments: {instruments} — played softly, as texture rather than foreground
-- Evoke the visual texture: {texture} — still and atmospheric, like a held breath before dawn
+- Style: WARM ENERGIZING BACKGROUND — present, uplifting, with gentle momentum. Designed to sit UNDER a voiceover, supporting it with forward energy.
+- Think: morning sunrise energy, golden warmth, gentle drive — NOT ambient/sleepy/meditation.
+- MUST have a soft rhythmic pulse or gentle beat — the music should MOVE, not float
+- Warm major key with melodic phrases that breathe between spoken words
+- Use the featured instruments: {instruments} — played with warmth and gentle energy, as supportive texture
+- Evoke the visual texture: {texture} — bright and hopeful, like light spreading across the sky
+- NO pure ambient/drone textures, NO "sparse notes with silence between them", NO meditation style
+- NO strong melody that overshadows voice, NO loud swells, NO heavy percussion
+- Balance: present enough to feel energizing, subtle enough not to compete with voiceover
 - Feel unique to today while staying in this warm positive style
 - End with: "Short instrumental, 60-90 seconds, loop-ready." """
 
@@ -341,6 +342,7 @@ PRAVIDLA:
 - ZAKÁZANÁ SLOVA: "portál", "brána", "hvězdy ti posílají", "ze hvězd"
 - Na TikToku NESMÍ být žádný odkaz ani URL — pouze text a hashtags
 - Třetí věta = follow trigger nebo engagement CTA — důvod sledovat profil
+- KONZISTENCE ASTRO ASPEKTŮ: Pokud zmiňuješ konkrétní astro aspekt (např. "Měsíc v opozici k Chironu"), použij PŘESNĚ STEJNÝ aspekt jako ve voiceover scriptu. Nevymýšlej jiný.
 - Za textem PRÁZDNÝ ŘÁDEK a pak hashtags na samostatném řádku
 - Hashtags: MAX 6 celkem — #mystickaHvezda + znamení + #horoskop + #fyp
 - GENDEROVÁ NEUTRALITA: Žádné genderové tvary ("být pravdivý/á", "byl/byla"). Přítomný čas, 2. os.
@@ -387,6 +389,7 @@ PRAVIDLA:
 - Tón: komunitní, trochu osobnější než TikTok — jako by psal přítel, ne algoritmus
 - GENDEROVÁ NEUTRALITA: Žádné genderové tvary ("být pravdivý/á", "byl/byla"). Přítomný čas, 2. os.
 - AI-BLOB ZÁKAZ: Žádné symetrické vzorce ("Není to X. Je to Y." / "Ne X. Ale Y.") — přeformuluj vždy do jedné věty
+- KONZISTENCE ASTRO ASPEKTŮ: Pokud zmiňuješ konkrétní astro aspekt (např. "Měsíc v opozici k Chironu"), použij PŘESNĚ STEJNÝ aspekt jako v TikTok description. TikTok a FB MUSÍ mít shodný astro aspekt.
 - Piš POUZE česky, pouze latinkou
 - ČISTÁ ČEŠTINA: NIKDY nepoužívej anglická slova (spreadsheet, feedback, challenge, mindset, vibe, deadline, random...). Vždy česky: feedback → zpětná vazba, challenge → výzva, mindset → nastavení mysli. Výjimky: názvy planet a Instagram/TikTok.
 - Výstup JEN samotný text, žádné komentáře"""
@@ -557,17 +560,17 @@ Výstup JEN samotný text — žádné nadpisy, žádné labely, žádné hvězd
     # Vyber komentářový trigger podle znamení
     komentar_trigger_map = {
         'Beran':    f'Označ Berana, co tohle zná.',
-        'Býk':      f'Napiš, jestli to sedí — Býci do komentáře ⬇️',
+        'Býk':      f'Napiš, jestli to sedí — Býku, do komentáře ⬇️',
         'Blíženci': f'Označ Blížence, co tohle dělá.',
-        'Rak':      f'Raci — napište jedno slovo jak se dnes cítíte ⬇️',
+        'Rak':      f'Raku — napiš jedno slovo, jak se dnes cítíš ⬇️',
         'Lev':      f'Označ Lva, co tuhle energii zná.',
-        'Panna':    f'Panny — napište, jestli to sedí ⬇️',
+        'Panna':    f'Panno — napiš, jestli to sedí ⬇️',
         'Váhy':     f'Označ Váhu, co tahle kalkulace zničila.',
         'Štír':     f'Označ Štíra, co přesně tohle dělá.',
-        'Střelec':  f'Střelci — napiš kam tě to dnes tahá ⬇️',
-        'Kozoroh':  f'Kozorohu — napiš co dnes odkládáš ⬇️',
+        'Střelec':  f'Střelci — napiš, kam tě to dnes tahá ⬇️',
+        'Kozoroh':  f'Kozorohu — napiš, co dnes odkládáš ⬇️',
         'Vodnář':   f'Označ Vodnáře, co tohle ví.',
-        'Ryby':     f'Ryby — napište jedno slovo co teď cítíte ⬇️',
+        'Ryby':     f'Ryby — napiš jedno slovo, co teď cítíš ⬇️',
     }
     komentar_trigger = komentar_trigger_map.get(sign, f'Napiš svoje znamení ⬇️')
 
