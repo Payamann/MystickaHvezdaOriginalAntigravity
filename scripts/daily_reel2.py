@@ -614,8 +614,16 @@ Toto je nejdůležitější část. MUSÍ obsahovat:
 A) MIKROPŘÍBĚH — konkrétní vizuální scéna ze života persony:
    - Přítomný čas, 2. osoba, max 8 slov na větu
    - ❌ ZAKÁZÁNO: "tvá energie dostává zelenou", "Neptun ti šeptá", "cítíš to tlačení" (vnitřní pocit, ne vizuální)
-   - ✅ SPRÁVNĚ: "Díváš se na tu zprávu. Přečteš ji potřetí. A zamkneš telefon."
-   - Scéna musí být VIDITELNÁ — konkrétní akce kterou kamera vidí (díváš se, otevřeš, zamkneš, sedíš, scrolluješ), NE vnitřní monolog (cítíš, přemýšlíš, víš)
+   - ❌ ZAKÁZÁNO OPAKOVAT: "Sedíš v kuchyni" — tato scéna je přetížená, NIKDY ji nepoužívej
+   - ✅ SPRÁVNĚ — různé každodenní scény (vyber jinou každý den):
+     "Díváš se na tu zprávu. Přečteš ji potřetí. A zamkneš telefon."
+     "Stojíš před zrcadlem. Zaváháš. Pak si to stejně oblečeš."
+     "Scrolluješ. Zastav se na tom příspěvku. Přejdeš dál."
+     "Otevřeš ten dokument. Zavřeš ho. Otevřeš znovu."
+     "Ležíš v posteli. Strop. Znovu strop. Vstaneš."
+     "Píšeš tu zprávu. Mažeš ji. Odložíš telefon."
+     "Stojíš na zastávce. Autobus přijede. Nenastoupíš."
+   - Scéna musí být VIDITELNÁ — konkrétní akce kterou kamera vidí (díváš se, otevřeš, zamkneš, stojíš, scrolluješ), NE vnitřní monolog (cítíš, přemýšlíš, víš)
    - Mezi větami uvnitř slidu: <break time="0.3s" />
    - GENDER NEUTRALITA 3. OSOBY — KRITICKÉ: Nikdy nepoužívej "němu/jí/ho/ji/on/ona" pro osoby ve scéně. Divák může být kdokoli — muž, žena, jakákoliv orientace.
      ❌ "Sedíš naproti němu." — předpokládá mužského partnera = divák je žena
