@@ -366,7 +366,7 @@ Napiš TikTok description ve formátu:
     return claude_call(system, user, max_tokens=400)
 
 
-def build_facebook_description(signs: list, script: str, target_date: str) -> str:
+def build_facebook_description(signs: list, script: str, target_date: str, tiktok_description: str = "") -> str:
     """Vygeneruje Facebook Reels description — delší, komunitní tón."""
     date_obj = date.fromisoformat(target_date)
     date_cs = f"{date_obj.day}. {MONTHS_CS[date_obj.month - 1]} {date_obj.year}"
@@ -389,20 +389,22 @@ PRAVIDLA:
 - Tón: komunitní, trochu osobnější než TikTok — jako by psal přítel, ne algoritmus
 - GENDEROVÁ NEUTRALITA: Žádné genderové tvary ("být pravdivý/á", "byl/byla"). Přítomný čas, 2. os.
 - AI-BLOB ZÁKAZ: Žádné symetrické vzorce ("Není to X. Je to Y." / "Ne X. Ale Y.") — přeformuluj vždy do jedné věty
-- KONZISTENCE ASTRO ASPEKTŮ: Pokud zmiňuješ konkrétní astro aspekt (např. "Měsíc v opozici k Chironu"), použij PŘESNĚ STEJNÝ aspekt jako v TikTok description. TikTok a FB MUSÍ mít shodný astro aspekt.
+- KONZISTENCE ASTRO ASPEKTŮ: Pokud TikTok description (viz níže) zmiňuje konkrétní astro aspekt (planetu, tranzit, dům), použij PŘESNĚ STEJNÝ aspekt — nesměšuj s jiným. FB rozšiřuje stejný astro příběh, nevymýšlí nový.
 - Piš POUZE česky, pouze latinkou
 - ČISTÁ ČEŠTINA: NIKDY nepoužívej anglická slova (spreadsheet, feedback, challenge, mindset, vibe, deadline, random...). Vždy česky: feedback → zpětná vazba, challenge → výzva, mindset → nastavení mysli. Výjimky: názvy planet a Instagram/TikTok.
 - Výstup JEN samotný text, žádné komentáře"""
 
+    tiktok_context = f"\nTikTok description (použij stejný astro aspekt, rozviň ho):\n{tiktok_description}\n" if tiktok_description else ""
+
     user = f"""Datum: {date_cs}
 Znamení ve videu: {sign}
 Web: https://www.mystickahvezda.cz/horoskopy.html
-
+{tiktok_context}
 Voiceover script (pro kontext — caption musí přidat NOVOU perspektivu a astro fakt):
 {script[:600]}
 
 Napiš Facebook description ve formátu:
-[4 věty textu s emoji — řádek 1: kontroverzní statement, řádky 2–3: astro fakt + vzdělávací kontext, řádek 4: CTA s odkazem]
+[4 věty textu s emoji — řádek 1: kontroverzní statement, řádky 2–3: astro fakt + vzdělávací kontext (STEJNÝ aspekt jako TikTok), řádek 4: CTA s odkazem]
 
 #mystickaHvezda #{sign} #horoskop #astrologie #dennihoroskop #mystika"""
 
@@ -764,7 +766,7 @@ def main():
     date_header = f"🗓️ {d.day}. {MONTHS_CS[d.month - 1]} {d.year}\n\n"
     script = date_header + script
     description = build_tiktok_description(chosen, script, target_date)
-    fb_description = build_facebook_description(chosen, script, target_date)
+    fb_description = build_facebook_description(chosen, script, target_date, tiktok_description=description)
     suno = build_suno_prompt(chosen, script, target_date)
 
     # 5. Vystup
