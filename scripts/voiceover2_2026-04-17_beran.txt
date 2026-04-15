@@ -1,0 +1,58 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 17. dubna 2026
+
+[commanding] Berane, dnes ti někdo řekne „zpomal". <break time="0.5s" />
+[intense] A ty na to nemáš odpověď. <break time="1.0s" />
+
+[confident] Díváš se na kalendář. <break time="0.3s" /> [commanding] Čtyři projekty naráz. <break time="0.3s" /> [intense] Mars ti dneska neukazuje cestu dopředu — ukazuje ti brzdu. <break time="0.3s" /> [warm] Tohle není slabost. <break time="0.3s" /> [commanding] Tohle je tvůj nejsilnější tah. <break time="1.0s" />
+
+[inviting] Berane — napiš, co dnes riskuješ ⬇️ <break time="0.3s" />
+[clearly] Příští díl: Beran a peníze. Šokující pravda.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+Mars v kvadratuře ke Saturnu 17. dubna 2026 🔥 znamená, že tvá největší síla dnes není v rychlosti, ale v zastavení. Beran je kardinální ohnivé znamení — vládce Mars ti ukazuje, že skutečná odvaha je říct "ne" dalšímu projektu a dodělat jeden perfektně. Sleduj profil, protože zítra ti ukážu, jak Beran přitahuje peníze přesně v momentě, kdy přestane honit všechno naráz ⚡
+
+#mystickaHvezda #Beran #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+Mars v kvadratuře ke Saturnu ti 17. dubna 2026 ukazuje, že běžet rychleji není řešení 🔥 Tohle není den pro start nového projektu — je to den, kdy skutečná síla Berana spočívá v dokončení toho, co už máš rozjetého. Kvadratura Mars–Saturn tě učí, že odvaha není jen v akci, ale taky v disciplíně říct "tenhle teď ne". Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Beran #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm energizing background track with soft vibraphone sparkles and shimmering synth layers over a gentle rhythmic pulse, evoking sunrise breaking through starlit sky with golden forward momentum and hopeful energy, designed to support voiceover without overpowering. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+Real deep-space Hubble-style nebula photograph background, split composition:
+top half = warm amber-orange stellar explosion, red fire tones with dramatic light burst from center,
+thin horizontal black band across the middle,
+bottom half = cool electric blue nebula with teal accents and scattered starlight.
+Cinematic, high-detail, photo-realistic.
+
+All graphic elements positioned in the UPPER 80% of the frame — leave minimal space at very bottom.
+
+Center-upper area: large ornate 3D CGI Beran zodiac symbol (♈),
+dark obsidian material with intricate gold filigree engravings,
+deeply detailed ancient medallion style, soft golden glow radiating from symbol, floating centered in frame.
+
+Directly below the symbol (upper-mid frame): dark stone plaque with ornate golden decorative border,
+bold serif text (NOT cursive, NOT italic, NOT calligraphic):
+Line 1: "17. DUBNA"
+Line 2: "BERAN"
+Text color: warm cream/off-white, engraved look.
+
+Immediately below the plaque (mid frame, NOT at the very bottom): aged parchment scroll, curled edges, warm paper texture,
+two lines of bold serif text (NOT cursive, NOT italic, NOT calligraphic), dark brown #2a1500:
+Line 1: "Někdo ti řekne zpomal."
+Line 2: "A ty nevíš co říct."
+
+Portrait 4:5, 1080x1350px. No watermarks, no UI, no borders.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Berane, dnes ti někdo řekne „zpomal". A ty na to nemáš odpověď. Díváš se na kalendář. Čtyři projekty naráz. Mars ti dneska neukazuje cestu dopředu — ukazuje ti brzdu. Tohle není slabost. Tohle je tvůj nejsilnější tah. Berane — napiš, co dnes riskuješ ⬇️ Příští díl: Beran a peníze. Šokující pravda."

@@ -1,0 +1,56 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 17. dubna 2026
+
+[intense] 17. dubna. <break time="0.5s" /> [mysterious] Pokud dnes nemůžeš přestat myslet na ten nápad — ostatní ho ještě nevidí. <break time="1.0s" />
+
+[confident] Otevřeš ten dokument. <break time="0.3s" /> [upbeat] Zavřeš ho. <break time="0.3s" /> [mysterious] Otevřeš znovu. <break time="0.3s" /> [intense] Vypadá to jako chaos? <break time="0.3s" /> [commanding] Ne. <break time="0.3s" /> [confident] Tvůj mozek právě přeskočil dva kroky napřed. <break time="1.0s" />
+
+[inviting] Vodnáři — napiš, co dnes vidíš jinak než ostatní ⬇️ <break time="0.3s" /> [clearly] Příště odhalím Vodnářovo největší tajemství ve vztazích.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+17. dubna 2026 Uran v tvém znamení rozkmitává myšlenky rychleji, než dokážeš zapsat — a tady je tvoje síla 🧠 Vzdušná fixní energie znamená, že tvůj mozek nepracuje lineárně, ale v sítích: vidíš souvislosti dřív, než se stanou zjevnými. Sleduj profil, abys příště věděl, kdy ten nápad konečně předložit světu ⚡
+
+#mystickaHvezda #Vodnář #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+17. dubna 2026 nedokážeš vypnout myšlenky — a to je přesně to, co máš dělat 🧠 Uran ve Vodnáři roztáčí tvůj vzdušný systém rychleji než algoritmus: vidíš vzorce, které ostatní ještě nevnímají, zachytáváš signály dřív, než je někdo pojmenuje. Tvoje fixní energie nedrží lineární strukturu — staví mosty mezi body, které vypadají vzdálené. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Vodnář #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm instrumental background with gentle marimba patterns and airy synth pads creating golden morning energy, soft rhythmic pulse drives forward momentum like sunrise light spreading across celestial dewdrops, major key melodic phrases breathe and lift without overpowering, designed as supportive bed for voiceover with present uplifting texture. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+Real deep-space Hubble-style nebula photograph background, split composition:
+top half = electric teal and cyan nebula with white core burst with dramatic light burst from center,
+thin horizontal black band across the middle,
+bottom half = deep indigo with aquamarine star trails and scattered starlight.
+Cinematic, high-detail, photo-realistic.
+
+All graphic elements positioned in the UPPER 80% of the frame — leave minimal space at very bottom.
+
+Center-upper area: large ornate 3D CGI Vodnář zodiac symbol (♒),
+dark obsidian material with intricate gold filigree engravings,
+deeply detailed ancient medallion style, soft golden glow radiating from symbol, floating centered in frame.
+
+Directly below the symbol (upper-mid frame): dark stone plaque with ornate golden decorative border,
+bold serif text (NOT cursive, NOT italic, NOT calligraphic):
+Line 1: "17. DUBNA"
+Line 2: "VODNÁŘ"
+Text color: warm cream/off-white, engraved look.
+
+Immediately below the plaque (mid frame, NOT at the very bottom): aged parchment scroll, curled edges, warm paper texture,
+two lines of bold serif text (NOT cursive, NOT italic, NOT calligraphic), dark brown #2a1500:
+Line 1: "Ostatní to ještě nevidí."
+Line 2: "Ty to cítíš celý den."
+
+Portrait 4:5, 1080x1350px. No watermarks, no UI, no borders.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "17. dubna. Pokud dnes nemůžeš přestat myslet na ten nápad — ostatní ho ještě nevidí. Otevřeš ten dokument. Zavřeš ho. Otevřeš znovu. Vypadá to jako chaos? Ne. Tvůj mozek právě přeskočil dva kroky napřed. Vodnáři — napiš, co dnes vidíš jinak než ostatní ⬇️ Příště odhalím Vodnářovo největší tajemství ve vztazích."
