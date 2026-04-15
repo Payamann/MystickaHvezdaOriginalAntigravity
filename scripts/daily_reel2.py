@@ -295,7 +295,22 @@ def build_suno_prompt(signs: list, script: str, target_date: str) -> str:
 
     sign_str = signs[0] if signs else ""
     day_seed = int(hashlib.md5((target_date + sign_str).encode()).hexdigest(), 16)
-    instruments = INSTRUMENT_VARIATIONS[day_seed % len(INSTRUMENT_VARIATIONS)]
+
+    # Sign-specific instrument overrides — synergické s energií znamení
+    SIGN_INSTRUMENT_OVERRIDE = {
+        'Beran':    ["driving percussion and bold brass accents", "energetic strings and rhythmic pulse"],
+        'Vodnář':   ["electric synth pads and futuristic arpeggio", "ambient synth layers with electric pulse"],
+        'Štír':     ["dark cello and deep bass undertones", "brooding strings and distant piano"],
+        'Blíženci': ["playful piano and quick silver flute", "bright marimba with dancing strings"],
+        'Lev':      ["grand piano and warm brass fanfare", "bold strings and golden orchestral swell"],
+        'Střelec':  ["adventurous strings and open horn melody", "expansive orchestral bed with warm brass"],
+    }
+    sign_instruments = SIGN_INSTRUMENT_OVERRIDE.get(sign_str)
+    if sign_instruments:
+        instruments = sign_instruments[day_seed % len(sign_instruments)]
+    else:
+        instruments = INSTRUMENT_VARIATIONS[day_seed % len(INSTRUMENT_VARIATIONS)]
+
     texture = TEXTURE_VARIATIONS[(day_seed // 7) % len(TEXTURE_VARIATIONS)]
 
     MOOD_SEEDS = {
@@ -461,7 +476,10 @@ PRAVIDLA:
 - GENDEROVÁ NEUTRALITA: Žádné genderové tvary ("být pravdivý/á", "byl/byla"). Přítomný čas, 2. os.
 - AI-BLOB ZÁKAZ: Žádné symetrické vzorce ("Není to X. Je to Y." / "Ne X. Ale Y.")
 - Piš POUZE česky, pouze latinkou, žádné cizí znaky ani kanji
-- ČISTÁ ČEŠTINA: NIKDY nepoužívej anglická slova (spreadsheet, feedback, challenge, mindset, vibe, deadline, random...). Vždy česky: feedback → zpětná vazba, challenge → výzva, mindset → nastavení mysli. Výjimky: názvy planet a Instagram/TikTok.
+- ČISTÁ ČEŠTINA: NIKDY nepoužívej anglická slova (spreadsheet, feedback, challenge, mindset, vibe, deadline, random...). Vždy česky: feedback → zpětná vazba, challenge → výzva, mindset → nastavení mysli. Výjimky: Instagram/TikTok.
+- NÁZVY PLANET ČESKY: Mercury → Merkur, Venus → Venuše, Uranus → Uran, Neptune → Neptun. Nikdy "Mercur", nikdy "Mercury".
+- ZAKÁZANÉ HASHTAGS: #znamenízvěrokruhu, #zodiac — nepoužívej je nikdy.
+- FOLLOW TRIGGER: Nikdy nepište "Sleduj, až odhalím X" — místo toho "Sleduj profil — příště odhalím X" nebo "Sleduj, ať ti neunikne X".
 - Výstup JEN samotný text, žádné komentáře"""
 
     user = f"""Datum: {date_cs}
@@ -504,7 +522,9 @@ PRAVIDLA:
 - AI-BLOB ZÁKAZ: Žádné symetrické vzorce ("Není to X. Je to Y." / "Ne X. Ale Y.") — přeformuluj vždy do jedné věty
 - KONZISTENCE ASTRO ASPEKTŮ: Pokud TikTok description (viz níže) zmiňuje konkrétní astro aspekt (planetu, tranzit, dům), použij PŘESNĚ STEJNÝ aspekt — nesměšuj s jiným. FB rozšiřuje stejný astro příběh, nevymýšlí nový.
 - Piš POUZE česky, pouze latinkou
-- ČISTÁ ČEŠTINA: NIKDY nepoužívej anglická slova (spreadsheet, feedback, challenge, mindset, vibe, deadline, random...). Vždy česky: feedback → zpětná vazba, challenge → výzva, mindset → nastavení mysli. Výjimky: názvy planet a Instagram/TikTok.
+- ČISTÁ ČEŠTINA: NIKDY nepoužívej anglická slova (spreadsheet, feedback, challenge, mindset, vibe, deadline, random...). Vždy česky: feedback → zpětná vazba, challenge → výzva, mindset → nastavení mysli. Výjimky: Instagram/TikTok.
+- NÁZVY PLANET ČESKY: Mercury → Merkur, Venus → Venuše, Uranus → Uran, Neptune → Neptun. Nikdy "Mercur", nikdy "Mercury".
+- TÉMA: FB description MUSÍ rozvíjet PŘESNĚ STEJNÉ téma jako voiceover — nepřidávej nové vlastnosti znamení, nové příběhy ani jiné aspekty. Pokud voiceover mluví o vidění budoucnosti, FB rozšiřuje vidění budoucnosti — ne o archivaci lidí nebo jiné téma.
 - Výstup JEN samotný text, žádné komentáře"""
 
     tiktok_context = f"\nTikTok description (použij stejný astro aspekt, rozviň ho):\n{tiktok_description}\n" if tiktok_description else ""
@@ -513,7 +533,7 @@ PRAVIDLA:
 Znamení ve videu: {sign}
 Web: https://www.mystickahvezda.cz/horoskopy.html
 {tiktok_context}
-Voiceover script (pro kontext — caption musí přidat NOVOU perspektivu a astro fakt):
+Voiceover script (HLAVNÍ TÉMA — FB musí rozvíjet přesně toto téma, ne jiné):
 {script[:600]}
 
 Napiš Facebook description ve formátu:
@@ -658,7 +678,14 @@ ENERGIE ZNAMENÍ (základ tónu):
 JAZYK — ČISTÁ ČEŠTINA:
 - NIKDY nepoužívej anglická slova (spreadsheet, too much, data, feedback, challenge, skill, mindset, vibe, random, deadline...).
 - Vždy najdi český ekvivalent: spreadsheet → tabulka, feedback → zpětná vazba, deadline → termín, challenge → výzva, skill → dovednost, mindset → nastavení mysli, random → náhodný.
-- Výjimky: názvy planet (Saturn, Jupiter, Pluto) a slovo "Instagram/TikTok" v CTA zůstávají.
+- NÁZVY PLANET ČESKY: Mercury → Merkur, Venus → Venuše, Uranus → Uran, Neptune → Neptun. Nikdy "Mercur".
+- Výjimky: Saturn, Jupiter, Pluto, Mars (stejné česky i anglicky) a slovo "Instagram/TikTok" v CTA.
+
+LOGIKA METAFOR:
+- Každá fráze musí dávat smysl doslova. Zkontroluj: dává tato věta smysl, když ji řeknu doslova?
+- ❌ "přeskakovat budoucnost" — nedává smysl. ✅ "ignorovat budoucnost" / "zaostávat za budoucností"
+- ❌ "Neptun ti šeptá" — zakázáno (viz blacklist). ✅ "Neptun v tvém znamení zesiluje..."
+- Metafory musí být konkrétní a vizuální, ne abstraktní.
 
 Výstup JEN samotný text — žádné nadpisy, žádné labely, žádné hvězdičky."""
 
@@ -807,31 +834,26 @@ Výstup JEN samotný text — žádné nadpisy, žádné labely, žádné hvězd
 
     # Follow trigger — rotace podle dne (různé struktury, ne jen "zítra sleduj")
     follow_triggers = [
-        # Série — zvědavost na další díl
-        f"Příště odhalím {sign_vocative} největší tajemství ve vztazích.",
-        f"Příští díl: co {sign_vocative} nikdy neřekne nahlas.",
-        f"Příště: proč {sign_vocative} sabotuje to, co chce nejvíc.",
-        f"Příště vysvětlím, proč {sign_vocative} reaguje tak, jak reaguje.",
         # Série — content tease bez "zítra"
-        f"Ukládej — budeš se k tomu vracet.",
-        f"Uložit a poslat někomu, kdo toto potřebuje slyšet.",
-        f"Uložit. Podívej se na to znovu večer.",
+        "Ukládej — budeš se k tomu vracet.",
+        "Uložit a poslat někomu, kdo toto potřebuje slyšet.",
+        "Uložit. Podívej se na to znovu večer.",
         # Označení
         f"Označ {sign_vocative}, co toto teď potřebuje.",
         f"Pošli to {sign_vocative}, co si tohle ještě neuvědomuje.",
-        f"Označ kohokoliv, kdo tohle zná zpaměti.",
-        # Sdílení / engagement bez "zítra"
-        f"Sleduj profil — každý den jiné znamení.",
-        f"Sleduj, ať ti neunikne tvůj den.",
-        f"Profil pro ty, co berou astro vážně.",
-        f"Na profilu najdeš výklad pro všechna ostatní znamení.",
-        # Série — zvědavost na téma
-        f"Příště: které znamení tohle nezvládá vůbec.",
-        f"Příště: temná strana {sign}ů — co se o vás neříká.",
-        f"Příští díl: {sign} a peníze. Šokující pravda.",
-        f"Příště: proč se {sign} bojí přesně toho, po čem touží.",
-        f"Příště odhalím, co {sign_vocative} opravdu chybí ve vztahu.",
-        f"Příští díl pro {sign_vocative} bude ještě přímější.",
+        "Označ kohokoliv, kdo tohle zná zpaměti.",
+        # Sleduj profil — obecné, bez slibu konkrétního znamení
+        "Sleduj profil — každý den jiné znamení.",
+        "Sleduj, ať ti neunikne tvůj den.",
+        "Profil pro ty, co berou astro vážně.",
+        "Na profilu najdeš výklad pro všechna ostatní znamení.",
+        # Obecné teasery na další díl — bez vazby na konkrétní znamení
+        "Příště: které znamení tohle nezvládá vůbec.",
+        "Příště: temná strana vztahů — co si znamení neřeknou.",
+        "Příští díl: astro a peníze. Šokující pravda.",
+        "Příště: proč se bojíme přesně toho, po čem toužíme.",
+        "Příští díl bude ještě přímější.",
+        "Příště odhalím, co hvězdy říkají o tvých vztazích.",
     ]
     follow_seed = int(hashlib.md5((target_date + sign).encode()).hexdigest(), 16)
     follow_trigger = follow_triggers[follow_seed % len(follow_triggers)]
@@ -870,10 +892,19 @@ A) MIKROPŘÍBĚH — konkrétní vizuální scéna ze života persony:
      ✅ Nejlepší: vybuduj scénu bez třetí osoby — objekt je věc, ne člověk: "Díváš se na tu zprávu.", "Otevřeš profil.", "Zamkneš telefon."
 
 B) TWIST — povinný moment překvapení nebo přerámování:
-   - Přijde po mikropříběhu jako "aha moment"
-   - ❌ ZAKÁZANÉ SYMETRICKÉ VZORCE: "Nejde o X. Jde o Y." / "Není to X. Je to Y." / "Ne X. Ale Y." — tohle je AI-blob, NIKDY nepoužívej!
-   - ✅ SPRÁVNÉ TWISTY: "Rozchod? Hádka? Ne. Přestáváš hrát roli, co ti někdo přidělil." / "Jo, ničíš to. Ale ne proto, že jsi zlá."
-   - Divák musí říct "wow, tohle jsem nevěděla"
+   - Přijde po mikropříběhu jako "aha moment" — nečekaný úhel pohledu, který změní výklad celé scény
+   - ❌ ZAKÁZANÉ VZORCE — VŠECHNY varianty symetrie jsou zakázány:
+     "Nejde o X. Jde o Y." / "Není to X. Je to Y." / "Ne X. Ale Y."
+     "Ne proto, že X. Ale proto, že Y." / "Ne kvůli X. Ale kvůli Y."
+     "To není X. To je Y." / "Tohle není X — je to Y."
+     → Jakákoli věta tvaru [negace A] + [potvrzení B] je AI-blob. NIKDY.
+   - ✅ SPRÁVNÉ TWISTY — překvapení přichází nečekaně, ne jako oprava:
+     "Rozchod? Hádka? Ne. Přestáváš hrát roli, co ti někdo přidělil."
+     "Jo, ničíš to. Ale ne proto, že jsi zlá." ← (tohle je OK, negace je uvnitř, ne vzorec)
+     "Čekáš na souhlas. Od sebe."
+     "Trpělivost tě nechrání před zklamáním. Chrání tě před spěchem, který by tě zničil dřív."
+     "Pomalost není slabost. Je to tvůj způsob, jak přežít to, co ostatní vzdali."
+   - SELF-CHECK před zapsáním twistové věty: "Překvapilo by tuto větu samotného diváka? Řekl by 'wow, to jsem nevěděl'?" — pokud ne, přepiš.
    - Za twistem: <break time="1.0s" /> (přechod na slide 3)
    - Použij dovolené tagy pro toto znamení
 
@@ -941,32 +972,88 @@ Tagy celkově: [mysterious] [intense] [warm] [gentle] [confident] [upbeat] [comm
     return raw
 
 def proofread_script(script: str) -> str:
-    """Projde voiceover script, opraví gramatiku a přeloží cizí slova do češtiny."""
-    system = """Jsi jazykový korektor češtiny specializovaný na astrologické texty.
+    """Projde voiceover script, opraví gramatiku, češtinu a kvalitu twistů."""
+    system = """Jsi senior jazykový korektor češtiny specializovaný na astrologické texty pro sociální sítě.
 Dostaneš voiceover script s hranatými závorkami [tag] pro hlasové styly — ty NIKDY neměň ani neodstraňuj.
 Výstup JEN opravený text — žádné komentáře, žádné vysvětlování změn, žádné uvozovky kolem textu."""
 
-    user = f"""Oprav tento voiceover script:
+    user = f"""Oprav tento voiceover script. Projdi KAŽDÝ bod pečlivě:
 
-1. Gramatické chyby — oprav interpunkci, shodu, pádové koncovky. "Dneš" → "Dnes".
-2. Cizí slova → česky: Venus → Venuše, Mars → Mars (OK), Mercury → Merkur, Saturn → Saturn (OK), Jupiter → Jupiter (OK), Neptune → Neptun, Pluto → Pluto (OK).
-   ANGLICKÁ SLOVA → ČESKY: spreadsheet → tabulka, too much → příliš, feedback → zpětná vazba, deadline → termín, challenge → výzva, skill → dovednost, mindset → nastavení mysli, vibe → atmosféra, random → náhodný, data → údaje. Pokud najdeš JAKÉKOLI anglické slovo (kromě planet a Instagram/TikTok), přelož ho do češtiny.
-3. Vykání → tykání pokud ještě někde zbylo (vás/vám/vaše → tě/ti/tvé)
-4. Genderová neutralita — DVA TYPY:
-   a) 2. osoba (divák) — KRITICKÉ: JAKÉKOLI minulé příčestí vztahující se k divákovi MUSÍ být přeformulováno do přítomného času. Bez výjimky.
-      ❌ "rozhodla", "rozhodl", "ignorovala", "ignoroval", "udělala", "udělal", "byl", "byla", "vykročil", "vykročila", "pustila", "pustil" — VŠECHNO zakázané
-      ✅ Přeformuluj: "cos se rozhodla pustit" → "co chceš pustit"; "co jsi ignorovala" → "co přeskakuješ"; "byl jsi" → "jsi"; "vykročil" → "vykračuješ"
-      Hledej aktivně celý text na vzor "cos/co jsi/jsi byl/byla/udělal/udělala/rozhodl/rozhodla/ignoroval/ignorovala" a přeformuluj.
-   b) 3. osoba (lidé ve scéně): "němu/jí/ho/ji" → "té osobě" nebo přeformuluj scénu bez osobního zájmena. "Sedíš naproti němu" → "Sedíš naproti té osobě" nebo "Otevřeš konverzaci." "Usmívá se na tebe" → "Vidíš ten úsměv." NIKDY předpokládat pohlaví partnera/šéfa/kamaráda.
-5. AI-blob symetrické vzorce — přeformuluj: "Nejde o X. Jde o Y." → "X? Y? Ne. [přerámování]." nebo slouč do jedné věty; "Není to X. Je to Y." → stejně přeformuluj. Nikdy nesmí zůstat struktura "[Negace]. [Pozitivní přerámování]." ve dvou větách za sebou.
-6. <break> tagy a [emotion] tagy — NIKDY neměň, nemaž, nepřesouvej. Zachovej přesně jak jsou.
-7. Jinak TEXT NEMĚŇ — zachovej přesné znění, styl, délku
+1. GRAMATIKA — oprav interpunkci, shodu, pádové koncovky. "Dneš" → "Dnes".
+
+2. CIZÍ SLOVA → ČESKY:
+   Planety: Venus → Venuše, Mercury → Merkur, Mercur → Merkur, Neptune → Neptun, Uranus → Uran. Mars/Saturn/Jupiter/Pluto jsou stejné.
+   Anglická slova: spreadsheet → tabulka, too much → příliš, feedback → zpětná vazba, deadline → termín, challenge → výzva, skill → dovednost, mindset → nastavení mysli, vibe → atmosféra, random → náhodný.
+   Pokud najdeš JAKÉKOLI anglické slovo (kromě Instagram/TikTok), přelož ho.
+
+3. VYKÁNÍ → TYKÁNÍ — vás/vám/vaše/váš → tě/ti/tvé/tvůj.
+
+4. GENDEROVÁ NEUTRALITA:
+   a) 2. osoba (divák) — ABSOLUTNÍ ZÁKAZ minulého příčestí:
+      ❌ rozhodla/rozhodl, ignorovala/ignoroval, udělala/udělal, byl/byla, vykročil/vykročila, pustila/pustil
+      ✅ Přeformuluj do přítomného času: "cos se rozhodla pustit" → "co chceš pustit"
+   b) 3. osoba ve scéně — NIKDY "němu/jí/ho/ji/on/ona" pro osoby:
+      ✅ "naproti té osobě" / scéna bez třetí osoby
+
+5. AI-BLOB VZORCE — přeformuluj VŠECHNY tyto struktury:
+   ❌ "Nejde o X. Jde o Y." / "Není to X. Je to Y." / "Ne X. Ale Y."
+   ❌ "Ne proto, že X. Ale proto, že Y." / "Ne kvůli X. Ale kvůli Y."
+   ❌ Jakákoli věta tvaru [negace A] + [potvrzení B] ve dvou větách za sebou
+   ✅ Slouč do jedné věty nebo přeformuluj jako skutečný twist bez symetrie.
+
+6. LOGIKA METAFOR — oprav fráze které nedávají doslova smysl:
+   ❌ "přeskakovat budoucnost" / "vidět projekty dovnitř" / "ukládat lidi do archivů"
+   ✅ Přeformuluj do srozumitelné češtiny.
+
+7. [emotion] TAGY a <break> TAGY — NIKDY neměň, nemaž, nepřesouvej.
+
+8. JINAK TEXT NEMĚŇ — zachovej styl, délku, strukturu.
 
 Script:
 {script}"""
 
-    print("[*] Proofreading...")
+    print("[*] Proofreading voiceoveru...")
     return claude_call(system, user, max_tokens=800)
+
+
+def proofread_caption(text: str, platform: str) -> str:
+    """Projde TikTok nebo Facebook caption — opraví češtinu, konzistenci a brand voice."""
+    system = """Jsi senior jazykový korektor češtiny specializovaný na sociální sítě.
+Výstup JEN opravený text — žádné komentáře, žádné vysvětlování, žádné uvozovky."""
+
+    hashtag_rules = (
+        "Zachovej hashtags přesně jak jsou — oprav pouze pokud obsahují zakázané: "
+        "#znamenízvěrokruhu nebo #zodiac → ODSTRAŇ je. #Mercury nebo #Venus → oprav na české (#Merkur, #Venuše)."
+        if platform == "tiktok"
+        else "Zachovej hashtags přesně jak jsou."
+    )
+
+    user = f"""Oprav tento {platform.upper()} caption. Projdi KAŽDÝ bod:
+
+1. GRAMATIKA — interpunkce, shoda, pádové koncovky, háčky a čárky.
+
+2. PLANETY ČESKY — Mercury/Mercur → Merkur, Venus → Venuše, Neptune → Neptun, Uranus → Uran.
+   ANGLICKÁ SLOVA → ČESKY (kromě Instagram/TikTok).
+
+3. VYKÁNÍ → TYKÁNÍ — vás/vám/vaše → tě/ti/tvé.
+
+4. GENDEROVÁ NEUTRALITA — zákaz minulého příčestí pro diváka (rozhodla/rozhodl atd.) → přítomný čas.
+
+5. AI-BLOB — přeformuluj "Není to X. Je to Y." / "Ne X. Ale Y." a všechny symetrické vzorce.
+
+6. LOGIKA — oprav fráze které nedávají doslova smysl (např. "vidět projekty dovnitř" → "rozumět projektům do hloubky").
+
+7. FOLLOW TRIGGER — "Sleduj, až odhalím X" → "Sleduj profil — příště odhalím X".
+
+8. {hashtag_rules}
+
+9. JINAK TEXT NEMĚŇ — zachovej styl, délku, emoji.
+
+Caption:
+{text}"""
+
+    print(f"[*] Proofreading {platform} caption...")
+    return claude_call(system, user, max_tokens=500)
 
 
 # ─── Main ─────────────────────────────────────────────────────────────────────
@@ -1031,7 +1118,22 @@ def main():
     date_header = f"🗓️ {d.day}. {MONTHS_CS[d.month - 1]} {d.year}\n\n"
     script = date_header + script
     description = build_tiktok_description(chosen, script, target_date)
+    description = proofread_caption(description, "tiktok")
     fb_description = build_facebook_description(chosen, script, target_date, tiktok_description=description)
+    fb_description = proofread_caption(fb_description, "facebook")
+
+    # Garantuj správný hashtag znamení s diakritikou — AI ho občas ztratí
+    sign = chosen[0]
+    for text_var in ['description', 'fb_description']:
+        val = locals()[text_var]
+        # Oprav hashtag bez diakritiky zpět na správný tvar
+        sign_slug = normalize_sign(sign)  # bez diakritiky, malá písmena
+        import re as _re
+        val = _re.sub(rf'#({re.escape(sign_slug)})\b', f'#{sign}', val, flags=re.IGNORECASE)
+        if text_var == 'description':
+            description = val
+        else:
+            fb_description = val
     suno = build_suno_prompt(chosen, script, target_date)
     thumbnail = build_thumbnail_prompt(chosen[0], target_date, script)
 
