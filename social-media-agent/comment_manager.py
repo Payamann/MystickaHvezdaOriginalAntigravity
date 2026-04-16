@@ -80,8 +80,8 @@ def _save_db(db: dict):
 # ══════════════════════════════════════════════════
 
 def fetch_facebook_comments(
-    limit_per_post: int = 25,
-    since_hours: int = 48,
+    limit_per_post: int = 100,
+    since_hours: int = 168,
 ) -> list[dict]:
     """
     Načte komentáře ze všech postů na Facebook stránce
@@ -105,7 +105,7 @@ def fetch_facebook_comments(
         "access_token": token,
         "fields": "id,message,created_time",
         "since": since_ts,
-        "limit": 20,
+        "limit": 50,
     }, timeout=config.HTTP_TIMEOUT)
 
     if posts_resp.status_code != 200:
@@ -119,17 +119,26 @@ def fetch_facebook_comments(
         post_message = post.get("message", "")[:100]
 
         comments_url = f"{GRAPH_API_URL}/{post_id}/comments"
-        comments_resp = requests.get(comments_url, params={
+        params = {
             "access_token": token,
             "fields": "id,from,message,created_time,can_reply_privately",
             "limit": limit_per_post,
             "filter": "stream",
-        }, timeout=config.HTTP_TIMEOUT)
+        }
+        page_comments = []
+        while comments_url:
+            comments_resp = requests.get(comments_url, params=params, timeout=config.HTTP_TIMEOUT)
+            if comments_resp.status_code != 200:
+                break
+            data = comments_resp.json()
+            page_comments.extend(data.get("data", []))
+            comments_url = data.get("paging", {}).get("next")
+            params = {}  # next URL already contains all params
 
         if comments_resp.status_code != 200:
             continue
 
-        for comment in comments_resp.json().get("data", []):
+        for comment in page_comments:
             comments.append({
                 "id": comment["id"],
                 "platform": "facebook",
@@ -239,13 +248,9 @@ def fetch_all_comments(since_hours: int = 48) -> list[dict]:
         except Exception as e:
             errors.append(f"Facebook: {e}")
 
-    if config.META_ACCESS_TOKEN and config.INSTAGRAM_ACCOUNT_ID:
-        try:
-            ig_comments = fetch_instagram_comments(since_hours=since_hours)
-            all_comments.extend(ig_comments)
-            log.info("Instagram: %d nových komentářů", len(ig_comments))
-        except Exception as e:
-            errors.append(f"Instagram: {e}")
+    # Instagram API v2.4+ má deprecated endpoint — dočasně vypnuto
+    # if config.META_ACCESS_TOKEN and config.INSTAGRAM_ACCOUNT_ID:
+    #     ig_comments = fetch_instagram_comments(since_hours=since_hours)
 
     if errors:
         for e in errors:
@@ -393,6 +398,39 @@ def analyze_comment_sentiment(message: str) -> dict:
 # SYNCHRONIZACE A ULOŽENÍ
 # ══════════════════════════════════════════════════
 
+def regenerate_replies() -> int:
+    """
+    Přegeneruje odpovědi pro všechny nevyřízené komentáře v DB.
+    Použij po změně reply logiky.
+    """
+    db = _load_db()
+    count = 0
+    for cid, comment in db["comments"].items():
+        if comment.get("status") not in ("new", None):
+            continue
+        if not comment.get("needs_reply"):
+            continue
+        if not comment.get("message", "").strip():
+            continue
+        try:
+            tone_map = {"question": "educational", "positive": "friendly",
+                        "skeptical": "empathetic", "neutral": "friendly", "off_topic": "friendly"}
+            tone = tone_map.get(comment.get("sentiment", "neutral"), "friendly")
+            from generators.text_generator import generate_comment_reply
+            suggested = generate_comment_reply(
+                original_comment=comment["message"],
+                post_topic=comment.get("post_message", "mystika"),
+                tone=tone,
+            )
+            comment["suggested_reply"] = suggested
+            db["comments"][cid] = comment
+            count += 1
+        except Exception as e:
+            log.warning("Regen selhal pro %s: %s", cid, e)
+    _save_db(db)
+    return count
+
+
 def sync_comments(since_hours: int = 48) -> dict:
     """
     Hlavní sync funkce:
@@ -414,6 +452,19 @@ def sync_comments(since_hours: int = 48) -> dict:
     skipped = 0
     replies_generated = 0
 
+    # Sleduj duplicity komentářů per post (max 3 stejné odpovědi)
+    post_msg_counts: dict[str, dict[str, int]] = {}
+
+    import unicodedata
+    def _is_junk(msg: str) -> bool:
+        """True pokud je komentář prázdný, příliš krátký nebo jen emoji/znaky."""
+        stripped = msg.strip()
+        if len(stripped) < 4:
+            return True
+        # Odstraň emoji a interpunkci, zkontroluj zda zbyde aspoň 1 písmeno
+        letters = [c for c in stripped if unicodedata.category(c).startswith("L")]
+        return len(letters) < 3
+
     for comment in new_comments:
         cid = comment["id"]
 
@@ -422,32 +473,38 @@ def sync_comments(since_hours: int = 48) -> dict:
             skipped += 1
             continue
 
+        msg = comment["message"].strip().lower()
+        post_id = comment.get("post_id", "")
+
+        # Přeskoč junk komentáře (prázdné, emoji-only, < 4 znaky)
+        if _is_junk(comment["message"]):
+            comment["status"] = "ignored"
+            comment["sentiment"] = "junk"
+            comment["priority"] = 0
+            comment["needs_reply"] = False
+            db["comments"][cid] = comment
+            added += 1
+            continue
+
+        # Přeskoč duplicity (max 3 stejné odpovědi na stejném postu)
+        if post_id not in post_msg_counts:
+            post_msg_counts[post_id] = {}
+        post_msg_counts[post_id][msg] = post_msg_counts[post_id].get(msg, 0) + 1
+        if post_msg_counts[post_id][msg] > 3:
+            comment["status"] = "ignored"
+            comment["sentiment"] = "duplicate"
+            comment["priority"] = 0
+            comment["needs_reply"] = False
+            db["comments"][cid] = comment
+            added += 1
+            continue
+
         # Analýza sentimentu
         analysis = analyze_comment_sentiment(comment["message"])
         comment.update(analysis)
 
-        # Generuj návrh odpovědi pokud je potřeba
-        if analysis["needs_reply"] and comment["message"].strip():
-            try:
-                tone_map = {
-                    "question": "educational",
-                    "positive": "friendly",
-                    "skeptical": "empathetic",
-                    "neutral": "friendly",
-                    "off_topic": "friendly",  # guardrails v promptu zajistí přesměrování
-                }
-                tone = tone_map.get(analysis["sentiment"], "friendly")
-
-                suggested = generate_comment_reply(
-                    original_comment=comment["message"],
-                    post_topic=comment.get("post_message", "mystika"),
-                    tone=tone,
-                )
-                comment["suggested_reply"] = suggested
-                replies_generated += 1
-            except Exception as e:
-                comment["suggested_reply"] = None
-                log.warning("Nepodařilo se vygenerovat odpověď: %s", e)
+        # Odpověď se generuje lazy — až těsně před odesláním v get_pending_comments()
+        # Tady jen uložíme komentář bez odpovědi (šetří API náklady při syncu)
 
         db["comments"][cid] = comment
         db["stats"]["total_fetched"] = db["stats"].get("total_fetched", 0) + 1
@@ -496,6 +553,35 @@ def get_pending_comments(
 
     # Seřaď podle priority (nejvyšší první), pak podle data
     pending.sort(key=lambda c: (-c.get("priority", 0), c.get("created_time", "")))
+
+    # Lazy generování — jen pro komentáře bez odpovědi, max batch_size najednou
+    _TONE_MAP = {"question": "educational", "positive": "friendly",
+                 "skeptical": "empathetic", "neutral": "friendly", "off_topic": "friendly"}
+    generated = 0
+    db_dirty = False
+    for comment in pending:
+        if comment.get("suggested_reply"):
+            continue
+        if not comment.get("needs_reply") or not comment.get("message", "").strip():
+            continue
+        try:
+            tone = _TONE_MAP.get(comment.get("sentiment", "neutral"), "friendly")
+            suggested = generate_comment_reply(
+                original_comment=comment["message"],
+                post_topic=comment.get("post_message", "mystika"),
+                tone=tone,
+            )
+            comment["suggested_reply"] = suggested
+            db["comments"][comment["id"]] = comment
+            db_dirty = True
+            generated += 1
+        except Exception as e:
+            log.warning("Nepodařilo se vygenerovat odpověď: %s", e)
+
+    if db_dirty:
+        _save_db(db)
+        log.info("Lazy generování: %d odpovědí vygenerováno", generated)
+
     return pending
 
 

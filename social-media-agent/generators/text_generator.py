@@ -1625,6 +1625,108 @@ Odpověz JSON:
 # ODPOVĚDI NA KOMENTÁŘE
 # ============================================================
 
+# Cached knowledge base pro comment replies — sestaví se jednou za session
+_COMMENT_KB_SYSTEM: list | None = None
+
+def _get_comment_system() -> list:
+    """Vrátí system prompt s cached knowledge base pro comment replies."""
+    global _COMMENT_KB_SYSTEM
+    if _COMMENT_KB_SYSTEM is None:
+        kb = build_knowledge_prompt(
+            include_tools=True,
+            include_pricing=True,
+            include_blog=False,
+            include_usp=True,
+            include_faq=True,
+            compact=True,
+        )
+        _COMMENT_KB_SYSTEM = [
+            {
+                "type": "text",
+                "text": BRAND_VOICE,
+                "cache_control": {"type": "ephemeral"},
+            },
+            {
+                "type": "text",
+                "text": kb,
+                "cache_control": {"type": "ephemeral"},
+            },
+        ]
+    return _COMMENT_KB_SYSTEM
+
+
+
+# ── Slovníky pro detekci kontextu ──
+_ZNAMENI = {
+    "beran": "Beran ♈", "byk": "Býk ♉", "blizenci": "Blíženci ♊", "blíženci": "Blíženci ♊",
+    "rak": "Rak ♋", "lev": "Lev ♌", "panna": "Panna ♍",
+    "vahy": "Váhy ♎", "váhy": "Váhy ♎", "stir": "Štír ♏", "štír": "Štír ♏",
+    "strelec": "Střelec ♐", "střelec": "Střelec ♐", "kozoroh": "Kozoroh ♑",
+    "vodnar": "Vodnář ♒", "vodnář": "Vodnář ♒", "ryby": "Ryby ♓",
+}
+
+_EMOCE = {
+    "unavená": "únava", "unavena": "únava", "unavený": "únava", "unavene": "únava",
+    "opuštěná": "osamělost", "opustena": "osamělost", "opuštěně": "osamělost", "opustene": "osamělost",
+    "skleslá": "sklíčenost", "sklesla": "sklíčenost", "sklesle": "sklíčenost",
+    "smutná": "smutek", "smutne": "smutek", "smutna": "smutek",
+    "znechutena": "znechucení", "znechucena": "znechucení",
+    "rezignovaně": "rezignace", "rezignovane": "rezignace",
+    "sám": "osamělost", "sama": "osamělost",
+    "úzkost": "úzkost", "uzkost": "úzkost",
+    "vyčerpaná": "vyčerpání", "vycerpana": "vyčerpání",
+    "ztracená": "ztráta", "ztracena": "ztráta",
+    "zlostná": "zlost", "nastvana": "zlost", "naštvaná": "zlost",
+    "spokojená": "spokojenost", "spokojená": "spokojenost",
+    "vděčná": "vděčnost", "vdecna": "vděčnost",
+    "nadšená": "nadšení", "nadsena": "nadšení",
+}
+
+_ENGAGEMENT_HOOKS = [
+    "A co ty — rezonuje ti to dnes?",
+    "Jak to vnímáš u sebe?",
+    "Bylo to tak i u tebe?",
+    "Co říká tvá intuice?",
+    "Poznáváš se v tom?",
+    "Co pro tebe dnes znamená tohle?",
+]
+
+import random as _random
+
+def _detect_comment_context(message: str) -> dict:
+    """Detekuje klíčový kontext komentáře — znamení, emoce, typ."""
+    lower = message.lower().strip()
+    ctx = {"znameni": None, "emoce": None, "typ": "neutral"}
+
+    # Detekce znamení
+    for klic, hodnota in _ZNAMENI.items():
+        if klic in lower:
+            ctx["znameni"] = hodnota
+            break
+
+    # Detekce emoce
+    for klic, hodnota in _EMOCE.items():
+        if klic in lower:
+            ctx["emoce"] = hodnota
+            break
+
+    # Detekce typu
+    if "?" in message:
+        ctx["typ"] = "otazka"
+    elif ctx["znameni"] and len(lower) < 30:
+        ctx["typ"] = "identifikace_znameni"  # "Jsem Štír 🦂"
+    elif ctx["emoce"]:
+        ctx["typ"] = "emocionalni_stav"
+    elif any(w in lower for w in ["díky", "dekuji", "děkuji", "super", "skvěl", "krásn", "úžasn", "přesn", "pravda", "❤", "💜", "🙏"]):
+        ctx["typ"] = "pochvala"
+    elif any(w in lower for w in ["nevím", "nevim", "pochyb", "nefunguje", "nevěřím", "neverim", "škoda", "zklamán"]):
+        ctx["typ"] = "skeptik"
+    elif ctx["znameni"]:
+        ctx["typ"] = "prinos_znameni"  # delší komentář se znamením
+
+    return ctx
+
+
 def generate_comment_reply(
     original_comment: str,
     post_topic: str,
@@ -1632,99 +1734,84 @@ def generate_comment_reply(
     post_context: str = "",
 ) -> str:
     """
-    Generuje lidskou, přirozenou odpověď na komentář.
-    Detekuje typ komentáře (otázka, pochvala, negativní, osobní příběh).
+    Generuje specifickou, duší nabitou odpověď na komentář.
+    Rozpoznává znamení, emoce, typ komentáře a přizpůsobuje tón i obsah.
     """
-    client, model_name = setup_claude()
+    client, model_name = setup_claude(use_fast=True)  # Haiku — levnější pro komentáře
 
-    tone_map = {
-        "friendly": "teplý, přátelský, jako by odpovídala kamarádka",
-        "empathetic": "hluboce empatický, uznal/a osobní příběh, podpůrný",
-        "educational": "informativní ale přátelský, přidej 1 hodnotnou informaci",
-        "playful": "lehký, s lehkým humorem pokud to sedí",
-    }
-    tone_desc = tone_map.get(tone, tone_map["friendly"])
+    ctx = _detect_comment_context(original_comment)
 
-    # Detekce typu komentáře
-    comment_lower = original_comment.lower()
-    if "?" in original_comment:
-        comment_type = "otázka — odpověz přímo a konkrétně"
-    elif any(w in comment_lower for w in ["díky", "dekuji", "super", "skvělé", "báječné", "❤", "💜", "krásné"]):
-        comment_type = "pochvala — přijmi vděčně, přidej osobní touch"
-    elif any(w in comment_lower for w in ["nevím", "pochybuji", "nefunguje", "nevěřím"]):
-        comment_type = "skeptický komentář — uznej pohled, reaguj laskavě bez obrannosti"
+    # Sestavení specifických instrukcí podle typu
+    if ctx["typ"] == "identifikace_znameni":
+        znameni = ctx["znameni"]
+        instrukce = f"""Osoba píše že je {znameni}. Krátce a vřele potvrď tuto identitu,
+přidej 1 konkrétní vlastnost nebo energii tohoto znamení která rezonuje s tématem postu.
+Tón: hřejivý, jako bys rozpoznal/a starého přítele. Délka: 1-2 věty."""
+
+    elif ctx["typ"] == "emocionalni_stav":
+        emoce = ctx["emoce"]
+        instrukce = f"""Osoba vyjadřuje: {emoce}.
+NEJDŘÍVE validuj tento pocit (bez rad, bez "ale"). Pak nabídni jeden malý, konkrétní mystický pohled nebo nástroj.
+Tón: teplý, přítomný, jako kamarádka která skutečně naslouchá. Délka: 2-3 věty.
+NEZLEHČUJ pocit, NEPŘESKAKUJ rovnou na rady."""
+
+    elif ctx["typ"] == "otazka":
+        instrukce = """Odpověz přímo a konkrétně na otázku. Přidej 1 praktickou informaci nebo odkaz.
+Tón: informativní, přátelský. Délka: 2-3 věty. Nezačínaj "Dobrou otázku!"."""
+
+    elif ctx["typ"] == "pochvala":
+        instrukce = """Přijmi pochvalu přirozeně (ne korporátně). Přidej osobní touch nebo pozvi k dalšímu prozkoumání.
+Tón: vřelý, autentický. Délka: 1-2 věty. Nepřehánět s vděčností."""
+
+    elif ctx["typ"] == "skeptik":
+        instrukce = """Uznej pohled bez obrannosti. Nabídni jiný úhel nebo osobní zkušenost.
+Tón: klidný, sebejistý, bez přesvědčování. Délka: 2 věty."""
+
+    elif ctx["typ"] == "prinos_znameni":
+        znameni = ctx["znameni"]
+        instrukce = f"""Osoba sdílí zkušenost jako {znameni}. Potvrď jejich zkušenost,
+přidej 1 konkrétní astrologický insight relevantní k tématu postu.
+Tón: jako průvodce který to zná zevnitř. Délka: 2-3 věty."""
+
     else:
-        comment_type = "obecný komentář — zapoj ho, potvrď jeho zážitek"
+        instrukce = """Zapoj osobu do rozhovoru. Potvrď jejich zážitek nebo pohled.
+Tón: přátelský, zvídavý. Délka: 1-2 věty."""
 
-    # Znalostní báze pro odpovědi (kompaktní + FAQ)
-    comment_knowledge = build_knowledge_prompt(
-        include_tools=True,
-        include_pricing=True,
-        include_blog=False,  # šetříme tokeny u komentářů
-        include_usp=True,
-        include_faq=True,
-        compact=True,
-    )
+    # Engagement hook — 60% šance na otázku na konci (boostuje diskusi)
+    engagement = ""
+    if ctx["typ"] not in ("otazka", "skeptik") and _random.random() < 0.6:
+        hook = _random.choice(_ENGAGEMENT_HOOKS)
+        engagement = f"\nNa konec přirozeně přidej tuto otázku (nebo podobnou): \"{hook}\""
 
-    # Najdi relevantní nástroj/blog pro doporučení v odpovědi
+    # Relevantní nástroj/odkaz
     tool = find_relevant_tool(original_comment) or find_relevant_tool(post_topic)
-    relevant_blogs = find_relevant_blog(original_comment, max_results=2)
+    relevant_blogs = find_relevant_blog(original_comment, max_results=1)
     recommendation = ""
-    if tool:
-        recommendation += f"\nMůžeš doporučit nástroj: {tool['name']} ({config.WEBSITE_URL}{tool.get('url', '')})"
-    if relevant_blogs:
-        recommendation += "\nMůžeš odkázat na článek: " + relevant_blogs[0]['title'] + f" ({config.WEBSITE_URL}/blog/{relevant_blogs[0]['slug']}.html)"
+    if tool and ctx["typ"] in ("otazka", "emocionalni_stav", "prinos_znameni"):
+        recommendation = f"\nPokud to přirozeně sedí, doporuč: {tool['name']} ({config.WEBSITE_URL}{tool.get('url', '')})"
+    elif relevant_blogs and ctx["typ"] == "otazka":
+        recommendation = f"\nMůžeš odkázat na: {relevant_blogs[0]['title']} ({config.WEBSITE_URL}/blog/{relevant_blogs[0]['slug']}.html)"
 
-    prompt = f"""{comment_knowledge}
-
-Jsi community manager Mystické Hvězdy, odpovídáš na komentář.
-ZNÁŠ CELOU PLATFORMU — nástroje, ceník, blog články. Využij je v odpovědích.
-
-Post byl o: "{post_topic}"
-{f'Kontext postu: {post_context}' if post_context else ''}
+    prompt = f"""Post byl o: "{post_topic}"
+{f'Kontext: {post_context[:200]}' if post_context else ''}
 Komentář: "{original_comment}"
-Typ komentáře: {comment_type}
-Tón: {tone_desc}
+
+INSTRUKCE PRO TUTO ODPOVĚĎ:
+{instrukce}
+{engagement}
 {recommendation}
 
-PRAVIDLA ODPOVĚDI:
-- Max 2-3 věty (kratší = přirozenější)
-- Lidský tón, NE robotický nebo firemní
-- Nezačínaj "Ahoj!" pokud to nesedí přirozeně
-- Nezačínaj "Děkujeme za komentář" (příliš korporátní)
-- Použij max 1 emoji
-- Pokud je otázka, odpověz konkrétně (ne "dobrou otázku!")
-- Případně vrať otázku zpět ("a ty, jak to cítíš?")
+VŽDY:
+- Piš česky, přirozeně, tykej
+- Max 1 emoji
+- Nezačínaj "Ahoj!", "Děkujeme", "To je skvělé že..."
+- Genderově neutrálně: NIKDY lomené tvary (narodil/a, přišel/přišla) — piš 2. os. přítomný čas nebo infinitiv
+- NIKDY neprozraď že jsi AI nebo bot
 
-GUARDRAILS — BEZPEČNOSTNÍ HRANICE (DODRŽUJ VŽDY):
-- NIKDY neodpovídej na témata mimo oblast Mystické Hvězdy (astrologie, tarot, krystaly,
-  numerologie, rituály, meditace, duchovní růst, energetická práce, lunární cykly, čakry, bylinky v kontextu mystiky).
-- Pokud je komentář MIMO TÉMA (recepty, politika, sport, technologie, finance, medicínské rady,
-  právní otázky, osobní útoky, náboženská kázání, prodej cizích produktů apod.):
-  → Odpověz laskavě že se zaměřujete na mystiku a duchovní cesty, a nabídni něco z vašeho světa.
-  → Příklad: "To je hezká otázka, ale my se tady věnujeme světu mystiky a energie ✨ Nechceš zkusit
-    mrknout na náš článek o bylinných rituálech?"
-- NIKDY nedávej medicínské, právní, finanční ani investiční rady.
-  → Pokud se někdo ptá na zdravotní problém, řekni: "Tohle je spíš otázka pro odborníka,
-    my se věnujeme duchovní stránce. Ale třeba meditace ti může pomoct s celkovým klidem."
-- NIKDY nesdílej osobní údaje, hesla, telefonní čísla ani jiné citlivé informace.
-- NIKDY neodpovídej na provokace, trolling nebo flamewars — drž klidný, pozitivní tón nebo ignoruj.
-- NIKDY neodpovídej způsobem, který by mohl poškodit pověst značky (vulgarity, kontroverze, sliby uzdravení apod.).
-- NETVAŘ SE jako odborník na cokoliv mimo mystiku — pokud nevíš, řekni upřímně že nevíš.
-- NIKDY NEPŘIZNEJ ŽE JSI AI — jsi tým Mystické Hvězdy. Pokud se někdo ptá "Jsi bot?",
-  odpověz: "Za Mystickou Hvězdou stojí tým lidí, kteří žijí mystikou každý den ✨"
-- NIKDY nepoužívej slova: AI, bot, umělá inteligence, algoritmus, model, generováno.
+Odpověz POUZE textem odpovědi."""
 
-ODKAZOVÁNÍ NA PLATFORMU:
-- Pokud je otázka relevantní, přirozeně doporuč konkrétní nástroj na mystickahvezda.cz
-  Příklad: "Hele, zkus si vytáhnout kartu na mystickahvezda.cz/tarot-zdarma.html — dnes je silná lunární energie."
-- Nebuď agresivně prodejní — odkazuj jen když to přirozeně sedí k otázce
-- Pokud se ptají na cenu: "Máme spoustu věcí zdarma, a prémiové plány začínají na 199 Kč/měsíc s 7denním trialem."
-- Pokud se ptají na konkrétní funkci, dej přesný odkaz
-
-Odpověz POUZE textem odpovědi. Nic jiného."""
-
-    response = _call_claude(client, model_name, prompt, temperature=0.7, max_tokens=256)
+    response = _call_claude(client, model_name, prompt, temperature=0.82, max_tokens=300,
+                            system=_get_comment_system())
     return response.text.strip()
 
 

@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 # Načti .env soubor
 env_path = Path(__file__).parent / ".env"
-load_dotenv(env_path)
+load_dotenv(env_path, override=True, encoding='utf-8')
 
 # === API KLÍČE ===
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")   # Claude — generování textů
