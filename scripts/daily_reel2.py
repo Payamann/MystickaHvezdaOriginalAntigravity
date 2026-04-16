@@ -357,34 +357,8 @@ Write a Suno song description. The music must:
 
 
 def build_thumbnail_prompt(sign: str, target_date: str, script: str) -> str:
-    """Vygeneruje kompletní Nano Banana thumbnail prompt pro daily_reel2."""
-    date_obj = date.fromisoformat(target_date)
-    date_cs_upper = f"{date_obj.day}. DUBNA" if date_obj.month == 4 else f"{date_obj.day}. {MONTHS_CS[date_obj.month - 1].upper()}"
-
-    # Glyfy znamení
-    SIGN_GLYPHS = {
-        'Beran': '♈', 'Býk': '♉', 'Blíženci': '♊', 'Rak': '♋',
-        'Lev': '♌', 'Panna': '♍', 'Váhy': '♎', 'Štír': '♏',
-        'Střelec': '♐', 'Kozoroh': '♑', 'Vodnář': '♒', 'Ryby': '♓',
-    }
-    glyph = SIGN_GLYPHS.get(sign, '★')
-
-    # Barvy nebuly podle živlu
-    ELEMENT_COLORS = {
-        'Beran':    ('warm amber-orange stellar explosion, red fire tones', 'cool electric blue nebula with teal accents'),
-        'Býk':      ('deep emerald green nebula with gold dust', 'rich teal and forest green star clusters'),
-        'Blíženci': ('bright golden-yellow nebula with white light burst', 'cool lavender and silver star field'),
-        'Rak':      ('warm teal-green nebula with soft silver glow', 'deep ocean blue with pearl starlight'),
-        'Lev':      ('blazing gold and amber supernova', 'warm copper-orange nebula with red fire edges'),
-        'Panna':    ('soft sage-green nebula with warm ivory light', 'cool mint and silver star clusters'),
-        'Váhy':     ('soft rose-gold nebula with lavender tones', 'cool periwinkle blue with silver starlight'),
-        'Štír':     ('deep crimson-red nebula with dark purple shadows', 'near-black deep space with electric violet accents'),
-        'Střelec':  ('warm amber-orange stellar explosion with bright white light burst', 'cool electric blue nebula with teal star clusters'),
-        'Kozoroh':  ('dark charcoal nebula with cold steel-blue light', 'deep navy with icy silver star clusters'),
-        'Vodnář':   ('electric teal and cyan nebula with white core burst', 'deep indigo with aquamarine star trails'),
-        'Ryby':     ('soft violet-lavender nebula with pearl shimmer', 'deep ocean blue with silver and teal starlight'),
-    }
-    top_color, bottom_color = ELEMENT_COLORS.get(sign, ('warm amber nebula', 'cool blue nebula'))
+    """Vygeneruje Nano Banana thumbnail prompt přes thumbnail2.build_prompt()."""
+    import thumbnail2
 
     # Generuj scroll text přes Claude — uzavřený standalone výrok
     scroll_system = """Jsi copywriter pro českou mystickou stránku Mystická Hvězda.
@@ -395,57 +369,38 @@ PRAVIDLA:
 - Tykáš, přítomný čas, žádné lomené tvary, žádné uvozovky, žádné emoji
 - JAZYK: pouze běžná přirozená čeština — jednoduchá slovesa, krátká slova
 - ZAKÁZÁNO: složená nebo neobvyklá slovesa ("uvázni se", "zapusť", "zakotvi"), dvě nesouvisející myšlenky
-- ZAKÁZÁNO: zájmena v druhé větě odkazující na podstatné jméno z první věty ("ji", "ho", "to", "ní") — každá věta musí být samostatně srozumitelná
-- ZAKÁZÁNO: genderová zájmena třetí osoby ("on", "ona", "jeho", "její") — piš bez pohlaví: místo "on čeká" → "druhá strana čeká" nebo přeformuluj bez osoby
+- ZAKÁZÁNO: zájmena v druhé větě odkazující na podstatné jméno z první věty — "ho", "ji", "to", "ní", "něj" — každá věta MUSÍ dávat smysl samostatně bez kontextu té druhé
+   ❌ "Plánuješ celý týden dopředu. A pak ho smazat a začít znovu." — "ho" odkazuje na "týden" z věty 1
+   ✅ "Plánuješ celý týden dopředu. A pak smažeš vše a začneš znovu." — "vše" je samostatně srozumitelné
+- ZAKÁZÁNO: genderová zájmena třetí osoby ("on", "ona", "jeho", "její") — piš bez pohlaví
+- ZAKÁZÁNO: "to" jako zájmeno odkazující na předchozí větu ("Ty to víš" je OK jen pokud "to" je obecné, ne odkaz na konkrétní podstatné jméno z věty 1)
+- TEST PŘED ZÁPISEM: přečti druhou větu izolovaně — dává smysl bez první věty? Pokud ne, přeformuluj.
 
 DOBRÉ PŘÍKLADY (přesně tenhle styl):
 "Ti uniká něco důležitého. A ty to víš."
 "Tvůj instinkt ví víc, než si myslíš. Stačí mu věřit."
-"Čekáš na správný moment. On už přišel."
 "Ostatní to nevidí. Ty to cítíš."
 "Váháš. Ale uvnitř už víš."
 "Hledáš odpověď v druhých. Je v tobě."
+"Kontrola nedá klid. Dá jen iluzi."
 
 Výstup: pouze 2 věty, každá na samostatném řádku, nic jiného."""
 
     scroll_user = f"""Znamení: {sign}
-Voiceover (vyber nejsilnější twist a přeformuluj jako 2 spojené věty v duchu příkladů výše):
+Voiceover (vyber twist nebo klíčovou myšlenku a zhušť ji do 2 vět):
 {script[:400]}
+
+KRITICKÉ: scroll text MUSÍ sémanticky odpovídat voiceoveru — pokud voiceover říká "chrání před spěchem", scroll NESMÍ říkat "chrání před pravdou". Zhušť to, co voiceover říká, ne nový význam.
 
 Napiš 2 věty na thumbnail svitek."""
 
     print("[*] Generuji thumbnail scroll text...")
     scroll_raw = claude_call(scroll_system, scroll_user, max_tokens=80)
     scroll_lines = [l.strip() for l in scroll_raw.strip().splitlines() if l.strip()]
-    scroll_line1 = scroll_lines[0] if len(scroll_lines) > 0 else f"Tvůj instinkt ví víc, než si myslíš."
-    scroll_line2 = scroll_lines[1] if len(scroll_lines) > 1 else f"Stačí mu důvěřovat."
+    scroll_line1 = scroll_lines[0] if len(scroll_lines) > 0 else "Tvůj instinkt ví víc, než si myslíš."
+    scroll_line2 = scroll_lines[1] if len(scroll_lines) > 1 else "Stačí mu důvěřovat."
 
-    prompt = f"""Real deep-space Hubble-style nebula photograph background, split composition:
-top half = {top_color} with dramatic light burst from center,
-thin horizontal black band across the middle,
-bottom half = {bottom_color} and scattered starlight.
-Cinematic, high-detail, photo-realistic.
-
-All graphic elements positioned in the UPPER 80% of the frame — leave minimal space at very bottom.
-
-Center-upper area: large ornate 3D CGI {sign} zodiac symbol ({glyph}),
-dark obsidian material with intricate gold filigree engravings,
-deeply detailed ancient medallion style, soft golden glow radiating from symbol, floating centered in frame.
-
-Directly below the symbol (upper-mid frame): dark stone plaque with ornate golden decorative border,
-bold serif text (NOT cursive, NOT italic, NOT calligraphic):
-Line 1: "{date_cs_upper}"
-Line 2: "{sign.upper()}"
-Text color: warm cream/off-white, engraved look.
-
-Immediately below the plaque (mid frame, NOT at the very bottom): aged parchment scroll, curled edges, warm paper texture,
-two lines of bold serif text (NOT cursive, NOT italic, NOT calligraphic), dark brown #2a1500:
-Line 1: "{scroll_line1}"
-Line 2: "{scroll_line2}"
-
-Portrait 4:5, 1080x1350px. No watermarks, no UI, no borders."""
-
-    return prompt
+    return thumbnail2.build_prompt(target_date, sign, scroll_line1, scroll_line2)
 
 
 def build_tiktok_description(signs: list, script: str, target_date: str) -> str:
@@ -945,115 +900,301 @@ Tagy celkově: [mysterious] [intense] [warm] [gentle] [confident] [upbeat] [comm
     # Pá (4): přesný popis situace — nesmí obsahovat "?"
     # So (5): kontroverze — nesmí obsahovat "?"
     # Ne (6): zrcadlo bolesti — nesmí obsahovat "většina"
+    def hook_word_count(text: str) -> int:
+        """Spočítá slova v hooku (slide 1) — odstraní tagy a break značky."""
+        lines = text.strip().split("\n")
+        hook_lines = []
+        for line in lines:
+            if not line.strip():
+                break
+            hook_lines.append(line)
+        hook_text = " ".join(hook_lines)
+        hook_clean = re.sub(r'\[[\w]+\]', '', hook_text)
+        hook_clean = re.sub(r'<break[^/]*/>', '', hook_clean)
+        hook_clean = re.sub(r'[^\w\s]', ' ', hook_clean)
+        return len(hook_clean.split())
+
     hook_line = raw.strip().split("\n")[0]
     weekday = date_obj.weekday()
     needs_retry = False
+    retry_reason = ""
+
     if weekday == 0:  # Po = přímé oslovení — musí obsahovat vokativ nebo jméno znamení
         if sign not in hook_line and sign_vocative not in hook_line:
             needs_retry = True
-            print("  [!] Hook nema osloveni znameni pro Pondeli — regeneruji...")
+            retry_reason = "Hook nema osloveni znameni pro Pondeli"
     elif weekday in (1, 4, 5):  # Út/Pá/So = kontroverze/provokace — bez otázky
         if "?" in hook_line:
             needs_retry = True
-            print("  [!] Hook ma otazku misto provokace — regeneruji...")
+            retry_reason = "Hook ma otazku misto provokace"
     elif weekday == 3:  # Čt = relationship hook — musí mít vztahové slovo nebo otázku
         vztah_slova = ['vztah', 'miluj', 'partner', 'lásk', 'cit', 'blízk', '?']
         if not any(s in hook_line.lower() for s in vztah_slova):
             needs_retry = True
-            print("  [!] Hook nema vztahovy kontext pro Ctvrtek — regeneruji...")
+            retry_reason = "Hook nema vztahovy kontext pro Ctvrtek"
     elif weekday == 6:  # Ne = zrcadlo bolesti — bez "většina"
         if "většina" in hook_line.lower():
             needs_retry = True
-            print("  [!] Hook obsahuje 'vetsina' misto zrcadla bolesti — regeneruji...")
+            retry_reason = "Hook obsahuje 'vetsina' misto zrcadla bolesti"
+
+    # Délka hooku — vždy kontroluj bez ohledu na den
+    wc = hook_word_count(raw)
+    if wc > 12:
+        needs_retry = True
+        retry_reason = (retry_reason + " | " if retry_reason else "") + f"Hook prilis dlouhy ({wc} slov, max 12)"
 
     if needs_retry:
+        print(f"  [!] {retry_reason} — regeneruji...")
         raw = claude_call(system, user, max_tokens=800)
 
     return raw
 
 def proofread_script(script: str) -> str:
-    """Projde voiceover script, opraví gramatiku, češtinu a kvalitu twistů."""
-    system = """Jsi senior jazykový korektor češtiny specializovaný na astrologické texty pro sociální sítě.
-Dostaneš voiceover script s hranatými závorkami [tag] pro hlasové styly — ty NIKDY neměň ani neodstraňuj.
-Výstup JEN opravený text — žádné komentáře, žádné vysvětlování změn, žádné uvozovky kolem textu."""
+    """Trojitý proofread voiceover scriptu — 3 sekvenční pasy, každý zaměřený jinak."""
 
-    user = f"""Oprav tento voiceover script. Projdi KAŽDÝ bod pečlivě:
+    # ── PAS 1: Gramatika, jazyk, struktura ───────────────────────────────────────
+    system1 = """Jsi senior jazykový korektor češtiny specializovaný na astrologické texty.
+Dostaneš voiceover script s hranatými závorkami [tag] a <break> tagy — ty NIKDY neměň ani neodstraňuj.
+Výstup JEN opravený text — žádné komentáře, žádné vysvětlování, žádné uvozovky."""
 
-1. GRAMATIKA — oprav interpunkci, shodu, pádové koncovky. "Dneš" → "Dnes".
+    user1 = f"""PAS 1 — GRAMATIKA, JAZYK, STRUKTURA. Oprav každý bod:
 
-2. CIZÍ SLOVA → ČESKY:
-   Planety: Venus → Venuše, Mercury → Merkur, Mercur → Merkur, Neptune → Neptun, Uranus → Uran. Mars/Saturn/Jupiter/Pluto jsou stejné.
-   Anglická slova: spreadsheet → tabulka, too much → příliš, feedback → zpětná vazba, deadline → termín, challenge → výzva, skill → dovednost, mindset → nastavení mysli, vibe → atmosféra, random → náhodný.
-   Pokud najdeš JAKÉKOLI anglické slovo (kromě Instagram/TikTok), přelož ho.
+1. GRAMATIKA — interpunkce, shoda, pádové koncovky, háčky/čárky. "Dneš" → "Dnes".
+
+2. PLANETY ČESKY — Venus → Venuše, Mercury/Mercur → Merkur, Neptune → Neptun, Uranus → Uran.
+   ANGLICKÁ SLOVA → ČESKY (kromě Instagram/TikTok):
+   spreadsheet→tabulka, feedback→zpětná vazba, challenge→výzva, mindset→nastavení mysli, vibe→atmosféra, random→náhodný, deadline→termín.
 
 3. VYKÁNÍ → TYKÁNÍ — vás/vám/vaše/váš → tě/ti/tvé/tvůj.
 
-4. GENDEROVÁ NEUTRALITA:
-   a) 2. osoba (divák) — ABSOLUTNÍ ZÁKAZ minulého příčestí:
-      ❌ rozhodla/rozhodl, ignorovala/ignoroval, udělala/udělal, byl/byla, vykročil/vykročila, pustila/pustil
-      ✅ Přeformuluj do přítomného času: "cos se rozhodla pustit" → "co chceš pustit"
-   b) 3. osoba ve scéně — NIKDY "němu/jí/ho/ji/on/ona" pro osoby:
-      ✅ "naproti té osobě" / scéna bez třetí osoby
+4. SPRÁVNÉ PLURÁLY ZNAMENÍ:
+   Beran→Berani | Býk→Býci | Blíženci→Blíženci | Rak→Raci | Lev→Lvi
+   Panna→Panny | Váhy→Váhy | Štír→Štíři | Střelec→Střelci
+   Kozoroh→Kozorohy | Vodnář→Vodnáři | Ryby→Ryby
+   ❌ Kozorohi, Kozorozi, Střelcové, Vodnářové → oprav vždy.
 
-5. AI-BLOB VZORCE — přeformuluj VŠECHNY tyto struktury:
-   ❌ "Nejde o X. Jde o Y." / "Není to X. Je to Y." / "Ne X. Ale Y."
-   ❌ "Ne proto, že X. Ale proto, že Y." / "Ne kvůli X. Ale kvůli Y."
-   ❌ Jakákoli věta tvaru [negace A] + [potvrzení B] ve dvou větách za sebou
-   ✅ Slouč do jedné věty nebo přeformuluj jako skutečný twist bez symetrie.
+5. [emotion] TAGY — KAŽDÁ věta musí mít tag. Chybí-li, přidej vhodný:
+   [mysterious] [intense] [warm] [gentle] [confident] [upbeat] [commanding] [soft] [inviting] [clearly]
+   NIKDY neměň ani nemaž existující tagy.
 
-6. LOGIKA METAFOR — oprav fráze které nedávají doslova smysl:
+6. <break> TAGY — NIKDY neměň, nemaž, nepřesouvej.
+
+7. HOOK DÉLKA — hook = první odstavec (slide 1). Pokud má celkem > 12 slov (bez tagů a break značek), zkrať 2. větu hooku. Zachovej smysl a tagy.
+
+8. LOGIKA METAFOR — oprav fráze bez doslovného smyslu:
    ❌ "přeskakovat budoucnost" / "vidět projekty dovnitř" / "ukládat lidi do archivů"
-   ✅ Přeformuluj do srozumitelné češtiny.
 
-7. [emotion] TAGY a <break> TAGY — NIKDY neměň, nemaž, nepřesouvej.
-
-8. JINAK TEXT NEMĚŇ — zachovej styl, délku, strukturu.
+9. JINAK TEXT NEMĚŇ.
 
 Script:
 {script}"""
 
-    print("[*] Proofreading voiceoveru...")
-    return claude_call(system, user, max_tokens=800)
+    print("[*] Proofreading voiceoveru — pas 1/3 (gramatika, jazyk, struktura)...")
+    pass1 = claude_call(system1, user1, max_tokens=900)
+
+    # ── PAS 2: Genderová neutralita ──────────────────────────────────────────────
+    system2 = """Jsi expert na genderovou neutralitu v češtině.
+Dostaneš voiceover script s hranatými závorkami [tag] a <break> tagy — ty NIKDY neměň ani neodstraňuj.
+Výstup JEN opravený text — žádné komentáře, žádné vysvětlování, žádné uvozovky."""
+
+    user2 = f"""PAS 2 — GENDEROVÁ NEUTRALITA. Toto je jediný úkol tohoto pasu. Projdi KAŽDOU větu:
+
+PRAVIDLO: Text čte žena, muž i nebinární osoba. Jakýkoliv tvar vázaný na pohlaví je CHYBA.
+
+A) 2. OSOBA — divák (ty/tě/ti/tvůj):
+   ABSOLUTNÍ ZÁKAZ příčestí minulého, adjektiv a split forem vázaných na pohlaví:
+   ❌ "rozhodla/rozhodl" → ✅ "rozhodneš / chceš rozhodnout"
+   ❌ "udělala/udělal" → ✅ "uděláš / děláš"
+   ❌ "byla/byl" → ✅ "jsi"
+   ❌ "nerozhodná/nerozhodný" jako přísudek → ✅ "v nerozhodnosti" / "bez rozhodnutí"
+   ❌ "přecitlivělá/přecitlivělý" → ✅ "přehnaně citlivý" NENÍ OK — ✅ "tvoje citlivost není slabost"
+   ❌ "unavená/unavený" → ✅ přeformuluj celou větu do přítomného času bez adjektiva pohlaví
+   ❌ "zvolila/zvolil" → ✅ "zvolíš / vybereš"
+
+   KRITICKÉ — SPLIT FORMY JSOU ZAKÁZÁNY:
+   ❌ "přecitlivělá ani přecitlivělý" — split forma adjektiva = CHYBA, i když vypadá inkluzivně
+   ❌ "unavená ani unavený", "šťastná ani šťastný" — VŠECHNY tyto formy jsou zakázány
+   ✅ Jediné řešení: přeformuluj větu bez jakéhokoliv genderového adjektiva:
+      "nejsi přecitlivělá ani přecitlivělý" → "tvoje citlivost není slabost" / "nejsi přehnaně citlivý" NENÍ OK → "cítíš víc než ostatní — to je síla"
+
+   PRAVIDLO KONDICIONÁLU: "bys udělala/udělal" → přeformuluj celou větu: "Co bys udělal" → "Co uděláš bez váhání"
+
+B) 3. OSOBA — lidé ve scéně:
+   ❌ "on/ona/jeho/její/jemu/jí/němu/ní/ho/ji" pro osoby → ✅ scéna bez třetí osoby nebo "ta osoba/druhá strana"
+   VÝJIMKA: "ho/ji/to" jako zájmeno pro věci (ne lidi) je OK: "smazat ho" (= soubor) ✓
+
+C) ADJEKTIVA POHLAVÍ v přívlastku nebo jmenném přísudku:
+   ❌ "jsi šťastná/šťastný" → ✅ "máš radost" / "cítíš štěstí"
+   ❌ "nejsi nerozhodná" → ✅ "nejsi bez rozhodnutí" / "tvoje váhání není slabost"
+
+D) [emotion] TAGY a <break> TAGY — NIKDY neměň.
+
+Script:
+{pass1}"""
+
+    print("[*] Proofreading voiceoveru — pas 2/3 (genderová neutralita)...")
+    pass2 = claude_call(system2, user2, max_tokens=900)
+
+    # ── PAS 3: AI-blob, brand voice, finální čistota ─────────────────────────────
+    system3 = """Jsi brand voice korektor pro českou mystickou stránku Mystická Hvězda.
+Dostaneš voiceover script s hranatými závorkami [tag] a <break> tagy — ty NIKDY neměň ani neodstraňuj.
+Výstup JEN opravený text — žádné komentáře, žádné vysvětlování, žádné uvozovky."""
+
+    user3 = f"""PAS 3 — BRAND VOICE, AI-BLOB, FINÁLNÍ ČISTOTA.
+
+1. AI-BLOB VZORCE — přeformuluj VŠECHNY symetrické struktury (i uvnitř jedné věty):
+   ❌ DVĚ VĚTY: "Nejde o X. Jde o Y." / "Není to X. Je to Y." / "Ne X. Ale Y." / "Ne proto, že X. Ale proto, že Y."
+   ❌ JEDNA VĚTA: "nečekáš na X, ale na Y" / "není to X — je to Y" / "ne X, ale Y" jako hlavní kostra věty
+   ✅ Slouč nebo přeformuluj — twist musí přijít nečekaně, ne jako oprava předchozího:
+      místo "nečekáš na povolení od reality, ale na souhlas od sebe"
+      → "povolení od reality nikdy nepřijde — souhlas musí přijít od tebe"
+
+2. ZAKÁZANÉ FRÁZE — odstraň nebo přepiš:
+   ❌ "Hvězdy mluví/říkají/šeptají" / "ze hvězd" / "portál" / "brána"
+   ❌ "tvá přirozená X dostává zelenou" / "energie kolem tebe pulzuje"
+   ❌ "Neptun ti šeptá" / jakákoli planeta "ti šeptá/říká/posílá"
+
+3. KONZISTENCE — zkontroluj, že astro aspekt zmíněný v textu (planeta, tranzit) je konzistentní v celém textu.
+
+4. [emotion] TAGY a <break> TAGY — NIKDY neměň, nemaž, nepřesouvej.
+
+5. JINAK TEXT NEMĚŇ — zachovej styl, délku, strukturu.
+
+Script:
+{pass2}"""
+
+    print("[*] Proofreading voiceoveru — pas 3/3 (brand voice, AI-blob)...")
+    pass3 = claude_call(system3, user3, max_tokens=900)
+
+    return pass3
 
 
 def proofread_caption(text: str, platform: str) -> str:
-    """Projde TikTok nebo Facebook caption — opraví češtinu, konzistenci a brand voice."""
-    system = """Jsi senior jazykový korektor češtiny specializovaný na sociální sítě.
-Výstup JEN opravený text — žádné komentáře, žádné vysvětlování, žádné uvozovky."""
+    """Trojitý proofread caption — 3 sekvenční pasy."""
 
     hashtag_rules = (
-        "Zachovej hashtags přesně jak jsou — oprav pouze pokud obsahují zakázané: "
-        "#znamenízvěrokruhu nebo #zodiac → ODSTRAŇ je. #Mercury nebo #Venus → oprav na české (#Merkur, #Venuše)."
+        "Zachovej hashtags přesně jak jsou — oprav pouze zakázané: "
+        "#znamenízvěrokruhu nebo #zodiac → ODSTRAŇ. #Mercury/#Venus → #Merkur/#Venuše."
         if platform == "tiktok"
         else "Zachovej hashtags přesně jak jsou."
     )
+    system_base = """Jsi senior jazykový korektor češtiny specializovaný na sociální sítě.
+Výstup JEN opravený text — žádné komentáře, žádné vysvětlování, žádné uvozovky."""
 
-    user = f"""Oprav tento {platform.upper()} caption. Projdi KAŽDÝ bod:
+    # ── PAS 1: Gramatika, jazyk, platforma ───────────────────────────────────────
+    user1 = f"""PAS 1 — GRAMATIKA A JAZYK ({platform.upper()}):
 
 1. GRAMATIKA — interpunkce, shoda, pádové koncovky, háčky a čárky.
+   SKLOŇOVÁNÍ ZNAMENÍ (zachovej velké písmeno):
+   v Beranu | v Býku | v Blížencích | v Raku | ve Lvu | v Panně
+   ve Váhách (NE "ve Vahách") | ve Štíru | ve Střelci | v Kozorohu | ve Vodnáři | v Rybách
 
-2. PLANETY ČESKY — Mercury/Mercur → Merkur, Venus → Venuše, Neptune → Neptun, Uranus → Uran.
+2. PLANETY ČESKY — Mercury/Mercur→Merkur, Venus→Venuše, Neptune→Neptun, Uranus→Uran.
    ANGLICKÁ SLOVA → ČESKY (kromě Instagram/TikTok).
 
-3. VYKÁNÍ → TYKÁNÍ — vás/vám/vaše → tě/ti/tvé.
+3. VYKÁNÍ → TYKÁNÍ — vás/vám/vaše/váš → tě/ti/tvé/tvůj.
 
-4. GENDEROVÁ NEUTRALITA — zákaz minulého příčestí pro diváka (rozhodla/rozhodl atd.) → přítomný čas.
+4. FOLLOW TRIGGER — "Sleduj, až odhalím X" → "Sleduj profil — příště odhalím X".
 
-5. AI-BLOB — přeformuluj "Není to X. Je to Y." / "Ne X. Ale Y." a všechny symetrické vzorce.
+5. {hashtag_rules}
 
-6. LOGIKA — oprav fráze které nedávají doslova smysl (např. "vidět projekty dovnitř" → "rozumět projektům do hloubky").
-
-7. FOLLOW TRIGGER — "Sleduj, až odhalím X" → "Sleduj profil — příště odhalím X".
-
-8. {hashtag_rules}
-
-9. JINAK TEXT NEMĚŇ — zachovej styl, délku, emoji.
+6. JINAK TEXT NEMĚŇ.
 
 Caption:
 {text}"""
 
-    print(f"[*] Proofreading {platform} caption...")
-    return claude_call(system, user, max_tokens=500)
+    print(f"[*] Proofreading {platform} caption — pas 1/3 (gramatika)...")
+    pass1 = claude_call(system_base, user1, max_tokens=600)
+
+    # ── PAS 2: Genderová neutralita ──────────────────────────────────────────────
+    user2 = f"""PAS 2 — GENDEROVÁ NEUTRALITA ({platform.upper()}). Jediný úkol tohoto pasu:
+
+ABSOLUTNÍ ZÁKAZ příčestí minulého a gendrových adjektiv pro diváka (2. osoba):
+❌ "rozhodla/rozhodl/rozhodlo" → ✅ přeformuluj do přítomného/budoucího času
+❌ "udělala/udělal" → ✅ "uděláš"
+❌ "toužila/toužil" → ✅ "toužíš"
+❌ "nerozhodná/nerozhodný" jako přísudek → ✅ "v nerozhodnosti" / "bez rozhodnutí"
+❌ kondicionál s příčestím: "bys zvolila/zvolil" → ✅ "zvolíš" nebo "co by sis vybral" NENÍ OK → "co uděláš bez váhání"
+
+3. osoba ve větě: ❌ "on/ona/jeho/její/jemu/jí" pro lidi → ✅ "ta osoba" nebo scéna bez třetí osoby.
+VÝJIMKA: "ho/ji/to" pro věci (ne lidi) je OK.
+
+[emotion] TAGY a hashtags — NIKDY neměň.
+JINAK TEXT NEMĚŇ.
+
+Caption:
+{pass1}"""
+
+    print(f"[*] Proofreading {platform} caption — pas 2/3 (genderová neutralita)...")
+    pass2 = claude_call(system_base, user2, max_tokens=600)
+
+    # ── PAS 3: AI-blob, brand voice, formátování ────────────────────────────────
+    user3 = f"""PAS 3 — AI-BLOB, BRAND VOICE, FORMÁTOVÁNÍ ({platform.upper()}):
+
+1. AI-BLOB — přeformuluj VŠECHNY symetrické vzorce. Hledej tyto PŘESNÉ vzory:
+
+   A) DVĚ VĚTY vedle sebe:
+      ❌ "Není to X. Je to Y." / "Nejde o X. Jde o Y." / "Ne X. Ale Y."
+      ❌ "Ne proto, že X. Ale proto, že Y." / "Ne kvůli X. Ale kvůli Y."
+
+   B) UVNITŘ JEDNÉ VĚTY (čárkou, pomlčkou, středníkem):
+      ❌ "X není slabost, je to Y" / "X není chaos, je to navigace"
+      ❌ "nečekáš na X, ale na Y" / "není X — je Y"
+      ❌ "X se dnes mění v Y" pokud X je negativní a Y pozitivní symetricky
+      ✅ Přeformuluj: slouč do jednoduché věty BEZ symetrické opravy.
+         Např. "tvoje trpělivost není slabost, je to taktika" → "tvoje trpělivost se dnes mění v taktiku"
+         Nebo lépe: "dnes trpělivost pracuje jako taktika" (jedna myšlenka, ne oprava)
+
+   C) TEST: Pokud z věty odstraníš první polovinu a zbyde "je to Y" / "ale Y" / "je Y", je to AI-blob.
+
+2. MARKDOWN — ODSTRAŇ jakékoli formátovací značky:
+   ❌ **bold**, *italic*, __underline__, ~~strike~~ — sociální sítě je nerendí
+   ✅ Nech čistý text bez jakéhokoli markdown formátování.
+
+3. ZAKÁZANÉ FRÁZE:
+   ❌ "ze hvězd" / "hvězdy ti posílají" / "portál" / "brána"
+   ❌ jakákoli planeta "ti šeptá/říká"
+
+4. LOGIKA — oprav fráze bez doslovného smyslu.
+
+5. Hashtags a emoji — NIKDY neměň.
+6. JINAK TEXT NEMĚŇ — zachovej styl, délku.
+
+Caption:
+{pass2}"""
+
+    print(f"[*] Proofreading {platform} caption — pas 3/3 (AI-blob, brand voice)...")
+    pass3 = claude_call(system_base, user3, max_tokens=600)
+
+    # ── Post-proofread Python sanitizace ─────────────────────────────────────────
+
+    # 1) Odstraň markdown — deterministicky
+    pass3 = re.sub(r'\*\*(.+?)\*\*', r'\1', pass3)
+    pass3 = re.sub(r'\*(.+?)\*',     r'\1', pass3)
+    pass3 = re.sub(r'__(.+?)__',     r'\1', pass3)
+    pass3 = re.sub(r'~~(.+?)~~',     r'\1', pass3)
+
+    # 2) AI-blob detekce — Python regex najde větu, LLM přepíše JEN tu větu
+    # Vzory: "ne X, ale Y" / "není X, je to Y" / "není X — je Y"
+    aiblob_patterns = [
+        re.compile(r'[^.!?\n]{5,}\bne\s+\w[^,!?\n]{3,40},\s*ale\s+\w[^.!?\n]{3,}', re.IGNORECASE),
+        re.compile(r'[^.!?\n]{5,}\bnení\s+\w[^,!?\n]{3,40},\s*je\s+to\s+\w[^.!?\n]{2,}', re.IGNORECASE),
+        re.compile(r'[^.!?\n]{5,}\bnení\s+\w[^—\n]{3,40}—\s*je\s+to\s+\w[^.!?\n]{2,}', re.IGNORECASE),
+    ]
+    for aiblob_re in aiblob_patterns:
+        m = aiblob_re.search(pass3)
+        if m:
+            bad = m.group(0).strip()
+            print(f"  [!] AI-blob v caption: '{bad[:70]}' — opravuji...")
+            fixed = claude_call(
+                "Jsi editor. Výstup POUZE přepsaná věta — žádné komentáře, žádné uvozovky.",
+                f'Přepiš tuto větu. Odstraň vzorec "ne X, ale Y" nebo "není X, je to Y" — výsledek musí být jedna plynulá myšlenka bez symetrie. Max stejná délka.\n\nVěta: "{bad}"',
+                max_tokens=120
+            )
+            pass3 = pass3.replace(bad, fixed.strip(), 1)
+            break  # jeden průchod stačí, spustí se znovu při dalším volání
+
+    return pass3
 
 
 # ─── Main ─────────────────────────────────────────────────────────────────────
@@ -1109,6 +1250,84 @@ def main():
     # 4. Build voiceover + TikTok description + Suno prompt
     script = build_voiceover(horoscopes, target_date)
     script = proofread_script(script)
+
+    # ── Python sanitizace voiceoveru ──────────────────────────────────────────────
+
+    def _sent_words(sentence: str) -> int:
+        """Počet slov ve větě — bez tagů, bez break značek, bez interpunkce."""
+        s = re.sub(r'\[[\w]+\]', '', sentence)
+        s = re.sub(r'<break[^/]*/>', '', s)
+        s = re.sub(r'[^\w\s]', ' ', s)
+        return len(s.split())
+
+    def _extract_hook_sentences(text: str) -> list[str]:
+        """Vrátí seznam vět z prvního odstavce (hook)."""
+        paragraphs = text.strip().split("\n\n")
+        hook_para = paragraphs[0] if paragraphs else ""
+        # Rozděl po <break> — každá věta končí break značkou
+        parts = re.split(r'(<break[^/]*/>)', hook_para)
+        sentences = []
+        current = ""
+        for part in parts:
+            if re.match(r'<break', part):
+                current += part
+                sentences.append(current.strip())
+                current = ""
+            else:
+                current += part
+        if current.strip():
+            sentences.append(current.strip())
+        return [s for s in sentences if s]
+
+    def _fix_hook_sentence(sentence: str, max_words: int) -> str:
+        """Přepíše jednu větu hooku na max_words slov. Zachová tag a break."""
+        tag_match = re.match(r'(\[[\w]+\])\s*', sentence)
+        break_match = re.search(r'(<break[^/]*/>)', sentence)
+        tag = tag_match.group(1) if tag_match else ""
+        brk = break_match.group(1) if break_match else ""
+        clean = re.sub(r'\[[\w]+\]', '', sentence)
+        clean = re.sub(r'<break[^/]*/>', '', clean).strip()
+        result = claude_call(
+            "Jsi editor. Výstup POUZE přepsaná věta — žádné komentáře, žádné uvozovky, žádné vysvětlení.",
+            f'Přepiš tuto větu tak, aby měla PŘESNĚ {max_words} slov nebo méně. Zachovej smysl. Žádné lomené tvary (šel/šla). Žádné split adjektiva (přecitlivělá ani přecitlivělý).\n\nVěta: "{clean}"',
+            max_tokens=60
+        )
+        return f"{tag} {result.strip()} {brk}".strip()
+
+    # 1) HOOK DÉLKA — Python počítá přesně, LLM jen přepíše konkrétní větu
+    hook_sentences = _extract_hook_sentences(script)
+    if len(hook_sentences) >= 2:
+        total_wc = sum(_sent_words(s) for s in hook_sentences)
+        if total_wc > 12:
+            print(f"  [!] Hook {total_wc} slov (limit 12) — zkracuji 2. větu...")
+            s1_wc = _sent_words(hook_sentences[0])
+            max_s2 = max(3, 12 - s1_wc)
+            fixed_s2 = _fix_hook_sentence(hook_sentences[1], max_s2)
+            # Nahraď 2. větu v scriptu
+            script = script.replace(hook_sentences[1], fixed_s2, 1)
+            new_wc = sum(_sent_words(s) for s in _extract_hook_sentences(script))
+            print(f"  [OK] Hook po zkrácení: {new_wc} slov")
+
+    # 2) SPLIT ADJEKTIVA — Python regex, chirurgická oprava konkrétní věty
+    split_adj_pattern = re.compile(r'[^\n]*\b\w+[aá]\s+(ani|nebo)\s+\w+[ýí]\b[^\n]*', re.IGNORECASE)
+    split_match = split_adj_pattern.search(script.split("\n\n")[0] if "\n\n" in script else script[:300])
+    if split_match:
+        bad_sentence = split_match.group(0).strip()
+        print(f"  [!] Split adjektivum: '{bad_sentence[:60]}...' — opravuji...")
+        tag_m = re.match(r'(\[[\w]+\])\s*', bad_sentence)
+        brk_m = re.search(r'(<break[^/]*/>)', bad_sentence)
+        tag = tag_m.group(1) if tag_m else ""
+        brk = brk_m.group(1) if brk_m else ""
+        clean_sent = re.sub(r'\[[\w]+\]', '', bad_sentence)
+        clean_sent = re.sub(r'<break[^/]*/>', '', clean_sent).strip()
+        fixed = claude_call(
+            "Jsi editor. Výstup POUZE opravená věta — žádné komentáře.",
+            f'Přepiš tuto větu BEZ genderového adjektiva (žádné "přecitlivělá ani přecitlivělý", "unavená ani unavený" apod.). Použij podstatné jméno nebo přítomný čas. Max stejná délka.\n\nVěta: "{clean_sent}"',
+            max_tokens=80
+        )
+        fixed_full = f"{tag} {fixed.strip()} {brk}".strip()
+        script = script.replace(bad_sentence, fixed_full, 1)
+
     # Ulož scénu slide 2 do blacklistu
     scene_key = extract_scene_key(script)
     if scene_key:
