@@ -1710,8 +1710,11 @@ def _detect_comment_context(message: str) -> dict:
             ctx["emoce"] = hodnota
             break
 
-    # Detekce typu
-    if "?" in message:
+    # Detekce humoru — před ostatními typy
+    humor_signals = ["😂", "😄", "😁", "🤣", "😅", "😆", "haha", "hehe", ":D", "lol"]
+    if any(s in lower for s in humor_signals) or (message.count("😂") + message.count("🤣")) >= 1:
+        ctx["typ"] = "humor"
+    elif "?" in message:
         ctx["typ"] = "otazka"
     elif ctx["znameni"] and len(lower) < 30:
         ctx["typ"] = "identifikace_znameni"  # "Jsem Štír 🦂"
@@ -1773,13 +1776,18 @@ Tón: klidný, sebejistý, bez přesvědčování. Délka: 2 věty."""
 přidej 1 konkrétní astrologický insight relevantní k tématu postu.
 Tón: jako průvodce který to zná zevnitř. Délka: 2-3 věty."""
 
+    elif ctx["typ"] == "humor":
+        instrukce = """Osoba vtipkuje nebo sdílí odlehčenou poznámku. Reaguj lehce, s humorem.
+Neber to vážně, odpověz v podobném duchu — vtip, lehká ironie nebo playful komentář.
+Tón: odlehčený, lidský, spontánní. Délka: 1 věta. Nezačínaj analýzou."""
+
     else:
         instrukce = """Zapoj osobu do rozhovoru. Potvrď jejich zážitek nebo pohled.
 Tón: přátelský, zvídavý. Délka: 1-2 věty."""
 
     # Engagement hook — 60% šance na otázku na konci (boostuje diskusi)
     engagement = ""
-    if ctx["typ"] not in ("otazka", "skeptik") and _random.random() < 0.6:
+    if ctx["typ"] not in ("otazka", "skeptik", "humor") and _random.random() < 0.6:
         hook = _random.choice(_ENGAGEMENT_HOOKS)
         engagement = f"\nNa konec přirozeně přidej tuto otázku (nebo podobnou): \"{hook}\""
 
@@ -1801,11 +1809,14 @@ INSTRUKCE PRO TUTO ODPOVĚĎ:
 {engagement}
 {recommendation}
 
-VŽDY:
-- Piš česky, přirozeně, tykej
+PEVNÁ PRAVIDLA — porušení není přípustné:
+- Piš česky, přirozeně, tykej (2. os. j.č.)
 - Max 1 emoji
-- Nezačínaj "Ahoj!", "Děkujeme", "To je skvělé že..."
-- Genderově neutrálně: NIKDY lomené tvary (narodil/a, přišel/přišla) — piš 2. os. přítomný čas nebo infinitiv
+- Nezačínaj "Ahoj!", "Děkujeme!", "To je skvělé že...", "To je krásné že..."
+- ABSOLUTNÍ ZÁKAZ lomených tvarů: NIKDY nepíšeš "cítil/a", "rozhodl/a", "přišel/přišla", "narodil/a" ani žádný jiný tvar s lomítkem — piš výhradně přítomný čas 2. os. ("cítíš", "rozhoduješ se") nebo infinitiv ("rozhodnout se")
+- ABSOLUTNÍ ZÁKAZ předpokladu pohlaví: nikdy "ses starala", "ses rozhodla", "byl jsi" — nevíš zda je to muž nebo žena
+- NIKDY nevymýšlej URL adresy — odkaz použij POUZE pokud je explicitně uveden výše v sekci "Pokud to přirozeně sedí, doporuč"
+- NIKDY nepouži medicínské/vědecké termíny pokud si nejsi 100% jistý (raději vynech)
 - NIKDY neprozraď že jsi AI nebo bot
 
 Odpověz POUZE textem odpovědi."""
