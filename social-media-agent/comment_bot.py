@@ -206,8 +206,8 @@ def process_comment(comment: dict, mode: str) -> bool:
 # HLAVNÍ RUN
 # ══════════════════════════════════════════════════
 
-def run_once(mode: str):
-    """Jeden běh: sync → zpracuj → vypiš statistiky"""
+def run_once(mode: str, limit: int = 0):
+    """Jeden běh: sync → zpracuj → vypiš statistiky. limit=0 znamená bez omezení."""
 
     if not config.META_ACCESS_TOKEN:
         print("❌ META_ACCESS_TOKEN není nastaven v .env")
@@ -228,8 +228,11 @@ def run_once(mode: str):
         log.error("Sync selhal: %s", e, exc_info=True)
         return
 
-    # 2. Načti nevyřízené
-    pending = get_pending_comments(min_priority=3)
+    # 2. Načti nevyřízené — generuj odpovědi jen pro tolik kolik potřebujeme
+    max_gen = limit if limit > 0 else 20
+    pending = get_pending_comments(min_priority=3, max_generate=max_gen)
+    if limit > 0:
+        pending = pending[:limit]
 
     if not pending:
         print("\n✨ Žádné nevyřízené komentáře.")
@@ -293,6 +296,7 @@ if __name__ == "__main__":
     parser.add_argument("--loop",    action="store_true", help="Polling smyčka (pro Railway)")
     parser.add_argument("--stats",   action="store_true", help="Zobrazí statistiky a skončí")
     parser.add_argument("--regen",   action="store_true", help="Přegeneruje odpovědi novou logikou")
+    parser.add_argument("--limit",   type=int, default=0, help="Max počet komentářů ke zpracování")
     args = parser.parse_args()
 
     if args.stats:
@@ -316,4 +320,4 @@ if __name__ == "__main__":
     if args.loop:
         run_loop(mode)
     else:
-        run_once(mode)
+        run_once(mode, limit=args.limit)

@@ -525,6 +525,7 @@ def get_pending_comments(
     platform: str = None,
     sentiment: str = None,
     min_priority: int = 0,
+    max_generate: int = 20,
 ) -> list[dict]:
     """
     Vrátí nevyřízené komentáře seřazené podle priority.
@@ -555,6 +556,7 @@ def get_pending_comments(
     pending.sort(key=lambda c: (-c.get("priority", 0), c.get("created_time", "")))
 
     # Lazy generování — jen pro komentáře bez odpovědi, max batch_size najednou
+    import time as _time
     _TONE_MAP = {"question": "educational", "positive": "friendly",
                  "skeptical": "empathetic", "neutral": "friendly", "off_topic": "friendly"}
     generated = 0
@@ -562,6 +564,8 @@ def get_pending_comments(
     for comment in pending:
         if comment.get("suggested_reply"):
             continue
+        if generated >= max_generate:
+            break
         if not comment.get("needs_reply") or not comment.get("message", "").strip():
             continue
         try:
@@ -575,8 +579,10 @@ def get_pending_comments(
             db["comments"][comment["id"]] = comment
             db_dirty = True
             generated += 1
+            _time.sleep(1.5)  # 50 req/min limit → max ~40/min s rezervou
         except Exception as e:
             log.warning("Nepodařilo se vygenerovat odpověď: %s", e)
+            _time.sleep(3)  # při chybě čekej déle
 
     if db_dirty:
         _save_db(db)
