@@ -1802,7 +1802,8 @@ Tón: odlehčený, lidský, spontánní. Délka: 1 věta. Nezačínaj analýzou.
 
     else:
         instrukce = """Zapoj osobu do rozhovoru. Potvrď jejich zážitek nebo pohled.
-Tón: přátelský, zvídavý. Délka: 1-2 věty."""
+Tón: přátelský, zvídavý. Délka: 1-2 věty.
+DŮLEŽITÉ: Nepřidávej astrologický kontext pokud nevychází přímo z komentáře nebo tématu postu. Raději se zeptej na jejich zkušenost."""
 
     # Engagement hook — 60% šance na otázku na konci (boostuje diskusi)
     engagement = ""
