@@ -1810,7 +1810,7 @@ VŽDY:
 
 Odpověz POUZE textem odpovědi."""
 
-    response = _call_claude(client, model_name, prompt, temperature=0.82, max_tokens=300,
+    response = _call_claude(client, model_name, prompt, temperature=0.82, max_tokens=250,
                             system=_get_comment_system())
     return response.text.strip()
 

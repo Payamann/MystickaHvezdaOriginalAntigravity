@@ -32,10 +32,12 @@ from comment_manager import (
     sync_comments,
     regenerate_replies,
     get_pending_comments,
+    save_comment_replies_batch,
     reply_to_comment,
     hide_comment,
     get_stats,
 )
+from generators.text_generator import generate_comment_reply
 from logger import get_logger
 
 log = get_logger("comment_bot")
@@ -222,17 +224,43 @@ def run_once(mode: str, limit: int = 0):
     try:
         since = 168 if mode == "dry-run" else 48  # dry-run vidí víc; auto jen čerstvé
         stats = sync_comments(since_hours=since)
-        print(f"   Nové: {stats['added']}  |  Návrhy: {stats['replies_generated']}  |  Celkem v DB: {stats['total_in_db']}")
+        print(f"   Nové: {stats['added']}  |  Celkem v DB: {stats['total_in_db']}")
     except Exception as e:
         print(f"❌ Sync selhal: {e}")
         log.error("Sync selhal: %s", e, exc_info=True)
         return
 
-    # 2. Načti nevyřízené — generuj odpovědi jen pro tolik kolik potřebujeme
-    max_gen = limit if limit > 0 else 20
-    pending = get_pending_comments(min_priority=3, max_generate=max_gen)
+    # 2. Načti nevyřízené a ořízni na limit — teprve pak generuj odpovědi
+    pending = get_pending_comments(min_priority=3)
     if limit > 0:
         pending = pending[:limit]
+
+    # 3. Generuj odpovědi přesně pro N komentářů (Claude API se zavolá max limit×)
+    _TONE_MAP = {
+        "question": "educational", "positive": "friendly",
+        "skeptical": "empathetic", "neutral": "friendly", "off_topic": "friendly",
+    }
+    new_replies: dict[str, str] = {}
+    for comment in pending:
+        if comment.get("suggested_reply") or not comment.get("needs_reply"):
+            continue
+        if not comment.get("message", "").strip():
+            continue
+        try:
+            tone = _TONE_MAP.get(comment.get("sentiment", "neutral"), "friendly")
+            suggested = generate_comment_reply(
+                original_comment=comment["message"],
+                post_topic=comment.get("post_message", "mystika"),
+                tone=tone,
+            )
+            comment["suggested_reply"] = suggested
+            new_replies[comment["id"]] = suggested
+            time.sleep(1.5)
+        except Exception as e:
+            log.warning("Nepodařilo se vygenerovat odpověď: %s", e)
+            time.sleep(3)
+    # Uložíme všechny vygenerované odpovědi v 1 disk I/O
+    save_comment_replies_batch(new_replies)
 
     if not pending:
         print("\n✨ Žádné nevyřízené komentáře.")

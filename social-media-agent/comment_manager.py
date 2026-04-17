@@ -124,6 +124,7 @@ def fetch_facebook_comments(
             "fields": "id,from,message,created_time,can_reply_privately",
             "limit": limit_per_post,
             "filter": "stream",
+            "since": since_ts,  # jen komentáře z daného okna, ne celá historie
         }
         page_comments = []
         while comments_url:
@@ -416,7 +417,6 @@ def regenerate_replies() -> int:
             tone_map = {"question": "educational", "positive": "friendly",
                         "skeptical": "empathetic", "neutral": "friendly", "off_topic": "friendly"}
             tone = tone_map.get(comment.get("sentiment", "neutral"), "friendly")
-            from generators.text_generator import generate_comment_reply
             suggested = generate_comment_reply(
                 original_comment=comment["message"],
                 post_topic=comment.get("post_message", "mystika"),
@@ -450,7 +450,6 @@ def sync_comments(since_hours: int = 48) -> dict:
 
     added = 0
     skipped = 0
-    replies_generated = 0
 
     # Sleduj duplicity komentářů per post (max 3 stejné odpovědi)
     post_msg_counts: dict[str, dict[str, int]] = {}
@@ -516,7 +515,6 @@ def sync_comments(since_hours: int = 48) -> dict:
     return {
         "added": added,
         "skipped": skipped,
-        "replies_generated": replies_generated,
         "total_in_db": len(db["comments"]),
     }
 
@@ -525,10 +523,9 @@ def get_pending_comments(
     platform: str = None,
     sentiment: str = None,
     min_priority: int = 0,
-    max_generate: int = 20,
 ) -> list[dict]:
     """
-    Vrátí nevyřízené komentáře seřazené podle priority.
+    Vrátí nevyřízené komentáře seřazené podle priority. Žádné Claude API volání.
 
     Args:
         platform: filtr platformy (facebook | instagram | None = obě)
@@ -552,43 +549,27 @@ def get_pending_comments(
 
         pending.append(comment)
 
-    # Seřaď podle priority (nejvyšší první), pak podle data
     pending.sort(key=lambda c: (-c.get("priority", 0), c.get("created_time", "")))
-
-    # Lazy generování — jen pro komentáře bez odpovědi, max batch_size najednou
-    import time as _time
-    _TONE_MAP = {"question": "educational", "positive": "friendly",
-                 "skeptical": "empathetic", "neutral": "friendly", "off_topic": "friendly"}
-    generated = 0
-    db_dirty = False
-    for comment in pending:
-        if comment.get("suggested_reply"):
-            continue
-        if generated >= max_generate:
-            break
-        if not comment.get("needs_reply") or not comment.get("message", "").strip():
-            continue
-        try:
-            tone = _TONE_MAP.get(comment.get("sentiment", "neutral"), "friendly")
-            suggested = generate_comment_reply(
-                original_comment=comment["message"],
-                post_topic=comment.get("post_message", "mystika"),
-                tone=tone,
-            )
-            comment["suggested_reply"] = suggested
-            db["comments"][comment["id"]] = comment
-            db_dirty = True
-            generated += 1
-            _time.sleep(1.5)  # 50 req/min limit → max ~40/min s rezervou
-        except Exception as e:
-            log.warning("Nepodařilo se vygenerovat odpověď: %s", e)
-            _time.sleep(3)  # při chybě čekej déle
-
-    if db_dirty:
-        _save_db(db)
-        log.info("Lazy generování: %d odpovědí vygenerováno", generated)
-
     return pending
+
+
+def save_comment_reply(comment_id: str, suggested_reply: str) -> None:
+    """Uloží navrhovanou odpověď do DB. Volá se z comment_bot před odesláním."""
+    db = _load_db()
+    if comment_id in db["comments"]:
+        db["comments"][comment_id]["suggested_reply"] = suggested_reply
+        _save_db(db)
+
+
+def save_comment_replies_batch(replies: dict[str, str]) -> None:
+    """Uloží více navrhovaných odpovědí najednou. 1× disk I/O místo N×."""
+    if not replies:
+        return
+    db = _load_db()
+    for cid, reply in replies.items():
+        if cid in db["comments"]:
+            db["comments"][cid]["suggested_reply"] = reply
+    _save_db(db)
 
 
 # ══════════════════════════════════════════════════
