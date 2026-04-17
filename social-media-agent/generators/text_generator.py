@@ -1844,12 +1844,14 @@ Odpověz POUZE textem odpovědi."""
                             system=_get_comment_system())
     result = response.text.strip()
 
-    # Post-processing: detekuj lomené tvary a přegeneruj 1×
-    # Zachytí: cítil/a, obklopil/a, sám/sama, přišel/přišla atd.
+    # Post-processing: detekuj lomené tvary a cyrilici, přegeneruj 1×
     import re as _re
-    if _re.search(r'\w+/\w+', result):
+    has_slash = _re.search(r'\w+/\w{1,4}\b', result)   # mohl/a, cítil/a, sám/sama
+    has_cyrillic = _re.search(r'[А-Яа-яЁё]', result)  # encoding bug → cyrilice
+    if has_slash or has_cyrillic:
         log.warning("Lomený tvar detekován, přegeneruji: %s", result[:60])
-        stricter = prompt + "\n\nPOZOR: Předchozí pokus obsahoval lomený tvar (např. tlačil/a). Tentokrát ABSOLUTNĚ bez lomítek."
+        issue = "lomený tvar (např. mohl/a)" if has_slash else "cyrilici místo češtiny"
+        stricter = prompt + f"\n\nPOZOR: Předchozí pokus obsahoval {issue}. Tentokrát ABSOLUTNĚ česky, bez lomítek, bez cizích znaků."
         response = _call_claude(client, model_name, stricter, temperature=0.7, max_tokens=250,
                                 system=_get_comment_system())
         result = response.text.strip()
