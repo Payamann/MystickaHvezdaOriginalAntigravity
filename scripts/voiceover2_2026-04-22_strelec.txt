@@ -1,0 +1,51 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 22. dubna 2026
+
+[intense] Střelče, pořád makáš. <break time="0.5s" /> [warm] A zapomínáš, proč jsi začínal. <break time="1.0s" />
+
+[confident] Tento týden zastavíš něco, do čeho jsi dal měsíce. <break time="0.3s" /> [upbeat] Saturn ti ukáže, co opravdu stojí za tvůj čas — a zbytek pustíš.
+
+[intense] Únava, kterou cítíš, není slabost — je to odpověď. <break time="1.0s" />
+
+[inviting] Co dnes chceš opustit? Napiš to ⬇️ <break time="0.3s" /> [clearly] Příště: které znamení tohle nezvládá vůbec.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+22. dubna 2026 platí pro Střelce jedno tvrdé pravidlo Jupitera: expanze bez hranic přestane být darem a stane se zátěží 🎯
+Saturn jako aktuální lektor tvého vládnoucího Jupitera tě nebrzdí ze msty — testuje, které projekty mají skutečnou strukturu a které stojí jen na nadšení.
+Sleduj profil — příště odhalím, které znamení tento tlak nezvládá vůbec 🔥
+
+#mystickaHvezda #Střelec #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+22. dubna 2026 je den, kdy přestat není vzdát se. 🎯 Saturn teď prosévá tvůj Jupiter a hledá, které projekty mají skutečnou strukturu a které drží pohromadě jen nadšení. Únava, kterou teď cítíš, je odpověď tvého těla na otázku, do čeho stojí za to dál investovat čas a energii. ✨ Co dnes chceš pustit? Napiš to do komentářů a celý výklad najdeš na mystickahvezda.cz/horoskopy.html 🔥
+
+#mystickaHvezda #Střelec #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm orchestral background with adventurous strings weaving gentle forward momentum and an open horn melody carrying bright, hopeful phrases across a golden major key landscape. Soft rhythmic pulse drives the energy like a sunrise in motion, evoking light spreading across a wide horizon with a nebula glow of optimism and freedom. Supportive texture designed to breathe naturally under a voiceover, present and uplifting without overpowering. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+A mystical video thumbnail for zodiac sign Sagittarius.
+
+BACKGROUND: deep dark space with soft subtle expansive turquoise and royal purple nebula with golden arrow-light streaks, deep violet cosmic horizon with teal aurora and warm gold bursts, wide open cosmic vista — adventurous, expansive, philosophical — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.
+
+COMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.
+
+ELEMENT 1 — glyph: large ornate Sagittarius symbol (♐) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.
+
+ELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '22. dubna' in elegant gold lettering on the first line, 'STŘELEC' in bold engraved gold capitals on the second line.
+
+ELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Makáš dál, ale zapomínáš proč.' on the first line, 'Únava ti říká, co pustit.' on the second line.
+
+NO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.
+
+Portrait 9:16.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Střelče, pořád makáš. A zapomínáš, proč jsi začínal. Tento týden zastavíš něco, do čeho jsi dal měsíce. Saturn ti ukáže, co opravdu stojí za tvůj čas — a zbytek pustíš. Únava, kterou cítíš, není slabost — je to odpověď. Co dnes chceš opustit? Napiš to ⬇️ Příště: které znamení tohle nezvládá vůbec."

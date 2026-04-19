@@ -1,0 +1,47 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 22. dubna 2026
+
+[intense] Berane, pořád makáš — a tělo volá dost. <break time="0.5s" /> [commanding] Pokračuješ, protože zastavení = prohra. <break time="1.0s" />
+
+[confident] Ležíš. Strop. Hlava počítá, co ještě nestihl. <break time="0.3s" /> [intense] Saturn v tvém znamení neodpustí zkratky — martyrství mu ale přijde stejně zbytečné. <break time="0.3s" /> [commanding] Dnešní únava je první poctivá zpětná vazba, kterou sis dal. <break time="1.0s" />
+
+[inviting] Napiš, co se stalo naposledy, kdy jsi šel do toho bez váhání. <break time="0.3s" /> [clearly] Existuje jedna věta, která platí jen pro tebe. Příště ji řeknu.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+22. dubna 2026 přichází Saturn do tvého znamení s jediným cílem — rozlišit sílu od pýchy. 🪐 Mars tě žene dopředu jako vládnoucí planeta ohně — jenže oheň bez přestávky spaluje i sám sebe, a to je mechanismus, který Saturn v Beranu trvale testuje. Sleduj profil — příště odhalím jednu větu, která platí jen pro tebe 🔥
+
+#mystickaHvezda #Beran #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+22. dubna 2026 tě Saturn v Beranu konfrontuje s věcí, které se bráníš přiznat. 🪐 Zastavit neznamená prohrát — znamená to, že Mars konečně přestane pálit energii nadarmo. Saturn ve tvém znamení trvale testuje rozdíl mezi vytrvalostí a sebedestrukcí, a dnešní únava je první poctivá zpětná vazba, která tě nenechá lhát. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Beran #horoskop #astrologie #dennihoroskop #mystika 🔥
+
+SUNO PROMPT
+============================================================
+Warm orchestral background with energetic strings carrying a confident, forward-moving pulse in a bright major key, evoking golden sunrise light breaking through vast cosmic clouds. Uplifting melodic phrases rise and breathe with natural space, driven by a gentle rhythmic heartbeat that keeps the energy alive without overpowering. Bold Aries spirit shines through the texture — purposeful, radiant, and moving steadily forward like the first light of a new day. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+A mystical video thumbnail for zodiac sign Aries.
+
+BACKGROUND: deep dark space with soft subtle blazing crimson and scarlet nebula with intense orange plasma bursts, fiery red cosmic energy surging like solar flares, deep red void with streaks of hot amber light — powerful, ignited, unstoppable — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.
+
+COMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.
+
+ELEMENT 1 — glyph: large ornate Aries symbol (♈) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.
+
+ELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '22. dubna' in elegant gold lettering on the first line, 'BERAN' in bold engraved gold capitals on the second line.
+
+ELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Makáš naplno, ale tělo říká dost.' on the first line, 'Zastavení není prohra.' on the second line.
+
+NO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.
+
+Portrait 9:16.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Berane, pořád makáš — a tělo volá dost. Pokračuješ, protože zastavení = prohra. Ležíš. Strop. Hlava počítá, co ještě nestihl. Saturn v tvém znamení neodpustí zkratky — martyrství mu ale přijde stejně zbytečné. Dnešní únava je první poctivá zpětná vazba, kterou sis dal. Napiš, co se stalo naposledy, kdy jsi šel do toho bez váhání. Existuje jedna věta, která platí jen pro tebe. Příště ji řeknu."

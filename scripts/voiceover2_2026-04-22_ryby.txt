@@ -1,0 +1,47 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 22. dubna 2026
+
+[gentle] Ryby, dnes víš, co cítíš. <break time="0.5s" /> [soft] Nevíš, jestli to můžeš říct nahlas. <break time="1.0s" />
+
+[mysterious] Některé věty tě dnes pronásledují celý den. <break time="0.3s" /> [warm] Neptun v Beranu ti ukazuje, že iluze nefungují — ani ta, že mlčením ochráníš pokoj. <break time="0.3s" /> [intense] Když to řekneš, ztratíš kontrolu nad reakcí. <break time="0.3s" /> [gentle] Když to neřekneš, ztratíš sebe. <break time="1.0s" />
+
+[inviting] Označ Ryby, co tohle nosí v sobě. <break time="0.3s" /> [clearly] Na profilu najdeš výklad pro všechna ostatní znamení.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+22. dubna 2026 Neptun v Beranu bourá tvou nejsilnější obranu — iluzi, že mlčení uchrání vztahy. Když vládce tvého znamení přechází z vlastního elementu (voda) do ohně 🔥, intuice dostává novou naléhavost — cítíš víc, než kdy dokážeš vysvětlit. Sleduj profil — příště odhalím, jak Ryby fungují pod tlakem Marsu, když už mlčení nestačí ⚔️
+
+#mystickaHvezda #Ryby #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+Neptun v Beranu bourá tvou nejsilnější obranu — víru, že mlčením udržíš vztahy při životě 🔥 22. dubna 2026 tvůj vládce opouští vodní element a přechází do ohně, intuice získává naléhavost, kterou už nedokážeš ignorovat. Cítíš víc, než umíš vysvětlit — a právě tohle napětí tě dnes pronásleduje: řekneš to a ztratíš kontrolu nad reakcí, zmlkneš a ztratíš sebe. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Ryby #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm uplifting instrumental with soft vibraphone melodies and shimmering synth layers creating golden morning energy, gentle rhythmic pulse drives forward like sunrise light spreading across cosmic horizons, major key phrases breathe with hopeful momentum perfect for supporting voiceover. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+A mystical video thumbnail for zodiac sign Pisces.
+
+BACKGROUND: deep dark space with soft subtle deep aqua and indigo nebula with dreamy ocean-deep cosmic mist, teal and midnight blue stardust blending into purple void, ethereal underwater cosmic light — mystical, fluid, transcendent — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.
+
+COMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.
+
+ELEMENT 1 — glyph: large ornate Pisces symbol (♓) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.
+
+ELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '22. dubna' in elegant gold lettering on the first line, 'RYBY' in bold engraved gold capitals on the second line.
+
+ELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Mlčíš, abys udržel klid.' on the first line, 'Ale klid je jen iluze.' on the second line.
+
+NO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.
+
+Portrait 9:16.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Ryby, dnes víš, co cítíš. Nevíš, jestli to můžeš říct nahlas. Některé věty tě dnes pronásledují celý den. Neptun v Beranu ti ukazuje, že iluze nefungují — ani ta, že mlčením ochráníš pokoj. Když to řekneš, ztratíš kontrolu nad reakcí. Když to neřekneš, ztratíš sebe. Označ Ryby, co tohle nosí v sobě. Na profilu najdeš výklad pro všechna ostatní znamení."

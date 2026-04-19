@@ -1,0 +1,49 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 22. dubna 2026
+
+[gentle] Raku, pořád dáváš. <break time="0.5s" /> [soft] A přitom nevíš, jestli to má smysl. <break time="1.0s" />
+
+[warm] Říkáš: „Nevadí, zvládnu to." <break time="0.3s" /> [mysterious] Myslíš: „Mám vyčerpání, ale nevím, kdy přestat."" <break time="0.3s" /> [warm] Říkáš: „Ještě chvíli." <break time="0.3s" /> [soft] Myslíš: „Tu chvíli říkám celé týdny." <break time="1.0s" />
+
+[inviting] Napiš ANO, pokud tohle cítíš, ale zatím jsi to nikomu neřekl. <break time="0.3s" /> [clearly] Ulož si to a podívej se na to znovu, až budeš mít chvíli pro sebe.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+22. dubna 2026 je Měsíc tvým vládcem 🌙 — a právě proto je tvá empatie zároveň tvou největší silou i největší zátěží.
+Vodní živly nesou emoce jako houba, a čím víc absorbují cizí energii, tím hůř rozlišují hranici mezi péčí a sebeobětováním.
+Sleduj profil — příště odhalím, jak přestat pečovat z vyčerpání a začít pečovat z plnosti 💧
+
+#mystickaHvezda #Rak #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+Dáváš pořád — a přitom 22. dubna 2026 ti Měsíc, tvůj vládce, ukazuje, že vyčerpání není ctnost. 🌙 Měsíc řídí tvůj emoční svět, a právě proto nasáváš cizí bolesti tak snadno, jako by byly tvoje vlastní. Jenže hranice mezi péčí a sebeobětováním se nezakreslí sama — a tohle video pojmenovává přesně ten moment, kdy říkáš „zvládnu to", ale uvnitř už dávno nezvládáš 💧. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Rak #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm instrumental background with gentle marimba patterns and airy synth pads moving in a soft rhythmic pulse, evoking sunrise light spreading across a starlit sky — bright, tender, and forward-moving in a warm major key. Uplifting golden energy with breathing melodic phrases designed to support a voiceover, never overpowering it, blending lunar softness with hopeful morning momentum. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+A mystical video thumbnail for zodiac sign Cancer.
+
+BACKGROUND: deep dark space with soft subtle silver and pale blue lunar nebula with moonlit cosmic mist, soft silver-white stardust glowing like reflected moonlight, deep indigo void with cool silver light trails — gentle, lunar, oceanic — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.
+
+COMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.
+
+ELEMENT 1 — glyph: large ornate Cancer symbol (♋) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.
+
+ELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '22. dubna' in elegant gold lettering on the first line, 'RAK' in bold engraved gold capitals on the second line.
+
+ELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Pořád dáváš, i když nemáš co.' on the first line, 'A přesto říkáš: ještě chvíli.' on the second line.
+
+NO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.
+
+Portrait 9:16.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Raku, pořád dáváš. A přitom nevíš, jestli to má smysl. Říkáš: „Nevadí, zvládnu to." Myslíš: „Mám vyčerpání, ale nevím, kdy přestat."" Říkáš: „Ještě chvíli." Myslíš: „Tu chvíli říkám celé týdny." Napiš ANO, pokud tohle cítíš, ale zatím jsi to nikomu neřekl. Ulož si to a podívej se na to znovu, až budeš mít chvíli pro sebe."

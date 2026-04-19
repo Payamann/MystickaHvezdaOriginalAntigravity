@@ -1,0 +1,58 @@
+[
+  {
+    "start": "2026-01-01",
+    "end": "2026-12-31",
+    "event": "Neptun v Beranu — iluze se hroutí, konfrontace s realitou je nevyhnutelná",
+    "signs": null,
+    "note": "Neptune ingressed Aries Jan 2026"
+  },
+  {
+    "start": "2026-01-01",
+    "end": "2026-12-31",
+    "event": "Saturn v Beranu — karma přichází rychle, každá zkratka se vrací",
+    "signs": null,
+    "note": "Saturn in Aries since May 2025"
+  },
+  {
+    "start": "2026-03-01",
+    "end": "2026-04-12",
+    "event": "Venuše retrográdní v Beranu — staré vztahy a nevyřešené emoce se vracejí na povrch",
+    "signs": ["Beran", "Váhy", "Rak", "Kozoroh"],
+    "note": "Venus retrograde approx Mar 1 - Apr 12 2026"
+  },
+  {
+    "start": "2026-04-13",
+    "end": "2026-05-31",
+    "event": "Venuše přímá po retrográdě — jasnost ve vztazích, čas uzavřít co zůstalo otevřené",
+    "signs": null,
+    "note": "Venus direct after retrograde"
+  },
+  {
+    "start": "2026-04-20",
+    "end": "2026-05-20",
+    "event": "Slunce v Býku — energie zpomaluje, zemský element zesiluje potřebu stability a hmotného zajištění",
+    "signs": null,
+    "note": "Sun in Taurus"
+  },
+  {
+    "start": "2026-06-21",
+    "end": "2026-07-22",
+    "event": "Slunce v Raku — rodinné vazby a emocionální bezpečí jsou v centru pozornosti",
+    "signs": null,
+    "note": "Sun in Cancer"
+  },
+  {
+    "start": "2026-06-26",
+    "end": "2026-07-21",
+    "event": "Merkur retrográdní — komunikace vázne, smlouvy a rozhodnutí odkládej na potom",
+    "signs": null,
+    "note": "Mercury retrograde approx Jun 26 - Jul 21 2026"
+  },
+  {
+    "start": "2026-10-21",
+    "end": "2026-11-11",
+    "event": "Merkur retrográdní — minulost se vrací přes zprávy a nečekaná setkání",
+    "signs": null,
+    "note": "Mercury retrograde approx Oct 21 - Nov 11 2026"
+  }
+]
