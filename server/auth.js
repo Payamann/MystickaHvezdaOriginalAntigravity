@@ -102,8 +102,8 @@ router.post('/register', authLimiter, async (req, res) => {
 
         const validatedFirstName = first_name ? validateName(first_name) : 'User';
 
-        // Birth date is mandatory
-        const validatedBirthDate = validateBirthDate(birth_date);
+        // Birth date is optional during signup to reduce registration friction.
+        const validatedBirthDate = birth_date ? validateBirthDate(birth_date) : null;
 
         // 1. Sign Up via Supabase Auth
         // This triggers the confirmation email automatically.

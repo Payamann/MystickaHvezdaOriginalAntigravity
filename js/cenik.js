@@ -10,6 +10,58 @@ const STRIPE_URLS = {
     'vip-majestrat': 'https://buy.stripe.com/bJebJ0ceF4cG6RZ5jjc7u00'
 };
 
+function updatePricingCopy() {
+    const heroTitle = document.querySelector('.section--hero .hero__title');
+    const heroSubtitle = document.querySelector('.section--hero .hero__subtitle');
+    const heroTrustBadge = document.querySelector('.hero__trust-badge');
+    const pricingCards = document.querySelectorAll('.card--pricing');
+    const premiumReasonsBadge = Array.from(document.querySelectorAll('.section__badge'))
+        .find((badge) => badge.textContent?.includes('Premium'));
+    const premiumReasonsTitle = premiumReasonsBadge?.closest('.section__header')?.querySelector('.section__title');
+
+    if (heroTitle) {
+        heroTitle.innerHTML = 'Začněte zdarma. <span class="text-gradient">Až ucítíte hodnotu, odemkněte Hvězdného Průvodce.</span>';
+    }
+
+    if (heroSubtitle) {
+        heroSubtitle.textContent = 'Bezplatný účet vám ukáže, jak Mystická Hvězda funguje. Hvězdný Průvodce za 199 Kč měsíčně odemkne plné výklady, osobní vhledy a každodenní vedení bez limitu pro lidi, kteří se chtějí vracet pravidelně.';
+    }
+
+    if (heroTrustBadge) {
+        heroTrustBadge.innerHTML = '<span>12 000+ aktivních uživatelů</span><span>|</span><span>Účet zdarma bez karty</span><span>|</span><span>Zrušíte kdykoliv</span>';
+    }
+
+    const freeCard = pricingCards[0];
+    const guideCard = pricingCards[1];
+
+    if (freeCard) {
+        const freeDescription = freeCard.querySelector('.card__text');
+        const freeFeatures = freeCard.querySelectorAll('.card__features li');
+        const freeCta = freeCard.querySelector('.btn');
+
+        if (freeDescription) freeDescription.textContent = 'Pro první seznámení bez závazku';
+        if (freeFeatures[2]) freeFeatures[2].textContent = 'Vyzkoušejte si, co vám sedne nejvíc';
+        if (freeCta) freeCta.textContent = 'Začít zdarma';
+    }
+
+    if (guideCard) {
+        const guideDescription = guideCard.querySelector('.card__text');
+        const guideFeatures = guideCard.querySelectorAll('.card__features li');
+        const guideCta = guideCard.querySelector('.plan-checkout-btn');
+
+        if (guideDescription) guideDescription.textContent = 'Pro většinu lidí, kteří chtějí z webu udělat každodenní oporu';
+        if (guideFeatures[0]) guideFeatures[0].textContent = 'Neomezené výklady a každodenní vedení bez čekání';
+        if (guideFeatures[1]) guideFeatures[1].textContent = 'Plný rozbor natální karty a numerologie';
+        if (guideFeatures[2]) guideFeatures[2].textContent = 'Partnerská shoda, minulý život a plné horoskopy';
+        if (guideFeatures[3]) guideFeatures[3].textContent = 'Nejrychlejší cesta k tomu, aby vám web dával hodnotu každý den';
+        if (guideCta) guideCta.textContent = 'Odemknout Hvězdného Průvodce';
+    }
+
+    if (premiumReasonsTitle) {
+        premiumReasonsTitle.textContent = 'Neplatíte za další ikonky. Platíte za hlubší odpovědi a pravidelný návrat k tomu, co vám pomáhá.';
+    }
+}
+
 function setPrices() {
     const suffix = '/měsíc';
 
@@ -66,6 +118,7 @@ function showPaymentReturnState() {
 
 document.addEventListener('DOMContentLoaded', () => {
     setPrices();
+    updatePricingCopy();
     showPaymentReturnState();
     window.MH_ANALYTICS?.trackPricingViewed?.(sessionStorage.getItem('pending_plan'), {
         source: 'pricing_page'

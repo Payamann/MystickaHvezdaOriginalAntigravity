@@ -507,6 +507,46 @@ body::after {
 
 }
 
+@media (pointer: coarse), (max-width: 992px) {
+
+  body::before,
+
+  body::after {
+
+    display: none;
+
+  }
+
+  .section--alt {
+
+    backdrop-filter: none;
+
+  }
+
+  .header,
+
+  .header.scrolled {
+
+    backdrop-filter: none;
+
+    -webkit-backdrop-filter: none;
+
+  }
+
+  .hero__image {
+
+    filter: drop-shadow(0 0 28px rgba(155, 89, 182, 0.12));
+
+  }
+
+  .floating-anim {
+
+    animation: none;
+
+  }
+
+}
+
 
 
 /* ============================================

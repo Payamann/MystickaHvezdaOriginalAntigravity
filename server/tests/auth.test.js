@@ -117,16 +117,6 @@ describe('🔐 Auth Endpoint Tests', () => {
             expect(res.status).toBe(400);
         });
 
-        test('Missing birth_date returns 400', async () => {
-            const csrfToken = await getCsrfToken();
-            const res = await request(app)
-                .post('/api/auth/register')
-                .set('x-csrf-token', csrfToken)
-                .send({ email: 'test@example.com', password: 'TestPassword123!' });
-
-            expect(res.status).toBe(400);
-        });
-
         test('Future birth_date returns 400', async () => {
             const csrfToken = await getCsrfToken();
             const futureDate = new Date();

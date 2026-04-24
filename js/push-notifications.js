@@ -150,8 +150,7 @@
         setTimeout(() => banner?.remove(), 12000);
     }
 
-    // Init: show prompt on 2nd+ visit after 5s
-    window.addEventListener('DOMContentLoaded', () => {
+    function init() {
         const count = incrementVisit();
         
         // Handle manual button if exists
@@ -200,5 +199,12 @@
                 }, 500);
             }
         }
-    });
+    }
+
+    // Init: show prompt on 2nd+ visit after 5s
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init, { once: true });
+    } else {
+        init();
+    }
 })();

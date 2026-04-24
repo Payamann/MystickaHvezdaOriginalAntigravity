@@ -1890,8 +1890,6 @@
   <script type="module" src="js/dist/personalization.js?v=6" async></script>
 <script src="js/auth-client.js?v=6" defer></script>
 <script src="js/auth-copy-fixes.js" defer></script>
-  <script src="js/dist/exit-intent.js" defer></script>
-
   <script src="js/dist/components.js" defer></script>
 
   <script src="js/dist/daily-card.js" defer></script>
@@ -1951,14 +1949,6 @@
   <script src="js/error-boundary.js" defer></script>
   <script src="js/mobile-nav.js?v=5" defer></script>
 
-  <script src="js/newsletter-popup.js?v=5" defer></script>
-
-  <script src="js/retention.js?v=5" defer></script>
-
-  <script src="js/push-notifications.js?v=5" defer></script>
-
-
-
   <!-- Carousel Pagination Dots -->
   <script src="js/dist/carousel-dots.js" defer></script>
 
@@ -1972,6 +1962,43 @@
   <!-- Analytics Initialization & Tracking -->
 
   <script type="module" src="js/dist/analytics-page-init.js" async></script>
+
+  <script>
+    (function () {
+      const nonCriticalScripts = [
+        'js/dist/exit-intent.js',
+        'js/newsletter-popup.js?v=5',
+        'js/push-notifications.js?v=5',
+        'js/retention.js?v=5'
+      ];
+
+      function loadScript(src) {
+        const script = document.createElement('script');
+        script.src = src;
+        script.defer = true;
+        document.body.appendChild(script);
+      }
+
+      function loadNonCriticalScripts() {
+        nonCriticalScripts.forEach(loadScript);
+      }
+
+      function scheduleLoad() {
+        if ('requestIdleCallback' in window) {
+          window.requestIdleCallback(loadNonCriticalScripts, { timeout: 3000 });
+          return;
+        }
+
+        window.setTimeout(loadNonCriticalScripts, 1200);
+      }
+
+      if (document.readyState === 'complete') {
+        scheduleLoad();
+      } else {
+        window.addEventListener('load', scheduleLoad, { once: true });
+      }
+    })();
+  </script>
 
   <!-- Hamburger menu failsafe (in case module chain fails) -->
   <script src="js/nav-failsafe.js" defer></script>

@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const confirmPwWrapper = document.getElementById('confirm-password-field-wrapper');
     const confirmPwInput = document.getElementById('confirm-password-reg');
     const registerFields = document.getElementById('register-fields');
-    const registerBirthDateInput = registerFields?.querySelector('input[name="birth_date"]');
     const gdprWrapper = document.getElementById('gdpr-consent-wrapper');
     const gdprConsent = document.getElementById('gdpr-consent');
     const urlParams = new URLSearchParams(window.location.search);
@@ -35,19 +34,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!authSubmitBtn) {
             return;
         }
+
         if (forgotPasswordLink) {
             forgotPasswordLink.style.display = isRegisterMode ? 'none' : 'block';
         }
 
         if (isRegisterMode) {
             if (loginHeader) loginHeader.textContent = 'Začněte svou cestu';
-            if (loginSubtitle) loginSubtitle.textContent = 'Registrace je zdarma a zabere jen chvilku.';
+            if (loginSubtitle) loginSubtitle.textContent = 'Registrace je zdarma a zabere jen chvilku. Datum narození doplníte až ve chvíli, kdy budete chtít osobní výklad.';
             if (socialProofEl) socialProofEl.style.display = 'block';
             if (confirmPwWrapper) confirmPwWrapper.style.display = 'block';
-            if (registerFields) registerFields.style.display = 'block';
+            if (registerFields) registerFields.style.display = 'none';
             if (gdprWrapper) gdprWrapper.style.display = 'block';
             if (confirmPwInput) confirmPwInput.required = true;
-            if (registerBirthDateInput) registerBirthDateInput.required = true;
             if (gdprConsent) gdprConsent.required = true;
             authSubmitBtn.textContent = 'Zaregistrovat';
             if (toggleBtn) toggleBtn.textContent = 'Máte účet? Přihlaste se';
@@ -62,7 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 confirmPwInput.required = false;
                 confirmPwInput.value = '';
             }
-            if (registerBirthDateInput) registerBirthDateInput.required = false;
             if (gdprConsent) {
                 gdprConsent.required = false;
                 gdprConsent.checked = false;
@@ -102,22 +100,12 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             if (isRegisterMode) {
                 const confirmPassword = confirmPwInput?.value || '';
-                const birthDate = registerBirthDateInput?.value || '';
-                const birthPlace = registerFields?.querySelector('input[name="birth_place"]')?.value || '';
-                const firstName = registerFields?.querySelector('input[name="first_name"]')?.value || '';
-
-                if (!birthDate) {
-                    throw new Error('Datum narození je povinné.');
-                }
 
                 if (password !== confirmPassword) {
                     throw new Error('Hesla se neshodují.');
                 }
 
                 const result = await window.Auth.register(email, password, {
-                    first_name: firstName || undefined,
-                    birth_date: birthDate,
-                    birth_place: birthPlace || undefined,
                     password_confirm: confirmPassword
                 });
 

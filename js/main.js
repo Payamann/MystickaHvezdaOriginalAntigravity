@@ -14,6 +14,15 @@ function safeInit(name, fn) {
     try { fn(); } catch (e) { console.error(`[Init] ${name} failed:`, e); }
 }
 
+function runWhenIdle(fn, timeout = 1200) {
+    if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(fn, { timeout });
+        return;
+    }
+
+    window.setTimeout(fn, 150);
+}
+
 function initInteractiveCards() {
     if (window.matchMedia('(hover: none)').matches) return;
 
@@ -43,8 +52,8 @@ document.addEventListener('DOMContentLoaded', () => {
     safeInit('EmailForms', initEmailForms);
     safeInit('InteractiveCards', initInteractiveCards);
 
-    // Non-critical or visual improvements (deferred)
-    setTimeout(() => {
+    // Non-critical and visual work should stay off the critical path.
+    const scheduleDeferredInits = () => runWhenIdle(() => {
         safeInit('Stars', initStars);
         safeInit('ScrollAnimations', initScrollAnimations);
         safeInit('FAQ', initFAQ);
@@ -54,8 +63,13 @@ document.addEventListener('DOMContentLoaded', () => {
         safeInit('DateValidation', initDateValidation);
         safeInit('Carousel', initCarousel);
         safeInit('CookieBanner', initCookieBanner);
-        safeInit('InteractiveCards', initInteractiveCards);
-    }, 50);
+    });
+
+    if (document.readyState === 'complete') {
+        scheduleDeferredInits();
+    } else {
+        window.addEventListener('load', scheduleDeferredInits, { once: true });
+    }
 });
 
 // Listen for dynamically loaded components (Header/Footer)
