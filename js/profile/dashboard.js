@@ -8,6 +8,61 @@ import { loadFavorites } from './favorites.js';
 import { toggleAvatarPicker, selectAvatar, loadSubscriptionStatus, initSettingsForm, saveSettings } from './settings.js';
 import { viewReading, closeReadingModal, toggleFavoriteModal, deleteReading } from './modal.js';
 
+const PREMIUM_ACTIVATION_KEY = 'mh_premium_activation_seen';
+const PREMIUM_ACTIONS = {
+    premium_monthly: [
+        {
+            href: '/mentor.html',
+            title: 'Otevřít Hvězdného Průvodce',
+            description: 'Začněte otázkou, která vás teď nejvíc táhne.'
+        },
+        {
+            href: '/natalni-karta.html',
+            title: 'Spustit natální kartu',
+            description: 'Využijte jeden z nejsilnějších důvodů, proč lidé zůstávají.'
+        },
+        {
+            href: '/horoskopy.html',
+            title: 'Otevřít plné horoskopy',
+            description: 'Denní, týdenní i měsíční vedení už máte odemčené.'
+        }
+    ],
+    exclusive_monthly: [
+        {
+            href: '/astro-mapa.html',
+            title: 'Spustit astrokartografii',
+            description: 'Teď dává největší smysl vyzkoušet funkci, která se právě odemkla.'
+        },
+        {
+            href: '/mentor.html',
+            title: 'Otevřít Hvězdného Průvodce',
+            description: 'Použijte prioritní odpovědi rovnou na konkrétní téma.'
+        },
+        {
+            href: '/natalni-karta.html',
+            title: 'Jít hlouběji do natální karty',
+            description: 'Propojte základní vhled s pokročilým výkladem.'
+        }
+    ],
+    vip_majestrat: [
+        {
+            href: '/mentor.html',
+            title: 'Začít VIP konzultaci',
+            description: 'Nejrychlejší cesta k první silné hodnotě po nákupu.'
+        },
+        {
+            href: '/rocni-horoskop.html',
+            title: 'Otevřít roční mapu',
+            description: 'Využijte plán na dlouhodobý směr, ne jen jednorázový vhled.'
+        },
+        {
+            href: '/profil.html#tab-settings',
+            title: 'Dokončit nastavení profilu',
+            description: 'Čím víc údajů doplníte, tím přesnější bude vedení.'
+        }
+    ]
+};
+
 function initTabs() {
     const tabs = document.querySelectorAll('.tab[data-tab], .profile-tab[data-tab]');
     const contents = document.querySelectorAll('.tab-content');
@@ -69,6 +124,117 @@ function handlePaymentReturnState() {
     }
 
     history.replaceState({}, document.title, sanitizeProfileUrl(window.location.href));
+}
+
+function getActivationStorageKey(planType) {
+    return `${PREMIUM_ACTIVATION_KEY}:${planType || 'free'}`;
+}
+
+function hasSeenActivation(planType) {
+    return localStorage.getItem(getActivationStorageKey(planType)) === '1';
+}
+
+function markActivationSeen(planType) {
+    localStorage.setItem(getActivationStorageKey(planType), '1');
+}
+
+function renderPremiumActivation(sub, user) {
+    const card = document.getElementById('premium-activation-card');
+    const titleEl = document.getElementById('premium-activation-title');
+    const copyEl = document.getElementById('premium-activation-copy');
+    const badgeEl = document.getElementById('premium-activation-badge');
+    const actionsEl = document.getElementById('premium-activation-actions');
+    const dismissBtn = document.getElementById('premium-activation-dismiss');
+
+    if (!card || !titleEl || !copyEl || !badgeEl || !actionsEl || !dismissBtn || !sub) {
+        return;
+    }
+
+    const planType = sub.planType === 'vip' ? 'vip_majestrat' : (sub.planType || 'free');
+    const isPremium = planType !== 'free';
+    const paymentState = new URLSearchParams(window.location.search).get('payment');
+    const shouldForceShow = paymentState === 'success';
+
+    if (!isPremium) {
+        card.style.display = 'none';
+        return;
+    }
+
+    if (!shouldForceShow && hasSeenActivation(planType)) {
+        card.style.display = 'none';
+        return;
+    }
+
+    const displayName = user?.first_name || user?.email?.split('@')[0] || 'poutníku';
+    const titleMap = {
+        premium_monthly: `Vítejte v Hvězdném Průvodci, ${displayName}`,
+        exclusive_monthly: `Odemkli jste Osvícení, ${displayName}`,
+        vip_majestrat: `VIP Majestrát je aktivní, ${displayName}`
+    };
+    const copyMap = {
+        premium_monthly: 'Největší šance na návrat je udělat teď první plný výklad. Začněte jedním z kroků níže.',
+        exclusive_monthly: 'Právě jste odemkli pokročilé nástroje. Největší hodnotu teď přinese vyzkoušet funkci, kterou free plán neuměl.',
+        vip_majestrat: 'Máte nejvyšší plán. Udělejte teď první krok, který z něj vytvoří každodenní oporu, ne jen aktivní členství.'
+    };
+    const badgeMap = {
+        premium_monthly: 'Premium aktivní',
+        exclusive_monthly: 'Osvícení aktivní',
+        vip_majestrat: 'VIP aktivní'
+    };
+
+    titleEl.textContent = titleMap[planType] || 'Vítejte v Premium';
+    copyEl.textContent = copyMap[planType] || 'Právě jste odemkli plné výklady a osobní vedení.';
+    badgeEl.textContent = badgeMap[planType] || 'Premium aktivní';
+
+    const actions = PREMIUM_ACTIONS[planType] || PREMIUM_ACTIONS.premium_monthly;
+    actionsEl.innerHTML = actions.map((action) => `
+        <a href="${action.href}" class="card glass-card premium-activation-action" data-activation-target="${action.href}" style="padding:1rem 1rem 1.1rem;text-decoration:none;color:inherit;border:1px solid rgba(255,255,255,0.08);">
+            <strong style="display:block;color:#fff;margin-bottom:0.35rem;">${action.title}</strong>
+            <span style="display:block;color:rgba(255,255,255,0.68);line-height:1.5;">${action.description}</span>
+        </a>
+    `).join('');
+
+    card.style.display = 'block';
+    card.dataset.planType = planType;
+    card.dataset.source = paymentState === 'success' ? 'payment_return' : 'profile';
+
+    if (!card.dataset.bound) {
+        dismissBtn.addEventListener('click', () => {
+            const activePlanType = card.dataset.planType || planType;
+            const activeSource = card.dataset.source || 'profile';
+            markActivationSeen(activePlanType);
+            card.style.display = 'none';
+            window.MH_ANALYTICS?.trackEvent?.('premium_activation_dismissed', {
+                plan_type: activePlanType,
+                source: activeSource
+            });
+        });
+
+        actionsEl.addEventListener('click', (event) => {
+            const link = event.target.closest('[data-activation-target]');
+            if (!link) return;
+
+            const activePlanType = card.dataset.planType || planType;
+            const activeSource = card.dataset.source || 'profile';
+            markActivationSeen(activePlanType);
+            window.MH_ANALYTICS?.trackCTA?.('premium_activation_action', {
+                destination: link.getAttribute('href'),
+                plan_id: activePlanType,
+                source: activeSource
+            });
+        });
+
+        card.dataset.bound = 'true';
+    }
+
+    window.MH_ANALYTICS?.trackEvent?.('premium_activation_shown', {
+        plan_type: planType,
+        source: paymentState === 'success' ? 'payment_return' : 'profile'
+    });
+
+    if (shouldForceShow) {
+        markActivationSeen(planType);
+    }
 }
 
 function handleLogout() {
@@ -304,12 +470,13 @@ async function initProfile() {
     initTabs();
     initSettingsForm();
 
-    const [readings] = await Promise.all([
+    const [readings, subscription] = await Promise.all([
         loadReadings(),
         loadSubscriptionStatus()
     ]);
 
     handlePaymentReturnState();
+    renderPremiumActivation(subscription, user);
     updateStats(readings);
     renderJournalEntries(readings);
 

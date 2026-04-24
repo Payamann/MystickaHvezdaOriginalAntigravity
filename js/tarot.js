@@ -8,6 +8,24 @@ let TAROT_CARDS = {};
 // Convert to array for backward compatibility
 let TAROT_CARDS_ARRAY = [];
 
+function getTarotPlanForSpread(spreadType) {
+    return spreadType === 'Celtic Cross' ? 'vip-majestrat' : 'pruvodce';
+}
+
+function startTarotUpgradeFlow(spreadType, source = 'tarot_inline_upsell') {
+    const planId = getTarotPlanForSpread(spreadType);
+    window.MH_ANALYTICS?.trackCTA?.(source, {
+        plan_id: planId,
+        spread_type: spreadType
+    });
+    window.Auth?.startPlanCheckout?.(planId, {
+        source,
+        feature: spreadType === 'Celtic Cross' ? 'tarot_celtic_cross' : 'tarot_multi_card',
+        redirect: '/cenik.html',
+        authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
+    });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     await loadTarotData();
     initTarot();
@@ -88,7 +106,7 @@ function initTarot() {
             if (spreadType !== 'Jedna karta') {
                 if (!window.Auth || !window.Auth.isLoggedIn()) {
                     window.Auth?.showToast('Přihlášení vyžadováno', 'Pro vstup do Hvězdného Průvodce se prosím přihlaste.', 'info');
-                    window.location.href = '/prihlaseni.html?redirect=/tarot.html';
+                    startTarotUpgradeFlow(spreadType, 'tarot_auth_gate');
                     return;
                 }
 
@@ -103,6 +121,7 @@ function initTarot() {
 
                     if (usage.date === today && usage.count >= 1) {
                         window.Auth.showToast('Limit vyčerpán 🔒', 'Dnešní ukázka zdarma již byla vyčerpána. Získejte Premium pro neomezené výklady.', 'error');
+                        startTarotUpgradeFlow(spreadType, 'tarot_limit_gate');
                         return;
                     }
 
@@ -241,6 +260,13 @@ async function startReading(spreadType, isSoftGated = false) {
     `;
 
     resultsContainer.classList.remove('hidden');
+    resultsContainer.querySelectorAll('a[href="cenik.html"]').forEach((link) => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault();
+            const source = link.closest('.premium-lock-overlay') ? 'tarot_locked_card' : 'tarot_teaser_banner';
+            startTarotUpgradeFlow(spreadType, source);
+        });
+    });
 
     // Now scroll to results
     await new Promise(r => setTimeout(r, 100));

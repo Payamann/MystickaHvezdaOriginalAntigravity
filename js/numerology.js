@@ -86,7 +86,12 @@ async function handleFormSubmit(e) {
     // Restriction: Must be logged in
     if (!window.Auth || !window.Auth.isLoggedIn()) {
         window.Auth?.showToast?.('Přihlášení vyžadováno', 'Pro výpočet numerologie se prosím přihlaste.', 'info');
-        window.location.href = '/prihlaseni.html?redirect=/numerologie.html';
+        window.Auth?.startPlanCheckout?.('pruvodce', {
+            source: 'numerology_auth_gate',
+            feature: 'numerologie_vyklad',
+            redirect: '/cenik.html',
+            authMode: 'register'
+        });
         return;
     }
 
@@ -242,8 +247,12 @@ async function displayInterpretation(name, birthDate, birthTime, lifePath, desti
                 if (window.Premium?.showTrialPaywall) {
                     window.Premium.showTrialPaywall('numerologie_vyklad');
                 } else {
-                    sessionStorage.setItem('pending_plan', 'pruvodce');
-                    window.location.href = '/prihlaseni.html?mode=register&redirect=/numerologie.html';
+                    window.Auth?.startPlanCheckout?.('pruvodce', {
+                        source: 'numerology_inline_gate',
+                        feature: 'numerologie_vyklad',
+                        redirect: '/cenik.html',
+                        authMode: 'register'
+                    });
                 }
             });
         }

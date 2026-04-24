@@ -173,7 +173,12 @@ async function requestDeepReading() {
         const intention = document.getElementById('rune-intention')?.value || '';
         sessionStorage.setItem('pendingRuneContext', JSON.stringify({ rune: drawnRune, intention }));
         window.Auth.showToast('Přihlášení vyžadováno', 'Hluboký výklad run vyžaduje bezplatné přihlášení nebo předplatné.', 'info');
-        window.Auth.openModal('login');
+        window.Auth?.startPlanCheckout?.('pruvodce', {
+            source: 'runes_auth_gate',
+            feature: 'runy_hluboky_vyklad',
+            redirect: '/cenik.html',
+            authMode: 'register'
+        });
         return;
     }
 
@@ -202,7 +207,12 @@ async function requestDeepReading() {
         if (response.status === 403) {
             sessionStorage.setItem('pendingRuneContext', JSON.stringify({ rune: drawnRune, intention }));
             window.Auth.showToast('Premium vyžadováno', 'Šamanský výklad vyžaduje prémiové členství Hvězdného Průvodce.', 'info');
-            window.Auth.openModal('login');
+            window.Auth?.startPlanCheckout?.('pruvodce', {
+                source: 'runes_premium_gate',
+                feature: 'runy_hluboky_vyklad',
+                redirect: '/cenik.html',
+                authMode: 'register'
+            });
             return;
         }
 

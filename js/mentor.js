@@ -5,6 +5,19 @@
 // DOM elementy — inicializujeme v DOMContentLoaded (bezpečná inicializace)
 let chatInput, sendBtn, messagesContainer, typingIndicator;
 
+function startMentorUpgradeFlow(source = 'mentor_inline_upsell') {
+    window.MH_ANALYTICS?.trackCTA?.(source, {
+        plan_id: 'pruvodce',
+        feature: 'mentor'
+    });
+    window.Auth?.startPlanCheckout?.('pruvodce', {
+        source,
+        feature: 'mentor',
+        redirect: '/cenik.html',
+        authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
+    });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     // Inicializuj DOM elementy — musí být uvnitř DOMContentLoaded
     chatInput = document.getElementById('chat-input');
@@ -267,6 +280,10 @@ function showTeaserResponse() {
         </div>
     `;
     messagesContainer?.insertBefore(div, typingIndicator);
+    div.querySelector('a[href="cenik.html"]')?.addEventListener('click', (event) => {
+        event.preventDefault();
+        startMentorUpgradeFlow('mentor_teaser_gate');
+    });
     scrollToBottom();
 }
 
@@ -347,6 +364,10 @@ function showPaywall() {
     `;
 
     overlay.style.display = 'flex';
+    overlay.querySelector('a[href="/cenik.html"]')?.addEventListener('click', (event) => {
+        event.preventDefault();
+        startMentorUpgradeFlow('mentor_paywall_overlay');
+    });
 
     // Add blur effect to messages if any (or just cover them)
     messagesContainer.style.filter = 'blur(5px)';

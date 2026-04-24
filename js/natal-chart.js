@@ -557,6 +557,19 @@ async function generateNatalChart(planetsGroup) {
                     </div>
                 `;
                 contentDiv.appendChild(teaserMsg);
+                teaserMsg.querySelector('a[href="/cenik"]')?.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    window.MH_ANALYTICS?.trackCTA?.('natal_teaser_gate', {
+                        plan_id: 'pruvodce',
+                        feature: 'natalni_interpretace'
+                    });
+                    window.Auth?.startPlanCheckout?.('pruvodce', {
+                        source: 'natal_teaser_gate',
+                        feature: 'natalni_interpretace',
+                        redirect: '/cenik.html',
+                        authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
+                    });
+                });
             }
 
             // Save to history if logged in and add favorite button

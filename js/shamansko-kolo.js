@@ -327,6 +327,20 @@
         document.body.removeChild(ta);
     }
 
+    function startMedicineWheelUpgradeFlow() {
+        window.MH_ANALYTICS?.trackCTA?.('medicine_wheel_premium_wall', {
+            plan_id: 'pruvodce',
+            feature: 'shamanske_kolo_plne_cteni'
+        });
+
+        window.Auth?.startPlanCheckout?.('pruvodce', {
+            source: 'medicine_wheel_premium_wall',
+            feature: 'shamanske_kolo_plne_cteni',
+            redirect: '/cenik.html',
+            authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
+        });
+    }
+
     function showPremiumContent(data) {
         document.getElementById('res-strengths').textContent = data.strengths || '';
         document.getElementById('res-challenges').textContent = data.challenges || '';
@@ -338,6 +352,12 @@
     function showPremiumWall() {
         document.getElementById('mw-premium-content').style.display = 'none';
         document.getElementById('mw-premium-wall').style.display = 'block';
+        document
+            .querySelector('#mw-premium-wall a[href="cenik.html"]')
+            ?.addEventListener('click', (event) => {
+                event.preventDefault();
+                startMedicineWheelUpgradeFlow();
+            }, { once: true });
     }
 
     function init() {

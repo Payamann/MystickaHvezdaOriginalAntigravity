@@ -71,6 +71,37 @@ const PLANET_COLORS = {
     'pluto': '#2c3e50'
 };
 
+function startAstroMapUpgradeFlow(source) {
+    window.MH_ANALYTICS?.trackCTA?.(source, {
+        plan_id: 'osviceni',
+        feature: 'astrocartography'
+    });
+
+    window.Auth?.startPlanCheckout?.('osviceni', {
+        source,
+        feature: 'astrocartography',
+        redirect: '/cenik.html',
+        authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
+    });
+}
+
+function showAstroMapUpgradeGate() {
+    showError(`
+        <div class="text-center">
+            <h3>🔭 Osvícení funkce</h3>
+            <p class="mb-lg">Astrokartografie je dostupná od plánu Osvícení (499 Kč/měsíc).</p>
+            <a href="cenik.html" class="btn btn--primary astro-map-upgrade-btn">Zobrazit plány</a>
+        </div>
+    `);
+
+    resultsContainer
+        ?.querySelector('.astro-map-upgrade-btn')
+        ?.addEventListener('click', (event) => {
+            event.preventDefault();
+            startAstroMapUpgradeFlow('astro_map_exclusive_gate');
+        });
+}
+
 /**
  * Initialize the astrocartography feature
  */
@@ -169,7 +200,7 @@ async function handleFormSubmit(e) {
     // Astro Cartography is Premium Only feature
     if (!window.Auth || !window.Auth.isLoggedIn()) {
         window.Auth?.showToast('Přihlášení vyžadováno', 'Pro zobrazení vaší hvězdné mapy se musíte přihlásit.', 'info');
-        window.Auth?.openModal('login');
+        startAstroMapUpgradeFlow('astro_map_auth_gate');
         return;
     }
 
@@ -178,13 +209,7 @@ async function handleFormSubmit(e) {
         if (window.Premium) {
             window.Premium.showExclusivePaywall('astrocartography');
         } else {
-            showError(`
-                <div class="text-center">
-                    <h3>🔭 Osvícení funkce</h3>
-                    <p class="mb-lg">Astrokartografie je dostupná od plánu Osvícení (499 Kč/měsíc).</p>
-                    <a href="cenik.html" class="btn btn--primary">Zobrazit plány</a>
-                </div>
-            `);
+            showAstroMapUpgradeGate();
         }
         return;
     }

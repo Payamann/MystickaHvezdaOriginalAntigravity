@@ -1,4 +1,31 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const PLAN_COPY = {
+        pruvodce: {
+            title: 'Hvězdný Průvodce',
+            copy: 'Odemknete plné výklady, natální kartu, numerologii a každodenní vedení bez limitu.'
+        },
+        osviceni: {
+            title: 'Osvícení',
+            copy: 'Pokračujete k pokročilým nástrojům, jako je astrokartografie a hlubší osobní analýzy.'
+        },
+        'vip-majestrat': {
+            title: 'VIP Majestrát',
+            copy: 'Pokračujete k nejvyšší hloubce, prioritě a osobní péči.'
+        }
+    };
+
+    const FEATURE_LABELS = {
+        astrocartography: 'Astrokartografie',
+        synastry: 'Partnerská shoda',
+        partnerska_detail: 'Detail partnerské shody',
+        numerologie_vyklad: 'Numerologický výklad',
+        natalni_interpretace: 'Interpretace natální karty',
+        runy_hluboky_vyklad: 'Hloubkový výklad run',
+        shamanske_kolo_plne_cteni: 'Plné čtení šamanského kola',
+        rituals: 'Lunární rituály',
+        mentor: 'Hvězdný průvodce'
+    };
+
     const loginForm = document.getElementById('login-form');
     const forgotPasswordForm = document.getElementById('forgot-password-form');
     const resetPasswordForm = document.getElementById('reset-password-form');
@@ -15,12 +42,41 @@ document.addEventListener('DOMContentLoaded', () => {
     const registerFields = document.getElementById('register-fields');
     const gdprWrapper = document.getElementById('gdpr-consent-wrapper');
     const gdprConsent = document.getElementById('gdpr-consent');
+    const checkoutContextBanner = document.getElementById('checkout-context-banner');
+    const checkoutContextLabel = document.getElementById('checkout-context-label');
+    const checkoutContextTitle = document.getElementById('checkout-context-title');
+    const checkoutContextCopy = document.getElementById('checkout-context-copy');
     const urlParams = new URLSearchParams(window.location.search);
     const isResetMode = urlParams.get('reset') === 'true';
     const hash = window.location.hash;
     let isRegisterMode = urlParams.get('mode') === 'register' || urlParams.get('registrace') === '1';
     const redirectTarget = urlParams.get('redirect') || '/profil.html';
-    const pendingPlan = sessionStorage.getItem('pending_plan') || null;
+    const pendingPlan = window.Auth?.getPendingCheckoutPlan?.() || sessionStorage.getItem('pending_plan') || null;
+    const pendingContext = window.Auth?.getPendingCheckoutContext?.() || {};
+    const requestedPlan = urlParams.get('plan') || pendingPlan;
+    const requestedFeature = urlParams.get('feature') || pendingContext.feature || null;
+    const requestedSource = urlParams.get('source') || pendingContext.source || null;
+
+    const renderCheckoutContext = () => {
+        if (!checkoutContextBanner || !requestedPlan || !PLAN_COPY[requestedPlan]) {
+            return;
+        }
+
+        const plan = PLAN_COPY[requestedPlan];
+        const featureLabel = requestedFeature ? FEATURE_LABELS[requestedFeature] || requestedFeature : null;
+
+        if (checkoutContextTitle) checkoutContextTitle.textContent = plan.title;
+        if (checkoutContextCopy) {
+            checkoutContextCopy.textContent = featureLabel
+                ? `${featureLabel} vás přivedla sem. ${plan.copy}`
+                : plan.copy;
+        }
+        if (checkoutContextLabel) {
+            checkoutContextLabel.textContent = requestedSource ? 'Pokračujete k odemčení' : 'Pokračujete k plánu';
+        }
+
+        checkoutContextBanner.style.display = 'block';
+    };
 
     const trackAuthView = (source = 'page_load') => {
         window.MH_ANALYTICS?.trackAuthViewed?.(isRegisterMode ? 'register' : 'login', {
@@ -80,6 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (loginSubtitle) loginSubtitle.textContent = 'Zadejte nové heslo a vraťte se zpět do svého účtu.';
     } else {
         applyMode();
+        renderCheckoutContext();
         trackAuthView();
     }
 

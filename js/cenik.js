@@ -4,10 +4,32 @@ const monthlyPrices = {
     'vip-majestrat': '999 Kč'
 };
 
-const STRIPE_URLS = {
-    pruvodce: 'https://buy.stripe.com/14A7sKfqRdNg2BJeTTc7u02',
-    osviceni: 'https://buy.stripe.com/dRm6oG1A18sW9077rrc7u01',
-    'vip-majestrat': 'https://buy.stripe.com/bJebJ0ceF4cG6RZ5jjc7u00'
+const PLAN_META = {
+    pruvodce: {
+        name: 'Hvězdný Průvodce',
+        headline: 'Nejrychlejší cesta k plným výkladům a každodennímu vedení.',
+        recommendedFor: 'Většina lidí začíná tady.'
+    },
+    osviceni: {
+        name: 'Osvícení',
+        headline: 'Pro chvíli, kdy chceš jít víc do hloubky a odemknout pokročilé nástroje.',
+        recommendedFor: 'Doporučeno pro astrokartografii a hlubší analýzy.'
+    },
+    'vip-majestrat': {
+        name: 'VIP Majestrát',
+        headline: 'Nejvyšší hloubka, priorita a osobní péče.',
+        recommendedFor: 'Pro nejnáročnější uživatele.'
+    }
+};
+
+const FEATURE_PLAN_MAP = {
+    astrocartography: 'osviceni',
+    synastry: 'pruvodce',
+    partnerska_detail: 'pruvodce',
+    natalni_interpretace: 'pruvodce',
+    numerologie_vyklad: 'pruvodce',
+    rituals: 'pruvodce',
+    mentor: 'pruvodce'
 };
 
 function updatePricingCopy() {
@@ -16,7 +38,7 @@ function updatePricingCopy() {
     const heroTrustBadge = document.querySelector('.hero__trust-badge');
     const pricingCards = document.querySelectorAll('.card--pricing');
     const premiumReasonsBadge = Array.from(document.querySelectorAll('.section__badge'))
-        .find((badge) => badge.textContent?.includes('Premium'));
+        .find((badge) => badge.textContent?.includes('Proč lidé'));
     const premiumReasonsTitle = premiumReasonsBadge?.closest('.section__header')?.querySelector('.section__title');
 
     if (heroTitle) {
@@ -77,24 +99,31 @@ function setPrices() {
     });
 }
 
-function startCheckout(planId, source = 'pricing_page') {
-    window.MH_ANALYTICS?.trackCheckoutStarted?.(planId, {
-        source
-    });
-
-    const url = STRIPE_URLS[planId];
-    if (url) {
-        window.location.href = url;
-    }
-}
-
 function sanitizeRedirectUrl(url) {
     const parsed = new URL(url, window.location.origin);
     parsed.searchParams.delete('payment');
+    parsed.searchParams.delete('plan');
+    parsed.searchParams.delete('source');
+    parsed.searchParams.delete('feature');
     return `${parsed.pathname}${parsed.search}${parsed.hash}`;
 }
 
-function showPaymentReturnState() {
+function resolveCheckoutContext() {
+    const params = new URLSearchParams(window.location.search);
+    const pendingContext = window.Auth?.getPendingCheckoutContext?.() || {};
+    const feature = params.get('feature') || pendingContext.feature || null;
+    const explicitPlan = params.get('plan') || pendingContext.planId || null;
+    const source = params.get('source') || pendingContext.source || 'pricing_page';
+    const recommendedPlan = explicitPlan || FEATURE_PLAN_MAP[feature] || 'pruvodce';
+
+    return {
+        feature,
+        source,
+        recommendedPlan
+    };
+}
+
+function showPaymentReturnState(context) {
     const params = new URLSearchParams(window.location.search);
     const paymentState = params.get('payment');
 
@@ -104,7 +133,8 @@ function showPaymentReturnState() {
 
     if (paymentState === 'cancel') {
         window.MH_ANALYTICS?.trackPaymentResult?.('cancel', {
-            source: 'pricing_page_return'
+            source: context.source || 'pricing_page_return',
+            feature: context.feature || null
         });
         window.Auth?.showToast?.(
             'Platba byla zrušena',
@@ -116,12 +146,85 @@ function showPaymentReturnState() {
     history.replaceState({}, document.title, sanitizeRedirectUrl(window.location.href));
 }
 
+function renderRecommendationBanner(context) {
+    const heroSubtitle = document.querySelector('.section--hero .hero__subtitle');
+    if (!heroSubtitle) return;
+
+    const planMeta = PLAN_META[context.recommendedPlan];
+    if (!planMeta) return;
+
+    const existing = document.getElementById('pricing-plan-recommendation');
+    if (existing) existing.remove();
+
+    const banner = document.createElement('div');
+    banner.id = 'pricing-plan-recommendation';
+    banner.style.cssText = 'max-width:760px;margin:1.25rem auto 0;padding:1rem 1.1rem;border-radius:18px;background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.25);text-align:left;';
+    banner.innerHTML = `
+        <div style="font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-mystic-gold);margin-bottom:0.45rem;">Doporučený další krok</div>
+        <strong style="display:block;color:#fff;font-size:1rem;margin-bottom:0.35rem;">${planMeta.name}</strong>
+        <p style="margin:0;color:rgba(255,255,255,0.78);line-height:1.6;">${planMeta.headline} ${planMeta.recommendedFor}</p>
+    `;
+
+    heroSubtitle.insertAdjacentElement('afterend', banner);
+}
+
+function highlightRecommendedPlan(planId) {
+    if (!planId) return;
+
+    document.querySelectorAll('.card--pricing').forEach((card) => {
+        card.classList.remove('pricing-card--recommended');
+        card.style.boxShadow = '';
+    });
+
+    const button = document.querySelector(`.plan-checkout-btn[data-plan="${planId}"]`);
+    const card = button?.closest('.card--pricing');
+    if (!card) return;
+
+    card.classList.add('pricing-card--recommended');
+    card.style.boxShadow = '0 0 0 2px rgba(212,175,55,0.45), 0 18px 50px rgba(0,0,0,0.35)';
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function bindCheckoutButtons(context) {
+    document.querySelectorAll('.plan-checkout-btn').forEach((button) => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            const planId = button.dataset.plan;
+            if (!planId) return;
+
+            const isLoggedIn = !!window.Auth?.isLoggedIn?.();
+            const checkoutContext = {
+                source: context.source || 'pricing_page',
+                feature: context.feature || null,
+                redirect: '/cenik.html',
+                authMode: 'register'
+            };
+
+            window.MH_ANALYTICS?.trackCTA?.('pricing_plan_cta', {
+                label: button.textContent?.trim() || 'checkout',
+                plan_id: planId,
+                requires_auth: !isLoggedIn,
+                destination: isLoggedIn ? 'stripe_checkout_session' : '/prihlaseni.html',
+                source: checkoutContext.source,
+                feature: checkoutContext.feature
+            });
+
+            window.Auth?.startPlanCheckout?.(planId, checkoutContext);
+        });
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     setPrices();
     updatePricingCopy();
-    showPaymentReturnState();
-    window.MH_ANALYTICS?.trackPricingViewed?.(sessionStorage.getItem('pending_plan'), {
-        source: 'pricing_page'
+
+    const context = resolveCheckoutContext();
+    showPaymentReturnState(context);
+    renderRecommendationBanner(context);
+
+    window.MH_ANALYTICS?.trackPricingViewed?.(context.recommendedPlan, {
+        source: context.source || 'pricing_page',
+        feature: context.feature || null
     });
 
     const toggleMonthly = document.getElementById('toggle-monthly');
@@ -136,44 +239,11 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleYearly.addEventListener('click', (event) => event.preventDefault());
     }
 
-    document.querySelectorAll('.plan-checkout-btn').forEach((button) => {
-        button.addEventListener('click', (event) => {
-            event.preventDefault();
-            const planId = button.dataset.plan;
-            if (!planId) return;
-            const isLoggedIn = !!window.Auth?.isLoggedIn?.();
+    bindCheckoutButtons(context);
 
-            window.MH_ANALYTICS?.trackCTA?.('pricing_plan_cta', {
-                label: button.textContent?.trim() || 'checkout',
-                plan_id: planId,
-                requires_auth: !isLoggedIn,
-                destination: isLoggedIn ? 'stripe_checkout' : '/prihlaseni.html?mode=register&redirect=/cenik.html'
-            });
-
-            const auth = window.Auth;
-            if (!auth || !auth.isLoggedIn()) {
-                sessionStorage.setItem('pending_plan', planId);
-                window.location.href = '/prihlaseni.html?mode=register&redirect=/cenik.html';
-                return;
-            }
-
-            startCheckout(planId);
+    if (context.source !== 'pricing_page' || context.feature || context.recommendedPlan !== 'pruvodce') {
+        window.requestAnimationFrame(() => {
+            highlightRecommendedPlan(context.recommendedPlan);
         });
-    });
-
-    const pending = sessionStorage.getItem('pending_plan');
-    if (!pending) return;
-
-    const triggerPendingCheckout = () => {
-        if (window.Auth?.isLoggedIn()) {
-            sessionStorage.removeItem('pending_plan');
-            startCheckout(pending, 'pending_plan_resume');
-        }
-    };
-
-    if (window.Auth) {
-        triggerPendingCheckout();
-    } else {
-        document.addEventListener('auth:changed', triggerPendingCheckout, { once: true });
     }
 });

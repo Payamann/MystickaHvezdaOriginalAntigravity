@@ -1,5 +1,7 @@
 (() => {
     const API_URL = window.API_CONFIG?.BASE_URL || '/api';
+    const PENDING_PLAN_KEY = 'pending_plan';
+    const PENDING_CONTEXT_KEY = 'pending_checkout_context';
 
 
     const Auth = {
@@ -246,7 +248,7 @@
         loginSuccess(data) {
             // Token is now in HttpOnly cookie (set by server)
             // We only store user data in localStorage
-            const pendingPlan = sessionStorage.getItem('pending_plan');
+            const pendingPlan = this.getPendingCheckoutPlan();
             this.user = data.user;
             localStorage.setItem('auth_user', JSON.stringify(data.user));
             this.updateUI();
@@ -254,9 +256,68 @@
 
             // After login/register success: check for pending plan redirect
             if (pendingPlan) {
-                sessionStorage.removeItem('pending_plan');
-                this._startCheckout(pendingPlan);
+                this._startCheckout(pendingPlan, this.getPendingCheckoutContext());
             }
+        },
+
+        getPendingCheckoutPlan() {
+            return sessionStorage.getItem(PENDING_PLAN_KEY);
+        },
+
+        getPendingCheckoutContext() {
+            try {
+                return JSON.parse(sessionStorage.getItem(PENDING_CONTEXT_KEY) || '{}');
+            } catch {
+                return {};
+            }
+        },
+
+        setPendingCheckout(planId, context = {}) {
+            if (!planId) return;
+
+            sessionStorage.setItem(PENDING_PLAN_KEY, planId);
+            sessionStorage.setItem(PENDING_CONTEXT_KEY, JSON.stringify({
+                planId,
+                source: 'unknown',
+                redirect: '/cenik.html',
+                authMode: 'register',
+                ...context
+            }));
+        },
+
+        clearPendingCheckout() {
+            sessionStorage.removeItem(PENDING_PLAN_KEY);
+            sessionStorage.removeItem(PENDING_CONTEXT_KEY);
+        },
+
+        startPlanCheckout(planId, context = {}) {
+            if (!planId) return;
+
+            if (!this.isLoggedIn()) {
+                const redirectTarget = typeof context.redirect === 'string' && context.redirect.startsWith('/') && !context.redirect.startsWith('//')
+                    ? context.redirect
+                    : '/cenik.html';
+                const authMode = context.authMode === 'login' ? 'login' : 'register';
+
+                this.setPendingCheckout(planId, {
+                    ...context,
+                    redirect: redirectTarget,
+                    authMode
+                });
+
+                const authUrl = new URL('/prihlaseni.html', window.location.origin);
+                authUrl.searchParams.set('mode', authMode);
+                authUrl.searchParams.set('redirect', redirectTarget);
+                authUrl.searchParams.set('plan', planId);
+
+                if (context.source) authUrl.searchParams.set('source', context.source);
+                if (context.feature) authUrl.searchParams.set('feature', context.feature);
+
+                window.location.href = `${authUrl.pathname}${authUrl.search}`;
+                return;
+            }
+
+            this._startCheckout(planId, context);
         },
 
         async logout() {
@@ -679,10 +740,12 @@
             }
         },
 
-        async _startCheckout(planId) {
+        async _startCheckout(planId, context = {}) {
             try {
+                const source = context.source || this.getPendingCheckoutContext().source || 'auth_pending_plan';
                 window.MH_ANALYTICS?.trackCheckoutStarted?.(planId, {
-                    source: 'auth_pending_plan'
+                    source,
+                    feature: context.feature || null
                 });
                 const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
                 const res = await fetch(`${API_URL}/payment/create-checkout-session`, {
@@ -696,14 +759,15 @@
                 });
                 const data = await res.json();
                 if (res.ok && data.url) {
+                    this.clearPendingCheckout();
                     window.location.href = data.url;
                 } else {
                     console.warn('Checkout session failed:', data);
-                    window.location.href = '/cenik.html';
+                    window.location.href = context.redirect || '/cenik.html';
                 }
             } catch (e) {
                 console.error('Checkout error:', e);
-                window.location.href = '/cenik.html';
+                window.location.href = context.redirect || '/cenik.html';
             }
         },
     };

@@ -482,6 +482,39 @@
 
                         <p id="rune-desc" style="color: var(--color-silver-mist); line-height: 1.6;"></p>
 
+                        <div id="premium-upsell"
+                            style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(212, 175, 55, 0.18);">
+                            <div
+                                style="display: flex; flex-direction: column; gap: 1rem; background: rgba(10, 10, 15, 0.72); border: 1px solid rgba(212, 175, 55, 0.16); border-radius: 18px; padding: 1.25rem;">
+                                <div>
+                                    <h4
+                                        style="font-family: var(--font-heading); color: var(--color-starlight); font-size: 1.25rem; margin-bottom: 0.4rem;">
+                                        Hloubkový šamanský výklad runy
+                                    </h4>
+                                    <p style="color: var(--color-silver-mist); margin: 0;">
+                                        Zeptej se na svůj záměr a odemkni osobní výklad, který propojí význam runy s tvou aktuální situací.
+                                    </p>
+                                </div>
+
+                                <label for="rune-intention"
+                                    style="font-size: 0.95rem; color: var(--color-starlight); font-weight: 600;">
+                                    Tvůj záměr nebo otázka
+                                </label>
+                                <textarea id="rune-intention"
+                                    placeholder="Např. Co mi dnes brání udělat další krok?"
+                                    style="min-height: 96px; width: 100%; resize: vertical; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; color: var(--color-starlight); padding: 0.9rem 1rem; font: inherit;"></textarea>
+
+                                <button id="btn-deep-reading" class="btn btn--gold" type="button"
+                                    style="align-self: flex-start;">
+                                    Získat šamanský výklad
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="ai-response-container"
+                            style="display: none; margin-top: 1.5rem; padding: 1.25rem; border-radius: 18px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: var(--color-silver-mist); line-height: 1.7;">
+                        </div>
+
                     </div>
 
                 </div>

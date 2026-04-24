@@ -9,6 +9,20 @@ document.addEventListener('DOMContentLoaded', () => {
     initSynastry();
 });
 
+function startSynastryUpgradeFlow(source) {
+    window.MH_ANALYTICS?.trackCTA?.(source, {
+        plan_id: 'pruvodce',
+        feature: 'partnerska_detail'
+    });
+
+    window.Auth?.startPlanCheckout?.('pruvodce', {
+        source,
+        feature: 'partnerska_detail',
+        redirect: '/cenik.html',
+        authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
+    });
+}
+
 function initSynastry() {
     const form = document.getElementById('synastry-form');
     if (!form) return;
@@ -99,6 +113,8 @@ async function calculateCompatibility() {
     // Calculate scores using imported logic
     const scores = calculateSynastryScores(person1, person2);
     const { emotion: emotionScore, communication: commScore, passion: passionScore, total: totalScore } = scores;
+    const viewerProfile = window.Auth?.isLoggedIn?.() ? await window.Auth.getProfile() : null;
+    const hasActiveSession = !!viewerProfile;
 
     // Show results with animation
     resultsDiv.style.display = 'block';
@@ -106,7 +122,7 @@ async function calculateCompatibility() {
 
     // Animate scores
     // Check Premium Status for Visuals
-    const isPremium = window.Auth && window.Auth.isLoggedIn() && window.Auth.isPremium();
+    const isPremium = hasActiveSession && window.Auth && window.Auth.isPremium();
 
     // Animate Total Score (Always visible)
     animateValue('total-score', 0, totalScore, 2000);
@@ -163,12 +179,7 @@ async function calculateCompatibility() {
         detailCard.appendChild(overlay);
 
         overlay.querySelector('.synastry-upgrade-btn').addEventListener('click', () => {
-            if (window.Premium?.showTrialPaywall) {
-                window.Premium.showTrialPaywall('partnerska_detail');
-            } else {
-                sessionStorage.setItem('pending_plan', 'pruvodce');
-                window.location.href = '/prihlaseni.html?mode=register&redirect=/partnerska-shoda.html';
-            }
+            startSynastryUpgradeFlow('synastry_detail_lock');
         });
     }
 
@@ -180,6 +191,17 @@ async function calculateCompatibility() {
         aiResultsDiv = createAIResultsContainer();
     }
     aiResultsDiv.style.display = 'none';
+
+    if (!hasActiveSession) {
+        document.getElementById('total-score').textContent = `${totalScore}%`;
+        document.getElementById('verdict-text').textContent =
+            `Celková kompatibilita ${totalScore}% - `;
+        aiResultsDiv.style.display = 'block';
+        renderTeaser(aiResultsDiv, totalScore);
+        btn.textContent = originalText;
+        btn.disabled = false;
+        return;
+    }
 
     try {
         // Call AI for detailed analysis
@@ -202,6 +224,7 @@ async function calculateCompatibility() {
 
             if (data.isTeaser) {
                 // RENDER TEASER (Blurred)
+                document.getElementById('total-score').textContent = `${totalScore}%`;
                 renderTeaser(aiResultsDiv);
             } else {
                 // RENDER FULL CONTENT
@@ -287,8 +310,11 @@ async function typewriterEffect(element, text) {
     }
 }
 
-function renderTeaser(container) {
+function renderTeaser(container, totalScore = null) {
     const contentDiv = container.querySelector('.ai-content');
+    const scoreLabel = typeof totalScore === 'number'
+        ? `${totalScore}%`
+        : (document.getElementById('total-score')?.textContent || 'vaši');
 
     // 1. Add Blur
     contentDiv.classList.add('blur-content');
@@ -315,6 +341,14 @@ function renderTeaser(container) {
         `;
         container.style.position = 'relative'; // Ensure positioning context
         container.appendChild(overlay);
+        const teaserCopy = overlay.querySelector('p');
+        if (teaserCopy) {
+            teaserCopy.textContent = `Zjistěte, proč máte ${scoreLabel} shodu a co vás čeká.`;
+        }
+        overlay.querySelector('a[href="cenik.html"]')?.addEventListener('click', (event) => {
+            event.preventDefault();
+            startSynastryUpgradeFlow('synastry_teaser_overlay');
+        });
     }
 }
 

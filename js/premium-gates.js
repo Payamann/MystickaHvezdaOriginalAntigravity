@@ -2,10 +2,6 @@
 // PAYWALL & PREMIUM UI COMPONENTS
 // ============================================
 
-/**
- * Check if user has premium access
- * @returns {boolean}
- */
 window.Premium = {
     _escapeHTML(str) {
         const div = document.createElement('div');
@@ -14,15 +10,11 @@ window.Premium = {
     },
 
     async checkStatus() {
-        // 1. Check local state first (Optimistic & Offline-friendly)
         if (window.Auth?.isPremium?.()) {
             console.log('Premium Verified (Local)');
             return true;
         }
 
-        // auth_token is HttpOnly cookie — not accessible via localStorage.
-        // We rely on credentials: 'include' to send the cookie automatically.
-        // Only skip the API call if user is clearly not logged in.
         if (window.Auth && !window.Auth.isLoggedIn()) return false;
 
         try {
@@ -44,148 +36,105 @@ window.Premium = {
         }
     },
 
-    /**
-     * Show paywall overlay for a feature
-     * @param {string} featureName - Name of the locked feature
-     * @param {string} message - Custom message
-     */
-    showPaywall(featureName, message = null) {
-        const defaultMessages = {
-            'numerology': '🔢 Vaše čísla skrývají víc, než čekáte – hluboký výklad čísel odemknete v plánu Hvězdný Průvodce',
-            'weekly_horoscope': '🌟 Detailní týdenní průvodce planetami čeká na vás – odemkněte ho s Hvězdným Průvodcem',
-            'monthly_horoscope': '📅 Celý měsíc pod hvězdami – kompletní měsíční předpověď patří Hvězdným Průvodcům',
-            'natal_chart': '⭐ Váš vesmírný plán čeká – plná interpretace natální karty je součástí Hvězdného Průvodce',
-            'synastry': '💫 Hloubková synastrie prozradí, zda jste pro sebe stvořeni – dostupná v Hvězdném Průvodci',
-            'astrocartography': '🌍 Kde na světě vás hvězdy volají? Astrokartografie je jen pro Hvězdné Průvodce',
-            'journal_insights': '📖 Hluboká analýza vzorců ve vašem deníku – funkce Hvězdného Průvodce',
-            'mentor': '🌙 Váš duchovní průvodce bez omezení zpráv – staňte se Hvězdným Průvodcem',
-            'rituals': '🌙 Lunární rituály vás vedou hluboko do noci – plný přístup patří Hvězdným Průvodcům'
-        };
+    startUpgradeFlow(planId, featureName, source = 'paywall') {
+        window.Auth?.startPlanCheckout?.(planId, {
+            source,
+            feature: featureName || null,
+            redirect: '/cenik.html',
+            authMode: 'register'
+        });
+    },
 
-        const displayMessage = message || defaultMessages[featureName] || 'Tato funkce vyžaduje Premium předplatné';
-
-        // Track analytics
-        this.trackPaywallHit(featureName);
-
-        // Escape user-influenced content to prevent XSS
-        const safeMessage = this._escapeHTML(displayMessage);
-
-        // Create overlay
+    createOverlay({ icon, title, message, benefits, ctaLabel, footer }) {
         const overlay = document.createElement('div');
         overlay.className = 'paywall-overlay';
         overlay.innerHTML = `
             <div class="paywall-content">
-                <div class="paywall-icon">✨</div>
-                <h3 class="paywall-title">Hvězdný Průvodce</h3>
-                <p class="paywall-message">${safeMessage}</p>
+                <div class="paywall-icon">${icon}</div>
+                <h3 class="paywall-title">${title}</h3>
+                <p class="paywall-message">${message}</p>
                 <div class="paywall-benefits">
-                    <div class="benefit-item">✓ Neomezený tarot – kdykoliv, na cokoliv</div>
-                    <div class="benefit-item">✓ Týdenní + měsíční horoskopy přesně pro vás</div>
-                    <div class="benefit-item">✓ Duchovní průvodce bez limitu zpráv</div>
-                    <div class="benefit-item">✓ Plná natální karta s interpretací</div>
+                    ${benefits.map((item) => `<div class="benefit-item">${item}</div>`).join('')}
                 </div>
                 <div class="paywall-actions">
-                    <button class="btn btn--primary paywall-upgrade">
-                        🌟 Stát se Průvodcem – 199 Kč/měsíc
-                    </button>
+                    <button class="btn btn--primary paywall-upgrade">${ctaLabel}</button>
                     <button class="btn btn--ghost paywall-close">Teď ne</button>
                 </div>
-                <p class="paywall-footer">Bez závazků • Zrušení jedním kliknutím • 7 dní zdarma</p>
+                <p class="paywall-footer">${footer}</p>
             </div>
         `;
 
         document.body.appendChild(overlay);
+        return overlay;
+    },
 
-        // Event listeners
-        overlay.querySelector('.paywall-upgrade').addEventListener('click', async () => {
+    bindOverlayActions(overlay, onUpgrade) {
+        overlay.querySelector('.paywall-upgrade').addEventListener('click', () => {
             const btn = overlay.querySelector('.paywall-upgrade');
             btn.textContent = 'Přesměrovávám...';
             btn.disabled = true;
-            if (window.Auth && window.Auth.isLoggedIn()) {
-                try {
-                    const res = await fetch(`${window.API_CONFIG?.BASE_URL || '/api'}/payment/create-checkout-session`, {
-                        method: 'POST', credentials: 'include',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ planId: 'pruvodce' })
-                    });
-                    const data = await res.json();
-                    if (data.url) { window.location.href = data.url; return; }
-                } catch (e) { console.error(e); }
-            }
-            sessionStorage.setItem('pending_plan', 'pruvodce');
-            window.location.href = '/prihlaseni.html?registrace=1&redirect=/cenik.html';
+            onUpgrade();
         });
 
-        overlay.querySelector('.paywall-close').addEventListener('click', () => {
-            overlay.remove();
-        });
-
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) {
-                overlay.remove();
-            }
+        overlay.querySelector('.paywall-close').addEventListener('click', () => overlay.remove());
+        overlay.addEventListener('click', (event) => {
+            if (event.target === overlay) overlay.remove();
         });
     },
 
-    /**
-     * Show paywall for Osvícení tier (exclusive_monthly, vip)
-     * @param {string} featureName - Feature identifier
-     */
+    showPaywall(featureName, message = null) {
+        const defaultMessages = {
+            numerology: 'Vaše čísla skrývají víc, než čekáte. Hluboký výklad odemknete v plánu Hvězdný Průvodce.',
+            weekly_horoscope: 'Detailní týdenní průvodce planetami čeká na vás. Odemkněte ho s Hvězdným Průvodcem.',
+            monthly_horoscope: 'Celý měsíc pod hvězdami. Kompletní měsíční předpověď patří Hvězdným Průvodcům.',
+            natal_chart: 'Váš vesmírný plán čeká. Plná interpretace natální karty je součástí Hvězdného Průvodce.',
+            synastry: 'Hloubková synastrie prozradí, zda jste pro sebe stvořeni. Dostupná je v Hvězdném Průvodci.',
+            astrocartography: 'Kde na světě vás hvězdy volají? Astrokartografie je dostupná od vyššího plánu.',
+            journal_insights: 'Hluboká analýza vzorců ve vašem deníku je funkce Hvězdného Průvodce.',
+            mentor: 'Váš duchovní průvodce bez omezení zpráv čeká v Hvězdném Průvodci.',
+            rituals: 'Lunární rituály vás vedou hluboko do noci. Plný přístup patří Hvězdným Průvodcům.'
+        };
+
+        const displayMessage = this._escapeHTML(message || defaultMessages[featureName] || 'Tato funkce vyžaduje Premium předplatné.');
+        this.trackPaywallHit(featureName);
+
+        const overlay = this.createOverlay({
+            icon: '✨',
+            title: 'Hvězdný Průvodce',
+            message: displayMessage,
+            benefits: [
+                '✓ Neomezený tarot kdykoliv a na cokoliv',
+                '✓ Týdenní i měsíční horoskopy přesně pro vás',
+                '✓ Duchovní průvodce bez limitu zpráv',
+                '✓ Plná natální karta s interpretací'
+            ],
+            ctaLabel: '🌟 Stát se Průvodcem – 199 Kč/měsíc',
+            footer: 'Bez závazků • Zrušení jedním kliknutím • 7 dní zdarma'
+        });
+
+        this.bindOverlayActions(overlay, () => this.startUpgradeFlow('pruvodce', featureName, 'inline_paywall'));
+    },
+
     showExclusivePaywall(featureName) {
         this.trackPaywallHit(featureName);
 
-        const overlay = document.createElement('div');
-        overlay.className = 'paywall-overlay';
-        overlay.innerHTML = `
-            <div class="paywall-content">
-                <div class="paywall-icon">🔭</div>
-                <h3 class="paywall-title">Osvícení</h3>
-                <p class="paywall-message">Tato funkce je dostupná od plánu Osvícení</p>
-                <div class="paywall-benefits">
-                    <div class="benefit-item">✓ Astrokartografie — vaše hvězdná mapa světa</div>
-                    <div class="benefit-item">✓ Pokročilá natální karta s hlubším výkladem</div>
-                    <div class="benefit-item">✓ Exkluzivní lunární rituály</div>
-                    <div class="benefit-item">✓ Prioritní odpovědi duchovního průvodce</div>
-                </div>
-                <div class="paywall-actions">
-                    <button class="btn btn--primary paywall-upgrade">
-                        🔭 Probudit se — 499 Kč/měsíc
-                    </button>
-                    <button class="btn btn--ghost paywall-close">Teď ne</button>
-                </div>
-                <p class="paywall-footer">Bez závazků • Zrušení jedním kliknutím</p>
-            </div>
-        `;
-
-        document.body.appendChild(overlay);
-
-        overlay.querySelector('.paywall-upgrade').addEventListener('click', async () => {
-            const btn = overlay.querySelector('.paywall-upgrade');
-            btn.textContent = 'Přesměrovávám...';
-            btn.disabled = true;
-            if (window.Auth && window.Auth.isLoggedIn()) {
-                try {
-                    const res = await fetch(`${window.API_CONFIG?.BASE_URL || '/api'}/payment/create-checkout-session`, {
-                        method: 'POST', credentials: 'include',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ planId: 'osviceni' })
-                    });
-                    const data = await res.json();
-                    if (data.url) { window.location.href = data.url; return; }
-                } catch (e) { console.error(e); }
-            }
-            sessionStorage.setItem('pending_plan', 'osviceni');
-            window.location.href = '/prihlaseni.html?registrace=1&redirect=/cenik.html';
+        const overlay = this.createOverlay({
+            icon: '🔭',
+            title: 'Osvícení',
+            message: 'Tato funkce je dostupná od plánu Osvícení.',
+            benefits: [
+                '✓ Astrokartografie a vaše hvězdná mapa světa',
+                '✓ Pokročilá natální karta s hlubším výkladem',
+                '✓ Exkluzivní lunární rituály',
+                '✓ Prioritní odpovědi duchovního průvodce'
+            ],
+            ctaLabel: '🔭 Probudit se — 499 Kč/měsíc',
+            footer: 'Bez závazků • Zrušení jedním kliknutím'
         });
-        overlay.querySelector('.paywall-close').addEventListener('click', () => overlay.remove());
-        overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+
+        this.bindOverlayActions(overlay, () => this.startUpgradeFlow('osviceni', featureName, 'exclusive_paywall'));
     },
 
-    /**
-     * Show login prompt gate (requires registration, not premium)
-     * @param {HTMLElement} container - Container element to show gate in
-     * @param {string} message - Optional custom message
-     */
     showLoginGate(container, message = null) {
         const defaultMsg = '⭐ Přihlaste se zdarma a získejte plný osobní výklad';
         const safeMsg = this._escapeHTML(message || defaultMsg);
@@ -205,10 +154,6 @@ window.Premium = {
         });
     },
 
-    /**
-     * Show inline premium badge/lock
-     * @param {HTMLElement} element - Element to mark as premium
-     */
     markAsPremium(element) {
         const badge = document.createElement('span');
         badge.className = 'premium-badge';
@@ -219,11 +164,6 @@ window.Premium = {
         element.appendChild(badge);
     },
 
-    /**
-     * Blur/lock content for free users
-     * @param {HTMLElement} container - Container to blur
-     * @param {string} featureName - Feature identifier
-     */
     lockContent(container, featureName) {
         container.classList.add('premium-locked');
 
@@ -238,18 +178,14 @@ window.Premium = {
         container.style.position = 'relative';
         container.appendChild(lockOverlay);
 
-        lockOverlay.querySelector('.unlock-btn').addEventListener('click', (e) => {
-            e.stopPropagation();
+        lockOverlay.querySelector('.unlock-btn').addEventListener('click', (event) => {
+            event.stopPropagation();
             this.showPaywall(featureName);
         });
     },
 
-    /**
-     * Track paywall hit event (analytics)
-     */
     trackPaywallHit(featureName) {
         try {
-            // Track with analytics service
             if (window.analytics) {
                 window.analytics.track('Paywall Hit', {
                     feature: featureName,
@@ -264,13 +200,13 @@ window.Premium = {
 
     showTrialPaywall(featureName) {
         this.trackPaywallHit(featureName);
+
         const featureMessages = {
-            'rituals': 'Lunární rituály tě provedou každou fází měsíce',
-            'partnerska_detail': 'Detailní analýza odhalí hlubší dynamiku vašeho vztahu',
-            'numerologie_vyklad': 'AI výklad odhalí co tvá čísla skutečně znamenají',
-            'natalni_interpretace': 'Plná AI interpretace tvé natální karty'
+            rituals: 'Lunární rituály tě provedou každou fází měsíce.',
+            partnerska_detail: 'Detailní analýza odhalí hlubší dynamiku vašeho vztahu.',
+            numerologie_vyklad: 'AI výklad odhalí, co tvá čísla skutečně znamenají.',
+            natalni_interpretace: 'Plná AI interpretace tvé natální karty.'
         };
-        const msg = featureMessages[featureName] || 'Tato funkce je součástí Hvězdného Průvodce';
 
         const overlay = document.createElement('div');
         overlay.className = 'paywall-overlay';
@@ -279,64 +215,38 @@ window.Premium = {
                 <div class="paywall-icon">✨</div>
                 <div style="background:linear-gradient(135deg,#f9d423,#ff4e50);color:#000;padding:6px 16px;border-radius:20px;font-size:0.75rem;font-weight:800;letter-spacing:1px;display:inline-block;margin-bottom:1rem;">7 DNÍ ZDARMA</div>
                 <h3 class="paywall-title">Hvězdný Průvodce</h3>
-                <p class="paywall-message">${this._escapeHTML(msg)}</p>
+                <p class="paywall-message">${this._escapeHTML(featureMessages[featureName] || 'Tato funkce je součástí Hvězdného Průvodce.')}</p>
                 <div class="paywall-benefits">
                     <div class="benefit-item">✓ Neomezený chat bez limitu</div>
-                    <div class="benefit-item">✓ Lunární rituály & výklady</div>
+                    <div class="benefit-item">✓ Lunární rituály a výklady</div>
                     <div class="benefit-item">✓ Natální karta s interpretací</div>
                     <div class="benefit-item">✓ Numerologický výklad bez omezení</div>
                 </div>
                 <div class="paywall-actions">
-                    <button class="btn btn--primary paywall-upgrade">
-                        🌟 Vyzkoušet 7 dní zdarma
-                    </button>
+                    <button class="btn btn--primary paywall-upgrade">🌟 Vyzkoušet 7 dní zdarma</button>
                     <button class="btn btn--ghost paywall-close">Teď ne</button>
                 </div>
                 <p class="paywall-footer">Zrušíš kdykoliv • Karta požadována po trialu • 199 Kč/měsíc</p>
             </div>
         `;
-        document.body.appendChild(overlay);
 
-        overlay.querySelector('.paywall-upgrade').addEventListener('click', async () => {
-            const btn = overlay.querySelector('.paywall-upgrade');
-            btn.textContent = 'Přesměrovávám...';
-            btn.disabled = true;
-            if (window.Auth && window.Auth.isLoggedIn()) {
-                try {
-                    const res = await fetch(`${window.API_CONFIG?.BASE_URL || '/api'}/payment/create-checkout-session`, {
-                        method: 'POST', credentials: 'include',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ planId: 'pruvodce' })
-                    });
-                    const data = await res.json();
-                    if (data.url) { window.location.href = data.url; return; }
-                } catch (e) { console.error(e); }
-            }
-            sessionStorage.setItem('pending_plan', 'pruvodce');
-            window.location.href = '/prihlaseni.html?registrace=1&redirect=/cenik.html';
-        });
-        overlay.querySelector('.paywall-close').addEventListener('click', () => overlay.remove());
-        overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+        document.body.appendChild(overlay);
+        this.bindOverlayActions(overlay, () => this.startUpgradeFlow('pruvodce', featureName, 'trial_paywall'));
     },
 
-    /**
-     * Initialize premium gates on page load
-     */
     async init() {
         const isPremium = await this.checkStatus();
         document.body.classList.toggle('is-premium', isPremium);
 
-        // Add premium badges to navigation
         if (!isPremium) {
-            document.querySelectorAll('[data-premium="true"]').forEach(el => {
+            document.querySelectorAll('[data-premium="true"]').forEach((element) => {
                 const badge = document.createElement('span');
                 badge.className = 'nav-premium-badge';
                 badge.textContent = '💎';
-                el.appendChild(badge);
+                element.appendChild(badge);
             });
         }
 
-        // Add upgrade CTA to header (for free users)
         if (!isPremium && document.getElementById('header-placeholder')) {
             const addUpgradeCTA = () => {
                 const header = document.querySelector('header nav');
@@ -349,7 +259,7 @@ window.Premium = {
                     header.appendChild(upgradeCTA);
                 }
             };
-            
+
             if (document.querySelector('header nav')) {
                 addUpgradeCTA();
             } else {
@@ -359,7 +269,6 @@ window.Premium = {
     }
 };
 
-// Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     window.Premium.init();
 });

@@ -177,7 +177,7 @@ export async function selectAvatar(emoji) {
 
 export async function loadSubscriptionStatus() {
     const container = document.getElementById('subscription-details');
-    if (!container) return;
+    if (!container) return null;
 
     try {
         const res = await fetch(`${apiUrl()}/payment/subscription/status`, {
@@ -189,6 +189,7 @@ export async function loadSubscriptionStatus() {
 
         const data = await res.json();
         renderSubscriptionCard(data);
+        return data;
     } catch (e) {
         console.error('Subscription status error:', e);
         container.innerHTML = `
@@ -201,6 +202,7 @@ export async function loadSubscriptionStatus() {
                 </div>
             </div>
         `;
+        return null;
     }
 }
 
