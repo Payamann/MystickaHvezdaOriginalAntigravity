@@ -6917,7 +6917,7 @@ body.page-mentor .header {
 
 body.cookie-banner-active {
 
-  padding-bottom: 220px;
+  padding-bottom: 0;
 
 }
 
@@ -6973,7 +6973,7 @@ body.cookie-banner-active {
 
   body.cookie-banner-active {
 
-    padding-bottom: 260px;
+    padding-bottom: 0;
 
   }
 
@@ -10696,19 +10696,19 @@ body.page-mentor .cookie-banner__actions .btn {
 
   body.page-login.cookie-banner-active {
 
-    padding-bottom: 280px;
+    padding-bottom: 0;
 
   }
 
   body.page-profile.cookie-banner-active {
 
-    padding-bottom: 280px;
+    padding-bottom: 0;
 
   }
 
   body.page-mentor.cookie-banner-active {
 
-    padding-bottom: 250px;
+    padding-bottom: 0;
 
   }
 

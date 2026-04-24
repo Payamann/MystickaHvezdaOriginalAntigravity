@@ -181,8 +181,10 @@
             if (e.key === 'Enter') document.getElementById('mh-popup-submit').click();
         });
 
-        // Trap focus in popup
-        popup.querySelector('#mh-popup-email').focus();
+        // Avoid viewport jumps when the popup appears during browsing.
+        if (!window.matchMedia('(pointer: coarse)').matches) {
+            popup.querySelector('#mh-popup-email').focus({ preventScroll: true });
+        }
     }
 
     function init() {
@@ -196,16 +198,7 @@
         // Timed trigger – 45 seconds
         setTimeout(createPopup, 45000);
 
-        // Scroll trigger – 70% of page scrolled
-        let scrollTriggered = false;
-        window.addEventListener('scroll', () => {
-            if (scrollTriggered) return;
-            const scrolled = window.scrollY / (document.body.scrollHeight - window.innerHeight);
-            if (scrolled > 0.70) {
-                scrollTriggered = true;
-                setTimeout(createPopup, 2000);
-            }
-        }, { passive: true });
+        // Do not interrupt reading with a scroll-triggered popup.
     }
 
     // Init after DOM ready
