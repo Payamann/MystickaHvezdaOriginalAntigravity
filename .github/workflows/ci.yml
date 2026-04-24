@@ -55,6 +55,9 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     name: E2E Tests (Playwright)
+    # Do not block Railway production deploys on the full browser suite.
+    # E2E remains available for nightly and manual runs.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
 
     steps:
       - uses: actions/checkout@v4
