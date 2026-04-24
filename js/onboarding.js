@@ -63,7 +63,7 @@
 
             // Also notify backend that onboarding is complete
             try {
-                const API_URL = window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api';
+                const API_URL = window.API_CONFIG?.BASE_URL || '/api';
                 const res = await fetch(`${API_URL}/auth/onboarding/complete`, {
                     // Send auth cookie automatically with credentials: 'include'
                     method: 'POST',

@@ -22,8 +22,10 @@ const MH_ANALYTICS = {
             gtag('event', eventName, data);
         }
 
-        // 2. Console logging (development)
-        console.log(`[Analytics] ${eventName}`, event);
+        // 2. Optional debug logging for local diagnostics
+        if (window.MH_DEBUG_ANALYTICS) {
+            console.debug(`[Analytics] ${eventName}`, event);
+        }
 
         // 3. Queue for backend analytics (optional)
         if (window.MH_ANALYTICS_QUEUE) {

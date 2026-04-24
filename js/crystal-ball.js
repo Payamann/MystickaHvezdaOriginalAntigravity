@@ -97,7 +97,7 @@ function initCrystalBall() {
 
         try {
             const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
-            const response = await fetch(`${window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api'}/crystal-ball`, {
+            const response = await fetch(`${window.API_CONFIG?.BASE_URL || '/api'}/crystal-ball`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {

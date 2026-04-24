@@ -260,7 +260,7 @@ async function displayInterpretation(name, birthDate, birthTime, lifePath, desti
 
     try {
         // Call AI API for interpretation
-        const apiUrl = window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api';
+        const apiUrl = window.API_CONFIG?.BASE_URL || '/api';
         const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
         const response = await fetch(`${apiUrl}/numerology`, {
             method: 'POST',
@@ -307,7 +307,7 @@ async function displayInterpretation(name, birthDate, birthTime, lifePath, desti
                 soul,
                 personality
             });
-            console.log('Reading saved:', saveResult);
+            if (window.MH_DEBUG) console.debug('Reading saved:', saveResult);
         }
     } catch (error) {
         console.error('AI interpretation error:', error);
@@ -322,7 +322,7 @@ async function displayInterpretation(name, birthDate, birthTime, lifePath, desti
 // Global listener for auth refresh
 // When session is updated (e.g. from User -> VIP), reload to reflect changes
 document.addEventListener('auth:refreshed', () => {
-    console.log('🔄 Auth refreshed, reloading to unlock content...');
+    if (window.MH_DEBUG) console.debug('Auth refreshed, reloading to unlock content...');
     // Add a small delay to ensure local storage is flushed
     setTimeout(() => window.location.reload(), 500);
 }, { once: true });

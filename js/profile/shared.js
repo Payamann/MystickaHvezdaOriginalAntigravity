@@ -12,7 +12,7 @@ export function escapeHtml(text) {
 
 // Helper: API base URL
 export function apiUrl() {
-    return window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api';
+    return window.API_CONFIG?.BASE_URL || '/api';
 }
 
 // Helper: Auth headers (Authorization kept as fallback during cookie migration)

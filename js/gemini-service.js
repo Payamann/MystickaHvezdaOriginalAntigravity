@@ -3,7 +3,7 @@
  * Frontend interface for communicating with the Mystická Hvězda API
  */
 
-const API_BASE_URL = window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api';
+const API_BASE_URL = window.API_CONFIG?.BASE_URL || '/api';
 
 /**
  * Generic API call helper

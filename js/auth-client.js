@@ -1,5 +1,5 @@
 (() => {
-    const API_URL = window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api';
+    const API_URL = window.API_CONFIG?.BASE_URL || '/api';
 
 
     const Auth = {
@@ -727,7 +727,7 @@
         if (event.key === 'auth_user') {
             // Check if the key was removed (logout in another tab)
             if (event.newValue === null && Auth.isLoggedIn()) {
-                console.log('🔄 Logout detected in another tab, logging out here...');
+                if (window.MH_DEBUG) console.debug('Logout detected in another tab, logging out here...');
                 Auth.user = null;
                 Auth.updateUI();
                 // Optionally show a message
@@ -738,7 +738,7 @@
 
         // Handle onboarding completion in another tab
         if (event.key === 'mh_onboarded' && event.newValue === '1') {
-            console.log('✅ Onboarding completed in another tab');
+            if (window.MH_DEBUG) console.debug('Onboarding completed in another tab');
             // Could redirect if needed
         }
     });

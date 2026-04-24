@@ -33,8 +33,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const scriptSrc = scriptTag ? scriptTag.getAttribute('src') : '';
     const basePath = scriptSrc.includes('js/components.js') ? scriptSrc.split('js/components.js')[0] : '';
 
-    console.log(`[components.js] Base path detected: "${basePath}"`);
-
     // Load header and footer in parallel for faster initial paint
     // Use high priority for header as it affects LCP/CLS
     await Promise.all([
@@ -64,7 +62,6 @@ async function loadComponent(elementId, path, basePath = '', highPriority = fals
     
     // If it's already in the DOM, just ensure initialization runs
     if (alreadyPresent) {
-        console.log(`[components.js] Component "${elementId}" already present in DOM, skipping fetch.`);
         return;
     }
 
@@ -216,7 +213,6 @@ function initStandaloneHeader() {
 
     initLanguageSwitcher();
 
-    console.log('[components.js] Standalone header initialized');
 }
 
 /**
@@ -235,8 +231,6 @@ function initLanguageSwitcher() {
     let currentLang = 'cs';
     if (path.includes('/sk/')) currentLang = 'sk';
     else if (path.includes('/pl/')) currentLang = 'pl';
-
-    console.log(`[components.js] Language detected: ${currentLang}`);
 
     // Update UI initial state
     const langMap = { 'cs': 'CZ', 'sk': 'SK', 'pl': 'PL' };

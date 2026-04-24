@@ -4,7 +4,7 @@
  */
 
 // API Configuration
-const API_URL = window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api';
+const API_URL = window.API_CONFIG?.BASE_URL || '/api';
 
 // DOM Elements
 const form = document.getElementById('astro-form');

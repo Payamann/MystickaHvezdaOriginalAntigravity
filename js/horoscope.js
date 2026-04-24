@@ -177,7 +177,7 @@ function initHoroscope() {
             let context = [];
             try {
                 if (window.Auth && window.Auth.isLoggedIn()) {
-                    const journalRes = await fetch(`${window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api'}/user/readings`, {
+                    const journalRes = await fetch(`${window.API_CONFIG?.BASE_URL || '/api'}/user/readings`, {
                         credentials: 'include'
                     });
                     if (!journalRes.ok) throw new Error(`Journal fetch failed: ${journalRes.status}`);
