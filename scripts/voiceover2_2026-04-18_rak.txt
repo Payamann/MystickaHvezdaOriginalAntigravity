@@ -1,0 +1,47 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 18. dubna 2026
+
+[gentle] Raku, nejsi přecitlivělý. <break time="0.5s" /> [soft] Jsi jediný, kdo si všímá, co ostatní přehlížejí. <break time="1.0s" />
+
+[warm] Sedíš v kuchyni. <break time="0.3s" /> [gentle] Díváš se na prázdný stůl a cítíš, že někdo chybí. <break time="0.3s" /> [mysterious] Ne dnes — už dlouho. <break time="0.3s" /> [soft] Intuice ti podsouvá pravdu dřív, než ji rozum pojmenuje. <break time="0.3s" /> [warm] Tvá citlivost není slabost — je to radar, který tě chrání před lidmi, kteří by tě vyprázdnili. <break time="1.0s" />
+
+[inviting] Raku — napiš jedno slovo, jak se dnes cítíš ⬇️ <break time="0.3s" /> [clearly] Příště: které znamení tohle nezvládá vůbec.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+18. dubna 2026 vládne Měsíc v Raku přesně v konjunkci s Chironem — a to znamená, že tvá emocionální paměť ti dnes ukazuje, kdo v tvém životě už nemá místo 🌙 Tvá vládnoucí planeta Měsíc tě učí rozpoznat, kdo z tvého okolí jen bere a nic nevrací. Sleduj profil — příště odhalím, proč Raci dokážou odhalit lež dřív, než ji někdo vysloví 💧
+
+#mystickaHvezda #Rak #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+Raku, tvá citlivost funguje jako radarem zabudovaný systém obrany 🌙 18. dubna 2026 se tvůj vládce Měsíc potkává s Chironem v Raku a ukazuje ti přesně, kdo v tvém životě bere víc, než dává. Intuice ti dnes šeptá pravdu dřív, než ji rozum stihne pojmenovat — a ty víš, že ti ta osoba chybí už dlouho, ne jen teď. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Rak #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm orchestral bed with gentle music box melody and soft rhythmic pulse, creating golden sunrise energy with forward momentum. Shimmering layers evoke cosmic light trails spreading across morning sky, bright and hopeful. Present supportive texture that energizes without overwhelming, breathing space for voice while maintaining gentle drive. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+A mystical video thumbnail for zodiac sign Cancer.
+
+BACKGROUND: deep dark space with soft subtle silver and pale blue lunar nebula with moonlit cosmic mist, soft silver-white stardust glowing like reflected moonlight, deep indigo void with cool silver light trails — gentle, lunar, oceanic — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.
+
+COMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.
+
+ELEMENT 1 — glyph: large ornate Cancer symbol (♋) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.
+
+ELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '18. dubna' in elegant gold lettering on the first line, 'RAK' in bold engraved gold capitals on the second line.
+
+ELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Cítíš to dřív, než to vidíš.' on the first line, 'Tvá intuice už dávno ví.' on the second line.
+
+NO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.
+
+Portrait 9:16.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Raku, nejsi přecitlivělý. Jsi jediný, kdo si všímá, co ostatní přehlížejí. Sedíš v kuchyni. Díváš se na prázdný stůl a cítíš, že někdo chybí. Ne dnes — už dlouho. Intuice ti podsouvá pravdu dřív, než ji rozum pojmenuje. Tvá citlivost není slabost — je to radar, který tě chrání před lidmi, kteří by tě vyprázdnili. Raku — napiš jedno slovo, jak se dnes cítíš ⬇️ Příště: které znamení tohle nezvládá vůbec."

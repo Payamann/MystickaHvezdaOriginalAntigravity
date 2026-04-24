@@ -1,20 +1,10 @@
-/**
- * share-result.js — Web Share API helper pro sdílení výsledků
- * Automaticky přidá share button když najde výsledek na stránce
- */
-
-(function () {
-    'use strict';
-
-    const SHARE_BTN_HTML = `
-        <button class="share-result-btn" aria-label="Sdílet výsledek">
+(function(){"use strict";const c=`
+        <button class="share-result-btn" aria-label="Sd\xEDlet v\xFDsledek">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-            Sdílet výsledek
+            Sd\xEDlet v\xFDsledek
         </button>
-        <div class="share-toast" role="status" aria-live="polite">✅ Odkaz zkopírován do schránky!</div>
-    `;
-
-    const SHARE_BTN_STYLES = `
+        <div class="share-toast" role="status" aria-live="polite">\u2705 Odkaz zkop\xEDrov\xE1n do schr\xE1nky!</div>
+    `,u=`
         .share-result-btn {
             display: inline-flex;
             align-items: center;
@@ -55,116 +45,6 @@
             from { opacity: 0; transform: translateX(-50%) translateY(10px); }
             to   { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
-    `;
+    `;function d(){if(document.getElementById("share-result-styles"))return;const e=document.createElement("style");e.id="share-result-styles",e.textContent=u,document.head.appendChild(e)}function m(e){const t=new URL(window.location.href);return t.searchParams.set("utm_source",e),t.searchParams.set("utm_medium","share"),t.searchParams.set("utm_campaign","result_share"),t.toString()}function h(e,t,s){if(!e||e.querySelector(".share-result-btn"))return;const r=document.createElement("div");r.innerHTML=c;const a=e.querySelector("#detail-numbers");if(a){const n=a.closest("p")||a.parentElement;r.style.textAlign="center",r.style.marginTop="1.5rem",r.style.marginBottom="2.5rem",n.insertAdjacentElement("afterend",r)}else e.appendChild(r);const v=r.querySelector(".share-result-btn"),f=r.querySelector(".share-toast");v.addEventListener("click",async()=>{const n=s||document.querySelector(".reading-text, .result-text, [data-share-text]")?.innerText?.slice(0,200)||"",i=t||document.title,x=/Android|iPhone|iPad/i.test(navigator.userAgent)?"mobile_share":"web_share",o=m(x);if(navigator.share)try{await navigator.share({title:i,text:n,url:o});return}catch{}try{await navigator.clipboard.writeText(`${i}
 
-    function injectStyles() {
-        if (document.getElementById('share-result-styles')) return;
-        const style = document.createElement('style');
-        style.id = 'share-result-styles';
-        style.textContent = SHARE_BTN_STYLES;
-        document.head.appendChild(style);
-    }
-
-    function buildShareUrl(utmSource) {
-        const url = new URL(window.location.href);
-        url.searchParams.set('utm_source', utmSource);
-        url.searchParams.set('utm_medium', 'share');
-        url.searchParams.set('utm_campaign', 'result_share');
-        return url.toString();
-    }
-
-    function addShareButton(container, title, text) {
-        if (!container || container.querySelector('.share-result-btn')) return;
-
-        const wrapper = document.createElement('div');
-        wrapper.innerHTML = SHARE_BTN_HTML;
-
-        // Pro horoskop — vlož za odstavec s čísly štěstí, vycentruj
-        const luckyNumbers = container.querySelector('#detail-numbers');
-        if (luckyNumbers) {
-            const luckyParagraph = luckyNumbers.closest('p') || luckyNumbers.parentElement;
-            wrapper.style.textAlign = 'center';
-            wrapper.style.marginTop = '1.5rem';
-            wrapper.style.marginBottom = '2.5rem';
-            luckyParagraph.insertAdjacentElement('afterend', wrapper);
-        } else {
-            container.appendChild(wrapper);
-        }
-
-        const btn = wrapper.querySelector('.share-result-btn');
-        const toast = wrapper.querySelector('.share-toast');
-
-        btn.addEventListener('click', async () => {
-            const shareText = text || document.querySelector('.reading-text, .result-text, [data-share-text]')?.innerText?.slice(0, 200) || '';
-            const shareTitle = title || document.title;
-
-            // Detekce platformy pro UTM
-            const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-            const utmSource = isMobile ? 'mobile_share' : 'web_share';
-            const shareUrl = buildShareUrl(utmSource);
-
-            if (navigator.share) {
-                try {
-                    await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
-                    return;
-                } catch (e) { /* fallback */ }
-            }
-
-            // Fallback: clipboard
-            try {
-                await navigator.clipboard.writeText(`${shareTitle}\n\n${shareUrl}`);
-                showToast(toast);
-            } catch (e) {
-                prompt('Zkopírujte odkaz:', shareUrl);
-            }
-        });
-    }
-
-    function showToast(toast) {
-        toast.classList.add('visible');
-        setTimeout(() => { toast.classList.remove('visible'); }, 3000);
-    }
-
-    // Observer — čeká na zobrazení výsledků a přidá share button
-    const selectors = [
-        '.reading-result', '.ai-result', '.result-section',
-        '.crystal-result', '.natal-result', '.numerology-result',
-        '.synastry-result', '.mentor-result', '#ai-reading', '.oracle-response',
-        '#tarot-result', '#tarot-results',
-        '#result-panel',
-        '#horoscope-result',
-        '#chart-results',
-        '#numerology-results',
-        '#phaseCard',
-        '#astro-results',
-        '#answer-container',
-        '#biorhythm-results',
-        '#aura-result',
-        '#messages-container',
-    ];
-
-    const requireLoadedFlag = new Set([]);
-
-    function checkAll() {
-        selectors.forEach(sel => {
-            const el = document.querySelector(sel);
-            if (!el || el.querySelector('.share-result-btn')) return;
-            if (requireLoadedFlag.has(sel) && !el.dataset.loaded) return;
-            if (el.children.length > 0) {
-                const pageTitle = document.title.replace(' | Mystická Hvězda', '');
-                addShareButton(el, `Můj výsledek: ${pageTitle} | Mystická Hvězda`);
-            }
-        });
-    }
-
-    function observeResults() {
-        checkAll();
-        const observer = new MutationObserver(checkAll);
-        observer.observe(document.body, { childList: true, subtree: true });
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        injectStyles();
-        observeResults();
-    });
-})();
+${o}`),b(f)}catch{prompt("Zkop\xEDrujte odkaz:",o)}})}function b(e){e.classList.add("visible"),setTimeout(()=>{e.classList.remove("visible")},3e3)}const y=[".reading-result",".ai-result",".result-section",".crystal-result",".natal-result",".numerology-result",".synastry-result",".mentor-result","#ai-reading",".oracle-response","#tarot-result","#tarot-results","#result-panel","#horoscope-result","#chart-results","#numerology-results","#phaseCard","#astro-results","#answer-container","#biorhythm-results","#aura-result","#messages-container"],p=new Set([]);function l(){y.forEach(e=>{const t=document.querySelector(e);if(!(!t||t.querySelector(".share-result-btn"))&&!(p.has(e)&&!t.dataset.loaded)&&t.children.length>0){const s=document.title.replace(" | Mystick\xE1 Hv\u011Bzda","");h(t,`M\u016Fj v\xFDsledek: ${s} | Mystick\xE1 Hv\u011Bzda`)}})}function g(){l(),new MutationObserver(l).observe(document.body,{childList:!0,subtree:!0})}document.addEventListener("DOMContentLoaded",()=>{d(),g()})})();

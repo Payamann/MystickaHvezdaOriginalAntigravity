@@ -18,11 +18,15 @@ const LOCKOUT_DURATION_MINUTES = 15;
 export async function generateToken(userId) {
     try {
         // Fetch latest subscription info
-        const { data: sub } = await supabase
+        const { data: sub, error: subError } = await supabase
             .from('subscriptions')
             .select('plan_type, status, current_period_end')
             .eq('user_id', userId)
             .single();
+        // PGRST116 = žádný řádek (nový uživatel bez subscriptions záznamu) — OK
+        if (subError && subError.code !== 'PGRST116') {
+            throw subError;
+        }
 
         const status = sub?.plan_type;
         const isPremium = status && PREMIUM_PLAN_TYPES.includes(status) &&

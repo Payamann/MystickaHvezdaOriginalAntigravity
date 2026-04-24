@@ -1,0 +1,32 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 15. dubna 2026
+
+[upbeat] Střelci, 15. dubna konečně mluvíš. <break time="0.5s" />
+[confident] A víš, že tě za to někdo odsoudí. <break time="1.0s" />
+
+[intense] Otevřeš konverzaci. <break time="0.3s" /> Napíšeš ten názor. <break time="0.3s" /> Odešleš ho. <break time="0.3s" />
+[warm] Neobhajuješ pravdu — přestáváš se schovávat za diplomacii, která tě dusí. <break time="1.0s" />
+
+[inviting] Označ Střelce, co tohle přesně cítí. <break time="0.3s" />
+[clearly] Příští díl: co Střelec nikdy neřekne nahlas.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+15. dubna 2026 se Jupiter (tvůj vládce) dostává do přímého aspektu s Merkurem — a ty najednou vidíš, že mlčení není moudrost, ale sebezrada 🔥 Střelci jsou ohnivý živel, ale Jupiterova expanze znamená, že pravda musí ven — ne jako útok, ale jako přirozený výdech po měsících zadržování dechu. Sleduj profil, jestli chceš vědět, co Střelec myslí, ale nikdy neřekne nahlas 🎯
+
+#mystickaHvezda #Střelec #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+15. dubna 2026 mluvíš nahlas — a víš, že tě za to někdo odsoudí 🔥 Jupiter (tvůj vládce) se dostává do přímého aspektu s Merkurem, což znamená: pravda musí ven, ne jako útok, ale jako přirozený výdech po měsících zadržování dechu. Když Jupiter expanduje komunikaci, mlčení není moudrost — je sebezrada. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Střelec #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm Rhodes piano chords with gentle rhythmic pulse, building golden morning energy through soft ambient layers and forward momentum, bright major key melodic phrases breathing naturally under speech, cosmic sunlight breaking through clouds with hopeful drive and sustained positivity. Short instrumental, 60-90 seconds, loop-ready.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Střelci, 15. dubna konečně mluvíš. A víš, že tě za to někdo odsoudí. Otevřeš konverzaci. Napíšeš ten názor. Odešleš ho. Neobhajuješ pravdu — přestáváš se schovávat za diplomacii, která tě dusí. Označ Střelce, co tohle přesně cítí. Příští díl: co Střelec nikdy neřekne nahlas."

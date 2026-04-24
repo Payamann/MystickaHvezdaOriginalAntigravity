@@ -1,0 +1,47 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 19. dubna 2026
+
+[confident] Střelci, plánuješ tu cestu už měsíc. <break time="0.5s" /> [intense] Správný moment nikdy nepřijde. <break time="1.0s" />
+
+[upbeat] Dnes klikáš na letenky. <break time="0.3s" /> [warm] Listíš přes ceny kurzů. <break time="0.3s" /> [confident] Scrolluješ nabídky škol. <break time="0.3s" /> [intense] Čekáš, až zmizí strach. <break time="0.3s" /> [commanding] Strach zmizí, až zaklikneš. <break time="1.0s" />
+
+[inviting] Střelci — co jsi dnes odložil na jindy? ⬇️ <break time="0.3s" /> [clearly] Příště: znamení, která tvé tajemství neudrží.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+19. dubna 2026 Jupiter (tvůj vládce) tlačí na jednu věc: rozhodnutí dělají odvážní, ne připravení. 🎯 Střelec je ohnivé znamení mutabilní kvality — tvá síla leží v akci, která přichází dřív než jistota. Sleduj profil — příště odhalím, která znamení tvé impulzivní plány sabotují ještě před startem. 🔥
+
+#mystickaHvezda #Střelec #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+19. dubna 2026 Jupiter říká: rezervuj letenku, ne jistotu. 🎯 Tvůj vládce dnes tlačí na start — Střelec je mutabilní oheň, který se učí v pohybu, ne v přípravě. Cesta, škola, kurz — čekáš na perfektní moment, ale ten přijde, až zaklikneš „potvrdit objednávku". Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Střelec #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm instrumental background with gentle forward momentum, featuring adventurous strings weaving golden melodic phrases and open horn melody that blooms like sunrise light across morning dew. Soft rhythmic pulse drives optimistic energy in major key, present and uplifting without overpowering, like celestial light spreading across the horizon with motivational brightness and gentle drive. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+A mystical video thumbnail for zodiac sign Sagittarius.
+
+BACKGROUND: deep dark space with soft subtle expansive turquoise and royal purple nebula with golden arrow-light streaks, deep violet cosmic horizon with teal aurora and warm gold bursts, wide open cosmic vista — adventurous, expansive, philosophical — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.
+
+COMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.
+
+ELEMENT 1 — glyph: large ornate Sagittarius symbol (♐) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.
+
+ELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '19. dubna' in elegant gold lettering on the first line, 'STŘELEC' in bold engraved gold capitals on the second line.
+
+ELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Čekáš na správný moment.' on the first line, 'Ten moment nikdy nepřijde.' on the second line.
+
+NO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.
+
+Portrait 9:16.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Střelci, plánuješ tu cestu už měsíc. Správný moment nikdy nepřijde. Dnes klikáš na letenky. Listíš přes ceny kurzů. Scrolluješ nabídky škol. Čekáš, až zmizí strach. Ten zmizí až tam. Střelci — co dnes omezuje tvou svobodu? ⬇️ Příště: znamení, která tvé tajemství neudrží."

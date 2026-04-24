@@ -86,7 +86,7 @@ window.showAffirmation = async function (sign) {
         const cached = sessionStorage.getItem(cacheKey);
         if (cached) {
             const { text } = JSON.parse(cached);
-            document.getElementById('affirmation-text').textContent = `„${text}"`;
+            document.getElementById('affirmation-text').textContent = `"${text}"`;
             document.getElementById('affirmation-sub').textContent = moon.name;
             try { localStorage.setItem('mh_last_affirmation_sign', sign); } catch (e) { }
             return;
@@ -100,7 +100,7 @@ window.showAffirmation = async function (sign) {
         const affirmation = parsed?.affirmation;
         if (!affirmation) throw new Error('No affirmation in response');
 
-        document.getElementById('affirmation-text').textContent = `„${affirmation}"`;
+        document.getElementById('affirmation-text').textContent = `"${affirmation}"`;
         document.getElementById('affirmation-sub').textContent = moon.name;
 
         try { sessionStorage.setItem(cacheKey, JSON.stringify({ text: affirmation })); } catch (e) { }
@@ -108,7 +108,7 @@ window.showAffirmation = async function (sign) {
     } catch (err) {
         console.warn('[Afirmace] API fallback:', err.message);
         const text = fallbackAffirmations[sign] || 'Jsem v souladu se svou nejhlubší pravdou.';
-        document.getElementById('affirmation-text').textContent = `„${text}"`;
+        document.getElementById('affirmation-text').textContent = `"${text}"`;
         document.getElementById('affirmation-sub').textContent = moon.name;
     }
 
@@ -117,7 +117,7 @@ window.showAffirmation = async function (sign) {
 
 function copyAffirmation() {
     const raw = document.getElementById('affirmation-text').textContent;
-    const text = raw.replace(/^„|"$/g, '').trim();
+    const text = raw.replace(/^"|"$/g, '').trim();
     navigator.clipboard.writeText(text + ' — Mystická Hvězda').then(() => {
         const el = document.getElementById('copy-confirm');
         el.style.display = 'block';
@@ -127,7 +127,7 @@ function copyAffirmation() {
 
 function shareAffirmation() {
     const raw = document.getElementById('affirmation-text').textContent;
-    const text = raw.replace(/^„|"$/g, '').trim();
+    const text = raw.replace(/^"|"$/g, '').trim();
     if (navigator.share) {
         navigator.share({ title: 'Moje dnešní afirmace', text, url: 'https://mystickahvezda.cz/afirmace.html' });
     } else {

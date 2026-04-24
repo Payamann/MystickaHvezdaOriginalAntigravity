@@ -14,11 +14,6 @@ async function callAPI(endpoint, data) {
 
     try {
         const headers = { 'Content-Type': 'application/json' };
-        // Include auth token for endpoints that require authentication
-        const token = localStorage.getItem('auth_token') || window.Auth?.token;
-        if (token) {
-            headers['Authorization'] = `Bearer ${token}`;
-        }
 
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
             method: 'POST',

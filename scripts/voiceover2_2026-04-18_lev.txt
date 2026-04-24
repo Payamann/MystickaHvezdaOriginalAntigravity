@@ -1,0 +1,47 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 18. dubna 2026
+
+[commanding] Lve, nejsi arogantní. <break time="0.5s" /> [warm] Jsi jediný, kdo se nebojí svítit. <break time="1.0s" />
+
+[confident] Dnes dopoledne tě napadne věta. <break time="0.3s" /> [upbeat] Zapíšeš si ji. <break time="0.3s" /> [warm] Za měsíc z ní bude celý projekt. <break time="0.3s" /> [commanding] Charisma není pózování — je to když neztlumíš své světlo jen proto, že ostatní nemají baterku. <break time="1.0s" />
+
+[inviting] Poznáváš se? Jedno slovo do komentáře. <break time="0.3s" /> [clearly] Ulož si to — budeš se k tomu vracet.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+18. dubna 2026 Slunce v Beranu ☀️ zesiluje tvou přirozenou autoritu — mluvíš s jistotou, protože víš, že máš co říct. Lev má fixní ohnivou energii — nepotřebuješ validaci, potřebuješ prostor pro expanzi. Sleduj profil — příště ti ukážu, jak rozlišit skutečnou sebedůvěru od ega 🔥
+
+#mystickaHvezda #Lev #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+18. dubna 2026 — Lve, tvé světlo není ego 🦁 Je palivo pro ostatní, kteří čekají na povolení svítit taky. Slunce v Beranu dnes zesiluje tvou přirozenou autoritu — věta, která tě dnes ráno napadne, může za měsíc stát celý projekt. Charisma znamená svítit naplno, i když ostatní nemají baterku ✨ Celý výklad najdeš na mystickahvezda.cz/horoskopy.html 🔥
+
+#mystickaHvezda #Lev #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm energizing instrumental bed with grand piano arpeggios and gentle brass fanfare, steady rhythmic pulse driving forward like golden sunrise light spreading through clouds, major key melodies breathing between phrases with confident uplifting momentum perfect for supporting voiceover. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+A mystical video thumbnail for zodiac sign Leo.
+
+BACKGROUND: deep dark space with soft subtle deep royal burgundy and dark copper nebula with dramatic sunburst corona in the distance, rich dark amber and deep maroon cosmic clouds, majestic dark regal tones — powerful, solar, commanding — dark enough to contrast with a gold glyph — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.
+
+COMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.
+
+ELEMENT 1 — glyph: large ornate Leo symbol (♌) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.
+
+ELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '18. dubna' in elegant gold lettering on the first line, 'LEV' in bold engraved gold capitals on the second line.
+
+ELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Nebojíš se svítit naplno.' on the first line, 'Ostatní jen tlumí své světlo.' on the second line.
+
+NO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.
+
+Portrait 9:16.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Lve, nejsi arogantní. Jsi jediný, kdo se nebojí svítit. Dnes dopoledne tě napadne věta. Zapíšeš si ji. Za měsíc z ní bude celý projekt. Charisma není pózování — je to když neztlumíš své světlo jen proto, že ostatní nemají baterku. Poznáváš se? Jedno slovo do komentáře. Ulož si to — budeš se k tomu vracet."

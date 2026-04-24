@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roční Horoskop na míru 2026 — Mystická Hvězda</title>
+  <meta name="description" content="Personalizovaný roční horoskop vytvořený speciálně pro tebe. 6 oblastí života, konkrétní předpovědi, klíčové měsíce. Doručení do e-mailu jako PDF.">
+  <link rel="canonical" href="https://www.mystickahvezda.cz/rocni-horoskop.html">
+  <meta property="og:title" content="Roční Horoskop na míru 2026 — Mystická Hvězda">
+  <meta property="og:description" content="Personalizovaný roční horoskop pro tvé znamení. Doručení do e-mailu do 5 minut.">
+  <meta property="og:image" content="https://www.mystickahvezda.cz/img/og/rocni-horoskop.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #d4af37;
+      --gold-light: #f1d875;
+      --gold-dim: rgba(212,175,55,0.15);
+      --navy: #06061a;
+      --navy-mid: #0d0d2b;
+      --navy-light: #131340;
+      --text: #e8e0d0;
+      --text-dim: rgba(232,224,208,0.6);
+      --radius: 12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--navy);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.65;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    .site-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(6,6,26,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(212,175,55,0.1);
+      padding: 14px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700;
+      color: var(--gold); text-decoration: none; letter-spacing: 2px;
+    }
+    .nav-back {
+      font-size: 13px; color: var(--text-dim); text-decoration: none;
+      display: flex; align-items: center; gap: 6px; transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--gold); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 120px 24px 80px;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(139,90,180,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 80%, rgba(212,175,55,0.06) 0%, transparent 50%),
+        var(--navy);
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--gold-dim); border: 1px solid rgba(212,175,55,0.25);
+      padding: 6px 16px; border-radius: 40px; margin-bottom: 32px;
+      font-size: 12px; letter-spacing: 2px; color: var(--gold); text-transform: uppercase;
+    }
+    .hero-glyph {
+      font-size: 72px; line-height: 1; margin-bottom: 24px;
+      filter: drop-shadow(0 0 30px rgba(212,175,55,0.35));
+    }
+    .hero-title {
+      font-family: 'Cinzel', serif; font-size: clamp(28px, 5vw, 52px);
+      font-weight: 700; line-height: 1.2; margin-bottom: 12px;
+      color: #f5ead0;
+    }
+    .hero-year {
+      font-family: 'Cinzel', serif; font-size: clamp(18px, 3vw, 28px);
+      color: var(--gold); letter-spacing: 8px; margin-bottom: 24px;
+    }
+    .hero-divider {
+      width: 120px; height: 1px; margin: 0 auto 28px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+    }
+    .hero-sub {
+      font-size: 17px; color: var(--text-dim); max-width: 560px;
+      margin: 0 auto 40px; line-height: 1.8;
+    }
+    .hero-price {
+      font-family: 'Cinzel', serif; font-size: 22px; color: var(--gold);
+      margin-bottom: 6px;
+    }
+    .hero-price-note {
+      font-size: 13px; color: var(--text-dim); margin-bottom: 36px;
+    }
+    .hero-cta {
+      display: inline-block; padding: 16px 40px;
+      background: linear-gradient(135deg, #c9a227, #e8c94f);
+      color: #000; font-weight: 700; font-size: 15px; letter-spacing: 1px;
+      border-radius: 8px; text-decoration: none; cursor: pointer;
+      border: none; transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 8px 30px rgba(212,175,55,0.3);
+    }
+    .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(212,175,55,0.4); }
+    .hero-delivery {
+      margin-top: 16px; font-size: 13px; color: var(--text-dim);
+    }
+    .hero-delivery span { color: var(--gold); }
+
+    /* ── WHAT YOU GET ── */
+    .sections-row {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px; max-width: 900px; width: 100%; margin: 0 auto; padding: 80px 24px;
+    }
+    .section-card {
+      background: var(--navy-mid);
+      border: 1px solid rgba(212,175,55,0.12);
+      border-radius: var(--radius); padding: 24px 20px;
+      text-align: center;
+    }
+    .section-card-icon { font-size: 24px; margin-bottom: 12px; color: var(--gold); }
+    .section-card-title {
+      font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 1.5px;
+      color: var(--gold); text-transform: uppercase; margin-bottom: 8px;
+    }
+    .section-card-text { font-size: 13.5px; color: var(--text-dim); line-height: 1.6; }
+
+    /* ── SAMPLE ── */
+    .sample-section {
+      max-width: 720px; margin: 0 auto; padding: 0 24px 80px;
+    }
+    .sample-label {
+      font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 3px;
+      color: var(--gold-light); text-transform: uppercase; text-align: center;
+      margin-bottom: 32px; opacity: 0.7;
+    }
+    .sample-box {
+      background: linear-gradient(135deg, #0f0f2d, #0a0a20);
+      border: 1px solid rgba(212,175,55,0.2); border-radius: 16px;
+      padding: 40px 36px; position: relative; overflow: hidden;
+    }
+    .sample-box::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+    }
+    .sample-box-title {
+      font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 3px;
+      color: var(--gold); text-transform: uppercase; text-align: center;
+      margin-bottom: 20px;
+    }
+    .sample-box p {
+      color: rgba(232,224,208,0.75); font-size: 14.5px; line-height: 1.85;
+      font-style: italic; text-align: center;
+    }
+
+    /* ── FORM ── */
+    .form-section {
+      max-width: 560px; margin: 0 auto; padding: 0 24px 100px;
+    }
+    .form-heading {
+      text-align: center; margin-bottom: 40px;
+    }
+    .form-heading h2 {
+      font-family: 'Cinzel', serif; font-size: clamp(20px, 4vw, 30px);
+      color: #f5ead0; margin-bottom: 10px;
+    }
+    .form-heading p { font-size: 15px; color: var(--text-dim); }
+
+    .form-card {
+      background: var(--navy-mid);
+      border: 1px solid rgba(212,175,55,0.15);
+      border-radius: 16px; padding: 40px 32px;
+    }
+
+    .form-group { margin-bottom: 20px; }
+    .form-group label {
+      display: block; font-size: 12px; letter-spacing: 1.5px; color: var(--gold);
+      text-transform: uppercase; margin-bottom: 8px; font-weight: 500;
+    }
+    .form-group input, .form-group select {
+      width: 100%; padding: 13px 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(212,175,55,0.2);
+      border-radius: 8px; color: var(--text); font-size: 15px;
+      font-family: inherit; outline: none; transition: border-color 0.2s;
+      -webkit-appearance: none; appearance: none;
+    }
+    .form-group select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23d4af37' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center;
+      padding-right: 40px; cursor: pointer;
+    }
+    .form-group select option { background: #0d0d2b; color: var(--text); }
+    .form-group input:focus, .form-group select:focus {
+      border-color: rgba(212,175,55,0.5);
+    }
+    .form-group input::placeholder { color: rgba(232,224,208,0.3); }
+
+    .form-submit {
+      width: 100%; padding: 16px;
+      background: linear-gradient(135deg, #c9a227, #e8c94f);
+      color: #000; font-weight: 700; font-size: 16px; letter-spacing: 0.5px;
+      border: none; border-radius: 8px; cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 6px 24px rgba(212,175,55,0.3);
+      margin-top: 8px;
+    }
+    .form-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(212,175,55,0.4); }
+    .form-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .form-note {
+      display: flex; align-items: center; gap: 8px; justify-content: center;
+      margin-top: 16px; font-size: 12.5px; color: var(--text-dim);
+    }
+    .form-note span { color: var(--gold); }
+
+    .form-error {
+      background: rgba(220,50,50,0.1); border: 1px solid rgba(220,50,50,0.3);
+      border-radius: 8px; padding: 12px 16px; margin-bottom: 16px;
+      font-size: 14px; color: #ff8080; display: none;
+    }
+
+    /* ── STATUS BANNERS ── */
+    .status-banner {
+      max-width: 560px; margin: 80px auto 40px; padding: 0 24px; text-align: center;
+      display: none;
+    }
+    .status-banner.visible { display: block; }
+    .status-banner-inner {
+      border-radius: 16px; padding: 48px 32px;
+    }
+    .status-banner-inner.success {
+      background: linear-gradient(135deg, rgba(50,180,80,0.08), rgba(50,180,80,0.04));
+      border: 1px solid rgba(50,180,80,0.25);
+    }
+    .status-banner-inner.cancel {
+      background: rgba(212,175,55,0.04);
+      border: 1px solid rgba(212,175,55,0.15);
+    }
+    .status-icon { font-size: 48px; margin-bottom: 20px; }
+    .status-title {
+      font-family: 'Cinzel', serif; font-size: 22px; margin-bottom: 14px;
+      color: #f5ead0;
+    }
+    .status-text { font-size: 15px; color: var(--text-dim); line-height: 1.7; }
+    .status-text strong { color: var(--gold); }
+
+    /* ── FAQ ── */
+    .faq-section {
+      max-width: 640px; margin: 0 auto; padding: 0 24px 80px;
+    }
+    .faq-title {
+      font-family: 'Cinzel', serif; font-size: 20px; text-align: center;
+      color: var(--gold); margin-bottom: 32px; letter-spacing: 2px;
+    }
+    .faq-item {
+      border-bottom: 1px solid rgba(212,175,55,0.1); padding: 18px 0;
+    }
+    .faq-q {
+      font-weight: 600; font-size: 15px; color: var(--text); margin-bottom: 8px;
+    }
+    .faq-a { font-size: 14px; color: var(--text-dim); line-height: 1.7; }
+
+    /* ── FOOTER ── */
+    .page-footer {
+      text-align: center; padding: 32px 24px;
+      border-top: 1px solid rgba(212,175,55,0.08);
+      font-size: 13px; color: var(--text-dim);
+    }
+    .page-footer a { color: var(--gold); text-decoration: none; }
+
+    @media (max-width: 600px) {
+      .form-card { padding: 28px 20px; }
+      .sample-box { padding: 28px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <a href="/" class="nav-logo">✦ Mystická Hvězda</a>
+  <a href="/" class="nav-back">← Zpět na hlavní stránku</a>
+</nav>
+
+<!-- STATUS BANNERS (shown after Stripe redirect) -->
+<div class="status-banner" id="bannerSuccess">
+  <div class="status-banner-inner success">
+    <div class="status-icon">✦</div>
+    <div class="status-title">Platba proběhla úspěšně</div>
+    <div class="status-text">
+      Tvůj Roční Horoskop na míru se právě generuje.<br>
+      Pošleme ho na tvůj e-mail <strong id="successEmail">do pár minut</strong>.<br><br>
+      Zkontroluj také složku hromadná/spam, pokud e-mail nepřijde do 10 minut.
+    </div>
+  </div>
+</div>
+
+<div class="status-banner" id="bannerCancel">
+  <div class="status-banner-inner cancel">
+    <div class="status-icon">◌</div>
+    <div class="status-title">Platba zrušena</div>
+    <div class="status-text">Platba nebyla dokončena. Pokud chceš pokračovat, vyplň formulář níže.</div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="hero-badge">✦ Personalizovaný výklad</div>
+  <div class="hero-glyph">✦</div>
+  <div class="hero-title">Roční Horoskop<br>na míru</div>
+  <div class="hero-year">2026</div>
+  <div class="hero-divider"></div>
+  <p class="hero-sub">
+    Zapomeň na obecné horoskopy. Tenhle je napsaný přímo pro tebe —
+    na základě tvého jména, data narození a znamení.
+    Šest oblastí života. Konkrétní předpovědi. Klíčové měsíce roku.
+  </p>
+  <div class="hero-price">199 Kč</div>
+  <div class="hero-price-note">jednorázová platba · PDF doručené do e-mailu</div>
+  <button class="hero-cta" onclick="document.getElementById('form').scrollIntoView({behavior:'smooth'})">
+    Chci svůj horoskop →
+  </button>
+  <div class="hero-delivery">Doručení do e-mailu <span>do 5–10 minut</span> od platby</div>
+</section>
+
+<!-- WHAT YOU GET -->
+<div class="sections-row">
+  <div class="section-card">
+    <div class="section-card-icon">✦</div>
+    <div class="section-card-title">Osobnost &amp; Duše</div>
+    <div class="section-card-text">Kdo jsi a jaká energie tě provází celý rok 2026.</div>
+  </div>
+  <div class="section-card">
+    <div class="section-card-icon">♥</div>
+    <div class="section-card-title">Láska &amp; Vztahy</div>
+    <div class="section-card-text">Co tě čeká v lásce, co opatrovat a kdy věci přijdou samy.</div>
+  </div>
+  <div class="section-card">
+    <div class="section-card-icon">◆</div>
+    <div class="section-card-title">Kariéra &amp; Finance</div>
+    <div class="section-card-text">Kdy riskovat, kdy šetřit, jaká příležitost tě čeká.</div>
+  </div>
+  <div class="section-card">
+    <div class="section-card-icon">✦</div>
+    <div class="section-card-title">Osobní Růst</div>
+    <div class="section-card-text">Nejdůležitější lekce a transformace, které tě rok přinese.</div>
+  </div>
+  <div class="section-card">
+    <div class="section-card-icon">◐</div>
+    <div class="section-card-title">Klíčové Měsíce</div>
+    <div class="section-card-text">Konkrétní měsíce roku — co přijde a jak se připravit.</div>
+  </div>
+  <div class="section-card">
+    <div class="section-card-icon">✧</div>
+    <div class="section-card-title">Slovo pro 2026</div>
+    <div class="section-card-text">Závěrečné slovo psané přímo pro tebe. Povzbuzení i pravda.</div>
+  </div>
+</div>
+
+<!-- SAMPLE -->
+<div class="sample-section">
+  <div class="sample-label">Ukázka z výkladu</div>
+  <div class="sample-box">
+    <div class="sample-box-title">Láska &amp; Vztahy · Ukázka pro Váhy</div>
+    <p>
+      "Rok 2026 přináší do tvého milostného světa jedno velké téma: rovnováhu mezi tím, co dáváš, a tím, co dostáváš zpět.
+      Jako Váhy jsi mistr kompromisu — ale letos tě hvězdy vybídnou, abys sama věděla, co chceš.
+      Duben přinese setkání, které tě překvapí. Nenech ho odplout ze strachu, že je příliš dobré na to, aby bylo pravdivé."
+    </p>
+  </div>
+</div>
+
+<!-- FORM -->
+<div class="form-section" id="form">
+  <div class="form-heading">
+    <h2>Objednej svůj horoskop</h2>
+    <p>Vyplň níže — PDF dorazí do tvého e-mailu do 5–10 minut.</p>
+  </div>
+
+  <div class="form-card">
+    <div class="form-error" id="formError"></div>
+
+    <form id="orderForm">
+      <div class="form-group">
+        <label for="name">Tvoje jméno</label>
+        <input type="text" id="name" name="name" placeholder="Jana" autocomplete="given-name" required maxlength="100">
+      </div>
+
+      <div class="form-group">
+        <label for="birthDate">Datum narození</label>
+        <input type="date" id="birthDate" name="birthDate" required>
+      </div>
+
+      <div class="form-group">
+        <label for="sign">Znamení zvěrokruhu</label>
+        <select id="sign" name="sign" required>
+          <option value="" disabled selected>Vyber své znamení</option>
+          <option value="beran">Beran (21.3 – 19.4)</option>
+          <option value="byk">Býk (20.4 – 20.5)</option>
+          <option value="blizenci">Blíženci (21.5 – 20.6)</option>
+          <option value="rak">Rak (21.6 – 22.7)</option>
+          <option value="lev">Lev (23.7 – 22.8)</option>
+          <option value="panna">Panna (23.8 – 22.9)</option>
+          <option value="vahy">Váhy (23.9 – 22.10)</option>
+          <option value="stir">Štír (23.10 – 21.11)</option>
+          <option value="strelec">Střelec (22.11 – 21.12)</option>
+          <option value="kozoroh">Kozoroh (22.12 – 19.1)</option>
+          <option value="vodnar">Vodnář (20.1 – 18.2)</option>
+          <option value="ryby">Ryby (19.2 – 20.3)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="email">E-mailová adresa</label>
+        <input type="email" id="email" name="email" placeholder="jana@example.cz" autocomplete="email" required>
+      </div>
+
+      <button type="submit" class="form-submit" id="submitBtn">
+        Pokračovat k platbě (199 Kč) →
+      </button>
+    </form>
+
+    <div class="form-note">
+      <span>🔒</span> Bezpečná platba přes Stripe · žádné opakované strhávání
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="faq-section">
+  <div class="faq-title">Časté otázky</div>
+
+  <div class="faq-item">
+    <div class="faq-q">Jak rychle dostanu horoskop?</div>
+    <div class="faq-a">Po dokončení platby generujeme horoskop ihned — obvykle do 5–10 minut dorazí PDF do tvého e-mailu.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Je horoskop opravdu personalizovaný?</div>
+    <div class="faq-a">Ano. Každý horoskop se generuje znovu pro konkrétní jméno, datum narození a znamení. Nejedná se o šablonu — výklad bere v úvahu tvůj jedinečný profil.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Co když e-mail nepřijde?</div>
+    <div class="faq-a">Zkontroluj složku hromadná / spam. Pokud tam e-mail není do 15 minut, napiš nám na info@mystickahvezda.cz — pomůžeme okamžitě.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Jak probíhá platba?</div>
+    <div class="faq-a">Platba probíhá přes Stripe — nejbezpečnější platební bránu. Přijímáme všechny karty. Jedná se o jednorázovou platbu, žádné předplatné.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Mohu si koupit horoskop jako dárek?</div>
+    <div class="faq-a">Samozřejmě. Zadej jméno a datum narození obdarované osoby a e-mail, na který má PDF dorazit.</div>
+  </div>
+</div>
+
+<footer class="page-footer">
+  <p>© 2026 Mystická Hvězda · <a href="/ochrana-osobnich-udaju.html">Ochrana osobních údajů</a> · <a href="/obchodni-podminky.html">Obchodní podmínky</a></p>
+</footer>
+
+<script>
+  // Show status banners based on URL param
+  const params = new URLSearchParams(location.search);
+  if (params.get('status') === 'success') {
+    document.getElementById('bannerSuccess').classList.add('visible');
+    document.getElementById('form').style.display = 'none';
+    document.querySelector('.sample-section').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else if (params.get('status') === 'cancel') {
+    document.getElementById('bannerCancel').classList.add('visible');
+  }
+
+  // Form submission → backend → Stripe redirect
+  document.getElementById('orderForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    const errEl = document.getElementById('formError');
+
+    btn.disabled = true;
+    btn.textContent = 'Přesměrovávám na platbu…';
+    errEl.style.display = 'none';
+
+    const body = {
+      name:      document.getElementById('name').value.trim(),
+      birthDate: document.getElementById('birthDate').value,
+      sign:      document.getElementById('sign').value,
+      email:     document.getElementById('email').value.trim(),
+    };
+
+    try {
+      // Get CSRF token first
+      const csrfRes = await fetch('/api/csrf-token');
+      const { csrfToken } = await csrfRes.json();
+
+      const res = await fetch('/api/rocni-horoskop/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+        credentials: 'include',
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Něco se pokazilo. Zkuste to prosím znovu.');
+      }
+
+      // Redirect to Stripe Checkout
+      window.location.href = data.url;
+    } catch (err) {
+      errEl.textContent = err.message;
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Pokračovat k platbě (199 Kč) →';
+    }
+  });
+</script>
+<script src="js/secondary-pages-copy-fixes.js" defer></script>
+</body>
+</html>

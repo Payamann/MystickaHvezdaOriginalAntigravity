@@ -62,6 +62,11 @@ router.post('/user/:userId/subscription', authenticateToken, requireAdmin, async
             return res.status(400).json({ success: false, error: 'Typ plánu je povinný.' });
         }
 
+        const VALID_PLAN_TYPES = ['free', 'premium_monthly', 'exclusive_monthly', 'vip_majestrat'];
+        if (!VALID_PLAN_TYPES.includes(plan_type)) {
+            return res.status(400).json({ success: false, error: `Neplatný typ plánu. Povolené hodnoty: ${VALID_PLAN_TYPES.join(', ')}` });
+        }
+
         // Set expiry based on plan type
         const expiryDate = new Date();
         if (plan_type.includes('yearly')) {

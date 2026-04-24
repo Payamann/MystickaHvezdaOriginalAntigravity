@@ -2,25 +2,46 @@
  * Hvězdný Průvodce - Frontend Logic
  */
 
-const chatInput = document.getElementById('chat-input');
-const sendBtn = document.getElementById('send-btn');
-const messagesContainer = document.getElementById('chat-messages');
-const typingIndicator = document.getElementById('typing-indicator');
+// DOM elementy — inicializujeme v DOMContentLoaded (bezpečná inicializace)
+let chatInput, sendBtn, messagesContainer, typingIndicator;
 
-// Auth Check - Strict
-// Must be logged in to access Mentor
 document.addEventListener('DOMContentLoaded', async () => {
-    // Wait for auth-client to initialize (if needed) but we can check token directly
-    const token = localStorage.getItem('auth_token');
-    if (!token) {
-        window.Auth?.showToast?.('Přihlášení vyžadováno', 'Pro vstup do Hvězdného Průvodce se prosím přihlaste.', 'info');
-        window.Auth?.openModal?.('login');
+    // Inicializuj DOM elementy — musí být uvnitř DOMContentLoaded
+    chatInput = document.getElementById('chat-input');
+    sendBtn = document.getElementById('send-btn');
+    messagesContainer = document.getElementById('chat-messages');
+    typingIndicator = document.getElementById('typing-indicator');
 
-        // Reload on login to initialize chat (once only to prevent listener leak)
-        document.addEventListener('auth:changed', () => {
-            if (localStorage.getItem('auth_token')) {
-                window.location.reload();
+    // Připoj event listenery až po inicializaci DOM
+    if (chatInput) {
+        chatInput.addEventListener('input', function () {
+            this.style.height = 'auto';
+            this.style.height = `${this.scrollHeight}px`;
+
+            if (this.value.trim().length > 0) {
+                sendBtn?.removeAttribute('disabled');
+            } else {
+                sendBtn?.setAttribute('disabled', 'true');
             }
+        });
+
+        chatInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    }
+    if (sendBtn) sendBtn.addEventListener('click', sendMessage);
+    // Wait for auth-client to initialize (if needed) but we can check token directly
+    // Auth token je HttpOnly cookie — JS k němu nemá přístup.
+    // Používáme window.Auth.isLoggedIn() které čte user data z localStorage.
+    if (!window.Auth?.isLoggedIn()) {
+        window.Auth?.showToast?.('Přihlášení vyžadováno', 'Pro vstup do Hvězdného Průvodce se prosím přihlaste.', 'info');
+        window.location.href = '/prihlaseni.html?redirect=/mentor.html';
+
+        document.addEventListener('auth:changed', () => {
+            if (window.Auth?.isLoggedIn()) window.location.reload();
         }, { once: true });
         return;
     }
@@ -31,7 +52,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Allow everyone to enter, but track status
         // Fix: Use window.Auth instead of authClient
         // Fix: Use subscription_status instead of subscription_tier
-        window.isPremium = userProfile && (userProfile.subscription_status === 'premium' || userProfile.subscription_status === 'vip');
+        const premiumStatuses = ['premium_monthly', 'exclusive_monthly', 'vip_majestrat'];
+        window.isPremium = userProfile && premiumStatuses.includes(userProfile.subscription_status);
 
         // Initialize usage tracking for free users
         if (!window.isPremium) {
@@ -46,7 +68,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Auto-focus input
-    chatInput.focus();
+    chatInput?.focus();
 });
 
 function initUsageTracking() {
@@ -60,10 +82,8 @@ function initUsageTracking() {
 
 async function loadHistory() {
     try {
-        const token = localStorage.getItem('auth_token');
         const response = await fetch(`${API_CONFIG.BASE_URL}/mentor/history`, {
-            credentials: 'include',
-            headers: { 'Authorization': `Bearer ${token}` }
+            credentials: 'include'
         });
 
         const data = await response.json();
@@ -99,11 +119,13 @@ async function checkGreeting() {
     // Actually, backend comparison is better. API call is cheap.
 
     try {
-        const token = localStorage.getItem('auth_token');
+        const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
         const response = await fetch(`${API_CONFIG.BASE_URL}/mentor/greeting`, {
             method: 'POST',
             credentials: 'include',
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: {
+                ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+            }
         });
 
         const data = await response.json();
@@ -117,44 +139,17 @@ async function checkGreeting() {
     }
 }
 
-// Auto-resize textarea
-chatInput.addEventListener('input', function () {
-    this.style.height = 'auto';
-    this.style.height = (this.scrollHeight) + 'px';
-
-    // Enable/disable button
-    if (this.value.trim().length > 0) {
-        sendBtn.removeAttribute('disabled');
-    } else {
-        sendBtn.setAttribute('disabled', 'true');
-    }
-});
-
-// Send on Enter (but Shift+Enter for newline)
-chatInput.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-    }
-});
-
-sendBtn.addEventListener('click', sendMessage);
-
 async function sendMessage() {
+    if (!chatInput || !sendBtn || !messagesContainer || !typingIndicator) return;
     const text = chatInput.value.trim();
     if (!text) return;
 
-    // 0. Auth Check
-    const token = localStorage.getItem('auth_token');
-    if (!token || !window.Auth.isLoggedIn()) {
+    // 0. Auth Check (token je HttpOnly cookie, kontrolujeme přes Auth objekt)
+    if (!window.Auth?.isLoggedIn()) {
         window.Auth?.showToast?.('Přihlášení vyžadováno', 'Pro konverzaci s Průvodcem se prosím přihlaste.', 'info');
-        window.Auth?.openModal?.('login');
-
-        // Reload on login to initialize chat
+        window.location.href = '/prihlaseni.html?redirect=/mentor.html';
         document.addEventListener('auth:changed', () => {
-            if (localStorage.getItem('auth_token')) {
-                window.location.reload();
-            }
+            if (window.Auth?.isLoggedIn()) window.location.reload();
         }, { once: true });
         return;
     }
@@ -194,13 +189,13 @@ async function sendMessage() {
 
     // 3. Call API
     try {
-        const token = localStorage.getItem('auth_token'); // Fixed key
+        const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
         const response = await fetch(`${API_CONFIG.BASE_URL}/mentor/chat`, {
             method: 'POST',
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                ...(csrfToken && { 'X-CSRF-Token': csrfToken })
             },
             body: JSON.stringify({ message: text })
         });
@@ -271,7 +266,7 @@ function showTeaserResponse() {
             <a href="cenik.html" class="btn btn--primary btn--sm">Získat Premium</a>
         </div>
     `;
-    messagesContainer.insertBefore(div, typingIndicator);
+    messagesContainer?.insertBefore(div, typingIndicator);
     scrollToBottom();
 }
 
@@ -298,7 +293,7 @@ function addMessage(text, type, shouldScroll = true) {
     div.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(html) : html;
 
     // Insert before typing indicator
-    messagesContainer.insertBefore(div, typingIndicator);
+    messagesContainer?.insertBefore(div, typingIndicator);
 
     // Scroll to bottom
     if (shouldScroll) {
@@ -308,14 +303,15 @@ function addMessage(text, type, shouldScroll = true) {
 
 function showTyping(show) {
     if (show) {
-        typingIndicator.style.display = 'flex';
+        if (typingIndicator) typingIndicator.style.display = 'flex';
         scrollToBottom();
     } else {
-        typingIndicator.style.display = 'none';
+        if (typingIndicator) typingIndicator.style.display = 'none';
     }
 }
 
 function scrollToBottom() {
+    if (!messagesContainer) return;
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 

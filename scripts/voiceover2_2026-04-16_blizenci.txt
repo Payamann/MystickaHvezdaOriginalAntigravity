@@ -1,0 +1,47 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 16. dubna 2026
+
+[upbeat] Blíženci, proč nejhlubší rozhovor máš s cizincem? <break time="0.5s" /> [mysterious] A nejlepší přátele znáš jen online. <break time="1.0s" />
+
+[confident] Dnes otevřeš Instagram. <break time="0.3s" /> [warm] Scrolluješ. <break time="0.3s" /> [upbeat] Zastavíš u profilu, který sleduješ rok. <break time="0.3s" /> [mysterious] Napíšeš zprávu. <break time="0.3s" /> [intense] Ta konverzace, co odkládáš měsíce? <break time="0.3s" /> [warm] Dnes dostane jiný konec. <break time="0.3s" /> [confident] Protože jeden nápad se ti mihne hlavou dvakrát. <break time="1.0s" />
+
+[inviting] Sedí to? <break time="0.3s" /> [warm] Jedno slovo do komentáře. <break time="0.3s" /> [clearly] Příště: které znamení tohle nezvládá vůbec.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+16. dubna 2026 Merkur v Beranu aktivuje tvůj komunikační živel tak silně, že odložené konverzace 💬 najednou vypadají jako příležitost, ne riziko. Tvoje vzdušné znamení teď dostává od Merkuru přímý impuls k akci — odvahu napsat první zprávu té osobě, která ti visí v hlavě měsíce. Sleduj profil — příště odhalím, proč Blíženci mlčí tam, kde by měli mluvit nejdřív. 🔥
+
+#mystickaHvezda #Blíženci #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+16. dubna 2026 Merkur v Beranu mění tempo tvé komunikace: ta zpráva, kterou odkládáš třetí měsíc, dnes dostane jiný konec 💬. Tvoje vzdušné znamení dneska cítí Merkurův impuls přesně v komunikačním domě — energii napsat první větu tomu profilu, co sleduješ už rok. Dnes scrolluješ Instagram a zastavíš přesně tam, kde máš — jedna konverzace změní dynamiku celého týdne. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Blíženci #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm energizing background instrumental with playful piano and quick silver flute dancing through gentle rhythmic pulse, evoking sunrise breaking through starlit sky with golden hopeful momentum and breathing melodic phrases in major key that support without overshadowing. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+A mystical video thumbnail for zodiac sign Gemini.
+
+BACKGROUND: deep dark space with soft subtle electric gold and violet dual-tone nebula with twin light streams, shimmering silver and yellow cosmic sparks, two converging light ribbons of lavender and gold — quicksilver, dazzling, mercurial — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.
+
+COMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.
+
+ELEMENT 1 — glyph: large ornate Gemini symbol (♊) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.
+
+ELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '16. dubna' in elegant gold lettering on the first line, 'BLÍŽENCI' in bold engraved gold capitals on the second line.
+
+ELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Nejlepší lidi znáš jen online.' on the first line, 'Dnes napíšeš tu první zprávu.' on the second line.
+
+NO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.
+
+Portrait 9:16.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Blíženci, proč ty nejvtipnější lidi znáš jen online? A proč ta nejhlubší konverzace byla s cizincem? Dnes otevřeš Instagram. Scrolluješ. Zastavíš u profilu, který sleduješ rok. Napíšeš zprávu. Ta konverzace, co odkládáš měsíce? Dnes dostane jiný konec. Protože jeden nápad se ti mihne hlavou dvakrát. Sedí to? Jedno slovo do komentáře. Příště: které znamení tohle nezvládá vůbec."

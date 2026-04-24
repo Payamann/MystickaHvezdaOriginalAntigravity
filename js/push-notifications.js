@@ -49,14 +49,14 @@
             }
 
             // Send subscription to server
-            const token = localStorage.getItem('auth_token');
             const BASE = window.API_CONFIG?.BASE_URL || '/api';
+            const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
             await fetch(`${BASE}/push/subscribe`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
-                    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                    ...(csrfToken && { 'X-CSRF-Token': csrfToken })
                 },
                 body: JSON.stringify({ subscription })
             });

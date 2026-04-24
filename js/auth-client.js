@@ -5,10 +5,19 @@
     const Auth = {
         // Token is stored in HttpOnly cookie (secure, XSS-proof)
         // JS cannot read it - that's the point. We track login state via user data.
-        user: JSON.parse(localStorage.getItem('auth_user')),
+        user: (() => {
+            try { return JSON.parse(localStorage.getItem('auth_user') || 'null'); }
+            catch { localStorage.removeItem('auth_user'); return null; }
+        })(),
+
+        isStandaloneAuthPage() {
+            return document.body?.classList.contains('page-login') || window.location.pathname.endsWith('/prihlaseni.html') || window.location.pathname.endsWith('prihlaseni.html');
+        },
 
         init() {
-            this.injectModal();
+            if (!this.isStandaloneAuthPage()) {
+                this.injectModal();
+            }
             this.updateUI();
             this.setupListeners();
             this.handleRedirect();
@@ -118,7 +127,7 @@
         isPremium() {
             if (!this.user || !this.user.subscription_status) return false;
             const s = this.user.subscription_status.toLowerCase();
-            if (!s.includes('premium') && !s.includes('exclusive') && s !== 'vip') return false;
+            if (!s.includes('premium') && !s.includes('exclusive') && !s.includes('vip')) return false;
             // Check expiration if available
             if (this.user.premiumExpires) {
                 const expires = new Date(this.user.premiumExpires);
@@ -131,7 +140,7 @@
         isExclusive() {
             if (!this.user || !this.user.subscription_status) return false;
             const s = this.user.subscription_status.toLowerCase();
-            if (!s.includes('exclusive') && s !== 'vip') return false;
+            if (!s.includes('exclusive') && !s.includes('vip')) return false;
             if (this.user.premiumExpires) {
                 const expires = new Date(this.user.premiumExpires);
                 if (expires < new Date()) return false;
@@ -237,13 +246,13 @@
         loginSuccess(data) {
             // Token is now in HttpOnly cookie (set by server)
             // We only store user data in localStorage
+            const pendingPlan = sessionStorage.getItem('pending_plan');
             this.user = data.user;
             localStorage.setItem('auth_user', JSON.stringify(data.user));
             this.updateUI();
             this.closeModal();
 
             // After login/register success: check for pending plan redirect
-            const pendingPlan = sessionStorage.getItem('pending_plan');
             if (pendingPlan) {
                 sessionStorage.removeItem('pending_plan');
                 this._startCheckout(pendingPlan);
@@ -350,11 +359,15 @@
                     return;
                 }
 
-                // Hero CTA Button (Index)
+                // Hero CTA Button (Index) now uses dedicated registration page
                 const heroBtn = e.target.closest('#hero-cta-btn');
                 if (heroBtn) {
-                    e.preventDefault();
-                    this.openModal('register');
+                    return;
+                }
+
+                // Guest profile CTA uses dedicated login page with redirect back
+                const profileLoginBtn = e.target.closest('#profile-login-btn');
+                if (profileLoginBtn) {
                     return;
                 }
 
@@ -396,6 +409,8 @@
             // Let's bind the form listener to document as well for safety
             document.body.addEventListener('submit', async (e) => {
                 if (e.target.id === 'login-form') {
+                    if (this.isStandaloneAuthPage()) return;
+
                     e.preventDefault();
                     const form = e.target;
                     const btn = document.getElementById('auth-submit');
@@ -443,6 +458,8 @@
 
             // Toggle Button inside Modal
             document.body.addEventListener('click', (e) => {
+                if (this.isStandaloneAuthPage()) return;
+
                 if (e.target.id === 'auth-mode-toggle') {
                     e.preventDefault();
                     this.toggleMode();
@@ -664,16 +681,24 @@
 
         async _startCheckout(planId) {
             try {
+                window.MH_ANALYTICS?.trackCheckoutStarted?.(planId, {
+                    source: 'auth_pending_plan'
+                });
+                const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
                 const res = await fetch(`${API_URL}/payment/create-checkout-session`, {
                     method: 'POST',
                     credentials: 'include',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+                    },
                     body: JSON.stringify({ planId })
                 });
                 const data = await res.json();
-                if (data.url) {
+                if (res.ok && data.url) {
                     window.location.href = data.url;
                 } else {
+                    console.warn('Checkout session failed:', data);
                     window.location.href = '/cenik.html';
                 }
             } catch (e) {
@@ -706,7 +731,7 @@
                 Auth.user = null;
                 Auth.updateUI();
                 // Optionally show a message
-                Auth.showToast('Sesselýjícího z jiného místa', 'Byli jste odhlášeni z jiného okna prohlížeče.', 'info');
+                Auth.showToast('Odhlášení z jiného okna', 'Byli jste odhlášeni z jiného okna prohlížeče.', 'info');
                 // Don't reload - just update UI so user can login again if needed
             }
         }

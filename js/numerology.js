@@ -86,7 +86,7 @@ async function handleFormSubmit(e) {
     // Restriction: Must be logged in
     if (!window.Auth || !window.Auth.isLoggedIn()) {
         window.Auth?.showToast?.('Přihlášení vyžadováno', 'Pro výpočet numerologie se prosím přihlaste.', 'info');
-        window.Auth?.openModal?.('login');
+        window.location.href = '/prihlaseni.html?redirect=/numerologie.html';
         return;
     }
 
@@ -107,12 +107,14 @@ async function handleFormSubmit(e) {
 
     // Calculate Personal Cycles (New Feature)
     // We import this dynamically or assume it's available via the updated logic file
-    import('./utils/numerology-logic.js').then(module => {
-        if (module.calculatePersonalCycles) {
-            const cycles = module.calculatePersonalCycles(birthDate);
-            displayPersonalCycles(cycles);
-        }
-    });
+    import('./utils/numerology-logic.js')
+        .then(module => {
+            if (module.calculatePersonalCycles) {
+                const cycles = module.calculatePersonalCycles(birthDate);
+                displayPersonalCycles(cycles);
+            }
+        })
+        .catch(err => console.error('Nepodařilo se načíst numerology-logic:', err));
 
     // Display results
     displayResults(lifePath, destiny, soul, personality);
@@ -241,7 +243,7 @@ async function displayInterpretation(name, birthDate, birthTime, lifePath, desti
                     window.Premium.showTrialPaywall('numerologie_vyklad');
                 } else {
                     sessionStorage.setItem('pending_plan', 'pruvodce');
-                    window.location.href = '/registrace.html';
+                    window.location.href = '/prihlaseni.html?mode=register&redirect=/numerologie.html';
                 }
             });
         }
@@ -258,14 +260,14 @@ async function displayInterpretation(name, birthDate, birthTime, lifePath, desti
 
     try {
         // Call AI API for interpretation
-        const token = window.Auth?.token || localStorage.getItem('auth_token');
         const apiUrl = window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api';
+        const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
         const response = await fetch(`${apiUrl}/numerology`, {
             method: 'POST',
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                ...(csrfToken && { 'X-CSRF-Token': csrfToken })
             },
             body: JSON.stringify({
                 name,

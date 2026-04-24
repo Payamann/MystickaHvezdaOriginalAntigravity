@@ -2,14 +2,11 @@
  * Main dashboard controller for Profile page
  */
 
-import { escapeHtml, apiUrl, authHeaders, getReadingIcon, getReadingTitle, getZodiacSign, getZodiacIconName } from './shared.js';
-import { loadReadings, showMoreReadings, handleFilterChange, renderReadings } from './readings.js';
+import { escapeHtml, apiUrl, authHeaders, getZodiacSign, getZodiacIconName } from './shared.js';
+import { loadReadings, showMoreReadings, handleFilterChange } from './readings.js';
 import { loadFavorites } from './favorites.js';
 import { toggleAvatarPicker, selectAvatar, loadSubscriptionStatus, initSettingsForm, saveSettings } from './settings.js';
 import { viewReading, closeReadingModal, toggleFavoriteModal, deleteReading } from './modal.js';
-
-// Re-export utility functions that were originally in dashboard but fit better here or shared
-// For now, we'll implement them here to match the plan
 
 function initTabs() {
     const tabs = document.querySelectorAll('.tab[data-tab], .profile-tab[data-tab]');
@@ -37,6 +34,43 @@ function initTabs() {
     });
 }
 
+function openProfileTab(tabId) {
+    const tab = document.querySelector(`.profile-tab[data-tab="${tabId}"]`);
+    tab?.click();
+}
+
+function sanitizeProfileUrl(url) {
+    const parsed = new URL(url, window.location.origin);
+    parsed.searchParams.delete('payment');
+    return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+}
+
+function handlePaymentReturnState() {
+    const params = new URLSearchParams(window.location.search);
+    const paymentState = params.get('payment');
+
+    if (!paymentState) {
+        return;
+    }
+
+    if (paymentState === 'success') {
+        window.MH_ANALYTICS?.trackPaymentResult?.('success', {
+            source: 'profile_return'
+        });
+        openProfileTab('settings');
+        setTimeout(() => {
+            document.getElementById('subscription-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 150);
+        window.Auth?.showToast?.(
+            'Platba proběhla úspěšně',
+            'Předplatné je aktivní. Správu svého plánu najdete níže v nastavení účtu.',
+            'success'
+        );
+    }
+
+    history.replaceState({}, document.title, sanitizeProfileUrl(window.location.href));
+}
+
 function handleLogout() {
     if (confirm('Opravdu se chcete odhlásit?')) {
         window.Auth?.logout();
@@ -44,15 +78,17 @@ function handleLogout() {
 }
 
 function formatPlanLocal(plan) {
+    const normalizedPlan = plan === 'vip' ? 'vip_majestrat' : plan;
     const plans = {
-        'free': '🆓 Zdarma',
-        'premium_monthly': '⭐ Premium (měsíční)',
-        'premium_yearly': '💎 Premium (roční)'
+        free: 'Poutník',
+        premium_monthly: 'Hvězdný Průvodce',
+        exclusive_monthly: 'Exclusive',
+        vip_majestrat: 'VIP Majestát'
     };
-    return plans[plan] || plan || 'Zdarma';
+
+    return plans[plan] || 'Poutník';
 }
 
-// Stats logic
 function calculateStreak(readings) {
     if (!readings || !readings.length) return 0;
 
@@ -68,6 +104,7 @@ function calculateStreak(readings) {
 
     let streak = 0;
     let checkDate = new Date(uniqueDates[0]);
+
     for (const dateStr of uniqueDates) {
         if (new Date(dateStr).toDateString() === checkDate.toDateString()) {
             streak++;
@@ -107,17 +144,16 @@ function animateCounter(elementId, target) {
 }
 
 function updateStats(readings) {
-    if (!readings) readings = [];
-
-    const total = readings.length;
+    const safeReadings = readings || [];
+    const total = safeReadings.length;
     const now = new Date();
-    const thisMonth = readings.filter(r => {
+    const thisMonth = safeReadings.filter(r => {
         const date = new Date(r.created_at);
         return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
     }).length;
 
-    const favorites = readings.filter(r => r.is_favorite).length;
-    const streak = calculateStreak(readings);
+    const favorites = safeReadings.filter(r => r.is_favorite).length;
+    const streak = calculateStreak(safeReadings);
 
     animateCounter('stat-total', total);
     animateCounter('stat-month', thisMonth);
@@ -125,12 +161,9 @@ function updateStats(readings) {
     animateCounter('stat-streak', streak);
 }
 
-
-
-// ZODIAC logic moved here as per original file structure
 function getZodiacSignLocal(dateStr) {
     const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return null;
+    if (Number.isNaN(date.getTime())) return null;
 
     const month = date.getMonth() + 1;
     const day = date.getDate();
@@ -158,6 +191,7 @@ function getZodiacSignLocal(dateStr) {
             return sign;
         }
     }
+
     return null;
 }
 
@@ -193,11 +227,9 @@ function renderJournalEntries(readings) {
     `).join('');
 }
 
-// MAIN INIT
 let listenersAttached = false;
 
 async function initProfile() {
-    // Wait for Auth
     let retries = 0;
     while (!window.Auth && retries < 20) {
         await new Promise(r => setTimeout(r, 100));
@@ -218,20 +250,17 @@ async function initProfile() {
 
         const loginBtn = document.getElementById('profile-login-btn');
         if (loginBtn && !loginBtn.dataset.listenerAttached) {
-            loginBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                window.Auth?.openModal();
+            loginBtn.addEventListener('click', () => {
+                window.location.href = 'prihlaseni.html?redirect=/profil.html';
             });
             loginBtn.dataset.listenerAttached = 'true';
         }
         return;
     }
 
-    // Login success UI
     if (loginRequired) loginRequired.style.display = 'none';
     if (dashboard) dashboard.style.display = 'block';
 
-    // Populate user info
     if (user) {
         const displayName = user.first_name || user.email.split('@')[0];
         if (greeting) greeting.textContent = `Vítejte zpět, ${displayName}! ✨`;
@@ -239,18 +268,16 @@ async function initProfile() {
         const emailEl = document.getElementById('user-email');
         if (emailEl) emailEl.textContent = user.email;
 
-        const plan = user.subscription_status || user.subscriptions?.plan_type || 'free';
-        const planLabels = {
-            'free': 'Poutník', 'poutnik': 'Poutník', 'hledac': 'Hledač',
-            'osviceny': 'Osvícený', 'vip': 'VIP'
-        };
-        const planClass = (plan !== 'free' && plan !== 'poutnik') ? 'badge--premium' : 'badge--secondary';
-        const planLabel = planLabels[plan.split('_')[0]] || 'Poutník';
-        // Support both layout variants: wrapper #user-badges or direct #user-plan span
+        const rawPlan = user.subscription_status || user.subscriptions?.plan_type || 'free';
+        const plan = rawPlan === 'vip' ? 'vip_majestrat' : rawPlan;
+        const planClass = plan === 'free' ? 'badge--secondary' : 'badge--premium';
+        const planLabel = formatPlanLocal(plan);
+
         const badgesContainer = document.getElementById('user-badges');
         if (badgesContainer) {
             badgesContainer.innerHTML = `<span id="user-plan" class="badge ${planClass}">${planLabel}</span>`;
         }
+
         const planEl = document.getElementById('user-plan');
         if (planEl) {
             planEl.textContent = planLabel;
@@ -268,6 +295,8 @@ async function initProfile() {
             if (zodiacEl && sign) {
                 zodiacEl.style.display = 'block';
                 zodiacEl.innerHTML = `<i data-lucide="${getZodiacIconName(sign.symbol)}" style="width: 14px; height: 14px; margin-right: 4px; vertical-align: middle;"></i> ${sign.name}`;
+            } else {
+                showZodiacSignLocal(user.birth_date);
             }
         }
     }
@@ -275,31 +304,29 @@ async function initProfile() {
     initTabs();
     initSettingsForm();
 
-    // Parallel load
     const [readings] = await Promise.all([
         loadReadings(),
         loadSubscriptionStatus()
     ]);
 
+    handlePaymentReturnState();
     updateStats(readings);
     renderJournalEntries(readings);
 
-    // Event Listeners
     if (!listenersAttached) {
         document.getElementById('logout-btn')?.addEventListener('click', handleLogout);
         document.getElementById('readings-filter')?.addEventListener('change', handleFilterChange);
         document.getElementById('readings-load-more')?.addEventListener('click', showMoreReadings);
 
-        // Modal listeners
         document.getElementById('reading-modal-close')?.addEventListener('click', closeReadingModal);
         document.getElementById('modal-favorite-btn')?.addEventListener('click', toggleFavoriteModal);
         document.getElementById('modal-delete-btn')?.addEventListener('click', deleteReading);
 
-        document.getElementById('reading-modal')?.addEventListener('click', (e) => {
+        document.getElementById('reading-modal')?.addEventListener('click', e => {
             if (e.target.id === 'reading-modal') closeReadingModal();
         });
 
-        document.addEventListener('keydown', (e) => {
+        document.addEventListener('keydown', e => {
             if (e.key === 'Escape') {
                 const modal = document.getElementById('reading-modal');
                 if (modal && modal.style.display !== 'none') closeReadingModal();
@@ -311,12 +338,11 @@ async function initProfile() {
 
         document.getElementById('save-settings-btn')?.addEventListener('click', saveSettings);
         document.getElementById('user-avatar')?.addEventListener('click', toggleAvatarPicker);
-        document.getElementById('avatar-picker')?.addEventListener('click', (e) => {
+        document.getElementById('avatar-picker')?.addEventListener('click', e => {
             const option = e.target.closest('.avatar-option');
             if (option) selectAvatar(option.dataset.avatar);
         });
 
-        // Journal listeners
         const journalBtn = document.getElementById('journal-submit');
         if (journalBtn) {
             journalBtn.addEventListener('click', async () => {
@@ -339,9 +365,9 @@ async function initProfile() {
                         input.value = '';
                         window.Auth?.showToast?.('Přání vysláno', 'Vaše slova se nesou ke hvězdám...', 'success');
                         if (window.createStardust) window.createStardust(journalBtn);
-                        const readings = await loadReadings();
-                        updateStats(readings);
-                        renderJournalEntries(readings);
+                        const refreshedReadings = await loadReadings();
+                        updateStats(refreshedReadings);
+                        renderJournalEntries(refreshedReadings);
                     } else {
                         const err = await response.json().catch(() => ({}));
                         window.Auth?.showToast?.('Chyba', err.error || 'Vesmír momentálně neodpovídá.', 'error');
@@ -356,9 +382,8 @@ async function initProfile() {
             });
         }
 
-        // Listen for updates from other modules
-        document.addEventListener('reading:updated', (e) => {
-            if (e.detail && e.detail.readings) {
+        document.addEventListener('reading:updated', e => {
+            if (e.detail?.readings) {
                 updateStats(e.detail.readings);
             }
         });
@@ -366,63 +391,59 @@ async function initProfile() {
         listenersAttached = true;
     }
 
-    // Always refresh icons after content load
     if (window.lucide) {
         window.lucide.createIcons();
     }
 }
 
-// Magic Stardust Animation
 window.createStardust = function(element) {
     if (!element) return;
+
     const rect = element.getBoundingClientRect();
     const count = 20;
-    
+
     for (let i = 0; i < count; i++) {
         const particle = document.createElement('div');
         particle.className = 'stardust-particle';
-        
+
         const size = Math.random() * 4 + 2;
         particle.style.width = `${size}px`;
         particle.style.height = `${size}px`;
-        
-        // Random starting position within element
+
         const x = rect.left + Math.random() * rect.width;
         const y = rect.top + Math.random() * rect.height;
-        
+
         particle.style.left = `${x}px`;
         particle.style.top = `${y}px`;
-        
-        // Random destination
+
         const tx = (Math.random() - 0.5) * 200;
-        const ty = (Math.random() - 0.5) * 200 - 100; // Rise up
-        
+        const ty = (Math.random() - 0.5) * 200 - 100;
+
         particle.style.setProperty('--tx', `${tx}px`);
         particle.style.setProperty('--ty', `${ty}px`);
-        
         particle.style.animation = `stardust-fade-out ${Math.random() * 1 + 0.5}s ease-out forwards`;
-        
+
         document.body.appendChild(particle);
-        
         setTimeout(() => particle.remove(), 1500);
     }
 };
 
-// Make functions available globally for HTML event handlers if needed
-// (Though typically we attach listeners in JS)
 window.viewReading = viewReading;
 window.toggleFavorite = (id, el) => {
-    // We need to import toggleFavorite from modal.js but it's not exported there as default
-    // and we need to handle the button element context
     import('./modal.js').then(m => m.toggleFavorite(id, el));
 };
 
-// Initialize — guard against concurrent calls (auth:changed can fire multiple times)
-let _profileInitRunning = false;
+let profileInitRunning = false;
+
 async function safeInitProfile() {
-    if (_profileInitRunning) return;
-    _profileInitRunning = true;
-    try { await initProfile(); } finally { _profileInitRunning = false; }
+    if (profileInitRunning) return;
+    profileInitRunning = true;
+
+    try {
+        await initProfile();
+    } finally {
+        profileInitRunning = false;
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {

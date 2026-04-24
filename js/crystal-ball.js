@@ -96,13 +96,13 @@ function initCrystalBall() {
         if (navigator.vibrate) navigator.vibrate(200);
 
         try {
-            const cbToken = localStorage.getItem('auth_token') || window.Auth?.token;
+            const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
             const response = await fetch(`${window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api'}/crystal-ball`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
-                    ...(cbToken ? { 'Authorization': `Bearer ${cbToken}` } : {})
+                    ...(csrfToken && { 'X-CSRF-Token': csrfToken })
                 },
                 body: JSON.stringify({
                     question: question.trim(),

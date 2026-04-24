@@ -1,0 +1,56 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 18. dubna 2026
+
+[upbeat] Blíženci nejsou povrchní. <break time="0.5s" /> [confident] Jsou jediní, kdo vidí obě strany — a mlčí, protože to druhá strana ještě nechce slyšet. <break time="1.0s" />
+
+[warm] Dneska ti někdo řekne: „Proč jsi tak tichý?" <break time="0.3s" /> [mysterious] Nejsi. <break time="0.3s" /> [intense] Čekáš, až ta osoba dotáhne myšlenku do konce — sama. <break time="0.3s" /> [confident] Protože ty už víš, kam to spěje. <break time="1.0s" />
+
+[inviting] Dvě věci najednou — která vyhraje dnes? ⬇️ <break time="0.3s" /> [clearly] Příště odhalím Blíženců největší tajemství ve vztazích.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+18. dubna 2026 ✨ Merkur ti nedává chaos — testuje, jestli umíš držet dvě pravdy najednou, aniž bys zhroutil mysl. Blíženci ovládají duplicitu jako živel vzduch: nemusí volit, protože obojí je pravdivé současně, a to ostatní znamení šílí z nepochopení. Sleduj, až odhalím, proč právě dnes tvoje mlčení přináší víc informací než slova druhých 🔮
+
+#mystickaHvezda #Blíženci #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+Mercur ti dnes nepřináší zmatek — nabízí ti prostor držet dvě pravdy vedle sebe, aniž bys musel vybírat 🌙 18. dubna 2026 testuje tvou schopnost vidět obě strany současně, zatímco ostatní tlačí na rychlé odpovědi. Tvoje mlčení není nejistota, je to strategie: necháváš druhé dospět k závěru, který ty už znáš, protože Blíženci ovládají čas informace jako nikdo jiný ✨ Celý výklad najdeš na mystickahvezda.cz/horoskopy.html 🔮
+
+#mystickaHvezda #Blíženci #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm piano arpeggios and soft orchestral strings create gentle forward momentum with a subtle rhythmic pulse, evoking shimmering cosmic light trails spreading across a golden sunrise sky. Major key melodic phrases breathe with uplifting energy, designed as supportive background texture under voiceover without overpowering, balancing present brightness with calm empowerment. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+Real deep-space Hubble-style nebula photograph background, split composition:
+top half = bright golden-yellow nebula with white light burst with dramatic light burst from center,
+thin horizontal black band across the middle,
+bottom half = cool lavender and silver star field and scattered starlight.
+Cinematic, high-detail, photo-realistic.
+
+All graphic elements positioned in the UPPER 80% of the frame — leave minimal space at very bottom.
+
+Center-upper area: large ornate 3D CGI Blíženci zodiac symbol (♊),
+dark obsidian material with intricate gold filigree engravings,
+deeply detailed ancient medallion style, soft golden glow radiating from symbol, floating centered in frame.
+
+Directly below the symbol (upper-mid frame): dark stone plaque with ornate golden decorative border,
+bold serif text (NOT cursive, NOT italic, NOT calligraphic):
+Line 1: "18. DUBNA"
+Line 2: "BLÍŽENCI"
+Text color: warm cream/off-white, engraved look.
+
+Immediately below the plaque (mid frame, NOT at the very bottom): aged parchment scroll, curled edges, warm paper texture,
+two lines of bold serif text (NOT cursive, NOT italic, NOT calligraphic), dark brown #2a1500:
+Line 1: "Vidíš obě strany už teď."
+Line 2: "Druhá strana to pochopí sama."
+
+Portrait 4:5, 1080x1350px. No watermarks, no UI, no borders.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Blíženci nejsou povrchní. Jsou jediní, kdo vidí obě strany — a mlčí, protože to druhá strana ještě nechce slyšet. Dneska ti někdo řekne: „Proč jsi tak tichý?" Nejsi. Čekáš, až ta osoba dotáhne myšlenku do konce — sama. Protože ty už víš, kam to spěje. Dvě věci najednou — která vyhraje dnes? ⬇️ Příště odhalím Blíženců největší tajemství ve vztazích."

@@ -26,7 +26,7 @@ function initSynastry() {
             const dateInput = document.getElementById('p1-date');
 
             if (e.target.checked) {
-                if (!window.Auth?.token) {
+                if (!window.Auth?.isLoggedIn()) {
                     window.Auth?.showToast?.('Info', 'Pro použití profilu se prosím přihlaste.', 'info');
                     e.target.checked = false;
                     return;
@@ -167,7 +167,7 @@ async function calculateCompatibility() {
                 window.Premium.showTrialPaywall('partnerska_detail');
             } else {
                 sessionStorage.setItem('pending_plan', 'pruvodce');
-                window.location.href = '/registrace.html';
+                window.location.href = '/prihlaseni.html?mode=register&redirect=/partnerska-shoda.html';
             }
         });
     }

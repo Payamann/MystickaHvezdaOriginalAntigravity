@@ -19,7 +19,7 @@
             ]
         },
         spise_ano: {
-            label: 'SPÍŠE ANO', emoji: '🌟', class: 'mozna',
+            label: 'SP͊E ANO', emoji: '🌟', class: 'mozna',
             texts: [
                 'Znamení ukazují spíše pozitivní výsledek, ale záleží na vašich dalších krocích.',
                 'Pravděpodobně ano — i když cesta nemusí být přímočará.',
@@ -39,7 +39,7 @@
             ]
         },
         spise_ne: {
-            label: 'SPÍŠE NE', emoji: '⚠️', class: 'ne',
+            label: 'SP͊E NE', emoji: '⚠️', class: 'ne',
             texts: [
                 'Karty varují před touto cestou. Zvažte alternativy.',
                 'Spíše ne — ale není to definitivní. Okolnosti se mohou změnit.',

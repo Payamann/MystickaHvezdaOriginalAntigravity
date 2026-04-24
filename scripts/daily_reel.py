@@ -320,6 +320,16 @@ Write a Suno song description. The music must:
     return claude_call(system, user, max_tokens=300)
 
 
+def build_thumbnail_prompt(target_date: str, signs: list,
+                           bg_color: str, wheel_color: str) -> str:
+    """Vygeneruje Nano Banana thumbnail prompt přes thumbnail.generate_one()."""
+    import thumbnail
+    history = thumbnail.load_history()
+    prompt = thumbnail.generate_one(target_date, bg_color, wheel_color, history)
+    thumbnail.save_history(history)
+    return prompt
+
+
 def build_tiktok_description(signs: list, script: str, target_date: str) -> str:
     """Vygeneruje TikTok/Instagram description na základě hotového scriptu."""
     date_obj = date.fromisoformat(target_date)
@@ -646,9 +656,11 @@ Script:
 
 def main():
     parser = argparse.ArgumentParser(description="Voiceover generator pro Mystickou Hvězdu")
-    parser.add_argument("--date", default=None, help="Datum videa (YYYY-MM-DD), default: zitra")
+    parser.add_argument("--date", default=None, help="Datum videa (YYYY-MM-DD), default: dnes")
     parser.add_argument("--signs", nargs=3, metavar="SIGN",
                         help="3 konkretni znameni (default: nahodny vyber)")
+    parser.add_argument("--snip", default=None, help="Snip videa pro analyzu barev (PNG/JPG)")
+    parser.add_argument("--color-desc", default=None, help="Manualni popis barev pozadi")
     args = parser.parse_args()
 
     target_date = args.date or str(date.today())
@@ -703,6 +715,36 @@ def main():
     fb_description = build_facebook_description(chosen, script, target_date)
     suno = build_suno_prompt(chosen, script, target_date)
 
+    # Barvy pro thumbnail — ze snipu, manuálního popisu, nebo default
+    import thumbnail as _thumb_mod
+    if args.color_desc:
+        bg_color = args.color_desc
+        desc_lower = args.color_desc.lower()
+        warm = sum(desc_lower.count(w) for w in ["amber","orange","scarlet","golden","warm","sienna","rust"])
+        cool = sum(desc_lower.count(w) for w in ["blue","cobalt","electric","glacial","silver","ice","cyan","teal"])
+        purp = sum(desc_lower.count(w) for w in ["indigo","violet","purple"])
+        if cool >= warm and cool >= purp:
+            wheel_color = "deep navy and glacial blue tones with icy silver-gold filigree"
+        elif purp > warm:
+            wheel_color = "deep indigo and cosmic violet tones with silver-gold filigree"
+        elif warm > 0:
+            wheel_color = "warm deep amber and burnt sienna tones with golden filigree"
+        else:
+            wheel_color = _thumb_mod.DEFAULT_WHEEL_COLOR
+    elif args.snip:
+        from pathlib import Path as _Path
+        snip_path = _Path(args.snip)
+        if snip_path.exists():
+            bg_color, wheel_color = _thumb_mod.analyze_colors(str(snip_path))
+        else:
+            print(f"[!] Snip nenalezen: {args.snip} — defaultni barvy")
+            bg_color, wheel_color = _thumb_mod.DEFAULT_COLOR_DESC, _thumb_mod.DEFAULT_WHEEL_COLOR
+    else:
+        print("[*] Zadny snip — defaultni barvy thumbnailem")
+        bg_color, wheel_color = _thumb_mod.DEFAULT_COLOR_DESC, _thumb_mod.DEFAULT_WHEEL_COLOR
+
+    thumbnail = build_thumbnail_prompt(target_date, chosen, bg_color, wheel_color)
+
     # 5. Vystup
     sep = "=" * 60
     print(f"\n{sep}\nVOICEOVER SCRIPT\n{sep}")
@@ -713,6 +755,8 @@ def main():
     print(fb_description)
     print(f"\n{sep}\nSUNO PROMPT\n{sep}")
     print(suno)
+    print(f"\n{sep}\nTHUMBNAIL PROMPT (Nano Banana)\n{sep}")
+    print(thumbnail)
     print(sep)
     print(f"\n[OK] Hotovo! Datum videa: {target_date}")
     print(f"[OK] Znameni: {', '.join(chosen)}")
@@ -723,7 +767,8 @@ def main():
         f"VOICEOVER SCRIPT\n{sep}\n{script}\n\n"
         f"TIKTOK / INSTAGRAM DESCRIPTION\n{sep}\n{description}\n\n"
         f"FACEBOOK REELS DESCRIPTION\n{sep}\n{fb_description}\n\n"
-        f"SUNO PROMPT\n{sep}\n{suno}\n"
+        f"SUNO PROMPT\n{sep}\n{suno}\n\n"
+        f"THUMBNAIL PROMPT (Nano Banana)\n{sep}\n{thumbnail}\n"
     )
     out_path.write_text(output, encoding="utf-8")
     print(f"[OK] Ulozeno: {out_path}")

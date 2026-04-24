@@ -15,11 +15,9 @@ window.Premium = {
 
     async checkStatus() {
         // 1. Check local state first (Optimistic & Offline-friendly)
-        if (window.Auth && typeof window.Auth.isPremium === 'function') {
-            if (window.Auth.isPremium()) {
-                console.log('Premium Verified (Local)');
-                return true;
-            }
+        if (window.Auth?.isPremium?.()) {
+            console.log('Premium Verified (Local)');
+            return true;
         }
 
         // auth_token is HttpOnly cookie — not accessible via localStorage.
@@ -35,7 +33,7 @@ window.Premium = {
             if (!response.ok) return false;
 
             const data = await response.json();
-            const isPremium = ['premium_monthly', 'exclusive_monthly', 'vip', 'vip_majestrat', 'premium_yearly', 'premium_pro'].includes(data.planType);
+            const isPremium = ['premium_monthly', 'exclusive_monthly', 'vip_majestrat'].includes(data.planType);
             const isActive = data.status === 'active' || data.status === 'trialing' || data.status === 'cancel_pending';
             const notExpired = !data.currentPeriodEnd || new Date(data.currentPeriodEnd) > new Date();
 
@@ -56,7 +54,7 @@ window.Premium = {
             'numerology': '🔢 Vaše čísla skrývají víc, než čekáte – hluboký výklad čísel odemknete v plánu Hvězdný Průvodce',
             'weekly_horoscope': '🌟 Detailní týdenní průvodce planetami čeká na vás – odemkněte ho s Hvězdným Průvodcem',
             'monthly_horoscope': '📅 Celý měsíc pod hvězdami – kompletní měsíční předpověď patří Hvězdným Průvodcům',
-            'natal_chart': '⭐ Váš vesmírný plán čeká – plná AI interpretace natální karty je součástí Hvězdného Průvodce',
+            'natal_chart': '⭐ Váš vesmírný plán čeká – plná interpretace natální karty je součástí Hvězdného Průvodce',
             'synastry': '💫 Hloubková synastrie prozradí, zda jste pro sebe stvořeni – dostupná v Hvězdném Průvodci',
             'astrocartography': '🌍 Kde na světě vás hvězdy volají? Astrokartografie je jen pro Hvězdné Průvodce',
             'journal_insights': '📖 Hluboká analýza vzorců ve vašem deníku – funkce Hvězdného Průvodce',
@@ -83,7 +81,7 @@ window.Premium = {
                 <div class="paywall-benefits">
                     <div class="benefit-item">✓ Neomezený tarot – kdykoliv, na cokoliv</div>
                     <div class="benefit-item">✓ Týdenní + měsíční horoskopy přesně pro vás</div>
-                    <div class="benefit-item">✓ AI průvodce bez limitu zpráv</div>
+                    <div class="benefit-item">✓ Duchovní průvodce bez limitu zpráv</div>
                     <div class="benefit-item">✓ Plná natální karta s interpretací</div>
                 </div>
                 <div class="paywall-actions">
@@ -115,7 +113,7 @@ window.Premium = {
                 } catch (e) { console.error(e); }
             }
             sessionStorage.setItem('pending_plan', 'pruvodce');
-            window.location.href = '/registrace.html';
+            window.location.href = '/prihlaseni.html?registrace=1&redirect=/cenik.html';
         });
 
         overlay.querySelector('.paywall-close').addEventListener('click', () => {
@@ -145,7 +143,7 @@ window.Premium = {
                 <p class="paywall-message">Tato funkce je dostupná od plánu Osvícení</p>
                 <div class="paywall-benefits">
                     <div class="benefit-item">✓ Astrokartografie — vaše hvězdná mapa světa</div>
-                    <div class="benefit-item">✓ Pokročilá natální karta s AI výkladem</div>
+                    <div class="benefit-item">✓ Pokročilá natální karta s hlubším výkladem</div>
                     <div class="benefit-item">✓ Exkluzivní lunární rituály</div>
                     <div class="benefit-item">✓ Prioritní odpovědi duchovního průvodce</div>
                 </div>
@@ -177,7 +175,7 @@ window.Premium = {
                 } catch (e) { console.error(e); }
             }
             sessionStorage.setItem('pending_plan', 'osviceni');
-            window.location.href = '/registrace.html';
+            window.location.href = '/prihlaseni.html?registrace=1&redirect=/cenik.html';
         });
         overlay.querySelector('.paywall-close').addEventListener('click', () => overlay.remove());
         overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
@@ -189,7 +187,7 @@ window.Premium = {
      * @param {string} message - Optional custom message
      */
     showLoginGate(container, message = null) {
-        const defaultMsg = '⭐ Přihlaste se zdarma a získejte AI interpretaci';
+        const defaultMsg = '⭐ Přihlaste se zdarma a získejte plný osobní výklad';
         const safeMsg = this._escapeHTML(message || defaultMsg);
 
         const gate = document.createElement('div');
@@ -283,10 +281,10 @@ window.Premium = {
                 <h3 class="paywall-title">Hvězdný Průvodce</h3>
                 <p class="paywall-message">${this._escapeHTML(msg)}</p>
                 <div class="paywall-benefits">
-                    <div class="benefit-item">✓ Neomezený AI chat bez limitu</div>
+                    <div class="benefit-item">✓ Neomezený chat bez limitu</div>
                     <div class="benefit-item">✓ Lunární rituály & výklady</div>
                     <div class="benefit-item">✓ Natální karta s interpretací</div>
-                    <div class="benefit-item">✓ Numerologie AI výklad</div>
+                    <div class="benefit-item">✓ Numerologický výklad bez omezení</div>
                 </div>
                 <div class="paywall-actions">
                     <button class="btn btn--primary paywall-upgrade">
@@ -315,7 +313,7 @@ window.Premium = {
                 } catch (e) { console.error(e); }
             }
             sessionStorage.setItem('pending_plan', 'pruvodce');
-            window.location.href = '/registrace.html';
+            window.location.href = '/prihlaseni.html?registrace=1&redirect=/cenik.html';
         });
         overlay.querySelector('.paywall-close').addEventListener('click', () => overlay.remove());
         overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });

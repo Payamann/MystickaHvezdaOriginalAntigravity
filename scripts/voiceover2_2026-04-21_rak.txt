@@ -1,0 +1,51 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 21. dubna 2026
+
+[mysterious] Raku, ty nemáš slabost. <break time="0.5s" /> [soft] Jsi ten, kdo cítí všechno — a zůstává. <break time="1.0s" />
+
+[gentle] Sedíš u okna. <break time="0.3s" /> Díváš se na tu zprávu od někoho blízkého. <break time="0.3s" /> [warm] Víš, co potřebuje slyšet — ale vnímáš, že tam je ještě něco víc. <break time="0.3s" /> [mysterious] Intuice ti ukazuje: nečekej na slova. <break time="0.3s" /> [intense] Čekej na to ticho mezi nimi. <break time="1.0s" />
+
+[inviting] Raku — co dnes chráníš? ⬇️ <break time="0.3s" /> [clearly] Označ kohokoliv, kdo tohle zná zpaměti.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+Dnes 21. dubna 2026 tě Měsíc, tvůj vládce, vede k naslouchání tomu, co nikdo nevysloví 🌙
+
+Tvůj živel Voda ti dává schopnost číst emocionální frekvence dřív, než se stanou slovy — proto vnímáš napětí, než ho ta osoba sama pojmenuje.
+
+Sleduj profil — příště odhalím, jak kardinální kvalita Raka mění ticho v sílu 🦀
+
+#mystickaHvezda #Rak #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+Dnes 21. dubna 2026 tvoje citlivost je schopnost zůstat, i když cítíš všechno najednou 🌙 Měsíc, tvůj vládce, tě vede k naslouchání tomu, co nikdo nevysloví — proto vnímáš pravdu v tichu mezi slovy dřív, než ta osoba sama pojmenuje, co se v ní odehrává. Tvůj živel Voda ti dává dar číst emocionální frekvence před jejich prvním projevem, a dnes je tento dar obzvlášť silný — pozoruj mezery v konverzacích, tam, kde ostatní vidí pauzu, ty vidíš odpověď. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Rak #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm instrumental underscore with soft vibraphone melodies dancing over shimmering synth pads and a gentle rhythmic pulse, evoking golden sunrise light breaking through cosmic clouds with hopeful forward momentum. Major key phrases breathe between spaces, creating an energizing yet supportive backdrop that moves with quiet optimism and celestial warmth. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+A mystical video thumbnail for zodiac sign Cancer.
+
+BACKGROUND: deep dark space with soft subtle silver and pale blue lunar nebula with moonlit cosmic mist, soft silver-white stardust glowing like reflected moonlight, deep indigo void with cool silver light trails — gentle, lunar, oceanic — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.
+
+COMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.
+
+ELEMENT 1 — glyph: large ornate Cancer symbol (♋) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.
+
+ELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '21. dubna' in elegant gold lettering on the first line, 'RAK' in bold engraved gold capitals on the second line.
+
+ELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Intuice ti ukazuje víc než slova.' on the first line, 'Stačí jí věřit.' on the second line.
+
+NO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.
+
+Portrait 9:16.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Raku, ty nemáš slabost. Jsi ten, kdo cítí všechno — a zůstává. Sedíš u okna. Díváš se na tu zprávu od někoho blízkého. Víš, co potřebuje slyšet — ale vnímáš, že tam je ještě něco víc. Intuice ti ukazuje: nečekej na slova. Čekej na to ticho mezi nimi. Raku — co dnes chráníš? ⬇️ Označ kohokoliv, kdo tohle zná zpaměti."

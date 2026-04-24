@@ -1,0 +1,31 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 16. dubna 2026
+
+[confident] Střelci, 16. dubna píšeš "jo" víc, než myslíš. <break time="0.5s" />
+[intense] A pokaždé to cítíš — tahle má váhu. <break time="1.0s" />
+
+[upbeat] Sedíš před kalendářem. <break time="0.3s" /> Klikneš na termín. <break time="0.3s" /> Zavřeš prohlížeč. <break time="0.3s" /> [warm] Všichni říkají plánuj. <break time="0.3s" /> [intense] Pravda? <break time="0.3s" /> Tohle není chaos — tohle je tvůj kompas. <break time="1.0s" />
+
+[inviting] Střelci — napiš, kam tě to dnes táhne ⬇️ <break time="0.3s" />
+[clearly] Zítra jdeme hlouběji. <break time="0.3s" /> Sleduj.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+16. dubna 2026 ti Jupiter v domě komunikace šeptá: tvoje "jo" není slabost — je to radar 🎯 Střelci fungují přes intuici, ne přes tabulky: vládnoucí planeta ti dává schopnost cítit správný směr dřív, než ho vidíš na mapě. Zítra ti ukážu, co se děje, když Jupiter mění kurz — sleduj profil, tohle není náhoda ✨
+
+#mystickaHvezda #Střelec #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+16. dubna 2026 tvoje "jo" není slabost — je to živý nástroj navigace 🎯 Jupiter ti v domě komunikace zesiluje schopnost rozpoznat správné načasování bez spreadsheetů: intuice u Střelců pracuje rychleji než logika, protože vládnoucí planeta ti dává přednost před analýzou. Tvůj kompas neměří místa — měří energii, kam tě situace táhne, a to je přesnější než jakýkoli plán. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Střelec #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm instrumental with light harp arpeggios and delicate flute melody over gentle rhythmic pulse, evoking golden sunrise breaking through starlit sky with forward momentum and bright Sagittarius energy, designed as uplifting background bed for voiceover in major key with breathing melodic phrases. Short instrumental, 60-90 seconds, loop-ready.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Střelci, 16. dubna píšeš "jo" víc, než myslíš. A pokaždé to cítíš — tahle má váhu. Sedíš před kalendářem. Klikneš na termín. Zavřeš prohlížeč. Všichni říkají plánuj. Pravda? Tohle není chaos — tohle je tvůj kompas. Střelci — napiš, kam tě to dnes táhne ⬇️ Zítra jdeme hlouběji. Sleduj."

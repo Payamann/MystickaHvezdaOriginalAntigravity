@@ -19,7 +19,10 @@ const router = express.Router();
 
 import { PREMIUM_PLAN_TYPES } from './config/constants.js';
 
-// Plan definitions (consistent with cenik.html)
+// Plan definitions — plan_type hodnoty musí odpovídat:
+//   - PREMIUM_PLAN_TYPES v server/config/constants.js (server-side check)
+//   - isPremium poli v js/premium-gates.js (frontend check)
+// Validní prémiové typy: 'premium_monthly', 'exclusive_monthly', 'vip_majestrat'
 const PLANS = {
     'poutnik': {
         name: 'Poutník (Základ)',
@@ -332,24 +335,21 @@ export async function handleStripeWebhook(rawBody, sig) {
 
     console.log(`[STRIPE] Webhook received: ${event.type} (ID: ${event.id})`);
 
-    // IDEMPOTENCY CHECK
-    try {
-        const { data: existingEvent } = await supabase
-            .from('payment_events')
-            .select('event_id')
-            .eq('event_id', event.id)
-            .single();
+    const { error: reserveError } = await supabase
+        .from('payment_events')
+        .insert({
+            event_id: event.id,
+            event_type: event.type,
+            status: 'processing'
+        });
 
-        if (existingEvent) {
-            console.log(`[STRIPE] Event ${event.id} already processed. Skipping.`);
+    if (reserveError) {
+        if (reserveError.code === '23505') {
+            console.log(`[STRIPE] Event ${event.id} already reserved/processed. Skipping.`);
             return;
         }
-    } catch (e) {
-        // Ignore "row not found" error, real errors will be caught later or table missing issue
-        // If table missing, this check fails but we proceed (safe failure mode? No, better to warn)
-        if (e.code !== 'PGRST116') { // PGRST116 is "Row not found" (good)
-            console.warn(`[STRIPE] Idempotency check failed (Table missing?): ${e.message}`);
-        }
+        console.error(`[STRIPE] Failed to reserve event ${event.id}: ${reserveError.message}`);
+        throw new Error(`Event reservation failed: ${reserveError.message}`);
     }
 
     try {
@@ -376,26 +376,75 @@ export async function handleStripeWebhook(rawBody, sig) {
                 console.log(`[STRIPE] Unhandled event type: ${event.type}`);
         }
 
-        // RECORD PROCESSED EVENT
-        await supabase.from('payment_events').insert({
-            event_id: event.id,
-            event_type: event.type,
-            status: 'success'
-        });
+        // RECORD PROCESSED EVENT (idempotency guard — must succeed)
+        const { error: updateError } = await supabase
+            .from('payment_events')
+            .update({ status: 'success' })
+            .eq('event_id', event.id);
+        if (updateError) {
+            console.error(`[STRIPE] Failed to mark event ${event.id} as success:`, updateError.message);
+            throw new Error(`Event status update failed: ${updateError.message}`);
+        }
 
     } catch (err) {
         console.error(`[STRIPE] Error processing event ${event.id}:`, err);
-        // We do NOT record failure in payment_events so Stripe can retry later
+        await supabase
+            .from('payment_events')
+            .delete()
+            .eq('event_id', event.id)
+            .eq('status', 'processing');
         throw err; // Re-throw to make Stripe retry
     }
 }
 
 /**
- * Handle checkout.session.completed - initial subscription creation
+ * Handle checkout.session.completed - dispatches to one-time or subscription handler
  */
 async function handleCheckoutCompleted(session) {
+    if (session.mode === 'payment' && session.metadata?.productType === 'rocni_horoskop') {
+        return handleRocniHoroskopPurchase(session);
+    }
+    return handleSubscriptionCheckoutCompleted(session);
+}
+
+/**
+ * Handle one-time purchase of Roční Horoskop na míru
+ * Generates PDF via Claude + Playwright, sends via Resend
+ */
+async function handleRocniHoroskopPurchase(session) {
+    const { customerName, birthDate, sign, email } = session.metadata || {};
+    const customerEmail = email || session.customer_email || session.customer_details?.email;
+
+    if (!customerName || !birthDate || !sign || !customerEmail) {
+        console.error('[HOROSKOP] Missing metadata in checkout session:', session.id);
+        return;
+    }
+
+    console.log(`[HOROSKOP] Generating PDF for ${customerEmail} (${sign})`);
+
+    // Run async — don't block webhook response
+    setImmediate(async () => {
+        try {
+            const { generateHoroscopeContent, renderPdf } = await import('./services/horoscope-pdf.js');
+            const { sendHoroscopePdf } = await import('./email-service.js');
+
+            const sections = await generateHoroscopeContent({ name: customerName, birthDate, sign });
+            const pdfBuffer = await renderPdf({ name: customerName, sign, birthDate, sections });
+
+            await sendHoroscopePdf({ to: customerEmail, name: customerName, sign, pdfBuffer });
+            console.log(`[HOROSKOP] PDF sent to ${customerEmail}`);
+        } catch (err) {
+            console.error(`[HOROSKOP] PDF generation/delivery failed for ${customerEmail}:`, err.message);
+        }
+    });
+}
+
+/**
+ * Handle checkout.session.completed - initial subscription creation
+ */
+async function handleSubscriptionCheckoutCompleted(session) {
     const userId = session.client_reference_id || session.metadata?.userId;
-    const validPlanTypes = ['premium_monthly', 'premium_yearly', 'premium_lifetime'];
+    const validPlanTypes = ['premium_monthly', 'exclusive_monthly', 'vip_majestrat'];
     let planType = session.metadata?.planType || 'premium_monthly';
     if (!validPlanTypes.includes(planType)) {
         console.error('[STRIPE] Invalid plan type in webhook:', planType);
@@ -428,11 +477,8 @@ async function handleCheckoutCompleted(session) {
                 currentPeriodEnd = new Date(session.subscription_details.current_period_end * 1000).toISOString();
             } else {
                 const expiry = new Date();
-                if (planType === 'premium_yearly') {
-                    expiry.setFullYear(expiry.getFullYear() + 1);
-                } else {
-                    expiry.setMonth(expiry.getMonth() + 1);
-                }
+                // Všechny plány jsou měsíční — fallback vždy +1 měsíc
+                expiry.setMonth(expiry.getMonth() + 1);
                 currentPeriodEnd = expiry.toISOString();
             }
         }
@@ -447,6 +493,18 @@ async function handleCheckoutCompleted(session) {
             .update({ stripe_customer_id: stripeCustomerId, is_premium: true })
             .eq('id', userId);
     }
+
+    const { data: existingSubscription, error: existingSubscriptionError } = await supabase
+        .from('subscriptions')
+        .select('stripe_subscription_id, status')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+    if (existingSubscriptionError) {
+        console.error('[STRIPE] Failed to load existing subscription before upsert:', existingSubscriptionError);
+    }
+
+    const isFirstPaidSubscription = !existingSubscription?.stripe_subscription_id;
 
     // Upsert subscription record
     const subData = {
@@ -473,13 +531,7 @@ async function handleCheckoutCompleted(session) {
 
                 // Trigger upgrade reminders (Day 7, 14) for free users upgrading
                 // Only send if it's their first purchase
-                const { data: oldSubs } = await supabase
-                    .from('subscriptions')
-                    .select('id')
-                    .eq('user_id', userId)
-                    .neq('id', userId); // Exclude current subscription
-
-                if (!oldSubs || oldSubs.length === 0) {
+                if (isFirstPaidSubscription) {
                     // First purchase - send reminders and churn prevention
                     // Skip upgrade reminders for trial users (they already paid/are trialing)
                     if (subStatus !== 'trialing') {
@@ -572,12 +624,7 @@ function getFeaturesByPlan(planType) {
             'Astrokartografické mapy (4x/rok)',
             'VIP komunita & diskuse'
         ],
-        'vip': [
-            'Everything in VIP Majestát, plus:',
-            '1-on-1 expert consultations',
-            'Custom astrological reports',
-            'White-label options'
-        ]
+        // 'vip' plan type byl odstraněn — v backendu neexistuje, platný typ je 'vip_majestrat'
     };
 
     return features[planType] || features['premium_monthly'];

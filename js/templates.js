@@ -3,6 +3,7 @@
  * Centralized string templates for UI components.
  */
 
+(() => {
 class Templates {
 
     /**
@@ -330,9 +331,8 @@ class Templates {
     }
 }
 
-// Export for module usage, or attach to window for script usage
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = Templates;
-} else {
+// Attach to window for browser usage
+if (typeof window !== 'undefined') {
     window.Templates = Templates;
 }
+})();

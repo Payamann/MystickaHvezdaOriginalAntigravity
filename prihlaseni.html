@@ -1,245 +1,66 @@
 <!DOCTYPE html>
-
 <html lang="cs">
-
-
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-
     <title>Přihlášení | Mystická Hvězda</title>
-
+    <meta name="description" content="Přihlaste se nebo si vytvořte účet zdarma a pokračujte v osobních výkladech na Mystické Hvězdě.">
     <meta name="robots" content="noindex, nofollow">
-
-
-
-    <!-- Favicon -->
-
-    <link rel="icon" type="image/svg+xml"
-
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔑</text></svg>">
-
-
-
-    <!-- Fonts -->
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link
-
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap&subset=latin,latin-ext"
-
-        rel="stylesheet"  >
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap&subset=latin,latin-ext" rel="stylesheet"></noscript>
-
-
-
-    <!-- Styles -->
-
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>*</text></svg>">
+    <link rel="stylesheet" href="/fonts/local-fonts.css">
     <link rel="stylesheet" href="css/style.v2.min.css?v=11">
 
     <style>
-        .login-section {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 6rem 1.25rem 3rem;
-        }
-
-        .login-card {
-            width: 100%;
-            max-width: 440px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            border-radius: 20px;
-            padding: 2.5rem 2rem;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.06);
-        }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .login-icon {
-            font-size: 2.5rem;
-            display: block;
-            margin-bottom: 0.75rem;
-        }
-
-        .login-card .form-group {
-            margin-bottom: 1.1rem;
-        }
-
-        .login-card .form-label {
-            display: block;
-            font-size: 0.85rem;
-            color: rgba(255,255,255,0.6);
-            margin-bottom: 0.4rem;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .login-card .form-input {
-            width: 100%;
-            box-sizing: border-box;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 10px;
-            padding: 0.75rem 1rem;
-            color: #fff;
-            font-size: 0.95rem;
-            font-family: 'Inter', sans-serif;
-            transition: border-color 0.2s;
-            outline: none;
-        }
-
-        .login-card .form-input:focus {
-            border-color: rgba(212, 175, 55, 0.6);
-            background: rgba(255, 255, 255, 0.09);
-        }
-
-        .login-card .form-input::placeholder {
-            color: rgba(255, 255, 255, 0.3);
-        }
-
-        .login-card .btn--primary {
-            width: 100%;
-            margin-top: 0.5rem;
-            padding: 0.85rem;
-            font-size: 0.95rem;
-            letter-spacing: 0.05em;
-        }
-
-        .login-card .btn--text {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
-            padding: 0.25rem 0;
-        }
-
-        #auth-mode-toggle {
-            display: block;
-            width: 100%;
-            margin-top: 1.5rem;
-            text-align: center;
-            background: rgba(212,175,55,0.08);
-            border: 1px solid rgba(212,175,55,0.25);
-            border-radius: 50px;
-            padding: 0.7rem 1.5rem;
-            color: var(--color-mystic-gold);
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        #auth-mode-toggle:hover {
-            background: rgba(212,175,55,0.15);
-        }
-
-        @media (max-width: 480px) {
-            .login-card {
-                padding: 2rem 1.25rem;
-            }
-        }
+        .login-section { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 6rem 1.25rem 3rem; }
+        .login-card { width: 100%; max-width: 440px; background: rgba(255,255,255,0.04); border: 1px solid rgba(212,175,55,0.2); border-radius: 20px; padding: 2.5rem 2rem; backdrop-filter: blur(12px); box-shadow: 0 8px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .login-header { text-align: center; margin-bottom: 2rem; }
+        .login-icon { font-size: 2.5rem; display: block; margin-bottom: 0.75rem; }
+        .login-card .form-group { margin-bottom: 1.1rem; }
+        .login-card .form-label { display: block; font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 0.4rem; font-family: 'Inter', sans-serif; }
+        .login-card .form-input { width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 0.75rem 1rem; color: #fff; font-size: 0.95rem; font-family: 'Inter', sans-serif; transition: border-color 0.2s; outline: none; }
+        .login-card .form-input:focus { border-color: rgba(212,175,55,0.6); background: rgba(255,255,255,0.09); }
+        .login-card .form-input::placeholder { color: rgba(255,255,255,0.3); }
+        .login-card .btn--primary { width: 100%; margin-top: 0.5rem; padding: 0.85rem; font-size: 0.95rem; letter-spacing: 0.05em; }
+        .login-card .btn--text { background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 0.9rem; padding: 0.25rem 0; }
+        #auth-mode-toggle { display: block; width: 100%; margin-top: 1.5rem; text-align: center; background: rgba(212,175,55,0.08); border: 1px solid rgba(212,175,55,0.25); border-radius: 50px; padding: 0.7rem 1.5rem; color: var(--color-mystic-gold); font-size: 0.9rem; cursor: pointer; transition: background 0.2s; }
+        #auth-mode-toggle:hover { background: rgba(212,175,55,0.15); }
+        @media (max-width: 480px) { .login-card { padding: 2rem 1.25rem; } }
     </style>
 
-
-
-    <!-- Scripts -->
-
-
-
-
-
-
-
-
-
-
-
     <meta property="og:image" content="https://www.mystickahvezda.cz/img/hero-3d.webp">
-
     <link rel="canonical" href="https://www.mystickahvezda.cz/prihlaseni.html">
-
-    <meta name="robots" content="noindex, nofollow">
-
     <script src="/js/dist/analytics-init.js" defer></script>
 </head>
 
-
-
-<body>
-
-    <!-- STARS BACKGROUND -->
-
+<body class="page-login">
     <div class="stars" aria-hidden="true"></div>
-
-
-
-    <!-- HEADER -->
-
     <div id="header-placeholder"></div>
 
-
-
     <main>
-
         <section class="login-section">
-
             <div class="login-card" data-animate>
-
                 <div class="login-header">
-
-                    <span class="login-icon">🔮</span>
-
+                    <span class="login-icon">*</span>
                     <h1 class="hero__title" id="login-page-title" style="font-size: 2rem; margin-bottom: 0.5rem;">Vítejte zpět</h1>
-
-                    <p class="hero__subtitle" id="login-page-subtitle" style="font-size: 1rem;">Přihlaste se ke svému účtu</p>
-
-                    <p id="login-social-proof" style="font-size:0.82rem;color:rgba(255,255,255,0.35);margin-top:0.5rem;display:none;">⭐⭐⭐⭐⭐ Přidejte se k 12 000+ uživatelům</p>
-
+                    <p class="hero__subtitle" id="login-page-subtitle" style="font-size: 1rem;">Přihlaste se ke svému účtu a pokračujte tam, kde jste skončili.</p>
+                    <p id="login-social-proof" style="font-size:0.82rem;color:rgba(255,255,255,0.45);margin-top:0.5rem;display:none;">12 000+ lidí se sem vrací pro denní vedení.</p>
                 </div>
 
-
-
-                <!-- Using the same ID as the modal form to reuse Auth logic -->
-
                 <form id="login-form">
-
                     <div class="form-group">
-
                         <label for="email" class="form-label">Email</label>
-
-                        <input type="email" id="email" name="email" class="form-input" placeholder="vas@email.cz"
-
-                            required autocomplete="email">
-
+                        <input type="email" id="email" name="email" class="form-input" placeholder="vas@email.cz" required autocomplete="email">
                     </div>
-
-
 
                     <div class="form-group">
                         <label for="password" class="form-label">Heslo</label>
-                        <input type="password" id="password" name="password" class="form-input" placeholder="••••••••"
-                            required autocomplete="current-password">
+                        <input type="password" id="password" name="password" class="form-input" placeholder="********" required autocomplete="current-password">
                     </div>
 
                     <div class="form-group" id="confirm-password-field-wrapper" style="display: none;">
                         <label for="confirm-password-reg" class="form-label">Potvrďte heslo</label>
-                        <input type="password" id="confirm-password-reg" name="confirm_password" class="form-input" placeholder="••••••••"
-                            autocomplete="new-password">
+                        <input type="password" id="confirm-password-reg" name="confirm_password" class="form-input" placeholder="********" autocomplete="new-password">
                     </div>
-
-
 
                     <div class="form-group" id="gdpr-consent-wrapper" style="display: none; margin-top: 1rem;">
                         <label class="checkbox-label" style="display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.85rem; color: rgba(255,255,255,0.7); cursor: pointer;">
@@ -248,169 +69,67 @@
                         </label>
                     </div>
 
-                    <button type="submit" id="auth-submit" class="btn btn--primary btn--glow"
-
-                        style="width: 100%; margin-top: 1rem;">
-
-                        Přihlásit se
-
-                    </button>
-
+                    <button type="submit" id="auth-submit" class="btn btn--primary btn--glow" style="width: 100%; margin-top: 1rem;">Přihlásit se</button>
                 </form>
-
-
-
-                <!-- Forgot Password Link -->
 
                 <div style="margin-top: 1rem; text-align: center;">
-
-                    <button id="forgot-password-link" class="btn btn--text"
-
-                        style="color: var(--color-silver-mist); font-size: 0.9rem;">
-
-                        Zapomněli jste heslo?
-
-                    </button>
-
+                    <button id="forgot-password-link" class="btn btn--text" style="color: var(--color-silver-mist); font-size: 0.9rem;">Zapomněli jste heslo?</button>
                 </div>
-
-
-
-                <!-- Forgot Password Form (Hidden by default) -->
 
                 <form id="forgot-password-form" style="display: none;">
-
                     <div class="form-group">
-
                         <label for="forgot-email" class="form-label">Email</label>
-
                         <input type="email" id="forgot-email" class="form-input" placeholder="vas@email.cz" required>
-
                     </div>
-
-                    <button type="submit" class="btn btn--primary btn--glow" style="width: 100%; margin-top: 1rem;">
-
-                        Odeslat odkaz pro obnovení
-
-                    </button>
-
-                    <button type="button" id="back-to-login" class="btn btn--text"
-
-                        style="width: 100%; margin-top: 0.5rem; color: var(--color-silver-mist);">
-
-                        Zpět na přihlášení
-
-                    </button>
-
+                    <button type="submit" class="btn btn--primary btn--glow" style="width: 100%; margin-top: 1rem;">Odeslat odkaz pro obnovu</button>
+                    <button type="button" id="back-to-login" class="btn btn--text" style="width: 100%; margin-top: 0.5rem; color: var(--color-silver-mist);">Zpět na přihlášení</button>
                 </form>
-
-
-
-                <!-- Reset Password Form (Hidden, shown when ?reset=true) -->
 
                 <form id="reset-password-form" style="display: none;">
-
                     <div class="form-group">
                         <label for="new-password" class="form-label">Nové heslo</label>
-                        <input type="password" id="new-password" class="form-input" placeholder="••••••••" required
-                            minlength="8">
+                        <input type="password" id="new-password" class="form-input" placeholder="********" required minlength="8">
                     </div>
-
                     <div class="form-group">
                         <label for="confirm-password" class="form-label">Potvrďte heslo</label>
-                        <input type="password" id="confirm-password" class="form-input" placeholder="••••••••" required
-                            minlength="8">
+                        <input type="password" id="confirm-password" class="form-input" placeholder="********" required minlength="8">
                     </div>
-
-                    <button type="submit" class="btn btn--primary btn--glow" style="width: 100%; margin-top: 1rem;">
-                        Nastavit nové heslo
-                    </button>
-
+                    <button type="submit" class="btn btn--primary btn--glow" style="width: 100%; margin-top: 1rem;">Nastavit nové heslo</button>
                 </form>
 
-
-
                 <div style="margin-top: 2rem; font-size: 0.9rem; color: var(--color-silver-mist);">
-
-                    <button id="auth-mode-toggle" class="btn btn--text" style="color: var(--color-mystic-gold);">
-
-                        Nemáte účet? Zaregistrujte se zdarma →
-
-                    </button>
-
+                    <button id="auth-mode-toggle" class="btn btn--text" style="color: var(--color-mystic-gold);">Nemáte účet? Zaregistrujte se zdarma →</button>
                 </div>
-
-
-
-                <!-- Hidden Register Fields (Managed by auth-client.js toggleMode) -->
 
                 <div id="register-fields" style="display: none; text-align: left; margin-top: 1rem;">
                     <div class="form-group">
                         <label class="form-label">Jméno</label>
                         <input type="text" name="first_name" class="form-input" placeholder="Vaše jméno">
                     </div>
-
                     <div class="form-group">
-
                         <label class="form-label">Datum narození</label>
-
                         <input type="date" name="birth_date" class="form-input">
-
                     </div>
-
                     <div class="form-group">
-
                         <label class="form-label">Místo narození</label>
-
                         <input type="text" name="birth_place" class="form-input" placeholder="Např. Praha">
-
                     </div>
-
                 </div>
 
-
-
-                <!-- Header for Register Mode (Hidden by default, updated by JS) -->
-
                 <span id="auth-title" class="sr-only">Přihlášení</span>
-
-
-
             </div>
-
         </section>
-
     </main>
-
-
-
-    <!-- FOOTER -->
 
     <div id="footer-placeholder"></div>
 
-
-
-    <!-- Handling Redirect Logic from URL -->
-
+    <script src="js/analytics.js?v=5" defer></script>
     <script src="js/prihlaseni.js" defer></script>
-
-
-
-
     <script src="js/api-config.js?v=5" defer></script>
-
     <script src="js/templates.js?v=10" defer></script>
-
     <script src="js/auth-client.js?v=5" defer></script>
-
+    <script src="js/auth-copy-fixes.js" defer></script>
     <script src="js/components.js?v=10" defer></script>
-
     <script type="module" src="js/main.js?v=10"></script>
-
-
 </body>
-
-
-
 </html>
-

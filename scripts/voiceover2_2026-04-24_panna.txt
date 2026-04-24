@@ -1,0 +1,47 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 24. dubna 2026
+
+[soft] Pořád opravuješ věci, které nikdo jiný nevidí. <break time="0.5s" /> [gentle] Přesto to nestačí. <break time="1.0s" />
+
+[confident] Tento týden narazíš na úkol, který jsi přepracoval do třetí verze — a zjistíš, že první byla správná. <break time="0.3s" /> [serious] Saturn ti vrací účet za čas strávený přepisováním toho, co už fungovalo. <break time="1.0s" />
+
+[inviting] Proč to kontroluješ? Napiš jedno slovo ⬇️ <break time="0.3s" /> [clearly] Jedno znamení tohle nikdy nepochopí. Které? Zjistíš příště.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+Merkur, vládce Panny, tě 24. dubna 2026 netlačí k dokonalosti — tlačí tě k analýze, a to je zásadní rozdíl. ⚡ Saturn jako planeta struktury zpomaluje všechno, co stavíš na opakování místo na důvěru v první úsudek. Sleduj profil — příště odhalím, které znamení tvůj přístup k detailům nikdy nepochopí. 🔍
+
+#mystickaHvezda #Panna #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+24. dubna 2026 ti Saturn vrací účet — za každou přepsanou verzi něčeho, co už fungovalo. 🪐 Merkur tě tlačí k analýze, a právě tam se skrývá zásadní rozdíl. Když narazíš na úkol ve třetí verzi, zastav se a ověř, jestli není první odpověď ta správná — Saturn strukturu zpomaluje proto, abys si všiml, kde plýtváš časem místo důvěry ve vlastní úsudek. ✍️ Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Panna #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm uplifting instrumental with gentle piano melody and soft orchestral strings, moving forward with a light rhythmic pulse in a bright major key — precise, grounded, and quietly energizing, like first rays of golden light spreading across a vast open sky. Melodic phrases breathe naturally, leaving space for a voiceover while carrying a steady sense of calm forward momentum and hopeful clarity. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+A mystical video thumbnail for zodiac sign Virgo.
+
+BACKGROUND: deep dark space with soft subtle deep teal and sage green nebula with cool earthy cosmic dust, forest emerald and silver stardust with precise geometric light patterns, refined cosmic clarity — cool, analytical, crystalline — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.
+
+COMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.
+
+ELEMENT 1 — glyph: large ornate Virgo symbol (♍) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.
+
+ELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '24. dubna' in elegant gold lettering on the first line, 'PANNA' in bold engraved gold capitals on the second line.
+
+ELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Opravuješ to, co už funguje.' on the first line, 'První verze byla správná.' on the second line.
+
+NO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.
+
+Portrait 9:16.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Pořád opravuješ věci, které nikdo jiný nevidí. Přesto to nestačí. Tento týden narazíš na úkol, který jsi přepracoval do třetí verze — a zjistíš, že první byla správná. Saturn ti vrací účet za čas strávený přepisováním toho, co už fungovalo. Proč to kontroluješ? Napiš jedno slovo ⬇️ Jedno znamení tohle nikdy nepochopí. Které? Zjistíš příště."

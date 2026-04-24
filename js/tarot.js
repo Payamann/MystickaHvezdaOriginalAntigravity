@@ -88,16 +88,18 @@ function initTarot() {
             if (spreadType !== 'Jedna karta') {
                 if (!window.Auth || !window.Auth.isLoggedIn()) {
                     window.Auth?.showToast('Přihlášení vyžadováno', 'Pro vstup do Hvězdného Průvodce se prosím přihlaste.', 'info');
-                    window.Auth?.openModal('login');
+                    window.location.href = '/prihlaseni.html?redirect=/tarot.html';
                     return;
                 }
 
-                if (!window.Auth.isPremium()) {
+                if (!window.Auth?.isPremium()) {
                     isSoftGated = true;
 
                     // Check daily limit for free teaser
                     const today = new Date().toISOString().split('T')[0];
-                    const usage = JSON.parse(localStorage.getItem('tarot_free_usage') || '{}');
+                    let usage = {};
+                    try { usage = JSON.parse(localStorage.getItem('tarot_free_usage') || '{}'); }
+                    catch { localStorage.removeItem('tarot_free_usage'); }
 
                     if (usage.date === today && usage.count >= 1) {
                         window.Auth.showToast('Limit vyčerpán 🔒', 'Dnešní ukázka zdarma již byla vyčerpána. Získejte Premium pro neomezené výklady.', 'error');
@@ -375,13 +377,13 @@ async function generateEtherealSummary(cards, spreadType) {
         if (path.includes('/sk/')) currentLang = 'sk';
         else if (path.includes('/pl/')) currentLang = 'pl';
 
-        const authToken = window.Auth?.token;
+        const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
         const response = await fetch(`${window.API_CONFIG?.BASE_URL || '/api'}/tarot-summary`, {
             method: 'POST',
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
-                ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
+                ...(csrfToken && { 'X-CSRF-Token': csrfToken })
             },
             body: JSON.stringify({
                 spreadType,

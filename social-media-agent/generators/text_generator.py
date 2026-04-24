@@ -1889,9 +1889,52 @@ DŮLEŽITÉ: Nepřidávej astrologický kontext pokud nevychází přímo z kome
     elif relevant_blogs and ctx["typ"] == "otazka":
         recommendation = f"\nODKAZ (použij POUZE tento, doslova): {config.WEBSITE_URL}/blog/{relevant_blogs[0]['slug']}.html"
 
-    prompt = f"""Post byl o: "{post_topic}"
+    # Detekce pohlaví z textu komentáře — ženské a mužské markery v češtině/slovenštině
+    from datetime import date as _date
+    _d = _date.today()
+    _today_str = f"{_d.day}. {_d.month}. {_d.year}"  # např. "21. 4. 2026"
+    _comment_lower = original_comment.lower()
+    _FEMALE_MARKERS = [
+        "sama", "unavena", "šťastná", "stastna", "smutná", "smutna", "ztracená",
+        "ztracena", "vyčerpaná", "vycerpana", "spokojená", "spokojena", "nervózní",
+        "nervozni", "vděčná", "vdecna", "ráda", "rada", "jsem šla", "som šla",
+        "som unavená", "som smutná", "som šťastná", "som spokojná",
+        "unavená", "unaveně",  # s diakritikou i bez
+    ]
+    _MALE_MARKERS = [
+        "sám", "sam ", "unavený", "unaveny", "šťastný", "stastny", "smutný",
+        "smutny", "ztracený", "ztraceny", "vyčerpaný", "vycerpany", "spokojený",
+        "spokojen", "vděčný", "vdecny", "rád ", "jsem šel", "som šiel",
+    ]
+    _gender_hint = ""
+    # Regex detekce ženského minulého tvaru: "byla jsem", "šla jsem", "udělala jsem" atd.
+    import re as _re_gender
+    if any(m in _comment_lower for m in _FEMALE_MARKERS) or \
+       _re_gender.search(r'\b\w+la\s+(jsem|som)\b', _comment_lower) or \
+       _re_gender.search(r'\b(jsem|som)\s+\w+la\b', _comment_lower) or \
+       "abych to byla" in _comment_lower or "abych byla" in _comment_lower:
+        _gender_hint = "\nPOHLAVÍ: Z komentáře vyplývá, že osoba je ŽENA — používej ženské tvary v přítomném čase: 'cítíš', 'děláš', v minulém čase 'byla jsi', 'šla jsi', 'uvědomila sis', 'ztratila ses' (NIKDY ne 'byl jsi', 'šel jsi', 'uvědomil', 'ztratil')."
+    elif any(m in _comment_lower for m in _MALE_MARKERS):
+        _gender_hint = "\nPOHLAVÍ: Z komentáře vyplývá, že osoba je MUŽ — používej mužské tvary: 'byl jsi', 'šel jsi' (ne 'byla jsi')."
+
+    # Detekce komentáře o třetích osobách — komentář mluví O jiných lidech, ne o sobě
+    _THIRD_PERSON_SUBJECTS = ["ženy", "muži", "oni", "jejich", "ony", "lidé", "lidi", "chlapi", "ženský"]
+    _FIRST_PERSON = ["jsem", "mě", " mi ", "mně", "moje", "muj", "můj", "mám", "som ", "mám"]
+    _is_about_others = (
+        any(w in _comment_lower for w in _THIRD_PERSON_SUBJECTS) and
+        not any(w in _comment_lower for w in _FIRST_PERSON)
+    )
+    _third_person_hint = ""
+    if _is_about_others:
+        _third_person_hint = "\nKONTEXT: Komentář mluví o jiných lidech (ne o sobě). Neodpovídej jako by pisatel mluvil o svém vlastním znamení — odpověz na to, co sdílí nebo cítí vůči těm druhým."
+
+    prompt = f"""Dnes je {_today_str}. Post byl publikován dříve — NEodkazuj na datum postu jako na budoucnost ani přítomnost. Pokud post zmiňuje konkrétní datum které už proběhlo, mluv o něm v minulém čase nebo vůbec.
+
+Post byl o: "{post_topic}"
 {f'Kontext: {post_context[:200]}' if post_context else ''}
 Komentář: "{original_comment}"
+{_gender_hint}
+{_third_person_hint}
 
 INSTRUKCE PRO TUTO ODPOVĚĎ:
 {instrukce}
@@ -1904,7 +1947,8 @@ PEVNÁ PRAVIDLA — porušení není přípustné:
 - Max 1 emoji
 - Nezačínaj "Ahoj!", "Děkujeme!", "To je skvělé že...", "To je krásné že..."
 - ABSOLUTNÍ ZÁKAZ lomených tvarů: NIKDY nepíšeš "cítil/a", "rozhodl/a", "přišel/přišla", "narodil/a" ani žádný jiný tvar s lomítkem — piš výhradně přítomný čas 2. os. ("cítíš", "rozhoduješ se") nebo infinitiv ("rozhodnout se")
-- ABSOLUTNÍ ZÁKAZ předpokladu pohlaví: nikdy "ses starala", "ses rozhodla", "byl jsi" — nevíš zda je to muž nebo žena
+- ABSOLUTNÍ ZÁKAZ předpokladu pohlaví pokud není jasné z komentáře — viz sekce POHLAVÍ výše
+- ABSOLUTNÍ ZÁKAZ: nikdy "Rád vidím", "Rád slyším" — to jsou mužské tvary. Použij "Super vidět", "Hezky slyšet", "Těší mě to"
 - NIKDY nevymýšlej URL adresy — odkaz použij POUZE pokud je explicitně uveden výše v sekci "Pokud to přirozeně sedí, doporuč"
 - NIKDY nepouži medicínské/vědecké termíny pokud si nejsi 100% jistý (raději vynech)
 - NIKDY neprozraď že jsi AI nebo bot
@@ -1915,20 +1959,73 @@ Odpověz POUZE textem odpovědi."""
                             system=_get_comment_system())
     result = response.text.strip()
 
-    # Post-processing: detekuj lomené tvary a cyrilici, přegeneruj max 3×
+    # Post-processing: detekuj lomené tvary, cyrilici, polská/slovenská slova, přegeneruj max 3×
     import re as _re
+    # Polská slova která se opakovaně prolínají do odpovědí (Haiku je občas zamíchá)
+    _POLISH_WORDS = [
+        "starasz", "mówisz", "robisz", "jesteś", "będziesz", "możesz", "chcesz",
+        "lubisz", "wiesz", "masz", "idziesz", "czujesz", "myślisz", "widzisz",
+        "rozumiesz", "pomożesz", "powiesz", "zrobisz", "dasz", "weźmiesz",
+        "będzie", "możemy", "musimy", "chcemy", "wiemy", "lubimy",
+        # Slovenská slova
+        "dávaš", "robíš", "môžeš", "chceš", "vieš", "ideš", "cítiš",
+        "myslíš", "vidíš", "rozumieš", "hovoríš", "pomôžeš",
+    ]
+    # Anglická slova která Haiku občas vmíchá do češtiny
+    _ENGLISH_WORDS = [
+        # Příslovce / spojky
+        "sometimes", "always", "never", "often", "maybe", "actually", "really",
+        "basically", "literally", "honestly", "anyway", "however", "although",
+        "because", "therefore", "instead", "together", "everything", "something",
+        "nothing", "everyone", "someone", "yourself", "myself", "yourself",
+        # Slovesa
+        "glad", "feel", "think", "know", "want", "need", "love", "like",
+        "see", "hear", "understand", "believe", "remember", "forget",
+        "happens", "happens", "works", "helps", "means", "shows", "feels",
+        # Podstatná jména (kontextová)
+        "life", "love", "heart", "soul", "time", "way", "place", "moment",
+        "light", "path", "journey", "space", "energy", "power", "strength",
+        # Přídavná jména
+        "beautiful", "powerful", "important", "special", "clear", "open",
+        "deep", "strong", "brave", "free", "true", "real", "new", "good",
+    ]
     def _has_issues(text: str) -> str | None:
         if _re.search(r'[А-Яа-яЁё]', text):
             return "cyrilici místo češtiny"
         if _re.search(r'\w+/\w{1,6}\b', text):
             return "lomený tvar (např. mohl/a, prožíval/a, měl/měla)"
+        text_lower = text.lower()
+        for w in _POLISH_WORDS:
+            if w in text_lower:
+                return f"polské/slovenské slovo '{w}' místo češtiny"
+        # Detekce anglických slov — hledej jako celé slovo (word boundary)
+        for w in _ENGLISH_WORDS:
+            if _re.search(rf'\b{_re.escape(w)}\b', text_lower):
+                return f"anglické slovo '{w}' v české odpovědi — nahraď českým ekvivalentem"
+        # Detekce mužského rodu na začátku (Rád vidím/slyším = předpokládá muže)
+        if _re.match(r'^rád\s', text_lower):
+            return "mužský rod 'Rád' na začátku — nevíme pohlaví, použij 'Super vidět', 'Těší mě to', 'Hezky slyšet'"
+        # Detekce "Rád/rád" kdekoliv jako predikát (Rád vidím, jsem rád že...)
+        if _re.search(r'\brád\s+(vidím|slyším|čtu|vnímám|cítím)\b', text_lower):
+            return "mužský rod 'rád vidím/slyším' — použij neutrální: 'Super vidět', 'Těší mě'"
+        # Detekce mužského minulého příčestí s "jsi" — POUZE pokud pohlaví není známé
+        # (pokud _gender_hint obsahuje MUŽ, mužské tvary jsou správné)
+        _MASC_PAST = r'\b(pocítil|zažil|viděl|slyšel|šel|byl|přišel|rozhodl|uvědomil|ztratil|cítil|řekl|udělal|zjistil|prošel|prožil|začal|skončil|dostal|pustil|nechal)\b'
+        if "MUŽ" not in _gender_hint:
+            if _re.search(r'\b(pocítil|zažil|viděl|slyšel|šel|byl|přišel|rozhodl|uvědomil)\s+jsi\b', text_lower):
+                return "mužský rod s 'jsi' — pohlaví neznámé, použij přítomný čas nebo infinitiv"
+        # Při ženském genderu kontroluj VŠECHNY mužské tvary minulého příčestí (i bez "jsi")
+        if "ŽENA" in _gender_hint:
+            match = _re.search(_MASC_PAST, text_lower)
+            if match:
+                return f"mužský tvar '{match.group()}' — ale víme že je to žena, použij ženský tvar (uvědomila, ztratila, šla...)"
         return None
 
     for _attempt in range(3):
         issue = _has_issues(result)
         if not issue:
             break
-        log.warning("Lomený tvar/cyrilice detekována (pokus %d), přegeneruji: %s", _attempt + 1, result[:60])
+        log.warning("Gender/jazyk/lomený tvar detekován (pokus %d), přegeneruji: %s", _attempt + 1, result[:60])
         stricter = prompt + f"\n\nPOZOR: Předchozí pokus obsahoval {issue}. Tentokrát ABSOLUTNĚ česky, BEZ LOMÍTEK (žádné /, žádné x/y tvary), bez cizích znaků. Piš výhradně přítomný čas 2. os. nebo infinitiv."
         response = _call_claude(client, model_name, stricter, temperature=0.65, max_tokens=250,
                                 system=_get_comment_system())
@@ -1937,6 +2034,24 @@ Odpověz POUZE textem odpovědi."""
         # Fallback: hrubé odstranění lomených tvarů (vezmi část před lomítkem)
         result = _re.sub(r'(\w+)/\w{1,6}\b', r'\1', result)
         log.warning("Fallback nahrazení lomených tvarů po 3 pokusech")
+        # Pokud víme že je to žena, oprav mužské minulé tvary na ženské
+        if "ŽENA" in _gender_hint:
+            _masc_to_fem = {
+                "uvědomil": "uvědomila", "ztratil": "ztratila", "pocítil": "pocítila",
+                "zažil": "zažila", "viděl": "viděla", "slyšel": "slyšela",
+                "přišel": "přišla", "rozhodl": "rozhodla", "cítil": "cítila",
+                "řekl": "řekla", "udělal": "udělala", "zjistil": "zjistila",
+                "prošel": "prošla", "prožil": "prožila", "začal": "začala",
+                "skončil": "skončila", "dostal": "dostala", "pustil": "pustila",
+                "nechal": "nechala", "šel": "šla",
+            }
+            for masc, fem in _masc_to_fem.items():
+                result = _re.sub(rf'\b{masc}\b', fem, result, flags=_re.IGNORECASE)
+            log.info("Fallback ženská korekce minulých tvarů aplikována")
+
+    # Vždy odstraň markdown formátování (*tučné*, _kurzíva_) — na FB vypadají špatně
+    result = _re.sub(r'\*([^*]+)\*', r'\1', result)   # *slovo* → slovo
+    result = _re.sub(r'_([^_]+)_', r'\1', result)     # _slovo_ → slovo
 
     _register_opener(result)
     return result

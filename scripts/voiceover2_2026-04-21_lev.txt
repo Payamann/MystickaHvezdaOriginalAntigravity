@@ -1,0 +1,47 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 21. dubna 2026
+
+[commanding] Lvi nejsou exhibicionisté. <break time="0.5s" /> [confident] Jsou architekti vlastních scén. <break time="1.0s" />
+
+[warm] Stojíš před tou prezentací. <break time="0.3s" /> [upbeat] Všechno máš připravené. <break time="0.3s" /> [confident] Otevřeš poznámky a přepisuješ úvod potřetí. <break time="0.3s" /> [commanding] Publika se nebojíš — bojíš se vlastní banality. <break time="1.0s" />
+
+[inviting] Označ Lva, co tuhle energii přesně zná. <break time="0.3s" /> [clearly] Ukládej — budeš se k tomu vracet.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+21. dubna 2026 nemáš strach z neúspěchu — máš strach z průměrnosti 🔥 Slunce, tvůj vládce, ti dává touhu po autentickém výrazu, ne jen pozornosti — proto přepisuješ úvod potřetí, dokud nezazáří tak silně jako ty. Sleduj profil — příště odhalím, proč Lvi dokážou přeměnit obyčejnou situaci v nezapomenutelný zážitek ✨
+
+#mystickaHvezda #Lev #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+21. dubna 2026 nepřepisuješ úvod kvůli perfekcionismu — píšeš ho znovu, protože cítíš, kdy text nezazáří stejně silně jako ty 🔥 Slunce, tvůj vládce, ti nedává jen touhu po pozornosti — dává ti schopnost poznat, kdy tvůj výraz ještě není autentický, kdy scéna není dost tvá. Proto stojíš před tou prezentací a všechno máš připravené, ale otevřeš poznámky a měníš první větu — ne ze strachu z publika, protože Lvi tvoří vlastní scény podle svých představ. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Lev #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm energizing instrumental with grand piano and brass fanfare creating gentle forward momentum, like golden sunrise light spreading across distant galaxies, soft rhythmic pulse in major key designed to support voiceover with confident uplifting energy without overpowering speech. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+A mystical video thumbnail for zodiac sign Leo.
+
+BACKGROUND: deep dark space with soft subtle deep royal burgundy and dark copper nebula with dramatic sunburst corona in the distance, rich dark amber and deep maroon cosmic clouds, majestic dark regal tones — powerful, solar, commanding — dark enough to contrast with a gold glyph — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.
+
+COMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.
+
+ELEMENT 1 — glyph: large ornate Leo symbol (♌) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.
+
+ELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '21. dubna' in elegant gold lettering on the first line, 'LEV' in bold engraved gold capitals on the second line.
+
+ELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Nebojíš se lidí.' on the first line, 'Bojíš se být průměrný.' on the second line.
+
+NO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.
+
+Portrait 9:16.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Lvi nejsou exhibicionisté. Jsou architekti vlastních scén. Stojíš před tou prezentací. Všechno máš připravené. Otevřeš poznámky a přepisuješ úvod potřetí. Publika se nebojíš — bojíš se vlastní banality. Označ Lva, co tuhle energii přesně zná. Ukládej — budeš se k tomu vracet."

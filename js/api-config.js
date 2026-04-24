@@ -48,10 +48,6 @@ async function callAPI(endpoint, data) {
     try {
         const headers = { 'Content-Type': 'application/json' };
 
-        // Attach JWT token if available (for authenticated endpoints)
-        const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
-        if (token) headers['Authorization'] = `Bearer ${token}`;
-
         const csrfToken = await getCSRFToken();
         if (csrfToken) headers['X-CSRF-Token'] = csrfToken;
 

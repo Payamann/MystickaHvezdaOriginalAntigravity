@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Horoskop karta preview</title>
+<style>body{margin:0;background:#111;display:flex;align-items:center;justify-content:center;min-height:100vh;}</style>
+</head>
+<body>
+<canvas id="c" width="540" height="675"></canvas>
+<script>
+const W=540,H=675,S=0.5;
+const c=document.getElementById('c');
+const ctx=c.getContext('2d');
+
+// BG gradient
+const bg=ctx.createLinearGradient(0,0,0,H);
+bg.addColorStop(0,'#050510'); bg.addColorStop(0.5,'#0b0418'); bg.addColorStop(1,'#0d0620');
+ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+
+// Nebula
+const n1=ctx.createRadialGradient(W*.3,H*.25,0,W*.3,H*.25,W*.55);
+n1.addColorStop(0,'rgba(90,40,160,0.45)'); n1.addColorStop(1,'transparent');
+ctx.fillStyle=n1; ctx.fillRect(0,0,W,H);
+const n2=ctx.createRadialGradient(W*.75,H*.45,0,W*.75,H*.45,W*.45);
+n2.addColorStop(0,'rgba(50,20,100,0.35)'); n2.addColorStop(1,'transparent');
+ctx.fillStyle=n2; ctx.fillRect(0,0,W,H);
+
+// Stars
+for(let i=0;i<140;i++){
+  ctx.beginPath();
+  ctx.arc(Math.random()*W,Math.random()*H*.75,Math.random()*0.75+0.15,0,Math.PI*2);
+  ctx.fillStyle=`rgba(255,255,255,${Math.random()*.6+.2})`;
+  ctx.fill();
+}
+
+// Gold circle
+const cx=W/2,cy=210,cr=105;
+const cg=ctx.createRadialGradient(cx,cy,30,cx,cy,cr);
+cg.addColorStop(0,'rgba(235,192,102,0.18)'); cg.addColorStop(.6,'rgba(235,192,102,0.06)'); cg.addColorStop(1,'transparent');
+ctx.fillStyle=cg; ctx.beginPath(); ctx.arc(cx,cy,cr,0,Math.PI*2); ctx.fill();
+ctx.beginPath(); ctx.arc(cx,cy,cr-5,0,Math.PI*2);
+ctx.strokeStyle='rgba(235,192,102,0.25)'; ctx.lineWidth=0.75; ctx.stroke();
+
+// Badge
+ctx.font='500 17px sans-serif'; ctx.letterSpacing='3px';
+ctx.fillStyle='#ebc066'; ctx.textAlign='center';
+ctx.fillText('DENNÍ HOROSKOP',W/2,50);
+ctx.letterSpacing='0px';
+ctx.beginPath(); ctx.moveTo(W/2-80,68); ctx.lineTo(W/2+80,68);
+ctx.strokeStyle='rgba(235,192,102,0.4)'; ctx.lineWidth=0.5; ctx.stroke();
+
+// Date
+ctx.font='300 15px sans-serif'; ctx.fillStyle='rgba(255,255,255,0.75)';
+ctx.fillText('Dnes • středa 9. dubna 2026',W/2,88);
+
+// Zodiac symbol
+ctx.font='90px serif'; ctx.fillText('♈',W/2,240);
+
+// Sign name
+ctx.font='bold 44px Georgia,serif'; ctx.fillStyle='#ebc066';
+ctx.fillText('BERAN',W/2,340);
+
+// Divider
+ctx.beginPath(); ctx.moveTo(W/2-75,355); ctx.lineTo(W/2+75,355);
+ctx.strokeStyle='rgba(235,192,102,0.5)'; ctx.lineWidth=0.75; ctx.stroke();
+ctx.save(); ctx.translate(W/2,355); ctx.rotate(Math.PI/4);
+ctx.fillStyle='#ebc066'; ctx.fillRect(-2.5,-2.5,5,5); ctx.restore();
+
+// Prediction text
+function wrapText(text,x,y,maxW,lh,maxL){
+  const words=text.split(' '); let line='', drawn=0;
+  for(let n=0;n<words.length;n++){
+    const t=line+words[n]+' ';
+    if(ctx.measureText(t).width>maxW&&n>0){
+      if(drawn>=maxL-1){ctx.fillText(line.trim()+'…',x,y);return;}
+      ctx.fillText(line.trim(),x,y); line=words[n]+' '; y+=lh; drawn++;
+    } else line=t;
+  }
+  if(line.trim()) ctx.fillText(line.trim(),x,y);
+}
+ctx.font='400 19px sans-serif'; ctx.fillStyle='#ffffff'; ctx.textAlign='left';
+wrapText('Dnes je pro tebe den plný energie a nových začátků. Mars, tvůj vládce, ti dává sílu překonat jakékoli překážky. Nezapomínej naslouchat svému srdci — intuice tě povede správným směrem.',45,400,W-90,29,5);
+
+// Affirmation box
+ctx.fillStyle='rgba(235,192,102,0.12)';
+ctx.beginPath(); const ax=45,ay=555,aw=W-90,ah=65,ar=8;
+ctx.moveTo(ax+ar,ay); ctx.lineTo(ax+aw-ar,ay);
+ctx.quadraticCurveTo(ax+aw,ay,ax+aw,ay+ar);
+ctx.lineTo(ax+aw,ay+ah-ar); ctx.quadraticCurveTo(ax+aw,ay+ah,ax+aw-ar,ay+ah);
+ctx.lineTo(ax+ar,ay+ah); ctx.quadraticCurveTo(ax,ay+ah,ax,ay+ah-ar);
+ctx.lineTo(ax,ay+ar); ctx.quadraticCurveTo(ax,ay,ax+ar,ay); ctx.closePath(); ctx.fill();
+ctx.strokeStyle='rgba(235,192,102,0.3)'; ctx.lineWidth=0.5; ctx.stroke();
+
+ctx.font='500 15px sans-serif'; ctx.fillStyle='#ebc066'; ctx.textAlign='left';
+ctx.fillText('✨ Afirmace',ax+10,ay+22);
+ctx.font='italic 17px sans-serif'; ctx.fillStyle='rgba(255,255,255,0.75)';
+ctx.fillText('"Jsem silný a odvážný v každém okamžiku."',ax+10,ay+47);
+
+// Branding
+ctx.beginPath(); ctx.moveTo(45,H-40); ctx.lineTo(W-45,H-40);
+ctx.strokeStyle='rgba(235,192,102,0.2)'; ctx.lineWidth=0.5; ctx.stroke();
+ctx.font='16px serif'; ctx.fillStyle='#ebc066'; ctx.textAlign='center';
+ctx.fillText('★',W/2-110,H-18);
+ctx.font='500 16px Georgia,serif';
+ctx.fillText('mystickahvezda.cz',W/2,H-18);
+ctx.font='16px serif';
+ctx.fillText('★',W/2+110,H-18);
+</script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 23. dubna 2026
+
+[gentle] Váhy, stále čekáš na ten správný okamžik. <break time="0.5s" /> [soft] Termín tě přerůstá. <break time="1.0s" />
+
+[warm] Stojíš na zastávce. <break time="0.3s" /> [soft] Hlas ve sluchátku utichl — a ty ani nevíš, jestli zavěsit, nebo počkat. <break time="0.3s" /> [confident] Snažíš se už dlouho. <break time="0.3s" /> [warm] Únava, kterou cítíš, není slabost — je to doklad skutečného nasazení. <break time="1.0s" />
+
+[inviting] Označ Váhu, co tohle přesně zná. <break time="0.3s" /> [clearly] Příště: co čekají planety pro tvé peníze tento měsíc.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+Váhy jsou vzduchovým znamením a 23. dubna 2026 právě tento živel způsobuje, že v tobě neustále běží tisíc možností najednou — a rozhodnutí tak dál visí ve vzduchu. ⚖️ Venuše jako tvá vládnoucí planeta tě přirozeně táhne k harmonii, takže každé nedokončené rozhodnutí cítíš jako fyzické napětí v těle, ne jen jako myšlenku. Sleduj profil — příště odhalím, co planety chystají pro tvé finance tento měsíc. 🪐
+
+#mystickaHvezda #Váhy #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+23. dubna 2026 si to zaslouží říct rovnou: čekat na dokonalý okamžik je past. ⚖️ Venuše jako tvá vládnoucí planeta touží po harmonii — a právě tohle tě nutí rozhodnutí odkládat, dokud nejsou „dokonalá". Únava, kterou teď nosíš v těle, otiskuje všechno, co do toho opravdu dáváš — vzdušný živel Vah tenhle vnitřní tlak jen zesiluje 🌬️. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Váhy #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm vibraphone melody with shimmering synth layers, gliding over a gentle rhythmic pulse in a bright major key — like golden light spreading across a starlit sky at dawn. Graceful and harmonious, with a steady forward energy that breathes and lifts without overpowering, designed to support a spoken voice with rose-tinted optimism. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+A mystical video thumbnail for zodiac sign Libra.
+
+BACKGROUND: deep dark space with soft subtle soft rose and lavender nebula with balanced pastel cosmic tones, delicate pink and lilac stardust, harmonious dual-color aurora in rose gold and violet hues — graceful, balanced, romantic — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.
+
+COMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.
+
+ELEMENT 1 — glyph: large ornate Libra symbol (♎) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.
+
+ELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '23. dubna' in elegant gold lettering on the first line, 'VÁHY' in bold engraved gold capitals on the second line.
+
+ELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Čekáš na správný čas.' on the first line, 'A čas nečeká.' on the second line.
+
+NO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.
+
+Portrait 9:16.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Váhy, stále čekáš na ten správný okamžik. Termín tě přerůstá. Stojíš na zastávce. Hlas ve sluchátku utichl — a ty ani nevíš, jestli zavěsit, nebo počkat. Snažíš se už dlouho. Únava, kterou cítíš, není slabost — je to doklad skutečného nasazení. Označ Váhu, co tohle přesně zná. Příště: co čekají planety pro tvé peníze tento měsíc."

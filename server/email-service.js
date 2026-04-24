@@ -702,6 +702,62 @@ EMAIL_TEMPLATES.daily_horoscope = {
   `, `Denní horoskop — ${data.sign}`)
 };
 
+const SIGN_NAMES_EMAIL = {
+  beran: 'Beran', byk: 'Býk', blizenci: 'Blíženci', rak: 'Rak',
+  lev: 'Lev', panna: 'Panna', vahy: 'Váhy', stir: 'Štír',
+  strelec: 'Střelec', kozoroh: 'Kozoroh', vodnar: 'Vodnář', ryby: 'Ryby'
+};
+
+/**
+ * Sends a personalized Roční Horoskop PDF as an email attachment.
+ */
+export async function sendHoroscopePdf({ to, name, sign, pdfBuffer }) {
+  const client = getResend();
+  if (!client) {
+    console.error('[EMAIL] Resend not configured — cannot send horoscope PDF');
+    return;
+  }
+
+  const signName = SIGN_NAMES_EMAIL[sign] || sign;
+  const year = new Date().getFullYear();
+
+  const html = getBaseTemplate(`
+    <div style="text-align:center;padding:20px 0 10px;">
+      <p style="font-family:'Cinzel',serif;font-size:18px;color:#d4af37;letter-spacing:2px;margin:0 0 6px;">Tvůj horoskop je tady ✦</p>
+      <p style="font-size:15px;color:rgba(255,255,255,0.8);margin:0;">Ahoj ${name},</p>
+    </div>
+    <div style="padding:20px 0;">
+      <p>Právě ti posílám tvůj <strong style="color:#d4af37;">Roční Horoskop na míru ${year}</strong> — personalizovaný výklad speciálně pro tebe jako ${signName}.</p>
+      <p style="margin-top:12px;">Najdeš ho v příloze tohoto e-mailu jako PDF. Doporučuji ho otevřít v klidu, udělat si čaj a číst pomalu — každá sekce je psaná přímo pro tebe.</p>
+      <div style="background:rgba(212,175,55,0.07);border-left:3px solid #d4af37;padding:16px 20px;margin:24px 0;border-radius:0 6px 6px 0;">
+        <p style="margin:0;font-size:14px;color:rgba(255,255,255,0.7);">Horoskop obsahuje: osobnostní profil, výhled pro lásku a vztahy, kariéru a finance, osobní růst, klíčové měsíce roku a závěrečné slovo.</p>
+      </div>
+      <p>Pokud máš jakékoli otázky, odpověz na tento e-mail.</p>
+      <p style="margin-top:16px;color:rgba(255,255,255,0.6);font-size:13px;">S láskou ze hvězd,<br><span style="color:#d4af37;font-family:'Cinzel',serif;">Mystická Hvězda</span></p>
+    </div>
+  `, `Tvůj Roční Horoskop ${year} je tady`);
+
+  const pdfBase64 = Buffer.from(pdfBuffer).toString('base64');
+
+  const { data, error } = await client.emails.send({
+    from: FROM_EMAIL,
+    to,
+    subject: `✦ Tvůj Roční Horoskop na míru ${year} — ${signName}`,
+    html,
+    attachments: [{
+      filename: `horoskop-${year}-${sign}.pdf`,
+      content: pdfBase64,
+      type: 'application/pdf',
+    }],
+  });
+
+  if (error) {
+    throw new Error(`Resend error: ${error.message} (${error.statusCode})`);
+  }
+
+  return data;
+}
+
 export default {
   sendEmail,
   sendOnboardingSequence,
@@ -711,5 +767,6 @@ export default {
   sendChurnRecoveryEmail,
   sendWeeklyFeatureEmail,
   sendTrialReminderEmails,
+  sendHoroscopePdf,
   EMAIL_TEMPLATES
 };

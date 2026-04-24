@@ -1,4 +1,4 @@
-class Templates{static renderTarotResult(e,s,i=!0,t=""){const a=i?"Velk\xE1 ark\xE1na":"Mal\xE1 ark\xE1na";return`
+(()=>{class r{static renderTarotResult(e,s,i=!0,t=""){const a=i?"Velk\xE1 ark\xE1na":"Mal\xE1 ark\xE1na";return`
             <div class="tarot-result-card fade-in-up" style="animation-delay: ${s*.2}s;">
                 <!-- Header Section -->
                 <div class="tarot-result-header">
@@ -250,4 +250,4 @@ class Templates{static renderTarotResult(e,s,i=!0,t=""){const a=i?"Velk\xE1 ark\
                     `:""}
                 </div>
             </div>
-        `:""}static escapeHtml(e){return e?e.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;"):""}}typeof module<"u"&&module.exports?module.exports=Templates:window.Templates=Templates;
+        `:""}static escapeHtml(e){return e?e.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;"):""}}typeof window<"u"&&(window.Templates=r)})();

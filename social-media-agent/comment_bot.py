@@ -19,7 +19,7 @@ import time
 import os
 import random
 import json
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -46,7 +46,7 @@ POLL_INTERVAL    = int(os.getenv("COMMENT_POLL_INTERVAL", "900"))   # 15 min
 AUTO_REPLY_DELAY = int(os.getenv("AUTO_REPLY_DELAY", "1800"))        # 30 min v review mode
 REPLY_DELAY_MIN  = int(os.getenv("REPLY_DELAY_MIN", "45"))           # min. sekund mezi odpověďmi
 REPLY_DELAY_MAX  = int(os.getenv("REPLY_DELAY_MAX", "120"))          # max. sekund mezi odpověďmi
-DAILY_LIMIT      = int(os.getenv("DAILY_REPLY_LIMIT", "200"))        # max odpovědí za den
+DAILY_LIMIT      = int(os.getenv("DAILY_REPLY_LIMIT", "350"))        # max odpovědí za den
 
 # Soubor pro sledování denního počtu odpovědí
 _DAILY_COUNTER_FILE = Path(__file__).parent / "output" / "daily_reply_counter.json"
@@ -208,7 +208,7 @@ def process_comment(comment: dict, mode: str) -> bool:
 # HLAVNÍ RUN
 # ══════════════════════════════════════════════════
 
-def run_once(mode: str, limit: int = 0):
+def run_once(mode: str, limit: int = 0, since_hours: int = None):
     """Jeden běh: sync → zpracuj → vypiš statistiky. limit=0 znamená bez omezení."""
 
     if not config.META_ACCESS_TOKEN:
@@ -222,7 +222,12 @@ def run_once(mode: str, limit: int = 0):
     # 1. Synchronizuj komentáře
     print("\n📥 Synchronizuji komentáře...")
     try:
-        since = 168 if mode == "dry-run" else 48  # dry-run vidí víc; auto jen čerstvé
+        if since_hours is not None:
+            since = since_hours
+        elif mode == "dry-run":
+            since = 168
+        else:
+            since = 48
         stats = sync_comments(since_hours=since)
         print(f"   Nové: {stats['added']}  |  Celkem v DB: {stats['total_in_db']}")
     except Exception as e:
@@ -230,57 +235,29 @@ def run_once(mode: str, limit: int = 0):
         log.error("Sync selhal: %s", e, exc_info=True)
         return
 
-    # 2. Načti nevyřízené a ořízni na limit — teprve pak generuj odpovědi
+    # 2. Načti nevyřízené, filtruj podle stáří komentáře a ořízni na limit
     pending = get_pending_comments(min_priority=3)
+
+    # Filtruj jen komentáře z posledních since_hours hodin (ne celou historii DB)
+    if since_hours is not None:
+        # Porovnávej v UTC — FB timestamps jsou UTC, datetime.utcnow() taky UTC
+        cutoff_utc = datetime.utcnow() - timedelta(hours=since_hours)
+        def _is_recent(c: dict) -> bool:
+            try:
+                ct_str = c.get("created_time", "")
+                if not ct_str:
+                    return False
+                ct = datetime.fromisoformat(ct_str.replace("Z", "+00:00").replace("+0000", "+00:00"))
+                ct_utc = ct.replace(tzinfo=None) if ct.tzinfo else ct  # strip tz → UTC naive
+                return ct_utc >= cutoff_utc
+            except Exception:
+                return False
+        before = len(pending)
+        pending = [c for c in pending if _is_recent(c)]
+        print(f"   Filtr {since_hours}h (UTC): {before} → {len(pending)} komentářů")
+
     if limit > 0:
         pending = pending[:limit]
-
-    # 3. Generuj odpovědi přesně pro N komentářů (Claude API se zavolá max limit×)
-    _TONE_MAP = {
-        "question": "educational", "positive": "friendly",
-        "skeptical": "empathetic", "neutral": "friendly", "off_topic": "friendly",
-        "emotional": "empathetic",
-    }
-    import re as _re
-    def _reply_has_issues(text: str) -> bool:
-        if _re.search(r'[А-Яа-яЁё]', text):
-            return True
-        if _re.search(r'\w+/\w{1,6}\b', text):
-            return True
-        # Anglicismy které proklouzávají
-        if any(w in text.lower() for w in ["nepassuje", "feelingovat", "neimpresionuje"]):
-            return True
-        return False
-
-    new_replies: dict[str, str] = {}
-    for comment in pending:
-        # Cached reply — zkontroluj na lomené tvary, pokud je problém přegeneruj
-        if comment.get("suggested_reply"):
-            if _reply_has_issues(comment["suggested_reply"]):
-                log.warning("Cached reply má problém, přegeneruji: %s", comment["id"])
-                comment["suggested_reply"] = None  # vymaž → bude přegenerována
-            else:
-                continue
-        if not comment.get("needs_reply"):
-            continue
-        if not comment.get("message", "").strip():
-            continue
-        try:
-            tone = _TONE_MAP.get(comment.get("sentiment", "neutral"), "friendly")
-            suggested = generate_comment_reply(
-                original_comment=comment["message"],
-                post_topic=comment.get("post_message", "mystika"),
-                tone=tone,
-                db_sentiment=comment.get("sentiment", ""),
-            )
-            comment["suggested_reply"] = suggested
-            new_replies[comment["id"]] = suggested
-            time.sleep(1.5)
-        except Exception as e:
-            log.warning("Nepodařilo se vygenerovat odpověď: %s", e)
-            time.sleep(3)
-    # Uložíme všechny vygenerované odpovědi v 1 disk I/O
-    save_comment_replies_batch(new_replies)
 
     if not pending:
         print("\n✨ Žádné nevyřízené komentáře.")
@@ -288,8 +265,7 @@ def run_once(mode: str, limit: int = 0):
 
     # Zkontroluj denní limit
     today_count = _get_today_count()
-    remaining = DAILY_LIMIT - today_count
-    if remaining <= 0 and mode != "dry-run":
+    if today_count >= DAILY_LIMIT and mode != "dry-run":
         print(f"\n🛑 Denní limit {DAILY_LIMIT} odpovědí dosažen. Zítra pokračujeme.")
         return
 
@@ -299,16 +275,55 @@ def run_once(mode: str, limit: int = 0):
     print(f"\n📋 Nevyřízených komentářů: {len(pending)}")
     _sep()
 
+    _TONE_MAP = {
+        "question": "educational", "positive": "friendly",
+        "skeptical": "empathetic", "neutral": "friendly", "off_topic": "friendly",
+        "emotional": "empathetic",
+    }
+
+    # Max odpovědí na jeden post za jeden běh — zabraňuje spamu
+    MAX_PER_POST = int(os.getenv("MAX_REPLIES_PER_POST", "3"))
+    post_reply_counts: dict[str, int] = {}
+
+    # 3. Generuj + pošli JEDNU odpověď najednou (generate → send → delay → generate → ...)
     replied = 0
     for idx, comment in enumerate(pending, 1):
         # Zastav při dosažení denního limitu
         if mode != "dry-run" and _get_today_count() >= DAILY_LIMIT:
             print(f"\n🛑 Denní limit {DAILY_LIMIT} dosažen, zastavuji.")
             break
+
+        # Přeskoč pokud jsme na tomto postu už odpověděli MAX_PER_POST×
+        post_id = comment.get("post_id", "")
+        if post_id and mode != "dry-run":
+            if post_reply_counts.get(post_id, 0) >= MAX_PER_POST:
+                log.debug("Post %s: already %d replies this run, skipping", post_id, MAX_PER_POST)
+                continue
+
+        # Generuj odpověď těsně před odesláním (ne batch předem)
+        if not comment.get("suggested_reply") or not comment["suggested_reply"].strip():
+            if not comment.get("needs_reply") or not comment.get("message", "").strip():
+                continue
+            try:
+                tone = _TONE_MAP.get(comment.get("sentiment", "neutral"), "friendly")
+                reply = generate_comment_reply(
+                    original_comment=comment["message"],
+                    post_topic=comment.get("post_message", "mystika"),
+                    tone=tone,
+                    db_sentiment=comment.get("sentiment", ""),
+                )
+                comment["suggested_reply"] = reply
+                save_comment_replies_batch({comment["id"]: reply})
+            except Exception as e:
+                log.warning("Nepodařilo se vygenerovat odpověď: %s", e)
+                continue
+
         _print_comment(comment, idx)
         success = process_comment(comment, mode)
         if success:
             replied += 1
+            if post_id:
+                post_reply_counts[post_id] = post_reply_counts.get(post_id, 0) + 1
 
     # 3. Statistiky
     _sep()
@@ -345,6 +360,7 @@ if __name__ == "__main__":
     parser.add_argument("--stats",   action="store_true", help="Zobrazí statistiky a skončí")
     parser.add_argument("--regen",   action="store_true", help="Přegeneruje odpovědi novou logikou")
     parser.add_argument("--limit",   type=int, default=0, help="Max počet komentářů ke zpracování")
+    parser.add_argument("--since",   type=int, default=0, help="Načti komentáře z posledních N hodin (0 = výchozí)")
     args = parser.parse_args()
 
     if args.stats:
@@ -368,4 +384,4 @@ if __name__ == "__main__":
     if args.loop:
         run_loop(mode)
     else:
-        run_once(mode, limit=args.limit)
+        run_once(mode, limit=args.limit, since_hours=args.since if args.since > 0 else None)

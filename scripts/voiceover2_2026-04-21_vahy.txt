@@ -1,0 +1,47 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 21. dubna 2026
+
+[gentle] Váhy, nejsi v nerozhodnosti. <break time="0.5s" /> [soft] Jen odmítáš rozhodnutí, která tě zradí. <break time="1.0s" />
+
+[warm] Stojíš před tou zprávou. <break time="0.3s" /> [confident] Víš, co chceš napsat. <break time="0.3s" /> [gentle] Ale píšeš to, co od tebe čekají. <break time="0.3s" /> [soft] Harmonie? <break time="0.3s" /> [intense] Ne. Strach, že tě ostatní odmítnou. <break time="1.0s" />
+
+[inviting] Váhy — co dnes nemůžeš rozhodnout? ⬇️ <break time="0.3s" /> [clearly] Příští díl: jak planety ovlivňují tvé peníze.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+21. dubna 2026 tvá vládkyně Venuše sedí v napětí se Saturnem — a ty proto vybíráš slova ze strachu z odmítnutí. Váhy prožívají paralýzu: vidíš obě strany konfliktu a bojíš se, že každá volba někoho zraní 💔. Sleduj profil — příště ti ukážu, jak Venuše ovlivňuje tvůj vztah k penězům a kdy ji přestat poslouchat ⚖️.
+
+#mystickaHvezda #Váhy #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+21. dubna 2026 nerozhoduješ — vybíráš, komu se nezlíbíš. Venuše v napětí se Saturnem tě nutí editovat pravdu, dokud z ní nezbude kompromis 💔. Vidíš obě strany, ale strach z odmítnutí ti našeptává: „Napiš, co chtějí slyšet." Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Váhy #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm energizing background track with gentle marimba patterns and airy synth pads creating soft forward momentum, like golden sunrise light spreading across a morning sky with crystalline dew drops. Features a subtle rhythmic pulse in major key that breathes with hopeful energy, present and uplifting yet spacious enough to support spoken words without competing. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+A mystical video thumbnail for zodiac sign Libra.
+
+BACKGROUND: deep dark space with soft subtle soft rose and lavender nebula with balanced pastel cosmic tones, delicate pink and lilac stardust, harmonious dual-color aurora in rose gold and violet hues — graceful, balanced, romantic — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.
+
+COMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.
+
+ELEMENT 1 — glyph: large ornate Libra symbol (♎) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.
+
+ELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '21. dubna' in elegant gold lettering on the first line, 'VÁHY' in bold engraved gold capitals on the second line.
+
+ELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Odmítáš rozhodnutí, která tě zradí.' on the first line, 'Píšeš to, co od tebe čekají.' on the second line.
+
+NO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.
+
+Portrait 9:16.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Váhy, nejsi v nerozhodnosti. Jen odmítáš rozhodnutí, která tě zradí. Stojíš před tou zprávou. Víš, co chceš napsat. Ale píšeš to, co od tebe čekají. Harmonie? Ne. Strach, že tě ostatní odmítnou. Váhy — co dnes nemůžeš rozhodnout? ⬇️ Příští díl: jak planety ovlivňují tvé peníze."

@@ -24,6 +24,6 @@ export default {
     modulePathIgnorePatterns: [
         '<rootDir>/.claude/worktrees/'
     ],
-    setupFilesAfterEnv: ['./server/tests/setup.js'],
+    setupFilesAfterEnv: ['./server/tests/setup.mjs'],
     transform: {}
 };

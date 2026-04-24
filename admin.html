@@ -6,9 +6,8 @@
 
 <head>
 
-    <meta charset="UTF-8">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔮</text></svg>">
-  <link rel="apple-touch-icon" href="img/icon-192.webp">
+    <meta charset="UTF-8">    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>*</text></svg>">
+<link rel="apple-touch-icon" href="img/icon-192.webp">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
@@ -258,6 +257,8 @@
     <script src="js/templates.js?v=10" defer></script>
 
     <script src="js/auth-client.js?v=5" defer></script>
+<script src="js/auth-copy-fixes.js" defer></script>
+    <script src="js/secondary-pages-copy-fixes.js" defer></script>
 
     <script src="js/components.js?v=10" defer></script>
 
@@ -309,8 +310,6 @@
 
         async function loadUsers() {
 
-            const token = window.Auth.token || localStorage.getItem('auth_token');
-
             const tbody = document.querySelector('#users-table tbody');
 
             const errorMsg = document.getElementById('error-msg');
@@ -320,8 +319,7 @@
             try {
 
                 const response = await fetch(`${API_CONFIG.BASE_URL}/admin/users`, {
-
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    credentials: 'include'
 
                 });
 
@@ -429,13 +427,13 @@
 
                 const tdActions = document.createElement('td');
 
-                ['premium_monthly', 'vip', 'free'].forEach((p, i) => {
+                ['premium_monthly', 'vip_majestrat', 'free'].forEach((p, i) => {
 
                     const btn = document.createElement('button');
 
                     btn.className = `action-btn${i === 0 ? ' btn-promote' : (i === 2 ? ' btn-demote' : '')}`;
 
-                    btn.textContent = i === 0 ? 'Premium' : (i === 1 ? 'VIP' : 'Free');
+                    btn.textContent = i === 0 ? 'Premium' : (i === 1 ? 'VIP Majestát' : 'Free');
 
                     btn.addEventListener('click', () => updateSub(user.id, p));
 
@@ -461,19 +459,17 @@
 
 
 
-            const token = window.Auth.token || localStorage.getItem('auth_token');
-
             try {
+                const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
 
                 const response = await fetch(`${API_CONFIG.BASE_URL}/admin/user/${userId}/subscription`, {
 
                     method: 'POST',
+                    credentials: 'include',
 
                     headers: {
-
-                        'Authorization': `Bearer ${token}`,
-
                         'Content-Type': 'application/json'
+                        ,...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {})
 
                     },
 
@@ -512,4 +508,3 @@
 
 
 </html>
-

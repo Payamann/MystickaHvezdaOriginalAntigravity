@@ -50,19 +50,19 @@ CSV_PATH   = OUT_DIR / "pinterest_pins.csv"
 for d in (INBOX_DIR, IMAGES_DIR):
     d.mkdir(parents=True, exist_ok=True)
 
-# Nástěnky per kategorie
+# Nástěnky per kategorie — názvy musí přesně odpovídat názvům na Pinterest účtu
 BOARD_MAP = {
-    "Astrologie":    "Astrologie a Horoskopy",
-    "Tarot":         "Tarot - vyklady a rozkladani",
-    "Numerologie":   "Numerologie - tvoje cisla",
-    "Spiritualita":  "Spiritualita a Energie",
-    "Lunární Magie": "Lunarni ritualy a Uplnek",
-    "Vztahy":        "Partnerskа shoda - kompatibilita",
-    "Šamanismus":    "Runy a Samanstvi",
-    "Sny":           "Sen - vyklad snu",
-    "Kompatibilita": "Partnerskа shoda - kompatibilita",
+    "Astrologie":    "Horoskopy, natální karta a planety v retro",
+    "Tarot":         "Výklady karet, arcana a tarotová rozložení",
+    "Numerologie":   "Životní číslo, jméno a kompatibilita párů",
+    "Spiritualita":  "Čakry, aura, ochrana a duchovní rovnováha",
+    "Lunární Magie": "Úplněk, nov a lunární rituály každý měsíc",
+    "Vztahy":        "Synastrie, kompatibilita a spřízněné duše",
+    "Šamanismus":    "Severské runy, totemová zvířata a rituály",
+    "Sny":           "Výklad snů a symboly tvého podvědomí",
+    "Kompatibilita": "Synastrie, kompatibilita a spřízněné duše",
 }
-DEFAULT_BOARD = "Mysticka Hvezda - Spiritualita"
+DEFAULT_BOARD = "Astrologie, tarot a spiritualita v češtině"
 
 SITE_URL = "https://www.mystickahvezda.cz"
 
@@ -89,9 +89,31 @@ def find_inbox_image(slug: str):
     return None
 
 
+def resolve_hooks(slug: str) -> list:
+    """Vrátí list hooků pro daný slug (vždy list, i když je jen jeden)."""
+    val = PINTEREST_HOOKS.get(slug)
+    if val is None:
+        return []
+    return val if isinstance(val, list) else [val]
+
+
+def variant_output_path(slug: str, idx: int) -> Path:
+    """idx=0 → slug_pin.jpg, idx=1 → slug_v2_pin.jpg, ..."""
+    if idx == 0:
+        return IMAGES_DIR / f"{slug}_pin.jpg"
+    return IMAGES_DIR / f"{slug}_v{idx + 1}_pin.jpg"
+
+
 def get_pending(posts, log) -> list:
+    """Post čeká pokud nemá ani jeden vygenerovaný pin (žádnou variantu)."""
     published = {e["slug"] for e in log.get("published", [])}
-    done = {f.stem.replace("_pin", "") for f in IMAGES_DIR.glob("*_pin.jpg")}
+    done = set()
+    for f in IMAGES_DIR.glob("*_pin.jpg"):
+        # slug_pin.jpg nebo slug_v2_pin.jpg → extrahuj slug
+        stem = f.stem  # např. "slug_pin" nebo "slug_v2_pin"
+        slug = stem.replace("_pin", "")
+        slug = slug.rsplit("_v", 1)[0] if "_v" in slug else slug
+        done.add(slug)
     return [p for p in posts if p["slug"] not in published and p["slug"] not in done]
 
 
@@ -143,10 +165,9 @@ def cmd_prompts():
 # ─────────────────────────────────────────────
 
 def cmd_compose():
-    posts   = load_posts()
+    posts        = load_posts()
     post_by_slug = {p["slug"]: p for p in posts}
-    images  = list(INBOX_DIR.glob("*"))
-    images  = [f for f in images if f.suffix.lower() in (".png", ".jpg", ".jpeg", ".webp")]
+    images       = [f for f in INBOX_DIR.glob("*") if f.suffix.lower() in (".png", ".jpg", ".jpeg", ".webp")]
 
     if not images:
         print(f"Zadne obrazky v inbox/: {INBOX_DIR}")
@@ -161,26 +182,28 @@ def cmd_compose():
             print(f"  SKIP: '{slug}' neni v blog-index.json")
             continue
 
-        out_path = IMAGES_DIR / f"{slug}_pin.jpg"
-        if out_path.exists():
-            print(f"  SKIP: {slug} uz ma pin")
-            continue
-
-        hook     = PINTEREST_HOOKS.get(slug, post["title"])
+        hooks    = resolve_hooks(slug) or [post["title"]]
         category = post.get("category", "")
-        print(f"  Compositor: {slug}")
-        try:
-            composite_pin(
-                bg_image_path=img,
-                title=hook,
-                category=category,
-                url="mystickahvezda.cz",
-                output_path=out_path,
-            )
-            print(f"  OK: {out_path.name}")
-            done += 1
-        except Exception as e:
-            print(f"  CHYBA: {e}")
+
+        for idx, hook in enumerate(hooks):
+            out_path = variant_output_path(slug, idx)
+            if out_path.exists():
+                print(f"  SKIP: {out_path.name} uz existuje")
+                continue
+            label = f"{slug}" if len(hooks) == 1 else f"{slug} [v{idx + 1}/{len(hooks)}]"
+            print(f"  Compositor: {label}")
+            try:
+                composite_pin(
+                    bg_image_path=img,
+                    title=hook,
+                    category=category,
+                    url="mystickahvezda.cz",
+                    output_path=out_path,
+                )
+                print(f"  OK: {out_path.name}")
+                done += 1
+            except Exception as e:
+                print(f"  CHYBA: {e}")
 
     print(f"\nHotovo: {done} pinu vytvoreno.")
 
@@ -189,13 +212,28 @@ def cmd_compose():
 # KROK 4: Export CSV pro Pinterest bulk upload
 # ─────────────────────────────────────────────
 
-def cmd_csv():
-    posts = load_posts()
-    log   = load_log()
-    post_by_slug = {p["slug"]: p for p in posts}
-    published = {e["slug"] for e in log.get("published", [])}
+def _slug_and_variant_from_stem(stem: str) -> tuple[str, int]:
+    """
+    'slug_pin'      → ('slug', 0)
+    'slug_v2_pin'   → ('slug', 1)
+    'slug_v3_pin'   → ('slug', 2)
+    """
+    stem = stem.replace("_pin", "")          # "slug" nebo "slug_v2"
+    if "_v" in stem:
+        base, v = stem.rsplit("_v", 1)
+        try:
+            return base, int(v) - 1
+        except ValueError:
+            return stem, 0
+    return stem, 0
 
-    # Najdi vsechny hotove piny
+
+def cmd_csv():
+    posts        = load_posts()
+    log          = load_log()
+    post_by_slug = {p["slug"]: p for p in posts}
+    published    = {e["slug"] for e in log.get("published", [])}
+
     pins = sorted(IMAGES_DIR.glob("*_pin.jpg"))
     if not pins:
         print("Zadne piny v images/. Nejpriv spust --compose.")
@@ -204,20 +242,23 @@ def cmd_csv():
     rows = []
     start_date = date.today()
     slot_times = ["08:00", "14:00", "20:00"]
-    slot_idx = 0
+    slot_idx   = 0
 
     for pin_path in pins:
-        slug = pin_path.stem.replace("_pin", "")
+        slug, var_idx = _slug_and_variant_from_stem(pin_path.stem)
         if slug in published:
             continue
 
-        post     = post_by_slug.get(slug, {})
-        hook     = PINTEREST_HOOKS.get(slug, post.get("title", slug))
+        post = post_by_slug.get(slug)
+        if not post:
+            print(f"  SKIP CSV: '{slug}' neni v blog-index.json")
+            continue
+        hooks    = resolve_hooks(slug) or [post.get("title", slug)]
+        hook     = hooks[var_idx] if var_idx < len(hooks) else hooks[0]
         category = post.get("category", "")
         board    = BOARD_MAP.get(category, DEFAULT_BOARD)
         url      = f"{SITE_URL}/blog/{slug}.html"
 
-        # Rozloz piny — 3/den
         day_offset = slot_idx // 3
         time_str   = slot_times[slot_idx % 3]
         sched_date = start_date + timedelta(days=day_offset)

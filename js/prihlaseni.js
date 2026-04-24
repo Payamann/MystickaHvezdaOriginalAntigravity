@@ -1,396 +1,307 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById('login-form');
+    const forgotPasswordForm = document.getElementById('forgot-password-form');
+    const resetPasswordForm = document.getElementById('reset-password-form');
+    const forgotPasswordLink = document.getElementById('forgot-password-link');
+    const backToLoginBtn = document.getElementById('back-to-login');
+    const loginHeader = document.getElementById('login-page-title');
+    const loginSubtitle = document.getElementById('login-page-subtitle');
+    const authModeWrapper = document.getElementById('auth-mode-toggle')?.parentElement;
+    const authSubmitBtn = document.getElementById('auth-submit');
+    const toggleBtn = document.getElementById('auth-mode-toggle');
+    const socialProofEl = document.getElementById('login-social-proof');
+    const confirmPwWrapper = document.getElementById('confirm-password-field-wrapper');
+    const confirmPwInput = document.getElementById('confirm-password-reg');
+    const registerFields = document.getElementById('register-fields');
+    const registerBirthDateInput = registerFields?.querySelector('input[name="birth_date"]');
+    const gdprWrapper = document.getElementById('gdpr-consent-wrapper');
+    const gdprConsent = document.getElementById('gdpr-consent');
+    const urlParams = new URLSearchParams(window.location.search);
+    const isResetMode = urlParams.get('reset') === 'true';
+    const hash = window.location.hash;
+    let isRegisterMode = urlParams.get('mode') === 'register' || urlParams.get('registrace') === '1';
+    const redirectTarget = urlParams.get('redirect') || '/profil.html';
+    const pendingPlan = sessionStorage.getItem('pending_plan') || null;
 
-        document.addEventListener('DOMContentLoaded', () => {
+    const trackAuthView = (source = 'page_load') => {
+        window.MH_ANALYTICS?.trackAuthViewed?.(isRegisterMode ? 'register' : 'login', {
+            source,
+            redirect_target: redirectTarget,
+            pending_plan: pendingPlan
+        });
+    };
 
-            // Auth-client.js automatically binds to #login-form and handles submission.
+    const applyMode = () => {
+        if (!authSubmitBtn) {
+            return;
+        }
+        if (forgotPasswordLink) {
+            forgotPasswordLink.style.display = isRegisterMode ? 'none' : 'block';
+        }
 
-            // It also handles #auth-mode-toggle.
+        if (isRegisterMode) {
+            if (loginHeader) loginHeader.textContent = 'Začněte svou cestu';
+            if (loginSubtitle) loginSubtitle.textContent = 'Registrace je zdarma a zabere jen chvilku.';
+            if (socialProofEl) socialProofEl.style.display = 'block';
+            if (confirmPwWrapper) confirmPwWrapper.style.display = 'block';
+            if (registerFields) registerFields.style.display = 'block';
+            if (gdprWrapper) gdprWrapper.style.display = 'block';
+            if (confirmPwInput) confirmPwInput.required = true;
+            if (registerBirthDateInput) registerBirthDateInput.required = true;
+            if (gdprConsent) gdprConsent.required = true;
+            authSubmitBtn.textContent = 'Zaregistrovat';
+            if (toggleBtn) toggleBtn.textContent = 'Máte účet? Přihlaste se';
+        } else {
+            if (loginHeader) loginHeader.textContent = 'Vítejte zpět';
+            if (loginSubtitle) loginSubtitle.textContent = 'Přihlaste se ke svému účtu a pokračujte tam, kde jste skončili.';
+            if (socialProofEl) socialProofEl.style.display = 'none';
+            if (confirmPwWrapper) confirmPwWrapper.style.display = 'none';
+            if (registerFields) registerFields.style.display = 'none';
+            if (gdprWrapper) gdprWrapper.style.display = 'none';
+            if (confirmPwInput) {
+                confirmPwInput.required = false;
+                confirmPwInput.value = '';
+            }
+            if (registerBirthDateInput) registerBirthDateInput.required = false;
+            if (gdprConsent) {
+                gdprConsent.required = false;
+                gdprConsent.checked = false;
+            }
+            authSubmitBtn.textContent = 'Přihlásit se';
+            if (toggleBtn) toggleBtn.textContent = 'Nemáte účet? Zaregistrujte se zdarma →';
+        }
+    };
 
-            // We just need to check if we are already logged in, and if so, redirect back.
+    if (isResetMode && hash) {
+        if (loginForm) loginForm.style.display = 'none';
+        if (forgotPasswordForm) forgotPasswordForm.style.display = 'none';
+        if (resetPasswordForm) resetPasswordForm.style.display = 'block';
+        if (forgotPasswordLink) forgotPasswordLink.style.display = 'none';
+        if (authModeWrapper) authModeWrapper.style.display = 'none';
+        if (loginHeader) loginHeader.textContent = 'Obnovení hesla';
+        if (loginSubtitle) loginSubtitle.textContent = 'Zadejte nové heslo a vraťte se zpět do svého účtu.';
+    } else {
+        applyMode();
+        trackAuthView();
+    }
 
+    loginForm?.addEventListener('submit', async (event) => {
+        event.preventDefault();
 
+        const email = document.getElementById('email')?.value?.trim();
+        const password = document.getElementById('password')?.value || '';
 
-            const loginForm = document.getElementById('login-form');
+        if (!window.Auth || !authSubmitBtn) {
+            return;
+        }
 
-            const forgotPasswordForm = document.getElementById('forgot-password-form');
+        authSubmitBtn.disabled = true;
+        const originalText = authSubmitBtn.textContent;
+        authSubmitBtn.textContent = isRegisterMode ? 'Registruji...' : 'Přihlašuji...';
 
-            const resetPasswordForm = document.getElementById('reset-password-form');
+        try {
+            if (isRegisterMode) {
+                const confirmPassword = confirmPwInput?.value || '';
+                const birthDate = registerBirthDateInput?.value || '';
+                const birthPlace = registerFields?.querySelector('input[name="birth_place"]')?.value || '';
+                const firstName = registerFields?.querySelector('input[name="first_name"]')?.value || '';
 
-            const forgotPasswordLink = document.getElementById('forgot-password-link');
+                if (!birthDate) {
+                    throw new Error('Datum narození je povinné.');
+                }
 
-            const backToLoginBtn = document.getElementById('back-to-login');
+                if (password !== confirmPassword) {
+                    throw new Error('Hesla se neshodují.');
+                }
 
-            const loginHeader = document.querySelector('.login-header h1');
+                const result = await window.Auth.register(email, password, {
+                    first_name: firstName || undefined,
+                    birth_date: birthDate,
+                    birth_place: birthPlace || undefined,
+                    password_confirm: confirmPassword
+                });
 
-            const loginSubtitle = document.querySelector('.login-header p');
+                if (!result.success) {
+                    throw new Error(result.error || 'Registrace se nepodařila.');
+                }
 
+                window.MH_ANALYTICS?.trackAuthCompleted?.('register', {
+                    method: 'email',
+                    redirect_target: redirectTarget,
+                    pending_plan: pendingPlan
+                });
+            } else {
+                const result = await window.Auth.login(email, password);
+                if (!result.success) {
+                    throw new Error(result.error || 'Přihlášení se nepodařilo.');
+                }
 
+                window.MH_ANALYTICS?.trackAuthCompleted?.('login', {
+                    method: 'email',
+                    redirect_target: redirectTarget,
+                    pending_plan: pendingPlan
+                });
 
-            // Check for reset token in URL
+                window.Auth.showToast?.('Vítejte zpět', 'Byli jste úspěšně přihlášeni.', 'success');
+            }
+        } catch (error) {
+            window.Auth.showToast?.('Chyba', error.message, 'error');
+        } finally {
+            authSubmitBtn.disabled = false;
+            authSubmitBtn.textContent = originalText;
+        }
+    });
 
-            const urlParams = new URLSearchParams(window.location.search);
+    forgotPasswordLink?.addEventListener('click', () => {
+        if (loginForm) loginForm.style.display = 'none';
+        if (forgotPasswordForm) forgotPasswordForm.style.display = 'block';
+        if (forgotPasswordLink) forgotPasswordLink.style.display = 'none';
+        if (authModeWrapper) authModeWrapper.style.display = 'none';
+        if (loginHeader) loginHeader.textContent = 'Zapomenuté heslo';
+        if (loginSubtitle) loginSubtitle.textContent = 'Pošleme vám odkaz pro nastavení nového hesla.';
+    });
 
-            const isResetMode = urlParams.get('reset') === 'true';
+    backToLoginBtn?.addEventListener('click', () => {
+        if (loginForm) loginForm.style.display = 'block';
+        if (forgotPasswordForm) forgotPasswordForm.style.display = 'none';
+        if (authModeWrapper) authModeWrapper.style.display = 'block';
+        applyMode();
+    });
 
-            const hash = window.location.hash;
+    forgotPasswordForm?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const email = document.getElementById('forgot-email')?.value;
+        const submitBtn = forgotPasswordForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn?.textContent;
 
+        if (!submitBtn) {
+            return;
+        }
 
+        submitBtn.textContent = 'Odesílám...';
+        submitBtn.disabled = true;
 
-            if (isResetMode && hash) {
+        try {
+            const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+            const response = await fetch('/api/auth/forgot-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+                },
+                body: JSON.stringify({ email })
+            });
 
-                // Show reset password form
+            const data = await response.json();
 
-                loginForm.style.display = 'none';
+            if (data.success) {
+                window.trackEvent?.('password_reset_requested', {
+                    source: 'forgot_password_form'
+                });
+                window.Auth?.showToast?.('E-mail odeslán', data.message, 'success');
+                backToLoginBtn?.click();
+            } else {
+                throw new Error(data.error || 'Nepodařilo se odeslat e-mail s obnovou hesla.');
+            }
+        } catch (error) {
+            window.Auth?.showToast?.('Chyba', error.message, 'error');
+        } finally {
+            submitBtn.textContent = originalText || 'Odeslat odkaz pro obnovu';
+            submitBtn.disabled = false;
+        }
+    });
 
-                forgotPasswordForm.style.display = 'none';
+    resetPasswordForm?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const newPassword = document.getElementById('new-password')?.value;
+        const confirmPassword = document.getElementById('confirm-password')?.value;
 
-                resetPasswordForm.style.display = 'block';
+        if (newPassword !== confirmPassword) {
+            window.Auth?.showToast?.('Chyba', 'Hesla se neshodují.', 'error');
+            return;
+        }
 
-                forgotPasswordLink.style.display = 'none';
+        const submitBtn = resetPasswordForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn?.textContent;
 
-                document.getElementById('auth-mode-toggle').parentElement.style.display = 'none';
+        if (!submitBtn) {
+            return;
+        }
 
-                loginHeader.textContent = 'Obnovení hesla';
+        submitBtn.textContent = 'Ukládám...';
+        submitBtn.disabled = true;
 
-                loginSubtitle.textContent = 'Zadejte nové heslo';
+        try {
+            const hashParams = new URLSearchParams(hash.substring(1));
+            const accessToken = hashParams.get('access_token');
 
+            if (!accessToken) {
+                throw new Error('Neplatný odkaz pro obnovení hesla.');
             }
 
-
-
-            // Forgot password link click
-
-            forgotPasswordLink?.addEventListener('click', () => {
-
-                loginForm.style.display = 'none';
-
-                forgotPasswordForm.style.display = 'block';
-
-                forgotPasswordLink.style.display = 'none';
-
-                document.getElementById('auth-mode-toggle').parentElement.style.display = 'none';
-
-                loginHeader.textContent = 'Zapomenuté heslo';
-
-                loginSubtitle.textContent = 'Zadejte svůj email';
-
+            const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+            const response = await fetch('/api/auth/reset-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${accessToken}`,
+                    ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+                },
+                body: JSON.stringify({ password: newPassword })
             });
 
-
-
-            // Back to login
-
-            backToLoginBtn?.addEventListener('click', () => {
-
-                loginForm.style.display = 'block';
-
-                forgotPasswordForm.style.display = 'none';
-
-                forgotPasswordLink.style.display = 'block';
-
-                document.getElementById('auth-mode-toggle').parentElement.style.display = 'block';
-
-                loginHeader.textContent = 'Vítejte zpět';
-
-                loginSubtitle.textContent = 'Přihlaste se ke svému účtu';
-
-            });
-
-
-
-            // Forgot password form submission
-
-            forgotPasswordForm?.addEventListener('submit', async (e) => {
-
-                e.preventDefault();
-
-                const email = document.getElementById('forgot-email').value;
-
-                const submitBtn = forgotPasswordForm.querySelector('button[type="submit"]');
-
-                const originalText = submitBtn.textContent;
-
-
-
-                submitBtn.textContent = 'Odesílám...';
-
-                submitBtn.disabled = true;
-
-
-
-                try {
-
-                    const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
-
-                    const response = await fetch('/api/auth/forgot-password', {
-
-                        method: 'POST',
-
-                        headers: {
-                            'Content-Type': 'application/json',
-                            ...(csrfToken && { 'X-CSRF-Token': csrfToken })
-                        },
-
-                        body: JSON.stringify({ email })
-
-                    });
-
-
-
-                    const data = await response.json();
-
-
-
-                    if (data.success) {
-
-                        if (window.Auth?.showToast) {
-
-                            window.Auth.showToast('Email odeslán', data.message, 'success');
-
-                        } else {
-
-                            alert(data.message);
-
-                        }
-
-                        // Go back to login
-
-                        backToLoginBtn.click();
-
-                    } else {
-
-                        throw new Error(data.error || 'Chyba při odesílání emailu');
-
-                    }
-
-                } catch (error) {
-
-                    if (window.Auth?.showToast) {
-
-                        window.Auth.showToast('Chyba', error.message, 'error');
-
-                    } else {
-
-                        alert(error.message);
-
-                    }
-
-                } finally {
-
-                    submitBtn.textContent = originalText;
-
-                    submitBtn.disabled = false;
-
-                }
-
-            });
-
-
-
-            // Reset password form submission
-
-            resetPasswordForm?.addEventListener('submit', async (e) => {
-
-                e.preventDefault();
-
-                const newPassword = document.getElementById('new-password').value;
-
-                const confirmPassword = document.getElementById('confirm-password').value;
-
-
-
-                if (newPassword !== confirmPassword) {
-                    if (window.Auth?.showToast) {
-                        window.Auth.showToast('Chyba', 'Hesla se neshodují', 'error');
-                    } else {
-                        alert('Hesla se neshodují');
-                    }
-                    return;
-                }
-
-
-
-                const submitBtn = resetPasswordForm.querySelector('button[type="submit"]');
-
-                const originalText = submitBtn.textContent;
-
-                submitBtn.textContent = 'Ukládám...';
-
-                submitBtn.disabled = true;
-
-
-
-                try {
-
-                    // Extract access_token from URL hash
-
-                    const hashParams = new URLSearchParams(hash.substring(1));
-
-                    const accessToken = hashParams.get('access_token');
-
-
-
-                    if (!accessToken) {
-
-                        throw new Error('Neplatný odkaz pro obnovení hesla');
-
-                    }
-
-
-
-                    const csrfToken2 = window.getCSRFToken ? await window.getCSRFToken() : null;
-
-                    const response = await fetch('/api/auth/reset-password', {
-
-                        method: 'POST',
-
-                        headers: {
-
-                            'Content-Type': 'application/json',
-
-                            'Authorization': `Bearer ${accessToken}`,
-
-                            ...(csrfToken2 && { 'X-CSRF-Token': csrfToken2 })
-
-                        },
-
-                        body: JSON.stringify({ password: newPassword })
-
-                    });
-
-
-
-                    const data = await response.json();
-
-
-
-                    if (data.success) {
-
-                        if (window.Auth?.showToast) {
-
-                            window.Auth.showToast('Úspěch', 'Heslo bylo změněno. Můžete se přihlásit.', 'success');
-
-                        } else {
-
-                            alert('Heslo bylo změněno. Můžete se přihlásit.');
-
-                        }
-
-                        // Redirect to login
-
-                        window.location.href = '/prihlaseni.html';
-
-                    } else {
-
-                        throw new Error(data.error || 'Chyba při změně hesla');
-
-                    }
-
-                } catch (error) {
-
-                    if (window.Auth?.showToast) {
-
-                        window.Auth.showToast('Chyba', error.message, 'error');
-
-                    } else {
-
-                        alert(error.message);
-
-                    }
-
-                } finally {
-
-                    submitBtn.textContent = originalText;
-
-                    submitBtn.disabled = false;
-
-                }
-
-            });
-
-
-
-            setTimeout(() => {
-
-                if (window.Auth && window.Auth.isLoggedIn()) {
-
-                    const urlParams = new URLSearchParams(window.location.search);
-
-                    const redirect = urlParams.get('redirect');
-
-                    // Only allow relative redirects to prevent open redirect attacks
-                    if (redirect && redirect.startsWith('/') && !redirect.startsWith('//')) {
-
-                        window.location.href = redirect;
-
-                    } else {
-
-                        window.location.href = '/profil.html';
-
-                    }
-
-                }
-
-            }, 500); // Small delay to let Auth init
-
-        });
-
-
-
-        // Handle "auth:changed" event from auth-client.js
-
-        document.addEventListener('auth:changed', () => {
-
-            if (window.Auth && window.Auth.isLoggedIn()) {
-
-                const urlParams = new URLSearchParams(window.location.search);
-
-                let redirect = urlParams.get('redirect') || '/profil.html';
-
-                // Only allow relative redirects to prevent open redirect attacks
-                if (!redirect.startsWith('/') || redirect.startsWith('//')) {
-                    redirect = '/profil.html';
-                }
-
-                // prevent infinite loop if redirect points to self
-
-                if (!redirect.includes('prihlaseni')) {
-
-                    window.location.href = redirect;
-
-                }
-
+            const data = await response.json();
+
+            if (data.success) {
+                window.trackEvent?.('password_reset_completed', {
+                    source: 'reset_password_form'
+                });
+                window.Auth?.showToast?.('Úspěch', 'Heslo bylo změněno. Můžete se přihlásit.', 'success');
+                window.location.href = '/prihlaseni.html';
+            } else {
+                throw new Error(data.error || 'Nepodařilo se změnit heslo.');
             }
+        } catch (error) {
+            window.Auth?.showToast?.('Chyba', error.message, 'error');
+        } finally {
+            submitBtn.textContent = originalText || 'Nastavit nové heslo';
+            submitBtn.disabled = false;
+        }
+    });
 
-        });
+    toggleBtn?.addEventListener('click', () => {
+        isRegisterMode = !isRegisterMode;
+        applyMode();
+        trackAuthView('toggle');
+    });
 
-        // CRO: Update heading when toggling between login and register
-        document.addEventListener('DOMContentLoaded', () => {
-            const toggleBtn = document.getElementById('auth-mode-toggle');
-            const titleEl = document.getElementById('login-page-title');
-            const subtitleEl = document.getElementById('login-page-subtitle');
-            const socialProofEl = document.getElementById('login-social-proof');
-            let isRegisterMode = false;
-
-            toggleBtn?.addEventListener('click', () => {
-                isRegisterMode = !isRegisterMode;
-                const confirmPwWrapper = document.getElementById('confirm-password-field-wrapper');
-                if (isRegisterMode) {
-                    if (titleEl) titleEl.textContent = 'Začněte svou cestu';
-                    if (subtitleEl) subtitleEl.textContent = 'Registrace je zdarma • přístup okamžitě';
-                    if (socialProofEl) socialProofEl.style.display = 'block';
-                    if (confirmPwWrapper) confirmPwWrapper.style.display = 'block';
-                    toggleBtn.textContent = 'Máte účet? Přihlaste se';
-                } else {
-                    if (titleEl) titleEl.textContent = 'Vítejte zpět';
-                    if (subtitleEl) subtitleEl.textContent = 'Přihlaste se ke svému účtu';
-                    if (socialProofEl) socialProofEl.style.display = 'none';
-                    if (confirmPwWrapper) confirmPwWrapper.style.display = 'none';
-                    toggleBtn.textContent = 'Nemáte účet? Zaregistrujte se zdarma →';
-                }
-            });
-
-            // If URL has ?mode=register, auto-switch to register
-            if (new URLSearchParams(window.location.search).get('mode') === 'register') {
-                setTimeout(() => toggleBtn?.click(), 100);
+    setTimeout(() => {
+        if (window.Auth?.isLoggedIn()) {
+            const redirect = urlParams.get('redirect');
+            if (redirect && redirect.startsWith('/') && !redirect.startsWith('//')) {
+                window.location.href = redirect;
+            } else {
+                window.location.href = '/profil.html';
             }
-        });
+        }
+    }, 500);
+});
+
+document.addEventListener('auth:changed', () => {
+    if (window.Auth?.isLoggedIn()) {
+        if (sessionStorage.getItem('pending_plan')) {
+            return;
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        let redirect = urlParams.get('redirect') || '/profil.html';
+
+        if (!redirect.startsWith('/') || redirect.startsWith('//')) {
+            redirect = '/profil.html';
+        }
+
+        if (!redirect.includes('prihlaseni')) {
+            window.location.href = redirect;
+        }
+    }
+});

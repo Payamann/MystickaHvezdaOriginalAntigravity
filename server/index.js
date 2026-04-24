@@ -43,6 +43,7 @@ import briefingRoutes from './routes/briefing.js';
 import horoscopeSubscribeRoutes from './routes/horoscope-subscribe.js';
 import pastLifeRoutes from './routes/past-life.js';
 import medicineWheelRoutes from './routes/medicine-wheel.js';
+import rocniHoroskopRoutes from './routes/rocni-horoskop.js';
 import { spawn } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -263,7 +264,20 @@ if (process.env.NODE_ENV === 'production' && !process.env.CSRF_SECRET) {
     console.error('[SECURITY ERROR] CSRF_SECRET environment variable is required in production!');
     process.exit(1);
 }
-const csrfSecret = process.env.CSRF_SECRET || 'dev-csrf-secret-fallback-2026';
+const csrfSecret = process.env.CSRF_SECRET || crypto.randomBytes(32).toString('hex');
+const csrfTokenLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: process.env.NODE_ENV === 'test' ? 1000 : 60,
+    standardHeaders: true,
+    legacyHeaders: false,
+    validate: { xForwardedForHeader: false },
+    handler: (req, res) => {
+        res.status(429).json({
+            error: 'Too many CSRF token requests. Please try again later.',
+            retryAfter: req.rateLimit.resetTime
+        });
+    }
+});
 
 // Generate CSRF token using HMAC: randomString.timestamp.signature
 function generateCSRFToken() {
@@ -347,14 +361,11 @@ const csrfProtection = (req, res, next) => {
     }
 };
 
-// Apply CSRF protection to state-changing API endpoints
-app.post('/api/*', csrfProtection);
-app.put('/api/*', csrfProtection);
-app.patch('/api/*', csrfProtection);
-app.delete('/api/*', csrfProtection);
+// XSS Protection - API routes only, after body parsing and before route handlers
+app.use('/api', xss());
 
 // Endpoint to get CSRF token (call this on page load)
-app.get('/api/csrf-token', (req, res) => {
+app.get('/api/csrf-token', csrfTokenLimiter, (req, res) => {
     try {
         const token = generateCSRFToken();
         res.json({ csrfToken: token });
@@ -364,8 +375,11 @@ app.get('/api/csrf-token', (req, res) => {
     }
 });
 
-// XSS Protection - only for API routes (not static files)
-app.use('/api', xss());
+// Apply CSRF protection to state-changing API endpoints after token endpoint is available
+app.post('/api/*', csrfProtection);
+app.put('/api/*', csrfProtection);
+app.patch('/api/*', csrfProtection);
+app.delete('/api/*', csrfProtection);
 
 // Health Check Endpoint (Moved UP to bypass Rate Limiting)
 app.get('/api/health', (req, res) => {
@@ -568,6 +582,9 @@ app.use('/api/past-life', aiLimiter, pastLifeRoutes);
 
 // Medicine Wheel — premium feature
 app.use('/api/medicine-wheel', aiLimiter, medicineWheelRoutes);
+
+// Roční Horoskop na míru — one-time paid PDF product
+app.use('/api/rocni-horoskop', rocniHoroskopRoutes);
 
 // Health Check - registered above rate limiter (see top of file)
 // Admin comment: duplicate route registrations removed

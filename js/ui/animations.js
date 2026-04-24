@@ -6,7 +6,12 @@ import { debounce } from '../utils/helpers.js';
 export function initScrollAnimations() {
     // Check for reduced motion preference
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
+    if (prefersReducedMotion) {
+        document.querySelectorAll('[data-animate]').forEach((el) => {
+            el.style.opacity = '1';
+        });
+        return;
+    }
 
     const animatedElements = document.querySelectorAll('[data-animate]');
     if (!animatedElements.length) return;
@@ -29,12 +34,12 @@ export function initScrollAnimations() {
         const rect = el.getBoundingClientRect();
         const isInViewport = rect.top < window.innerHeight && rect.bottom > 0;
 
+        // Content should never depend on the observer to become visible.
+        el.style.opacity = '1';
+
         if (isInViewport) {
             el.classList.add('animate-fade-in');
-            el.style.opacity = '1';
         } else {
-            el.style.opacity = '0';
-            el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
             observer.observe(el);
         }
     });

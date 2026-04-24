@@ -168,7 +168,7 @@ TOOLS_AND_FEATURES = {
         "duchov_pruvodce_free": {
             "name": "Duchovní průvodce (zdarma)",
             "url": "/mentor.html",
-            "description": "AI chat s duchovním průvodcem — odpovídá na otázky o vztazích, kariéře, duchovní cestě. Zdarma 5 zpráv/den.",
+            "description": "Chat s duchovním průvodcem — odpovídá na otázky o vztazích, kariéře a duchovní cestě. Zdarma 5 zpráv/den.",
             "limit": "5 zpráv/den",
         },
     },
@@ -242,7 +242,7 @@ TOOLS_AND_FEATURES = {
         "duchov_pruvodce_premium": {
             "name": "Neomezený duchovní průvodce",
             "url": "/mentor.html",
-            "description": "Neomezený AI chat s duchovním průvodcem bez denního limitu — otázky o vztazích, kariéře, duchovní cestě.",
+            "description": "Neomezený chat s duchovním průvodcem bez denního limitu — otázky o vztazích, kariéře a duchovní cestě.",
             "min_plan": "Hvězdný Průvodce",
         },
     },
@@ -746,6 +746,11 @@ def find_relevant_tool(topic: str) -> dict | None:
     """Najde nejrelevantnější nástroj k danému tématu"""
     topic_lower = topic.lower()
     all_tools = {**TOOLS_AND_FEATURES["free"], **TOOLS_AND_FEATURES["premium"]}
+
+    if any(keyword in topic_lower for keyword in ("krystal", "krystaly", "minerál", "mineral")):
+        tool = all_tools["aura"].copy()
+        tool["key"] = "aura"
+        return tool
 
     keyword_map = {
         "tarot": ["tarot_denni", "tarot_ano_ne", "tarot_neomezeny"],

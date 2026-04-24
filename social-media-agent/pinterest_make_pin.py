@@ -503,133 +503,137 @@ IMAGE_PROMPTS = {
 
 PINTEREST_HOOKS = {
     "chiron-raneny-lecitel-natalni-karta":
-        "TVA NEJHLUBSI RANA: Je take tvuj nejvetsi dar — Chiron v natalni karte ti to ukaze",
+        "TVÁ NEJHLUBŠÍ RANA: Je také tvůj největší dar — Chiron v natální kartě ti to ukáže",
     "ctyri-zivly-astrologie-ohen-zeme-vzduch-voda":
-        "KTERY ZIVEL JSI: Ohen, Zeme, Vzduch nebo Voda — tvuj horoskop to prozradi",
-    "pentagramy-tarot-penize-kariera":
-        "PENIZE A TAROT: Co ti karty rikaji o kariere a hojnosti",
+        "KTERÝ ŽIVEL JSI: Oheň, Země, Vzduch nebo Voda — tvůj horoskop to prozradí",
+    "pentagramy-tarot-penize-kariera": [
+        "PENÍZE A TAROT: Co ti karty říkají — o kariéře a hojnosti",
+        "TAROT A KARIÉRA: Pentagramy odhalí, co ti brání v hojnosti",
+    ],
     "hulkove-karty-tarot-vyznam":
-        "OHEN V KARTACH: Hulky ti prozradi, kde v tobe hori vule i vasen",
-    "numerologie-jmena-krizni-jmeno":
-        "TVOJE JMENO: Vibruje na konkretni frekvenci — zjisti co to o tobe prozrazuje",
+        "OHEŇ V KARTÁCH: Hůlky ti prozradí, kde v tobě hoří vůle i vášeň",
+    "numerologie-jmena-krizni-jmeno": [
+        "TVOJE JMÉNO: Skrývá vibrace — zjisti, co tvoje jméno o tobě prozrazuje",
+        "KŘÍŽNÍ JMÉNO: Proč záleží na každém písmenu tvého jména",
+    ],
     "cakrove-leceni-navod":
-        "BLOKOVANE CAKRY: Prakticky navod jak je otevrit a znovu nechat proudit energii",
+        "BLOKOVANÉ ČAKRY: Praktický návod, jak je otevřít a znovu nechat proudit energii",
     "novy-mesic-ritual-zacatecnici":
-        "NOVY MESIC: Nejsilnejsi chvile pro zamery — ritual pro zacatecniky bez balastu",
+        "NOVÝ MĚSÍC: Nejsilnější chvíle pro záměry — rituál pro začátečníky bez balastu",
     "karta-soudce-tarot-vyznam":
-        "KARTA SOUDCE: Volani tveho vyssiho ja — karmicka bilance prichazi",
+        "KARTA SOUDCE: Volání tvého vyššího já — karmická bilance přichází",
     "numerologie-kompatibilita-partneru":
-        "VASE CISLA LASKY: Jsou cisla osudu ve shode nebo v konfliktu?",
+        "VAŠE ČÍSLA LÁSKY: Jsou čísla osudu ve shodě, nebo v konfliktu?",
     "mecove-karty-tarot-vyznam":
-        "MECE V TAROTU: Nejobavanejsi suit prinasi osvobozujici pravdu — prijmi ji",
+        "MEČE V TAROTU: Nejobávanější suit přináší osvobozující pravdu — přijmi ji",
     "keltsky-kriz-tarot-rozlozeni":
-        "KELTSKY KRIZ: Jak cist nejslavnejsi tarotove rozlozeni krok za krokem",
+        "KELTSKÝ KŘÍŽ: Jak číst nejslavnější tarotové rozložení krok za krokem",
     "shamansko-kolo-totemove-zvire":
-        "TVOJE TOTEMOVE ZVIRE: Shamansko Kolo odhali, kdo te chrani na zivotni ceste",
+        "TVOJE TOTEMOVÉ ZVÍŘE: Šamanské kolo odhalí, kdo tě chrání na životní cestě",
     "retrograde-venus-2026-co-cekat-v-lasce":
-        "VENUSE RETRO 2026: Co cekat v lasce, vztazich a financich — pro kazde znameni",
+        "VENUŠE RETRO 2026: Co čekat v lásce, vztazích a financích — pro každé znamení",
     "uplnek-v-panne-ritual-a-vyklad-pro-kazde-znameni":
-        "UPLNEK V PANNE: Ritual a vyklad pro kazde znameni — vyuzij tuto lunaci naplno",
+        "ÚPLNĚK V PANNĚ: Rituál a výklad pro každé znamení — využij tuto lunaci naplno",
     "uplnek-v-kozorohovi-ritual-a-vyznam":
-        "UPLNEK V KOZOROHU: Cas sklizne ambici a uvolneni strachu z neuspechu",
+        "ÚPLNĚK V KOZOROHU: Čas sklizně ambicí a uvolnění strachu z neúspěchu",
     "merkur-v-retrograde-co-to-znamena-pro-vase-znameni":
-        "MERKUR RETRO: Co to skutecne znamena pro kazde ze 12 znameni zverokruhu",
+        "MERKUR RETRO: Co to skutečně znamená pro každé ze 12 znamení zvěrokruhu",
     "proc-vam-to-v-lasce-nevyhcazi":
-        "PROC TI TO V LASCE NEVYCHAZI: Karmicky vztah nebo spriznena duse?",
+        "PROČ TI TO V LÁSCE NEVYCHÁZÍ: Karmický vztah, nebo spřízněná duše?",
     "zivotni-cislo-odhaleni-kodu-vasi-duse":
-        "ZIVOTNI CISLO: Staroveke klic k tve karme a skrytemu potencialu duse",
+        "ŽIVOTNÍ ČÍSLO: Starověký klíč k tvé karmě a skrytému potenciálu duše",
     "rozpoznejte-svou-astrologickou-signaturu":
-        "TVOJE VELKA TROJKA: Slunce, Mesic a Ascendent — tri klice k sobe same",
+        "TVOJE VELKÁ TROJKA: Slunce, Měsíc a Ascendent — tři klíče k sobě samé",
     "tajemstvi-12-astrologickych-domu":
-        "12 ASTROLOGICKYCH DOMU: Skryte tajemstvi, ktere meni cteni horoskopu navzdy",
+        "12 ASTROLOGICKÝCH DOMŮ: Skrytá tajemství, která mění čtení horoskopu navždy",
     "stir-muz-a-panna-zena-kompatibilita":
-        "STIR + PANNA: Jeden z nejsilnejsich paru — nebo ticha katastrofa ve vztahu?",
+        "ŠTÍR + PANNA: Jeden z nejsilnějších párů — nebo tichá katastrofa ve vztahu?",
     "runy-severska-magie-v-modernim-svete":
-        "RUNY: Severskia magie neni pro slabe — syrova pravda starych symbolu",
+        "RUNY: Severská magie není pro slabé — syrová pravda starých symbolů",
     "co-je-synastrie-jak-funguje-partnerska-astrologie":
-        "SYNASTRIE: Jak astrologie odhali, co ve vasem vztahu skutecne funguje",
+        "SYNASTRIE: Jak astrologie odhalí, co ve vašem vztahu skutečně funguje",
     "andelska-cisla-1111":
-        "VIDIS 11:11: Tracis rozum nebo s tebou promlouva vesmir?",
+        "VIDÍŠ 11:11: Ztrácíš rozum, nebo s tebou promlouvá vesmír?",
     "5-znaku-ze-potkavate-svou-spriznenou-dusi":
-        "5 ZNAMENI: Prave jsi potkal svou spriznenou dusi — poznas to?",
+        "5 ZNAMENÍ: Právě jsi potkal svou spřízněnou duši — poznáš to?",
     "jak-zjistit-sve-logo-a-sestici-v-numerologii":
-        "3 CISLA TVE DUSE: Cislo Vyrazu, Duse a Osobnosti — co o tobe prozrazuji",
+        "3 ČÍSLA TVÉ DUŠE: Číslo Výrazu, Duše a Osobnosti — co o tobě prozrazují",
     "iluze-spriznene-duse-karmicke-vztahy":
-        "ILUZE SPRIZNENE DUSE: Proc nas tytez vztahy chronicky stahuji ke dnu",
+        "ILUZE SPŘÍZNĚNÉ DUŠE: Proč nás tytéž vztahy chronicky stahují ke dnu",
     "co-znamenaji-pohary-v-tarotu":
-        "POHARY V TAROTU: Skryty svet emoci, lasky a intuice ve vodnim zivlu",
+        "POHÁRY V TAROTU: Skrytý svět emocí, lásky a intuice ve vodním živlu",
     "psychologie-snu-stici-stromy":
-        "VYPADANE ZUBY VE SNE: Co se ti snazi rict tvoje stinove podvedomi?",
+        "VYPADANÉ ZUBY VE SNE: Co se ti snaží říct tvoje stínové podvědomí?",
     "ascendent-vs-slunecni-znameni-jaky-je-rozdil":
-        "ASCENDENT VS. SLUNCE: Proc se nekdy nevztahujes ke svemu znameni?",
+        "ASCENDENT VS. SLUNCE: Proč se někdy nevztahuješ ke svému znamení?",
     "zaklady-sedmi-caker-anatomie":
-        "7 CAKER: Anatomie neviditelneho energetickeho tela — kompletni pruvodce",
+        "7 ČAKER: Anatomie neviditelného energetického těla — kompletní průvodce",
     "tajemstvi-kristalove-koule-scrying":
-        "KRISTALOVA KOULE: Staroveka technika zreni, ktera funguje dodnes",
+        "KŘIŠŤÁLOVÁ KOULE: Starověká technika zření, která funguje dodnes",
     "tajemstvi-snilku-jak-rozklivovat-nocni-vzazy":
-        "TAJEMSTVI SNU: Jak dekodovat nocni poselstvi tveho podvedomi",
+        "TAJEMSTVÍ SNŮ: Jak dekódovat noční poselství tvého podvědomí",
     "znameni-zverokruhu-a-penize":
-        "TVOJE ZNAMENI A PENIZE: Kdo se topi ve zlate a kdo ma pruvan v penezkance?",
+        "TVOJE ZNAMENÍ A PENÍZE: Kdo se topí ve zlatě a kdo má průvan v peněžence?",
     "skryty-kod-biorytmu-energeticke-cykly":
-        "PROC MAS SPATNE DNY: Biorytmy vysvetluji, proc nestesti nechodi nahodou",
+        "PROČ MÁŠ ŠPATNÉ DNY: Biorytmy vysvětlují, proč neštěstí nechodí náhodou",
     "biorytmy-proc-se-vam-nedari":
-        "KRITICKY DEN BIORYTMU: Proc pada vsechno z rukou — a jak se pripravit",
+        "KRITICKÝ DEN BIORYTMU: Proč padá všechno z rukou — a jak se připravit",
     "vidite-vsude-1111-poselstvi-andelu":
-        "VIDIS VSUDE 1111: Andele ti posilaji silne poselstvi — prectis ho",
+        "VIDÍŠ VŠUDE 11:11: Andělé ti posílají silné poselství — přečteš ho?",
     "lekce-padajici-veze-tarot":
-        "KARTA VEZ: Proc kartari hrabnou, kdyz ji spatri — a co ti skutecne prinasi",
+        "KARTA VĚŽ: Proč kartáři hrabnou, když ji spatří — a co ti skutečně přináší",
     "pruvodce-energie-ochrana":
-        "ENERGETICTI UPIRI: Jak se zamknout a ochranit svou zivotni energii",
+        "ENERGETIČTÍ UPÍŘI: Jak se zamknout a ochránit svoji životní energii",
     "zatmeni-slunce-a-mesice-2026":
-        "ZATMENI 2026: Urychlovac osudu — jak prezit kosmicky chaos a vyuzit ho",
+        "ZATMĚNÍ 2026: Urychlovač osudu — jak přežít kosmický chaos a využít ho",
     "panna-a-beran-partnerska-shoda":
-        "PANNA + BERAN: Anatomie vztahove katastrofy — proc to na papire neklape",
+        "PANNA + BERAN: Anatomie vztahové katastrofy — proč to na papíře neklapí",
     "retrogradni-merkur-pruvodce":
-        "MERKUR RETRO: Ultimatni pruvodce prezitim — rozbite telefony, ex v DMs",
+        "MERKUR RETRO: Ultimátní průvodce přežitím — rozbité telefony, ex v DMs",
     "zakon-pritazlivosti-chyby":
-        "ZAKON PRITAZLIVOSTI: 3 fatalni chyby, ktere te blokkuji od hojnosti",
+        "ZÁKON PŘITAŽLIVOSTI: 3 fatální chyby, které tě blokují od hojnosti",
     "vyklad-tarotu-pro-zacatecniky":
-        "TAROT DOMA: Jak vylozit karty zadarmo — manual pro uplne zacatecniky",
+        "TAROT DOMA: Jak vyložit karty zdarma — manuál pro úplné začátečníky",
     "saturuv-navrat-29-rok-zivota":
-        "SATURUV NAVRAT: Proc je 29. rok zivota zlomovy a co ti prinese",
+        "SATURNŮV NÁVRAT: Proč je 29. rok života zlomový a co ti přinese",
     "karta-hvezda-tarot-vyznam":
-        "KARTA HVEZDA: Nadeje a uzdraveni po nejtezssich casech — tvuj novy zacatek",
+        "KARTA HVĚZDA: Naděje a uzdravení po nejtěžších časech — tvůj nový začátek",
     "uzel-osudu-severni-jizni-uzel":
-        "UZEL OSUDU: Severni a Jizni uzel odhali tvoji karmickou misi v tomto zivote",
+        "UZEL OSUDU: Severní a Jižní uzel odhalí tvoji karmickou misi v tomto životě",
     "osobni-rok-numerologie-2026":
-        "TVUJ OSOBNI ROK 2026: Co ti numerologie predpoвida — vypocitej si ho",
+        "TVŮJ OSOBNÍ ROK 2026: Co ti numerologie předpovídá — vypočítej si ho",
     "karta-mesic-tarot-vyznam":
-        "KARTA MESIC: Iluze a podvedomi — jak projit mlznym uzemim bez ztraty sebe",
+        "KARTA MĚSÍC: Iluze a podvědomí — jak projít mlžným územím bez ztráty sebe",
     "attachment-styly-vzorce-ve-vztazich":
-        "PROC PRITAHUJES STALE STEJNE: Attachment styly a skryte vztahove vzorce",
+        "PROČ PŘITAHUJEŠ STÁLE STEJNÉ: Attachment styly a skryté vztahové vzorce",
     "letani-ve-snu-vyznam":
-        "LETANI VE SNE: Nejkrasnejsi sen ma konkretni poselstvi — znas ho?",
+        "LÉTÁNÍ VE SNE: Nejkrásnější sen má konkrétní poselství — znáš ho?",
     "feng-shui-doma-energie-penizy-laska":
-        "FENG SHUI DOMA: Jak upravit prostor pro prilis energie, lasky a penez",
+        "FENG SHUI DOMA: Jak upravit prostor pro příliš energie, lásky a peněz",
     "karta-slunce-tarot-vyznam":
-        "KARTA SLUNCE: Symbol radosti a vitezstvi — jak privolat jeji zlatou energii",
+        "KARTA SLUNCE: Symbol radosti a vítězství — jak přivolat její zlatou energii",
     "mistrovska-cisla-numerologie":
-        "11, 22, 33: Mistrovska cisla v numerologii — dar nebo prokleti?",
+        "11, 22, 33: Mistrovská čísla v numerologii — dar, nebo prokletí?",
     "jak-se-pripravit-na-uplnek":
-        "UPLNEK SE BLIZI: Jak se pripravit a vyuzit naplno jeho silnou energii",
+        "ÚPLNĚK SE BLÍŽÍ: Jak se připravit a využít naplno jeho silnou energii",
     "andelska-cisla-333-444-555":
-        "333, 444, 555: Co ti vesmir opakovaně posila — prectis svoji zprávu",
+        "333, 444, 555: Co ti vesmír opakovaně posílá — přečteš svoji zprávu?",
     "jak-cist-natalni-kartu-pruvodce":
-        "NATALNI KARTA: Kompletni pruvodce ctenim — i pro uplne zacatecniky",
+        "NATÁLNÍ KARTA: Kompletní průvodce čtením — i pro úplné začátečníky",
     "lilith-v-natalni-karte":
-        "LILITH V KARTE: Temna bohyne a tvuj skryty rebel — kde v tobe zije",
+        "LILITH V KARTĚ: Temná bohyně a tvůj skrytý rebel — kde v tobě žije",
     "runovy-vyklad-doma-pruvodce":
-        "RUNOVY VYKLAD: Pruvodce pro zacatecniky — od vyberu run po interpretaci",
+        "RUNOVÝ VÝKLAD: Průvodce pro začátečníky — od výběru run po interpretaci",
     "pluto-ve-vodnari-2024-2043":
-        "PLUTO VE VODNARI: Nejvetsi generacni transformace za 248 let — co to znamena pro tebe",
+        "PLUTO VE VODNÁŘI: Největší generační transformace za 248 let — co to znamená pro tebe",
     "mesicni-znak-natalni-karta":
-        "TVUJ MESICNI ZNAK: Co Mesic v natalni karte rika o tve dusi a emocich",
+        "TVŮJ MĚSÍČNÍ ZNAK: Co Měsíc v natální kartě říká o tvé duši a emocích",
     "cinsky-horoskop-2026-rok-ohniveho-kone":
-        "ROK OHNIVEHO KONE 2026: Co ceka kazde cinske zvire — prectis svuj osud",
+        "ROK OHNIVÉHO KONĚ 2026: Co čeká každé čínské zvíře — přečteš svůj osud",
     "jak-funguji-andelske-karty":
-        "ANDELSKE KARTY: Jak funguji a jak s nimi pracovat — pruvodce pro zacatecniky",
+        "ANDĚLSKÉ KARTY: Jak fungují a jak s nimi pracovat — průvodce pro začátečníky",
     "co-je-aura-jak-ji-videt-cist-cistit":
-        "TVOJE AURA: Jak ji videt, cist barvy a cistit pro vice energie a ochrany",
+        "TVOJE AURA: Jak ji vidět, číst barvy a čistit pro více energie a ochrany",
 }
 
 

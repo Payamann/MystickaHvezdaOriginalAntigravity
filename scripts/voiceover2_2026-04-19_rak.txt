@@ -1,0 +1,47 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 19. dubna 2026
+
+[gentle] Raku, kolikrát jsi dal někomu druhou šanci? <break time="0.5s" /> [soft] A oni odešli stejně. <break time="1.0s" />
+
+[warm] Dnes víš, kdo si to nezaslouží. <break time="0.3s" /> [mysterious] Díváš se na tu zprávu. <break time="0.3s" /> [soft] Nečteš slova — cítíš jejich tón. <break time="0.3s" /> [gentle] Zamkneš telefon. <break time="0.3s" /> [intense] Jasnost nepřišla z hlavy. <break time="0.3s" /> Tvé srdce už nechce lhát samo sobě. <break time="1.0s" />
+
+[inviting] Označ Raka, co tohle drží v sobě. <break time="0.3s" /> [clearly] Pošli to Raku, co si tohle ještě neuvědomuje.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+19. dubna 2026 se Měsíc v opozici k Chironu ptá: Kolikrát ještě budeš odpouštět lidem, kteří ti nikdy neodpustí tvou citlivost? 🌙 Rak jako kardinální vodní znamení ovládané Měsícem cítí energie dřív než myšlenky — tvá intuice dnes mluví jazykem, kterému rozum nerozumí. Sleduj profil — příště odhalím, proč právě Raci vnímají lži skrz tělo, ne skrz slova 💧
+
+#mystickaHvezda #Rak #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+19. dubna 2026 ti tvé srdce šeptá pravdu, kterou mozek ještě nechce slyšet. 🌙 Měsíc v opozici k Chironu ukazuje, že odpouštění funguje jen tehdy, když druhá strana zná tvou citlivost jako dar — Rak vnímá lži skrz napětí v těle, ne skrz slova. Dnes zavřeš chat a necháš ticho mluvit za tebe, protože jasnost nepřichází z hlavy, ale z místa, kde už nechceš zradit sám sebe. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Rak #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm orchestral background with gentle music box melody, soft rhythmic pulse in major key creating golden sunrise energy. Like first light spreading across distant galaxies, the music moves forward with tender momentum and reassuring warmth, present but never overpowering, designed to support and uplift spoken words. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+A mystical video thumbnail for zodiac sign Cancer.
+
+BACKGROUND: deep dark space with soft subtle silver and pale blue lunar nebula with moonlit cosmic mist, soft silver-white stardust glowing like reflected moonlight, deep indigo void with cool silver light trails — gentle, lunar, oceanic — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.
+
+COMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.
+
+ELEMENT 1 — glyph: large ornate Cancer symbol (♋) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.
+
+ELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '19. dubna' in elegant gold lettering on the first line, 'RAK' in bold engraved gold capitals on the second line.
+
+ELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Dáváš druhé šance lidem, kteří odejdou stejně.' on the first line, 'Dnes víš, kdo si to nezaslouží.' on the second line.
+
+NO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.
+
+Portrait 9:16.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Raku, kolikrát jsi dal někomu druhou šanci? A oni odešli stejně. Dnes víš, kdo si to nezaslouží. Díváš se na tu zprávu. Nečteš slova — cítíš jejich tón. Zamkneš telefon. Jasnost nepřišla z hlavy. Tvé srdce už nechce lhát samo sobě. Označ Raka, co tohle drží v sobě. Pošli to Raku, co si tohle ještě neuvědomuje."

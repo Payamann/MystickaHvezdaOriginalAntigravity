@@ -12,6 +12,7 @@
             b.classList.remove('visible');
             b.style.display = 'none';
         }
+        if (document.body) document.body.classList.remove('cookie-banner-active');
     }
 
     /** Show banner via CSS class (matches style.v2.css transform animation) */
@@ -19,6 +20,7 @@
         var b = document.getElementById('cookie-banner');
         if (b) {
             b.style.display = '';
+            if (document.body) document.body.classList.add('cookie-banner-active');
             requestAnimationFrame(function () { b.classList.add('visible'); });
         }
     }

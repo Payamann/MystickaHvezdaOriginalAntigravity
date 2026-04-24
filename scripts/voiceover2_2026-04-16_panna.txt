@@ -1,0 +1,56 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 16. dubna 2026
+
+[gentle] Panno, 16. dubna analyzuješ každé slovo. <break time="0.5s" /> [soft] A přitom přehlížíš, co ti říká mlčení. <break time="1.0s" />
+
+[confident] Díváš se na tu konverzaci. <break time="0.3s" /> [serious] Scrolluješ nahoru. <break time="0.3s" /> [gentle] Hledáš chybu v tom, co jsi napsal nebo napsala. <break time="0.3s" /> [soft] Ale pravda není v těch slovech — je v tom, co ta osoba neodpověděla. <break time="1.0s" />
+
+[inviting] Označ Pannu, co tohle analyzuje každý den. <break time="0.3s" /> [clearly] Pokračování zítra — sleduj, ať ti to neunikne.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+16. dubna 2026 Merkur v tvojem znamení zesiluje analytické myšlení — ale ty analyzuješ slova, místo abys četla energii 🔍 Panna je zemské znamení ovládané planetou komunikace, a právě proto jsi tak citlivá na to, co *není* řečeno — mlčení pro tebe mluví hlasitěji než tisíc vět. Sleduj profil, ať zítra zjistíš, jak přestat hledat chyby v textech a začít důvěřovat intuici 💫
+
+#mystickaHvezda #Panna #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+16. dubna 2026 se díváš na každou zprávu, jako by to byla vědecká práce 📱 Merkur v Panně totiž zesiluje analytické myšlení — a ty analyzuješ gramatiku, místo abys vnímala emocionální podtext mezi řádky. Mlčení pro tebe mluví hlasitěji než tisíc vět, protože jsi zemské znamení ovládané planetou komunikace — ta citlivost není slabost, je to tvůj systém včasného varování. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Panna #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm acoustic guitar harmonics blend with gentle cello in a golden sunrise soundscape, with soft rhythmic pulse driving forward momentum under cosmic light breaking through clouds. Major key melodies breathe and flow with tender healing energy, present and uplifting without overpowering, creating supportive background warmth perfect for voiceover. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+Real deep-space Hubble-style nebula photograph background, split composition:
+top half = soft sage-green nebula with warm ivory light with dramatic light burst from center,
+thin horizontal black band across the middle,
+bottom half = cool mint and silver star clusters and scattered starlight.
+Cinematic, high-detail, photo-realistic.
+
+All graphic elements positioned in the UPPER 80% of the frame — leave minimal space at very bottom.
+
+Center-upper area: large ornate 3D CGI Panna zodiac symbol (♍),
+dark obsidian material with intricate gold filigree engravings,
+deeply detailed ancient medallion style, soft golden glow radiating from symbol, floating centered in frame.
+
+Directly below the symbol (upper-mid frame): dark stone plaque with ornate golden decorative border,
+bold serif text (NOT cursive, NOT italic, NOT calligraphic):
+Line 1: "16. DUBNA"
+Line 2: "PANNA"
+Text color: warm cream/off-white, engraved look.
+
+Immediately below the plaque (mid frame, NOT at the very bottom): aged parchment scroll, curled edges, warm paper texture,
+two lines of bold serif text (NOT cursive, NOT italic, NOT calligraphic), dark brown #2a1500:
+Line 1: "Rozbíráš každé slovo na kousky."
+Line 2: "Přitom ti mluví ticho."
+
+Portrait 4:5, 1080x1350px. No watermarks, no UI, no borders.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Panno, 16. dubna analyzuješ každé slovo. A přitom přehlížíš, co ti říká mlčení. Díváš se na tu konverzaci. Scrolluješ nahoru. Hledáš chybu v tom, co jsi napsal nebo napsala. Ale pravda není v těch slovech — je v tom, co ta osoba neodpověděla. Označ Pannu, co tohle analyzuje každý den. Pokračování zítra — sleduj, ať ti to neunikne."

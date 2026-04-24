@@ -178,9 +178,9 @@ function initHoroscope() {
             try {
                 if (window.Auth && window.Auth.isLoggedIn()) {
                     const journalRes = await fetch(`${window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api'}/user/readings`, {
-                        credentials: 'include',
-                        headers: { 'Authorization': `Bearer ${window.Auth.token}` }
+                        credentials: 'include'
                     });
+                    if (!journalRes.ok) throw new Error(`Journal fetch failed: ${journalRes.status}`);
                     const jData = await journalRes.json();
                     // Filter for 'journal' type and take last 3
                     context = (jData.readings || [])
