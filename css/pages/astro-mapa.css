@@ -1,0 +1,113 @@
+/* Migrated from astro-mapa.html static style attributes. */
+html body .mh-inline-94487e376d { gap: var(--space-2xl); }
+html body .mh-inline-0e3d9ac75a { margin: 0; }
+html body .mh-inline-c445a143df { font-size: 0.9rem; cursor: pointer; display: none; align-items: center; gap: 0.5rem; }
+html body .mh-inline-b15d335fe1 { accent-color: var(--color-mystic-gold); }
+html body .mh-inline-c747dd33a1 { cursor: pointer; }
+html body .mh-inline-a359183bb9 { margin-top: var(--space-md); }
+html body .mh-inline-cfbcde7816 { display: none; }
+html body .mh-inline-49809fe465 { width: 80px; height: 80px; border-radius: 50%; }
+
+/* Migrated from astro-mapa.html remaining static style attributes. */
+html body .mh-inline-1095a37166 { opacity: 0.8; }
+
+#astro-loading {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    margin: var(--space-lg) 0;
+}
+
+.map-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.map-bg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.map-tooltip {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.map-tooltip.is-visible {
+    opacity: 1;
+}
+
+.city-marker {
+    position: absolute;
+    z-index: 4;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.city-marker.visible {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.marker-dot {
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-mystic-gold);
+    box-shadow: 0 0 12px rgba(212, 175, 55, 0.75);
+}
+
+.city-marker.negative .marker-dot {
+    background: #e74c3c;
+    box-shadow: 0 0 12px rgba(231, 76, 60, 0.7);
+}
+
+.marker-label {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    padding: 0.15rem 0.45rem;
+    border-radius: 999px;
+    background: rgba(10, 10, 26, 0.86);
+    color: #fff;
+    font-size: 0.68rem;
+    white-space: nowrap;
+    transform: translateX(-50%);
+}
+
+.city-marker--praha { left: 52%; top: 34%; }
+.city-marker--londyn { left: 47%; top: 32%; }
+.city-marker--pariz { left: 48%; top: 34%; }
+.city-marker--new-york { left: 26%; top: 37%; }
+.city-marker--los-angeles { left: 15%; top: 39%; }
+.city-marker--tokyo { left: 85%; top: 38%; }
+.city-marker--sydney { left: 89%; top: 72%; }
+.city-marker--perth { left: 80%; top: 68%; }
+.city-marker--borabora { left: 5%; top: 60%; }
+.city-marker--barcelona { left: 47%; top: 37%; }
+.city-marker--berlin { left: 51%; top: 32%; }
+.city-marker--rim { left: 52%; top: 37%; }
+.city-marker--florencie { left: 51%; top: 36%; }
+.city-marker--benatky { left: 52%; top: 35%; }
+.city-marker--dubaj { left: 62%; top: 44%; }
+.city-marker--singapur { left: 78%; top: 55%; }
+.city-marker--mumbai { left: 68%; top: 48%; }
+.city-marker--bali { left: 82%; top: 60%; }
+.city-marker--bangkok { left: 77%; top: 50%; }
+.city-marker--istanbul { left: 56%; top: 37%; }
+.city-marker--viden { left: 53%; top: 35%; }
+.city-marker--amsterdam { left: 48%; top: 31%; }
+.city-marker--toronto { left: 25%; top: 34%; }
+.city-marker--san-francisco { left: 14%; top: 38%; }
+.city-marker--miami { left: 25%; top: 45%; }
+.city-marker--rio-de-janeiro { left: 36%; top: 65%; }
+.city-marker--buenos-aires { left: 32%; top: 72%; }
+.city-marker--kapske-mesto { left: 55%; top: 75%; }
+.city-marker--kahira { left: 56%; top: 42%; }
+.city-marker--moskva { left: 60%; top: 28%; }
+.city-marker--reykjavik { left: 40%; top: 22%; }
+.city-marker--havaj { left: 3%; top: 45%; }

@@ -1,0 +1,201 @@
+/* Extracted from afirmace.html inline <style> block. */
+.zodiac-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+
+            gap: 0.75rem;
+
+            max-width: 700px;
+
+            margin: 2rem auto;
+
+        }
+
+
+
+        .zodiac-btn {
+
+            background: rgba(255, 255, 255, 0.04);
+
+            border: 1px solid rgba(255, 255, 255, 0.1);
+
+            border-radius: 14px;
+
+            padding: 0.9rem 0.5rem;
+
+            cursor: pointer;
+
+            transition: all 0.25s;
+
+            text-align: center;
+
+            color: rgba(255, 255, 255, 0.75);
+
+            font-size: 0.82rem;
+
+            font-family: inherit;
+
+        }
+
+
+
+        .zodiac-btn:hover,
+
+        .zodiac-btn.active {
+
+            background: rgba(155, 89, 182, 0.15);
+
+            border-color: rgba(155, 89, 182, 0.5);
+
+            color: white;
+
+            transform: translateY(-2px);
+
+        }
+
+
+
+        .zodiac-btn span {
+
+            display: block;
+
+            font-size: 1.8rem;
+
+            margin-bottom: 0.3rem;
+
+        }
+
+
+
+        .affirmation-card {
+
+            max-width: 600px;
+
+            margin: 2.5rem auto 0;
+
+            padding: 2.5rem 2rem;
+
+            border-radius: 24px;
+
+            text-align: center;
+
+            border: 1px solid rgba(212, 175, 55, 0.25);
+
+            background: linear-gradient(135deg, rgba(30, 10, 60, 0.9), rgba(45, 15, 85, 0.7));
+
+            display: none;
+
+            animation: popIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+        }
+
+
+
+        .affirmation-card.show {
+
+            display: block;
+
+        }
+
+        .affirmation-card--beran { border-color: rgba(231, 76, 60, 0.27); }
+        .affirmation-card--byk { border-color: rgba(39, 174, 96, 0.27); }
+        .affirmation-card--blizenci { border-color: rgba(243, 156, 18, 0.27); }
+        .affirmation-card--rak { border-color: rgba(41, 128, 185, 0.27); }
+        .affirmation-card--lev { border-color: rgba(230, 126, 34, 0.27); }
+        .affirmation-card--panna { border-color: rgba(142, 68, 173, 0.27); }
+        .affirmation-card--vahy { border-color: rgba(22, 160, 133, 0.27); }
+        .affirmation-card--stir { border-color: rgba(192, 57, 43, 0.27); }
+        .affirmation-card--strelec { border-color: rgba(211, 84, 0, 0.27); }
+        .affirmation-card--kozoroh { border-color: rgba(127, 140, 141, 0.27); }
+        .affirmation-card--vodnar { border-color: rgba(36, 113, 163, 0.27); }
+        .affirmation-card--ryby { border-color: rgba(26, 82, 118, 0.27); }
+
+
+
+        @keyframes popIn {
+
+            from {
+
+                opacity: 0;
+
+                transform: scale(0.9)
+
+            }
+
+
+
+            to {
+
+                opacity: 1;
+
+                transform: scale(1)
+
+            }
+
+        }
+
+
+
+        .moon-badge {
+
+            display: inline-block;
+
+            padding: 0.3rem 0.85rem;
+
+            border-radius: 50px;
+
+            background: rgba(212, 175, 55, 0.1);
+
+            border: 1px solid rgba(212, 175, 55, 0.25);
+
+            color: #d4af37;
+
+            font-size: 0.8rem;
+
+            margin-bottom: 1.25rem;
+
+        }
+
+
+
+        .affirmation-text {
+
+            font-family: 'Cinzel', serif;
+
+            font-size: clamp(1.1rem, 3vw, 1.4rem);
+
+            color: white;
+
+            line-height: 1.7;
+
+            margin: 1rem 0 1.5rem;
+
+            font-style: italic;
+
+        }
+
+
+
+        .affirmation-sub {
+
+            color: rgba(255, 255, 255, 0.55);
+
+            font-size: 0.9rem;
+
+            line-height: 1.6;
+
+        }
+
+/* Migrated from afirmace.html static style attributes. */
+html body .mh-inline-f2b0621c52 { padding-top:5rem;text-align:center; }
+html body .mh-inline-c41fbcc356 { font-size:3.5rem;margin-bottom:0.5rem; }
+html body .mh-inline-b3210be4ad { font-family:'Cinzel',serif;color:#d4af37;font-size:0.95rem;letter-spacing:2px;margin-bottom:1rem; }
+html body .mh-inline-5d4d7ad749 { font-size:0.88rem;padding:0.6rem 1.25rem; }
+html body .mh-inline-6aabc89df3 { color:#2ed573;font-size:0.85rem;margin-top:0.75rem;display:none; }
+
+/* Migrated from afirmace.html remaining static style attributes. */
+html body .mh-inline-e00b42d954 { margin-top:1.5rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap; }
+html body .mh-inline-09c9f48879 { margin-top:4rem;padding:2rem;background:rgba(155,89,182,0.08);border:1px solid rgba(155,89,182,0.2);border-radius:16px;max-width:600px;margin-left:auto;margin-right:auto; }
+html body .mh-inline-75e0992588 { color:rgba(255,255,255,0.7);margin-bottom:1rem; }

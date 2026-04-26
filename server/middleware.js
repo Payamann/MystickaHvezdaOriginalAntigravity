@@ -101,8 +101,10 @@ export const optionalPremiumCheck = async (req, res, next) => {
 
 export const requireAdmin = (req, res, next) => {
     if (!req.user || req.user.role !== 'admin') {
-        // Fallback for identified developers from environment variable
-        const adminEmails = (process.env.ADMIN_EMAILS || 'pavel@mystickahvezda.cz,admin@mystickahvezda.cz').split(',').map(e => e.trim());
+        const adminEmails = (process.env.ADMIN_EMAILS || '')
+            .split(',')
+            .map(e => e.trim())
+            .filter(Boolean);
         if (req.user && adminEmails.includes(req.user.email)) {
             return next();
         }
@@ -133,7 +135,7 @@ export async function trackPaywallHit(userId, toolName) {
 export const globalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 300,
-    skip: (req) => req.path.match(/\.(js|css|jpg|jpeg|png|gif|ico|svg|ttf|webp|woff|woff2)$/),
+    skip: (req) => process.env.NODE_ENV === 'test' || req.path.match(/\.(js|css|jpg|jpeg|png|gif|ico|svg|ttf|webp|woff|woff2)$/),
     standardHeaders: true,
     legacyHeaders: false,
     validate: { xForwardedForHeader: false },
@@ -145,10 +147,16 @@ export const globalLimiter = rateLimit({
     }
 });
 
+const STATIC_ASSET_PATTERN = /\.(?:js|css|jpg|jpeg|png|gif|ico|svg|ttf|webp|woff|woff2|map|json|xml|txt)$/i;
+
 export const staticLimiter = rateLimit({
     windowMs: 1 * 60 * 1000,
-    max: 500,
-    skip: (req) => req.path.startsWith('/api/'),
+    max: process.env.NODE_ENV === 'production' ? 2400 : 10000,
+    skip: (req) => (
+        process.env.NODE_ENV === 'test' ||
+        req.path.startsWith('/api/') ||
+        STATIC_ASSET_PATTERN.test(req.path)
+    ),
     standardHeaders: true,
     legacyHeaders: false,
     validate: { xForwardedForHeader: false }
@@ -157,7 +165,7 @@ export const staticLimiter = rateLimit({
 export const aiLimiter = rateLimit({
     windowMs: 24 * 60 * 60 * 1000,
     max: (req) => {
-        if (process.env.NODE_ENV === 'development') return 1000;
+        if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') return 10000;
         return req.user?.isPremium ? 100 : 10;
     },
     message: { error: 'Překročen denní limit pro generování výkladů. Upgradujte na premium pro neomezený přístup.' },

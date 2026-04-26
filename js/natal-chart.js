@@ -4,7 +4,7 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Natal Chart JS loaded');
+    if (window.MH_DEBUG) console.debug('Natal Chart JS loaded');
     initNatalChart();
 });
 
@@ -32,6 +32,18 @@ const PLANETS = [
     { symbol: '♃', name: 'Jupiter', color: '#E6E6FA', img: 'img/planets/jupiter.webp', size: 55, desc: 'Štěstí, expanze a růst.' },
     { symbol: '♄', name: 'Saturn', color: '#708090', img: 'img/planets/saturn_rings.webp', size: 50, hasRing: true, desc: 'Disciplína a zkoušky.' }
 ];
+
+function setBlockVisible(element, visible) {
+    if (!element) return;
+    element.hidden = !visible;
+    element.classList.toggle('mh-block-visible', visible);
+}
+
+function setFlexVisible(element, visible) {
+    if (!element) return;
+    element.hidden = !visible;
+    element.classList.toggle('mh-flex-visible', visible);
+}
 
 function initNatalChart() {
     const zodiacGroup = document.getElementById('zodiac-ring');
@@ -69,7 +81,7 @@ function initNatalChart() {
         const wrapper = useProfileCheckbox.closest('.checkbox-wrapper');
         if (wrapper) {
             const updateVisibility = () => {
-                wrapper.style.display = (window.Auth && window.Auth.isLoggedIn()) ? 'flex' : 'none';
+                setFlexVisible(wrapper, window.Auth && window.Auth.isLoggedIn());
             };
             updateVisibility();
             document.addEventListener('auth:changed', updateVisibility);
@@ -169,7 +181,7 @@ function renderZodiacRing(group) {
 }
 
 function generatePlanets(group, seed) {
-    console.log('Generating planets with seed:', seed);
+    if (window.MH_DEBUG) console.debug('Generating planets with seed:', seed);
     // Orbital radii - slightly compressed to make room for larger zodiac ring
     // Saturn at 165 + RingRadius(~25) = 190 max extent.
     // Inner zodiac ring will be at 195.
@@ -242,7 +254,7 @@ function generatePlanets(group, seed) {
         fallback.setAttribute("r", radiusPx - 2);
         fallback.setAttribute("fill", planet.color || "#FFF");
         fallback.setAttribute("opacity", "0.8");
-        fallback.style.display = 'none';
+        fallback.setAttribute("display", "none");
         planetG.appendChild(fallback);
 
         // 2. Add the Image
@@ -286,7 +298,7 @@ function generatePlanets(group, seed) {
 
             // Apply the mask
             image.setAttribute("mask", `url(#${maskId})`);
-            image.style.mixBlendMode = 'normal'; // Reset blend
+            image.classList.add('planet-image--normal');
 
             // Note: If the star background is behind, the black parts of the image (in the mask) become transparent.
             // However, the planet body itself (tan/brown) is lighter than black, so it stays opaque.
@@ -308,7 +320,7 @@ function generatePlanets(group, seed) {
             image.setAttribute("clip-path", `url(#${clipId})`);
 
             // Removed drop-shadow to prevent "white edge" artifacts completely
-            image.style.filter = "none";
+            image.classList.add('planet-image--clean');
         }
 
         // Optional: Add simple rotation if desired, currently disabled to keep it stable
@@ -317,8 +329,8 @@ function generatePlanets(group, seed) {
         // Show fallback only on error
         image.addEventListener('error', (e) => {
             console.error(`Failed to load image for ${planet.name}: ${planet.img}`);
-            image.style.display = 'none';
-            fallback.style.display = 'block';
+            image.setAttribute("display", "none");
+            fallback.removeAttribute("display");
         });
 
         planetG.appendChild(image);
@@ -332,7 +344,7 @@ function generatePlanets(group, seed) {
             atmosphere.setAttribute("stroke", "#FFD700");
             atmosphere.setAttribute("stroke-width", "2");
             atmosphere.setAttribute("opacity", "0.5");
-            atmosphere.style.filter = "blur(4px)";
+            atmosphere.classList.add('sun-atmosphere');
             planetG.appendChild(atmosphere);
         }
 
@@ -343,10 +355,9 @@ function generatePlanets(group, seed) {
         group.appendChild(orbitWrapper);
 
         // Animation: Fade in
-        orbitWrapper.style.opacity = 0;
+        orbitWrapper.classList.add('orbit-path--pending');
         setTimeout(() => {
-            orbitWrapper.style.transition = 'opacity 0.5s ease';
-            orbitWrapper.style.opacity = 1;
+            orbitWrapper.classList.add('orbit-path--visible');
         }, index * 150);
     });
 }
@@ -365,14 +376,14 @@ async function generateNatalChart(planetsGroup) {
 
     // Clear previous
     planetsGroup.innerHTML = '';
-    document.getElementById('chart-results').style.display = 'none';
+    setBlockVisible(document.getElementById('chart-results'), false);
 
     // Get or create AI results container
     let aiResultsDiv = document.getElementById('ai-interpretation');
     if (!aiResultsDiv) {
         aiResultsDiv = createAIResultsContainer();
     }
-    aiResultsDiv.style.display = 'none';
+    setBlockVisible(aiResultsDiv, false);
 
     try {
         // Generate pseudo-positions for visual
@@ -382,7 +393,7 @@ async function generateNatalChart(planetsGroup) {
         // Update 3D Chart
         if (window.Natal3DInstance) {
             const container = document.getElementById('natal-3d-container');
-            container.style.display = 'block';
+            setBlockVisible(container, true);
             window.Natal3DInstance.onWindowResize(); // Force resize since it was hidden
             window.Natal3DInstance.updatePlanets(seed);
         }
@@ -452,7 +463,7 @@ async function generateNatalChart(planetsGroup) {
         // Moon and Ascendant are still random/estimated as we don't have real calculation
         // But Sun is deterministic.
         document.getElementById('tip-sign').textContent = sunSign.name;
-        document.getElementById('chart-results').style.display = 'block';
+        setBlockVisible(document.getElementById('chart-results'), true);
 
         // Call AI for interpretation
         btn.innerHTML = '<span class="loading-spinner"></span> Navazuji spojení s hvězdami...';
@@ -460,6 +471,33 @@ async function generateNatalChart(planetsGroup) {
         // Calculate Sun Sign locally for prompt accuracy
         const birthDateObj = new Date(birthDate);
         const localSunSign = getZodiacSign(birthDateObj)?.name || '';
+
+        // Login required for AI interpretation (chart graphic stays public)
+        if (!window.Auth || !window.Auth.isLoggedIn()) {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+            setBlockVisible(aiResultsDiv, true);
+            const contentDiv = aiResultsDiv.querySelector('.ai-content');
+            if (window.Premium) {
+                window.Premium.showLoginGate(
+                    contentDiv,
+                    '\u2B50 P\u0159ihlaste se zdarma a odhalte sv\u016Fj vesm\u00EDrn\u00FD pl\u00E1n',
+                    'natalni_interpretace',
+                    'natal_teaser_gate'
+                );
+            }
+            return;
+        }
+
+        // Premium required for AI interpretation
+        if (!window.Auth.isPremium()) {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+            if (window.Premium?.showTrialPaywall) {
+                window.Premium.showTrialPaywall('natalni_interpretace');
+            }
+            return;
+        }
 
         // Call API via centralized helper
         const data = await window.callAPI('/natal-chart', {
@@ -472,7 +510,7 @@ async function generateNatalChart(planetsGroup) {
 
         if (data.success || data.response) {
             // Display AI interpretation
-            aiResultsDiv.style.display = 'block';
+            setBlockVisible(aiResultsDiv, true);
             const contentDiv = aiResultsDiv.querySelector('.ai-content');
             
             // Clean and format the response
@@ -480,6 +518,7 @@ async function generateNatalChart(planetsGroup) {
             
             // Safer cleaning: remove <html>, <body>, <head>, <script>, <style> only
             let cleanContent = responseText.replace(/<\/?(html|body|head|script|style)[^>]*>/gi, '');
+            const textToSearch = cleanContent.replace(/<[^>]+>/g, ' ');
 
             // Ensure our specific structure is preserved and enhanced
             let formattedContent = cleanContent
@@ -491,7 +530,7 @@ async function generateNatalChart(planetsGroup) {
                     return `<p>${para.replace(/\n/g, '<br>')}</p>`;
                 }).join('');
 
-            contentDiv.innerHTML = DOMPurify.sanitize(formattedContent);
+            contentDiv.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(formattedContent) : formattedContent;
             
             // --- STRUCTURED DATA EXTRACTION ---
             // Look for "DATA: Slunce=..., Měsíc=..., Ascendent=..."
@@ -507,7 +546,7 @@ async function generateNatalChart(planetsGroup) {
                 
                 // Remove the DATA block from visible content (sanitized)
                 const cleaned = contentDiv.innerHTML.replace(/DATA:\s*Slunce=[^<]+/i, '').replace(/<p><\/p>/g, '');
-                contentDiv.innerHTML = DOMPurify.sanitize(cleaned);
+                contentDiv.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(cleaned) : cleaned;
             } else {
                 // Fallback to strict sign names search in text if DATA block is missing
                 const signNames = ZODIAC_SIGNS.map(s => s.name).join('|');
@@ -535,6 +574,19 @@ async function generateNatalChart(planetsGroup) {
                     </div>
                 `;
                 contentDiv.appendChild(teaserMsg);
+                teaserMsg.querySelector('a[href="/cenik"]')?.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    window.MH_ANALYTICS?.trackCTA?.('natal_teaser_gate', {
+                        plan_id: 'pruvodce',
+                        feature: 'natalni_interpretace'
+                    });
+                    window.Auth?.startPlanCheckout?.('pruvodce', {
+                        source: 'natal_teaser_gate',
+                        feature: 'natalni_interpretace',
+                        redirect: '/cenik.html',
+                        authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
+                    });
+                });
             }
 
             // Save to history if logged in and add favorite button
@@ -553,10 +605,9 @@ async function generateNatalChart(planetsGroup) {
 
                     // Add favorite button after interpretation
                     const favoriteBtn = document.createElement('div');
-                    favoriteBtn.className = 'text-center';
-                    favoriteBtn.style.marginTop = 'var(--space-xl)';
+                    favoriteBtn.className = 'text-center favorite-reading-action';
                     favoriteBtn.innerHTML = `
-                        <button id="favorite-natal-btn" class="btn btn--glass" style="min-width: 200px;">
+                        <button id="favorite-natal-btn" class="btn btn--glass favorite-reading-action__button">
                             <span class="favorite-icon">⭐</span> Přidat do oblíbených
                         </button>
                     `;
@@ -575,7 +626,7 @@ async function generateNatalChart(planetsGroup) {
 
     } catch (error) {
         console.error('Natal Chart Error:', error);
-        aiResultsDiv.style.display = 'block';
+        setBlockVisible(aiResultsDiv, true);
         aiResultsDiv.querySelector('.ai-content').textContent =
             'Hvězdy momentálně odmítají odhalit svá tajemství. Zkuste to prosím později.';
     }
@@ -589,18 +640,12 @@ async function generateNatalChart(planetsGroup) {
 function createAIResultsContainer() {
     const container = document.createElement('div');
     container.id = 'ai-interpretation';
-    container.style.cssText = `
-        margin-top: var(--space-xl);
-        padding: var(--space-xl);
-        background: linear-gradient(135deg, rgba(155, 89, 182, 0.1) 0%, rgba(10, 10, 26, 0.9) 100%);
-        border: 1px solid var(--color-mystic-gold);
-        border-radius: var(--radius-lg);
-    `;
+    container.className = 'natal-ai';
     container.innerHTML = `
-        <h4 style="color: var(--color-mystic-gold); margin-bottom: var(--space-md);">
+        <h4 class="natal-ai__title">
             ✨ Váš osobní hvězdný příběh
         </h4>
-        <div class="ai-content" style="color: var(--color-starlight); line-height: 1.8; white-space: pre-wrap;"></div>
+        <div class="ai-content natal-ai__content"></div>
     `;
 
     // Insert after chart-results
@@ -616,14 +661,13 @@ function getSignFromAngle(angle) {
 }
 
 async function typewriterEffect(element, htmlContent) {
-    element.style.opacity = '0';
-    element.innerHTML = DOMPurify.sanitize(htmlContent);
+    element.classList.add('content-fade-enter');
+    element.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(htmlContent) : htmlContent;
 
     // Small delay to ensure DOM update
     await new Promise(r => setTimeout(r, 100));
 
-    element.style.transition = 'opacity 1.5s ease-in-out';
-    element.style.opacity = '1';
+    element.classList.add('content-fade-enter-active');
 
     // Scroll into view if needed
     element.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -698,5 +742,5 @@ function updateTransits(birthDate) {
     document.getElementById('transit-subtitle').textContent = subtitle;
     document.getElementById('transit-message').innerHTML = message;
 
-    section.style.display = 'block';
+    setBlockVisible(section, true);
 }

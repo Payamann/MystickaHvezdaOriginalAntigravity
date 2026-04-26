@@ -8,7 +8,7 @@ export async function loadFavorites() {
     const container = document.getElementById('favorites-list');
     if (!container) return;
 
-    container.innerHTML = '<p style="text-align: center; opacity: 0.6;">Načítání...</p>';
+    container.innerHTML = '<p class="profile-loading">Načítání...</p>';
 
     try {
         const response = await fetch(`${apiUrl()}/user/readings`, {
@@ -33,7 +33,7 @@ export async function loadFavorites() {
         }
 
         container.innerHTML = favorites.map(reading => `
-            <div class="reading-item card" onclick="viewReading('${escapeHtml(reading.id)}')">
+            <div class="reading-item card" data-reading-id="${escapeHtml(reading.id)}" role="button" tabindex="0">
                 <div class="reading-item__inner">
                     <div class="reading-item__left">
                         <span class="reading-item__icon" aria-hidden="true">${getReadingIcon(reading.type)}</span>
@@ -47,8 +47,8 @@ export async function loadFavorites() {
                         </div>
                     </div>
                     <div class="reading-item__actions">
-                        <button class="btn btn--sm btn--glass" onclick="event.stopPropagation(); toggleFavorite('${escapeHtml(reading.id)}', this)" title="Odebrat z oblíbených" aria-label="Odebrat z oblíbených">⭐</button>
-                        <button class="btn btn--sm btn--glass" onclick="event.stopPropagation(); viewReading('${escapeHtml(reading.id)}')" aria-label="Zobrazit detail">Zobrazit</button>
+                        <button class="btn btn--sm btn--glass" data-reading-action="favorite" data-reading-id="${escapeHtml(reading.id)}" title="Odebrat z oblíbených" aria-label="Odebrat z oblíbených">⭐</button>
+                        <button class="btn btn--sm btn--glass" data-reading-action="view" data-reading-id="${escapeHtml(reading.id)}" aria-label="Zobrazit detail">Zobrazit</button>
                     </div>
                 </div>
             </div>

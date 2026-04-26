@@ -1,0 +1,56 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 18. dubna 2026
+
+[mysterious] Ryby nejsou zmatené. <break time="0.5s" /> [soft] Jsou jediné, kdo cítí pravdu dřív, než se stane slovy. <break time="1.0s" />
+
+[gentle] Díváš se na tu zprávu. <break time="0.3s" /> [warm] Přečteš ji potřetí. <break time="0.3s" /> [mysterious] A zamkneš telefon. <break time="0.3s" /> [intense] Protože už znáš odpověď — jen ji ještě nikdo neřekl nahlas. <break time="1.0s" />
+
+[inviting] Co vidíš u ostatních, co oni sami nevidí? ⬇️ <break time="0.3s" /> [clearly] Příště: temná strana vztahů — co si znamení neřeknou.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+18. dubna 2026 Neptun posiluje schopnost Ryb vnímat emoční pravdu dřív než logiku — nejde o chaos, jde o předvídavost 🌊 Vládnoucí planeta Neptun rozpouští hranice mezi vědomím a podvědomím — proto Ryby čtou mezi řádky dřív, než ostatní vůbec pošlou zprávu. Sleduj profil — příště odhalím, co znamení tají před svými partnery ✨
+
+#mystickaHvezda #Ryby #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+Neptun ti 18. dubna 2026 otevírá schopnost číst pravdu dřív, než se stane slovy 🌊 Zatímco ostatní analyzují text zprávy, ty už cítíš odpověď — vládnoucí planeta rozpouští hranici mezi tím, co někdo řekne, a tím, co ve skutečnosti myslí. Neptun posiluje tvou předvídavost — vnímáš emoční pravdu dřív než logiku, a to je dar. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Ryby #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm instrumental background with mellow Rhodes piano playing gentle melodic phrases over soft rhythmic pulse and luminous ambient textures, evoking golden morning light and stardust drifting through awakening skies. Major key progression with forward momentum creates supportive energy bed that breathes beneath spoken voice without competing, like sunrise spreading hope across the horizon. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+Real deep-space Hubble-style nebula photograph background, split composition:
+top half = soft violet-lavender nebula with pearl shimmer with dramatic light burst from center,
+thin horizontal black band across the middle,
+bottom half = deep ocean blue with silver and teal starlight and scattered starlight.
+Cinematic, high-detail, photo-realistic.
+
+All graphic elements positioned in the UPPER 80% of the frame — leave minimal space at very bottom.
+
+Center-upper area: large ornate 3D CGI Ryby zodiac symbol (♓),
+dark obsidian material with intricate gold filigree engravings,
+deeply detailed ancient medallion style, soft golden glow radiating from symbol, floating centered in frame.
+
+Directly below the symbol (upper-mid frame): dark stone plaque with ornate golden decorative border,
+bold serif text (NOT cursive, NOT italic, NOT calligraphic):
+Line 1: "18. DUBNA"
+Line 2: "RYBY"
+Text color: warm cream/off-white, engraved look.
+
+Immediately below the plaque (mid frame, NOT at the very bottom): aged parchment scroll, curled edges, warm paper texture,
+two lines of bold serif text (NOT cursive, NOT italic, NOT calligraphic), dark brown #2a1500:
+Line 1: "Odpověď znáš dřív než přijde."
+Line 2: "Slova jen potvrdí, co cítíš."
+
+Portrait 4:5, 1080x1350px. No watermarks, no UI, no borders.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Ryby nejsou zmatené. Jsou jediné, kdo cítí pravdu dřív, než se stane slovy. Díváš se na tu zprávu. Přečteš ji potřetí. A zamkneš telefon. Protože už znáš odpověď — jen ji ještě nikdo neřekl nahlas. Co vidíš u ostatních, co oni sami nevidí? ⬇️ Příště: temná strana vztahů — co si znamení neřeknou."

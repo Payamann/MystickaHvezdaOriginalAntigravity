@@ -1,0 +1,44 @@
+/* Extracted from horoskop/vodnar.html inline <style> block. */
+.zodiac-hero { background: linear-gradient(135deg, #2980b9, #16a085); padding: 5rem 2rem 4rem; text-align: center; position: relative; overflow: hidden; }
+
+        .zodiac-hero::before { content:''; position:absolute; inset:0; background: rgba(0,0,0,0.4); }
+
+        .zodiac-hero__content { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+
+        .zodiac-emoji { font-size: 5rem; display: block; margin-bottom: 1rem; animation: float 3s ease-in-out infinite; }
+
+        .zodiac-dates { color: rgba(255,255,255,0.7); font-size: 1rem; margin-bottom: 0.5rem; }
+
+        .zodiac-meta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin: 1rem 0; }
+
+        .zodiac-tag { background: rgba(255,255,255,0.15); border-radius: 50px; padding: 0.3rem 0.9rem; font-size: 0.85rem; color: white; }
+
+        .zodiac-content { max-width: 800px; margin: 0 auto; padding: 3rem 2rem; }
+
+        .zodiac-section { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.75rem; margin-bottom: 1.5rem; }
+
+        .zodiac-section h2 { font-family:'Cinzel',serif; color:#d4af37; font-size:1.1rem; margin-bottom:0.75rem; }
+
+        .zodiac-nav { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; max-width: 600px; margin: 3rem auto 0; }
+
+        .zodiac-nav a { display:flex; flex-direction:column; align-items:center; padding:0.75rem 0.5rem; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:rgba(255,255,255,0.7); font-size:0.8rem; text-decoration:none; transition:all 0.2s; gap:0.25rem; }
+
+        .zodiac-nav a:hover { background:rgba(212,175,55,0.1); border-color:rgba(212,175,55,0.3); color:white; }
+
+        .zodiac-nav span { font-size:1.4rem; }
+
+/* Migrated from horoskop/vodnar.html static style attributes. */
+html body .mh-inline-7455f0d11e { padding:1rem 2rem; font-size:0.85rem; color:rgba(255,255,255,0.4); }
+html body .mh-inline-4f868368b2 { color:rgba(255,255,255,0.4);text-decoration:none; }
+html body .mh-inline-98bd6d102a { color:rgba(255,255,255,0.7); }
+html body .mh-inline-ad28c018e4 { font-family:'Cinzel',serif; font-size:clamp(2rem,5vw,3rem); color:white; margin-bottom:0.5rem; }
+html body .mh-inline-1cdff01858 { color:rgba(255,255,255,0.8); line-height:1.8; }
+html body .mh-inline-3befcf52c1 { color:rgba(255,255,255,0.7); line-height:1.8; margin-top:0.75rem; }
+html body .mh-inline-a4fdb72457 { display:inline-block; margin-top:1rem; color:#d4af37; font-size:0.9rem; }
+html body .mh-inline-405f36f32d { text-align:center; padding:3rem 2rem; background:linear-gradient(135deg,rgba(155,89,182,0.12),rgba(212,175,55,0.08)); border:1px solid rgba(212,175,55,0.25); border-radius:20px; margin:2rem 0; }
+html body .mh-inline-239ff7924a { font-size:3rem; margin-bottom:1rem; }
+html body .mh-inline-cc8a2d7b8f { font-family:'Cinzel',serif; color:#d4af37; font-size:1.4rem; margin-bottom:0.75rem; }
+html body .mh-inline-463ded2f5d { color:rgba(255,255,255,0.65); max-width:480px; margin:0 auto 1.5rem; line-height:1.7; }
+html body .mh-inline-5a5098ad5f { margin-right:0.5rem; }
+html body .mh-inline-e642221fcb { color:rgba(255,255,255,0.25); font-size:0.8rem; margin-top:1rem; }
+html body .mh-inline-661438894a { font-family:'Cinzel',serif; color:rgba(255,255,255,0.5); font-size:0.9rem; text-align:center; margin-top:3rem; letter-spacing:1px; }

@@ -1,0 +1,391 @@
+/* Extracted from tarot-ano-ne.html inline <style> block. */
+.cards-area {
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: clamp(0.75rem, 3vw, 1.5rem);
+
+            flex-wrap: wrap;
+
+            margin: 2.5rem 0;
+
+            perspective: 1000px;
+
+        }
+
+
+
+        .tarot-card {
+
+            width: clamp(80px, 16vw, 115px);
+
+            height: clamp(130px, 26vw, 185px);
+
+            cursor: pointer;
+
+            position: relative;
+
+            transform-style: preserve-3d;
+
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+
+            border-radius: 14px;
+
+        }
+
+
+
+        .tarot-card.flipped {
+
+            transform: rotateY(180deg);
+
+            pointer-events: none;
+
+        }
+
+
+
+        .card-face {
+
+            position: absolute;
+
+            inset: 0;
+
+            border-radius: 14px;
+
+            backface-visibility: hidden;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+        }
+
+
+
+        .card-back {
+
+            background: linear-gradient(145deg, #1e0a3c, #3b1a6e);
+
+            border: 2px solid rgba(212, 175, 55, 0.5);
+
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+
+        }
+
+
+
+        .card-back::before {
+
+            content: '★';
+
+            font-size: 2.5rem;
+
+            color: rgba(212, 175, 55, 0.4);
+
+        }
+
+
+
+        .card-back:hover {
+
+            border-color: rgba(212, 175, 55, 0.9);
+
+            box-shadow: 0 12px 40px rgba(155, 89, 182, 0.4);
+
+            transform: translateY(-6px);
+
+            transition: all 0.25s;
+
+        }
+
+
+
+        .card-front {
+
+            transform: rotateY(180deg);
+
+            flex-direction: column;
+
+            gap: 0.5rem;
+
+            padding: 1rem;
+
+            text-align: center;
+
+        }
+
+
+
+        .card-front.ano {
+
+            background: linear-gradient(145deg, #0d3b1e, #1a6e3b);
+
+            border: 2px solid rgba(46, 213, 115, 0.6);
+
+            box-shadow: 0 8px 32px rgba(46, 213, 115, 0.3);
+
+        }
+
+
+
+        .card-front.mozna {
+
+            background: linear-gradient(145deg, #2d2000, #5a4200);
+
+            border: 2px solid rgba(212, 175, 55, 0.6);
+
+            box-shadow: 0 8px 32px rgba(212, 175, 55, 0.3);
+
+        }
+
+
+
+        .card-front.ne {
+
+            background: linear-gradient(145deg, #3b0a0a, #6e1a1a);
+
+            border: 2px solid rgba(213, 46, 46, 0.6);
+
+            box-shadow: 0 8px 32px rgba(213, 46, 46, 0.3);
+
+        }
+
+
+
+        .answer-label {
+
+            font-family: 'Cinzel', serif;
+
+            font-size: 1.1rem;
+
+            font-weight: 700;
+
+        }
+
+
+
+        .ano .answer-label {
+
+            color: #2ed573;
+
+        }
+
+
+
+        .mozna .answer-label {
+
+            color: #d4af37;
+
+        }
+
+
+
+        .ne .answer-label {
+
+            color: #ff6b6b;
+
+        }
+
+
+
+        .card-emoji {
+
+            font-size: 2rem;
+
+        }
+
+
+
+        .result-panel {
+
+            max-width: 600px;
+
+            margin: 0 auto;
+
+            padding: 2rem;
+
+            background: rgba(255, 255, 255, 0.04);
+
+            border: 1px solid rgba(255, 255, 255, 0.08);
+
+            border-radius: 20px;
+
+            display: none;
+
+            animation: fadeIn 0.5s ease;
+
+        }
+
+
+
+        .result-panel.show {
+
+            display: block;
+
+        }
+
+
+
+        @keyframes fadeIn {
+
+            from {
+
+                opacity: 0;
+
+                transform: translateY(20px)
+
+            }
+
+
+
+            to {
+
+                opacity: 1;
+
+                transform: translateY(0)
+
+            }
+
+        }
+
+
+
+        .question-input {
+
+            width: 100%;
+
+            padding: 1rem 1.25rem;
+
+            background: rgba(255, 255, 255, 0.06);
+
+            border: 1px solid rgba(255, 255, 255, 0.12);
+
+            border-radius: 12px;
+
+            color: white;
+
+            font-size: 1rem;
+
+            font-family: 'Inter', sans-serif;
+
+            outline: none;
+
+            box-sizing: border-box;
+
+            transition: border-color 0.2s;
+
+        }
+
+
+
+        .question-input:focus {
+
+            border-color: rgba(212, 175, 55, 0.5);
+
+        }
+
+
+
+        .question-input::placeholder {
+
+            color: rgba(255, 255, 255, 0.35);
+
+        }
+
+
+
+        .shake {
+
+            animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+
+            transform: translate3d(0, 0, 0);
+
+        }
+
+
+
+        @keyframes shake {
+
+
+
+            10%,
+
+            90% {
+
+                transform: translate3d(-1px, 0, 0);
+
+            }
+
+
+
+            20%,
+
+            80% {
+
+                transform: translate3d(2px, 0, 0);
+
+            }
+
+
+
+            30%,
+
+            50%,
+
+            70% {
+
+                transform: translate3d(-4px, 0, 0);
+
+            }
+
+
+
+            40%,
+
+            60% {
+
+                transform: translate3d(4px, 0, 0);
+
+            }
+
+        }
+
+/* Migrated from tarot-ano-ne.html static style attributes. */
+html body .mh-inline-0bf3eb4e93 { padding-top:5rem; text-align:center; }
+html body .mh-inline-10aaa9d482 { max-width:750px; }
+html body .mh-inline-2f0dd961ce { color:#ff6b6b; }
+html body .mh-inline-0ae869fa50 { font-size:3rem;margin-bottom:0.75rem; }
+html body .mh-inline-e18c901d36 { font-family:'Cinzel',serif;font-size:1.8rem;margin-bottom:0.75rem; }
+html body .mh-inline-0e03fbe474 { color:rgba(255,255,255,0.75);line-height:1.8;font-size:1rem; }
+
+/* Migrated from tarot-ano-ne.html remaining static style attributes. */
+html body .mh-inline-f8cea551e3 { margin:2rem 0 1.5rem; }
+html body .mh-inline-d3ee132133 { margin-top:1.5rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap; }
+html body .mh-inline-0fe834f6fb { margin-top:4rem;text-align:left; }
+html body .mh-inline-3024a9e607 { font-family:'Cinzel',serif;color:#d4af37;font-size:1.2rem;margin-bottom:1rem; }
+html body .mh-inline-418361a818 { color:rgba(255,255,255,0.65);line-height:1.8; }
+
+.input--invalid {
+    border-color: rgba(231, 76, 60, 0.8);
+}
+
+.tarot-card--locked {
+    cursor: default;
+}
+
+.result-title--yes {
+    color: #2ed573;
+}
+
+.result-title--no {
+    color: #ff6b6b;
+}
+
+.result-title--maybe {
+    color: #d4af37;
+}

@@ -1,0 +1,47 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 23. dubna 2026
+
+[confident] Blíženci, přestáváš — nebo jen dýcháš? <break time="0.5s" /> [warm] Nevíš, zda tě vyčerpala práce nebo její nesmyslnost. <break time="1.0s" />
+
+[upbeat] Sedíš na lavičce v parku. <break time="0.3s" /> [warm] Lidé tě míjejí, ty koukáš jinam. <break time="0.3s" /> [mysterious] Máš rozpracovaný nápad, který jsi třikrát přepsal a pořád nesedí. <break time="0.3s" /> [confident] Saturn teď vrací každou zkratku zpátky na stůl — a ta únava, kterou cítíš? <break time="0.3s" /> [intense] Roste tam, kde jsi ztratil upřímnost k sobě — ne tam, kde jsi přestal makat. <break time="1.0s" />
+
+[inviting] Co dnes odkládáš, protože máš jiný nápad? ⬇️ <break time="0.3s" /> [clearly] Označ Blížence, co tohle teď potřebuje slyšet.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+23. dubna 2026 platí pro Blížence jedno staré astrologické pravidlo: únava ukazuje místa, kde nesou nepravdy příliš dlouho. 🪐 Merkur, tvůj vládce, zpracovává svět skrz slova a logiku — jenže když vnitřní příběh nesedí se skutečností, mysl se točí v kruhu a tělo to odnese jako první. Sleduj profil — příště jdeme hlouběji do toho, jak vzdušný živel Blíženců sabotuje klid, který si zasloužíš. ✨
+
+#mystickaHvezda #Blíženci #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+23. dubna 2026 sedíš a nevíš, jestli tě vyčerpala práce — nebo její nesmyslnost. 🪐 Saturn teď vrací každou zkratku zpátky na stůl bez výjimky. Únava, kterou cítíš, neroste tam, kde přestáváš makat — roste přesně v místech, kde přestáváš být upřímný sám k sobě. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Blíženci #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm marimba phrases bounce lightly over a gentle rhythmic pulse, paired with airy dancing strings that shimmer like morning light spreading across a soft glowing horizon. The texture feels bright and intellectually curious, golden and forward-moving, designed to sit comfortably beneath a spoken voice without competing. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+A mystical video thumbnail for zodiac sign Gemini.
+
+BACKGROUND: deep dark space with soft subtle electric gold and violet dual-tone nebula with twin light streams, shimmering silver and yellow cosmic sparks, two converging light ribbons of lavender and gold — quicksilver, dazzling, mercurial — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.
+
+COMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.
+
+ELEMENT 1 — glyph: large ornate Gemini symbol (♊) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.
+
+ELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '23. dubna' in elegant gold lettering on the first line, 'BLÍŽENCI' in bold engraved gold capitals on the second line.
+
+ELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Nevíš, zda přestat, nebo jen vydechnout.' on the first line, 'Tvůj nápad není špatný — jen potřebuje čas.' on the second line.
+
+NO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.
+
+Portrait 9:16.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Blíženci, přestáváš — nebo jen dýcháš? Nevíš, zda tě vyčerpala práce nebo její nesmyslnost. Sedíš na lavičce v parku. Lidé tě míjejí, ty koukáš jinam. Máš rozpracovaný nápad, který jsi třikrát přepsal a pořád nesedí. Saturn teď vrací každou zkratku zpátky na stůl — a ta únava, kterou cítíš? Roste tam, kde jsi ztratil upřímnost k sobě — ne tam, kde jsi přestal makat. Co dnes odkládáš, protože máš jiný nápad? ⬇️ Označ Blížence, co tohle teď potřebuje slyšet."

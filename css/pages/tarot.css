@@ -1,0 +1,95 @@
+/* Migrated from tarot.html static style attributes. */
+html body .mh-inline-82c7740230 { display:none; background: linear-gradient(90deg, rgba(212,175,55,0.1), rgba(155,89,182,0.1)); border-bottom: 1px solid rgba(212,175,55,0.2); padding: 0.65rem 1rem; text-align: center; font-size: 0.88rem; color: rgba(255,255,255,0.8); }
+html body .mh-inline-58ef8148d6 { color: #d4af37; font-weight: 600; }
+html body .mh-inline-3b742ab049 { background:none;border:none;color:rgba(255,255,255,0.3);cursor:pointer;font-size:1rem;vertical-align:middle; }
+html body .mh-inline-92c056aeba { min-height: 80vh; padding-top: 140px; }
+html body .mh-inline-337de79d64 { margin-top: 3rem; }
+html body .mh-inline-b4c908ffb7 { width: 80px; height: auto; filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3)); }
+html body .mh-inline-32b6acaa47 { padding-top: 2rem; }
+html body .mh-inline-58bc1f9d44 { max-width: 800px; margin: 0 auto; }
+html body .mh-inline-9e9a3fbfac { flex-wrap: wrap; gap: var(--space-md); }
+html body .mh-inline-79cc1ae746 { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+
+/* Migrated from tarot.html remaining static style attributes. */
+html body .mh-inline-4665ff48a5 { font-size: 4rem; }
+
+.tarot-load-error {
+    padding: 2rem;
+    color: #ff6b6b;
+}
+
+.tarot-results {
+    margin-top: var(--space-2xl);
+}
+
+.tarot-card--clickable {
+    cursor: pointer;
+}
+
+.tarot-deck--shuffle-scale {
+    transform: scale(1.05);
+}
+
+.tarot-results__title {
+    color: var(--color-mystic-gold);
+}
+
+.tarot-results__spread {
+    max-width: 1200px;
+    gap: var(--space-lg);
+    margin-right: auto;
+    margin-bottom: var(--space-xl);
+    margin-left: auto;
+}
+
+.tarot-card-lock {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.tarot-card-lock__icon {
+    font-size: 2rem;
+}
+
+.tarot-card-lock__title {
+    margin-bottom: 1rem;
+    color: var(--color-mystic-gold);
+    font-family: 'Cinzel', serif;
+}
+
+.tarot-card-lock__copy {
+    margin-bottom: 2rem;
+    color: var(--color-silver-mist);
+}
+
+.tarot-card-image--locked {
+    filter: blur(5px);
+    opacity: 0.5;
+}
+
+.tarot-interpretations {
+    margin-top: var(--space-xl);
+}
+
+.tarot-soft-gate {
+    max-width: 600px;
+    margin: 2rem auto;
+    border: 1px solid var(--color-mystic-gold);
+    border-radius: 12px;
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.tarot-soft-gate__title {
+    color: var(--color-mystic-gold);
+}
+
+.favorite-reading-action {
+    margin-top: var(--space-xl);
+}
+
+.favorite-reading-action__button {
+    min-width: 200px;
+}
+
+.tarot-summary-error {
+    color: var(--color-silver-mist);
+}

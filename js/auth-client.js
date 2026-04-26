@@ -1,20 +1,48 @@
 (() => {
-    const API_URL = window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api';
+    const API_URL = window.API_CONFIG?.BASE_URL || '/api';
+    const PENDING_PLAN_KEY = 'pending_plan';
+    const PENDING_CONTEXT_KEY = 'pending_checkout_context';
+    const POST_AUTH_ACTIVATION_KEY = 'post_auth_activation';
+    const POST_AUTH_REDIRECT_PENDING_KEY = 'post_auth_redirect_pending';
 
+    function setHidden(element, hidden) {
+        if (element) element.hidden = hidden;
+    }
+
+    function setAuthButtonPremiumLabel(button, isPremium) {
+        if (!button) return;
+        button.textContent = 'Odhlásit';
+        if (!isPremium) return;
+
+        const badge = document.createElement('span');
+        badge.className = 'auth-premium-label';
+        badge.textContent = '(Premium)';
+        button.append(' ', badge);
+    }
 
     const Auth = {
         // Token is stored in HttpOnly cookie (secure, XSS-proof)
         // JS cannot read it - that's the point. We track login state via user data.
-        user: JSON.parse(localStorage.getItem('auth_user')),
+        user: (() => {
+            try { return JSON.parse(localStorage.getItem('auth_user') || 'null'); }
+            catch { localStorage.removeItem('auth_user'); return null; }
+        })(),
+
+        isStandaloneAuthPage() {
+            return document.body?.classList.contains('page-login') || window.location.pathname.endsWith('/prihlaseni.html') || window.location.pathname.endsWith('prihlaseni.html');
+        },
 
         init() {
-            this.injectModal();
+            if (!this.isStandaloneAuthPage()) {
+                this.injectModal();
+            }
             this.updateUI();
             this.setupListeners();
             this.handleRedirect();
+            this.maybeShowPostAuthActivation();
             this.refreshSession(); // Auto-sync profile on load
-            // Auto-refresh token every hour
-            setInterval(() => this.refreshSession(), 3600000);
+            // Auto-refresh token every 15 minutes (faster detection of trial expiration)
+            setInterval(() => this.refreshSession(), 900000);
         },
 
         async refreshSession() {
@@ -118,10 +146,22 @@
         isPremium() {
             if (!this.user || !this.user.subscription_status) return false;
             const s = this.user.subscription_status.toLowerCase();
-            if (!s.includes('premium') && !s.includes('exclusive') && s !== 'vip') return false;
+            if (!s.includes('premium') && !s.includes('exclusive') && !s.includes('vip')) return false;
             // Check expiration if available
-            if (this.user.subscription_expires_at) {
-                const expires = new Date(this.user.subscription_expires_at);
+            if (this.user.premiumExpires) {
+                const expires = new Date(this.user.premiumExpires);
+                if (expires < new Date()) return false;
+            }
+            return true;
+        },
+
+        // Osvícení or VIP level check (exclusive_monthly, vip)
+        isExclusive() {
+            if (!this.user || !this.user.subscription_status) return false;
+            const s = this.user.subscription_status.toLowerCase();
+            if (!s.includes('exclusive') && !s.includes('vip')) return false;
+            if (this.user.premiumExpires) {
+                const expires = new Date(this.user.premiumExpires);
                 if (expires < new Date()) return false;
             }
             return true;
@@ -148,12 +188,8 @@
                     return { success: true, verificationRequired: true };
                 }
 
-                this.loginSuccess(data);
+                this.loginSuccess(data, { mode: 'register' });
                 this.showToast('Vítejte!', 'Registrace proběhla úspěšně. 🌟', 'success');
-                // Redirect new users to onboarding
-                if (!localStorage.getItem('mh_onboarded')) {
-                    setTimeout(() => { window.location.href = 'onboarding.html'; }, 800);
-                }
                 return { success: true };
             } catch (e) {
                 return { success: false, error: e.message };
@@ -195,7 +231,7 @@
 
             // Auto remove
             setTimeout(() => {
-                toast.style.animation = 'fadeOutRight 0.3s ease-in forwards';
+                toast.classList.add('toast--leaving');
                 setTimeout(() => toast.remove(), 300);
             }, 5000);
         },
@@ -215,27 +251,298 @@
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error);
 
-                this.loginSuccess(data);
+                this.loginSuccess(data, { mode: 'login' });
                 return { success: true };
             } catch (e) {
                 return { success: false, error: e.message };
             }
         },
 
-        loginSuccess(data) {
+        loginSuccess(data, options = {}) {
             // Token is now in HttpOnly cookie (set by server)
             // We only store user data in localStorage
+            const pendingPlan = this.getPendingCheckoutPlan();
+            const pendingContext = pendingPlan ? this.getPendingCheckoutContext() : null;
+            const postAuthRedirect = pendingPlan ? null : this.resolvePostAuthRedirect(options);
+            if (postAuthRedirect) {
+                sessionStorage.setItem(POST_AUTH_REDIRECT_PENDING_KEY, postAuthRedirect);
+            } else {
+                sessionStorage.removeItem(POST_AUTH_REDIRECT_PENDING_KEY);
+            }
             this.user = data.user;
             localStorage.setItem('auth_user', JSON.stringify(data.user));
             this.updateUI();
             this.closeModal();
+
+            // After login/register success: check for pending plan redirect
+            if (pendingPlan) {
+                sessionStorage.removeItem(POST_AUTH_REDIRECT_PENDING_KEY);
+                this._startCheckout(pendingPlan, pendingContext);
+                return;
+            }
+
+            if (postAuthRedirect) {
+                setTimeout(() => {
+                    sessionStorage.removeItem(POST_AUTH_REDIRECT_PENDING_KEY);
+                    window.location.href = postAuthRedirect;
+                }, 500);
+            }
         },
 
-        logout() {
+        getStandaloneAuthContext() {
+            if (!this.isStandaloneAuthPage()) return null;
+
+            const params = new URLSearchParams(window.location.search);
+            const mode = params.get('mode') === 'register' ? 'register' : 'login';
+            const redirect = params.get('redirect') || '/profil.html';
+            const source = params.get('source') || null;
+            const feature = params.get('feature') || null;
+            const plan = params.get('plan') || null;
+
+            return {
+                mode,
+                redirect,
+                source,
+                feature,
+                plan
+            };
+        },
+
+        getPostAuthActivationConfig(context = {}) {
+            const feature = context.feature || '';
+            const source = context.source || '';
+
+            const featureMap = {
+                partnerska_detail: {
+                    path: '/partnerska-shoda.html',
+                    title: 'Vítejte v Mystické Hvězdě',
+                    message: 'Začněte partnerskou shodou. První výsledek vám rychle ukáže osobní hodnotu.'
+                },
+                synastry: {
+                    path: '/partnerska-shoda.html',
+                    title: 'Vítejte v Mystické Hvězdě',
+                    message: 'Začněte partnerskou shodou. První výsledek vám rychle ukáže osobní hodnotu.'
+                },
+                natalni_interpretace: {
+                    path: '/natalni-karta.html',
+                    title: 'Vítejte v Mystické Hvězdě',
+                    message: 'Natální karta je jeden z nejsilnějších prvních momentů. Začněte právě tady.'
+                },
+                numerologie_vyklad: {
+                    path: '/numerologie.html',
+                    title: 'Vítejte v Mystické Hvězdě',
+                    message: 'V numerologii nejrychleji uvidíte, jak osobní umí být vaše první vedení.'
+                },
+                tarot: {
+                    path: '/tarot.html',
+                    title: 'Vítejte v Mystické Hvězdě',
+                    message: 'Vyzkoušejte hned první tarotový výklad. Je to nejrychlejší cesta k první hodnotě.'
+                },
+                horoskopy: {
+                    path: '/horoskopy.html',
+                    title: 'Vítejte v Mystické Hvězdě',
+                    message: 'Začněte osobním horoskopem a získejte rychlý první vhled.'
+                },
+                weekly_horoscope: {
+                    path: '/horoskopy.html',
+                    title: 'Vítejte v Mystické Hvězdě',
+                    message: 'Začněte osobním horoskopem a získejte rychlý první vhled.'
+                },
+                monthly_horoscope: {
+                    path: '/horoskopy.html',
+                    title: 'Vítejte v Mystické Hvězdě',
+                    message: 'Začněte osobním horoskopem a získejte rychlý první vhled.'
+                },
+                mentor: {
+                    path: '/mentor.html',
+                    title: 'Vítejte v Mystické Hvězdě',
+                    message: 'Položte hned první otázku Hvězdnému Průvodci a získejte osobní kontakt s produktem.'
+                },
+                hvezdny_mentor: {
+                    path: '/mentor.html',
+                    title: 'Vítejte v Mystické Hvězdě',
+                    message: 'Položte hned první otázku Hvězdnému Průvodci a získejte osobní kontakt s produktem.'
+                },
+                runy_hluboky_vyklad: {
+                    path: '/runy.html',
+                    title: 'Vítejte v Mystické Hvězdě',
+                    message: 'Runy jsou silný první krok, pokud chcete okamžitý osobní výklad.'
+                },
+                shamanske_kolo_plne_cteni: {
+                    path: '/shamanske-kolo.html',
+                    title: 'Vítejte v Mystické Hvězdě',
+                    message: 'Šamanské kolo vás rychle dostane k hlubšímu prvnímu zážitku.'
+                },
+                minuly_zivot: {
+                    path: '/minuly-zivot.html',
+                    title: 'Vítejte v Mystické Hvězdě',
+                    message: 'Minulý život je silný vstupní zážitek, pokud chcete začít něčím hlubokým.'
+                },
+                kristalova_koule: {
+                    path: '/kristalova-koule.html',
+                    title: 'Vítejte v Mystické Hvězdě',
+                    message: 'Křišťálová koule je rychlý první moment, který ukáže osobní vedení v praxi.'
+                }
+            };
+
+            const sourceMap = {
+                newsletter_form: {
+                    path: '/horoskopy.html',
+                    title: 'Registrace je hotová',
+                    message: 'Když už jste uvnitř, vezměte si hned první hodnotu přes osobní horoskop.'
+                }
+            };
+
+            return featureMap[feature] || sourceMap[source] || null;
+        },
+
+        setPostAuthActivation(context = {}) {
+            if (!context?.path) return;
+
+            sessionStorage.setItem(POST_AUTH_ACTIVATION_KEY, JSON.stringify({
+                path: context.path,
+                title: context.title || 'Vítejte',
+                message: context.message || '',
+                source: context.source || null,
+                feature: context.feature || null
+            }));
+        },
+
+        maybeShowPostAuthActivation() {
+            try {
+                const raw = sessionStorage.getItem(POST_AUTH_ACTIVATION_KEY);
+                if (!raw) return;
+
+                const activation = JSON.parse(raw);
+                if (!activation?.path || window.location.pathname !== activation.path) {
+                    return;
+                }
+
+                sessionStorage.removeItem(POST_AUTH_ACTIVATION_KEY);
+
+                if (activation.title || activation.message) {
+                    this.showToast(
+                        activation.title || 'Vítejte',
+                        activation.message || 'Začněte prvním osobním výkladem.',
+                        'success'
+                    );
+                }
+
+                window.MH_ANALYTICS?.trackEvent?.('signup_activation_landed', {
+                    source: activation.source || 'direct',
+                    feature: activation.feature || null,
+                    destination: activation.path
+                });
+            } catch (error) {
+                console.warn('Post-auth activation handling failed:', error);
+                sessionStorage.removeItem(POST_AUTH_ACTIVATION_KEY);
+            }
+        },
+
+        resolvePostAuthRedirect(options = {}) {
+            const context = this.getStandaloneAuthContext();
+            if (!context) return null;
+
+            const safeRedirect = typeof context.redirect === 'string' && context.redirect.startsWith('/') && !context.redirect.startsWith('//')
+                ? context.redirect
+                : '/profil.html';
+
+            if (options.mode === 'register') {
+                const activation = this.getPostAuthActivationConfig(context);
+                if (activation?.path) {
+                    this.setPostAuthActivation({
+                        ...activation,
+                        source: context.source,
+                        feature: context.feature
+                    });
+
+                    window.MH_ANALYTICS?.trackEvent?.('signup_activation_redirected', {
+                        source: context.source || 'register',
+                        feature: context.feature || null,
+                        destination: activation.path
+                    });
+
+                    return activation.path;
+                }
+
+                if (safeRedirect === '/profil.html' && !localStorage.getItem('mh_onboarded')) {
+                    return '/onboarding.html';
+                }
+            }
+
+            return safeRedirect;
+        },
+
+        getPendingCheckoutPlan() {
+            return sessionStorage.getItem(PENDING_PLAN_KEY);
+        },
+
+        getPendingCheckoutContext() {
+            try {
+                return JSON.parse(sessionStorage.getItem(PENDING_CONTEXT_KEY) || '{}');
+            } catch {
+                return {};
+            }
+        },
+
+        setPendingCheckout(planId, context = {}) {
+            if (!planId) return;
+
+            sessionStorage.setItem(PENDING_PLAN_KEY, planId);
+            sessionStorage.setItem(PENDING_CONTEXT_KEY, JSON.stringify({
+                planId,
+                source: 'unknown',
+                redirect: '/cenik.html',
+                authMode: 'register',
+                ...context
+            }));
+        },
+
+        clearPendingCheckout() {
+            sessionStorage.removeItem(PENDING_PLAN_KEY);
+            sessionStorage.removeItem(PENDING_CONTEXT_KEY);
+        },
+
+        startPlanCheckout(planId, context = {}) {
+            if (!planId) return;
+
+            if (!this.isLoggedIn()) {
+                const redirectTarget = typeof context.redirect === 'string' && context.redirect.startsWith('/') && !context.redirect.startsWith('//')
+                    ? context.redirect
+                    : '/cenik.html';
+                const authMode = context.authMode === 'login' ? 'login' : 'register';
+
+                this.setPendingCheckout(planId, {
+                    ...context,
+                    redirect: redirectTarget,
+                    authMode
+                });
+
+                const authUrl = new URL('/prihlaseni.html', window.location.origin);
+                authUrl.searchParams.set('mode', authMode);
+                authUrl.searchParams.set('redirect', redirectTarget);
+                authUrl.searchParams.set('plan', planId);
+
+                if (context.source) authUrl.searchParams.set('source', context.source);
+                if (context.feature) authUrl.searchParams.set('feature', context.feature);
+
+                window.location.href = `${authUrl.pathname}${authUrl.search}`;
+                return;
+            }
+
+            this._startCheckout(planId, context);
+        },
+
+        async logout() {
             // Call server logout endpoint to clear HttpOnly cookie
-            fetch(`${API_URL}/auth/logout`, {
+            const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+            await fetch(`${API_URL}/auth/logout`, {
                 method: 'POST',
-                credentials: 'include'
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+                }
             }).catch(e => console.warn('Logout API call failed:', e));
 
             // Clear local state
@@ -266,49 +573,38 @@
             if (this.isLoggedIn()) {
                 // Desktop
                 if (authBtn) {
-                    authBtn.textContent = 'Odhlásit';
-                    authBtn.onclick = (e) => { e.preventDefault(); this.logout(); };
-                    if (this.isPremium()) {
-                        authBtn.innerHTML = `Odhlásit <span style="font-size:0.8em; color:gold;">(Premium)</span>`;
-                    }
+                    setAuthButtonPremiumLabel(authBtn, this.isPremium());
                 }
-                if (regBtn) regBtn.style.display = 'none';
-                if (profileLink) profileLink.style.display = 'inline-flex';
+                setHidden(regBtn, true);
+                setHidden(profileLink, false);
 
                 // Mobile
                 if (mobileAuthBtn) {
                     mobileAuthBtn.textContent = 'Odhlásit se';
-                    mobileAuthBtn.onclick = (e) => { e.preventDefault(); this.logout(); };
                 }
-                if (mobileRegBtn) mobileRegBtn.style.display = 'none';
-                if (mobileProfileLink) mobileProfileLink.style.display = 'inline-flex';
+                setHidden(mobileRegBtn, true);
+                setHidden(mobileProfileLink, false);
             } else {
                 // Desktop
                 if (authBtn) {
                     authBtn.textContent = 'Přihlásit';
-                    authBtn.onclick = (e) => { e.preventDefault(); this.openModal(); };
                 }
-                if (regBtn) regBtn.style.display = 'inline-flex';
-                if (profileLink) profileLink.style.display = 'none';
+                setHidden(regBtn, false);
+                setHidden(profileLink, true);
 
                 // Mobile
                 if (mobileAuthBtn) {
                     mobileAuthBtn.textContent = 'Přihlásit se';
-                    mobileAuthBtn.onclick = (e) => { e.preventDefault(); this.openModal('login'); };
                 }
-                if (mobileRegBtn) mobileRegBtn.style.display = 'inline-flex';
-                if (mobileProfileLink) mobileProfileLink.style.display = 'none';
+                setHidden(mobileRegBtn, false);
+                setHidden(mobileProfileLink, true);
             }
 
             // Hero CTA Logic
             const heroCta = document.getElementById('hero-cta-container');
             const heroCtaLoggedIn = document.getElementById('hero-cta-logged-in');
-            if (heroCta) {
-                heroCta.style.display = this.isLoggedIn() ? 'none' : 'block';
-            }
-            if (heroCtaLoggedIn) {
-                heroCtaLoggedIn.style.display = this.isLoggedIn() ? 'flex' : 'none';
-            }
+            setHidden(heroCta, this.isLoggedIn());
+            setHidden(heroCtaLoggedIn, !this.isLoggedIn());
 
             // Notify other components (like profile.js) that auth state changed
             document.dispatchEvent(new Event('auth:changed'));
@@ -326,11 +622,15 @@
                     return;
                 }
 
-                // Hero CTA Button (Index)
+                // Hero CTA Button (Index) now uses dedicated registration page
                 const heroBtn = e.target.closest('#hero-cta-btn');
                 if (heroBtn) {
-                    e.preventDefault();
-                    this.openModal('register');
+                    return;
+                }
+
+                // Guest profile CTA uses dedicated login page with redirect back
+                const profileLoginBtn = e.target.closest('#profile-login-btn');
+                if (profileLoginBtn) {
                     return;
                 }
 
@@ -372,6 +672,8 @@
             // Let's bind the form listener to document as well for safety
             document.body.addEventListener('submit', async (e) => {
                 if (e.target.id === 'login-form') {
+                    if (this.isStandaloneAuthPage()) return;
+
                     e.preventDefault();
                     const form = e.target;
                     const btn = document.getElementById('auth-submit');
@@ -419,6 +721,8 @@
 
             // Toggle Button inside Modal
             document.body.addEventListener('click', (e) => {
+                if (this.isStandaloneAuthPage()) return;
+
                 if (e.target.id === 'auth-mode-toggle') {
                     e.preventDefault();
                     this.toggleMode();
@@ -443,10 +747,10 @@
             if (title) title.textContent = 'Obnovení hesla';
             if (btn) { btn.textContent = 'Odeslat odkaz'; btn.dataset.mode = 'reset'; }
             if (toggleBtn) toggleBtn.textContent = 'Zpět na přihlášení';
-            if (pwField) pwField.style.display = 'none';
-            if (forgotLink) forgotLink.style.display = 'none';
-            if (resetFields) resetFields.style.display = 'block';
-            if (registerFields) registerFields.style.display = 'none';
+            setHidden(pwField, true);
+            setHidden(forgotLink, true);
+            setHidden(resetFields, false);
+            setHidden(registerFields, true);
         },
 
         async resetPassword(email) {
@@ -483,30 +787,40 @@
                 const forgotLink = document.getElementById('forgot-password-link');
                 const resetFields = document.getElementById('reset-password-fields');
                 const registerFields = document.getElementById('register-fields');
+                const confirmPwField = document.getElementById('confirm-password-field-wrapper');
+                const gdprWrapper = document.getElementById('gdpr-consent-wrapper');
                 title.textContent = 'Přihlášení';
                 btn.textContent = 'Přihlásit se';
                 toggleBtn.textContent = 'Nemáte účet? Zaregistrujte se';
-                if (pwField) pwField.style.display = 'block';
-                if (forgotLink) forgotLink.style.display = 'block';
-                if (resetFields) resetFields.style.display = 'none';
-                if (registerFields) registerFields.style.display = 'none';
+                setHidden(pwField, false);
+                setHidden(forgotLink, false);
+                setHidden(resetFields, true);
+                setHidden(registerFields, true);
+                setHidden(confirmPwField, true);
+                setHidden(gdprWrapper, true);
                 return;
             }
 
             const isLogin = btn.textContent === 'Přihlásit se';
 
             const fields = document.getElementById('register-fields');
+            const confirmPwField = document.getElementById('confirm-password-field-wrapper');
+            const gdprWrapper = document.getElementById('gdpr-consent-wrapper');
 
             if (isLogin) {
                 title.textContent = 'Registrace';
                 btn.textContent = 'Zaregistrovat';
                 toggleBtn.textContent = 'Již máte účet? Přihlaste se';
-                if (fields) fields.style.display = 'block';
+                setHidden(fields, false);
+                setHidden(confirmPwField, false);
+                setHidden(gdprWrapper, false);
             } else {
                 title.textContent = 'Přihlášení';
                 btn.textContent = 'Přihlásit se';
                 toggleBtn.textContent = 'Nemáte účet? Zaregistrujte se';
-                if (fields) fields.style.display = 'none';
+                setHidden(fields, true);
+                setHidden(confirmPwField, true);
+                setHidden(gdprWrapper, true);
             }
         },
 
@@ -517,7 +831,7 @@
 
             const modal = document.getElementById('auth-modal');
             if (modal) {
-                modal.style.display = 'flex';
+                modal.hidden = false;
 
                 // Set correct mode
                 const title = document.getElementById('auth-title');
@@ -527,24 +841,30 @@
                 if (!title || !btn || !toggleBtn) return;
 
                 const fields = document.getElementById('register-fields');
+                const confirmPwField = document.getElementById('confirm-password-field-wrapper');
+                const gdprWrapper = document.getElementById('gdpr-consent-wrapper');
 
                 if (mode === 'register') {
                     title.textContent = 'Registrace';
                     btn.textContent = 'Zaregistrovat';
                     toggleBtn.textContent = 'Již máte účet? Přihlaste se';
-                    if (fields) fields.style.display = 'block';
+                    setHidden(fields, false);
+                    setHidden(confirmPwField, false);
+                    setHidden(gdprWrapper, false);
                 } else {
                     title.textContent = 'Přihlášení';
                     btn.textContent = 'Přihlásit se';
                     toggleBtn.textContent = 'Nemáte účet? Zaregistrujte se';
-                    if (fields) fields.style.display = 'none';
+                    setHidden(fields, true);
+                    setHidden(confirmPwField, true);
+                    setHidden(gdprWrapper, true);
                 }
             }
         },
 
         closeModal() {
             const modal = document.getElementById('auth-modal');
-            if (modal) modal.style.display = 'none';
+            if (modal) modal.hidden = true;
         },
 
         // API Wrapper for protected calls
@@ -581,7 +901,6 @@
             if (!this.isLoggedIn()) return null;
 
             try {
-                // console.log(`💾 Saving reading (${type})...`);
                 const res = await fetch(`${API_URL}/user/readings`, {
                     method: 'POST',
                     credentials: 'include', // Send auth_token cookie
@@ -597,7 +916,6 @@
                     return null;
                 } else {
                     const savedData = await res.json();
-                    // console.log('✅ Reading saved successfully', savedData);
                     return savedData; // Return saved reading with ID
                 }
             } catch (e) {
@@ -620,7 +938,43 @@
                 console.error('getProfile failed', e);
                 return null;
             }
-        }
+        },
+
+        async _startCheckout(planId, context = {}) {
+            try {
+                const source = context.source || this.getPendingCheckoutContext().source || 'auth_pending_plan';
+                window.MH_ANALYTICS?.trackCheckoutStarted?.(planId, {
+                    source,
+                    feature: context.feature || null
+                });
+                const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+                const res = await fetch(`${API_URL}/payment/create-checkout-session`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+                    },
+                    body: JSON.stringify({
+                        planId,
+                        source,
+                        feature: context.feature || null,
+                        billingInterval: context.billing_interval || context.billingInterval || null
+                    })
+                });
+                const data = await res.json();
+                if (res.ok && data.url) {
+                    this.clearPendingCheckout();
+                    window.location.href = data.url;
+                } else {
+                    console.warn('Checkout session failed:', data);
+                    window.location.href = context.redirect || '/cenik.html';
+                }
+            } catch (e) {
+                console.error('Checkout error:', e);
+                window.location.href = context.redirect || '/cenik.html';
+            }
+        },
     };
 
     // Expose to window
@@ -642,18 +996,18 @@
         if (event.key === 'auth_user') {
             // Check if the key was removed (logout in another tab)
             if (event.newValue === null && Auth.isLoggedIn()) {
-                console.log('🔄 Logout detected in another tab, logging out here...');
+                if (window.MH_DEBUG) console.debug('Logout detected in another tab, logging out here...');
                 Auth.user = null;
                 Auth.updateUI();
                 // Optionally show a message
-                Auth.showToast('Sesselýjícího z jiného místa', 'Byli jste odhlášeni z jiného okna prohlížeče.', 'info');
+                Auth.showToast('Odhlášení z jiného okna', 'Byli jste odhlášeni z jiného okna prohlížeče.', 'info');
                 // Don't reload - just update UI so user can login again if needed
             }
         }
 
         // Handle onboarding completion in another tab
         if (event.key === 'mh_onboarded' && event.newValue === '1') {
-            console.log('✅ Onboarding completed in another tab');
+            if (window.MH_DEBUG) console.debug('Onboarding completed in another tab');
             // Could redirect if needed
         }
     });

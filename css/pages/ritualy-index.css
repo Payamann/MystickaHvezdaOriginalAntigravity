@@ -1,0 +1,220 @@
+/* Extracted from ritualy/index.html inline <style> block. */
+/* ── SIGN PICKER ─────────────────────────────────── */
+        .zodiac-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 0.75rem;
+            max-width: 700px;
+            margin: 1.5rem auto;
+        }
+        .zodiac-btn {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 0.9rem 0.5rem;
+            cursor: pointer;
+            transition: all 0.25s;
+            text-align: center;
+            color: rgba(255,255,255,0.75);
+            font-size: 0.82rem;
+            font-family: inherit;
+        }
+        .zodiac-btn:hover,
+        .zodiac-btn.active {
+            background: rgba(212,175,55,0.12);
+            border-color: rgba(212,175,55,0.5);
+            color: white;
+            transform: translateY(-2px);
+        }
+        .zodiac-btn--preferred { outline: 2px solid rgba(212,175,55,0.4); }
+        .zodiac-btn span { display: block; font-size: 1.8rem; margin-bottom: 0.3rem; }
+
+        /* ── RITUAL CARD ─────────────────────────────────── */
+        .ritual-card {
+            max-width: 640px;
+            margin: 2rem auto 0;
+            padding: 2.5rem 2rem;
+            border-radius: 24px;
+            border: 1px solid rgba(212,175,55,0.3);
+            background: linear-gradient(135deg, rgba(30,10,60,0.9), rgba(45,15,85,0.7));
+            display: none;
+            animation: popIn 0.4s cubic-bezier(0.4,0,0.2,1);
+        }
+        .ritual-card.show { display: block; }
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.94) translateY(12px); }
+            to   { opacity: 1; transform: scale(1)    translateY(0); }
+        }
+
+        .ritual-card__badge {
+            display: inline-block;
+            padding: 0.3rem 0.85rem;
+            border-radius: 50px;
+            background: rgba(212,175,55,0.1);
+            border: 1px solid rgba(212,175,55,0.25);
+            color: #d4af37;
+            font-size: 0.8rem;
+            margin-bottom: 1.25rem;
+        }
+        .ritual-card__title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.2rem, 3vw, 1.6rem);
+            color: white;
+            margin: 0.5rem 0 1rem;
+        }
+        .ritual-card__popis {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.95rem;
+            line-height: 1.75;
+            margin-bottom: 1.5rem;
+        }
+        .ritual-card__meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.75rem;
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.5);
+        }
+        .ritual-card__meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        /* ── PREP CHECKLIST ──────────────────────────────── */
+        .prep-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.75rem;
+        }
+        .prep-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.75);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .prep-list li:last-child { border-bottom: none; }
+        .prep-list li:hover { color: white; }
+        .prep-list li.checked { color: rgba(255,255,255,0.4); }
+        .prep-list li.checked::before { content: '✓'; color: #d4af37; font-weight: 700; }
+        .prep-list li:not(.checked)::before { content: '○'; color: rgba(255,255,255,0.3); }
+
+        /* ── CTA BUTTON ──────────────────────────────────── */
+        .btn-enter-ritual {
+            display: block;
+            width: 100%;
+            padding: 1.1rem 2rem;
+            background: linear-gradient(135deg, #d4af37, #c9a227);
+            color: #0a0a1a;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+            box-shadow: 0 8px 24px rgba(212,175,55,0.25);
+            text-decoration: none;
+            text-align: center;
+        }
+        .btn-enter-ritual:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(212,175,55,0.4);
+        }
+        .btn-enter-ritual:disabled,
+        .btn-enter-ritual.locked {
+            background: rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.3);
+            cursor: default;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* ── MOON HERO ───────────────────────────────────── */
+        .ritual-moon-hero {
+            text-align: center;
+            padding: 4rem 0 1rem;
+        }
+        .ritual-moon-emoji {
+            font-size: 6rem;
+            line-height: 1;
+            animation: moonPulse 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 24px rgba(212,175,55,0.35));
+            display: block;
+            margin-bottom: 0.75rem;
+        }
+        @keyframes moonPulse {
+            0%,100% { filter: drop-shadow(0 0 20px rgba(212,175,55,0.3)); }
+            50%      { filter: drop-shadow(0 0 44px rgba(212,175,55,0.6)); transform: scale(1.04); }
+        }
+        .ritual-moon-name {
+            font-family: 'Cinzel', serif;
+            color: #d4af37;
+            font-size: 1.1rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+        .ritual-moon-desc {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        /* ── FAQ ─────────────────────────────────────────── */
+        .faq-item {
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .faq-item summary {
+            padding: 1.1rem 0;
+            cursor: pointer;
+            font-weight: 600;
+            color: white;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .faq-item summary::after {
+            content: '+';
+            color: #d4af37;
+            font-size: 1.4rem;
+            transition: transform 0.3s;
+            flex-shrink: 0;
+        }
+        .faq-item[open] summary::after { transform: rotate(45deg); }
+        .faq-item p {
+            padding: 0 0 1.1rem;
+            color: rgba(255,255,255,0.6);
+            line-height: 1.7;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 600px) {
+            .ritual-moon-emoji { font-size: 4.5rem; }
+            .ritual-card { padding: 1.75rem 1.25rem; }
+        }
+
+/* Migrated from ritualy/index.html static style attributes. */
+html body .mh-inline-a73f71da83 { margin-bottom:1.5rem; }
+html body .mh-inline-23f1a8c35c { padding-top:1.5rem; }
+html body .mh-inline-6000cef532 { text-align:center; }
+html body .mh-inline-98b1b7f9a0 { margin-bottom:0.5rem; }
+html body .mh-inline-b570706c89 { font-size:3rem;margin-bottom:0.4rem; }
+html body .mh-inline-8a6a9d71d5 { font-family:'Cinzel',serif;color:#d4af37;font-size:0.9rem;letter-spacing:2px;margin-bottom:0.5rem; }
+html body .mh-inline-bcdee5f198 { font-size:0.8rem;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.35);margin-bottom:0.75rem; }
+html body .mh-inline-4c9fe3124a { font-size:0.82rem;color:rgba(255,255,255,0.35);text-align:center;margin-bottom:1rem; }
+html body .mh-inline-c19c551164 { display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;margin-top:2.5rem; }
+html body .mh-inline-402bd952a6 { font-size:0.88rem; }
+html body .mh-inline-b35a5de833 { padding-top:1rem; }
+html body .mh-inline-16dc7b520f { max-width:720px;margin:0 auto; }
+html body .mh-inline-983d098c66 { text-align:center;font-family:'Cinzel',serif;color:#d4af37;margin-bottom:1.5rem; }

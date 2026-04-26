@@ -9,4 +9,5 @@ Disallow: /onboarding.html
 Disallow: /offline.html
 Disallow: /404.html
 
-Sitemap: https://mystickahvezda.cz/sitemap.xml
+Sitemap: https://www.mystickahvezda.cz/sitemap.xml
+Sitemap: https://www.mystickahvezda.cz/horoskop/sitemap-horoscopes.xml

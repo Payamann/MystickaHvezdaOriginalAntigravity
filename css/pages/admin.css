@@ -1,0 +1,441 @@
+/* Extracted from admin.html inline <style> block. */
+.admin-section {
+
+            padding: 100px 0;
+
+            min-height: 100vh;
+
+        }
+
+
+
+.admin-table-container {
+
+            background: rgba(10, 10, 26, 0.9);
+
+            border: 1px solid rgba(255, 255, 255, 0.1);
+
+            border-radius: 12px;
+
+            overflow-x: auto;
+
+            padding: 1rem;
+
+        }
+
+        .admin-panel {
+
+            background: rgba(10, 10, 26, 0.9);
+
+            border: 1px solid rgba(255, 255, 255, 0.1);
+
+            border-radius: 12px;
+
+            padding: 1.25rem;
+
+        }
+
+        .admin-panel__header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: flex-start;
+
+            gap: 1rem;
+
+            margin-bottom: 1.25rem;
+
+        }
+
+        .admin-panel__header h2 {
+
+            margin: 0 0 0.35rem;
+
+            color: var(--color-mystic-gold);
+
+            font-family: var(--font-heading);
+
+        }
+
+        .admin-panel__subtext {
+
+            margin: 0;
+
+            color: var(--color-silver-mist);
+
+            opacity: 0.82;
+
+        }
+
+        .admin-panel__controls {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 0.75rem;
+
+            flex-wrap: wrap;
+
+        }
+
+        .admin-select-label {
+
+            color: var(--color-silver-mist);
+
+            font-size: 0.9rem;
+
+        }
+
+        .admin-select {
+
+            min-height: 40px;
+
+            border: 1px solid rgba(255, 255, 255, 0.22);
+
+            border-radius: 6px;
+
+            background: rgba(255, 255, 255, 0.08);
+
+            color: white;
+
+            padding: 0 0.75rem;
+
+        }
+
+        .admin-metrics {
+
+            display: grid;
+
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+
+            gap: 0.75rem;
+
+            margin-bottom: 1rem;
+
+        }
+
+        .admin-metric {
+
+            border: 1px solid rgba(255, 255, 255, 0.1);
+
+            border-radius: 8px;
+
+            background: rgba(255, 255, 255, 0.055);
+
+            padding: 0.9rem;
+
+        }
+
+        .admin-metric__label {
+
+            color: var(--color-silver-mist);
+
+            font-size: 0.78rem;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.04em;
+
+        }
+
+        .admin-metric__value {
+
+            display: block;
+
+            margin-top: 0.35rem;
+
+            color: white;
+
+            font-size: 1.55rem;
+
+            font-weight: 700;
+
+        }
+
+        .admin-metric__hint {
+
+            display: block;
+
+            margin-top: 0.35rem;
+
+            color: var(--color-silver-mist);
+
+            font-size: 0.82rem;
+
+            opacity: 0.78;
+
+        }
+
+        .admin-funnel-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+
+            gap: 1rem;
+
+            margin-bottom: 1rem;
+
+        }
+
+        .admin-box {
+
+            border: 1px solid rgba(255, 255, 255, 0.1);
+
+            border-radius: 8px;
+
+            background: rgba(255, 255, 255, 0.045);
+
+            padding: 1rem;
+
+        }
+
+        .admin-box h3 {
+
+            margin: 0 0 0.8rem;
+
+            color: var(--color-mystic-gold);
+
+            font-size: 1rem;
+
+        }
+
+        .admin-breakdown-list {
+
+            display: grid;
+
+            gap: 0.45rem;
+
+            list-style: none;
+
+            margin: 0;
+
+            padding: 0;
+
+        }
+
+        .admin-breakdown-list li {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 1rem;
+
+            color: var(--color-silver-mist);
+
+            font-size: 0.92rem;
+
+        }
+
+        .admin-breakdown-list strong {
+
+            color: white;
+
+            font-weight: 600;
+
+            overflow-wrap: anywhere;
+
+        }
+
+        .admin-loading {
+
+            grid-column: 1 / -1;
+
+            color: var(--color-silver-mist);
+
+        }
+
+        .admin-table-container--compact {
+
+            padding: 0.5rem;
+
+        }
+
+        .admin-table-container--compact th,
+
+        .admin-table-container--compact td {
+
+            padding: 0.65rem;
+
+            font-size: 0.9rem;
+
+        }
+
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            color: var(--color-silver-mist);
+
+        }
+
+
+
+        th,
+
+        td {
+
+            padding: 1rem;
+
+            text-align: left;
+
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+        }
+
+
+
+        th {
+
+            color: var(--color-mystic-gold);
+
+            font-family: var(--font-heading);
+
+        }
+
+
+
+        .status-badge {
+
+            padding: 0.2rem 0.6rem;
+
+            border-radius: 20px;
+
+            font-size: 0.8rem;
+
+            font-weight: bold;
+
+        }
+
+
+
+        .status-free {
+
+            background: rgba(255, 255, 255, 0.1);
+
+            color: white;
+
+        }
+
+
+
+        .status-premium {
+
+            background: rgba(212, 175, 55, 0.2);
+
+            color: var(--color-mystic-gold);
+
+        }
+
+
+
+        .status-vip {
+
+            background: rgba(155, 89, 182, 0.2);
+
+            color: #9b59b6;
+
+        }
+
+
+
+        .action-btn {
+
+            padding: 0.3rem 0.6rem;
+
+            font-size: 0.8rem;
+
+            margin-right: 0.3rem;
+
+            cursor: pointer;
+
+            border: 1px solid rgba(255, 255, 255, 0.2);
+
+            background: transparent;
+
+            color: white;
+
+            border-radius: 4px;
+
+        }
+
+
+
+        .action-btn:hover {
+
+            background: rgba(255, 255, 255, 0.1);
+
+        }
+
+
+
+        .btn-promote {
+
+            border-color: var(--color-mystic-gold);
+
+            color: var(--color-mystic-gold);
+
+        }
+
+
+
+        .btn-demote {
+
+            border-color: #e74c3c;
+
+            color: #e74c3c;
+
+        }
+
+        .admin-table-error {
+
+            color: #e74c3c;
+
+        }
+
+        .admin-user-id {
+
+            font-family: monospace;
+
+            font-size: 0.8rem;
+
+        }
+
+        @media (max-width: 720px) {
+
+            .admin-panel__header {
+
+                flex-direction: column;
+
+            }
+
+            .admin-panel__controls {
+
+                width: 100%;
+
+            }
+
+            .admin-panel__controls .btn {
+
+                width: 100%;
+
+            }
+
+            .admin-select {
+
+                flex: 1;
+
+            }
+
+        }
+
+/* Migrated from admin.html static style attributes. */
+html body .mh-inline-1e5e8bf4a2 { color:red; margin-top:1rem; }

@@ -10,11 +10,13 @@ class Natal3D {
 
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(75, this.container.clientWidth / this.container.clientHeight, 0.1, 1000);
-        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        const canvas = document.createElement('canvas');
+        canvas.className = 'natal-3d-canvas';
+        this.container.appendChild(canvas);
+        this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
         
-        this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
+        this.renderer.setSize(this.container.clientWidth, this.container.clientHeight, false);
         this.renderer.setPixelRatio(window.devicePixelRatio);
-        this.container.appendChild(this.renderer.domElement);
 
         this.camera.position.z = 400;
 
@@ -103,7 +105,7 @@ class Natal3D {
     onWindowResize() {
         this.camera.aspect = this.container.clientWidth / this.container.clientHeight;
         this.camera.updateProjectionMatrix();
-        this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
+        this.renderer.setSize(this.container.clientWidth, this.container.clientHeight, false);
     }
 
     animate() {

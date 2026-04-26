@@ -18,11 +18,13 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
     <link rel="manifest" href="../manifest.json">
     <link rel="stylesheet" href="../css/style.v2.min.css?v=9">
+    <link rel="stylesheet" href="../css/pages/sk-natalni-karta.css">
     
-    <link rel="canonical" href="https://mystickahvezda.cz/sk/natalni-karta.html">
-    <link rel="alternate" hreflang="cs" href="https://mystickahvezda.cz/natalni-karta.html">
-    <link rel="alternate" hreflang="sk" href="https://mystickahvezda.cz/sk/natalni-karta.html">
-    <link rel="alternate" hreflang="pl" href="https://mystickahvezda.cz/pl/natalni-karta.html">
+    <link rel="canonical" href="https://www.mystickahvezda.cz/sk/natalni-karta.html">
+    <link rel="alternate" hreflang="cs" href="https://www.mystickahvezda.cz/natalni-karta.html">
+    <link rel="alternate" hreflang="sk" href="https://www.mystickahvezda.cz/sk/natalni-karta.html">
+    <link rel="alternate" hreflang="pl" href="https://www.mystickahvezda.cz/pl/natalni-karta.html">
+    <script src="/js/dist/analytics-init.js" defer></script>
 </head>
 
 <body>
@@ -30,7 +32,7 @@
     <div id="header-placeholder"></div>
 
     <main id="main-content">
-        <section class="section section--hero" style="min-height: 50vh; display: flex; align-items: center; padding-top: 120px;">
+        <section class="section section--hero mh-inline-e3e4c16824">
             <div class="container text-center">
                 <h1 class="hero__title mb-xl">
                     <span class="text-gradient">Objavte Svoj Vesmírny Kód</span>
@@ -41,7 +43,7 @@
 
         <section class="section">
             <div class="container">
-                <div class="grid grid-2" style="align-items: flex-start; gap: 4rem;">
+                <div class="grid grid-2 mh-inline-2df0356992">
                     <div class="card">
                         <h2 class="section__title mb-lg">Údaje Narodenia</h2>
                         <div id="natal-form" class="email-form">
@@ -62,8 +64,8 @@
                     </div>
                     <div id="natal-result" class="text-center">
                         <div class="natal-chart-container">
-                            <img src="../img/icon-natal.webp" alt="Natálna karta" style="width: 100%; opacity: 0.2; filter: grayscale(1);">
-                            <p style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--color-silver-mist);">Zadajte údaje pre vygenerovanie mapy</p>
+                            <img src="../img/icon-natal.webp" alt="Natálna karta" class="mh-inline-d818421134">
+                            <p class="mh-inline-d966b0addf">Zadajte údaje pre vygenerovanie mapy</p>
                         </div>
                     </div>
                 </div>
@@ -72,9 +74,9 @@
     </main>
 
     <div id="footer-placeholder"></div>
-    <script src="../js/api-config.js" defer></script>
-    <script src="../js/templates.js" defer></script>
-    <script src="../js/components.js" defer></script>
-    <script type="module" src="../js/main.js"></script>
+    <script src="../js/dist/api-config.js" defer></script>
+    <script src="../js/dist/templates.js" defer></script>
+    <script src="../js/dist/components.js" defer></script>
+    <script type="module" src="../js/dist/main.js"></script>
 </body>
 </html>

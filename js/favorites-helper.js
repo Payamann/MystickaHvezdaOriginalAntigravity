@@ -8,13 +8,14 @@ async function toggleFavorite(readingId, buttonId) {
     if (!btn || !readingId) return;
 
     try {
-        const apiUrl = window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api';
+        const apiUrl = window.API_CONFIG?.BASE_URL || '/api';
+        const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
         const response = await fetch(`${apiUrl}/user/readings/${readingId}/favorite`, {
             method: 'PATCH',
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${window.Auth?.token || localStorage.getItem('auth_token')}`
+                ...(csrfToken && { 'X-CSRF-Token': csrfToken })
             }
         });
 

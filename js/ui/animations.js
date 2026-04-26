@@ -6,7 +6,12 @@ import { debounce } from '../utils/helpers.js';
 export function initScrollAnimations() {
     // Check for reduced motion preference
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
+    if (prefersReducedMotion) {
+        document.querySelectorAll('[data-animate]').forEach((el) => {
+            el.classList.add('is-visible');
+        });
+        return;
+    }
 
     const animatedElements = document.querySelectorAll('[data-animate]');
     if (!animatedElements.length) return;
@@ -15,7 +20,7 @@ export function initScrollAnimations() {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('animate-fade-in');
-                entry.target.style.opacity = '1'; // Ensure it's visible
+                entry.target.classList.add('is-visible');
                 observer.unobserve(entry.target);
             }
         });
@@ -29,12 +34,12 @@ export function initScrollAnimations() {
         const rect = el.getBoundingClientRect();
         const isInViewport = rect.top < window.innerHeight && rect.bottom > 0;
 
+        // Content should never depend on the observer to become visible.
+        el.classList.add('is-visible');
+
         if (isInViewport) {
             el.classList.add('animate-fade-in');
-            el.style.opacity = '1';
         } else {
-            el.style.opacity = '0';
-            el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
             observer.observe(el);
         }
     });
@@ -126,7 +131,10 @@ export function initCustomCursor() {
 
     function animate() {
         // Update cursor head position
-        cursorHead.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+        cursorHead.animate(
+            [{ transform: `translate3d(${mouseX}px, ${mouseY}px, 0)` }],
+            { duration: 80, fill: 'forwards' }
+        );
 
         // Draw particles
         ctx.clearRect(0, 0, width, height);

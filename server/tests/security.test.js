@@ -6,8 +6,13 @@
  */
 
 import request from 'supertest';
+import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
 import app from '../index.js';
 import { validateEmail, validatePassword, validateName, validateBirthDate } from '../utils/validation.js';
+
+const ROOT_DIR = path.resolve(process.cwd());
 
 describe('🔒 Security Tests', () => {
 
@@ -179,6 +184,30 @@ describe('🔒 Security Tests', () => {
     // SECURITY HEADER TESTS
     // ============================================
     describe('Security Headers', () => {
+        function getCspDirective(header, directiveName) {
+            return header
+                .split(';')
+                .map(part => part.trim())
+                .find(part => part.startsWith(`${directiveName} `)) || '';
+        }
+
+        function readInlineScriptHashes(relativeFilePath) {
+            const html = fs.readFileSync(path.join(ROOT_DIR, relativeFilePath), 'utf8');
+            const hashes = [];
+            const scriptBlockPattern = /<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi;
+            let match;
+
+            while ((match = scriptBlockPattern.exec(html)) !== null) {
+                const scriptBody = match[1];
+                if (!scriptBody.trim()) continue;
+
+                const hash = crypto.createHash('sha256').update(scriptBody, 'utf8').digest('base64');
+                hashes.push(`'sha256-${hash}'`);
+            }
+
+            return hashes;
+        }
+
         test('Response includes CSP header', async () => {
             const res = await request(app)
                 .get('/')
@@ -186,6 +215,53 @@ describe('🔒 Security Tests', () => {
 
             expect(res.headers['content-security-policy']).toBeDefined();
             expect(res.headers['content-security-policy']).toContain("default-src 'self'");
+            expect(res.headers['content-security-policy']).toContain("base-uri 'self'");
+            expect(res.headers['content-security-policy']).toContain("form-action 'self' https://checkout.stripe.com");
+        });
+
+        test('CSP allows inline JSON-LD only through script hashes', async () => {
+            const res = await request(app)
+                .get('/rocni-horoskop.html')
+                .expect(200);
+            const scriptSrc = getCspDirective(res.headers['content-security-policy'], 'script-src');
+
+            expect(scriptSrc).toContain("'sha256-");
+            expect(scriptSrc).not.toContain("'unsafe-inline'");
+            expect(res.headers['content-security-policy']).not.toContain("script-src-attr 'unsafe-inline'");
+        });
+
+        test('API responses keep CSP compact and hash-free', async () => {
+            const res = await request(app)
+                .get('/api/health')
+                .expect(200);
+            const csp = res.headers['content-security-policy'];
+
+            expect(csp.length).toBeLessThan(2000);
+            expect(csp).not.toContain("'sha256-");
+        });
+
+        test('CSP hashes inline JSON-LD in nested static HTML pages', async () => {
+            const expectedHashes = readInlineScriptHashes(path.join('horoskop', 'beran.html'));
+            const res = await request(app)
+                .get('/horoskop/beran.html')
+                .expect(200);
+            const scriptSrc = getCspDirective(res.headers['content-security-policy'], 'script-src');
+
+            expect(expectedHashes.length).toBeGreaterThan(0);
+            expect(scriptSrc.match(/'sha256-/g)).toHaveLength(expectedHashes.length);
+            for (const hash of expectedHashes) {
+                expect(scriptSrc).toContain(hash);
+            }
+        });
+
+        test('CSP does not allow inline styles', async () => {
+            const res = await request(app)
+                .get('/')
+                .expect(200);
+            const styleSrc = getCspDirective(res.headers['content-security-policy'], 'style-src');
+
+            expect(styleSrc).toBeTruthy();
+            expect(styleSrc).not.toContain("'unsafe-inline'");
         });
 
         test('Response includes HSTS header', async () => {
@@ -269,18 +345,17 @@ describe('🔒 Security Tests', () => {
             const csrfToken = tokenRes.body.csrfToken;
 
             const res = await request(app)
-                .post('/api/contact/contact')
+                .post('/api/contact')
                 .set('x-csrf-token', csrfToken)
                 .send({
                     name: '<script>alert("xss")</script>',
                     email: 'test@example.com',
-                    subject: 'Test',
+                    subject: 'Test subject',
                     message: 'This is a test message'
-                })
-                .expect((res) => {
-                    // Should either accept (with sanitized content) or reject with validation error
-                    expect([200, 400]).toContain(res.status);
                 });
+
+            expect(res.status).toBe(200);
+            expect(res.body.success).toBe(true);
         });
     });
 

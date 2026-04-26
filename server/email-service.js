@@ -257,7 +257,7 @@ export const EMAIL_TEMPLATES = {
       <div style="text-align: center; margin-bottom: 30px;">
         <p>Abychom ti zpříjemnili tvou cestu, přichystali jsme pro tebe něco speciálního:</p>
         <div style="font-size: 48px; color: #d4af37; font-weight: 700; margin: 20px 0;">
-          ${data.discount || 50}% SLEVA
+          ${data.discount || 25}% SLEVA
         </div>
         <p>na tvé předplatné po dobu <span class="highlight">${data.months || 3} měsíců</span>.</p>
       </div>
@@ -292,21 +292,21 @@ export const EMAIL_TEMPLATES = {
   },
 
   upgrade_reminder_day14: {
-    subject: '⏰ Poslední šance - 50% sleva na Premium!',
+    subject: '⏰ Poslední šance - 25% sleva na Premium',
     getHtml: (data) => getBaseTemplate(`
       <h1 class="h1">Hvězdná příležitost končí</h1>
       <div style="background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.3); padding: 25px; border-radius: 12px; text-align: center; margin-bottom: 25px;">
         <p>Tato limitovaná nabídka vyprší již za 24 hodin:</p>
         <div style="font-size: 32px; color: #ff6b6b; font-weight: 700; margin: 15px 0;">
-          199 Kč → 99.50 Kč
+          199 Kč → 149 Kč
         </div>
-        <p><strong>🎁 50% SLEVA na první měsíc</strong></p>
+        <p><strong>🎁 25% SLEVA na první 3 měsíce</strong></p>
       </div>
 
       <p style="text-align: center;">Nechej si poradit od hvězd za poloviční cenu.</p>
 
       <div class="cta-box">
-        <a href="${process.env.APP_URL}/cenik.html?utm_source=email&utm_campaign=upgrade_day14" class="btn" style="background: linear-gradient(135deg, #ff6b6b, #ee5253); color: white !important;">Aktivovat slevu 50% →</a>
+        <a href="${process.env.APP_URL}/cenik.html?utm_source=email&utm_campaign=upgrade_day14" class="btn" style="background: linear-gradient(135deg, #ff6b6b, #ee5253); color: white !important;">Aktivovat slevu 25% →</a>
       </div>
     `, 'Poslední šance')
   },
@@ -378,6 +378,58 @@ export const EMAIL_TEMPLATES = {
         </table>
       </div>
     `, 'Nová zpráva - Mystická Hvězda')
+  },
+
+  trial_ending_reminder: {
+    subject: 'Vaše zkušební období končí za 2 dny ⏳',
+    getHtml: (data) => getBaseTemplate(`
+      <h1 class="h1">Zkušební období brzy končí</h1>
+      <p>Vaše zkušební období u Mystické Hvězdy končí za <span class="highlight">${data.daysRemaining || 2} dny</span>.</p>
+
+      <p>Během zkušebního období jste měli přístup k:</p>
+      <div class="feature-item">
+        <ul style="margin-top: 10px; padding-left: 20px;">
+          <li>📖 Neomezeným tarotovým výkladům</li>
+          <li>⭐ Detailním osobním horoskopům</li>
+          <li>✨ Duchovnímu průvodci</li>
+          <li>🗺️ Natálním kartám</li>
+        </ul>
+      </div>
+
+      <p>Po skončení zkušebního období bude automaticky aktivováno vaše předplatné. Pokud si nepřejete pokračovat, můžete předplatné zrušit v nastavení profilu.</p>
+
+      <div class="cta-box">
+        <a href="${process.env.APP_URL}/profil.html" class="btn">Spravovat předplatné →</a>
+      </div>
+    `, 'Zkušební období končí')
+  },
+
+  trial_ended: {
+    subject: 'Děkujeme za vyzkoušení Mystické Hvězdy ✨',
+    getHtml: (data) => getBaseTemplate(`
+      <h1 class="h1">Zkušební období skončilo</h1>
+      <p>Vaše 7denní zkušební období právě skončilo a vaše předplatné <span class="highlight">Hvězdný Průvodce</span> je nyní plně aktivní.</p>
+
+      <p>Od dnešního dne vám bude pravidelně účtována měsíční platba. Veškeré prémiové funkce zůstávají k dispozici.</p>
+
+      <div class="feature-item">
+        <strong>Co máte k dispozici:</strong>
+        <ul style="margin-top: 10px; padding-left: 20px;">
+          <li>📖 Neomezené tarotové výklady</li>
+          <li>⭐ Týdenní a měsíční horoskopy</li>
+          <li>✨ Duchovní průvodce pro hluboké otázky</li>
+          <li>🗺️ Natální karty s interpretací</li>
+        </ul>
+      </div>
+
+      <div class="cta-box">
+        <a href="${process.env.APP_URL}/profil.html" class="btn">Otevřít svůj profil →</a>
+      </div>
+
+      <p style="font-size: 13px; opacity: 0.7; text-align: center;">
+        Předplatné můžete kdykoli spravovat ve svém profilu.
+      </p>
+    `, 'Vítejte v plném předplatném')
   }
 
 };
@@ -513,7 +565,7 @@ export async function sendUpgradeReminders(userId, email) {
       delaySeconds: 604800 // 7 days
     });
 
-    // Email 2: Day 14 - "50% discount (limited time)"
+    // Email 2: Day 14 - limited retention discount
     await scheduleEmailLater({
       userId,
       email,
@@ -570,6 +622,142 @@ export async function sendWeeklyFeatureEmail(email, featureData = {}) {
   }
 }
 
+/**
+ * Schedule trial reminder emails (Day 5: ending soon, Day 7: ended)
+ */
+export async function sendTrialReminderEmails(userId, email, trialEndDate) {
+  if (!trialEndDate) return;
+  const trialEnd = new Date(trialEndDate);
+  if (isNaN(trialEnd.getTime())) return; // guard against invalid date
+
+  try {
+    const { scheduleEmailLater } = await import('./jobs/email-queue.js');
+    const now = new Date();
+
+    // Day 5: "Trial ending in 2 days"
+    const day5Delay = Math.max(0, Math.floor((trialEnd - now - 2 * 86400000) / 1000));
+    if (day5Delay > 60) { // at least 1 minute in the future
+      await scheduleEmailLater({
+        userId,
+        email,
+        template: 'trial_ending_reminder',
+        data: { daysRemaining: 2 },
+        delaySeconds: day5Delay
+      });
+    }
+
+    // Day 7: "Trial ended, subscription active"
+    const day7Delay = Math.max(0, Math.floor((trialEnd - now) / 1000));
+    if (day7Delay > 60) {
+      await scheduleEmailLater({
+        userId,
+        email,
+        template: 'trial_ended',
+        data: {},
+        delaySeconds: day7Delay
+      });
+    }
+
+    console.log(`[EMAIL] Trial reminders scheduled for user ${userId} (end: ${trialEndDate})`);
+    return { success: true };
+  } catch (error) {
+    console.error('[EMAIL] Failed to schedule trial reminders:', error);
+    throw error;
+  }
+}
+
+EMAIL_TEMPLATES.horoscope_subscription_confirm = {
+  subject: '🌟 Odběr denního horoskopu potvrzen',
+  getHtml: (data) => getBaseTemplate(`
+    <h1 class="h1">Hvězdy tě vítají!</h1>
+    <p>Tvůj odběr denního horoskopu pro znamení <span class="highlight">${data.sign}</span> byl úspěšně aktivován.</p>
+    <p>Každý den ráno ti přijde tvůj osobní horoskop přímo do emailu. Začni sledovat, jak tě hvězdy vedou...</p>
+    <div class="cta-box">
+      <a href="${process.env.APP_URL}/horoskopy.html" class="btn">Otevřít dnešní horoskop →</a>
+    </div>
+    <p style="font-size:13px;opacity:0.6;text-align:center;margin-top:2rem;">
+      Pokud si nepřeješ dostávat denní horoskop, můžeš se <a href="${process.env.APP_URL}/api/subscribe/horoscope/unsubscribe?token=${data.token}" style="color:#d4af37;">kdykoli odhlásit</a>.
+    </p>
+  `, 'Odběr potvrzen — Mystická Hvězda')
+};
+
+EMAIL_TEMPLATES.daily_horoscope = {
+  subject: (data) => `🌙 Tvůj denní horoskop — ${data.sign} — ${data.date}`,
+  getHtml: (data) => getBaseTemplate(`
+    <h1 class="h1">Horoskop pro ${data.sign}</h1>
+    <p style="text-align:center;opacity:0.7;margin-top:-10px;">${data.date}</p>
+
+    <div style="background:rgba(212,175,55,0.07);border-left:3px solid #d4af37;padding:20px 25px;border-radius:0 8px 8px 0;margin:25px 0;line-height:1.8;font-size:16px;">
+      ${data.horoscope_text}
+    </div>
+
+    <div class="cta-box">
+      <a href="${process.env.APP_URL}/horoskopy.html" class="btn">Celý horoskop na webu →</a>
+    </div>
+
+    <p style="font-size:12px;opacity:0.5;text-align:center;margin-top:2rem;">
+      Dostáváš tento email protože jsi přihlášen k odběru denního horoskopu Mystické Hvězdy.<br>
+      <a href="${process.env.APP_URL}/api/subscribe/horoscope/unsubscribe?token=${data.token}" style="color:#d4af37;">Odhlásit se z odběru</a>
+    </p>
+  `, `Denní horoskop — ${data.sign}`)
+};
+
+const SIGN_NAMES_EMAIL = {
+  beran: 'Beran', byk: 'Býk', blizenci: 'Blíženci', rak: 'Rak',
+  lev: 'Lev', panna: 'Panna', vahy: 'Váhy', stir: 'Štír',
+  strelec: 'Střelec', kozoroh: 'Kozoroh', vodnar: 'Vodnář', ryby: 'Ryby'
+};
+
+/**
+ * Sends a personalized Roční Horoskop PDF as an email attachment.
+ */
+export async function sendHoroscopePdf({ to, name, sign, pdfBuffer }) {
+  const client = getResend();
+  if (!client) {
+    console.error('[EMAIL] Resend not configured — cannot send horoscope PDF');
+    return;
+  }
+
+  const signName = SIGN_NAMES_EMAIL[sign] || sign;
+  const year = new Date().getFullYear();
+
+  const html = getBaseTemplate(`
+    <div style="text-align:center;padding:20px 0 10px;">
+      <p style="font-family:'Cinzel',serif;font-size:18px;color:#d4af37;letter-spacing:2px;margin:0 0 6px;">Tvůj horoskop je tady ✦</p>
+      <p style="font-size:15px;color:rgba(255,255,255,0.8);margin:0;">Ahoj ${name},</p>
+    </div>
+    <div style="padding:20px 0;">
+      <p>Právě ti posílám tvůj <strong style="color:#d4af37;">Roční Horoskop na míru ${year}</strong> — personalizovaný výklad speciálně pro tebe jako ${signName}.</p>
+      <p style="margin-top:12px;">Najdeš ho v příloze tohoto e-mailu jako PDF. Doporučuji ho otevřít v klidu, udělat si čaj a číst pomalu — každá sekce je psaná přímo pro tebe.</p>
+      <div style="background:rgba(212,175,55,0.07);border-left:3px solid #d4af37;padding:16px 20px;margin:24px 0;border-radius:0 6px 6px 0;">
+        <p style="margin:0;font-size:14px;color:rgba(255,255,255,0.7);">Horoskop obsahuje: osobnostní profil, výhled pro lásku a vztahy, kariéru a finance, osobní růst, klíčové měsíce roku a závěrečné slovo.</p>
+      </div>
+      <p>Pokud máš jakékoli otázky, odpověz na tento e-mail.</p>
+      <p style="margin-top:16px;color:rgba(255,255,255,0.6);font-size:13px;">S láskou ze hvězd,<br><span style="color:#d4af37;font-family:'Cinzel',serif;">Mystická Hvězda</span></p>
+    </div>
+  `, `Tvůj Roční Horoskop ${year} je tady`);
+
+  const pdfBase64 = Buffer.from(pdfBuffer).toString('base64');
+
+  const { data, error } = await client.emails.send({
+    from: FROM_EMAIL,
+    to,
+    subject: `✦ Tvůj Roční Horoskop na míru ${year} — ${signName}`,
+    html,
+    attachments: [{
+      filename: `horoskop-${year}-${sign}.pdf`,
+      content: pdfBase64,
+      type: 'application/pdf',
+    }],
+  });
+
+  if (error) {
+    throw new Error(`Resend error: ${error.message} (${error.statusCode})`);
+  }
+
+  return data;
+}
+
 export default {
   sendEmail,
   sendOnboardingSequence,
@@ -578,5 +766,7 @@ export default {
   sendUpgradeReminders,
   sendChurnRecoveryEmail,
   sendWeeklyFeatureEmail,
+  sendTrialReminderEmails,
+  sendHoroscopePdf,
   EMAIL_TEMPLATES
 };

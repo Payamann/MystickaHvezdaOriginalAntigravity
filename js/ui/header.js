@@ -8,8 +8,8 @@ export function initHeader() {
     if (!header) return;
 
     // Prevent double initialization
-    if (header.dataset.initialized === 'true') return;
-    header.dataset.initialized = 'true';
+    if (header.dataset.headerInitialized === 'true') return;
+    header.dataset.headerInitialized = 'true';
 
     // Throttled scroll handler for better performance
     const handleScroll = throttle(() => {
@@ -36,6 +36,10 @@ export function initMobileNav() {
     const navList = document.querySelector('.nav__list');
 
     if (!toggle || !navList) return;
+
+    // Prevent double initialization
+    if (toggle.dataset.navInitialized === 'true') return;
+    toggle.dataset.navInitialized = 'true';
 
     // Toggle menu
     toggle.addEventListener('click', () => {

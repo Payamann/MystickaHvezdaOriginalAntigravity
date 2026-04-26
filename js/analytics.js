@@ -22,8 +22,10 @@ const MH_ANALYTICS = {
             gtag('event', eventName, data);
         }
 
-        // 2. Console logging (development)
-        console.log(`[Analytics] ${eventName}`, event);
+        // 2. Optional debug logging for local diagnostics
+        if (window.MH_DEBUG_ANALYTICS) {
+            console.debug(`[Analytics] ${eventName}`, event);
+        }
 
         // 3. Queue for backend analytics (optional)
         if (window.MH_ANALYTICS_QUEUE) {
@@ -58,6 +60,82 @@ const MH_ANALYTICS = {
         this.trackEvent(`action_${action}`, context);
     },
 
+    trackCTA(location, context = {}) {
+        this.trackEvent('cta_clicked', {
+            location,
+            ...context
+        });
+    },
+
+    trackPricingViewed(selectedPlan = null, context = {}) {
+        this.trackEvent('pricing_viewed', {
+            selected_plan: selectedPlan,
+            ...context
+        });
+    },
+
+    trackAuthViewed(mode = 'login', context = {}) {
+        this.trackEvent('auth_viewed', {
+            auth_mode: mode,
+            ...context
+        });
+    },
+
+    trackAuthCompleted(mode = 'login', context = {}) {
+        const eventName = mode === 'register' ? 'signup_completed' : 'login_completed';
+        this.trackEvent(eventName, {
+            auth_mode: mode,
+            ...context
+        });
+    },
+
+    trackCheckoutStarted(planId = 'unknown', context = {}) {
+        this.trackEvent('begin_checkout', {
+            plan_id: planId,
+            ...context
+        });
+    },
+
+    trackPaymentResult(status = 'unknown', context = {}) {
+        this.trackEvent('payment_returned', {
+            payment_status: status,
+            ...context
+        });
+    },
+
+    trackPurchaseCompleted(productId = 'unknown', value = null, currency = 'CZK', context = {}) {
+        const productType = context.product_type || 'subscription';
+        const payload = {
+            transaction_id: context.transaction_id || context.session_id || undefined,
+            currency,
+            value,
+            product_id: productId,
+            product_type: productType,
+            items: [{
+                item_id: productId,
+                item_name: context.product_name || productId,
+                item_category: productType,
+                price: value ?? undefined,
+                quantity: 1
+            }],
+            ...context
+        };
+
+        this.trackEvent('purchase', payload);
+        this.trackEvent('purchase_completed', payload);
+    },
+
+    trackBillingPortalOpened(context = {}) {
+        this.trackEvent('billing_portal_opened', context);
+    },
+
+    trackSubscriptionAction(action, context = {}) {
+        this.trackEvent('subscription_action', {
+            action,
+            ...context
+        });
+    },
+
     /**
      * Track error
      */
@@ -73,6 +151,44 @@ const MH_ANALYTICS = {
 // Create global aliases
 window.trackEvent = window.trackEvent || ((eventName, data) => MH_ANALYTICS.trackEvent(eventName, data));
 window.MH_ANALYTICS = MH_ANALYTICS;
+
+document.addEventListener('click', (event) => {
+    const target = event.target.closest(
+        '#hero-cta-btn, #cta-banner-btn, #auth-register-btn, #mobile-auth-register-btn, #auth-btn, #mobile-auth-btn, a[data-plan]'
+    );
+    if (!target) return;
+
+    const href = target.getAttribute('href') || '';
+    const label = target.textContent?.trim() || target.id || 'unknown';
+
+    if (target.matches('#hero-cta-btn')) {
+        MH_ANALYTICS.trackCTA('homepage_hero', { label, destination: href || '/prihlaseni.html?mode=register' });
+        return;
+    }
+
+    if (target.matches('#cta-banner-btn')) {
+        MH_ANALYTICS.trackCTA('homepage_cta_banner', { label, destination: href || '/cenik.html' });
+        return;
+    }
+
+    if (target.matches('#auth-register-btn, #mobile-auth-register-btn')) {
+        MH_ANALYTICS.trackCTA('header_register', { label, destination: href || 'auth_modal_register' });
+        return;
+    }
+
+    if (target.matches('#auth-btn, #mobile-auth-btn') && !(window.Auth?.isLoggedIn?.())) {
+        MH_ANALYTICS.trackCTA('header_login', { label, destination: href || 'auth_modal_login' });
+        return;
+    }
+
+    if (target.matches('a[data-plan]')) {
+        MH_ANALYTICS.trackCTA('homepage_pricing_preview', {
+            label,
+            plan_id: target.dataset.plan || null,
+            destination: href || '/cenik.html'
+        });
+    }
+});
 
 // Track uncaught errors
 window.addEventListener('error', (event) => {

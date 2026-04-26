@@ -1,0 +1,177 @@
+/* Extracted from natalni-karta.html inline <style> block. */
+/* Natal Chart Specific Styles */
+
+        .natal-chart-container {
+
+            position: relative;
+
+            width: 100%;
+
+            max-width: 600px;
+
+            margin: 0 auto;
+
+            aspect-ratio: 1/1;
+
+        }
+
+
+
+        .natal-svg {
+
+            width: 100%;
+
+            height: 100%;
+
+            filter: drop-shadow(0 0 20px rgba(155, 89, 182, 0.3));
+
+        }
+
+
+
+        .planet-tooltip {
+
+            position: absolute;
+
+            background: rgba(10, 10, 26, 0.95);
+
+            border: 1px solid var(--color-mystic-gold);
+
+            padding: 1rem;
+
+            border-radius: var(--radius-md);
+
+            color: var(--color-starlight);
+
+            pointer-events: none;
+
+            opacity: 0;
+
+            transition: opacity 0.3s ease;
+
+            z-index: 10;
+
+            max-width: 200px;
+
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+
+        }
+
+
+
+        .form-group {
+
+            margin-bottom: var(--space-md);
+
+        }
+
+/* Migrated from natalni-karta.html static style attributes. */
+html body .mh-inline-8318922717 { align-items: start; gap: var(--space-2xl); }
+html body .mh-inline-f9b4b13ce3 { margin: 0; }
+html body .mh-inline-0057bdf0d3 { font-size: 0.9rem; cursor: pointer; display: none; align-items: center; gap: 0.5rem; }
+html body .mh-inline-aacbbd8920 { accent-color: var(--color-mystic-gold); }
+html body .mh-inline-5a7f49c252 { display: block; }
+html body .mh-inline-4d3c1b4aba { display: block; margin-bottom: 0.5rem; color: var(--color-silver-mist); }
+html body .mh-inline-2ee748ee9c { gap: var(--space-md); }
+html body .mh-inline-f84cc648fc { width: 100%; margin-top: var(--space-md); }
+html body .mh-inline-2f73dcd12d { margin-top: var(--space-xl); display: none; }
+html body .mh-inline-a8e773483a { border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; }
+html body .mh-inline-f9715488b0 { background: rgba(155, 89, 182, 0.1); border-radius: var(--radius-md); }
+html body .mh-inline-239626a1a5 { width: 100%; height: 500px; position: relative; margin-bottom: 2rem; display: none; }
+.natal-3d-canvas { display: block; width: 100%; height: 100%; }
+html body .mh-inline-3ef2c0188e { stop-color:#FFF7E0;stop-opacity:1; }
+html body .mh-inline-1c14898eda { stop-color:#FFD700;stop-opacity:1; }
+html body .mh-inline-5a4f3214ed { stop-color:#FF8C00;stop-opacity:1; }
+html body .mh-inline-7acad95db7 { stop-color:#FFFFFF;stop-opacity:1; }
+html body .mh-inline-60f01d9f61 { stop-color:#E0E0E0;stop-opacity:1; }
+html body .mh-inline-83af41cdc9 { stop-color:#B0B0B0;stop-opacity:1; }
+html body .mh-inline-229cc83d76 { stop-color:#E6E6FA;stop-opacity:1; }
+html body .mh-inline-7422dd850d { stop-color:#B0C4DE;stop-opacity:1; }
+html body .mh-inline-1c05e1255b { stop-color:#708090;stop-opacity:1; }
+html body .mh-inline-0da6309e3b { stop-color:#FFF0F5;stop-opacity:1; }
+html body .mh-inline-e2943f83a6 { stop-color:#FFB6C1;stop-opacity:1; }
+html body .mh-inline-5f024c93e7 { stop-color:#DB7093;stop-opacity:1; }
+html body .mh-inline-9f3ef889f0 { stop-color:#FF7F50;stop-opacity:1; }
+html body .mh-inline-5d862d8664 { stop-color:#FF4500;stop-opacity:1; }
+html body .mh-inline-34eacfeb37 { stop-color:#8B0000;stop-opacity:1; }
+html body .mh-inline-26aadce8ee { stop-color:#FFE4B5;stop-opacity:1; }
+html body .mh-inline-c27f17ebd5 { stop-color:#DEB887;stop-opacity:1; }
+html body .mh-inline-caa2c78f5a { stop-color:#A0522D;stop-opacity:1; }
+html body .mh-inline-9ae719b45d { stop-color:#F0E68C;stop-opacity:1; }
+html body .mh-inline-0a670a1814 { stop-color:#BDB76B;stop-opacity:1; }
+html body .mh-inline-0926d50310 { stop-color:#556B2F;stop-opacity:1; }
+html body .mh-inline-80f1bd625d { stop-color:#9B59B6;stop-opacity:1; }
+html body .mh-inline-5e0dbaec70 { stop-color:#4A235A;stop-opacity:1; }
+html body .mh-inline-9bfba94449 { display: none; padding-top: 0; animation: fadeIn 0.5s ease-out; }
+html body .mh-inline-b99dfef38d { background: linear-gradient(135deg, rgba(10, 10, 26, 0.8), rgba(60, 20, 80, 0.4)); border: 1px solid var(--color-mystic-gold); }
+html body .mh-inline-15cadc97f3 { align-items: center; }
+html body .mh-inline-b7eb929638 { color: var(--color-silver-mist); margin-top: 0.5rem; }
+html body .mh-inline-3eba41e878 { gap: var(--space-xl); align-items: center; }
+html body .mh-inline-49835faaa6 { font-size: 4rem; margin-bottom: 1rem; filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.3)); }
+html body .mh-inline-1bd284d04b { color: var(--color-starlight); margin-bottom: 0.5rem; }
+html body .mh-inline-42cf0c1c61 { font-size: 0.9rem; color: var(--color-silver-mist); }
+html body .mh-inline-bf3fb05115 { background: rgba(255,255,255,0.05); border-radius: var(--radius-md); margin-bottom: 1rem; }
+html body .mh-inline-231ba9517f { line-height: 1.6; color: var(--color-starlight); margin: 0; }
+
+/* Migrated from natalni-karta.html remaining static style attributes. */
+html body .mh-inline-ba3ff4fd1a { opacity: 0.8; }
+html body .mh-inline-f62391840f { list-style: none; padding: 0; }
+html body .mh-inline-cb3bb4caa1 { margin-bottom: 0.2rem; }
+html body .mh-inline-e8965e1cb8 { margin: 0; color: var(--color-mystic-gold); }
+
+.planet-image--normal {
+    mix-blend-mode: normal;
+}
+
+.planet-image--clean {
+    filter: none;
+}
+
+.sun-atmosphere {
+    filter: blur(4px);
+}
+
+.orbit-path--pending {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.orbit-path--visible {
+    opacity: 1;
+}
+
+.natal-ai {
+    margin-top: var(--space-xl);
+    padding: var(--space-xl);
+    border: 1px solid var(--color-mystic-gold);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(135deg, rgba(155, 89, 182, 0.1) 0%, rgba(10, 10, 26, 0.9) 100%);
+}
+
+.natal-ai__title {
+    margin-bottom: var(--space-md);
+    color: var(--color-mystic-gold);
+}
+
+.natal-ai__content {
+    color: var(--color-starlight);
+    line-height: 1.8;
+    white-space: pre-wrap;
+}
+
+.favorite-reading-action {
+    margin-top: var(--space-xl);
+}
+
+.favorite-reading-action__button {
+    min-width: 200px;
+}
+
+.content-fade-enter {
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+}
+
+.content-fade-enter-active {
+    opacity: 1;
+}

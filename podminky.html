@@ -27,7 +27,8 @@
     <meta property="og:title" content="Obchodní podmínky | Mystická Hvězda">
 
     <meta property="og:description" content="Všeobecné obchodní podmínky služby Mystická Hvězda.">
-
+    <meta property="og:url" content="https://www.mystickahvezda.cz/podminky.html">
+    <meta property="og:image" content="https://www.mystickahvezda.cz/img/hero-3d.webp">
     <meta property="og:locale" content="cs_CZ">
 
 
@@ -40,7 +41,7 @@
 
     <link rel="icon" type="image/svg+xml"
 
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>??</text></svg>">
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
 
 
 
@@ -67,8 +68,26 @@
         rel="stylesheet"  >
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap&subset=latin,latin-ext" rel="stylesheet"></noscript>
 
-    <link rel="stylesheet" href="css/style.v2.min.css?v=9">
+    <link rel="stylesheet" href="css/style.v2.min.css?v=11">
+    <link rel="stylesheet" href="css/pages/podminky.css">
 
+    <link rel="canonical" href="https://www.mystickahvezda.cz/podminky.html">
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Podmínky použití | Mystická Hvězda",
+        "description": "Podmínky a pravidla pro používání platformy Mystická Hvězda.",
+        "url": "https://www.mystickahvezda.cz/podminky.html",
+        "isPartOf": {
+            "@type": "WebSite",
+            "name": "Mystická Hvězda",
+            "url": "https://www.mystickahvezda.cz"
+        }
+    }
+    </script>
+    <script src="/js/dist/analytics-init.js" defer></script>
 </head>
 
 
@@ -95,7 +114,7 @@
 
         <!-- HERO -->
 
-        <section class="section section--hero" style="min-height: 50vh; padding-top: 140px;">
+        <section class="section section--hero hero--legal">
 
             <div class="container">
 
@@ -125,7 +144,7 @@
 
         <section class="section">
 
-            <div class="container" style="max-width: 800px;">
+            <div class="container mh-inline-51e04e9965">
 
                 <div class="card" data-animate>
 
@@ -157,7 +176,7 @@
 
                         </p>
 
-                        <ul style="list-style: disc; margin-left: 1.5rem; color: var(--color-silver-mist);">
+                        <ul class="u-list-disc-muted">
 
                             <li>Denní, týdenní a měsíční horoskopy</li>
 
@@ -301,35 +320,21 @@
 
     <!-- Service Worker Registration -->
 
-    <script>
-
-        if ('serviceWorker' in navigator) {
-
-            window.addEventListener('load', () => {
-
-                navigator.serviceWorker.register('/service-worker.js')
-
-                    .then(reg => console.log('? Service Worker registered'))
-
-                    .catch(err => console.log('SW registration failed:', err));
-
-            });
-
-        }
-
-    </script>
+    <script src="/js/dist/register-sw.js" defer></script>
 
 
 
-    <script src="js/api-config.js?v=5" defer></script>
+    <script src="js/dist/api-config.js?v=5" defer></script>
 
-    <script src="js/templates.js?v=10" defer></script>
+    <script src="js/dist/templates.js?v=10" defer></script>
 
-    <script src="js/auth-client.js?v=5" defer></script>
+    <script src="js/dist/auth-client.js?v=5" defer></script>
+<script src="js/dist/auth-copy-fixes.js" defer></script>
+    <script src="js/dist/secondary-pages-copy-fixes.js" defer></script>
 
-    <script src="js/components.js?v=10" defer></script>
+    <script src="js/dist/components.js?v=10" defer></script>
 
-    <script type="module" src="js/main.js?v=10"></script>
+    <script type="module" src="js/dist/main.js?v=10"></script>
 
 
 
@@ -338,4 +343,3 @@
 
 
 </html>
-

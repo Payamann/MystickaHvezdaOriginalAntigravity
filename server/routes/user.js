@@ -71,7 +71,7 @@ router.post('/readings', authenticateToken, async (req, res) => {
         }
 
         // Validate type against allowlist
-        const validTypes = ['tarot', 'oracle', 'numerology', 'horoscope', 'angel'];
+        const validTypes = ['tarot', 'oracle', 'numerology', 'horoscope', 'angel', 'journal'];
         if (!validTypes.includes(type)) {
             return res.status(400).json({ error: 'Invalid reading type.' });
         }

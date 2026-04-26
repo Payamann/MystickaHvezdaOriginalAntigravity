@@ -1,8 +1,8 @@
 import express from 'express';
 import { supabase } from './db-supabase.js';
-import { authenticateToken } from './middleware.js';
+import { authenticateToken, optionalPremiumCheck } from './middleware.js';
 import Stripe from 'stripe';
-import { sendEmail, sendPauseEmail, sendDiscountEmail, sendOnboardingSequence, sendUpgradeReminders, sendChurnRecoveryEmail } from './email-service.js';
+import { sendEmail, sendPauseEmail, sendDiscountEmail, sendOnboardingSequence, sendUpgradeReminders, sendChurnRecoveryEmail, sendTrialReminderEmails } from './email-service.js';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -17,39 +17,80 @@ const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
 const APP_URL = process.env.APP_URL || 'http://localhost:3001';
 const router = express.Router();
 
-import { PREMIUM_PLAN_TYPES } from './config/constants.js';
+import {
+    DEFAULT_PREMIUM_PLAN_TYPE,
+    PLAN_TYPES,
+    PREMIUM_PLAN_TYPES,
+    SUBSCRIPTION_PLANS,
+    isPremiumPlanType,
+    normalizePlanType
+} from './config/constants.js';
 
-// Plan definitions (consistent with cenik.html)
-const PLANS = {
-    'poutnik': {
-        name: 'Poutník (Základ)',
-        price: 0,
-        type: 'free',
-        interval: null,
-        description: 'Základní přístup - Denní horoskop, Tarot 1x denně, Křišťálová koule 3x denně'
-    },
-    'pruvodce': {
-        name: 'Hvězdný Průvodce (Měsíční)',
-        price: 19900, // 199 CZK in halere
-        type: 'premium_monthly',
-        interval: 'month',
-        description: 'Premium přístup - Neomezené tarotové výklady, Týdenní + měsíční horoskopy, Natální karta s interpretací'
-    },
-    'osviceni': {
-        name: 'Osvícení (Měsíční)',
-        price: 49900, // 499 Kč in haléře
-        type: 'exclusive_monthly',
-        interval: 'month',
-        description: 'Exkluzivní přístup - Prioritní odpovědi, Exkluzivní obsah, Early access k novinkám'
-    },
-    'vip-majestrat': {
-        name: 'VIP Věštecký Majestát (Měsíční)',
-        price: 99900, // 999 Kč in haléře
-        type: 'vip_majestrat',
-        interval: 'month',
-        description: 'VIP přístup - Priority 24/7 podpora, Personalizovaný daily horoscope, Neomezené konzultace s Hvězdným Průvodcem'
+const PLANS = SUBSCRIPTION_PLANS;
+
+const PUBLIC_FUNNEL_EVENTS = new Set([
+    'paywall_viewed',
+    'login_gate_viewed',
+    'upgrade_cta_viewed',
+]);
+
+function cleanFunnelValue(value, fallback = null, maxLength = 120) {
+    if (typeof value !== 'string') return fallback;
+    const trimmed = value.trim();
+    if (!trimmed) return fallback;
+    return trimmed.slice(0, maxLength);
+}
+
+async function recordFunnelEvent(eventName, {
+    userId = null,
+    source = null,
+    feature = null,
+    planId = null,
+    planType = null,
+    stripeSessionId = null,
+    stripeEventId = null,
+    metadata = {}
+} = {}) {
+    try {
+        await supabase.from('funnel_events').insert({
+            user_id: userId,
+            event_name: eventName,
+            source: cleanFunnelValue(source),
+            feature: cleanFunnelValue(feature),
+            plan_id: cleanFunnelValue(planId),
+            plan_type: cleanFunnelValue(planType),
+            stripe_session_id: cleanFunnelValue(stripeSessionId),
+            stripe_event_id: cleanFunnelValue(stripeEventId),
+            metadata
+        });
+    } catch (error) {
+        console.warn('[FUNNEL] Could not record funnel event:', eventName, error.message);
     }
-};
+}
+
+function sanitizeFunnelMetadata(metadata) {
+    if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) {
+        return {};
+    }
+
+    const safeMetadata = {};
+    const entries = Object.entries(metadata).slice(0, 12);
+
+    for (const [rawKey, rawValue] of entries) {
+        const key = cleanFunnelValue(rawKey, null, 40);
+        if (!key) continue;
+
+        if (typeof rawValue === 'string') {
+            safeMetadata[key] = cleanFunnelValue(rawValue, null, 240);
+        } else if (typeof rawValue === 'number' && Number.isFinite(rawValue)) {
+            safeMetadata[key] = rawValue;
+        } else if (typeof rawValue === 'boolean' || rawValue === null) {
+            safeMetadata[key] = rawValue;
+        }
+    }
+
+    return safeMetadata;
+}
 
 // Helper to check premium status (aligned with middleware logic)
 export async function isPremiumUser(userId) {
@@ -64,7 +105,7 @@ export async function isPremiumUser(userId) {
 
         const isActive = subscription.status === 'active' || subscription.status === 'trialing' || subscription.status === 'cancel_pending';
         const notExpired = new Date(subscription.current_period_end) > new Date();
-        const isPremium = PREMIUM_PLAN_TYPES.includes(subscription.plan_type);
+        const isPremium = isPremiumPlanType(subscription.plan_type);
 
         return isActive && notExpired && isPremium;
     } catch (e) {
@@ -139,22 +180,66 @@ router.get('/subscription/status', authenticateToken, async (req, res) => {
 });
 
 // ============================================
+// POST /funnel-event - Public top-of-funnel tracking
+// ============================================
+router.post('/funnel-event', optionalPremiumCheck, async (req, res) => {
+    try {
+        const eventName = cleanFunnelValue(req.body?.eventName, null, 80);
+
+        if (!eventName || !PUBLIC_FUNNEL_EVENTS.has(eventName)) {
+            return res.status(400).json({ success: false, error: 'Invalid funnel event.' });
+        }
+
+        await recordFunnelEvent(eventName, {
+            userId: req.user?.id || null,
+            source: req.body?.source,
+            feature: req.body?.feature,
+            planId: req.body?.planId,
+            planType: req.body?.planType,
+            metadata: sanitizeFunnelMetadata(req.body?.metadata)
+        });
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('[FUNNEL] Public event failed:', error);
+        res.status(500).json({ success: false, error: 'Could not record funnel event.' });
+    }
+});
+
+// ============================================
 // POST /create-checkout-session - Create Stripe Checkout for subscription
 // ============================================
 router.post('/create-checkout-session', authenticateToken, async (req, res) => {
     try {
         const { planId } = req.body;
         const user = req.user;
+        const source = cleanFunnelValue(req.body?.source, 'direct');
+        const feature = cleanFunnelValue(req.body?.feature);
 
         // Validate planId - must be one of the defined plans
         const validPlanIds = Object.keys(PLANS);
         if (!planId || typeof planId !== 'string' || !validPlanIds.includes(planId)) {
+            await recordFunnelEvent('checkout_validation_failed', {
+                userId: user.id,
+                source,
+                feature,
+                planId: cleanFunnelValue(planId),
+                metadata: { reason: 'invalid_plan_id' }
+            });
             return res.status(400).json({ error: 'Invalid plan selected' });
         }
 
         const plan = PLANS[planId];
 
         if (plan.price === 0) {
+            await recordFunnelEvent('checkout_validation_failed', {
+                userId: user.id,
+                source,
+                feature,
+                planId,
+                planType: plan.type,
+                metadata: { reason: 'free_plan_checkout_blocked' }
+            });
             return res.status(400).json({ error: 'Cannot create session for free plan' });
         }
 
@@ -179,24 +264,56 @@ router.post('/create-checkout-session', authenticateToken, async (req, res) => {
                 quantity: 1,
             }],
             mode: 'subscription',
-            success_url: `${APP_URL}/profil.html?payment=success`,
+            payment_method_collection: 'always',
+            locale: 'cs',
+            success_url: `${APP_URL}/profil.html?payment=success&plan=${encodeURIComponent(planId)}&session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${APP_URL}/cenik.html?payment=cancel`,
             client_reference_id: user.id,
             metadata: {
                 userId: user.id,
-                planType: plan.type
+                planId,
+                planType: plan.type,
+                billingInterval: plan.interval,
+                source,
+                feature: feature || ''
             },
             subscription_data: {
+                ...(plan.trialDays > 0 && { trial_period_days: plan.trialDays }),
                 metadata: {
                     userId: user.id,
-                    planType: plan.type
+                    planId,
+                    planType: plan.type,
+                    billingInterval: plan.interval,
+                    source,
+                    feature: feature || ''
                 }
+            }
+        });
+
+        await recordFunnelEvent('checkout_session_created', {
+            userId: user.id,
+            source,
+            feature,
+            planId,
+            planType: plan.type,
+            stripeSessionId: session.id,
+            metadata: {
+                billingInterval: plan.interval,
+                amount: plan.price,
+                currency: 'czk'
             }
         });
 
         res.json({ id: session.id, url: session.url });
     } catch (error) {
         console.error('Stripe Session Error:', error);
+        await recordFunnelEvent('checkout_session_failed', {
+            userId: req.user?.id,
+            source: req.body?.source,
+            feature: req.body?.feature,
+            planId: req.body?.planId,
+            metadata: { error: error.message }
+        });
         res.status(500).json({ error: 'Platba se nezdařila. Zkuste to prosím později.' });
     }
 });
@@ -230,6 +347,14 @@ router.post('/cancel', authenticateToken, async (req, res) => {
             .from('subscriptions')
             .update({ status: 'cancel_pending' })
             .eq('user_id', req.user.id);
+
+        await recordFunnelEvent('subscription_cancel_requested', {
+            userId: req.user.id,
+            metadata: {
+                stripeSubscriptionId: subscription.stripe_subscription_id,
+                previousStatus: subscription.status
+            }
+        });
 
         res.json({
             success: true,
@@ -269,6 +394,13 @@ router.post('/reactivate', authenticateToken, async (req, res) => {
             .from('subscriptions')
             .update({ status: 'active' })
             .eq('user_id', req.user.id);
+
+        await recordFunnelEvent('subscription_reactivated', {
+            userId: req.user.id,
+            metadata: {
+                stripeSubscriptionId: subscription.stripe_subscription_id
+            }
+        });
 
         res.json({
             success: true,
@@ -326,67 +458,170 @@ export async function handleStripeWebhook(rawBody, sig) {
 
     console.log(`[STRIPE] Webhook received: ${event.type} (ID: ${event.id})`);
 
-    // IDEMPOTENCY CHECK
-    try {
-        const { data: existingEvent } = await supabase
-            .from('payment_events')
-            .select('event_id')
-            .eq('event_id', event.id)
-            .single();
+    const { error: reserveError } = await supabase
+        .from('payment_events')
+        .insert({
+            event_id: event.id,
+            event_type: event.type,
+            status: 'processing'
+        });
 
-        if (existingEvent) {
-            console.log(`[STRIPE] Event ${event.id} already processed. Skipping.`);
+    if (reserveError) {
+        if (reserveError.code === '23505') {
+            console.log(`[STRIPE] Event ${event.id} already reserved/processed. Skipping.`);
             return;
         }
-    } catch (e) {
-        // Ignore "row not found" error, real errors will be caught later or table missing issue
-        // If table missing, this check fails but we proceed (safe failure mode? No, better to warn)
-        if (e.code !== 'PGRST116') { // PGRST116 is "Row not found" (good)
-            console.warn(`[STRIPE] Idempotency check failed (Table missing?): ${e.message}`);
-        }
+        console.error(`[STRIPE] Failed to reserve event ${event.id}: ${reserveError.message}`);
+        throw new Error(`Event reservation failed: ${reserveError.message}`);
     }
 
     try {
         switch (event.type) {
             case 'checkout.session.completed':
-                await handleCheckoutCompleted(event.data.object);
+                await handleCheckoutCompleted(event.data.object, event.id);
                 break;
             case 'invoice.paid':
-                await handleInvoicePaid(event.data.object);
+                await handleInvoicePaid(event.data.object, event.id);
                 break;
             case 'invoice.payment_failed':
-                await handleInvoicePaymentFailed(event.data.object);
+                await handleInvoicePaymentFailed(event.data.object, event.id);
                 break;
             case 'customer.subscription.updated':
-                await handleSubscriptionUpdated(event.data.object);
+                await handleSubscriptionUpdated(event.data.object, event.id);
                 break;
             case 'customer.subscription.deleted':
-                await handleSubscriptionDeleted(event.data.object);
+                await handleSubscriptionDeleted(event.data.object, event.id);
+                break;
+            case 'customer.subscription.trial_will_end':
+                await handleTrialWillEnd(event.data.object);
+                break;
+            case 'charge.refunded':
+            case 'refund.created':
+                await handleRefundEvent(event.data.object, event.id, event.type);
                 break;
             default:
                 console.log(`[STRIPE] Unhandled event type: ${event.type}`);
         }
 
-        // RECORD PROCESSED EVENT
-        await supabase.from('payment_events').insert({
-            event_id: event.id,
-            event_type: event.type,
-            status: 'success'
-        });
+        // RECORD PROCESSED EVENT (idempotency guard — must succeed)
+        const { error: updateError } = await supabase
+            .from('payment_events')
+            .update({ status: 'success' })
+            .eq('event_id', event.id);
+        if (updateError) {
+            console.error(`[STRIPE] Failed to mark event ${event.id} as success:`, updateError.message);
+            throw new Error(`Event status update failed: ${updateError.message}`);
+        }
 
     } catch (err) {
         console.error(`[STRIPE] Error processing event ${event.id}:`, err);
-        // We do NOT record failure in payment_events so Stripe can retry later
+        await recordFunnelEvent('stripe_webhook_failed', {
+            stripeEventId: event.id,
+            metadata: {
+                eventType: event.type,
+                error: err.message
+            }
+        });
+        await supabase
+            .from('payment_events')
+            .delete()
+            .eq('event_id', event.id)
+            .eq('status', 'processing');
         throw err; // Re-throw to make Stripe retry
+    }
+}
+
+/**
+ * Handle checkout.session.completed - dispatches to one-time or subscription handler
+ */
+async function handleCheckoutCompleted(session, stripeEventId = null) {
+    if (session.mode === 'payment' && session.metadata?.productType === 'rocni_horoskop') {
+        return handleRocniHoroskopPurchase(session, stripeEventId);
+    }
+    return handleSubscriptionCheckoutCompleted(session, stripeEventId);
+}
+
+/**
+ * Handle one-time purchase of Roční Horoskop na míru
+ * Generates PDF via Claude + Playwright, sends via Resend
+ */
+async function handleRocniHoroskopPurchase(session, stripeEventId = null) {
+    const { customerName, birthDate, sign, email, productId = 'rocni_horoskop_2026' } = session.metadata || {};
+    const customerEmail = email || session.customer_email || session.customer_details?.email;
+
+    if (!customerName || !birthDate || !sign || !customerEmail) {
+        console.error('[HOROSKOP] Missing metadata in checkout session:', session.id);
+        return;
+    }
+
+    console.log(`[HOROSKOP] Generating PDF for ${customerEmail} (${sign})`);
+
+    await recordOneTimePurchase(session, {
+        productType: 'rocni_horoskop',
+        productId,
+        email: customerEmail
+    });
+
+    await recordFunnelEvent('one_time_purchase_completed', {
+        stripeSessionId: session.id,
+        stripeEventId,
+        metadata: {
+            productType: 'rocni_horoskop',
+            productId,
+            amount: session.amount_total || Number(session.metadata?.price) || null,
+            currency: session.currency || session.metadata?.currency || 'czk'
+        }
+    });
+
+    // Run async — don't block webhook response
+    setImmediate(async () => {
+        try {
+            const { generateHoroscopeContent, renderPdf } = await import('./services/horoscope-pdf.js');
+            const { sendHoroscopePdf } = await import('./email-service.js');
+
+            const sections = await generateHoroscopeContent({ name: customerName, birthDate, sign });
+            const pdfBuffer = await renderPdf({ name: customerName, sign, birthDate, sections });
+
+            await sendHoroscopePdf({ to: customerEmail, name: customerName, sign, pdfBuffer });
+            console.log(`[HOROSKOP] PDF sent to ${customerEmail}`);
+        } catch (err) {
+            console.error(`[HOROSKOP] PDF generation/delivery failed for ${customerEmail}:`, err.message);
+        }
+    });
+}
+
+async function recordOneTimePurchase(session, { productType, productId, email }) {
+    const { error } = await supabase
+        .from('one_time_purchases')
+        .insert({
+            stripe_session_id: session.id,
+            stripe_payment_intent_id: session.payment_intent || null,
+            customer_email: email,
+            product_type: productType,
+            product_id: productId,
+            amount_total: session.amount_total || Number(session.metadata?.price) || null,
+            currency: session.currency || session.metadata?.currency || 'czk',
+            status: session.payment_status || 'paid',
+            metadata: session.metadata || {}
+        });
+
+    if (error) {
+        console.warn('[HOROSKOP] Could not record one-time purchase:', error.message);
     }
 }
 
 /**
  * Handle checkout.session.completed - initial subscription creation
  */
-async function handleCheckoutCompleted(session) {
+async function handleSubscriptionCheckoutCompleted(session, stripeEventId = null) {
     const userId = session.client_reference_id || session.metadata?.userId;
-    const planType = session.metadata?.planType || 'premium_monthly';
+    const rawPlanType = session.metadata?.planType || DEFAULT_PREMIUM_PLAN_TYPE;
+    let planType = normalizePlanType(rawPlanType, DEFAULT_PREMIUM_PLAN_TYPE);
+    if (!PREMIUM_PLAN_TYPES.includes(planType)) {
+        console.error('[STRIPE] Invalid plan type in webhook:', rawPlanType);
+        planType = DEFAULT_PREMIUM_PLAN_TYPE;
+    }
+    const billingInterval = session.metadata?.billingInterval || 'month';
     const stripeSubscriptionId = session.subscription;
     const stripeCustomerId = session.customer;
     const userEmail = session.customer_email || session.customer_details?.email;
@@ -398,28 +633,32 @@ async function handleCheckoutCompleted(session) {
 
     console.log(`[STRIPE] Checkout completed for user ${userId}, plan: ${planType}`);
 
-    // Get period end from webhook payload (already calculated by Stripe)
-    // Fallback to REST API only if needed
+    // Fetch subscription from Stripe to get both period end and actual status (trialing vs active)
     let currentPeriodEnd;
-    if (session.subscription_details?.current_period_end) {
-        // Use data from webhook payload (most reliable)
-        currentPeriodEnd = new Date(session.subscription_details.current_period_end * 1000).toISOString();
-    } else if (stripeSubscriptionId) {
-        // Fallback: fetch from Stripe if not in webhook
+    let subStatus = 'active';
+
+    if (stripeSubscriptionId) {
         try {
             const stripeSub = await stripe.subscriptions.retrieve(stripeSubscriptionId);
             currentPeriodEnd = new Date(stripeSub.current_period_end * 1000).toISOString();
+            subStatus = stripeSub.status || 'active'; // 'trialing', 'active', etc.
         } catch (e) {
-            console.error('[STRIPE] Failed to retrieve subscription details:', e.message);
-            // Calculate based on plan type
-            const expiry = new Date();
-            if (planType === 'premium_yearly') {
-                expiry.setFullYear(expiry.getFullYear() + 1);
+            console.error('[STRIPE] Failed to retrieve subscription:', e.message);
+            // Fallback: use webhook data or calculate
+            if (session.subscription_details?.current_period_end) {
+                currentPeriodEnd = new Date(session.subscription_details.current_period_end * 1000).toISOString();
             } else {
-                expiry.setMonth(expiry.getMonth() + 1);
+                const expiry = new Date();
+                if (billingInterval === 'year') {
+                    expiry.setFullYear(expiry.getFullYear() + 1);
+                } else {
+                    expiry.setMonth(expiry.getMonth() + 1);
+                }
+                currentPeriodEnd = expiry.toISOString();
             }
-            currentPeriodEnd = expiry.toISOString();
         }
+    } else if (session.subscription_details?.current_period_end) {
+        currentPeriodEnd = new Date(session.subscription_details.current_period_end * 1000).toISOString();
     }
 
     // Save Stripe customer ID on the user
@@ -430,11 +669,23 @@ async function handleCheckoutCompleted(session) {
             .eq('id', userId);
     }
 
+    const { data: existingSubscription, error: existingSubscriptionError } = await supabase
+        .from('subscriptions')
+        .select('stripe_subscription_id, status')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+    if (existingSubscriptionError) {
+        console.error('[STRIPE] Failed to load existing subscription before upsert:', existingSubscriptionError);
+    }
+
+    const isFirstPaidSubscription = !existingSubscription?.stripe_subscription_id;
+
     // Upsert subscription record
     const subData = {
         user_id: userId,
         plan_type: planType,
-        status: 'active',
+        status: subStatus,
         current_period_end: currentPeriodEnd,
         stripe_subscription_id: stripeSubscriptionId || null
     };
@@ -448,6 +699,21 @@ async function handleCheckoutCompleted(session) {
     } else {
         console.log(`[STRIPE] User ${userId} upgraded to ${planType}.`);
 
+        await recordFunnelEvent('subscription_checkout_completed', {
+            userId,
+            source: session.metadata?.source,
+            feature: session.metadata?.feature,
+            planId: session.metadata?.planId,
+            planType,
+            stripeSessionId: session.id,
+            stripeEventId,
+            metadata: {
+                status: subStatus,
+                billingInterval,
+                isFirstPaidSubscription
+            }
+        });
+
         // RETENTION: Send onboarding emails + automation sequences
         if (userEmail) {
             try {
@@ -455,20 +721,28 @@ async function handleCheckoutCompleted(session) {
 
                 // Trigger upgrade reminders (Day 7, 14) for free users upgrading
                 // Only send if it's their first purchase
-                const { data: oldSubs } = await supabase
-                    .from('subscriptions')
-                    .select('id')
-                    .eq('user_id', userId)
-                    .neq('id', userId); // Exclude current subscription
-
-                if (!oldSubs || oldSubs.length === 0) {
+                if (isFirstPaidSubscription) {
                     // First purchase - send reminders and churn prevention
+                    // Skip upgrade reminders for trial users (they already paid/are trialing)
+                    if (subStatus !== 'trialing') {
+                        try {
+                            await sendUpgradeReminders(userId, userEmail);
+                            await sendChurnRecoveryEmail(userId, userEmail);
+                            console.log(`[RETENTION] Email sequences scheduled for new subscriber ${userId}`);
+                        } catch (seqError) {
+                            console.warn(`[RETENTION] Failed to schedule sequences for ${userId}:`, seqError.message);
+                        }
+                    }
+                }
+
+                // Schedule trial reminder emails if this is a trial subscription
+                if (subStatus === 'trialing' && currentPeriodEnd) {
                     try {
-                        await sendUpgradeReminders(userId, userEmail);
-                        await sendChurnRecoveryEmail(userId, userEmail);
-                        console.log(`[RETENTION] Email sequences scheduled for new subscriber ${userId}`);
-                    } catch (seqError) {
-                        console.warn(`[RETENTION] Failed to schedule sequences for ${userId}:`, seqError.message);
+                        const { sendTrialReminderEmails } = await import('./email-service.js');
+                        await sendTrialReminderEmails(userId, userEmail, currentPeriodEnd);
+                        console.log(`[RETENTION] Trial reminders scheduled for ${userId}`);
+                    } catch (trialEmailError) {
+                        console.warn(`[RETENTION] Trial reminder scheduling failed:`, trialEmailError.message);
                     }
                 }
             } catch (emailError) {
@@ -493,45 +767,25 @@ async function sendOnboardingEmails(userId, email, planType) {
 }
 
 /**
- * Schedule an email to be sent after delay
- * (Stub - requires email service integration like SendGrid/Resend)
- */
-function scheduleEmail(userId, email, emailConfig) {
-    // TODO: Integrate with email service
-    // This would call SendGrid/Resend API with delayed delivery
-    // For now, just log intent
-    console.log(`[EMAIL] Scheduled: ${emailConfig.type} for ${email} after ${emailConfig.delaySeconds}s`);
-
-    // In production, call:
-    // await emailService.scheduleEmail({
-    //     to: email,
-    //     subject: emailConfig.subject,
-    //     template: emailConfig.template,
-    //     data: emailConfig.data,
-    //     sendAfter: new Date(Date.now() + emailConfig.delaySeconds * 1000)
-    // });
-}
-
-/**
  * Get feature list based on subscription plan
  */
 function getFeaturesByPlan(planType) {
     const features = {
-        'premium_monthly': [
+        [PLAN_TYPES.PREMIUM]: [
             'Unlimited tarot readings',
             'Weekly & monthly horoscopes',
             'Hvězdný Průvodce (chat)',
             'Nativity chart interpretation',
             'Numerology readings'
         ],
-        'exclusive_monthly': [
+        [PLAN_TYPES.EXCLUSIVE]: [
             'Everything in Premium, plus:',
             'Priority AI responses',
             'Exclusive premium content',
             'Early access to new features',
             'Dedicated email support'
         ],
-        'vip_majestrat': [
+        [PLAN_TYPES.VIP]: [
             'Everything in Exclusive, plus:',
             'Priority 24/7 support (do 2h)',
             'Personalizovaný Daily Horoscope',
@@ -540,21 +794,30 @@ function getFeaturesByPlan(planType) {
             'Astrokartografické mapy (4x/rok)',
             'VIP komunita & diskuse'
         ],
-        'vip': [
-            'Everything in VIP Majestát, plus:',
-            '1-on-1 expert consultations',
-            'Custom astrological reports',
-            'White-label options'
-        ]
+        // 'vip' plan type byl odstraněn — v backendu neexistuje, platný typ je 'vip_majestrat'
     };
 
-    return features[planType] || features['premium_monthly'];
+    return features[normalizePlanType(planType, DEFAULT_PREMIUM_PLAN_TYPE)] || features[DEFAULT_PREMIUM_PLAN_TYPE];
+}
+
+async function handleRefundEvent(refundOrCharge, stripeEventId, eventType) {
+    await recordFunnelEvent('payment_refunded', {
+        stripeEventId,
+        stripeSessionId: refundOrCharge.payment_intent || null,
+        metadata: {
+            eventType,
+            chargeId: refundOrCharge.charge || refundOrCharge.id || null,
+            amount: refundOrCharge.amount_refunded || refundOrCharge.amount || null,
+            currency: refundOrCharge.currency || null,
+            status: refundOrCharge.status || null
+        }
+    });
 }
 
 /**
  * Handle invoice.paid - recurring payment succeeded (subscription renewal)
  */
-async function handleInvoicePaid(invoice) {
+async function handleInvoicePaid(invoice, stripeEventId = null) {
     const stripeSubscriptionId = invoice.subscription;
     if (!stripeSubscriptionId) return;
 
@@ -585,6 +848,17 @@ async function handleInvoicePaid(invoice) {
 
         await supabase.from('users').update({ is_premium: true }).eq('id', sub.user_id);
 
+        await recordFunnelEvent('subscription_invoice_paid', {
+            userId: sub.user_id,
+            stripeEventId,
+            metadata: {
+                stripeSubscriptionId,
+                amountPaid: invoice.amount_paid || null,
+                currency: invoice.currency || null,
+                currentPeriodEnd
+            }
+        });
+
         console.log(`[STRIPE] Subscription renewed for user ${sub.user_id} until ${currentPeriodEnd}`);
     } catch (e) {
         console.error('[STRIPE] Failed to process invoice.paid:', e.message);
@@ -594,7 +868,7 @@ async function handleInvoicePaid(invoice) {
 /**
  * Handle invoice.payment_failed - payment failed, mark as past_due
  */
-async function handleInvoicePaymentFailed(invoice) {
+async function handleInvoicePaymentFailed(invoice, stripeEventId = null) {
     const stripeSubscriptionId = invoice.subscription;
     if (!stripeSubscriptionId) return;
 
@@ -606,6 +880,15 @@ async function handleInvoicePaymentFailed(invoice) {
     if (error) {
         console.error('[STRIPE] Failed to mark subscription as past_due:', error);
     } else {
+        await recordFunnelEvent('subscription_payment_failed', {
+            stripeEventId,
+            metadata: {
+                stripeSubscriptionId,
+                amountDue: invoice.amount_due || null,
+                currency: invoice.currency || null,
+                attemptCount: invoice.attempt_count || null
+            }
+        });
         console.log(`[STRIPE] Subscription ${stripeSubscriptionId} marked as past_due`);
     }
 }
@@ -613,7 +896,7 @@ async function handleInvoicePaymentFailed(invoice) {
 /**
  * Handle customer.subscription.updated - plan changes, trial end, etc.
  */
-async function handleSubscriptionUpdated(subscription) {
+async function handleSubscriptionUpdated(subscription, stripeEventId = null) {
     const stripeSubscriptionId = subscription.id;
 
     const { data: sub } = await supabase
@@ -631,7 +914,7 @@ async function handleSubscriptionUpdated(subscription) {
     let status = subscription.status; // active, past_due, canceled, trialing, etc.
 
     // Map Stripe statuses to our internal statuses
-    if (subscription.cancel_at_period_end && status === 'active') {
+    if (subscription.cancel_at_period_end && (status === 'active' || status === 'trialing')) {
         status = 'cancel_pending';
     }
 
@@ -647,13 +930,25 @@ async function handleSubscriptionUpdated(subscription) {
     const isPremium = (status === 'active' || status === 'trialing' || status === 'cancel_pending');
     await supabase.from('users').update({ is_premium: isPremium }).eq('id', sub.user_id);
 
+    await recordFunnelEvent('subscription_updated', {
+        userId: sub.user_id,
+        stripeEventId,
+        metadata: {
+            stripeSubscriptionId,
+            status,
+            isPremium,
+            cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end),
+            currentPeriodEnd
+        }
+    });
+
     console.log(`[STRIPE] Subscription ${stripeSubscriptionId} updated: status=${status}`);
 }
 
 /**
  * Handle customer.subscription.deleted - subscription fully cancelled
  */
-async function handleSubscriptionDeleted(subscription) {
+async function handleSubscriptionDeleted(subscription, stripeEventId = null) {
     const stripeSubscriptionId = subscription.id;
 
     const { data: sub } = await supabase
@@ -671,14 +966,65 @@ async function handleSubscriptionDeleted(subscription) {
         .from('subscriptions')
         .update({
             status: 'cancelled',
-            plan_type: 'free',
+            plan_type: PLAN_TYPES.FREE,
             stripe_subscription_id: null
         })
         .eq('user_id', sub.user_id);
 
     await supabase.from('users').update({ is_premium: false }).eq('id', sub.user_id);
 
+    await recordFunnelEvent('subscription_cancelled', {
+        userId: sub.user_id,
+        planType: PLAN_TYPES.FREE,
+        stripeEventId,
+        metadata: {
+            stripeSubscriptionId,
+            status: subscription.status || 'deleted'
+        }
+    });
+
     console.log(`[STRIPE] Subscription cancelled for user ${sub.user_id}`);
+}
+
+/**
+ * Handle customer.subscription.trial_will_end
+ * Stripe sends this 3 days before trial ends — schedule reminder emails
+ */
+async function handleTrialWillEnd(subscription) {
+    const stripeSubscriptionId = subscription.id;
+    const trialEnd = subscription.trial_end
+        ? new Date(subscription.trial_end * 1000).toISOString()
+        : null;
+
+    if (!trialEnd) {
+        console.warn('[STRIPE] trial_will_end: no trial_end date on subscription');
+        return;
+    }
+
+    const { data: sub } = await supabase
+        .from('subscriptions')
+        .select('user_id')
+        .eq('stripe_subscription_id', stripeSubscriptionId)
+        .single();
+
+    if (!sub) {
+        console.log(`[STRIPE] trial_will_end: no local record for ${stripeSubscriptionId}`);
+        return;
+    }
+
+    const { data: user } = await supabase
+        .from('users')
+        .select('email')
+        .eq('id', sub.user_id)
+        .single();
+
+    if (!user?.email) {
+        console.warn(`[STRIPE] trial_will_end: no email for user ${sub.user_id}`);
+        return;
+    }
+
+    await sendTrialReminderEmails(sub.user_id, user.email, trialEnd);
+    console.log(`[STRIPE] Trial reminder emails scheduled for user ${sub.user_id}, trial ends: ${trialEnd}`);
 }
 
 // ============================================
@@ -695,8 +1041,17 @@ router.post('/retention/feedback', authenticateToken, async (req, res) => {
         const { type, reason, feedback } = req.body;
 
         // Validate inputs
-        const validTypes = ['churn', 'pause', 'downgrade'];
-        const validReasons = ['too_expensive', 'not_using', 'technical_issues', 'found_alternative', 'other'];
+        const validTypes = ['churn', 'pause', 'downgrade', 'cancellation'];
+        const validReasons = [
+            'too_expensive',
+            'not_using',
+            'technical_issues',
+            'found_alternative',
+            'found_better',
+            'personal',
+            'other',
+            'not_provided'
+        ];
 
         if (!type || !validTypes.includes(type)) {
             return res.status(400).json({ error: 'Invalid feedback type' });
@@ -832,6 +1187,24 @@ router.post('/subscription/pause', authenticateToken, async (req, res) => {
  * POST /subscription/apply-discount
  * Apply discount coupon to active subscription
  */
+async function getOrCreateRetentionCoupon(couponCode) {
+    try {
+        return await stripe.coupons.retrieve(couponCode);
+    } catch (err) {
+        if (couponCode !== 'STAY25') {
+            throw err;
+        }
+
+        return stripe.coupons.create({
+            id: 'STAY25',
+            name: 'Retention 25% for 3 months',
+            percent_off: 25,
+            duration: 'repeating',
+            duration_in_months: 3
+        });
+    }
+}
+
 router.post('/subscription/apply-discount', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id;
@@ -860,10 +1233,10 @@ router.post('/subscription/apply-discount', authenticateToken, async (req, res) 
             return res.status(404).json({ error: 'Stripe subscription not found' });
         }
 
-        // Verify coupon exists in Stripe
+        // Verify coupon exists in Stripe, create the standard retention coupon if missing
         let coupon;
         try {
-            coupon = await stripe.coupons.retrieve(validatedCode);
+            coupon = await getOrCreateRetentionCoupon(validatedCode);
         } catch (err) {
             return res.status(400).json({ error: `Coupon not found` });
         }

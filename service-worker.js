@@ -3,28 +3,43 @@
  * Provides offline caching with stale-while-revalidate strategy
  */
 
-const CACHE_NAME = 'mysticka-hvezda-v18';
+const CACHE_NAME = 'mysticka-hvezda-09f923c98026';
 const MAX_RUNTIME_CACHE_SIZE = 150;
 const STATIC_ASSETS = [
     '/',
     '/index.html',
+    '/cenik.html',
+    '/rocni-horoskop.html',
     '/css/style.v2.min.css',
-    '/js/main.js',
-    '/js/components.js',
-    '/js/api-config.js',
-    '/js/templates.js',
-    '/js/auth-client.js',
+    '/css/profile-refresh.css',
+    '/css/pages/index.css',
+    '/css/pages/cenik.css',
+    '/css/pages/rocni-horoskop.css',
+    '/js/dist/analytics.js',
+    '/js/dist/main.js',
+    '/js/dist/components.js',
+    '/js/dist/api-config.js',
+    '/js/dist/templates.js',
+    '/js/dist/auth-client.js',
+    '/js/dist/cenik.js',
+    '/js/dist/index-lazy-load.js',
     '/js/gemini-service.js',
-    '/js/mobile-nav.js',
-    '/js/page-extras.js',
+    '/js/dist/mobile-nav.js',
+    '/js/dist/page-extras.js',
+    '/js/dist/premium-gates.js',
+    '/js/dist/retention.js',
+    '/js/dist/rocni-horoskop.js',
     '/img/logo-3d.webp',
     '/img/hero-3d.webp',
     '/img/bg-cosmic-hd.webp',
     '/img/bg-cosmic-mobile.webp',
     '/img/icon-192.webp',
+    '/img/icon-192.png',
     '/data/tarot-cards.json',
     '/data/runes.json',
-    '/js/runes.js',
+    '/js/dist/runes.js',
+    '/js/dist/platby-init.js',
+    '/js/dist/analytics-page-init.js',
     '/manifest.json',
     '/offline.html'
 ];
@@ -74,8 +89,12 @@ async function trimCache(cacheName, maxItems) {
 
 // Fetch - stale-while-revalidate for cached content
 self.addEventListener('fetch', (event) => {
-    // Skip non-GET requests and API calls
-    if (event.request.method !== 'GET' || event.request.url.includes('/api/')) {
+    // Skip non-GET requests, API calls, and external domains (analytics, GTM, Stripe...)
+    if (
+        event.request.method !== 'GET' ||
+        event.request.url.includes('/api/') ||
+        !event.request.url.startsWith(self.location.origin)
+    ) {
         return;
     }
 

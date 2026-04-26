@@ -2,30 +2,32 @@
  * Programmatic Horoscope Day Pages
  * GET /horoskop/:sign/:date  → Server-rendered HTML page for SEO
  * GET /horoskop/:sign        → Redirects to today's date
- * GET /sitemap-horoscopes.xml → Dynamic sitemap for Google
+ * GET /horoskop/sitemap-horoscopes.xml → Dynamic sitemap for Google
  *
  * Each sign+date combination is a unique, indexable URL targeting
  * long-tail searches like "horoskop štír 12 března 2026".
  */
 import express from 'express';
-import { callGemini } from '../services/gemini.js';
+import { callClaude } from '../services/claude.js';
 import { getCachedHoroscope, saveCachedHoroscope } from '../services/astrology.js';
+import { setHtmlContentSecurityPolicy } from '../utils/csp.js';
 
 export const router = express.Router();
+const SITE_ORIGIN = process.env.SITE_ORIGIN || 'https://www.mystickahvezda.cz';
 
 const SIGN_MAP = {
-    'beran':    { name: 'Beran',    nameGen: 'Berana',    symbol: '♈', dates: '21.3. – 19.4.' },
-    'byk':      { name: 'Býk',      nameGen: 'Býka',      symbol: '♉', dates: '20.4. – 20.5.' },
-    'blizenci': { name: 'Blíženci', nameGen: 'Blíženců',  symbol: '♊', dates: '21.5. – 20.6.' },
-    'rak':      { name: 'Rak',      nameGen: 'Raka',      symbol: '♋', dates: '21.6. – 22.7.' },
-    'lev':      { name: 'Lev',      nameGen: 'Lva',       symbol: '♌', dates: '23.7. – 22.8.' },
-    'panna':    { name: 'Panna',    nameGen: 'Panny',     symbol: '♍', dates: '23.8. – 22.9.' },
-    'vahy':     { name: 'Váhy',     nameGen: 'Vah',       symbol: '♎', dates: '23.9. – 22.10.' },
-    'stir':     { name: 'Štír',     nameGen: 'Štíra',     symbol: '♏', dates: '23.10. – 21.11.' },
-    'strelec':  { name: 'Střelec',  nameGen: 'Střelce',   symbol: '♐', dates: '22.11. – 21.12.' },
-    'kozoroh':  { name: 'Kozoroh',  nameGen: 'Kozoroha',  symbol: '♑', dates: '22.12. – 19.1.' },
-    'vodnar':   { name: 'Vodnář',   nameGen: 'Vodnáře',   symbol: '♒', dates: '20.1. – 18.2.' },
-    'ryby':     { name: 'Ryby',     nameGen: 'Ryb',       symbol: '♓', dates: '19.2. – 20.3.' },
+    'beran':    { name: 'Beran',    nameGen: 'Berana',    nameAcc: 'Berana',   symbol: '♈', dates: '21.3. – 19.4.' },
+    'byk':      { name: 'Býk',      nameGen: 'Býka',      nameAcc: 'Býka',     symbol: '♉', dates: '20.4. – 20.5.' },
+    'blizenci': { name: 'Blíženci', nameGen: 'Blíženců',  nameAcc: 'Blížence', symbol: '♊', dates: '21.5. – 20.6.' },
+    'rak':      { name: 'Rak',      nameGen: 'Raka',      nameAcc: 'Raka',     symbol: '♋', dates: '21.6. – 22.7.' },
+    'lev':      { name: 'Lev',      nameGen: 'Lva',       nameAcc: 'Lva',      symbol: '♌', dates: '23.7. – 22.8.' },
+    'panna':    { name: 'Panna',    nameGen: 'Panny',     nameAcc: 'Pannu',    symbol: '♍', dates: '23.8. – 22.9.' },
+    'vahy':     { name: 'Váhy',     nameGen: 'Vah',       nameAcc: 'Váhy',     symbol: '♎', dates: '23.9. – 22.10.' },
+    'stir':     { name: 'Štír',     nameGen: 'Štíra',     nameAcc: 'Štíra',    symbol: '♏', dates: '23.10. – 21.11.' },
+    'strelec':  { name: 'Střelec',  nameGen: 'Střelce',   nameAcc: 'Střelce',  symbol: '♐', dates: '22.11. – 21.12.' },
+    'kozoroh':  { name: 'Kozoroh',  nameGen: 'Kozoroha',  nameAcc: 'Kozoroha', symbol: '♑', dates: '22.12. – 19.1.' },
+    'vodnar':   { name: 'Vodnář',   nameGen: 'Vodnáře',   nameAcc: 'Vodnáře',  symbol: '♒', dates: '20.1. – 18.2.' },
+    'ryby':     { name: 'Ryby',     nameGen: 'Ryb',       nameAcc: 'Ryby',     symbol: '♓', dates: '19.2. – 20.3.' },
 };
 
 const CZECH_MONTHS = ['ledna', 'února', 'března', 'dubna', 'května', 'června',
@@ -46,8 +48,17 @@ function getTodayStr() {
     return new Date().toISOString().split('T')[0];
 }
 
+function parseIsoDateStrict(dateStr) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return null;
+
+    const targetDate = new Date(dateStr + 'T12:00:00Z');
+    if (isNaN(targetDate.getTime())) return null;
+
+    return targetDate.toISOString().split('T')[0] === dateStr ? targetDate : null;
+}
+
 // ============================================================
-// DYNAMIC SITEMAP — /sitemap-horoscopes.xml
+// DYNAMIC SITEMAP — /horoskop/sitemap-horoscopes.xml
 // Covers last 60 days + next 7 days for all 12 signs
 // ============================================================
 router.get('/sitemap-horoscopes.xml', (req, res) => {
@@ -60,7 +71,7 @@ router.get('/sitemap-horoscopes.xml', (req, res) => {
     const urls = [];
     for (const date of dates) {
         for (const slug of Object.keys(SIGN_MAP)) {
-            const loc = `https://mystickahvezda.cz/horoskop/${slug}/${date}`;
+            const loc = `${SITE_ORIGIN}/horoskop/${slug}/${date}`;
             const priority = date === today ? '1.0' : date > today ? '0.6' : '0.7';
             urls.push(`  <url>
     <loc>${loc}</loc>
@@ -101,10 +112,9 @@ router.get('/:sign/:date', async (req, res, next) => {
         const signData = SIGN_MAP[slug];
         if (!signData) return next();
 
-        // Validate date format
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return next();
-        const targetDate = new Date(date + 'T12:00:00Z');
-        if (isNaN(targetDate.getTime())) return next();
+        // Validate date format without allowing JS Date rollover, e.g. 2026-02-31.
+        const targetDate = parseIsoDateStrict(date);
+        if (!targetDate) return next();
 
         // Restrict range: 2 years back, 30 days forward
         const todayMs = Date.now();
@@ -114,10 +124,10 @@ router.get('/:sign/:date', async (req, res, next) => {
         const todayStr = getTodayStr();
         const czechDate = formatCzechDate(date);
 
-        // Cache key matches the existing daily cache pattern in astrology.js
+        // Cache key sjednocen s horoskopy.html — stejný klíč, stejný text, stejný model (Claude)
         const signNormalized = signData.name.toLowerCase()
             .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        const cacheKey = `${signNormalized}_daily_${date}_v2`;
+        const cacheKey = `${signNormalized}_daily_${date}_v3-cs-nocontext`;
 
         // Try cache first
         let parsed;
@@ -129,17 +139,28 @@ router.get('/:sign/:date', async (req, res, next) => {
                 parsed = { prediction: cached.response, affirmation: '', luckyNumbers: [] };
             }
         } else {
-            // Generate via Gemini
-            const prompt = `Jsi laskavý astrologický průvodce.\nGeneruj denní horoskop ve formátu JSON.\nOdpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).\nStruktura:\n{\n  "prediction": "Text horoskopu (3-4 věty). Hlavní energie dne a jedna konkrétní rada.",\n  "affirmation": "Krátká pozitivní afirmace pro tento den.",\n  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]\n}\nText piš česky, poeticky a povzbudivě.`;
-            const message = `Znamení: ${signData.name}\nDatum: ${czechDate}`;
+            // Generate via Claude — stejný model a prompt jako horoskopy.html (horoscope.js)
+            const signAccMap = {
+                'Beran': 'Berana', 'Býk': 'Býka', 'Blíženci': 'Blížence', 'Rak': 'Raka',
+                'Lev': 'Lva', 'Panna': 'Pannu', 'Váhy': 'Váhy', 'Štír': 'Štíra',
+                'Střelec': 'Střelce', 'Kozoroh': 'Kozoroha', 'Vodnář': 'Vodnáře', 'Ryby': 'Ryby'
+            };
+            const signAcc = signAccMap[signData.name] || signData.name;
+            const prompt = `Jsi laskavý astrologický průvodce. Generuješ denní horoskop pro ${signAcc} na den ${czechDate}.\nOdpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).\nStruktura:\n{\n  "prediction": "Text horoskopu (přesně 3 věty) specifický pro ${signAcc}. Hlavní energie dne a jedna konkrétní rada vycházející z vlastností tohoto znamení.",\n  "affirmation": "Osobní denní mantra — silná, poetická, specifická pro ${signAcc} a jeho element. 15–25 slov, první osoba, přítomný čas.",\n  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]\n}\nText piš česky, poeticky a povzbudivě. DŮLEŽITÉ: Text piš VŽDY v tykání — 2. osoba jednotného čísla (ty/tě/ti/tvé/tvůj). NIKDY nepoužívej vykání.`;
+            const message = `Vygeneruj horoskop pro znamení ${signData.name} na ${czechDate}.`;
 
-            const raw = await callGemini(prompt, message);
-            const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '').trim();
-            await saveCachedHoroscope(cacheKey, signData.name, 'daily', cleaned, 'Denní inspirace');
             try {
-                parsed = JSON.parse(cleaned);
-            } catch {
-                parsed = { prediction: cleaned, affirmation: '', luckyNumbers: [] };
+                const raw = await callClaude(prompt, message);
+                const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '').trim();
+                await saveCachedHoroscope(cacheKey, signData.name, 'daily', cleaned, 'Denní inspirace');
+                try {
+                    parsed = JSON.parse(cleaned);
+                } catch {
+                    parsed = { prediction: cleaned, affirmation: '', luckyNumbers: [] };
+                }
+            } catch (claudeError) {
+                console.warn(`[HoroscopePage] Claude API failed for ${signData.name}:`, claudeError.message);
+                parsed = { prediction: `Hvězdy dnes pro ${signAcc} připravily zvláštní energii. Důvěřuj svému vnitřnímu hlasu a jednej podle svých hodnot.`, affirmation: 'Má cesta je jedinečná a přesně taková, jaká má být.', luckyNumbers: [3, 7, 12, 21] };
             }
         }
 
@@ -148,31 +169,31 @@ router.get('/:sign/:date', async (req, res, next) => {
         const hasNext = diffDays < 0;
         const isToday = date === todayStr;
 
-        const canonicalUrl = `https://mystickahvezda.cz/horoskop/${slug}/${date}`;
+        const canonicalUrl = `${SITE_ORIGIN}/horoskop/${slug}/${date}`;
         const titleStr = `Horoskop ${signData.nameGen} — ${czechDate} | Mystická Hvězda`;
         const prediction = parsed.prediction || '';
-        const descStr = `Denní horoskop pro ${signData.name} na ${czechDate}. ${prediction.substring(0, 130).replace(/"/g, '&quot;')}…`;
+        const descStr = `Denní horoskop pro ${signData.nameAcc} na ${czechDate}. ${prediction.substring(0, 130).replace(/"/g, '&quot;')}…`;
         // Only index past+today, not future
         const robotsContent = diffDays > 7 ? 'noindex, follow' : 'index, follow';
 
         const luckyNumbersHtml = Array.isArray(parsed.luckyNumbers) && parsed.luckyNumbers.length
-            ? `<div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:2rem;">
-                <span style="color:rgba(255,255,255,0.6);font-size:0.9rem;">✨ Čísla štěstí:</span>
+            ? `<div class="horoscope-day-lucky">
+                <span class="horoscope-day-lucky__label">✨ Čísla štěstí:</span>
                 ${parsed.luckyNumbers.map(n =>
-                `<span style="background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);border-radius:50%;width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-heading);color:var(--color-mystic-gold);font-weight:600;">${Number(n)}</span>`
+                `<span class="horoscope-day-lucky__number">${Number(n)}</span>`
             ).join('')}
               </div>`
             : '';
 
         const affirmationHtml = parsed.affirmation
-            ? `<div style="background:rgba(212,175,55,0.08);border-left:3px solid var(--color-mystic-gold);border-radius:0 12px 12px 0;padding:1.25rem 1.5rem;margin-bottom:2rem;">
-                <p style="font-family:var(--font-heading);color:var(--color-mystic-gold);font-size:0.8rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:0.5rem;">Afirmace dne</p>
-                <p style="font-size:1.05rem;color:rgba(255,255,255,0.9);font-style:italic;margin:0;">&ldquo;${parsed.affirmation}&rdquo;</p>
+            ? `<div class="horoscope-day-affirmation">
+                <p class="horoscope-day-affirmation__label">Afirmace dne</p>
+                <p class="horoscope-day-affirmation__text">&ldquo;${parsed.affirmation}&rdquo;</p>
               </div>`
             : '';
 
         const otherSignsHtml = Object.entries(SIGN_MAP).map(([s, d]) =>
-            `<a href="/horoskop/${s}/${date}" class="zodiac-card" ${s === slug ? 'style="border-color:rgba(212,175,55,0.5);"' : ''}>
+            `<a href="/horoskop/${s}/${date}" class="zodiac-card${s === slug ? ' zodiac-card--highlighted' : ''}">
                 <span class="zodiac-card__symbol">${d.symbol}</span>
                 <h3 class="zodiac-card__name">${d.name}</h3>
                 <span class="zodiac-card__dates">${d.dates}</span>
@@ -193,7 +214,7 @@ router.get('/:sign/:date', async (req, res, next) => {
   <meta property="og:type" content="article">
   <meta property="og:title" content="${titleStr}">
   <meta property="og:description" content="${descStr}">
-  <meta property="og:image" content="https://mystickahvezda.cz/img/icon-zodiac.webp">
+  <meta property="og:image" content="${SITE_ORIGIN}/img/icon-zodiac.webp">
   <meta property="og:locale" content="cs_CZ">
   <meta property="og:url" content="${canonicalUrl}">
   <meta name="twitter:card" content="summary_large_image">
@@ -212,7 +233,7 @@ router.get('/:sign/:date', async (req, res, next) => {
     "publisher": {
       "@type": "Organization",
       "name": "Mystická Hvězda",
-      "url": "https://mystickahvezda.cz"
+      "url": "${SITE_ORIGIN}"
     },
     "mainEntityOfPage": "${canonicalUrl}"
   }
@@ -222,8 +243,8 @@ router.get('/:sign/:date', async (req, res, next) => {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      {"@type": "ListItem", "position": 1, "name": "Horoskopy", "item": "https://mystickahvezda.cz/horoskopy.html"},
-      {"@type": "ListItem", "position": 2, "name": "${signData.name}", "item": "https://mystickahvezda.cz/horoskop/${slug}/${todayStr}"},
+      {"@type": "ListItem", "position": 1, "name": "Horoskopy", "item": "${SITE_ORIGIN}/horoskopy.html"},
+      {"@type": "ListItem", "position": 2, "name": "${signData.name}", "item": "${SITE_ORIGIN}/horoskop/${slug}/${todayStr}"},
       {"@type": "ListItem", "position": 3, "name": "${czechDate}", "item": "${canonicalUrl}"}
     ]
   }
@@ -231,8 +252,8 @@ router.get('/:sign/:date', async (req, res, next) => {
 
   <link rel="canonical" href="${canonicalUrl}">
   <link rel="alternate" hreflang="cs" href="${canonicalUrl}">
-  <link rel="prev" href="https://mystickahvezda.cz/horoskop/${slug}/${prevDate}">
-  ${hasNext ? `<link rel="next" href="https://mystickahvezda.cz/horoskop/${slug}/${nextDate}">` : ''}
+  <link rel="prev" href="${SITE_ORIGIN}/horoskop/${slug}/${prevDate}">
+  ${hasNext ? `<link rel="next" href="${SITE_ORIGIN}/horoskop/${slug}/${nextDate}">` : ''}
 
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>${signData.symbol}</text></svg>">
   <link rel="manifest" href="/manifest.json">
@@ -251,52 +272,52 @@ router.get('/:sign/:date', async (req, res, next) => {
   <main id="main-content">
 
     <!-- HERO -->
-    <section class="section section--hero" style="min-height:50vh;">
+    <section class="section section--hero horoscope-day-hero">
       <div class="container">
         <div class="hero__content">
-          <nav aria-label="Drobečková navigace" style="margin-bottom:1rem;font-size:0.85rem;color:rgba(255,255,255,0.5);">
-            <a href="/horoskopy.html" style="color:var(--color-mystic-gold);text-decoration:none;">Horoskopy</a>
-            <span style="margin:0 0.5rem;">›</span>
-            <a href="/horoskop/${slug}/${todayStr}" style="color:var(--color-mystic-gold);text-decoration:none;">${signData.name}</a>
-            <span style="margin:0 0.5rem;">›</span>
+          <nav aria-label="Drobečková navigace" class="horoscope-day-breadcrumb">
+            <a href="/horoskopy.html" class="horoscope-day-breadcrumb__link">Horoskopy</a>
+            <span class="horoscope-day-breadcrumb__separator">›</span>
+            <a href="/horoskop/${slug}/${todayStr}" class="horoscope-day-breadcrumb__link">${signData.name}</a>
+            <span class="horoscope-day-breadcrumb__separator">›</span>
             <span>${czechDate}</span>
           </nav>
-          <p style="font-size:5rem;margin:0;line-height:1;" aria-hidden="true">${signData.symbol}</p>
-          <h1 class="hero__title" style="font-size:clamp(1.8rem,5vw,3rem);">
+          <p class="horoscope-day-symbol" aria-hidden="true">${signData.symbol}</p>
+          <h1 class="hero__title horoscope-day-title">
             <span class="text-gradient">Horoskop ${signData.nameGen}</span>
           </h1>
-          <p class="hero__subtitle" style="font-size:1.1rem;">${czechDate} • ${signData.dates}</p>
-          ${isToday ? '<p style="display:inline-block;background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);border-radius:20px;padding:0.3rem 1rem;font-size:0.85rem;color:var(--color-mystic-gold);">✨ Dnešní předpověď</p>' : ''}
+          <p class="hero__subtitle horoscope-day-subtitle">${czechDate} • ${signData.dates}</p>
+          ${isToday ? '<p class="horoscope-day-pill">✨ Dnešní předpověď</p>' : ''}
         </div>
       </div>
     </section>
 
     <!-- HOROSCOPE CONTENT -->
     <section class="section section--alt">
-      <div class="container" style="max-width:800px;">
-        <div class="card" style="padding:2.5rem;" data-animate>
+      <div class="container horoscope-day-content-container">
+        <div class="card horoscope-day-card" data-animate>
           <span class="section__badge">Denní inspirace • ${signData.name} ${signData.symbol}</span>
-          <h2 style="font-family:var(--font-heading);color:var(--color-starlight);margin:1rem 0 1.5rem;font-size:1.6rem;">
+          <h2 class="horoscope-day-heading">
             Co vám hvězdy říkají
           </h2>
-          <p style="font-size:1.15rem;line-height:1.8;color:rgba(255,255,255,0.9);margin-bottom:2rem;">${prediction}</p>
+          <p class="horoscope-day-prediction">${prediction}</p>
           ${affirmationHtml}
           ${luckyNumbersHtml}
 
           <!-- Day navigation -->
-          <div style="display:flex;justify-content:space-between;align-items:center;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,0.08);flex-wrap:wrap;gap:0.75rem;">
-            <a href="/horoskop/${slug}/${prevDate}" class="btn btn--glass" style="font-size:0.9rem;">‹ Předchozí den</a>
-            ${!isToday ? `<a href="/horoskop/${slug}/${todayStr}" style="color:var(--color-mystic-gold);font-size:0.85rem;text-decoration:none;">→ Dnes</a>` : ''}
-            ${hasNext ? `<a href="/horoskop/${slug}/${nextDate}" class="btn btn--glass" style="font-size:0.9rem;">Následující den ›</a>` : '<span></span>'}
+          <div class="horoscope-day-nav">
+            <a href="/horoskop/${slug}/${prevDate}" class="btn btn--glass horoscope-day-nav__link">‹ Předchozí den</a>
+            ${!isToday ? `<a href="/horoskop/${slug}/${todayStr}" class="horoscope-day-nav__today">→ Dnes</a>` : ''}
+            ${hasNext ? `<a href="/horoskop/${slug}/${nextDate}" class="btn btn--glass horoscope-day-nav__link">Následující den ›</a>` : '<span></span>'}
           </div>
         </div>
       </div>
     </section>
 
     <!-- OTHER SIGNS SAME DAY -->
-    <section class="section" style="padding-top:0;">
+    <section class="section horoscope-day-section--flush">
       <div class="container">
-        <h3 style="font-family:var(--font-heading);color:var(--color-mystic-gold);text-align:center;margin-bottom:1.5rem;font-size:1.1rem;letter-spacing:1px;">
+        <h3 class="horoscope-day-other-title">
           Horoskop pro jiné znamení — ${czechDate}
         </h3>
         <div class="zodiac-grid" data-animate>
@@ -306,8 +327,8 @@ router.get('/:sign/:date', async (req, res, next) => {
     </section>
 
     <!-- CTA -->
-    <section class="section" style="padding-top:0;">
-      <div class="container" style="max-width:700px;">
+    <section class="section horoscope-day-section--flush">
+      <div class="container horoscope-day-cta-container">
         <div class="cta-banner" data-animate>
           <div class="cta-banner__content">
             <h2 class="cta-banner__title">Chcete přesnější horoskop?</h2>
@@ -322,17 +343,18 @@ router.get('/:sign/:date', async (req, res, next) => {
 
   <div id="footer-placeholder"></div>
 
-  <script src="/js/api-config.js?v=5" defer></script>
-  <script src="/js/templates.js?v=11" defer></script>
-  <script src="/js/auth-client.js?v=5" defer></script>
-  <script src="/js/components.js?v=11" defer></script>
-  <script type="module" src="/js/main.js?v=11"></script>
+  <script src="/js/dist/api-config.js?v=5" defer></script>
+  <script src="/js/dist/templates.js?v=11" defer></script>
+  <script src="/js/dist/auth-client.js?v=5" defer></script>
+  <script src="/js/dist/components.js?v=11" defer></script>
+  <script type="module" src="/js/dist/main.js?v=11"></script>
 </body>
 </html>`;
 
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         // Cache 1h browser, 24h CDN — content is stable once generated
         res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400');
+        setHtmlContentSecurityPolicy(res, html);
         res.send(html);
 
     } catch (err) {

@@ -1,0 +1,53 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 16. dubna 2026
+
+[gentle] Váhy, nejsi bez rozhodnutí. <break time="0.5s" />
+[soft] Jen víš, co ztratíš každým výběrem. <break time="1.0s" />
+
+[warm] Stojíš před dvěma dveřmi. <break time="0.3s" />
+[confident] Obě jsou správné. <break time="0.3s" />
+[gentle] Obě bolí. <break time="0.3s" />
+[soft] Čekáš na souhlas. <break time="0.3s" />
+[mysterious] Od sebe. <break time="1.0s" />
+
+[inviting] Co by ses rozhodl, kdyby tě nikdo neviděl? ⬇️ <break time="0.3s" />
+[clearly] Profil pro ty, co berou astro vážně.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+16. dubna 2026 Venuše v kvintilu k Saturnu ukazuje, že čekáš na povolení od reality — ale ta ti ho nedá 🪐 Ve Váhách nerozhodnost nepramení z nedostatku jasnosti — pramení z přebytku empatie: vidíš přesně, co každý krok udělá druhým. Sleduj profil — příště odhalím, proč právě tvé znamení cítí bolest nezvoleného stejně silně jako radost zvoleného ⚖️
+
+#mystickaHvezda #Váhy #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+Tvoje nerozhodnost není slabost — je to empatická kalkulace toho, co každý krok udělá druhým 🪐 16. dubna 2026 Venuše v kvintilu k Saturnu ti ukazuje, že povolení od reality nikdy nepřijde — souhlas musí přijít od tebe. Stojíš před dvěma dveřmi a obě jsou správné, obě bolí — a cítíš ztrátu nezvoleného stejně silně jako radost zvoleného. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Váhy #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm background instrumental with gentle marimba patterns and airy synth pads creating shimmering cosmic light trails, soft rhythmic pulse drives forward like golden sunrise energy spreading across the sky, tender and reassuring in major key with breathing melodic phrases designed to support voiceover without competing. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+A mystical video thumbnail for zodiac sign Libra.
+
+BACKGROUND: deep dark space with soft subtle soft rose and lavender nebula with balanced pastel cosmic tones, delicate pink and lilac stardust, harmonious dual-color aurora in rose gold and violet hues — graceful, balanced, romantic — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.
+
+COMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.
+
+ELEMENT 1 — glyph: large ornate Libra symbol (♎) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.
+
+ELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '16. dubna' in elegant gold lettering on the first line, 'VÁHY' in bold engraved gold capitals on the second line.
+
+ELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Nejsi bez rozhodnutí.' on the first line, 'Jen víš, co ztratíš.' on the second line.
+
+NO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.
+
+Portrait 9:16.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Váhy, nejsi bez rozhodnutí. Jen víš, co ztratíš každým výběrem. Stojíš před dvěma dveřmi. Obě jsou správné. Obě bolí. Čekáš na souhlas. Od sebe. Co by ses rozhodl, kdyby tě nikdo neviděl? ⬇️ Profil pro ty, co berou astro vážně."

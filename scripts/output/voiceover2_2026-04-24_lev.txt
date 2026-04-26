@@ -1,0 +1,47 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 24. dubna 2026
+
+[confident] Lve, přestáváš se snažit — nebo jen dochází energie? <break time="0.5s" /> [warm] Vypadá stejně, ale není. <break time="1.0s" />
+
+[upbeat] Tento týden otevřeš projekt, který jsi odložil — a zjistíš, že jsi dál, než sis myslel. <break time="0.3s" /> [intense] Ve čtvrtek dostaneš prostor ukázat se, ale zaváháš — protože nevíš, jestli to stojí za tu energii. <break time="0.3s" /> [commanding] Saturn teď nechce tvůj výkon — chce tvůj výběr: co si zaslouží tebe a co ne. <break time="1.0s" />
+
+[inviting] Napiš, co se stalo naposledy, kdy jsi zářil a nikdo si toho nevšiml. <break time="0.3s" /> [clearly] Jedno znamení tohle nikdy nepochopí. Které? Zjistíš příště.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+24. dubna 2026 platí pro Lva paradox: čím víc energii šetříš, tím míň máš — Slunce jako tvůj vládce potřebuje výdej, aby se obnovilo. 🌞 Saturn právě testuje tvoji schopnost rozlišit, kam tvá síla skutečně patří — a to je jiná výzva než únava. Sleduj profil — příště rozeberu mechanismy, které za tvým znamením stojí 🔆
+
+#mystickaHvezda #Lev #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+Lve, 24. dubna 2026 nestojíš před únavou — stojíš před výběrem. 🌞 Saturn právě netlačí na výkon, ale ptá se, co si skutečně zaslouží tvoji sílu. Tento týden otevřeš rozdělanou práci a zjistíš, že jsi dál, než si připouštíš — a přesně ve čtvrtek dostaneš prostor to ukázat. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Lev #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Grand piano carries a warm, rolling melodic phrase in a bright major key, supported by a gentle brass fanfare that glows like sunlight breaking through morning clouds. A soft rhythmic pulse drives the music forward with quiet confidence, evoking dew-lit horizons and golden celestial light spreading steadily across the sky. The texture breathes and lifts, regal yet unobtrusive, built to support a voiceover with radiant, forward-moving warmth. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+A mystical video thumbnail for zodiac sign Leo.
+
+BACKGROUND: deep dark space with soft subtle deep royal burgundy and dark copper nebula with dramatic sunburst corona in the distance, rich dark amber and deep maroon cosmic clouds, majestic dark regal tones — powerful, solar, commanding — dark enough to contrast with a gold glyph — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.
+
+COMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.
+
+ELEMENT 1 — glyph: large ornate Leo symbol (♌) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.
+
+ELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '24. dubna' in elegant gold lettering on the first line, 'LEV' in bold engraved gold capitals on the second line.
+
+ELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Odložený projekt čeká.' on the first line, 'Jsi dál, než si myslíš.' on the second line.
+
+NO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.
+
+Portrait 9:16.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Lve, přestáváš se snažit — nebo jen dochází energie? Vypadá stejně, ale není. Tento týden otevřeš projekt, který jsi odložil — a zjistíš, že jsi dál, než sis myslel. Ve čtvrtek dostaneš prostor ukázat se, ale zaváháš — protože nevíš, jestli to stojí za tu energii. Saturn teď nechce tvůj výkon — chce tvůj výběr: co si zaslouží tebe a co ne. Napiš, co se stalo naposledy, kdy jsi zářil a nikdo si toho nevšiml. Jedno znamení tohle nikdy nepochopí. Které? Zjistíš příště."

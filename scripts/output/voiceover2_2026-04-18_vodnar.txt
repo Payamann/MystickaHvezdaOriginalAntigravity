@@ -1,0 +1,58 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 18. dubna 2026
+
+[mysterious] Vodnáři nejsou chladní. <break time="0.5s" />
+[intense] Jsou až moc napojení — a proto se odpojují. <break time="1.0s" />
+
+[confident] Stojíš na schůzce. <break time="0.3s" /> [upbeat] Někdo předkládá nápad — bezpečný, ověřený. <break time="0.3s" /> [mysterious] Ty vidíš jinou cestu. <break time="0.3s" /> [intense] Nikdo ji nechce slyšet. <break time="0.3s" /> [commanding] Přesto řekneš „mám lepší řešení". <break time="0.3s" /> [warm] Ne proto, že jsi rebel. <break time="0.3s" /> [confident] Protože přeskakovat budoucnost — to by tě zabilo. <break time="1.0s" />
+
+[inviting] Sedí to? <break time="0.3s" /> Jedno slovo do komentáře. <break time="0.3s" />
+[clearly] Příští díl: co Vodnář nikdy neřekne nahlas.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+18. dubna 2026 Vodnáři nevidí budoucnost — jsou v ní už teď, zatímco ostatní řeší současnost. ⚡ Uran, tvá vládnoucí planeta, tě nutí vnímat vzorce o tři kroky napřed: to, co dnes zní jako provokace, za rok bude norma. Sleduj, pokud nechceš zůstat o krok pozadu za tím, jak funguje tvé znamení. 🔮
+
+#mystickaHvezda #Vodnář #horoskop #fyp #astrologie #znamenízvěrokruhu
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+18. dubna 2026 Vodnáři nezapomínají — ukládají lidi do archivů a čekají, až zase dávají smysl. ⚡ Uran, tvá vládnoucí planeta, tě žene přemýšlet o vzorcích, které teprve vzniknou: to, co dnes provoláš jako absurditu, za rok se stane běžnou praxí. Neodpojuješ se, protože jsi chladný — odpojuješ se, protože tvůj systém vnímá budoucnost rychleji, než ji ostatní dokážou pojmenovat. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Vodnář #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm energizing Rhodes piano with gentle rhythmic pulse and ambient textures, creating golden sunrise momentum in bright major key, soft forward-moving background that supports without competing, like dawn light spreading across stars with hope and gentle drive. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+Real deep-space Hubble-style nebula photograph background, split composition:
+top half = electric teal and cyan nebula with white core burst with dramatic light burst from center,
+thin horizontal black band across the middle,
+bottom half = deep indigo with aquamarine star trails and scattered starlight.
+Cinematic, high-detail, photo-realistic.
+
+All graphic elements positioned in the UPPER 80% of the frame — leave minimal space at very bottom.
+
+Center-upper area: large ornate 3D CGI Vodnář zodiac symbol (♒),
+dark obsidian material with intricate gold filigree engravings,
+deeply detailed ancient medallion style, soft golden glow radiating from symbol, floating centered in frame.
+
+Directly below the symbol (upper-mid frame): dark stone plaque with ornate golden decorative border,
+bold serif text (NOT cursive, NOT italic, NOT calligraphic):
+Line 1: "18. DUBNA"
+Line 2: "VODNÁŘ"
+Text color: warm cream/off-white, engraved look.
+
+Immediately below the plaque (mid frame, NOT at the very bottom): aged parchment scroll, curled edges, warm paper texture,
+two lines of bold serif text (NOT cursive, NOT italic, NOT calligraphic), dark brown #2a1500:
+Line 1: "Vidíš jinak než všichni."
+Line 2: "Proto tě nikdo nechce slyšet."
+
+Portrait 4:5, 1080x1350px. No watermarks, no UI, no borders.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Vodnáři nejsou chladní. Jsou až moc napojení — a proto se odpojují. Stojíš na schůzce. Někdo předkládá nápad — bezpečný, ověřený. Ty vidíš jinou cestu. Nikdo ji nechce slyšet. Přesto řekneš „mám lepší řešení". Ne proto, že jsi rebel. Protože přeskakovat budoucnost — to by tě zabilo. Sedí to? Jedno slovo do komentáře. Příští díl: co Vodnář nikdy neřekne nahlas."

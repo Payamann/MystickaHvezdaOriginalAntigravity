@@ -5,6 +5,12 @@
  * Requires GA4 script loaded in HTML first
  */
 
+function debugLog(...args) {
+    if (window.MH_DEBUG_ANALYTICS) {
+        console.debug(...args);
+    }
+}
+
 // Initialize tracking (called on page load)
 export function initAnalytics() {
     if (typeof gtag === 'undefined') {
@@ -21,7 +27,7 @@ export function initAnalytics() {
         });
     }
 
-    console.log('[GA] Analytics initialized');
+    debugLog('[GA] Analytics initialized');
     return true;
 }
 
@@ -39,12 +45,12 @@ export function trackUpgradeModalShown(data = {}) {
     gtag('event', 'upgrade_modal_shown', {
         'feature_name': data.feature || 'unknown',
         'plan_id': data.plan || 'pruvodce',
-        'price': data.price || 179,
+        'price': data.price || 199,
         'trigger_type': data.trigger || 'limit_reached',
         'timestamp': new Date().toISOString()
     });
 
-    console.log('[GA] Event: upgrade_modal_shown', data.feature);
+    debugLog('[GA] Event: upgrade_modal_shown', data.feature);
 }
 
 /**
@@ -59,7 +65,7 @@ export function trackUpgradeModalClosed(action = 'unknown') {
         'timestamp': new Date().toISOString()
     });
 
-    console.log('[GA] Event: upgrade_modal_closed', action);
+    debugLog('[GA] Event: upgrade_modal_closed', action);
 }
 
 /**
@@ -76,7 +82,7 @@ export function trackUpgradeCTAClicked(data = {}) {
         'timestamp': new Date().toISOString()
     });
 
-    console.log('[GA] Event: upgrade_cta_clicked', data.feature);
+    debugLog('[GA] Event: upgrade_cta_clicked', data.feature);
 }
 
 /**
@@ -95,7 +101,7 @@ export function trackPricingPageView(selectedPlan = null) {
         'timestamp': new Date().toISOString()
     });
 
-    console.log('[GA] Event: pricing_page_view', selectedPlan);
+    debugLog('[GA] Event: pricing_page_view', selectedPlan);
 }
 
 // ═════════════════════════════════════════════════════════════════
@@ -114,7 +120,7 @@ export function trackCrystalBallQuestion() {
         'timestamp': new Date().toISOString()
     });
 
-    console.log('[GA] Event: feature_use - crystal_ball');
+    debugLog('[GA] Event: feature_use - crystal_ball');
 }
 
 /**
@@ -131,7 +137,7 @@ export function trackTarotReading(spreadType = 'unknown') {
         'timestamp': new Date().toISOString()
     });
 
-    console.log('[GA] Event: feature_use - tarot');
+    debugLog('[GA] Event: feature_use - tarot');
 }
 
 /**
@@ -150,7 +156,7 @@ export function trackHoroscopeView(sign = 'unknown', period = 'daily') {
         'timestamp': new Date().toISOString()
     });
 
-    console.log('[GA] Event: feature_use - horoscope');
+    debugLog('[GA] Event: feature_use - horoscope');
 }
 
 /**
@@ -165,7 +171,7 @@ export function trackAngelCardDraw() {
         'timestamp': new Date().toISOString()
     });
 
-    console.log('[GA] Event: feature_use - angel_cards');
+    debugLog('[GA] Event: feature_use - angel_cards');
 }
 
 /**
@@ -180,7 +186,7 @@ export function trackNumerologyReading() {
         'timestamp': new Date().toISOString()
     });
 
-    console.log('[GA] Event: feature_use - numerology');
+    debugLog('[GA] Event: feature_use - numerology');
 }
 
 /**
@@ -195,7 +201,7 @@ export function trackDreamAnalysis() {
         'timestamp': new Date().toISOString()
     });
 
-    console.log('[GA] Event: feature_use - dream_analysis');
+    debugLog('[GA] Event: feature_use - dream_analysis');
 }
 
 // ═════════════════════════════════════════════════════════════════
@@ -214,7 +220,7 @@ export function trackUserSignup(method = 'email') {
         'timestamp': new Date().toISOString()
     });
 
-    console.log('[GA] Event: sign_up', method);
+    debugLog('[GA] Event: sign_up', method);
 }
 
 /**
@@ -229,7 +235,7 @@ export function trackUserLogin(method = 'email') {
         'timestamp': new Date().toISOString()
     });
 
-    console.log('[GA] Event: login', method);
+    debugLog('[GA] Event: login', method);
 }
 
 /**
@@ -255,7 +261,7 @@ export function trackPremiumPurchase(plan = 'unknown', price = 0, currency = 'CZ
         'timestamp': new Date().toISOString()
     });
 
-    console.log('[GA] Event: purchase', plan, priceInKc + ' ' + currency);
+    debugLog('[GA] Event: purchase', plan, priceInKc + ' ' + currency);
 }
 
 /**
@@ -272,7 +278,7 @@ export function trackSubscriptionCancelled(plan = 'unknown', reason = 'unknown')
         'timestamp': new Date().toISOString()
     });
 
-    console.log('[GA] Event: subscription_cancelled', plan);
+    debugLog('[GA] Event: subscription_cancelled', plan);
 }
 
 /**
@@ -289,7 +295,7 @@ export function trackPageView(pageName = '', path = '') {
         'timestamp': new Date().toISOString()
     });
 
-    console.log('[GA] Event: page_view', pageName);
+    debugLog('[GA] Event: page_view', pageName);
 }
 
 // ═════════════════════════════════════════════════════════════════
@@ -306,7 +312,7 @@ export function trackPageLoadMetrics() {
     window.addEventListener('load', () => {
         const perfData = performance.getEntriesByType('navigation')[0];
         if (!perfData) {
-            console.log('[GA] Performance data not available');
+            debugLog('[GA] Performance data not available');
             return;
         }
 
@@ -321,7 +327,7 @@ export function trackPageLoadMetrics() {
 
         gtag('event', 'page_load_metrics', metrics);
 
-        console.log('[GA] Event: page_load_metrics', metrics);
+        debugLog('[GA] Event: page_load_metrics', metrics);
 
         // Track LCP (Largest Contentful Paint)
         const lcpEntries = performance.getEntriesByType('largest-contentful-paint');
@@ -331,7 +337,7 @@ export function trackPageLoadMetrics() {
                 'value': lcp,
                 'timestamp': new Date().toISOString()
             });
-            console.log('[GA] Event: largest_contentful_paint', lcp + 'ms');
+            debugLog('[GA] Event: largest_contentful_paint', lcp + 'ms');
         }
 
         // Track FCP (First Contentful Paint)
@@ -342,7 +348,7 @@ export function trackPageLoadMetrics() {
                 'value': fcpTime,
                 'timestamp': new Date().toISOString()
             });
-            console.log('[GA] Event: first_contentful_paint', fcpTime + 'ms');
+            debugLog('[GA] Event: first_contentful_paint', fcpTime + 'ms');
         }
     });
 }
@@ -372,7 +378,7 @@ export function setUserId(userId) {
             'user_id': userId
         });
     }
-    console.log('[GA] User ID set:', userId);
+    debugLog('[GA] User ID set:', userId);
 }
 
 /**
@@ -380,7 +386,7 @@ export function setUserId(userId) {
  */
 export function clearUserId() {
     localStorage.removeItem('userId');
-    console.log('[GA] User ID cleared');
+    debugLog('[GA] User ID cleared');
 }
 
 /**
@@ -395,7 +401,7 @@ export function setUserProperty(propertyName, propertyValue) {
         [`user_property_${propertyName}`]: propertyValue
     });
 
-    console.log('[GA] User property set:', propertyName, propertyValue);
+    debugLog('[GA] User property set:', propertyName, propertyValue);
 }
 
 // ═════════════════════════════════════════════════════════════════

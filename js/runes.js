@@ -11,7 +11,7 @@ let drawnRune = null;
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Load rune database
     try {
-        const res = await fetch('data/runes.json');
+        const res = await fetch('/data/runes.json');
         if (!res.ok) throw new Error('Nepodařilo se načíst databázi run.');
         runesData = await res.json();
     } catch (error) {
@@ -102,12 +102,12 @@ function revealPreDrawnRune() {
     if (runeEl) {
         runeEl.classList.remove('hidden');
         document.getElementById('rune-symbol').textContent = drawnRune.symbol;
-        runeEl.style.cursor = 'default';
+        runeEl.classList.add('rune-stone--drawn');
         // Remove click listener manually by cloning if needed, or check drawnRune in click handler
     }
 
     if (drawBtn) {
-        drawBtn.style.display = 'none';
+        drawBtn.hidden = true;
     }
 
     showResultData();
@@ -121,10 +121,9 @@ async function drawRune() {
     const loadingEl = document.getElementById('loading');
 
     // UI state
-    if (drawBtn) drawBtn.style.display = 'none';
+    if (drawBtn) drawBtn.hidden = true;
     if (runeEl) {
-        runeEl.classList.add('shuffling');
-        runeEl.style.pointerEvents = 'none';
+        runeEl.classList.add('shuffling', 'rune-stone--disabled');
     }
 
     // Play sound / wait for animation
@@ -136,7 +135,8 @@ async function drawRune() {
 
     // Remove shuffling
     if (runeEl) {
-        runeEl.classList.remove('shuffling', 'hidden');
+        runeEl.classList.remove('shuffling', 'hidden', 'rune-stone--disabled');
+        runeEl.classList.add('rune-stone--drawn');
         document.getElementById('rune-symbol').textContent = drawnRune.symbol;
     }
 
@@ -173,7 +173,12 @@ async function requestDeepReading() {
         const intention = document.getElementById('rune-intention')?.value || '';
         sessionStorage.setItem('pendingRuneContext', JSON.stringify({ rune: drawnRune, intention }));
         window.Auth.showToast('Přihlášení vyžadováno', 'Hluboký výklad run vyžaduje bezplatné přihlášení nebo předplatné.', 'info');
-        window.Auth.openModal('login');
+        window.Auth?.startPlanCheckout?.('pruvodce', {
+            source: 'runes_auth_gate',
+            feature: 'runy_hluboky_vyklad',
+            redirect: '/cenik.html',
+            authMode: 'register'
+        });
         return;
     }
 
@@ -184,7 +189,7 @@ async function requestDeepReading() {
     const originUpsell = document.getElementById('premium-upsell');
 
     btn.disabled = true;
-    btn.innerHTML = 'Šaman přijímá vedení... <div class="loading__spinner" style="width: 1rem; height: 1rem;"></div>';
+    btn.innerHTML = 'Šaman přijímá vedení... <div class="loading__spinner loading__spinner--inline"></div>';
 
     try {
         const response = await fetch(`${apiUrl}/api/runes`, {
@@ -202,7 +207,12 @@ async function requestDeepReading() {
         if (response.status === 403) {
             sessionStorage.setItem('pendingRuneContext', JSON.stringify({ rune: drawnRune, intention }));
             window.Auth.showToast('Premium vyžadováno', 'Šamanský výklad vyžaduje prémiové členství Hvězdného Průvodce.', 'info');
-            window.Auth.openModal('login');
+            window.Auth?.startPlanCheckout?.('pruvodce', {
+                source: 'runes_premium_gate',
+                feature: 'runy_hluboky_vyklad',
+                redirect: '/cenik.html',
+                authMode: 'register'
+            });
             return;
         }
 
@@ -211,14 +221,15 @@ async function requestDeepReading() {
         }
 
         // Hide upsell block
-        originUpsell.style.display = 'none';
+        if (originUpsell) originUpsell.hidden = true;
 
         // Show response safely
-        aiContainer.style.display = 'block';
+        aiContainer.hidden = false;
+        aiContainer.classList.add('mh-block-visible');
         const div = document.createElement('div');
         div.textContent = data.response;
         let safeHTML = div.innerHTML.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        aiContainer.innerHTML = DOMPurify.sanitize(safeHTML);
+        aiContainer.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(safeHTML) : safeHTML;
 
         aiContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 

@@ -1,0 +1,31 @@
+/* Extracted from testy/dar-intuice.html inline <style> block. */
+.loader-gift {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .loader-gift::before, .loader-gift::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            border-radius: 50%;
+            border: 2px solid var(--color-ethereal-violet);
+            animation: pulseWave 2s ease-out infinite;
+        }
+        .loader-gift::after { animation-delay: 1s; }
+        @keyframes pulseWave {
+            0% { transform: scale(0.5); opacity: 1; border-color: var(--color-mystic-gold); }
+            100% { transform: scale(2); opacity: 0; border-color: var(--color-ethereal-violet); }
+        }
+        .animate-eye {
+            animation: eyeFade 3s infinite alternate;
+        }
+        @keyframes eyeFade {
+            0% { opacity: 0.8; transform: scale(1); filter: blur(0); }
+            50% { opacity: 1; transform: scale(1.1); filter: blur(1px); }
+            100% { opacity: 0.8; transform: scale(1); filter: blur(0); }
+        }
+
+/* Migrated from testy/dar-intuice.html static style attributes. */
+html body .mh-inline-51a33aab3c { padding-top: 0; }

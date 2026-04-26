@@ -1,0 +1,291 @@
+/* Extracted from aura.html inline <style> block. */
+.aura-orb {
+
+            width: 200px;
+
+            height: 200px;
+
+            border-radius: 50%;
+
+            margin: 0 auto 2rem;
+
+            position: relative;
+
+            display: none;
+
+            animation: orbAppear 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+
+        }
+
+
+
+        @keyframes orbAppear {
+
+            from {
+
+                opacity: 0;
+
+                transform: scale(0.3)
+
+            }
+
+
+
+            to {
+
+                opacity: 1;
+
+                transform: scale(1)
+
+            }
+
+        }
+
+
+
+        .aura-orb::before {
+
+            content: '';
+
+            position: absolute;
+
+            inset: -20px;
+
+            border-radius: 50%;
+
+            opacity: 0.3;
+
+            animation: pulse 3s ease-in-out infinite;
+
+        }
+
+        .aura-orb--1 {
+            background: radial-gradient(circle at 35% 35%, #e74c3cdd, #e74c3c66);
+            box-shadow: 0 0 60px rgba(231, 76, 60, 0.5), 0 0 120px rgba(231, 76, 60, 0.5);
+        }
+
+        .aura-orb--1::before { background: radial-gradient(circle, rgba(231, 76, 60, 0.5), transparent); }
+        .aura-orb--2 { background: radial-gradient(circle at 35% 35%, #e67e22dd, #e67e2266); box-shadow: 0 0 60px rgba(230, 126, 34, 0.5), 0 0 120px rgba(230, 126, 34, 0.5); }
+        .aura-orb--2::before { background: radial-gradient(circle, rgba(230, 126, 34, 0.5), transparent); }
+        .aura-orb--3 { background: radial-gradient(circle at 35% 35%, #f1c40fdd, #f1c40f66); box-shadow: 0 0 60px rgba(241, 196, 15, 0.5), 0 0 120px rgba(241, 196, 15, 0.5); }
+        .aura-orb--3::before { background: radial-gradient(circle, rgba(241, 196, 15, 0.5), transparent); }
+        .aura-orb--4 { background: radial-gradient(circle at 35% 35%, #2ecc71dd, #2ecc7166); box-shadow: 0 0 60px rgba(46, 204, 113, 0.5), 0 0 120px rgba(46, 204, 113, 0.5); }
+        .aura-orb--4::before { background: radial-gradient(circle, rgba(46, 204, 113, 0.5), transparent); }
+        .aura-orb--5 { background: radial-gradient(circle at 35% 35%, #3498dbdd, #3498db66); box-shadow: 0 0 60px rgba(52, 152, 219, 0.5), 0 0 120px rgba(52, 152, 219, 0.5); }
+        .aura-orb--5::before { background: radial-gradient(circle, rgba(52, 152, 219, 0.5), transparent); }
+        .aura-orb--6 { background: radial-gradient(circle at 35% 35%, #5b2d8edd, #5b2d8e66); box-shadow: 0 0 60px rgba(91, 45, 142, 0.5), 0 0 120px rgba(91, 45, 142, 0.5); }
+        .aura-orb--6::before { background: radial-gradient(circle, rgba(91, 45, 142, 0.5), transparent); }
+        .aura-orb--7 { background: radial-gradient(circle at 35% 35%, #9b59b6dd, #9b59b666); box-shadow: 0 0 60px rgba(155, 89, 182, 0.5), 0 0 120px rgba(155, 89, 182, 0.5); }
+        .aura-orb--7::before { background: radial-gradient(circle, rgba(155, 89, 182, 0.5), transparent); }
+        .aura-orb--8 { background: radial-gradient(circle at 35% 35%, #d4af37dd, #d4af3766); box-shadow: 0 0 60px rgba(212, 175, 55, 0.5), 0 0 120px rgba(212, 175, 55, 0.5); }
+        .aura-orb--8::before { background: radial-gradient(circle, rgba(212, 175, 55, 0.5), transparent); }
+        .aura-orb--9 { background: radial-gradient(circle at 35% 35%, #ecf0f1dd, #ecf0f166); box-shadow: 0 0 60px rgba(255, 255, 255, 0.4), 0 0 120px rgba(255, 255, 255, 0.4); }
+        .aura-orb--9::before { background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent); }
+
+
+
+        @keyframes pulse {
+
+
+
+            0%,
+
+            100% {
+
+                transform: scale(1)
+
+            }
+
+
+
+            50% {
+
+                transform: scale(1.1)
+
+            }
+
+        }
+
+
+
+        .aura-orb.show {
+
+            display: block;
+
+        }
+
+
+
+        .aura-result {
+
+            max-width: 650px;
+
+            margin: 0 auto;
+
+            display: none;
+
+            animation: fadeIn 0.5s ease;
+
+        }
+
+
+
+        .aura-result.show {
+
+            display: block;
+
+        }
+
+
+
+        @keyframes fadeIn {
+
+            from {
+
+                opacity: 0;
+
+                transform: translateY(20px)
+
+            }
+
+
+
+            to {
+
+                opacity: 1;
+
+                transform: translateY(0)
+
+            }
+
+        }
+
+
+
+        .aura-detail-grid {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 1rem;
+
+            margin-top: 1.5rem;
+
+        }
+
+
+
+        @media(max-width:500px) {
+
+            .aura-detail-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+        }
+
+
+
+        .aura-detail-card {
+
+            background: rgba(255, 255, 255, 0.04);
+
+            border: 1px solid rgba(255, 255, 255, 0.08);
+
+            border-radius: 14px;
+
+            padding: 1.1rem;
+
+        }
+
+
+
+        .aura-detail-card h4 {
+
+            color: #d4af37;
+
+            font-size: 0.8rem;
+
+            letter-spacing: 1px;
+
+            margin-bottom: 0.4rem;
+
+            text-transform: uppercase;
+
+        }
+
+
+
+        .birth-input {
+
+            padding: 0.9rem 1.25rem;
+
+            background: rgba(255, 255, 255, 0.06);
+
+            border: 1px solid rgba(255, 255, 255, 0.12);
+
+            border-radius: 12px;
+
+            color: white;
+
+            font-size: 1rem;
+
+            font-family: 'Inter', sans-serif;
+
+            outline: none;
+
+            width: 100%;
+
+            box-sizing: border-box;
+
+        }
+
+
+
+        .birth-input:focus {
+
+            border-color: rgba(212, 175, 55, 0.5);
+
+        }
+
+        .birth-input--invalid {
+
+            border-color: rgba(212, 175, 55, 0.8);
+
+        }
+
+        .aura-title--1 { color: #e74c3c; }
+        .aura-title--2 { color: #e67e22; }
+        .aura-title--3 { color: #f1c40f; }
+        .aura-title--4 { color: #2ecc71; }
+        .aura-title--5 { color: #3498db; }
+        .aura-title--6 { color: #5b2d8e; }
+        .aura-title--7 { color: #9b59b6; }
+        .aura-title--8 { color: #d4af37; }
+        .aura-title--9 { color: #ecf0f1; }
+
+
+
+        .birth-input::-webkit-calendar-picker-indicator {
+
+            filter: invert(1);
+
+        }
+
+/* Migrated from aura.html static style attributes. */
+html body .mh-inline-6f193556e2 { padding-top:5rem;text-align:center; }
+html body .mh-inline-f30ddb6588 { max-width:700px; }
+html body .mh-inline-dfeb9b62ed { display:block;color:rgba(255,255,255,0.5);font-size:0.85rem;margin-bottom:0.5rem; }
+html body .mh-inline-23c2640005 { width:100%;margin-top:1rem;font-size:1rem; }
+html body .mh-inline-c24eaf4824 { font-family:'Cinzel',serif;font-size:2rem;margin-bottom:0.25rem; }
+html body .mh-inline-b470d63a65 { color:#d4af37;font-size:1rem;letter-spacing:2px;margin-bottom:1.5rem; }
+html body .mh-inline-8210494844 { color:rgba(255,255,255,0.8);line-height:1.8;font-size:1rem;margin-bottom:1rem; }
+html body .mh-inline-d19cccc57b { color:rgba(255,255,255,0.75);font-size:0.9rem;line-height:1.6; }
+html body .mh-inline-b659ac58f5 { color:rgba(255,255,255,0.75);font-size:0.9rem; }
+html body .mh-inline-59613f67a1 { margin-top:1rem;text-align:left; }
+
+/* Migrated from aura.html remaining static style attributes. */
+html body .mh-inline-74ba1a8615 { max-width:340px;margin:2.5rem auto; }
+html body .mh-inline-63afc91ba0 { margin-top:2rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap; }

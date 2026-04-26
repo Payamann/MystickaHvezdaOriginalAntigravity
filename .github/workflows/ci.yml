@@ -5,11 +5,15 @@ on:
     branches: [ main, claude/* ]
   pull_request:
     branches: [ main ]
+  schedule:
+    - cron: '0 5 * * *'  # Každý den 05:00 UTC = 07:00 CET
+  workflow_dispatch:       # Manuální spuštění z GitHub UI
 
 jobs:
   lint:
     runs-on: ubuntu-latest
     name: Lint Code
+    if: github.event_name != 'schedule'
 
     steps:
       - uses: actions/checkout@v4
@@ -17,7 +21,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
 
       - name: Install dependencies
@@ -29,6 +33,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     name: Run Tests
+    if: github.event_name != 'schedule'
 
     steps:
       - uses: actions/checkout@v4
@@ -36,20 +41,42 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Run encoding check
+        run: npm run check:encoding
 
       - name: Run tests
         run: npm test -- --coverage --passWithNoTests
         env:
           NODE_OPTIONS: --experimental-vm-modules
 
-  build:
+      - name: Run site audit
+        run: npm run audit:site
+
+      - name: Run sitemap canonical check
+        run: npm run sitemap:check
+
+  e2e:
     runs-on: ubuntu-latest
-    name: Build Assets
+    name: E2E (${{ matrix.project }} / ${{ matrix.section }})
+    # Do not block Railway production deploys on the full browser suite.
+    # E2E remains available for nightly and manual runs.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [chromium, mobile-chrome]
+        section: [api, core, content, tools, checkout]
 
     steps:
       - uses: actions/checkout@v4
@@ -57,7 +84,146 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E section
+        run: |
+          if [ "${{ matrix.section }}" = "core" ]; then
+            npm run test:e2e:sections -- --project=${{ matrix.project }} --section=${{ matrix.section }}
+          else
+            npm run test:e2e:sections -- --project=${{ matrix.project }} --section=${{ matrix.section }} --workers=2
+          fi
+        env:
+          NODE_ENV: test
+          DISABLE_SCHEDULED_JOBS: 'true'
+          MOCK_AI: 'true'
+          MOCK_SUPABASE: 'true'
+          JWT_SECRET: test-secret-key-for-ci-only
+          CSRF_SECRET: test-csrf-secret-for-ci-only
+          SUPABASE_URL: https://placeholder.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: placeholder-key-for-ci
+          ANTHROPIC_API_KEY: placeholder-key-for-ci
+          STRIPE_SECRET_KEY: sk_test_placeholder
+          STRIPE_WEBHOOK_SECRET: whsec_placeholder
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.project }}-${{ matrix.section }}
+          path: playwright-report/
+          retention-days: 7
+
+      - name: Create GitHub Issue on scheduled failure
+        if: failure() && github.event_name == 'schedule'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const date = new Date().toISOString().split('T')[0];
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `E2E testy selhaly - ${{ matrix.project }} / ${{ matrix.section }} - ${date}`,
+              body: [
+                '## Playwright E2E testy selhaly při nočním běhu',
+                '',
+                `**Datum:** ${date}`,
+                `**Projekt:** ${{ matrix.project }}`,
+                `**Sekce:** ${{ matrix.section }}`,
+                `**Workflow run:** [Zobraz výsledky a report](${runUrl})`,
+                '',
+                '### Co udělat',
+                '1. Klikni na odkaz výše a stáhni odpovídající **playwright-report** artefakt',
+                '2. Spusť `npm run test:e2e:report` pro vizuální přehled',
+                '3. Oprav chyby a zavři tento issue',
+                '',
+                '_Automaticky vytvořeno nočním CI workflow_'
+              ].join('\n'),
+              labels: ['bug', 'test-failure']
+            });
+
+  smoke:
+    runs-on: ubuntu-latest
+    name: Production Smoke Test
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Health check — API
+        run: |
+          echo "Checking https://www.mystickahvezda.cz/api/health ..."
+          RESPONSE=$(curl -sf --max-time 15 https://www.mystickahvezda.cz/api/health 2>&1) || {
+            echo "❌ Health endpoint nedosažitelný"
+            exit 1
+          }
+          echo "Response: $RESPONSE"
+          STATUS=$(echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin).get('status','error'))" 2>/dev/null || echo "parse_error")
+          echo "Status: $STATUS"
+          if [ "$STATUS" != "ok" ]; then
+            echo "❌ Health status není 'ok'"
+            exit 1
+          fi
+          echo "✅ Produkce OK"
+
+      - name: Check homepage loads
+        run: |
+          HTTP_CODE=$(curl -o /dev/null -sf --max-time 15 -w "%{http_code}" https://www.mystickahvezda.cz/ 2>/dev/null || echo "000")
+          echo "Homepage HTTP: $HTTP_CODE"
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "❌ Homepage vrátila $HTTP_CODE"
+            exit 1
+          fi
+          echo "✅ Homepage OK"
+
+      - name: Create GitHub Issue on production failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const date = new Date().toISOString().split('T')[0];
+            const time = new Date().toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🔥 Produkce nefunguje — ${date}`,
+              body: [
+                '## Produkční smoke test selhal',
+                '',
+                `**URL:** https://www.mystickahvezda.cz`,
+                `**Čas detekce:** ${time}`,
+                `**Workflow run:** [Zobraz detail](${runUrl})`,
+                '',
+                '### Zkontrolovat',
+                '- [ ] Railway deployment status',
+                '- [ ] `/api/health` endpoint',
+                '- [ ] Supabase connection',
+                '- [ ] Logy na Railway',
+                '',
+                '_Automaticky vytvořeno nočním CI workflow_'
+              ].join('\n'),
+              labels: ['critical', 'production']
+            });
+
+  build:
+    runs-on: ubuntu-latest
+    name: Build Assets
+    if: github.event_name != 'schedule'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
           cache: 'npm'
 
       - name: Install dependencies
@@ -68,7 +234,6 @@ jobs:
 
       - name: Build JavaScript
         run: npm run build:js
-        continue-on-error: true
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -78,17 +243,3 @@ jobs:
             css/style.v2.min.css
             js/dist/
           retention-days: 7
-
-  deploy:
-    runs-on: ubuntu-latest
-    name: Deploy to Railway
-    needs: [lint, test, build]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Deploy to Railway
-        uses: railwayapp/deploy-action@v1
-        with:
-          token: ${{ secrets.RAILWAY_TOKEN }}

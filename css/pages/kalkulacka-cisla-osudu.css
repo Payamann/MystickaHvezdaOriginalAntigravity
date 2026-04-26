@@ -1,0 +1,209 @@
+/* Extracted from kalkulacka-cisla-osudu.html inline <style> block. */
+.calc-card {
+
+            max-width: 600px;
+
+            margin: 0 auto;
+
+            background: rgba(10, 10, 26, 0.8);
+
+            border: 1px solid rgba(255, 255, 255, 0.1);
+
+            border-radius: 24px;
+
+            padding: 2.5rem;
+
+            backdrop-filter: blur(10px);
+
+        }
+
+
+
+        .date-inputs {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr 1.5fr;
+
+            gap: 0.75rem;
+
+            margin: 1.5rem 0;
+
+        }
+
+
+
+        .date-inputs input {
+
+            padding: 0.9rem;
+
+            background: rgba(255, 255, 255, 0.06);
+
+            border: 1px solid rgba(255, 255, 255, 0.15);
+
+            border-radius: 12px;
+
+            color: #fff;
+
+            font-size: 1rem;
+
+            text-align: center;
+
+            font-family: 'Inter', sans-serif;
+
+            transition: border-color 0.2s;
+
+            width: 100%;
+
+        }
+
+
+
+        .date-inputs input:focus {
+
+            outline: none;
+
+            border-color: rgba(235, 192, 102, 0.6);
+
+        }
+
+
+
+        .date-inputs label {
+
+            display: block;
+
+            font-size: 0.75rem;
+
+            color: rgba(255, 255, 255, 0.4);
+
+            margin-bottom: 0.35rem;
+
+            letter-spacing: 1px;
+
+            text-transform: uppercase;
+
+        }
+
+
+
+        .result-number {
+
+            font-family: 'Cinzel', serif;
+
+            font-size: 6rem;
+
+            background: linear-gradient(135deg, #d4af37, #f5d776);
+
+            -webkit-background-clip: text;
+
+            -webkit-text-fill-color: transparent;
+
+            font-weight: 700;
+
+            line-height: 1;
+
+            margin: 1rem 0 0.5rem;
+
+        }
+
+
+
+        .result-name {
+
+            font-family: 'Cinzel', serif;
+
+            font-size: 1.3rem;
+
+            color: #ebc066;
+
+            margin-bottom: 1rem;
+
+        }
+
+
+
+        .result-text {
+
+            color: rgba(255, 255, 255, 0.75);
+
+            line-height: 1.8;
+
+            font-size: 0.95rem;
+
+        }
+
+
+
+        .trait-grid {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 0.5rem;
+
+            margin: 1rem 0;
+
+            justify-content: center;
+
+        }
+
+
+
+        .trait-chip {
+
+            background: rgba(235, 192, 102, 0.12);
+
+            border: 1px solid rgba(235, 192, 102, 0.25);
+
+            border-radius: 50px;
+
+            padding: 0.3rem 0.9rem;
+
+            font-size: 0.82rem;
+
+            color: #ebc066;
+
+        }
+
+
+
+        .share-result {
+
+            margin-top: 1.5rem;
+
+            padding-top: 1.5rem;
+
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+        }
+
+/* Migrated from kalkulacka-cisla-osudu.html static style attributes. */
+html body .mh-inline-4bfe679126 { min-height:auto; padding-bottom:0; }
+html body .mh-inline-f6e00d6753 { padding-top:2rem; }
+html body .mh-inline-14bd58b6c6 { font-family:'Cinzel',serif;color:#ebc066;text-align:center;font-size:1.3rem;margin:0 0 0.25rem; }
+html body .mh-inline-392353889f { width:100%;font-size:1rem; }
+html body .mh-inline-68f1dcf006 { color:#f87171;font-size:0.85rem;text-align:center;margin-top:0.75rem;min-height:1.2em; }
+html body .mh-inline-c3c6b0e32b { display:none;text-align:center;margin-top:2rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,0.08); }
+html body .mh-inline-df42b1ec49 { font-size:0.8rem;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase; }
+html body .mh-inline-befada9df0 { font-size:0.82rem;padding:0.5rem 1rem; }
+html body .mh-inline-bc8a40ecda { margin-top:2rem;padding:1.5rem;background:rgba(155,89,182,0.1);border:1px solid rgba(155,89,182,0.2);border-radius:16px; }
+html body .mh-inline-0dc7c34752 { font-size:0.9rem; }
+html body .mh-inline-3c9bb1ab99 { background:rgba(10,10,26,0.6);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:1rem 1.5rem;margin-bottom:0.75rem; }
+
+/* Migrated from kalkulacka-cisla-osudu.html remaining static style attributes. */
+html body .mh-inline-40b3337173 { text-align:center;color:rgba(255,255,255,0.4);font-size:0.85rem;margin:0 0 1.5rem; }
+html body .mh-inline-68ce2bdc63 { color:rgba(255,255,255,0.4);font-size:0.8rem;margin-bottom:0.75rem; }
+html body .mh-inline-aa8df7dab0 { display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap; }
+html body .mh-inline-2c2319365f { font-family:'Cinzel',serif;color:#ebc066;margin:0 0 0.75rem;font-size:1rem; }
+html body .mh-inline-5497eebd4d { color:rgba(255,255,255,0.6);font-size:0.88rem;margin:0 0 1rem; }
+html body .mh-inline-4ec9742dd9 { max-width:700px;margin:4rem auto 0; }
+html body .mh-inline-16a9f070c8 { font-family:'Cinzel',serif;color:#ebc066;font-size:1.5rem;margin-bottom:1rem; }
+html body .mh-inline-d325b482d4 { color:rgba(255,255,255,0.7);line-height:1.85;margin-bottom:1rem; }
+html body .mh-inline-681afbd319 { font-family:'Cinzel',serif;color:#ebc066;font-size:1.3rem;margin:2rem 0 1rem; }
+html body .mh-inline-141b96f6da { color:rgba(255,255,255,0.7);line-height:1.85; }
+html body .mh-inline-7b21502de8 { color:#ebc066; }
+html body .mh-inline-dc28cffb30 { margin-top:3rem; }
+html body .mh-inline-da07287adf { color:#ebc066;cursor:pointer;font-weight:600; }
+html body .mh-inline-9b240aa668 { color:rgba(255,255,255,0.7);line-height:1.8;margin-top:0.75rem;margin-bottom:0; }

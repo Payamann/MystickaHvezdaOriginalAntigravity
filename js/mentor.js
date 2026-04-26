@@ -2,25 +2,87 @@
  * Hvězdný Průvodce - Frontend Logic
  */
 
-const chatInput = document.getElementById('chat-input');
-const sendBtn = document.getElementById('send-btn');
-const messagesContainer = document.getElementById('chat-messages');
-const typingIndicator = document.getElementById('typing-indicator');
+// DOM elementy — inicializujeme v DOMContentLoaded (bezpečná inicializace)
+let chatInput, sendBtn, messagesContainer, typingIndicator;
 
-// Auth Check - Strict
-// Must be logged in to access Mentor
+function resizeChatInput() {
+    if (!chatInput) return;
+    const lineEstimate = chatInput.value.split('\n').length + Math.floor(chatInput.value.length / 70);
+    chatInput.rows = Math.max(1, Math.min(6, lineEstimate));
+}
+
+function resetChatInput() {
+    if (!chatInput) return;
+    chatInput.value = '';
+    chatInput.rows = 1;
+}
+
+function startMentorUpgradeFlow(source = 'mentor_inline_upsell') {
+    window.MH_ANALYTICS?.trackCTA?.(source, {
+        plan_id: 'pruvodce',
+        feature: 'mentor'
+    });
+    window.Auth?.startPlanCheckout?.('pruvodce', {
+        source,
+        feature: 'mentor',
+        redirect: '/cenik.html',
+        authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
+    });
+}
+
+function runAfterComponentsLoaded(callback) {
+    let hasRun = false;
+    const run = () => {
+        if (hasRun) return;
+        hasRun = true;
+        callback();
+    };
+
+    if (document.querySelector('.header') || !document.getElementById('header-placeholder')) {
+        run();
+        return;
+    }
+
+    document.addEventListener('components:loaded', run, { once: true });
+    window.setTimeout(run, 1200);
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
-    // Wait for auth-client to initialize (if needed) but we can check token directly
-    const token = localStorage.getItem('auth_token');
-    if (!token) {
-        window.Auth?.showToast?.('Přihlášení vyžadováno', 'Pro vstup do Hvězdného Průvodce se prosím přihlaste.', 'info');
-        window.Auth?.openModal?.('login');
+    // Inicializuj DOM elementy — musí být uvnitř DOMContentLoaded
+    chatInput = document.getElementById('chat-input');
+    sendBtn = document.getElementById('send-btn');
+    messagesContainer = document.getElementById('chat-messages');
+    typingIndicator = document.getElementById('typing-indicator');
 
-        // Reload on login to initialize chat (once only to prevent listener leak)
-        document.addEventListener('auth:changed', () => {
-            if (localStorage.getItem('auth_token')) {
-                window.location.reload();
+    // Připoj event listenery až po inicializaci DOM
+    if (chatInput) {
+        chatInput.addEventListener('input', function () {
+            resizeChatInput();
+
+            if (this.value.trim().length > 0) {
+                sendBtn?.removeAttribute('disabled');
+            } else {
+                sendBtn?.setAttribute('disabled', 'true');
             }
+        });
+
+        chatInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    }
+    if (sendBtn) sendBtn.addEventListener('click', sendMessage);
+    // Wait for auth-client to initialize (if needed) but we can check token directly
+    // Auth token je HttpOnly cookie — JS k němu nemá přístup.
+    // Používáme window.Auth.isLoggedIn() které čte user data z localStorage.
+    if (!window.Auth?.isLoggedIn()) {
+        window.Auth?.showToast?.('Přihlášení vyžadováno', 'Pro vstup do Hvězdného Průvodce se prosím přihlaste.', 'info');
+        runAfterComponentsLoaded(() => startMentorUpgradeFlow('mentor_entry_auth_gate'));
+
+        document.addEventListener('auth:changed', () => {
+            if (window.Auth?.isLoggedIn()) window.location.reload();
         }, { once: true });
         return;
     }
@@ -31,7 +93,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Allow everyone to enter, but track status
         // Fix: Use window.Auth instead of authClient
         // Fix: Use subscription_status instead of subscription_tier
-        window.isPremium = userProfile && (userProfile.subscription_status === 'premium' || userProfile.subscription_status === 'vip');
+        const premiumStatuses = ['premium_monthly', 'exclusive_monthly', 'vip_majestrat'];
+        window.isPremium = userProfile && premiumStatuses.includes(userProfile.subscription_status);
 
         // Initialize usage tracking for free users
         if (!window.isPremium) {
@@ -46,7 +109,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Auto-focus input
-    chatInput.focus();
+    chatInput?.focus();
 });
 
 function initUsageTracking() {
@@ -60,10 +123,8 @@ function initUsageTracking() {
 
 async function loadHistory() {
     try {
-        const token = localStorage.getItem('auth_token');
         const response = await fetch(`${API_CONFIG.BASE_URL}/mentor/history`, {
-            credentials: 'include',
-            headers: { 'Authorization': `Bearer ${token}` }
+            credentials: 'include'
         });
 
         const data = await response.json();
@@ -99,11 +160,13 @@ async function checkGreeting() {
     // Actually, backend comparison is better. API call is cheap.
 
     try {
-        const token = localStorage.getItem('auth_token');
+        const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
         const response = await fetch(`${API_CONFIG.BASE_URL}/mentor/greeting`, {
             method: 'POST',
             credentials: 'include',
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: {
+                ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+            }
         });
 
         const data = await response.json();
@@ -113,48 +176,21 @@ async function checkGreeting() {
         }
     } catch (e) {
         // Silent fail
-        console.log('No greeting today.');
+        if (window.MH_DEBUG) console.debug('No greeting today.');
     }
 }
 
-// Auto-resize textarea
-chatInput.addEventListener('input', function () {
-    this.style.height = 'auto';
-    this.style.height = (this.scrollHeight) + 'px';
-
-    // Enable/disable button
-    if (this.value.trim().length > 0) {
-        sendBtn.removeAttribute('disabled');
-    } else {
-        sendBtn.setAttribute('disabled', 'true');
-    }
-});
-
-// Send on Enter (but Shift+Enter for newline)
-chatInput.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-    }
-});
-
-sendBtn.addEventListener('click', sendMessage);
-
 async function sendMessage() {
+    if (!chatInput || !sendBtn || !messagesContainer || !typingIndicator) return;
     const text = chatInput.value.trim();
     if (!text) return;
 
-    // 0. Auth Check
-    const token = localStorage.getItem('auth_token');
-    if (!token || !window.Auth.isLoggedIn()) {
+    // 0. Auth Check (token je HttpOnly cookie, kontrolujeme přes Auth objekt)
+    if (!window.Auth?.isLoggedIn()) {
         window.Auth?.showToast?.('Přihlášení vyžadováno', 'Pro konverzaci s Průvodcem se prosím přihlaste.', 'info');
-        window.Auth?.openModal?.('login');
-
-        // Reload on login to initialize chat
+        startMentorUpgradeFlow('mentor_chat_auth_gate');
         document.addEventListener('auth:changed', () => {
-            if (localStorage.getItem('auth_token')) {
-                window.location.reload();
-            }
+            if (window.Auth?.isLoggedIn()) window.location.reload();
         }, { once: true });
         return;
     }
@@ -163,8 +199,7 @@ async function sendMessage() {
     if (!window.isPremium && checkUsageLimit()) {
         // Limit reached logic (The "Hook")
         addMessage(text, 'user');
-        chatInput.value = '';
-        chatInput.style.height = 'auto';
+        resetChatInput();
         chatInput.disabled = true;
         sendBtn.disabled = true;
 
@@ -180,8 +215,7 @@ async function sendMessage() {
 
     // 1. Add User Message
     addMessage(text, 'user');
-    chatInput.value = '';
-    chatInput.style.height = 'auto';
+    resetChatInput();
     sendBtn.setAttribute('disabled', 'true');
 
     // Increment usage for free users
@@ -194,13 +228,13 @@ async function sendMessage() {
 
     // 3. Call API
     try {
-        const token = localStorage.getItem('auth_token'); // Fixed key
+        const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
         const response = await fetch(`${API_CONFIG.BASE_URL}/mentor/chat`, {
             method: 'POST',
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                ...(csrfToken && { 'X-CSRF-Token': csrfToken })
             },
             body: JSON.stringify({ message: text })
         });
@@ -238,8 +272,8 @@ function checkUsageLimit() {
     const today = new Date().toISOString().split('T')[0];
     const usage = JSON.parse(localStorage.getItem('mentor_usage') || '{}');
 
-    // Allow 3 messages, trigger gate on 4th
-    if (usage.date === today && usage.count >= 3) {
+    // Allow 5 messages, trigger gate on 6th
+    if (usage.date === today && usage.count >= 5) {
         return true;
     }
     return false;
@@ -271,7 +305,11 @@ function showTeaserResponse() {
             <a href="cenik.html" class="btn btn--primary btn--sm">Získat Premium</a>
         </div>
     `;
-    messagesContainer.insertBefore(div, typingIndicator);
+    messagesContainer?.insertBefore(div, typingIndicator);
+    div.querySelector('a[href="cenik.html"]')?.addEventListener('click', (event) => {
+        event.preventDefault();
+        startMentorUpgradeFlow('mentor_teaser_gate');
+    });
     scrollToBottom();
 }
 
@@ -295,10 +333,10 @@ function addMessage(text, type, shouldScroll = true) {
     html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
     html = html.replace(/(_)(.*?)(_)/g, '<em>$2</em>');
 
-    div.innerHTML = DOMPurify.sanitize(html);
+    div.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(html) : html;
 
     // Insert before typing indicator
-    messagesContainer.insertBefore(div, typingIndicator);
+    messagesContainer?.insertBefore(div, typingIndicator);
 
     // Scroll to bottom
     if (shouldScroll) {
@@ -308,14 +346,21 @@ function addMessage(text, type, shouldScroll = true) {
 
 function showTyping(show) {
     if (show) {
-        typingIndicator.style.display = 'flex';
+        if (typingIndicator) {
+            typingIndicator.hidden = false;
+            typingIndicator.classList.add('mh-flex-visible');
+        }
         scrollToBottom();
     } else {
-        typingIndicator.style.display = 'none';
+        if (typingIndicator) {
+            typingIndicator.hidden = true;
+            typingIndicator.classList.remove('mh-flex-visible');
+        }
     }
 }
 
 function scrollToBottom() {
+    if (!messagesContainer) return;
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
@@ -339,10 +384,10 @@ function showPaywall() {
     }
 
     overlay.innerHTML = `
-        <div style="text-align: center; color: white; padding: 2rem;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">🔒</div>
-            <h2 style="font-family: 'Cinzel', serif; color: var(--color-mystic-gold); margin-bottom: 1rem;">Pouze pro Premium</h2>
-            <p style="margin-bottom: 2rem; color: var(--color-silver-mist);">
+        <div class="mentor-paywall">
+            <div class="mentor-paywall__icon">🔒</div>
+            <h2 class="mentor-paywall__title">Pouze pro Premium</h2>
+            <p class="mentor-paywall__copy">
                 Hvězdný Mentor je exkluzivní průvodce pro naše předplatitele.<br>
                 Získejte neomezený přístup k moudrosti hvězd.
             </p>
@@ -350,8 +395,12 @@ function showPaywall() {
         </div>
     `;
 
-    overlay.style.display = 'flex';
+    overlay.classList.add('limit-reached-overlay--visible');
+    overlay.querySelector('a[href="/cenik.html"]')?.addEventListener('click', (event) => {
+        event.preventDefault();
+        startMentorUpgradeFlow('mentor_paywall_overlay');
+    });
 
     // Add blur effect to messages if any (or just cover them)
-    messagesContainer.style.filter = 'blur(5px)';
+    messagesContainer.classList.add('chat-messages--blurred');
 }

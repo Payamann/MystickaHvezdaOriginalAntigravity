@@ -6,7 +6,7 @@
 import express from 'express';
 import crypto from 'crypto';
 import { authenticateToken, requirePremium } from '../middleware.js';
-import { callGemini } from '../services/gemini.js';
+import { callClaude } from '../services/claude.js';
 import { SYSTEM_PROMPTS } from '../config/prompts.js';
 import { supabase } from '../db-supabase.js';
 
@@ -72,7 +72,7 @@ router.post('/', authenticateToken, requirePremium, async (req, res) => {
 
         const message = `Jméno: ${name}\nDatum narození: ${birthDate}${birthTime ? `\nČas narození: ${birthTime}` : ''}\n\nVypočítaná čísla:\n- Číslo životní cesty: ${lifePath}\n- Číslo osudu: ${destiny}\n- Číslo duše: ${soul}\n- Číslo osobnosti: ${personality}\n\nVytvoř komplexní interpretaci tohoto numerologického profilu.${birthTime ? ' Vezmi v potaz i čas narození pro hlubší výklad.' : ''}`;
 
-        const response = await callGemini(SYSTEM_PROMPTS.numerology, message);
+        const response = await callClaude(SYSTEM_PROMPTS.numerology, message);
 
         await saveCachedNumerology(cacheKey, { name, birthDate, birthTime, lifePath, destiny, soul, personality }, response);
         console.log(`💾 Numerology cached in DB: ${cacheKey}`);

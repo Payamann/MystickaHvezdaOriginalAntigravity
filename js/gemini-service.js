@@ -3,7 +3,7 @@
  * Frontend interface for communicating with the Mystická Hvězda API
  */
 
-const API_BASE_URL = window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api';
+const API_BASE_URL = window.API_CONFIG?.BASE_URL || '/api';
 
 /**
  * Generic API call helper
@@ -14,11 +14,6 @@ async function callAPI(endpoint, data) {
 
     try {
         const headers = { 'Content-Type': 'application/json' };
-        // Include auth token for endpoints that require authentication
-        const token = localStorage.getItem('auth_token') || window.Auth?.token;
-        if (token) {
-            headers['Authorization'] = `Bearer ${token}`;
-        }
 
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
             method: 'POST',

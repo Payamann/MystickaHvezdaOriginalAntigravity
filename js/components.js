@@ -4,14 +4,35 @@
  * ALSO includes standalone hamburger menu handler (no module dependencies).
  */
 
+// Load GA4 + cookie handler on every page (lazy, non-blocking)
+(function () {
+    const scriptTag = document.querySelector('script[src*="components.js"]');
+    const scriptSrc = scriptTag ? scriptTag.getAttribute('src') : '';
+    const basePath = scriptSrc.split(/js\/(?:dist\/)?components\.js/)[0] || '';
+
+    // Analytics — always first (sets up dataLayer + consent stubs before banner loads)
+    if (!window.gtag && !document.querySelector('script[src*="analytics-init.js"]')) {
+        const s = document.createElement('script');
+        s.src = basePath + 'js/analytics-init.js';
+        s.defer = true;
+        document.head.appendChild(s);
+    }
+
+    // Cookie handler — loads after analytics so consent update event is always caught
+    if (!window.MH_COOKIE_HANDLER_INIT && !document.querySelector('script[src*="cookie-handler.js"]')) {
+        const ch = document.createElement('script');
+        ch.src = basePath + 'js/dist/cookie-handler.js';
+        ch.defer = true;
+        document.head.appendChild(ch);
+    }
+})();
+
 document.addEventListener('DOMContentLoaded', async () => {
     // Determine the base path based on where this script is loaded from
     // This allows the component loader to work correctly from subdirectories (like /blog/ or /sk/)
-    const scriptTag = document.querySelector('script[src*="js/components.js"]');
+    const scriptTag = document.querySelector('script[src*="components.js"]');
     const scriptSrc = scriptTag ? scriptTag.getAttribute('src') : '';
-    const basePath = scriptSrc.includes('js/components.js') ? scriptSrc.split('js/components.js')[0] : '';
-
-    console.log(`[components.js] Base path detected: "${basePath}"`);
+    const basePath = scriptSrc.split(/js\/(?:dist\/)?components\.js/)[0] || '';
 
     // Load header and footer in parallel for faster initial paint
     // Use high priority for header as it affects LCP/CLS
@@ -20,12 +41,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadComponent('footer-placeholder', `${basePath}components/footer.html?v=11`, basePath, false)
     ]);
 
+    // STANDALONE: Init hamburger menu + header scroll (no module dependency)
+    // Must run BEFORE dispatching components:loaded, so navInitialized flag is set
+    // before main.js's components:loaded listener calls initMobileNav().
+    // This prevents the double-toggle bug caused by both handlers attaching a click listener.
+    initStandaloneHeader();
+
     // Dispatch event to signal that UI shells are ready
     document.dispatchEvent(new Event('components:loaded'));
-
-    // STANDALONE: Init hamburger menu + header scroll (no module dependency)
-    // This ensures menu works even if main.js module fails to load
-    initStandaloneHeader();
 });
 
 async function loadComponent(elementId, path, basePath = '', highPriority = false) {
@@ -40,7 +63,6 @@ async function loadComponent(elementId, path, basePath = '', highPriority = fals
     
     // If it's already in the DOM, just ensure initialization runs
     if (alreadyPresent) {
-        console.log(`[components.js] Component "${elementId}" already present in DOM, skipping fetch.`);
         return;
     }
 
@@ -95,8 +117,8 @@ function initStandaloneHeader() {
     if (!header) return;
 
     // Prevent double-init if main.js already initialized
-    if (header.dataset.initialized === 'true') return;
-    header.dataset.initialized = 'true';
+    if (header.dataset.headerInitialized === 'true') return;
+    header.dataset.headerInitialized = 'true';
 
     // === SCROLL EFFECT ===
     let ticking = false;
@@ -121,6 +143,10 @@ function initStandaloneHeader() {
     const navList = document.querySelector('.nav__list');
     if (!toggle || !navList) return;
 
+    // Prevent double initialization of mobile nav
+    if (toggle.dataset.navInitialized === 'true') return;
+    toggle.dataset.navInitialized = 'true';
+
     toggle.addEventListener('click', function (e) {
         e.stopPropagation();
         const isOpen = navList.classList.toggle('open');
@@ -129,8 +155,34 @@ function initStandaloneHeader() {
         navList.setAttribute('aria-hidden', String(!isOpen));
     });
 
-    // Close menu when clicking a nav link
-    navList.querySelectorAll('.nav__link').forEach(link => {
+    // === MOBILE DROPDOWNS ===
+    navList.querySelectorAll('.nav__link--dropdown-toggle').forEach(toggleLink => {
+        toggleLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const item = toggleLink.closest('.nav__item--has-dropdown');
+            if (!item) return;
+            const isOpen = item.classList.contains('is-active');
+            // Close all other dropdowns
+            navList.querySelectorAll('.nav__item--has-dropdown.is-active').forEach(el => el.classList.remove('is-active'));
+            // Toggle current
+            item.classList.toggle('is-active', !isOpen);
+        });
+    });
+
+    // Close menu when clicking a nav dropdown link (actual page link)
+    navList.querySelectorAll('.nav__dropdown-link').forEach(link => {
+        link.addEventListener('click', () => {
+            navList.classList.remove('open');
+            toggle.classList.remove('active');
+            toggle.setAttribute('aria-expanded', 'false');
+            navList.setAttribute('aria-hidden', 'true');
+            navList.querySelectorAll('.nav__item--has-dropdown').forEach(el => el.classList.remove('is-active'));
+        });
+    });
+
+    // Close menu when clicking a nav link (ignore dropdown toggles)
+    navList.querySelectorAll('.nav__link:not(.nav__link--dropdown-toggle)').forEach(link => {
         link.addEventListener('click', () => {
             navList.classList.remove('open');
             toggle.classList.remove('active');
@@ -162,7 +214,6 @@ function initStandaloneHeader() {
 
     initLanguageSwitcher();
 
-    console.log('[components.js] Standalone header initialized');
 }
 
 /**
@@ -181,8 +232,6 @@ function initLanguageSwitcher() {
     let currentLang = 'cs';
     if (path.includes('/sk/')) currentLang = 'sk';
     else if (path.includes('/pl/')) currentLang = 'pl';
-
-    console.log(`[components.js] Language detected: ${currentLang}`);
 
     // Update UI initial state
     const langMap = { 'cs': 'CZ', 'sk': 'SK', 'pl': 'PL' };

@@ -1,0 +1,45 @@
+/* Extracted from blog/mistrovska-cisla-numerologie.html inline <style> block. */
+.blog-content { max-width:800px; margin:0 auto; line-height:1.85; font-size:1.05rem; color:rgba(255,255,255,0.85); }
+        .blog-content h2 { font-family:'Cinzel',serif; color:#ebc066; font-size:1.5rem; margin:2.5rem 0 1rem; padding-bottom:0.5rem; border-bottom:1px solid rgba(235,192,102,0.2); }
+        .blog-content h3 { font-family:'Cinzel',serif; color:#d4af37; font-size:1.15rem; margin:2rem 0 0.75rem; }
+        .blog-content p { margin-bottom:1.4rem; }
+        .blog-content ul, .blog-content ol { margin:0 0 1.4rem 1.5rem; }
+        .blog-content li { margin-bottom:0.5rem; }
+        .blog-content blockquote { border-left:4px solid #9b59b6; padding:1rem 1.5rem; margin:2rem 0; background:rgba(155,89,182,0.08); border-radius:0 12px 12px 0; font-style:italic; color:rgba(255,255,255,0.9); }
+        .blog-content strong { color:#fff; }
+        .highlight-box { background:rgba(212,175,55,0.07); border:1px solid rgba(212,175,55,0.2); border-radius:14px; padding:1.5rem 2rem; margin:2rem 0; }
+        .highlight-box h3 { color:#ebc066; margin-top:0; font-family:'Cinzel',serif; }
+        .breadcrumb { color:rgba(255,255,255,0.35); font-size:0.82rem; margin-bottom:1.5rem; }
+        .breadcrumb a { color:rgba(235,192,102,0.6); text-decoration:none; }
+        .author-box { margin-top:3rem; padding:1.5rem 2rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:16px; display:flex; align-items:center; gap:1.5rem; }
+        .author-avatar { width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,#9b59b6,#d4af37); display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0; }
+        .master-table { width:100%; border-collapse:collapse; margin:1.5rem 0; font-size:0.95rem; }
+        .master-table th { background:rgba(212,175,55,0.15); color:#ebc066; font-family:'Cinzel',serif; font-weight:600; padding:0.75rem 1rem; text-align:left; border-bottom:1px solid rgba(212,175,55,0.3); }
+        .master-table td { padding:0.7rem 1rem; border-bottom:1px solid rgba(255,255,255,0.07); color:rgba(255,255,255,0.8); vertical-align:top; }
+        .master-table tr:last-child td { border-bottom:none; }
+        .num-badge { display:inline-block; background:linear-gradient(135deg,#9b59b6,#6c3483); color:#fff; font-family:'Cinzel',serif; font-weight:700; font-size:1.1rem; width:2.2rem; height:2.2rem; line-height:2.2rem; text-align:center; border-radius:50%; margin-right:0.4rem; }
+        @media(max-width:640px){.author-box{flex-direction:column;text-align:center}.master-table{font-size:0.85rem}}
+
+/* Migrated from blog/mistrovska-cisla-numerologie.html static style attributes. */
+html body .mh-inline-f081e1de58 { max-width: 800px; margin: 0 auto; text-align: left; }
+html body .mh-inline-be177b7543 { text-align: left; font-size: 2.5rem; margin-top: 0.5rem; margin-bottom: 0; }
+html body .mh-inline-e7f36fd44e { justify-content: flex-start; }
+html body .mh-inline-839393eda4 { color: var(--color-mystic-gold); }
+html body .mh-inline-7d460fff62 { padding-top: 1rem; }
+html body .mh-inline-258c41b4f2 { max-width: 800px; }
+html body .mh-inline-daf4b2669b { margin-bottom:0.75rem; }
+html body .mh-inline-86ae148aed { margin-bottom:0; }
+html body .mh-inline-ec67f006c6 { margin:0; }
+html body .mh-inline-9a1e8b7402 { margin: 0 0 0.5rem 0; color: var(--color-mystic-gold); }
+html body .mh-inline-44d2ae8b32 { margin: 0; font-size: 0.9rem; color: var(--color-text-mutated); }
+html body .mh-inline-7716148dcc { margin: 3rem 0 2rem; padding: 2rem; background: linear-gradient(135deg, rgba(155,89,182,0.15), rgba(212,175,55,0.08)); border: 1px solid rgba(212,175,55,0.3); border-radius: 20px; text-align: center; }
+html body .mh-inline-edf21346da { font-size: 2rem; margin-bottom: 0.75rem; }
+html body .mh-inline-6682461e52 { font-family: 'Cinzel', serif; color: #d4af37; font-size: 1.3rem; margin-bottom: 0.75rem; }
+html body .mh-inline-18d6650577 { color: rgba(255,255,255,0.7); line-height: 1.7; margin-bottom: 1.5rem; max-width: 480px; margin-left: auto; margin-right: auto; }
+html body .mh-inline-96a8852875 { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+html body .mh-inline-989cadc008 { display: inline-block; padding: 0.75rem 1.75rem; background: linear-gradient(135deg, #9b59b6, #6c3483); border-radius: 50px; color: white; text-decoration: none; font-weight: 600; font-size: 0.95rem; }
+html body .mh-inline-9604ce3834 { display: inline-block; padding: 0.75rem 1.75rem; background: transparent; border: 1px solid rgba(212,175,55,0.5); border-radius: 50px; color: #d4af37; text-decoration: none; font-size: 0.95rem; }
+html body .mh-inline-58d7e7a4ff { color: rgba(255,255,255,0.3); font-size: 0.8rem; margin-top: 0.75rem; }
+html body .mh-inline-613db675ca { margin: 2rem 0 3rem; }
+html body .mh-inline-184dd3bed1 { font-family: 'Cinzel', serif; color: #d4af37; font-size: 1.1rem; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(212,175,55,0.2); }
+html body .mh-inline-862e0ef3a9 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }

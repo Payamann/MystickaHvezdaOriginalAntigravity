@@ -8,16 +8,30 @@
  * - Win-back campaigns
  */
 
+async function postRetentionJson(url, body) {
+    const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+    return fetch(url, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+            ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+        },
+        body: JSON.stringify(body)
+    });
+}
+
 const MH_RETENTION = {
     /**
      * Show cancellation modal when user attempts to cancel subscription
      */
     showCancellationModal(onConfirm) {
+        this.onConfirm = typeof onConfirm === 'function' ? onConfirm : null;
         const modal = document.createElement('div');
         modal.className = 'retention-modal-overlay';
         modal.innerHTML = `
             <div class="retention-modal">
-                <button class="retention-modal__close" onclick="MH_RETENTION.closeCancellationModal()">×</button>
+                <button class="retention-modal__close" type="button" data-retention-action="close">×</button>
 
                 <h2 class="retention-modal__title">Chceme se zlepšit! 💫</h2>
                 <p class="retention-modal__subtitle">Prosím řekněte nám, proč chcete odejít</p>
@@ -28,7 +42,7 @@ const MH_RETENTION = {
                         <label class="retention-form__option">
                             <input type="radio" name="reason" value="too_expensive" required>
                             <span class="retention-form__label">💰 Příliš drahé</span>
-                            <span class="retention-form__hint">Nabídneme vám slevu</span>
+                            <span class="retention-form__hint">Nabídneme úspornější variantu</span>
                         </label>
 
                         <label class="retention-form__option">
@@ -66,31 +80,31 @@ const MH_RETENTION = {
 
                     <!-- Action buttons -->
                     <div class="retention-form__actions">
-                        <button type="button" class="btn btn--secondary" onclick="MH_RETENTION.handleCancellation()">
+                        <button type="button" class="btn btn--secondary" data-retention-action="cancel">
                             Zrušit
                         </button>
-                        <button type="button" class="btn btn--primary" onclick="MH_RETENTION.handleOffer()">
+                        <button type="button" class="btn btn--primary" data-retention-action="offer">
                             Podívat se na nabídky
                         </button>
                     </div>
                 </form>
 
                 <!-- Pause subscription offer (appears after selecting reason) -->
-                <div id="pause-offer" class="retention-offer" style="display: none;">
+                <div id="pause-offer" class="retention-offer" hidden>
                     <h3>⏸️ Pozastavit místo zrušení?</h3>
                     <p>Vaše předplatné bude pozastaveno na <strong>1 měsíc zdarma</strong>.</p>
                     <p>Vraťte se, až vám budeme chybět — bez ztráty dat.</p>
-                    <button class="btn btn--primary" onclick="MH_RETENTION.handlePause()">
+                    <button class="btn btn--primary" type="button" data-retention-action="pause">
                         Pozastavit na měsíc
                     </button>
                 </div>
 
                 <!-- Discount offer (appears for "too expensive") -->
-                <div id="discount-offer" class="retention-offer" style="display: none;">
+                <div id="discount-offer" class="retention-offer" hidden>
                     <h3>💝 Speciální nabídka</h3>
-                    <p>Máme pro vás <strong>50% slevu</strong> na příští 3 měsíce.</p>
-                    <p class="retention-offer__code">Kód: <code>COMEBACK50</code></p>
-                    <button class="btn btn--primary" onclick="MH_RETENTION.handleDiscountAccept()">
+                    <p>Máme pro vás <strong>25% slevu</strong> na příští 3 měsíce.</p>
+                    <p class="retention-offer__code">Kód: <code>STAY25</code></p>
+                    <button class="btn btn--primary" type="button" data-retention-action="discount">
                         Přijmout slevu
                     </button>
                 </div>
@@ -99,6 +113,21 @@ const MH_RETENTION = {
 
         document.body.appendChild(modal);
         this.currentModal = modal;
+
+        modal.addEventListener('click', (event) => {
+            const action = event.target.closest('[data-retention-action]')?.dataset.retentionAction;
+            if (!action) return;
+
+            const handlers = {
+                close: () => this.closeCancellationModal(),
+                cancel: () => this.handleCancellation(),
+                offer: () => this.handleOffer(),
+                pause: () => this.handlePause(),
+                discount: () => this.handleDiscountAccept()
+            };
+
+            handlers[action]?.();
+        });
 
         // Form submit handler
         document.getElementById('cancellation-feedback-form').addEventListener('change', (e) => {
@@ -114,14 +143,14 @@ const MH_RETENTION = {
      * Show relevant offer based on cancellation reason
      */
     showRelevantOffer(reason) {
-        document.getElementById('pause-offer').style.display = 'none';
-        document.getElementById('discount-offer').style.display = 'none';
+        document.getElementById('pause-offer').hidden = true;
+        document.getElementById('discount-offer').hidden = true;
 
         if (reason === 'not_using') {
-            document.getElementById('pause-offer').style.display = 'block';
+            document.getElementById('pause-offer').hidden = false;
             trackEvent('pause_offer_shown');
         } else if (reason === 'too_expensive') {
-            document.getElementById('discount-offer').style.display = 'block';
+            document.getElementById('discount-offer').hidden = false;
             trackEvent('discount_offer_shown');
         }
     },
@@ -136,15 +165,11 @@ const MH_RETENTION = {
 
         // Save feedback
         try {
-            const response = await fetch('/api/retention/feedback', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    type: 'cancellation',
-                    reason: reason || 'not_provided',
-                    feedback: feedback,
-                    timestamp: new Date().toISOString()
-                })
+            const response = await postRetentionJson('/api/payment/retention/feedback', {
+                type: 'churn',
+                reason: reason || 'not_provided',
+                feedback: feedback,
+                timestamp: new Date().toISOString()
             });
 
             if (response.ok) {
@@ -157,9 +182,8 @@ const MH_RETENTION = {
         // Proceed with cancellation
         this.closeCancellationModal();
         // Call parent cancellation handler
-        if (window.onCancellationConfirmed) {
-            window.onCancellationConfirmed();
-        }
+        this.onConfirm?.();
+        this.onConfirm = null;
     },
 
     /**
@@ -167,12 +191,8 @@ const MH_RETENTION = {
      */
     async handlePause() {
         try {
-            const response = await fetch('/api/subscription/pause', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    pauseDays: 30
-                })
+            const response = await postRetentionJson('/api/payment/subscription/pause', {
+                pauseDays: 30
             });
 
             const data = await response.json();
@@ -202,16 +222,12 @@ const MH_RETENTION = {
      */
     async handleDiscountAccept() {
         try {
-            const response = await fetch('/api/subscription/apply-discount', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    couponCode: 'COMEBACK50'
-                })
+            const response = await postRetentionJson('/api/payment/subscription/apply-discount', {
+                couponCode: 'STAY25'
             });
 
             if (response.ok) {
-                this.showToast('✓ Sleva byla aplikována! 50% na 3 měsíce.', 'success');
+                this.showToast('✓ Sleva byla aplikována! 25% na 3 měsíce.', 'success');
                 trackEvent('discount_accepted');
                 this.closeCancellationModal();
 
@@ -252,7 +268,7 @@ const MH_RETENTION = {
      */
     closeCancellationModal() {
         if (this.currentModal) {
-            this.currentModal.style.animation = 'retention-modal-fade-out 0.3s ease-out';
+            this.currentModal.classList.add('retention-modal-overlay--closing');
             setTimeout(() => {
                 this.currentModal.remove();
                 this.currentModal = null;
@@ -270,7 +286,7 @@ const MH_RETENTION = {
         document.body.appendChild(toast);
 
         setTimeout(() => {
-            toast.style.animation = 'retention-toast-fade-out 0.3s ease-out';
+            toast.classList.add('retention-toast--closing');
             setTimeout(() => toast.remove(), 300);
         }, 3000);
     },
@@ -280,13 +296,9 @@ const MH_RETENTION = {
      */
     async sendPauseEmail() {
         try {
-            await fetch('/api/email/send', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    template: 'subscription_paused',
-                    data: { daysUntilResume: 30 }
-                })
+            await postRetentionJson('/api/payment/email/send', {
+                template: 'subscription_paused',
+                data: { daysUntilResume: 30 }
             });
         } catch (e) {
             console.warn('Failed to send pause email:', e);
@@ -298,13 +310,9 @@ const MH_RETENTION = {
      */
     async sendDiscountEmail() {
         try {
-            await fetch('/api/email/send', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    template: 'discount_applied',
-                    data: { discount: 50, months: 3 }
-                })
+            await postRetentionJson('/api/payment/email/send', {
+                template: 'discount_applied',
+                data: { discount: 25, months: 3 }
             });
         } catch (e) {
             console.warn('Failed to send discount email:', e);

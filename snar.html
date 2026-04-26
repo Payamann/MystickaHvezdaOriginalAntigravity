@@ -14,7 +14,7 @@
     <meta property="og:title" content="Snář: Výklad Snů & Lexikon Symbolů | Mystická Hvězda">
     <meta property="og:description"
         content="Rozlušte významy snů zdarma. 65+ snových symbolů nebo hluboký osobní výklad celého snu.">
-    <meta property="og:image" content="https://mystickahvezda.cz/img/icon-moon.webp">
+    <meta property="og:image" content="https://www.mystickahvezda.cz/img/icon-moon.webp">
     <meta property="og:locale" content="cs_CZ">
     <meta name="twitter:card" content="summary_large_image">
     <!-- JSON-LD Structured Data -->
@@ -26,7 +26,7 @@
                 "@type": "WebPage",
                 "name": "Snář: Lexikon Snů & Hluboký Výklad | Mystická Hvězda",
                 "description": "Bezplatný online snář s výkladem 65+ snových symbolů. Rozlušte značení vašeho snu.",
-                "url": "https://mystickahvezda.cz/snar.html",
+                "url": "https://www.mystickahvezda.cz/snar.html",
                 "inLanguage": "cs",
                 "speakable": {
                     "@type": "SpeakableSpecification",
@@ -42,7 +42,7 @@
                 "breadcrumb": {
                     "@type": "BreadcrumbList",
                     "itemListElement": [
-                        {"@type": "ListItem", "position": 1, "name": "Mystická Hvězda", "item": "https://mystickahvezda.cz"},
+                        {"@type": "ListItem", "position": 1, "name": "Mystická Hvězda", "item": "https://www.mystickahvezda.cz"},
                         {"@type": "ListItem", "position": 2, "name": "Snář & Lexikon Snů"}
                     ]
                 }
@@ -104,474 +104,12 @@
         href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap&subset=latin,latin-ext"
         rel="stylesheet"  >
     <noscript><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap&subset=latin,latin-ext" rel="stylesheet"></noscript>
-    <link rel="stylesheet" href="css/style.v2.min.css?v=9">
-
-    <style>
-        /* Modern Dream Lexicon Custom Styles */
-        .dream-hero {
-            background: radial-gradient(circle at top right, rgba(138, 43, 226, 0.15), transparent 60%),
-                radial-gradient(circle at bottom left, rgba(75, 0, 130, 0.2), transparent 60%);
-            padding-top: 140px;
-            /* offset for header */
-            padding-bottom: var(--space-xl);
-            position: relative;
-        }
-
-        .dream-hero::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-            z-index: 0;
-            opacity: 0.5;
-        }
-
-        .dream-container {
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Search & Alphabet section */
-        .search-section {
-            background: rgba(15, 10, 30, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius-lg);
-            padding: var(--space-xl);
-            margin-bottom: var(--space-2xl);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .search-input-wrapper {
-            position: relative;
-            margin-bottom: var(--space-lg);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: var(--space-md);
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--color-silver-mist);
-            font-size: 1.2rem;
-        }
-
-        .dream-search-input {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--color-mystic-gold);
-            border-radius: 30px;
-            padding: var(--space-md) var(--space-lg) var(--space-md) 3rem;
-            color: #fff;
-            font-size: 1.1rem;
-            transition: all var(--transition-base);
-        }
-
-        .dream-search-input:focus {
-            outline: none;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
-            background: rgba(0, 0, 0, 0.5);
-        }
-
-        .alphabet-nav {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            justify-content: center;
-            margin-bottom: var(--space-lg);
-        }
-
-        .alphabet-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--color-silver-mist);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            font-family: var(--font-heading);
-            font-size: 0.9rem;
-        }
-
-        .alphabet-btn:hover,
-        .alphabet-btn.active {
-            background: var(--color-mystic-gold);
-            color: #000;
-            border-color: var(--color-mystic-gold);
-            transform: translateY(-2px);
-        }
-
-        /* Dictionary Results Grid */
-        .dict-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: var(--space-md);
-        }
-
-        @media (min-width: 768px) {
-            .dict-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .dict-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: var(--space-lg);
-            }
-        }
-
-        .dict-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: var(--radius-md);
-            padding: var(--space-md);
-            transition: all var(--transition-base);
-            height: 100%;
-        }
-
-        .dict-card:hover {
-            border-color: rgba(212, 175, 55, 0.3);
-            background: rgba(255, 255, 255, 0.05);
-            transform: translateY(-2px);
-        }
-
-        .dict-keyword {
-            font-family: var(--font-heading);
-            color: var(--color-mystic-gold);
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-            padding-bottom: 0.5rem;
-        }
-
-        .dict-desc {
-            font-size: 0.9rem;
-            color: var(--color-silver-mist);
-            line-height: 1.6;
-            margin: 0;
-        }
-
-        .no-results {
-            text-align: center;
-            color: var(--color-silver-mist);
-            padding: var(--space-xl);
-            font-style: italic;
-            grid-column: 1 / -1;
-        }
-
-        .loading-animation {
-            display: none;
-            text-align: center;
-            margin: var(--space-lg) 0;
-        }
-
-        .moon-loader {
-            font-size: 3rem;
-            display: inline-block;
-            animation: orbBounce 2s ease-in-out infinite;
-            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.5));
-        }
-
-        /* Popular Dreams Quick Grid */
-        .popular-dreams-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin: var(--space-xl) 0;
-        }
-
-        @media (min-width: 640px) {
-            .popular-dreams-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .popular-dreams-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-
-        .popular-card {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            padding: var(--space-md);
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-        }
-
-        .popular-card:hover {
-            background: rgba(212, 175, 55, 0.1);
-            border-color: rgba(212, 175, 55, 0.4);
-            transform: translateY(-3px);
-        }
-
-        .popular-card-emoji {
-            font-size: 2rem;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        .popular-card-label {
-            color: var(--color-starlight);
-            font-size: 0.85rem;
-            line-height: 1.3;
-        }
-
-        /* FAQ Section */
-        .faq-section {
-            margin-top: var(--space-3xl);
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            padding-top: var(--space-2xl);
-        }
-
-        .faq-item {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            overflow: hidden;
-        }
-
-        .faq-question {
-            width: 100%;
-            background: none;
-            border: none;
-            color: var(--color-starlight);
-            font-family: var(--font-heading);
-            font-size: 1.05rem;
-            text-align: left;
-            padding: var(--space-md) 0;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .faq-question:hover {
-            color: var(--color-mystic-gold);
-        }
-
-        .faq-icon {
-            font-size: 1.2rem;
-            flex-shrink: 0;
-            transition: transform 0.3s ease;
-        }
-
-        .faq-item.open .faq-icon {
-            transform: rotate(45deg);
-        }
-
-        .faq-answer {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease, padding 0.3s ease;
-            color: var(--color-silver-mist);
-            font-size: 0.95rem;
-            line-height: 1.8;
-        }
-
-        .faq-item.open .faq-answer {
-            max-height: 400px;
-            padding-bottom: var(--space-md);
-        }
-
-        /* Cross-links section */
-        .crosslinks-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: var(--space-md);
-            margin-top: var(--space-lg);
-        }
-
-        @media (min-width: 768px) {
-            .crosslinks-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-
-        .crosslink-card {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            padding: var(--space-md);
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            text-decoration: none;
-            color: var(--color-silver-mist);
-            font-size: 0.9rem;
-            text-align: center;
-            transition: all 0.2s ease;
-        }
-
-        .crosslink-card:hover {
-            background: rgba(157, 78, 221, 0.1);
-            border-color: rgba(157, 78, 221, 0.3);
-            color: var(--color-starlight);
-            transform: translateY(-2px);
-        }
-
-        .crosslink-card .emoji {
-            font-size: 1.8rem;
-        }
-
-        /* Sen Dne (Dream of the Day) widget */
-        .dream-of-day {
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.12) 0%, rgba(75, 0, 130, 0.2) 100%);
-            border: 1px solid rgba(212, 175, 55, 0.25);
-            border-radius: var(--radius-lg);
-            padding: var(--space-lg) var(--space-xl);
-            margin-bottom: var(--space-xl);
-            display: flex;
-            align-items: center;
-            gap: var(--space-lg);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .dream-of-day::before {
-            content: '';
-            position: absolute;
-            top: -30px;
-            right: -30px;
-            width: 120px;
-            height: 120px;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.12) 0%, transparent 70%);
-            border-radius: 50%;
-        }
-
-        .dod-emoji {
-            font-size: 3.5rem;
-            flex-shrink: 0;
-            filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.5));
-            animation: float 4s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-8px);
-            }
-        }
-
-        .dod-content {
-            flex: 1;
-        }
-
-        .dod-label {
-            font-size: 0.75rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--color-mystic-gold);
-            opacity: 0.8;
-            margin-bottom: 4px;
-        }
-
-        .dod-keyword {
-            font-family: var(--font-heading);
-            font-size: 1.5rem;
-            color: #fff;
-            margin-bottom: 6px;
-        }
-
-        .dod-desc {
-            font-size: 0.9rem;
-            color: var(--color-silver-mist);
-            line-height: 1.6;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        /* Stats bar */
-        .stats-bar {
-            display: flex;
-            justify-content: center;
-            gap: var(--space-2xl);
-            margin: var(--space-xl) 0 var(--space-lg);
-            flex-wrap: wrap;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-number {
-            font-family: var(--font-heading);
-            font-size: 2rem;
-            color: var(--color-mystic-gold);
-            display: block;
-            line-height: 1;
-        }
-
-        .stat-label {
-            font-size: 0.8rem;
-            color: var(--color-silver-mist);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        /* Random dream button */
-        .btn-random {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: var(--color-silver-mist);
-            border-radius: 30px;
-            padding: 8px 20px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-random:hover {
-            border-color: rgba(212, 175, 55, 0.4);
-            color: var(--color-mystic-gold);
-            background: rgba(212, 175, 55, 0.05);
-        }
-
-        /* Share button after result */
-        .share-bar {
-            display: none;
-            margin-top: var(--space-md);
-            gap: var(--space-sm);
-            flex-wrap: wrap;
-        }
-
-        .share-bar.visible {
-            display: flex;
-        }
-
-        .btn-share {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: var(--color-silver-mist);
-            border-radius: 20px;
-            padding: 6px 14px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-share:hover {
-            background: rgba(255, 255, 255, 0.12);
-            color: #fff;
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.v2.min.css?v=11">
+    <link rel="stylesheet" href="css/pages/snar.css">
+<!-- DOMPurify for XSS protection (must load synchronously before other scripts use it) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"></script>
+    <link rel="canonical" href="https://www.mystickahvezda.cz/snar.html">
+    <script src="/js/dist/analytics-init.js" defer></script>
 </head>
 
 <body>
@@ -589,7 +127,7 @@
                         <h1 class="hero__title">
                             Lexikon <span class="text-gradient">Snů</span>
                         </h1>
-                        <p class="hero__subtitle mx-auto" style="max-width: 650px;">
+                        <p class="hero__subtitle mx-auto mh-inline-937dd12a1d">
                             Naše sny jsou tajným jazykem podvědomí. Rozklíčujte význam symbolů, které se vám v noci
                             zjevují, nebo svěřte celý děj snu našemu Hvězdnému Průvodci pro hlubokou psychologickou
                             analýzu.
@@ -613,8 +151,8 @@
                     </div>
 
                     <!-- Sen Dne (Dream of the Day) -->
-                    <div class="dream-of-day" data-animate style="animation-delay: 0.15s;">
-                        <span class="dod-emoji" id="dod-emoji">🔮</span>
+                    <div class="dream-of-day mh-inline-7eaa5de39e" data-animate>
+                        <span class="dod-emoji" id="dod-emoji">&#128302;</span>
                         <div class="dod-content">
                             <div class="dod-label">✨ Symbol dne</div>
                             <div class="dod-keyword" id="dod-keyword">Hvězdy se řadí...</div>
@@ -622,14 +160,14 @@
                         </div>
                     </div>
 
-                    <div style="margin: var(--space-2xl) 0;">
-                        <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.1); margin-bottom: 2rem;">
-                        <h2 class="text-center"
-                            style="font-family: var(--font-heading); font-size: 2rem; margin-bottom: 0.5rem;">
+                    <div class="mh-inline-20b02501bd">
+                        <hr class="mh-inline-b40d50db1e">
+                        <h2 class="text-center mh-inline-50c5890429"
+                           >
                             Nejhledánější
                             Sny</h2>
-                        <p class="text-center"
-                            style="color: var(--color-silver-mist); margin-bottom: 1.5rem; font-size: 0.9rem;">Klikněte
+                        <p class="text-center mh-inline-ee869c43d5"
+                           >Klikněte
                             na symbol a ihned ho najděte ve slovníčku</p>
                         <div class="popular-dreams-grid" id="popular-dreams-grid">
                             <button class="popular-card" data-search="Zuby">
@@ -657,7 +195,7 @@
                                 <span class="popular-card-label">Těhotenství ve snu</span>
                             </button>
                             <button class="popular-card" data-search="Ex-partner">
-                                <span class="popular-card-emoji">💔</span>
+                                <span class="popular-card-emoji">&#128148;</span>
                                 <span class="popular-card-label">Sen o bývalém</span>
                             </button>
                             <button class="popular-card" data-search="Moře">
@@ -665,14 +203,14 @@
                                 <span class="popular-card-label">More / Oceán</span>
                             </button>
                         </div>
-                        <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 2rem 0;">
-                        <h2 class="text-center"
-                            style="font-family: var(--font-heading); font-size: 2rem; margin-bottom: 1rem;">Abecední
+                        <hr class="mh-inline-a65d8d0b94">
+                        <h2 class="text-center mh-inline-116ccf6a1d"
+                           >Abecední
                             Snář</h2>
                     </div>
 
                     <!-- Dictionary Search & Filter -->
-                    <div class="search-section" data-animate style="animation-delay: 0.4s;">
+                    <div class="search-section mh-inline-ff70f9fca6" data-animate>
                         <div class="search-input-wrapper">
                             <span class="search-icon">🔍</span>
                             <input type="text" id="dream-search" class="dream-search-input"
@@ -692,13 +230,13 @@
 
                     <!-- FAQ Section for SEO -->
                     <section class="faq-section" aria-label="Časté otázky o snách">
-                        <h2 class="text-center"
-                            style="font-family: var(--font-heading); font-size: 2rem; margin-bottom: 0.5rem;">Nejčastěji
+                        <h2 class="text-center mh-inline-50c5890429"
+                           >Nejčastěji
                             Kladené Otázky</h2>
-                        <p class="text-center"
-                            style="color: var(--color-silver-mist); margin-bottom: 2rem; font-size: 0.9rem;">Odpovědi z
+                        <p class="text-center mh-inline-35ffd4b130"
+                           >Odpovědi z
                             pohledu jungiánské psychologie a snového výkladu</p>
-                        <div style="max-width: 800px; margin: 0 auto;" itemscope itemtype="https://schema.org/FAQPage">
+                        <div class="mh-inline-992a972ff3" itemscope itemtype="https://schema.org/FAQPage">
 
                             <div class="faq-item" itemscope itemprop="mainEntity"
                                 itemtype="https://schema.org/Question">
@@ -790,13 +328,13 @@
 
                     <!-- Internal Cross-links -->
                     <section
-                        style="margin-top: var(--space-3xl); border-top: 1px solid rgba(255,255,255,0.08); padding-top: var(--space-2xl);"
+                        class="mh-inline-4dc17d5743"
                         aria-label="Další nástroje">
-                        <h2 class="text-center"
-                            style="font-family: var(--font-heading); font-size: 1.8rem; margin-bottom: 0.5rem;">Mohlo by
+                        <h2 class="text-center mh-inline-d43c5e8766"
+                           >Mohlo by
                             vás zajímat</h2>
-                        <p class="text-center"
-                            style="color: var(--color-silver-mist); margin-bottom: 1.5rem; font-size: 0.9rem;">Další
+                        <p class="text-center mh-inline-ee869c43d5"
+                           >Další
                             nástroje pro sebepoznání na Mystické Hvězdě</p>
                         <div class="crosslinks-grid">
                             <a href="tarot.html" class="crosslink-card">
@@ -804,7 +342,7 @@
                                 <span>Výklad <strong>Tarot</strong>u</span>
                             </a>
                             <a href="kristalova-koule.html" class="crosslink-card">
-                                <span class="emoji">🔮</span>
+                                <span class="emoji">&#128302;</span>
                                 <span>Křišťálová <strong>Koule</strong></span>
                             </a>
                             <a href="biorytmy.html" class="crosslink-card">
@@ -828,61 +366,20 @@
     <div id="toast-container" class="toast-container"></div>
 
     <!-- Global Scripts -->
-    <script src="js/api-config.js?v=5" defer></script>
-    <script src="js/templates.js?v=10" defer></script>
-    <script src="js/auth-client.js?v=5" defer></script>
-    <script src="js/share-result.js" defer></script>
+    <script src="js/dist/api-config.js?v=5" defer></script>
+    <script src="js/dist/templates.js?v=10" defer></script>
+    <script src="js/dist/auth-client.js?v=5" defer></script>
+<script src="js/dist/auth-copy-fixes.js" defer></script>
+    <script src="js/dist/secondary-pages-copy-fixes.js" defer></script>
+    <script src="js/dist/share-result.js" defer></script>
     
-    <script src="js/exit-intent.js" defer></script>
-    <script src="js/components.js?v=10" defer></script>
-    <script src="js/snar.js?v=7" defer></script>
-    <script type="module" src="js/main.js?v=10"></script>
+    <script src="js/dist/exit-intent.js" defer></script>
+    <script src="js/dist/components.js?v=10" defer></script>
+    <script src="js/dist/snar.js?v=7" defer></script>
+    <script type="module" src="js/dist/main.js?v=10"></script>
 
     <!-- FAQ Accordion + Sen Dne -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // FAQ Accordion
-            document.querySelectorAll('.faq-question').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const item = btn.closest('.faq-item');
-                    const isOpen = item.classList.contains('open');
-                    document.querySelectorAll('.faq-item.open').forEach(i => {
-                        i.classList.remove('open');
-                        i.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
-                    });
-                    if (!isOpen) {
-                        item.classList.add('open');
-                        btn.setAttribute('aria-expanded', 'true');
-                    }
-                });
-            });
-
-            // Sen Dne — wired via globalDreamsData poll
-            function initDreamOfDay(dreams) {
-                if (!dreams || !dreams.length) return;
-                const countEl = document.getElementById('symbol-count');
-                if (countEl) countEl.textContent = dreams.length + '+';
-                const todayDream = dreams[Math.floor(Date.now() / 86400000) % dreams.length];
-                showDreamOfDay(todayDream);
-            }
-
-            function showDreamOfDay(d) {
-                const e = document.getElementById('dod-emoji');
-                const k = document.getElementById('dod-keyword');
-                const desc = document.getElementById('dod-desc');
-                if (e) e.textContent = d.emoji || '✨';
-                if (k) k.textContent = d.keyword;
-                if (desc) desc.textContent = d.description;
-            }
-
-            let _pc = 0;
-            const _pi = setInterval(() => {
-                if (window.globalDreamsData && window.globalDreamsData.length) {
-                    clearInterval(_pi);
-                    initDreamOfDay(window.globalDreamsData);
-                } else if (++_pc > 40) clearInterval(_pi);
-            }, 150);
-        });
-    </script>
+    <script src="js/dist/snar-inline.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"></script>
 </body>
 </html>

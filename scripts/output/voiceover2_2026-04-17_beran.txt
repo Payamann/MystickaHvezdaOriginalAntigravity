@@ -1,0 +1,56 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 17. dubna 2026
+
+[commanding] Berane, dnes riskuješ víc, než plánuješ. <break time="0.5s" /> [intense] A Mars ti šeptá: „Ne rychleji — jasněji." <break time="1.0s" />
+
+[confident] Otevřeš kalendář. <break time="0.3s" /> Vidíš ten termín. <break time="0.3s" /> [commanding] Tlačíš „ano" — ale intuice říká „počkej". <break time="0.3s" /> [intense] Odvaha není brzda. <break time="0.3s" /> Je to kompas, když chvat kazí směr. <break time="1.0s" />
+
+[inviting] Berane — napiš, co dnes riskuješ ⬇️ <break time="0.3s" /> [clearly] Profil pro ty, co berou astro vážně.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+17. dubna 2026 Mars v Beranu zesiluje impuls — ale retrográdní Merkur brzdí jednání 🔥 a stojíš mezi akcí a přemýšlením. Mars tě tlačí dopředu, ale když se bojíš brzdy, ztrácíš jasnost — odvaha bez směru je jen chaos. Sleduj profil — příště odhalím, jak Venuše v Býku změní strategii 🧭
+
+#mystickaHvezda #Beran #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+17. dubna 2026 Mars v Beranu tlačí na plyn — ale co když brzda není slabost, ale kompas? 🔥 Retrográdní Merkur ti dnes připomíná, že impuls bez směru tě nevede k cíli, ale do chaosu. Mars ti dává energii jednat, ale právě schopnost zastavit a poslechnout intuici tě odlišuje od těch, co jen reagují. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Beran #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm major-key instrumental with gentle driving percussion and softly accented brass that pulses forward like golden light spreading across dawn sky. Melodic phrases breathe rhythmically beneath spoken words, creating supportive momentum that energizes without overpowering, balancing presence with subtlety. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+Real deep-space Hubble-style nebula photograph background, split composition:
+top half = warm amber-orange stellar explosion, red fire tones with dramatic light burst from center,
+thin horizontal black band across the middle,
+bottom half = cool electric blue nebula with teal accents and scattered starlight.
+Cinematic, high-detail, photo-realistic.
+
+All graphic elements positioned in the UPPER 80% of the frame — leave minimal space at very bottom.
+
+Center-upper area: large ornate 3D CGI Beran zodiac symbol (♈),
+dark obsidian material with intricate gold filigree engravings,
+deeply detailed ancient medallion style, soft golden glow radiating from symbol, floating centered in frame.
+
+Directly below the symbol (upper-mid frame): dark stone plaque with ornate golden decorative border,
+bold serif text (NOT cursive, NOT italic, NOT calligraphic):
+Line 1: "17. DUBNA"
+Line 2: "BERAN"
+Text color: warm cream/off-white, engraved look.
+
+Immediately below the plaque (mid frame, NOT at the very bottom): aged parchment scroll, curled edges, warm paper texture,
+two lines of bold serif text (NOT cursive, NOT italic, NOT calligraphic), dark brown #2a1500:
+Line 1: "Tlačíš rychle dopředu."
+Line 2: "Mars říká počkej."
+
+Portrait 4:5, 1080x1350px. No watermarks, no UI, no borders.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Berane, dnes riskuješ víc, než plánuješ. A Mars ti šeptá: „Ne rychleji — jasněji." Otevřeš kalendář. Vidíš ten termín. Tlačíš „ano" — ale intuice říká „počkej". Odvaha není brzda. Je to kompas, když chvat kazí směr. Berane — napiš, co dnes riskuješ ⬇️ Profil pro ty, co berou astro vážně."

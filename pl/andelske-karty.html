@@ -18,11 +18,13 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👼</text></svg>">
     <link rel="manifest" href="../manifest.json">
     <link rel="stylesheet" href="../css/style.v2.min.css?v=9">
+    <link rel="stylesheet" href="../css/pages/pl-andelske-karty.css">
     
-    <link rel="canonical" href="https://mystickahvezda.cz/pl/andelske-karty.html">
-    <link rel="alternate" hreflang="cs" href="https://mystickahvezda.cz/andelske-karty.html">
-    <link rel="alternate" hreflang="sk" href="https://mystickahvezda.cz/sk/andelske-karty.html">
-    <link rel="alternate" hreflang="pl" href="https://mystickahvezda.cz/pl/andelske-karty.html">
+    <link rel="canonical" href="https://www.mystickahvezda.cz/pl/andelske-karty.html">
+    <link rel="alternate" hreflang="cs" href="https://www.mystickahvezda.cz/andelske-karty.html">
+    <link rel="alternate" hreflang="sk" href="https://www.mystickahvezda.cz/sk/andelske-karty.html">
+    <link rel="alternate" hreflang="pl" href="https://www.mystickahvezda.cz/pl/andelske-karty.html">
+    <script src="/js/dist/analytics-init.js" defer></script>
 </head>
 
 <body>
@@ -30,7 +32,7 @@
     <div id="header-placeholder"></div>
 
     <main id="main-content">
-        <section class="section section--hero angel-hero" style="min-height: 80vh; display: flex; align-items: center; padding-top: 100px;">
+        <section class="section section--hero angel-hero mh-inline-1a4b335401">
             <div class="container text-center">
                 <h1 class="hero__title mb-xl">
                     <span class="text-gradient">Anielska Karta Dnia</span>
@@ -48,24 +50,24 @@
                     </div>
                 </div>
 
-                <div id="angel-interpretation" class="card mt-xl" style="display: none; max-width: 600px; margin: 0 auto; text-align: left;">
-                    <h3 id="card-name" style="color: var(--color-mystic-gold);">---</h3>
-                    <p id="card-message" style="font-size: 1.1rem; line-height: 1.6;"></p>
+                <div id="angel-interpretation" class="card mt-xl mh-inline-f84c7568ce">
+                    <h3 id="card-name" class="mh-inline-76c98785d7">---</h3>
+                    <p id="card-message" class="mh-inline-f942cac2fb"></p>
                 </div>
 
                 <div class="mt-xl">
                     <button class="btn btn--primary btn--lg" id="draw-btn">Wylosuj Kartę</button>
-                    <button class="btn btn--secondary btn--lg" id="next-btn" style="display: none;">Pokaż kolejną kartę</button>
+                    <button class="btn btn--secondary btn--lg mh-inline-4e8480f4ea" id="next-btn">Pokaż kolejną kartę</button>
                 </div>
             </div>
         </section>
     </main>
 
     <div id="footer-placeholder"></div>
-    <script src="../js/api-config.js" defer></script>
-    <script src="../js/templates.js" defer></script>
-    <script src="../js/components.js" defer></script>
-    <script src="../js/angel-cards.js" defer></script>
-    <script type="module" src="../js/main.js"></script>
+    <script src="../js/dist/api-config.js" defer></script>
+    <script src="../js/dist/templates.js" defer></script>
+    <script src="../js/dist/components.js" defer></script>
+    <script src="../js/dist/angel-cards.js" defer></script>
+    <script type="module" src="../js/dist/main.js"></script>
 </body>
 </html>

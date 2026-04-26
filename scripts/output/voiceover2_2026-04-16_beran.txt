@@ -1,0 +1,47 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 16. dubna 2026
+
+[commanding] Berane, dnes ti někdo řekne „buď trpělivý". <break time="0.5s" /> [intense] A ty cítíš vření uvnitř. <break time="1.0s" />
+
+[confident] Díváš se na ten projekt. <break time="0.3s" /> [intense] Třetí měsíc. <break time="0.3s" /> [commanding] Všichni říkají „ještě chvíli". <break time="0.3s" /> [mysterious] Trpělivost tě nechrání před zklamáním. <break time="0.3s" /> [intense] Chrání tě před spěchem, který by tě smetl dřív, než bys vůbec začal. <break time="1.0s" />
+
+[inviting] Berane — co rozhodneš bez přemýšlení? <break time="0.3s" /> [clearly] Příští díl: astro a peníze. <break time="0.3s" /> Šokující pravda.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+16. dubna 2026 Mars vstupuje do stínu Saturna a tvoje trpělivost se dnes mění v taktiku. ♈️ Mars (tvoje vládnoucí planeta) v konfliktu se Saturnem tě nutí brzdit impulz — struktura musí udržet tvůj plamen, aby nevyhořel naprázdno. Sleduj profil — příště odhalím, kdy Mars prolomí saturnský strop a ty konečně spustíš to, co teď plánuješ. 🔥
+
+#mystickaHvezda #Beran #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+16. dubna 2026 tě někdo vyzve k trpělivosti — a ty v sobě cítíš vzpouru. Mars (tvá vládnoucí planeta) vstupuje do stínu Saturnu, což znamená: tvůj impuls musí čekat na správnou strukturu ⚔️ Saturnský tlak tě nutí postavit pevný základ, který udrží tvůj plamen, místo aby shořel naprázdno. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Beran #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm morning brass and gentle driving percussion create forward momentum with golden major key harmonies, like stardust catching first light spreading across the horizon, maintaining soft rhythmic pulse that energizes without overpowering, designed as supportive bed for voiceover with breathing melodic phrases and hopeful radiance. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+A mystical video thumbnail for zodiac sign Aries.
+
+BACKGROUND: deep dark space with soft subtle blazing crimson and scarlet nebula with intense orange plasma bursts, fiery red cosmic energy surging like solar flares, deep red void with streaks of hot amber light — powerful, ignited, unstoppable — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.
+
+COMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.
+
+ELEMENT 1 — glyph: large ornate Aries symbol (♈) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.
+
+ELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '16. dubna' in elegant gold lettering on the first line, 'BERAN' in bold engraved gold capitals on the second line.
+
+ELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Trpělivost tě nechrání před zklamáním.' on the first line, 'Chrání tě před spěchem, který by tě zlomil.' on the second line.
+
+NO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.
+
+Portrait 9:16.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Berane, dnes ti někdo řekne „buď trpělivý". A ty cítíš vření uvnitř. Díváš se na ten projekt. Třetí měsíc. Všichni říkají „ještě chvíli". Trpělivost tě nechrání před zklamáním. Chrání tě před spěchem, který by tě smetl dřív, než bys vůbec začal. Berane — co rozhodneš bez přemýšlení? Příští díl: astro a peníze. Šokující pravda."

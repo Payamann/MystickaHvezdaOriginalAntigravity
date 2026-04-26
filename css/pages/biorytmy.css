@@ -1,0 +1,266 @@
+/* Extracted from biorytmy.html inline <style> block. */
+.bio-form {
+
+            max-width: 500px;
+
+            margin: 0 auto;
+
+        }
+
+
+
+        .biorhythm-chart {
+
+            width: 100%;
+
+            height: 300px;
+
+            margin-top: var(--space-lg);
+
+            position: relative;
+
+        }
+
+
+
+        .bio-legend {
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: var(--space-md);
+
+            margin-top: var(--space-xl);
+
+            flex-wrap: wrap;
+
+        }
+
+
+
+        .bio-legend-item {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            font-size: var(--text-sm);
+
+        }
+
+
+
+        .bio-color {
+
+            width: 12px;
+
+            height: 12px;
+
+            border-radius: 50%;
+
+            display: inline-block;
+
+        }
+
+
+
+        .bio-stats {
+
+            display: grid;
+
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: var(--space-md);
+
+            margin-top: var(--space-lg);
+
+        }
+
+
+
+        .bio-stat-card {
+
+            background: rgba(255, 255, 255, 0.02);
+
+            border: 1px solid rgba(255, 255, 255, 0.05);
+
+            border-radius: var(--radius-md);
+
+            padding: var(--space-md);
+
+            text-align: center;
+
+        }
+
+
+
+        .bio-stat-label {
+
+            font-size: var(--text-xs);
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.05em;
+
+            color: var(--color-silver-mist);
+
+            margin-bottom: 4px;
+
+        }
+
+
+
+        .bio-stat-value {
+
+            font-size: var(--text-lg);
+
+            font-weight: 700;
+
+            font-family: var(--font-heading);
+
+        }
+
+        .bio-stat-value--physical {
+            margin-bottom: 8px;
+            color: #ff4b4b;
+        }
+
+        .bio-stat-value--emotional {
+            margin-bottom: 8px;
+            color: #4caf50;
+        }
+
+        .bio-stat-value--intellectual {
+            margin-bottom: 8px;
+            color: #00bcd4;
+        }
+
+        .bio-stat-description {
+            margin: 0;
+            color: var(--color-silver-mist);
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+
+
+        /* Date Input Styling Override */
+
+        .bio-date-wrapper {
+
+            position: relative;
+
+            max-width: 300px;
+
+            margin: 0 auto;
+
+        }
+
+
+
+        .bio-date-input {
+
+            width: 100%;
+
+            padding: 15px 20px;
+
+            font-size: 1.2rem;
+
+            color: #ffffff;
+
+            background: rgba(255, 255, 255, 0.05);
+
+            border: 2px solid rgba(212, 175, 55, 0.3);
+
+            border-radius: 12px;
+
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+
+            text-align: center;
+
+            font-family: var(--font-body);
+
+            transition: all 0.3s ease;
+
+            cursor: pointer;
+
+        }
+
+
+
+        .bio-date-input:focus {
+
+            outline: none;
+
+            border-color: var(--color-mystic-gold);
+
+            background: rgba(255, 255, 255, 0.1);
+
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3), inset 0 2px 5px rgba(0, 0, 0, 0.5);
+
+        }
+
+
+
+        /* Hide the default calendar icon and make the whole input clickable */
+
+        .bio-date-input::-webkit-calendar-picker-indicator {
+
+            position: absolute;
+
+            top: 0;
+
+            left: 0;
+
+            right: 0;
+
+            bottom: 0;
+
+            width: 100%;
+
+            height: 100%;
+
+            opacity: 0;
+
+            cursor: pointer;
+
+        }
+
+
+
+        .bio-date-input::-webkit-datetime-edit {
+
+            text-align: center;
+
+        }
+
+
+
+        @media (max-width: 600px) {
+
+            .bio-stats {
+
+                grid-template-columns: 1fr;
+
+            }
+
+        }
+
+/* Migrated from biorytmy.html static style attributes. */
+html body .mh-inline-b41d72ce16 { max-width: 800px; margin: 0 auto; }
+html body .mh-inline-1edbc0b906 { margin: 0; }
+html body .mh-inline-71094106cf { margin-top: var(--space-xl); }
+html body .mh-inline-934b479c34 { letter-spacing: 1px; min-width: 250px; }
+html body .mh-inline-1f494c8269 { display: none; margin-top: var(--space-xxl); }
+html body .mh-inline-923fc29cd3 { background: var(--color-danger); }
+html body .mh-inline-cb76c85312 { background: var(--color-success); }
+html body .mh-inline-ccfde4559a { background: var(--color-info); }
+html body .mh-inline-3e3f9127cb { margin-top: var(--space-xl); background: rgba(212, 175, 55, 0.05); border-color: rgba(212, 175, 55, 0.2); }
+
+/* Migrated from biorytmy.html remaining static style attributes. */
+html body .mh-inline-f5dad90286 { border-color: rgba(255,255,255,0.1); margin-bottom: var(--space-xl); }
+html body .mh-inline-2b886153c4 { color: var(--color-mystic-gold); margin-bottom: 1rem; }
+html body .mh-inline-da6f3fb3d8 { margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--color-silver-mist); }

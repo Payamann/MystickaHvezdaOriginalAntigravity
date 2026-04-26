@@ -1,0 +1,56 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 18. dubna 2026
+
+[intense] Štíři nejsou mstiví. <break time="0.5s" /> [mysterious] Jsou jediní, kdo si pamatuje pravdu. <break time="1.0s" />
+
+[commanding] Díváš se na tu osobu. <break time="0.3s" /> [mysterious] Cítíš, že ti lže. <break time="0.3s" /> [intense] Všichni říkají — odpusť. <break time="0.3s" /> [warm] Ale odpuštění neznamená zapomenout. <break time="0.3s" /> [confident] Znamená pustit touhu to napravit. <break time="1.0s" />
+
+[inviting] Štíre — napiš, co dnes nepouštíš ⬇️ <break time="0.3s" /> [clearly] Ukládej — budeš se k tomu vracet.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+18. dubna 2026 Pluton ve Vodnáři odhaluje: Štír nikdy nezapomíná, protože jeho paměť je evolučním nástrojem 🦂 — ne slabostí. Fixní vodní znamení řízené Plutonem archivuje emocionální pravdy jako seismograf — každý otřes, každá lež, každý rozpor je zakódován v těle. Sleduj profil — příště odhalím, proč Štír rozliší manipulaci dřív, než ji ostatní vůbec zaregistrují 🔍
+
+#mystickaHvezda #Stir #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+18. dubna 2026 ti Pluton ve Vodnáři ukazuje: paměť Štíra není archiv minulosti — je kompasem současnosti 🦂 Fixní vodní znamení řízené Plutonem nezapomíná proto, že by lpělo na bolesti — archivuje emocionální pravdy jako referenční body reality. Každá lež, každý rozpor, každý energetický nesoulad je zakódován v těle jako seismograf, který chrání před opakováním deformace. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Štír #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm instrumental underscore with gentle forward pulse, golden major key melodies breathing between phrases, dark cello and deep bass undertones adding rich supportive warmth like stardust catching morning light, soft rhythmic momentum creates energizing lift without overpowering, designed to sit beneath voiceover with present uplifting drive. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+Real deep-space Hubble-style nebula photograph background, split composition:
+top half = deep crimson-red nebula with dark purple shadows with dramatic light burst from center,
+thin horizontal black band across the middle,
+bottom half = near-black deep space with electric violet accents and scattered starlight.
+Cinematic, high-detail, photo-realistic.
+
+All graphic elements positioned in the UPPER 80% of the frame — leave minimal space at very bottom.
+
+Center-upper area: large ornate 3D CGI Štír zodiac symbol (♏),
+dark obsidian material with intricate gold filigree engravings,
+deeply detailed ancient medallion style, soft golden glow radiating from symbol, floating centered in frame.
+
+Directly below the symbol (upper-mid frame): dark stone plaque with ornate golden decorative border,
+bold serif text (NOT cursive, NOT italic, NOT calligraphic):
+Line 1: "18. DUBNA"
+Line 2: "ŠTÍR"
+Text color: warm cream/off-white, engraved look.
+
+Immediately below the plaque (mid frame, NOT at the very bottom): aged parchment scroll, curled edges, warm paper texture,
+two lines of bold serif text (NOT cursive, NOT italic, NOT calligraphic), dark brown #2a1500:
+Line 1: "Odpuštění neznamená zapomenout."
+Line 2: "Znamená pustit pravdu ven."
+
+Portrait 4:5, 1080x1350px. No watermarks, no UI, no borders.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Štíři nejsou mstiví. Jsou jediní, kdo si pamatuje pravdu. Díváš se na tu osobu. Cítíš, že ti lže. Všichni říkají — odpusť. Ale odpuštění neznamená zapomenout. Znamená pustit touhu to napravit. Štíre — napiš, co dnes nepouštíš ⬇️ Ukládej — budeš se k tomu vracet."

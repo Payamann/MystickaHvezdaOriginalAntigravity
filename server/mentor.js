@@ -2,7 +2,7 @@ import express from 'express';
 import { calculateMoonPhase } from './services/astrology.js';
 import { supabase } from './db-supabase.js';
 import { authenticateToken, requirePremiumSoft } from './middleware.js';
-import { callGemini } from './services/gemini.js';
+import { callClaude } from './services/claude.js';
 import { SYSTEM_PROMPTS } from './config/prompts.js';
 import xss from 'xss';
 
@@ -165,7 +165,7 @@ ${contextItems.join('\n')}
         // 5. Generate Response
         console.log('[Mentor] Calling Gemini API with Enhanced Context...');
         const systemPrompt = SYSTEM_PROMPTS.mentor;
-        const responseText = await callGemini(
+        const responseText = await callClaude(
             systemPrompt,
             [...history, { role: 'user', content: sanitizedMessage }],
             { userContext, appContext }

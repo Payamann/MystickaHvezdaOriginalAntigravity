@@ -198,18 +198,18 @@ function updateTodayStats(birthDate) {
     statsContainer.innerHTML = `
         <div class="bio-stat-card">
             <div class="bio-stat-label">Fyzický</div>
-            <div class="bio-stat-value" style="color: #ff4b4b; margin-bottom: 8px;">${Math.round(vals.physical)}%</div>
-            <p style="font-size: 0.85rem; color: var(--color-silver-mist); margin: 0; line-height: 1.4;">${getInterpretation('physical', vals.physical)}</p>
+            <div class="bio-stat-value bio-stat-value--physical">${Math.round(vals.physical)}%</div>
+            <p class="bio-stat-description">${getInterpretation('physical', vals.physical)}</p>
         </div>
         <div class="bio-stat-card">
             <div class="bio-stat-label">Emoční</div>
-            <div class="bio-stat-value" style="color: #4caf50; margin-bottom: 8px;">${Math.round(vals.emotional)}%</div>
-            <p style="font-size: 0.85rem; color: var(--color-silver-mist); margin: 0; line-height: 1.4;">${getInterpretation('emotional', vals.emotional)}</p>
+            <div class="bio-stat-value bio-stat-value--emotional">${Math.round(vals.emotional)}%</div>
+            <p class="bio-stat-description">${getInterpretation('emotional', vals.emotional)}</p>
         </div>
         <div class="bio-stat-card">
             <div class="bio-stat-label">Intelektuální</div>
-            <div class="bio-stat-value" style="color: #00bcd4; margin-bottom: 8px;">${Math.round(vals.intellectual)}%</div>
-            <p style="font-size: 0.85rem; color: var(--color-silver-mist); margin: 0; line-height: 1.4;">${getInterpretation('intellectual', vals.intellectual)}</p>
+            <div class="bio-stat-value bio-stat-value--intellectual">${Math.round(vals.intellectual)}%</div>
+            <p class="bio-stat-description">${getInterpretation('intellectual', vals.intellectual)}</p>
         </div>
     `;
 }
@@ -228,7 +228,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const dateVal = birthdateInput.value;
             if (dateVal) {
                 const resultsSection = document.getElementById('biorhythm-results');
-                resultsSection.style.display = 'block';
+                resultsSection.hidden = false;
+                resultsSection.classList.add('mh-block-visible');
 
                 // Smooth scroll to results
                 resultsSection.scrollIntoView({ behavior: 'smooth', block: 'end' });

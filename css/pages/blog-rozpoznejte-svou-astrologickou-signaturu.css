@@ -1,0 +1,52 @@
+/* Extracted from blog/rozpoznejte-svou-astrologickou-signaturu.html inline <style> block. */
+.blog-content { max-width:800px; margin:0 auto; line-height:1.85; font-size:1.05rem; color:rgba(255,255,255,0.85); }
+
+        .blog-content h2 { font-family:'Cinzel',serif; color:#ebc066; font-size:1.5rem; margin:2.5rem 0 1rem; padding-bottom:0.5rem; border-bottom:1px solid rgba(235,192,102,0.2); }
+
+        .blog-content h3 { font-family:'Cinzel',serif; color:#d4af37; font-size:1.15rem; margin:2rem 0 0.75rem; }
+
+        .blog-content p { margin-bottom:1.4rem; }
+
+        .blog-content ul, .blog-content ol { margin:0 0 1.4rem 1.5rem; }
+
+        .blog-content li { margin-bottom:0.5rem; }
+
+        .blog-content blockquote { border-left:4px solid #9b59b6; padding:1rem 1.5rem; margin:2rem 0; background:rgba(155,89,182,0.08); border-radius:0 12px 12px 0; font-style:italic; color:rgba(255,255,255,0.9); }
+
+        .blog-content strong { color:#fff; }
+
+        .highlight-box { background:rgba(212,175,55,0.07); border:1px solid rgba(212,175,55,0.2); border-radius:14px; padding:1.5rem 2rem; margin:2rem 0; }
+
+        .highlight-box h3 { color:#ebc066; margin-top:0; font-family:'Cinzel',serif; }
+
+        .article-meta { display:flex; gap:1.5rem; color:rgba(255,255,255,0.4); font-size:0.82rem; margin-bottom:2rem; flex-wrap:wrap; }
+
+        .breadcrumb { color:rgba(255,255,255,0.35); font-size:0.82rem; margin-bottom:1.5rem; }
+
+        .breadcrumb a { color:rgba(235,192,102,0.6); text-decoration:none; }
+
+        .author-box { margin-top:3rem; padding:1.5rem 2rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:16px; display:flex; align-items:center; gap:1.5rem; }
+
+        .author-avatar { width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,#9b59b6,#d4af37); display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0; }
+
+        @media(max-width:640px){.author-box{flex-direction:column;text-align:center}}
+
+/* Migrated from blog/rozpoznejte-svou-astrologickou-signaturu.html static style attributes. */
+html body .mh-inline-4386cd951b { max-width: 800px; margin: 0 auto; text-align: left; }
+html body .mh-inline-6c279403a3 { text-align: left; font-size: 2.5rem; margin-top: 0.5rem; margin-bottom: 0; }
+html body .mh-inline-5f3fd8f573 { justify-content: flex-start; }
+html body .mh-inline-05314c49b6 { color: var(--color-mystic-gold); }
+html body .mh-inline-a17ff94afd { padding-top: 1rem; }
+html body .mh-inline-0fc9280457 { max-width: 800px; }
+html body .mh-inline-549ab2e562 { display:none; }
+html body .mh-inline-eb7533ee72 { margin: 3rem 0 2rem; padding: 2rem; background: linear-gradient(135deg, rgba(155,89,182,0.15), rgba(212,175,55,0.08)); border: 1px solid rgba(212,175,55,0.3); border-radius: 20px; text-align: center; }
+html body .mh-inline-fc120a8d4c { font-size: 2rem; margin-bottom: 0.75rem; }
+html body .mh-inline-0d687b6dc0 { font-family: 'Cinzel', serif; color: #d4af37; font-size: 1.3rem; margin-bottom: 0.75rem; }
+html body .mh-inline-71ec9c6a48 { color: rgba(255,255,255,0.7); line-height: 1.7; margin-bottom: 1.5rem; max-width: 480px; margin-left: auto; margin-right: auto; }
+html body .mh-inline-36b87179ea { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+html body .mh-inline-547bad16a1 { display: inline-block; padding: 0.75rem 1.75rem; background: linear-gradient(135deg, #9b59b6, #6c3483); border-radius: 50px; color: white; text-decoration: none; font-weight: 600; font-size: 0.95rem; }
+html body .mh-inline-d50660699f { display: inline-block; padding: 0.75rem 1.75rem; background: transparent; border: 1px solid rgba(212,175,55,0.5); border-radius: 50px; color: #d4af37; text-decoration: none; font-size: 0.95rem; }
+html body .mh-inline-8bcfe160b9 { color: rgba(255,255,255,0.3); font-size: 0.8rem; margin-top: 0.75rem; }
+html body .mh-inline-5753851c5f { margin: 2rem 0 3rem; }
+html body .mh-inline-55624aedea { font-family: 'Cinzel', serif; color: #d4af37; font-size: 1.1rem; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(212,175,55,0.2); }
+html body .mh-inline-06435eb791 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }

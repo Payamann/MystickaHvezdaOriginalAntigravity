@@ -26,15 +26,33 @@ export function getMoonPhase(date = new Date()) {
     if (phase < 0.78) return { name: 'Poslední čtvrť', slug: 'last-quarter', icon: '🌗', illumination: illuminationPct };
     if (phase < 0.97) return { name: 'Ubývající srpek', slug: 'waning-crescent', icon: '🌘', illumination: illuminationPct };
     return { name: 'Novoluní', slug: 'new-moon', icon: '🌑', illumination: illuminationPct };
-    return { name: 'Novoluní', slug: 'new-moon', icon: '🌑' };
 }
 
 export function getRitualDescription(phaseSlug) {
     const rituals = {
-        'new-moon': 'Čas pro nové začátky, setí záměrů a vnitřní klid.',
-        'full-moon': 'Vrchol energie. Čas pro uvolnění starého, oslavu a vděčnost.',
-        'waxing-crescent': 'Fáze růstu. Zaměřte se na akci a budování síly.',
-        'waning-gibbous': 'Fáze reflexe. Ideální pro očistu prostoru i mysli.'
+        'new-moon':        'Čas pro nové začátky, setí záměrů a vnitřní klid.',
+        'waxing-crescent': 'Fáze růstu. Čas pro první kroky a odvahu k akci.',
+        'first-quarter':   'Čas překonávat překážky, rozhodovat se a jednat s vůlí.',
+        'waxing-gibbous':  'Fáze zdokonalování. Vylaďte detaily a dotáhněte záměry.',
+        'full-moon':       'Vrchol energie. Čas pro oslavu, vděčnost a vědomé propuštění.',
+        'waning-gibbous':  'Fáze reflexe. Integrujte moudrost a sdílejte ji s ostatními.',
+        'last-quarter':    'Čas hlubokého čistění — pusťte vše, co vám již neslouží.',
+        'waning-crescent': 'Čas odpočinku, obnovy a tiché přípravy na nový cyklus.',
     };
     return rituals[phaseSlug] || 'Univerzální rituál pro harmonii s hvězdami.';
+}
+
+// Auto-update moon phase card on page load
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMoonPhaseCard);
+} else {
+    initMoonPhaseCard();
+}
+
+function initMoonPhaseCard() {
+    const card = document.getElementById('moon-phase-card');
+    if (card) {
+        const phase = getMoonPhase();
+        card.textContent = `${phase.icon} ${phase.name}`;
+    }
 }

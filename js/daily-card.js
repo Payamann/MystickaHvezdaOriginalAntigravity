@@ -40,6 +40,18 @@
         const inner = el('kdd-inner');
         if (!cardContainer || !inner) return;
 
+        const setInlineBlockVisible = (element, visible) => {
+            if (!element) return;
+            element.hidden = !visible;
+            element.classList.toggle('mh-inline-block-visible', visible);
+        };
+
+        const setBlockVisible = (element, visible) => {
+            if (!element) return;
+            element.hidden = !visible;
+            element.classList.toggle('mh-block-visible', visible);
+        };
+
         // LocalStorage keys
         const KEY_DATE = 'mh_kdd_date';
         const KEY_INDEX = 'mh_kdd_index';
@@ -98,7 +110,7 @@
         // Update streak badge
         const badge = el('kdd-streak-badge');
         if (badge && streakCount > 0) {
-            badge.style.display = 'inline-block';
+            setInlineBlockVisible(badge, true);
             const streakCountEl = el('kdd-streak-count');
             if (streakCountEl) streakCountEl.textContent = streakCount;
         }
@@ -106,21 +118,23 @@
         // Web Share API
         const shareBtn = el('kdd-share-btn');
         if (shareBtn && navigator.share) {
-            shareBtn.style.display = 'inline-block';
+            setInlineBlockVisible(shareBtn, true);
             shareBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 navigator.share({
                     title: 'Mystická Hvězda - Moje Karta Dne',
                     text: `Moje dnešní karta je ${card.name} (${card.emoji}). Zjisti, jakou zprávu mají hvězdy připravenou pro tebe!`,
-                    url: 'https://mystickahvezda.cz'
-                }).catch(err => console.log('Share error:', err));
+                    url: 'https://www.mystickahvezda.cz'
+                }).catch(err => {
+                    if (window.MH_DEBUG) console.debug('Share error:', err);
+                });
             });
         }
 
         // Reveal UI Logic
         const revealCard = () => {
             // If already flipped, do nothing
-            if (inner.style.transform.includes('rotateY(180deg)')) return;
+            if (inner.classList.contains('kdd-inner--flipped')) return;
 
             // They flipped it! Now increment the streak if appropriate.
             // We need a separate flag so we don't increment multiple times a day if they refresh and flip again.
@@ -140,22 +154,21 @@
                 // Update badge UI since it might have changed
                 const badge = el('kdd-streak-badge');
                 if (badge && streakCount > 0) {
-                    badge.style.display = 'inline-block';
+                    setInlineBlockVisible(badge, true);
                     const streakCountEl = el('kdd-streak-count');
                     if (streakCountEl) streakCountEl.textContent = streakCount;
                 }
             }
 
             // Always animate the flip (no immediate reveal on page load)
-            inner.style.transform = 'rotateY(180deg)';
-            inner.style.webkitTransform = 'rotateY(180deg)';
+            inner.classList.add('kdd-inner--flipped');
 
             setTimeout(() => {
-                if (el('kdd-hint')) el('kdd-hint').style.display = 'none';
+                if (el('kdd-hint')) el('kdd-hint').hidden = true;
                 const msg = el('kdd-message');
                 if (msg) {
-                    msg.style.display = 'block';
-                    msg.style.animation = 'fadeIn 0.5s ease';
+                    setBlockVisible(msg, true);
+                    msg.classList.add('kdd-message--visible');
                 }
             }, 400);
         };

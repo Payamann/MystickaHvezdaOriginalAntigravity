@@ -1,0 +1,47 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 16. dubna 2026
+
+[gentle] Raku, tvoje citlivost není slabost. <break time="0.5s" /> [soft] Jsi jediná bytost, která si dovolí cítit pravdu. <break time="1.0s" />
+
+[warm] Stojíš u okna. <break time="0.3s" /> [mysterious] Díváš se ven a uvnitř ti někdo šeptá — tohle místo už není tvoje. <break time="0.3s" /> [gentle] Tvá intuice už dávno ví, kam patříš. <break time="1.0s" />
+
+[inviting] Co dnes navenek neříkáš, ale uvnitř cítíš? ⬇️ <break time="0.3s" /> [clearly] Příští díl: astro a peníze. Šokující pravda.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+16. dubna 2026 se Měsíc v Rybách dotýká tvého vnitřního kompasu — intuitivní navigace, ne sentimentalita 🧭 Rak je kardinální vodní znamení — tvá citlivost vnímá energetické proudy dřív, než je ostatní vůbec zaregistrují. Sleduj profil — příště odhalím, jak astro aspekty ovlivňují tvé finance a proč peníze k tobě přicházejí vlnami 🌊
+
+#mystickaHvezda #Rak #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+Tvoje intuice čte energii dřív než slova — to je radar, který ostatní nemají. 16. dubna 2026 se Měsíc v Rybách dotýká tvého vnitřního kompasu 🧭 a ty vnímáš proudy, které ostatní ještě nevidí. Kardinální vodní energie tě vede tam, kam patříš — pravda uvnitř tebe ti ukazuje cestu, ne zvyk 🌊 Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Rak #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm energizing instrumental backdrop with mellow Rhodes piano dancing over gentle rhythmic pulse and luminous ambient textures, evoking golden sunrise light spreading across dewlit skies, moving forward with tender hope and soft reassuring momentum, designed to support voiceover with present uplifting energy in major key. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+A mystical video thumbnail for zodiac sign Cancer.
+
+BACKGROUND: deep dark space with soft subtle silver and pale blue lunar nebula with moonlit cosmic mist, soft silver-white stardust glowing like reflected moonlight, deep indigo void with cool silver light trails — gentle, lunar, oceanic — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.
+
+COMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.
+
+ELEMENT 1 — glyph: large ornate Cancer symbol (♋) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.
+
+ELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '16. dubna' in elegant gold lettering on the first line, 'RAK' in bold engraved gold capitals on the second line.
+
+ELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Nejsi přecitlivělý.' on the first line, 'Jsi jediný, kdo cítí pravdu.' on the second line.
+
+NO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.
+
+Portrait 9:16.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Raku, nejsi přecitlivělá ani přecitlivělý. Jsi jediná osoba, která si dovolí cítit pravdu. Stojíš u okna. Díváš se ven a uvnitř ti někdo šeptá — tohle místo už není tvoje. Tvá intuice už dávno ví, kam patříš. Co dnes navenek neříkáš, ale uvnitř cítíš? ⬇️ Příští díl: astro a peníze. Šokující pravda."

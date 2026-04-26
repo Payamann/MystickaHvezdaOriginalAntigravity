@@ -1,714 +1,123 @@
 <!DOCTYPE html>
-
 <html lang="cs">
-
-
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-
     <title>Přihlášení | Mystická Hvězda</title>
-
+    <meta name="description" content="Přihlaste se nebo si vytvořte účet zdarma a pokračujte v osobních výkladech na Mystické Hvězdě.">
     <meta name="robots" content="noindex, nofollow">
-
-
-
-    <!-- Favicon -->
-
-    <link rel="icon" type="image/svg+xml"
-
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>??</text></svg>">
-
-
-
-    <!-- Fonts -->
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link
-
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap&subset=latin,latin-ext"
-
-        rel="stylesheet"  >
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap&subset=latin,latin-ext" rel="stylesheet"></noscript>
-
-
-
-    <!-- Styles -->
-
-    <link rel="stylesheet" href="css/style.v2.min.css?v=9">
-
-
-
-    <!-- Scripts -->
-
-
-
-
-
-
-
-
-
-
-
-    <meta property="og:image" content="https://mystickahvezda.cz/img/hero-3d.webp">
-
-    <link rel="canonical" href="https://mystickahvezda.cz/prihlaseni.html">
-
-    <meta name="robots" content="noindex, nofollow">
-
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>*</text></svg>">
+    <link rel="stylesheet" href="/fonts/local-fonts.css">
+    <link rel="stylesheet" href="css/style.v2.min.css?v=11">
+    <link rel="stylesheet" href="css/pages/prihlaseni.css">
+<meta property="og:image" content="https://www.mystickahvezda.cz/img/hero-3d.webp">
+    <link rel="canonical" href="https://www.mystickahvezda.cz/prihlaseni.html">
+    <script src="/js/dist/analytics-init.js" defer></script>
 </head>
 
-
-
-<body>
-
-    <!-- STARS BACKGROUND -->
-
+<body class="page-login">
     <div class="stars" aria-hidden="true"></div>
-
-
-
-    <!-- HEADER -->
-
     <div id="header-placeholder"></div>
 
-
-
     <main>
-
         <section class="login-section">
-
             <div class="login-card" data-animate>
-
                 <div class="login-header">
-
-                    <span class="login-icon">🔮</span>
-
-                    <h1 class="hero__title" id="login-page-title" style="font-size: 2rem; margin-bottom: 0.5rem;">Vítejte zpět</h1>
-
-                    <p class="hero__subtitle" id="login-page-subtitle" style="font-size: 1rem;">Přihlaste se ke svému účtu</p>
-
-                    <p id="login-social-proof" style="font-size:0.82rem;color:rgba(255,255,255,0.35);margin-top:0.5rem;display:none;">⭐⭐⭐⭐⭐ Přidejte se k 12 000+ uživatelům</p>
-
+                    <span class="login-icon">*</span>
+                    <h1 class="hero__title login-card__title" id="login-page-title">Vítejte zpět</h1>
+                    <p class="hero__subtitle mh-inline-86e975967b" id="login-page-subtitle">Přihlaste se ke svému účtu a pokračujte tam, kde jste skončili.</p>
+                    <p id="login-social-proof" class="mh-inline-99dc5ae89a">12 000+ lidí se sem vrací pro denní vedení.</p>
+                    <div id="checkout-context-banner" class="mh-inline-0503a03e27">
+                        <div id="checkout-context-label" class="mh-inline-445ad7cc27">Pokračujete k plánu</div>
+                        <strong id="checkout-context-title" class="mh-inline-1d765838a2"></strong>
+                        <p id="checkout-context-copy" class="mh-inline-8b9d667a40"></p>
+                    </div>
                 </div>
-
-
-
-                <!-- Using the same ID as the modal form to reuse Auth logic -->
 
                 <form id="login-form">
-
                     <div class="form-group">
-
                         <label for="email" class="form-label">Email</label>
-
-                        <input type="email" id="email" name="email" class="form-input" placeholder="vas@email.cz"
-
-                            required autocomplete="email">
-
+                        <input type="email" id="email" name="email" class="form-input" placeholder="vas@email.cz" required autocomplete="email">
                     </div>
 
-
-
                     <div class="form-group">
-
                         <label for="password" class="form-label">Heslo</label>
-
-                        <input type="password" id="password" name="password" class="form-input" placeholder="••••••••"
-
-                            required autocomplete="current-password">
-
+                        <input type="password" id="password" name="password" class="form-input" placeholder="********" required autocomplete="current-password">
                     </div>
 
+                    <div class="form-group mh-inline-59ce1fef8d" id="confirm-password-field-wrapper">
+                        <label for="confirm-password-reg" class="form-label">Potvrďte heslo</label>
+                        <input type="password" id="confirm-password-reg" name="confirm_password" class="form-input" placeholder="********" autocomplete="new-password">
+                    </div>
 
+                    <div class="form-group mh-inline-716d8554e4" id="gdpr-consent-wrapper">
+                        <label class="checkbox-label mh-inline-6dada34cf2">
+                            <input type="checkbox" id="gdpr-consent" name="gdpr_consent" required class="mh-inline-111c8ad875">
+                            <span>Souhlasím se <a href="ochrana-soukromi.html" target="_blank" class="u-text-gold">zpracováním osobních údajů</a> a <a href="podminky.html" target="_blank" class="u-text-gold">obchodními podmínkami</a>.</span>
+                        </label>
+                    </div>
 
-                    <button type="submit" id="auth-submit" class="btn btn--primary btn--glow"
-
-                        style="width: 100%; margin-top: 1rem;">
-
-                        Přihlásit se
-
-                    </button>
-
+                    <button type="submit" id="auth-submit" class="btn btn--primary btn--glow mh-inline-c0b8a97c16">Přihlásit se</button>
                 </form>
 
-
-
-                <!-- Forgot Password Link -->
-
-                <div style="margin-top: 1rem; text-align: center;">
-
-                    <button id="forgot-password-link" class="btn btn--text"
-
-                        style="color: var(--color-silver-mist); font-size: 0.9rem;">
-
-                        Zapomněli jste heslo?
-
-                    </button>
-
+                <div class="mh-inline-712077614e">
+                    <button id="forgot-password-link" class="btn btn--text mh-inline-afc08e5b30">Zapomněli jste heslo?</button>
                 </div>
 
-
-
-                <!-- Forgot Password Form (Hidden by default) -->
-
-                <form id="forgot-password-form" style="display: none;">
-
+                <form id="forgot-password-form" class="mh-inline-59ce1fef8d">
                     <div class="form-group">
-
                         <label for="forgot-email" class="form-label">Email</label>
-
                         <input type="email" id="forgot-email" class="form-input" placeholder="vas@email.cz" required>
-
                     </div>
-
-                    <button type="submit" class="btn btn--primary btn--glow" style="width: 100%; margin-top: 1rem;">
-
-                        Odeslat odkaz pro obnovení
-
-                    </button>
-
-                    <button type="button" id="back-to-login" class="btn btn--text"
-
-                        style="width: 100%; margin-top: 0.5rem; color: var(--color-silver-mist);">
-
-                        Zpět na přihlášení
-
-                    </button>
-
+                    <button type="submit" class="btn btn--primary btn--glow mh-inline-c0b8a97c16">Odeslat odkaz pro obnovu</button>
+                    <button type="button" id="back-to-login" class="btn btn--text mh-inline-05ea2d974d">Zpět na přihlášení</button>
                 </form>
 
-
-
-                <!-- Reset Password Form (Hidden, shown when ?reset=true) -->
-
-                <form id="reset-password-form" style="display: none;">
-
+                <form id="reset-password-form" class="mh-inline-59ce1fef8d">
                     <div class="form-group">
-
                         <label for="new-password" class="form-label">Nové heslo</label>
-
-                        <input type="password" id="new-password" class="form-input" placeholder="••••••••" required
-
-                            minlength="8">
-
+                        <input type="password" id="new-password" class="form-input" placeholder="********" required minlength="8">
                     </div>
-
                     <div class="form-group">
-
                         <label for="confirm-password" class="form-label">Potvrďte heslo</label>
-
-                        <input type="password" id="confirm-password" class="form-input" placeholder="••••••••" required
-
-                            minlength="8">
-
+                        <input type="password" id="confirm-password" class="form-input" placeholder="********" required minlength="8">
                     </div>
-
-                    <button type="submit" class="btn btn--primary btn--glow" style="width: 100%; margin-top: 1rem;">
-
-                        Nastavit nové heslo
-
-                    </button>
-
+                    <button type="submit" class="btn btn--primary btn--glow mh-inline-c0b8a97c16">Nastavit nové heslo</button>
                 </form>
 
-
-
-                <div style="margin-top: 2rem; font-size: 0.9rem; color: var(--color-silver-mist);">
-
-                    <button id="auth-mode-toggle" class="btn btn--text" style="color: var(--color-mystic-gold);">
-
-                        Nemáte účet? Zaregistrujte se zdarma →
-
-                    </button>
-
+                <div class="mh-inline-68221bb3c6">
+                    <button id="auth-mode-toggle" class="btn btn--text u-text-gold">Nemáte účet? Zaregistrujte se zdarma →</button>
                 </div>
 
-
-
-                <!-- Hidden Register Fields (Managed by auth-client.js toggleMode) -->
-
-                <div id="register-fields" style="display: none; text-align: left; margin-top: 1rem;">
-                    <div class="form-group">
-                        <label class="form-label" for="confirm-password-reg">Potvrďte heslo</label>
-                        <input type="password" id="confirm-password-reg" name="confirm_password" class="form-input" placeholder="••••••••" autocomplete="new-password">
-                    </div>
-
+                <div id="register-fields" class="mh-inline-225c671c73">
                     <div class="form-group">
                         <label class="form-label">Jméno</label>
                         <input type="text" name="first_name" class="form-input" placeholder="Vaše jméno">
                     </div>
-
                     <div class="form-group">
-
                         <label class="form-label">Datum narození</label>
-
                         <input type="date" name="birth_date" class="form-input">
-
                     </div>
-
                     <div class="form-group">
-
                         <label class="form-label">Místo narození</label>
-
                         <input type="text" name="birth_place" class="form-input" placeholder="Např. Praha">
-
                     </div>
-
                 </div>
 
-
-
-                <!-- Header for Register Mode (Hidden by default, updated by JS) -->
-
-                <h1 id="auth-title" class="sr-only">Přihlášení</h1>
-
-
-
+                <span id="auth-title" class="sr-only">Přihlášení</span>
             </div>
-
         </section>
-
     </main>
-
-
-
-    <!-- FOOTER -->
 
     <div id="footer-placeholder"></div>
 
-
-
-    <!-- Handling Redirect Logic from URL -->
-
-    <script>
-
-        document.addEventListener('DOMContentLoaded', () => {
-
-            // Auth-client.js automatically binds to #login-form and handles submission.
-
-            // It also handles #auth-mode-toggle.
-
-            // We just need to check if we are already logged in, and if so, redirect back.
-
-
-
-            const loginForm = document.getElementById('login-form');
-
-            const forgotPasswordForm = document.getElementById('forgot-password-form');
-
-            const resetPasswordForm = document.getElementById('reset-password-form');
-
-            const forgotPasswordLink = document.getElementById('forgot-password-link');
-
-            const backToLoginBtn = document.getElementById('back-to-login');
-
-            const loginHeader = document.querySelector('.login-header h1');
-
-            const loginSubtitle = document.querySelector('.login-header p');
-
-
-
-            // Check for reset token in URL
-
-            const urlParams = new URLSearchParams(window.location.search);
-
-            const isResetMode = urlParams.get('reset') === 'true';
-
-            const hash = window.location.hash;
-
-
-
-            if (isResetMode && hash) {
-
-                // Show reset password form
-
-                loginForm.style.display = 'none';
-
-                forgotPasswordForm.style.display = 'none';
-
-                resetPasswordForm.style.display = 'block';
-
-                forgotPasswordLink.style.display = 'none';
-
-                document.getElementById('auth-mode-toggle').parentElement.style.display = 'none';
-
-                loginHeader.textContent = 'Obnovení hesla';
-
-                loginSubtitle.textContent = 'Zadejte nové heslo';
-
-            }
-
-
-
-            // Forgot password link click
-
-            forgotPasswordLink?.addEventListener('click', () => {
-
-                loginForm.style.display = 'none';
-
-                forgotPasswordForm.style.display = 'block';
-
-                forgotPasswordLink.style.display = 'none';
-
-                document.getElementById('auth-mode-toggle').parentElement.style.display = 'none';
-
-                loginHeader.textContent = 'Zapomenuté heslo';
-
-                loginSubtitle.textContent = 'Zadejte svůj email';
-
-            });
-
-
-
-            // Back to login
-
-            backToLoginBtn?.addEventListener('click', () => {
-
-                loginForm.style.display = 'block';
-
-                forgotPasswordForm.style.display = 'none';
-
-                forgotPasswordLink.style.display = 'block';
-
-                document.getElementById('auth-mode-toggle').parentElement.style.display = 'block';
-
-                loginHeader.textContent = 'Vítejte zpět';
-
-                loginSubtitle.textContent = 'Přihlaste se ke svému účtu';
-
-            });
-
-
-
-            // Forgot password form submission
-
-            forgotPasswordForm?.addEventListener('submit', async (e) => {
-
-                e.preventDefault();
-
-                const email = document.getElementById('forgot-email').value;
-
-                const submitBtn = forgotPasswordForm.querySelector('button[type="submit"]');
-
-                const originalText = submitBtn.textContent;
-
-
-
-                submitBtn.textContent = 'Odesílám...';
-
-                submitBtn.disabled = true;
-
-
-
-                try {
-
-                    const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
-
-                    const response = await fetch('/api/auth/forgot-password', {
-
-                        method: 'POST',
-
-                        headers: {
-                            'Content-Type': 'application/json',
-                            ...(csrfToken && { 'X-CSRF-Token': csrfToken })
-                        },
-
-                        body: JSON.stringify({ email })
-
-                    });
-
-
-
-                    const data = await response.json();
-
-
-
-                    if (data.success) {
-
-                        if (window.Auth?.showToast) {
-
-                            window.Auth.showToast('Email odeslán', data.message, 'success');
-
-                        } else {
-
-                            alert(data.message);
-
-                        }
-
-                        // Go back to login
-
-                        backToLoginBtn.click();
-
-                    } else {
-
-                        throw new Error(data.error || 'Chyba při odesílání emailu');
-
-                    }
-
-                } catch (error) {
-
-                    if (window.Auth?.showToast) {
-
-                        window.Auth.showToast('Chyba', error.message, 'error');
-
-                    } else {
-
-                        alert(error.message);
-
-                    }
-
-                } finally {
-
-                    submitBtn.textContent = originalText;
-
-                    submitBtn.disabled = false;
-
-                }
-
-            });
-
-
-
-            // Reset password form submission
-
-            resetPasswordForm?.addEventListener('submit', async (e) => {
-
-                e.preventDefault();
-
-                const newPassword = document.getElementById('new-password').value;
-
-                const confirmPassword = document.getElementById('confirm-password').value;
-
-
-
-                if (newPassword !== confirmPassword) {
-
-                    if (window.Auth?.showToast) {
-
-                        window.Auth.showToast('Chyba', 'Hesla se neshodují', 'error');
-
-                    } else {
-
-                        alert('Hesla se neshodují');
-
-                    }
-
-                    return;
-
-                }
-
-
-
-                const submitBtn = resetPasswordForm.querySelector('button[type="submit"]');
-
-                const originalText = submitBtn.textContent;
-
-                submitBtn.textContent = 'Ukládám...';
-
-                submitBtn.disabled = true;
-
-
-
-                try {
-
-                    // Extract access_token from URL hash
-
-                    const hashParams = new URLSearchParams(hash.substring(1));
-
-                    const accessToken = hashParams.get('access_token');
-
-
-
-                    if (!accessToken) {
-
-                        throw new Error('Neplatný odkaz pro obnovení hesla');
-
-                    }
-
-
-
-                    const csrfToken2 = window.getCSRFToken ? await window.getCSRFToken() : null;
-
-                    const response = await fetch('/api/auth/reset-password', {
-
-                        method: 'POST',
-
-                        headers: {
-
-                            'Content-Type': 'application/json',
-
-                            'Authorization': `Bearer ${accessToken}`,
-
-                            ...(csrfToken2 && { 'X-CSRF-Token': csrfToken2 })
-
-                        },
-
-                        body: JSON.stringify({ password: newPassword })
-
-                    });
-
-
-
-                    const data = await response.json();
-
-
-
-                    if (data.success) {
-
-                        if (window.Auth?.showToast) {
-
-                            window.Auth.showToast('Úspěch', 'Heslo bylo změněno. Můžete se přihlásit.', 'success');
-
-                        } else {
-
-                            alert('Heslo bylo změněno. Můžete se přihlásit.');
-
-                        }
-
-                        // Redirect to login
-
-                        window.location.href = '/prihlaseni.html';
-
-                    } else {
-
-                        throw new Error(data.error || 'Chyba při změně hesla');
-
-                    }
-
-                } catch (error) {
-
-                    if (window.Auth?.showToast) {
-
-                        window.Auth.showToast('Chyba', error.message, 'error');
-
-                    } else {
-
-                        alert(error.message);
-
-                    }
-
-                } finally {
-
-                    submitBtn.textContent = originalText;
-
-                    submitBtn.disabled = false;
-
-                }
-
-            });
-
-
-
-            setTimeout(() => {
-
-                if (window.Auth && window.Auth.isLoggedIn()) {
-
-                    const urlParams = new URLSearchParams(window.location.search);
-
-                    const redirect = urlParams.get('redirect');
-
-                    // Only allow relative redirects to prevent open redirect attacks
-                    if (redirect && redirect.startsWith('/') && !redirect.startsWith('//')) {
-
-                        window.location.href = redirect;
-
-                    } else {
-
-                        window.location.href = '/profil.html';
-
-                    }
-
-                }
-
-            }, 500); // Small delay to let Auth init
-
-        });
-
-
-
-        // Handle "auth:changed" event from auth-client.js
-
-        document.addEventListener('auth:changed', () => {
-
-            if (window.Auth && window.Auth.isLoggedIn()) {
-
-                const urlParams = new URLSearchParams(window.location.search);
-
-                let redirect = urlParams.get('redirect') || '/profil.html';
-
-                // Only allow relative redirects to prevent open redirect attacks
-                if (!redirect.startsWith('/') || redirect.startsWith('//')) {
-                    redirect = '/profil.html';
-                }
-
-                // prevent infinite loop if redirect points to self
-
-                if (!redirect.includes('prihlaseni')) {
-
-                    window.location.href = redirect;
-
-                }
-
-            }
-
-        });
-
-    </script>
-
-
-
-    <script src="js/api-config.js?v=5" defer></script>
-
-    <script src="js/templates.js?v=10" defer></script>
-
-    <script src="js/auth-client.js?v=5" defer></script>
-
-    <script src="js/components.js?v=10" defer></script>
-
-    <script type="module" src="js/main.js?v=10"></script>
-
-    <!-- CRO: Update heading when toggling between login and register -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const toggleBtn = document.getElementById('auth-mode-toggle');
-            const titleEl = document.getElementById('login-page-title');
-            const subtitleEl = document.getElementById('login-page-subtitle');
-            const socialProofEl = document.getElementById('login-social-proof');
-            let isRegisterMode = false;
-
-            toggleBtn?.addEventListener('click', () => {
-                isRegisterMode = !isRegisterMode;
-                if (isRegisterMode) {
-                    if (titleEl) titleEl.textContent = 'Začněte svou cestu';
-                    if (subtitleEl) subtitleEl.textContent = 'Registrace je zdarma – 7 dní Premium bez karty';
-                    if (socialProofEl) socialProofEl.style.display = 'block';
-                    toggleBtn.textContent = 'Máte účet? Přihlaste se';
-                } else {
-                    if (titleEl) titleEl.textContent = 'Vítejte zpět';
-                    if (subtitleEl) subtitleEl.textContent = 'Přihlaste se ke svému účtu';
-                    if (socialProofEl) socialProofEl.style.display = 'none';
-                    toggleBtn.textContent = 'Nemáte účet? Zaregistrujte se zdarma →';
-                }
-            });
-
-            // If URL has ?mode=register, auto-switch to register
-            if (new URLSearchParams(window.location.search).get('mode') === 'register') {
-                setTimeout(() => toggleBtn?.click(), 100);
-            }
-        });
-    </script>
-
+    <script src="js/dist/analytics.js?v=5" defer></script>
+    <script src="js/dist/prihlaseni.js?v=2" defer></script>
+    <script src="js/dist/api-config.js?v=5" defer></script>
+    <script src="js/dist/templates.js?v=10" defer></script>
+    <script src="js/dist/auth-client.js?v=5" defer></script>
+    <script src="js/dist/auth-copy-fixes.js" defer></script>
+    <script src="js/dist/components.js?v=10" defer></script>
+    <script type="module" src="js/dist/main.js?v=10"></script>
 </body>
-
-
-
 </html>
-

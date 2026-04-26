@@ -1,0 +1,47 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 25. dubna 2026
+
+[confident] Vodnáři, ty nepřestáváš. <break time="0.5s" /> [intense] Ale prsty přestaly. <break time="1.0s" />
+
+[upbeat] Sedíš na gauči. <break time="0.3s" /> [mysterious] V rukou máš věc, kterou jsi celý týden opravoval. <break time="0.3s" /> [intense] Položíš ji. Nezlomeně. Jen tak. <break time="0.3s" /> [confident] Saturn teď rozlišuje — kde dřeš pro výsledek a kde jen pro klid svědomí. <break time="1.0s" />
+
+[inviting] Sedí to? Jedno slovo do komentáře. <break time="0.3s" /> [clearly] Příště: které znamení sabotuje sebe těsně před cílem — a proč.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+25. dubna 2026 je den, kdy Saturn — tvůj nejtišší učitel — nehodnotí výsledek, ale záměr za ním. ⚡ Vodnář patří ke vzdušným znamením, a přesto ho Saturn svazuje zemskou zodpovědností: napětí mezi svobodou a strukturou pohání tě dál jako motor. Sleduj profil — příště odhalím, jak tuto dualitu proměnit v největší výhodu Vodnáře. 🪐
+
+#mystickaHvezda #Vodnář #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+25. dubna 2026 Saturn nesleduje tvůj výkon — sleduje, proč to vůbec děláš. 🪐 Jako vládce Vodnáře rozlišuje přesně mezi tím, co konáš pro výsledek, a tím, co konáš pro klid svědomí. Tenhle tlak mezi svobodou a zodpovědností funguje jako motor, který tě posouvá dál, i když ruce zastaví dřív, než hlava stihne říct stop. ⚡ Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Vodnář #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm electric synth pads layered with a bright futuristic arpeggio pulse gently forward in a golden major key, evoking morning light spreading across a dewy celestial horizon. A soft rhythmic groove keeps the energy moving with quiet momentum, breathing between phrases like sunrise air, uplifting and forward-thinking without overpowering. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+A mystical video thumbnail for zodiac sign Aquarius.
+
+BACKGROUND: deep dark space with soft subtle electric cyan and ultraviolet nebula with futuristic plasma currents, neon aqua and deep violet cosmic energy fields, electric blue lightning traces in a dark space — visionary, electric, revolutionary — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.
+
+COMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.
+
+ELEMENT 1 — glyph: large ornate Aquarius symbol (♒) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.
+
+ELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '25. dubna' in elegant gold lettering on the first line, 'VODNÁŘ' in bold engraved gold capitals on the second line.
+
+ELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Tělo říká stop.' on the first line, 'Ty ale ještě nekončíš.' on the second line.
+
+NO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.
+
+Portrait 9:16.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Vodnáři, ty nepřestáváš. Ale prsty přestaly. Sedíš na gauči. V rukou máš věc, kterou jsi celý týden opravoval. Položíš ji. Nezlomeně. Jen tak. Saturn teď rozlišuje — kde dřeš pro výsledek a kde jen pro klid svědomí. Sedí to? Jedno slovo do komentáře. Příště: které znamení sabotuje sebe těsně před cílem — a proč."

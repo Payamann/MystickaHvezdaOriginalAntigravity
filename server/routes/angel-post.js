@@ -11,11 +11,11 @@ import xss from 'xss';
 
 const router = express.Router();
 
-// Limit: max 1 vzkaz za den(24h) na IP
+// Limit: max 3 vzkazy za den(24h) na IP
 const postLimiter = rateLimit({
     windowMs: 24 * 60 * 60 * 1000, // 24 hodin v ms
-    max: 1, // Pouze 1 request povoleno
-    message: { error: 'Dnes jste již andělům psali. Zkuste to prosím zase zítra.' },
+    max: 3,
+    message: { error: 'Dnes jste již andělům psali 3×. Zkuste to prosím zase zítra.' },
     standardHeaders: true,
     legacyHeaders: false,
 });

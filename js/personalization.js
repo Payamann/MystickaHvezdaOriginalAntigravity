@@ -55,18 +55,18 @@ window.MH_PERSONALIZATION = MH_PERSONALIZATION;
 
 // Signs metadata (pro sanitaci ve šablonách)
 const SIGNS_CZ = {
-    beran: { label: 'Beran', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sign-icon"><path d="M5 8c.5-3 2.5-5 5-5s5 2 5 5c0 3-2.5 5-5 5M19 8c-.5-3-2.5-5-5-5s-5 2-5 5c0 3 2.5 5 5 5M12 13v8"/></svg>', dates: '21. 3. – 19. 4.' },
-    byk: { label: 'Býk', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sign-icon"><circle cx="12" cy="12" r="6"/><path d="M5 4c1 2 3 3 7 3s6-1 7-3"/></svg>', dates: '20. 4. – 20. 5.' },
-    blizenci: { label: 'Blíženci', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sign-icon"><path d="M4 20h16M4 4h16M9 4v16M15 4v16"/></svg>', dates: '21. 5. – 20. 6.' },
-    rak: { label: 'Rak', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sign-icon"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 8a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM18 12c4 0 4-4 4-4M6 12c-4 0-4 4-4 4"/></svg>', dates: '21. 6. – 22. 7.' },
-    lev: { label: 'Lev', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sign-icon"><path d="M11 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM15 11c0 4-4 6-4 10M11 11c-4 0-4-4-4-4"/></svg>', dates: '23. 7. – 22. 8.' },
-    panna: { label: 'Panna', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sign-icon"><path d="M7 4v12a3 3 0 0 0 3 3M11 4v12a3 3 0 0 0 3 3M15 4v12a3 3 0 0 1-3 3M11 4c4 0 4 4 4 4"/></svg>', dates: '23. 8. – 22. 9.' },
-    vahy: { label: 'Váhy', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sign-icon"><path d="M5 19h14M5 14h14M12 14V5M8 9l4-4 4 4"/></svg>', dates: '23. 9. – 22. 10.' },
-    stir: { label: 'Štír', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sign-icon"><path d="M5 4v12a3 3 0 0 0 3 3M9 4v12a3 3 0 0 0 3 3M13 4v12a3 3 0 0 1 3 3l2 2"/></svg>', dates: '23. 10. – 21. 11.' },
-    strelec: { label: 'Střelec', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sign-icon"><path d="m3 21 18-18M11 3h10v10M6.6 6.6l5.4 5.4"/></svg>', dates: '22. 11. – 21. 12.' },
-    kozoroh: { label: 'Kozoroh', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sign-icon"><path d="M12 3a8 8 0 0 0-8 8M12 3a8 8 0 0 1 8 8M4 11c0 4 3 6 3 10M20 11c0 4-3 6-3 10"/></svg>', dates: '22. 12. – 19. 1.' },
-    vodnar: { label: 'Vodnář', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sign-icon"><path d="M5 12c1.5-2 3.5-2 5 0s3.5 2 5 0 3.5-2 5 0M5 17c1.5-2 3.5-2 5 0s3.5 2 5 0 3.5-2 5 0"/></svg>', dates: '20. 1. – 18. 2.' },
-    ryby: { label: 'Ryby', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sign-icon"><path d="M5 8c6 0 6 8 0 8M19 8c-6 0-6 8 0 8M12 4v16"/></svg>', dates: '19. 2. – 20. 3.' },
+    beran: { label: 'Beran', emoji: '♈', dates: '21. 3. – 19. 4.' },
+    byk: { label: 'Býk', emoji: '♉', dates: '20. 4. – 20. 5.' },
+    blizenci: { label: 'Blíženci', emoji: '♊', dates: '21. 5. – 20. 6.' },
+    rak: { label: 'Rak', emoji: '♋', dates: '21. 6. – 22. 7.' },
+    lev: { label: 'Lev', emoji: '♌', dates: '23. 7. – 22. 8.' },
+    panna: { label: 'Panna', emoji: '♍', dates: '23. 8. – 22. 9.' },
+    vahy: { label: 'Váhy', emoji: '♎', dates: '23. 9. – 22. 10.' },
+    stir: { label: 'Štír', emoji: '♏', dates: '23. 10. – 21. 11.' },
+    strelec: { label: 'Střelec', emoji: '♐', dates: '22. 11. – 21. 12.' },
+    kozoroh: { label: 'Kozoroh', emoji: '♑', dates: '22. 12. – 19. 1.' },
+    vodnar: { label: 'Vodnář', emoji: '♒', dates: '20. 1. – 18. 2.' },
+    ryby: { label: 'Ryby', emoji: '♓', dates: '19. 2. – 20. 3.' },
 };
 window.SIGNS_CZ = SIGNS_CZ;
 
@@ -85,7 +85,7 @@ function initIndexGreeting() {
         const nameStr = name ? `, ${sanitizeText(name)}` : '';
         
         greetingEl.innerHTML = `
-            <span class="greeting-icon">${s.icon}</span>
+            <span class="greeting-icon">${s.emoji}</span>
             <span class="greeting-text">${timeGreet}${nameStr}! Váš dnešní výhled pro ${s.label} →</span>
         `;
         
@@ -169,7 +169,7 @@ function renderSignPickerHTML(picker) {
                     aria-controls="sign-picker-expanded"
                     data-action="toggle-expanded"
                     title="Zobrazit/skrýt všechna znamení">
-                    ${s.emoji} ${sanitizeText(s.label)}
+                    ${sanitizeText(s.label)}
                 </button>
                 <button class="sign-picker__change-btn"
                     data-action="toggle-expanded"
@@ -182,7 +182,7 @@ function renderSignPickerHTML(picker) {
                         data-action="pick-sign"
                         title="${s.dates}"
                         aria-pressed="${current === key ? 'true' : 'false'}">
-                        ${s.emoji} ${sanitizeText(s.label)}
+                        ${sanitizeText(s.label)}
                     </button>
                 `).join('')}
             </div>
@@ -199,7 +199,7 @@ function renderSignPickerHTML(picker) {
                         data-pick="${key}"
                         data-action="pick-sign"
                         title="${s.dates}">
-                        ${s.emoji} ${sanitizeText(s.label)}
+                        ${sanitizeText(s.label)}
                     </button>
                 `).join('')}
             </div>
@@ -362,15 +362,13 @@ const MH_STREAK = {
         badge.className = 'mh-streak-badge' + (milestone ? ' mh-streak-badge--milestone' : '');
 
         // Animation
-        badge.style.animation = 'none';
-        setTimeout(() => {
-            badge.style.animation = 'mh-streak-bounce 0.5s ease-in-out';
-        }, 10);
+        badge.classList.remove('mh-streak-badge--bounce', 'mh-streak-badge--hiding');
+        void badge.offsetWidth;
+        badge.classList.add('mh-streak-badge--bounce');
 
         // Hide after 5 seconds
         setTimeout(() => {
-            badge.style.opacity = '0';
-            badge.style.transition = 'opacity 0.3s ease-out';
+            badge.classList.add('mh-streak-badge--hiding');
         }, 5000);
     }
 };
@@ -391,10 +389,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inicializuj highlight pouze pokud jsou zodiac cards (horoskopy.html)
     const cards = document.querySelectorAll('.zodiac-card');
     if (cards.length > 0) {
-        // Track streak when user views horoscopes
-        MH_STREAK.incrementStreak();
-        MH_STREAK.displayStreak();
-
         initHoroscopeHighlight();
     }
 

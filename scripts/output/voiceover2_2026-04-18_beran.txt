@@ -1,0 +1,47 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 18. dubna 2026
+
+[intense] Berane, nejsi v netrpělivosti. <break time="0.5s" /> [commanding] Jsi jediný, kdo vidí, že čekat znamená prohrát. <break time="1.0s" />
+
+[confident] Stojíš před rozhodnutím. <break time="0.3s" /> [commanding] Všichni říkají zvaž to. <break time="0.3s" /> [intense] Ale ty už znáš odpověď tři dny. <break time="0.3s" /> [mysterious] Povolení od ostatních nikdy nepřijde — souhlas musí přijít od tebe. <break time="1.0s" />
+
+[inviting] Co tě dnes brzdí? Jedno slovo ⬇️ <break time="0.3s" /> [clearly] Označ Berana, co toto teď potřebuje.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+18. dubna 2026 Mars v Beranu aktivuje tvůj impulz jednat dřív, než mozek stihne vymyslet důvod nečekat — a právě proto vypadáš jako ta osoba, co riskuje, zatímco ostatní jen analyzují mrtvou příležitost ⚡ Mars ti dává schopnost vidět okno, které se za tři dny zavře. Sleduj profil — příště odhalím, proč ohňová znamení pracují s přesností načasování
+
+#mystickaHvezda #Beran #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+18. dubna 2026 Mars v Beranu aktivuje instinkt, který vidí okno příležitosti dřív, než ho ostatní vůbec zaregistrují ⚡ Zatímco jiní analyzují rizika, ty už cítíš, že čekat znamená nechat šanci zavřít se za tři dny. Mars ti dává schopnost jednat v momentě, kdy rozhodnutí ještě má sílu — ne když už je pozdě. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Beran #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm energizing instrumental with gentle rhythmic pulse and flowing strings creating forward momentum, evoking shimmering cosmic light trails spreading across a golden sunrise sky, designed as supportive background texture under voiceover with bright major key phrases that breathe and uplift without overpowering speech. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+A mystical video thumbnail for zodiac sign Aries.
+
+BACKGROUND: deep dark space with soft subtle blazing crimson and scarlet nebula with intense orange plasma bursts, fiery red cosmic energy surging like solar flares, deep red void with streaks of hot amber light — powerful, ignited, unstoppable — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.
+
+COMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.
+
+ELEMENT 1 — glyph: large ornate Aries symbol (♈) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.
+
+ELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '18. dubna' in elegant gold lettering on the first line, 'BERAN' in bold engraved gold capitals on the second line.
+
+ELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Znáš odpověď tři dny.' on the first line, 'Čekáš na povolení.' on the second line.
+
+NO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.
+
+Portrait 9:16.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Berane, nejsi v netrpělivosti. Jsi jediný, kdo vidí, že čekat znamená prohrát. Stojíš před rozhodnutím. Všichni říkají zvaž to. Ale ty už znáš odpověď tři dny. Povolení od ostatních nikdy nepřijde — souhlas musí přijít od tebe. Co tě dnes brzdí? Jedno slovo ⬇️ Označ Berana, co toto teď potřebuje."

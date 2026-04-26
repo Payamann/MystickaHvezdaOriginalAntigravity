@@ -18,11 +18,33 @@ function initCrystalBall() {
     const resetBtn = document.getElementById('reset-btn');
     const questionInput = document.getElementById('question-input');
     const askBtn = document.getElementById('ask-btn');
+    const bannerUpgradeBtn = document.getElementById('crystal-banner-upgrade');
 
     if (!ballContainer) return;
 
     let isThinking = false;
     let cooldownTimer = null;
+
+    function startCrystalCheckout(source, authMode = 'register') {
+        window.Auth?.startPlanCheckout?.('pruvodce', {
+            source,
+            feature: 'kristalova_koule',
+            redirect: '/cenik.html',
+            authMode
+        });
+    }
+
+    if (bannerUpgradeBtn) {
+        bannerUpgradeBtn.addEventListener('click', (event) => {
+            event.preventDefault();
+            startCrystalCheckout('crystal_ball_banner_upgrade', 'register');
+        });
+    }
+
+    function setResetVisible(visible) {
+        if (!resetBtn) return;
+        resetBtn.classList.toggle('crystal-reset--visible', visible);
+    }
 
     // Check availability based on last usage
     function getRemainingCooldown() {
@@ -40,10 +62,9 @@ function initCrystalBall() {
             if (askBtn) {
                 askBtn.disabled = true;
                 askBtn.innerText = `Koule čerpá energii (${remaining}s)`;
-                askBtn.style.opacity = '0.6';
-                askBtn.style.cursor = 'not-allowed';
+                askBtn.classList.add('crystal-action--cooldown');
             }
-            if (ballContainer) ballContainer.style.cursor = 'not-allowed';
+            if (ballContainer) ballContainer.classList.add('ball-container--cooldown');
 
             // Re-check every second
             clearTimeout(cooldownTimer);
@@ -52,10 +73,9 @@ function initCrystalBall() {
             if (askBtn) {
                 askBtn.disabled = false;
                 askBtn.innerText = 'Zeptat se koule';
-                askBtn.style.opacity = '1';
-                askBtn.style.cursor = 'pointer';
+                askBtn.classList.remove('crystal-action--cooldown');
             }
-            if (ballContainer) ballContainer.style.cursor = 'pointer';
+            if (ballContainer) ballContainer.classList.remove('ball-container--cooldown');
         }
     }
 
@@ -67,7 +87,7 @@ function initCrystalBall() {
         // Restriction: Must be logged in
         if (!window.Auth || !window.Auth.isLoggedIn()) {
             window.Auth?.showToast?.('Přihlášení vyžadováno', 'Pro radu od křišťálové koule se prosím přihlaste.', 'info');
-            window.Auth?.openModal?.('login');
+            startCrystalCheckout('crystal_ball_auth_gate', 'login');
             return;
         }
 
@@ -86,23 +106,20 @@ function initCrystalBall() {
         // Reset state
         if (answerContainer) answerContainer.classList.remove('visible');
         if (answerText) answerText.textContent = '';
-        if (resetBtn) {
-            resetBtn.style.opacity = '0';
-            resetBtn.style.pointerEvents = 'none';
-        }
+        setResetVisible(false);
 
         // Animation
         ballContainer.classList.add('shaking');
         if (navigator.vibrate) navigator.vibrate(200);
 
         try {
-            const cbToken = localStorage.getItem('auth_token') || window.Auth?.token;
-            const response = await fetch(`${window.API_CONFIG?.BASE_URL || 'http://localhost:3001/api'}/crystal-ball`, {
+            const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+            const response = await fetch(`${window.API_CONFIG?.BASE_URL || '/api'}/crystal-ball`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
-                    ...(cbToken ? { 'Authorization': `Bearer ${cbToken}` } : {})
+                    ...(csrfToken && { 'X-CSRF-Token': csrfToken })
                 },
                 body: JSON.stringify({
                     question: question.trim(),
@@ -136,10 +153,9 @@ function initCrystalBall() {
 
                         // Add favorite button after answer
                         const favoriteBtn = document.createElement('div');
-                        favoriteBtn.className = 'text-center';
-                        favoriteBtn.style.marginTop = 'var(--space-lg)';
+                        favoriteBtn.className = 'text-center favorite-reading-action';
                         favoriteBtn.innerHTML = `
-                            <button id="favorite-crystal-btn" class="btn btn--glass" style="min-width: 200px;">
+                            <button id="favorite-crystal-btn" class="btn btn--glass favorite-reading-action__button">
                                 <span class="favorite-icon">⭐</span> Přidat do oblíbených
                             </button>
                         `;
@@ -155,7 +171,7 @@ function initCrystalBall() {
                 if (response.status === 402 || response.status === 403 || (data.error && data.error.toLowerCase().includes('limit'))) {
                     if (answerContainer) answerContainer.classList.remove('visible');
                     window.Auth?.showToast?.('Limit dosažen', 'Chceš neomezené odpovědi? Aktivuj si Hvězdného Průvodce.', 'info');
-                    window.Auth?.openModal?.('register');
+                    startCrystalCheckout('crystal_ball_limit_gate', 'register');
                 } else {
                     if (answerContainer) answerContainer.classList.add('visible');
                     if (answerText) answerText.textContent = data.error || 'Hvězdy mlčí...';
@@ -171,10 +187,7 @@ function initCrystalBall() {
 
         // Show reset btn
         setTimeout(() => {
-            if (resetBtn) {
-                resetBtn.style.opacity = '1';
-                resetBtn.style.pointerEvents = 'auto';
-            }
+            setResetVisible(true);
             isThinking = false;
         }, 500);
     }
@@ -218,14 +231,13 @@ function initCrystalBall() {
             if (answerContainer) {
                 answerContainer.classList.remove('visible');
                 // Remove accumulated favorite buttons
-                answerContainer.querySelectorAll('.text-center').forEach(el => el.remove());
+                answerContainer.querySelectorAll('.favorite-reading-action').forEach(el => el.remove());
             }
             if (questionInput) {
                 questionInput.value = '';
                 questionInput.focus();
             }
-            resetBtn.style.opacity = '0';
-            resetBtn.style.pointerEvents = 'none';
+            setResetVisible(false);
         });
     }
 }

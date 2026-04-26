@@ -6,11 +6,43 @@
 let angelCardsData = [];
 let drawnCard = null;
 
+function setBlockVisible(element, visible) {
+    if (!element) return;
+    element.hidden = !visible;
+    element.classList.toggle('mh-block-visible', visible);
+}
+
+function setCardBack(backEl, card) {
+    if (!backEl || !card) return;
+
+    const archetype = card.archetype || 'guidance';
+    backEl.className = `angel-card-back angel-card-back--${archetype}`;
+    backEl.innerHTML = `
+        <div class="angel-card-overlay"></div>
+        <div class="angel-card-content">
+            <div class="angel-card-sparkle">✨</div>
+            <h3 class="angel-name">${card.name}</h3>
+            <div class="angel-theme">${card.theme}</div>
+        </div>
+    `;
+}
+
+function animateCardTilt(inner, transform) {
+    if (!inner) return;
+    inner.animate([
+        { transform }
+    ], {
+        duration: 120,
+        easing: 'ease-out',
+        fill: 'forwards'
+    });
+}
+
 // Initialization
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Load card database
     try {
-        const res = await fetch('data/angel-cards.json');
+        const res = await fetch('/data/angel-cards.json');
         if (!res.ok) throw new Error('Nepodařilo se načíst databázi karet.');
         angelCardsData = await res.json();
     } catch (error) {
@@ -31,7 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         drawBtn.addEventListener('mouseleave', () => {
             const inner = drawBtn.querySelector('.angel-card-inner');
             if (inner && !drawBtn.classList.contains('is-flipped')) {
-                inner.style.transform = `rotateX(0deg) rotateY(0deg)`;
+                animateCardTilt(inner, 'rotateX(0deg) rotateY(0deg)');
             }
         });
     }
@@ -106,18 +138,7 @@ function revealPreDrawnCard() {
     // Populate Back of Card
     const backEl = container.querySelector('.angel-card-back');
     if (backEl) {
-        const archetype = drawnCard.archetype || 'guidance';
-        backEl.style.backgroundImage = `linear-gradient(to bottom, rgba(20, 15, 30, 0.3), rgba(20, 15, 30, 0.9)), url('img/angel-archetypes/${archetype}.webp')`;
-        backEl.style.backgroundSize = 'cover';
-        backEl.style.backgroundPosition = 'center';
-        backEl.innerHTML = `
-            <div class="angel-card-overlay"></div>
-            <div class="angel-card-content">
-                <div style="font-size: 3rem; margin-bottom: 1rem; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));">✨</div>
-                <h3 class="angel-name">${drawnCard.name}</h3>
-                <div class="angel-theme">${drawnCard.theme}</div>
-            </div>
-        `;
+        setCardBack(backEl, drawnCard);
     }
 
     // Populate Results Area
@@ -128,38 +149,38 @@ function revealPreDrawnCard() {
 
     // Skip animation lock
     const inner = container.querySelector('.angel-card-inner');
-    if (inner) inner.style.transform = '';
+    if (inner) animateCardTilt(inner, 'rotateX(0deg) rotateY(0deg)');
     // Turn off transition temporarily so it just appears flipped
-    if (inner) inner.style.transition = 'none';
+    if (inner) inner.classList.add('angel-card-inner--no-transition');
 
     container.classList.add('is-flipped');
     container.classList.remove('glow-effect');
-    container.style.cursor = 'default';
+    container.classList.add('angel-card-container--drawn');
 
     // Show results section immediately
     const intro = document.getElementById('angel-intro');
     if (intro) {
         const introTexts = intro.querySelectorAll('p');
-        introTexts.forEach(p => p.style.display = 'none');
+        introTexts.forEach(p => {
+            p.hidden = true;
+        });
 
         // Add a small title for returning users
         const returnMsg = document.createElement('p');
-        returnMsg.className = 'mb-xl text-lg w-mx-md mx-auto';
-        returnMsg.style.color = 'var(--color-silver-mist)';
+        returnMsg.className = 'mb-xl text-lg w-mx-md mx-auto angel-return-message';
         returnMsg.innerHTML = '<em>Pro tento den už k vám andělé promluvili...</em>';
         intro.prepend(returnMsg);
     }
 
     const results = document.getElementById('angel-results');
     if (results) {
-        results.style.display = 'block';
-        results.style.opacity = '1';
-        results.style.transform = 'translateY(0)';
+        setBlockVisible(results, true);
+        results.classList.add('animate-in');
     }
 
     // Restore transition after a tiny delay so future interactions aren't broken
     setTimeout(() => {
-        if (inner) inner.style.transition = '';
+        if (inner) inner.classList.remove('angel-card-inner--no-transition');
     }, 50);
 }
 
@@ -182,7 +203,7 @@ function handleMouseMove(e) {
 
     const inner = cardEl.querySelector('.angel-card-inner');
     if (inner) {
-        inner.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        animateCardTilt(inner, `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`);
     }
 }
 
@@ -208,18 +229,7 @@ function drawCard() {
     const backEl = container.querySelector('.angel-card-back');
     if (backEl) {
         // We will use a soft abstract background image or CSS gradient
-        const archetype = drawnCard.archetype || 'guidance';
-        backEl.style.backgroundImage = `linear-gradient(to bottom, rgba(20, 15, 30, 0.3), rgba(20, 15, 30, 0.9)), url('img/angel-archetypes/${archetype}.webp')`;
-        backEl.style.backgroundSize = 'cover';
-        backEl.style.backgroundPosition = 'center';
-        backEl.innerHTML = `
-            <div class="angel-card-overlay"></div>
-            <div class="angel-card-content">
-                <div style="font-size: 3rem; margin-bottom: 1rem; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));">✨</div>
-                <h3 class="angel-name">${drawnCard.name}</h3>
-                <div class="angel-theme">${drawnCard.theme}</div>
-            </div>
-        `;
+        setCardBack(backEl, drawnCard);
     }
 
     // Populate Results Area
@@ -231,11 +241,11 @@ function drawCard() {
     // Trigger Flip
     // Reset any transform from mouse move
     const inner = container.querySelector('.angel-card-inner');
-    if (inner) inner.style.transform = '';
+    if (inner) animateCardTilt(inner, 'rotateX(0deg) rotateY(0deg)');
 
     container.classList.add('is-flipped');
     container.classList.remove('glow-effect');
-    container.style.cursor = 'default';
+    container.classList.add('angel-card-container--drawn');
 
     // Show results section after flip completes smoothly
     setTimeout(() => {
@@ -243,12 +253,12 @@ function drawCard() {
         if (intro) {
             // Hide intro text
             const introTexts = intro.querySelectorAll('p');
-            introTexts.forEach(p => p.style.opacity = '0');
+            introTexts.forEach(p => p.classList.add('angel-intro-text--hidden'));
         }
 
         const results = document.getElementById('angel-results');
         if (results) {
-            results.style.display = 'block';
+            setBlockVisible(results, true);
             // Trigger animation frame
             requestAnimationFrame(() => {
                 results.classList.add('animate-in');

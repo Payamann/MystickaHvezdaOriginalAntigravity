@@ -4,6 +4,7 @@
 *.local
 server/.env
 server/.env.*
+!server/.env.example
 
 # Dependencies
 node_modules/
@@ -12,6 +13,8 @@ server/node_modules/
 # Build & Cache
 dist/
 build/
+!js/dist/
+!js/dist/**
 coverage/
 .cache/
 
@@ -33,8 +36,24 @@ tmp/
 # IDE
 .vscode/
 .idea/
-.claude/
+.claude/*
+!.claude/commands/
+!.claude/settings.json
+.claire/
 _agent/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.pytest-tmp/
+
+# Social media agent outputs (local only)
+social-media-agent/output/
+social-media-agent/.pytest-tmp/
 
 # Test outputs
 *.lcov
+playwright-report/
+test-results/
+tmp_email_previews/

@@ -1,0 +1,60 @@
+/* Extracted from horoskop/rak.html inline <style> block. */
+.sign-hero { padding: 5rem 0 3rem; text-align: center; }
+
+        .sign-emoji { font-size: 5rem; display: block; margin-bottom: 1rem; animation: float 4s ease-in-out infinite; }
+
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-15px)} }
+
+        .sign-dates { color: var(--color-mystic-gold); font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 2rem; }
+
+        .sign-meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin: 2rem 0; max-width: 700px; margin-inline: auto; }
+
+        .meta-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.2rem; text-align: center; }
+
+        .meta-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--color-text-mutated); margin-bottom: 0.4rem; }
+
+        .meta-value { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--color-mystic-gold); }
+
+        .sign-content { max-width: 800px; margin: 0 auto; }
+
+        .traits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 2rem 0; }
+
+        .traits-card { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 2rem; border: 1px solid rgba(255,255,255,0.08); }
+
+        .traits-card.strengths { border-top: 3px solid #27ae60; }
+
+        .traits-card.weaknesses { border-top: 3px solid #e74c3c; }
+
+        .traits-card h3 { margin-top: 0; }
+
+        .traits-card ul { padding-left: 1.2rem; }
+
+        .traits-card li { margin-bottom: 0.5rem; }
+
+        .bread a { color: var(--color-mystic-gold); text-decoration: none; }
+
+        .bread { font-size: 0.9rem; color: var(--color-text-mutated); margin-bottom: 2rem; }
+
+        @media(max-width:600px) { .traits-grid { grid-template-columns: 1fr; } }
+
+/* Migrated from horoskop/rak.html static style attributes. */
+html body .mh-inline-ae60f4468b { padding-top:0; }
+html body .mh-inline-3ef2a39134 { background: rgba(10,10,26,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 3rem; font-size: 1.1rem; line-height: 1.8; color: var(--color-text-light); margin-bottom: 2rem; }
+html body .mh-inline-9387e47bb2 { background: rgba(10,10,26,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 2.5rem; margin-bottom: 2rem; }
+html body .mh-inline-6937852495 { margin-top:0; color: var(--color-mystic-gold); }
+html body .mh-inline-ab1e44a701 { color: var(--color-text-mutated); margin-bottom: 1.5rem; }
+html body .mh-inline-355440bf07 { display:inline-block; padding: 0.4rem 1rem; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); border-radius: 50px; color: #d4af37; margin: 0.3rem; font-size: 0.95rem; }
+html body .mh-inline-27ae42dd31 { margin-top: 2rem; text-align: center; }
+html body .mh-inline-295365cd1c { font-size: 1rem; }
+html body .mh-inline-084708b42b { display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center; margin-top: 1rem; }
+html body .mh-inline-47c074fd37 { display:inline-flex; align-items:center; justify-content:center; width: 3rem; height: 3rem; border-radius: 50%; background: rgba(155,89,182,0.2); border: 1px solid rgba(155,89,182,0.4); font-family:'Cinzel',serif; font-size:1.1rem; color:white; }
+html body .mh-inline-c79408ed43 { background: linear-gradient(135deg, rgba(155,89,182,0.15), rgba(10,10,26,0.9)); border: 1px solid rgba(155,89,182,0.3); border-radius: 20px; padding: 3rem; text-align: center; margin-bottom: 2rem; }
+html body .mh-inline-32547590fb { margin-top:0; font-family:'Cinzel',serif; font-size: 1.8rem; }
+html body .mh-inline-4d25659a08 { font-size: 1.1rem; line-height: 1.8; margin-bottom: 2rem; color: #cbd5e1; }
+html body .mh-inline-1aaceffdf5 { font-size: 1.1rem; padding: 1.2rem 2.5rem; }
+html body .mh-inline-50a64aa22e { background: rgba(10,10,26,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 2.5rem; }
+html body .mh-inline-c662651651 { margin-top: 1.5rem; }
+html body .mh-inline-78bdbfbb9e { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 1rem 0; cursor: pointer; }
+html body .mh-inline-e1a3e96bd2 { font-weight:600; color:white; }
+html body .mh-inline-5666b2dd84 { margin: 1rem 0 0; color: var(--color-text-mutated); }
+html body .mh-inline-4953305f0e { padding: 1rem 0; cursor: pointer; }

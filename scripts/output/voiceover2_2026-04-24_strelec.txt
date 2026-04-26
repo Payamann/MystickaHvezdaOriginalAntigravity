@@ -1,0 +1,49 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 24. dubna 2026
+
+[warm] Střelče, pořád tlačíš dopředu. <break time="0.5s" /> [confident] A tělo se ptá, kam spěcháš. <break time="1.0s" />
+
+[upbeat] Jdeš ráno bez hudby. <break time="0.3s" /> [warm] Kroky, dech, nic víc. <break time="0.3s" /> [intense] Pak se zastavíš — únava přichází z cíle, nebo z cesty k němu? <break time="1.0s" />
+
+[inviting] Co v tobě touží po prostoru, který ti nikdo kolem tebe nedovolí mít? <break time="0.3s" /> [clearly] Příště: co planety naznačují o tvých penězích tento měsíc.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+24. dubna 2026 přináší Střelci paradox — Jupiter, tvůj vládce, tě neustále žene k horizontu, ale oheň 🔥 jako tvůj živel potřebuje i ticho, aby nepřehořel.
+Jupiterova energie expanduje všechno, co se jí nevzpíráš, a právě proto se únava nehromadí v těle, ale v nastavení mysli, které odmítá zvolnit.
+Sleduj profil — příště odhalím, co planety naznačují o tvých financích tento měsíc 🪐
+
+#mystickaHvezda #Střelec #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+24. dubna 2026 ti Jupiter znovu šlápne na plyn — ale oheň bez ticha přehořívá. 🔥 Únava, kterou teď cítíš, nesídlí v těle, ale v nastavení mysli, které neumí zastavit. Jupiterova energie expanduje všechno, čemu se nestavíš do cesty, a právě proto potřebuješ dnes aspoň jeden moment — kroky, dech, nic víc — kdy přestaneš tlačit dopředu a necháš energii, aby se sama seřadila. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Střelec #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm orchestral background for voiceover, adventurous strings carrying a gentle forward momentum in a bright major key, with an open horn melody weaving through like golden light spreading across a wide horizon. Soft rhythmic pulse underneath keeps the energy moving and alive, while bright stardust textures in the strings shimmer with optimistic warmth and expansive freedom. Uplifting and present without overpowering, breathing naturally between phrases with a sense of open-sky discovery and morning vitality. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+A mystical video thumbnail for zodiac sign Sagittarius.
+
+BACKGROUND: deep dark space with soft subtle expansive turquoise and royal purple nebula with golden arrow-light streaks, deep violet cosmic horizon with teal aurora and warm gold bursts, wide open cosmic vista — adventurous, expansive, philosophical — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.
+
+COMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.
+
+ELEMENT 1 — glyph: large ornate Sagittarius symbol (♐) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.
+
+ELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '24. dubna' in elegant gold lettering on the first line, 'STŘELEC' in bold engraved gold capitals on the second line.
+
+ELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Pořád tlačíš dopředu.' on the first line, 'Tělo se ptá, kam spěcháš.' on the second line.
+
+NO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.
+
+Portrait 9:16.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Střelče, pořád tlačíš dopředu. A tělo se ptá, kam spěcháš. Jdeš ráno bez hudby. Kroky, dech, nic víc. Pak se zastavíš — únava přichází z cíle, nebo z cesty k němu? Co v tobě touží po prostoru, který ti nikdo kolem tebe nedovolí mít? Příště: co planety naznačují o tvých penězích tento měsíc."

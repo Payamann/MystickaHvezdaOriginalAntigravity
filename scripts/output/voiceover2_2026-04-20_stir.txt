@@ -1,0 +1,47 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 20. dubna 2026
+
+[intense] Štíře, dneska to nepůjde po tvém. <break time="0.5s" /> [mysterious] Víš, že to není poprvé. <break time="1.0s" />
+
+[commanding] Díváš se na zprávu, co přišla ráno. <break time="0.3s" /> [intense] Přečteš ji podruhé. <break time="0.3s" /> [mysterious] Zamkneš telefon a víš — tohle není jen odpověď. <break time="0.3s" /> [warm] Tohle je výzva pustit to, co ovládat nemůžeš. <break time="1.0s" />
+
+[inviting] Co dnes víš, ale zatím neříkáš? ⬇️ <break time="0.3s" /> [clearly] Sleduj profil — každý den jiné znamení.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+20. dubna 2026 Pluto, tvůj vládce, dává dnes o sobě vědět — a ty to cítíš jako tlak tam, kde jsi čekal klid 🔒 Pluto tě učí transformovat skrze uvolnění, ne skrze sílu. Sleduj profil — příště odhalím, co Štíři dělají s emocemi, které neunesou říct nahlas 🖤
+
+#mystickaHvezda #Štír #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+Dnes, 20. dubna 2026, možná dostaneš odpověď, která ti nesedne 🔒 Pluto, tvůj vládce, dává dnes o sobě vědět — a ty to cítíš jako moment, kdy kontrola náhle nestačí. Transformace, kterou Pluto nabízí, přichází skrze uvolnění, ne přes sílu. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Štír #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm instrumental backdrop with gentle forward pulse, blending dark cello warmth and deep bass undertones into a golden morning ascent, like first light spreading across distant galaxies with soft rhythmic momentum and hopeful major key phrases that breathe underneath speech. Energizing presence without competition, supporting voiceover with uplifting drive and cosmic optimism. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+A mystical video thumbnail for zodiac sign Scorpio.
+
+BACKGROUND: deep dark space with soft subtle deep crimson and obsidian black nebula with dark violet undertones, intense blood-red plasma in a near-total cosmic darkness, smoldering maroon and deep purple void — mysterious, intense, transformative — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.
+
+COMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.
+
+ELEMENT 1 — glyph: large ornate Scorpio symbol (♏) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.
+
+ELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '20. dubna' in elegant gold lettering on the first line, 'ŠTÍR' in bold engraved gold capitals on the second line.
+
+ELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Přečteš zprávu podruhé a zamkneš telefon.' on the first line, 'Tohle není odpověď. Je to výzva pustit.' on the second line.
+
+NO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.
+
+Portrait 9:16.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Štíře, dneska to nepůjde po tvém. Víš, že to není poprvé. Díváš se na zprávu, co přišla ráno. Přečteš ji podruhé. Zamkneš telefon a víš — tohle není jen odpověď. Tohle je výzva pustit to, co ovládat nemůžeš. Co dnes víš, ale zatím neříkáš? ⬇️ Sleduj profil — každý den jiné znamení."

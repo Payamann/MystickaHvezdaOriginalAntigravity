@@ -19,7 +19,7 @@
             ]
         },
         spise_ano: {
-            label: 'SPÍŠE ANO', emoji: '🌟', class: 'mozna',
+            label: 'SP͊E ANO', emoji: '🌟', class: 'mozna',
             texts: [
                 'Znamení ukazují spíše pozitivní výsledek, ale záleží na vašich dalších krocích.',
                 'Pravděpodobně ano — i když cesta nemusí být přímočará.',
@@ -39,7 +39,7 @@
             ]
         },
         spise_ne: {
-            label: 'SPÍŠE NE', emoji: '⚠️', class: 'ne',
+            label: 'SP͊E NE', emoji: '⚠️', class: 'ne',
             texts: [
                 'Karty varují před touto cestou. Zvažte alternativy.',
                 'Spíše ne — ale není to definitivní. Okolnosti se mohou změnit.',
@@ -80,7 +80,7 @@
         if (!q) {
             // Zobrazíme UX upozornění - uživatel musí vyplnit otázku
             inputEl.focus();
-            inputEl.style.borderColor = 'rgba(231,76,60,0.8)';
+            inputEl.classList.add('input--invalid');
 
             // Přidat "shake" animaci k elementu
             inputEl.classList.remove('shake');
@@ -93,13 +93,13 @@
         }
 
         // Obnovíme původní barvu ohraničení InputBoxu
-        inputEl.style.borderColor = 'rgba(212,175,55,0.5)';
+        inputEl.classList.remove('input--invalid');
         inputEl.classList.remove('shake');
 
         used = true;
 
         // Uzamčeme ostatní karty
-        document.querySelectorAll('.tarot-card').forEach(c => c.style.cursor = 'default');
+        document.querySelectorAll('.tarot-card').forEach(c => c.classList.add('tarot-card--locked'));
 
         // Vyhodnocení
         const key = pool[Math.floor(Math.random() * pool.length)];
@@ -118,7 +118,9 @@
         setTimeout(() => {
             document.getElementById('result-emoji').textContent = ans.emoji;
             document.getElementById('result-title').textContent = ans.label;
-            document.getElementById('result-title').style.color = ans.class === 'ano' ? '#2ed573' : (ans.class === 'ne' ? '#ff6b6b' : '#d4af37');
+            const resultTitle = document.getElementById('result-title');
+            resultTitle.classList.remove('result-title--yes', 'result-title--no', 'result-title--maybe');
+            resultTitle.classList.add(ans.class === 'ano' ? 'result-title--yes' : (ans.class === 'ne' ? 'result-title--no' : 'result-title--maybe'));
             document.getElementById('result-text').textContent = text;
             const panel = document.getElementById('result-panel');
             panel.classList.add('show');
@@ -129,12 +131,11 @@
     function resetCards() {
         used = false;
         document.getElementById('question-input').value = '';
-        document.getElementById('question-input').style.borderColor = '';
+        document.getElementById('question-input').classList.remove('input--invalid');
         document.getElementById('result-panel').classList.remove('show');
 
         document.querySelectorAll('.tarot-card').forEach(c => {
-            c.classList.remove('flipped');
-            c.style.cursor = 'pointer';
+            c.classList.remove('flipped', 'tarot-card--locked');
             const front = c.querySelector('.card-front');
             front.className = 'card-front card-face';
             front.innerHTML = '';

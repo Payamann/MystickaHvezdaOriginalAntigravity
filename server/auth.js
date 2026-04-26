@@ -2,7 +2,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import rateLimit from 'express-rate-limit';
 import { supabase } from './db-supabase.js';
-import { JWT_SECRET, JWT_EXPIRY, COOKIE_OPTIONS, INDICATOR_COOKIE_OPTIONS } from './config/jwt.js';
+import { JWT_SECRET, JWT_EXPIRY, COOKIE_OPTIONS, INDICATOR_COOKIE_OPTIONS, CLEAR_COOKIE_OPTIONS, CLEAR_INDICATOR_COOKIE_OPTIONS } from './config/jwt.js';
 import { authenticateToken } from './middleware.js';
 import { validateEmail, validatePassword, validateName, validateBirthDate } from './utils/validation.js';
 import { PREMIUM_PLAN_TYPES } from './config/constants.js';
@@ -18,15 +18,19 @@ const LOCKOUT_DURATION_MINUTES = 15;
 export async function generateToken(userId) {
     try {
         // Fetch latest subscription info
-        const { data: sub } = await supabase
+        const { data: sub, error: subError } = await supabase
             .from('subscriptions')
             .select('plan_type, status, current_period_end')
             .eq('user_id', userId)
             .single();
+        // PGRST116 = žádný řádek (nový uživatel bez subscriptions záznamu) — OK
+        if (subError && subError.code !== 'PGRST116') {
+            throw subError;
+        }
 
         const status = sub?.plan_type;
         const isPremium = status && PREMIUM_PLAN_TYPES.includes(status) &&
-                         sub.status === 'active' &&
+                         ['active', 'trialing', 'cancel_pending'].includes(sub.status) &&
                          new Date(sub.current_period_end) > new Date();
 
         // Fetch user email
@@ -65,15 +69,94 @@ const sensitiveLimiter = rateLimit({
     keyGenerator: (req) => req.user?.id || req.ip, // Limit per user ID when authenticated
     standardHeaders: true,
     legacyHeaders: false,
+    validate: false,
 });
 
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 const APP_URL = process.env.APP_URL || 'http://localhost:3001';
+const DEV_AUTO_LOGIN_AFTER_REGISTER = !IS_PRODUCTION && process.env.DEV_AUTO_LOGIN_AFTER_REGISTER !== 'false';
 
 const logDebug = (msg) => {
     if (IS_PRODUCTION) return; // Skip debug logging in production
     console.log(`[DEBUG] ${msg}`);
 };
+
+async function ensureUserRecordFromAuth(authUser) {
+    const { data: users, error: dbError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', authUser.id);
+
+    let user = Array.isArray(users) && users.length > 0 ? users[0] : null;
+
+    if (dbError) {
+        logDebug(`DB Error fetching user during register repair: ${JSON.stringify(dbError)}`);
+    }
+
+    if (!user) {
+        const { error: insertError } = await supabase
+            .from('users')
+            .insert({
+                id: authUser.id,
+                email: authUser.email,
+                role: 'user',
+                first_name: authUser.user_metadata?.first_name || null,
+                birth_date: authUser.user_metadata?.birth_date || null,
+                birth_time: authUser.user_metadata?.birth_time || null,
+                birth_place: authUser.user_metadata?.birth_place || null
+            });
+
+        if (insertError) {
+            throw insertError;
+        }
+
+        const { data: retryUser, error: retryError } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', authUser.id)
+            .single();
+
+        if (retryError || !retryUser) {
+            throw retryError || new Error('User sync failed after register repair.');
+        }
+
+        user = retryUser;
+    }
+
+    const { data: existingSubscription, error: subError } = await supabase
+        .from('subscriptions')
+        .select('plan_type, status, credits, current_period_end')
+        .eq('user_id', authUser.id)
+        .single();
+
+    let subscription = existingSubscription;
+
+    if (subError && subError.code !== 'PGRST116') {
+        throw subError;
+    }
+
+    if (!subscription) {
+        const { data: createdSubscription, error: createSubError } = await supabase
+            .from('subscriptions')
+            .insert({ user_id: authUser.id, plan_type: 'free' })
+            .select('plan_type, status, credits, current_period_end')
+            .single();
+
+        if (createSubError && createSubError.code !== '23505') {
+            throw createSubError;
+        }
+
+        subscription = createdSubscription || {
+            plan_type: 'free',
+            status: null,
+            credits: null,
+            current_period_end: null
+        };
+    }
+
+    user.subscriptions = subscription;
+    return user;
+}
 
 
 // Premium activation removed - use Stripe payment flow instead
@@ -84,6 +167,8 @@ router.post('/activate-premium', (req, res) => {
 // Register (Supabase Auth)
 router.post('/register', authLimiter, async (req, res) => {
     const { email, password, confirm_password, first_name, birth_date, birth_time, birth_place } = req.body;
+    const clientIp = req.ip || req.connection.remoteAddress;
+    const userAgent = req.headers['user-agent'] || 'unknown';
 
     try {
         // Validate input using centralized validators
@@ -97,8 +182,8 @@ router.post('/register', authLimiter, async (req, res) => {
 
         const validatedFirstName = first_name ? validateName(first_name) : 'User';
 
-        // Birth date is mandatory
-        const validatedBirthDate = validateBirthDate(birth_date);
+        // Birth date is optional during signup to reduce registration friction.
+        const validatedBirthDate = birth_date ? validateBirthDate(birth_date) : null;
 
         // 1. Sign Up via Supabase Auth
         // This triggers the confirmation email automatically.
@@ -132,17 +217,44 @@ router.post('/register', authLimiter, async (req, res) => {
             throw error;
         }
 
+        if (DEV_AUTO_LOGIN_AFTER_REGISTER && data?.user?.id) {
+            const user = await ensureUserRecordFromAuth(data.user);
+            const token = await generateToken(user.id);
+            const status = user.subscriptions?.plan_type || 'free';
+
+            res.cookie('auth_token', token, COOKIE_OPTIONS);
+            res.cookie('logged_in', '1', INDICATOR_COOKIE_OPTIONS);
+
+            await recordSuccessfulLogin(user.email, clientIp, userAgent);
+
+            return res.json({
+                success: true,
+                devAutoLogin: true,
+                message: 'Registrace uspela. V lokalnim vyvoji jste byli rovnou prihlaseni.',
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    subscription_status: status,
+                    first_name: user.first_name,
+                    birth_date: user.birth_date,
+                    birth_time: user.birth_time,
+                    birth_place: user.birth_place,
+                    avatar: user.avatar || null
+                }
+            });
+        }
+
         // 2. Success - Tell user to check email
         // We DO NOT return a token here anymore. Login is blocked until verification.
         res.json({
             success: true,
-            message: 'Registrace úspěšná. Zkontrolujte prosím svůj email pro potvrzení účtu.',
+            message: 'Registrace \u00fasp\u011b\u0161n\u00e1. Zkontrolujte pros\u00edm sv\u016fj email pro potvrzen\u00ed \u00fa\u010dtu.',
             requireEmailVerification: true
         });
 
     } catch (e) {
         // Return validation errors as 400, everything else as 500
-        if (e.message && (e.message.includes('must') || e.message.includes('Invalid') || e.message.includes('required') || e.message.includes('too'))) {
+        if (e.message && (e.message.includes('must') || e.message.includes('Invalid') || e.message.includes('required') || e.message.includes('too') || e.message.includes('cannot') || e.message.includes('after'))) {
             return res.status(400).json({ error: e.message });
         }
         console.error('Register Error:', e);
@@ -193,9 +305,6 @@ router.post('/login', authLimiter, async (req, res) => {
                 remainingAttempts: lockoutRes.remainingAttempts
             });
         }
-
-        // Successful login - clear lockout
-        clearLoginAttempts(validatedEmail);
 
         const authUser = authData.user;
         logDebug(`Login attempt for: ${authUser.email} (ID: ${authUser.id})`);
@@ -274,7 +383,7 @@ router.post('/login', authLimiter, async (req, res) => {
 
         // Check if premium (and not expired)
         const isPremium = status && PREMIUM_PLAN_TYPES.includes(status) &&
-                         sub.status === 'active' &&
+                         ['active', 'trialing', 'cancel_pending'].includes(sub.status) &&
                          new Date(sub.current_period_end) > new Date();
 
         const token = jwt.sign({
@@ -306,6 +415,10 @@ router.post('/login', authLimiter, async (req, res) => {
         });
 
     } catch (e) {
+        // Return validation errors as 400, everything else as 500
+        if (e.message && (e.message.includes('must') || e.message.includes('Invalid') || e.message.includes('required') || e.message.includes('too') || e.message.includes('cannot') || e.message.includes('after'))) {
+            return res.status(400).json({ error: e.message });
+        }
         console.error('Login Error:', e);
         res.status(500).json({ error: 'Server error during login' });
     }
@@ -323,8 +436,14 @@ router.post('/refresh-token', authenticateToken, sensitiveLimiter, async (req, r
         // Generate new token with updated subscription info
         const newToken = await generateToken(userId);
 
-        // Decode fresh token to get updated claims
-        const decoded = jwt.decode(newToken);
+        // Verify fresh token to get updated claims
+        let decoded;
+        try {
+            decoded = jwt.verify(newToken, JWT_SECRET);
+        } catch (verifyErr) {
+            console.error('[AUTH] Failed to verify refreshed token:', verifyErr.message);
+            return res.status(500).json({ error: 'Token verification failed' });
+        }
 
         // Fetch fresh user data
         const { data: profile } = await supabase
@@ -366,9 +485,9 @@ router.post('/logout', authenticateToken, async (req, res) => {
             await blacklistToken(token);
         }
 
-        // Clear auth cookies
-        res.clearCookie('auth_token', COOKIE_OPTIONS);
-        res.clearCookie('logged_in', INDICATOR_COOKIE_OPTIONS);
+        // Clear auth cookies (bez maxAge — jinak Node.js varuje "expires immediately")
+        res.clearCookie('auth_token', CLEAR_COOKIE_OPTIONS);
+        res.clearCookie('logged_in', CLEAR_INDICATOR_COOKIE_OPTIONS);
 
         res.json({ success: true, message: 'Odhlášení úspěšné.' });
     } catch (e) {

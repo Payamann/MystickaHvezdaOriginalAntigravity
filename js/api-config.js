@@ -5,11 +5,7 @@
 
 const API_CONFIG = {
     // Use environment-appropriate URL
-    BASE_URL: (
-        window.location.hostname === 'localhost' ||
-        window.location.hostname === '127.0.0.1' ||
-        window.location.protocol === 'file:' // Handle Opening index.html directly
-    ) ? 'http://localhost:3001/api' : '/api',
+    BASE_URL: '/api',
 
     // Stripe publishable key — loaded from server at runtime (see initConfig)
     STRIPE_PUBLISHABLE_KEY: null,
@@ -52,10 +48,6 @@ async function callAPI(endpoint, data) {
     try {
         const headers = { 'Content-Type': 'application/json' };
 
-        // Attach JWT token if available (for authenticated endpoints)
-        const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
-        if (token) headers['Authorization'] = `Bearer ${token}`;
-
         const csrfToken = await getCSRFToken();
         if (csrfToken) headers['X-CSRF-Token'] = csrfToken;
 
@@ -76,7 +68,9 @@ async function callAPI(endpoint, data) {
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP Error: ${response.status}`);
+            const err = new Error(`HTTP Error: ${response.status}`);
+            err.status = response.status;
+            throw err;
         }
 
         const result = await response.json();
@@ -110,7 +104,7 @@ async function getCSRFToken() {
         .then(data => {
             _csrfToken = data.csrfToken;
             _csrfFetchPromise = null;
-            setTimeout(() => { _csrfToken = null; }, 2 * 60 * 60 * 1000);
+            setTimeout(() => { _csrfToken = null; }, 10 * 60 * 1000); // 10 min (server expiry is 15 min)
             return _csrfToken;
         })
         .catch(() => { _csrfFetchPromise = null; return null; });

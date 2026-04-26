@@ -8,7 +8,9 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>*</text></svg>">
+<link rel="apple-touch-icon" href="img/icon-192.webp">
+    <meta name="apple-mobile-web-app-capable" content="yes">
 
     <title>Tarot výklad zdarma online | Mystická Hvězda</title>
 
@@ -16,7 +18,7 @@
 
         content="Zkuste tarot výklad zdarma online. Andělský tarot, Celtic Cross nebo jednoduchý 3-kártový výklad. Bez registrace, okamžitě.">
 
-    <link rel="canonical" href="https://mystickahvezda.cz/tarot-zdarma.html">
+    <link rel="canonical" href="https://www.mystickahvezda.cz/tarot-zdarma.html">
 
     <meta property="og:title" content="Tarot výklad zdarma online | Mystická Hvězda">
 
@@ -24,7 +26,7 @@
 
         content="Výklad tarotu zdarma — vyberte si kartu a nechte hvězdy promluvit. Okamžitý výklad bez registrace.">
 
-    <meta property="og:image" content="https://mystickahvezda.cz/img/hero-3d.webp">
+    <meta property="og:image" content="https://www.mystickahvezda.cz/img/hero-3d.webp">
 
     <meta property="og:type" content="website">
 
@@ -39,7 +41,8 @@
         rel="stylesheet"  >
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap&subset=latin,latin-ext" rel="stylesheet"></noscript>
 
-    <link rel="stylesheet" href="css/style.v2.min.css?v=9">
+    <link rel="stylesheet" href="css/style.v2.min.css?v=11">
+    <link rel="stylesheet" href="css/pages/tarot-zdarma.css">
 
 
 
@@ -61,9 +64,9 @@
 
             "itemListElement": [
 
-                {"@type":"ListItem","position":1,"name":"Domů","item":"https://mystickahvezda.cz/"},
+                {"@type":"ListItem","position":1,"name":"Domů","item":"https://www.mystickahvezda.cz/"},
 
-                {"@type":"ListItem","position":2,"name":"Tarot výklad zdarma","item":"https://mystickahvezda.cz/tarot-zdarma.html"}
+                {"@type":"ListItem","position":2,"name":"Tarot výklad zdarma","item":"https://www.mystickahvezda.cz/tarot-zdarma.html"}
 
             ]
 
@@ -84,157 +87,9 @@
     }
 
     </script>
-
-
-
-    <style>
-
-        .tarot-hero {
-
-            text-align: center;
-
-            padding: 5rem 2rem 3rem;
-
-        }
-
-
-
-        .tarot-demo {
-
-            max-width: 600px;
-
-            margin: 0 auto;
-
-        }
-
-
-
-        .card-row {
-
-            display: flex;
-
-            justify-content: center;
-
-            gap: 1.5rem;
-
-            margin: 2rem 0;
-
-            flex-wrap: wrap;
-
-        }
-
-
-
-        .demo-card {
-
-            width: 120px;
-
-            height: 200px;
-
-            border-radius: 12px;
-
-            cursor: pointer;
-
-            background: linear-gradient(135deg, #2d1b69, #1a0a2e);
-
-            border: 2px solid rgba(212, 175, 55, 0.4);
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            font-size: 2.5rem;
-
-            transition: transform 0.3s, box-shadow 0.3s;
-
-            position: relative;
-
-            overflow: hidden;
-
-        }
-
-
-
-        .demo-card:hover {
-
-            transform: translateY(-8px) rotate(-2deg);
-
-            box-shadow: 0 20px 40px rgba(155, 89, 182, 0.4);
-
-        }
-
-
-
-        .demo-card.flipped {
-
-            border-color: var(--color-mystic-gold);
-
-            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.3);
-
-        }
-
-
-
-        .features-grid {
-
-            display: grid;
-
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-
-            gap: 1.5rem;
-
-            margin: 3rem 0;
-
-        }
-
-
-
-        .feature-card {
-
-            background: rgba(255, 255, 255, 0.03);
-
-            border: 1px solid rgba(255, 255, 255, 0.08);
-
-            border-radius: 16px;
-
-            padding: 1.5rem;
-
-            text-align: center;
-
-        }
-
-
-
-        .testimonials {
-
-            display: grid;
-
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-
-            gap: 1rem;
-
-            margin: 2rem 0;
-
-        }
-
-
-
-        .testimonial {
-
-            background: rgba(255, 255, 255, 0.03);
-
-            border: 1px solid rgba(255, 255, 255, 0.08);
-
-            border-radius: 12px;
-
-            padding: 1.25rem;
-
-        }
-
-    </style>
-
+<!-- DOMPurify for XSS protection (must load synchronously before other scripts use it) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"></script>
+    <script src="/js/dist/analytics-init.js" defer></script>
 </head>
 
 
@@ -261,7 +116,7 @@
 
                     <h1 class="section__title">Tarot výklad zdarma online</h1>
 
-                    <p class="section__text" style="max-width:600px; margin:0 auto 2rem;">
+                    <p class="section__text mh-inline-9d47910823">
 
                         Nechte karty promluvit. Vyberte si výkladovou metodu a získejte okamžitý výklad — bez platební
 
@@ -269,13 +124,13 @@
 
                     </p>
 
-                    <a href="tarot.html" class="btn btn--primary" style="font-size:1.1rem; padding:1rem 2.5rem;">
+                    <a href="tarot.html" class="btn btn--primary mh-inline-0047785d1b">
 
-                        🃏 Začít výklad zdarma →
+                        Začít výklad zdarma →
 
                     </a>
 
-                    <p style="color:rgba(255,255,255,0.35);font-size:0.85rem;margin-top:0.75rem;">Přes 3 000 spokojených
+                    <p class="mh-inline-ea7ece0fbf">Přes 3 000 spokojených
 
                         uživatelů každý měsíc</p>
 
@@ -285,21 +140,21 @@
 
                 <!-- Animované demo karty -->
 
-                <div class="tarot-demo" data-animate style="margin-top:3rem;">
+                <div class="tarot-demo mh-inline-08844fa438" data-animate>
 
                     <div class="card-row">
 
                         <div class="demo-card" data-action="flipCard" title="Klikněte pro výklad">✨</div>
 
-                        <div class="demo-card" data-action="flipCard" title="Klikněte pro výklad"
+                        <div class="demo-card mh-inline-7721223c29" data-action="flipCard" title="Klikněte pro výklad"
 
-                            style="transform:rotate(3deg); margin-top:-10px;">✨</div>
+                           >✨</div>
 
                         <div class="demo-card" data-action="flipCard" title="Klikněte pro výklad">✨</div>
 
                     </div>
 
-                    <p style="color:rgba(255,255,255,0.4);font-size:0.88rem;">Klikněte na kartu pro ukázku</p>
+                    <p class="mh-inline-6d57abf60c">Klikněte na kartu pro ukázku</p>
 
                 </div>
 
@@ -327,73 +182,73 @@
 
                     <div class="feature-card" data-animate>
 
-                        <div style="font-size:2.5rem;margin-bottom:0.75rem;">🃏</div>
+                        <div class="mh-inline-d748de8818">🃏</div>
 
-                        <h3 style="font-family:'Cinzel',serif;color:#d4af37;font-size:1rem;margin-bottom:0.5rem;">Jedna
+                        <h3 class="mh-inline-4bc303e177">Jedna
 
                             karta dne</h3>
 
-                        <p style="color:rgba(255,255,255,0.6);font-size:0.88rem;line-height:1.6;">Rychlý denní vhled —
+                        <p class="mh-inline-007bf9d6cf">Rychlý denní vhled —
 
                             co vás čeká a na co se zaměřit.</p>
 
                         <a href="tarot.html"
 
-                            style="color:#9b59b6;font-size:0.85rem;display:block;margin-top:1rem;">Vyzkoušet →</a>
+                            class="mh-inline-f919e97caa">Vyzkoušet →</a>
 
                     </div>
 
                     <div class="feature-card" data-animate>
 
-                        <div style="font-size:2.5rem;margin-bottom:0.75rem;">🔮</div>
+                        <div class="mh-inline-d748de8818">&#128302;</div>
 
-                        <h3 style="font-family:'Cinzel',serif;color:#d4af37;font-size:1rem;margin-bottom:0.5rem;">3
+                        <h3 class="mh-inline-4bc303e177">3
 
                             karty — M/P/B</h3>
 
-                        <p style="color:rgba(255,255,255,0.6);font-size:0.88rem;line-height:1.6;">Minulost, přítomnost,
+                        <p class="mh-inline-007bf9d6cf">Minulost, přítomnost,
 
                             budoucnost — kompletní přehled situace.</p>
 
                         <a href="tarot.html"
 
-                            style="color:#9b59b6;font-size:0.85rem;display:block;margin-top:1rem;">Vyzkoušet →</a>
+                            class="mh-inline-f919e97caa">Vyzkoušet →</a>
 
                     </div>
 
                     <div class="feature-card" data-animate>
 
-                        <div style="font-size:2.5rem;margin-bottom:0.75rem;">⭐</div>
+                        <div class="mh-inline-d748de8818">⭐</div>
 
-                        <h3 style="font-family:'Cinzel',serif;color:#d4af37;font-size:1rem;margin-bottom:0.5rem;">Celtic
+                        <h3 class="mh-inline-4bc303e177">Celtic
 
                             Cross</h3>
 
-                        <p style="color:rgba(255,255,255,0.6);font-size:0.88rem;line-height:1.6;">Hluboký výklad 10
+                        <p class="mh-inline-007bf9d6cf">Hluboký výklad 10
 
                             karet pro komplexní životní otázky.</p>
 
                         <a href="tarot.html"
 
-                            style="color:#9b59b6;font-size:0.85rem;display:block;margin-top:1rem;">Vyzkoušet →</a>
+                            class="mh-inline-f919e97caa">Vyzkoušet →</a>
 
                     </div>
 
                     <div class="feature-card" data-animate>
 
-                        <div style="font-size:2.5rem;margin-bottom:0.75rem;">👼</div>
+                        <div class="mh-inline-d748de8818">👼</div>
 
-                        <h3 style="font-family:'Cinzel',serif;color:#d4af37;font-size:1rem;margin-bottom:0.5rem;">
+                        <h3 class="mh-inline-4bc303e177">
 
                             Andělské karty</h3>
 
-                        <p style="color:rgba(255,255,255,0.6);font-size:0.88rem;line-height:1.6;">Jemné duchovní vedení
+                        <p class="mh-inline-007bf9d6cf">Jemné duchovní vedení
 
                             prostřednictvím andělských poselství.</p>
 
                         <a href="andelske-karty.html"
 
-                            style="color:#9b59b6;font-size:0.85rem;display:block;margin-top:1rem;">Vyzkoušet →</a>
+                            class="mh-inline-f919e97caa">Vyzkoušet →</a>
 
                     </div>
 
@@ -409,21 +264,21 @@
 
         <section class="section">
 
-            <div class="container" style="max-width:700px;">
+            <div class="container mh-inline-43161e95c1">
 
                 <h2 class="section__title" data-animate>Časté otázky o tarotu</h2>
 
-                <div style="margin-top:2rem;">
+                <div class="mh-inline-6b72c1bf7c">
 
                     <details
 
-                        style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:1.25rem;margin-bottom:1rem;">
+                        class="mh-inline-206220f4b6">
 
-                        <summary style="color:#d4af37;cursor:pointer;font-weight:600;">Je tarot výklad zdarma přesný?
+                        <summary class="mh-inline-8fa9796d1f">Je tarot výklad zdarma přesný?
 
                         </summary>
 
-                        <p style="color:rgba(255,255,255,0.7);margin-top:0.75rem;line-height:1.7;">Tarot není věštba —
+                        <p class="mh-inline-ece2e4f6fa">Tarot není věštba —
 
                             je to nástroj pro introspekci a vedení. Výklady vycházejí z tisícileté symboliky karet, ale
 
@@ -433,13 +288,13 @@
 
                     <details
 
-                        style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:1.25rem;margin-bottom:1rem;">
+                        class="mh-inline-206220f4b6">
 
-                        <summary style="color:#d4af37;cursor:pointer;font-weight:600;">Musím se registrovat pro tarot
+                        <summary class="mh-inline-8fa9796d1f">Musím se registrovat pro tarot
 
                             zdarma?</summary>
 
-                        <p style="color:rgba(255,255,255,0.7);margin-top:0.75rem;line-height:1.7;">Ne, základní výklad
+                        <p class="mh-inline-ece2e4f6fa">Ne, základní výklad
 
                             jedné karty je dostupný bez registrace. Registrací zdarma získáte 3 výklady denně a historii
 
@@ -449,13 +304,13 @@
 
                     <details
 
-                        style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:1.25rem;margin-bottom:1rem;">
+                        class="mh-inline-206220f4b6">
 
-                        <summary style="color:#d4af37;cursor:pointer;font-weight:600;">Jaký je rozdíl mezi tarotem a
+                        <summary class="mh-inline-8fa9796d1f">Jaký je rozdíl mezi tarotem a
 
                             andělskými kartami?</summary>
 
-                        <p style="color:rgba(255,255,255,0.7);margin-top:0.75rem;line-height:1.7;">Klasický tarot má 78
+                        <p class="mh-inline-ece2e4f6fa">Klasický tarot má 78
 
                             karet s bohatou symbolikou a různými výkladovými metodami. Andělské karty jsou jemnější —
 
@@ -483,13 +338,13 @@
 
                     <div class="testimonial" data-animate>
 
-                        <div style="color:#d4af37;margin-bottom:0.5rem;">★★★★★</div>
+                        <div class="mh-inline-724ba53d2d">★★★★★</div>
 
-                        <p style="color:rgba(255,255,255,0.8);font-size:0.9rem;line-height:1.6;">"Výklad tarotu byl
+                        <p class="mh-inline-6ff69a5388">"Výklad tarotu byl
 
                             překvapivě přesný. Popsalo to přesně co prožívám a ukázalo směr."</p>
 
-                        <p style="color:rgba(255,255,255,0.4);font-size:0.8rem;margin-top:0.5rem;">— Monika K., Praha
+                        <p class="mh-inline-1707c49b2e">— Monika K., Praha
 
                         </p>
 
@@ -497,25 +352,25 @@
 
                     <div class="testimonial" data-animate>
 
-                        <div style="color:#d4af37;margin-bottom:0.5rem;">★★★★★</div>
+                        <div class="mh-inline-724ba53d2d">★★★★★</div>
 
-                        <p style="color:rgba(255,255,255,0.8);font-size:0.9rem;line-height:1.6;">"Používám každé ráno
+                        <p class="mh-inline-6ff69a5388">"Používám každé ráno
 
                             kartu dne — pomáhá mi zaměřit se na to důležité."</p>
 
-                        <p style="color:rgba(255,255,255,0.4);font-size:0.8rem;margin-top:0.5rem;">— Tereza B., Brno</p>
+                        <p class="mh-inline-1707c49b2e">— Tereza B., Brno</p>
 
                     </div>
 
                     <div class="testimonial" data-animate>
 
-                        <div style="color:#d4af37;margin-bottom:0.5rem;">★★★★☆</div>
+                        <div class="mh-inline-724ba53d2d">★★★★☆</div>
 
-                        <p style="color:rgba(255,255,255,0.8);font-size:0.9rem;line-height:1.6;">"Celtic Cross mi pomohl
+                        <p class="mh-inline-6ff69a5388">"Celtic Cross mi pomohl
 
                             pochopit složitou situaci v práci. Doporučuji přemýšlivým lidem."</p>
 
-                        <p style="color:rgba(255,255,255,0.4);font-size:0.8rem;margin-top:0.5rem;">— Jakub M., Ostrava
+                        <p class="mh-inline-1707c49b2e">— Jakub M., Ostrava
 
                         </p>
 
@@ -531,7 +386,7 @@
 
         <!-- Final CTA -->
 
-        <section class="section" style="text-align:center;">
+        <section class="section mh-inline-4c46f574e7">
 
             <div class="container">
 
@@ -541,9 +396,9 @@
 
                     <p class="section__text">Začněte zdarma — žádná karta, žádný závazek.</p>
 
-                    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:2rem;">
+                    <div class="mh-inline-753831b405">
 
-                        <a href="tarot.html" class="btn btn--primary">🃏 Tarot výklad zdarma</a>
+                        <a href="tarot.html" class="btn btn--primary">Tarot výklad zdarma</a>
 
                         <a href="andelske-karty.html" class="btn btn--ghost">👼 Andělské karty</a>
 
@@ -563,71 +418,25 @@
 
 
 
-    <script>
-        // Event delegation for flipCard function
-        document.addEventListener('click', (e) => {
-            const action = e.target.getAttribute('data-action');
-            if (action === 'flipCard') {
-                flipCard(e.target);
-            }
-        });
+    <script src="js/dist/tarot-zdarma.js" defer></script>
 
-        function flipCard(el) {
-            el.classList.toggle('flipped');
-        }
-    </script>
+    <script src="js/dist/api-config.js?v=5" defer></script>
 
-    <script src="js/api-config.js?v=5" defer></script>
+    <script src="js/dist/templates.js" defer></script>
+    <script src="js/dist/auth-client.js?v=5" defer></script>
+<script src="js/dist/auth-copy-fixes.js" defer></script>
+    <script src="js/dist/secondary-pages-copy-fixes.js" defer></script>
 
-    <script src="js/auth-client.js?v=5" defer></script>
+    <script src="js/dist/components.js?v=10" defer></script>
 
-    <script src="js/components.js?v=10" defer></script>
+    <script src="js/dist/exit-intent.js" defer></script>
 
-    <script src="js/exit-intent.js" defer></script>
+    <script type="module" src="js/dist/main.js?v=10"></script>
 
-    <script type="module" src="js/main.js?v=10"></script>
 
-    <script>
-
-        function flipCard(el) {
-
-            const cards = ['🌙', '⭐', '🔮', '🌟', '✨', '🌙'];
-
-            const names = ['Měsíc', 'Hvězda', 'Věž', 'Slunce', 'Svět', 'Soudce'];
-
-            const msgs = [
-
-                'Naslouchejte svým emocím a snům.',
-
-                'Naděje a inspirace jsou na vaší straně.',
-
-                'Čas na změnu — pustit se staré struktury.',
-
-                'Radost, úspěch a jasnost přichází.',
-
-                'Naplnění a dokončení dlouhé cesty.',
-
-                'Čas zúčtování a nového pohledu na minulost.'
-
-            ];
-
-            const i = Math.floor(Math.random() * cards.length);
-
-            el.classList.add('flipped');
-
-            el.textContent = cards[i];
-
-            el.title = names[i] + ': ' + msgs[i];
-
-            el.setAttribute('aria-label', names[i] + ': ' + msgs[i]);
-
-        }
-
-    </script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"></script>
 </body>
 
 
 
 </html>
-

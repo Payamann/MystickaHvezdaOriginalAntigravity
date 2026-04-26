@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roční Horoskop na míru 2026 — Mystická Hvězda</title>
+  <meta name="description" content="Personalizovaný roční horoskop vytvořený speciálně pro tebe. 6 oblastí života, konkrétní předpovědi, klíčové měsíce. Doručení do e-mailu jako PDF.">
+      <link rel="stylesheet" href="css/pages/rocni-horoskop.css">
+<link rel="canonical" href="https://www.mystickahvezda.cz/rocni-horoskop.html">
+  <meta property="og:title" content="Roční Horoskop na míru 2026 — Mystická Hvězda">
+  <meta property="og:description" content="Personalizovaný roční horoskop pro tvé znamení. Doručení do e-mailu do 5 minut.">
+  <meta property="og:image" content="https://www.mystickahvezda.cz/img/og-horoskop.jpg">
+  <link rel="stylesheet" href="/fonts/local-fonts.css">
+  <script src="https://js.stripe.com/v3/"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Product",
+        "name": "Roční horoskop na míru 2026",
+        "description": "Personalizovaný roční horoskop ve formátu PDF s výkladem šesti oblastí života a klíčových měsíců roku 2026.",
+        "brand": { "@type": "Brand", "name": "Mystická Hvězda" },
+        "offers": {
+          "@type": "Offer",
+          "price": "199",
+          "priceCurrency": "CZK",
+          "availability": "https://schema.org/InStock",
+          "url": "https://www.mystickahvezda.cz/rocni-horoskop.html"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Domů", "item": "https://www.mystickahvezda.cz/" },
+          { "@type": "ListItem", "position": 2, "name": "Roční horoskop", "item": "https://www.mystickahvezda.cz/rocni-horoskop.html" }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Jak rychle dostanu roční horoskop?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Po dokončení platby se horoskop začne generovat a obvykle dorazí do e-mailu během 5 až 10 minut." }
+          },
+          {
+            "@type": "Question",
+            "name": "Je roční horoskop jednorázová platba?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Ano. Roční horoskop je jednorázový PDF produkt bez opakovaného strhávání." }
+          },
+          {
+            "@type": "Question",
+            "name": "Z čeho se výklad skládá?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Výklad obsahuje osobnost a duši, lásku a vztahy, kariéru a finance, osobní růst, klíčové měsíce a závěrečné slovo pro rok 2026." }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+
+<nav class="site-nav">
+  <a href="/" class="nav-logo">✦ Mystická Hvězda</a>
+  <a href="/" class="nav-back">← Zpět na hlavní stránku</a>
+</nav>
+
+<!-- STATUS BANNERS (shown after Stripe redirect) -->
+<div class="status-banner" id="bannerSuccess">
+  <div class="status-banner-inner success">
+    <div class="status-icon">✦</div>
+    <div class="status-title">Platba proběhla úspěšně</div>
+    <div class="status-text">
+      Tvůj Roční Horoskop na míru se právě generuje.<br>
+      Pošleme ho na tvůj e-mail <strong id="successEmail">do pár minut</strong>.<br><br>
+      Zkontroluj také složku hromadná/spam, pokud e-mail nepřijde do 10 minut.
+      <div class="post-purchase-cta">
+        Chceš se k výkladům vracet průběžně během roku?
+        <br>
+        <a href="/cenik.html?source=annual_horoscope_success&feature=daily_guidance">Vyzkoušet Premium na 7 dní</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="status-banner" id="bannerCancel">
+  <div class="status-banner-inner cancel">
+    <div class="status-icon">◌</div>
+    <div class="status-title">Platba zrušena</div>
+    <div class="status-text">Platba nebyla dokončena. Pokud chceš pokračovat, vyplň formulář níže.</div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="hero-badge">✦ Personalizovaný výklad</div>
+  <div class="hero-glyph">✦</div>
+  <div class="hero-title">Roční Horoskop<br>na míru</div>
+  <div class="hero-year">2026</div>
+  <div class="hero-divider"></div>
+  <p class="hero-sub">
+    Zapomeň na obecné horoskopy. Tenhle je napsaný přímo pro tebe —
+    na základě tvého jména, data narození a znamení.
+    Šest oblastí života. Konkrétní předpovědi. Klíčové měsíce roku.
+  </p>
+  <div class="hero-price">199 Kč</div>
+  <div class="hero-price-note">jednorázová platba · PDF doručené do e-mailu</div>
+  <button class="hero-cta" type="button" data-scroll-target="form">
+    Chci svůj horoskop →
+  </button>
+  <div class="hero-delivery">Doručení do e-mailu <span>do 5–10 minut</span> od platby</div>
+</section>
+
+<div class="trust-strip" aria-label="Informace k nákupu">
+  <div class="trust-item">
+    <strong>Bez předplatného</strong>
+    <span>Zaplatíš jednou. Nejsou tu žádné opakované platby.</span>
+  </div>
+  <div class="trust-item">
+    <strong>Bezpečná platba</strong>
+    <span>Checkout běží přes Stripe a stránka neukládá údaje o kartě.</span>
+  </div>
+  <div class="trust-item">
+    <strong>Jasný výstup</strong>
+    <span>Dostaneš PDF, které si můžeš uložit nebo se k němu vracet.</span>
+  </div>
+</div>
+
+<!-- WHAT YOU GET -->
+<div class="sections-row">
+  <div class="section-card">
+    <div class="section-card-icon">✦</div>
+    <div class="section-card-title">Osobnost &amp; Duše</div>
+    <div class="section-card-text">Kdo jsi a jaká energie tě provází celý rok 2026.</div>
+  </div>
+  <div class="section-card">
+    <div class="section-card-icon">♥</div>
+    <div class="section-card-title">Láska &amp; Vztahy</div>
+    <div class="section-card-text">Co tě čeká v lásce, co opatrovat a kdy věci přijdou samy.</div>
+  </div>
+  <div class="section-card">
+    <div class="section-card-icon">◆</div>
+    <div class="section-card-title">Kariéra &amp; Finance</div>
+    <div class="section-card-text">Kdy riskovat, kdy šetřit, jaká příležitost tě čeká.</div>
+  </div>
+  <div class="section-card">
+    <div class="section-card-icon">✦</div>
+    <div class="section-card-title">Osobní Růst</div>
+    <div class="section-card-text">Nejdůležitější lekce a transformace, které tě rok přinese.</div>
+  </div>
+  <div class="section-card">
+    <div class="section-card-icon">◐</div>
+    <div class="section-card-title">Klíčové Měsíce</div>
+    <div class="section-card-text">Konkrétní měsíce roku — co přijde a jak se připravit.</div>
+  </div>
+  <div class="section-card">
+    <div class="section-card-icon">✧</div>
+    <div class="section-card-title">Slovo pro 2026</div>
+    <div class="section-card-text">Závěrečné slovo psané přímo pro tebe. Povzbuzení i pravda.</div>
+  </div>
+</div>
+
+<!-- SAMPLE -->
+<div class="sample-section">
+  <div class="sample-label">Ukázka z výkladu</div>
+  <div class="sample-box">
+    <div class="sample-box-title">Láska &amp; Vztahy · Ukázka pro Váhy</div>
+    <p>
+      "Rok 2026 přináší do tvého milostného světa jedno velké téma: rovnováhu mezi tím, co dáváš, a tím, co dostáváš zpět.
+      Jako Váhy jsi mistr kompromisu — ale letos tě hvězdy vybídnou, abys sama věděla, co chceš.
+      Duben přinese setkání, které tě překvapí. Nenech ho odplout ze strachu, že je příliš dobré na to, aby bylo pravdivé."
+    </p>
+  </div>
+</div>
+
+<!-- FORM -->
+<div class="form-section" id="form">
+  <div class="form-heading">
+    <h2>Objednej svůj horoskop</h2>
+    <p>Vyplň níže — PDF dorazí do tvého e-mailu do 5–10 minut.</p>
+  </div>
+
+  <div class="form-card">
+    <div class="form-error" id="formError"></div>
+
+    <form id="orderForm">
+      <div class="form-group">
+        <label for="name">Tvoje jméno</label>
+        <input type="text" id="name" name="name" placeholder="Jana" autocomplete="given-name" required maxlength="100">
+      </div>
+
+      <div class="form-group">
+        <label for="birthDate">Datum narození</label>
+        <input type="date" id="birthDate" name="birthDate" required>
+      </div>
+
+      <div class="form-group">
+        <label for="sign">Znamení zvěrokruhu</label>
+        <select id="sign" name="sign" required>
+          <option value="" disabled selected>Vyber své znamení</option>
+          <option value="beran">Beran (21.3 – 19.4)</option>
+          <option value="byk">Býk (20.4 – 20.5)</option>
+          <option value="blizenci">Blíženci (21.5 – 20.6)</option>
+          <option value="rak">Rak (21.6 – 22.7)</option>
+          <option value="lev">Lev (23.7 – 22.8)</option>
+          <option value="panna">Panna (23.8 – 22.9)</option>
+          <option value="vahy">Váhy (23.9 – 22.10)</option>
+          <option value="stir">Štír (23.10 – 21.11)</option>
+          <option value="strelec">Střelec (22.11 – 21.12)</option>
+          <option value="kozoroh">Kozoroh (22.12 – 19.1)</option>
+          <option value="vodnar">Vodnář (20.1 – 18.2)</option>
+          <option value="ryby">Ryby (19.2 – 20.3)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="email">E-mailová adresa</label>
+        <input type="email" id="email" name="email" placeholder="jana@example.cz" autocomplete="email" required>
+      </div>
+
+      <button type="submit" class="form-submit" id="submitBtn">
+        Pokračovat k platbě (199 Kč) →
+      </button>
+    </form>
+
+    <div class="form-note">
+      <span>🔒</span> Bezpečná platba přes Stripe · žádné opakované strhávání
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="faq-section">
+  <div class="faq-title">Časté otázky</div>
+
+  <div class="faq-item">
+    <div class="faq-q">Jak rychle dostanu horoskop?</div>
+    <div class="faq-a">Po dokončení platby generujeme horoskop ihned — obvykle do 5–10 minut dorazí PDF do tvého e-mailu.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Je horoskop opravdu personalizovaný?</div>
+    <div class="faq-a">Ano. Každý horoskop se generuje znovu pro konkrétní jméno, datum narození a znamení. Nejedná se o šablonu — výklad bere v úvahu tvůj jedinečný profil.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Co když e-mail nepřijde?</div>
+    <div class="faq-a">Zkontroluj složku hromadná / spam. Pokud tam e-mail není do 15 minut, napiš nám na info@mystickahvezda.cz — pomůžeme okamžitě.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Jak probíhá platba?</div>
+    <div class="faq-a">Platba probíhá přes Stripe — nejbezpečnější platební bránu. Přijímáme všechny karty. Jedná se o jednorázovou platbu, žádné předplatné.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Mohu si koupit horoskop jako dárek?</div>
+    <div class="faq-a">Samozřejmě. Zadej jméno a datum narození obdarované osoby a e-mail, na který má PDF dorazit.</div>
+  </div>
+</div>
+
+<footer class="page-footer">
+  <p>© 2026 Mystická Hvězda · <a href="/ochrana-soukromi.html">Ochrana soukromí</a> · <a href="/podminky.html">Obchodní podmínky</a></p>
+</footer>
+
+<script src="js/dist/analytics.js?v=6"></script>
+<script src="js/dist/rocni-horoskop.js?v=1" defer></script>
+<script src="js/dist/secondary-pages-copy-fixes.js" defer></script>
+</body>
+</html>

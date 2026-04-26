@@ -1,0 +1,31 @@
+/* Extracted from testy/stin-znameni.html inline <style> block. */
+.loader-shadow {
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #2a0a2e 0%, #050510 100%);
+            border: 2px solid #6a0dad;
+            border-radius: 50%;
+            margin: 0 auto;
+            position: relative;
+            animation: breathe 3s ease-in-out infinite;
+        }
+        .loader-shadow::after {
+            content: '🌗';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5rem;
+            filter: drop-shadow(0 0 10px #9d4edd);
+        }
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(106, 13, 173, 0.2); }
+            50% { transform: scale(1.1); box-shadow: 0 0 40px rgba(106, 13, 173, 0.6); }
+        }
+        .animate-shadow { animation: shadowPulse 4s infinite alternate; }
+        @keyframes shadowPulse {
+            from { filter: drop-shadow(0 0 5px #000); transform: scale(1); }
+            to { filter: drop-shadow(0 0 20px #6a0dad); transform: scale(1.1) rotate(5deg); }
+        }
+
+/* Migrated from testy/stin-znameni.html static style attributes. */
+html body .mh-inline-7fba039499 { padding-top: 0; }

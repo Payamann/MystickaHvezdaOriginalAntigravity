@@ -3,8 +3,9 @@
  * Groups smaller AI-powered features that don't warrant individual files
  */
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import { authenticateToken, requirePremium, requirePremiumSoft, optionalPremiumCheck } from '../middleware.js';
-import { callGemini } from '../services/gemini.js';
+import { callClaude } from '../services/claude.js';
 import { SYSTEM_PROMPTS } from '../config/prompts.js';
 import { calculateMoonPhase } from '../services/astrology.js';
 import { supabase } from '../db-supabase.js';
@@ -12,9 +13,16 @@ import { trackPaywallHit } from '../middleware.js';
 
 export const router = express.Router();
 
+// Rate limiter for AI-powered oracle endpoints
+const oracleLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 20,
+    message: { error: 'Příliš mnoho požadavků. Zkuste to znovu za hodinu.' }
+});
+
 // ─── Crystal Ball ──────────────────────────────────────────────────────────────
 
-router.post('/crystal-ball', optionalPremiumCheck, async (req, res) => {
+router.post('/crystal-ball', oracleLimiter, optionalPremiumCheck, async (req, res) => {
     try {
         const { question, history = [], lang = 'cs' } = req.body;
 
@@ -80,7 +88,7 @@ router.post('/crystal-ball', optionalPremiumCheck, async (req, res) => {
         const moonPhase = calculateMoonPhase();
         const systemPrompt = SYSTEM_PROMPTS.crystalBall.replace('{MOON_PHASE}', moonPhase) + `\n\nRespond in ${targetLangName}.`;
 
-        const response = await callGemini(systemPrompt, contextMessage);
+        const response = await callClaude(systemPrompt, contextMessage);
         res.json({ success: true, response });
     } catch (error) {
         console.error('Crystal Ball Error:', error);
@@ -90,7 +98,7 @@ router.post('/crystal-ball', optionalPremiumCheck, async (req, res) => {
 
 // ─── Lexikon Snů ──────────────────────────────────────────────────────────────
 
-router.post('/dream', authenticateToken, requirePremiumSoft, async (req, res) => {
+router.post('/dream', oracleLimiter, authenticateToken, requirePremiumSoft, async (req, res) => {
     try {
         const { dream } = req.body;
 
@@ -113,7 +121,7 @@ router.post('/dream', authenticateToken, requirePremiumSoft, async (req, res) =>
 
         const message = `Sen: "${dream}"\nProsím o hlubokou analýzu tohoto snu.`;
         const systemPrompt = SYSTEM_PROMPTS.dreamAnalysis + `\n\nRespond in ${targetLangName}.`;
-        const response = await callGemini(systemPrompt, message);
+        const response = await callClaude(systemPrompt, message);
         res.json({ success: true, response });
 
     } catch (error) {
@@ -124,7 +132,7 @@ router.post('/dream', authenticateToken, requirePremiumSoft, async (req, res) =>
 
 // ─── Tarot ────────────────────────────────────────────────────────────────────
 
-router.post('/tarot', authenticateToken, requirePremiumSoft, async (req, res) => {
+router.post('/tarot', oracleLimiter, authenticateToken, requirePremiumSoft, async (req, res) => {
     try {
         const { question, cards, spreadType = 'tříkartový' } = req.body;
 
@@ -159,7 +167,7 @@ router.post('/tarot', authenticateToken, requirePremiumSoft, async (req, res) =>
 
         const message = `Typ výkladu: ${spreadType}\nOtázka: "${question}"\nVytažené karty: ${cards.join(', ')}`;
         const systemPrompt = SYSTEM_PROMPTS.tarot + `\n\nRespond in ${targetLangName}.`;
-        const response = await callGemini(systemPrompt, message);
+        const response = await callClaude(systemPrompt, message);
         res.json({ success: true, response });
     } catch (error) {
         console.error('Tarot Error:', error);
@@ -167,7 +175,7 @@ router.post('/tarot', authenticateToken, requirePremiumSoft, async (req, res) =>
     }
 });
 
-router.post('/tarot-summary', authenticateToken, async (req, res) => {
+router.post('/tarot-summary', oracleLimiter, authenticateToken, async (req, res) => {
     try {
         const { cards, spreadType } = req.body;
 
@@ -189,7 +197,7 @@ router.post('/tarot-summary', authenticateToken, async (req, res) => {
         const message = `Typ výkladu: ${safeSpreadType}\n\nKarty v kontextu pozic:\n${cardContext}\n\nVytvoř krásný, hluboký souhrn tohoto výkladu.`;
 
         const systemPrompt = SYSTEM_PROMPTS.tarotSummary + `\n\nRespond in ${targetLangName}.`;
-        const response = await callGemini(systemPrompt, message);
+        const response = await callClaude(systemPrompt, message);
         res.json({ success: true, response });
     } catch (error) {
         console.error('Tarot Summary Error:', error);
@@ -199,7 +207,7 @@ router.post('/tarot-summary', authenticateToken, async (req, res) => {
 
 // ─── Natal Chart ──────────────────────────────────────────────────────────────
 
-router.post('/natal-chart', optionalPremiumCheck, async (req, res) => {
+router.post('/natal-chart', oracleLimiter, optionalPremiumCheck, async (req, res) => {
     try {
         const { birthDate, birthTime, birthPlace, name } = req.body;
 
@@ -225,7 +233,7 @@ router.post('/natal-chart', optionalPremiumCheck, async (req, res) => {
         const message = `Jméno: ${safeName}\\nDatum narození: ${String(birthDate).substring(0, 30)}\\nČas narození: ${String(birthTime || '').substring(0, 20)}\\nMísto narození: ${String(birthPlace || '').substring(0, 200)}${sunSignInfo}`;
 
         const systemPrompt = SYSTEM_PROMPTS.natalChart + `\n\nRespond in ${targetLangName}.`;
-        const response = await callGemini(systemPrompt, message);
+        const response = await callClaude(systemPrompt, message);
         res.json({ success: true, response, isTeaser: false });
     } catch (error) {
         console.error('Natal Chart Error:', error);
@@ -235,7 +243,7 @@ router.post('/natal-chart', optionalPremiumCheck, async (req, res) => {
 
 // ─── Synastry ─────────────────────────────────────────────────────────────────
 
-router.post('/synastry', authenticateToken, requirePremiumSoft, async (req, res) => {
+router.post('/synastry', oracleLimiter, authenticateToken, requirePremiumSoft, async (req, res) => {
     try {
         const { person1, person2 } = req.body;
 
@@ -255,7 +263,7 @@ router.post('/synastry', authenticateToken, requirePremiumSoft, async (req, res)
 
         const message = `Osoba A: ${safeName1}, narozena ${safeDate1}\nOsoba B: ${safeName2}, narozena ${safeDate2}`;
         const systemPrompt = SYSTEM_PROMPTS.synastry + `\n\nRespond in ${targetLangName}.`;
-        const response = await callGemini(systemPrompt, message);
+        const response = await callClaude(systemPrompt, message);
         res.json({ success: true, response, isTeaser: false });
     } catch (error) {
         console.error('Synastry Error:', error);
@@ -265,7 +273,7 @@ router.post('/synastry', authenticateToken, requirePremiumSoft, async (req, res)
 
 // ─── Astrocartography ─────────────────────────────────────────────────────────
 
-router.post('/astrocartography', authenticateToken, requirePremium, async (req, res) => {
+router.post('/astrocartography', oracleLimiter, authenticateToken, requirePremium, async (req, res) => {
     try {
         const { birthDate, birthTime, birthPlace, name, intention = 'obecný' } = req.body;
 
@@ -280,7 +288,7 @@ router.post('/astrocartography', authenticateToken, requirePremium, async (req, 
         const message = `Jméno: ${String(name || 'Tazatel').substring(0, 100)}\nDatum narození: ${String(birthDate).substring(0, 30)}\nČas narození: ${String(birthTime || '').substring(0, 20)}\nMísto narození: ${String(birthPlace || '').substring(0, 200)}\nZáměr analýzy: ${String(intention).substring(0, 200)}\n\nVytvoř personalizovanou astrokartografickou mapu s doporučenými lokalitami.`;
 
         const systemPrompt = SYSTEM_PROMPTS.astrocartography + `\n\nRespond in ${targetLangName}.`;
-        const response = await callGemini(systemPrompt, message);
+        const response = await callClaude(systemPrompt, message);
         res.json({ success: true, response });
     } catch (error) {
         console.error('Astrocartography Error:', error.message);
@@ -290,7 +298,7 @@ router.post('/astrocartography', authenticateToken, requirePremium, async (req, 
 
 // ─── Angel Cards ──────────────────────────────────────────────────────────────
 
-router.post('/angel-card', optionalPremiumCheck, async (req, res) => {
+router.post('/angel-card', oracleLimiter, authenticateToken, requirePremiumSoft, async (req, res) => {
     try {
         const { card, intention = 'obecný vhled do dnešního dne' } = req.body;
 
@@ -324,7 +332,7 @@ router.post('/angel-card', optionalPremiumCheck, async (req, res) => {
         const message = `Vytažená karta: ${safeCardName}\nTéma karty: ${safeCardTheme}\nZáměr / Otázka uživatele: ${safeIntention}\n\nVytvoř laskavé spojení, vysvětli poselství této karty pro tuto situaci a poraď praktický laskavý krok.`;
 
         const systemPrompt = SYSTEM_PROMPTS.angelCard + `\n\nRespond in ${targetLangName}.`;
-        const response = await callGemini(systemPrompt, message);
+        const response = await callClaude(systemPrompt, message);
         res.json({ success: true, response, isTeaser: false });
     } catch (error) {
         console.error('Angel Card Error:', error.message);
@@ -333,7 +341,7 @@ router.post('/angel-card', optionalPremiumCheck, async (req, res) => {
 });
 
 // ─── Runes (Elder Futhark) ────────────────────────────────────────────────────
-router.post('/runes', optionalPremiumCheck, async (req, res) => {
+router.post('/runes', oracleLimiter, authenticateToken, requirePremiumSoft, async (req, res) => {
     try {
         const { rune, intention = 'obecný duchovní vhled', history = [] } = req.body;
 
@@ -352,7 +360,7 @@ router.post('/runes', optionalPremiumCheck, async (req, res) => {
         let contextMessage = `Vytažená runa: ${safeRuneName}\nTradiční význam: ${safeRuneMeaning}\nZáměr / Otázka uživatele: ${safeIntention}\n\nVytvoř šamanský výklad a propojení energie této runy s životem tazatele.`;
 
         const systemPrompt = SYSTEM_PROMPTS.runes + `\n\nRespond in ${targetLangName}.`;
-        const response = await callGemini(systemPrompt, contextMessage);
+        const response = await callClaude(systemPrompt, contextMessage);
         res.json({ success: true, response, isTeaser: false });
 
     } catch (error) {
@@ -362,7 +370,7 @@ router.post('/runes', optionalPremiumCheck, async (req, res) => {
 });
 
 // ─── Daily Wisdom (AI Powered) ────────────────────────────────────────────────
-router.post('/daily-wisdom', optionalPremiumCheck, async (req, res) => {
+router.post('/daily-wisdom', oracleLimiter, authenticateToken, requirePremiumSoft, async (req, res) => {
     try {
         const { sign, moonPhase, lang = 'cs' } = req.body;
         
@@ -375,7 +383,7 @@ router.post('/daily-wisdom', optionalPremiumCheck, async (req, res) => {
         
         const systemPrompt = SYSTEM_PROMPTS.dailyWisdom + `\n\nRespond in ${targetLangName}.`;
         
-        const response = await callGemini(systemPrompt, message);
+        const response = await callClaude(systemPrompt, message);
         res.json({ success: true, response });
     } catch (error) {
         console.error('Daily Wisdom AI Error:', error);

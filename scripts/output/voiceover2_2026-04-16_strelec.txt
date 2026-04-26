@@ -1,0 +1,56 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 16. dubna 2026
+
+[intense] Střelci, 16. dubna máš volno. <break time="0.5s" /> [confident] A stejně plánuješ další krok. <break time="1.0s" />
+
+[upbeat] Otevřeš mapu. <break time="0.3s" /> [warm] Označíš místo, kde jsi nikdy nebyl. <break time="0.3s" /> [confident] Zavřeš aplikaci. <break time="0.3s" /> [intense] Nejde ti o útěk — chceš si dokázat, že ještě umíš překvapit sebe. <break time="1.0s" />
+
+[inviting] Střelci — napiš, kam tě to dnes táhne ⬇️ <break time="0.3s" /> [clearly] Série pokračuje. Sleduj pro další znamení.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+Jupiter, tvůj vládce, 16. dubna 2026 vstupuje do sextilu s Uranem — kombinace, která tě nutí expandovat mimo zónu komfortu 🎯 Nejde o únavu z rutiny, ale o potřebu tvého ohnivého živlu testovat vlastní hranice skrz nové terény. Střelci nejsou cestovatelé proto, že utíkají — jsou průzkumníci, protože stagnace je pro ně psychická smrt 🔥
+
+Sleduj pro další astro mechanismy, který ti nikdo nevysvětlí.
+
+#mystickaHvezda #Strelec #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+Jupiter v sextilu s Uranem 16. dubna 2026 ti nedává volno — dává ti příkaz k expanzi 🎯 Tvůj ohnivý živel nesnáší stagnaci jako jed, proto označuješ místa na mapě, kde jsi ještě nebyla. Sextil Jupiter-Uran je aspekt průzkumníků, ne utečenců — testuje tvou odvahu překvapit sám sebe mimo zaběhlé trasy 🔥 Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Střelec #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm energizing instrumental with soft vibraphone and shimmering synth layers creating gentle forward momentum, like golden sunrise light spreading across morning sky, featuring subtle rhythmic pulse and breathing melodic phrases in major key that support without overpowering, evoking celestial dewdrops catching first light with motivational brightness and hopeful energy. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+Real deep-space Hubble-style nebula photograph background, split composition:
+top half = warm amber-orange stellar explosion with bright white light burst with dramatic light burst from center,
+thin horizontal black band across the middle,
+bottom half = cool electric blue nebula with teal star clusters and scattered starlight.
+Cinematic, high-detail, photo-realistic.
+
+Center: large ornate 3D CGI Střelec zodiac symbol (♐),
+dark obsidian material with intricate gold filigree engravings,
+deeply detailed ancient medallion style, soft golden glow radiating from symbol, floating centered in frame.
+
+Below the symbol: dark stone plaque with ornate golden decorative border,
+bold serif text (NOT cursive, NOT italic, NOT calligraphic):
+Line 1: "16. DUBNA"
+Line 2: "STŘELEC"
+Text color: warm cream/off-white, engraved look.
+
+Bottom of image: aged parchment scroll, curled edges, warm paper texture,
+two lines of bold serif text (NOT cursive, NOT italic, NOT calligraphic), dark brown #2a1500:
+Line 1: "Máš volno a už plánuješ další krok."
+Line 2: "Nejde ti o útěk, jde ti o sebe."
+
+Portrait 4:5, 1080x1350px. No watermarks, no UI, no borders.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Střelci, 16. dubna máš volno. A stejně plánuješ další krok. Otevřeš mapu. Označíš místo, kde jsi nikdy nebyl. Zavřeš aplikaci. Nejde ti o útěk — chceš si dokázat, že ještě umíš překvapit sebe. Střelci — napiš, kam tě to dnes táhne ⬇️ Série pokračuje. Sleduj pro další znamení."
