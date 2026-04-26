@@ -15,11 +15,11 @@ function buildHoroscopeUpsell(period) {
         : 'Mesicni horoskop dava sirsi kontext a pomuze vam cist delsi cyklus misto jedine dnesni nalady.';
 
     return `
-        <div class="card glass-card" style="padding:1.15rem 1.15rem 1.25rem;border:1px solid rgba(212,175,55,0.24);background:rgba(212,175,55,0.08);">
-            <div style="font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-mystic-gold);margin-bottom:0.45rem;">Premium odemkne vic</div>
-            <h3 style="margin:0 0 0.45rem;color:#fff;font-size:1.15rem;">${title}</h3>
-            <p style="margin:0 0 1rem;color:rgba(255,255,255,0.76);line-height:1.6;">${copy}</p>
-            <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <div class="card glass-card horoscope-upsell">
+            <div class="horoscope-upsell__eyebrow">Premium odemkne vic</div>
+            <h3 class="horoscope-upsell__title">${title}</h3>
+            <p class="horoscope-upsell__copy">${copy}</p>
+            <div class="horoscope-upsell__actions">
                 <button type="button" class="btn btn--primary horoscope-upsell-btn" data-plan="pruvodce" data-source="horoscope_inline_upsell" data-feature="${period}_horoscope">Odemknout Hvezdneho Pruvodce</button>
                 <a href="/cenik.html?plan=pruvodce&source=horoscope_inline_upsell&feature=${period}_horoscope" class="btn btn--glass">Nejdriv si projit plany</a>
             </div>
@@ -48,8 +48,8 @@ function initHoroscope() {
     loadingState.className = 'horoscope-loading hidden';
     loadingState.innerHTML = `
         <div class="text-center">
-            <span class="loading-spinner" style="width: 30px; height: 30px; border-width: 3px;"></span>
-            <p class="fade-in-text" style="display: block; margin-top: 10px; transition: opacity 0.3s ease;">Naladeni na energii vaseho znameni...</p>
+            <span class="loading-spinner horoscope-loading__spinner"></span>
+            <p class="fade-in-text horoscope-loading__text">Naladeni na energii vaseho znameni...</p>
         </div>
     `;
 
@@ -61,12 +61,12 @@ function initHoroscope() {
         if (!detailText) return;
 
         const reasonText = reason === 'auth'
-            ? '<p style="margin:0 0 0.9rem;color:rgba(255,255,255,0.72);">Pro tenhle typ horoskopu je potreba ucet, protoze si uklada hlubsi osobni kontext.</p>'
+            ? '<p class="horoscope-upsell-reason">Pro tenhle typ horoskopu je potreba ucet, protoze si uklada hlubsi osobni kontext.</p>'
             : '';
 
         detailText.innerHTML = `${reasonText}${buildHoroscopeUpsell(period)}`;
         if (detailWork) detailWork.innerHTML = '';
-        if (detailRelationships) detailRelationships.style.display = 'none';
+        if (detailRelationships) detailRelationships.hidden = true;
         if (detailNumbers) detailNumbers.innerText = '-';
 
         const upsellBtn = detailText.querySelector('.horoscope-upsell-btn');
@@ -195,10 +195,10 @@ function initHoroscope() {
         const loadingInterval = setInterval(() => {
             msgIndex = (msgIndex + 1) % currentMsgs.length;
             if (loadingText) {
-                loadingText.style.opacity = '0';
+                loadingText.classList.add('is-fading');
                 setTimeout(() => {
                     loadingText.innerText = currentMsgs[msgIndex];
-                    loadingText.style.opacity = '1';
+                    loadingText.classList.remove('is-fading');
                 }, 300);
             }
         }, 2500);
@@ -274,12 +274,12 @@ function initHoroscope() {
                 const affLabel = { cs: 'Afirmace', sk: 'Afirmacia', pl: 'Afirmacja' }[currentLang] || 'Afirmace';
                 const affFallback = { cs: 'Jsem v souladu s vesmirem.', sk: 'Som v sulade s vesmirom.', pl: 'Jestem w harmonii z wszechswiatem.' }[currentLang] || 'Jsem v souladu s vesmirem.';
                 const affirmationText = predictionData.affirmation || extractedAffirmation || affFallback;
-                const rawHtml = `<strong style="color: var(--color-starlight);">✨ ${affLabel}:</strong> ${affirmationText}`;
+                const rawHtml = `<strong class="horoscope-affirmation-label">&#10024; ${affLabel}:</strong> ${affirmationText}`;
                 const sanitized = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(rawHtml) : rawHtml;
                 detailWork.innerHTML = sanitized;
             }
 
-            if (detailRelationships) detailRelationships.style.display = 'none';
+            if (detailRelationships) detailRelationships.hidden = true;
 
             if (detailNumbers) {
                 if (predictionData.luckyNumbers && Array.isArray(predictionData.luckyNumbers)) {
@@ -308,11 +308,10 @@ function initHoroscope() {
                     const existingBtn = document.getElementById('favorite-horoscope-btn');
                     if (!existingBtn && contentContainer) {
                         const favoriteBtn = document.createElement('div');
-                        favoriteBtn.className = 'text-center';
-                        favoriteBtn.style.marginTop = 'var(--space-xl)';
+                        favoriteBtn.className = 'text-center favorite-reading-action';
                         favoriteBtn.innerHTML = `
-                            <button id="favorite-horoscope-btn" class="btn btn--glass" style="min-width: 200px;">
-                                <span class="favorite-icon">★</span> Pridat do oblibenych
+                            <button id="favorite-horoscope-btn" class="btn btn--glass favorite-reading-action__button">
+                                <span class="favorite-icon">&#9733;</span> Pridat do oblibenych
                             </button>
                         `;
                         contentContainer.appendChild(favoriteBtn);

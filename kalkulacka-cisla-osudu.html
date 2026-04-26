@@ -122,194 +122,8 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap&subset=latin,latin-ext" rel="stylesheet"></noscript>
 
     <link rel="stylesheet" href="css/style.v2.min.css?v=11">
-
-
-
-    <style>
-
-        .calc-card {
-
-            max-width: 600px;
-
-            margin: 0 auto;
-
-            background: rgba(10, 10, 26, 0.8);
-
-            border: 1px solid rgba(255, 255, 255, 0.1);
-
-            border-radius: 24px;
-
-            padding: 2.5rem;
-
-            backdrop-filter: blur(10px);
-
-        }
-
-
-
-        .date-inputs {
-
-            display: grid;
-
-            grid-template-columns: 1fr 1fr 1.5fr;
-
-            gap: 0.75rem;
-
-            margin: 1.5rem 0;
-
-        }
-
-
-
-        .date-inputs input {
-
-            padding: 0.9rem;
-
-            background: rgba(255, 255, 255, 0.06);
-
-            border: 1px solid rgba(255, 255, 255, 0.15);
-
-            border-radius: 12px;
-
-            color: #fff;
-
-            font-size: 1rem;
-
-            text-align: center;
-
-            font-family: 'Inter', sans-serif;
-
-            transition: border-color 0.2s;
-
-            width: 100%;
-
-        }
-
-
-
-        .date-inputs input:focus {
-
-            outline: none;
-
-            border-color: rgba(235, 192, 102, 0.6);
-
-        }
-
-
-
-        .date-inputs label {
-
-            display: block;
-
-            font-size: 0.75rem;
-
-            color: rgba(255, 255, 255, 0.4);
-
-            margin-bottom: 0.35rem;
-
-            letter-spacing: 1px;
-
-            text-transform: uppercase;
-
-        }
-
-
-
-        .result-number {
-
-            font-family: 'Cinzel', serif;
-
-            font-size: 6rem;
-
-            background: linear-gradient(135deg, #d4af37, #f5d776);
-
-            -webkit-background-clip: text;
-
-            -webkit-text-fill-color: transparent;
-
-            font-weight: 700;
-
-            line-height: 1;
-
-            margin: 1rem 0 0.5rem;
-
-        }
-
-
-
-        .result-name {
-
-            font-family: 'Cinzel', serif;
-
-            font-size: 1.3rem;
-
-            color: #ebc066;
-
-            margin-bottom: 1rem;
-
-        }
-
-
-
-        .result-text {
-
-            color: rgba(255, 255, 255, 0.75);
-
-            line-height: 1.8;
-
-            font-size: 0.95rem;
-
-        }
-
-
-
-        .trait-grid {
-
-            display: flex;
-
-            flex-wrap: wrap;
-
-            gap: 0.5rem;
-
-            margin: 1rem 0;
-
-            justify-content: center;
-
-        }
-
-
-
-        .trait-chip {
-
-            background: rgba(235, 192, 102, 0.12);
-
-            border: 1px solid rgba(235, 192, 102, 0.25);
-
-            border-radius: 50px;
-
-            padding: 0.3rem 0.9rem;
-
-            font-size: 0.82rem;
-
-            color: #ebc066;
-
-        }
-
-
-
-        .share-result {
-
-            margin-top: 1.5rem;
-
-            padding-top: 1.5rem;
-
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-
-        }
-
-    </style>
-
-    <script src="/js/dist/analytics-init.js" defer></script>
+    <link rel="stylesheet" href="css/pages/kalkulacka-cisla-osudu.css">
+<script src="/js/dist/analytics-init.js" defer></script>
 </head>
 
 
@@ -326,7 +140,7 @@
 
     <main id="main-content">
 
-        <section class="section section--hero" style="min-height:auto; padding-bottom:0;">
+        <section class="section section--hero mh-inline-4bfe679126">
 
             <div class="container text-center">
 
@@ -344,7 +158,7 @@
 
 
 
-        <section class="section" style="padding-top:2rem;">
+        <section class="section mh-inline-f6e00d6753">
 
             <div class="container">
 
@@ -352,11 +166,11 @@
 
                     <h2
 
-                        style="font-family:'Cinzel',serif;color:#ebc066;text-align:center;font-size:1.3rem;margin:0 0 0.25rem;">
+                        class="mh-inline-14bd58b6c6">
 
                         Zadejte datum narození</h2>
 
-                    <p style="text-align:center;color:rgba(255,255,255,0.4);font-size:0.85rem;margin:0 0 1.5rem;">Den,
+                    <p class="mh-inline-40b3337173">Den,
 
                         měsíc a rok jsou důležité – každá číslice se počítá.</p>
 
@@ -394,7 +208,7 @@
 
 
 
-                    <button id="calc-btn" class="btn btn--primary" style="width:100%;font-size:1rem;">
+                    <button id="calc-btn" class="btn btn--primary mh-inline-392353889f">
 
                         ✨ Vypočítat mé číslo zdarma
 
@@ -404,7 +218,7 @@
 
                     <div id="calc-error"
 
-                        style="color:#f87171;font-size:0.85rem;text-align:center;margin-top:0.75rem;min-height:1.2em;">
+                        class="mh-inline-68f1dcf006">
 
                     </div>
 
@@ -414,11 +228,11 @@
 
                     <div id="calc-result"
 
-                        style="display:none;text-align:center;margin-top:2rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,0.08);">
+                        class="mh-inline-c3c6b0e32b">
 
                         <div
 
-                            style="font-size:0.8rem;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;">
+                            class="mh-inline-df42b1ec49">
 
                             Vaše Číslo Osudu</div>
 
@@ -434,23 +248,23 @@
 
                         <div class="share-result">
 
-                            <p style="color:rgba(255,255,255,0.4);font-size:0.8rem;margin-bottom:0.75rem;">Sdílejte
+                            <p class="mh-inline-68ce2bdc63">Sdílejte
 
                                 svůj výsledek:</p>
 
-                            <div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;">
+                            <div class="mh-inline-aa8df7dab0">
 
-                                <button data-action="shareResult" data-platform="twitter" class="btn btn--glass"
+                                <button data-action="shareResult" data-platform="twitter" class="btn btn--glass mh-inline-befada9df0"
 
-                                    style="font-size:0.82rem;padding:0.5rem 1rem;">𝕏 Twitter</button>
+                                   >𝕏 Twitter</button>
 
-                                <button data-action="shareResult" data-platform="facebook" class="btn btn--glass"
+                                <button data-action="shareResult" data-platform="facebook" class="btn btn--glass mh-inline-befada9df0"
 
-                                    style="font-size:0.82rem;padding:0.5rem 1rem;">Facebook</button>
+                                   >Facebook</button>
 
-                                <button data-action="shareResult" data-platform="copy" class="btn btn--glass"
+                                <button data-action="shareResult" data-platform="copy" class="btn btn--glass mh-inline-befada9df0"
 
-                                    style="font-size:0.82rem;padding:0.5rem 1rem;" id="copy-btn">📋 Kopírovat</button>
+                                    id="copy-btn">📋 Kopírovat</button>
 
                             </div>
 
@@ -460,19 +274,19 @@
 
                         <div
 
-                            style="margin-top:2rem;padding:1.5rem;background:rgba(155,89,182,0.1);border:1px solid rgba(155,89,182,0.2);border-radius:16px;">
+                            class="mh-inline-bc8a40ecda">
 
-                            <p style="font-family:'Cinzel',serif;color:#ebc066;margin:0 0 0.75rem;font-size:1rem;">
+                            <p class="mh-inline-2c2319365f">
 
                                 Chcete hlubší výklad?</p>
 
-                            <p style="color:rgba(255,255,255,0.6);font-size:0.88rem;margin:0 0 1rem;">Plná AI
+                            <p class="mh-inline-5497eebd4d">Plná AI
 
                                 numerologická analýza včetně čísla výrazu, duše a osobnosti je součástí Hvězdného
 
                                 Průvodce.</p>
 
-                            <a href="numerologie.html" class="btn btn--primary" style="font-size:0.9rem;">Otevřít plnou
+                            <a href="numerologie.html" class="btn btn--primary mh-inline-0dc7c34752">Otevřít plnou
 
                                 analýzu →</a>
 
@@ -486,13 +300,13 @@
 
                 <!-- EXPLANATION SECTION - SEO content -->
 
-                <div style="max-width:700px;margin:4rem auto 0;">
+                <div class="mh-inline-4ec9742dd9">
 
-                    <h2 style="font-family:'Cinzel',serif;color:#ebc066;font-size:1.5rem;margin-bottom:1rem;">Co je
+                    <h2 class="mh-inline-16a9f070c8">Co je
 
                         Číslo Osudu?</h2>
 
-                    <p style="color:rgba(255,255,255,0.7);line-height:1.85;margin-bottom:1rem;">Číslo Osudu – také
+                    <p class="mh-inline-d325b482d4">Číslo Osudu – také
 
                         nazývané Životní číslo nebo Číslo cesty – je základní číslo v numerologii. Vypočítává se z
 
@@ -500,7 +314,7 @@
 
                         jste si přišli prožít.</p>
 
-                    <p style="color:rgba(255,255,255,0.7);line-height:1.85;margin-bottom:1rem;">Numerologie vychází z
+                    <p class="mh-inline-d325b482d4">Numerologie vychází z
 
                         myšlenky, že čísla mají vibrační kvalitu, která ovlivňuje energii narozeného člověka.
 
@@ -510,33 +324,33 @@
 
 
 
-                    <h2 style="font-family:'Cinzel',serif;color:#ebc066;font-size:1.3rem;margin:2rem 0 1rem;">Jak
+                    <h2 class="mh-inline-681afbd319">Jak
 
                         kalkulačka počítá?</h2>
 
-                    <p style="color:rgba(255,255,255,0.7);line-height:1.85;margin-bottom:1rem;">Sečteme všechny
+                    <p class="mh-inline-d325b482d4">Sečteme všechny
 
                         číslice data narození až do jednociferného výsledku. Výjimkou jsou tzv. Master Numbers: 11, 22
 
                         a 33, které se neredukují dál, protože nesou zvláštní vibrační potenciál.</p>
 
-                    <p style="color:rgba(255,255,255,0.7);line-height:1.85;">Příklad: Datum 15. 3. 1990 → 1+5+3+1+9+9+0
+                    <p class="mh-inline-141b96f6da">Příklad: Datum 15. 3. 1990 → 1+5+3+1+9+9+0
 
-                        = 28 → 2+8 = 10 → 1+0 = <strong style="color:#ebc066;">1</strong></p>
+                        = 28 → 2+8 = 10 → 1+0 = <strong class="mh-inline-7b21502de8">1</strong></p>
 
 
 
-                    <div style="margin-top:3rem;">
+                    <div class="mh-inline-dc28cffb30">
 
                         <details
 
-                            style="background:rgba(10,10,26,0.6);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:1rem 1.5rem;margin-bottom:0.75rem;">
+                            class="mh-inline-3c9bb1ab99">
 
-                            <summary style="color:#ebc066;cursor:pointer;font-weight:600;">Co je Master Number?
+                            <summary class="mh-inline-da07287adf">Co je Master Number?
 
                             </summary>
 
-                            <p style="color:rgba(255,255,255,0.7);line-height:1.8;margin-top:0.75rem;margin-bottom:0;">
+                            <p class="mh-inline-9b240aa668">
 
                                 Master Numbers jsou 11, 22 a 33. Obsahují zdvojenou energii svého kořenového čísla (2,
 
@@ -546,13 +360,13 @@
 
                         <details
 
-                            style="background:rgba(10,10,26,0.6);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:1rem 1.5rem;margin-bottom:0.75rem;">
+                            class="mh-inline-3c9bb1ab99">
 
-                            <summary style="color:#ebc066;cursor:pointer;font-weight:600;">Je numerologie věda?
+                            <summary class="mh-inline-da07287adf">Je numerologie věda?
 
                             </summary>
 
-                            <p style="color:rgba(255,255,255,0.7);line-height:1.8;margin-top:0.75rem;margin-bottom:0;">
+                            <p class="mh-inline-9b240aa668">
 
                                 Numerologie není věda v akademickém slova smyslu, ale starověká symbolická tradice.
 
@@ -578,27 +392,27 @@
 
 
 
-    <script src="js/kalkulacka-cisla-osudu.js" defer></script>
+    <script src="js/dist/kalkulacka-cisla-osudu.js" defer></script>
 
 
 
-    <script src="js/api-config.js?v=5" defer></script>
+    <script src="js/dist/api-config.js?v=5" defer></script>
 
-    <script src="js/templates.js?v=10" defer></script>
+    <script src="js/dist/templates.js?v=10" defer></script>
 
-    <script src="js/auth-client.js?v=5" defer></script>
-<script src="js/auth-copy-fixes.js" defer></script>
-    <script src="js/secondary-pages-copy-fixes.js" defer></script>
+    <script src="js/dist/auth-client.js?v=5" defer></script>
+<script src="js/dist/auth-copy-fixes.js" defer></script>
+    <script src="js/dist/secondary-pages-copy-fixes.js" defer></script>
 
-    <script src="js/components.js?v=10" defer></script>
+    <script src="js/dist/components.js?v=10" defer></script>
 
-    <script type="module" src="js/main.js?v=10"></script>
+    <script type="module" src="js/dist/main.js?v=10"></script>
 
-    <script src="js/retention.js?v=5" defer></script>
+    <script src="js/dist/retention.js?v=6" defer></script>
 
-  <script type="module" src="js/personalization.js?v=5"></script>
+  <script type="module" src="js/dist/personalization.js?v=5"></script>
 
-    <script src="js/newsletter-popup.js" defer></script>
+    <script src="js/dist/newsletter-popup.js" defer></script>
 
 </body>
 

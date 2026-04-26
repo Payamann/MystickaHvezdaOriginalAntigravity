@@ -7,7 +7,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import pytest
-from comment_manager import analyze_comment_sentiment
+import comment_manager
+from comment_manager import analyze_comment_sentiment, get_comments_to_hide
 
 
 class TestSpamDetection:
@@ -28,7 +29,7 @@ class TestSpamDetection:
 
 
 class TestHateDetection:
-    """Hate / urážky → skrýt"""
+    """Hrubé komentáře → klidná odpověď, extrémní útoky → skrýt"""
 
     @pytest.mark.parametrize("text", [
         "Tohle jsou kraviny",
@@ -38,9 +39,18 @@ class TestHateDetection:
         "Jste idioti",
         "hlupaci",
     ])
-    def test_hate_detected(self, text):
+    def test_rude_detected(self, text):
         result = analyze_comment_sentiment(text)
-        assert result["sentiment"] == "negative"
+        assert result["sentiment"] == "rude"
+        assert result["needs_reply"] is True
+        assert result["should_hide"] is False
+
+    @pytest.mark.parametrize("text", [
+        "Drž hubu",
+        "chcípněte",
+    ])
+    def test_severe_abuse_hidden(self, text):
+        result = analyze_comment_sentiment(text)
         assert result["should_hide"] is True
 
 
@@ -119,12 +129,17 @@ class TestNeutralSentiment:
 
     def test_neutral_generic(self):
         result = analyze_comment_sentiment("Zajímavé")
-        assert result["sentiment"] == "neutral"
-        assert result["needs_reply"] is True
+        assert result["sentiment"] == "low_signal"
+        assert result["needs_reply"] is False
 
     def test_empty_ish(self):
         result = analyze_comment_sentiment("ok")
+        assert result["sentiment"] in {"neutral", "low_signal"}
+
+    def test_short_zodiac_identity_is_not_low_signal(self):
+        result = analyze_comment_sentiment("Štír")
         assert result["sentiment"] == "neutral"
+        assert result["needs_reply"] is True
 
 
 class TestSkepticalSentiment:
@@ -135,3 +150,59 @@ class TestSkepticalSentiment:
         assert result["sentiment"] == "skeptical"
         assert result["needs_reply"] is True
         assert result["should_hide"] is False
+
+
+class TestEmotionalSupport:
+    """Lidé píšící že se mají špatně → podpůrná odpověď"""
+
+    @pytest.mark.parametrize("text", [
+        "Mám se špatně",
+        "Je mi blbě a už nemůžu",
+        "Nejsem v pořádku",
+        "Po rozchodu se cítím hrozně",
+    ])
+    def test_emotional_support_detected(self, text):
+        result = analyze_comment_sentiment(text)
+        assert result["sentiment"] == "emotional"
+        assert result["needs_reply"] is True
+        assert result["priority"] >= 7
+
+    @pytest.mark.parametrize("text", [
+        "Nechci žít",
+        "Chci si ublížit",
+    ])
+    def test_crisis_detected(self, text):
+        result = analyze_comment_sentiment(text)
+        assert result["sentiment"] == "crisis"
+        assert result["needs_reply"] is True
+        assert result["should_hide"] is False
+
+
+class TestModerationQueue:
+    """Spam/hate komentáře se musí dostat do moderace i s nízkou prioritou."""
+
+    def test_hide_queue_includes_should_hide_comments(self, monkeypatch):
+        monkeypatch.setattr(comment_manager, "_load_db", lambda: {
+            "comments": {
+                "1": {
+                    "id": "1",
+                    "status": "new",
+                    "platform": "facebook",
+                    "from_name": "User",
+                    "should_hide": True,
+                    "message": "spam",
+                },
+                "2": {
+                    "id": "2",
+                    "status": "new",
+                    "platform": "facebook",
+                    "from_name": "User",
+                    "should_hide": False,
+                    "message": "normální komentář",
+                },
+            }
+        })
+
+        result = get_comments_to_hide()
+
+        assert [comment["id"] for comment in result] == ["1"]

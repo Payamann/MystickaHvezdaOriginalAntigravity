@@ -1,0 +1,336 @@
+/* Extracted from cinsky-horoskop.html inline <style> block. */
+.animal-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+
+            gap: 0.75rem;
+
+            max-width: 800px;
+
+            margin: 2rem auto;
+
+        }
+
+
+
+        .animal-btn {
+
+            background: rgba(255, 255, 255, 0.04);
+
+            border: 1px solid rgba(255, 255, 255, 0.1);
+
+            border-radius: 14px;
+
+            padding: 1rem 0.5rem;
+
+            cursor: pointer;
+
+            transition: all 0.25s;
+
+            text-align: center;
+
+            color: rgba(255, 255, 255, 0.75);
+
+            font-size: 0.82rem;
+
+            font-family: inherit;
+
+        }
+
+
+
+        .animal-btn:hover,
+
+        .animal-btn.active {
+
+            background: rgba(212, 175, 55, 0.12);
+
+            border-color: rgba(212, 175, 55, 0.4);
+
+            color: white;
+
+            transform: translateY(-3px);
+
+        }
+
+
+
+        .animal-btn span {
+
+            display: block;
+
+            font-size: 2rem;
+
+            margin-bottom: 0.4rem;
+
+        }
+
+
+
+        .result-section {
+
+            max-width: 700px;
+
+            margin: 2rem auto;
+
+            display: none;
+
+            animation: fadeIn 0.4s ease;
+
+        }
+
+
+
+        .result-section.show {
+
+            display: block;
+
+        }
+
+
+
+        @keyframes fadeIn {
+
+            from {
+
+                opacity: 0;
+
+                transform: translateY(20px)
+
+            }
+
+
+
+            to {
+
+                opacity: 1;
+
+                transform: translateY(0)
+
+            }
+
+        }
+
+
+
+        .result-hero {
+
+            padding: 2.5rem 2rem;
+
+            border-radius: 20px;
+
+            text-align: center;
+
+            margin-bottom: 1.5rem;
+
+        }
+
+
+
+        .detail-card {
+
+            background: rgba(255, 255, 255, 0.04);
+
+            border: 1px solid rgba(255, 255, 255, 0.08);
+
+            border-radius: 14px;
+
+            padding: 1.25rem;
+
+            margin-bottom: 1rem;
+
+        }
+
+
+
+        .detail-card h3 {
+
+            color: #d4af37;
+
+            font-family: 'Cinzel', serif;
+
+            font-size: 1rem;
+
+            margin-bottom: 0.75rem;
+
+        }
+
+
+
+        .compat-grid {
+
+            display: flex;
+
+            gap: 1rem;
+
+            flex-wrap: wrap;
+
+            margin-top: 0.5rem;
+
+        }
+
+
+
+        .compat-badge {
+
+            padding: 0.3rem 0.75rem;
+
+            border-radius: 50px;
+
+            font-size: 0.82rem;
+
+        }
+
+
+
+        .compat-good {
+
+            background: rgba(46, 204, 113, 0.15);
+
+            border: 1px solid rgba(46, 204, 113, 0.3);
+
+            color: #2ecc71;
+
+        }
+
+
+
+        .compat-bad {
+
+            background: rgba(231, 76, 60, 0.12);
+
+            border: 1px solid rgba(231, 76, 60, 0.3);
+
+            color: #ff6b6b;
+
+        }
+
+
+
+        .year-input-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            height: 48px;
+        }
+
+        .year-input-wrapper:focus-within {
+            border-color: rgba(212, 175, 55, 0.6);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+        }
+
+        .year-input-wrapper--invalid {
+            border-color: rgba(231, 76, 60, 0.8);
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.08);
+        }
+
+        .year-input {
+            padding: 0 0.5rem;
+            background: transparent !important;
+            border: none !important;
+            color: white;
+            font-size: 1.1rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            width: 80px;
+            text-align: center;
+            margin: 0;
+            height: 100%;
+            -webkit-appearance: none;
+            appearance: none;
+            -moz-appearance: textfield;
+        }
+
+        .year-input::-webkit-outer-spin-button,
+        .year-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .ctrl-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            width: 40px;
+            height: 100%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .ctrl-btn:hover {
+            color: #d4af37;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .ctrl-btn:active {
+            transform: scale(0.9);
+        }
+
+        .ctrl-btn.minus {
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .ctrl-btn.plus {
+            border-left: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .result-hero--active {
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(155, 89, 182, 0.1));
+        }
+
+        .chinese-element--metal { color: #b0c4de; }
+        .chinese-element--water { color: #3498db; }
+        .chinese-element--wood { color: #2ecc71; }
+        .chinese-element--fire { color: #e74c3c; }
+        .chinese-element--earth { color: #f39c12; }
+        .chinese-element--neutral { color: var(--color-mystic-gold); }
+
+        .syn-title--good { color: #2ecc71; }
+        .syn-title--bad { color: #e74c3c; }
+        .syn-title--neutral { color: var(--color-mystic-gold); }
+
+/* Migrated from cinsky-horoskop.html static style attributes. */
+html body .mh-inline-31328a8ea3 { padding-top:5rem;text-align:center; }
+html body .mh-inline-cd1c29fb1d { max-width:800px; }
+html body .mh-inline-0acb84fc14 { font-size:5rem;margin-bottom:0.75rem; }
+html body .mh-inline-7fb01b8db9 { font-family:'Cinzel',serif;font-size:2rem;color:white;margin-bottom:0.25rem; }
+html body .mh-inline-882eac247e { color:rgba(255,255,255,0.5);font-size:0.9rem;margin-bottom:0.5rem; }
+html body .mh-inline-5f26a41e27 { color:#d4af37;font-size:0.95rem; }
+html body .mh-inline-7766ed7ec2 { color:rgba(255,255,255,0.8);line-height:1.8; }
+html body .mh-inline-43bc13b9b3 { color:rgba(255,255,255,0.75);line-height:1.6;font-size:0.92rem; }
+html body .mh-inline-c20fb24ce2 { text-align:center;margin-top:1.5rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap; }
+html body .mh-inline-e73c9faaa6 { padding-top:3rem; padding-bottom:5rem; }
+html body .mh-inline-dae7ef5af5 { max-width:800px; text-align:center; }
+html body .mh-inline-4e254343b9 { margin-top:2rem; padding:2rem; background:rgba(20,15,30,0.6); }
+html body .mh-inline-8d53b49ce0 { display:block; color:var(--color-silver-mist); margin-bottom:0.5rem; font-size:0.9rem; }
+html body .mh-inline-8b5ba9f1a4 { display:none; margin-top:2rem; text-align:left; border-top:1px solid rgba(255,255,255,0.1); padding-top:2rem; animation:fadeIn 0.5s ease; }
+html body .mh-inline-8e1313a4cc { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem; }
+html body .mh-inline-200aa8a60a { font-size:3rem; }
+html body .mh-inline-563b028729 { color:var(--color-mystic-gold); font-weight:bold; font-family:'Cinzel', serif; font-size:1.1rem; margin-top:0.5rem; }
+html body .mh-inline-0edad4595f { text-align:center; background:rgba(0,0,0,0.2); }
+html body .mh-inline-ab9e971564 { font-size:1.4rem; margin-bottom:0.75rem; }
+html body .mh-inline-888043c781 { color:rgba(255,255,255,0.85); line-height:1.6; font-size:0.95rem; }
+html body .mh-inline-6bb703f1fd { background:linear-gradient(135deg, #d4af37, #f1c40f); color:#000; border:none; box-shadow:0 0 15px rgba(212,175,55,0.6); }
+
+/* Migrated from cinsky-horoskop.html remaining static style attributes. */
+html body .mh-inline-5f03cef152 { margin:2rem 0 1rem;display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap; }
+html body .mh-inline-e4f4aa02dd { display:grid;grid-template-columns:1fr 1fr;gap:1rem; }
+html body .mh-inline-4258f29939 { color:rgba(255,255,255,0.5);font-size:0.85rem;margin-bottom:0.75rem; }
+html body .mh-inline-50d84c4b9c { color:rgba(255,255,255,0.5);font-size:0.85rem;margin:0.75rem 0 0.5rem; }
+html body .mh-inline-a3cd1c1280 { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:1.5rem; }
+html body .mh-inline-4ed11ed228 { text-align:center; flex:1; }
+html body .mh-inline-507e25c2d7 { font-size:2rem; opacity:0.5; }
+html body .mh-inline-fb7d31145b { text-align:center; margin-top:1.5rem; }

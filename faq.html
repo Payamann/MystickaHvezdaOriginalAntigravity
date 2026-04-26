@@ -102,76 +102,9 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap&subset=latin,latin-ext" rel="stylesheet"></noscript>
 
     <link rel="stylesheet" href="css/style.v2.min.css?v=11">
+    <link rel="stylesheet" href="css/pages/faq.css">
     <script src="https://cdn.jsdelivr.net/npm/lucide/dist/umd/lucide.js"></script>
-
-    <style>
-        .faq-category {
-            margin-bottom: var(--space-2xl);
-        }
-        .faq-category__header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: var(--space-lg);
-            padding-bottom: var(--space-xs);
-            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-        }
-        .faq-category__title {
-            font-family: var(--font-display);
-            font-size: var(--text-2xl);
-            color: var(--color-mystic-gold);
-            margin: 0;
-        }
-        .faq-category__icon {
-            color: var(--color-mystic-gold);
-            opacity: 0.8;
-        }
-        .card--faq {
-            margin-bottom: var(--space-md);
-            padding: 0 !important;
-            overflow: hidden;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: all 0.3s ease;
-        }
-        .card--faq:hover {
-            border-color: rgba(212, 175, 55, 0.3);
-            background: rgba(255, 255, 255, 0.05);
-        }
-        .faq-summary {
-            padding: 1.25rem 1.5rem;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.95);
-            list-style: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            user-select: none;
-        }
-        .faq-summary::-webkit-details-marker {
-            display: none;
-        }
-        .faq-summary .faq-icon-chevron {
-            color: var(--color-mystic-gold);
-            transition: transform 0.3s ease;
-        }
-        details[open] .faq-summary .faq-icon-chevron {
-            transform: rotate(180deg);
-        }
-        .faq-content {
-            padding: 0 1.5rem 1.25rem;
-            color: rgba(255, 255, 255, 0.8);
-            line-height: 1.6;
-            font-size: 0.95rem;
-        }
-        @media (max-width: 768px) {
-            .faq-category__title { font-size: 1.5rem; }
-            .faq-summary { padding: 1rem 1.25rem; font-size: 1rem; }
-            .faq-content { padding: 0 1.25rem 1.1rem; font-size: 0.9rem; }
-        }
-    </style>
-    <link rel="canonical" href="https://www.mystickahvezda.cz/faq.html">
+<link rel="canonical" href="https://www.mystickahvezda.cz/faq.html">
     <script src="/js/dist/analytics-init.js" defer></script>
 </head>
 
@@ -199,7 +132,7 @@
 
         <!-- HERO -->
 
-        <section class="section section--hero" style="min-height: 50vh; padding-top: 140px;">
+        <section class="section section--hero hero--legal">
 
             <div class="container">
 
@@ -225,7 +158,7 @@
 
         <!-- FAQ CATEGORIES -->
         <section class="section">
-            <div class="container" style="max-width: 900px;">
+            <div class="container mh-inline-b21af215ba">
                 
                 <!-- Category 1: Astrologické Služby -->
                 <div class="faq-category" data-animate>
@@ -378,25 +311,25 @@
 
     <!-- Service Worker Registration -->
 
-    <script src="/js/register-sw.js" defer></script>
+    <script src="/js/dist/register-sw.js" defer></script>
 
 
 
-    <script src="js/api-config.js?v=5" defer></script>
+    <script src="js/dist/api-config.js?v=5" defer></script>
 
-    <script src="js/templates.js?v=10" defer></script>
+    <script src="js/dist/templates.js?v=10" defer></script>
 
-    <script src="js/auth-client.js?v=5" defer></script>
-<script src="js/auth-copy-fixes.js" defer></script>
-    <script src="js/secondary-pages-copy-fixes.js" defer></script>
+    <script src="js/dist/auth-client.js?v=5" defer></script>
+<script src="js/dist/auth-copy-fixes.js" defer></script>
+    <script src="js/dist/secondary-pages-copy-fixes.js" defer></script>
 
-    <script src="js/components.js?v=10" defer></script>
+    <script src="js/dist/components.js?v=10" defer></script>
 
-    <script type="module" src="js/main.js?v=10"></script>
+    <script type="module" src="js/dist/main.js?v=10"></script>
 
 
 
-    <script src="js/lucide-init.js" defer></script>
+    <script src="js/dist/lucide-init.js" defer></script>
 </body>
 
 

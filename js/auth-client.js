@@ -4,6 +4,20 @@
     const PENDING_CONTEXT_KEY = 'pending_checkout_context';
     const POST_AUTH_ACTIVATION_KEY = 'post_auth_activation';
 
+    function setHidden(element, hidden) {
+        if (element) element.hidden = hidden;
+    }
+
+    function setAuthButtonPremiumLabel(button, isPremium) {
+        if (!button) return;
+        button.textContent = 'Odhlásit';
+        if (!isPremium) return;
+
+        const badge = document.createElement('span');
+        badge.className = 'auth-premium-label';
+        badge.textContent = '(Premium)';
+        button.append(' ', badge);
+    }
 
     const Auth = {
         // Token is stored in HttpOnly cookie (secure, XSS-proof)
@@ -216,7 +230,7 @@
 
             // Auto remove
             setTimeout(() => {
-                toast.style.animation = 'fadeOutRight 0.3s ease-in forwards';
+                toast.classList.add('toast--leaving');
                 setTimeout(() => toast.remove(), 300);
             }, 5000);
         },
@@ -550,49 +564,38 @@
             if (this.isLoggedIn()) {
                 // Desktop
                 if (authBtn) {
-                    authBtn.textContent = 'Odhlásit';
-                    authBtn.onclick = (e) => { e.preventDefault(); this.logout(); };
-                    if (this.isPremium()) {
-                        authBtn.innerHTML = `Odhlásit <span style="font-size:0.8em; color:gold;">(Premium)</span>`;
-                    }
+                    setAuthButtonPremiumLabel(authBtn, this.isPremium());
                 }
-                if (regBtn) regBtn.style.display = 'none';
-                if (profileLink) profileLink.style.display = 'inline-flex';
+                setHidden(regBtn, true);
+                setHidden(profileLink, false);
 
                 // Mobile
                 if (mobileAuthBtn) {
                     mobileAuthBtn.textContent = 'Odhlásit se';
-                    mobileAuthBtn.onclick = (e) => { e.preventDefault(); this.logout(); };
                 }
-                if (mobileRegBtn) mobileRegBtn.style.display = 'none';
-                if (mobileProfileLink) mobileProfileLink.style.display = 'inline-flex';
+                setHidden(mobileRegBtn, true);
+                setHidden(mobileProfileLink, false);
             } else {
                 // Desktop
                 if (authBtn) {
                     authBtn.textContent = 'Přihlásit';
-                    authBtn.onclick = (e) => { e.preventDefault(); this.openModal(); };
                 }
-                if (regBtn) regBtn.style.display = 'inline-flex';
-                if (profileLink) profileLink.style.display = 'none';
+                setHidden(regBtn, false);
+                setHidden(profileLink, true);
 
                 // Mobile
                 if (mobileAuthBtn) {
                     mobileAuthBtn.textContent = 'Přihlásit se';
-                    mobileAuthBtn.onclick = (e) => { e.preventDefault(); this.openModal('login'); };
                 }
-                if (mobileRegBtn) mobileRegBtn.style.display = 'inline-flex';
-                if (mobileProfileLink) mobileProfileLink.style.display = 'none';
+                setHidden(mobileRegBtn, false);
+                setHidden(mobileProfileLink, true);
             }
 
             // Hero CTA Logic
             const heroCta = document.getElementById('hero-cta-container');
             const heroCtaLoggedIn = document.getElementById('hero-cta-logged-in');
-            if (heroCta) {
-                heroCta.style.display = this.isLoggedIn() ? 'none' : 'block';
-            }
-            if (heroCtaLoggedIn) {
-                heroCtaLoggedIn.style.display = this.isLoggedIn() ? 'flex' : 'none';
-            }
+            setHidden(heroCta, this.isLoggedIn());
+            setHidden(heroCtaLoggedIn, !this.isLoggedIn());
 
             // Notify other components (like profile.js) that auth state changed
             document.dispatchEvent(new Event('auth:changed'));
@@ -735,10 +738,10 @@
             if (title) title.textContent = 'Obnovení hesla';
             if (btn) { btn.textContent = 'Odeslat odkaz'; btn.dataset.mode = 'reset'; }
             if (toggleBtn) toggleBtn.textContent = 'Zpět na přihlášení';
-            if (pwField) pwField.style.display = 'none';
-            if (forgotLink) forgotLink.style.display = 'none';
-            if (resetFields) resetFields.style.display = 'block';
-            if (registerFields) registerFields.style.display = 'none';
+            setHidden(pwField, true);
+            setHidden(forgotLink, true);
+            setHidden(resetFields, false);
+            setHidden(registerFields, true);
         },
 
         async resetPassword(email) {
@@ -780,12 +783,12 @@
                 title.textContent = 'Přihlášení';
                 btn.textContent = 'Přihlásit se';
                 toggleBtn.textContent = 'Nemáte účet? Zaregistrujte se';
-                if (pwField) pwField.style.display = 'block';
-                if (forgotLink) forgotLink.style.display = 'block';
-                if (resetFields) resetFields.style.display = 'none';
-                if (registerFields) registerFields.style.display = 'none';
-                if (confirmPwField) confirmPwField.style.display = 'none';
-                if (gdprWrapper) gdprWrapper.style.display = 'none';
+                setHidden(pwField, false);
+                setHidden(forgotLink, false);
+                setHidden(resetFields, true);
+                setHidden(registerFields, true);
+                setHidden(confirmPwField, true);
+                setHidden(gdprWrapper, true);
                 return;
             }
 
@@ -799,16 +802,16 @@
                 title.textContent = 'Registrace';
                 btn.textContent = 'Zaregistrovat';
                 toggleBtn.textContent = 'Již máte účet? Přihlaste se';
-                if (fields) fields.style.display = 'block';
-                if (confirmPwField) confirmPwField.style.display = 'block';
-                if (gdprWrapper) gdprWrapper.style.display = 'block';
+                setHidden(fields, false);
+                setHidden(confirmPwField, false);
+                setHidden(gdprWrapper, false);
             } else {
                 title.textContent = 'Přihlášení';
                 btn.textContent = 'Přihlásit se';
                 toggleBtn.textContent = 'Nemáte účet? Zaregistrujte se';
-                if (fields) fields.style.display = 'none';
-                if (confirmPwField) confirmPwField.style.display = 'none';
-                if (gdprWrapper) gdprWrapper.style.display = 'none';
+                setHidden(fields, true);
+                setHidden(confirmPwField, true);
+                setHidden(gdprWrapper, true);
             }
         },
 
@@ -819,7 +822,7 @@
 
             const modal = document.getElementById('auth-modal');
             if (modal) {
-                modal.style.display = 'flex';
+                modal.hidden = false;
 
                 // Set correct mode
                 const title = document.getElementById('auth-title');
@@ -836,23 +839,23 @@
                     title.textContent = 'Registrace';
                     btn.textContent = 'Zaregistrovat';
                     toggleBtn.textContent = 'Již máte účet? Přihlaste se';
-                    if (fields) fields.style.display = 'block';
-                    if (confirmPwField) confirmPwField.style.display = 'block';
-                    if (gdprWrapper) gdprWrapper.style.display = 'block';
+                    setHidden(fields, false);
+                    setHidden(confirmPwField, false);
+                    setHidden(gdprWrapper, false);
                 } else {
                     title.textContent = 'Přihlášení';
                     btn.textContent = 'Přihlásit se';
                     toggleBtn.textContent = 'Nemáte účet? Zaregistrujte se';
-                    if (fields) fields.style.display = 'none';
-                    if (confirmPwField) confirmPwField.style.display = 'none';
-                    if (gdprWrapper) gdprWrapper.style.display = 'none';
+                    setHidden(fields, true);
+                    setHidden(confirmPwField, true);
+                    setHidden(gdprWrapper, true);
                 }
             }
         },
 
         closeModal() {
             const modal = document.getElementById('auth-modal');
-            if (modal) modal.style.display = 'none';
+            if (modal) modal.hidden = true;
         },
 
         // API Wrapper for protected calls
@@ -945,7 +948,12 @@
                         'Content-Type': 'application/json',
                         ...(csrfToken && { 'X-CSRF-Token': csrfToken })
                     },
-                    body: JSON.stringify({ planId })
+                    body: JSON.stringify({
+                        planId,
+                        source,
+                        feature: context.feature || null,
+                        billingInterval: context.billing_interval || context.billingInterval || null
+                    })
                 });
                 const data = await res.json();
                 if (res.ok && data.url) {

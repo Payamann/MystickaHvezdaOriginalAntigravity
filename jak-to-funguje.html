@@ -21,114 +21,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap&subset=latin,latin-ext" rel="stylesheet">
     
     <link rel="stylesheet" href="css/style.v2.min.css?v=11">
+    <link rel="stylesheet" href="css/pages/jak-to-funguje.css">
     <script src="https://cdn.jsdelivr.net/npm/lucide/dist/umd/lucide.min.js"></script>
-
-    <style>
-        .process-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-            margin-top: 4rem;
-        }
-        
-        .process-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: var(--radius-lg);
-            padding: 2.5rem;
-            text-align: center;
-            position: relative;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-        
-        .process-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(212, 175, 55, 0.3);
-            background: rgba(255, 255, 255, 0.05);
-        }
-        
-        .process-card__number {
-            position: absolute;
-            top: -1.5rem;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 3rem;
-            height: 3rem;
-            background: var(--gradient-gold);
-            color: var(--color-deep-space);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--font-display);
-            font-size: 1.5rem;
-            font-weight: 700;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
-        }
-        
-        .process-card__icon {
-            margin-bottom: 1.5rem;
-            color: var(--color-mystic-gold);
-            opacity: 0.9;
-        }
-        
-        .process-card__title {
-            font-family: var(--font-display);
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--color-mystic-gold);
-        }
-        
-        .process-card__text {
-            color: rgba(255, 255, 255, 0.7);
-            line-height: 1.6;
-            font-size: 1rem;
-        }
-
-        .tech-section {
-            margin-top: 6rem;
-            padding: 4rem;
-            background: rgba(157, 78, 221, 0.05);
-            border-radius: var(--radius-xl);
-            border: 1px solid rgba(157, 78, 221, 0.1);
-            text-align: center;
-        }
-
-        .tech-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 3rem;
-            margin-top: 3rem;
-            text-align: left;
-        }
-
-        .tech-item {
-            display: flex;
-            gap: 1.5rem;
-            align-items: flex-start;
-        }
-
-        .tech-item i {
-            color: var(--color-ethereal-violet);
-            flex-shrink: 0;
-            margin-top: 0.2rem;
-        }
-
-        .tech-item h4 {
-            color: #fff;
-            margin-bottom: 0.5rem;
-            font-family: var(--font-display);
-        }
-
-        @media (max-width: 992px) {
-            .process-grid { grid-template-columns: 1fr; gap: 3rem; }
-            .tech-grid { grid-template-columns: 1fr; }
-            .tech-section { padding: 2rem; }
-        }
-    </style>
-    <link rel="canonical" href="https://www.mystickahvezda.cz/jak-to-funguje.html">
+<link rel="canonical" href="https://www.mystickahvezda.cz/jak-to-funguje.html">
 
     <script type="application/ld+json">
     {
@@ -145,7 +40,7 @@
     }
     </script>
     <script src="/js/dist/analytics-init.js" defer></script>
-    <script src="/js/components.js" defer></script>
+    <script src="/js/dist/components.js" defer></script>
 </head>
 
 <body>
@@ -154,7 +49,7 @@
 
     <main id="main-content">
         <!-- HERO -->
-        <section class="section section--hero" style="min-height: 60vh; padding-top: 140px;">
+        <section class="section section--hero mh-inline-ef658aa8aa">
             <div class="container">
                 <div class="hero__content text-center">
                     <span class="hero__badge">Transparentní cesta</span>
@@ -179,7 +74,7 @@
                     </div>
 
                     <!-- Step 2 -->
-                    <div class="process-card" data-animate style="animation-delay: 0.2s;">
+                    <div class="process-card mh-inline-d51392c7dd" data-animate>
                         <div class="process-card__number">2</div>
                         <i data-lucide="moon-star" class="process-card__icon" size="48"></i>
                         <h3 class="process-card__title">Vesmírná Syntéza</h3>
@@ -189,7 +84,7 @@
                     </div>
 
                     <!-- Step 3 -->
-                    <div class="process-card" data-animate style="animation-delay: 0.4s;">
+                    <div class="process-card mh-inline-ebf2cc33d7" data-animate>
                         <div class="process-card__number">3</div>
                         <i data-lucide="scroll-text" class="process-card__icon" size="48"></i>
                         <h3 class="process-card__title">Váš Průvodce</h3>
@@ -239,7 +134,7 @@
                 <!-- CTA -->
                 <div class="text-center mt-3xl" data-animate>
                     <a href="prihlaseni.html" class="btn btn--primary btn--lg">Začít svou cestu zdarma</a>
-                    <p class="mt-md" style="opacity: 0.5; font-size: 0.85rem;">Registrace trvá méně než 1 minutu.</p>
+                    <p class="mt-md mh-inline-3056f1ff5b">Registrace trvá méně než 1 minutu.</p>
                 </div>
             </div>
         </section>
@@ -247,8 +142,7 @@
 
     <div id="footer-placeholder"></div>
 
-    <script src="js/secondary-pages-copy-fixes.js" defer></script>
-    <script src="js/main.js" defer></script>
-    <script src="js/jak-to-funguje.js" defer></script>
+    <script src="js/dist/secondary-pages-copy-fixes.js" defer></script>
+    <script type="module" src="js/dist/main.js"></script>
 </body>
 </html>

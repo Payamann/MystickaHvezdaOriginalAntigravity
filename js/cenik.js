@@ -1,8 +1,16 @@
-const monthlyPrices = {
-    pruvodce: '199 Kč',
-    osviceni: '499 Kč',
-    'vip-majestrat': '999 Kč'
+const FALLBACK_PRICE_CONFIG = {
+    monthly: {
+        pruvodce: { amount: '199 Kč', suffix: '/měsíc', planId: 'pruvodce' },
+        osviceni: { amount: '499 Kč', suffix: '/měsíc', planId: 'osviceni' }
+    },
+    yearly: {
+        pruvodce: { amount: '1 990 Kč', suffix: '/rok', planId: 'pruvodce-rocne' },
+        osviceni: { amount: '4 990 Kč', suffix: '/rok', planId: 'osviceni-rocne' }
+    }
 };
+
+let priceConfig = FALLBACK_PRICE_CONFIG;
+let currentBilling = 'monthly';
 
 const PLAN_META = {
     pruvodce: {
@@ -10,10 +18,20 @@ const PLAN_META = {
         headline: 'Nejrychlejší cesta k plným výkladům a každodennímu vedení.',
         recommendedFor: 'Většina lidí začíná tady.'
     },
+    'pruvodce-rocne': {
+        name: 'Hvězdný Průvodce ročně',
+        headline: 'Stejný každodenní přístup s výhodnější roční platbou.',
+        recommendedFor: 'Dává smysl, pokud se chcete vracet pravidelně.'
+    },
     osviceni: {
         name: 'Osvícení',
         headline: 'Pro chvíli, kdy chceš jít víc do hloubky a odemknout pokročilé nástroje.',
         recommendedFor: 'Doporučeno pro astrokartografii a hlubší analýzy.'
+    },
+    'osviceni-rocne': {
+        name: 'Osvícení ročně',
+        headline: 'Roční hlubší plán pro pokročilé analýzy, astrokartografii a dlouhodobý směr.',
+        recommendedFor: 'Nejlepší volba pro dlouhodobou práci s výklady.'
     },
     'vip-majestrat': {
         name: 'VIP Majestrát',
@@ -32,6 +50,61 @@ const FEATURE_PLAN_MAP = {
     mentor: 'pruvodce'
 };
 
+function getApiBaseUrl() {
+    return window.API_CONFIG?.BASE_URL || '/api';
+}
+
+function getPriceSuffix(interval, fallback) {
+    if (interval === 'month') return '/měsíc';
+    if (interval === 'year') return '/rok';
+    return fallback;
+}
+
+function buildPriceConfigFromManifest(manifest) {
+    const plans = Array.isArray(manifest?.plans) ? manifest.plans : [];
+    const byId = new Map(plans.map(plan => [plan.id, plan]));
+    const pricingPage = manifest?.pricingPage || {};
+    const nextConfig = {
+        monthly: { ...FALLBACK_PRICE_CONFIG.monthly },
+        yearly: { ...FALLBACK_PRICE_CONFIG.yearly }
+    };
+
+    ['monthly', 'yearly'].forEach((billing) => {
+        Object.entries(FALLBACK_PRICE_CONFIG[billing]).forEach(([displayPlanKey, fallback]) => {
+            const planId = pricingPage[billing]?.[displayPlanKey] || fallback.planId;
+            const plan = byId.get(planId);
+            if (!plan) return;
+
+            nextConfig[billing][displayPlanKey] = {
+                amount: plan.priceLabel || fallback.amount,
+                suffix: getPriceSuffix(plan.interval, fallback.suffix),
+                planId: plan.id
+            };
+        });
+    });
+
+    return nextConfig;
+}
+
+async function loadPlanManifest() {
+    try {
+        const response = await fetch(`${getApiBaseUrl()}/plans`, {
+            credentials: 'same-origin'
+        });
+        if (!response.ok) throw new Error(`Plan manifest returned ${response.status}`);
+
+        const manifest = await response.json();
+        if (!manifest.success || !Array.isArray(manifest.plans)) {
+            throw new Error('Plan manifest has invalid shape');
+        }
+
+        priceConfig = buildPriceConfigFromManifest(manifest);
+    } catch (error) {
+        console.warn('[Pricing] Using fallback plan config:', error.message);
+        priceConfig = FALLBACK_PRICE_CONFIG;
+    }
+}
+
 function updatePricingCopy() {
     const heroTitle = document.querySelector('.section--hero .hero__title');
     const heroSubtitle = document.querySelector('.section--hero .hero__subtitle');
@@ -42,15 +115,15 @@ function updatePricingCopy() {
     const premiumReasonsTitle = premiumReasonsBadge?.closest('.section__header')?.querySelector('.section__title');
 
     if (heroTitle) {
-        heroTitle.innerHTML = 'Začněte zdarma. <span class="text-gradient">Až ucítíte hodnotu, odemkněte Hvězdného Průvodce.</span>';
+        heroTitle.innerHTML = 'Začněte zdarma. <span class="text-gradient">Plaťte až za hlubší osobní vedení.</span>';
     }
 
     if (heroSubtitle) {
-        heroSubtitle.textContent = 'Bezplatný účet vám ukáže, jak Mystická Hvězda funguje. Hvězdný Průvodce za 199 Kč měsíčně odemkne plné výklady, osobní vhledy a každodenní vedení bez limitu pro lidi, kteří se chtějí vracet pravidelně.';
+        heroSubtitle.textContent = 'Bezplatný účet vytvoří denní návyk. Hvězdný Průvodce odemkne plné výklady, historii, osobní profil a týdenní i měsíční vedení pro chvíle, kdy se chcete vracet pravidelně.';
     }
 
     if (heroTrustBadge) {
-        heroTrustBadge.innerHTML = '<span>12 000+ aktivních uživatelů</span><span>|</span><span>Účet zdarma bez karty</span><span>|</span><span>Zrušíte kdykoliv</span>';
+        heroTrustBadge.innerHTML = '<span>Účet zdarma bez karty</span><span>|</span><span>7 dní Premium na vyzkoušení</span><span>|</span><span>Zrušíte kdykoliv</span>';
     }
 
     const freeCard = pricingCards[0];
@@ -73,9 +146,9 @@ function updatePricingCopy() {
 
         if (guideDescription) guideDescription.textContent = 'Pro většinu lidí, kteří chtějí z webu udělat každodenní oporu';
         if (guideFeatures[0]) guideFeatures[0].textContent = 'Neomezené výklady a každodenní vedení bez čekání';
-        if (guideFeatures[1]) guideFeatures[1].textContent = 'Plný rozbor natální karty a numerologie';
-        if (guideFeatures[2]) guideFeatures[2].textContent = 'Partnerská shoda, minulý život a plné horoskopy';
-        if (guideFeatures[3]) guideFeatures[3].textContent = 'Nejrychlejší cesta k tomu, aby vám web dával hodnotu každý den';
+        if (guideFeatures[1]) guideFeatures[1].textContent = 'Plný rozbor natální karty, numerologie a vztahů';
+        if (guideFeatures[2]) guideFeatures[2].textContent = 'Historie výkladů a osobní profil pro pravidelný návrat';
+        if (guideFeatures[3]) guideFeatures[3].textContent = 'Nejrychlejší cesta k tomu, aby web dával hodnotu každý den';
         if (guideCta) guideCta.textContent = 'Odemknout Hvězdného Průvodce';
     }
 
@@ -84,19 +157,44 @@ function updatePricingCopy() {
     }
 }
 
-function setPrices() {
-    const suffix = '/měsíc';
+function setToggleState(billing) {
+    const toggleMonthly = document.getElementById('toggle-monthly');
+    const toggleYearly = document.getElementById('toggle-yearly');
+
+    if (toggleMonthly) {
+        toggleMonthly.classList.toggle('pricing-toggle--active', billing === 'monthly');
+        toggleMonthly.setAttribute('aria-pressed', billing === 'monthly' ? 'true' : 'false');
+    }
+
+    if (toggleYearly) {
+        toggleYearly.classList.toggle('pricing-toggle--active', billing === 'yearly');
+        toggleYearly.setAttribute('aria-pressed', billing === 'yearly' ? 'true' : 'false');
+    }
+}
+
+function setPrices(billing = currentBilling) {
+    currentBilling = billing;
+    const config = priceConfig[billing] || priceConfig.monthly;
 
     document.querySelectorAll('[data-price-plan]').forEach((element) => {
         const plan = element.dataset.pricePlan;
-        if (!monthlyPrices[plan]) return;
+        const planConfig = config[plan] || priceConfig.monthly[plan];
+        if (!planConfig) return;
 
         const amountEl = element.querySelector('.price-amount');
         const suffixEl = element.querySelector('.price-suffix');
 
-        if (amountEl) amountEl.textContent = monthlyPrices[plan];
-        if (suffixEl) suffixEl.textContent = suffix;
+        if (amountEl) amountEl.textContent = planConfig.amount;
+        if (suffixEl) suffixEl.textContent = planConfig.suffix;
+
+        const card = element.closest('.card--pricing');
+        const checkoutButton = card?.querySelector('.plan-checkout-btn');
+        if (checkoutButton) {
+            checkoutButton.dataset.plan = planConfig.planId;
+        }
     });
+
+    setToggleState(billing);
 }
 
 function sanitizeRedirectUrl(url) {
@@ -158,11 +256,11 @@ function renderRecommendationBanner(context) {
 
     const banner = document.createElement('div');
     banner.id = 'pricing-plan-recommendation';
-    banner.style.cssText = 'max-width:760px;margin:1.25rem auto 0;padding:1rem 1.1rem;border-radius:18px;background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.25);text-align:left;';
+    banner.className = 'pricing-plan-recommendation';
     banner.innerHTML = `
-        <div style="font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-mystic-gold);margin-bottom:0.45rem;">Doporučený další krok</div>
-        <strong style="display:block;color:#fff;font-size:1rem;margin-bottom:0.35rem;">${planMeta.name}</strong>
-        <p style="margin:0;color:rgba(255,255,255,0.78);line-height:1.6;">${planMeta.headline} ${planMeta.recommendedFor}</p>
+        <div class="pricing-plan-recommendation__eyebrow">Doporučený další krok</div>
+        <strong class="pricing-plan-recommendation__title">${planMeta.name}</strong>
+        <p class="pricing-plan-recommendation__text">${planMeta.headline} ${planMeta.recommendedFor}</p>
     `;
 
     heroSubtitle.insertAdjacentElement('afterend', banner);
@@ -173,7 +271,6 @@ function highlightRecommendedPlan(planId) {
 
     document.querySelectorAll('.card--pricing').forEach((card) => {
         card.classList.remove('pricing-card--recommended');
-        card.style.boxShadow = '';
     });
 
     const button = document.querySelector(`.plan-checkout-btn[data-plan="${planId}"]`);
@@ -181,7 +278,6 @@ function highlightRecommendedPlan(planId) {
     if (!card) return;
 
     card.classList.add('pricing-card--recommended');
-    card.style.boxShadow = '0 0 0 2px rgba(212,175,55,0.45), 0 18px 50px rgba(0,0,0,0.35)';
     card.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
@@ -196,6 +292,7 @@ function bindCheckoutButtons(context) {
             const checkoutContext = {
                 source: context.source || 'pricing_page',
                 feature: context.feature || null,
+                billing_interval: currentBilling,
                 redirect: '/cenik.html',
                 authMode: 'register'
             };
@@ -206,7 +303,8 @@ function bindCheckoutButtons(context) {
                 requires_auth: !isLoggedIn,
                 destination: isLoggedIn ? 'stripe_checkout_session' : '/prihlaseni.html',
                 source: checkoutContext.source,
-                feature: checkoutContext.feature
+                feature: checkoutContext.feature,
+                billing_interval: currentBilling
             });
 
             window.Auth?.startPlanCheckout?.(planId, checkoutContext);
@@ -214,8 +312,21 @@ function bindCheckoutButtons(context) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    setPrices();
+function bindProductLinks() {
+    document.querySelectorAll('[data-product]').forEach((link) => {
+        link.addEventListener('click', () => {
+            window.MH_ANALYTICS?.trackCTA?.('pricing_one_time_product', {
+                product_id: link.dataset.product || null,
+                label: link.textContent?.trim() || 'one_time_product',
+                destination: link.getAttribute('href') || null
+            });
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadPlanManifest();
+    setPrices('monthly');
     updatePricingCopy();
 
     const context = resolveCheckoutContext();
@@ -230,16 +341,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggleMonthly = document.getElementById('toggle-monthly');
     const toggleYearly = document.getElementById('toggle-yearly');
 
-    toggleMonthly?.addEventListener('click', () => setPrices());
+    toggleMonthly?.addEventListener('click', () => {
+        setPrices('monthly');
+        window.MH_ANALYTICS?.trackEvent?.('pricing_billing_toggled', { billing_interval: 'monthly' });
+    });
 
     if (toggleYearly) {
-        toggleYearly.style.opacity = '0.4';
-        toggleYearly.style.cursor = 'not-allowed';
-        toggleYearly.title = 'Roční plány připravujeme';
-        toggleYearly.addEventListener('click', (event) => event.preventDefault());
+        toggleYearly.title = 'Roční platba sníží cenu přibližně o dva měsíce';
+        toggleYearly.addEventListener('click', () => {
+            setPrices('yearly');
+            window.MH_ANALYTICS?.trackEvent?.('pricing_billing_toggled', { billing_interval: 'yearly' });
+        });
     }
 
     bindCheckoutButtons(context);
+    bindProductLinks();
 
     if (context.source !== 'pricing_page' || context.feature || context.recommendedPlan !== 'pruvodce') {
         window.requestAnimationFrame(() => {

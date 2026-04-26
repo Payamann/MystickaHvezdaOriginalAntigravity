@@ -30,542 +30,8 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap&subset=latin,latin-ext" rel="stylesheet"></noscript>
 
     <link rel="stylesheet" href="css/style.v2.min.css?v=11">
-
-
-
-    <style>
-
-        /* Featured Post Layout */
-
-        .featured-post {
-
-            display: grid;
-
-            grid-template-columns: 1fr 1fr;
-
-            gap: 3rem;
-
-            background: linear-gradient(135deg, rgba(10, 10, 26, 0.8), rgba(20, 20, 40, 0.6));
-
-            border: 1px solid rgba(212, 175, 55, 0.2);
-
-            border-radius: 20px;
-
-            padding: 2.5rem;
-
-            margin-bottom: 4rem;
-
-            text-decoration: none;
-
-            color: white;
-
-            transition: all 0.4s ease;
-
-            position: relative;
-
-            overflow: hidden;
-
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-
-        }
-
-
-
-        .featured-post::after {
-
-            content: 'NEJNOVĚJŠÍ';
-
-            position: absolute;
-
-            top: 2rem;
-
-            right: -3rem;
-
-            background: var(--color-primary);
-
-            color: white;
-
-            padding: 0.5rem 4rem;
-
-            transform: rotate(45deg);
-
-            font-size: 0.8rem;
-
-            font-weight: bold;
-
-            letter-spacing: 2px;
-
-            z-index: 2;
-
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-
-        }
-
-
-
-        .featured-post:hover {
-
-            transform: translateY(-5px);
-
-            border-color: var(--color-mystic-gold);
-
-            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.15);
-
-        }
-
-
-
-        .featured-post__image-wrapper {
-
-            border-radius: 12px;
-
-            overflow: hidden;
-
-            position: relative;
-
-        }
-
-
-
-        .featured-post__image {
-
-            width: 100%;
-
-            height: 100%;
-
-            min-height: 300px;
-
-            object-fit: cover;
-
-            transition: transform 0.6s ease;
-
-        }
-
-
-
-        .featured-post:hover .featured-post__image {
-
-            transform: scale(1.05);
-
-        }
-
-
-
-        .featured-post__content {
-
-            display: flex;
-
-            flex-direction: column;
-
-            justify-content: center;
-
-        }
-
-
-
-        .featured-post__meta {
-
-            color: var(--color-mystic-gold);
-
-            margin-bottom: 1.5rem;
-
-            font-size: 0.9rem;
-
-            display: flex;
-
-            gap: 1.5rem;
-
-            text-transform: uppercase;
-
-            letter-spacing: 1px;
-
-            font-weight: 500;
-
-        }
-
-
-
-        .featured-post__title {
-
-            font-family: 'Cinzel', serif;
-
-            font-size: 2.5rem;
-
-            line-height: 1.2;
-
-            margin-bottom: 1.5rem;
-
-            color: white;
-
-        }
-
-
-
-        .featured-post__desc {
-
-            font-size: 1.1rem;
-
-            line-height: 1.7;
-
-            color: var(--color-text-mutated);
-
-            margin-bottom: 2rem;
-
-        }
-
-
-
-        .btn-read-more {
-
-            display: inline-flex;
-
-            align-items: center;
-
-            gap: 0.5rem;
-
-            padding: 0.8rem 1.5rem;
-
-            background: rgba(255, 255, 255, 0.05);
-
-            border: 1px solid var(--color-mystic-gold);
-
-            border-radius: 50px;
-
-            color: var(--color-mystic-gold);
-
-            text-decoration: none;
-
-            transition: all 0.3s;
-
-            width: max-content;
-
-        }
-
-
-
-        .featured-post:hover .btn-read-more {
-
-            background: var(--color-mystic-gold);
-
-            color: #000;
-
-        }
-
-
-
-        /* Grid Layout for rest */
-
-        .blog-grid {
-
-            display: grid;
-
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-
-            gap: 2rem;
-
-        }
-
-
-
-        .blog-card {
-
-            background: rgba(255, 255, 255, 0.03);
-
-            border: 1px solid rgba(255, 255, 255, 0.08);
-
-            border-radius: 16px;
-
-            overflow: hidden;
-
-            text-decoration: none;
-
-            color: white;
-
-            transition: all 0.3s ease;
-
-            display: flex;
-
-            flex-direction: column;
-
-            height: 100%;
-
-            position: relative;
-
-        }
-
-
-
-        .blog-card:hover {
-
-            transform: translateY(-8px);
-
-            border-color: rgba(212, 175, 55, 0.5);
-
-            background: rgba(255, 255, 255, 0.05);
-
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
-
-        }
-
-
-
-        .blog-card-image {
-
-            width: 100%;
-
-            height: 185px;
-
-            object-fit: cover;
-
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-
-            transition: transform 0.5s ease;
-
-            display: block;
-
-            background: linear-gradient(135deg, rgba(20, 15, 40, 0.9), rgba(60, 30, 90, 0.7));
-
-        }
-
-
-
-        .blog-card:hover .blog-card-image {
-
-            transform: scale(1.04);
-
-        }
-
-
-
-        .blog-card-content {
-
-            padding: 1.5rem;
-
-            display: flex;
-
-            flex-direction: column;
-
-            flex-grow: 1;
-
-            z-index: 2;
-
-            background: inherit;
-
-        }
-
-
-
-        .blog-meta-small {
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: space-between;
-
-            font-size: 0.75rem;
-
-            color: var(--color-mystic-gold);
-
-            margin-bottom: 1rem;
-
-            text-transform: uppercase;
-
-            letter-spacing: 1px;
-
-            background: rgba(212, 175, 55, 0.1);
-
-            padding: 0.3rem 0.8rem;
-
-            border-radius: 50px;
-
-            width: max-content;
-
-        }
-
-
-
-        .blog-title {
-
-            font-size: 1.15rem;
-
-            font-weight: 600;
-
-            margin-bottom: 1rem;
-
-            font-family: 'Inter', sans-serif;
-
-            line-height: 1.4;
-
-            color: rgba(255, 255, 255, 0.95);
-
-        }
-
-
-
-        .blog-desc {
-
-            color: var(--color-text-mutated);
-
-            font-size: 0.95rem;
-
-            line-height: 1.6;
-
-            flex-grow: 1;
-
-            margin-bottom: 1rem;
-
-            display: -webkit-box;
-
-            -webkit-line-clamp: 3;
-
-            line-clamp: 3;
-
-            -webkit-box-orient: vertical;
-
-            overflow: hidden;
-
-        }
-
-
-
-        .blog-footer {
-
-            margin-top: auto;
-
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-
-            padding-top: 1rem;
-
-            font-size: 0.85rem;
-
-            color: var(--color-text-mutated);
-
-            display: flex;
-
-            justify-content: space-between;
-
-        }
-
-
-
-        .no-results {
-
-            text-align: center;
-
-            grid-column: 1 / -1;
-
-            padding: 3rem;
-
-            color: var(--color-text-mutated);
-
-            font-size: 1.2rem;
-
-        }
-
-
-
-        /* Chips Filters */
-
-        .category-filter {
-
-            display: flex;
-
-            justify-content: center;
-
-            gap: 1rem;
-
-            margin-bottom: 3.5rem;
-
-            flex-wrap: wrap;
-
-        }
-
-
-
-        .category-btn {
-
-            background: rgba(255, 255, 255, 0.05);
-
-            border: 1px solid rgba(255, 255, 255, 0.1);
-
-            color: var(--color-text-light);
-
-            padding: 0.6rem 1.5rem;
-
-            border-radius: 50px;
-
-            cursor: pointer;
-
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-
-            font-size: 0.95rem;
-
-            letter-spacing: 0.5px;
-
-        }
-
-
-
-        .category-btn:hover {
-
-            background: rgba(255, 255, 255, 0.1);
-
-            border-color: rgba(255, 255, 255, 0.3);
-
-            transform: translateY(-2px);
-
-        }
-
-
-
-        .category-btn.active {
-
-            background: linear-gradient(135deg, var(--color-primary), #6c3483);
-
-            border-color: transparent;
-
-            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.4);
-
-            font-weight: 500;
-
-        }
-
-
-
-        @media (max-width: 992px) {
-
-            .featured-post {
-
-                grid-template-columns: 1fr;
-
-                gap: 1.5rem;
-
-                padding: 1.5rem;
-
-            }
-
-
-
-            .featured-post__title {
-
-                font-size: 2rem;
-
-            }
-
-
-
-            .featured-post::after {
-
-                display: none;
-
-            }
-
-        }
-
-    </style>
-
-    <link rel="canonical" href="https://www.mystickahvezda.cz/blog.html">
+    <link rel="stylesheet" href="css/pages/blog.css">
+<link rel="canonical" href="https://www.mystickahvezda.cz/blog.html">
 
     <meta property="og:type" content="website">
     <meta property="og:title" content="Astrologický Blog — Horoskopy, Tarot & Numerologie | Mystická Hvězda">
@@ -593,19 +59,19 @@
 
     <main>
 
-        <section class="hero" style="padding-top: 8rem; padding-bottom: 2rem; min-height: unset;">
+        <section class="hero mh-inline-d9468cd0f1">
 
-            <div class="container" style="text-align: center;">
+            <div class="container text-center">
 
-                <span class="section__badge"
+                <span class="section__badge mh-inline-d585016a15"
 
-                    style="background: rgba(212, 175, 55, 0.1); border-color: var(--color-mystic-gold); color: var(--color-mystic-gold);">Čerstvé
+                   >Čerstvé
 
                     vhledy</span>
 
                 <h1 class="hero__title">Mystický <span class="text-gradient">Blog</span></h1>
 
-                <p class="hero__subtitle" style="max-width: 600px; margin: 0 auto;">Ponořte se do hlubin tajných nauk.
+                <p class="hero__subtitle u-narrow-center-600">Ponořte se do hlubin tajných nauk.
 
                     Články, návody a postřehy ze světa hvězd a karet.</p>
 
@@ -615,7 +81,7 @@
 
 
 
-        <section class="section" style="padding-top: 1rem; min-height: 50vh;">
+        <section class="section mh-inline-bdcca27d6b">
 
             <div class="container">
 
@@ -639,17 +105,17 @@
 
 
 
-                <h3 style="font-family: 'Cinzel', serif; font-size: 1.8rem; margin-bottom: 2rem; color: #fff;"
+                <h3 class="mh-inline-2c4907bb5c"
 
                     id="gridTitle">Nejnovější články</h3>
 
                 <div class="blog-grid" id="blogContainer">
 
-                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+                    <div class="mh-inline-dd99755427">
 
-                        <div class="loader" style="margin: 0 auto 1rem;"></div>
+                        <div class="loader mh-inline-32babf835d"></div>
 
-                        <p style="color: var(--color-text-mutated);">Načítám zajímavosti...</p>
+                        <p class="mh-inline-8e37b2c1c5">Načítám zajímavosti...</p>
 
                     </div>
 
@@ -669,25 +135,25 @@
 
 
 
-    <script src="js/api-config.js" defer></script>
+    <script src="js/dist/api-config.js" defer></script>
 
     <script src="js/dist/templates.js" defer></script>
-    <script src="js/auth-client.js" defer></script>
-<script src="js/auth-copy-fixes.js" defer></script>
-    <script src="js/secondary-pages-copy-fixes.js" defer></script>
+    <script src="js/dist/auth-client.js" defer></script>
+<script src="js/dist/auth-copy-fixes.js" defer></script>
+    <script src="js/dist/secondary-pages-copy-fixes.js" defer></script>
 
     
 
-    <script src="js/exit-intent.js" defer></script>
+    <script src="js/dist/exit-intent.js" defer></script>
 
-    <script src="js/components.js" defer></script>
+    <script src="js/dist/components.js" defer></script>
 
-    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/dist/main.js"></script>
 
-    <script src="js/blog.js" defer></script>
+    <script src="js/dist/blog.js" defer></script>
 
 
-    <script src="js/newsletter-popup.js" defer></script>
+    <script src="js/dist/newsletter-popup.js" defer></script>
 
 </body>
 

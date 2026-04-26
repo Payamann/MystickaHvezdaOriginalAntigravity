@@ -90,356 +90,8 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap&subset=latin,latin-ext" rel="stylesheet"></noscript>
 
     <link rel="stylesheet" href="../css/style.v2.min.css?v=4">
-
-
-
-    <style>
-
-        .blog-content {
-
-            max-width: 800px;
-
-            margin: 0 auto;
-
-            line-height: 1.85;
-
-            font-size: 1.05rem;
-
-            color: rgba(255, 255, 255, 0.85);
-
-        }
-
-
-
-        .blog-content h2 {
-
-            font-family: 'Cinzel', serif;
-
-            color: #ebc066;
-
-            font-size: 1.5rem;
-
-            margin: 2.5rem 0 1rem;
-
-            padding-bottom: 0.5rem;
-
-            border-bottom: 1px solid rgba(235, 192, 102, 0.2);
-
-        }
-
-
-
-        .blog-content h3 {
-
-            font-family: 'Cinzel', serif;
-
-            color: #d4af37;
-
-            font-size: 1.15rem;
-
-            margin: 2rem 0 0.75rem;
-
-        }
-
-
-
-        .blog-content p {
-
-            margin-bottom: 1.4rem;
-
-        }
-
-
-
-        .blog-content ul,
-
-        .blog-content ol {
-
-            margin: 0 0 1.4rem 1.5rem;
-
-        }
-
-
-
-        .blog-content li {
-
-            margin-bottom: 0.5rem;
-
-        }
-
-
-
-        .blog-content blockquote {
-
-            border-left: 4px solid #9b59b6;
-
-            padding: 1rem 1.5rem;
-
-            margin: 2rem 0;
-
-            background: rgba(155, 89, 182, 0.08);
-
-            border-radius: 0 12px 12px 0;
-
-            font-style: italic;
-
-            color: rgba(255, 255, 255, 0.9);
-
-        }
-
-
-
-        .blog-content strong {
-
-            color: #fff;
-
-        }
-
-
-
-        .score-bar {
-
-            background: rgba(255, 255, 255, 0.06);
-
-            border-radius: 50px;
-
-            height: 10px;
-
-            margin: 0.35rem 0 1rem;
-
-            overflow: hidden;
-
-        }
-
-
-
-        .score-fill {
-
-            height: 100%;
-
-            border-radius: 50px;
-
-            background: linear-gradient(90deg, #9b59b6, #d4af37);
-
-        }
-
-
-
-        .score-row {
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-
-            color: rgba(255, 255, 255, 0.6);
-
-            font-size: 0.88rem;
-
-        }
-
-
-
-        .highlight-box {
-
-            background: rgba(212, 175, 55, 0.07);
-
-            border: 1px solid rgba(212, 175, 55, 0.2);
-
-            border-radius: 14px;
-
-            padding: 1.5rem 2rem;
-
-            margin: 2rem 0;
-
-        }
-
-
-
-        .highlight-box h3 {
-
-            color: #ebc066;
-
-            margin-top: 0;
-
-            font-family: 'Cinzel', serif;
-
-        }
-
-
-
-        .two-col {
-
-            display: grid;
-
-            grid-template-columns: 1fr 1fr;
-
-            gap: 1rem;
-
-            margin: 1.5rem 0;
-
-        }
-
-
-
-        .col-card {
-
-            background: rgba(10, 10, 26, 0.7);
-
-            border: 1px solid rgba(255, 255, 255, 0.08);
-
-            border-radius: 14px;
-
-            padding: 1.25rem 1.5rem;
-
-        }
-
-
-
-        .col-card h4 {
-
-            font-family: 'Cinzel', serif;
-
-            font-size: 1rem;
-
-            margin: 0 0 0.75rem;
-
-        }
-
-
-
-        .col-card ul {
-
-            margin: 0 0 0 1.2rem;
-
-            padding: 0;
-
-        }
-
-
-
-        .col-card li {
-
-            color: rgba(255, 255, 255, 0.7);
-
-            font-size: 0.9rem;
-
-            margin-bottom: 0.4rem;
-
-        }
-
-
-
-        .article-meta {
-
-            display: flex;
-
-            gap: 1.5rem;
-
-            color: rgba(255, 255, 255, 0.4);
-
-            font-size: 0.82rem;
-
-            margin-bottom: 2rem;
-
-            flex-wrap: wrap;
-
-        }
-
-
-
-        .breadcrumb {
-
-            color: rgba(255, 255, 255, 0.35);
-
-            font-size: 0.82rem;
-
-            margin-bottom: 1.5rem;
-
-        }
-
-
-
-        .breadcrumb a {
-
-            color: rgba(235, 192, 102, 0.6);
-
-            text-decoration: none;
-
-        }
-
-
-
-        .author-box {
-
-            margin-top: 3rem;
-
-            padding: 1.5rem 2rem;
-
-            background: rgba(255, 255, 255, 0.03);
-
-            border: 1px solid rgba(255, 255, 255, 0.07);
-
-            border-radius: 16px;
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 1.5rem;
-
-        }
-
-
-
-        .author-avatar {
-
-            width: 56px;
-
-            height: 56px;
-
-            border-radius: 50%;
-
-            background: linear-gradient(135deg, #9b59b6, #d4af37);
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            font-size: 1.5rem;
-
-            flex-shrink: 0;
-
-        }
-
-
-
-        @media(max-width:640px) {
-
-            .two-col {
-
-                grid-template-columns: 1fr
-
-            }
-
-
-
-            .author-box {
-
-                flex-direction: column;
-
-                text-align: center
-
-            }
-
-        }
-
-    </style>
-
-    <script src="/js/dist/analytics-init.js" defer></script>
+    <link rel="stylesheet" href="../css/pages/blog-stir-muz-a-panna-zena-kompatibilita.css">
+<script src="/js/dist/analytics-init.js" defer></script>
 
     <!-- Doplněné OG / social tagy -->
     <meta property="og:site_name" content="Mystická Hvězda">
@@ -461,9 +113,9 @@
 
     <main id="main-content">
 
-        <section class="section" style="padding-top:130px; padding-bottom:0;">
+        <section class="section mh-inline-d9cfa2d535">
 
-            <div class="container" style="max-width:800px;">
+            <div class="container mh-inline-ce78823b8c">
 
                 <div class="breadcrumb">
 
@@ -475,7 +127,7 @@
 
                 <span class="section__badge">Kompatibilita</span>
 
-                <h1 class="hero__title" style="font-size:2.2rem; text-align:left; margin-top:1rem; line-height:1.25;">
+                <h1 class="hero__title mh-inline-e780bd3dde">
 
                     Štír muž a Panna žena:<br><span class="text-gradient">Kompatibilita a pravda o tomto vztahu</span>
 
@@ -497,7 +149,7 @@
 
 
 
-        <section class="section" style="padding-top:2rem;">
+        <section class="section mh-inline-02f383c6cb">
 
             <div class="container">
 
@@ -525,63 +177,63 @@
 
 
 
-                    <div style="margin:1.5rem 0;">
+                    <div class="mh-inline-8d7a0173bb">
 
-                        <div class="score-row"><span>🌡️ Celková kompatibilita</span><strong style="color:#ebc066;">87
-
-                                %</strong></div>
-
-                        <div class="score-bar">
-
-                            <div class="score-fill" style="width:87%"></div>
-
-                        </div>
-
-
-
-                        <div class="score-row"><span>❤️ Emocionální propojení</span><strong style="color:#ebc066;">79
+                        <div class="score-row"><span>🌡️ Celková kompatibilita</span><strong class="mh-inline-aa2de3b409">87
 
                                 %</strong></div>
 
                         <div class="score-bar">
 
-                            <div class="score-fill" style="width:79%"></div>
+                            <div class="score-fill mh-inline-a2b256b2d4"></div>
 
                         </div>
 
 
 
-                        <div class="score-row"><span>💬 Komunikace</span><strong style="color:#ebc066;">82 %</strong>
-
-                        </div>
-
-                        <div class="score-bar">
-
-                            <div class="score-fill" style="width:82%"></div>
-
-                        </div>
-
-
-
-                        <div class="score-row"><span>🔥 Fyzická přitažlivost</span><strong style="color:#ebc066;">91
+                        <div class="score-row"><span>❤️ Emocionální propojení</span><strong class="mh-inline-aa2de3b409">79
 
                                 %</strong></div>
 
                         <div class="score-bar">
 
-                            <div class="score-fill" style="width:91%"></div>
+                            <div class="score-fill mh-inline-4d76476162"></div>
 
                         </div>
 
 
 
-                        <div class="score-row"><span>🎯 Dlouhodobá perspektiva</span><strong style="color:#ebc066;">89
+                        <div class="score-row"><span>💬 Komunikace</span><strong class="mh-inline-aa2de3b409">82 %</strong>
+
+                        </div>
+
+                        <div class="score-bar">
+
+                            <div class="score-fill mh-inline-d5d4cfdc6e"></div>
+
+                        </div>
+
+
+
+                        <div class="score-row"><span>🔥 Fyzická přitažlivost</span><strong class="mh-inline-aa2de3b409">91
 
                                 %</strong></div>
 
                         <div class="score-bar">
 
-                            <div class="score-fill" style="width:89%"></div>
+                            <div class="score-fill mh-inline-efe142a20c"></div>
+
+                        </div>
+
+
+
+                        <div class="score-row"><span>🎯 Dlouhodobá perspektiva</span><strong class="mh-inline-aa2de3b409">89
+
+                                %</strong></div>
+
+                        <div class="score-bar">
+
+                            <div class="score-fill mh-inline-77fd55798f"></div>
 
                         </div>
 
@@ -625,7 +277,7 @@
 
                         <div class="col-card">
 
-                            <h4 style="color:#9b59b6;">♏ Štír muž</h4>
+                            <h4 class="mh-inline-829b5d9fae">♏ Štír muž</h4>
 
                             <ul>
 
@@ -647,7 +299,7 @@
 
                         <div class="col-card">
 
-                            <h4 style="color:#ebc066;">♍ Panna žena</h4>
+                            <h4 class="mh-inline-aa2de3b409">♍ Panna žena</h4>
 
                             <ul>
 
@@ -771,11 +423,11 @@
 
                         <div>
 
-                            <div style="color:#ebc066; font-weight:600; margin-bottom:0.25rem;">Tým Mystická Hvězda
+                            <div class="mh-inline-4c396c0688">Tým Mystická Hvězda
 
                             </div>
 
-                            <p style="margin:0; color:rgba(255,255,255,0.5); font-size:0.85rem; line-height:1.6;">
+                            <p class="mh-inline-16af0132bc">
 
                                 Kompatibilita v sluneční astrologii je jen začátek. Pro přesnou analýzu vašeho
 
@@ -789,13 +441,13 @@
 
                     <div
 
-                        style="margin-top:2.5rem; text-align:center; padding:2rem; background:rgba(155,89,182,0.08); border:1px solid rgba(155,89,182,0.2); border-radius:16px;">
+                        class="mh-inline-a4d400a13c">
 
-                        <p style="font-family:'Cinzel',serif; color:#ebc066; font-size:1.05rem; margin:0 0 0.75rem;">
+                        <p class="mh-inline-4809f5f642">
 
                             Zjistěte shodu vašeho konkrétního páru</p>
 
-                        <p style="color:rgba(255,255,255,0.6); font-size:0.9rem; margin:0 0 1.25rem;">Naše synastrie
+                        <p class="mh-inline-0f9d392ed6">Naše synastrie
 
                             analyzuje přesnou kompatibilitu z natálních karet obou partnerů – nejen ze slunečních
 
@@ -807,7 +459,7 @@
 
                 </div>
 
-                <div style="text-align:center; margin-top:2rem;">
+                <div class="mh-inline-1c71810897">
 
                     <a href="../blog.html" class="btn btn--glass">← Zpět na blog</a>
 
@@ -824,15 +476,15 @@
     
 
         <!-- KONVERZNÍ CTA BLOK -->
-    <div style="margin: 3rem 0 2rem; padding: 2rem; background: linear-gradient(135deg, rgba(155,89,182,0.15), rgba(212,175,55,0.08)); border: 1px solid rgba(212,175,55,0.3); border-radius: 20px; text-align: center;">
-        <div style="font-size: 2rem; margin-bottom: 0.75rem;">💞</div>
-        <h3 style="font-family: 'Cinzel', serif; color: #d4af37; font-size: 1.3rem; margin-bottom: 0.75rem;">Jak fungujete dohromady?</h3>
-        <p style="color: rgba(255,255,255,0.7); line-height: 1.7; margin-bottom: 1.5rem; max-width: 480px; margin-left: auto; margin-right: auto;">Zjisti partnerskou shodu podle astrologie — porovnání natálních karet odhalí dynamiku vztahu na hlubší úrovni.</p>
-        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-            <a href="../partnerska-shoda.html" style="display: inline-block; padding: 0.75rem 1.75rem; background: linear-gradient(135deg, #9b59b6, #6c3483); border-radius: 50px; color: white; text-decoration: none; font-weight: 600; font-size: 0.95rem;">Zkontrolovat shodu</a>
-            <a href="../natalni-karta.html" style="display: inline-block; padding: 0.75rem 1.75rem; background: transparent; border: 1px solid rgba(212,175,55,0.5); border-radius: 50px; color: #d4af37; text-decoration: none; font-size: 0.95rem;">Natální karta</a>
+    <div class="mh-inline-77bc1893c5">
+        <div class="mh-inline-e338e7fb24">💞</div>
+        <h3 class="mh-inline-cc5681b4ba">Jak fungujete dohromady?</h3>
+        <p class="mh-inline-9fd8124761">Zjisti partnerskou shodu podle astrologie — porovnání natálních karet odhalí dynamiku vztahu na hlubší úrovni.</p>
+        <div class="mh-inline-d342875b42">
+            <a href="../partnerska-shoda.html" class="mh-inline-f0c62e48bf">Zkontrolovat shodu</a>
+            <a href="../natalni-karta.html" class="mh-inline-b63770d2e3">Natální karta</a>
         </div>
-        <p style="color: rgba(255,255,255,0.3); font-size: 0.8rem; margin-top: 0.75rem;">Bez platební karty &bull; Zrušení kdykoliv</p>
+        <p class="mh-inline-fe5bd42421">Bez platební karty &bull; Zrušení kdykoliv</p>
     </div>
 
 
@@ -841,15 +493,15 @@
 
     <!-- RELATED POSTS WIDGET -->
 
-    <div id="related-posts-section" style="margin: 2rem 0 3rem;">
+    <div id="related-posts-section" class="mh-inline-4aeb051df8">
 
-        <h3 style="font-family: 'Cinzel', serif; color: #d4af37; font-size: 1.1rem; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(212,175,55,0.2);">📚 Čtěte také</h3>
+        <h3 class="mh-inline-4c9e41d786">📚 Čtěte také</h3>
 
-        <div id="related-posts-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;"></div>
+        <div id="related-posts-grid" class="mh-inline-5d9ebc6640"></div>
 
     </div>
 
-    <script src="/js/blog-related.js" defer></script>
+    <script src="/js/dist/blog-related.js" defer></script>
 
 
 
@@ -857,19 +509,19 @@
 
 
 
-    <script src="../js/api-config.js?v=5" defer></script>
+    <script src="../js/dist/api-config.js?v=5" defer></script>
 
-    <script src="../js/templates.js?v=10" defer></script>
+    <script src="../js/dist/templates.js?v=10" defer></script>
 
-    <script src="../js/auth-client.js?v=5" defer></script>
+    <script src="../js/dist/auth-client.js?v=5" defer></script>
 
-        <script src="../js/blog-enhancements.js" defer></script>
+        <script src="../js/dist/blog-enhancements.js" defer></script>
 
-    <script src="../js/components.js?v=10" defer></script>
+    <script src="../js/dist/components.js?v=10" defer></script>
 
-    <script type="module" src="../js/main.js?v=10"></script>
+    <script type="module" src="../js/dist/main.js?v=10"></script>
 
-    <script src="../js/newsletter-popup.js" defer></script>
+    <script src="../js/dist/newsletter-popup.js" defer></script>
 
 </body>
 

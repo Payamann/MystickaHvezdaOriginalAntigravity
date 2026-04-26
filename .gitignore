@@ -43,9 +43,12 @@ _agent/
 # Python
 __pycache__/
 *.pyc
+.pytest_cache/
+.pytest-tmp/
 
 # Social media agent outputs (local only)
 social-media-agent/output/
+social-media-agent/.pytest-tmp/
 
 # Test outputs
 *.lcov

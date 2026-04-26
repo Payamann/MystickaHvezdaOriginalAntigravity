@@ -13,6 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="../css/style.v2.min.css?v=9">
+    <link rel="stylesheet" href="../css/pages/testy-barva-aury.css">
     <link rel="stylesheet" href="../css/testy.css?v=2">
 
     <!-- SEO & Open Graph -->
@@ -40,7 +41,7 @@
             </div>
         </section>
 
-        <section class="section" style="padding-top: 0;">
+        <section class="section mh-inline-42662af6d3">
             <div class="container">
                 <div class="quiz-container" id="quiz-box">
                     <div class="quiz-progress">
@@ -151,47 +152,10 @@
 
     <div id="footer-placeholder"></div>
 
-    <script src="../js/api-config.js?v=5" defer></script>
-    <script src="../js/components.js?v=11" defer></script>
-    <script type="module" src="../js/main.js?v=11"></script>
+    <script src="../js/dist/api-config.js?v=5" defer></script>
+    <script src="../js/dist/components.js?v=11" defer></script>
+    <script type="module" src="../js/dist/main.js?v=11"></script>
 
-    <script src="../js/quiz/barva-aury.js?v=1" defer></script>
-
-    <style>
-        .loader-aura {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin: 0 auto;
-            position: relative;
-            background: linear-gradient(45deg, var(--color-mystic-gold), var(--color-ethereal-violet), var(--color-deep-space));
-            background-size: 200% 200%;
-            animation: auraMorph 3s ease infinite, spin 10s linear infinite;
-        }
-        .loader-aura::after {
-            content: '';
-            position: absolute;
-            top: -10px; left: -10px; right: -10px; bottom: -10px;
-            border: 2px solid rgba(255,215,0,0.3);
-            border-radius: 50%;
-            animation: auraPulse 2s infinite;
-        }
-        @keyframes auraMorph {
-            0%, 100% { border-radius: 50% 60% 50% 40%; }
-            50% { border-radius: 60% 40% 60% 50%; }
-        }
-        @keyframes auraPulse {
-            0% { transform: scale(1); opacity: 0.8; }
-            100% { transform: scale(1.3); opacity: 0; }
-        }
-        .animate-aura {
-            animation: resultAura 4s ease-in-out infinite;
-            filter: drop-shadow(0 0 15px var(--aura-color));
-        }
-        @keyframes resultAura {
-            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px var(--aura-color)); }
-            50% { transform: scale(1.1); filter: drop-shadow(0 0 30px var(--aura-color)); }
-        }
-    </style>
+    <script src="/js/dist/quiz/barva-aury.js?v=1" defer></script>
 </body>
 </html>

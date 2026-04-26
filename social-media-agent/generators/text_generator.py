@@ -24,6 +24,8 @@ from brand_knowledge import (
     build_knowledge_prompt, find_relevant_blog, find_relevant_tool,
     get_blog_summary_for_prompt, get_relatable_scenario,
 )
+from comment_cost import record_comment_reply_usage, usage_to_dict
+from comment_policy import should_offer_comment_link, sanitize_reply_links
 from logger import get_logger
 
 log = get_logger(__name__)
@@ -548,8 +550,10 @@ def _call_claude(
     System prompt je cachován — BRAND_VOICE se neposílá znovu při opakovaných voláních.
     """
     class _Response:
-        def __init__(self, text: str):
+        def __init__(self, text: str, usage=None, model: str | None = None):
             self.text = text
+            self.usage = usage
+            self.model = model
 
     effective_system = system if system is not None else _BRAND_SYSTEM
 
@@ -562,7 +566,7 @@ def _call_claude(
                 system=effective_system,
                 messages=[{"role": "user", "content": contents}],
             )
-            return _Response(response.content[0].text)
+            return _Response(response.content[0].text, usage=getattr(response, "usage", None), model=model)
         except Exception as e:
             error_msg = str(e).lower()
             retriable = any(kw in error_msg for kw in [
@@ -1664,13 +1668,15 @@ def _get_comment_system() -> list:
 
 2. POHLAVÍ: Nikdy nepředpokládej pohlaví. Zakázáno: "ses starala", "ses rozhodla", "byl jsi unavený". Správně: "ses staral/... " NE — správně: "jsi se staral o ostatní" NE — správně: "pečoval jsi o ostatní" NE. Správně: "péče o ostatní tě vyčerpala" nebo "starat se o ostatní tě vyčerpalo".
 
-3. URL ADRESY: Nikdy nevymýšlej URL. Odkaz použij POUZE pokud je doslova napsán v sekci "Pokud to přirozeně sedí, doporuč:" v aktuálním promptu. Jinak žádný odkaz nepíšeš.
+3. URL ADRESY: Nikdy nevymýšlej URL. Odkaz použij POUZE pokud je doslova napsán v sekci "JEMNÉ POZVÁNÍ" v aktuálním promptu. Jinak žádný odkaz nepíšeš.
 
 4. JAZYK: Piš výhradně česky. Žádná slovenská slova (bolesť→bolest, tichle→tiše). Žádné anglicismy — "neimpresionuje"→"neohromí", "feelingovat"→"cítit", "nepassuje"→"nesedí"/"nerezonuje", "makes sense"→"dává smysl".
 
 5. DÉLKA: Max 3 věty. Kratší je lepší.
 
-6. TĚŽKÉ EMOCE: Pokud někdo píše o ztrátě blízkého, strachu, bolesti — NEJDŘÍV validuj pocit ("To je těžké.", "Cítím, co to musí být."), teprve pak nabídni pohled. Nikdy rovnou nepřeskakuj na analýzu nebo rady."""
+6. TĚŽKÉ EMOCE: Pokud někdo píše o ztrátě blízkého, strachu, bolesti — NEJDŘÍV validuj pocit ("To je těžké.", "Cítím, co to musí být."), teprve pak nabídni pohled. Nikdy rovnou nepřeskakuj na analýzu nebo rady.
+
+7. LIDSKOST: Odpověď musí působit jako ručně napsaná reakce na konkrétní komentář. Vždy se opři o 1 konkrétní slovo nebo situaci z komentáře. Nepiš univerzální fráze, které by šly poslat komukoliv."""
 
         _COMMENT_KB_SYSTEM = [
             {
@@ -1704,19 +1710,24 @@ _ZNAMENI = {
 
 _EMOCE = {
     "unavená": "únava", "unavena": "únava", "unavený": "únava", "unavene": "únava",
+    "unaveně": "únava", "vyčerpaný": "vyčerpání", "vycerpany": "vyčerpání",
     "opuštěná": "osamělost", "opustena": "osamělost", "opuštěně": "osamělost", "opustene": "osamělost",
+    "osamělý": "osamělost", "osamely": "osamělost", "osamělá": "osamělost", "osamela": "osamělost",
     "skleslá": "sklíčenost", "sklesla": "sklíčenost", "sklesle": "sklíčenost",
-    "smutná": "smutek", "smutne": "smutek", "smutna": "smutek",
+    "smutná": "smutek", "smutný": "smutek", "smutne": "smutek", "smutna": "smutek", "smutno": "smutek",
     "znechutena": "znechucení", "znechucena": "znechucení",
     "rezignovaně": "rezignace", "rezignovane": "rezignace",
     "sám": "osamělost", "sama": "osamělost",
-    "úzkost": "úzkost", "uzkost": "úzkost",
+    "úzkost": "úzkost", "uzkost": "úzkost", "panika": "úzkost",
     "vyčerpaná": "vyčerpání", "vycerpana": "vyčerpání",
-    "ztracená": "ztráta", "ztracena": "ztráta",
+    "ztracená": "ztráta", "ztracený": "ztráta", "ztracena": "ztráta", "ztraceny": "ztráta",
     "zlostná": "zlost", "nastvana": "zlost", "naštvaná": "zlost",
     "spokojená": "spokojenost", "spokojená": "spokojenost",
     "vděčná": "vděčnost", "vdecna": "vděčnost",
     "nadšená": "nadšení", "nadsena": "nadšení",
+    "špatně": "těžký stav", "spatne": "těžký stav", "blbě": "těžký stav", "blbe": "těžký stav",
+    "nezvládám": "přetížení", "nezvladam": "přetížení", "nemůžu": "přetížení", "nemuzu": "přetížení",
+    "rozchod": "bolest po rozchodu", "brečím": "pláč", "brecim": "pláč",
 }
 
 _ENGAGEMENT_HOOKS = [
@@ -1726,10 +1737,10 @@ _ENGAGEMENT_HOOKS = [
     "Co říká tvá intuice?",
     "Poznáváš se v tom?",
     "Co pro tebe dnes znamená tohle?",
-    "Jak se s tím vyrovnáváš?",
+    "Co ti v tom teď nejvíc pomáhá?",
     "Kde to teď cítíš nejvíc?",
     "Co na tom je pro tebe nejtěžší?",
-    "Kdy ses to uvědomil naposledy?",
+    "Kdy ti to naposledy dávalo smysl?",
 ]
 
 # Začátky odpovědí — rotujeme, aby se neopakovaly
@@ -1773,7 +1784,18 @@ def _detect_comment_context(message: str) -> dict:
 
     # Detekce humoru — před ostatními typy
     humor_signals = ["😂", "😄", "😁", "🤣", "😅", "😆", "haha", "hehe", ":D", "lol"]
-    if any(s in lower for s in humor_signals) or (message.count("😂") + message.count("🤣")) >= 1:
+    rude_signals = ["blbost", "kravina", "kraviny", "debil", "nesmysl", "podvod", "fake", "scam", "šarlat", "sarlat", "lžete", "lzete", "trapn", "hovadina"]
+    crisis_signals = ["nechci žít", "nechci zit", "chci umřít", "chci umrit", "zabiju se", "ublížit si", "ublizit si", "si ublížit", "si ublizit", "ukončit život", "ukoncit zivot"]
+    support_signals = ["mám se špatně", "mam se spatne", "mám se blbě", "mam se blbe", "je mi špatně", "je mi spatne", "je mi blbě", "je mi blbe", "už nemůžu", "uz nemuzu", "nemůžu dál", "nemuzu dal", "nejsem dobře", "nejsem v pořádku", "nejsem v pohode", "trápím se", "trapim se"]
+    if any(s in lower for s in crisis_signals):
+        ctx["typ"] = "krize"
+    elif any(s in lower for s in rude_signals):
+        ctx["typ"] = "hruby_komentar"
+    elif any(s in lower for s in support_signals):
+        ctx["typ"] = "emocionalni_stav"
+        if not ctx["emoce"]:
+            ctx["emoce"] = "těžký stav"
+    elif any(s in lower for s in humor_signals) or (message.count("😂") + message.count("🤣")) >= 1:
         ctx["typ"] = "humor"
     elif "?" in message:
         ctx["typ"] = "otazka"
@@ -1804,32 +1826,71 @@ def generate_comment_reply(
     tone: str = "friendly",
     post_context: str = "",
     db_sentiment: str = "",
-) -> str:
+    comment_id: str = "",
+    context_type: str = "",
+    allowed_reply_url: str | None = None,
+    tool_name: str = "",
+    model_tier: str = "fast",
+    max_tokens: int = 250,
+    quality_feedback: str = "",
+    route: str = "ai_cheap",
+    regenerated: int = 0,
+    return_metadata: bool = False,
+) -> str | tuple[str, dict]:
     """
     Generuje specifickou, duší nabitou odpověď na komentář.
     Rozpoznává znamení, emoce, typ komentáře a přizpůsobuje tón i obsah.
     db_sentiment: sentiment z DB (přepíše detekci pokud je 'emotional')
     """
-    client, model_name = setup_claude(use_fast=True)  # Haiku — levnější pro komentáře
+    model_tier = (model_tier or "fast").strip().lower()
+    if model_tier not in {"fast", "standard", "pro"}:
+        model_tier = "fast"
+    client, model_name = setup_claude(
+        use_fast=model_tier == "fast",
+        use_pro=model_tier == "pro",
+    )
+    usage_events: list[dict] = []
 
     ctx = _detect_comment_context(original_comment)
     # Pokud DB klasifikovala komentář jako emocionální výpověď, respektuj to
-    if db_sentiment == "emotional" and ctx["typ"] not in ("humor", "identifikace_znameni"):
+    if db_sentiment == "crisis":
+        ctx["typ"] = "krize"
+        if not ctx["emoce"]:
+            ctx["emoce"] = "krizový stav"
+    elif db_sentiment == "rude":
+        ctx["typ"] = "hruby_komentar"
+    elif db_sentiment == "emotional" and ctx["typ"] not in ("humor", "identifikace_znameni"):
         ctx["typ"] = "emocionalni_stav"
+        if not ctx["emoce"]:
+            ctx["emoce"] = "těžký stav"
+    if context_type:
+        ctx["typ"] = {
+            "emotional": "emocionalni_stav",
+            "crisis": "krize",
+            "rude": "hruby_komentar",
+            "otazka": "otazka",
+            "pochvala": "pochvala",
+            "skeptical": "skeptik",
+        }.get(context_type, context_type)
 
     # Sestavení specifických instrukcí podle typu
     if ctx["typ"] == "identifikace_znameni":
         znameni = ctx["znameni"]
         instrukce = f"""Osoba píše že je {znameni}. Krátce a vřele potvrď tuto identitu,
 přidej 1 konkrétní vlastnost nebo energii tohoto znamení která rezonuje s tématem postu.
-Tón: hřejivý, jako bys rozpoznal/a starého přítele. Délka: 1-2 věty."""
+Tón: hřejivý, jako bys poznával známou energii. Délka: 1-2 věty."""
 
     elif ctx["typ"] == "emocionalni_stav":
         emoce = ctx["emoce"]
         instrukce = f"""Osoba vyjadřuje: {emoce}.
-NEJDŘÍVE validuj tento pocit (bez rad, bez "ale"). Pak nabídni jeden malý, konkrétní mystický pohled nebo nástroj.
-Tón: teplý, přítomný, jako kamarádka která skutečně naslouchá. Délka: 2-3 věty.
-NEZLEHČUJ pocit, NEPŘESKAKUJ rovnou na rady."""
+NEJDŘÍVE validuj tento pocit bez rad a bez "ale". Pak napiš jednu malou, konkrétní oporu pro nejbližší chvíli.
+Tón: teplý, přítomný, jako člověk který si dal záležet a skutečně četl komentář. Délka: 2-3 věty.
+NEZLEHČUJ pocit, NEPŘESKAKUJ rovnou na astro, tarot ani web. Nepoužívej klišé typu "všechno bude dobré"."""
+
+    elif ctx["typ"] == "krize":
+        instrukce = """Osoba naznačuje krizový stav nebo možné sebepoškození.
+Odpověz velmi lidsky, stručně a přímo: nejdřív potvrď, že to bereme vážně, pak ji jemně naveď na okamžitý kontakt s někým blízkým nebo místní tísňovou pomocí, pokud je v ohrožení.
+ŽÁDNÁ mystika, žádný tarot, žádné odkazy na náš web, žádné sliby, žádná diagnóza. Délka: max 3 věty."""
 
     elif ctx["typ"] == "otazka":
         instrukce = """Odpověz přímo a konkrétně na otázku. Přidej 1 praktickou informaci nebo odkaz.
@@ -1843,6 +1904,11 @@ Tón: vřelý, autentický. Délka: 1-2 věty. Nepřehánět s vděčností."""
         instrukce = """Uznej pohled bez obrannosti. Nabídni jiný úhel nebo osobní zkušenost.
 Tón: klidný, sebejistý, bez přesvědčování. Délka: 2 věty."""
 
+    elif ctx["typ"] == "hruby_komentar":
+        instrukce = """Osoba píše hrubě, odmítavě nebo dehonestuje téma.
+Neobhajuj se, neútoč, nesnaž se ji přesvědčit. Odpověz klidně, s hranicí a respektem: uznej, že to nemusí sedět každému, a nabídni prostor pro konkrétní otázku, pokud chce věcně reagovat.
+Tón: lidský, pevný, ne korporátní. Délka: 1-2 věty. Bez URL, bez emoji, bez ironie."""
+
     elif ctx["typ"] == "prinos_znameni":
         znameni = ctx["znameni"]
         instrukce = f"""Osoba sdílí zkušenost jako {znameni}. Potvrď jejich zkušenost,
@@ -1855,7 +1921,7 @@ Neber to vážně, odpověz v podobném duchu — vtip, lehká ironie nebo playf
 Tón: odlehčený, lidský, spontánní. Délka: 1 věta. Nezačínaj analýzou."""
 
     elif ctx["typ"] == "kratky_negativni":
-        instrukce = """Osoba napsal/a jen jedno slovo nebo krátkou větu vyjadřující, že se cítí špatně nebo smutně.
+        instrukce = """Osoba napsala jen jedno slovo nebo krátkou větu vyjadřující, že se cítí špatně nebo smutně.
 PRVNÍ věta: výhradně empatie — krátce, lidsky, přítomně. Příklady: "To slyším." / "To je těžké." / "Jsem tu." / "Cítím to s tebou."
 DRUHÁ věta (volitelná): jeden malý, konkrétní dotaz nebo nabídka pohledu — bez rad, bez diagnózy, bez astro teorie.
 Tón: teplý, přítomný, žádné klišé. Délka: max 2 věty.
@@ -1868,7 +1934,7 @@ DŮLEŽITÉ: Nepřidávej astrologický kontext pokud nevychází přímo z kome
 
     # Engagement hook — 60% šance na otázku na konci (boostuje diskusi)
     engagement = ""
-    if ctx["typ"] not in ("otazka", "skeptik", "humor", "kratky_negativni") and _random.random() < 0.6:
+    if ctx["typ"] not in ("otazka", "skeptik", "humor", "kratky_negativni", "emocionalni_stav", "krize", "hruby_komentar") and _random.random() < 0.6:
         hook = _random.choice(_ENGAGEMENT_HOOKS)
         engagement = f"\nNa konec přirozeně přidej tuto otázku (nebo podobnou): \"{hook}\""
 
@@ -1880,14 +1946,26 @@ DŮLEŽITÉ: Nepřidávej astrologický kontext pokud nevychází přímo z kome
     if banned_now:
         variety_hint = f"\nNEZAČÍNAJ těmito frázemi (příliš časté): {', '.join(banned_now[:3])}"
 
-    # Relevantní nástroj/odkaz
-    tool = find_relevant_tool(original_comment) or find_relevant_tool(post_topic)
-    relevant_blogs = find_relevant_blog(original_comment, max_results=1)
-    recommendation = "\nODKAZY: Nepoužívej žádné URL. Pokud je níže uvedena konkrétní adresa, použij POUZE tu — jinak žádný odkaz nepíšeš."
-    if tool and ctx["typ"] in ("otazka", "emocionalni_stav", "prinos_znameni"):
-        recommendation = f"\nODKAZ (použij POUZE tento, doslova): {config.WEBSITE_URL}{tool.get('url', '')}"
-    elif relevant_blogs and ctx["typ"] == "otazka":
-        recommendation = f"\nODKAZ (použij POUZE tento, doslova): {config.WEBSITE_URL}/blog/{relevant_blogs[0]['slug']}.html"
+    # Relevantní nástroj/odkaz — konzervativně, aby odpovědi nepůsobily jako spam.
+    comment_tool = None
+    if not allowed_reply_url:
+        offer_link, comment_tool = should_offer_comment_link(
+            original_comment=original_comment,
+            post_topic=post_topic,
+            context_type=ctx["typ"],
+            db_sentiment=db_sentiment,
+        )
+        allowed_reply_url = f"{config.WEBSITE_URL.rstrip('/')}{comment_tool.url}" if offer_link and comment_tool else None
+    recommendation = "\nODKAZY: V této odpovědi NEPIŠ žádnou URL."
+    if allowed_reply_url:
+        display_tool_name = tool_name or (comment_tool.name if comment_tool else "relevantní nástroj")
+        recommendation = f"""
+JEMNÉ POZVÁNÍ:
+- Odpověď musí nejdřív reálně pomoct v kontextu komentáře.
+- Pokud to sedí jako přirozený další krok, můžeš v poslední větě jemně pozvat na {display_tool_name}.
+- Použij POUZE tento odkaz, doslova: {allowed_reply_url}
+- Žádný prodejní tón. Nepiš "klikni", "sleduj nás", "mrkni na web" ani "odkaz v biu".
+- Odkaz max jednou a pouze v poslední větě."""
 
     # Detekce pohlaví z textu komentáře — ženské a mužské markery v češtině/slovenštině
     from datetime import date as _date
@@ -1941,6 +2019,7 @@ INSTRUKCE PRO TUTO ODPOVĚĎ:
 {engagement}
 {variety_hint}
 {recommendation}
+{f'OPRAVA PO QUALITY GATE: {quality_feedback}' if quality_feedback else ''}
 
 PEVNÁ PRAVIDLA — porušení není přípustné:
 - Piš česky, přirozeně, tykej (2. os. j.č.)
@@ -1949,14 +2028,17 @@ PEVNÁ PRAVIDLA — porušení není přípustné:
 - ABSOLUTNÍ ZÁKAZ lomených tvarů: NIKDY nepíšeš "cítil/a", "rozhodl/a", "přišel/přišla", "narodil/a" ani žádný jiný tvar s lomítkem — piš výhradně přítomný čas 2. os. ("cítíš", "rozhoduješ se") nebo infinitiv ("rozhodnout se")
 - ABSOLUTNÍ ZÁKAZ předpokladu pohlaví pokud není jasné z komentáře — viz sekce POHLAVÍ výše
 - ABSOLUTNÍ ZÁKAZ: nikdy "Rád vidím", "Rád slyším" — to jsou mužské tvary. Použij "Super vidět", "Hezky slyšet", "Těší mě to"
-- NIKDY nevymýšlej URL adresy — odkaz použij POUZE pokud je explicitně uveden výše v sekci "Pokud to přirozeně sedí, doporuč"
+- NIKDY nevymýšlej URL adresy — odkaz použij POUZE pokud je explicitně uveden výše v sekci "JEMNÉ POZVÁNÍ"
 - NIKDY nepouži medicínské/vědecké termíny pokud si nejsi 100% jistý (raději vynech)
 - NIKDY neprozraď že jsi AI nebo bot
+- Nepiš šablonově: žádné "Mrzí mě, že se tak cítíš" jako univerzální první věta, pokud můžeš reagovat konkrétněji na slova komentáře
 
 Odpověz POUZE textem odpovědi."""
 
-    response = _call_claude(client, model_name, prompt, temperature=0.82, max_tokens=250,
+    max_tokens = max(80, min(int(max_tokens or 180), 320))
+    response = _call_claude(client, model_name, prompt, temperature=0.82, max_tokens=max_tokens,
                             system=_get_comment_system())
+    usage_events.append(usage_to_dict(getattr(response, "usage", None)))
     result = response.text.strip()
 
     # Post-processing: detekuj lomené tvary, cyrilici, polská/slovenská slova, přegeneruj max 3×
@@ -2027,8 +2109,9 @@ Odpověz POUZE textem odpovědi."""
             break
         log.warning("Gender/jazyk/lomený tvar detekován (pokus %d), přegeneruji: %s", _attempt + 1, result[:60])
         stricter = prompt + f"\n\nPOZOR: Předchozí pokus obsahoval {issue}. Tentokrát ABSOLUTNĚ česky, BEZ LOMÍTEK (žádné /, žádné x/y tvary), bez cizích znaků. Piš výhradně přítomný čas 2. os. nebo infinitiv."
-        response = _call_claude(client, model_name, stricter, temperature=0.65, max_tokens=250,
+        response = _call_claude(client, model_name, stricter, temperature=0.65, max_tokens=max_tokens,
                                 system=_get_comment_system())
+        usage_events.append(usage_to_dict(getattr(response, "usage", None)))
         result = response.text.strip()
     else:
         # Fallback: hrubé odstranění lomených tvarů (vezmi část před lomítkem)
@@ -2052,8 +2135,28 @@ Odpověz POUZE textem odpovědi."""
     # Vždy odstraň markdown formátování (*tučné*, _kurzíva_) — na FB vypadají špatně
     result = _re.sub(r'\*([^*]+)\*', r'\1', result)   # *slovo* → slovo
     result = _re.sub(r'_([^_]+)_', r'\1', result)     # _slovo_ → slovo
+    result = sanitize_reply_links(result, config.WEBSITE_URL, allowed_reply_url)
+
+    metadata = {
+        "model": model_name,
+        "usage_events": usage_events,
+        "route": route,
+        "regenerated": regenerated,
+        "final_chars": len(result),
+    }
+    if comment_id and not return_metadata:
+        record_comment_reply_usage(
+            comment_id=comment_id,
+            route=route,
+            model=model_name,
+            usage_events=usage_events,
+            final_chars=len(result),
+            regenerated=regenerated,
+        )
 
     _register_opener(result)
+    if return_metadata:
+        return result, metadata
     return result
 
 

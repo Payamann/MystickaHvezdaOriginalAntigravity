@@ -53,72 +53,34 @@
         const checkoutContext = resolveCheckoutContext();
         const modal = document.createElement('div');
         modal.id = 'exit-intent-modal';
-        modal.style.cssText = `
-            position: fixed; inset: 0; z-index: 99999;
-            display: flex; align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
-            animation: fadeIn 0.3s ease;
-        `;
+        modal.className = 'exit-intent-modal';
 
         modal.innerHTML = `
-            <div style="
-                max-width: 480px; width: 90%;
-                background: linear-gradient(135deg, #0f0a22, #1a0a35);
-                border: 1px solid rgba(212,175,55,0.4);
-                border-radius: 24px;
-                padding: 2.5rem 2rem;
-                text-align: center;
-                position: relative;
-                box-shadow: 0 40px 80px rgba(0,0,0,0.5);
-                animation: slideUp 0.4s cubic-bezier(0.4,0,0.2,1);
-            ">
-                <button id="exit-close" type="button" style="
-                    position: absolute; top: 1rem; right: 1rem;
-                    background: none; border: none; color: rgba(255,255,255,0.4);
-                    font-size: 1.5rem; cursor: pointer; line-height: 1;
-                    transition: color 0.2s;
-                " aria-label="Zavřít"
-                    onmouseover="this.style.color='white'"
-                    onmouseout="this.style.color='rgba(255,255,255,0.4)'">×</button>
+            <div class="exit-intent-modal__panel">
+                <button id="exit-close" class="exit-intent-modal__close" type="button" aria-label="Zavřít">×</button>
 
-                <div style="font-size: 3rem; margin-bottom: 1rem;">🌟</div>
-                <h2 style="font-family: 'Cinzel', serif; color: #d4af37; font-size: 1.4rem; margin-bottom: 0.75rem;">
+                <div class="exit-intent-modal__icon">🌟</div>
+                <h2 class="exit-intent-modal__title">
                     Tvůj výklad jde mnohem dál
                 </h2>
-                <div style="color: rgba(255,255,255,0.7); line-height: 2; margin-bottom: 1.5rem; font-size: 0.92rem; text-align: left; display: inline-block;">
+                <div class="exit-intent-modal__features">
                     <div>🔮 Natální karta a partnerská shoda</div>
                     <div>🌙 Horoskopy bez omezení</div>
                     <div>✨ Tarot, runy, výklady a mnohem víc</div>
                 </div>
-                <p style="color: rgba(255,255,255,0.45); line-height: 1.6; margin-bottom: 1.5rem; font-size: 0.88rem;">
+                <p class="exit-intent-modal__text">
                     Pokud už cítíš, že chceš víc než jen náhled, Hvězdný Průvodce tě vezme do hloubky.
                 </p>
 
-                <button id="exit-cta" type="button" style="
-                    display: block; width: 100%;
-                    padding: 0.9rem 2rem;
-                    background: linear-gradient(135deg, #9b59b6, #6c3483);
-                    border-radius: 50px; color: white; text-decoration: none;
-                    font-weight: 700; font-size: 1rem; margin-bottom: 1rem;
-                    border: none; cursor: pointer;
-                    transition: transform 0.2s, box-shadow 0.2s;
-                    box-shadow: 0 8px 30px rgba(155,89,182,0.4);
-                " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 12px 40px rgba(155,89,182,0.5)'"
-                   onmouseout="this.style.transform='';this.style.boxShadow='0 8px 30px rgba(155,89,182,0.4)'">
+                <button id="exit-cta" class="exit-intent-modal__cta" type="button">
                     ✨ Pokračovat k plnému přístupu →
                 </button>
 
-                <button id="exit-dismiss" type="button" style="
-                    background: none; border: none;
-                    color: rgba(255,255,255,0.35); font-size: 0.85rem;
-                    cursor: pointer; padding: 0.5rem;
-                    text-decoration: underline;
-                " onmouseover="this.style.color='rgba(255,255,255,0.6)'"
-                   onmouseout="this.style.color='rgba(255,255,255,0.35)'">
+                <button id="exit-dismiss" class="exit-intent-modal__dismiss" type="button">
                     Zatím ne, zůstanu u základní verze
                 </button>
 
-                <p style="color: rgba(255,255,255,0.2); font-size: 0.75rem; margin-top: 0.75rem;">
+                <p class="exit-intent-modal__privacy">
                     GDPR chráněno
                 </p>
             </div>
@@ -132,7 +94,7 @@
                 source: checkoutContext.source,
                 feature: checkoutContext.feature
             });
-            modal.style.animation = 'fadeOut 0.2s ease forwards';
+            modal.classList.add('is-closing');
             setTimeout(() => modal.remove(), 200);
         }
 
@@ -188,10 +150,4 @@
         }
     });
 
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes fadeOut { to { opacity: 0; } }
-    `;
-    document.head.appendChild(style);
 })();

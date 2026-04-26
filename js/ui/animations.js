@@ -8,7 +8,7 @@ export function initScrollAnimations() {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) {
         document.querySelectorAll('[data-animate]').forEach((el) => {
-            el.style.opacity = '1';
+            el.classList.add('is-visible');
         });
         return;
     }
@@ -20,7 +20,7 @@ export function initScrollAnimations() {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('animate-fade-in');
-                entry.target.style.opacity = '1'; // Ensure it's visible
+                entry.target.classList.add('is-visible');
                 observer.unobserve(entry.target);
             }
         });
@@ -35,7 +35,7 @@ export function initScrollAnimations() {
         const isInViewport = rect.top < window.innerHeight && rect.bottom > 0;
 
         // Content should never depend on the observer to become visible.
-        el.style.opacity = '1';
+        el.classList.add('is-visible');
 
         if (isInViewport) {
             el.classList.add('animate-fade-in');
@@ -131,7 +131,10 @@ export function initCustomCursor() {
 
     function animate() {
         // Update cursor head position
-        cursorHead.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+        cursorHead.animate(
+            [{ transform: `translate3d(${mouseX}px, ${mouseY}px, 0)` }],
+            { duration: 80, fill: 'forwards' }
+        );
 
         // Draw particles
         ctx.clearRect(0, 0, width, height);

@@ -173,11 +173,13 @@
 
             if (!dateInput) {
 
-                document.getElementById('birth-date').style.borderColor = 'rgba(212,175,55,0.8)';
+                document.getElementById('birth-date').classList.add('birth-input--invalid');
 
                 return;
 
             }
+
+            document.getElementById('birth-date').classList.remove('birth-input--invalid');
 
 
 
@@ -205,15 +207,7 @@
 
             const orb = document.getElementById('aura-orb');
 
-            orb.style.background = `radial-gradient(circle at 35% 35%, ${aura.color}dd, ${aura.color}66)`;
-
-            orb.style.boxShadow = `0 0 60px ${aura.glow}, 0 0 120px ${aura.glow}`;
-
-            orb.style.cssText += `; before-background: ${aura.glow}`;
-
-            orb.innerHTML = `<div style="position:absolute;inset:-20px;border-radius:50%;background:radial-gradient(circle,${aura.glow},transparent);animation:pulse 3s ease-in-out infinite;"></div>`;
-
-            orb.classList.add('show');
+            orb.className = `aura-orb aura-orb--${sum} show`;
 
 
 
@@ -223,7 +217,8 @@
 
             title.textContent = aura.name;
 
-            title.style.color = aura.color;
+            title.classList.remove(...Array.from({ length: 9 }, (_, index) => `aura-title--${index + 1}`));
+            title.classList.add('aura-title', `aura-title--${sum}`);
 
             document.getElementById('aura-keyword').textContent = aura.keyword;
 
@@ -256,10 +251,12 @@
         document.getElementById('btn-aura-reset').addEventListener('click', () => {
 
             document.getElementById('birth-date').value = '';
+            document.getElementById('birth-date').classList.remove('birth-input--invalid');
 
             document.getElementById('aura-orb').className = 'aura-orb';
 
             document.getElementById('aura-result').className = 'aura-result';
+            document.getElementById('aura-title').classList.remove('aura-title', ...Array.from({ length: 9 }, (_, index) => `aura-title--${index + 1}`));
 
         });
 

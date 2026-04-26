@@ -1,0 +1,50 @@
+import { createHash } from 'node:crypto';
+import { readFile, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const rootDir = path.resolve(__dirname, '..');
+const serviceWorkerPath = path.join(rootDir, 'service-worker.js');
+
+function extractStaticAssets(source) {
+    const match = source.match(/const STATIC_ASSETS = \[([\s\S]*?)\];/);
+    if (!match) {
+        throw new Error('STATIC_ASSETS manifest not found in service-worker.js');
+    }
+
+    return [...match[1].matchAll(/'([^']+)'/g)].map((asset) => asset[1]);
+}
+
+async function buildCacheName(assets) {
+    const hash = createHash('sha256');
+
+    for (const asset of assets) {
+        if (asset === '/') continue;
+
+        const assetPath = path.join(rootDir, asset.replace(/^\//, ''));
+        const content = await readFile(assetPath);
+        hash.update(asset);
+        hash.update('\0');
+        hash.update(content);
+        hash.update('\0');
+    }
+
+    return `mysticka-hvezda-${hash.digest('hex').slice(0, 12)}`;
+}
+
+const source = await readFile(serviceWorkerPath, 'utf8');
+const assets = extractStaticAssets(source);
+const cacheName = await buildCacheName(assets);
+const nextSource = source.replace(
+    /const CACHE_NAME = 'mysticka-hvezda-[^']+';/,
+    `const CACHE_NAME = '${cacheName}';`
+);
+
+if (nextSource === source) {
+    console.log(`[SW] Cache name already current: ${cacheName}`);
+} else {
+    await writeFile(serviceWorkerPath, nextSource);
+    console.log(`[SW] Updated cache name: ${cacheName}`);
+}

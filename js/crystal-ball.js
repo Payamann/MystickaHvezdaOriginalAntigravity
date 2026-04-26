@@ -41,6 +41,11 @@ function initCrystalBall() {
         });
     }
 
+    function setResetVisible(visible) {
+        if (!resetBtn) return;
+        resetBtn.classList.toggle('crystal-reset--visible', visible);
+    }
+
     // Check availability based on last usage
     function getRemainingCooldown() {
         const lastUsage = localStorage.getItem('crystalBall_lastUsage');
@@ -57,10 +62,9 @@ function initCrystalBall() {
             if (askBtn) {
                 askBtn.disabled = true;
                 askBtn.innerText = `Koule čerpá energii (${remaining}s)`;
-                askBtn.style.opacity = '0.6';
-                askBtn.style.cursor = 'not-allowed';
+                askBtn.classList.add('crystal-action--cooldown');
             }
-            if (ballContainer) ballContainer.style.cursor = 'not-allowed';
+            if (ballContainer) ballContainer.classList.add('ball-container--cooldown');
 
             // Re-check every second
             clearTimeout(cooldownTimer);
@@ -69,10 +73,9 @@ function initCrystalBall() {
             if (askBtn) {
                 askBtn.disabled = false;
                 askBtn.innerText = 'Zeptat se koule';
-                askBtn.style.opacity = '1';
-                askBtn.style.cursor = 'pointer';
+                askBtn.classList.remove('crystal-action--cooldown');
             }
-            if (ballContainer) ballContainer.style.cursor = 'pointer';
+            if (ballContainer) ballContainer.classList.remove('ball-container--cooldown');
         }
     }
 
@@ -103,10 +106,7 @@ function initCrystalBall() {
         // Reset state
         if (answerContainer) answerContainer.classList.remove('visible');
         if (answerText) answerText.textContent = '';
-        if (resetBtn) {
-            resetBtn.style.opacity = '0';
-            resetBtn.style.pointerEvents = 'none';
-        }
+        setResetVisible(false);
 
         // Animation
         ballContainer.classList.add('shaking');
@@ -153,10 +153,9 @@ function initCrystalBall() {
 
                         // Add favorite button after answer
                         const favoriteBtn = document.createElement('div');
-                        favoriteBtn.className = 'text-center';
-                        favoriteBtn.style.marginTop = 'var(--space-lg)';
+                        favoriteBtn.className = 'text-center favorite-reading-action';
                         favoriteBtn.innerHTML = `
-                            <button id="favorite-crystal-btn" class="btn btn--glass" style="min-width: 200px;">
+                            <button id="favorite-crystal-btn" class="btn btn--glass favorite-reading-action__button">
                                 <span class="favorite-icon">⭐</span> Přidat do oblíbených
                             </button>
                         `;
@@ -188,10 +187,7 @@ function initCrystalBall() {
 
         // Show reset btn
         setTimeout(() => {
-            if (resetBtn) {
-                resetBtn.style.opacity = '1';
-                resetBtn.style.pointerEvents = 'auto';
-            }
+            setResetVisible(true);
             isThinking = false;
         }, 500);
     }
@@ -235,14 +231,13 @@ function initCrystalBall() {
             if (answerContainer) {
                 answerContainer.classList.remove('visible');
                 // Remove accumulated favorite buttons
-                answerContainer.querySelectorAll('.text-center').forEach(el => el.remove());
+                answerContainer.querySelectorAll('.favorite-reading-action').forEach(el => el.remove());
             }
             if (questionInput) {
                 questionInput.value = '';
                 questionInput.focus();
             }
-            resetBtn.style.opacity = '0';
-            resetBtn.style.pointerEvents = 'none';
+            setResetVisible(false);
         });
     }
 }

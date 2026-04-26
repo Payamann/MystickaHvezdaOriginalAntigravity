@@ -1,1 +1,1 @@
-document.addEventListener("DOMContentLoaded",()=>{typeof lucide<"u"&&lucide.createIcons()});
+(()=>{document.addEventListener("DOMContentLoaded",()=>{typeof lucide<"u"&&lucide.createIcons()});})();

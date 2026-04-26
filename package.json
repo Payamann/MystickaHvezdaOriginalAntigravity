@@ -13,9 +13,10 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
     "test:e2e:report": "playwright show-report",
+    "audit:site": "node scripts/audit-site-structure.mjs",
     "test:all": "npm test && npm run test:e2e",
-    "build:css": "cleancss -o css/style.v2.min.css css/style.v2.css",
-    "build:js": "node scripts/build-js.mjs",
+    "build:css": "cleancss -o css/style.v2.min.css css/style.v2.css && node scripts/update-service-worker-cache.mjs",
+    "build:js": "node scripts/build-js.mjs && node scripts/update-service-worker-cache.mjs",
     "lint": "eslint server/ js/"
   },
   "dependencies": {

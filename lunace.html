@@ -74,6 +74,7 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap&subset=latin,latin-ext" rel="stylesheet"></noscript>
 
     <link rel="stylesheet" href="css/style.v2.min.css?v=11">
+    <link rel="stylesheet" href="css/pages/lunace.css">
 
 
 
@@ -142,408 +143,7 @@
     }
 
     </script>
-
-
-
-    <style>
-
-        .lunar-hero {
-
-            padding: 5rem 0 2rem;
-
-            text-align: center;
-
-        }
-
-
-
-        .moon-container {
-
-            display: flex;
-
-            flex-direction: column;
-
-            align-items: center;
-
-            justify-content: center;
-
-            margin: 2rem auto;
-
-        }
-
-
-
-        .moon-display {
-
-            font-size: 10rem;
-
-            line-height: 1;
-
-            animation: moonPulse 4s ease-in-out infinite;
-
-            filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.4));
-
-        }
-
-
-
-        @keyframes moonPulse {
-
-
-
-            0%,
-
-            100% {
-
-                transform: scale(1);
-
-                filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.3));
-
-            }
-
-
-
-            50% {
-
-                transform: scale(1.05);
-
-                filter: drop-shadow(0 0 50px rgba(212, 175, 55, 0.6));
-
-            }
-
-        }
-
-
-
-        .phase-name {
-
-            font-family: 'Cinzel', serif;
-
-            font-size: 2.5rem;
-
-            color: var(--color-mystic-gold);
-
-            margin: 1.5rem 0 0.5rem;
-
-        }
-
-
-
-        .phase-date {
-
-            color: var(--color-text-mutated);
-
-            font-size: 1rem;
-
-            margin-bottom: 2rem;
-
-        }
-
-
-
-        .illumination-bar {
-
-            width: 300px;
-
-            height: 8px;
-
-            background: rgba(255, 255, 255, 0.1);
-
-            border-radius: 50px;
-
-            overflow: hidden;
-
-            margin: 1rem auto;
-
-        }
-
-
-
-        .illumination-fill {
-
-            height: 100%;
-
-            background: linear-gradient(90deg, #d4af37, #f5d776);
-
-            border-radius: 50px;
-
-            transition: width 1s ease;
-
-        }
-
-
-
-        .illumination-label {
-
-            font-size: 0.9rem;
-
-            color: var(--color-text-mutated);
-
-            text-align: center;
-
-            margin-top: 0.5rem;
-
-        }
-
-
-
-        .phase-card {
-
-            background: rgba(10, 10, 26, 0.8);
-
-            border: 1px solid rgba(212, 175, 55, 0.2);
-
-            border-radius: 20px;
-
-            padding: 3rem;
-
-            max-width: 800px;
-
-            margin: 0 auto 2rem;
-
-            backdrop-filter: blur(10px);
-
-        }
-
-
-
-        .phase-card h2 {
-
-            color: var(--color-mystic-gold);
-
-            font-family: 'Cinzel', serif;
-
-            margin-top: 0;
-
-        }
-
-
-
-        .phase-card p {
-
-            line-height: 1.8;
-
-            font-size: 1.1rem;
-
-            color: var(--color-text-light);
-
-        }
-
-
-
-        .tags-row {
-
-            display: flex;
-
-            flex-wrap: wrap;
-
-            gap: 0.5rem;
-
-            margin: 1.5rem 0;
-
-        }
-
-
-
-        .tag {
-
-            padding: 0.4rem 1rem;
-
-            border-radius: 50px;
-
-            font-size: 0.9rem;
-
-            border: 1px solid rgba(212, 175, 55, 0.3);
-
-            background: rgba(212, 175, 55, 0.08);
-
-            color: #d4af37;
-
-        }
-
-
-
-        .lunar-cycle-grid {
-
-            display: grid;
-
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-
-            gap: 1rem;
-
-            margin: 2rem 0;
-
-        }
-
-
-
-        .cycle-item {
-
-            background: rgba(255, 255, 255, 0.03);
-
-            border: 1px solid rgba(255, 255, 255, 0.07);
-
-            border-radius: 12px;
-
-            padding: 1.2rem;
-
-            text-align: center;
-
-            cursor: pointer;
-
-            transition: all 0.3s ease;
-
-        }
-
-
-
-        .cycle-item.active {
-
-            border-color: var(--color-mystic-gold);
-
-            background: rgba(212, 175, 55, 0.08);
-
-        }
-
-
-
-        .cycle-item:hover {
-
-            transform: translateY(-3px);
-
-            border-color: rgba(212, 175, 55, 0.5);
-
-        }
-
-
-
-        .cycle-emoji {
-
-            font-size: 2.5rem;
-
-            display: block;
-
-            margin-bottom: 0.5rem;
-
-        }
-
-
-
-        .cycle-name {
-
-            font-size: 0.85rem;
-
-            color: var(--color-text-mutated);
-
-        }
-
-
-
-        .faq-section {
-
-            max-width: 800px;
-
-            margin: 0 auto 2rem;
-
-        }
-
-
-
-        .faq-item {
-
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-
-        }
-
-
-
-        .faq-item summary {
-
-            padding: 1.2rem 0;
-
-            cursor: pointer;
-
-            font-weight: 600;
-
-            color: white;
-
-            list-style: none;
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-
-        }
-
-
-
-        .faq-item summary::after {
-
-            content: '+';
-
-            color: var(--color-mystic-gold);
-
-            font-size: 1.5rem;
-
-            transition: transform 0.3s;
-
-        }
-
-
-
-        .faq-item[open] summary::after {
-
-            transform: rotate(45deg);
-
-        }
-
-
-
-        .faq-item p {
-
-            padding: 0 0 1.2rem;
-
-            color: var(--color-text-mutated);
-
-            line-height: 1.7;
-
-            margin: 0;
-
-        }
-
-
-
-        @media (max-width: 600px) {
-
-            .moon-display {
-
-                font-size: 7rem;
-
-            }
-
-
-
-            .phase-name {
-
-                font-size: 1.8rem;
-
-            }
-
-
-
-            .phase-card {
-
-                padding: 1.5rem;
-
-            }
-
-        }
-
-    </style>
-
-  <!-- DOMPurify for XSS protection (must load synchronously before other scripts use it) -->
+<!-- DOMPurify for XSS protection (must load synchronously before other scripts use it) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"></script>
     <link rel="canonical" href="https://www.mystickahvezda.cz/lunace.html">
     <script src="/js/dist/analytics-init.js" defer></script>
@@ -581,7 +181,7 @@
 
                 <h1 class="hero__title">Dnešní <span class="text-gradient">Lunární Fáze</span></h1>
 
-                <p class="hero__subtitle" style="max-width: 600px; margin: 0 auto 2rem;">Zjistěte, co lunární energie
+                <p class="hero__subtitle mh-inline-dede459c64">Zjistěte, co lunární energie
 
                     říká o vaší dnešní cestě.</p>
 
@@ -597,7 +197,7 @@
 
                     <div class="illumination-bar">
 
-                        <div class="illumination-fill" id="illuminationFill" style="width: 0%"></div>
+                        <div class="illumination-fill mh-inline-d826c20c41" id="illuminationFill"></div>
 
                     </div>
 
@@ -605,35 +205,35 @@
 
                         <!-- COUNTDOWN DO DALŠÍHO NOVOLUNĚNÍ / ÚPLŇKU -->
 
-        <div style="max-width:700px;margin:2rem auto 0;display:grid;grid-template-columns:1fr 1fr;gap:1rem;" id="lunar-countdown-wrap">
-            <div id="next-new-moon-box" style="background:rgba(10,10,26,0.7);border:1px solid rgba(212,175,55,0.2);border-radius:16px;padding:1.5rem;text-align:center;">
-                <div style="font-size:1.8rem;margin-bottom:0.3rem;">🌑</div>
-                <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:0.5rem;">Příští Novolunění</div>
-                <div id="countdown-new" style="font-family:'Cinzel',serif;color:#ebc066;font-size:1.4rem;font-weight:600;">--</div>
-                <div id="countdown-new-date" style="font-size:0.8rem;color:rgba(255,255,255,0.4);margin-top:0.25rem;"></div>
+        <div class="mh-inline-5e4075d76a" id="lunar-countdown-wrap">
+            <div id="next-new-moon-box" class="mh-inline-565de43b2c">
+                <div class="mh-inline-aa10f4832e">🌑</div>
+                <div class="mh-inline-60dd39b693">Příští Novolunění</div>
+                <div id="countdown-new" class="mh-inline-d07104dab6">--</div>
+                <div id="countdown-new-date" class="mh-inline-4b13259c5e"></div>
             </div>
-            <div id="next-full-moon-box" style="background:rgba(10,10,26,0.7);border:1px solid rgba(212,175,55,0.2);border-radius:16px;padding:1.5rem;text-align:center;">
-                <div style="font-size:1.8rem;margin-bottom:0.3rem;">🌕</div>
-                <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:0.5rem;">Příští Úplněk</div>
-                <div id="countdown-full" style="font-family:'Cinzel',serif;color:#ebc066;font-size:1.4rem;font-weight:600;">--</div>
-                <div id="countdown-full-date" style="font-size:0.8rem;color:rgba(255,255,255,0.4);margin-top:0.25rem;"></div>
-                <div style="margin-top:0.75rem;border-top:1px solid rgba(212,175,55,0.1);padding-top:0.65rem;display:flex;flex-direction:column;gap:0.3rem;">
-                    <div style="font-size:0.75rem;color:rgba(255,255,255,0.35);">
-                        <span style="color:rgba(255,255,255,0.5);">⏰</span>
-                        <span id="full-moon-time" style="color:rgba(255,255,255,0.6);">--</span>
+            <div id="next-full-moon-box" class="mh-inline-565de43b2c">
+                <div class="mh-inline-aa10f4832e">🌕</div>
+                <div class="mh-inline-60dd39b693">Příští Úplněk</div>
+                <div id="countdown-full" class="mh-inline-d07104dab6">--</div>
+                <div id="countdown-full-date" class="mh-inline-4b13259c5e"></div>
+                <div class="mh-inline-4cf588778a">
+                    <div class="mh-inline-e81d7578c8">
+                        <span class="mh-inline-f5c37c93a5">⏰</span>
+                        <span id="full-moon-time" class="mh-inline-2e40daa533">--</span>
                     </div>
-                    <div style="font-size:0.75rem;color:rgba(255,255,255,0.35);">
-                        <span style="color:rgba(255,255,255,0.5);">♎</span>
-                        Znamení: <span id="full-moon-znameni" style="color:#ebc066;">--</span>
+                    <div class="mh-inline-e81d7578c8">
+                        <span class="mh-inline-f5c37c93a5">♎</span>
+                        Znamení: <span id="full-moon-znameni" class="mh-inline-46cc32ebed">--</span>
                     </div>
-                    <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);font-style:italic;">
+                    <div class="mh-inline-f697697fcd">
                         <span id="full-moon-lidovy-nazev">--</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <script src="js/lunace-countdown.js" defer></script>
+        <script src="js/dist/lunace-countdown.js" defer></script>
 
         </div>
 
@@ -643,7 +243,7 @@
 
 
 
-        <section class="section" style="padding-top: 0;">
+        <section class="section mh-inline-9e06f2c6dc">
 
             <div class="container">
 
@@ -664,34 +264,34 @@
 
 
                 <!-- CTA: Lunární Rituál -->
-                <div style="background: linear-gradient(135deg, rgba(212,175,55,0.1), rgba(10,10,26,0.8)); border: 1px solid rgba(212,175,55,0.3); border-radius: 20px; padding: 2rem; text-align: center; max-width: 800px; margin: 0 auto 2rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
-                    <div style="text-align:left;">
-                        <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:2px;color:#d4af37;margin-bottom:0.4rem;">Nová funkce</div>
-                        <h2 style="margin:0 0 0.4rem;font-family:'Cinzel',serif;font-size:1.25rem;">Dnešní Lunární Rituál</h2>
-                        <p style="margin:0;color:rgba(255,255,255,0.6);font-size:0.9rem;">Personalizovaný rituál pro vaše znamení a tuto fázi — 7–12 minut.</p>
+                <div class="mh-inline-5180d3dcc2">
+                    <div class="mh-inline-96a3ecece8">
+                        <div class="mh-inline-3f4a341640">Nová funkce</div>
+                        <h2 class="mh-inline-098b66c834">Dnešní Lunární Rituál</h2>
+                        <p class="mh-inline-f1c160186c">Personalizovaný rituál pro vaše znamení a tuto fázi — 7–12 minut.</p>
                     </div>
-                    <a href="ritualy/" class="btn btn--primary" style="white-space:nowrap;flex-shrink:0;">🌙 Vstoupit do rituálu →</a>
+                    <a href="ritualy/" class="btn btn--primary mh-inline-f8094c3d80">🌙 Vstoupit do rituálu →</a>
                 </div>
 
                 <!-- CTA Box -->
 
                 <div
 
-                    style="background: linear-gradient(135deg, rgba(155,89,182,0.15), rgba(10,10,26,0.9)); border: 1px solid rgba(155,89,182,0.3); border-radius: 20px; padding: 3rem; text-align: center; max-width: 800px; margin: 0 auto 3rem;">
+                    class="mh-inline-27753b61e7">
 
-                    <h2 style="margin-top:0; font-family:'Cinzel',serif;">Měsíc je jen začátek</h2>
+                    <h2 class="mh-inline-3b6c2f9634">Měsíc je jen začátek</h2>
 
-                    <p style="font-size: 1.1rem; line-height: 1.8; color: #cbd5e1; margin-bottom: 2rem;">Lunární fáze
+                    <p class="mh-inline-695a26f59f">Lunární fáze
 
                         ovlivňuje vaši energii globálně – ale vaše osobní Natální karta prozradí, ve kterém domě váš
 
                         Měsíc sídlí a co to říká o vašich emocích a intuici.</p>
 
-                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <div class="mh-inline-4e3af88a74">
 
-                        <a href="natalni-karta.html" class="btn btn--primary" style="font-size: 1.1rem;">✨ Vygenerovat
+                        <a href="natalni-karta.html" class="btn btn--primary mh-inline-27ef801a9c">✨ Vygenerovat
                             Natální Kartu</a>
-                        <a href="horoskopy.html" class="btn btn--secondary" style="font-size: 1.1rem;">&#128302; Horoskopy</a>
+                        <a href="horoskopy.html" class="btn btn--secondary mh-inline-27ef801a9c">&#128302; Horoskopy</a>
 
                     </div>
 
@@ -701,9 +301,9 @@
 
                 <!-- Full Lunar Cycle -->
 
-                <div style="max-width: 800px; margin: 0 auto 3rem;">
+                <div class="mh-inline-c31b8bcea9">
 
-                    <h2 style="text-align:center; color:var(--color-mystic-gold); font-family:'Cinzel',serif;">Kompletní
+                    <h2 class="mh-inline-222218e8d6">Kompletní
 
                         Lunární Cyklus</h2>
 
@@ -717,7 +317,7 @@
 
                 <div class="faq-section">
 
-                        <h2 style="text-align:center; color:var(--color-mystic-gold); font-family:'Cinzel',serif; margin-bottom: 2rem;">
+                        <h2 class="mh-inline-72a7f6bd27">
                         ❓ Časté otázky</h2>
 
                     <details class="faq-item">
@@ -766,25 +366,25 @@
     <!-- FOOTER (loaded dynamically) -->
     <div id="footer-placeholder"></div>
 
-    <script src="js/api-config.js?v=5" defer></script>
-    <script src="js/templates.js?v=10" defer></script>
-    <script src="js/auth-client.js?v=5" defer></script>
-<script src="js/auth-copy-fixes.js" defer></script>
-    <script src="js/landing-pages-copy-fixes.js" defer></script>
-    <script src="js/share-result.js" defer></script>
+    <script src="js/dist/api-config.js?v=5" defer></script>
+    <script src="js/dist/templates.js?v=10" defer></script>
+    <script src="js/dist/auth-client.js?v=5" defer></script>
+<script src="js/dist/auth-copy-fixes.js" defer></script>
+    <script src="js/dist/landing-pages-copy-fixes.js" defer></script>
+    <script src="js/dist/share-result.js" defer></script>
     
-    <script src="js/exit-intent.js" defer></script>
-    <script src="js/components.js?v=10" defer></script>
-    <script src="js/retention.js?v=5" defer></script>
-    <script type="module" src="js/personalization.js?v=5"></script>
-    <script type="module" src="js/main.js?v=10"></script>
+    <script src="js/dist/exit-intent.js" defer></script>
+    <script src="js/dist/components.js?v=10" defer></script>
+    <script src="js/dist/retention.js?v=6" defer></script>
+    <script type="module" src="js/dist/personalization.js?v=5"></script>
+    <script type="module" src="js/dist/main.js?v=10"></script>
 
 
-    <script src="js/lunace.js" defer></script>
+    <script src="js/dist/lunace.js" defer></script>
 
-    <script src="js/newsletter-popup.js" defer></script>
+    <script src="js/dist/newsletter-popup.js" defer></script>
 
-    <script src="js/push-notifications.js" defer></script>
+    <script src="js/dist/push-notifications.js" defer></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"></script>
 </body>

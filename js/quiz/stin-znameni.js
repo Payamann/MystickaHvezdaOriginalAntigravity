@@ -5,6 +5,14 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentStep = 1;
     const totalSteps = steps.length;
 
+    function setProgress(percent) {
+        const rounded = Math.max(0, Math.min(100, Math.round(percent / 5) * 5));
+        progressBar.classList.forEach((className) => {
+            if (className.startsWith('progress-width-')) progressBar.classList.remove(className);
+        });
+        progressBar.classList.add(`progress-width-${rounded}`);
+    }
+
     const resultsData = {
         power: {
             title: "Stín Moci",
@@ -38,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateProgress() {
         const percent = (currentStep / totalSteps) * 100;
-        progressBar.style.width = percent + '%';
+        setProgress(percent);
     }
 
     function showStep(stepNum) {
@@ -55,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function showLoading() {
         steps.forEach(s => s.classList.remove('active'));
         document.getElementById('loading-step').classList.add('active');
-        progressBar.style.width = '100%';
+        setProgress(100);
 
         setTimeout(showResult, 2500);
     }
@@ -68,18 +76,18 @@ document.addEventListener('DOMContentLoaded', () => {
         window.lastResult = data.title;
 
         const resultHtml = `
-            <div class="result-card" style="border-color: #6a0dad;">
+            <div class="result-card quiz-result-card">
                 <div class="result-card__header">
-                    <h4 class="result-card__title" style="color: #6a0dad;">${data.title}</h4>
-                    <p style="color: rgba(157,78,221,0.6); font-size: 0.8rem;">Váš potlačený archetyp</p>
+                    <h4 class="result-card__title quiz-result-title">${data.title}</h4>
+                    <p class="quiz-result-kicker">Váš potlačený archetyp</p>
                 </div>
                 <div class="result-card__image animate-shadow">${data.icon}</div>
                 <div class="result-card__body">
-                    <h5 style="margin-bottom: 0.5rem; color: #fff;">${data.subtitle}</h5>
-                    <p style="font-size: 0.9rem; color: rgba(255,255,255,0.8); line-height: 1.4;">${data.desc}</p>
+                    <h5 class="quiz-result-subtitle">${data.subtitle}</h5>
+                    <p class="quiz-result-description">${data.desc}</p>
                 </div>
-                <div class="result-card__footer" style="margin-top: 1rem; border-top: 1px solid rgba(157,78,221,0.2); padding-top: 1rem;">
-                    <p style="font-style: italic; font-size: 0.85rem; color: #9d4edd;">"${data.advice}"</p>
+                <div class="result-card__footer quiz-result-footer">
+                    <p class="quiz-result-advice">"${data.advice}"</p>
                 </div>
             </div>
             <div class="mt-xl">

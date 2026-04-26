@@ -6,13 +6,14 @@
  * - Nepřihlášený uživatel dostane 401 (ne redirect, ne 500)
  * - Neplatný planId dostane 400
  * - Volný plan "poutnik" dostane 400 (nelze zaplatit zdarma)
- * - Platné planId hodnoty jsou přijaty (pruvodce, osviceni, vip-majestrat)
+ * - Platné planId hodnoty jsou přijaty (měsíční i roční plány)
  * - CSRF ochrana funguje
  */
 
 import request from 'supertest';
 import app from '../index.js';
 import jwt from 'jsonwebtoken';
+import { SUBSCRIPTION_PLANS } from '../config/constants.js';
 
 async function getCsrfToken() {
     const res = await request(app).get('/api/csrf-token').expect(200);
@@ -125,7 +126,9 @@ describe('💳 Payment Checkout Session', () => {
     // ── Platné plany — přijaté jako validní (i když Supabase selže) ──────────
 
     describe('Platné planId hodnoty', () => {
-        const validPlans = ['pruvodce', 'osviceni', 'vip-majestrat'];
+        const validPlans = Object.entries(SUBSCRIPTION_PLANS)
+            .filter(([, plan]) => plan.price > 0)
+            .map(([planId]) => planId);
 
         validPlans.forEach(planId => {
             test(`planId "${planId}" projde validací (ne 400)`, async () => {

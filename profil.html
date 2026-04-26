@@ -19,8 +19,9 @@
     <link rel="stylesheet" href="/fonts/local-fonts.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.469.0/lucide.min.js"></script>
     <link rel="stylesheet" href="css/style.v2.min.css?v=11">
-    <link rel="stylesheet" href="css/profile-refresh.css?v=1">
-    <script type="module" src="js/profile/dashboard.js?v=13" defer></script>
+    <link rel="stylesheet" href="css/pages/profil.css">
+    <link rel="stylesheet" href="css/profile-refresh.css?v=2">
+    <script type="module" src="/js/dist/profile/dashboard.js?v=14" defer></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-H22CGHF34K"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"></script>
 </head>
@@ -39,7 +40,7 @@
 
         <section class="section">
             <div class="container">
-                <div id="login-required" class="card glass-card profile-guest-card text-center" style="display: none;">
+                <div id="login-required" class="card glass-card profile-guest-card text-center mh-inline-6f6243d92c">
                     <div class="profile-guest-card__icon">✦</div>
                     <h2>Přihlášení je potřeba</h2>
                     <p class="profile-guest-card__lead">Pro zobrazení vašeho profilu se prosím přihlaste.</p>
@@ -50,38 +51,38 @@
                     </div>
                 </div>
 
-                <div id="profile-dashboard" style="display: none;">
-                    <div id="premium-activation-card" class="card glass-card" style="display:none; margin-bottom: 2rem;">
-                        <div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap;">
+                <div id="profile-dashboard" class="mh-inline-6f6243d92c">
+                    <div id="premium-activation-card" class="card glass-card mh-inline-1d037ed32a">
+                        <div class="mh-inline-60b4be7f38">
                             <div>
-                                <div id="premium-activation-badge" class="badge badge--premium" style="margin-bottom:0.75rem;">Nově odemčeno</div>
-                                <h2 id="premium-activation-title" style="margin:0 0 0.5rem;">Vítejte v Premium</h2>
-                                <p id="premium-activation-copy" style="margin:0;color:rgba(255,255,255,0.72);max-width:760px;">Právě jste odemkli plné výklady a osobní vedení.</p>
+                                <div id="premium-activation-badge" class="badge badge--premium mh-inline-a0030f1cfe">Nově odemčeno</div>
+                                <h2 id="premium-activation-title" class="mh-inline-e4d8f59c31">Vítejte v Premium</h2>
+                                <p id="premium-activation-copy" class="mh-inline-2a3ddab81e">Právě jste odemkli plné výklady a osobní vedení.</p>
                             </div>
                             <button id="premium-activation-dismiss" class="btn btn--secondary btn--sm" type="button">Skrýt</button>
                         </div>
-                        <div id="premium-activation-actions" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1.25rem;"></div>
+                        <div id="premium-activation-actions" class="mh-inline-bcd2e163a0"></div>
                     </div>
 
-                    <div class="card glass-card profile-user-card" style="margin-bottom: 2rem;">
+                    <div class="card glass-card profile-user-card mh-inline-721fcfae6c">
                         <div class="profile-user-info">
                             <div class="profile-user-left">
                                 <button id="user-avatar" class="profile-avatar" aria-label="Změnit avatar" title="Klikněte pro změnu avataru">*</button>
                                 <div class="profile-user-details">
                                     <h2 class="profile-user-email"><span id="user-email">-</span></h2>
                                     <p class="profile-user-plan">Předplatné: <span id="user-plan" class="badge">-</span></p>
-                                    <p id="user-zodiac" class="profile-user-zodiac" style="display: none;"></p>
+                                    <p id="user-zodiac" class="profile-user-zodiac mh-inline-6f6243d92c"></p>
                                 </div>
                             </div>
                             <div class="profile-user-right">
                                 <button id="logout-btn" class="btn btn--secondary btn--sm">
-                                    <i data-lucide="log-out" style="width: 16px; height: 16px; margin-right: 8px;"></i>
+                                    <i data-lucide="log-out" class="mh-inline-bda24ed18a"></i>
                                     Odhlásit
                                 </button>
                             </div>
                         </div>
 
-                        <div id="avatar-picker" class="avatar-picker" style="display: none;">
+                        <div id="avatar-picker" class="avatar-picker mh-inline-6f6243d92c">
                             <p class="avatar-picker__label">Vyberte si avatar:</p>
                             <div class="avatar-picker__grid">
                                 <button class="avatar-option" data-avatar="A">A</button>
@@ -98,6 +99,33 @@
                                 <button class="avatar-option" data-avatar="L">L</button>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="profile-return-grid" id="profile-return-grid">
+                        <section id="daily-guidance-card" class="card glass-card daily-guidance-card" aria-labelledby="daily-guidance-title">
+                            <div class="daily-guidance-card__header">
+                                <div>
+                                    <span id="daily-guidance-date" class="daily-guidance-card__eyebrow">Dnes</span>
+                                    <h2 id="daily-guidance-title" class="daily-guidance-card__title">Načítám dnešní vedení...</h2>
+                                </div>
+                                <span id="daily-guidance-plan" class="badge">Poutník</span>
+                            </div>
+                            <p id="daily-guidance-copy" class="daily-guidance-card__copy">Připravujeme osobní přehled pro dnešní den.</p>
+                            <div id="daily-guidance-focus" class="daily-guidance-focus"></div>
+                            <div id="daily-guidance-actions" class="daily-guidance-actions"></div>
+                        </section>
+
+                        <section id="activation-checklist-card" class="card glass-card activation-checklist-card" aria-labelledby="activation-checklist-title">
+                            <div class="activation-checklist-card__header">
+                                <div>
+                                    <span class="daily-guidance-card__eyebrow">Aktivace</span>
+                                    <h2 id="activation-checklist-title" class="activation-checklist-card__title">Proměňte účet v osobní místo</h2>
+                                </div>
+                                <span id="activation-progress-label" class="badge">0/5</span>
+                            </div>
+                            <div class="activation-progress" aria-hidden="true"><div id="activation-progress-bar" class="activation-progress__bar"></div></div>
+                            <div id="activation-checklist-items" class="activation-checklist-items"></div>
+                        </section>
                     </div>
 
                     <div class="stats-grid">
@@ -139,12 +167,12 @@
                                     <option value="synastry">Partnerská shoda</option>
                                 </select>
                             </div>
-                            <div id="readings-list" class="readings-list"><p class="text-center" style="opacity: 0.6;">Načítám historii...</p></div>
-                            <div id="readings-pagination" class="readings-pagination" style="display: none;"><button id="readings-load-more" class="btn btn--glass btn--sm">Načíst další</button></div>
+                            <div id="readings-list" class="readings-list"><p class="text-center mh-inline-aedbc7dfa7">Načítám historii...</p></div>
+                            <div id="readings-pagination" class="readings-pagination mh-inline-6f6243d92c"><button id="readings-load-more" class="btn btn--glass btn--sm">Načíst další</button></div>
                         </div>
                     </div>
 
-                    <div class="tab-content" id="tab-favorites" style="display: none;" role="tabpanel" aria-labelledby="tab-btn-favorites">
+                    <div class="tab-content mh-inline-6f6243d92c" id="tab-favorites" role="tabpanel" aria-labelledby="tab-btn-favorites">
                         <div class="card glass-card">
                             <h3>Uložené výklady</h3>
                             <div id="favorites-list">
@@ -157,7 +185,7 @@
                         </div>
                     </div>
 
-                    <div class="tab-content" id="tab-settings" style="display: none;" role="tabpanel" aria-labelledby="tab-btn-settings">
+                    <div class="tab-content mh-inline-6f6243d92c" id="tab-settings" role="tabpanel" aria-labelledby="tab-btn-settings">
                         <div class="card glass-card">
                             <h3>Nastavení účtu</h3>
                             <div class="settings-form">
@@ -175,9 +203,9 @@
                                 <button id="save-settings-btn" class="btn btn--primary">Uložit změny</button>
                             </div>
                         </div>
-                        <div class="card glass-card subscription-card" style="margin-top: 2rem;" id="subscription-card">
+                        <div class="card glass-card subscription-card mh-inline-3b7e64dbd0" id="subscription-card">
                             <h3>Správa předplatného</h3>
-                            <div id="subscription-details" class="subscription-details"><p style="opacity: 0.6;">Načítám...</p></div>
+                            <div id="subscription-details" class="subscription-details"><p class="mh-inline-aedbc7dfa7">Načítám...</p></div>
                         </div>
                     </div>
                 </div>
@@ -185,10 +213,10 @@
         </section>
     </main>
 
-    <div id="reading-modal" class="modal reading-modal" role="dialog" aria-modal="true" aria-label="Detail výkladu" style="display: none;">
+    <div id="reading-modal" class="modal reading-modal mh-inline-6f6243d92c" role="dialog" aria-modal="true" aria-label="Detail výkladu">
         <div class="modal__content reading-modal__content">
             <button id="reading-modal-close" class="modal__close" aria-label="Zavřít">X</button>
-            <div id="reading-modal-content"><p style="text-align: center; opacity: 0.6;">Načítám...</p></div>
+            <div id="reading-modal-content"><p class="mh-inline-c28b1b3348">Načítám...</p></div>
             <div class="reading-modal__actions">
                 <button id="modal-favorite-btn" class="btn btn--secondary btn--sm" aria-label="Přidat do oblíbených">Přidat do oblíbených</button>
                 <button id="modal-delete-btn" class="btn btn--sm btn--danger" aria-label="Smazat výklad">Smazat</button>
@@ -198,19 +226,19 @@
 
     <div id="footer-placeholder"></div>
 
-    <script src="/js/register-sw.js" defer></script>
+    <script src="/js/dist/register-sw.js" defer></script>
     <script src="/js/dist/analytics-init.js" defer></script>
-    <script src="js/analytics.js?v=5" defer></script>
-    <script src="js/api-config.js?v=5" defer></script>
-    <script src="js/templates.js?v=10" defer></script>
-    <script src="js/auth-client.js?v=5" defer></script>
-    <script src="js/auth-copy-fixes.js" defer></script>
-    <script src="js/components.js?v=11" defer></script>
-    <script src="js/retention.js?v=5" defer></script>
-    <script type="module" src="js/personalization.js?v=5"></script>
-    <script type="module" src="js/main.js?v=10"></script>
-    <script src="js/lucide-init.js" defer></script>
-    <script src="js/nav-failsafe.js" defer></script>
+    <script src="js/dist/analytics.js?v=6" defer></script>
+    <script src="js/dist/api-config.js?v=5" defer></script>
+    <script src="js/dist/templates.js?v=10" defer></script>
+    <script src="js/dist/auth-client.js?v=5" defer></script>
+    <script src="js/dist/auth-copy-fixes.js" defer></script>
+    <script src="js/dist/components.js?v=11" defer></script>
+    <script src="js/dist/retention.js?v=6" defer></script>
+    <script type="module" src="js/dist/personalization.js?v=5"></script>
+    <script type="module" src="js/dist/main.js?v=10"></script>
+    <script src="js/dist/lucide-init.js" defer></script>
+    <script src="js/dist/nav-failsafe.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"></script>
 </body>
 </html>

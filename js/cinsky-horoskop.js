@@ -151,6 +151,22 @@ function getChineseElement(year) {
     return null;
 }
 
+function setYearInputInvalid(input, invalid) {
+    if (!input) return;
+    input.classList.toggle('year-input--invalid', invalid);
+    input.closest('.year-input-wrapper')?.classList.toggle('year-input-wrapper--invalid', invalid);
+}
+
+function getElementClass(elementName) {
+    return {
+        Kov: 'chinese-element--metal',
+        Voda: 'chinese-element--water',
+        Dřevo: 'chinese-element--wood',
+        Oheň: 'chinese-element--fire',
+        Země: 'chinese-element--earth'
+    }[elementName] || 'chinese-element--neutral';
+}
+
 /**
  * Exposed to global scope for HTML inline calls (or ideally migrated later)
  */
@@ -158,11 +174,11 @@ window.calculateAnimal = function () {
     const input = document.getElementById('birth-year');
     if (!input) return;
 
-    input.style.borderColor = '';
+    setYearInputInvalid(input, false);
     const year = parseInt(input.value);
 
     if (!year || year < 1900 || year > 2100) {
-        input.style.borderColor = 'rgba(231,76,60,0.8)';
+        setYearInputInvalid(input, true);
         return;
     }
     window.showAnimal(null, year);
@@ -193,15 +209,15 @@ window.showAnimal = function (slugOverride, exactYear = null) {
 
     // Display Hero Section
     const hero = document.getElementById('result-hero');
-    hero.style.background = 'linear-gradient(135deg, rgba(212,175,55,0.1), rgba(155,89,182,0.1))';
-    hero.style.border = '1px solid rgba(212,175,55,0.25)';
+    hero.classList.add('result-hero--active');
 
     document.getElementById('result-emoji').textContent = data.emoji;
 
     // Customization based on Element
     if (isSpecificYear && computedElement) {
         document.getElementById('result-name').textContent = `${computedElement.suffix} ${data.name}`;
-        document.getElementById('result-element').innerHTML = `${computedElement.icon} Aktivní Živel: <strong style="color:${computedElement.color}">${computedElement.name}</strong>`;
+        const rawElement = `${computedElement.icon} Aktivní Živel: <strong class="${getElementClass(computedElement.name)}">${computedElement.name}</strong>`;
+        document.getElementById('result-element').innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(rawElement) : rawElement;
         document.getElementById('result-years').textContent = `Ročník: ${exactYear}`;
     } else {
         document.getElementById('result-name').textContent = data.name;
@@ -275,19 +291,19 @@ window.calculateChineseSynastry = function () {
     const input2 = document.getElementById('synastry-year2');
 
     // Reset borders
-    input1.style.borderColor = '';
-    input2.style.borderColor = '';
+    setYearInputInvalid(input1, false);
+    setYearInputInvalid(input2, false);
 
     const year1 = parseInt(input1.value);
     const year2 = parseInt(input2.value);
 
     let hasError = false;
     if (!year1 || year1 < 1900 || year1 > 2100) {
-        input1.style.borderColor = 'rgba(231,76,60,0.8)';
+        setYearInputInvalid(input1, true);
         hasError = true;
     }
     if (!year2 || year2 < 1900 || year2 > 2100) {
-        input2.style.borderColor = 'rgba(231,76,60,0.8)';
+        setYearInputInvalid(input2, true);
         hasError = true;
     }
 
@@ -314,23 +330,25 @@ window.calculateChineseSynastry = function () {
 
     const titleEl = document.getElementById('syn-title');
     const descEl = document.getElementById('syn-desc');
+    titleEl.classList.remove('syn-title--good', 'syn-title--bad', 'syn-title--neutral');
 
     if (isGood) {
         titleEl.textContent = 'Ideální partnerství ✨';
-        titleEl.style.color = '#2ecc71';
+        titleEl.classList.add('syn-title--good');
         descEl.textContent = `Tato dvě znamení tvoří naprosto přirozený a prosperující pár. ${data1.name} a ${data2.name} se skvěle doplňují a jejich životní energie jdou ruku v ruce. Navíc specifická interakce vrstev "${elem1.name}" a "${elem2.name}" může toto spojení ještě více rozsvítit!`;
     } else if (isBad) {
         titleEl.textContent = 'Náročný (Karmický) vztah ⚔️';
-        titleEl.style.color = '#e74c3c';
+        titleEl.classList.add('syn-title--bad');
         descEl.textContent = `V čínské astrologii jde o tzv. opoziční dvojici, která vidí svět jinýma očima. Může to být velmi vášnivé, ale vyžaduje to kompromisy. Zatímco ${data1.name} míří jedním směrem, ${data2.name} druhým. Interakce vašich živlů (${elem1.name} vs ${elem2.name}) hraje klíčovou roli v kompromisech.`;
     } else {
         titleEl.textContent = 'Harmonické spojení 💖';
-        titleEl.style.color = 'var(--color-mystic-gold)';
+        titleEl.classList.add('syn-title--neutral');
         descEl.textContent = `Tento svazek je vyvážený. Nebojujete proti sobě, ale ani nejste vyloženě slepenou dvojicí. Váš vztah se tvoří na klidných kompromisech a respektu. Právě zde hrají obrovskou roli vaše unikátní elementy (${elem1.name} & ${elem2.name}), které dávají vašemu domovu barvu.`;
     }
 
     const res = document.getElementById('synastry-result');
-    res.style.display = 'block';
+    res.hidden = false;
+    res.classList.add('mh-block-visible');
     setTimeout(() => {
         res.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 50);

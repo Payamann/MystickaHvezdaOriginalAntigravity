@@ -257,7 +257,7 @@ export const EMAIL_TEMPLATES = {
       <div style="text-align: center; margin-bottom: 30px;">
         <p>Abychom ti zpříjemnili tvou cestu, přichystali jsme pro tebe něco speciálního:</p>
         <div style="font-size: 48px; color: #d4af37; font-weight: 700; margin: 20px 0;">
-          ${data.discount || 50}% SLEVA
+          ${data.discount || 25}% SLEVA
         </div>
         <p>na tvé předplatné po dobu <span class="highlight">${data.months || 3} měsíců</span>.</p>
       </div>
@@ -292,21 +292,21 @@ export const EMAIL_TEMPLATES = {
   },
 
   upgrade_reminder_day14: {
-    subject: '⏰ Poslední šance - 50% sleva na Premium!',
+    subject: '⏰ Poslední šance - 25% sleva na Premium',
     getHtml: (data) => getBaseTemplate(`
       <h1 class="h1">Hvězdná příležitost končí</h1>
       <div style="background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.3); padding: 25px; border-radius: 12px; text-align: center; margin-bottom: 25px;">
         <p>Tato limitovaná nabídka vyprší již za 24 hodin:</p>
         <div style="font-size: 32px; color: #ff6b6b; font-weight: 700; margin: 15px 0;">
-          199 Kč → 99.50 Kč
+          199 Kč → 149 Kč
         </div>
-        <p><strong>🎁 50% SLEVA na první měsíc</strong></p>
+        <p><strong>🎁 25% SLEVA na první 3 měsíce</strong></p>
       </div>
 
       <p style="text-align: center;">Nechej si poradit od hvězd za poloviční cenu.</p>
 
       <div class="cta-box">
-        <a href="${process.env.APP_URL}/cenik.html?utm_source=email&utm_campaign=upgrade_day14" class="btn" style="background: linear-gradient(135deg, #ff6b6b, #ee5253); color: white !important;">Aktivovat slevu 50% →</a>
+        <a href="${process.env.APP_URL}/cenik.html?utm_source=email&utm_campaign=upgrade_day14" class="btn" style="background: linear-gradient(135deg, #ff6b6b, #ee5253); color: white !important;">Aktivovat slevu 25% →</a>
       </div>
     `, 'Poslední šance')
   },
@@ -565,7 +565,7 @@ export async function sendUpgradeReminders(userId, email) {
       delaySeconds: 604800 // 7 days
     });
 
-    // Email 2: Day 14 - "50% discount (limited time)"
+    // Email 2: Day 14 - limited retention discount
     await scheduleEmailLater({
       userId,
       email,

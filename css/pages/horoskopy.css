@@ -1,0 +1,97 @@
+/* Extracted from horoskopy.html inline <style> block. */
+/* Critical Hero CSS refined */
+    .section--hero { min-height: 45vh !important; display: flex; align-items: center; justify-content: center; padding: 100px 0 40px !important; }
+    .hero__title { font-size: clamp(2.5rem, 8vw, 4rem); text-align: center; margin-bottom: 1rem; }
+
+/* Migrated from horoskopy.html static style attributes. */
+html body .mh-inline-c7ca2aadf5 { display:none; background: linear-gradient(90deg, rgba(212,175,55,0.1), rgba(155,89,182,0.1)); border-bottom: 1px solid rgba(212,175,55,0.2); padding: 0.65rem 1rem; text-align: center; font-size: 0.88rem; color: rgba(255,255,255,0.8); }
+html body .mh-inline-ab7a727fdb { color: #d4af37; font-weight: 600; }
+html body .mh-inline-71ff7bdda8 { background:none;border:none;color:rgba(255,255,255,0.3);cursor:pointer;font-size:1rem;vertical-align:middle; }
+html body .mh-inline-2f124be5b2 { min-height: 60vh; }
+html body .mh-inline-9aa7a0fc6b { padding-top: 0; }
+html body .mh-inline-1f4e53068f { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+html body .mh-inline-1054d3c93f { max-width:400px; margin-left:auto; margin-right:auto; }
+html body .mh-inline-1aaa6a5561 { width:100%;box-sizing:border-box;padding:0.75rem 1rem;background:rgba(255,255,255,0.07);border:1px solid rgba(212,175,55,0.3);border-radius:8px;color:#fff;font-size:1rem;margin-bottom:0.75rem; }
+html body .mh-inline-93bca9f516 { width:100%;box-sizing:border-box;padding:0.75rem 1rem;background:#0f0a1f;border:1px solid rgba(212,175,55,0.3);border-radius:8px;color:#fff;font-size:1rem;margin-bottom:1rem;cursor:pointer; }
+html body .mh-inline-03c5c01d1c { display:none;color:#d4af37;font-weight:600;text-align:center;margin:0.5rem 0 0; }
+html body .mh-inline-0e243e1d35 { align-items: center; }
+html body .mh-inline-f85d85243e { margin-bottom: var(--space-md); }
+html body .mh-inline-f7d94d0212 { font-size: 3rem; }
+html body .mh-inline-377322babf { display: none; }
+html body .mh-inline-5f6c97c273 { font-size: var(--text-sm); color: var(--color-mystic-gold); }
+html body .mh-inline-7e4a8af1a6 { font-size: var(--text-lg); }
+
+/* Migrated from horoskopy.html remaining static style attributes. */
+html body .mh-inline-822870aaa4 { background:rgba(15,10,31,0.85);border:1px solid rgba(212,175,55,0.3);border-radius:16px;padding:1.5rem;backdrop-filter:blur(10px); }
+html body .mh-inline-ab30c465af { color:#d4af37;font-weight:600;margin:0 0 1rem;text-align:center; }
+html body .mh-inline-6bd7cf3a19 { font-size:0.75rem;opacity:0.5;text-align:center;margin:0.75rem 0 0; }
+html body .mh-inline-3482510637 { margin-top: 1rem; color: var(--color-mystic-gold); }
+html body .mh-inline-78489344ad { font-size: 12rem; opacity: 0.1; }
+
+.horoscope-upsell {
+    padding: 1.15rem 1.15rem 1.25rem;
+    border: 1px solid rgba(212, 175, 55, 0.24);
+    background: rgba(212, 175, 55, 0.08);
+}
+
+.horoscope-upsell__eyebrow {
+    margin-bottom: 0.45rem;
+    color: var(--color-mystic-gold);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.horoscope-upsell__title {
+    margin: 0 0 0.45rem;
+    color: #fff;
+    font-size: 1.15rem;
+}
+
+.horoscope-upsell__copy,
+.horoscope-upsell-reason {
+    color: rgba(255, 255, 255, 0.76);
+    line-height: 1.6;
+}
+
+.horoscope-upsell__copy {
+    margin: 0 0 1rem;
+}
+
+.horoscope-upsell-reason {
+    margin: 0 0 0.9rem;
+}
+
+.horoscope-upsell__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.horoscope-loading__spinner {
+    width: 30px;
+    height: 30px;
+    border-width: 3px;
+}
+
+.horoscope-loading__text {
+    display: block;
+    margin-top: 10px;
+    transition: opacity 0.3s ease;
+}
+
+.horoscope-loading__text.is-fading {
+    opacity: 0;
+}
+
+.horoscope-affirmation-label {
+    color: var(--color-starlight);
+}
+
+.favorite-reading-action {
+    margin-top: var(--space-xl);
+}
+
+.favorite-reading-action__button {
+    min-width: 200px;
+}

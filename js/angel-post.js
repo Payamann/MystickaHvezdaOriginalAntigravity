@@ -22,12 +22,27 @@ try {
 
 // --- RENDER ---
 
+function showSubmitMessage(type, text, duration = 4000) {
+    const msgEl = document.getElementById('submit-msg');
+    if (!msgEl) return;
+
+    msgEl.textContent = text;
+    msgEl.hidden = false;
+    msgEl.classList.add('mh-block-visible');
+    msgEl.classList.toggle('submit-message--error', type === 'error');
+    msgEl.classList.toggle('submit-message--success', type === 'success');
+    setTimeout(() => {
+        msgEl.hidden = true;
+        msgEl.classList.remove('mh-block-visible', 'submit-message--error', 'submit-message--success');
+    }, duration);
+}
+
 function renderMessages() {
     const wall = document.getElementById('messages-container');
     if (!wall) return;
 
     if (localMessages.length === 0) {
-        wall.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,0.4);padding:2rem;">Zatím žádné vzkazy. Buďte první!</div>';
+        wall.innerHTML = '<div class="message-empty-state">Zatím žádné vzkazy. Buďte první!</div>';
         return;
     }
 
@@ -44,7 +59,7 @@ function renderMessages() {
                 <span>${ago}</span>
             </div>
             <p class="message-text">"${text}"</p>
-            <div style="text-align:right;margin-top:0.5rem;">
+            <div class="message-actions">
                 <button class="heart-btn ${isLiked ? 'liked' : ''}" data-index="${i}" aria-label="Podpořit srdíčkem">
                     ${isLiked ? '❤️' : '🤍'} ${msg.likes}
                 </button>
@@ -95,21 +110,18 @@ function updateCounter() {
 }
 
 async function submitMessage() {
-    const text = document.getElementById('msg-text').value.trim();
+    const textInput = document.getElementById('msg-text');
+    const text = textInput.value.trim();
     const nickname = document.getElementById('msg-nickname').value.trim() || 'Anonym';
     const category = document.getElementById('msg-category').value;
-    const msgEl = document.getElementById('submit-msg');
 
     if (text.length < 10) {
-        document.getElementById('msg-text').style.borderColor = 'rgba(231,76,60,0.8)';
-        msgEl.textContent = '❌ Váš vzkaz andělům musí mít alespoň 10 znaků.';
-        msgEl.style.color = '#e74c3c';
-        msgEl.style.display = 'block';
-        setTimeout(() => { msgEl.style.display = 'none'; }, 4000);
+        textInput.classList.add('form-input--invalid');
+        showSubmitMessage('error', '❌ Váš vzkaz andělům musí mít alespoň 10 znaků.');
         return;
     }
 
-    document.getElementById('msg-text').style.borderColor = 'rgba(255,255,255,0.1)';
+    textInput.classList.remove('form-input--invalid');
 
     const newMsg = { nickname, message: text, category, likes: 0, created_at: new Date() };
 
@@ -128,10 +140,7 @@ async function submitMessage() {
         const data = await res.json();
 
         if (!res.ok) {
-            msgEl.textContent = '❌ ' + (data.error || 'Nastala chyba při odesílání.');
-            msgEl.style.color = '#e74c3c';
-            msgEl.style.display = 'block';
-            setTimeout(() => { msgEl.style.display = 'none'; }, 5000);
+            showSubmitMessage('error', '❌ ' + (data.error || 'Nastala chyba při odesílání.'), 5000);
             return;
         }
 
@@ -144,14 +153,11 @@ async function submitMessage() {
     localMessages.unshift(newMsg);
     renderMessages();
 
-    document.getElementById('msg-text').value = '';
+    textInput.value = '';
     document.getElementById('msg-nickname').value = '';
     document.getElementById('char-count').textContent = '0';
 
-    msgEl.textContent = '✨ Váš vzkaz byl odeslán andělům!';
-    msgEl.style.color = '#2ed573';
-    msgEl.style.display = 'block';
-    setTimeout(() => { msgEl.style.display = 'none'; }, 4000);
+    showSubmitMessage('success', '✨ Váš vzkaz byl odeslán andělům!');
 
     setTimeout(() => {
         const wall = document.querySelector('.messages-wall');
@@ -194,7 +200,8 @@ if (messagesContainer) {
         if (btn) {
             const index = parseInt(btn.getAttribute('data-index'));
             if (!isNaN(index)) {
-                btn.style.transform = 'scale(1.3)';
+                btn.classList.add('heart-btn--pop');
+                setTimeout(() => btn.classList.remove('heart-btn--pop'), 220);
                 setTimeout(() => likeMessage(index), 100);
             }
         }

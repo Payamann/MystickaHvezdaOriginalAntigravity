@@ -21,6 +21,10 @@
 
             }
 
+            window.MH_ANALYTICS?.trackEvent?.('onboarding_step_viewed', {
+                step_number: n
+            });
+
         }
 
 
@@ -33,13 +37,15 @@
 
             selectedSign = btn.dataset.sign;
 
+            window.MH_ANALYTICS?.trackEvent?.('onboarding_sign_selected', {
+                sign: selectedSign
+            });
+
             const nextBtn = document.getElementById('btn-step2');
 
             nextBtn.disabled = false;
 
-            nextBtn.style.opacity = '1';
-
-            nextBtn.style.cursor = 'pointer';
+            nextBtn.classList.add('onboarding-next-enabled');
 
         }
 
@@ -48,6 +54,11 @@
         function toggleInterest(btn) {
 
             btn.classList.toggle('selected');
+
+            window.MH_ANALYTICS?.trackEvent?.('onboarding_interest_toggled', {
+                interest: btn.textContent.trim(),
+                selected: btn.classList.contains('selected')
+            });
 
         }
 
@@ -60,6 +71,11 @@
             if (selectedSign) localStorage.setItem('mh_zodiac', selectedSign);
             if (interests.length) localStorage.setItem('mh_interests', JSON.stringify(interests));
             localStorage.setItem('mh_onboarded', '1');
+
+            window.MH_ANALYTICS?.trackEvent?.('onboarding_completed', {
+                sign: selectedSign,
+                interests_count: interests.length
+            });
 
             // Also notify backend that onboarding is complete
             try {
@@ -79,7 +95,7 @@
                 // Don't block navigation if backend call fails
             }
 
-            window.location.href = 'index.html';
+            window.location.href = 'profil.html?source=onboarding_complete';
         }
 
         // Event delegation - CSP compliance (remove unsafe-inline)

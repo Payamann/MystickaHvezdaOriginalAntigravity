@@ -18,6 +18,13 @@ const signs = {
     ryby:    { name: 'Ryby',     emoji: '♓', color: '#1a5276', apiName: 'Ryby' }
 };
 
+const affirmationSignClasses = Object.keys(signs).map(sign => `affirmation-card--${sign}`);
+
+function setAffirmationCardTheme(card, sign) {
+    card.classList.remove(...affirmationSignClasses);
+    card.classList.add(`affirmation-card--${sign}`);
+}
+
 const moonPhases = [
     { name: 'Nov — čas nových začátků',       emoji: '🌑' },
     { name: 'Dorůstající srpek — čas plánování', emoji: '🌒' },
@@ -72,7 +79,7 @@ window.showAffirmation = async function (sign) {
     document.getElementById('sign-name').textContent = signData.name.toUpperCase();
 
     const card = document.getElementById('affirmation-card');
-    card.style.borderColor = signData.color + '44';
+    setAffirmationCardTheme(card, sign);
 
     // Zobraz kartu s loading textem
     document.getElementById('affirmation-text').textContent = '✨ Naladění na energii vašeho znamení…';
@@ -120,8 +127,12 @@ function copyAffirmation() {
     const text = raw.replace(/^"|"$/g, '').trim();
     navigator.clipboard.writeText(text + ' — Mystická Hvězda').then(() => {
         const el = document.getElementById('copy-confirm');
-        el.style.display = 'block';
-        setTimeout(() => el.style.display = 'none', 2000);
+        el.hidden = false;
+        el.classList.add('mh-block-visible');
+        setTimeout(() => {
+            el.hidden = true;
+            el.classList.remove('mh-block-visible');
+        }, 2000);
     });
 }
 

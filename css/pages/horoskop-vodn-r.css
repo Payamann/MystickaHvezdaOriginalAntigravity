@@ -1,0 +1,60 @@
+/* Extracted from horoskop/vodnár.html inline <style> block. */
+.sign-hero { padding: 5rem 0 3rem; text-align: center; }
+
+        .sign-emoji { font-size: 5rem; display: block; margin-bottom: 1rem; animation: float 4s ease-in-out infinite; }
+
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-15px)} }
+
+        .sign-dates { color: var(--color-mystic-gold); font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 2rem; }
+
+        .sign-meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin: 2rem 0; max-width: 700px; margin-inline: auto; }
+
+        .meta-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.2rem; text-align: center; }
+
+        .meta-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--color-text-mutated); margin-bottom: 0.4rem; }
+
+        .meta-value { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--color-mystic-gold); }
+
+        .sign-content { max-width: 800px; margin: 0 auto; }
+
+        .traits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 2rem 0; }
+
+        .traits-card { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 2rem; border: 1px solid rgba(255,255,255,0.08); }
+
+        .traits-card.strengths { border-top: 3px solid #27ae60; }
+
+        .traits-card.weaknesses { border-top: 3px solid #e74c3c; }
+
+        .traits-card h3 { margin-top: 0; }
+
+        .traits-card ul { padding-left: 1.2rem; }
+
+        .traits-card li { margin-bottom: 0.5rem; }
+
+        .bread a { color: var(--color-mystic-gold); text-decoration: none; }
+
+        .bread { font-size: 0.9rem; color: var(--color-text-mutated); margin-bottom: 2rem; }
+
+        @media(max-width:600px) { .traits-grid { grid-template-columns: 1fr; } }
+
+/* Migrated from horoskop/vodnár.html static style attributes. */
+html body .mh-inline-5240baf4fe { padding-top:0; }
+html body .mh-inline-8bc97cec35 { background: rgba(10,10,26,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 3rem; font-size: 1.1rem; line-height: 1.8; color: var(--color-text-light); margin-bottom: 2rem; }
+html body .mh-inline-790e95fb9b { background: rgba(10,10,26,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 2.5rem; margin-bottom: 2rem; }
+html body .mh-inline-4fbfe70bc8 { margin-top:0; color: var(--color-mystic-gold); }
+html body .mh-inline-c6b0cb3819 { color: var(--color-text-mutated); margin-bottom: 1.5rem; }
+html body .mh-inline-bad1ed3e6e { display:inline-block; padding: 0.4rem 1rem; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); border-radius: 50px; color: #d4af37; margin: 0.3rem; font-size: 0.95rem; }
+html body .mh-inline-ac2584c2ba { margin-top: 2rem; text-align: center; }
+html body .mh-inline-d253d79f94 { font-size: 1rem; }
+html body .mh-inline-dd5ef03a66 { display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center; margin-top: 1rem; }
+html body .mh-inline-e0c38a043f { display:inline-flex; align-items:center; justify-content:center; width: 3rem; height: 3rem; border-radius: 50%; background: rgba(155,89,182,0.2); border: 1px solid rgba(155,89,182,0.4); font-family:'Cinzel',serif; font-size:1.1rem; color:white; }
+html body .mh-inline-78933469ba { background: linear-gradient(135deg, rgba(155,89,182,0.15), rgba(10,10,26,0.9)); border: 1px solid rgba(155,89,182,0.3); border-radius: 20px; padding: 3rem; text-align: center; margin-bottom: 2rem; }
+html body .mh-inline-5e9a5ef3ec { margin-top:0; font-family:'Cinzel',serif; font-size: 1.8rem; }
+html body .mh-inline-8d7e8b1ca0 { font-size: 1.1rem; line-height: 1.8; margin-bottom: 2rem; color: #cbd5e1; }
+html body .mh-inline-f29cd69704 { font-size: 1.1rem; padding: 1.2rem 2.5rem; }
+html body .mh-inline-9766343fcb { background: rgba(10,10,26,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 2.5rem; }
+html body .mh-inline-4ef3f735f9 { margin-top: 1.5rem; }
+html body .mh-inline-d315195790 { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 1rem 0; cursor: pointer; }
+html body .mh-inline-a11110f4c0 { font-weight:600; color:white; }
+html body .mh-inline-eaff9d996d { margin: 1rem 0 0; color: var(--color-text-mutated); }
+html body .mh-inline-abf08b3943 { padding: 1rem 0; cursor: pointer; }

@@ -143,14 +143,28 @@
         return (window.API_CONFIG && window.API_CONFIG.BASE_URL) || '/api';
     }
 
+    function setBlockVisible(id, visible) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.hidden = !visible;
+        el.classList.toggle('mh-block-visible', visible);
+    }
+
+    function setInlineFlexVisible(id, visible) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.hidden = !visible;
+        el.classList.toggle('mh-flex-visible', visible);
+    }
+
     function showError(msg) {
         const el = document.getElementById('mw-error');
         el.textContent = msg;
-        el.style.display = 'block';
+        setBlockVisible('mw-error', true);
     }
 
     function hideError() {
-        document.getElementById('mw-error').style.display = 'none';
+        setBlockVisible('mw-error', false);
     }
 
     function getTotemByDate(dateStr) {
@@ -295,7 +309,7 @@
 
         const nativeBtn = document.getElementById('share-native');
         if (navigator.share) {
-            nativeBtn.style.display = 'inline-flex';
+            setInlineFlexVisible('share-native', true);
             nativeBtn.onclick = function () {
                 navigator.share({
                     title: 'Mé Šamanské Kolo — ' + totem.name,
@@ -304,7 +318,7 @@
                 }).catch(function () {});
             };
         } else {
-            nativeBtn.style.display = 'none';
+            setInlineFlexVisible('share-native', false);
         }
     }
 
@@ -320,7 +334,7 @@
     function fallbackCopy(text, btn, label) {
         const ta = document.createElement('textarea');
         ta.value = text;
-        ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;';
+        ta.className = 'clipboard-hidden-textarea';
         document.body.appendChild(ta);
         ta.select();
         try { document.execCommand('copy'); showCopied(btn, label); } catch (e) {}
@@ -345,13 +359,13 @@
         document.getElementById('res-strengths').textContent = data.strengths || '';
         document.getElementById('res-challenges').textContent = data.challenges || '';
         document.getElementById('res-message').textContent = data.message || '';
-        document.getElementById('mw-premium-content').style.display = 'block';
-        document.getElementById('mw-premium-wall').style.display = 'none';
+        setBlockVisible('mw-premium-content', true);
+        setBlockVisible('mw-premium-wall', false);
     }
 
     function showPremiumWall() {
-        document.getElementById('mw-premium-content').style.display = 'none';
-        document.getElementById('mw-premium-wall').style.display = 'block';
+        setBlockVisible('mw-premium-content', false);
+        setBlockVisible('mw-premium-wall', true);
         document
             .querySelector('#mw-premium-wall a[href="cenik.html"]')
             ?.addEventListener('click', (event) => {
@@ -371,8 +385,8 @@
             if (!birth) { showError('Zadejte datum narození.'); return; }
 
             // Show loading
-            document.getElementById('mw-form-section').style.display = 'none';
-            document.getElementById('mw-loading').style.display = 'block';
+            setBlockVisible('mw-form-section', false);
+            setBlockVisible('mw-loading', true);
             document.getElementById('mw-result').classList.remove('visible');
 
             // Determine totem locally (always available)
@@ -395,7 +409,7 @@
 
                 const data = await res.json();
 
-                document.getElementById('mw-loading').style.display = 'none';
+                setBlockVisible('mw-loading', false);
 
                 // Show free result regardless of API outcome
                 showFreeResult(name, totem);
@@ -407,7 +421,7 @@
                 }
 
             } catch (e) {
-                document.getElementById('mw-loading').style.display = 'none';
+                setBlockVisible('mw-loading', false);
                 // Network error – show free (local) result, premium wall
                 showFreeResult(name, totem);
                 showPremiumWall();
@@ -421,7 +435,7 @@
         // Reset
         document.getElementById('mw-reset').addEventListener('click', function () {
             document.getElementById('mw-result').classList.remove('visible');
-            document.getElementById('mw-form-section').style.display = 'block';
+            setBlockVisible('mw-form-section', true);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }

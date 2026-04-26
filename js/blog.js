@@ -7,6 +7,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let allPosts = [];
 
+    document.addEventListener('error', (event) => {
+        const image = event.target;
+        if (!(image instanceof HTMLImageElement)) return;
+        if (!image.classList.contains('featured-post__image') && !image.classList.contains('blog-card-image')) return;
+
+        image.hidden = true;
+        image.closest('.featured-post__image-wrapper, .blog-card-image-wrapper')?.classList.add('blog-image-fallback');
+    }, true);
+
     try {
         const response = await fetch('/data/blog-index.json');
         if (!response.ok) throw new Error('Data index nebyl nalezen');
@@ -34,8 +43,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (err) {
         console.error(err);
         container.innerHTML = '<div class="no-results">Zatím nebyly publikovány žádné články.</div>';
-        featuredContainer.style.display = 'none';
-        gridTitle.style.display = 'none';
+        featuredContainer.hidden = true;
+        gridTitle.hidden = true;
     }
 
     filterContainer.addEventListener('click', (e) => {
@@ -56,8 +65,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     function renderAll(posts) {
         if (posts.length === 0) return;
 
-        gridTitle.style.display = 'block';
-        featuredContainer.style.display = 'block';
+        gridTitle.hidden = false;
+        featuredContainer.hidden = false;
+        gridTitle.classList.add('mh-block-visible');
+        featuredContainer.classList.add('mh-block-visible');
         gridTitle.textContent = "Nejnovější články";
 
         const featured = posts[0];
@@ -68,8 +79,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function renderFilteredGrid(posts, categoryStr) {
-        featuredContainer.style.display = 'none';
-        gridTitle.style.display = 'block';
+        featuredContainer.hidden = true;
+        featuredContainer.classList.remove('mh-block-visible');
+        gridTitle.hidden = false;
+        gridTitle.classList.add('mh-block-visible');
         gridTitle.textContent = `Články v kategorii: ${categoryStr}`;
         renderPostsGrid(posts);
     }
@@ -84,8 +97,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         featuredContainer.innerHTML = `
             <a href="blog/${post.slug}.html" class="featured-post">
                 <div class="featured-post__image-wrapper">
-                    <img src="${imageSrc}" alt="" role="presentation" class="featured-post__image" loading="lazy"
-                        onerror="this.style.display='none'; this.parentElement.style.background='linear-gradient(135deg,#1a0a2e,#2d1747)';">
+                    <img src="${imageSrc}" alt="" role="presentation" class="featured-post__image" loading="lazy">
                 </div>
                 <div class="featured-post__content">
                     <div class="featured-post__meta">
@@ -95,7 +107,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                     <h2 class="featured-post__title">${post.title}</h2>
                     <p class="featured-post__desc">${post.short_description || ''}</p>
-                    <div class="featured-post__meta" style="margin-bottom:0; justify-content:space-between; align-items:center;">
+                    <div class="featured-post__meta featured-post__meta--footer">
                         <span class="btn-read-more">Číst článek <span>›</span></span>
                         <span>📖 ${readTime}</span>
                     </div>
@@ -122,9 +134,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             el.href = `blog/${post.slug}.html`;
             el.className = 'blog-card';
             el.innerHTML = `
-                <div style="overflow:hidden; border-radius:16px 16px 0 0;">
-                    <img src="${imageSrc}" alt="" role="presentation" class="blog-card-image" loading="lazy"
-                        onerror="this.style.display='none'; this.parentElement.style.background='linear-gradient(135deg,#1a0a2e,#2d1747)'; this.parentElement.style.height='185px';">
+                <div class="blog-card-image-wrapper">
+                    <img src="${imageSrc}" alt="" role="presentation" class="blog-card-image" loading="lazy">
                 </div>
                 <div class="blog-card-content">
                     <div class="blog-meta-small">

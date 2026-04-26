@@ -179,6 +179,13 @@ describe('🔒 Security Tests', () => {
     // SECURITY HEADER TESTS
     // ============================================
     describe('Security Headers', () => {
+        function getCspDirective(header, directiveName) {
+            return header
+                .split(';')
+                .map(part => part.trim())
+                .find(part => part.startsWith(`${directiveName} `)) || '';
+        }
+
         test('Response includes CSP header', async () => {
             const res = await request(app)
                 .get('/')
@@ -186,6 +193,29 @@ describe('🔒 Security Tests', () => {
 
             expect(res.headers['content-security-policy']).toBeDefined();
             expect(res.headers['content-security-policy']).toContain("default-src 'self'");
+            expect(res.headers['content-security-policy']).toContain("base-uri 'self'");
+            expect(res.headers['content-security-policy']).toContain("form-action 'self' https://checkout.stripe.com");
+        });
+
+        test('CSP allows inline JSON-LD only through script hashes', async () => {
+            const res = await request(app)
+                .get('/rocni-horoskop.html')
+                .expect(200);
+            const scriptSrc = getCspDirective(res.headers['content-security-policy'], 'script-src');
+
+            expect(scriptSrc).toContain("'sha256-");
+            expect(scriptSrc).not.toContain("'unsafe-inline'");
+            expect(res.headers['content-security-policy']).not.toContain("script-src-attr 'unsafe-inline'");
+        });
+
+        test('CSP does not allow inline styles', async () => {
+            const res = await request(app)
+                .get('/')
+                .expect(200);
+            const styleSrc = getCspDirective(res.headers['content-security-policy'], 'style-src');
+
+            expect(styleSrc).toBeTruthy();
+            expect(styleSrc).not.toContain("'unsafe-inline'");
         });
 
         test('Response includes HSTS header', async () => {

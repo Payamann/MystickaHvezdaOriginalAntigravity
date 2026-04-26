@@ -2,11 +2,11 @@
  * Main dashboard controller for Profile page
  */
 
-import { escapeHtml, apiUrl, authHeaders, getZodiacSign, getZodiacIconName } from './shared.js';
+import { escapeHtml, apiUrl, authHeaders, getZodiacSign, getZodiacIconName, getReadingTitle } from './shared.js';
 import { loadReadings, showMoreReadings, handleFilterChange } from './readings.js';
 import { loadFavorites } from './favorites.js';
 import { toggleAvatarPicker, selectAvatar, loadSubscriptionStatus, initSettingsForm, saveSettings } from './settings.js';
-import { viewReading, closeReadingModal, toggleFavoriteModal, deleteReading } from './modal.js';
+import { viewReading, closeReadingModal, toggleFavoriteModal, toggleFavorite, deleteReading } from './modal.js';
 
 const PREMIUM_ACTIVATION_KEY = 'mh_premium_activation_seen';
 const PREMIUM_ACTIONS = {
@@ -63,9 +63,54 @@ const PREMIUM_ACTIONS = {
     ]
 };
 
+const ONBOARDING_SIGN_LABELS = {
+    beran: { name: 'Beran', symbol: '♈' },
+    byk: { name: 'Býk', symbol: '♉' },
+    blizenci: { name: 'Blíženci', symbol: '♊' },
+    rak: { name: 'Rak', symbol: '♋' },
+    lev: { name: 'Lev', symbol: '♌' },
+    panna: { name: 'Panna', symbol: '♍' },
+    vahy: { name: 'Váhy', symbol: '♎' },
+    stir: { name: 'Štír', symbol: '♏' },
+    strelec: { name: 'Střelec', symbol: '♐' },
+    kozoroh: { name: 'Kozoroh', symbol: '♑' },
+    vodnar: { name: 'Vodnář', symbol: '♒' },
+    ryby: { name: 'Ryby', symbol: '♓' }
+};
+
+const DAILY_FOCUS = [
+    'Dnes se vyplatí zpomalit a pojmenovat, co od sebe opravdu potřebujete slyšet.',
+    'Dnes má největší hodnotu první konkrétní krok, ne dokonalý plán.',
+    'Dnes sledujte, kde reagujete ze zvyku a kde už můžete zvolit nový směr.',
+    'Dnes pomůže jednoduchá otázka: co mi přináší klid a co jen bere energii?',
+    'Dnes je dobré nechat si prostor na upřímný rozhovor nebo tiché rozhodnutí.',
+    'Dnes se opřete o drobný rituál, který vrátí pozornost zpátky k sobě.',
+    'Dnes si zapište jednu věc, která se opakuje. Právě tam začíná váš vzorec.'
+];
+
+const PLAN_PRICE_CZK = {
+    pruvodce: 199,
+    'pruvodce-rocne': 1990,
+    osviceni: 499,
+    'osviceni-rocne': 4990,
+    'vip-majestrat': 999
+};
+
+function setProfileBlockVisible(element, visible) {
+    if (!element) return;
+    element.hidden = !visible;
+    element.classList.toggle('profile-block-visible', visible);
+}
+
 function initTabs() {
     const tabs = document.querySelectorAll('.tab[data-tab], .profile-tab[data-tab]');
     const contents = document.querySelectorAll('.tab-content');
+
+    contents.forEach(content => {
+        const isActive = content.classList.contains('active');
+        content.classList.toggle('is-active', isActive);
+        content.hidden = !isActive;
+    });
 
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
@@ -79,7 +124,10 @@ function initTabs() {
             tab.setAttribute('aria-selected', 'true');
 
             contents.forEach(c => {
-                c.style.display = c.id === `tab-${targetId}` ? 'block' : 'none';
+                const isTarget = c.id === `tab-${targetId}`;
+                c.classList.toggle('active', isTarget);
+                c.classList.toggle('is-active', isTarget);
+                c.hidden = !isTarget;
             });
 
             if (targetId === 'favorites') {
@@ -97,6 +145,8 @@ function openProfileTab(tabId) {
 function sanitizeProfileUrl(url) {
     const parsed = new URL(url, window.location.origin);
     parsed.searchParams.delete('payment');
+    parsed.searchParams.delete('plan');
+    parsed.searchParams.delete('session_id');
     return `${parsed.pathname}${parsed.search}${parsed.hash}`;
 }
 
@@ -109,7 +159,16 @@ function handlePaymentReturnState() {
     }
 
     if (paymentState === 'success') {
+        const planId = params.get('plan') || null;
+        const sessionId = params.get('session_id') || null;
         window.MH_ANALYTICS?.trackPaymentResult?.('success', {
+            source: 'profile_return',
+            plan_id: planId,
+            session_id: sessionId
+        });
+        window.MH_ANALYTICS?.trackPurchaseCompleted?.(planId || 'subscription', PLAN_PRICE_CZK[planId] || null, 'CZK', {
+            product_type: 'subscription',
+            transaction_id: sessionId,
             source: 'profile_return'
         });
         openProfileTab('settings');
@@ -156,12 +215,12 @@ function renderPremiumActivation(sub, user) {
     const shouldForceShow = paymentState === 'success';
 
     if (!isPremium) {
-        card.style.display = 'none';
+        setProfileBlockVisible(card, false);
         return;
     }
 
     if (!shouldForceShow && hasSeenActivation(planType)) {
-        card.style.display = 'none';
+        setProfileBlockVisible(card, false);
         return;
     }
 
@@ -188,13 +247,13 @@ function renderPremiumActivation(sub, user) {
 
     const actions = PREMIUM_ACTIONS[planType] || PREMIUM_ACTIONS.premium_monthly;
     actionsEl.innerHTML = actions.map((action) => `
-        <a href="${action.href}" class="card glass-card premium-activation-action" data-activation-target="${action.href}" style="padding:1rem 1rem 1.1rem;text-decoration:none;color:inherit;border:1px solid rgba(255,255,255,0.08);">
-            <strong style="display:block;color:#fff;margin-bottom:0.35rem;">${action.title}</strong>
-            <span style="display:block;color:rgba(255,255,255,0.68);line-height:1.5;">${action.description}</span>
+        <a href="${action.href}" class="card glass-card premium-activation-action" data-activation-target="${action.href}">
+            <strong class="premium-activation-action__title">${action.title}</strong>
+            <span class="premium-activation-action__description">${action.description}</span>
         </a>
     `).join('');
 
-    card.style.display = 'block';
+    setProfileBlockVisible(card, true);
     card.dataset.planType = planType;
     card.dataset.source = paymentState === 'success' ? 'payment_return' : 'profile';
 
@@ -203,7 +262,7 @@ function renderPremiumActivation(sub, user) {
             const activePlanType = card.dataset.planType || planType;
             const activeSource = card.dataset.source || 'profile';
             markActivationSeen(activePlanType);
-            card.style.display = 'none';
+            setProfileBlockVisible(card, false);
             window.MH_ANALYTICS?.trackEvent?.('premium_activation_dismissed', {
                 plan_type: activePlanType,
                 source: activeSource
@@ -252,7 +311,7 @@ function formatPlanLocal(plan) {
         vip_majestrat: 'VIP Majestát'
     };
 
-    return plans[plan] || 'Poutník';
+    return plans[normalizedPlan] || 'Poutník';
 }
 
 function calculateStreak(readings) {
@@ -281,6 +340,259 @@ function calculateStreak(readings) {
     }
 
     return streak;
+}
+
+function isPremiumSubscription(sub) {
+    const planType = sub?.planType === 'vip' ? 'vip_majestrat' : (sub?.planType || 'free');
+    const activeStatuses = ['active', 'trialing', 'cancel_pending'];
+    return planType !== 'free' && activeStatuses.includes(sub?.status || 'active');
+}
+
+function getSavedOnboardingSign() {
+    try {
+        const saved = localStorage.getItem('mh_zodiac');
+        return saved && ONBOARDING_SIGN_LABELS[saved]
+            ? { ...ONBOARDING_SIGN_LABELS[saved], slug: saved }
+            : null;
+    } catch (e) {
+        return null;
+    }
+}
+
+function getProfileSign(user) {
+    if (user?.birth_date) {
+        const sign = getZodiacSign(user.birth_date) || getZodiacSignLocal(user.birth_date);
+        if (sign?.name) {
+            const slug = Object.entries(ONBOARDING_SIGN_LABELS)
+                .find(([, value]) => value.name === sign.name)?.[0] || null;
+            return { ...sign, slug };
+        }
+    }
+
+    return getSavedOnboardingSign();
+}
+
+function getReadingKinds(readings) {
+    return new Set((readings || []).map(reading => reading.type));
+}
+
+function getLastReadingLabel(readings) {
+    if (!readings?.length) return 'Zatím žádný uložený výklad';
+
+    const latest = [...readings].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+    const date = new Date(latest.created_at);
+    return `${date.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long' })} · ${getReadingTitle(latest.type)}`;
+}
+
+function renderDailyGuidance(user, readings, subscription) {
+    const titleEl = document.getElementById('daily-guidance-title');
+    const dateEl = document.getElementById('daily-guidance-date');
+    const planEl = document.getElementById('daily-guidance-plan');
+    const copyEl = document.getElementById('daily-guidance-copy');
+    const focusEl = document.getElementById('daily-guidance-focus');
+    const actionsEl = document.getElementById('daily-guidance-actions');
+
+    if (!titleEl || !dateEl || !planEl || !copyEl || !focusEl || !actionsEl) return;
+
+    const now = new Date();
+    const sign = getProfileSign(user);
+    const planType = subscription?.planType === 'vip' ? 'vip_majestrat' : (subscription?.planType || user?.subscription_status || 'free');
+    const isPremium = isPremiumSubscription(subscription) || ['premium_monthly', 'exclusive_monthly', 'vip_majestrat'].includes(planType);
+    const readingKinds = getReadingKinds(readings);
+    const dateLabel = now.toLocaleDateString('cs-CZ', { weekday: 'long', day: 'numeric', month: 'long' });
+    const focus = DAILY_FOCUS[now.getDay()];
+
+    dateEl.textContent = dateLabel;
+    planEl.textContent = formatPlanLocal(planType);
+    planEl.className = `badge ${isPremium ? 'badge--premium' : 'badge--secondary'}`;
+    titleEl.textContent = sign
+        ? `Dnešní směr pro znamení ${sign.name}`
+        : 'Dnešní směr čeká na doplnění profilu';
+
+    copyEl.textContent = sign
+        ? `Máte připravený denní rituál podle svého profilu. Poslední stopa v historii: ${getLastReadingLabel(readings)}.`
+        : 'Doplňte znamení nebo datum narození a denní přehled začne dávat přesnější osobní kontext.';
+
+    focusEl.textContent = focus;
+
+    const horoscopeHref = sign?.slug ? `horoskopy.html?sign=${encodeURIComponent(sign.slug)}` : 'horoskopy.html';
+    const actions = [
+        {
+            href: horoscopeHref,
+            label: 'Otevřít dnešní horoskop',
+            description: sign ? `Denní vedení pro ${sign.name}.` : 'Nejrychlejší vstup do dnešního směru.',
+            action: 'daily_horoscope',
+            primary: true
+        },
+        {
+            href: 'tarot.html',
+            label: readingKinds.has('tarot') ? 'Navázat dalším tarotem' : 'Vyložit kartu dne',
+            description: 'Jeden symbol pro rozhodnutí, které máte před sebou.',
+            action: 'daily_tarot'
+        },
+        {
+            href: '#journal-input',
+            label: 'Zapsat večerní reflexi',
+            description: 'Zachytíte vzorec dřív, než z něj bude další opakování.',
+            action: 'daily_journal'
+        }
+    ];
+
+    if (!isPremium) {
+        actions.push({
+            href: 'cenik.html?source=profile_daily&feature=daily_guidance',
+            label: 'Odemknout hlubší vedení',
+            description: 'Plné výklady, historie a týdenní mapa v jednom plánu.',
+            action: 'daily_upgrade'
+        });
+    }
+
+    actionsEl.innerHTML = actions.map(action => `
+        <a href="${action.href}" class="daily-guidance-action ${action.primary ? 'daily-guidance-action--primary' : ''}" data-daily-action="${action.action}">
+            <strong>${escapeHtml(action.label)}</strong>
+            <span>${escapeHtml(action.description)}</span>
+        </a>
+    `).join('');
+
+    window.MH_ANALYTICS?.trackEvent?.('profile_daily_guidance_viewed', {
+        plan_type: planType,
+        has_sign: Boolean(sign),
+        reading_count: readings?.length || 0
+    });
+}
+
+function renderActivationChecklist(user, readings, subscription) {
+    const labelEl = document.getElementById('activation-progress-label');
+    const barEl = document.getElementById('activation-progress-bar');
+    const itemsEl = document.getElementById('activation-checklist-items');
+    if (!labelEl || !barEl || !itemsEl) return;
+
+    const kinds = getReadingKinds(readings);
+    const sign = getProfileSign(user);
+    const streak = calculateStreak(readings);
+    const isPremium = isPremiumSubscription(subscription);
+
+    const items = [
+        {
+            key: 'account_created',
+            title: 'Účet je vytvořený',
+            description: 'Základ osobního prostoru je připravený.',
+            done: true,
+            href: '#profile-dashboard'
+        },
+        {
+            key: 'profile_personalized',
+            title: 'Osobní profil je doplněný',
+            description: sign ? `Dnešní vedení se může opřít o znamení ${sign.name}.` : 'Doplňte datum narození nebo znamení pro přesnější návraty.',
+            done: Boolean(sign),
+            href: sign ? '#tab-settings' : 'onboarding.html?source=profile_activation',
+            action: sign ? 'open_settings' : 'start_onboarding'
+        },
+        {
+            key: 'first_reading',
+            title: 'První výklad je v historii',
+            description: kinds.size ? 'Už máte první stopu, ke které se dá vracet.' : 'Začněte tarotem, horoskopem nebo křišťálovou koulí.',
+            done: kinds.size > 0,
+            href: kinds.size > 0 ? '#tab-history' : 'tarot.html',
+            action: kinds.size > 0 ? 'open_history' : 'start_tarot'
+        },
+        {
+            key: 'daily_reflection',
+            title: 'Vzniká návratový rituál',
+            description: streak > 1 ? `Aktuální série: ${streak} dny.` : 'Zapište si večerní reflexi nebo se vraťte zítra pro další výklad.',
+            done: streak > 1 || kinds.has('journal'),
+            href: '#journal-input',
+            action: 'focus_journal'
+        },
+        {
+            key: 'premium_depth',
+            title: 'Hlubší vedení je odemčené',
+            description: isPremium ? 'Plné výklady a osobní historie jsou aktivní.' : 'Premium dává smysl ve chvíli, kdy se chcete vracet pravidelně.',
+            done: isPremium,
+            href: isPremium ? '#daily-guidance-card' : 'cenik.html?source=profile_activation&feature=daily_guidance',
+            action: isPremium ? 'daily_guidance' : 'upgrade'
+        }
+    ];
+
+    const completed = items.filter(item => item.done).length;
+    labelEl.textContent = `${completed}/${items.length}`;
+    barEl.className = `activation-progress__bar activation-progress__bar--${completed}`;
+
+    itemsEl.innerHTML = items.map(item => `
+        <a href="${item.href}" class="activation-checklist-item ${item.done ? 'activation-checklist-item--done' : ''}" data-activation-step="${item.key}" data-activation-action="${item.action || ''}" data-completed="${item.done ? 'true' : 'false'}">
+            <span class="activation-checklist-item__status">${item.done ? '✓' : '•'}</span>
+            <span class="activation-checklist-item__body">
+                <strong>${escapeHtml(item.title)}</strong>
+                <span>${escapeHtml(item.description)}</span>
+            </span>
+        </a>
+    `).join('');
+
+    window.MH_ANALYTICS?.trackEvent?.('profile_activation_checklist_viewed', {
+        completed_steps: completed,
+        total_steps: items.length,
+        activated: completed >= 3
+    });
+}
+
+function focusJournalInput() {
+    const input = document.getElementById('journal-input');
+    if (!input) return;
+
+    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => input.focus(), 250);
+}
+
+function handleDailyGuidanceClick(event) {
+    const link = event.target.closest('[data-daily-action]');
+    if (!link) return;
+
+    const action = link.dataset.dailyAction;
+    const destination = link.getAttribute('href');
+
+    window.MH_ANALYTICS?.trackCTA?.('profile_daily_guidance', {
+        action,
+        destination
+    });
+
+    if (action === 'daily_journal') {
+        event.preventDefault();
+        focusJournalInput();
+    }
+}
+
+function handleActivationChecklistClick(event) {
+    const link = event.target.closest('[data-activation-step]');
+    if (!link) return;
+
+    const action = link.dataset.activationAction;
+    const step = link.dataset.activationStep;
+    const completed = link.dataset.completed === 'true';
+
+    window.MH_ANALYTICS?.trackCTA?.('profile_activation_checklist', {
+        step,
+        action,
+        completed,
+        destination: link.getAttribute('href')
+    });
+
+    if (action === 'open_settings') {
+        event.preventDefault();
+        openProfileTab('settings');
+        document.getElementById('settings-name')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+    }
+
+    if (action === 'open_history') {
+        event.preventDefault();
+        openProfileTab('history');
+        return;
+    }
+
+    if (action === 'focus_journal') {
+        event.preventDefault();
+        focusJournalInput();
+    }
 }
 
 function animateCounter(elementId, target) {
@@ -368,7 +680,7 @@ function showZodiacSignLocal(birthDate) {
     const sign = getZodiacSignLocal(birthDate);
     if (sign) {
         zodiacEl.textContent = `${sign.symbol} ${sign.name}`;
-        zodiacEl.style.display = 'block';
+        setProfileBlockVisible(zodiacEl, true);
     }
 }
 
@@ -395,6 +707,39 @@ function renderJournalEntries(readings) {
 
 let listenersAttached = false;
 
+async function handleReadingListInteraction(event) {
+    const actionButton = event.target.closest('[data-reading-action]');
+    if (actionButton) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const id = actionButton.dataset.readingId;
+        if (!id) return;
+
+        if (actionButton.dataset.readingAction === 'favorite') {
+            await toggleFavorite(id, actionButton);
+        } else if (actionButton.dataset.readingAction === 'view') {
+            await viewReading(id);
+        }
+        return;
+    }
+
+    const card = event.target.closest('[data-reading-id]');
+    if (card && event.currentTarget.contains(card)) {
+        await viewReading(card.dataset.readingId);
+    }
+}
+
+function handleReadingListKeyboard(event) {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+
+    const card = event.target.closest('[data-reading-id]');
+    if (!card || !event.currentTarget.contains(card)) return;
+
+    event.preventDefault();
+    viewReading(card.dataset.readingId);
+}
+
 async function initProfile() {
     let retries = 0;
     while (!window.Auth && retries < 20) {
@@ -410,8 +755,8 @@ async function initProfile() {
     const greeting = document.getElementById('profile-greeting');
 
     if (!isLoggedIn) {
-        if (loginRequired) loginRequired.style.display = 'block';
-        if (dashboard) dashboard.style.display = 'none';
+        setProfileBlockVisible(loginRequired, true);
+        setProfileBlockVisible(dashboard, false);
         if (greeting) greeting.textContent = 'Přihlaste se pro zobrazení vašeho profilu';
 
         const loginBtn = document.getElementById('profile-login-btn');
@@ -424,8 +769,8 @@ async function initProfile() {
         return;
     }
 
-    if (loginRequired) loginRequired.style.display = 'none';
-    if (dashboard) dashboard.style.display = 'block';
+    setProfileBlockVisible(loginRequired, false);
+    setProfileBlockVisible(dashboard, true);
 
     if (user) {
         const displayName = user.first_name || user.email.split('@')[0];
@@ -459,8 +804,8 @@ async function initProfile() {
             const sign = getZodiacSign(user.birth_date);
             const zodiacEl = document.getElementById('user-zodiac');
             if (zodiacEl && sign) {
-                zodiacEl.style.display = 'block';
-                zodiacEl.innerHTML = `<i data-lucide="${getZodiacIconName(sign.symbol)}" style="width: 14px; height: 14px; margin-right: 4px; vertical-align: middle;"></i> ${sign.name}`;
+                setProfileBlockVisible(zodiacEl, true);
+                zodiacEl.innerHTML = `<i class="profile-zodiac-icon" data-lucide="${getZodiacIconName(sign.symbol)}"></i> ${sign.name}`;
             } else {
                 showZodiacSignLocal(user.birth_date);
             }
@@ -477,13 +822,21 @@ async function initProfile() {
 
     handlePaymentReturnState();
     renderPremiumActivation(subscription, user);
+    renderDailyGuidance(user, readings, subscription);
+    renderActivationChecklist(user, readings, subscription);
     updateStats(readings);
     renderJournalEntries(readings);
 
     if (!listenersAttached) {
         document.getElementById('logout-btn')?.addEventListener('click', handleLogout);
+        document.getElementById('daily-guidance-card')?.addEventListener('click', handleDailyGuidanceClick);
+        document.getElementById('activation-checklist-card')?.addEventListener('click', handleActivationChecklistClick);
         document.getElementById('readings-filter')?.addEventListener('change', handleFilterChange);
         document.getElementById('readings-load-more')?.addEventListener('click', showMoreReadings);
+        document.getElementById('readings-list')?.addEventListener('click', handleReadingListInteraction);
+        document.getElementById('readings-list')?.addEventListener('keydown', handleReadingListKeyboard);
+        document.getElementById('favorites-list')?.addEventListener('click', handleReadingListInteraction);
+        document.getElementById('favorites-list')?.addEventListener('keydown', handleReadingListKeyboard);
 
         document.getElementById('reading-modal-close')?.addEventListener('click', closeReadingModal);
         document.getElementById('modal-favorite-btn')?.addEventListener('click', toggleFavoriteModal);
@@ -496,10 +849,13 @@ async function initProfile() {
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape') {
                 const modal = document.getElementById('reading-modal');
-                if (modal && modal.style.display !== 'none') closeReadingModal();
+                if (modal && !modal.hidden) closeReadingModal();
 
                 const picker = document.getElementById('avatar-picker');
-                if (picker && picker.style.display !== 'none') picker.style.display = 'none';
+                if (picker && !picker.hidden) {
+                    picker.hidden = true;
+                    picker.classList.remove('profile-block-visible');
+                }
             }
         });
 
@@ -535,6 +891,11 @@ async function initProfile() {
                         const refreshedReadings = await loadReadings();
                         updateStats(refreshedReadings);
                         renderJournalEntries(refreshedReadings);
+                        renderDailyGuidance(window.Auth?.user, refreshedReadings, subscription);
+                        renderActivationChecklist(window.Auth?.user, refreshedReadings, subscription);
+                        window.MH_ANALYTICS?.trackEvent?.('profile_journal_saved', {
+                            source: 'profile_dashboard'
+                        });
                     } else {
                         const err = await response.json().catch(() => ({}));
                         window.Auth?.showToast?.('Chyba', err.error || 'Vesmír momentálně neodpovídá.', 'error');
@@ -552,6 +913,8 @@ async function initProfile() {
         document.addEventListener('reading:updated', e => {
             if (e.detail?.readings) {
                 updateStats(e.detail.readings);
+                renderDailyGuidance(window.Auth?.user, e.detail.readings, subscription);
+                renderActivationChecklist(window.Auth?.user, e.detail.readings, subscription);
             }
         });
 
@@ -573,25 +936,27 @@ window.createStardust = function(element) {
         const particle = document.createElement('div');
         particle.className = 'stardust-particle';
 
-        const size = Math.random() * 4 + 2;
-        particle.style.width = `${size}px`;
-        particle.style.height = `${size}px`;
+        const sizeClass = Math.random() > 0.66
+            ? 'stardust-particle--lg'
+            : (Math.random() > 0.5 ? 'stardust-particle--md' : 'stardust-particle--sm');
+        particle.classList.add(sizeClass);
 
         const x = rect.left + Math.random() * rect.width;
         const y = rect.top + Math.random() * rect.height;
 
-        particle.style.left = `${x}px`;
-        particle.style.top = `${y}px`;
-
         const tx = (Math.random() - 0.5) * 200;
         const ty = (Math.random() - 0.5) * 200 - 100;
-
-        particle.style.setProperty('--tx', `${tx}px`);
-        particle.style.setProperty('--ty', `${ty}px`);
-        particle.style.animation = `stardust-fade-out ${Math.random() * 1 + 0.5}s ease-out forwards`;
+        const duration = (Math.random() * 1 + 0.5) * 1000;
 
         document.body.appendChild(particle);
-        setTimeout(() => particle.remove(), 1500);
+        particle.animate([
+            { transform: `translate(${x}px, ${y}px) scale(1)`, opacity: 1 },
+            { transform: `translate(${x + tx}px, ${y + ty}px) scale(0)`, opacity: 0 }
+        ], {
+            duration,
+            easing: 'ease-out',
+            fill: 'forwards'
+        }).finished.finally(() => particle.remove());
     }
 };
 

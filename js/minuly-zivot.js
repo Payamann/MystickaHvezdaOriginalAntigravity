@@ -7,13 +7,25 @@
         return (window.API_CONFIG && window.API_CONFIG.BASE_URL) || '/api';
     }
 
+    function setBlockVisible(element, visible) {
+        if (!element) return;
+        element.hidden = !visible;
+        element.classList.toggle('mh-block-visible', visible);
+    }
+
+    function setInlineFlexVisible(element, visible) {
+        if (!element) return;
+        element.hidden = !visible;
+        element.classList.toggle('mh-inline-flex-visible', visible);
+    }
+
     function showError(msg) {
         var el = document.getElementById('pl-error');
         el.textContent = msg;
-        el.style.display = 'block';
+        setBlockVisible(el, true);
     }
     function hideError() {
-        document.getElementById('pl-error').style.display = 'none';
+        setBlockVisible(document.getElementById('pl-error'), false);
     }
 
     function startPastLifeCheckout(source, authMode) {
@@ -66,8 +78,8 @@
             if (!gender) { showError('Vyberte pohlaví.'); return; }
 
             // Show loading
-            document.getElementById('form-section').style.display = 'none';
-            document.getElementById('pl-loading').style.display = 'block';
+            setBlockVisible(document.getElementById('form-section'), false);
+            setBlockVisible(document.getElementById('pl-loading'), true);
             document.getElementById('pl-result').classList.remove('visible');
 
             try {
@@ -87,10 +99,10 @@
 
                 var data = await res.json();
 
-                document.getElementById('pl-loading').style.display = 'none';
+                setBlockVisible(document.getElementById('pl-loading'), false);
 
                 if (!res.ok || !data.success) {
-                    document.getElementById('form-section').style.display = 'block';
+                    setBlockVisible(document.getElementById('form-section'), true);
                     showError(data.error || 'Chyba serveru. Zkuste to prosím znovu.');
                     return;
                 }
@@ -111,8 +123,8 @@
                 window.scrollTo({ top: document.getElementById('pl-result').offsetTop - 80, behavior: 'smooth' });
 
             } catch (e) {
-                document.getElementById('pl-loading').style.display = 'none';
-                document.getElementById('form-section').style.display = 'block';
+                setBlockVisible(document.getElementById('pl-loading'), false);
+                setBlockVisible(document.getElementById('form-section'), true);
                 showError('Chyba připojení. Zkuste to prosím znovu.');
             }
         });
@@ -120,7 +132,7 @@
         // Reset
         document.getElementById('pl-reset').addEventListener('click', function() {
             document.getElementById('pl-result').classList.remove('visible');
-            document.getElementById('form-section').style.display = 'block';
+            setBlockVisible(document.getElementById('form-section'), true);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
@@ -161,7 +173,7 @@
         // Native share (mobile)
         var nativeBtn = document.getElementById('share-native');
         if (navigator.share) {
-            nativeBtn.style.display = 'inline-flex';
+            setInlineFlexVisible(nativeBtn, true);
             nativeBtn.onclick = function() {
                 navigator.share({
                     title: 'M\u016Fj minul\u00FD \u017Eivot \u2014 Akashick\u00E9 Z\u00E1znamy',
@@ -170,7 +182,7 @@
                 }).catch(function() {});
             };
         } else {
-            nativeBtn.style.display = 'none';
+            setInlineFlexVisible(nativeBtn, false);
         }
     }
 
@@ -186,7 +198,7 @@
     function fallbackCopy(text, btn, label) {
         var ta = document.createElement('textarea');
         ta.value = text;
-        ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;';
+        ta.className = 'clipboard-hidden-textarea';
         document.body.appendChild(ta);
         ta.select();
         try { document.execCommand('copy'); showCopied(btn, label); } catch(e) {}
@@ -199,11 +211,11 @@
         var isPremium = window.Auth && window.Auth.isPremium && window.Auth.isPremium();
 
         if (!isLoggedIn || !isPremium) {
-            document.getElementById('pl-form-wrap').style.display = 'none';
-            document.getElementById('premium-wall').style.display = 'block';
+            setBlockVisible(document.getElementById('pl-form-wrap'), false);
+            setBlockVisible(document.getElementById('premium-wall'), true);
         } else {
-            document.getElementById('pl-form-wrap').style.display = 'block';
-            document.getElementById('premium-wall').style.display = 'none';
+            setBlockVisible(document.getElementById('pl-form-wrap'), true);
+            setBlockVisible(document.getElementById('premium-wall'), false);
         }
     }
 

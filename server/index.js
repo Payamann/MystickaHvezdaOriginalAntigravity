@@ -45,9 +45,11 @@ import pastLifeRoutes from './routes/past-life.js';
 import medicineWheelRoutes from './routes/medicine-wheel.js';
 import rocniHoroskopRoutes from './routes/rocni-horoskop.js';
 import { spawn } from 'child_process';
+import { getPublicPlanManifest } from './config/constants.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const rootDir = path.resolve(__dirname, '../');
 dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
@@ -55,6 +57,31 @@ const app = express();
 app.set('trust proxy', 1);
 
 const PORT = process.env.PORT || 3001;
+
+function buildInlineScriptHashes() {
+    const hashes = new Set();
+    const scriptBlockPattern = /<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi;
+
+    for (const fileName of fs.readdirSync(rootDir)) {
+        if (!fileName.endsWith('.html')) continue;
+
+        const filePath = path.join(rootDir, fileName);
+        const html = fs.readFileSync(filePath, 'utf8');
+        let match;
+
+        while ((match = scriptBlockPattern.exec(html)) !== null) {
+            const scriptBody = match[1];
+            if (!scriptBody.trim()) continue;
+
+            const hash = crypto.createHash('sha256').update(scriptBody, 'utf8').digest('base64');
+            hashes.add(`'sha256-${hash}'`);
+        }
+    }
+
+    return [...hashes].sort();
+}
+
+const inlineScriptHashes = buildInlineScriptHashes();
 
 // Middleware - Restrict CORS to same-origin by default
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
@@ -169,13 +196,17 @@ app.use(staticLimiter);
 // Gzip Compression
 app.use(compression());
 
-// Security Headers with proper Content Security Policy (applied early so all responses get headers)
+// Security headers. Inline script blocks are allowed only by exact SHA-256 hashes
+// generated from current HTML files, mostly for JSON-LD structured data.
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'", "https://cdnjs.cloudflare.com"],
+            baseUri: ["'self'"],
+            formAction: ["'self'", 'https://checkout.stripe.com'],
             scriptSrc: [
                 "'self'",
+                ...inlineScriptHashes,
                 'https://js.stripe.com',
                 'https://cdn.jsdelivr.net',
                 'https://cdnjs.cloudflare.com',
@@ -186,7 +217,6 @@ app.use(helmet({
             ],
             styleSrc: [
                 "'self'",
-                "'unsafe-inline'",   // Needed for inline styles
                 'https://fonts.googleapis.com',
                 'https://cdnjs.cloudflare.com',
                 'https://cdn.jsdelivr.net',
@@ -222,7 +252,7 @@ app.use(helmet({
                 'https://stats.g.doubleclick.net',
                 'https://www.googletagmanager.com',
             ].filter(Boolean),
-            frameSrc: ["'self'", 'https://js.stripe.com'], // Allow Stripe iframe
+            frameSrc: ["'self'", 'https://js.stripe.com', 'https://checkout.stripe.com'], // Allow Stripe iframe/checkout
             objectSrc: ["'none'"],
             upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null,
         },
@@ -481,15 +511,18 @@ app.get('/horoskopy.html', (req, res, next) => {
 });
 
 // Support for /jmena/:name (redirects to /jmena/?jmeno=Name)
-app.get('/jmena/:name', (req, res) => {
+app.get('/jmena/:name', (req, res, next) => {
     const name = req.params.name;
+    if (name === 'index' || name.includes('.')) {
+        return next();
+    }
+
     // Capitalize first letter to match database
     const capitalized = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
     res.redirect(301, `/jmena/index.html?jmeno=${encodeURIComponent(capitalized)}`);
 });
 
 // Serve static files from the parent directory (MystickaHvezda root)
-const rootDir = path.resolve(__dirname, '../');
 console.warn(`📂 Serving static files from: ${rootDir}`);
 
 const staticOptions = process.env.NODE_ENV === 'production'
@@ -555,6 +588,14 @@ app.use('/api/admin', adminRoutes);
 app.get('/api/config', (req, res) => {
     res.json({
         stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY || null,
+    });
+});
+
+// Public subscription plan manifest for pricing UI.
+app.get('/api/plans', (req, res) => {
+    res.json({
+        success: true,
+        ...getPublicPlanManifest()
     });
 });
 

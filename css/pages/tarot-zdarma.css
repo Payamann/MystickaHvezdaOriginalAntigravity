@@ -1,0 +1,168 @@
+/* Extracted from tarot-zdarma.html inline <style> block. */
+.tarot-hero {
+
+            text-align: center;
+
+            padding: 5rem 2rem 3rem;
+
+        }
+
+
+
+        .tarot-demo {
+
+            max-width: 600px;
+
+            margin: 0 auto;
+
+        }
+
+
+
+        .card-row {
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 1.5rem;
+
+            margin: 2rem 0;
+
+            flex-wrap: wrap;
+
+        }
+
+
+
+        .demo-card {
+
+            width: 120px;
+
+            height: 200px;
+
+            border-radius: 12px;
+
+            cursor: pointer;
+
+            background: linear-gradient(135deg, #2d1b69, #1a0a2e);
+
+            border: 2px solid rgba(212, 175, 55, 0.4);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 2.5rem;
+
+            transition: transform 0.3s, box-shadow 0.3s;
+
+            position: relative;
+
+            overflow: hidden;
+
+        }
+
+
+
+        .demo-card:hover {
+
+            transform: translateY(-8px) rotate(-2deg);
+
+            box-shadow: 0 20px 40px rgba(155, 89, 182, 0.4);
+
+        }
+
+
+
+        .demo-card.flipped {
+
+            border-color: var(--color-mystic-gold);
+
+            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.3);
+
+        }
+
+
+
+        .features-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+
+            gap: 1.5rem;
+
+            margin: 3rem 0;
+
+        }
+
+
+
+        .feature-card {
+
+            background: rgba(255, 255, 255, 0.03);
+
+            border: 1px solid rgba(255, 255, 255, 0.08);
+
+            border-radius: 16px;
+
+            padding: 1.5rem;
+
+            text-align: center;
+
+        }
+
+
+
+        .testimonials {
+
+            display: grid;
+
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+
+            gap: 1rem;
+
+            margin: 2rem 0;
+
+        }
+
+
+
+        .testimonial {
+
+            background: rgba(255, 255, 255, 0.03);
+
+            border: 1px solid rgba(255, 255, 255, 0.08);
+
+            border-radius: 12px;
+
+            padding: 1.25rem;
+
+        }
+
+/* Migrated from tarot-zdarma.html static style attributes. */
+html body .mh-inline-9d47910823 { max-width:600px; margin:0 auto 2rem; }
+html body .mh-inline-0047785d1b { font-size:1.1rem; padding:1rem 2.5rem; }
+html body .mh-inline-08844fa438 { margin-top:3rem; }
+html body .mh-inline-7721223c29 { transform:rotate(3deg); margin-top:-10px; }
+html body .mh-inline-f919e97caa { color:#9b59b6;font-size:0.85rem;display:block;margin-top:1rem; }
+html body .mh-inline-43161e95c1 { max-width:700px; }
+html body .mh-inline-206220f4b6 { background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:1.25rem;margin-bottom:1rem; }
+html body .mh-inline-4c46f574e7 { text-align:center; }
+
+/* Migrated from tarot-zdarma.html remaining static style attributes. */
+html body .mh-inline-ea7ece0fbf { color:rgba(255,255,255,0.35);font-size:0.85rem;margin-top:0.75rem; }
+html body .mh-inline-6d57abf60c { color:rgba(255,255,255,0.4);font-size:0.88rem; }
+html body .mh-inline-d748de8818 { font-size:2.5rem;margin-bottom:0.75rem; }
+html body .mh-inline-4bc303e177 { font-family:'Cinzel',serif;color:#d4af37;font-size:1rem;margin-bottom:0.5rem; }
+html body .mh-inline-007bf9d6cf { color:rgba(255,255,255,0.6);font-size:0.88rem;line-height:1.6; }
+html body .mh-inline-6b72c1bf7c { margin-top:2rem; }
+html body .mh-inline-8fa9796d1f { color:#d4af37;cursor:pointer;font-weight:600; }
+html body .mh-inline-ece2e4f6fa { color:rgba(255,255,255,0.7);margin-top:0.75rem;line-height:1.7; }
+html body .mh-inline-724ba53d2d { color:#d4af37;margin-bottom:0.5rem; }
+html body .mh-inline-6ff69a5388 { color:rgba(255,255,255,0.8);font-size:0.9rem;line-height:1.6; }
+html body .mh-inline-1707c49b2e { color:rgba(255,255,255,0.4);font-size:0.8rem;margin-top:0.5rem; }
+html body .mh-inline-753831b405 { display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:2rem; }

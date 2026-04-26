@@ -113,366 +113,8 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap&subset=latin,latin-ext" rel="stylesheet"></noscript>
 
     <link rel="stylesheet" href="../css/style.v2.min.css?v=4">
-
-
-
-    <style>
-
-        .blog-content {
-
-            max-width: 800px;
-
-            margin: 0 auto;
-
-            line-height: 1.85;
-
-            font-size: 1.05rem;
-
-            color: rgba(255, 255, 255, 0.85);
-
-        }
-
-
-
-        .blog-content h2 {
-
-            font-family: 'Cinzel', serif;
-
-            color: #ebc066;
-
-            font-size: 1.5rem;
-
-            margin: 2.5rem 0 1rem;
-
-            padding-bottom: 0.5rem;
-
-            border-bottom: 1px solid rgba(235, 192, 102, 0.2);
-
-        }
-
-
-
-        .blog-content h3 {
-
-            font-family: 'Cinzel', serif;
-
-            color: #d4af37;
-
-            font-size: 1.15rem;
-
-            margin: 2rem 0 0.75rem;
-
-        }
-
-
-
-        .blog-content p {
-
-            margin-bottom: 1.4rem;
-
-        }
-
-
-
-        .blog-content ul,
-
-        .blog-content ol {
-
-            margin: 0 0 1.4rem 1.5rem;
-
-        }
-
-
-
-        .blog-content li {
-
-            margin-bottom: 0.5rem;
-
-        }
-
-
-
-        .blog-content blockquote {
-
-            border-left: 4px solid #9b59b6;
-
-            padding: 1rem 1.5rem;
-
-            margin: 2rem 0;
-
-            background: rgba(155, 89, 182, 0.08);
-
-            border-radius: 0 12px 12px 0;
-
-            font-style: italic;
-
-            color: rgba(255, 255, 255, 0.9);
-
-        }
-
-
-
-        .blog-content strong {
-
-            color: #fff;
-
-        }
-
-
-
-        .comparison-table {
-
-            width: 100%;
-
-            border-collapse: collapse;
-
-            margin: 1.5rem 0;
-
-        }
-
-
-
-        .comparison-table th {
-
-            background: rgba(235, 192, 102, 0.1);
-
-            color: #ebc066;
-
-            font-family: 'Cinzel', serif;
-
-            padding: 0.75rem 1rem;
-
-            text-align: left;
-
-            border-bottom: 1px solid rgba(235, 192, 102, 0.2);
-
-        }
-
-
-
-        .comparison-table td {
-
-            padding: 0.75rem 1rem;
-
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-
-            color: rgba(255, 255, 255, 0.75);
-
-            vertical-align: top;
-
-        }
-
-
-
-        .comparison-table tr:hover td {
-
-            background: rgba(255, 255, 255, 0.02);
-
-        }
-
-
-
-        .asc-grid {
-
-            display: grid;
-
-            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-
-            gap: 1rem;
-
-            margin: 1.5rem 0;
-
-        }
-
-
-
-        .asc-card {
-
-            background: rgba(10, 10, 26, 0.7);
-
-            border: 1px solid rgba(255, 255, 255, 0.08);
-
-            border-radius: 14px;
-
-            padding: 1.25rem 1.5rem;
-
-        }
-
-
-
-        .asc-card h4 {
-
-            color: #ebc066;
-
-            font-family: 'Cinzel', serif;
-
-            font-size: 1rem;
-
-            margin: 0 0 0.5rem;
-
-        }
-
-
-
-        .asc-card p {
-
-            color: rgba(255, 255, 255, 0.7);
-
-            margin: 0;
-
-            font-size: 0.92rem;
-
-            line-height: 1.7;
-
-        }
-
-
-
-        .highlight-box {
-
-            background: rgba(212, 175, 55, 0.07);
-
-            border: 1px solid rgba(212, 175, 55, 0.2);
-
-            border-radius: 14px;
-
-            padding: 1.5rem 2rem;
-
-            margin: 2rem 0;
-
-        }
-
-
-
-        .highlight-box h3 {
-
-            color: #ebc066;
-
-            margin-top: 0;
-
-            font-family: 'Cinzel', serif;
-
-        }
-
-
-
-        .article-meta {
-
-            display: flex;
-
-            gap: 1.5rem;
-
-            color: rgba(255, 255, 255, 0.4);
-
-            font-size: 0.82rem;
-
-            margin-bottom: 2rem;
-
-            flex-wrap: wrap;
-
-        }
-
-
-
-        .breadcrumb {
-
-            color: rgba(255, 255, 255, 0.35);
-
-            font-size: 0.82rem;
-
-            margin-bottom: 1.5rem;
-
-        }
-
-
-
-        .breadcrumb a {
-
-            color: rgba(235, 192, 102, 0.6);
-
-            text-decoration: none;
-
-        }
-
-
-
-        .author-box {
-
-            margin-top: 3rem;
-
-            padding: 1.5rem 2rem;
-
-            background: rgba(255, 255, 255, 0.03);
-
-            border: 1px solid rgba(255, 255, 255, 0.07);
-
-            border-radius: 16px;
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 1.5rem;
-
-        }
-
-
-
-        .author-avatar {
-
-            width: 56px;
-
-            height: 56px;
-
-            border-radius: 50%;
-
-            background: linear-gradient(135deg, #9b59b6, #d4af37);
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            font-size: 1.5rem;
-
-            flex-shrink: 0;
-
-        }
-
-
-
-        @media(max-width:640px) {
-
-            .asc-grid {
-
-                grid-template-columns: 1fr
-
-            }
-
-
-
-            .author-box {
-
-                flex-direction: column;
-
-                text-align: center
-
-            }
-
-
-
-            .comparison-table {
-
-                font-size: 0.85rem
-
-            }
-
-        }
-
-    </style>
-
-    <script src="/js/dist/analytics-init.js" defer></script>
+    <link rel="stylesheet" href="../css/pages/blog-ascendent-vs-slunecni-znameni-jaky-je-rozdil.css">
+<script src="/js/dist/analytics-init.js" defer></script>
 
     <!-- Doplněné OG / social tagy -->
     <meta property="og:site_name" content="Mystická Hvězda">
@@ -494,9 +136,9 @@
 
     <main id="main-content">
 
-        <section class="section" style="padding-top:130px; padding-bottom:0;">
+        <section class="section mh-inline-736f525d7d">
 
-            <div class="container" style="max-width:800px;">
+            <div class="container mh-inline-d8eb20db2b">
 
                 <div class="breadcrumb">
 
@@ -506,7 +148,7 @@
 
                 <span class="section__badge">Astrologie</span>
 
-                <h1 class="hero__title" style="font-size:2.2rem; text-align:left; margin-top:1rem; line-height:1.25;">
+                <h1 class="hero__title mh-inline-8275ac1b5c">
 
                     Ascendent vs. Sluneční znamení:<br><span class="text-gradient">Jaký je skutečný rozdíl?</span>
 
@@ -528,7 +170,7 @@
 
 
 
-        <section class="section" style="padding-top:2rem;">
+        <section class="section mh-inline-5e5ed0543f">
 
             <div class="container">
 
@@ -896,11 +538,11 @@
 
                         <div>
 
-                            <div style="color:#ebc066; font-weight:600; margin-bottom:0.25rem;">Tým Mystická Hvězda
+                            <div class="mh-inline-68e670894b">Tým Mystická Hvězda
 
                             </div>
 
-                            <p style="margin:0; color:rgba(255,255,255,0.5); font-size:0.85rem; line-height:1.6;">
+                            <p class="mh-inline-8139419ebb">
 
                                 Astrologický výklad je věda i umění. Naším cílem je přiblížit ho každému srozumitelně a
 
@@ -914,13 +556,13 @@
 
                     <div
 
-                        style="margin-top:2.5rem; text-align:center; padding:2rem; background:rgba(155,89,182,0.08); border:1px solid rgba(155,89,182,0.2); border-radius:16px;">
+                        class="mh-inline-4a990e7c6b">
 
-                        <p style="font-family:'Cinzel',serif; color:#ebc066; font-size:1.05rem; margin:0 0 0.75rem;">
+                        <p class="mh-inline-61c9defb20">
 
                             Zjistěte svůj Ascendent právě teď</p>
 
-                        <p style="color:rgba(255,255,255,0.6); font-size:0.9rem; margin:0 0 1.25rem;">Zadejte datum, čas
+                        <p class="mh-inline-436fff38fc">Zadejte datum, čas
 
                             a místo narození a okamžitě uvidíte celou natální kartu včetně Ascendentu.</p>
 
@@ -930,7 +572,7 @@
 
                 </div>
 
-                <div style="text-align:center; margin-top:2rem;">
+                <div class="mh-inline-1053deaf1a">
 
                     <a href="../blog.html" class="btn btn--glass">← Zpět na blog</a>
 
@@ -947,15 +589,15 @@
     
 
         <!-- KONVERZNÍ CTA BLOK -->
-    <div style="margin: 3rem 0 2rem; padding: 2rem; background: linear-gradient(135deg, rgba(155,89,182,0.15), rgba(212,175,55,0.08)); border: 1px solid rgba(212,175,55,0.3); border-radius: 20px; text-align: center;">
-        <div style="font-size: 2rem; margin-bottom: 0.75rem;">⭐</div>
-        <h3 style="font-family: 'Cinzel', serif; color: #d4af37; font-size: 1.3rem; margin-bottom: 0.75rem;">Zjisti, co říkají hvězdy o tobě</h3>
-        <p style="color: rgba(255,255,255,0.7); line-height: 1.7; margin-bottom: 1.5rem; max-width: 480px; margin-left: auto; margin-right: auto;">Vygeneruj si svou natální kartu — přesná mapa nebes v moment tvého narození s výkladem každého prvku.</p>
-        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-            <a href="../natalni-karta.html" style="display: inline-block; padding: 0.75rem 1.75rem; background: linear-gradient(135deg, #9b59b6, #6c3483); border-radius: 50px; color: white; text-decoration: none; font-weight: 600; font-size: 0.95rem;">Spočítat natální kartu</a>
-            <a href="../cenik.html" style="display: inline-block; padding: 0.75rem 1.75rem; background: transparent; border: 1px solid rgba(212,175,55,0.5); border-radius: 50px; color: #d4af37; text-decoration: none; font-size: 0.95rem;">Zobrazit plány</a>
+    <div class="mh-inline-de18c65dbf">
+        <div class="mh-inline-a698823a98">⭐</div>
+        <h3 class="mh-inline-67975af6df">Zjisti, co říkají hvězdy o tobě</h3>
+        <p class="mh-inline-a4b9740e97">Vygeneruj si svou natální kartu — přesná mapa nebes v moment tvého narození s výkladem každého prvku.</p>
+        <div class="mh-inline-5495ea4b1f">
+            <a href="../natalni-karta.html" class="mh-inline-be29c76e14">Spočítat natální kartu</a>
+            <a href="../cenik.html" class="mh-inline-4ee6ec33b7">Zobrazit plány</a>
         </div>
-        <p style="color: rgba(255,255,255,0.3); font-size: 0.8rem; margin-top: 0.75rem;">Bez platební karty &bull; Zrušení kdykoliv</p>
+        <p class="mh-inline-029074f7fd">Bez platební karty &bull; Zrušení kdykoliv</p>
     </div>
 
 
@@ -964,15 +606,15 @@
 
     <!-- RELATED POSTS WIDGET -->
 
-    <div id="related-posts-section" style="margin: 2rem 0 3rem;">
+    <div id="related-posts-section" class="mh-inline-c9e2062637">
 
-        <h3 style="font-family: 'Cinzel', serif; color: #d4af37; font-size: 1.1rem; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(212,175,55,0.2);">📚 Čtěte také</h3>
+        <h3 class="mh-inline-18d389bae7">📚 Čtěte také</h3>
 
-        <div id="related-posts-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;"></div>
+        <div id="related-posts-grid" class="mh-inline-78d4f78065"></div>
 
     </div>
 
-    <script src="/js/blog-related.js" defer></script>
+    <script src="/js/dist/blog-related.js" defer></script>
 
 
 
@@ -980,19 +622,19 @@
 
 
 
-    <script src="../js/api-config.js?v=5" defer></script>
+    <script src="../js/dist/api-config.js?v=5" defer></script>
 
-    <script src="../js/templates.js?v=10" defer></script>
+    <script src="../js/dist/templates.js?v=10" defer></script>
 
-    <script src="../js/auth-client.js?v=5" defer></script>
+    <script src="../js/dist/auth-client.js?v=5" defer></script>
 
-        <script src="../js/blog-enhancements.js" defer></script>
+        <script src="../js/dist/blog-enhancements.js" defer></script>
 
-    <script src="../js/components.js?v=10" defer></script>
+    <script src="../js/dist/components.js?v=10" defer></script>
 
-    <script type="module" src="../js/main.js?v=10"></script>
+    <script type="module" src="../js/dist/main.js?v=10"></script>
 
-    <script src="../js/newsletter-popup.js" defer></script>
+    <script src="../js/dist/newsletter-popup.js" defer></script>
 
 </body>
 

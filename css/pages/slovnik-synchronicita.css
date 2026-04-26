@@ -1,0 +1,248 @@
+/* Extracted from slovnik/synchronicita.html inline <style> block. */
+.dictionary-header {
+
+            padding: 4rem 0 2rem;
+
+            text-align: center;
+
+        }
+
+
+
+        .dictionary-badge {
+
+            display: inline-block;
+
+            background: rgba(155, 89, 182, 0.2);
+
+            color: #d4af37;
+
+            padding: 0.5rem 1rem;
+
+            border-radius: 50px;
+
+            font-size: 0.9rem;
+
+            margin-bottom: 1rem;
+
+            border: 1px solid rgba(212, 175, 55, 0.3);
+
+        }
+
+
+
+        .dictionary-content {
+
+            max-width: 800px;
+
+            margin: 0 auto;
+
+            background: rgba(10, 10, 26, 0.8);
+
+            border: 1px solid rgba(255, 255, 255, 0.1);
+
+            padding: 3rem;
+
+            border-radius: 20px;
+
+            backdrop-filter: blur(10px);
+
+            line-height: 1.8;
+
+            color: var(--color-text-light);
+
+            font-size: 1.1rem;
+
+        }
+
+
+
+        .dictionary-content h2,
+
+        .dictionary-content h3 {
+
+            color: var(--color-mystic-gold);
+
+            margin-top: 2rem;
+
+            margin-bottom: 1rem;
+
+        }
+
+
+
+        .dictionary-content p {
+
+            margin-bottom: 1.5rem;
+
+        }
+
+
+
+        .dictionary-content ul,
+
+        .dictionary-content ol {
+
+            margin-bottom: 1.5rem;
+
+            padding-left: 1.5rem;
+
+        }
+
+
+
+        .dictionary-content li {
+
+            margin-bottom: 0.5rem;
+
+        }
+
+
+
+        .related-features {
+
+            margin-top: 4rem;
+
+            padding-top: 2rem;
+
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+        }
+
+
+
+        .related-features h3 {
+
+            text-align: center;
+
+            margin-bottom: 1.5rem;
+
+        }
+
+
+
+        .features-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+
+            gap: 1.5rem;
+
+        }
+
+
+
+        .feature-card {
+
+            background: rgba(255, 255, 255, 0.05);
+
+            border: 1px solid rgba(255, 255, 255, 0.1);
+
+            padding: 1.5rem;
+
+            border-radius: 12px;
+
+            text-align: center;
+
+            transition: all 0.3s ease;
+
+            text-decoration: none;
+
+            color: white;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            gap: 1rem;
+
+        }
+
+
+
+        .feature-card:hover {
+
+            transform: translateY(-5px);
+
+            border-color: var(--color-primary);
+
+            background: rgba(155, 89, 182, 0.1);
+
+            box-shadow: 0 5px 15px rgba(155, 89, 182, 0.3);
+
+        }
+
+
+
+        .feature-icon {
+
+            font-size: 2.5rem;
+
+        }
+
+
+
+        .feature-title {
+
+            font-weight: 600;
+
+            color: var(--color-mystic-gold);
+
+        }
+
+
+
+        .breadcrumb {
+
+            margin-bottom: 2rem;
+
+            font-size: 0.9rem;
+
+            color: var(--color-text-mutated);
+
+        }
+
+
+
+        .breadcrumb a {
+
+            color: var(--color-mystic-gold);
+
+            text-decoration: none;
+
+        }
+
+
+
+        .breadcrumb a:hover {
+
+            text-decoration: underline;
+
+        }
+
+
+
+        @media (max-width: 768px) {
+
+            .dictionary-content {
+
+                padding: 1.5rem;
+
+            }
+
+        }
+
+/* Migrated from slovnik/synchronicita.html static style attributes. */
+html body .mh-inline-ca1d20353e { max-width: 800px; margin: 0 auto; text-align: left; }
+html body .mh-inline-34fb459054 { text-align: left; font-size: 2.5rem; margin-top: 0.5rem; margin-bottom: 0; }
+html body .mh-inline-2c0adb1490 { padding-top: 0; }
+html body .mh-inline-bc21480acc { margin-top:2rem; padding: 1.5rem; background: rgba(155,89,182,0.08); border-left: 3px solid var(--color-primary); border-radius:0 12px 12px 0; }
+html body .mh-inline-102e2cb5d5 { margin:0; font-size:0.9rem; color:var(--color-text-mutated); }
+html body .mh-inline-ae8ad38bff { color:white; }
+html body .mh-inline-0f276ea656 { color:var(--color-primary); text-decoration:underline; }
+html body .mh-inline-2a37741a1d { margin-top:3rem; padding-top:2rem; border-top: 1px solid rgba(255,255,255,0.08); }
+html body .mh-inline-a22aeb574d { font-size:0.85rem; text-transform:uppercase; letter-spacing:1px; color:var(--color-text-mutated); margin-bottom:1rem; }
+html body .mh-inline-7d48f9c6f2 { display:inline-block; margin: 0.3rem; padding: 0.5rem 1rem; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); border-radius: 50px; color: #d4af37; text-decoration: none; font-size: 0.9rem; transition: all 0.2s ease; }

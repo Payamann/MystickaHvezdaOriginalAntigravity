@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 1. Fetch JSON Data
     async function loadDreamData() {
         try {
-            const response = await fetch('data/dreams.json');
+            const response = await fetch('/data/dreams.json');
             if (!response.ok) throw new Error('Data se nepodařilo načíst');
             dreamsData = await response.json();
 
@@ -43,8 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const btnAll = document.createElement('button');
         btnAll.className = 'alphabet-btn active';
         btnAll.textContent = 'Vše';
-        btnAll.style.width = 'auto';
-        btnAll.style.padding = '0 10px';
+        btnAll.classList.add('alphabet-btn--all');
         btnAll.addEventListener('click', () => filterByLetter(null));
         alphabetNav.appendChild(btnAll);
 
@@ -83,14 +82,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Add "Load More" button if needed
         if (useLimit && totalCount > currentlyVisibleCount) {
             const loadMoreWrapper = document.createElement('div');
-            loadMoreWrapper.style.gridColumn = '1 / -1';
-            loadMoreWrapper.style.textAlign = 'center';
-            loadMoreWrapper.style.marginTop = '2rem';
+            loadMoreWrapper.className = 'load-more-wrapper';
             
             const loadMoreBtn = document.createElement('button');
             loadMoreBtn.className = 'btn btn--secondary';
             loadMoreBtn.textContent = 'Načíst další symboly';
-            loadMoreBtn.style.padding = '12px 30px';
+            loadMoreBtn.classList.add('load-more-button');
             loadMoreBtn.addEventListener('click', () => {
                 currentlyVisibleCount += 24;
                 renderDictionary(true);

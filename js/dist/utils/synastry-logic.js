@@ -1,0 +1,1 @@
+function i(t,n){if(!t?.name||!n?.name)return{emotion:0,communication:0,passion:0,total:0};let o=t.name.length+n.name.length,c=60+o*3%39,e=60+o*7%39,a=60+o*5%39,m=Math.floor((c+e+a)/3);return{emotion:c,communication:e,passion:a,total:m}}export{i as calculateSynastryScores};

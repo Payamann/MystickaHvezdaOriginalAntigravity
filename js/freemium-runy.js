@@ -29,7 +29,10 @@
 
             if (countEl) countEl.textContent = remaining + ' / ' + DAILY_LIMIT;
 
-            if (banner) banner.style.display = 'block';
+            if (banner) {
+                banner.hidden = false;
+                banner.classList.add('mh-block-visible');
+            }
 
         }
 

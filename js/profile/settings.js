@@ -134,8 +134,9 @@ export async function saveSettings() {
 export function toggleAvatarPicker() {
     const picker = document.getElementById('avatar-picker');
     if (!picker) return;
-    const isHidden = picker.style.display === 'none' || !picker.style.display;
-    picker.style.display = isHidden ? 'block' : 'none';
+    const isHidden = picker.hidden || !picker.classList.contains('profile-block-visible');
+    picker.hidden = !isHidden;
+    picker.classList.toggle('profile-block-visible', isHidden);
 
     if (isHidden) {
         const currentAvatar = document.getElementById('user-avatar')?.textContent?.trim();
@@ -150,7 +151,10 @@ export async function selectAvatar(emoji) {
     const picker = document.getElementById('avatar-picker');
 
     if (avatarEl) avatarEl.textContent = emoji;
-    if (picker) picker.style.display = 'none';
+    if (picker) {
+        picker.hidden = true;
+        picker.classList.remove('profile-block-visible');
+    }
 
     picker?.querySelectorAll('.avatar-option').forEach(opt => {
         opt.classList.toggle('avatar-option--active', opt.dataset.avatar === emoji);
@@ -262,9 +266,9 @@ function renderSubscriptionCard(sub) {
     if (sub.status === 'trialing' && periodEnd) {
         const daysRemaining = Math.max(0, Math.ceil((periodEnd - new Date()) / 86400000));
         const dayWord = daysRemaining === 1 ? 'den' : (daysRemaining >= 2 && daysRemaining <= 4) ? 'dny' : 'dni';
-        html += `<div class="trial-countdown" style="margin: 12px 0; padding: 12px 16px; background: rgba(52, 152, 219, 0.15); border: 1px solid rgba(52, 152, 219, 0.3); border-radius: 8px;">
-            <span style="color: var(--color-starlight, #f0e68c);">Zkušební období: zbývá <strong>${daysRemaining}</strong> ${dayWord}</span>
-            <span style="display: block; opacity: 0.7; font-size: 0.85rem; margin-top: 4px;">Končí: ${periodEndStr}</span>
+        html += `<div class="trial-countdown">
+            <span class="trial-countdown__main">Zkušební období: zbývá <strong>${daysRemaining}</strong> ${dayWord}</span>
+            <span class="trial-countdown__date">Končí: ${periodEndStr}</span>
         </div>`;
     }
 
@@ -302,9 +306,20 @@ function renderSubscriptionCard(sub) {
     document.getElementById('sub-portal-btn')?.addEventListener('click', openStripePortal);
 }
 
-async function cancelSubscription() {
-    if (!confirm('Opravdu chcete zrušit předplatné? Přístup vám zůstane do konce aktuálního období.')) {
+async function cancelSubscription({ skipRetention = false } = {}) {
+    if (!skipRetention && window.MH_RETENTION?.showCancellationModal) {
+        window.MH_ANALYTICS?.trackSubscriptionAction?.('cancel_flow_opened', {
+            source: 'profile_settings'
+        });
+        window.MH_RETENTION.showCancellationModal(() => cancelSubscription({ skipRetention: true }));
         return;
+    }
+
+    if (!skipRetention) {
+        const confirmed = confirm('Opravdu chcete zrušit předplatné? Přístup vám zůstane do konce aktuálního období.');
+        if (!confirmed) {
+            return;
+        }
     }
 
     const btn = document.getElementById('sub-cancel-btn');

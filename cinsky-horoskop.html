@@ -36,300 +36,14 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap&subset=latin,latin-ext" rel="stylesheet"></noscript>
 
     <link rel="stylesheet" href="css/style.v2.min.css?v=11">
+    <link rel="stylesheet" href="css/pages/cinsky-horoskop.css">
 
     <script type="application/ld+json">
 
     {"@context":"https://schema.org","@type":"WebPage","name":"Čínský horoskop 2026","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Domů","item":"https://www.mystickahvezda.cz/"},{"@type":"ListItem","position":2,"name":"Čínský horoskop","item":"https://www.mystickahvezda.cz/cinsky-horoskop.html"}]}}
 
     </script>
-
-    <style>
-
-        .animal-grid {
-
-            display: grid;
-
-            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-
-            gap: 0.75rem;
-
-            max-width: 800px;
-
-            margin: 2rem auto;
-
-        }
-
-
-
-        .animal-btn {
-
-            background: rgba(255, 255, 255, 0.04);
-
-            border: 1px solid rgba(255, 255, 255, 0.1);
-
-            border-radius: 14px;
-
-            padding: 1rem 0.5rem;
-
-            cursor: pointer;
-
-            transition: all 0.25s;
-
-            text-align: center;
-
-            color: rgba(255, 255, 255, 0.75);
-
-            font-size: 0.82rem;
-
-            font-family: inherit;
-
-        }
-
-
-
-        .animal-btn:hover,
-
-        .animal-btn.active {
-
-            background: rgba(212, 175, 55, 0.12);
-
-            border-color: rgba(212, 175, 55, 0.4);
-
-            color: white;
-
-            transform: translateY(-3px);
-
-        }
-
-
-
-        .animal-btn span {
-
-            display: block;
-
-            font-size: 2rem;
-
-            margin-bottom: 0.4rem;
-
-        }
-
-
-
-        .result-section {
-
-            max-width: 700px;
-
-            margin: 2rem auto;
-
-            display: none;
-
-            animation: fadeIn 0.4s ease;
-
-        }
-
-
-
-        .result-section.show {
-
-            display: block;
-
-        }
-
-
-
-        @keyframes fadeIn {
-
-            from {
-
-                opacity: 0;
-
-                transform: translateY(20px)
-
-            }
-
-
-
-            to {
-
-                opacity: 1;
-
-                transform: translateY(0)
-
-            }
-
-        }
-
-
-
-        .result-hero {
-
-            padding: 2.5rem 2rem;
-
-            border-radius: 20px;
-
-            text-align: center;
-
-            margin-bottom: 1.5rem;
-
-        }
-
-
-
-        .detail-card {
-
-            background: rgba(255, 255, 255, 0.04);
-
-            border: 1px solid rgba(255, 255, 255, 0.08);
-
-            border-radius: 14px;
-
-            padding: 1.25rem;
-
-            margin-bottom: 1rem;
-
-        }
-
-
-
-        .detail-card h3 {
-
-            color: #d4af37;
-
-            font-family: 'Cinzel', serif;
-
-            font-size: 1rem;
-
-            margin-bottom: 0.75rem;
-
-        }
-
-
-
-        .compat-grid {
-
-            display: flex;
-
-            gap: 1rem;
-
-            flex-wrap: wrap;
-
-            margin-top: 0.5rem;
-
-        }
-
-
-
-        .compat-badge {
-
-            padding: 0.3rem 0.75rem;
-
-            border-radius: 50px;
-
-            font-size: 0.82rem;
-
-        }
-
-
-
-        .compat-good {
-
-            background: rgba(46, 204, 113, 0.15);
-
-            border: 1px solid rgba(46, 204, 113, 0.3);
-
-            color: #2ecc71;
-
-        }
-
-
-
-        .compat-bad {
-
-            background: rgba(231, 76, 60, 0.12);
-
-            border: 1px solid rgba(231, 76, 60, 0.3);
-
-            color: #ff6b6b;
-
-        }
-
-
-
-        .year-input-wrapper {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 12px;
-            overflow: hidden;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            height: 48px;
-        }
-
-        .year-input-wrapper:focus-within {
-            border-color: rgba(212, 175, 55, 0.6);
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
-        }
-
-        .year-input {
-            padding: 0 0.5rem;
-            background: transparent !important;
-            border: none !important;
-            color: white;
-            font-size: 1.1rem;
-            font-family: 'Inter', sans-serif;
-            outline: none;
-            width: 80px;
-            text-align: center;
-            margin: 0;
-            height: 100%;
-            -webkit-appearance: none;
-            appearance: none;
-            -moz-appearance: textfield;
-        }
-
-        .year-input::-webkit-outer-spin-button,
-        .year-input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        .ctrl-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: none;
-            color: rgba(255, 255, 255, 0.6);
-            width: 40px;
-            height: 100%;
-            cursor: pointer;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            user-select: none;
-        }
-
-        .ctrl-btn:hover {
-            color: #d4af37;
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .ctrl-btn:active {
-            transform: scale(0.9);
-        }
-
-        .ctrl-btn.minus {
-            border-right: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .ctrl-btn.plus {
-            border-left: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-    </style>
-
-  <!-- DOMPurify for XSS protection (must load synchronously before other scripts use it) -->
+<!-- DOMPurify for XSS protection (must load synchronously before other scripts use it) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"></script>
     <script src="/js/dist/analytics-init.js" defer></script>
 </head>
@@ -346,9 +60,9 @@
 
     <main>
 
-        <section class="section" style="padding-top:5rem;text-align:center;">
+        <section class="section mh-inline-31328a8ea3">
 
-            <div class="container" style="max-width:800px;">
+            <div class="container mh-inline-cd1c29fb1d">
 
                 <div data-animate>
 
@@ -364,7 +78,7 @@
 
                 <!-- Rok zadání -->
 
-                <div style="margin:2rem 0 1rem;display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;"
+                <div class="mh-inline-5f03cef152"
 
                     data-animate>
 
@@ -419,17 +133,17 @@
 
                     <div class="result-hero" id="result-hero">
 
-                        <div id="result-emoji" style="font-size:5rem;margin-bottom:0.75rem;"></div>
+                        <div id="result-emoji" class="mh-inline-0acb84fc14"></div>
 
                         <h2 id="result-name"
 
-                            style="font-family:'Cinzel',serif;font-size:2rem;color:white;margin-bottom:0.25rem;"></h2>
+                            class="mh-inline-7fb01b8db9"></h2>
 
-                        <p id="result-years" style="color:rgba(255,255,255,0.5);font-size:0.9rem;margin-bottom:0.5rem;">
+                        <p id="result-years" class="mh-inline-882eac247e">
 
                         </p>
 
-                        <p id="result-element" style="color:#d4af37;font-size:0.95rem;"></p>
+                        <p id="result-element" class="mh-inline-5f26a41e27"></p>
 
                     </div>
 
@@ -439,17 +153,17 @@
 
                         <h3>🌟 Charakteristika</h3>
 
-                        <p id="result-desc" style="color:rgba(255,255,255,0.8);line-height:1.8;"></p>
+                        <p id="result-desc" class="mh-inline-7766ed7ec2"></p>
 
                     </div>
 
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                    <div class="mh-inline-e4f4aa02dd">
 
                         <div class="detail-card">
 
                             <h3>❤️ V lásce</h3>
 
-                            <p id="result-love" style="color:rgba(255,255,255,0.75);line-height:1.6;font-size:0.92rem;">
+                            <p id="result-love" class="mh-inline-43bc13b9b3">
 
                             </p>
 
@@ -461,7 +175,7 @@
 
                             <p id="result-career"
 
-                                style="color:rgba(255,255,255,0.75);line-height:1.6;font-size:0.92rem;"></p>
+                                class="mh-inline-43bc13b9b3"></p>
 
                         </div>
 
@@ -471,7 +185,7 @@
 
                         <h3>🔮 Prognóza 2026 — Rok Koně</h3>
 
-                        <p id="result-2026" style="color:rgba(255,255,255,0.8);line-height:1.8;"></p>
+                        <p id="result-2026" class="mh-inline-7766ed7ec2"></p>
 
                     </div>
 
@@ -479,13 +193,13 @@
 
                         <h3>🤝 Kompatibilita</h3>
 
-                        <p style="color:rgba(255,255,255,0.5);font-size:0.85rem;margin-bottom:0.75rem;">Ideální
+                        <p class="mh-inline-4258f29939">Ideální
 
                             partneři:</p>
 
                         <div class="compat-grid" id="compat-good"></div>
 
-                        <p style="color:rgba(255,255,255,0.5);font-size:0.85rem;margin:0.75rem 0 0.5rem;">Náročné
+                        <p class="mh-inline-50d84c4b9c">Náročné
 
                             kombinace:</p>
 
@@ -495,7 +209,7 @@
 
                     <div
 
-                        style="text-align:center;margin-top:1.5rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+                        class="mh-inline-c20fb24ce2">
 
                         <a href="horoskopy.html" class="btn btn--primary">🌌 Západní horoskop</a>
 
@@ -513,9 +227,9 @@
 
         <!-- ČÍNSKÁ KOMPATIBILITA -->
 
-        <section class="section section--alt" id="chinese-synastry" style="padding-top:3rem; padding-bottom:5rem;">
+        <section class="section section--alt mh-inline-e73c9faaa6" id="chinese-synastry">
 
-            <div class="container" style="max-width:800px; text-align:center;">
+            <div class="container mh-inline-dae7ef5af5">
 
                 <span class="section__badge">Partnerská shoda</span>
 
@@ -527,22 +241,22 @@
 
 
 
-                <div class="card" style="margin-top:2rem; padding:2rem; background:rgba(20,15,30,0.6);" data-animate>
+                <div class="card mh-inline-4e254343b9" data-animate>
 
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:1.5rem;">
+                    <div class="mh-inline-a3cd1c1280">
 
                         <div>
 
                             <label for="synastry-year1"
 
-                                style="display:block; color:var(--color-silver-mist); margin-bottom:0.5rem; font-size:0.9rem;">Váš
+                                class="mh-inline-8d53b49ce0">Váš
 
                                 rok narození</label>
 
-                            <div class="year-input-wrapper" style="width:100%;">
+                            <div class="year-input-wrapper u-w-full">
                                 <button class="ctrl-btn minus" type="button" data-action="stepDown">−</button>
-                                <input type="number" id="synastry-year1" class="year-input" placeholder="Např. 1986"
-                                    min="1900" max="2100" style="width:100%;">
+                                <input type="number" id="synastry-year1" class="year-input u-w-full" placeholder="Např. 1986"
+                                    min="1900" max="2100">
                                 <button class="ctrl-btn plus" type="button" data-action="stepUp">+</button>
                             </div>
 
@@ -552,14 +266,14 @@
 
                             <label for="synastry-year2"
 
-                                style="display:block; color:var(--color-silver-mist); margin-bottom:0.5rem; font-size:0.9rem;">Rok
+                                class="mh-inline-8d53b49ce0">Rok
 
                                 partnera</label>
 
-                            <div class="year-input-wrapper" style="width:100%;">
+                            <div class="year-input-wrapper u-w-full">
                                 <button class="ctrl-btn minus" type="button" data-action="stepDown">−</button>
-                                <input type="number" id="synastry-year2" class="year-input" placeholder="Např. 1990"
-                                    min="1900" max="2100" style="width:100%;">
+                                <input type="number" id="synastry-year2" class="year-input u-w-full" placeholder="Např. 1990"
+                                    min="1900" max="2100">
                                 <button class="ctrl-btn plus" type="button" data-action="stepUp">+</button>
                             </div>
 
@@ -567,7 +281,7 @@
 
                     </div>
 
-                    <button id="btn-synastry" class="btn btn--primary" style="width:100%;">&#128158;
+                    <button id="btn-synastry" class="btn btn--primary u-w-full">&#128158;
 
                         Vypočítat shodu vztahu</button>
 
@@ -577,33 +291,33 @@
 
                     <div id="synastry-result"
 
-                        style="display:none; margin-top:2rem; text-align:left; border-top:1px solid rgba(255,255,255,0.1); padding-top:2rem; animation:fadeIn 0.5s ease;">
+                        class="mh-inline-8b5ba9f1a4">
 
                         <div
 
-                            style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+                            class="mh-inline-8e1313a4cc">
 
-                            <div style="text-align:center; flex:1;">
+                            <div class="mh-inline-4ed11ed228">
 
-                                <div id="syn-emoji1" style="font-size:3rem;"></div>
+                                <div id="syn-emoji1" class="mh-inline-200aa8a60a"></div>
 
                                 <div id="syn-name1"
 
-                                    style="color:var(--color-mystic-gold); font-weight:bold; font-family:'Cinzel', serif; font-size:1.1rem; margin-top:0.5rem;">
+                                    class="mh-inline-563b028729">
 
                                 </div>
 
                             </div>
 
-                            <div style="font-size:2rem; opacity:0.5;">&#128150;</div>
+                            <div class="mh-inline-507e25c2d7">&#128150;</div>
 
-                            <div style="text-align:center; flex:1;">
+                            <div class="mh-inline-4ed11ed228">
 
-                                <div id="syn-emoji2" style="font-size:3rem;"></div>
+                                <div id="syn-emoji2" class="mh-inline-200aa8a60a"></div>
 
                                 <div id="syn-name2"
 
-                                    style="color:var(--color-mystic-gold); font-weight:bold; font-family:'Cinzel', serif; font-size:1.1rem; margin-top:0.5rem;">
+                                    class="mh-inline-563b028729">
 
                                 </div>
 
@@ -613,11 +327,11 @@
 
 
 
-                        <div class="detail-card" style="text-align:center; background:rgba(0,0,0,0.2);">
+                        <div class="detail-card mh-inline-0edad4595f">
 
-                            <h3 id="syn-title" style="font-size:1.4rem; margin-bottom:0.75rem;"></h3>
+                            <h3 id="syn-title" class="mh-inline-ab9e971564"></h3>
 
-                            <p id="syn-desc" style="color:rgba(255,255,255,0.85); line-height:1.6; font-size:0.95rem;">
+                            <p id="syn-desc" class="mh-inline-888043c781">
 
                             </p>
 
@@ -627,11 +341,11 @@
 
                         <!-- CTA Do Synastrie Západní a Premium -->
 
-                        <div style="text-align:center; margin-top:1.5rem;">
+                        <div class="mh-inline-fb7d31145b">
 
-                            <a href="partnerska-shoda.html" class="btn btn--primary"
+                            <a href="partnerska-shoda.html" class="btn btn--primary mh-inline-6bb703f1fd"
 
-                                style="background:linear-gradient(135deg, #d4af37, #f1c40f); color:#000; border:none; box-shadow:0 0 15px rgba(212,175,55,0.6);"><i
+                               ><i
 
                                     class="fas fa-magic"></i> Získat hloubkový astrologický rozbor páru</a>
 
@@ -651,25 +365,25 @@
 
     <div id="footer-placeholder"></div>
 
-    <script src="js/api-config.js?v=5" defer></script>
+    <script src="js/dist/api-config.js?v=5" defer></script>
 
     <script src="js/dist/templates.js" defer></script>
-    <script src="js/auth-client.js?v=5" defer></script>
-<script src="js/auth-copy-fixes.js" defer></script>
-    <script src="js/secondary-pages-copy-fixes.js" defer></script>
+    <script src="js/dist/auth-client.js?v=5" defer></script>
+<script src="js/dist/auth-copy-fixes.js" defer></script>
+    <script src="js/dist/secondary-pages-copy-fixes.js" defer></script>
 
-    <script src="js/components.js?v=10" defer></script>
+    <script src="js/dist/components.js?v=10" defer></script>
 
     
 
-    <script src="js/exit-intent.js" defer></script>
+    <script src="js/dist/exit-intent.js" defer></script>
 
-    <script type="module" src="js/main.js?v=10"></script>
+    <script type="module" src="js/dist/main.js?v=10"></script>
 
     <!-- Nový dynamický skript pro čínský horoskop (Zvířata, Elementy podle ročníku a Synastrie) -->
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" defer></script>
-    <script src="js/cinsky-horoskop.js?v=6" defer></script>
+    <script src="js/dist/cinsky-horoskop.js?v=6" defer></script>
 
 
 </body>

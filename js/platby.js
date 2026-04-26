@@ -33,8 +33,8 @@ async function handlePaymentClick(planId, btn) {
     try {
         // Loading state
         btn.disabled = true;
-        btn.style.opacity = '0.7';
-        btn.innerHTML = '<span class="loading-spinner" style="width: 16px; height: 16px; border-width: 2px; vertical-align: middle; margin-right: 8px;"></span> Přesměrování...';
+        btn.classList.add('payment-button--loading');
+        btn.innerHTML = '<span class="loading-spinner loading-spinner--payment"></span> Přesměrování...';
 
         const baseUrl = window.API_CONFIG?.BASE_URL || '/api';
         const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
@@ -70,7 +70,7 @@ async function handlePaymentClick(planId, btn) {
 
         // Reset button
         btn.disabled = false;
-        btn.style.opacity = '1';
+        btn.classList.remove('payment-button--loading');
         btn.innerHTML = originalText;
     }
 }

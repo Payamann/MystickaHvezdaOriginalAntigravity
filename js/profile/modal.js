@@ -19,8 +19,9 @@ export async function viewReading(id) {
     if (!modal || !content) return;
 
     currentReadingId = id;
-    modal.style.display = 'flex';
-    content.innerHTML = '<p style="text-align: center; opacity: 0.6;">Načítání...</p>';
+    modal.hidden = false;
+    modal.classList.add('is-visible');
+    content.innerHTML = '<p class="reading-modal__loading">Načítání...</p>';
 
     // Trap focus inside modal
     trapFocus(modal);
@@ -40,16 +41,20 @@ export async function viewReading(id) {
         updateFavoriteButton();
 
         content.innerHTML = renderReadingContent(reading);
+        bindReadingImageFallbacks(content);
 
     } catch (error) {
         console.error('Error loading reading:', error);
-        content.innerHTML = `<p style="color: #e74c3c;">Nepodařilo se načíst výklad.</p>`;
+        content.innerHTML = '<p class="reading-modal__error">Nepodařilo se načíst výklad.</p>';
     }
 }
 
 export function closeReadingModal() {
     const modal = document.getElementById('reading-modal');
-    if (modal) modal.style.display = 'none';
+    if (modal) {
+        modal.classList.remove('is-visible');
+        modal.hidden = true;
+    }
     currentReadingId = null;
     releaseFocus();
 }
@@ -94,7 +99,7 @@ export async function toggleFavorite(id, buttonEl = null) {
 
         // Refresh favorites tab if visible
         const favoritesTab = document.getElementById('tab-favorites');
-        if (favoritesTab && favoritesTab.style.display !== 'none') {
+        if (favoritesTab && favoritesTab.classList.contains('is-active')) {
             loadFavorites();
         }
 
@@ -201,18 +206,28 @@ function getFocusableElements(modal) {
     )).filter((element) => element.offsetParent !== null);
 }
 
+function bindReadingImageFallbacks(root) {
+    root.querySelectorAll('[data-tarot-fallback]').forEach((image) => {
+        image.addEventListener('error', () => {
+            if (image.dataset.fallbackApplied === '1') return;
+            image.dataset.fallbackApplied = '1';
+            image.src = '/img/tarot/tarot_placeholder.webp';
+        });
+    });
+}
+
 function renderReadingContent(reading) {
     const date = new Date(reading.created_at).toLocaleDateString('cs-CZ', {
         day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
     });
 
     let contentHtml = `
-        <div style="text-align: center; margin-bottom: 1.5rem;">
-            <span style="font-size: 3rem;" aria-hidden="true">${getReadingIcon(reading.type)}</span>
-            <h2 style="margin: 0.5rem 0;">${escapeHtml(getReadingTitle(reading.type))}</h2>
-            <p style="opacity: 0.6; font-size: 0.9rem;">${date}</p>
+        <div class="reading-detail__header">
+            <span class="reading-detail__icon" aria-hidden="true">${getReadingIcon(reading.type)}</span>
+            <h2 class="reading-detail__title">${escapeHtml(getReadingTitle(reading.type))}</h2>
+            <p class="reading-detail__date">${date}</p>
         </div>
-        <div class="reading-content" style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 10px; max-height: 400px; overflow-y: auto;">
+        <div class="reading-content reading-detail__body">
     `;
 
     const data = reading.data || {};
@@ -227,20 +242,20 @@ function renderReadingContent(reading) {
     }
 
     if (reading.type === 'tarot' && data.cards) {
-        contentHtml += `<div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-bottom: 1.5rem;">`;
+        contentHtml += '<div class="reading-tarot-grid">';
         data.cards.forEach(card => {
             const imagePath = getTarotImageByName(card.name);
             contentHtml += `
-                <div style="text-align: center; width: 100px; display: flex; flex-direction: column; align-items: center;">
-                    <div style="position: relative; width: 80px; height: 120px; margin-bottom: 0.5rem;">
+                <div class="reading-tarot-card">
+                    <div class="reading-tarot-card__image-wrap">
                          <img src="${escapeHtml(imagePath)}"
                               alt="${escapeHtml(card.name)}"
                               loading="lazy"
-                              onerror="this.onerror=null;this.src='img/tarot/tarot_placeholder.webp';"
-                              style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
+                              data-tarot-fallback
+                              class="reading-tarot-card__image">
                     </div>
-                    <p style="font-size: 0.75rem; margin: 0; font-weight: 600; color: var(--color-mystic-gold); line-height: 1.2;">${escapeHtml(card.name)}</p>
-                    ${card.position ? `<small style="font-size: 0.65rem; opacity: 0.7;">${escapeHtml(card.position)}</small>` : ''}
+                    <p class="reading-tarot-card__title">${escapeHtml(card.name)}</p>
+                    ${card.position ? `<small class="reading-tarot-card__position">${escapeHtml(card.position)}</small>` : ''}
                 </div>
             `;
         });
@@ -249,9 +264,9 @@ function renderReadingContent(reading) {
         const summary = data.response || data.interpretation;
         if (summary) {
             contentHtml += `
-                <div style="background: rgba(255,255,255,0.05); padding: 1.25rem; border-radius: 8px; border-left: 3px solid var(--color-mystic-gold);">
-                    <h4 style="color: var(--color-mystic-gold); margin-bottom: 0.75rem; font-size: 1rem;">VÝKLAD KARET</h4>
-                    <div style="line-height: 1.8; font-size: 1rem; color: var(--color-silver-mist);">
+                <div class="reading-interpretation">
+                    <h4 class="reading-interpretation__title">VÝKLAD KARET</h4>
+                    <div class="reading-interpretation__text">
                         ${summary.replace(/\n/g, '<br>')}
                     </div>
                 </div>
@@ -263,34 +278,34 @@ function renderReadingContent(reading) {
         const periodLabel = periodMap[data.period] || data.period || 'Horoskop';
 
         contentHtml += `
-            <div style="text-align: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                <h3 style="color: var(--color-mystic-gold); font-size: 1.5rem; margin-bottom: 0.2rem;">${escapeHtml(data.sign || 'Znamení')}</h3>
-                <span style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.75rem; opacity: 0.7;">${escapeHtml(periodLabel)}</span>
+            <div class="reading-horoscope-header">
+                <h3 class="reading-horoscope-header__sign">${escapeHtml(data.sign || 'Znamení')}</h3>
+                <span class="reading-horoscope-header__period">${escapeHtml(periodLabel)}</span>
             </div>
-            <div style="font-size: 1.05rem; line-height: 1.8; color: var(--color-starlight); margin-bottom: 1.5rem;">
+            <div class="reading-horoscope-text">
                 ${escapeHtml(text)}
             </div>
         `;
 
         if (data.luckyNumbers) {
             contentHtml += `
-                <div style="background: rgba(212, 175, 55, 0.1); padding: 0.75rem; border-radius: 8px; text-align: center;">
-                    <span style="display: block; font-size: 0.8rem; text-transform: uppercase; color: var(--color-mystic-gold); margin-bottom: 0.25rem;">Šťastná čísla</span>
-                    <span style="font-family: var(--font-heading); font-size: 1.2rem; letter-spacing: 1px;">${escapeHtml(data.luckyNumbers.toString())}</span>
+                <div class="reading-lucky-numbers">
+                    <span class="reading-lucky-numbers__label">Šťastná čísla</span>
+                    <span class="reading-lucky-numbers__value">${escapeHtml(data.luckyNumbers.toString())}</span>
                 </div>
             `;
         }
     } else if (data.answer) {
         if (data.question) {
             contentHtml += `
-                <div style="margin-bottom: 1.5rem; padding: 1rem; border-left: 3px solid var(--color-mystic-gold); background: rgba(255,255,255,0.03);">
-                    <small style="text-transform: uppercase; color: var(--color-mystic-gold); font-size: 0.7rem; display: block; margin-bottom: 0.3rem;">Otázka</small>
-                    <p style="font-style: italic; opacity: 0.9; margin: 0; font-family: var(--font-heading); font-size: 1.1rem;">"${escapeHtml(data.question)}"</p>
+                <div class="reading-question">
+                    <small class="reading-question__label">Otázka</small>
+                    <p class="reading-question__text">"${escapeHtml(data.question)}"</p>
                 </div>
             `;
         }
         contentHtml += `
-            <div style="font-size: 1.05rem; line-height: 1.8; color: var(--color-starlight);">
+            <div class="reading-answer">
                 ${escapeHtml(data.answer)}
             </div>
         `;
@@ -299,12 +314,12 @@ function renderReadingContent(reading) {
 
         if (typeof content === 'string') {
             const sanitized = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(content) : content;
-            contentHtml += `<div class="formatted-content" style="line-height: 1.7; color: var(--color-starlight);">${sanitized}</div>`;
+            contentHtml += `<div class="formatted-content reading-formatted-content">${sanitized}</div>`;
         } else {
-            contentHtml += `<p style="line-height: 1.7;">${escapeHtml(content)}</p>`;
+            contentHtml += `<p class="reading-plain-text">${escapeHtml(content)}</p>`;
         }
     } else {
-        contentHtml += `<pre style="white-space: pre-wrap; font-size: 0.85rem;">${escapeHtml(JSON.stringify(data, null, 2))}</pre>`;
+        contentHtml += `<pre class="reading-json">${escapeHtml(JSON.stringify(data, null, 2))}</pre>`;
     }
 
     contentHtml += `</div>`;

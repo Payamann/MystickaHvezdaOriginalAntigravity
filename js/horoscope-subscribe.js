@@ -64,12 +64,15 @@
         });
 
         function showSubscribed() {
-            if (btn) { btn.style.display = 'none'; }
-            if (subscribedMsg) { subscribedMsg.style.display = 'block'; }
+            if (btn) { btn.hidden = true; }
+            if (subscribedMsg) {
+                subscribedMsg.hidden = false;
+                subscribedMsg.classList.add('mh-block-visible');
+            }
             var emailInput = document.getElementById('horoscope-email-input');
             var signSelect = document.getElementById('horoscope-sign-select');
-            if (emailInput) emailInput.style.display = 'none';
-            if (signSelect) signSelect.style.display = 'none';
+            if (emailInput) emailInput.hidden = true;
+            if (signSelect) signSelect.hidden = true;
         }
 
         // Pre-fill sign from personalization

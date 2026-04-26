@@ -128,7 +128,8 @@ function renderPhase() {
     document.getElementById('moonEmoji').textContent = phase.emoji;
     document.getElementById('phaseName').textContent = phase.name;
     document.getElementById('phaseDate').textContent = formatDate(now) + ` · Věk Měsíce: ${age.toFixed(1)} dní`;
-    document.getElementById('illuminationFill').style.width = illumination + '%';
+    const illuminationStep = Math.round(illumination / 5) * 5;
+    document.getElementById('illuminationFill').dataset.illumination = String(illuminationStep);
     document.getElementById('illuminationLabel').textContent = `Osvícení: ${illumination} %`;
 
     document.getElementById('phaseIntroTitle').textContent = `${phase.emoji} ${phase.name}`;

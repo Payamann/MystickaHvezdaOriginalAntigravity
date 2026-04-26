@@ -1,0 +1,174 @@
+/* Extracted from partnerska-shoda.html inline <style> block. */
+/* Synastry Specific Styles */
+
+        .heart-meter {
+
+            position: relative;
+
+            width: 200px;
+
+            height: 200px;
+
+            margin: 0 auto;
+
+        }
+
+
+
+        .heart-bg {
+
+            fill: rgba(255, 255, 255, 0.1);
+
+        }
+
+
+
+        .heart-fill {
+
+            fill: var(--color-nebula-pink);
+
+            transform-origin: bottom center;
+
+            transform: scaleY(0);
+
+            transition: transform 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+        }
+
+
+
+        .heart-text {
+
+            position: absolute;
+
+            top: 50%;
+
+            left: 50%;
+
+            transform: translate(-50%, -50%);
+
+            font-size: 3rem;
+
+            font-weight: 700;
+
+            color: #fff;
+
+            text-shadow: 0 0 20px rgba(233, 30, 140, 0.8);
+
+            font-family: var(--font-heading);
+
+        }
+
+
+
+        .compatibility-bar {
+
+            height: 8px;
+
+            background: rgba(255, 255, 255, 0.1);
+
+            border-radius: 4px;
+
+            overflow: hidden;
+
+            margin-top: 5px;
+
+        }
+
+
+
+        .compatibility-bar-fill {
+
+            height: 100%;
+
+            background: linear-gradient(90deg, var(--color-mystic-gold), var(--color-nebula-pink));
+
+            width: 100%;
+
+            transform: scaleX(0);
+
+            transform-origin: left center;
+
+            transition: width 1s ease-out;
+
+        }
+
+
+
+        .person-card {
+
+            background: rgba(255, 255, 255, 0.03);
+
+            padding: var(--space-lg);
+
+            border-radius: var(--radius-lg);
+
+            border: 1px solid rgba(255, 255, 255, 0.05);
+
+        }
+
+/* Migrated from partnerska-shoda.html static style attributes. */
+html body .mh-inline-ae5c51ad88 { gap: var(--space-xl); }
+html body .mh-inline-cb37106706 { font-size: 0.8rem; cursor: pointer; display: none; align-items: center; gap: 0.5rem; }
+html body .mh-inline-839fa92861 { accent-color: var(--color-mystic-gold); }
+html body .mh-inline-d3752c7c88 { color: var(--color-nebula-pink); }
+html body .mh-inline-dc55d6d421 { display: none; }
+html body .mh-inline-d676af8484 { align-items: center; gap: var(--space-2xl); }
+html body .mh-inline-008ba5d933 { background: rgba(255,255,255,0.05); border-radius: var(--radius-md); }
+
+/* Migrated from partnerska-shoda.html remaining static style attributes. */
+html body .mh-inline-0c8ec6d8bf { color: var(--color-mystic-gold); margin: 0; }
+html body .mh-inline-de7ffff2a8 { opacity: 0.8; }
+
+.premium-lock-host,
+.teaser-overlay-host {
+    position: relative;
+    overflow: hidden;
+}
+
+.synastry-lock-title {
+    margin-bottom: 0.5rem;
+    color: var(--color-mystic-gold);
+}
+
+.synastry-lock-copy {
+    color: var(--color-silver-mist);
+}
+
+.synastry-ai {
+    margin-top: var(--space-xl);
+    padding: var(--space-xl);
+    border: 1px solid rgba(219, 39, 119, 0.5);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(135deg, rgba(219, 39, 119, 0.1) 0%, rgba(10, 10, 26, 0.9) 100%);
+}
+
+.synastry-ai__title {
+    margin-bottom: var(--space-md);
+    color: #ec4899;
+}
+
+.synastry-ai__content {
+    color: var(--color-starlight);
+    line-height: 1.8;
+    white-space: pre-wrap;
+}
+
+.synastry-teaser-card {
+    display: inline-block;
+    padding: 2rem;
+    border: 1px solid var(--color-mystic-gold);
+    border-radius: 12px;
+    background: rgba(10, 10, 26, 0.9);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+}
+
+.synastry-teaser-card__title {
+    margin-bottom: 1rem;
+    color: var(--color-mystic-gold);
+}
+
+.synastry-teaser-card__copy {
+    margin-bottom: 1.5rem;
+    color: #ccc;
+}

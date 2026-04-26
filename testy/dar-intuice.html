@@ -13,6 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="../css/style.v2.min.css?v=9">
+    <link rel="stylesheet" href="../css/pages/testy-dar-intuice.css">
     <link rel="stylesheet" href="../css/testy.css?v=2">
 
     <!-- SEO & Open Graph -->
@@ -40,7 +41,7 @@
             </div>
         </section>
 
-        <section class="section" style="padding-top: 0;">
+        <section class="section mh-inline-51a33aab3c">
             <div class="container">
                 <div class="quiz-container" id="quiz-box">
                     <div class="quiz-progress">
@@ -151,40 +152,10 @@
 
     <div id="footer-placeholder"></div>
 
-    <script src="../js/api-config.js?v=5" defer></script>
-    <script src="../js/components.js?v=11" defer></script>
-    <script type="module" src="../js/main.js?v=11"></script>
+    <script src="../js/dist/api-config.js?v=5" defer></script>
+    <script src="../js/dist/components.js?v=11" defer></script>
+    <script type="module" src="../js/dist/main.js?v=11"></script>
 
-    <script src="../js/quiz/dar-intuice.js?v=1" defer></script>
-
-    <style>
-        .loader-gift {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto;
-            position: relative;
-        }
-        .loader-gift::before, .loader-gift::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            border-radius: 50%;
-            border: 2px solid var(--color-ethereal-violet);
-            animation: pulseWave 2s ease-out infinite;
-        }
-        .loader-gift::after { animation-delay: 1s; }
-        @keyframes pulseWave {
-            0% { transform: scale(0.5); opacity: 1; border-color: var(--color-mystic-gold); }
-            100% { transform: scale(2); opacity: 0; border-color: var(--color-ethereal-violet); }
-        }
-        .animate-eye {
-            animation: eyeFade 3s infinite alternate;
-        }
-        @keyframes eyeFade {
-            0% { opacity: 0.8; transform: scale(1); filter: blur(0); }
-            50% { opacity: 1; transform: scale(1.1); filter: blur(1px); }
-            100% { opacity: 0.8; transform: scale(1); filter: blur(0); }
-        }
-    </style>
+    <script src="/js/dist/quiz/dar-intuice.js?v=1" defer></script>
 </body>
 </html>

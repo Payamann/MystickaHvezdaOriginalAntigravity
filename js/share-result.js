@@ -58,11 +58,7 @@
     `;
 
     function injectStyles() {
-        if (document.getElementById('share-result-styles')) return;
-        const style = document.createElement('style');
-        style.id = 'share-result-styles';
-        style.textContent = SHARE_BTN_STYLES;
-        document.head.appendChild(style);
+        // Styles live in css/style.v2.css.
     }
 
     function buildShareUrl(utmSource) {
@@ -83,9 +79,7 @@
         const luckyNumbers = container.querySelector('#detail-numbers');
         if (luckyNumbers) {
             const luckyParagraph = luckyNumbers.closest('p') || luckyNumbers.parentElement;
-            wrapper.style.textAlign = 'center';
-            wrapper.style.marginTop = '1.5rem';
-            wrapper.style.marginBottom = '2.5rem';
+            wrapper.classList.add('share-result-wrapper--horoscope');
             luckyParagraph.insertAdjacentElement('afterend', wrapper);
         } else {
             container.appendChild(wrapper);

@@ -12,6 +12,22 @@ const resultsContainer = document.getElementById('astro-results');
 const loadingIndicator = document.getElementById('astro-loading');
 const mapContainer = document.querySelector('.map-container');
 
+function setBlockVisible(element, visible) {
+    if (!element) return;
+    element.hidden = !visible;
+    element.classList.toggle('mh-block-visible', visible);
+}
+
+function setFlexVisible(element, visible) {
+    if (!element) return;
+    element.hidden = !visible;
+    element.classList.toggle('mh-flex-visible', visible);
+}
+
+function cityMarkerClass(city) {
+    return `city-marker--${city.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase()}`;
+}
+
 // Intention select for personalized results
 const INTENTIONS = {
     'obecny': 'Obecná analýza',
@@ -120,7 +136,7 @@ function init() {
         const wrapper = useProfileCheckbox.closest('.checkbox-wrapper');
         if (wrapper) {
             const updateVisibility = () => {
-                wrapper.style.display = (window.Auth && window.Auth.isLoggedIn()) ? 'flex' : 'none';
+                setFlexVisible(wrapper, Boolean(window.Auth && window.Auth.isLoggedIn()));
             };
             updateVisibility();
             document.addEventListener('auth:changed', updateVisibility);
@@ -253,12 +269,10 @@ async function handleFormSubmit(e) {
  * Show loading indicator
  */
 function showLoading() {
-    if (loadingIndicator) {
-        loadingIndicator.style.display = 'flex';
-    }
+    setFlexVisible(loadingIndicator, true);
     if (resultsContainer) {
         resultsContainer.innerHTML = '';
-        resultsContainer.style.display = 'none';
+        setBlockVisible(resultsContainer, false);
     }
     // Animate map
     if (mapContainer) {
@@ -270,9 +284,7 @@ function showLoading() {
  * Hide loading indicator
  */
 function hideLoading() {
-    if (loadingIndicator) {
-        loadingIndicator.style.display = 'none';
-    }
+    setFlexVisible(loadingIndicator, false);
     if (mapContainer) {
         mapContainer.classList.remove('calculating');
     }
@@ -340,7 +352,7 @@ function displayResults(response) {
                 </div>
             </div>
         `;
-        resultsContainer.style.display = 'block';
+        setBlockVisible(resultsContainer, true);
         resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 }
@@ -368,7 +380,7 @@ function showError(message) {
             errorDiv.append(icon, p);
         }
         resultsContainer.appendChild(errorDiv);
-        resultsContainer.style.display = 'block';
+        setBlockVisible(resultsContainer, true);
     }
 }
 
@@ -387,7 +399,7 @@ function highlightCitiesFromResponse(response) {
         const isMatch = lowerResponse.includes(city) || (pos.aliases && pos.aliases.some(alias => lowerResponse.includes(alias)));
 
         if (isMatch) {
-            addCityMarker(city, pos.x, pos.y, isPraisedCity(lowerResponse, city, pos.aliases));
+            addCityMarker(city, isPraisedCity(lowerResponse, city, pos.aliases));
         }
     });
 }
@@ -425,13 +437,11 @@ function isPraisedCity(response, city, aliases = []) {
 /**
  * Add a city marker to the map
  */
-function addCityMarker(city, x, y, isPositive) {
+function addCityMarker(city, isPositive) {
     if (!mapContainer) return;
 
     const marker = document.createElement('div');
-    marker.className = `city-marker ${isPositive ? 'positive' : 'negative'}`;
-    marker.style.left = `${x}%`;
-    marker.style.top = `${y}%`;
+    marker.className = `city-marker ${cityMarkerClass(city)} ${isPositive ? 'positive' : 'negative'}`;
     marker.innerHTML = `
         <span class="marker-dot"></span>
         <span class="marker-label">${city.charAt(0).toUpperCase() + city.slice(1)}</span>
@@ -455,13 +465,13 @@ function initMapInteractions() {
             const tooltip = document.getElementById('map-tooltip');
             if (tooltip) {
                 tooltip.querySelector('p').textContent = e.target.dataset.info;
-                tooltip.style.opacity = '1';
+                tooltip.classList.add('is-visible');
             }
         });
         line.addEventListener('mouseleave', () => {
             const tooltip = document.getElementById('map-tooltip');
             if (tooltip) {
-                tooltip.style.opacity = '0';
+                tooltip.classList.remove('is-visible');
             }
         });
     });

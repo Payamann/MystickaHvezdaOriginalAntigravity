@@ -1,0 +1,29 @@
+/* Extracted from kompatibilita/blizenci-vodnar.html inline <style> block. */
+.compat-hero { text-align:center; padding: 5rem 0 2rem; }
+        .compat-signs { display:flex; align-items:center; justify-content:center; gap:1.5rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+        .compat-sign-box { text-align:center; }
+        .compat-sign-emoji { font-size:5rem; display:block; }
+        .compat-sign-name { font-family:'Cinzel',serif; color:#ebc066; font-size:1.3rem; }
+        .compat-sign-dates { font-size:0.8rem; color:rgba(255,255,255,0.4); }
+        .compat-vs { font-size:2rem; color:rgba(255,255,255,0.3); }
+        .compat-score { font-family:'Cinzel',serif; font-size:4.5rem; background:linear-gradient(135deg,#d4af37,#f5d776); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-weight:700; }
+        .compat-label { color:rgba(255,255,255,0.6); font-size:1rem; margin-top:-0.5rem; margin-bottom:2rem; }
+        .compat-bar { width:300px; height:10px; background:rgba(255,255,255,0.1); border-radius:50px; overflow:hidden; margin:0 auto 2rem; }
+        .compat-fill { height:100%; background:linear-gradient(90deg,#d4af37,#f5d776); border-radius:50px; box-shadow:0 0 12px rgba(212,175,55,0.5); }
+        .compat-content { max-width:800px; margin:0 auto; }
+        .compat-section { background:rgba(10,10,26,0.7); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:2rem; margin-bottom:1.5rem; }
+        .compat-section h3 { color:#ebc066; font-family:'Cinzel',serif; margin-top:0; border-bottom:1px solid rgba(235,192,102,0.2); padding-bottom:0.75rem; margin-bottom:1rem; }
+        .compat-section p { color:rgba(255,255,255,0.8); line-height:1.8; margin:0; }
+        .compat-cta { background:linear-gradient(135deg,rgba(155,89,182,0.15),rgba(10,10,26,0.9)); border:1px solid rgba(155,89,182,0.3); border-radius:20px; padding:2.5rem; text-align:center; margin-bottom:3rem; }
+        .related-links { display:flex; flex-wrap:wrap; gap:0.75rem; justify-content:center; margin-top:2rem; }
+        .related-chip { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); padding:0.4rem 1rem; border-radius:50px; color:rgba(255,255,255,0.7); text-decoration:none; transition:all 0.2s; font-size:0.875rem; }
+        .related-chip:hover { background:rgba(235,192,102,0.1); border-color:rgba(235,192,102,0.4); color:#ebc066; }
+
+/* Migrated from kompatibilita/blizenci-vodnar.html static style attributes. */
+html body .mh-inline-954c28ef99 { width:80%; }
+html body .mh-inline-c8289685b6 { padding-top:0; }
+html body .mh-inline-58c14971b7 { background:rgba(212,175,55,0.06); border-color:rgba(235,192,102,0.2); }
+html body .mh-inline-21d017283d { margin-top:0;font-family:'Cinzel',serif; }
+html body .mh-inline-7d464d2281 { color:rgba(255,255,255,0.7);margin-bottom:1.5rem; }
+html body .mh-inline-fbd15b132d { text-align:center; margin-bottom:3rem; }
+html body .mh-inline-c3928fe796 { color:#ebc066;font-family:'Cinzel',serif;font-size:1.2rem; }

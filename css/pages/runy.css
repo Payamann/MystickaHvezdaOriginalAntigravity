@@ -1,0 +1,325 @@
+/* Extracted from runy.html inline <style> block. */
+.runes-hero {
+
+            background: radial-gradient(circle at center, rgba(100, 110, 130, 0.15) 0%, transparent 70%);
+
+            min-height: 80vh;
+
+            display: flex;
+
+            align-items: center;
+
+        }
+
+
+
+        .rune-pouch-container {
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 2rem;
+
+            margin: 2rem auto;
+
+            min-height: 300px;
+
+        }
+
+
+
+        .rune-stone {
+
+            width: 140px;
+
+            height: 180px;
+
+            background: linear-gradient(145deg, #2b2f36, #1a1c20);
+
+            border-radius: 40% 60% 50% 50% / 50% 50% 60% 40%;
+
+            box-shadow:
+
+                inset -5px -5px 15px rgba(0, 0, 0, 0.8),
+
+                inset 5px 5px 15px rgba(255, 255, 255, 0.1),
+
+                0 15px 35px rgba(0, 0, 0, 0.6);
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            font-size: 5rem;
+
+            color: #d4af37;
+
+            /* Mystic Gold */
+
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.6), inset 0 0 2px #000;
+
+            cursor: pointer;
+
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+            font-family: serif;
+
+            /* fallback for unicode runes */
+
+            border: 1px solid rgba(255, 255, 255, 0.05);
+
+            position: relative;
+
+        }
+
+
+
+        /* Othala and other wide runes adjustment */
+
+        .rune-stone span {
+
+            transform: translateY(-5px);
+
+            filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.8));
+
+        }
+
+
+
+        .rune-stone:hover {
+
+            transform: translateY(-10px) scale(1.05);
+
+            box-shadow:
+
+                inset -5px -5px 15px rgba(0, 0, 0, 0.8),
+
+                inset 5px 5px 15px rgba(255, 255, 255, 0.2),
+
+                0 25px 45px rgba(212, 175, 55, 0.2);
+
+            color: #f9d976;
+
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.8), 0 0 40px rgba(212, 175, 55, 0.4);
+
+        }
+
+        .rune-stone--drawn {
+            cursor: default;
+        }
+
+        .rune-stone--disabled {
+            pointer-events: none;
+        }
+
+
+
+        .rune-stone.hidden {
+
+            opacity: 1;
+
+            transform: scale(1);
+
+            color: transparent;
+
+            text-shadow: none;
+
+            cursor: pointer;
+
+            animation: breathe 3s infinite ease-in-out;
+
+            background: linear-gradient(145deg, #1c1f24, #0f1114);
+
+        }
+
+
+
+        .rune-stone.hidden span {
+
+            display: none;
+
+        }
+
+
+
+        .rune-stone.hidden::before {
+
+            content: "?";
+
+            font-family: var(--font-heading);
+
+            font-size: 3rem;
+
+            color: rgba(255, 255, 255, 0.1);
+
+        }
+
+
+
+        .rune-stone.shuffling {
+
+            animation: shakeRune 0.5s ease-in-out infinite;
+
+            filter: blur(1px);
+
+        }
+
+
+
+        @keyframes shakeRune {
+
+
+
+            0%,
+
+            100% {
+
+                transform: translate(0, 0) rotate(0deg);
+
+            }
+
+
+
+            25% {
+
+                transform: translate(-5px, 5px) rotate(-5deg);
+
+            }
+
+
+
+            50% {
+
+                transform: translate(5px, -5px) rotate(5deg);
+
+            }
+
+
+
+            75% {
+
+                transform: translate(5px, 5px) rotate(-5deg);
+
+            }
+
+        }
+
+
+
+        @keyframes breathe {
+
+
+
+            0%,
+
+            100% {
+
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.02);
+
+            }
+
+
+
+            50% {
+
+                box-shadow: 0 15px 35px rgba(212, 175, 55, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.05);
+
+            }
+
+        }
+
+
+
+        .rune-result-frame {
+
+            background: rgba(15, 15, 25, 0.85);
+
+            border: 1px solid rgba(212, 175, 55, 0.3);
+
+            border-radius: var(--radius-lg);
+
+            padding: var(--space-xl);
+
+            margin-top: 2rem;
+
+            max-width: 600px;
+
+            width: 100%;
+
+            display: none;
+
+            opacity: 0;
+
+            transform: translateY(20px);
+
+            transition: all 0.5s ease-out;
+
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+
+        }
+
+
+
+        .rune-result-frame.visible {
+
+            display: block;
+
+            opacity: 1;
+
+            transform: translateY(0);
+
+        }
+
+
+
+        .share-actions {
+
+            display: flex;
+
+            gap: 1rem;
+
+            justify-content: center;
+
+            margin-top: 1.5rem;
+
+            flex-wrap: wrap;
+
+        }
+
+        .loading__spinner--inline {
+            width: 1rem;
+            height: 1rem;
+        }
+
+/* Migrated from runy.html static style attributes. */
+html body .mh-inline-00a0652841 { display:none; background: linear-gradient(90deg, rgba(212,175,55,0.1), rgba(155,89,182,0.1)); border-bottom: 1px solid rgba(212,175,55,0.2); padding: 0.65rem 1rem; text-align: center; font-size: 0.88rem; color: rgba(255,255,255,0.8); }
+html body .mh-inline-588f3944ff { color: #d4af37; font-weight: 600; }
+html body .mh-inline-76ca24d04a { background:none;border:none;color:rgba(255,255,255,0.3);cursor:pointer;font-size:1rem;vertical-align:middle; }
+html body .mh-inline-b746b39236 { background: rgba(212,175,55,0.1); color: var(--color-mystic-gold); border: 1px solid var(--color-mystic-gold); }
+html body .mh-inline-3c007d0dc3 { display: none; }
+html body .mh-inline-24291699b8 { color: var(--color-silver-mist); }
+html body .mh-inline-367b3e8abe { font-family: var(--font-heading); color: var(--color-starlight); font-size: 2rem; margin-bottom: 0.5rem; }
+html body .mh-inline-dce3b80927 { color: var(--color-mystic-gold); font-size: 1.1rem; margin-bottom: 1.5rem; font-style: italic; }
+html body .mh-inline-66e05d31f2 { color: var(--color-silver-mist); line-height: 1.6; }
+html body .mh-inline-aa0917acc9 { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(212, 175, 55, 0.18); }
+html body .mh-inline-e34ea4f6e0 { display: flex; flex-direction: column; gap: 1rem; background: rgba(10, 10, 15, 0.72); border: 1px solid rgba(212, 175, 55, 0.16); border-radius: 18px; padding: 1.25rem; }
+html body .mh-inline-391f551959 { font-family: var(--font-heading); color: var(--color-starlight); font-size: 1.25rem; margin-bottom: 0.4rem; }
+html body .mh-inline-01c051939b { font-size: 0.95rem; color: var(--color-starlight); font-weight: 600; }
+html body .mh-inline-5f1f0fbb13 { min-height: 96px; width: 100%; resize: vertical; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; color: var(--color-starlight); padding: 0.9rem 1rem; font: inherit; }
+html body .mh-inline-3ee7f5ef24 { align-self: flex-start; }
+html body .mh-inline-bfc941424f { display: none; margin-top: 1.5rem; padding: 1.25rem; border-radius: 18px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: var(--color-silver-mist); line-height: 1.7; }
+html body .mh-inline-29c2910ad2 { background: rgba(10, 10, 15, 0.5); border-top: 1px solid rgba(255,255,255,0.05); }
+html body .mh-inline-a8470d2eb9 { max-width: 800px; }
+
+/* Migrated from runy.html remaining static style attributes. */
+html body .mh-inline-de33ec85ca { color: var(--color-silver-mist); margin: 0; }
+html body .mh-inline-7c806d36e5 { font-family: var(--font-heading); color: var(--color-mystic-gold); margin-bottom: 1.5rem; }
+html body .mh-inline-45df8e19ce { color: var(--color-silver-mist); line-height: 1.7; font-size: 1.05rem; }
+html body .mh-inline-ea59635151 { color: var(--color-starlight); margin: 2rem 0 1rem; font-size: 1.3rem; }

@@ -23,6 +23,30 @@ function startSynastryUpgradeFlow(source) {
     });
 }
 
+function setBlockVisible(element, visible) {
+    if (!element) return;
+    element.hidden = !visible;
+    element.classList.toggle('mh-block-visible', visible);
+}
+
+function setFlexVisible(element, visible) {
+    if (!element) return;
+    element.hidden = !visible;
+    element.classList.toggle('mh-flex-visible', visible);
+}
+
+function animateScale(element, axis, value, duration = 1000) {
+    if (!element) return;
+    element.animate([
+        { transform: `${axis}(0)` },
+        { transform: `${axis}(${value})` }
+    ], {
+        duration,
+        easing: 'ease-out',
+        fill: 'forwards'
+    });
+}
+
 function initSynastry() {
     const form = document.getElementById('synastry-form');
     if (!form) return;
@@ -83,9 +107,9 @@ function updateProfileVisibility() {
     if (!wrapper) return;
 
     if (window.Auth && window.Auth.isLoggedIn()) {
-        wrapper.style.display = 'flex';
+        setFlexVisible(wrapper, true);
     } else {
-        wrapper.style.display = 'none';
+        setFlexVisible(wrapper, false);
         // Uncheck if hidden
         const checkbox = document.getElementById('use-profile-p1');
         if (checkbox) checkbox.checked = false;
@@ -117,7 +141,7 @@ async function calculateCompatibility() {
     const hasActiveSession = !!viewerProfile;
 
     // Show results with animation
-    resultsDiv.style.display = 'block';
+    setBlockVisible(resultsDiv, true);
     resultsDiv.scrollIntoView({ behavior: 'smooth' });
 
     // Animate scores
@@ -128,7 +152,7 @@ async function calculateCompatibility() {
     animateValue('total-score', 0, totalScore, 2000);
     const heartFill = document.getElementById('heart-anim');
     if (heartFill) {
-        heartFill.style.transform = `scaleY(${totalScore / 100})`;
+        animateScale(heartFill, 'scaleY', totalScore / 100, 1500);
     }
 
     // Detailed Scores - Gated
@@ -151,29 +175,28 @@ async function calculateCompatibility() {
         animateValue('score-comm', 0, commScore, 1700);
         animateValue('score-passion', 0, passionScore, 1900);
 
-        document.getElementById('bar-emotion').style.width = `${emotionScore}%`;
-        document.getElementById('bar-comm').style.width = `${commScore}%`;
-        document.getElementById('bar-passion').style.width = `${passionScore}%`;
+        animateScale(document.getElementById('bar-emotion'), 'scaleX', emotionScore / 100);
+        animateScale(document.getElementById('bar-comm'), 'scaleX', commScore / 100);
+        animateScale(document.getElementById('bar-passion'), 'scaleX', passionScore / 100);
     } else {
         // Soft Gate - Obscure Details
         document.getElementById('score-emotion').textContent = '🔒';
         document.getElementById('score-comm').textContent = '🔒';
         document.getElementById('score-passion').textContent = '🔒';
 
-        document.getElementById('bar-emotion').style.width = '0%';
-        document.getElementById('bar-comm').style.width = '0%';
-        document.getElementById('bar-passion').style.width = '0%';
+        animateScale(document.getElementById('bar-emotion'), 'scaleX', 0);
+        animateScale(document.getElementById('bar-comm'), 'scaleX', 0);
+        animateScale(document.getElementById('bar-passion'), 'scaleX', 0);
 
         // Add Overlay
-        detailCard.style.position = 'relative';
-        detailCard.style.overflow = 'hidden';
+        detailCard.classList.add('premium-lock-host');
 
         const overlay = document.createElement('div');
         overlay.className = 'premium-lock-overlay';
         overlay.innerHTML = `
             <div class="lock-icon">🔒</div>
-            <h3 style="color: var(--color-mystic-gold); margin-bottom: 0.5rem;">Detailní rozbor</h3>
-            <p style="color: var(--color-silver-mist);">Emoce, komunikace a vášeň jsou dostupné pouze pro Hvězdné Průvodce.</p>
+            <h3 class="synastry-lock-title">Detailní rozbor</h3>
+            <p class="synastry-lock-copy">Emoce, komunikace a vášeň jsou dostupné pouze pro Hvězdné Průvodce.</p>
             <button class="btn btn--primary btn--sm mt-md synastry-upgrade-btn">🌟 Vyzkoušet 7 dní zdarma</button>
         `;
         detailCard.appendChild(overlay);
@@ -190,13 +213,13 @@ async function calculateCompatibility() {
     if (!aiResultsDiv) {
         aiResultsDiv = createAIResultsContainer();
     }
-    aiResultsDiv.style.display = 'none';
+    setBlockVisible(aiResultsDiv, false);
 
     if (!hasActiveSession) {
         document.getElementById('total-score').textContent = `${totalScore}%`;
         document.getElementById('verdict-text').textContent =
             `Celková kompatibilita ${totalScore}% - `;
-        aiResultsDiv.style.display = 'block';
+        setBlockVisible(aiResultsDiv, true);
         renderTeaser(aiResultsDiv, totalScore);
         btn.textContent = originalText;
         btn.disabled = false;
@@ -220,7 +243,7 @@ async function calculateCompatibility() {
                 `Celková kompatibilita ${totalScore}% - `;
 
             // Show AI interpretation
-            aiResultsDiv.style.display = 'block';
+            setBlockVisible(aiResultsDiv, true);
 
             if (data.isTeaser) {
                 // RENDER TEASER (Blurred)
@@ -265,7 +288,7 @@ async function calculateCompatibility() {
         else verdict = "Vztah s potenciálem, který vyžaduje práci.";
         document.getElementById('verdict-text').textContent = verdict;
 
-        aiResultsDiv.style.display = 'block';
+        setBlockVisible(aiResultsDiv, true);
         aiResultsDiv.querySelector('.ai-content').textContent =
             'Hlubší analýza momentálně není dostupná. Zkuste to prosím později.';
     }
@@ -277,18 +300,12 @@ async function calculateCompatibility() {
 function createAIResultsContainer() {
     const container = document.createElement('div');
     container.id = 'ai-synastry';
-    container.style.cssText = `
-        margin-top: var(--space-xl);
-        padding: var(--space-xl);
-        background: linear-gradient(135deg, rgba(219, 39, 119, 0.1) 0%, rgba(10, 10, 26, 0.9) 100%);
-        border: 1px solid rgba(219, 39, 119, 0.5);
-        border-radius: var(--radius-lg);
-    `;
+    container.className = 'synastry-ai';
     container.innerHTML = `
-        <h4 style="color: #ec4899; margin-bottom: var(--space-md);">
+        <h4 class="synastry-ai__title">
             💕 Hluboká analýza vašeho vztahu
         </h4>
-        <div class="ai-content" style="color: var(--color-starlight); line-height: 1.8; white-space: pre-wrap;"></div>
+        <div class="ai-content synastry-ai__content"></div>
     `;
 
     // Insert after synastry-results
@@ -333,13 +350,13 @@ function renderTeaser(container, totalScore = null) {
         const overlay = document.createElement('div');
         overlay.className = 'teaser-overlay';
         overlay.innerHTML = `
-            <div style="background: rgba(10, 10, 26, 0.9); padding: 2rem; border-radius: 12px; border: 1px solid var(--color-mystic-gold); box-shadow: 0 0 20px rgba(212, 175, 55, 0.2); display: inline-block;">
-                <h3 style="color: var(--color-mystic-gold); margin-bottom: 1rem;">Odemkněte tajemství vašeho vztahu</h3>
-                <p style="color: #ccc; margin-bottom: 1.5rem;">Zjistěte, proč máte ${document.getElementById('total-score').textContent} shodu a co vás čeká.</p>
+            <div class="synastry-teaser-card">
+                <h3 class="synastry-teaser-card__title">Odemkněte tajemství vašeho vztahu</h3>
+                <p class="synastry-teaser-card__copy">Zjistěte, proč máte ${document.getElementById('total-score').textContent} shodu a co vás čeká.</p>
                 <a href="cenik.html" class="btn btn--primary">Odemknout plný rozbor (199 Kč)</a>
             </div>
         `;
-        container.style.position = 'relative'; // Ensure positioning context
+        container.classList.add('teaser-overlay-host');
         container.appendChild(overlay);
         const teaserCopy = overlay.querySelector('p');
         if (teaserCopy) {

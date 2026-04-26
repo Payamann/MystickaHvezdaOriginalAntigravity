@@ -1,0 +1,120 @@
+/* Migrated from numerologie.html static style attributes. */
+html body .mh-inline-2b95e7bee2 { margin: 0; }
+html body .mh-inline-c26fcc7b86 { font-size: 0.9rem; cursor: pointer; display: none; align-items: center; gap: 0.5rem; }
+html body .mh-inline-62ac942649 { accent-color: var(--color-mystic-gold); }
+html body .mh-inline-104cad9c64 { display: none; margin-bottom: var(--space-2xl); animation: fadeIn 0.5s ease-out; }
+html body .mh-inline-cf96b41003 { gap: var(--space-lg); max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); }
+html body .mh-inline-5f6012ef8f { background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(10, 10, 26, 0.6)); border: 1px solid var(--color-mystic-gold); position: relative; overflow: hidden; padding: 2rem; }
+html body .mh-inline-1c2d6001fa { position: absolute; top:0; left:0; right:0; height: 4px; background: var(--color-mystic-gold); }
+html body .mh-inline-580f67c7c9 { color: var(--color-starlight); margin-bottom: 0.5rem; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; margin-top: 1rem; }
+html body .mh-inline-d52a946dec { font-size: 4rem; font-weight: 700; color: var(--color-mystic-gold); margin: 0.5rem 0; line-height: 1; text-shadow: 0 0 20px rgba(212,175,55,0.3); }
+html body .mh-inline-f6aa719386 { font-size: 0.9rem; color: var(--color-silver-mist); line-height: 1.4; padding: 0 1rem; }
+html body .mh-inline-127e7ceadf { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 1.5rem; }
+html body .mh-inline-1eb951a681 { color: var(--color-starlight); margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; }
+html body .mh-inline-211f362b65 { font-size: 2.5rem; font-weight: 600; color: var(--color-electric-blue); margin: 0.5rem 0; }
+html body .mh-inline-b9aaf869e5 { font-size: 0.85rem; color: var(--color-silver-mist); }
+html body .mh-inline-56832df12a { font-size: 2.5rem; font-weight: 600; color: var(--color-cosmic-green); margin: 0.5rem 0; }
+html body .mh-inline-1ceef7d917 { display: none; }
+html body .mh-inline-8075c8d8fb { max-width: 680px; margin-left: auto; margin-right: auto; text-align: center; }
+
+/* Migrated from numerologie.html remaining static style attributes. */
+html body .mh-inline-3d0248e768 { opacity: 0.8; }
+html body .mh-inline-18f6c81258 { color: var(--color-silver-mist); font-size: 0.75rem; }
+html body .mh-inline-00a714ff98 { font-size: 2rem; color: var(--color-mystic-gold); margin-bottom: 0.5rem; }
+html body .mh-inline-bc2787405c { color: var(--color-silver-mist); opacity: 0.8; }
+
+.number-card--gold { --card-color: #d4af37; }
+.number-card--blue { --card-color: #3498db; }
+.number-card--green { --card-color: #2ecc71; }
+.number-card--starlight { --card-color: #f1c40f; }
+
+.numerology-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.number-card--summary {
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.number-card--summary-life {
+    background: linear-gradient(135deg, rgba(155, 89, 182, 0.2), rgba(52, 152, 219, 0.2));
+}
+
+.number-card--summary-destiny {
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.2), rgba(46, 204, 113, 0.2));
+}
+
+.number-card--summary-soul {
+    background: linear-gradient(135deg, rgba(46, 204, 113, 0.2), rgba(241, 196, 15, 0.2));
+}
+
+.number-card--summary-personality {
+    background: linear-gradient(135deg, rgba(241, 196, 15, 0.2), rgba(230, 126, 34, 0.2));
+}
+
+.number-card__summary-label {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.number-card__summary-value {
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+.number-card__summary-value--gold {
+    color: var(--color-mystic-gold);
+}
+
+.number-card__summary-value--blue {
+    color: var(--color-electric-blue);
+}
+
+.number-card__summary-value--green {
+    color: var(--color-cosmic-green);
+}
+
+.number-card__summary-value--starlight {
+    color: var(--color-starlight);
+}
+
+.numerology-premium-preview {
+    position: relative;
+    margin-top: 2rem;
+    padding: 3rem;
+    border-radius: 15px;
+    background: linear-gradient(135deg, rgba(30, 20, 50, 0.8), rgba(42, 26, 78, 0.8));
+    filter: blur(5px);
+}
+
+.numerology-premium-preview__muted {
+    opacity: 0.7;
+}
+
+.interpretation-loading {
+    padding: 2rem;
+    text-align: center;
+}
+
+.interpretation-loading__text {
+    margin-top: 1rem;
+    color: var(--color-silver-mist);
+}
+
+.error-message--inline {
+    padding: 1.5rem;
+    border-left: 4px solid #e74c3c;
+    border-radius: 10px;
+    background: rgba(231, 76, 60, 0.1);
+}
+
+.error-message__text {
+    margin: 0;
+    color: #e74c3c;
+}

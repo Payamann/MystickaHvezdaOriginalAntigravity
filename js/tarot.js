@@ -26,6 +26,16 @@ function startTarotUpgradeFlow(spreadType, source = 'tarot_inline_upsell') {
     });
 }
 
+function bindTarotImageFallbacks(root) {
+    root.querySelectorAll('.tarot-card-image').forEach((image) => {
+        image.addEventListener('error', () => {
+            if (image.dataset.fallbackApplied === '1') return;
+            image.dataset.fallbackApplied = '1';
+            image.src = '/img/tarot/tarot_placeholder.webp';
+        });
+    });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     await loadTarotData();
     initTarot();
@@ -33,7 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function loadTarotData() {
     try {
-        const response = await fetch('data/tarot-cards.json?v=2');
+        const response = await fetch('/data/tarot-cards.json?v=2');
         if (!response.ok) throw new Error('Failed to load tarot data');
         TAROT_CARDS = await response.json();
         TAROT_CARDS_ARRAY = Object.keys(TAROT_CARDS);
@@ -42,7 +52,7 @@ async function loadTarotData() {
         console.error('CRITICAL: Failed to load tarot cards:', error);
         const container = document.querySelector('.tarot-deck');
         if (container) {
-            container.innerHTML = '<div class="text-center" style="color: #ff6b6b; padding: 2rem;">Nepodařilo se načíst data karet. Zkontrolujte připojení.</div>';
+            container.innerHTML = '<div class="text-center tarot-load-error">Nepodařilo se načíst data karet. Zkontrolujte připojení.</div>';
         }
     }
 }
@@ -59,8 +69,7 @@ function initTarot() {
     if (!resultsContainer) {
         resultsContainer = document.createElement('div');
         resultsContainer.id = 'tarot-results';
-        resultsContainer.className = 'container hidden';
-        resultsContainer.style.marginTop = 'var(--space-2xl)';
+        resultsContainer.className = 'container hidden tarot-results';
         const parentSection = deckContainer.closest('.section');
         if (parentSection) {
             parentSection.after(resultsContainer);
@@ -145,7 +154,7 @@ function initTarot() {
     // Add click listeners to deck cards
     const deckCards = deckContainer.querySelectorAll('.tarot-card');
     deckCards.forEach(card => {
-        card.style.cursor = 'pointer';
+        card.classList.add('tarot-card--clickable');
         card.addEventListener('click', () => {
             // Default to currently selected spread or 'Jedna karta'
             const selectedBtn = document.querySelector('.t-spread-card.featured .btn');
@@ -171,11 +180,11 @@ async function startReading(spreadType, isSoftGated = false) {
     await new Promise(r => setTimeout(r, 300));
 
     // 1. Shuffle Animation - make it more visible
-    deckContainer.style.transform = 'scale(1.05)';
+    deckContainer.classList.add('tarot-deck--shuffle-scale');
     deckContainer.classList.add('shaking');
     await new Promise(r => setTimeout(r, 1500)); // Longer shuffle
     deckContainer.classList.remove('shaking');
-    deckContainer.style.transform = '';
+    deckContainer.classList.remove('tarot-deck--shuffle-scale');
 
     // Small pause after shuffle
     await new Promise(r => setTimeout(r, 300));
@@ -212,30 +221,30 @@ async function startReading(spreadType, isSoftGated = false) {
     // Build initial layout (cards face down)
     resultsContainer.innerHTML = `
         <div class="text-center">
-            <h3 class="mb-lg" style="color: var(--color-mystic-gold);">✨ Vaše vylosované karty ✨</h3>
-            <div class="tarot-spread grid ${gridClass}" style="gap: var(--space-lg); margin-bottom: var(--space-xl); max-width: 1200px; margin-left: auto; margin-right: auto;">
+            <h3 class="mb-lg tarot-results__title">✨ Vaše vylosované karty ✨</h3>
+            <div class="tarot-spread grid ${gridClass} tarot-results__spread">
                 ${drawnCards.map((card, index) => {
         const isLocked = isSoftGated && index > 0;
         return `
-                    <div class="tarot-flip-card ${isLocked ? 'locked-card' : ''}" data-index="${index}" style="--flip-delay: ${index * 0.3}s;">
+                    <div class="tarot-flip-card ${isLocked ? 'locked-card' : ''}" data-index="${index}">
                         <div class="tarot-flip-inner">
                             <div class="tarot-flip-front">
                                 <img src="img/tarot-back.webp" alt="Tarot Card Back">
                             </div>
                             <div class="tarot-flip-back ${card.image ? 'has-image' : ''}">
                                 ${isLocked ? `
-                                    <div class="premium-lock-overlay" style="position: absolute; inset: 0; background: rgba(0,0,0,0.8); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10;">
-                                        <div class="lock-icon" style="font-size: 2rem;">🔒</div>
-                                        <h2 style="font-family: 'Cinzel', serif; color: var(--color-mystic-gold); margin-bottom: 1rem;">Pouze pro Premium</h2>
-                                        <p style="margin-bottom: 2rem; color: var(--color-silver-mist);">
+                                    <div class="premium-lock-overlay tarot-card-lock">
+                                        <div class="lock-icon tarot-card-lock__icon">🔒</div>
+                                        <h2 class="tarot-card-lock__title">Pouze pro Premium</h2>
+                                        <p class="tarot-card-lock__copy">
                                             Hvězdný Průvodce je exkluzivní zdroj moudrosti pro naše předplatitele.<br>
                                             Odemkněte plný potenciál a získejte přístup ke všem výkladům.
                                         </p>
                                         <a href="cenik.html" class="btn btn--primary">Získat Premium</a>
                                     </div>
-                                    <img src="img/tarot-back.webp" style="filter: blur(5px); opacity: 0.5;" alt="Locked">
+                                    <img src="img/tarot-back.webp" class="tarot-card-image--locked" alt="Locked">
                                 ` : (card.image ? `
-                                    <img src="${card.image}" onerror="this.onerror=null;this.src='img/tarot/tarot_placeholder.webp'" alt="${escapeHtml(card.name)}" class="tarot-card-image" loading="lazy">
+                                    <img src="${card.image}" alt="${escapeHtml(card.name)}" class="tarot-card-image" loading="lazy">
                                 ` : `
                                     <div class="tarot-card-content">
                                         <span class="tarot-card-emoji">${card.emoji}</span>
@@ -248,10 +257,10 @@ async function startReading(spreadType, isSoftGated = false) {
                     </div>
                 `}).join('')}
             </div>
-            <div id="interpretations-container" style="margin-top: var(--space-xl);"></div>
+            <div id="interpretations-container" class="tarot-interpretations"></div>
              ${isSoftGated ? `
-                <div class="text-center mt-xl p-lg" style="background: rgba(212, 175, 55, 0.1); border: 1px solid var(--color-mystic-gold); border-radius: 12px; max-width: 600px; margin: 2rem auto;">
-                    <h3 style="color: var(--color-mystic-gold);">Odemkněte svůj osud</h3>
+                <div class="text-center mt-xl p-lg tarot-soft-gate">
+                    <h3 class="tarot-soft-gate__title">Odemkněte svůj osud</h3>
                     <p class="mb-lg">Právě jste nahlédli za oponu. Zbývajících ${numCards - 1} karet skrývá klíč k pochopení celé situace.</p>
                     <a href="cenik.html" class="btn btn--primary">Získat Premium a odhalit vše</a>
                 </div>
@@ -260,6 +269,7 @@ async function startReading(spreadType, isSoftGated = false) {
     `;
 
     resultsContainer.classList.remove('hidden');
+    bindTarotImageFallbacks(resultsContainer);
     resultsContainer.querySelectorAll('a[href="cenik.html"]').forEach((link) => {
         link.addEventListener('click', (event) => {
             event.preventDefault();
@@ -350,10 +360,9 @@ async function startReading(spreadType, isSoftGated = false) {
 
                 // Add favorite button after interpretations
                 const favoriteBtn = document.createElement('div');
-                favoriteBtn.className = 'text-center';
-                favoriteBtn.style.marginTop = 'var(--space-xl)';
+                favoriteBtn.className = 'text-center favorite-reading-action';
                 favoriteBtn.innerHTML = `
-                    <button id="favorite-tarot-btn" class="btn btn--glass" style="min-width: 200px;">
+                    <button id="favorite-tarot-btn" class="btn btn--glass favorite-reading-action__button">
                         <span class="favorite-icon">⭐</span> Přidat do oblíbených
                     </button>
                 `;
@@ -440,10 +449,9 @@ async function generateEtherealSummary(cards, spreadType) {
 
                     // Add favorite button after summary
                     const favoriteBtn = document.createElement('div');
-                    favoriteBtn.className = 'text-center';
-                    favoriteBtn.style.marginTop = 'var(--space-xl)';
+                    favoriteBtn.className = 'text-center favorite-reading-action';
                     favoriteBtn.innerHTML = `
-                        <button id="favorite-tarot-btn" class="btn btn--glass" style="min-width: 200px;">
+                        <button id="favorite-tarot-btn" class="btn btn--glass favorite-reading-action__button">
                             <span class="favorite-icon">⭐</span> Přidat do oblíbených
                         </button>
                     `;
@@ -463,7 +471,7 @@ async function generateEtherealSummary(cards, spreadType) {
     } catch (error) {
         console.error('AI Summary Error:', error);
         summaryContainer.innerHTML = `
-            <p class="text-center" style="color: var(--color-silver-mist);">
+            <p class="text-center tarot-summary-error">
                 <em>Hvězdy jsou nyní příliš daleko... (Spojení selhalo)</em>
             </p>
         `;

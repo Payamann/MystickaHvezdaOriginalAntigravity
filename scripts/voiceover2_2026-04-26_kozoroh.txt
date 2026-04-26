@@ -1,0 +1,47 @@
+VOICEOVER SCRIPT
+============================================================
+🗓️ 26. dubna 2026
+
+[commanding] Vždy makáš jako první. <break time="0.5s" /> [intense] A čekáš, že výsledky přijdou samy. <break time="1.0s" />
+
+[serious] Sedíš na lavičce v parku. <break time="0.3s" /> [intense] Lidé míjejí. <break time="0.3s" /> [confident] Ty počítáš, co ti ještě zbývá dokončit. <break time="0.3s" /> [commanding] Vytrvalost tě sem dostala — a sama ti řekne, kdy stačí. <break time="1.0s" />
+
+[inviting] Kozorohu — napiš, co dnes odkládáš ⬇️ <break time="0.3s" /> [clearly] Pošli to někomu, kdo tohle dnes prožívá.
+
+TIKTOK / INSTAGRAM DESCRIPTION
+============================================================
+Saturn, tvůj vládce, nereaguje na spěch — reaguje na strukturu, a 26. dubna 2026 je přesně ten typ dne, kdy to budeš cítit v kostech. ♄ Zemský živel Kozoroha ti dává schopnost vydržet tam, kde ostatní odcházejí, ale zároveň buduje tlak, který jednou přeroste v nutnost zastavit se. Sleduj profil — příště odhalím, proč Saturn odměňuje pauzu víc, než odměňuje přesčas. ⏸️
+
+#mystickaHvezda #Kozoroh #horoskop #fyp
+
+FACEBOOK REELS DESCRIPTION
+============================================================
+Vždy makáš jako první — a přesto výsledky někdy mlčí. ♄ 26. dubna 2026 ti Saturn, tvůj vládce, připomíná, že nereaguje na spěch, ale na strukturu. Vytrvalost tě dostala tam, kde jsi — a právě ona ti teď tiše naznačuje, že pauza do plánu patří. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨
+
+#mystickaHvezda #Kozoroh #horoskop #astrologie #dennihoroskop #mystika
+
+SUNO PROMPT
+============================================================
+Warm instrumental background with light harp arpeggios and a delicate flute melody weaving gently above a soft rhythmic pulse, evoking the golden spread of sunrise breaking through a fading starlit sky. Major key with steady, purposeful forward momentum — bright, uplifting, and quietly determined, designed to support a voiceover without competing, breathing space between melodic phrases. Short instrumental, 60-90 seconds, loop-ready.
+
+THUMBNAIL PROMPT (Nano Banana)
+============================================================
+A mystical video thumbnail for zodiac sign Capricorn.
+
+BACKGROUND: deep dark space with soft subtle dark glacial blue and granite grey nebula with icy silver stellar clouds, cold deep navy void with frost-white star clusters, stoic cosmic terrain of dark blue and charcoal — disciplined, ancient, enduring — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.
+
+COMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.
+
+ELEMENT 1 — glyph: large ornate Capricorn symbol (♑) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.
+
+ELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '26. dubna' in elegant gold lettering on the first line, 'KOZOROH' in bold engraved gold capitals on the second line.
+
+ELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Makáš jako první a čekáš výsledky.' on the first line, 'Vytrvalost sama ví, kdy stačí.' on the second line.
+
+NO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.
+
+Portrait 9:16.
+
+CAPTIONS PŘÍKAZ
+============================================================
+python "C:/Users/pavel/OneDrive/Desktop/captions-tool/captions.py" "VIDEO.mp4" --model small --text "Vždy makáš jako první. A čekáš, že výsledky přijdou samy. Sedíš na lavičce v parku. Lidé míjejí. Ty počítáš, co ti ještě zbývá dokončit. Vytrvalost tě sem dostala — a sama ti řekne, kdy stačí. Kozorohu — napiš, co dnes odkládáš ⬇️ Pošli to někomu, kdo tohle dnes prožívá."

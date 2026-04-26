@@ -22,8 +22,9 @@
     <meta name="twitter:image" content="https://www.mystickahvezda.cz/img/hero-3d.webp">
     <title>Šamanské Kolo — Indiánská Moudrost | Mystická Hvězda</title>
     <link rel="canonical" href="https://www.mystickahvezda.cz/shamansko-kolo.html">
-    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="img/icon-192.webp" type="image/webp">
     <link rel="stylesheet" href="css/style.v2.min.css?v=11">
+    <link rel="stylesheet" href="css/pages/shamansko-kolo.css">
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -46,645 +47,7 @@
       }
     }
     </script>
-    <style>
-        /* ============================================================
-           KEYFRAMES
-        ============================================================ */
-        @keyframes outerRingSpin {
-            from { transform: rotate(0deg); }
-            to   { transform: rotate(360deg); }
-        }
-        @keyframes segPulse {
-            0%,100% { opacity: 0.75; }
-            50%      { opacity: 1; }
-        }
-        @keyframes glowPulse2 {
-            0%,100% { opacity: 0.8; }
-            50%      { opacity: 1; }
-        }
-        @keyframes totemReveal {
-            from { opacity: 0; transform: scale(0.6) rotate(-10deg); }
-            to   { opacity: 1; transform: scale(1) rotate(0deg); }
-        }
-        @keyframes cardSlideIn {
-            from { opacity: 0; transform: translateY(24px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes featherFloat {
-            0%,100% { transform: translateY(0) rotate(-5deg); }
-            50%      { transform: translateY(-14px) rotate(5deg); }
-        }
-        @keyframes mwSpin {
-            to { transform: rotate(360deg); }
-        }
-        @keyframes breathe {
-            0%,100% { r: 34; }
-            50%      { r: 37; }
-        }
-        @keyframes heroFadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes glowPulse {
-            0%,100% { box-shadow: 0 0 20px rgba(139,90,180,0.2), 0 0 40px rgba(139,90,180,0.05); }
-            50%      { box-shadow: 0 0 30px rgba(139,90,180,0.4), 0 0 60px rgba(139,90,180,0.15); }
-        }
-        @keyframes shimmer {
-            from { background-position: -200% center; }
-            to   { background-position: 200% center; }
-        }
-
-        /* ============================================================
-           HERO
-        ============================================================ */
-        .mw-hero {
-            min-height: 55vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 7rem 1rem 4rem;
-            position: relative;
-            overflow: hidden;
-        }
-        .mw-hero::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background:
-                radial-gradient(ellipse at 50% 50%, rgba(10,6,30,0.72) 0%, rgba(10,6,30,0.45) 60%, transparent 100%),
-                radial-gradient(ellipse at 50% -10%, rgba(120,80,180,0.25) 0%, transparent 65%);
-        }
-        /* Faint large watermark wheel */
-        .mw-hero::after {
-            content: '';
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: min(600px, 120vw);
-            height: min(600px, 120vw);
-            border-radius: 50%;
-            border: 1px solid rgba(139,90,180,0.08);
-            box-shadow:
-                0 0 0 40px rgba(139,90,180,0.03),
-                0 0 0 80px rgba(139,90,180,0.02),
-                0 0 0 120px rgba(139,90,180,0.01);
-            pointer-events: none;
-        }
-        .mw-hero__content {
-            position: relative;
-            z-index: 1;
-            animation: heroFadeIn 0.8s ease both;
-        }
-        .mw-hero__badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.35rem 1rem;
-            background: rgba(212,175,55,0.1);
-            border: 1px solid rgba(212,175,55,0.35);
-            border-radius: 50px;
-            font-size: 0.72rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--color-mystic-gold);
-            margin-bottom: 1.5rem;
-        }
-        .mw-hero__title {
-            font-size: clamp(2.2rem, 5.5vw, 3.8rem);
-            font-family: var(--font-heading);
-            font-weight: 700;
-            line-height: 1.15;
-            margin-bottom: 1.25rem;
-            text-shadow: 0 2px 20px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.5);
-        }
-        .mw-hero__title-gradient {
-            background: linear-gradient(135deg, #D4AF37 0%, #8B5AB4 40%, #D4AF37 80%);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: shimmer 4s linear infinite;
-        }
-        .mw-hero__desc {
-            max-width: 520px;
-            margin: 0 auto 1.5rem;
-            color: rgba(255,255,255,0.85);
-            font-size: 1.05rem;
-            line-height: 1.75;
-            text-shadow: 0 1px 12px rgba(0,0,0,0.9);
-        }
-        /* Floating feather decorations */
-        .mw-feather {
-            position: absolute;
-            font-size: 1.8rem;
-            opacity: 0.25;
-            pointer-events: none;
-            animation: featherFloat 4s ease-in-out infinite;
-        }
-        .mw-feather:nth-child(1) { top: 15%; left: 8%;  animation-delay: 0s;    animation-duration: 4.5s; }
-        .mw-feather:nth-child(2) { top: 25%; right: 7%; animation-delay: 1s;    animation-duration: 3.8s; }
-        .mw-feather:nth-child(3) { top: 60%; left: 5%;  animation-delay: 2s;    animation-duration: 5s; }
-        .mw-feather:nth-child(4) { top: 55%; right: 5%; animation-delay: 0.5s;  animation-duration: 4.2s; }
-        @media (max-width: 600px) {
-            .mw-feather { display: none; }
-        }
-
-        /* Direction color pills below hero */
-        .mw-directions-row {
-            display: flex;
-            justify-content: center;
-            gap: 0.6rem;
-            flex-wrap: wrap;
-            margin-top: 0.5rem;
-        }
-        .mw-dir-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.35rem;
-            padding: 0.3rem 0.85rem;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            border: 1px solid;
-        }
-        .mw-dir-pill--east  { background: rgba(212,175,55,0.1);  border-color: rgba(212,175,55,0.3);  color: #D4AF37; }
-        .mw-dir-pill--south { background: rgba(92,158,74,0.1);   border-color: rgba(92,158,74,0.3);   color: #7DBF5A; }
-        .mw-dir-pill--west  { background: rgba(139,90,180,0.1);  border-color: rgba(139,90,180,0.3);  color: #8B5AB4; }
-        .mw-dir-pill--north { background: rgba(168,200,216,0.1); border-color: rgba(168,200,216,0.3); color: #A8C8D8; }
-
-        /* ============================================================
-           FORM
-        ============================================================ */
-        .mw-form-section {
-            max-width: 520px;
-            margin: 0 auto;
-            padding: 0 1rem 5rem;
-        }
-        .mw-form {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(212,175,55,0.2);
-            border-radius: 24px;
-            padding: 2.5rem 2rem;
-            backdrop-filter: blur(16px);
-            position: relative;
-            overflow: hidden;
-        }
-        .mw-form::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(212,175,55,0.8), transparent);
-        }
-        .mw-form__icon {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 0.75rem;
-        }
-        .mw-form__title {
-            text-align: center;
-            font-size: 1.35rem;
-            font-family: var(--font-heading);
-            margin-bottom: 0.3rem;
-        }
-        .mw-form__subtitle {
-            text-align: center;
-            color: rgba(255,255,255,0.38);
-            font-size: 0.85rem;
-            margin-bottom: 2rem;
-        }
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-        .form-group label {
-            display: block;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: rgba(255,255,255,0.45);
-            margin-bottom: 0.5rem;
-        }
-        .form-group input {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 0.9rem 1.1rem;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(212,175,55,0.25);
-            border-radius: 12px;
-            color: #fff;
-            font-size: 1rem;
-            transition: border-color 0.25s, box-shadow 0.25s;
-        }
-        .form-group input:focus {
-            outline: none;
-            border-color: rgba(212,175,55,0.6);
-            box-shadow: 0 0 0 3px rgba(212,175,55,0.08);
-        }
-        .mw-error {
-            display: none;
-            background: rgba(255,60,60,0.1);
-            border: 1px solid rgba(255,60,60,0.3);
-            border-radius: 10px;
-            padding: 0.75rem 1rem;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-            color: #ff9999;
-        }
-        .mw-submit-btn {
-            width: 100%;
-            font-size: 1rem;
-            padding: 1.05rem 2rem;
-        }
-        .mw-form__disclaimer {
-            text-align: center;
-            font-size: 0.68rem;
-            color: rgba(255,255,255,0.22);
-            margin-top: 0.85rem;
-        }
-
-        /* ============================================================
-           LOADING
-        ============================================================ */
-        .mw-loading {
-            display: none;
-            text-align: center;
-            padding: 4rem 1rem;
-        }
-        .mw-spinner {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            border: 5px solid transparent;
-            border-top-color: #D4AF37;
-            border-right-color: #7DBF5A;
-            border-bottom-color: #8B5AB4;
-            border-left-color: #A8C8D8;
-            animation: mwSpin 1.4s linear infinite;
-            margin: 0 auto 1.5rem;
-        }
-        .mw-spinner__inner {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            border: 3px solid transparent;
-            border-top-color: rgba(139,90,180,0.4);
-            border-bottom-color: rgba(168,200,216,0.4);
-            animation: mwSpin 1s linear infinite reverse;
-            margin: 9px auto 0;
-        }
-        .mw-loading__text {
-            color: rgba(255,255,255,0.45);
-            font-size: 0.95rem;
-            letter-spacing: 0.5px;
-        }
-
-        /* ============================================================
-           RESULT SECTION
-        ============================================================ */
-        .mw-result {
-            display: none;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 0 1rem 6rem;
-        }
-        .mw-result.visible { display: block; }
-
-        /* ── Compass container ── */
-        .mw-wheel-wrap {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 2.5rem;
-        }
-        .mw-compass-svg {
-            width: clamp(260px, 60vw, 340px);
-            height: clamp(260px, 60vw, 340px);
-            filter: drop-shadow(0 0 45px rgba(139,90,180,0.35))
-                    drop-shadow(0 0 18px rgba(212,175,55,0.18))
-                    drop-shadow(0 12px 28px rgba(0,0,0,0.6));
-            overflow: visible;
-            display: block;
-        }
-        /* Base compass points — inactive slightly dimmed for contrast */
-        .mw-wheel__segment {
-            transition: filter 0.5s ease;
-            filter: brightness(0.7) saturate(0.8);
-        }
-        .mw-wheel__segment.active {
-            filter: brightness(3) saturate(2) drop-shadow(0 0 6px rgba(255,220,50,0.9));
-        }
-        /* Directional glow overlays */
-        .mw-seg-glow {
-            opacity: 0;
-            transition: opacity 0.6s ease;
-            pointer-events: none;
-        }
-        .mw-seg-glow.active {
-            animation: glowPulse2 2s ease-in-out infinite;
-        }
-        #seg-north-glow.active {
-            filter: drop-shadow(0 -16px 28px rgba(110,180,255,1))
-                    drop-shadow(0 -8px 14px rgba(80,150,255,0.85));
-        }
-        #seg-south-glow.active {
-            filter: drop-shadow(0 16px 28px rgba(40,220,135,1))
-                    drop-shadow(0 8px 14px rgba(20,180,100,0.85));
-        }
-        #seg-east-glow.active {
-            filter: drop-shadow(16px 0 28px rgba(255,215,0,1))
-                    drop-shadow(8px 0 14px rgba(200,160,0,0.85));
-        }
-        #seg-west-glow.active {
-            filter: drop-shadow(-16px 0 28px rgba(195,60,255,1))
-                    drop-shadow(-8px 0 14px rgba(145,30,210,0.85));
-        }
-        /* Direction labels in SVG */
-        .mw-compass-dir-label {
-            font-size: 7px;
-            fill: rgba(212,175,55,0.5);
-            font-family: sans-serif;
-            letter-spacing: 2px;
-            font-weight: 600;
-            transition: fill 0.4s, filter 0.4s;
-        }
-        .mw-compass-dir-label.active {
-            fill: rgba(255,225,50,1);
-            filter: url(#txt-glow-filter);
-        }
-
-        /* ── Direction legend below wheel ── */
-        .mw-wheel-legend {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-top: 1.25rem;
-        }
-        .mw-legend-item {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            font-size: 0.75rem;
-            color: rgba(255,255,255,0.45);
-        }
-        .mw-legend-dot {
-            width: 10px; height: 10px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        /* ── Totem Banner ── */
-        .mw-totem-banner {
-            text-align: center;
-            padding: 2.5rem 2rem;
-            background: linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(157,78,221,0.06) 50%, rgba(212,175,55,0.04) 100%);
-            border: 1px solid rgba(212,175,55,0.3);
-            border-radius: 24px;
-            margin-bottom: 1.5rem;
-            position: relative;
-            overflow: hidden;
-            animation: glowPulse 4s ease-in-out infinite;
-        }
-        .mw-totem-banner::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(212,175,55,0.7), transparent);
-        }
-        .mw-totem-banner::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(212,175,55,0.3), transparent);
-        }
-        .mw-totem-banner__label {
-            font-size: 0.68rem;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            color: rgba(255,255,255,0.35);
-            margin-bottom: 1rem;
-        }
-        .mw-totem-banner__emoji {
-            font-size: clamp(3.5rem, 10vw, 5.5rem);
-            display: block;
-            margin-bottom: 0.75rem;
-            animation: totemReveal 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-            filter: drop-shadow(0 4px 20px rgba(212,175,55,0.35));
-        }
-        .mw-totem-banner__name {
-            font-size: clamp(1.8rem, 5vw, 2.6rem);
-            font-family: var(--font-heading);
-            font-weight: 700;
-            background: linear-gradient(135deg, #ffd700, #fcf6ba, #ffd700);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: shimmer 3s linear infinite;
-            margin-bottom: 0.35rem;
-            line-height: 1.2;
-        }
-        .mw-totem-banner__native {
-            font-size: 0.9rem;
-            color: rgba(255,255,255,0.3);
-            font-style: italic;
-            letter-spacing: 0.5px;
-        }
-
-        /* ── Cards grid ── */
-        .mw-cards-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-        @media (max-width: 580px) {
-            .mw-cards-grid { grid-template-columns: 1fr; }
-        }
-        .mw-card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.07);
-            border-radius: 16px;
-            padding: 1.5rem;
-            position: relative;
-            overflow: hidden;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-        .mw-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(212,175,55,0.4), transparent);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .mw-card:hover::before { opacity: 1; }
-        .mw-card:hover {
-            border-color: rgba(212,175,55,0.25);
-            box-shadow: 0 4px 20px rgba(212,175,55,0.08);
-        }
-        .mw-card--wide { grid-column: 1 / -1; }
-        .mw-card--east  { border-color: rgba(212,175,55,0.2); }
-        .mw-card--south { border-color: rgba(92,158,74,0.2);  }
-        .mw-card--west  { border-color: rgba(139,90,180,0.2); }
-        .mw-card--north { border-color: rgba(168,200,216,0.2);}
-        .mw-card__icon {
-            font-size: 1.75rem;
-            margin-bottom: 0.6rem;
-            display: block;
-        }
-        .mw-card__label {
-            font-size: 0.63rem;
-            text-transform: uppercase;
-            letter-spacing: 1.8px;
-            color: rgba(255,255,255,0.3);
-            margin-bottom: 0.5rem;
-        }
-        .mw-card__text {
-            font-size: 0.95rem;
-            line-height: 1.7;
-            color: rgba(255,255,255,0.82);
-        }
-
-        /* Entrance animations for cards */
-        .mw-result.visible .mw-card {
-            animation: cardSlideIn 0.5s ease both;
-        }
-        .mw-result.visible .mw-card:nth-child(1) { animation-delay: 0.05s; }
-        .mw-result.visible .mw-card:nth-child(2) { animation-delay: 0.15s; }
-        .mw-result.visible .mw-card:nth-child(3) { animation-delay: 0.25s; }
-        .mw-result.visible .mw-card:nth-child(4) { animation-delay: 0.35s; }
-
-        /* ── Premium wall ── */
-        .mw-premium-wall {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 3rem 2rem;
-            background: linear-gradient(135deg, rgba(139,90,180,0.06), rgba(212,175,55,0.04));
-            border: 1px solid rgba(139,90,180,0.2);
-            border-radius: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-        .mw-premium-wall::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(139,90,180,0.6), transparent);
-        }
-        .mw-premium-wall__lock {
-            font-size: 2.5rem;
-            margin-bottom: 0.75rem;
-            filter: drop-shadow(0 4px 12px rgba(139,90,180,0.3));
-        }
-        .mw-premium-wall__title {
-            font-family: var(--font-heading);
-            font-size: 1.4rem;
-            margin-bottom: 0.6rem;
-            background: linear-gradient(135deg, var(--color-mystic-gold), #fff8dc, var(--color-mystic-gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .mw-premium-wall__desc {
-            color: rgba(255,255,255,0.5);
-            font-size: 0.9rem;
-            line-height: 1.65;
-            margin-bottom: 1.5rem;
-            max-width: 380px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        /* ── Message ── */
-        .mw-message {
-            text-align: center;
-            padding: 2rem 2rem;
-            background: linear-gradient(135deg, rgba(139,90,180,0.08), rgba(92,158,74,0.04));
-            border: 1px solid rgba(139,90,180,0.2);
-            border-radius: 18px;
-            margin-top: 1rem;
-            font-size: 1.05rem;
-            line-height: 1.75;
-            color: rgba(255,255,255,0.85);
-            font-style: italic;
-            position: relative;
-        }
-        .mw-message::before {
-            content: '"';
-            position: absolute;
-            top: -0.5rem; left: 1.5rem;
-            font-size: 4rem;
-            font-family: Georgia, serif;
-            color: rgba(139,90,180,0.25);
-            line-height: 1;
-        }
-
-        /* ── Tribal divider ── */
-        .mw-divider {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin: 2rem 0 1.5rem;
-            color: rgba(255,255,255,0.2);
-            font-size: 0.7rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-        .mw-divider::before,
-        .mw-divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(139,90,180,0.25), transparent);
-        }
-
-        /* ── Share bar ── */
-        .mw-share {
-            margin-top: 2rem;
-            text-align: center;
-        }
-        .mw-share__label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: rgba(255,255,255,0.3);
-            margin-bottom: 1rem;
-        }
-        .mw-share__buttons {
-            display: flex;
-            justify-content: center;
-            gap: 0.6rem;
-            flex-wrap: wrap;
-        }
-        .share-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.45rem;
-            padding: 0.6rem 1.15rem;
-            border-radius: 50px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.04);
-            color: rgba(255,255,255,0.75);
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-decoration: none;
-            font-family: var(--font-body);
-        }
-        .share-btn:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.2); color: #fff; }
-        .share-btn--fb:hover   { background: rgba(24,119,242,0.15); border-color: rgba(24,119,242,0.5); }
-        .share-btn--copy       { border-color: rgba(139,90,180,0.3); }
-        .share-btn--copy:hover { background: rgba(139,90,180,0.12); border-color: rgba(139,90,180,0.6); color: #8B5AB4; }
-        .share-btn--native     { border-color: rgba(92,158,74,0.3); }
-        .share-btn--native:hover { background: rgba(92,158,74,0.15); border-color: rgba(92,158,74,0.6); }
-        .share-btn--copy.copied { border-color: rgba(80,200,120,0.5); color: #6ee7a0; background: rgba(80,200,120,0.08); }
-    </style>
-    <script src="/js/dist/analytics-init.js" defer></script>
+<script src="/js/dist/analytics-init.js" defer></script>
 </head>
 <body>
     <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
@@ -892,7 +255,7 @@
 
                     <!-- Centre totem emoji (updated by JS on reveal) -->
                     <text id="mw-center-emoji" x="150" y="159" text-anchor="middle"
-                        font-size="26" style="transition: all 0.5s;">🧭</text>
+                        font-size="26" class="mh-inline-c674023472">🧭</text>
 
                     <!-- ── Direction labels (full names, IDs used by JS for active toggle) ── -->
                     <text id="lbl-north" x="150" y="17"  text-anchor="middle" class="mw-compass-dir-label">SEVER</text>
@@ -928,7 +291,7 @@
             <div id="mw-premium-section">
 
                 <!-- When premium: full content -->
-                <div id="mw-premium-content" style="display:none;">
+                <div id="mw-premium-content" class="mh-inline-b8d4284540">
                     <div class="mw-divider">Plné čtení</div>
                     <div class="mw-cards-grid">
                         <div class="mw-card">
@@ -946,7 +309,7 @@
                 </div>
 
                 <!-- When not premium: upgrade wall -->
-                <div id="mw-premium-wall" style="display:none;">
+                <div id="mw-premium-wall" class="mh-inline-b8d4284540">
                     <div class="mw-divider">Plné čtení</div>
                     <div class="mw-cards-grid">
                         <div class="mw-premium-wall">
@@ -956,7 +319,7 @@
                                 Silné stránky vašeho totemu, výzvy na životní cestě
                                 a osobní duchovní poselství čekají na vás.
                             </p>
-                            <a href="cenik.html" class="btn btn--primary" style="max-width:320px; display:block; margin: 0 auto 0.75rem;">
+                            <a href="cenik.html" class="btn btn--primary mh-inline-e28e160e11">
                                 ✨ Hvězdný Průvodce — 199 Kč/měsíc
                             </a>
                         </div>
@@ -969,7 +332,7 @@
             <div class="mw-share">
                 <div class="mw-share__label">🌿 Sdílet svůj totem</div>
                 <div class="mw-share__buttons">
-                    <button class="share-btn share-btn--native" id="share-native" style="display:none;" type="button">
+                    <button class="share-btn share-btn--native mh-inline-b8d4284540" id="share-native" type="button">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
                         Sdílet
                     </button>
@@ -988,7 +351,7 @@
                 </div>
             </div>
 
-            <div style="text-align:center; margin-top:2.5rem;">
+            <div class="mh-inline-1c0d81b4ab">
                 <button id="mw-reset" class="btn btn--secondary">🔄 Hledat znovu</button>
             </div>
 
@@ -997,13 +360,13 @@
 
     <div id="footer-placeholder"></div>
 
-    <script src="js/api-config.js?v=5" defer></script>
-    <script src="js/components.js?v=10" defer></script>
-    <script src="js/templates.js?v=10" defer></script>
-    <script src="js/auth-client.js?v=5" defer></script>
-<script src="js/auth-copy-fixes.js" defer></script>
-    <script src="js/secondary-pages-copy-fixes.js" defer></script>
-    <script src="js/nav-failsafe.js" defer></script>
-    <script src="js/shamansko-kolo.js" defer></script>
+    <script src="js/dist/api-config.js?v=5" defer></script>
+    <script src="js/dist/components.js?v=10" defer></script>
+    <script src="js/dist/templates.js?v=10" defer></script>
+    <script src="js/dist/auth-client.js?v=5" defer></script>
+<script src="js/dist/auth-copy-fixes.js" defer></script>
+    <script src="js/dist/secondary-pages-copy-fixes.js" defer></script>
+    <script src="js/dist/nav-failsafe.js" defer></script>
+    <script src="js/dist/shamansko-kolo.js" defer></script>
 </body>
 </html>

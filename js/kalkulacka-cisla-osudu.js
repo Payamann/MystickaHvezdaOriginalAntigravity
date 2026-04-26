@@ -185,9 +185,13 @@
 
             document.getElementById('res-text').textContent = data.text;
 
-            document.getElementById('calc-result').style.display = 'block';
+            const result = document.getElementById('calc-result');
 
-            document.getElementById('calc-result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            result.hidden = false;
+
+            result.classList.add('mh-block-visible');
+
+            result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
 
 

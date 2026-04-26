@@ -33,9 +33,9 @@ test.describe('Ceník — platební tlačítka', () => {
 
     // ── Checkout tlačítka — struktura ────────────────────────────────────────
 
-    test('existují 3 checkout tlačítka s třídou plan-checkout-btn', async ({ page }) => {
+    test('existuji 2 hlavni checkout tlacitka s tridou plan-checkout-btn', async ({ page }) => {
         const btns = page.locator('.plan-checkout-btn');
-        await expect(btns).toHaveCount(3);
+        await expect(btns).toHaveCount(2);
     });
 
     test('tlačítko Průvodce má data-plan="pruvodce"', async ({ page }) => {
@@ -48,9 +48,9 @@ test.describe('Ceník — platební tlačítka', () => {
         await expect(btn).toBeVisible();
     });
 
-    test('tlačítko VIP má data-plan="vip-majestrat"', async ({ page }) => {
+    test('bezny cenik nezobrazuje VIP jako hlavni checkout CTA', async ({ page }) => {
         const btn = page.locator('[data-plan="vip-majestrat"]');
-        await expect(btn).toBeVisible();
+        await expect(btn).toHaveCount(0);
     });
 
     // ── Kritický test: nepřihlášený uživatel → správné přesměrování ──────────
@@ -113,10 +113,10 @@ test.describe('Ceník — platební tlačítka', () => {
         expect(pruvodcePrice).toContain('199');
     });
 
-    test('přepnutí na roční změní ceny na nižší', async ({ page }) => {
+    test('prepnuti na rocni zobrazi rocni cenu', async ({ page }) => {
         await page.locator('#toggle-yearly').click();
         const pruvodcePrice = await page.locator('[data-price-plan="pruvodce"] .price-amount').textContent();
-        expect(pruvodcePrice).toContain('159');
+        expect(pruvodcePrice).toContain('1 990');
     });
 
     test('přepnutí zpět na měsíční obnoví původní ceny', async ({ page }) => {
@@ -144,5 +144,117 @@ test.describe('Ceník — platební tlačítka', () => {
         // Po přesměrování zpět zkontrolujeme sessionStorage (na prihlaseni.html)
         const pending = await page.evaluate(() => sessionStorage.getItem('pending_plan'));
         expect(pending).toBe('pruvodce');
+    });
+
+    test('prihlaseny checkout posila serveru funnel kontext a billing interval', async ({ page }) => {
+        let checkoutPayload = null;
+
+        await page.route('**/api/payment/create-checkout-session', async (route) => {
+            checkoutPayload = route.request().postDataJSON();
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    id: 'cs_test_funnel_context',
+                    url: '/profil.html?payment=success&plan=pruvodce-rocne&session_id=cs_test_funnel_context'
+                })
+            });
+        });
+
+        await page.addInitScript(() => {
+            localStorage.setItem('auth_user', JSON.stringify({
+                id: 'e2e-user',
+                email: 'e2e@example.com',
+                role: 'user'
+            }));
+        });
+
+        await page.goto('/cenik.html?source=inline_paywall&feature=numerologie_vyklad&plan=pruvodce');
+        await waitForPageReady(page);
+        await page.locator('#toggle-yearly').click();
+
+        await Promise.all([
+            page.waitForURL(/profil\.html\?payment=success/),
+            page.locator('[data-plan="pruvodce-rocne"]').click(),
+        ]);
+
+        expect(checkoutPayload).toEqual(expect.objectContaining({
+            planId: 'pruvodce-rocne',
+            source: 'inline_paywall',
+            feature: 'numerologie_vyklad',
+            billingInterval: 'yearly'
+        }));
+    });
+
+    test('pending checkout se po registraci dokonci se stejnym kontextem', async ({ page }) => {
+        let authPayload = null;
+        let checkoutPayload = null;
+
+        await page.route('**/api/auth/register', async (route) => {
+            authPayload = route.request().postDataJSON();
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    success: true,
+                    user: {
+                        id: 'post-auth-user',
+                        email: 'postauth@example.com',
+                        role: 'user',
+                        subscription_status: 'free'
+                    }
+                })
+            });
+        });
+
+        await page.route('**/api/payment/create-checkout-session', async (route) => {
+            checkoutPayload = route.request().postDataJSON();
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    id: 'cs_test_post_auth',
+                    url: '/profil.html?payment=success&plan=pruvodce&session_id=cs_test_post_auth'
+                })
+            });
+        });
+
+        await page.evaluate(() => {
+            localStorage.clear();
+            sessionStorage.clear();
+        });
+
+        await page.goto('/cenik.html?source=inline_paywall&feature=numerologie_vyklad');
+        await waitForPageReady(page);
+
+        await Promise.all([
+            page.waitForURL(/prihlaseni\.html/),
+            page.locator('[data-plan="pruvodce"]').click(),
+        ]);
+
+        await expect(page.locator('#checkout-context-banner')).toBeVisible();
+        await page.locator('#email').fill('postauth@example.com');
+        await page.locator('#password').fill('TestPassword123!');
+        await page.locator('#confirm-password-reg').fill('TestPassword123!');
+        await page.locator('#gdpr-consent').check();
+
+        await Promise.all([
+            page.waitForURL(/profil\.html\?payment=success/),
+            page.locator('#auth-submit').click(),
+        ]);
+
+        expect(authPayload).toEqual(expect.objectContaining({
+            email: 'postauth@example.com',
+            password: 'TestPassword123!',
+            password_confirm: 'TestPassword123!'
+        }));
+        expect(checkoutPayload).toEqual(expect.objectContaining({
+            planId: 'pruvodce',
+            source: 'inline_paywall',
+            feature: 'numerologie_vyklad'
+        }));
+
+        const pending = await page.evaluate(() => sessionStorage.getItem('pending_plan'));
+        expect(pending).toBeNull();
     });
 });

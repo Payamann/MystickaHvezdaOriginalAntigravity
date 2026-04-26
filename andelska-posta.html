@@ -36,262 +36,8 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap&subset=latin,latin-ext" rel="stylesheet"></noscript>
 
     <link rel="stylesheet" href="css/style.v2.min.css?v=11">
-
-    <style>
-
-        .message-form {
-
-            max-width: 580px;
-
-            margin: 0 auto;
-
-            background: rgba(255, 255, 255, 0.03);
-
-            border: 1px solid rgba(255, 255, 255, 0.08);
-
-            border-radius: 20px;
-
-            padding: 2rem;
-
-        }
-
-
-
-        .form-input {
-
-            width: 100%;
-
-            padding: 0.85rem 1.1rem;
-
-            background: rgba(255, 255, 255, 0.06);
-
-            border: 1px solid rgba(255, 255, 255, 0.1);
-
-            border-radius: 12px;
-
-            color: white;
-
-            font-family: 'Inter', sans-serif;
-
-            font-size: 0.95rem;
-
-            outline: none;
-
-            box-sizing: border-box;
-
-            transition: border-color 0.2s;
-
-        }
-
-
-
-        .form-input:focus {
-
-            border-color: rgba(212, 175, 55, 0.45);
-
-        }
-
-
-
-        textarea.form-input {
-
-            resize: vertical;
-
-            min-height: 120px;
-
-        }
-
-
-
-        .messages-wall {
-
-            max-width: 700px;
-
-            margin: 3rem auto 0;
-
-        }
-
-
-
-        .message-card {
-
-            background: rgba(255, 255, 255, 0.03);
-
-            border: 1px solid rgba(255, 255, 255, 0.07);
-
-            border-radius: 16px;
-
-            padding: 1.25rem 1.5rem;
-
-            margin-bottom: 1rem;
-
-            position: relative;
-
-            animation: fadeIn 0.4s ease;
-
-        }
-
-
-
-        .message-card:hover {
-
-            border-color: rgba(212, 175, 55, 0.2);
-
-        }
-
-
-
-        @keyframes fadeIn {
-
-            from {
-
-                opacity: 0;
-
-                transform: translateY(10px)
-
-            }
-
-
-
-            to {
-
-                opacity: 1;
-
-                transform: translateY(0)
-
-            }
-
-        }
-
-
-
-        .message-meta {
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-
-            margin-bottom: 0.6rem;
-
-            font-size: 0.8rem;
-
-            color: rgba(255, 255, 255, 0.3);
-
-        }
-
-
-
-        .message-text {
-
-            color: rgba(255, 255, 255, 0.82);
-
-            line-height: 1.7;
-
-            font-size: 0.95rem;
-
-            font-style: italic;
-
-        }
-
-
-
-        .heart-btn {
-
-            background: none;
-
-            border: none;
-
-            cursor: pointer;
-
-            color: rgba(255, 255, 255, 0.3);
-
-            font-size: 1rem;
-
-            padding: 0.3rem 0.6rem;
-
-            transition: color 0.2s;
-
-            border-radius: 8px;
-
-        }
-
-
-
-        .heart-btn:hover {
-
-            color: #e74c3c;
-
-        }
-
-
-
-        .heart-btn:active {
-
-            transform: scale(1.2);
-
-            transition: transform 0.1s;
-
-        }
-
-
-
-        .heart-btn.liked {
-
-            color: #e74c3c;
-
-        }
-
-
-
-        .category-tag {
-
-            display: inline-block;
-
-            padding: 0.2rem 0.6rem;
-
-            border-radius: 50px;
-
-            font-size: 0.75rem;
-
-            background: rgba(155, 89, 182, 0.15);
-
-            border: 1px solid rgba(155, 89, 182, 0.25);
-
-            color: rgba(155, 89, 182, 0.8);
-
-            margin-right: 0.3rem;
-
-        }
-
-
-
-        .submit-btn {
-
-            width: 100%;
-
-            margin-top: 1rem;
-
-        }
-
-
-
-        .char-counter {
-
-            font-size: 0.78rem;
-
-            color: rgba(255, 255, 255, 0.3);
-
-            text-align: right;
-
-            margin-top: 0.3rem;
-
-        }
-
-    </style>
-
-  <!-- DOMPurify for XSS protection (must load synchronously before other scripts use it) -->
+    <link rel="stylesheet" href="css/pages/andelska-posta.css">
+<!-- DOMPurify for XSS protection (must load synchronously before other scripts use it) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"></script>
 
     <script type="application/ld+json">
@@ -323,7 +69,7 @@
 
     <main>
 
-        <section class="section" style="padding-top:5rem;text-align:center;">
+        <section class="section mh-inline-fe157fd9e5">
 
             <div class="container">
 
@@ -345,11 +91,11 @@
 
                 <div class="message-form" data-animate>
 
-                    <div style="margin-bottom:1rem;">
+                    <div class="mh-inline-d768660cf3">
 
                         <label for="msg-nickname"
 
-                            style="display:block;color:rgba(255,255,255,0.5);font-size:0.82rem;margin-bottom:0.4rem;">Vaše
+                            class="mh-inline-ed21604022">Vaše
 
                             přezdívka (nepovinné)</label>
 
@@ -359,11 +105,11 @@
 
                     </div>
 
-                    <div style="margin-bottom:0.25rem;">
+                    <div class="mh-inline-3460e39b22">
 
                         <label for="msg-text"
 
-                            style="display:block;color:rgba(255,255,255,0.5);font-size:0.82rem;margin-bottom:0.4rem;">Váš
+                            class="mh-inline-ed21604022">Váš
 
                             vzkaz andělům</label>
 
@@ -375,11 +121,11 @@
 
                     </div>
 
-                    <div style="margin-bottom:1rem;">
+                    <div class="mh-inline-d768660cf3">
 
                         <label
 
-                            style="display:block;color:rgba(255,255,255,0.5);font-size:0.82rem;margin-bottom:0.4rem;">Kategorie</label>
+                            class="mh-inline-ed21604022">Kategorie</label>
 
                         <select id="msg-category" class="form-input" aria-label="Kategorie vzkazu">
 
@@ -403,7 +149,7 @@
 
                     <p id="submit-msg"
 
-                        style="display:none;color:#2ed573;font-size:0.88rem;margin-top:0.75rem;text-align:center;"></p>
+                        class="mh-inline-f423340941"></p>
 
                 </div>
 
@@ -415,7 +161,7 @@
 
                     <h2
 
-                        style="font-family:'Cinzel',serif;color:#d4af37;font-size:1.2rem;margin-bottom:1.5rem;text-align:center;">
+                        class="mh-inline-30d4d9591a">
 
                         ✨ Nedávné vzkazy komunity</h2>
 
@@ -437,23 +183,23 @@
 
     <div id="footer-placeholder"></div>
 
-    <script src="js/api-config.js?v=5" defer></script>
+    <script src="js/dist/api-config.js?v=5" defer></script>
 
     <script src="js/dist/templates.js" defer></script>
-    <script src="js/auth-client.js?v=5" defer></script>
-<script src="js/auth-copy-fixes.js" defer></script>
-    <script src="js/secondary-pages-copy-fixes.js" defer></script>
+    <script src="js/dist/auth-client.js?v=5" defer></script>
+<script src="js/dist/auth-copy-fixes.js" defer></script>
+    <script src="js/dist/secondary-pages-copy-fixes.js" defer></script>
 
-    <script src="js/components.js?v=10" defer></script>
+    <script src="js/dist/components.js?v=10" defer></script>
 
     
 
-    <script src="js/exit-intent.js" defer></script>
+    <script src="js/dist/exit-intent.js" defer></script>
 
-    <script type="module" src="js/main.js?v=10"></script>
+    <script type="module" src="js/dist/main.js?v=10"></script>
 
-    <script src="js/angel-post.js" defer></script>
-    <script src="js/share-result.js" defer></script>
+    <script src="js/dist/angel-post.js" defer></script>
+    <script src="js/dist/share-result.js" defer></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"></script>
 </body>

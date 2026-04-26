@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setText('#toggle-monthly', 'Měsíčně');
     const yearly = document.getElementById('toggle-yearly');
     if (yearly) {
-        yearly.innerHTML = 'Ročně <span style="background:rgba(46,204,113,0.15); color:#2ecc71; font-size:0.7rem; padding:1px 6px; border-radius:20px; font-weight:800; margin-left:4px;">brzy</span>';
+        yearly.innerHTML = 'Ročně <span class="pricing-soon-badge">brzy</span>';
     }
 
     const pricingCards = document.querySelectorAll('.card--pricing');

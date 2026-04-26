@@ -17,10 +17,17 @@
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "Mystická Hvězda - Ceník",
+        "@type": "SoftwareApplication",
+        "name": "Mystická Hvězda",
         "applicationCategory": "LifestyleApplication",
-        "operatingSystem": "Web"
+        "operatingSystem": "Web",
+        "url": "https://www.mystickahvezda.cz/cenik.html",
+        "offers": [
+            { "@type": "Offer", "name": "Poutník", "price": "0", "priceCurrency": "CZK" },
+            { "@type": "Offer", "name": "Hvězdný Průvodce", "price": "199", "priceCurrency": "CZK", "priceSpecification": { "@type": "UnitPriceSpecification", "price": "199", "priceCurrency": "CZK", "billingDuration": "P1M" } },
+            { "@type": "Offer", "name": "Osvícení", "price": "499", "priceCurrency": "CZK", "priceSpecification": { "@type": "UnitPriceSpecification", "price": "499", "priceCurrency": "CZK", "billingDuration": "P1M" } },
+            { "@type": "Offer", "name": "Roční horoskop na míru 2026", "price": "199", "priceCurrency": "CZK", "url": "https://www.mystickahvezda.cz/rocni-horoskop.html" }
+        ]
     }
     </script>
 
@@ -33,6 +40,7 @@
 
     <link rel="stylesheet" href="/fonts/local-fonts.css">
     <link rel="stylesheet" href="css/style.v2.min.css?v=11">
+    <link rel="stylesheet" href="css/pages/cenik.css">
     <script defer src="https://js.stripe.com/v3/"></script>
     <script src="https://cdn.jsdelivr.net/npm/lucide/dist/umd/lucide.js"></script>
 
@@ -40,37 +48,7 @@
     <link rel="alternate" hreflang="sk" href="https://www.mystickahvezda.cz/sk/cenik.html">
     <link rel="alternate" hreflang="x-default" href="https://www.mystickahvezda.cz/cenik.html">
     <link rel="canonical" href="https://www.mystickahvezda.cz/cenik.html">
-
-    <style>
-        :root { --card-padding-compact: 1.5rem; }
-        .card--pricing { padding: var(--card-padding-compact) !important; display: flex; flex-direction: column; height: 100%; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s ease; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); position: relative; overflow: visible; }
-        .card--pricing:hover { transform: translateY(-8px); border-color: rgba(212,175,55,0.3); }
-        .card--pricing .card__features { margin: 1.25rem 0; padding: 0; list-style: none; flex-grow: 1; display: flex; flex-direction: column; gap: 0.6rem; }
-        .card--pricing .card__features li { display: flex; align-items: flex-start; gap: 0.75rem; font-size: 0.85rem; color: rgba(255,255,255,0.7); line-height: 1.4; text-align: left; }
-        .card--pricing .feature-icon { color: var(--color-mystic-gold); flex-shrink: 0; margin-top: 3px; }
-        .card__price { margin: 0.75rem 0; display: flex; flex-direction: column; align-items: center; }
-        .price-amount { font-size: 2.5rem !important; font-weight: 700; color: #fff; line-height: 1.1; }
-        .price-suffix { font-size: 0.8rem !important; color: rgba(255,255,255,0.4); margin-top: 0.2rem; }
-        .btn-full { width: 100%; margin-top: auto; }
-        .pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
-        .hero__trust-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 50px; font-size: 0.75rem; margin-top: 1.5rem; color: rgba(255,255,255,0.65); flex-wrap: wrap; justify-content: center; }
-        .vip-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--color-mystic-gold), #c9a227); color: #000; padding: 3px 14px; border-radius: 50px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; box-shadow: 0 4px 15px rgba(212,175,55,0.4); z-index: 10; }
-        .comparison-table-wrap { background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); overflow-x: auto; }
-        .comparison-mobile { display: none; margin-top: 1.5rem; gap: 1rem; }
-        .comparison-mobile__card { padding: 1.25rem; border-radius: 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
-        .comparison-mobile__card--featured { border-color: rgba(212,175,55,0.35); background: rgba(212,175,55,0.06); }
-        .comparison-mobile__title { margin-bottom: 0.25rem; color: #fff; font-size: 1rem; font-weight: 700; }
-        .comparison-mobile__subtitle { margin-bottom: 0.9rem; color: rgba(255,255,255,0.5); font-size: 0.8rem; }
-        .comparison-mobile__list { margin: 0; padding-left: 1rem; color: rgba(255,255,255,0.78); }
-        .comparison-mobile__list li { margin-bottom: 0.5rem; }
-        @media (max-width: 1200px) { .pricing-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 680px) {
-            .pricing-grid { grid-template-columns: 1fr; }
-            .comparison-table-wrap { display: none; }
-            .comparison-mobile { display: grid; }
-        }
-    </style>
-    <script src="/js/dist/analytics-init.js" defer></script>
+<script src="/js/dist/analytics-init.js" defer></script>
 </head>
 
 <body class="page-pricing">
@@ -78,75 +56,82 @@
     <div id="header-placeholder"></div>
 
     <main id="main-content">
-        <section class="section section--hero" style="padding-top: var(--space-2xl); padding-bottom: 3rem;">
+        <section class="section section--hero mh-inline-fd21170680">
             <div class="container text-center">
                 <span class="section__badge">Předplatné</span>
-                <h1 class="hero__title" style="margin: 0.5rem 0 1rem; font-size: 3rem;">Začněte zdarma. <span class="text-gradient">Přechod na Premium udělejte až ve chvíli, kdy chcete víc.</span></h1>
-                <p class="hero__subtitle" style="max-width: 760px; margin: 0 auto;">Bezplatný účet vám ukáže, jak Mystická Hvězda funguje. Pokud budete chtít osobní výklady, plné horoskopy, natální kartu a každodenní vedení bez limitu, odemyká je Hvězdný Průvodce.</p>
-                <div class="hero__trust-badge"><span>12 000+ aktivních uživatelů</span><span>|</span><span>Bez karty pro start zdarma</span><span>|</span><span>Zrušíte kdykoliv</span></div>
+                <h1 class="hero__title mh-inline-44e3a01151">Začněte zdarma. <span class="text-gradient">Plaťte až za hlubší osobní vedení.</span></h1>
+                <p class="hero__subtitle mh-inline-9536a1e4b5">Bezplatný účet vytvoří denní návyk. Hvězdný Průvodce odemkne plné výklady, historii, osobní profil a týdenní i měsíční vedení pro chvíle, kdy se chcete vracet pravidelně.</p>
+                <div class="hero__trust-badge"><span>Účet zdarma bez karty</span><span>|</span><span>7 dní Premium na vyzkoušení</span><span>|</span><span>Zrušíte kdykoliv</span></div>
             </div>
         </section>
 
-        <section style="padding-bottom: 3rem; text-align: center;">
+        <section class="mh-inline-cc8b54ce84">
             <div class="container">
-                <div style="display:inline-flex; align-items:center; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:50px; padding:0.3rem;">
-                    <button id="toggle-monthly" style="cursor:pointer; padding:0.6rem 1.6rem; border-radius:30px; font-size:0.85rem; font-weight:700; background:var(--color-mystic-gold); color:#000; border:none; transition:all 0.2s;">Měsíčně</button>
-                    <button id="toggle-yearly" style="cursor:pointer; padding:0.6rem 1.6rem; border-radius:30px; font-size:0.85rem; font-weight:500; color:rgba(255,255,255,0.5); background:transparent; border:none; transition:all 0.2s;">Ročně <span style="background:rgba(46,204,113,0.15); color:#2ecc71; font-size:0.7rem; padding:1px 6px; border-radius:20px; font-weight:800; margin-left:4px;">brzy</span></button>
+                <div class="mh-inline-338e96a176">
+                    <button id="toggle-monthly" class="mh-inline-c838d5f69c">Měsíčně</button>
+                    <button id="toggle-yearly" class="mh-inline-8cb51f9572">Ročně <span class="mh-inline-0cf125c745">2 měsíce zdarma</span></button>
                 </div>
             </div>
         </section>
 
-        <section class="section" style="padding-top:0;">
+        <section class="section mh-inline-bbf01b1a87">
             <div class="container">
                 <div class="pricing-grid">
                     <div class="card card--pricing">
                         <h4 class="card__title">Poutník</h4>
-                        <p class="card__text" style="font-size:0.8rem; opacity:0.5;">Pro první vyzkoušení bez závazku</p>
+                        <p class="card__text mh-inline-b3f39e388b">Pro první vyzkoušení bez závazku</p>
                         <div class="card__price"><span class="price-amount">0 Kč</span><span class="price-suffix">navždy zdarma</span></div>
                         <ul class="card__features">
-                            <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> Denní horoskop a základní výklady</li>
-                            <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> 15+ nástrojů bez placení</li>
-                            <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> Vyzkoušejte si, co vám sedne nejvíc</li>
+                            <li><i data-lucide="check" class="feature-icon"></i> Denní horoskop a základní výklady</li>
+                            <li><i data-lucide="check" class="feature-icon"></i> 15+ nástrojů bez placení</li>
+                            <li><i data-lucide="check" class="feature-icon"></i> Vyzkoušejte si, co vám sedne nejvíc</li>
                         </ul>
-                        <a href="prihlaseni.html?mode=register" class="btn btn-full" style="background:linear-gradient(to right,#d4af37,#b38b00);border:none;color:#000;font-weight:700;">Vytvořit účet zdarma</a>
+                        <a href="prihlaseni.html?mode=register" class="btn btn-full mh-inline-31d501362b">Vytvořit účet zdarma</a>
                     </div>
 
-                    <div class="card card--pricing featured" style="border: 2px solid var(--color-mystic-gold); background: rgba(212, 175, 55, 0.05);">
+                    <div class="card card--pricing featured mh-inline-166747a07d">
                         <div class="vip-badge">Nejlepší start</div>
-                        <h4 class="card__title" style="color:var(--color-mystic-gold);">Hvězdný Průvodce</h4>
-                        <p class="card__text" style="font-size:0.8rem; opacity:0.7;">Nejlepší poměr ceny a skutečné hodnoty</p>
+                        <h4 class="card__title mh-inline-db5d8166dc">Hvězdný Průvodce</h4>
+                        <p class="card__text mh-inline-c6c050eb74">Nejlepší poměr ceny a skutečné hodnoty</p>
                         <div class="card__price" data-price-plan="pruvodce"><span class="price-amount">199 Kč</span><span class="price-suffix">/měsíc</span></div>
                         <ul class="card__features">
-                            <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> Neomezené výklady a denní vedení</li>
-                            <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> Natální karta a numerologický rozbor</li>
-                            <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> Minulý život, rituály a plné horoskopy</li>
-                            <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> Plán, na kterém většina lidí opravdu zůstane</li>
+                            <li><i data-lucide="check" class="feature-icon"></i> Neomezené výklady a denní vedení</li>
+                            <li><i data-lucide="check" class="feature-icon"></i> Natální karta a numerologický rozbor</li>
+                            <li><i data-lucide="check" class="feature-icon"></i> Minulý život, rituály a plné horoskopy</li>
+                            <li><i data-lucide="check" class="feature-icon"></i> Plán, na kterém většina lidí opravdu zůstane</li>
                         </ul>
                         <a href="#" class="btn btn--primary btn-full plan-checkout-btn" data-plan="pruvodce">Chci plný přístup</a>
                     </div>
 
                     <div class="card card--pricing">
-                        <h4 class="card__title">Exclusive</h4>
-                        <p class="card__text" style="font-size:0.8rem; opacity:0.5;">Pro ty, kdo chtějí ještě víc detailu</p>
+                        <h4 class="card__title">Osvícení</h4>
+                        <p class="card__text mh-inline-b3f39e388b">Pro ty, kdo chtějí ještě víc detailu</p>
                         <div class="card__price" data-price-plan="osviceni"><span class="price-amount">499 Kč</span><span class="price-suffix">/měsíc</span></div>
                         <ul class="card__features">
-                            <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> Vše z Průvodce</li>
-                            <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> Astrokartografie a pokročilé analýzy</li>
-                            <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> Prioritní přístup k novým funkcím</li>
+                            <li><i data-lucide="check" class="feature-icon"></i> Vše z Průvodce</li>
+                            <li><i data-lucide="check" class="feature-icon"></i> Astrokartografie a pokročilé analýzy</li>
+                            <li><i data-lucide="check" class="feature-icon"></i> Prioritní přístup k novým funkcím</li>
                         </ul>
-                        <a href="#" class="btn btn-full plan-checkout-btn" data-plan="osviceni" style="background:linear-gradient(to right,#d4af37,#b38b00);border:none;color:#000;font-weight:700;">Chci jít víc do hloubky</a>
+                        <a href="#" class="btn btn-full plan-checkout-btn mh-inline-31d501362b" data-plan="osviceni">Chci jít víc do hloubky</a>
                     </div>
 
-                    <div class="card card--pricing" style="background: rgba(212, 175, 55, 0.08); border: 1px dashed var(--color-mystic-gold);">
-                        <h4 class="card__title" style="color:var(--color-mystic-gold);">VIP Majestát</h4>
-                        <p class="card__text" style="font-size:0.8rem; opacity:0.6;">Pro nejnáročnější a největší hloubku</p>
-                        <div class="card__price" data-price-plan="vip-majestrat"><span class="price-amount">999 Kč</span><span class="price-suffix">/měsíc</span></div>
-                        <ul class="card__features">
-                            <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> Vše z Exclusive</li>
-                            <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> Roční mapa a VIP odpovědi</li>
-                            <li><i data-lucide="check" class="feature-icon" style="width:14px;"></i> Prioritní podpora a nejvyšší hloubka</li>
-                        </ul>
-                        <a href="#" class="btn btn--primary btn-full plan-checkout-btn" data-plan="vip-majestrat" style="background:linear-gradient(to right, #d4af37, #b38b00); border:none; color:#000; font-weight:800;">Vstoupit do VIP</a>
+                </div>
+
+                <div class="pricing-addon">
+                    <div>
+                        <div class="mh-inline-edc1a1f232">Jednorázové hluboké rozbory</div>
+                        <h3 class="mh-inline-aea0d46c32">Ne každý chce předplatné hned. Proto má web i vstupní placený produkt.</h3>
+                        <p class="mh-inline-2b7d17c05c">Roční horoskop na míru je jednorázové PDF pro návštěvníky, kteří chtějí nejdřív jeden konkrétní výstup. Po nákupu dostanou přirozenou cestu k Premium, pokud se chtějí během roku vracet pravidelně.</p>
+                    </div>
+                    <div class="pricing-addon__products">
+                        <a href="rocni-horoskop.html?source=pricing_addon" class="pricing-addon__product" data-product="rocni_horoskop_2026">
+                            <strong><span>Roční horoskop na míru 2026</span><span>199 Kč</span></strong>
+                            <span>Jednorázové PDF do e-mailu. Bez předplatného, dobrý první placený krok.</span>
+                        </a>
+                        <a href="natalni-karta.html?source=pricing_addon" class="pricing-addon__product" data-product="natalni_karta">
+                            <strong><span>Natální karta</span><span>Premium</span></strong>
+                            <span>Hlubší osobní rozbor jako důvod přejít na Průvodce.</span>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -160,23 +145,22 @@
                     <p class="section__text">Rychlé srovnání toho, co se odemkne po registraci a po přechodu na placený plán.</p>
                 </div>
                 <div class="comparison-table-wrap">
-                    <table style="width:100%; border-collapse:collapse; min-width:800px;">
+                    <table class="pricing-comparison-table">
                         <thead>
-                            <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
-                                <th style="text-align:left; padding:1.25rem; color: var(--color-silver-mist);">Funkce</th>
-                                <th style="text-align:center; padding:1.25rem; color: var(--color-starlight);">Poutník</th>
-                                <th style="text-align:center; padding:1.25rem; color:var(--color-mystic-gold);">Průvodce</th>
-                                <th style="text-align:center; padding:1.25rem; color: var(--color-starlight);">Exclusive</th>
-                                <th style="text-align:center; padding:1.25rem; color:var(--color-mystic-gold); background: linear-gradient(to bottom, rgba(212, 175, 55, 0.3), rgba(212, 175, 55, 0.1)); border-top: 2px solid var(--color-mystic-gold); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);">VIP Majestát</th>
+                            <tr class="pricing-comparison-table__head-row">
+                                <th class="pricing-comparison-table__head-cell pricing-comparison-table__head-cell--feature">Funkce</th>
+                                <th class="pricing-comparison-table__head-cell">Poutník</th>
+                                <th class="pricing-comparison-table__head-cell pricing-comparison-table__head-cell--highlight">Průvodce</th>
+                                <th class="pricing-comparison-table__head-cell">Osvícení</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr style="background: rgba(255,255,255,0.025); border-bottom: 1px solid rgba(255,255,255,0.06);"><td colspan="5" style="padding: 0.6rem 1.25rem; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.3); font-weight: 700;">Základní přístup</td></tr>
-                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding:1.25rem;">Denní horoskop</td><td style="text-align:center; padding:1.25rem;">Ano</td><td style="text-align:center; padding:1.25rem;"><strong>Ano + plná verze</strong></td><td style="text-align:center; padding:1.25rem;">Ano</td><td style="text-align:center; padding:1.25rem; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>Ano + osobní hloubka</strong></td></tr>
-                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding:1.25rem;">Tarot a výklady</td><td style="text-align:center; padding:1.25rem;">Omezeně</td><td style="text-align:center; padding:1.25rem;"><strong>Neomezeně</strong></td><td style="text-align:center; padding:1.25rem;">Neomezeně</td><td style="text-align:center; padding:1.25rem; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>Neomezeně + priorita</strong></td></tr>
-                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding:1.25rem;">Natální karta a numerologie</td><td style="text-align:center; padding:1.25rem;">Základ</td><td style="text-align:center; padding:1.25rem;"><strong>Plný rozbor</strong></td><td style="text-align:center; padding:1.25rem;">Pokročilý rozbor</td><td style="text-align:center; padding:1.25rem; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>Nejhlubší interpretace</strong></td></tr>
-                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding:1.25rem;">Partnerská shoda a minulý život</td><td style="text-align:center; padding:1.25rem;">Částečně</td><td style="text-align:center; padding:1.25rem;"><strong>Plný přístup</strong></td><td style="text-align:center; padding:1.25rem;">Plný přístup</td><td style="text-align:center; padding:1.25rem; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3);"><strong>Plný přístup + prognóza</strong></td></tr>
-                            <tr><td style="padding:1.25rem;">Osobní péče</td><td style="text-align:center; padding:1.25rem;">-</td><td style="text-align:center; padding:1.25rem;">Základní vedení</td><td style="text-align:center; padding:1.25rem;">Prioritní přístup</td><td style="text-align:center; padding:1.25rem; background: rgba(212, 175, 55, 0.1); border-left: 1px solid rgba(212, 175, 55, 0.3); border-right: 1px solid rgba(212, 175, 55, 0.3); border-bottom: 2px solid var(--color-mystic-gold);"><strong>VIP priorita a roční mapa</strong></td></tr>
+                            <tr class="pricing-comparison-table__section-row"><td colspan="4" class="pricing-comparison-table__section-cell">Základní přístup</td></tr>
+                            <tr class="pricing-comparison-table__row"><td class="pricing-comparison-table__cell">Denní horoskop</td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center">Ano</td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center"><strong>Ano + plná verze</strong></td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center">Ano + hlubší kontext</td></tr>
+                            <tr class="pricing-comparison-table__row"><td class="pricing-comparison-table__cell">Tarot a výklady</td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center">Omezeně</td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center"><strong>Neomezeně</strong></td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center">Neomezeně + pokročilé výklady</td></tr>
+                            <tr class="pricing-comparison-table__row"><td class="pricing-comparison-table__cell">Natální karta a numerologie</td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center">Základ</td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center"><strong>Plný rozbor</strong></td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center">Pokročilý rozbor</td></tr>
+                            <tr class="pricing-comparison-table__row"><td class="pricing-comparison-table__cell">Partnerská shoda a minulý život</td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center">Částečně</td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center"><strong>Plný přístup</strong></td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center">Plný přístup + hlubší vrstvy</td></tr>
+                            <tr><td class="pricing-comparison-table__cell">Osobní kontinuita</td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center">Základní profil</td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center">Historie a pravidelné vedení</td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center">Roční mapa a pokročilé analýzy</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -202,7 +186,7 @@
                         </ul>
                     </div>
                     <div class="comparison-mobile__card">
-                        <div class="comparison-mobile__title">Exclusive</div>
+                        <div class="comparison-mobile__title">Osvícení</div>
                         <div class="comparison-mobile__subtitle">Více detailu a priorita</div>
                         <ul class="comparison-mobile__list">
                             <li>Vše z Průvodce</li>
@@ -210,29 +194,20 @@
                             <li>Prioritní přístup k novým funkcím</li>
                         </ul>
                     </div>
-                    <div class="comparison-mobile__card">
-                        <div class="comparison-mobile__title">VIP Majestát</div>
-                        <div class="comparison-mobile__subtitle">Nejvyšší hloubka a osobní péče</div>
-                        <ul class="comparison-mobile__list">
-                            <li>Vše z Exclusive</li>
-                            <li>Roční mapa a VIP odpovědi</li>
-                            <li>Prioritní podpora a osobní hloubka</li>
-                        </ul>
-                    </div>
                 </div>
             </div>
         </section>
 
-        <section class="section" style="padding-top: 0;">
+        <section class="section mh-inline-bea2ca4e42">
             <div class="container">
                 <div class="section__header" data-animate>
-                    <span class="section__badge">Proč lidé přechází na Premium</span>
-                    <h2 class="section__title">Neplatíte za další funkce. Platíte za větší hloubku a menší limity.</h2>
+                    <span class="section__badge">Proč Premium dává smysl</span>
+                    <h2 class="section__title">Premium musí zvyšovat hodnotu každého návratu, ne jen odemykat další obrazovky.</h2>
                 </div>
-                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin-top:2rem;" data-animate>
-                    <div style="padding:2rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;"><div style="color:var(--color-mystic-gold);margin-bottom:1rem;">5/5</div><p style="color:rgba(255,255,255,0.8);font-style:italic;line-height:1.7;margin-bottom:1rem;">Kontroluji si vedení skoro každý den. Přesně ten typ klidu a směru, který jsem potřebovala.</p><div><strong style="color:white;font-size:.9rem;">Andrea K.</strong><br><span style="color:rgba(255,255,255,0.4);font-size:.8rem;">Praha - Hvězdný Průvodce</span></div></div>
-                    <div style="padding:2rem;background:rgba(255,255,255,0.03);border:1px solid rgba(212,175,55,0.25);border-radius:16px;"><div style="color:var(--color-mystic-gold);margin-bottom:1rem;">5/5</div><p style="color:rgba(255,255,255,0.8);font-style:italic;line-height:1.7;margin-bottom:1rem;">Natální karta a partnerská shoda byly překvapivě přesné. Za mě největší hodnota celé aplikace.</p><div><strong style="color:white;font-size:.9rem;">Kateřina V.</strong><br><span style="color:rgba(255,255,255,0.4);font-size:.8rem;">Brno - Hvězdný Průvodce</span></div></div>
-                    <div style="padding:2rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;"><div style="color:var(--color-mystic-gold);margin-bottom:1rem;">5/5</div><p style="color:rgba(255,255,255,0.8);font-style:italic;line-height:1.7;margin-bottom:1rem;">Přišel jsem kvůli zvědavosti, zůstal jsem kvůli tomu, že to dává smysl a vracím se sem pravidelně.</p><div><strong style="color:white;font-size:.9rem;">Jan P.</strong><br><span style="color:rgba(255,255,255,0.4);font-size:.8rem;">Ostrava - Exclusive</span></div></div>
+                <div class="mh-inline-520d03824b" data-animate>
+                    <div class="mh-inline-1e08cb841f"><div class="mh-inline-f1bfa65f56">Denní kontinuita</div><p class="mh-inline-4a80c2a99c">Bezplatný účet ukáže první hodnotu. Premium má smysl ve chvíli, kdy chceš historii, pravidelné vedení a hlubší kontext místo izolovaných výkladů.</p></div>
+                    <div class="mh-inline-b836ff56dd"><div class="mh-inline-f1bfa65f56">Hlubší odpovědi</div><p class="mh-inline-4a80c2a99c">Placené plány jsou postavené kolem funkcí, které mají vyšší vnímanou hodnotu: plné výklady, natální karta, vztahy, numerologie a dlouhodobější směr.</p></div>
+                    <div class="mh-inline-1e08cb841f"><div class="mh-inline-f1bfa65f56">Kontrola nad platbou</div><p class="mh-inline-4a80c2a99c">Registrace zdarma je bez karty. Předplatné jde spravovat v profilu a jednorázový roční horoskop je oddělený produkt bez opakované platby.</p></div>
                 </div>
             </div>
         </section>
@@ -240,10 +215,12 @@
         <section class="section" id="faq">
             <div class="container text-center">
                 <div class="section__header"><h2 class="section__title">Časté otázky</h2></div>
-                <div style="max-width:760px; margin:2rem auto; text-align:left;">
+                <div class="mh-inline-fcfa6c58cb">
                     <div class="faq-item"><button class="faq-question">Jak zruším předplatné? <span class="faq-icon">+</span></button><div class="faq-answer"><p>Kdykoliv ve svém profilu. Přístup vám zůstane do konce zaplaceného období.</p></div></div>
                     <div class="faq-item"><button class="faq-question">Musím zadávat kartu při registraci zdarma? <span class="faq-icon">+</span></button><div class="faq-answer"><p>Ne. Bezplatný účet vytvoříte bez karty. Kartu zadáváte až při přechodu na placený plán.</p></div></div>
                     <div class="faq-item"><button class="faq-question">Který plán je nejlepší na začátek? <span class="faq-icon">+</span></button><div class="faq-answer"><p>Pro většinu lidí je nejlepší Hvězdný Průvodce. Odemkne klíčové funkce bez zbytečně vysoké ceny.</p></div></div>
+                    <div class="faq-item"><button class="faq-question">Jaký je rozdíl mezi předplatným a ročním horoskopem? <span class="faq-icon">+</span></button><div class="faq-answer"><p>Předplatné odemyká opakované používání nástrojů a denní vedení. Roční horoskop na míru 2026 je jednorázové PDF za 199 Kč bez opakované platby.</p></div></div>
+                    <div class="faq-item"><button class="faq-question">Vyplatí se roční platba? <span class="faq-icon">+</span></button><div class="faq-answer"><p>Ano, pokud chcete Mystickou Hvězdu používat pravidelně. Roční platba vychází jako 10 měsíců za cenu celého roku.</p></div></div>
                 </div>
             </div>
         </section>
@@ -251,13 +228,13 @@
 
     <div id="footer-placeholder"></div>
 
-    <script src="js/analytics.js?v=5" defer></script>
-    <script src="js/api-config.js?v=5" defer></script>
-    <script src="js/auth-client.js?v=5" defer></script>
-    <script src="js/auth-copy-fixes.js" defer></script>
-    <script src="js/templates.js?v=12" defer></script>
-    <script src="js/components.js?v=12" defer></script>
-    <script type="module" src="js/main.js?v=12"></script>
-    <script src="js/cenik.js" defer></script>
+    <script src="js/dist/analytics.js?v=6" defer></script>
+    <script src="js/dist/api-config.js?v=5" defer></script>
+    <script src="js/dist/auth-client.js?v=5" defer></script>
+    <script src="js/dist/auth-copy-fixes.js" defer></script>
+    <script src="js/dist/templates.js?v=12" defer></script>
+    <script src="js/dist/components.js?v=12" defer></script>
+    <script type="module" src="js/dist/main.js?v=12"></script>
+    <script src="js/dist/cenik.js?v=2" defer></script>
 </body>
 </html>

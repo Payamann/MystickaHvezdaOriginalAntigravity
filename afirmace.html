@@ -36,188 +36,8 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap&subset=latin,latin-ext" rel="stylesheet"></noscript>
 
     <link rel="stylesheet" href="css/style.v2.min.css?v=11">
-
-    <style>
-
-        .zodiac-grid {
-
-            display: grid;
-
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-
-            gap: 0.75rem;
-
-            max-width: 700px;
-
-            margin: 2rem auto;
-
-        }
-
-
-
-        .zodiac-btn {
-
-            background: rgba(255, 255, 255, 0.04);
-
-            border: 1px solid rgba(255, 255, 255, 0.1);
-
-            border-radius: 14px;
-
-            padding: 0.9rem 0.5rem;
-
-            cursor: pointer;
-
-            transition: all 0.25s;
-
-            text-align: center;
-
-            color: rgba(255, 255, 255, 0.75);
-
-            font-size: 0.82rem;
-
-            font-family: inherit;
-
-        }
-
-
-
-        .zodiac-btn:hover,
-
-        .zodiac-btn.active {
-
-            background: rgba(155, 89, 182, 0.15);
-
-            border-color: rgba(155, 89, 182, 0.5);
-
-            color: white;
-
-            transform: translateY(-2px);
-
-        }
-
-
-
-        .zodiac-btn span {
-
-            display: block;
-
-            font-size: 1.8rem;
-
-            margin-bottom: 0.3rem;
-
-        }
-
-
-
-        .affirmation-card {
-
-            max-width: 600px;
-
-            margin: 2.5rem auto 0;
-
-            padding: 2.5rem 2rem;
-
-            border-radius: 24px;
-
-            text-align: center;
-
-            border: 1px solid rgba(212, 175, 55, 0.25);
-
-            background: linear-gradient(135deg, rgba(30, 10, 60, 0.9), rgba(45, 15, 85, 0.7));
-
-            display: none;
-
-            animation: popIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-
-        }
-
-
-
-        .affirmation-card.show {
-
-            display: block;
-
-        }
-
-
-
-        @keyframes popIn {
-
-            from {
-
-                opacity: 0;
-
-                transform: scale(0.9)
-
-            }
-
-
-
-            to {
-
-                opacity: 1;
-
-                transform: scale(1)
-
-            }
-
-        }
-
-
-
-        .moon-badge {
-
-            display: inline-block;
-
-            padding: 0.3rem 0.85rem;
-
-            border-radius: 50px;
-
-            background: rgba(212, 175, 55, 0.1);
-
-            border: 1px solid rgba(212, 175, 55, 0.25);
-
-            color: #d4af37;
-
-            font-size: 0.8rem;
-
-            margin-bottom: 1.25rem;
-
-        }
-
-
-
-        .affirmation-text {
-
-            font-family: 'Cinzel', serif;
-
-            font-size: clamp(1.1rem, 3vw, 1.4rem);
-
-            color: white;
-
-            line-height: 1.7;
-
-            margin: 1rem 0 1.5rem;
-
-            font-style: italic;
-
-        }
-
-
-
-        .affirmation-sub {
-
-            color: rgba(255, 255, 255, 0.55);
-
-            font-size: 0.9rem;
-
-            line-height: 1.6;
-
-        }
-
-    </style>
-
-  <!-- DOMPurify for XSS protection (must load synchronously before other scripts use it) -->
+    <link rel="stylesheet" href="css/pages/afirmace.css">
+<!-- DOMPurify for XSS protection (must load synchronously before other scripts use it) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"></script>
 
     <script type="application/ld+json">
@@ -249,7 +69,7 @@
 
     <main>
 
-        <section class="section" style="padding-top:5rem;text-align:center;">
+        <section class="section mh-inline-f2b0621c52">
 
             <div class="container">
 
@@ -329,11 +149,11 @@
 
                     <div class="moon-badge" id="moon-badge">🌙 Fáze Měsíce</div>
 
-                    <div id="sign-emoji" style="font-size:3.5rem;margin-bottom:0.5rem;"></div>
+                    <div id="sign-emoji" class="mh-inline-c41fbcc356"></div>
 
                     <div id="sign-name"
 
-                        style="font-family:'Cinzel',serif;color:#d4af37;font-size:0.95rem;letter-spacing:2px;margin-bottom:1rem;">
+                        class="mh-inline-b3210be4ad">
 
                     </div>
 
@@ -341,23 +161,23 @@
 
                     <p class="affirmation-sub" id="affirmation-sub"></p>
 
-                    <div style="margin-top:1.5rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+                    <div class="mh-inline-e00b42d954">
 
-                        <button id="btn-copy-affirmation" class="btn btn--ghost"
+                        <button id="btn-copy-affirmation" class="btn btn--ghost mh-inline-5d4d7ad749"
 
-                            style="font-size:0.88rem;padding:0.6rem 1.25rem;">📋 Kopírovat</button>
+                           >📋 Kopírovat</button>
 
-                        <button id="btn-share-affirmation" class="btn btn--ghost"
+                        <button id="btn-share-affirmation" class="btn btn--ghost mh-inline-5d4d7ad749"
 
-                            style="font-size:0.88rem;padding:0.6rem 1.25rem;">📤 Sdílet</button>
+                           >📤 Sdílet</button>
 
-                        <a id="btn-horoskop-link" href="horoskopy.html" class="btn btn--primary"
+                        <a id="btn-horoskop-link" href="horoskopy.html" class="btn btn--primary mh-inline-5d4d7ad749"
 
-                            style="font-size:0.88rem;padding:0.6rem 1.25rem;">🌌 Horoskop dnes</a>
+                           >🌌 Horoskop dnes</a>
 
                     </div>
 
-                    <p id="copy-confirm" style="color:#2ed573;font-size:0.85rem;margin-top:0.75rem;display:none;">✓
+                    <p id="copy-confirm" class="mh-inline-6aabc89df3">✓
 
                         Zkopírováno!</p>
 
@@ -367,11 +187,11 @@
 
                 <!-- CTA -->
 
-                <div style="margin-top:4rem;padding:2rem;background:rgba(155,89,182,0.08);border:1px solid rgba(155,89,182,0.2);border-radius:16px;max-width:600px;margin-left:auto;margin-right:auto;"
+                <div class="mh-inline-09c9f48879"
 
                     data-animate>
 
-                    <p style="color:rgba(255,255,255,0.7);margin-bottom:1rem;">Chcete afirmace každé ráno přímo do
+                    <p class="mh-inline-75e0992588">Chcete afirmace každé ráno přímo do
 
                         e-mailu, spolu s personalizovaným horoskopem?</p>
 
@@ -389,22 +209,22 @@
 
     <div id="footer-placeholder"></div>
 
-    <script src="js/api-config.js?v=5" defer></script>
+    <script src="js/dist/api-config.js?v=5" defer></script>
 
     <script src="js/dist/templates.js" defer></script>
-    <script src="js/auth-client.js?v=5" defer></script>
-<script src="js/auth-copy-fixes.js" defer></script>
-    <script src="js/secondary-pages-copy-fixes.js" defer></script>
+    <script src="js/dist/auth-client.js?v=5" defer></script>
+<script src="js/dist/auth-copy-fixes.js" defer></script>
+    <script src="js/dist/secondary-pages-copy-fixes.js" defer></script>
 
-    <script src="js/components.js?v=10" defer></script>
+    <script src="js/dist/components.js?v=10" defer></script>
 
     
 
-    <script src="js/exit-intent.js" defer></script>
+    <script src="js/dist/exit-intent.js" defer></script>
 
-    <script type="module" src="js/main.js?v=10"></script>
+    <script type="module" src="js/dist/main.js?v=10"></script>
 
-    <script src="js/afirmace.js" defer></script>
+    <script src="js/dist/afirmace.js" defer></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"></script>
 </body>

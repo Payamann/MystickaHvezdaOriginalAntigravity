@@ -1963,8 +1963,8 @@ def main():
 
         # 3) GENDER ADJ. V JMENNÉM PŘÍSUDKU — "jsi jediná", "nejsi nerozhodnutá", "cítíš se ztracený"
         #    Regex safety-net pro případy, kdy LLM proofread přehlédne.
-        SAFE_WORDS = {"tvojí", "tvou", "svou", "celou", "jinou", "jednou", "dlouho",
-                      "samou", "sebou", "dnou", "hlavou", "stranou", "cestou"}
+        SAFE_WORDS = {"tvojí", "tvou", "svou", "celou", "celý", "celé", "celá", "jinou",
+                      "jednou", "dlouho", "samou", "sebou", "dnou", "hlavou", "stranou", "cestou"}
         seen_sentences = set()
         for gender_match in list(_GENDERED_ADJ_PRED.finditer(script)):
             adj = gender_match.group(1).lower()
@@ -1996,7 +1996,13 @@ def main():
                     f'Přepiš tuto větu BEZ jakéhokoliv genderového adjektiva v jmenném přísudku (žádné "jsi jediná", "nejsi kritická", "cítíš se ztracený"). Použij podstatné jméno nebo přítomný čas. Zachovej stejnou délku a význam.\n\nVěta: "{clean_sent}"',
                     max_tokens=80
                 )
-                fixed_full = f"{tag} {fixed.strip()}".strip()
+                fixed = fixed.strip()
+                # Přeskoč, pokud Claude vrátil vysvětlení místo opravené věty
+                _expl_markers = ("tato věta", "přísudek", "zůstává beze změny", "neobsahuje", "není třeba")
+                if any(m in fixed.lower() for m in _expl_markers) or fixed.count(".") > 2:
+                    print(f"  [!] Claude vrátil vysvětlení místo věty — přeskakuji opravu")
+                    continue
+                fixed_full = f"{tag} {fixed}".strip()
                 script = script.replace(bad_sentence, fixed_full, 1)
             except Exception as e:
                 print(f"  [!] Oprava selhala: {e}")

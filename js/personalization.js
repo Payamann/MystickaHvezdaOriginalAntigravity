@@ -362,15 +362,13 @@ const MH_STREAK = {
         badge.className = 'mh-streak-badge' + (milestone ? ' mh-streak-badge--milestone' : '');
 
         // Animation
-        badge.style.animation = 'none';
-        setTimeout(() => {
-            badge.style.animation = 'mh-streak-bounce 0.5s ease-in-out';
-        }, 10);
+        badge.classList.remove('mh-streak-badge--bounce', 'mh-streak-badge--hiding');
+        void badge.offsetWidth;
+        badge.classList.add('mh-streak-badge--bounce');
 
         // Hide after 5 seconds
         setTimeout(() => {
-            badge.style.opacity = '0';
-            badge.style.transition = 'opacity 0.3s ease-out';
+            badge.classList.add('mh-streak-badge--hiding');
         }, 5000);
     }
 };

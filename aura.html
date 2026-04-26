@@ -36,6 +36,7 @@
   <noscript><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap&subset=latin,latin-ext" rel="stylesheet"></noscript>
 
     <link rel="stylesheet" href="css/style.v2.min.css?v=11">
+    <link rel="stylesheet" href="css/pages/aura.css">
 
     <script type="application/ld+json">
 
@@ -88,248 +89,7 @@
     }
 
     </script>
-
-    <style>
-
-        .aura-orb {
-
-            width: 200px;
-
-            height: 200px;
-
-            border-radius: 50%;
-
-            margin: 0 auto 2rem;
-
-            position: relative;
-
-            display: none;
-
-            animation: orbAppear 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-
-        }
-
-
-
-        @keyframes orbAppear {
-
-            from {
-
-                opacity: 0;
-
-                transform: scale(0.3)
-
-            }
-
-
-
-            to {
-
-                opacity: 1;
-
-                transform: scale(1)
-
-            }
-
-        }
-
-
-
-        .aura-orb::before {
-
-            content: '';
-
-            position: absolute;
-
-            inset: -20px;
-
-            border-radius: 50%;
-
-            opacity: 0.3;
-
-            animation: pulse 3s ease-in-out infinite;
-
-        }
-
-
-
-        @keyframes pulse {
-
-
-
-            0%,
-
-            100% {
-
-                transform: scale(1)
-
-            }
-
-
-
-            50% {
-
-                transform: scale(1.1)
-
-            }
-
-        }
-
-
-
-        .aura-orb.show {
-
-            display: block;
-
-        }
-
-
-
-        .aura-result {
-
-            max-width: 650px;
-
-            margin: 0 auto;
-
-            display: none;
-
-            animation: fadeIn 0.5s ease;
-
-        }
-
-
-
-        .aura-result.show {
-
-            display: block;
-
-        }
-
-
-
-        @keyframes fadeIn {
-
-            from {
-
-                opacity: 0;
-
-                transform: translateY(20px)
-
-            }
-
-
-
-            to {
-
-                opacity: 1;
-
-                transform: translateY(0)
-
-            }
-
-        }
-
-
-
-        .aura-detail-grid {
-
-            display: grid;
-
-            grid-template-columns: 1fr 1fr;
-
-            gap: 1rem;
-
-            margin-top: 1.5rem;
-
-        }
-
-
-
-        @media(max-width:500px) {
-
-            .aura-detail-grid {
-
-                grid-template-columns: 1fr;
-
-            }
-
-        }
-
-
-
-        .aura-detail-card {
-
-            background: rgba(255, 255, 255, 0.04);
-
-            border: 1px solid rgba(255, 255, 255, 0.08);
-
-            border-radius: 14px;
-
-            padding: 1.1rem;
-
-        }
-
-
-
-        .aura-detail-card h4 {
-
-            color: #d4af37;
-
-            font-size: 0.8rem;
-
-            letter-spacing: 1px;
-
-            margin-bottom: 0.4rem;
-
-            text-transform: uppercase;
-
-        }
-
-
-
-        .birth-input {
-
-            padding: 0.9rem 1.25rem;
-
-            background: rgba(255, 255, 255, 0.06);
-
-            border: 1px solid rgba(255, 255, 255, 0.12);
-
-            border-radius: 12px;
-
-            color: white;
-
-            font-size: 1rem;
-
-            font-family: 'Inter', sans-serif;
-
-            outline: none;
-
-            width: 100%;
-
-            box-sizing: border-box;
-
-        }
-
-
-
-        .birth-input:focus {
-
-            border-color: rgba(212, 175, 55, 0.5);
-
-        }
-
-
-
-        .birth-input::-webkit-calendar-picker-indicator {
-
-            filter: invert(1);
-
-        }
-
-    </style>
-
-  <!-- DOMPurify for XSS protection (must load synchronously before other scripts use it) -->
+<!-- DOMPurify for XSS protection (must load synchronously before other scripts use it) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"></script>
     <script src="/js/dist/analytics-init.js" defer></script>
 </head>
@@ -346,9 +106,9 @@
 
     <main>
 
-        <section class="section" style="padding-top:5rem;text-align:center;">
+        <section class="section mh-inline-6f193556e2">
 
-            <div class="container" style="max-width:700px;">
+            <div class="container mh-inline-f30ddb6588">
 
                 <div data-animate>
 
@@ -364,19 +124,19 @@
 
 
 
-                <div style="max-width:340px;margin:2.5rem auto;" data-animate>
+                <div class="mh-inline-74ba1a8615" data-animate>
 
                     <label for="birth-date"
 
-                        style="display:block;color:rgba(255,255,255,0.5);font-size:0.85rem;margin-bottom:0.5rem;">Datum
+                        class="mh-inline-dfeb9b62ed">Datum
 
                         narození</label>
 
                     <input type="date" id="birth-date" class="birth-input" aria-label="Datum narození">
 
-                    <button id="btn-aura-calc" class="btn btn--primary"
+                    <button id="btn-aura-calc" class="btn btn--primary mh-inline-23c2640005"
 
-                        style="width:100%;margin-top:1rem;font-size:1rem;">Zjistit mou auru →</button>
+                       >Zjistit mou auru →</button>
 
                 </div>
 
@@ -392,15 +152,15 @@
 
                 <div class="aura-result" id="aura-result">
 
-                    <h2 id="aura-title" style="font-family:'Cinzel',serif;font-size:2rem;margin-bottom:0.25rem;"></h2>
+                    <h2 id="aura-title" class="mh-inline-c24eaf4824"></h2>
 
-                    <p id="aura-keyword" style="color:#d4af37;font-size:1rem;letter-spacing:2px;margin-bottom:1.5rem;">
+                    <p id="aura-keyword" class="mh-inline-b470d63a65">
 
                     </p>
 
                     <p id="aura-desc"
 
-                        style="color:rgba(255,255,255,0.8);line-height:1.8;font-size:1rem;margin-bottom:1rem;"></p>
+                        class="mh-inline-8210494844"></p>
 
 
 
@@ -412,7 +172,7 @@
 
                             <p id="aura-strengths"
 
-                                style="color:rgba(255,255,255,0.75);font-size:0.9rem;line-height:1.6;"></p>
+                                class="mh-inline-d19cccc57b"></p>
 
                         </div>
 
@@ -422,7 +182,7 @@
 
                             <p id="aura-challenges"
 
-                                style="color:rgba(255,255,255,0.75);font-size:0.9rem;line-height:1.6;"></p>
+                                class="mh-inline-d19cccc57b"></p>
 
                         </div>
 
@@ -430,7 +190,7 @@
 
                             <h4>&#128142; Krystal</h4>
 
-                            <p id="aura-crystal" style="color:rgba(255,255,255,0.75);font-size:0.9rem;"></p>
+                            <p id="aura-crystal" class="mh-inline-b659ac58f5"></p>
 
                         </div>
 
@@ -438,23 +198,23 @@
 
                             <h4>🌀 Čakra</h4>
 
-                            <p id="aura-chakra" style="color:rgba(255,255,255,0.75);font-size:0.9rem;"></p>
+                            <p id="aura-chakra" class="mh-inline-b659ac58f5"></p>
 
                         </div>
 
                     </div>
 
-                    <div class="aura-detail-card" style="margin-top:1rem;text-align:left;">
+                    <div class="aura-detail-card mh-inline-59613f67a1">
 
                         <h4>💼 Povolání a životní mise</h4>
 
-                        <p id="aura-career" style="color:rgba(255,255,255,0.75);font-size:0.9rem;line-height:1.6;"></p>
+                        <p id="aura-career" class="mh-inline-d19cccc57b"></p>
 
                     </div>
 
 
 
-                    <div style="margin-top:2rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+                    <div class="mh-inline-63afc91ba0">
 
                         <button id="btn-aura-reset"
 
@@ -476,23 +236,23 @@
 
     <div id="footer-placeholder"></div>
 
-    <script src="js/api-config.js?v=5" defer></script>
+    <script src="js/dist/api-config.js?v=5" defer></script>
 
     <script src="js/dist/templates.js" defer></script>
-    <script src="js/auth-client.js?v=5" defer></script>
-<script src="js/auth-copy-fixes.js" defer></script>
-    <script src="js/secondary-pages-copy-fixes.js" defer></script>
+    <script src="js/dist/auth-client.js?v=5" defer></script>
+<script src="js/dist/auth-copy-fixes.js" defer></script>
+    <script src="js/dist/secondary-pages-copy-fixes.js" defer></script>
 
-    <script src="js/components.js?v=10" defer></script>
+    <script src="js/dist/components.js?v=10" defer></script>
 
     
 
-    <script src="js/exit-intent.js" defer></script>
+    <script src="js/dist/exit-intent.js" defer></script>
 
-    <script type="module" src="js/main.js?v=10"></script>
+    <script type="module" src="js/dist/main.js?v=10"></script>
 
-    <script src="js/aura.js" defer></script>
-    <script src="js/share-result.js" defer></script>
+    <script src="js/dist/aura.js" defer></script>
+    <script src="js/dist/share-result.js" defer></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"></script>
 </body>

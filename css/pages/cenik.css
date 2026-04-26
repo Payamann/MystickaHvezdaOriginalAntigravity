@@ -1,0 +1,111 @@
+/* Extracted from cenik.html inline <style> block. */
+:root { --card-padding-compact: 1.5rem; }
+        .card--pricing { padding: var(--card-padding-compact) !important; display: flex; flex-direction: column; height: 100%; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s ease; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); position: relative; overflow: visible; }
+        .card--pricing:hover { transform: translateY(-8px); border-color: rgba(212,175,55,0.3); }
+        .card--pricing .card__features { margin: 1.25rem 0; padding: 0; list-style: none; flex-grow: 1; display: flex; flex-direction: column; gap: 0.6rem; }
+        .card--pricing .card__features li { display: flex; align-items: flex-start; gap: 0.75rem; font-size: 0.85rem; color: rgba(255,255,255,0.7); line-height: 1.4; text-align: left; }
+        .card--pricing .feature-icon { color: var(--color-mystic-gold); flex-shrink: 0; margin-top: 3px; width: 14px; height: 14px; }
+        .card__price { margin: 0.75rem 0; display: flex; flex-direction: column; align-items: center; }
+        .price-amount { font-size: 2.5rem !important; font-weight: 700; color: #fff; line-height: 1.1; }
+        .price-suffix { font-size: 0.8rem !important; color: rgba(255,255,255,0.4); margin-top: 0.2rem; }
+        .pricing-soon-badge { background: rgba(46,204,113,0.15); color: #2ecc71; font-size: 0.7rem; padding: 1px 6px; border-radius: 20px; font-weight: 800; margin-left: 4px; }
+        .btn-full { width: 100%; margin-top: auto; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+        .hero__trust-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 50px; font-size: 0.75rem; margin-top: 1.5rem; color: rgba(255,255,255,0.65); flex-wrap: wrap; justify-content: center; }
+        .vip-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--color-mystic-gold), #c9a227); color: #000; padding: 3px 14px; border-radius: 50px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; box-shadow: 0 4px 15px rgba(212,175,55,0.4); z-index: 10; }
+        .comparison-table-wrap { background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); overflow-x: auto; }
+        .pricing-addon { margin-top:1.5rem; padding:1.5rem; border:1px solid rgba(212,175,55,0.18); border-radius:18px; background:rgba(212,175,55,0.05); display:grid; grid-template-columns:minmax(0,1.1fr) minmax(260px,0.9fr); gap:1.2rem; align-items:center; }
+        .pricing-addon__products { display:grid; gap:0.8rem; }
+        .pricing-addon__product { padding:1rem; border-radius:14px; border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.035); text-decoration:none; }
+        .pricing-addon__product strong { display:flex; justify-content:space-between; gap:0.8rem; color:#fff; margin-bottom:0.35rem; }
+        .pricing-addon__product span { color:rgba(255,255,255,0.64); font-size:0.86rem; line-height:1.5; }
+        .comparison-mobile { display: none; margin-top: 1.5rem; gap: 1rem; }
+        .comparison-mobile__card { padding: 1.25rem; border-radius: 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
+        .comparison-mobile__card--featured { border-color: rgba(212,175,55,0.35); background: rgba(212,175,55,0.06); }
+        .comparison-mobile__title { margin-bottom: 0.25rem; color: #fff; font-size: 1rem; font-weight: 700; }
+        .comparison-mobile__subtitle { margin-bottom: 0.9rem; color: rgba(255,255,255,0.5); font-size: 0.8rem; }
+        .comparison-mobile__list { margin: 0; padding-left: 1rem; color: rgba(255,255,255,0.78); }
+        .comparison-mobile__list li { margin-bottom: 0.5rem; }
+        @media (max-width: 1200px) { .pricing-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 680px) {
+            .pricing-grid { grid-template-columns: 1fr; }
+            .pricing-addon { grid-template-columns: 1fr; }
+            .comparison-table-wrap { display: none; }
+            .comparison-mobile { display: grid; }
+        }
+
+/* Migrated from cenik.html static style attributes. */
+html body .mh-inline-fd21170680 { padding-top: var(--space-2xl); padding-bottom: 3rem; }
+html body .mh-inline-44e3a01151 { margin: 0.5rem 0 1rem; font-size: 3rem; }
+html body .mh-inline-9536a1e4b5 { max-width: 760px; margin: 0 auto; }
+html body .mh-inline-c838d5f69c { cursor:pointer; padding:0.6rem 1.6rem; border-radius:30px; font-size:0.85rem; font-weight:700; background:var(--color-mystic-gold); color:#000; border:none; transition:all 0.2s; }
+html body .mh-inline-8cb51f9572 { cursor:pointer; padding:0.6rem 1.6rem; border-radius:30px; font-size:0.85rem; font-weight:500; color:rgba(255,255,255,0.5); background:transparent; border:none; transition:all 0.2s; }
+html body .mh-inline-bbf01b1a87 { padding-top:0; }
+html body .mh-inline-b3f39e388b { font-size:0.8rem; opacity:0.5; }
+html body .mh-inline-31d501362b { background:linear-gradient(to right,#d4af37,#b38b00);border:none;color:#000;font-weight:700; }
+html body .mh-inline-166747a07d { border: 2px solid var(--color-mystic-gold); background: rgba(212, 175, 55, 0.05); }
+html body .mh-inline-db5d8166dc { color:var(--color-mystic-gold); }
+html body .mh-inline-c6c050eb74 { font-size:0.8rem; opacity:0.7; }
+html body .mh-inline-bea2ca4e42 { padding-top: 0; }
+
+/* Migrated from cenik.html remaining static style attributes. */
+html body .mh-inline-cc8b54ce84 { padding-bottom: 3rem; text-align: center; }
+html body .mh-inline-338e96a176 { display:inline-flex; align-items:center; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:50px; padding:0.3rem; }
+html body .mh-inline-0cf125c745 { background:rgba(46,204,113,0.15); color:#2ecc71; font-size:0.7rem; padding:1px 6px; border-radius:20px; font-weight:800; margin-left:4px; }
+html body .mh-inline-edc1a1f232 { font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--color-mystic-gold);margin-bottom:0.45rem; }
+html body .mh-inline-aea0d46c32 { margin:0 0 0.45rem; }
+html body .mh-inline-2b7d17c05c { margin:0;color:rgba(255,255,255,0.68);line-height:1.6; }
+html body .mh-inline-520d03824b { display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin-top:2rem; }
+html body .mh-inline-1e08cb841f { padding:2rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px; }
+html body .mh-inline-f1bfa65f56 { color:var(--color-mystic-gold);margin-bottom:1rem; }
+html body .mh-inline-4a80c2a99c { color:rgba(255,255,255,0.8);line-height:1.7;margin:0; }
+html body .mh-inline-b836ff56dd { padding:2rem;background:rgba(255,255,255,0.03);border:1px solid rgba(212,175,55,0.25);border-radius:16px; }
+html body .mh-inline-fcfa6c58cb { max-width:760px; margin:2rem auto; text-align:left; }
+
+html body #toggle-monthly:not(.pricing-toggle--active),
+html body #toggle-yearly:not(.pricing-toggle--active) {
+    background: transparent !important;
+    color: rgba(255,255,255,0.5) !important;
+    font-weight: 500 !important;
+}
+
+html body .pricing-toggle--active {
+    background: var(--color-mystic-gold) !important;
+    color: #000 !important;
+    font-weight: 700 !important;
+}
+
+.pricing-plan-recommendation {
+    max-width: 760px;
+    margin: 1.25rem auto 0;
+    padding: 1rem 1.1rem;
+    border: 1px solid rgba(212,175,55,0.25);
+    border-radius: 18px;
+    background: rgba(212,175,55,0.08);
+    text-align: left;
+}
+
+.pricing-plan-recommendation__eyebrow {
+    margin-bottom: 0.45rem;
+    color: var(--color-mystic-gold);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.pricing-plan-recommendation__title {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.pricing-plan-recommendation__text {
+    margin: 0;
+    color: rgba(255,255,255,0.78);
+    line-height: 1.6;
+}
+
+.pricing-card--recommended {
+    box-shadow: 0 0 0 2px rgba(212,175,55,0.45), 0 18px 50px rgba(0,0,0,0.35);
+}

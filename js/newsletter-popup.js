@@ -32,13 +32,12 @@
         localStorage.setItem(STORAGE_KEY, Date.now().toString());
         const popup = document.getElementById('mh-newsletter-popup');
         if (popup) {
-            popup.style.opacity = '0';
-            popup.style.transform = 'translate(-50%, -50%) scale(0.95)';
+            popup.classList.add('is-closing');
             setTimeout(() => popup.remove(), 400);
         }
         const overlay = document.getElementById('mh-popup-overlay');
         if (overlay) {
-            overlay.style.opacity = '0';
+            overlay.classList.add('is-closing');
             setTimeout(() => overlay.remove(), 400);
         }
     }
@@ -66,17 +65,17 @@
             const data = await res.json();
             if (data.success) {
                 msg.textContent = '🌟 Skvělé! Brzy vám přijde první hvězdná zpráva.';
-                msg.style.color = '#4ade80';
+                msg.className = 'mh-popup-msg mh-popup-msg--success';
                 setTimeout(dismiss, 2500);
             } else {
                 msg.textContent = data.error || 'Chyba. Zkuste to znovu.';
-                msg.style.color = '#f87171';
+                msg.className = 'mh-popup-msg mh-popup-msg--error';
                 btn.disabled = false;
                 btn.textContent = 'Odebírat zdarma';
             }
         } catch {
             msg.textContent = 'Chyba připojení. Zkuste to znovu.';
-            msg.style.color = '#f87171';
+            msg.className = 'mh-popup-msg mh-popup-msg--error';
             btn.disabled = false;
             btn.textContent = 'Odebírat zdarma';
         }
@@ -90,29 +89,15 @@
         // Overlay
         const overlay = document.createElement('div');
         overlay.id = 'mh-popup-overlay';
-        overlay.style.cssText = `
-            position:fixed; inset:0; background:rgba(0,0,0,0.65);
-            z-index:9998; opacity:0; transition:opacity 0.4s ease;
-            backdrop-filter:blur(4px);
-        `;
+        overlay.className = 'mh-popup-overlay';
         overlay.addEventListener('click', dismiss);
 
         // Popup
         const popup = document.createElement('div');
         popup.id = 'mh-newsletter-popup';
+        popup.className = 'mh-newsletter-popup';
         popup.setAttribute('role', 'dialog');
         popup.setAttribute('aria-label', 'Přihlásit se k odběru');
-        popup.style.cssText = `
-            position:fixed; top:50%; left:50%; z-index:9999;
-            transform:translate(-50%, -50%) scale(0.92);
-            background:linear-gradient(135deg,#0f0a1f,#1a0a2e);
-            border:1px solid rgba(235,192,102,0.35);
-            border-radius:24px; padding:2.5rem;
-            max-width:440px; width:90%;
-            box-shadow:0 30px 80px rgba(0,0,0,0.8), 0 0 60px rgba(235,192,102,0.08);
-            opacity:0; transition:opacity 0.4s ease, transform 0.4s ease;
-            text-align:center; font-family:'Inter',sans-serif;
-        `;
 
         const signEmoji = (() => {
             const emojis = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓'];
@@ -121,46 +106,26 @@
         })();
 
         popup.innerHTML = `
-            <button id="mh-popup-close" aria-label="Zavřít" style="
-                position:absolute;top:1rem;right:1rem;background:none;border:none;
-                color:rgba(255,255,255,0.5);font-size:1.5rem;cursor:pointer;line-height:1;
-                transition:color 0.2s;
-            " onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">×</button>
+            <button id="mh-popup-close" class="mh-popup-close" aria-label="Zavřít">×</button>
 
-            <div style="font-size:3rem;margin-bottom:0.5rem;">${signEmoji} 🌙</div>
-            <h2 style="font-family:'Cinzel',serif;color:#ebc066;font-size:1.5rem;margin:0 0 0.75rem;font-weight:600;">
+            <div class="mh-popup-icon">${signEmoji} 🌙</div>
+            <h2 class="mh-popup-title">
                 Hvězdy vám píší každý den
             </h2>
-            <p style="color:rgba(255,255,255,0.7);line-height:1.6;margin:0 0 1.5rem;font-size:0.95rem;">
+            <p class="mh-popup-text">
                 Dostávejte denní horoskop, výklad Měsíce a esoterické tipy přímo do vašeho emailu. Zcela zdarma.
             </p>
 
-            <div style="display:flex;gap:0.5rem;margin-bottom:0.75rem;flex-wrap:wrap;">
+            <div class="mh-popup-form">
                 <input id="mh-popup-email" type="email" placeholder="váš@email.cz"
-                    style="
-                        flex:1;min-width:0;padding:0.85rem 1.2rem;
-                        background:rgba(255,255,255,0.07);
-                        border:1px solid rgba(235,192,102,0.3);
-                        border-radius:50px;color:#fff;font-size:0.95rem;
-                        outline:none;transition:border-color 0.2s;
-                    "
-                    onfocus="this.style.borderColor='rgba(235,192,102,0.7)'"
-                    onblur="this.style.borderColor='rgba(235,192,102,0.3)'"
+                    class="mh-popup-email"
                 />
-                <button id="mh-popup-submit" style="
-                    padding:0.85rem 1.5rem; white-space:nowrap;
-                    background:linear-gradient(135deg,#d4af37,#b8860b);
-                    border:none;border-radius:50px;color:#0f0a1f;
-                    font-weight:700;font-size:0.95rem;cursor:pointer;
-                    transition:transform 0.2s,box-shadow 0.2s;
-                "
-                onmouseover="this.style.transform='scale(1.04)';this.style.boxShadow='0 0 20px rgba(212,175,55,0.4)'"
-                onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <button id="mh-popup-submit" class="mh-popup-submit">
                     Odebírat zdarma ✨
                 </button>
             </div>
-            <div id="mh-popup-msg" style="font-size:0.85rem;min-height:1.2em;color:rgba(255,255,255,0.5);"></div>
-            <p style="font-size:0.75rem;color:rgba(255,255,255,0.3);margin:1rem 0 0;">
+            <div id="mh-popup-msg" class="mh-popup-msg"></div>
+            <p class="mh-popup-fineprint">
                 Žádný spam. Odhlásit se můžete kdykoli jedním kliknutím.
             </p>
         `;
@@ -171,9 +136,8 @@
         // Animate in
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
-                overlay.style.opacity = '1';
-                popup.style.opacity = '1';
-                popup.style.transform = 'translate(-50%, -50%) scale(1)';
+                overlay.classList.add('is-visible');
+                popup.classList.add('is-visible');
             });
         });
 
@@ -183,7 +147,7 @@
             const email = document.getElementById('mh-popup-email').value.trim();
             if (!email) {
                 document.getElementById('mh-popup-msg').textContent = 'Zadejte prosím emailovou adresu.';
-                document.getElementById('mh-popup-msg').style.color = '#f87171';
+                document.getElementById('mh-popup-msg').className = 'mh-popup-msg mh-popup-msg--error';
                 return;
             }
             subscribe(email);

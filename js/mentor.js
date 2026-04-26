@@ -5,6 +5,18 @@
 // DOM elementy — inicializujeme v DOMContentLoaded (bezpečná inicializace)
 let chatInput, sendBtn, messagesContainer, typingIndicator;
 
+function resizeChatInput() {
+    if (!chatInput) return;
+    const lineEstimate = chatInput.value.split('\n').length + Math.floor(chatInput.value.length / 70);
+    chatInput.rows = Math.max(1, Math.min(6, lineEstimate));
+}
+
+function resetChatInput() {
+    if (!chatInput) return;
+    chatInput.value = '';
+    chatInput.rows = 1;
+}
+
 function startMentorUpgradeFlow(source = 'mentor_inline_upsell') {
     window.MH_ANALYTICS?.trackCTA?.(source, {
         plan_id: 'pruvodce',
@@ -18,6 +30,23 @@ function startMentorUpgradeFlow(source = 'mentor_inline_upsell') {
     });
 }
 
+function runAfterComponentsLoaded(callback) {
+    let hasRun = false;
+    const run = () => {
+        if (hasRun) return;
+        hasRun = true;
+        callback();
+    };
+
+    if (document.querySelector('.header') || !document.getElementById('header-placeholder')) {
+        run();
+        return;
+    }
+
+    document.addEventListener('components:loaded', run, { once: true });
+    window.setTimeout(run, 1200);
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     // Inicializuj DOM elementy — musí být uvnitř DOMContentLoaded
     chatInput = document.getElementById('chat-input');
@@ -28,8 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Připoj event listenery až po inicializaci DOM
     if (chatInput) {
         chatInput.addEventListener('input', function () {
-            this.style.height = 'auto';
-            this.style.height = `${this.scrollHeight}px`;
+            resizeChatInput();
 
             if (this.value.trim().length > 0) {
                 sendBtn?.removeAttribute('disabled');
@@ -51,7 +79,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Používáme window.Auth.isLoggedIn() které čte user data z localStorage.
     if (!window.Auth?.isLoggedIn()) {
         window.Auth?.showToast?.('Přihlášení vyžadováno', 'Pro vstup do Hvězdného Průvodce se prosím přihlaste.', 'info');
-        startMentorUpgradeFlow('mentor_entry_auth_gate');
+        runAfterComponentsLoaded(() => startMentorUpgradeFlow('mentor_entry_auth_gate'));
 
         document.addEventListener('auth:changed', () => {
             if (window.Auth?.isLoggedIn()) window.location.reload();
@@ -171,8 +199,7 @@ async function sendMessage() {
     if (!window.isPremium && checkUsageLimit()) {
         // Limit reached logic (The "Hook")
         addMessage(text, 'user');
-        chatInput.value = '';
-        chatInput.style.height = 'auto';
+        resetChatInput();
         chatInput.disabled = true;
         sendBtn.disabled = true;
 
@@ -188,8 +215,7 @@ async function sendMessage() {
 
     // 1. Add User Message
     addMessage(text, 'user');
-    chatInput.value = '';
-    chatInput.style.height = 'auto';
+    resetChatInput();
     sendBtn.setAttribute('disabled', 'true');
 
     // Increment usage for free users
@@ -320,10 +346,16 @@ function addMessage(text, type, shouldScroll = true) {
 
 function showTyping(show) {
     if (show) {
-        if (typingIndicator) typingIndicator.style.display = 'flex';
+        if (typingIndicator) {
+            typingIndicator.hidden = false;
+            typingIndicator.classList.add('mh-flex-visible');
+        }
         scrollToBottom();
     } else {
-        if (typingIndicator) typingIndicator.style.display = 'none';
+        if (typingIndicator) {
+            typingIndicator.hidden = true;
+            typingIndicator.classList.remove('mh-flex-visible');
+        }
     }
 }
 
@@ -352,10 +384,10 @@ function showPaywall() {
     }
 
     overlay.innerHTML = `
-        <div style="text-align: center; color: white; padding: 2rem;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">🔒</div>
-            <h2 style="font-family: 'Cinzel', serif; color: var(--color-mystic-gold); margin-bottom: 1rem;">Pouze pro Premium</h2>
-            <p style="margin-bottom: 2rem; color: var(--color-silver-mist);">
+        <div class="mentor-paywall">
+            <div class="mentor-paywall__icon">🔒</div>
+            <h2 class="mentor-paywall__title">Pouze pro Premium</h2>
+            <p class="mentor-paywall__copy">
                 Hvězdný Mentor je exkluzivní průvodce pro naše předplatitele.<br>
                 Získejte neomezený přístup k moudrosti hvězd.
             </p>
@@ -363,12 +395,12 @@ function showPaywall() {
         </div>
     `;
 
-    overlay.style.display = 'flex';
+    overlay.classList.add('limit-reached-overlay--visible');
     overlay.querySelector('a[href="/cenik.html"]')?.addEventListener('click', (event) => {
         event.preventDefault();
         startMentorUpgradeFlow('mentor_paywall_overlay');
     });
 
     // Add blur effect to messages if any (or just cover them)
-    messagesContainer.style.filter = 'blur(5px)';
+    messagesContainer.classList.add('chat-messages--blurred');
 }

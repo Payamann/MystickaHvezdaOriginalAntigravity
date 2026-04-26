@@ -10,8 +10,16 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const router = express.Router();
 const APP_URL = process.env.APP_URL || 'http://localhost:3001';
-const PRICE_CZK = 19900;
+const PRODUCT = {
+    id: 'rocni_horoskop_2026',
+    type: 'rocni_horoskop',
+    name: 'Roční horoskop na míru 2026',
+    price: 19900,
+    currency: 'czk',
+    year: '2026'
+};
 const VALID_SIGNS = ['beran', 'byk', 'blizenci', 'rak', 'lev', 'panna', 'vahy', 'stir', 'strelec', 'kozoroh', 'vodnar', 'ryby'];
+const EMAIL_PATTERN = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
 let stripeClient;
 
@@ -27,18 +35,30 @@ function getStripeClient() {
     return stripeClient;
 }
 
-router.post('/checkout', async (req, res) => {
-    const { name, birthDate, sign, email } = req.body;
+router.get('/product', (_req, res) => {
+    res.json({
+        id: PRODUCT.id,
+        name: PRODUCT.name,
+        price: PRODUCT.price,
+        currency: PRODUCT.currency,
+        year: PRODUCT.year
+    });
+});
 
-    if (!name || !birthDate || !sign || !email) {
+router.post('/checkout', async (req, res) => {
+    const { birthDate, sign } = req.body;
+    const customerName = typeof req.body.name === 'string' ? req.body.name.trim() : '';
+    const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+
+    if (!customerName || !birthDate || !sign || !email) {
         return res.status(400).json({ error: 'Vyplňte všechna pole.' });
     }
 
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    if (!EMAIL_PATTERN.test(email)) {
         return res.status(400).json({ error: 'Neplatná e-mailová adresa.' });
     }
 
-    if (typeof name !== 'string' || name.length > 100) {
+    if (customerName.length > 100) {
         return res.status(400).json({ error: 'Neplatné jméno.' });
     }
 
@@ -57,25 +77,29 @@ router.post('/checkout', async (req, res) => {
             customer_email: email,
             line_items: [{
                 price_data: {
-                    currency: 'czk',
+                    currency: PRODUCT.currency,
                     product_data: {
-                        name: 'Roční horoskop na míru 2026',
-                        description: `Personalizovaný horoskop pro ${name} - ${new Date().getFullYear()}`
+                        name: PRODUCT.name,
+                        description: `Personalizovaný horoskop pro ${customerName} - ${PRODUCT.year}`
                     },
-                    unit_amount: PRICE_CZK
+                    unit_amount: PRODUCT.price
                 },
                 quantity: 1
             }],
             mode: 'payment',
             locale: 'cs',
-            success_url: `${APP_URL}/rocni-horoskop.html?status=success`,
+            success_url: `${APP_URL}/rocni-horoskop.html?status=success&session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${APP_URL}/rocni-horoskop.html?status=cancel`,
             metadata: {
-                productType: 'rocni_horoskop',
-                customerName: name,
+                productType: PRODUCT.type,
+                productId: PRODUCT.id,
+                productYear: PRODUCT.year,
+                customerName,
                 birthDate,
                 sign,
-                email
+                email,
+                price: String(PRODUCT.price),
+                currency: PRODUCT.currency
             }
         });
 

@@ -92,270 +92,8 @@
     <link rel="alternate" hreflang="x-default" href="https://www.mystickahvezda.cz/kristalova-koule.html">
 
     <link rel="stylesheet" href="css/style.v2.min.css?v=11">
-
-    <style>
-
-        /* Crystal Ball Specific Styles */
-
-        .ball-container {
-
-            position: relative;
-
-            width: 400px;
-
-            height: 400px;
-
-            margin: 0 auto;
-
-            cursor: pointer;
-
-            transition: transform 0.3s ease;
-
-            display: flex;
-
-            justify-content: center;
-
-            align-items: center;
-
-        }
-
-
-
-        .ball-image {
-
-            width: 100%;
-
-            height: auto;
-
-            position: relative;
-
-            z-index: 2;
-
-            filter: drop-shadow(0 0 30px rgba(157, 78, 221, 0.4));
-
-            transition: filter 0.3s ease;
-
-        }
-
-
-
-        .ball-container:hover .ball-image {
-
-            transform: scale(1.02);
-
-            filter: drop-shadow(0 0 50px rgba(157, 78, 221, 0.6));
-
-        }
-
-
-
-        .ball-glow {
-
-            position: absolute;
-
-            top: 50%;
-
-            left: 50%;
-
-            transform: translate(-50%, -50%);
-
-            width: 60%;
-
-            height: 60%;
-
-            background: radial-gradient(circle, rgba(157, 78, 221, 0.6) 0%, transparent 70%);
-
-            border-radius: 50%;
-
-            z-index: 1;
-
-            opacity: 0.5;
-
-            animation: pulse-glow 4s infinite ease-in-out;
-
-        }
-
-
-
-        @keyframes pulse-glow {
-
-
-
-            0%,
-
-            100% {
-
-                opacity: 0.5;
-
-                transform: translate(-50%, -50%) scale(1);
-
-            }
-
-
-
-            50% {
-
-                opacity: 0.8;
-
-                transform: translate(-50%, -50%) scale(1.2);
-
-            }
-
-        }
-
-
-
-        .ball-container.shaking .ball-image {
-
-            animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both infinite;
-
-        }
-
-
-
-        @keyframes shake {
-
-
-
-            10%,
-
-            90% {
-
-                transform: translate3d(-1px, 0, 0);
-
-            }
-
-
-
-            20%,
-
-            80% {
-
-                transform: translate3d(2px, 0, 0);
-
-            }
-
-
-
-            30%,
-
-            50%,
-
-            70% {
-
-                transform: translate3d(-4px, 0, 0);
-
-            }
-
-
-
-            40%,
-
-            60% {
-
-                transform: translate3d(4px, 0, 0);
-
-            }
-
-        }
-
-
-
-        /* Answer Box (Glassmorphism) */
-
-        .answer-box {
-
-            margin: var(--space-xl) auto;
-
-            /* Space between ball and answer */
-
-            max-width: 600px;
-
-            min-height: 100px;
-
-            /* Prevent layout jump */
-
-            padding: var(--space-lg);
-
-            border-radius: var(--radius-lg);
-
-            background: rgba(10, 17, 40, 0.6);
-
-            border: 1px solid rgba(157, 78, 221, 0.3);
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            text-align: center;
-
-            opacity: 0;
-
-            transform: translateY(20px);
-
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-
-            pointer-events: none;
-
-        }
-
-
-
-        .answer-box.visible {
-
-            opacity: 1;
-
-            transform: translateY(0);
-
-            box-shadow: 0 0 30px rgba(157, 78, 221, 0.2);
-
-        }
-
-
-
-        #answer-text {
-
-            color: var(--color-starlight);
-
-            font-family: var(--font-heading);
-
-            font-size: var(--text-xl);
-
-            line-height: 1.6;
-
-            margin: 0;
-
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-
-        }
-
-
-
-        .instruction-text {
-
-            color: var(--color-silver-mist);
-
-            font-style: italic;
-
-        }
-
-
-
-        .shake-input {
-
-            animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
-
-            border-color: #ff4d4d !important;
-
-        }
-
-    </style>
-
-
-
-    <!-- Google Analytics 4 -->
+    <link rel="stylesheet" href="css/pages/kristalova-koule.css">
+<!-- Google Analytics 4 -->
 
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-H22CGHF34K"></script>
 
@@ -386,21 +124,21 @@
 
     <!-- FREEMIUM LIMIT BANNER (pro nepřihlášené a free uživatele) -->
 
-    <div id="freemium-banner" style="display:none; background: linear-gradient(90deg, rgba(212,175,55,0.1), rgba(155,89,182,0.1)); border-bottom: 1px solid rgba(212,175,55,0.2); padding: 0.65rem 1rem; text-align: center; font-size: 0.88rem; color: rgba(255,255,255,0.8);">
+    <div id="freemium-banner" class="mh-inline-59738f37b7">
 
         <span id="freemium-banner-text">?? Dnes zbývá: <strong id="freemium-count">...</strong> výkladů zdarma</span>
 
         &nbsp;•&nbsp;
 
-        <a href="cenik.html" id="crystal-banner-upgrade" style="color: #d4af37; font-weight: 600;">? Získat Premium ›</a>
+        <a href="cenik.html" id="crystal-banner-upgrade" class="mh-inline-417d5e8acf">? Získat Premium ›</a>
 
         &nbsp;
 
-        <button data-action="closeBanner" style="background:none;border:none;color:rgba(255,255,255,0.3);cursor:pointer;font-size:1rem;vertical-align:middle;">×</button>
+        <button data-action="closeBanner" class="mh-inline-a6b16c7ada">×</button>
 
     </div>
 
-    <script src="js/freemium-koule.js" defer></script>
+    <script src="js/dist/freemium-koule.js" defer></script>
 
 
 
@@ -410,7 +148,7 @@
 
         <!-- HERO -->
 
-        <section class="section section--hero" style="min-height: 80vh; display: flex; align-items: center;">
+        <section class="section section--hero mh-inline-555f3d5f76">
 
             <div class="container text-center">
 
@@ -450,11 +188,11 @@
 
                 <!-- Question Input for AI -->
 
-                <div class="question-form" style="max-width: 500px; margin: var(--space-xl) auto;">
+                <div class="question-form mh-inline-5cc7978959">
 
-                    <input type="text" id="question-input" class="email-form__input" placeholder="Napiš svou otázku..."
+                    <input type="text" id="question-input" class="email-form__input mh-inline-fccfe91516" placeholder="Napiš svou otázku..."
 
-                        style="width: 100%; text-align: center;">
+                       >
 
                 </div>
 
@@ -472,9 +210,9 @@
 
                     <button class="btn btn--primary" id="ask-btn">Zeptat se koule</button>
 
-                    <button class="btn btn--ghost" id="reset-btn"
+                    <button class="btn btn--ghost mh-inline-a8fffc9a73" id="reset-btn"
 
-                        style="opacity: 0; pointer-events: none; margin-left: var(--space-md);">Nová otázka</button>
+                       >Nová otázka</button>
 
                 </div>
 
@@ -494,68 +232,68 @@
 
     <!-- CROSS-LINKING SEKCE -->
 
-    <section class="section" style="padding-top: 0; padding-bottom: 3rem;">
+    <section class="section cross-linking-section">
 
-        <div class="container" style="max-width: 860px;">
+        <div class="container cross-linking-container">
 
-            <h3 style="font-family: var(--font-heading); color: var(--color-mystic-gold); text-align: center; font-size: 1.3rem; margin-bottom: 1.5rem; letter-spacing: 1px;">Pokračujte ve své duchovní cestě</h3>
+            <h3 class="cross-linking-title">Pokračujte ve své duchovní cestě</h3>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;">
+            <div class="cross-linking-grid">
 
-                <a href="andelske-karty.html" class="card" style="text-decoration: none; padding: 1.5rem; text-align: center; border-radius: 16px; background: rgba(20,15,30,0.6); border: 1px solid rgba(235,192,102,0.2); transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(235,192,102,0.5)'" onmouseout="this.style.transform='';this.style.borderColor='rgba(235,192,102,0.2)'">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">👼</div>
-                    <div style="color: #fff; font-weight: 500; font-size: 0.95rem;">Andělská Karta</div>
-                    <div style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 0.25rem;">Poselství na dnešní den</div>
+                <a href="andelske-karty.html" class="card cross-link-card">
+                    <div class="cross-link-card__icon">👼</div>
+                    <div class="cross-link-card__title">Andělská Karta</div>
+                    <div class="cross-link-card__text">Poselství na dnešní den</div>
                 </a>
-                <a href="tarot.html" class="card" style="text-decoration: none; padding: 1.5rem; text-align: center; border-radius: 16px; background: rgba(20,15,30,0.6); border: 1px solid rgba(235,192,102,0.2); transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(235,192,102,0.5)'" onmouseout="this.style.transform='';this.style.borderColor='rgba(235,192,102,0.2)'">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🃏</div>
-                    <div style="color: #fff; font-weight: 500; font-size: 0.95rem;">Tarotový výklad</div>
-                    <div style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 0.25rem;">Hloubkový vhled</div>
+                <a href="tarot.html" class="card cross-link-card">
+                    <div class="cross-link-card__icon">🃏</div>
+                    <div class="cross-link-card__title">Tarotový výklad</div>
+                    <div class="cross-link-card__text">Hloubkový vhled</div>
                 </a>
-                <a href="horoskopy.html" class="card" style="text-decoration: none; padding: 1.5rem; text-align: center; border-radius: 16px; background: rgba(20,15,30,0.6); border: 1px solid rgba(235,192,102,0.2); transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(235,192,102,0.5)'" onmouseout="this.style.transform='';this.style.borderColor='rgba(235,192,102,0.2)'">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">✨</div>
-                    <div style="color: #fff; font-weight: 500; font-size: 0.95rem;">Denní horoskop</div>
-                    <div style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 0.25rem;">Vaše znamení dnes</div>
+                <a href="horoskopy.html" class="card cross-link-card">
+                    <div class="cross-link-card__icon">✨</div>
+                    <div class="cross-link-card__title">Denní horoskop</div>
+                    <div class="cross-link-card__text">Vaše znamení dnes</div>
                 </a>
-                <a href="mentor.html" class="card" style="text-decoration: none; padding: 1.5rem; text-align: center; border-radius: 16px; background: rgba(20,15,30,0.6); border: 1px solid rgba(235,192,102,0.2); transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(235,192,102,0.5)'" onmouseout="this.style.transform='';this.style.borderColor='rgba(235,192,102,0.2)'">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">👤</div>
-                    <div style="color: #fff; font-weight: 500; font-size: 0.95rem;">Hvězdný Průvodce</div>
-                    <div style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 0.25rem;">Hvězdný průvodce</div>
+                <a href="mentor.html" class="card cross-link-card">
+                    <div class="cross-link-card__icon">👤</div>
+                    <div class="cross-link-card__title">Hvězdný Průvodce</div>
+                    <div class="cross-link-card__text">Hvězdný průvodce</div>
                 </a>
-                <a href="natalni-karta.html" class="card" style="text-decoration: none; padding: 1.5rem; text-align: center; border-radius: 16px; background: rgba(20,15,30,0.6); border: 1px solid rgba(235,192,102,0.2); transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(235,192,102,0.5)'" onmouseout="this.style.transform='';this.style.borderColor='rgba(235,192,102,0.2)'">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🗺️</div>
-                    <div style="color: #fff; font-weight: 500; font-size: 0.95rem;">Natální karta</div>
-                    <div style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 0.25rem;">Váš vesmírný otisk</div>
+                <a href="natalni-karta.html" class="card cross-link-card">
+                    <div class="cross-link-card__icon">🗺️</div>
+                    <div class="cross-link-card__title">Natální karta</div>
+                    <div class="cross-link-card__text">Váš vesmírný otisk</div>
                 </a>
-                <a href="partnerska-shoda.html" class="card" style="text-decoration: none; padding: 1.5rem; text-align: center; border-radius: 16px; background: rgba(20,15,30,0.6); border: 1px solid rgba(235,192,102,0.2); transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(235,192,102,0.5)'" onmouseout="this.style.transform='';this.style.borderColor='rgba(235,192,102,0.2)'">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">&#128158;</div>
-                    <div style="color: #fff; font-weight: 500; font-size: 0.95rem;">Partnerská shoda</div>
-                    <div style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 0.25rem;">Synastrie vztahů</div>
+                <a href="partnerska-shoda.html" class="card cross-link-card">
+                    <div class="cross-link-card__icon">&#128158;</div>
+                    <div class="cross-link-card__title">Partnerská shoda</div>
+                    <div class="cross-link-card__text">Synastrie vztahů</div>
                 </a>
-                <a href="numerologie.html" class="card" style="text-decoration: none; padding: 1.5rem; text-align: center; border-radius: 16px; background: rgba(20,15,30,0.6); border: 1px solid rgba(235,192,102,0.2); transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(235,192,102,0.5)'" onmouseout="this.style.transform='';this.style.borderColor='rgba(235,192,102,0.2)'">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔢</div>
-                    <div style="color: #fff; font-weight: 500; font-size: 0.95rem;">Numerologie</div>
-                    <div style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 0.25rem;">Rozbor čísel</div>
+                <a href="numerologie.html" class="card cross-link-card">
+                    <div class="cross-link-card__icon">🔢</div>
+                    <div class="cross-link-card__title">Numerologie</div>
+                    <div class="cross-link-card__text">Rozbor čísel</div>
                 </a>
-                <a href="astro-mapa.html" class="card" style="text-decoration: none; padding: 1.5rem; text-align: center; border-radius: 16px; background: rgba(20,15,30,0.6); border: 1px solid rgba(235,192,102,0.2); transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(235,192,102,0.5)'" onmouseout="this.style.transform='';this.style.borderColor='rgba(235,192,102,0.2)'">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌍</div>
-                    <div style="color: #fff; font-weight: 500; font-size: 0.95rem;">Astro-mapa</div>
-                    <div style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 0.25rem;">Zóny síly ve světě</div>
+                <a href="astro-mapa.html" class="card cross-link-card">
+                    <div class="cross-link-card__icon">🌍</div>
+                    <div class="cross-link-card__title">Astro-mapa</div>
+                    <div class="cross-link-card__text">Zóny síly ve světě</div>
                 </a>
-                <a href="snar.html" class="card" style="text-decoration: none; padding: 1.5rem; text-align: center; border-radius: 16px; background: rgba(20,15,30,0.6); border: 1px solid rgba(235,192,102,0.2); transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(235,192,102,0.5)'" onmouseout="this.style.transform='';this.style.borderColor='rgba(235,192,102,0.2)'">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌙</div>
-                    <div style="color: #fff; font-weight: 500; font-size: 0.95rem;">Lexikon snů</div>
-                    <div style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 0.25rem;">Analýza vašeho snu</div>
+                <a href="snar.html" class="card cross-link-card">
+                    <div class="cross-link-card__icon">🌙</div>
+                    <div class="cross-link-card__title">Lexikon snů</div>
+                    <div class="cross-link-card__text">Analýza vašeho snu</div>
                 </a>
-                <a href="biorytmy.html" class="card" style="text-decoration: none; padding: 1.5rem; text-align: center; border-radius: 16px; background: rgba(20,15,30,0.6); border: 1px solid rgba(235,192,102,0.2); transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(235,192,102,0.5)'" onmouseout="this.style.transform='';this.style.borderColor='rgba(235,192,102,0.2)'">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📈</div>
-                    <div style="color: #fff; font-weight: 500; font-size: 0.95rem;">Biorytmy</div>
-                    <div style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 0.25rem;">Dnešní křivky energie</div>
+                <a href="biorytmy.html" class="card cross-link-card">
+                    <div class="cross-link-card__icon">📈</div>
+                    <div class="cross-link-card__title">Biorytmy</div>
+                    <div class="cross-link-card__text">Dnešní křivky energie</div>
                 </a>
-                <a href="runy.html" class="card" style="text-decoration: none; padding: 1.5rem; text-align: center; border-radius: 16px; background: rgba(20,15,30,0.6); border: 1px solid rgba(235,192,102,0.2); transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='rgba(235,192,102,0.5)'" onmouseout="this.style.transform='';this.style.borderColor='rgba(235,192,102,0.2)'">
-                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">ᚱ</div>
-                    <div style="color: #fff; font-weight: 500; font-size: 0.95rem;">Věštění z Run</div>
-                    <div style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin-top: 0.25rem;">Severská moudrost</div>
+                <a href="runy.html" class="card cross-link-card">
+                    <div class="cross-link-card__icon">ᚱ</div>
+                    <div class="cross-link-card__title">Věštění z Run</div>
+                    <div class="cross-link-card__text">Severská moudrost</div>
                 </a>
 
             </div>
@@ -584,36 +322,36 @@
 
 
 
-    <script src="js/favorites-helper.js" defer></script>
+    <script src="js/dist/favorites-helper.js" defer></script>
 
-    <script src="js/crystal-ball.js" defer></script>
+    <script src="js/dist/crystal-ball.js" defer></script>
 
 
 
     <!-- Service Worker Registration -->
 
-    <script src="/js/register-sw.js" defer></script>
+    <script src="/js/dist/register-sw.js" defer></script>
     <script src="/js/dist/analytics-init.js" defer></script>
 
-    <script src="/js/close-banner.js" defer></script>
+    <script src="/js/dist/close-banner.js" defer></script>
 
-    <script src="js/api-config.js?v=5" defer></script>
+    <script src="js/dist/api-config.js?v=5" defer></script>
 
-    <script src="js/templates.js?v=10" defer></script>
+    <script src="js/dist/templates.js?v=10" defer></script>
 
-    <script src="js/auth-client.js?v=5" defer></script>
-<script src="js/auth-copy-fixes.js" defer></script>
-    <script src="js/landing-pages-copy-fixes.js" defer></script>
+    <script src="js/dist/auth-client.js?v=5" defer></script>
+<script src="js/dist/auth-copy-fixes.js" defer></script>
+    <script src="js/dist/landing-pages-copy-fixes.js" defer></script>
 
-    <script src="js/share-result.js" defer></script>
+    <script src="js/dist/share-result.js" defer></script>
 
         
 
-    <script src="js/exit-intent.js" defer></script>
+    <script src="js/dist/exit-intent.js" defer></script>
 
-    <script src="js/components.js?v=10" defer></script>
+    <script src="js/dist/components.js?v=10" defer></script>
 
-    <script type="module" src="js/main.js?v=10"></script>
+    <script type="module" src="js/dist/main.js?v=10"></script>
 
 
 

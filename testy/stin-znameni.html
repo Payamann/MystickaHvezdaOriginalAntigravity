@@ -13,6 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="../css/style.v2.min.css?v=9">
+    <link rel="stylesheet" href="../css/pages/testy-stin-znameni.css">
     <link rel="stylesheet" href="../css/testy.css?v=2">
 
     <!-- SEO & Open Graph -->
@@ -40,7 +41,7 @@
             </div>
         </section>
 
-        <section class="section" style="padding-top: 0;">
+        <section class="section mh-inline-7fba039499">
             <div class="container">
                 <div class="quiz-container" id="quiz-box">
                     <div class="quiz-progress">
@@ -151,40 +152,10 @@
 
     <div id="footer-placeholder"></div>
 
-    <script src="../js/api-config.js?v=5" defer></script>
-    <script src="../js/components.js?v=11" defer></script>
-    <script type="module" src="../js/main.js?v=11"></script>
+    <script src="../js/dist/api-config.js?v=5" defer></script>
+    <script src="../js/dist/components.js?v=11" defer></script>
+    <script type="module" src="../js/dist/main.js?v=11"></script>
 
-    <script src="../js/quiz/stin-znameni.js?v=1" defer></script>
-
-    <style>
-        .loader-shadow {
-            width: 80px;
-            height: 80px;
-            background: radial-gradient(circle, #2a0a2e 0%, #050510 100%);
-            border: 2px solid #6a0dad;
-            border-radius: 50%;
-            margin: 0 auto;
-            position: relative;
-            animation: breathe 3s ease-in-out infinite;
-        }
-        .loader-shadow::after {
-            content: '🌗';
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 2.5rem;
-            filter: drop-shadow(0 0 10px #9d4edd);
-        }
-        @keyframes breathe {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(106, 13, 173, 0.2); }
-            50% { transform: scale(1.1); box-shadow: 0 0 40px rgba(106, 13, 173, 0.6); }
-        }
-        .animate-shadow { animation: shadowPulse 4s infinite alternate; }
-        @keyframes shadowPulse {
-            from { filter: drop-shadow(0 0 5px #000); transform: scale(1); }
-            to { filter: drop-shadow(0 0 20px #6a0dad); transform: scale(1.1) rotate(5deg); }
-        }
-    </style>
+    <script src="/js/dist/quiz/stin-znameni.js?v=1" defer></script>
 </body>
 </html>

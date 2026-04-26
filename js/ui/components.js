@@ -141,9 +141,9 @@ export function initCarousel() {
 
     const updateSlidePosition = () => {
         const gap = parseFloat(getComputedStyle(track).gap) || 0;
-        // Move track by (slideWidth + gap) * currentIndex
+        // Scroll by (slideWidth + gap) * currentIndex without writing inline styles.
         const amountToMove = (slideWidth + gap) * currentIndex;
-        track.style.transform = `translateX(-${amountToMove}px)`;
+        container.scrollTo({ left: amountToMove, behavior: 'smooth' });
     };
 
     const handleNext = () => {
@@ -208,7 +208,7 @@ export function initCookieBanner() {
             detail: { analytics, marketing }
         }));
         banner.classList.remove('visible');
-        banner.style.display = 'none';
+        banner.hidden = true;
     }
 
     // Check if user already acted (support both old and new key)
@@ -217,9 +217,12 @@ export function initCookieBanner() {
         localStorage.getItem('cookieConsent') === 'rejected';
 
     if (!alreadyDone) {
-        setTimeout(() => { banner.classList.add('visible'); }, 1000);
+        setTimeout(() => {
+            banner.hidden = false;
+            banner.classList.add('visible');
+        }, 1000);
     } else {
-        banner.style.display = 'none';
+        banner.hidden = true;
     }
 
     acceptBtn.addEventListener('click', () => saveCookieConsent(true, true));

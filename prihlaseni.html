@@ -9,25 +9,8 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>*</text></svg>">
     <link rel="stylesheet" href="/fonts/local-fonts.css">
     <link rel="stylesheet" href="css/style.v2.min.css?v=11">
-
-    <style>
-        .login-section { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 6rem 1.25rem 3rem; }
-        .login-card { width: 100%; max-width: 440px; background: rgba(255,255,255,0.04); border: 1px solid rgba(212,175,55,0.2); border-radius: 20px; padding: 2.5rem 2rem; backdrop-filter: blur(12px); box-shadow: 0 8px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06); }
-        .login-header { text-align: center; margin-bottom: 2rem; }
-        .login-icon { font-size: 2.5rem; display: block; margin-bottom: 0.75rem; }
-        .login-card .form-group { margin-bottom: 1.1rem; }
-        .login-card .form-label { display: block; font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 0.4rem; font-family: 'Inter', sans-serif; }
-        .login-card .form-input { width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 0.75rem 1rem; color: #fff; font-size: 0.95rem; font-family: 'Inter', sans-serif; transition: border-color 0.2s; outline: none; }
-        .login-card .form-input:focus { border-color: rgba(212,175,55,0.6); background: rgba(255,255,255,0.09); }
-        .login-card .form-input::placeholder { color: rgba(255,255,255,0.3); }
-        .login-card .btn--primary { width: 100%; margin-top: 0.5rem; padding: 0.85rem; font-size: 0.95rem; letter-spacing: 0.05em; }
-        .login-card .btn--text { background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 0.9rem; padding: 0.25rem 0; }
-        #auth-mode-toggle { display: block; width: 100%; margin-top: 1.5rem; text-align: center; background: rgba(212,175,55,0.08); border: 1px solid rgba(212,175,55,0.25); border-radius: 50px; padding: 0.7rem 1.5rem; color: var(--color-mystic-gold); font-size: 0.9rem; cursor: pointer; transition: background 0.2s; }
-        #auth-mode-toggle:hover { background: rgba(212,175,55,0.15); }
-        @media (max-width: 480px) { .login-card { padding: 2rem 1.25rem; } }
-    </style>
-
-    <meta property="og:image" content="https://www.mystickahvezda.cz/img/hero-3d.webp">
+    <link rel="stylesheet" href="css/pages/prihlaseni.css">
+<meta property="og:image" content="https://www.mystickahvezda.cz/img/hero-3d.webp">
     <link rel="canonical" href="https://www.mystickahvezda.cz/prihlaseni.html">
     <script src="/js/dist/analytics-init.js" defer></script>
 </head>
@@ -41,13 +24,13 @@
             <div class="login-card" data-animate>
                 <div class="login-header">
                     <span class="login-icon">*</span>
-                    <h1 class="hero__title" id="login-page-title" style="font-size: 2rem; margin-bottom: 0.5rem;">Vítejte zpět</h1>
-                    <p class="hero__subtitle" id="login-page-subtitle" style="font-size: 1rem;">Přihlaste se ke svému účtu a pokračujte tam, kde jste skončili.</p>
-                    <p id="login-social-proof" style="font-size:0.82rem;color:rgba(255,255,255,0.45);margin-top:0.5rem;display:none;">12 000+ lidí se sem vrací pro denní vedení.</p>
-                    <div id="checkout-context-banner" style="display:none;margin-top:1rem;padding:0.95rem 1rem;border-radius:16px;background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.22);text-align:left;">
-                        <div id="checkout-context-label" style="font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-mystic-gold);margin-bottom:0.4rem;">Pokračujete k plánu</div>
-                        <strong id="checkout-context-title" style="display:block;color:#fff;font-size:1rem;margin-bottom:0.25rem;"></strong>
-                        <p id="checkout-context-copy" style="margin:0;color:rgba(255,255,255,0.72);font-size:0.9rem;line-height:1.55;"></p>
+                    <h1 class="hero__title login-card__title" id="login-page-title">Vítejte zpět</h1>
+                    <p class="hero__subtitle mh-inline-86e975967b" id="login-page-subtitle">Přihlaste se ke svému účtu a pokračujte tam, kde jste skončili.</p>
+                    <p id="login-social-proof" class="mh-inline-99dc5ae89a">12 000+ lidí se sem vrací pro denní vedení.</p>
+                    <div id="checkout-context-banner" class="mh-inline-0503a03e27">
+                        <div id="checkout-context-label" class="mh-inline-445ad7cc27">Pokračujete k plánu</div>
+                        <strong id="checkout-context-title" class="mh-inline-1d765838a2"></strong>
+                        <p id="checkout-context-copy" class="mh-inline-8b9d667a40"></p>
                     </div>
                 </div>
 
@@ -62,35 +45,35 @@
                         <input type="password" id="password" name="password" class="form-input" placeholder="********" required autocomplete="current-password">
                     </div>
 
-                    <div class="form-group" id="confirm-password-field-wrapper" style="display: none;">
+                    <div class="form-group mh-inline-59ce1fef8d" id="confirm-password-field-wrapper">
                         <label for="confirm-password-reg" class="form-label">Potvrďte heslo</label>
                         <input type="password" id="confirm-password-reg" name="confirm_password" class="form-input" placeholder="********" autocomplete="new-password">
                     </div>
 
-                    <div class="form-group" id="gdpr-consent-wrapper" style="display: none; margin-top: 1rem;">
-                        <label class="checkbox-label" style="display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.85rem; color: rgba(255,255,255,0.7); cursor: pointer;">
-                            <input type="checkbox" id="gdpr-consent" name="gdpr_consent" required style="margin-top: 0.2rem;">
-                            <span>Souhlasím se <a href="ochrana-soukromi.html" target="_blank" style="color: var(--color-mystic-gold);">zpracováním osobních údajů</a> a <a href="podminky.html" target="_blank" style="color: var(--color-mystic-gold);">obchodními podmínkami</a>.</span>
+                    <div class="form-group mh-inline-716d8554e4" id="gdpr-consent-wrapper">
+                        <label class="checkbox-label mh-inline-6dada34cf2">
+                            <input type="checkbox" id="gdpr-consent" name="gdpr_consent" required class="mh-inline-111c8ad875">
+                            <span>Souhlasím se <a href="ochrana-soukromi.html" target="_blank" class="u-text-gold">zpracováním osobních údajů</a> a <a href="podminky.html" target="_blank" class="u-text-gold">obchodními podmínkami</a>.</span>
                         </label>
                     </div>
 
-                    <button type="submit" id="auth-submit" class="btn btn--primary btn--glow" style="width: 100%; margin-top: 1rem;">Přihlásit se</button>
+                    <button type="submit" id="auth-submit" class="btn btn--primary btn--glow mh-inline-c0b8a97c16">Přihlásit se</button>
                 </form>
 
-                <div style="margin-top: 1rem; text-align: center;">
-                    <button id="forgot-password-link" class="btn btn--text" style="color: var(--color-silver-mist); font-size: 0.9rem;">Zapomněli jste heslo?</button>
+                <div class="mh-inline-712077614e">
+                    <button id="forgot-password-link" class="btn btn--text mh-inline-afc08e5b30">Zapomněli jste heslo?</button>
                 </div>
 
-                <form id="forgot-password-form" style="display: none;">
+                <form id="forgot-password-form" class="mh-inline-59ce1fef8d">
                     <div class="form-group">
                         <label for="forgot-email" class="form-label">Email</label>
                         <input type="email" id="forgot-email" class="form-input" placeholder="vas@email.cz" required>
                     </div>
-                    <button type="submit" class="btn btn--primary btn--glow" style="width: 100%; margin-top: 1rem;">Odeslat odkaz pro obnovu</button>
-                    <button type="button" id="back-to-login" class="btn btn--text" style="width: 100%; margin-top: 0.5rem; color: var(--color-silver-mist);">Zpět na přihlášení</button>
+                    <button type="submit" class="btn btn--primary btn--glow mh-inline-c0b8a97c16">Odeslat odkaz pro obnovu</button>
+                    <button type="button" id="back-to-login" class="btn btn--text mh-inline-05ea2d974d">Zpět na přihlášení</button>
                 </form>
 
-                <form id="reset-password-form" style="display: none;">
+                <form id="reset-password-form" class="mh-inline-59ce1fef8d">
                     <div class="form-group">
                         <label for="new-password" class="form-label">Nové heslo</label>
                         <input type="password" id="new-password" class="form-input" placeholder="********" required minlength="8">
@@ -99,14 +82,14 @@
                         <label for="confirm-password" class="form-label">Potvrďte heslo</label>
                         <input type="password" id="confirm-password" class="form-input" placeholder="********" required minlength="8">
                     </div>
-                    <button type="submit" class="btn btn--primary btn--glow" style="width: 100%; margin-top: 1rem;">Nastavit nové heslo</button>
+                    <button type="submit" class="btn btn--primary btn--glow mh-inline-c0b8a97c16">Nastavit nové heslo</button>
                 </form>
 
-                <div style="margin-top: 2rem; font-size: 0.9rem; color: var(--color-silver-mist);">
-                    <button id="auth-mode-toggle" class="btn btn--text" style="color: var(--color-mystic-gold);">Nemáte účet? Zaregistrujte se zdarma →</button>
+                <div class="mh-inline-68221bb3c6">
+                    <button id="auth-mode-toggle" class="btn btn--text u-text-gold">Nemáte účet? Zaregistrujte se zdarma →</button>
                 </div>
 
-                <div id="register-fields" style="display: none; text-align: left; margin-top: 1rem;">
+                <div id="register-fields" class="mh-inline-225c671c73">
                     <div class="form-group">
                         <label class="form-label">Jméno</label>
                         <input type="text" name="first_name" class="form-input" placeholder="Vaše jméno">
@@ -128,13 +111,13 @@
 
     <div id="footer-placeholder"></div>
 
-    <script src="js/analytics.js?v=5" defer></script>
-    <script src="js/prihlaseni.js?v=2" defer></script>
-    <script src="js/api-config.js?v=5" defer></script>
-    <script src="js/templates.js?v=10" defer></script>
-    <script src="js/auth-client.js?v=5" defer></script>
-    <script src="js/auth-copy-fixes.js" defer></script>
-    <script src="js/components.js?v=10" defer></script>
-    <script type="module" src="js/main.js?v=10"></script>
+    <script src="js/dist/analytics.js?v=5" defer></script>
+    <script src="js/dist/prihlaseni.js?v=2" defer></script>
+    <script src="js/dist/api-config.js?v=5" defer></script>
+    <script src="js/dist/templates.js?v=10" defer></script>
+    <script src="js/dist/auth-client.js?v=5" defer></script>
+    <script src="js/dist/auth-copy-fixes.js" defer></script>
+    <script src="js/dist/components.js?v=10" defer></script>
+    <script type="module" src="js/dist/main.js?v=10"></script>
 </body>
 </html>

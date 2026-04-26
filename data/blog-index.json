@@ -23,7 +23,7 @@
     "short_description": "Pentagramy nejsou nudnou suitou. Jsou mapou materiálního světa — práce, peněz, těla i hojnosti. Průvodce všemi 14 kartami zemního živlu.",
     "category": "Tarot",
     "published_at": "2026-04-10T10:00:00.000Z",
-    "featured_image": "img/blog-tarot.webp",
+    "featured_image": "img/icon-tarot.webp",
     "readTime": 4
   },
   {
@@ -32,7 +32,7 @@
     "short_description": "Hůlky jsou suitou ohně, vůle a životní síly. Průvodce všemi 14 kartami — od Esa po Krále — a jak je číst v kontextu kariéry, lásky i varování.",
     "category": "Tarot",
     "published_at": "2026-04-07T10:00:00.000Z",
-    "featured_image": "img/blog-tarot.webp",
+    "featured_image": "img/icon-tarot.webp",
     "readTime": 4
   },
   {
@@ -41,7 +41,7 @@
     "short_description": "Vaše jméno vibruje na konkrétní frekvenci. Pythagorická numerologie odhalí, co vaše křestní jméno říká o vaší osobnosti — a co se stane, když ho změníte.",
     "category": "Numerologie",
     "published_at": "2026-04-03T10:00:00.000Z",
-    "featured_image": "img/blog-numerology.webp",
+    "featured_image": "img/icon-numerology.webp",
     "readTime": 4
   },
   {
@@ -50,7 +50,7 @@
     "short_description": "Teorie čaker je krásná — ale jak skutečně pracovat s blokacemi? Praktický průvodce léčením všech 7 čaker od příznaků po konkrétní techniky.",
     "category": "Spiritualita",
     "published_at": "2026-03-31T10:00:00.000Z",
-    "featured_image": "img/blog-spirituality.webp",
+    "featured_image": "img/icon-ritual.webp",
     "readTime": 5
   },
   {
@@ -59,7 +59,7 @@
     "short_description": "Nový Měsíc je nejsilnější okamžik pro zasazení záměrů. Průvodce rituálem pro začátečníky — bez mystického balastu, jen čistá praxe.",
     "category": "Spiritualita",
     "published_at": "2026-03-27T10:00:00.000Z",
-    "featured_image": "img/blog-spirituality.webp",
+    "featured_image": "img/icon-ritual.webp",
     "readTime": 4
   },
   {
@@ -68,7 +68,7 @@
     "short_description": "Karta Soudce nepřichází jako trest — přichází jako volání. Probuzení, absolution a karmická bilance v jednom mocném obrazu.",
     "category": "Tarot",
     "published_at": "2026-03-24T10:00:00.000Z",
-    "featured_image": "img/blog-tarot.webp",
+    "featured_image": "img/icon-tarot.webp",
     "readTime": 4
   },
   {
@@ -77,7 +77,7 @@
     "short_description": "Numerologie odhaluje hlubší vrstvu partnerské dynamiky než horoskopy. Zjistěte, jak vaše životní čísla spolupracují — a kde leží největší výzvy.",
     "category": "Numerologie",
     "published_at": "2026-03-20T10:00:00.000Z",
-    "featured_image": "img/blog-numerology.webp",
+    "featured_image": "img/icon-numerology.webp",
     "readTime": 5
   },
   {
@@ -86,7 +86,7 @@
     "short_description": "Meče jsou nejobávanější suitou tarotu. Ale co když právě tyto karty přinášejí osvobozující pravdu, kterou jste potřebovali slyšet?",
     "category": "Tarot",
     "published_at": "2026-03-17T10:00:00.000Z",
-    "featured_image": "img/blog-tarot.webp",
+    "featured_image": "img/icon-tarot.webp",
     "readTime": 4
   },
   {
@@ -95,7 +95,7 @@
     "short_description": "Keltský kříž je nejkomplexnější tarotové rozložení, jaké existuje. Naučte se číst všech 10 pozic a poskládat z nich jeden ucelený příběh.",
     "category": "Tarot",
     "published_at": "2026-03-13T10:00:00.000Z",
-    "featured_image": "img/blog-tarot.webp",
+    "featured_image": "img/icon-tarot.webp",
     "readTime": 5
   },
   {
@@ -104,7 +104,7 @@
     "short_description": "Každý z nás se rodí pod ochranou konkrétního totemového zvířete. Šamanské Kolo vám ukáže, které to je — a co vám o vaší cestě životem prozrazuje.",
     "category": "Šamanismus",
     "published_at": "2026-03-10T10:00:00.000Z",
-    "featured_image": "img/blog-spirituality.webp",
+    "featured_image": "img/icon-ritual.webp",
     "readTime": 5
   },
   {
@@ -149,7 +149,7 @@
     "short_description": "Stále se točíte v bludném kruhu toxických vztahů? Možná potkáváte karmické učitele místo své skutečné spřízněné duše. Zjistěte ten zásadní rozdíl.",
     "category": "Vztahy",
     "published_at": "2026-02-27T18:56:29.000Z",
-    "featured_image": "img/blog-relationships.webp",
+    "featured_image": "img/icon-synastry.webp",
     "readTime": 4
   },
   {
@@ -158,7 +158,7 @@
     "short_description": "Vaše datum narození není matematická náhoda. Objevte, jak starořecká numerologie dešifruje mapu vaší duše a jaký osudový úkol vám byl svěřen.",
     "category": "Numerologie",
     "published_at": "2026-02-27T20:06:34.985Z",
-    "featured_image": "img/blog-numerology.webp",
+    "featured_image": "img/icon-numerology.webp",
     "readTime": 4
   },
   {
@@ -194,7 +194,7 @@
     "short_description": "Zatímco Tarot odpovídá v jemných psychologických nuancích, Runy do vás vrhnou syrovou, ostrou severskou pravdu. Jak bezpečně pracovat s tímto starodávným systémem?",
     "category": "Věštění",
     "published_at": "2026-02-21T20:06:34.988Z",
-    "featured_image": "img/blog-divination.webp",
+    "featured_image": "img/og-runes.webp",
     "readTime": 3
   },
   {
@@ -212,7 +212,7 @@
     "short_description": "Podíváte se na telefon – je přesně 11:11. Účet za kávu je 222 Kč. Před vámi jede auto s poznávací značkou 333. Ztrácíte rozum, nebo s vámi promlouvá Vesmír?",
     "category": "Spiritualita",
     "published_at": "2026-02-17T20:06:34.988Z",
-    "featured_image": "img/blog-spirituality.webp",
+    "featured_image": "img/icon-ritual.webp",
     "readTime": 3
   },
   {
@@ -221,7 +221,7 @@
     "short_description": "Jak poznáte, že jste potkali svou spřízněnou duši? Pět konkrétních znamení – a proč spřízněná duše nemusí být ta, u které zůstanete navždy.",
     "category": "Spiritualita",
     "published_at": "2026-02-17T12:00:00.000Z",
-    "featured_image": "img/blog-spirituality.webp",
+    "featured_image": "img/icon-ritual.webp",
     "readTime": 7
   },
   {
@@ -230,7 +230,7 @@
     "short_description": "Logo (Číslo Výrazu), Číslo Duše a Číslo Osobnosti – tři klíčové numerologické ukazatele, které jdou daleko za Číslo Osudu. Kompletní průvodce výpočtem a výkladem.",
     "category": "Numerologie",
     "published_at": "2026-02-16T10:00:00.000Z",
-    "featured_image": "img/blog-numerology.webp",
+    "featured_image": "img/icon-numerology.webp",
     "readTime": 9
   },
   {
@@ -239,7 +239,7 @@
     "short_description": "Motýlci v břiše, pocit, že se znáte staletí, a pak náhlý a zničující pád. Proč astrologická praxe nabádá k maximální opatrnosti před karmickými svazky?",
     "category": "Vztahy",
     "published_at": "2026-02-14T20:06:34.987Z",
-    "featured_image": "img/blog-relationships.webp",
+    "featured_image": "img/icon-synastry.webp",
     "readTime": 3
   },
   {
@@ -248,7 +248,7 @@
     "short_description": "Barva pohárů v malých arkánách vypovídá o našem emocionálním životě, lásce a intuici. Naučte se číst poselství elementu vody.",
     "category": "Tarot",
     "published_at": "2026-02-12T10:00:00.000Z",
-    "featured_image": "img/blog-tarot.webp",
+    "featured_image": "img/icon-tarot.webp",
     "readTime": 4
   },
   {
@@ -257,7 +257,7 @@
     "short_description": "Myslíte si, že ten mrazivý sen, v němž nemůžete utéct, je jen hloupost? Sny jsou královskou cestou do hlubin toho nejtemnějšího uvnitř nás. Pojďme je rozluštit.",
     "category": "Snář",
     "published_at": "2026-02-11T20:06:34.988Z",
-    "featured_image": "img/blog-dreams.webp",
+    "featured_image": "img/icon-sny.webp",
     "readTime": 3
   },
   {
@@ -275,7 +275,7 @@
     "short_description": "Myslíte si, že tělo končí vaší kožní bariérou? Existuje prastará mapa sedmi silových generátorů, u níž by zablokování i jediné pumpy ohrozilo všechny psychofyzikální vrstvy.",
     "category": "Spiritualita",
     "published_at": "2026-02-04T20:06:34.988Z",
-    "featured_image": "img/blog-spirituality.webp",
+    "featured_image": "img/icon-ritual.webp",
     "readTime": 4
   },
   {
@@ -284,7 +284,7 @@
     "short_description": "Pokud považujete křišťálovou kouli jen za rekvizitu pro hollywoodské filmy o čarodějnicích, připravujete se o jednu z nejsilnějších technik starověkého zření.",
     "category": "Věštění",
     "published_at": "2026-01-30T20:06:34.987Z",
-    "featured_image": "img/blog-divination.webp",
+    "featured_image": "img/og-runes.webp",
     "readTime": 3
   },
   {
@@ -293,7 +293,7 @@
     "short_description": "Padání z útesu, vypadávající zuby, pronásledování... Každou noc hrajeme ve vlastním filmu, jehož autorem je naše podvědomí. Jak těmto poselstvím porozumět?",
     "category": "Snář",
     "published_at": "2026-01-28T18:56:29.000Z",
-    "featured_image": "img/blog-dreams.webp",
+    "featured_image": "img/icon-sny.webp",
     "readTime": 3
   },
   {
@@ -311,7 +311,7 @@
     "short_description": "Některé dny sršíte vtipem a všechno se daří. O týden později máte pocit, že se proti vám spikl svět. Co když ale tyto výkyvy nejsou náhodné, ale přísně matematické?",
     "category": "Spiritualita",
     "published_at": "2026-01-15T20:06:34.988Z",
-    "featured_image": "img/blog-spirituality.webp",
+    "featured_image": "img/icon-ritual.webp",
     "readTime": 4
   },
   {
@@ -320,7 +320,7 @@
     "short_description": "Jste bez energie, v práci děláte chyby a s partnerem jste na nože. Dříve se tomu říkalo smůla. Dnes tomu říkáme kritický den Biorytmu.",
     "category": "Spiritualita",
     "published_at": "2026-01-10T18:56:29.000Z",
-    "featured_image": "img/blog-spirituality.webp",
+    "featured_image": "img/icon-ritual.webp",
     "readTime": 3
   },
   {
@@ -329,7 +329,7 @@
     "short_description": "Vidíte všude číslo 1111? Andělé vám posílají silné poselství. Zjistěte, co toto andělské číslo znamená pro váš život, lásku a duchovní cestu.",
     "category": "Spiritualita",
     "published_at": "2026-01-01T10:00:00.000Z",
-    "featured_image": "img/blog-spirituality.webp",
+    "featured_image": "img/icon-ritual.webp",
     "readTime": 5
   },
   {
@@ -338,7 +338,7 @@
     "short_description": "Pokud existuje karta, u níž zkušeným kartářkám hrkne v hrudi, nebývá to s populární legendou opředená Smrt, nýbrž hrůzostrašná a ničivá karta Věž.",
     "category": "Tarot",
     "published_at": "2025-12-31T20:06:34.988Z",
-    "featured_image": "img/blog-tarot.webp",
+    "featured_image": "img/icon-tarot.webp",
     "readTime": 4
   },
   {
@@ -347,7 +347,7 @@
     "short_description": "Znáte lidi, po kterých se cítíte, jako by vás přejel parní válec? Ukážeme vám, jak se zamknout před odsáváním životní energie.",
     "category": "Spiritualita",
     "published_at": "2025-12-29T18:56:29.000Z",
-    "featured_image": "img/blog-spirituality.webp",
+    "featured_image": "img/icon-ritual.webp",
     "readTime": 3
   },
   {
@@ -365,7 +365,7 @@
     "short_description": "Některé znakové kombinace vypadají na papíře skvěle, ale v reálu končí slzami a křikem. Pojďme si rozebrat klasický příklad nesourodého spojení.",
     "category": "Vztahy",
     "published_at": "2025-12-21T18:56:29.000Z",
-    "featured_image": "img/blog-relationships.webp",
+    "featured_image": "img/icon-synastry.webp",
     "readTime": 3
   },
   {
@@ -383,7 +383,7 @@
     "short_description": "Tak rádi byste přitáhli hojnost a lásku, ale The Secret pro vás nefunguje? Děláte pravděpodobně jednu z těchto tří začátečnických chyb.",
     "category": "Spiritualita",
     "published_at": "2025-12-11T18:56:29.000Z",
-    "featured_image": "img/blog-spirituality.webp",
+    "featured_image": "img/icon-ritual.webp",
     "readTime": 3
   },
   {
@@ -392,7 +392,7 @@
     "short_description": "Chcete se zeptat karet na budoucnost, ale bojíte se, že něco pokazíte? Tento průvodce vás krok za krokem provede prvním bezpečným domácím výkladem.",
     "category": "Tarot",
     "published_at": "2025-12-06T18:56:29.000Z",
-    "featured_image": "img/blog-tarot.webp",
+    "featured_image": "img/icon-tarot.webp",
     "readTime": 3
   },
   {
@@ -410,7 +410,7 @@
     "short_description": "Karta Hvězda v tarotu symbolizuje naději a uzdravení po těžkých časech. Poznej její symboliku, výklad v lásce, kariéře i kombinace s jinými kartami.",
     "category": "Tarot",
     "published_at": "2025-11-01T10:00:00.000Z",
-    "featured_image": "img/blog-tarot.webp",
+    "featured_image": "img/icon-tarot.webp",
     "readTime": 4
   },
   {
@@ -428,7 +428,7 @@
     "short_description": "Zjisti, co ti přinese rok 2026 podle numerologie. Vypočítej svůj osobní rok, pochop energii každého čísla a využij ji vědomě ve svůj prospěch.",
     "category": "Numerologie",
     "published_at": "2025-10-04T10:00:00.000Z",
-    "featured_image": "img/blog-numerology.webp",
+    "featured_image": "img/icon-numerology.webp",
     "readTime": 5
   },
   {
@@ -437,7 +437,7 @@
     "short_description": "Karta Měsíc v tarotu odhaluje iluze, podvědomé strachy a skryté pravdy. Zjisti, co znamená ve vztazích, kariéře a jak projít jejím mlžným územím.",
     "category": "Tarot",
     "published_at": "2025-09-20T10:00:00.000Z",
-    "featured_image": "img/blog-tarot.webp",
+    "featured_image": "img/icon-tarot.webp",
     "readTime": 4
   },
   {
@@ -446,7 +446,7 @@
     "short_description": "Proč přitahujeme stále stejné typy lidí? Pochop attachment styly — jistý, úzkostný, vyhýbavý — a zjisti, jak změnit hluboké vztahové vzorce.",
     "category": "Vztahy",
     "published_at": "2025-09-06T10:00:00.000Z",
-    "featured_image": "img/blog-relationships.webp",
+    "featured_image": "img/icon-synastry.webp",
     "readTime": 5
   },
   {
@@ -455,7 +455,7 @@
     "short_description": "Létání ve snu je jedním z nejčastějších a nejkrásnějších snových zážitků. Zjisti, co ti chce podvědomí říct a jak tyto sny vědomě využít.",
     "category": "Snář",
     "published_at": "2025-08-23T10:00:00.000Z",
-    "featured_image": "img/blog-dreams.webp",
+    "featured_image": "img/icon-sny.webp",
     "readTime": 4
   },
   {
@@ -464,7 +464,7 @@
     "short_description": "Feng shui doma není jen o dekoraci. Naučte se, jak pomocí bagua mapy aktivovat zóny prosperity, lásky a hojnosti ve svém bytě nebo domě.",
     "category": "Spiritualita",
     "published_at": "2025-08-09T10:00:00.000Z",
-    "featured_image": "img/blog-spirituality.webp",
+    "featured_image": "img/icon-ritual.webp",
     "readTime": 5
   },
   {
@@ -473,7 +473,7 @@
     "short_description": "Karta Slunce v tarotu je symbolem radosti, vítězství a životní síly. Zjistěte, co přesně tato karta říká ve výkladu a jak přivolat její energii.",
     "category": "Tarot",
     "published_at": "2025-07-26T10:00:00.000Z",
-    "featured_image": "img/blog-tarot.webp",
+    "featured_image": "img/icon-tarot.webp",
     "readTime": 4
   },
   {
@@ -482,7 +482,7 @@
     "short_description": "Mistrovská čísla 11, 22 a 33 nesou mimořádný potenciál i mimořádnou zátěž. Zjistěte, co znamenají, jak je poznat ve svém životopisu a jak s nimi pracovat.",
     "category": "Numerologie",
     "published_at": "2025-07-12T10:00:00.000Z",
-    "featured_image": "img/blog-numerology.webp",
+    "featured_image": "img/icon-numerology.webp",
     "readTime": 6
   },
   {
@@ -491,7 +491,7 @@
     "short_description": "Úplněk je časem uvolnění a silných energií. Zjistěte, jaké rituály vám pomohou tuto energii využít naplno.",
     "category": "Lunární Magie",
     "published_at": "2025-07-05T10:00:00.000Z",
-    "featured_image": "img/blog-spirituality.webp",
+    "featured_image": "img/icon-ritual.webp",
     "readTime": 3
   },
   {
@@ -527,7 +527,7 @@
     "short_description": "Runy jsou prastarý věštecký systém skandinávských Vikingů. Naučte se dělat runové výklady doma — od výběru run přes kladení až po interpretaci symbolů.",
     "category": "Spiritualita",
     "published_at": "2026-03-29T16:00:00.000Z",
-    "featured_image": "img/blog-spirituality.webp",
+    "featured_image": "img/icon-ritual.webp",
     "readTime": 6
   },
   {
@@ -563,7 +563,7 @@
     "short_description": "Andělské karty nejsou tarot. Jsou laskavým, povzbudivým systémem, který vás spojuje s vyššími průvodci. Zjistěte, jak fungují, jak s nimi pracovat a jak interpretovat poselství.",
     "category": "Spiritualita",
     "published_at": "2026-03-30T10:00:00.000Z",
-    "featured_image": "img/blog-spirituality.webp",
+    "featured_image": "img/icon-ritual.webp",
     "readTime": 6
   },
   {
@@ -572,7 +572,7 @@
     "short_description": "Aura je energetické pole obklopující každou živou bytost. Naučte se, jak auru vidět, jaké barvy co znamenají a jak ji pravidelně čistit pro více energie a ochranu.",
     "category": "Spiritualita",
     "published_at": "2026-03-30T12:00:00.000Z",
-    "featured_image": "img/blog-spirituality.webp",
+    "featured_image": "img/icon-ritual.webp",
     "readTime": 7
   }
 ]

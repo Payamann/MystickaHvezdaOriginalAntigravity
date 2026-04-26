@@ -284,12 +284,7 @@
         previewCanvas.height = 338;
         const pCtx = previewCanvas.getContext('2d');
         pCtx.drawImage(canvas, 0, 0, 270, 338);
-        previewCanvas.style.cssText = `
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(235,192,102,0.2);
-            display: block;
-            margin: 0 auto 1.5rem;
-        `;
+        previewCanvas.className = 'hs-preview-canvas';
 
         // Share URL — UTM + anchor (pro clipboard)
         const shareUrl = shareUrlWithUTM || canonicalUrl;
@@ -317,13 +312,13 @@
                             <span>Instagram / TikTok / WhatsApp</span>
                         </button>` : ''}
                         <a class="hs-opt" href="${fbUrl}" target="_blank" rel="noopener">
-                            <span class="hs-opt-icon" style="background:#1877f2">
+                            <span class="hs-opt-icon hs-opt-icon--facebook">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
                             </span>
                             <span>Facebook</span>
                         </a>
                         <a class="hs-opt" href="${waUrl}" target="_blank" rel="noopener">
-                            <span class="hs-opt-icon" style="background:#25d366">
+                            <span class="hs-opt-icon hs-opt-icon--whatsapp">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
                             </span>
                             <span>WhatsApp</span>
@@ -355,7 +350,7 @@
         shareBtn.addEventListener('click', () => {
             const open = optionsEl.classList.toggle('hs-options--open');
             optionsEl.setAttribute('aria-hidden', String(!open));
-            shareBtn.querySelector('.hs-chevron').style.transform = open ? 'rotate(180deg)' : '';
+            shareBtn.classList.toggle('hs-share-btn--open', open);
         });
 
         // Nativní share (mobil) — Instagram / TikTok / WhatsApp
@@ -396,111 +391,10 @@
 
     // ─── CSS styles ──────────────────────────────────────────────────────────
     function injectStyles() {
-        if (document.getElementById('hs-styles')) return;
-        const s = document.createElement('style');
-        s.id = 'hs-styles';
-        s.textContent = `
-            #horoscope-share-panel {
-                margin-top: 2.5rem;
-                padding: 2rem 1.5rem;
-                background: rgba(10,6,28,0.7);
-                border: 1px solid rgba(235,192,102,0.2);
-                border-radius: 20px;
-                backdrop-filter: blur(12px);
-                text-align: center;
-            }
-            .hs-inner { max-width: 420px; margin: 0 auto; }
-            .hs-title {
-                font-family: 'Cinzel', serif;
-                color: #ebc066;
-                font-size: 1.1rem;
-                margin-bottom: 1.25rem;
-                letter-spacing: 0.03em;
-            }
-            .hs-main-btn-wrap { text-align: center; }
-            .hs-btn {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                gap: 0.6rem;
-                padding: 0.8rem 1.8rem;
-                border-radius: 50px;
-                font-size: 0.95rem;
-                font-weight: 600;
-                cursor: pointer;
-                transition: opacity 0.2s, transform 0.15s;
-                text-decoration: none;
-                border: none;
-            }
-            .hs-btn--primary {
-                background: linear-gradient(135deg, #ebc066, #c89b3c);
-                color: #0a0a1a;
-            }
-            .hs-btn--primary:hover { opacity: 0.9; transform: translateY(-1px); }
-            .hs-chevron { transition: transform 0.25s; margin-left: 2px; }
-
-            /* Rozbalovací možnosti */
-            .hs-options {
-                display: grid;
-                grid-template-rows: 0fr;
-                transition: grid-template-rows 0.3s ease, margin-top 0.3s ease;
-                margin-top: 0;
-            }
-            .hs-options-inner {
-                overflow: hidden;
-                min-height: 0;
-            }
-            .hs-options--open {
-                grid-template-rows: 1fr;
-                margin-top: 0.75rem;
-            }
-            .hs-opt {
-                display: flex;
-                align-items: center;
-                gap: 0.85rem;
-                width: 100%;
-                padding: 0.7rem 1rem;
-                border-radius: 12px;
-                background: rgba(255,255,255,0.04);
-                border: 1px solid rgba(255,255,255,0.07);
-                color: rgba(255,255,255,0.85);
-                font-size: 0.9rem;
-                cursor: pointer;
-                text-decoration: none;
-                transition: background 0.2s;
-                margin-bottom: 0.4rem;
-                text-align: left;
-            }
-            .hs-opt:last-child { margin-bottom: 0; }
-            .hs-opt:hover { background: rgba(255,255,255,0.09); }
-            .hs-opt-icon {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 30px;
-                height: 30px;
-                border-radius: 8px;
-                background: rgba(235,192,102,0.15);
-                flex-shrink: 0;
-                font-size: 16px;
-            }
-            .hs-toast {
-                display: none;
-                margin-top: 1rem;
-                padding: 0.6rem 1.2rem;
-                background: rgba(20,15,40,0.95);
-                border: 1px solid rgba(235,192,102,0.3);
-                border-radius: 50px;
-                color: #fff;
-                font-size: 0.85rem;
-                backdrop-filter: blur(10px);
-            }
-            .hs-toast.visible { display: inline-block; }
-        `;
-        document.head.appendChild(s);
+        // Styles live in css/style.v2.css.
     }
 
-    // ─── Hlavní logika — sleduj načtení horoskopu ────────────────────────────
+    // Hlavni logika - sleduj nacteni horoskopu
     function init() {
         injectStyles();
 

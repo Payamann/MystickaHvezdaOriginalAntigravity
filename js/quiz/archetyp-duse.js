@@ -10,6 +10,14 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentStep = 1;
     const totalSteps = steps.length;
 
+    function setProgress(percent) {
+        const rounded = Math.max(0, Math.min(100, Math.round(percent / 5) * 5));
+        progressBar.classList.forEach((className) => {
+            if (className.startsWith('progress-width-')) progressBar.classList.remove(className);
+        });
+        progressBar.classList.add(`progress-width-${rounded}`);
+    }
+
     const resultsData = {
         magician: {
             title: "Máh",
@@ -50,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateProgress() {
         const percent = (currentStep / totalSteps) * 100;
-        progressBar.style.width = percent + '%';
+        setProgress(percent);
     }
 
     function showStep(stepNum) {
@@ -67,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function showLoading() {
         steps.forEach(s => s.classList.remove('active'));
         document.getElementById('loading-step').classList.add('active');
-        progressBar.style.width = '100%';
+        setProgress(100);
 
         setTimeout(showResult, 2500);
     }
@@ -80,18 +88,18 @@ document.addEventListener('DOMContentLoaded', () => {
         window.lastResult = data.title;
 
         const resultHtml = `
-            <div class="result-card" style="border-color: var(--quiz-accent);">
+            <div class="result-card quiz-result-card">
                 <div class="result-card__header">
                     <h4 class="result-card__title">${data.title}</h4>
-                    <p style="color: rgba(255,215,0,0.6); font-size: 0.8rem;">Váš duchovní archetyp</p>
+                    <p class="quiz-result-kicker">Váš duchovní archetyp</p>
                 </div>
                 <div class="result-card__image animate-glow">${data.icon}</div>
                 <div class="result-card__body">
-                    <h5 style="margin-bottom: 0.5rem; color: #fff;">${data.subtitle}</h5>
-                    <p style="font-size: 0.9rem; color: rgba(255,255,255,0.8); line-height: 1.4;">${data.desc}</p>
+                    <h5 class="quiz-result-subtitle">${data.subtitle}</h5>
+                    <p class="quiz-result-description">${data.desc}</p>
                 </div>
-                <div class="result-card__footer" style="margin-top: 1rem; border-top: 1px solid rgba(255,215,0,0.2); padding-top: 1rem;">
-                    <p style="font-style: italic; font-size: 0.85rem; color: var(--quiz-accent);">"${data.advice}"</p>
+                <div class="result-card__footer quiz-result-footer">
+                    <p class="quiz-result-advice">"${data.advice}"</p>
                 </div>
             </div>
             <div class="mt-xl">

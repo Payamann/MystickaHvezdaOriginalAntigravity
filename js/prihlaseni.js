@@ -65,6 +65,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const requestedSource = urlParams.get('source') || pendingContext.source || null;
     const requestedEmail = urlParams.get('email') || '';
 
+    const setBlockVisible = (element, visible) => {
+        if (!element) return;
+        element.hidden = !visible;
+        element.classList.toggle('mh-block-visible', visible);
+    };
+
     const renderCheckoutContext = () => {
         if (!checkoutContextBanner || !requestedPlan || !PLAN_COPY[requestedPlan]) {
             return;
@@ -83,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
             checkoutContextLabel.textContent = requestedSource ? 'Pokračujete k odemčení' : 'Pokračujete k plánu';
         }
 
-        checkoutContextBanner.style.display = 'block';
+        setBlockVisible(checkoutContextBanner, true);
     };
 
     const trackAuthView = (source = 'page_load') => {
@@ -100,16 +106,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (forgotPasswordLink) {
-            forgotPasswordLink.style.display = isRegisterMode ? 'none' : 'block';
+            setBlockVisible(forgotPasswordLink, !isRegisterMode);
         }
 
         if (isRegisterMode) {
             if (loginHeader) loginHeader.textContent = 'Začněte svou cestu';
             if (loginSubtitle) loginSubtitle.textContent = 'Registrace je zdarma a zabere jen chvilku. Datum narození doplníte až ve chvíli, kdy budete chtít osobní výklad.';
-            if (socialProofEl) socialProofEl.style.display = 'block';
-            if (confirmPwWrapper) confirmPwWrapper.style.display = 'block';
-            if (registerFields) registerFields.style.display = 'none';
-            if (gdprWrapper) gdprWrapper.style.display = 'block';
+            setBlockVisible(socialProofEl, true);
+            setBlockVisible(confirmPwWrapper, true);
+            setBlockVisible(registerFields, false);
+            setBlockVisible(gdprWrapper, true);
             if (confirmPwInput) confirmPwInput.required = true;
             if (gdprConsent) gdprConsent.required = true;
             authSubmitBtn.textContent = 'Zaregistrovat';
@@ -117,10 +123,10 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             if (loginHeader) loginHeader.textContent = 'Vítejte zpět';
             if (loginSubtitle) loginSubtitle.textContent = 'Přihlaste se ke svému účtu a pokračujte tam, kde jste skončili.';
-            if (socialProofEl) socialProofEl.style.display = 'none';
-            if (confirmPwWrapper) confirmPwWrapper.style.display = 'none';
-            if (registerFields) registerFields.style.display = 'none';
-            if (gdprWrapper) gdprWrapper.style.display = 'none';
+            setBlockVisible(socialProofEl, false);
+            setBlockVisible(confirmPwWrapper, false);
+            setBlockVisible(registerFields, false);
+            setBlockVisible(gdprWrapper, false);
             if (confirmPwInput) {
                 confirmPwInput.required = false;
                 confirmPwInput.value = '';
@@ -140,11 +146,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     if (isResetMode && hash) {
-        if (loginForm) loginForm.style.display = 'none';
-        if (forgotPasswordForm) forgotPasswordForm.style.display = 'none';
-        if (resetPasswordForm) resetPasswordForm.style.display = 'block';
-        if (forgotPasswordLink) forgotPasswordLink.style.display = 'none';
-        if (authModeWrapper) authModeWrapper.style.display = 'none';
+        setBlockVisible(loginForm, false);
+        setBlockVisible(forgotPasswordForm, false);
+        setBlockVisible(resetPasswordForm, true);
+        setBlockVisible(forgotPasswordLink, false);
+        setBlockVisible(authModeWrapper, false);
         if (loginHeader) loginHeader.textContent = 'Obnovení hesla';
         if (loginSubtitle) loginSubtitle.textContent = 'Zadejte nové heslo a vraťte se zpět do svého účtu.';
     } else {
@@ -211,18 +217,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     forgotPasswordLink?.addEventListener('click', () => {
-        if (loginForm) loginForm.style.display = 'none';
-        if (forgotPasswordForm) forgotPasswordForm.style.display = 'block';
-        if (forgotPasswordLink) forgotPasswordLink.style.display = 'none';
-        if (authModeWrapper) authModeWrapper.style.display = 'none';
+        setBlockVisible(loginForm, false);
+        setBlockVisible(forgotPasswordForm, true);
+        setBlockVisible(forgotPasswordLink, false);
+        setBlockVisible(authModeWrapper, false);
         if (loginHeader) loginHeader.textContent = 'Zapomenuté heslo';
         if (loginSubtitle) loginSubtitle.textContent = 'Pošleme vám odkaz pro nastavení nového hesla.';
     });
 
     backToLoginBtn?.addEventListener('click', () => {
-        if (loginForm) loginForm.style.display = 'block';
-        if (forgotPasswordForm) forgotPasswordForm.style.display = 'none';
-        if (authModeWrapper) authModeWrapper.style.display = 'block';
+        setBlockVisible(loginForm, true);
+        setBlockVisible(forgotPasswordForm, false);
+        setBlockVisible(authModeWrapper, true);
         applyMode();
     });
 
@@ -335,6 +341,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setTimeout(() => {
         if (window.Auth?.isLoggedIn()) {
+            if (sessionStorage.getItem('pending_plan')) {
+                return;
+            }
+
             const redirect = urlParams.get('redirect');
             if (redirect && redirect.startsWith('/') && !redirect.startsWith('//')) {
                 window.location.href = redirect;

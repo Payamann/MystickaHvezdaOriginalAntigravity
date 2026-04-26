@@ -48,9 +48,10 @@ export async function loadReadings() {
                 <div class="empty-state">
                     <div class="empty-state__icon">⚠️</div>
                     <p class="empty-state__text">Nepodařilo se načíst historii.</p>
-                    <button class="btn btn--glass btn--sm" onclick="location.reload()">Zkusit znovu</button>
+                    <button class="btn btn--glass btn--sm" data-readings-action="reload">Zkusit znovu</button>
                 </div>
             `;
+            container.querySelector('[data-readings-action="reload"]')?.addEventListener('click', () => location.reload());
         }
         return [];
     }
@@ -80,7 +81,7 @@ export function renderReadings() {
                 <h4 class="empty-state__title">${currentFilter === 'all' ? 'Zatím nemáte žádné výklady' : 'Žádné výklady tohoto typu'}</h4>
                 <p class="empty-state__text">${currentFilter === 'all' ? 'Vydejte se na cestu za poznáním hvězd!' : 'Zkuste jiný typ výkladu.'}</p>
                 ${currentFilter === 'all' ? `
-                    <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem;">
+                    <div class="empty-state__actions">
                         <a href="tarot.html" class="btn btn--primary btn--sm">🃏 Tarot</a>
                         <a href="kristalova-koule.html" class="btn btn--glass btn--sm">🔮 Křišťálová koule</a>
                         <a href="horoskopy.html" class="btn btn--glass btn--sm">⭐ Horoskop</a>
@@ -97,7 +98,7 @@ export function renderReadings() {
     displayedCount = toShow.length;
 
     container.innerHTML = toShow.map(reading => `
-        <div class="reading-item card" onclick="viewReading('${escapeHtml(reading.id)}')">
+        <div class="reading-item card" data-reading-id="${escapeHtml(reading.id)}" role="button" tabindex="0">
             <div class="reading-item__inner">
                 <div class="reading-item__left">
                     <span class="reading-item__icon" aria-hidden="true">${getReadingIcon(reading.type)}</span>
@@ -112,12 +113,12 @@ export function renderReadings() {
                     </div>
                 </div>
                 <div class="reading-item__actions">
-                    <button class="btn btn--sm btn--glass" onclick="event.stopPropagation(); toggleFavorite('${escapeHtml(reading.id)}', this)"
+                    <button class="btn btn--sm btn--glass" data-reading-action="favorite" data-reading-id="${escapeHtml(reading.id)}"
                         title="${reading.is_favorite ? 'Odebrat z oblíbených' : 'Přidat do oblíbených'}"
                         aria-label="${reading.is_favorite ? 'Odebrat z oblíbených' : 'Přidat do oblíbených'}">
                         ${reading.is_favorite ? '⭐' : '☆'}
                     </button>
-                    <button class="btn btn--sm btn--glass" onclick="event.stopPropagation(); viewReading('${escapeHtml(reading.id)}')" aria-label="Zobrazit detail">Zobrazit</button>
+                    <button class="btn btn--sm btn--glass" data-reading-action="view" data-reading-id="${escapeHtml(reading.id)}" aria-label="Zobrazit detail">Zobrazit</button>
                 </div>
             </div>
         </div>
@@ -135,10 +136,12 @@ function updatePagination(shown, total) {
     if (!paginationEl) return;
 
     if (shown < total) {
-        paginationEl.style.display = 'block';
+        paginationEl.hidden = false;
+        paginationEl.classList.add('profile-block-visible');
         const btn = document.getElementById('readings-load-more');
         if (btn) btn.textContent = `Načíst další (${total - shown} zbývá)`;
     } else {
-        paginationEl.style.display = 'none';
+        paginationEl.hidden = true;
+        paginationEl.classList.remove('profile-block-visible');
     }
 }

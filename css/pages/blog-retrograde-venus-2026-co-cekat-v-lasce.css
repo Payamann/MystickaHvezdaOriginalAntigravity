@@ -1,0 +1,387 @@
+/* Extracted from blog/retrograde-venus-2026-co-cekat-v-lasce.html inline <style> block. */
+.blog-content {
+
+            max-width: 800px;
+
+            margin: 0 auto;
+
+            line-height: 1.85;
+
+            font-size: 1.05rem;
+
+            color: rgba(255, 255, 255, 0.85);
+
+        }
+
+
+
+        .blog-content h2 {
+
+            font-family: 'Cinzel', serif;
+
+            color: #ebc066;
+
+            font-size: 1.5rem;
+
+            margin: 2.5rem 0 1rem;
+
+            padding-bottom: 0.5rem;
+
+            border-bottom: 1px solid rgba(235, 192, 102, 0.2);
+
+        }
+
+
+
+        .blog-content h3 {
+
+            font-family: 'Cinzel', serif;
+
+            color: #d4af37;
+
+            font-size: 1.15rem;
+
+            margin: 2rem 0 0.75rem;
+
+        }
+
+
+
+        .blog-content p {
+
+            margin-bottom: 1.4rem;
+
+        }
+
+
+
+        .blog-content ul,
+
+        .blog-content ol {
+
+            margin: 0 0 1.4rem 1.5rem;
+
+        }
+
+
+
+        .blog-content li {
+
+            margin-bottom: 0.5rem;
+
+        }
+
+
+
+        .blog-content blockquote {
+
+            border-left: 4px solid #e8498a;
+
+            padding: 1rem 1.5rem;
+
+            margin: 2rem 0;
+
+            background: rgba(232, 73, 138, 0.07);
+
+            border-radius: 0 12px 12px 0;
+
+            font-style: italic;
+
+            color: rgba(255, 255, 255, 0.9);
+
+        }
+
+
+
+        .blog-content strong {
+
+            color: #fff;
+
+        }
+
+
+
+        .highlight-box {
+
+            background: rgba(212, 175, 55, 0.07);
+
+            border: 1px solid rgba(212, 175, 55, 0.2);
+
+            border-radius: 14px;
+
+            padding: 1.5rem 2rem;
+
+            margin: 2rem 0;
+
+        }
+
+
+
+        .highlight-box h3 {
+
+            color: #ebc066;
+
+            margin-top: 0;
+
+            font-family: 'Cinzel', serif;
+
+        }
+
+
+
+        .sign-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+
+            gap: 1rem;
+
+            margin: 1.5rem 0;
+
+        }
+
+
+
+        .sign-card {
+
+            background: rgba(10, 10, 26, 0.7);
+
+            border: 1px solid rgba(255, 255, 255, 0.08);
+
+            border-radius: 14px;
+
+            padding: 1.25rem 1.5rem;
+
+        }
+
+
+
+        .sign-card h4 {
+
+            color: #ebc066;
+
+            font-family: 'Cinzel', serif;
+
+            font-size: 1rem;
+
+            margin: 0 0 0.5rem;
+
+        }
+
+
+
+        .sign-card p {
+
+            color: rgba(255, 255, 255, 0.7);
+
+            margin: 0;
+
+            font-size: 0.92rem;
+
+            line-height: 1.7;
+
+        }
+
+
+
+        .timeline {
+
+            border-left: 2px solid rgba(232, 73, 138, 0.4);
+
+            margin: 1.5rem 0 1.5rem 0.5rem;
+
+            padding-left: 1.5rem;
+
+        }
+
+
+
+        .timeline-item {
+
+            position: relative;
+
+            margin-bottom: 1.5rem;
+
+        }
+
+
+
+        .timeline-item::before {
+
+            content: '';
+
+            position: absolute;
+
+            left: -1.85rem;
+
+            top: 0.3rem;
+
+            width: 10px;
+
+            height: 10px;
+
+            border-radius: 50%;
+
+            background: #e8498a;
+
+            box-shadow: 0 0 8px rgba(232, 73, 138, 0.5);
+
+        }
+
+
+
+        .timeline-item strong {
+
+            color: #e8498a;
+
+            display: block;
+
+            margin-bottom: 0.2rem;
+
+            font-size: 0.9rem;
+
+        }
+
+
+
+        .timeline-item p {
+
+            color: rgba(255, 255, 255, 0.7);
+
+            font-size: 0.92rem;
+
+            margin: 0;
+
+        }
+
+
+
+        .article-meta {
+
+            display: flex;
+
+            gap: 1.5rem;
+
+            color: rgba(255, 255, 255, 0.4);
+
+            font-size: 0.82rem;
+
+            margin-bottom: 2rem;
+
+            flex-wrap: wrap;
+
+        }
+
+
+
+        .breadcrumb {
+
+            color: rgba(255, 255, 255, 0.35);
+
+            font-size: 0.82rem;
+
+            margin-bottom: 1.5rem;
+
+        }
+
+
+
+        .breadcrumb a {
+
+            color: rgba(235, 192, 102, 0.6);
+
+            text-decoration: none;
+
+        }
+
+
+
+        .author-box {
+
+            margin-top: 3rem;
+
+            padding: 1.5rem 2rem;
+
+            background: rgba(255, 255, 255, 0.03);
+
+            border: 1px solid rgba(255, 255, 255, 0.07);
+
+            border-radius: 16px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 1.5rem;
+
+        }
+
+
+
+        .author-avatar {
+
+            width: 56px;
+
+            height: 56px;
+
+            border-radius: 50%;
+
+            background: linear-gradient(135deg, #e8498a, #d4af37);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 1.5rem;
+
+            flex-shrink: 0;
+
+        }
+
+
+
+        @media(max-width:640px) {
+
+            .sign-grid {
+
+                grid-template-columns: 1fr
+
+            }
+
+
+
+            .author-box {
+
+                flex-direction: column;
+
+                text-align: center
+
+            }
+
+        }
+
+/* Migrated from blog/retrograde-venus-2026-co-cekat-v-lasce.html static style attributes. */
+html body .mh-inline-e227f5f488 { padding-top:130px; padding-bottom:0; }
+html body .mh-inline-5c8f6bf879 { max-width:800px; }
+html body .mh-inline-9a9c654f3c { font-size:2.2rem; text-align:left; margin-top:1rem; line-height:1.25; }
+html body .mh-inline-408fc06ac6 { padding-top:2rem; }
+html body .mh-inline-31cb9a186f { color:#ebc066; font-weight:600; margin-bottom:0.25rem; }
+html body .mh-inline-688521b0fa { margin:0; color:rgba(255,255,255,0.5); font-size:0.85rem; line-height:1.6; }
+html body .mh-inline-b5c4133828 { margin-top:2.5rem; text-align:center; padding:2rem; background:rgba(232,73,138,0.07); border:1px solid rgba(232,73,138,0.2); border-radius:16px; }
+html body .mh-inline-2f18d9925c { font-family:'Cinzel',serif; color:#ebc066; font-size:1.05rem; margin:0 0 0.75rem; }
+html body .mh-inline-a34acd835e { color:rgba(255,255,255,0.6); font-size:0.9rem; margin:0 0 1.25rem; }
+html body .mh-inline-8167774c8a { text-align:center; margin-top:2rem; }
+html body .mh-inline-10ca58b77e { margin: 3rem 0 2rem; padding: 2rem; background: linear-gradient(135deg, rgba(155,89,182,0.15), rgba(212,175,55,0.08)); border: 1px solid rgba(212,175,55,0.3); border-radius: 20px; text-align: center; }
+html body .mh-inline-eba1c761ba { font-size: 2rem; margin-bottom: 0.75rem; }
+html body .mh-inline-7c5e4a27fe { font-family: 'Cinzel', serif; color: #d4af37; font-size: 1.3rem; margin-bottom: 0.75rem; }
+html body .mh-inline-581d510c98 { color: rgba(255,255,255,0.7); line-height: 1.7; margin-bottom: 1.5rem; max-width: 480px; margin-left: auto; margin-right: auto; }
+html body .mh-inline-ca41f33354 { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+html body .mh-inline-224529c2da { display: inline-block; padding: 0.75rem 1.75rem; background: linear-gradient(135deg, #9b59b6, #6c3483); border-radius: 50px; color: white; text-decoration: none; font-weight: 600; font-size: 0.95rem; }
+html body .mh-inline-4a0c933874 { display: inline-block; padding: 0.75rem 1.75rem; background: transparent; border: 1px solid rgba(212,175,55,0.5); border-radius: 50px; color: #d4af37; text-decoration: none; font-size: 0.95rem; }
+html body .mh-inline-edd08dfaff { color: rgba(255,255,255,0.3); font-size: 0.8rem; margin-top: 0.75rem; }
+html body .mh-inline-79d523f7ed { margin: 2rem 0 3rem; }
+html body .mh-inline-0b6c70d4c9 { font-family: 'Cinzel', serif; color: #d4af37; font-size: 1.1rem; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(212,175,55,0.2); }
+html body .mh-inline-55d56ff067 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }

@@ -147,10 +147,16 @@ export const globalLimiter = rateLimit({
     }
 });
 
+const STATIC_ASSET_PATTERN = /\.(?:js|css|jpg|jpeg|png|gif|ico|svg|ttf|webp|woff|woff2|map|json|xml|txt)$/i;
+
 export const staticLimiter = rateLimit({
     windowMs: 1 * 60 * 1000,
-    max: 500,
-    skip: (req) => process.env.NODE_ENV === 'test' || req.path.startsWith('/api/'),
+    max: process.env.NODE_ENV === 'production' ? 2400 : 10000,
+    skip: (req) => (
+        process.env.NODE_ENV === 'test' ||
+        req.path.startsWith('/api/') ||
+        STATIC_ASSET_PATTERN.test(req.path)
+    ),
     standardHeaders: true,
     legacyHeaders: false,
     validate: { xForwardedForHeader: false }

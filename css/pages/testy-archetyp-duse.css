@@ -1,0 +1,27 @@
+/* Extracted from testy/archetyp-duse.html inline <style> block. */
+.loader-celestial {
+            width: 80px;
+            height: 80px;
+            border: 3px solid transparent;
+            border-top-color: var(--color-mystic-gold);
+            border-bottom-color: var(--color-ethereal-violet);
+            border-radius: 50%;
+            margin: 0 auto;
+            animation: spin 2s linear infinite;
+            position: relative;
+        }
+        .loader-celestial::after {
+            content: '✨';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            animation: pulse 1s ease-in-out infinite alternate;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes pulse { from { opacity: 0.5; transform: translate(-50%, -50%) scale(0.8); } to { opacity: 1; transform: translate(-50%, -50%) scale(1.2); } }
+        .animate-glow { animation: glowPulse 2s infinite alternate; }
+        @keyframes glowPulse { from { text-shadow: 0 0 10px rgba(255,215,0,0.3); } to { text-shadow: 0 0 30px rgba(255,215,0,0.8); transform: scale(1.05); } }
+
+/* Migrated from testy/archetyp-duse.html static style attributes. */
+html body .mh-inline-f1128859fe { padding-top: 0; }

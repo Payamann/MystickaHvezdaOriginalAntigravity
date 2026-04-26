@@ -32,14 +32,14 @@
 
         if (authBtn) {
             authBtn.innerHTML = premiumLogged
-                ? 'Odhlásit <span style="font-size:0.8em; color:gold;">(Premium)</span>'
+                ? 'Odhlásit <span class="auth-premium-label">(Premium)</span>'
                 : 'Přihlásit';
         }
 
         if (document.cookie.includes('logged_in=1') || window.Auth?.user) {
             if (authBtn) {
                 authBtn.innerHTML = window.Auth?.isPremium?.()
-                    ? 'Odhlásit <span style="font-size:0.8em; color:gold;">(Premium)</span>'
+                    ? 'Odhlásit <span class="auth-premium-label">(Premium)</span>'
                     : 'Odhlásit';
             }
             if (mobileAuthBtn) mobileAuthBtn.textContent = 'Odhlásit se';

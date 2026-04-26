@@ -103,6 +103,28 @@ const MH_ANALYTICS = {
         });
     },
 
+    trackPurchaseCompleted(productId = 'unknown', value = null, currency = 'CZK', context = {}) {
+        const productType = context.product_type || 'subscription';
+        const payload = {
+            transaction_id: context.transaction_id || context.session_id || undefined,
+            currency,
+            value,
+            product_id: productId,
+            product_type: productType,
+            items: [{
+                item_id: productId,
+                item_name: context.product_name || productId,
+                item_category: productType,
+                price: value ?? undefined,
+                quantity: 1
+            }],
+            ...context
+        };
+
+        this.trackEvent('purchase', payload);
+        this.trackEvent('purchase_completed', payload);
+    },
+
     trackBillingPortalOpened(context = {}) {
         this.trackEvent('billing_portal_opened', context);
     },

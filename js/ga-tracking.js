@@ -45,7 +45,7 @@ export function trackUpgradeModalShown(data = {}) {
     gtag('event', 'upgrade_modal_shown', {
         'feature_name': data.feature || 'unknown',
         'plan_id': data.plan || 'pruvodce',
-        'price': data.price || 179,
+        'price': data.price || 199,
         'trigger_type': data.trigger || 'limit_reached',
         'timestamp': new Date().toISOString()
     });

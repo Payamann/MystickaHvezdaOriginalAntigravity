@@ -29,31 +29,17 @@ function initInteractiveCards() {
     document.querySelectorAll('a.card').forEach((card) => {
         if (card.dataset.hoverInit === 'true') return;
         card.dataset.hoverInit = 'true';
-
-        const initialTransform = card.style.transform;
-        const initialBorderColor = card.style.borderColor;
-
-        card.addEventListener('mouseenter', () => {
-            card.style.transform = 'translateY(-4px)';
-            card.style.borderColor = 'rgba(235,192,102,0.5)';
-        });
-
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = initialTransform;
-            card.style.borderColor = initialBorderColor || 'rgba(235,192,102,0.2)';
-        });
+        card.classList.add('card--interactive-hover');
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Critical for first interaction
-    safeInit('Header', initHeader);
-    safeInit('MobileNav', initMobileNav);
-    safeInit('EmailForms', initEmailForms);
-    safeInit('InteractiveCards', initInteractiveCards);
+let deferredInitsScheduled = false;
 
-    // Non-critical and visual work should stay off the critical path.
-    const scheduleDeferredInits = () => runWhenIdle(() => {
+function scheduleDeferredInits() {
+    if (deferredInitsScheduled) return;
+    deferredInitsScheduled = true;
+
+    runWhenIdle(() => {
         safeInit('Stars', initStars);
         safeInit('ScrollAnimations', initScrollAnimations);
         safeInit('FAQ', initFAQ);
@@ -64,13 +50,25 @@ document.addEventListener('DOMContentLoaded', () => {
         safeInit('Carousel', initCarousel);
         safeInit('CookieBanner', initCookieBanner);
     });
+}
 
-    if (document.readyState === 'complete') {
-        scheduleDeferredInits();
-    } else {
-        window.addEventListener('load', scheduleDeferredInits, { once: true });
-    }
-});
+function initApp() {
+    // Critical for first interaction
+    safeInit('Header', initHeader);
+    safeInit('MobileNav', initMobileNav);
+    safeInit('EmailForms', initEmailForms);
+    safeInit('InteractiveCards', initInteractiveCards);
+
+    // Non-critical and visual work should stay off the critical path, but must
+    // not depend on catching window.load after this module has executed.
+    scheduleDeferredInits();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp, { once: true });
+} else {
+    initApp();
+}
 
 // Listen for dynamically loaded components (Header/Footer)
 document.addEventListener('components:loaded', () => {

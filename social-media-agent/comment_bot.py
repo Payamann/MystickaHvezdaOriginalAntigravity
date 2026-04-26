@@ -19,7 +19,7 @@ import time
 import os
 import random
 import json
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -32,24 +32,44 @@ from comment_manager import (
     sync_comments,
     regenerate_replies,
     get_pending_comments,
-    save_comment_replies_batch,
-    reply_to_comment,
+    get_comments_to_hide,
+    get_comment_thread_memory,
+    claim_comment_for_reply,
+    release_comment_claim,
+    mark_comment_ignored,
+    save_comment_reply_metadata,
+    _reply_to_comment,
     hide_comment,
     get_stats,
 )
+from comment_cost import record_comment_reply_usage
 from generators.text_generator import generate_comment_reply
 from logger import get_logger
+from reply_quality import build_quality_feedback, evaluate_reply_quality
+from reply_strategy import ReplyStrategy, decide_reply_strategy
+from reply_templates import render_template_reply
 
 log = get_logger("comment_bot")
 
-POLL_INTERVAL    = int(os.getenv("COMMENT_POLL_INTERVAL", "900"))   # 15 min
+POLL_INTERVAL    = int(os.getenv("COMMENT_POLL_INTERVAL", "1200"))  # 20 min
 AUTO_REPLY_DELAY = int(os.getenv("AUTO_REPLY_DELAY", "1800"))        # 30 min v review mode
-REPLY_DELAY_MIN  = int(os.getenv("REPLY_DELAY_MIN", "45"))           # min. sekund mezi odpověďmi
-REPLY_DELAY_MAX  = int(os.getenv("REPLY_DELAY_MAX", "120"))          # max. sekund mezi odpověďmi
-DAILY_LIMIT      = int(os.getenv("DAILY_REPLY_LIMIT", "350"))        # max odpovědí za den
+REPLY_DELAY_MIN  = int(os.getenv("REPLY_DELAY_MIN", "180"))          # min. sekund mezi odpověďmi
+REPLY_DELAY_MAX  = int(os.getenv("REPLY_DELAY_MAX", "420"))          # max. sekund mezi odpověďmi
+DAILY_LIMIT      = int(os.getenv("DAILY_REPLY_LIMIT", "60"))         # max odpovědí za den
+MAX_PER_USER_PER_RUN = int(os.getenv("MAX_REPLIES_PER_USER_PER_RUN", "0"))  # 0 = vypnuto; nové comment_id smí dostat odpověď
 
 # Soubor pro sledování denního počtu odpovědí
 _DAILY_COUNTER_FILE = Path(__file__).parent / "output" / "daily_reply_counter.json"
+
+
+class MetaRateLimitStop(RuntimeError):
+    """Raised when Meta signals a temporary block or rate limit."""
+
+
+def _raise_if_meta_rate_limited(result: dict) -> None:
+    if result.get("rate_limited"):
+        details = result.get("error") or "Meta rate limit / temporary block"
+        raise MetaRateLimitStop(str(details))
 
 
 def _get_today_count() -> int:
@@ -113,6 +133,159 @@ def _print_comment(c: dict, idx: int):
         print(f"     (bez návrhu odpovědi)")
 
 
+def _save_quality_result(
+    comment: dict,
+    reply: str,
+    strategy: ReplyStrategy,
+    quality,
+    model_meta: dict | None = None,
+    template_key: str | None = None,
+) -> None:
+    """Persist reply metadata and append one usage/cost event."""
+    model_meta = model_meta or {}
+    comment["suggested_reply"] = quality.cleaned_reply
+    comment["reply_strategy"] = strategy.to_dict()
+    comment["reply_quality"] = quality.to_dict()
+    save_comment_reply_metadata(
+        comment["id"],
+        quality.cleaned_reply,
+        strategy=strategy.to_dict(),
+        quality=quality.to_dict(),
+    )
+    record_comment_reply_usage(
+        comment_id=comment["id"],
+        route=strategy.route,
+        model=model_meta.get("model"),
+        usage_events=model_meta.get("usage_events", []),
+        quality_score=quality.score,
+        final_chars=len(quality.cleaned_reply),
+        template_key=template_key or strategy.template_key or None,
+        regenerated=model_meta.get("regenerated", 0),
+    )
+
+
+def build_reply_for_comment(comment: dict, mode: str) -> str | None:
+    """
+    Decide the cheapest reply route, generate/render the reply, and run quality gate.
+    Returns the cleaned reply or None when the comment should not be answered.
+    """
+    cid = comment["id"]
+    thread_memory = get_comment_thread_memory(cid)
+    strategy = decide_reply_strategy(comment, config.WEBSITE_URL, thread_memory)
+
+    if strategy.route == "no_reply":
+        if mode != "dry-run":
+            mark_comment_ignored(cid, f"reply_strategy:{strategy.reason}")
+        log.info("Komentář %s přeskakuji podle strategie: %s", cid, strategy.reason)
+        return None
+
+    recent_replies = thread_memory.get("recent_replies", [])
+
+    force_regenerate = os.getenv("COMMENT_FORCE_REGENERATE_REPLY", "0").strip().lower() in {"1", "true", "yes"}
+
+    if comment.get("suggested_reply") and not force_regenerate:
+        quality = evaluate_reply_quality(
+            comment["suggested_reply"],
+            comment,
+            strategy,
+            config.WEBSITE_URL,
+            recent_replies=recent_replies,
+        )
+        _save_quality_result(comment, quality.cleaned_reply, strategy, quality)
+        if quality.publishable or mode == "review":
+            return quality.cleaned_reply
+        if mode != "dry-run":
+            mark_comment_ignored(cid, "quality_gate_failed:" + ",".join(quality.issues))
+        log.warning("Quality gate stopnul existující návrh %s: %s", cid, quality.issues)
+        return None
+
+    if strategy.route == "template":
+        reply = render_template_reply(comment, strategy, thread_memory)
+        quality = evaluate_reply_quality(
+            reply,
+            comment,
+            strategy,
+            config.WEBSITE_URL,
+            recent_replies=recent_replies,
+        )
+        _save_quality_result(comment, reply, strategy, quality, template_key=strategy.template_key)
+        if quality.publishable or mode == "review":
+            return quality.cleaned_reply
+        if mode != "dry-run":
+            mark_comment_ignored(cid, "template_quality_failed:" + ",".join(quality.issues))
+        log.warning("Template quality gate stopnul %s: %s", cid, quality.issues)
+        return None
+
+    max_regens = max(0, int(os.getenv("COMMENT_REPLY_MAX_REGENERATIONS", "1")))
+    feedback = ""
+    combined_usage: list[dict] = []
+    model_name = None
+    last_quality = None
+    last_reply = ""
+    regenerated = 0
+
+    for attempt in range(max_regens + 1):
+        result = generate_comment_reply(
+            original_comment=comment["message"],
+            post_topic=comment.get("post_message", "mystika"),
+            tone=strategy.tone,
+            post_context=strategy.brief,
+            db_sentiment=comment.get("sentiment", ""),
+            comment_id=cid,
+            context_type=strategy.context_type,
+            allowed_reply_url=strategy.allowed_url,
+            tool_name=strategy.tool_name or "",
+            model_tier=strategy.model_tier,
+            max_tokens=strategy.max_tokens,
+            quality_feedback=feedback,
+            route=strategy.route,
+            regenerated=attempt,
+            return_metadata=True,
+        )
+        reply, meta = result
+        last_reply = reply
+        model_name = meta.get("model")
+        combined_usage.extend(meta.get("usage_events", []))
+        regenerated = attempt
+
+        quality = evaluate_reply_quality(
+            reply,
+            comment,
+            strategy,
+            config.WEBSITE_URL,
+            recent_replies=recent_replies,
+        )
+        last_quality = quality
+        if quality.publishable:
+            break
+        feedback = build_quality_feedback(quality)
+        if not feedback:
+            break
+
+    if last_quality is None:
+        return None
+
+    _save_quality_result(
+        comment,
+        last_reply,
+        strategy,
+        last_quality,
+        model_meta={
+            "model": model_name,
+            "usage_events": combined_usage,
+            "regenerated": regenerated,
+        },
+    )
+
+    if last_quality.publishable or mode == "review":
+        return last_quality.cleaned_reply
+
+    if mode != "dry-run":
+        mark_comment_ignored(cid, "quality_gate_failed:" + ",".join(last_quality.issues))
+    log.warning("Quality gate stopnul AI odpověď %s: %s", cid, last_quality.issues)
+    return None
+
+
 # ══════════════════════════════════════════════════
 # ZPRACOVÁNÍ JEDNOHO KOMENTÁŘE
 # ══════════════════════════════════════════════════
@@ -129,7 +302,11 @@ def process_comment(comment: dict, mode: str) -> bool:
     if comment.get("should_hide"):
         if mode != "dry-run":
             result = hide_comment(cid, comment.get("platform", "facebook"))
-            log.info("Skryto [%s]: %s", cid, comment["message"][:40])
+            if result.get("success"):
+                log.info("Skryto [%s]: %s", cid, comment["message"][:40])
+            else:
+                log.warning("Nepodařilo se skrýt [%s]: %s", cid, result.get("error"))
+                _raise_if_meta_rate_limited(result)
         else:
             print(f"  [DRY-RUN] Skryji spam: {comment['message'][:40]}")
         return False
@@ -144,16 +321,26 @@ def process_comment(comment: dict, mode: str) -> bool:
         return False
 
     if mode == "auto":
+        claim_token = comment.get("_claim_token") or claim_comment_for_reply(cid)
+        if not claim_token:
+            log.info("Komentář už je zpracovaný nebo zamčený, přeskakuji: %s", cid)
+            return False
         _human_delay(mode)
-        result = reply_to_comment(cid, reply)
+        try:
+            result = _reply_to_comment(cid, reply, claim_token=claim_token)
+        except Exception as e:
+            log.error("Nejistý stav při odpovídání %s: %s", cid, e, exc_info=True)
+            return False
         if result["success"]:
             count = _increment_today_count()
             print(f"  ✅ Odpovězeno [{count}/{DAILY_LIMIT}] na [{comment['from_name']}]: {reply[:60]}...")
             log.info("Auto-odpověď odeslána: %s", cid)
             return True
         else:
+            release_comment_claim(cid, claim_token, result.get("error", "reply failed"))
             print(f"  ❌ Chyba: {result.get('error')}")
             log.error("Chyba při odpovídání %s: %s", cid, result.get("error"))
+            _raise_if_meta_rate_limited(result)
             return False
 
     if mode == "review":
@@ -165,10 +352,21 @@ def process_comment(comment: dict, mode: str) -> bool:
         # Na Railway (non-interactive) — chovej se jako auto mode (s delay + counter)
         if not sys.stdin.isatty():
             print("(auto-odesílám — non-interactive)")
+            claim_token = comment.get("_claim_token") or claim_comment_for_reply(cid)
+            if not claim_token:
+                log.info("Komentář už je zpracovaný nebo zamčený, přeskakuji: %s", cid)
+                return False
             _human_delay("auto")
-            result = reply_to_comment(cid, reply)
+            try:
+                result = _reply_to_comment(cid, reply, claim_token=claim_token)
+            except Exception as e:
+                log.error("Nejistý stav při odpovídání %s: %s", cid, e, exc_info=True)
+                return False
             if result["success"]:
                 _increment_today_count()
+            else:
+                release_comment_claim(cid, claim_token, result.get("error", "reply failed"))
+                _raise_if_meta_rate_limited(result)
             return result["success"]
 
         try:
@@ -187,18 +385,28 @@ def process_comment(comment: dict, mode: str) -> bool:
             return False
         elif choice == "e":
             new_reply = input("  Nový text: ").strip()
+            claim_token = comment.get("_claim_token") or claim_comment_for_reply(cid)
+            if not claim_token:
+                print("  ⏭ Komentář už je zpracovaný nebo zamčený")
+                return False
             if new_reply:
-                result = reply_to_comment(cid, new_reply)
+                result = _reply_to_comment(cid, new_reply, claim_token=claim_token)
             else:
-                result = reply_to_comment(cid, reply)
+                result = _reply_to_comment(cid, reply, claim_token=claim_token)
         else:
-            result = reply_to_comment(cid, reply)
+            claim_token = comment.get("_claim_token") or claim_comment_for_reply(cid)
+            if not claim_token:
+                print("  ⏭ Komentář už je zpracovaný nebo zamčený")
+                return False
+            result = _reply_to_comment(cid, reply, claim_token=claim_token)
 
         if result["success"]:
             print(f"  ✅ Odesláno")
             return True
         else:
+            release_comment_claim(cid, claim_token, result.get("error", "reply failed"))
             print(f"  ❌ Chyba: {result.get('error')}")
+            _raise_if_meta_rate_limited(result)
             return False
 
     return False
@@ -224,24 +432,38 @@ def run_once(mode: str, limit: int = 0, since_hours: int = None):
     try:
         if since_hours is not None:
             since = since_hours
-        elif mode == "dry-run":
-            since = 168
         else:
-            since = 48
+            since = int(os.getenv("COMMENT_SYNC_SINCE_HOURS", "168"))
         stats = sync_comments(since_hours=since)
-        print(f"   Nové: {stats['added']}  |  Celkem v DB: {stats['total_in_db']}")
+        print(
+            f"   Staženo: {stats.get('fetched', 0)}  |  "
+            f"Nové: {stats['added']}  |  Aktualizované: {stats.get('updated', 0)}  |  "
+            f"Celkem v DB: {stats['total_in_db']}"
+        )
     except Exception as e:
         print(f"❌ Sync selhal: {e}")
         log.error("Sync selhal: %s", e, exc_info=True)
         return
 
-    # 2. Načti nevyřízené, filtruj podle stáří komentáře a ořízni na limit
+    # 2. Nejdřív moderuj spam/hate komentáře. Ty mají nízkou prioritu, ale nesmí zůstat viset.
+    to_hide = get_comments_to_hide()
+    if to_hide:
+        print(f"\n🛡️ Komentářů ke skrytí: {len(to_hide)}")
+        for comment in to_hide:
+            try:
+                process_comment(comment, mode)
+            except MetaRateLimitStop as e:
+                print(f"🛑 Meta vrátila rate limit / dočasný blok: {e}")
+                log.warning("Zastavuji běh kvůli Meta rate limitu při moderaci: %s", e)
+                return
+
+    # 3. Načti nevyřízené, filtruj podle stáří komentáře a ořízni na limit
     pending = get_pending_comments(min_priority=3)
 
     # Filtruj jen komentáře z posledních since_hours hodin (ne celou historii DB)
     if since_hours is not None:
         # Porovnávej v UTC — FB timestamps jsou UTC, datetime.utcnow() taky UTC
-        cutoff_utc = datetime.utcnow() - timedelta(hours=since_hours)
+        cutoff_utc = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(hours=since_hours)
         def _is_recent(c: dict) -> bool:
             try:
                 ct_str = c.get("created_time", "")
@@ -275,15 +497,10 @@ def run_once(mode: str, limit: int = 0, since_hours: int = None):
     print(f"\n📋 Nevyřízených komentářů: {len(pending)}")
     _sep()
 
-    _TONE_MAP = {
-        "question": "educational", "positive": "friendly",
-        "skeptical": "empathetic", "neutral": "friendly", "off_topic": "friendly",
-        "emotional": "empathetic",
-    }
-
     # Max odpovědí na jeden post za jeden běh — zabraňuje spamu
     MAX_PER_POST = int(os.getenv("MAX_REPLIES_PER_POST", "3"))
     post_reply_counts: dict[str, int] = {}
+    user_reply_counts: dict[str, int] = {}
 
     # 3. Generuj + pošli JEDNU odpověď najednou (generate → send → delay → generate → ...)
     replied = 0
@@ -300,30 +517,48 @@ def run_once(mode: str, limit: int = 0, since_hours: int = None):
                 log.debug("Post %s: already %d replies this run, skipping", post_id, MAX_PER_POST)
                 continue
 
-        # Generuj odpověď těsně před odesláním (ne batch předem)
-        if not comment.get("suggested_reply") or not comment["suggested_reply"].strip():
-            if not comment.get("needs_reply") or not comment.get("message", "").strip():
-                continue
-            try:
-                tone = _TONE_MAP.get(comment.get("sentiment", "neutral"), "friendly")
-                reply = generate_comment_reply(
-                    original_comment=comment["message"],
-                    post_topic=comment.get("post_message", "mystika"),
-                    tone=tone,
-                    db_sentiment=comment.get("sentiment", ""),
-                )
-                comment["suggested_reply"] = reply
-                save_comment_replies_batch({comment["id"]: reply})
-            except Exception as e:
-                log.warning("Nepodařilo se vygenerovat odpověď: %s", e)
+        user_key = comment.get("from_id") or comment.get("from_name") or ""
+        if user_key and MAX_PER_USER_PER_RUN > 0:
+            if user_reply_counts.get(user_key, 0) >= MAX_PER_USER_PER_RUN:
+                log.debug("User %s: already replied this run, skipping", user_key)
                 continue
 
+        # Strategii, šablonu/AI a quality gate řešíme těsně před odesláním.
+        if not comment.get("needs_reply") or not comment.get("message", "").strip():
+            continue
+        preclaim_token = None
+        if mode == "auto":
+            preclaim_token = claim_comment_for_reply(comment["id"])
+            if not preclaim_token:
+                log.info("Komentář už je zpracovaný nebo zamčený, přeskakuji: %s", comment["id"])
+                continue
+            comment["_claim_token"] = preclaim_token
+        try:
+            reply = build_reply_for_comment(comment, mode)
+            if not reply:
+                if preclaim_token:
+                    release_comment_claim(comment["id"], preclaim_token, "reply preparation skipped")
+                continue
+            comment["suggested_reply"] = reply
+        except Exception as e:
+            if preclaim_token:
+                release_comment_claim(comment["id"], preclaim_token, str(e))
+            log.warning("Nepodařilo se připravit odpověď: %s", e, exc_info=True)
+            continue
+
         _print_comment(comment, idx)
-        success = process_comment(comment, mode)
+        try:
+            success = process_comment(comment, mode)
+        except MetaRateLimitStop as e:
+            print(f"🛑 Meta vrátila rate limit / dočasný blok: {e}")
+            log.warning("Zastavuji běh kvůli Meta rate limitu při odpovídání: %s", e)
+            break
         if success:
             replied += 1
             if post_id:
                 post_reply_counts[post_id] = post_reply_counts.get(post_id, 0) + 1
+            if user_key:
+                user_reply_counts[user_key] = user_reply_counts.get(user_key, 0) + 1
 
     # 3. Statistiky
     _sep()

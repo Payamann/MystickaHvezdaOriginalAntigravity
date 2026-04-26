@@ -13,6 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="../css/style.v2.min.css?v=9">
+    <link rel="stylesheet" href="../css/pages/testy-karmicke-dedictvi.css">
     <link rel="stylesheet" href="../css/testy.css?v=2">
 
     <!-- SEO & Open Graph -->
@@ -40,7 +41,7 @@
             </div>
         </section>
 
-        <section class="section" style="padding-top: 0;">
+        <section class="section mh-inline-84beed7a37">
             <div class="container">
                 <div class="quiz-container" id="quiz-box">
                     <div class="quiz-progress">
@@ -151,40 +152,10 @@
 
     <div id="footer-placeholder"></div>
 
-    <script src="../js/api-config.js?v=5" defer></script>
-    <script src="../js/components.js?v=11" defer></script>
-    <script type="module" src="../js/main.js?v=11"></script>
+    <script src="../js/dist/api-config.js?v=5" defer></script>
+    <script src="../js/dist/components.js?v=11" defer></script>
+    <script type="module" src="../js/dist/main.js?v=11"></script>
 
-    <script src="../js/quiz/karmicke-dedictvi.js?v=1" defer></script>
-
-    <style>
-        .loader-karma {
-            width: 80px;
-            height: 80px;
-            background: conic-gradient(from 0deg, transparent, var(--color-mystic-gold));
-            mask: radial-gradient(circle, transparent 55%, black 60%);
-            -webkit-mask: radial-gradient(circle, transparent 55%, black 60%);
-            border-radius: 50%;
-            margin: 0 auto;
-            animation: spin 2s linear infinite;
-            position: relative;
-        }
-        .loader-karma::after {
-            content: '⏳';
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 2rem;
-            animation: flip 2s steps(2) infinite;
-        }
-        @keyframes flip { to { transform: translate(-50%, -50%) rotateY(180deg); } }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .animate-spiral { animation: spiralPulse 5s infinite; }
-        @keyframes spiralPulse {
-            0% { transform: scale(1) rotate(0deg); filter: blur(0); }
-            50% { transform: scale(1.2) rotate(180deg); filter: blur(1px); }
-            100% { transform: scale(1) rotate(360deg); filter: blur(0); }
-        }
-    </style>
+    <script src="/js/dist/quiz/karmicke-dedictvi.js?v=1" defer></script>
 </body>
 </html>
