@@ -35,4 +35,24 @@ describe('Public funnel event endpoint', () => {
         expect(res.status).toBe(400);
         expect(res.body.success).toBe(false);
     });
+
+    test('accepts paywall CTA click events with funnel context', async () => {
+        const csrfToken = await getCsrfToken();
+        const res = await request(app)
+            .post('/api/payment/funnel-event')
+            .set('x-csrf-token', csrfToken)
+            .send({
+                eventName: 'paywall_cta_clicked',
+                source: 'inline_paywall',
+                feature: 'numerologie_vyklad',
+                planId: 'pruvodce',
+                metadata: {
+                    path: '/numerologie.html',
+                    label: 'Odemknout Hvězdného Průvodce'
+                }
+            });
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+    });
 });

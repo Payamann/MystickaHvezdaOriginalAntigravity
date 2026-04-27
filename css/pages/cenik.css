@@ -106,6 +106,24 @@ html body .pricing-toggle--active {
     line-height: 1.6;
 }
 
+.pricing-plan-recommendation__action {
+    margin-top: 0.85rem;
+    padding: 0.55rem 0.95rem;
+    border: 1px solid rgba(212,175,55,0.45);
+    border-radius: 999px;
+    background: rgba(212,175,55,0.12);
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.pricing-plan-recommendation__action:hover,
+.pricing-plan-recommendation__action:focus-visible {
+    background: rgba(212,175,55,0.2);
+    outline: none;
+}
+
 .pricing-card--recommended {
     box-shadow: 0 0 0 2px rgba(212,175,55,0.45), 0 18px 50px rgba(0,0,0,0.35);
 }

@@ -30,6 +30,7 @@ const PLANS = SUBSCRIPTION_PLANS;
 
 const PUBLIC_FUNNEL_EVENTS = new Set([
     'paywall_viewed',
+    'paywall_cta_clicked',
     'login_gate_viewed',
     'upgrade_cta_viewed',
 ]);

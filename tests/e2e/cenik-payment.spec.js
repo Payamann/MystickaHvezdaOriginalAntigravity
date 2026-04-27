@@ -53,6 +53,22 @@ test.describe('Ceník — platební tlačítka', () => {
         await expect(btn).toHaveCount(0);
     });
 
+    test('runtime copy update zachova check ikony ve vsech cenikovych benefitech', async ({ page }) => {
+        await expect(page.locator('.card--pricing .card__features li .feature-icon')).toHaveCount(10);
+    });
+
+    test('feature kontext zobrazi doporuceny plan a umi ho zvyraznit', async ({ page }) => {
+        await page.goto('/cenik.html?source=inline_paywall&feature=astrocartography');
+        await waitForPageReady(page);
+
+        const banner = page.locator('#pricing-plan-recommendation');
+        await expect(banner).toBeVisible();
+        await expect(banner).toContainText('Osvícení');
+
+        await banner.locator('[data-recommended-plan="osviceni"]').click();
+        await expect(page.locator('.card--pricing', { has: page.locator('[data-plan="osviceni"]') })).toHaveClass(/pricing-card--recommended/);
+    });
+
     // ── Kritický test: nepřihlášený uživatel → správné přesměrování ──────────
 
     test('klik na checkout bez přihlášení přesměruje na prihlaseni.html', async ({ page }) => {

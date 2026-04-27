@@ -131,12 +131,23 @@ window.Premium = {
     },
 
     startUpgradeFlow(planId, featureName, source = 'paywall', authMode = null) {
-        window.Auth?.startPlanCheckout?.(planId, {
+        const checkoutContext = {
             source,
             feature: featureName || null,
             redirect: '/cenik.html',
             authMode: authMode || (window.Auth?.isLoggedIn?.() ? 'login' : 'register')
-        });
+        };
+
+        if (window.Auth?.startPlanCheckout) {
+            window.Auth.startPlanCheckout(planId, checkoutContext);
+            return;
+        }
+
+        const pricingUrl = new URL('/cenik.html', window.location.origin);
+        pricingUrl.searchParams.set('plan', planId);
+        pricingUrl.searchParams.set('source', source);
+        if (featureName) pricingUrl.searchParams.set('feature', featureName);
+        window.location.href = `${pricingUrl.pathname}${pricingUrl.search}`;
     },
 
     createOverlay({ icon, title, message, benefits, ctaLabel, footer }) {
@@ -144,17 +155,17 @@ window.Premium = {
         overlay.className = 'paywall-overlay';
         overlay.innerHTML = `
             <div class="paywall-content">
-                <div class="paywall-icon">${icon}</div>
-                <h3 class="paywall-title">${title}</h3>
-                <p class="paywall-message">${message}</p>
+                <div class="paywall-icon">${this._escapeHTML(icon)}</div>
+                <h3 class="paywall-title">${this._escapeHTML(title)}</h3>
+                <p class="paywall-message">${this._escapeHTML(message)}</p>
                 <div class="paywall-benefits">
-                    ${benefits.map((item) => `<div class="benefit-item">${item}</div>`).join('')}
+                    ${(benefits || []).map((item) => `<div class="benefit-item">${this._escapeHTML(item)}</div>`).join('')}
                 </div>
                 <div class="paywall-actions">
-                    <button class="btn btn--primary paywall-upgrade">${ctaLabel}</button>
+                    <button class="btn btn--primary paywall-upgrade">${this._escapeHTML(ctaLabel)}</button>
                     <button class="btn btn--ghost paywall-close">Teď ne</button>
                 </div>
-                <p class="paywall-footer">${footer}</p>
+                <p class="paywall-footer">${this._escapeHTML(footer)}</p>
             </div>
         `;
 
@@ -162,12 +173,26 @@ window.Premium = {
         return overlay;
     },
 
-    bindOverlayActions(overlay, onUpgrade) {
+    bindOverlayActions(overlay, onUpgrade, context = {}) {
         overlay.querySelector('.paywall-upgrade').addEventListener('click', () => {
             const btn = overlay.querySelector('.paywall-upgrade');
+            const source = context.source || 'premium_gate';
+            const feature = context.feature || null;
+            const planId = context.planId || null;
             window.MH_ANALYTICS?.trackEvent?.('paywall_cta_clicked', {
                 label: btn.textContent?.trim() || 'upgrade',
-                source: 'premium_gate'
+                source,
+                feature,
+                plan_id: planId
+            });
+            void this.trackServerFunnelEvent('paywall_cta_clicked', {
+                source,
+                feature,
+                planId,
+                metadata: {
+                    path: window.location.pathname,
+                    label: btn.textContent?.trim() || 'upgrade'
+                }
             });
             btn.textContent = 'Přesměrovávám...';
             btn.disabled = true;
@@ -268,20 +293,24 @@ window.Premium = {
             ]
         };
 
-        const displayMessage = this._escapeHTML(message || config.message);
+        const displayMessage = message || config.message;
         const planId = config.planId || this.getFeaturePlanId(featureName, 'pruvodce');
         this.trackPaywallHit(featureName, 'inline_paywall', planId);
 
         const overlay = this.createOverlay({
             icon: planId === 'osviceni' ? '🔭' : '✨',
-            title: this._escapeHTML(config.title),
+            title: config.title,
             message: displayMessage,
             benefits: config.benefits,
             ctaLabel: this.getPlanCtaLabel(planId, config.ctaLabel || '🌟 Odemknout Hvězdného Průvodce – 199 Kč/měsíc'),
             footer: this.getPlanFooter(planId, config.footer || '7 dní zdarma • Bez závazků • Zrušení jedním kliknutím')
         });
 
-        this.bindOverlayActions(overlay, () => this.startUpgradeFlow(planId, featureName, 'inline_paywall'));
+        this.bindOverlayActions(overlay, () => this.startUpgradeFlow(planId, featureName, 'inline_paywall'), {
+            source: 'inline_paywall',
+            feature: featureName,
+            planId
+        });
     },
 
     showExclusivePaywall(featureName) {
@@ -301,7 +330,11 @@ window.Premium = {
             footer: this.getPlanFooter('osviceni', 'Bez závazků • Zrušení jedním kliknutím')
         });
 
-        this.bindOverlayActions(overlay, () => this.startUpgradeFlow('osviceni', featureName, 'exclusive_paywall'));
+        this.bindOverlayActions(overlay, () => this.startUpgradeFlow('osviceni', featureName, 'exclusive_paywall'), {
+            source: 'exclusive_paywall',
+            feature: featureName,
+            planId: 'osviceni'
+        });
     },
 
     showLoginGate(container, message = null, featureName = null, source = 'inline_login_gate') {
@@ -428,7 +461,11 @@ window.Premium = {
         `;
 
         document.body.appendChild(overlay);
-        this.bindOverlayActions(overlay, () => this.startUpgradeFlow(planId, featureName, 'trial_paywall'));
+        this.bindOverlayActions(overlay, () => this.startUpgradeFlow(planId, featureName, 'trial_paywall'), {
+            source: 'trial_paywall',
+            feature: featureName,
+            planId
+        });
     },
 
     async init() {

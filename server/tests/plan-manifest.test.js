@@ -34,10 +34,17 @@ describe('Public plan manifest', () => {
         expect(manifest.pricingPage.yearly.osviceni).toBe('osviceni-rocne');
         expect(manifest.featurePlanMap.astrocartography).toBe('osviceni');
         expect(manifest.featurePlanMap.angel_card_deep).toBe('pruvodce');
+        expect(manifest.featurePlanMap.andelske_karty_hluboky_vhled).toBe('pruvodce');
         expect(manifest.featurePlanMap.runes_deep_reading).toBe('pruvodce');
+        expect(manifest.featurePlanMap.runy_hluboky_vyklad).toBe('pruvodce');
         expect(manifest.featurePlanMap.past_life).toBe('pruvodce');
+        expect(manifest.featurePlanMap.minuly_zivot).toBe('pruvodce');
         expect(manifest.featurePlanMap.medicine_wheel).toBe('pruvodce');
+        expect(manifest.featurePlanMap.shamanske_kolo_plne_cteni).toBe('pruvodce');
         expect(manifest.featurePlanMap.mentor).toBe('pruvodce');
+        expect(manifest.featurePlanMap.hvezdny_mentor).toBe('pruvodce');
+        expect(manifest.featurePlanMap.kristalova_koule).toBe('pruvodce');
+        expect(manifest.featurePlanMap.tarot).toBe('pruvodce');
         expect(manifest.featurePlanMap.tarot_celtic_cross).toBe('vip-majestrat');
     });
 

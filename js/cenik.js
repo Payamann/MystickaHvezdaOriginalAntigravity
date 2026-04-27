@@ -42,18 +42,48 @@ const PLAN_META = {
 
 const FALLBACK_FEATURE_PLAN_MAP = {
     angel_card_deep: 'pruvodce',
+    andelske_karty_hluboky_vhled: 'pruvodce',
     astrocartography: 'osviceni',
+    crystal_ball_unlimited: 'pruvodce',
+    horoskopy: 'pruvodce',
+    hvezdny_mentor: 'pruvodce',
+    journal_insights: 'pruvodce',
+    kristalova_koule: 'pruvodce',
     medicine_wheel: 'pruvodce',
+    minuly_zivot: 'pruvodce',
+    monthly_horoscope: 'pruvodce',
     synastry: 'pruvodce',
     partnerska_detail: 'pruvodce',
     natalni_interpretace: 'pruvodce',
+    natal_chart: 'pruvodce',
     numerologie_vyklad: 'pruvodce',
     past_life: 'pruvodce',
     rituals: 'pruvodce',
+    runy_hluboky_vyklad: 'pruvodce',
     runes_deep_reading: 'pruvodce',
+    shamanske_kolo_plne_cteni: 'pruvodce',
+    tarot: 'pruvodce',
+    tarot_multi_card: 'pruvodce',
+    tarot_celtic_cross: 'vip-majestrat',
+    weekly_horoscope: 'pruvodce',
     mentor: 'pruvodce'
 };
 let featurePlanMap = FALLBACK_FEATURE_PLAN_MAP;
+
+function setFeatureText(item, text) {
+    if (!item) return;
+
+    const icon = item.querySelector('.feature-icon, svg');
+    item.textContent = '';
+
+    if (icon) {
+        item.appendChild(icon);
+        item.appendChild(document.createTextNode(` ${text}`));
+        return;
+    }
+
+    item.textContent = text;
+}
 
 function getApiBaseUrl() {
     return window.API_CONFIG?.BASE_URL || '/api';
@@ -144,7 +174,7 @@ function updatePricingCopy() {
         const freeCta = freeCard.querySelector('.btn');
 
         if (freeDescription) freeDescription.textContent = 'Pro první seznámení bez závazku';
-        if (freeFeatures[2]) freeFeatures[2].textContent = 'Vyzkoušejte si, co vám sedne nejvíc';
+        setFeatureText(freeFeatures[2], 'Vyzkoušejte si, co vám sedne nejvíc');
         if (freeCta) freeCta.textContent = 'Začít zdarma';
     }
 
@@ -154,10 +184,10 @@ function updatePricingCopy() {
         const guideCta = guideCard.querySelector('.plan-checkout-btn');
 
         if (guideDescription) guideDescription.textContent = 'Pro většinu lidí, kteří chtějí z webu udělat každodenní oporu';
-        if (guideFeatures[0]) guideFeatures[0].textContent = 'Neomezené výklady a každodenní vedení bez čekání';
-        if (guideFeatures[1]) guideFeatures[1].textContent = 'Plný rozbor natální karty, numerologie a vztahů';
-        if (guideFeatures[2]) guideFeatures[2].textContent = 'Historie výkladů a osobní profil pro pravidelný návrat';
-        if (guideFeatures[3]) guideFeatures[3].textContent = 'Nejrychlejší cesta k tomu, aby web dával hodnotu každý den';
+        setFeatureText(guideFeatures[0], 'Neomezené výklady a každodenní vedení bez čekání');
+        setFeatureText(guideFeatures[1], 'Plný rozbor natální karty, numerologie a vztahů');
+        setFeatureText(guideFeatures[2], 'Historie výkladů a osobní profil pro pravidelný návrat');
+        setFeatureText(guideFeatures[3], 'Nejrychlejší cesta k tomu, aby web dával hodnotu každý den');
         if (guideCta) guideCta.textContent = 'Odemknout Hvězdného Průvodce';
     }
 
@@ -264,19 +294,33 @@ function renderRecommendationBanner(context) {
     if (existing) existing.remove();
 
     const banner = document.createElement('div');
+    const hasVisiblePlanCard = !!document.querySelector(`.plan-checkout-btn[data-plan="${context.recommendedPlan}"]`);
+    const actionLabel = hasVisiblePlanCard ? 'Ukázat doporučený plán' : 'Pokračovat k doporučenému plánu';
     banner.id = 'pricing-plan-recommendation';
     banner.className = 'pricing-plan-recommendation';
     banner.innerHTML = `
         <div class="pricing-plan-recommendation__eyebrow">Doporučený další krok</div>
         <strong class="pricing-plan-recommendation__title">${planMeta.name}</strong>
         <p class="pricing-plan-recommendation__text">${planMeta.headline} ${planMeta.recommendedFor}</p>
+        <button type="button" class="pricing-plan-recommendation__action" data-recommended-plan="${context.recommendedPlan}">${actionLabel}</button>
     `;
 
     heroSubtitle.insertAdjacentElement('afterend', banner);
+
+    banner.querySelector('.pricing-plan-recommendation__action')?.addEventListener('click', () => {
+        window.MH_ANALYTICS?.trackCTA?.('pricing_recommendation_cta', {
+            source: context.source || 'pricing_page',
+            feature: context.feature || null,
+            plan_id: context.recommendedPlan
+        });
+        if (!highlightRecommendedPlan(context.recommendedPlan)) {
+            startRecommendedCheckout(context.recommendedPlan, context);
+        }
+    });
 }
 
 function highlightRecommendedPlan(planId) {
-    if (!planId) return;
+    if (!planId) return false;
 
     document.querySelectorAll('.card--pricing').forEach((card) => {
         card.classList.remove('pricing-card--recommended');
@@ -284,10 +328,33 @@ function highlightRecommendedPlan(planId) {
 
     const button = document.querySelector(`.plan-checkout-btn[data-plan="${planId}"]`);
     const card = button?.closest('.card--pricing');
-    if (!card) return;
+    if (!card) return false;
 
     card.classList.add('pricing-card--recommended');
     card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return true;
+}
+
+function startRecommendedCheckout(planId, context) {
+    const checkoutContext = {
+        source: context.source || 'pricing_recommendation',
+        feature: context.feature || null,
+        redirect: '/cenik.html',
+        authMode: 'register'
+    };
+
+    if (window.Auth?.startPlanCheckout) {
+        window.Auth.startPlanCheckout(planId, checkoutContext);
+        return;
+    }
+
+    const authUrl = new URL('/prihlaseni.html', window.location.origin);
+    authUrl.searchParams.set('mode', 'register');
+    authUrl.searchParams.set('redirect', '/cenik.html');
+    authUrl.searchParams.set('plan', planId);
+    authUrl.searchParams.set('source', checkoutContext.source);
+    if (checkoutContext.feature) authUrl.searchParams.set('feature', checkoutContext.feature);
+    window.location.href = `${authUrl.pathname}${authUrl.search}`;
 }
 
 function bindCheckoutButtons(context) {
