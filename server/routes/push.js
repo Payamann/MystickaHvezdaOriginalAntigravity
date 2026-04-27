@@ -5,6 +5,7 @@
 import express from 'express';
 import { supabase } from '../db-supabase.js';
 import { authenticateToken } from '../middleware.js';
+import { JWT_SECRET } from '../config/jwt.js';
 import rateLimit from 'express-rate-limit';
 import jwt from 'jsonwebtoken';
 
@@ -24,7 +25,7 @@ function getPushUserId(req) {
     if (!token) return null;
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, JWT_SECRET);
         return decoded.id || decoded.userId || null;
     } catch {
         return null;

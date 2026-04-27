@@ -12,6 +12,9 @@ Aktualizováno: 2026-04-27
 - Server už nepřebírá klientem poslané numerologické výpočty jako autoritu.
 - Produktové texty a vybrané blogy už netvrdí přesnost tam, kde jde o symbolický nebo AI asistovaný výklad.
 - Opravené překlepy a lomené tvary v dotčených feature textech.
+- Produkční smoke test ověřuje live service worker cache verzi, hlavní veřejné stránky a základní astro výpočetní cesty.
+- Push notifikace mají runtime dependency `web-push`, health/config rozlišují kompletní, částečnou a vypnutou VAPID konfiguraci a veřejný config neskryje chybu za neplatný klientský klíč.
+- Orphan `server/package-lock.json` a stale root quick-start dokument jsou pryč z aktivní části repozitáře.
 
 ## Vědomě zbývá
 
@@ -114,6 +117,10 @@ Hotovo:
 - Prompt pro natální kartu nově explicitně obsahuje rozpoznané místo narození vedle přesnosti výpočtu.
 - Astro endpointy už propouštějí přesné `latitude`/`longitude`/`timeZone`/`country` vstupy do natálního, tranzitního, synastrického a astrokartografického výpočtu; API klienti tak nejsou omezeni jen lokálním seznamem podporovaných měst a výpočet bez validního IANA `timeZone` už se transparentně značí jako UTC přesnost bez ascendentu/domů.
 - Lokální resolver míst narození používá hranice slov místo volného substring matchingu, takže podporuje `Praha 2`, `Praha-Vinohrady` nebo `New York, USA`, ale neoznačí omylem `Nepraha` jako Prahu.
+- Produkční smoke test nově porovnává živý `service-worker.js` proti lokálně očekávané `CACHE_NAME`, takže stará precache verze po deployi selže viditelně.
+- Veřejný `/api/config` vrací `features.pushNotifications` a `vapidPublicKey` jen při kompletním VAPID nastavení; live produkce je teď ověřená jako bezpečně vypnutá místo napůl zapnuté.
+- `web-push` je skutečná runtime dependency a regresní test hlídá, že testovací push route neskončí na chybě chybějícího balíčku.
+- Kořen repozitáře je o další krok čistší: stale quick-start je v archivu a orphan server lockfile už nezkresluje dependency audit.
 
 Zbývá:
 

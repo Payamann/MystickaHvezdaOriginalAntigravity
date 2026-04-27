@@ -1,6 +1,8 @@
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import app from '../index.js';
+import { supabase } from '../db-supabase.js';
+import { JWT_SECRET } from '../config/jwt.js';
 
 async function getCsrfToken() {
     const res = await request(app).get('/api/csrf-token').expect(200);
@@ -78,6 +80,45 @@ describe('Push notification API', () => {
             .expect(200);
 
         expect(unsubscribeRes.body.success).toBe(true);
+    });
+
+    test('subscribe associates authenticated cookie user through shared JWT config', async () => {
+        const originalJwtSecret = process.env.JWT_SECRET;
+        const csrfToken = await getCsrfToken();
+        const userId = 'push-cookie-user';
+        const token = jwt.sign({ id: userId, email: 'push-cookie@example.com' }, JWT_SECRET, { expiresIn: '1h' });
+        const subscription = {
+            endpoint: `https://push.example.test/cookie-${Date.now()}`,
+            keys: {
+                p256dh: 'test-p256dh-cookie',
+                auth: 'test-auth-cookie'
+            }
+        };
+
+        delete process.env.JWT_SECRET;
+
+        try {
+            await request(app)
+                .post('/api/push/subscribe')
+                .set('x-csrf-token', csrfToken)
+                .set('Cookie', [`auth_token=${token}`])
+                .send({ subscription })
+                .expect(200);
+
+            const { data } = await supabase
+                .from('push_subscriptions')
+                .select('*')
+                .eq('endpoint', subscription.endpoint)
+                .maybeSingle();
+
+            expect(data.user_id).toBe(userId);
+        } finally {
+            if (originalJwtSecret === undefined) {
+                delete process.env.JWT_SECRET;
+            } else {
+                process.env.JWT_SECRET = originalJwtSecret;
+            }
+        }
     });
 
     test('POST /api/push/send-test loads web-push before VAPID validation', async () => {

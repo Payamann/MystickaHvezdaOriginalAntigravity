@@ -1,6 +1,6 @@
 # Technical Debt Backlog
 
-Aktualizace: 2026-04-26
+Aktualizace: 2026-04-27
 
 ## P0/P1 - nejblizsi sprinty
 
@@ -25,6 +25,7 @@ Aktualizace: 2026-04-26
 4. **Zpresnit service worker caching**
    - Stav: hotovo. `build:css` i `build:js` spousti `scripts/update-service-worker-cache.mjs`, ktery validuje precache assety a vaze `CACHE_NAME` na hash jejich aktualniho obsahu.
    - Stav navic: update skript i Jest test pro service worker ted hlidaji, ze `STATIC_ASSETS` nema duplicity, nema prazdne polozky a vsechny assety jsou root-relative cesty.
+   - Stav navic: produkcni smoke test porovnava live `service-worker.js` proti lokalne ocekavane `CACHE_NAME`, takze Railway deploy uz nemuze tise bezet se starou precache verzi.
    - Proc: pri dalsich zmenach buildu se cache verze meni deterministicky a test selze, pokud zustane zastarala.
    - Dalsi krok: pokud bude precache seznam rust, oddelit seznam assetu do samostatneho manifestu a generovat i `STATIC_ASSETS`, ne jen cache verzi.
 
@@ -93,6 +94,8 @@ Aktualizace: 2026-04-26
    - Stav navic: zastarale duplicitni sitemap helpery `scripts/generate_sitemap.js`, `scripts/generate-sitemap.js` a puvodni `server/scripts/generate-sitemap.js` jsou presunute do `docs/archive/2026-04-stale-scripts/`; aktivni ochrana sitemap zustava pres `npm run audit:site`.
    - Stav navic: manualni SQL snippet soubory jsou presunute do `server/scripts/sql/` s README; encoding kontrola ted zahrnuje i `.sql`, `.txt`, `.xml` a `.yml/.yaml` soubory.
    - Stav navic: stare jednorazove mojibake/content repair skripty jsou presunute do `docs/archive/2026-04-stale-scripts/encoding-repair-scripts/`, takze aktivni encoding check uz nepotrebuje souborove vyjimky a `server/scripts/` zustava pro aktualni provozni helpery.
+   - Stav navic: orphan `server/package-lock.json` bez odpovidajiciho `server/package.json` byl odstranen z aktivniho repozitare a ignorovan, aby nehlasil zastarale dependency a nespletl provozni audit.
+   - Stav navic: root `QUICK_START_GUIDE.md` byl presunut do `docs/archive/2026-04-root-artifacts/`, koren tak drzi jen aktivni vstupni dokumenty a runtime soubory.
    - Stav navic: `.gitattributes` definuje LF pro zdrojove textove soubory a binary pravidla pro assety, aby se omezil dalsi line-ending a binarni churn.
    - Stav navic: public JS uz nepise produkcni `console.log`; diagnostika v bootstrapu, premium gatech, tarotu, snari, natalni karte, mentorovi a share flow je pod `window.MH_DEBUG`/`console.debug` a staticky test hlida zdrojove i buildovane soubory mimo vendor.
    - Stav navic: `npm run audit:site` ted validuje i `manifest.json` ikony, chybici `img/icon-192.png` byl doplnen, precache seznam ho zahrnuje a duplicitni PNG-only PWA generator byl archivovan; aktivni generator je `npm run build:pwa-icons`.
@@ -121,4 +124,5 @@ Aktualizace: 2026-04-26
    - Stav navic: kontaktni formular ma opravene `label for` vazby na skutecna `id` poli a staticky test hlida vsechny produktove HTML labely proti neexistujicim targetum.
    - Stav navic: staticka HTML hygiene kontrola hlida i duplicitni `id` atributy v produktovych HTML souborech, aby se nerozbijely labely, anchor odkazy a selektory.
    - Stav navic: `npm run verify:production` po deployi kontroluje i live sitemap, robots.txt a hlavni HTML vstupy na produkcni domene, nejen API health a jeden staticky asset.
+   - Stav navic: `npm run verify:production` nove kontroluje i zakladni astro vypocetni cesty a vraci konkretni HTTP status pri selhani, takze produkcni regresi lze rychleji dohledat.
    - Dalsi krok: pozdeji lze doplnit stejnou live HTTP status kontrolu proti stagingu, az bude stabilni staging URL.
