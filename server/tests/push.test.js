@@ -1,4 +1,5 @@
 import request from 'supertest';
+import jwt from 'jsonwebtoken';
 import app from '../index.js';
 
 async function getCsrfToken() {
@@ -7,6 +8,14 @@ async function getCsrfToken() {
 }
 
 describe('Push notification API', () => {
+    function createAdminToken() {
+        return jwt.sign({
+            id: 'push-admin-test',
+            email: 'admin@example.com',
+            role: 'admin'
+        }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    }
+
     test('POST /api/push/subscribe rejects missing CSRF', async () => {
         const res = await request(app)
             .post('/api/push/subscribe')
@@ -69,5 +78,47 @@ describe('Push notification API', () => {
             .expect(200);
 
         expect(unsubscribeRes.body.success).toBe(true);
+    });
+
+    test('POST /api/push/send-test loads web-push before VAPID validation', async () => {
+        const originalAdminEmails = process.env.ADMIN_EMAILS;
+        const originalPublicKey = process.env.VAPID_PUBLIC_KEY;
+        const originalPrivateKey = process.env.VAPID_PRIVATE_KEY;
+
+        process.env.ADMIN_EMAILS = 'admin@example.com';
+        delete process.env.VAPID_PUBLIC_KEY;
+        delete process.env.VAPID_PRIVATE_KEY;
+
+        try {
+            const csrfToken = await getCsrfToken();
+            const res = await request(app)
+                .post('/api/push/send-test')
+                .set('x-csrf-token', csrfToken)
+                .set('Authorization', `Bearer ${createAdminToken()}`)
+                .send({ body: 'Test push' })
+                .expect(200);
+
+            expect(res.body.success).toBe(false);
+            expect(res.body.error).toContain('VAPID');
+            expect(res.body.error).not.toContain('není nainstalován');
+        } finally {
+            if (originalAdminEmails === undefined) {
+                delete process.env.ADMIN_EMAILS;
+            } else {
+                process.env.ADMIN_EMAILS = originalAdminEmails;
+            }
+
+            if (originalPublicKey === undefined) {
+                delete process.env.VAPID_PUBLIC_KEY;
+            } else {
+                process.env.VAPID_PUBLIC_KEY = originalPublicKey;
+            }
+
+            if (originalPrivateKey === undefined) {
+                delete process.env.VAPID_PRIVATE_KEY;
+            } else {
+                process.env.VAPID_PRIVATE_KEY = originalPrivateKey;
+            }
+        }
     });
 });
