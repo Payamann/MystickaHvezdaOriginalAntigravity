@@ -503,17 +503,35 @@ function isFiniteCoordinate(value, min, max) {
     return Number.isFinite(number) && number >= min && number <= max;
 }
 
+function resolveTimeZone(value) {
+    const timeZone = String(value || '').trim();
+
+    if (timeZone) {
+        try {
+            new Intl.DateTimeFormat('en-US', { timeZone }).format(new Date());
+            return { timeZone, timeZoneSource: 'input' };
+        } catch {
+            return { timeZone: 'UTC', timeZoneSource: 'fallback_utc' };
+        }
+    }
+
+    return { timeZone: 'UTC', timeZoneSource: 'fallback_utc' };
+}
+
 export function resolveBirthLocation(input = {}) {
     if (
         isFiniteCoordinate(input.latitude, -90, 90) &&
         isFiniteCoordinate(input.longitude, -180, 180)
     ) {
+        const { timeZone, timeZoneSource } = resolveTimeZone(input.timeZone);
+
         return {
             name: input.birthPlace ? String(input.birthPlace).substring(0, 100) : 'Vlastni souradnice',
             country: input.country || null,
             latitude: round(Number(input.latitude), 5),
             longitude: round(Number(input.longitude), 5),
-            timeZone: input.timeZone || 'UTC',
+            timeZone,
+            timeZoneSource,
             source: 'coordinates'
         };
     }
@@ -539,6 +557,7 @@ export function resolveBirthLocation(input = {}) {
         latitude: location.latitude,
         longitude: location.longitude,
         timeZone: location.timeZone,
+        timeZoneSource: 'local_city_database',
         source: 'local_city_database'
     };
 }
@@ -631,7 +650,11 @@ function parseBirthDateTime({ birthDate, birthTime }, location = null) {
         try {
             date = utcDateFromLocalTime({ year, month, day, hour, minute }, location.timeZone);
             timezoneOffsetMinutes = getTimeZoneOffsetMinutes(date, location.timeZone);
-            notes.push(`Misto narozeni rozpoznano jako ${location.name}, cas interpretovan v zone ${location.timeZone}.`);
+            if (location.timeZoneSource === 'fallback_utc') {
+                notes.push(`Misto narozeni ma souradnice, ale chybi validni casove pasmo; cas byl interpretovan v UTC.`);
+            } else {
+                notes.push(`Misto narozeni rozpoznano jako ${location.name}, cas interpretovan v zone ${location.timeZone}.`);
+            }
         } catch {
             date = new Date(Date.UTC(year, month - 1, day, hour, minute, 0));
             notes.push('Casove pasmo rozpoznaneho mista se nepodarilo pouzit, vypocet pouzil UTC.');
@@ -884,6 +907,17 @@ function calculateHouses({ julianDay, location, hasExactTime }) {
         };
     }
 
+    if (location.timeZoneSource === 'fallback_utc') {
+        return {
+            available: false,
+            system: null,
+            ascendant: null,
+            houses: [],
+            location,
+            reason: 'Bez validniho casoveho pasma pro souradnice nepocitame ascendent ani domy.'
+        };
+    }
+
     if (!hasExactTime) {
         return {
             available: false,
@@ -943,14 +977,15 @@ export function calculateNatalChart(input = {}) {
     const aspects = calculateAspects(planets);
     const elementBalance = calculateBalance(planets, 'element');
     const qualityBalance = calculateBalance(planets, 'quality');
-    const precision = location
+    const hasReliableLocationTimeZone = location && location.timeZoneSource !== 'fallback_utc';
+    const precision = hasReliableLocationTimeZone
         ? (hasExactTime ? 'birth_time_location_timezone' : 'date_noon_location_timezone')
         : (hasExactTime ? 'birth_time_utc' : 'date_noon_utc');
     const engineNotes = [
         'Planety jsou pocitane low-precision geocentrickou efemeridou vhodnou pro produktovou interpretaci.',
-        houses.available
+        houses.available && hasReliableLocationTimeZone
             ? 'Ascendent a domy jsou pocitane metodou whole-sign pro rozpoznane misto a casove pasmo.'
-            : 'Ascendent, domy a presne astrokartograficke linie vyzaduji rozpoznane misto narozeni a presny cas.',
+            : 'Ascendent, domy a presne astrokartograficke linie vyzaduji rozpoznane misto narozeni, presny cas a validni casove pasmo.',
         ...notes
     ];
 

@@ -176,7 +176,7 @@ paths:
           schema:
             type: string
             maxLength: 100
-          description: IANA časové pásmo pro přesné souřadnice, např. Europe/Prague.
+          description: IANA časové pásmo pro přesné souřadnice, např. Europe/Prague. Bez validní hodnoty se čas bere jako UTC a ascendent/domy se pro souřadnice nepočítají.
         - in: query
           name: country
           schema:

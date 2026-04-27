@@ -60,7 +60,8 @@ describe('Astro calculation routes', () => {
             name: 'Praha - souradnice',
             country: 'CZ',
             source: 'coordinates',
-            timeZone: 'Europe/Prague'
+            timeZone: 'Europe/Prague',
+            timeZoneSource: 'input'
         }));
         expect(res.body.chart.houses.available).toBe(true);
         expect(res.body.chart.summary.ascendantSign).toBeTruthy();
@@ -182,7 +183,8 @@ describe('Astro calculation routes', () => {
         expect(res.body.synastry.engine.person1Precision).toBe('birth_time_location_timezone');
         expect(res.body.synastry.person1.chart.location).toEqual(expect.objectContaining({
             source: 'coordinates',
-            timeZone: 'Europe/Prague'
+            timeZone: 'Europe/Prague',
+            timeZoneSource: 'input'
         }));
         expect(res.body.synastry.person1.chart.houses.available).toBe(true);
         expect(res.body.synastry.person2.chart.location.name).toBe('Brno');

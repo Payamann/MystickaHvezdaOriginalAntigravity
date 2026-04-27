@@ -88,6 +88,26 @@ describe('Astro engine', () => {
         expect(chart.engine.notes.some((note) => note.includes('Misto narozeni nebylo rozpoznano'))).toBe(true);
     });
 
+    test('requires valid time zone before coordinate input is marked as location-timezone precision', () => {
+        const chart = calculateNatalChart({
+            birthDate: '1990-01-01',
+            birthTime: '12:00',
+            birthPlace: 'Praha - souradnice',
+            latitude: 50.0755,
+            longitude: 14.4378
+        });
+
+        expect(chart.location).toEqual(expect.objectContaining({
+            source: 'coordinates',
+            timeZone: 'UTC',
+            timeZoneSource: 'fallback_utc'
+        }));
+        expect(chart.engine.precision).toBe('birth_time_utc');
+        expect(chart.houses.available).toBe(false);
+        expect(chart.houses.reason).toContain('validniho casoveho pasma');
+        expect(chart.engine.notes.some((note) => note.includes('chybi validni casove pasmo'))).toBe(true);
+    });
+
     test('detects major aspects from supplied planet positions', () => {
         const aspects = calculateAspects({
             sun: {
