@@ -163,7 +163,7 @@ ${contextItems.join('\n')}
         } catch (dbError) { }
 
         // 5. Generate Response
-        console.log('[Mentor] Calling Gemini API with Enhanced Context...');
+        console.log('[Mentor] Calling Claude API with enhanced context...');
         const systemPrompt = SYSTEM_PROMPTS.mentor;
         const responseText = await callClaude(
             systemPrompt,

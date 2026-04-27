@@ -1,6 +1,6 @@
 /**
  * Mystická Hvězda - Natal Chart Visualization (AI-Powered)
- * Uses Gemini AI for personalized life narrative generation
+ * Uses the server AI API for personalized life narrative generation.
  */
 
 document.addEventListener('DOMContentLoaded', () => {

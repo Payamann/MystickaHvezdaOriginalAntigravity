@@ -2,7 +2,7 @@ import { calculateSynastryScores } from './utils/synastry-logic.js';
 
 /**
  * Mystická Hvězda - Synastry Calculator (AI-Powered)
- * Uses Gemini AI for detailed relationship analysis
+ * Uses the server AI API for detailed relationship analysis.
  */
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -1,6 +1,6 @@
 /**
  * Mystická Hvězda - Crystal Ball (AI-Powered)
- * Uses Gemini AI for mystical, contextual oracle responses
+ * Uses the server AI API for mystical, contextual oracle responses.
  */
 
 let questionHistory = [];

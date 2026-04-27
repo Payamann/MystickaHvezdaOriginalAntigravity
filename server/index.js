@@ -715,7 +715,7 @@ if (isMain || process.env.NODE_ENV === 'production') {
         }
 
         // Prefill horoscope cache — every day at 05:00 UTC (6:00 CET)
-        // Hits all 12 sign URLs → Gemini generates & saves to _v2 cache
+        // Hits all 12 sign URLs; Claude generates and saves to the production cache.
         schedule.scheduleJob('0 5 * * *', async () => {
             const signs = ['beran','byk','blizenci','rak','lev','panna','vahy','stir','strelec','kozoroh','vodnar','ryby'];
             const dates = [0, 1, 2].map(offset => {

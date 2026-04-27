@@ -1,5 +1,5 @@
 /**
- * Gemini AI Service Module
+ * AI Service Module
  * Frontend interface for communicating with the Mystická Hvězda API
  */
 

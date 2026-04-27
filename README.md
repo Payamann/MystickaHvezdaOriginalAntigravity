@@ -6,7 +6,7 @@ Comprehensive astrology web application with AI-powered horoscopes, tarot readin
 
 ## Features
 
-- 🔮 **AI-Powered Oracle**: Tarot, angel cards, runes, crystal ball readings powered by Gemini AI
+- 🔮 **AI-Powered Oracle**: Tarot, angel cards, runes, crystal ball readings powered by Claude
 - ♈ **Astrology Tools**: Natal charts, birth horoscopes, moon phases, synastry analysis
 - 🔢 **Numerology & Personality**: Lucky numbers, aura colors, personality tests, birthdate analysis
 - 📱 **Premium Membership**: Subscription-based premium content and AI guide mentorship
@@ -21,7 +21,7 @@ Comprehensive astrology web application with AI-powered horoscopes, tarot readin
 - **Runtime**: Node.js 20+
 - **Framework**: Express.js
 - **Database**: Supabase (PostgreSQL)
-- **API**: Gemini API (Google AI)
+- **AI API**: Anthropic Claude
 - **Payment**: Stripe
 - **Email**: Resend
 - **Security**: Helmet, rate limiting, JWT, XSS protection
@@ -70,7 +70,7 @@ Edit `server/.env` and add:
 ```env
 SUPABASE_URL=your_supabase_url
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_key
-GEMINI_API_KEY=your_gemini_api_key
+ANTHROPIC_API_KEY=your_anthropic_api_key
 JWT_SECRET=your_jwt_secret_key
 STRIPE_SECRET_KEY=your_stripe_secret
 STRIPE_PUBLISHABLE_KEY=your_stripe_public
