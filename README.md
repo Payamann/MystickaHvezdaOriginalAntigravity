@@ -193,7 +193,7 @@ mystickahvezda/
 ### Authentication
 - JWT tokens in HttpOnly cookies
 - Account lockout after 5 failed login attempts
-- Password hashing with bcrypt
+- Supabase Auth-managed password hashes
 - CSRF token validation on state-changing operations
 
 ### Rate Limiting
@@ -230,7 +230,7 @@ mystickahvezda/
 ```sql
 - id (UUID, primary key)
 - email (unique)
-- password_hash (bcrypt)
+- password_hash (managed by Supabase Auth)
 - username
 - created_at
 - last_login

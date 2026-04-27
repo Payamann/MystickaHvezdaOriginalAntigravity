@@ -9,6 +9,7 @@ server/.env.*
 # Dependencies
 node_modules/
 server/node_modules/
+server/package-lock.json
 
 # Build & Cache
 dist/
