@@ -69,10 +69,17 @@ describe('Astro engine', () => {
             name: 'Praha',
             timeZone: 'Europe/Prague'
         }));
+        expect(resolveBirthLocation({ birthPlace: 'Praha-Vinohrady' })).toEqual(expect.objectContaining({
+            name: 'Praha'
+        }));
+        expect(resolveBirthLocation({ birthPlace: 'New York, USA' })).toEqual(expect.objectContaining({
+            name: 'New York'
+        }));
         expect(resolveBirthLocation({ birthPlace: 'Kladno' })).toEqual(expect.objectContaining({
             name: 'Kladno'
         }));
         expect(resolveBirthLocation({ birthPlace: 'Atlantida' })).toBe(null);
+        expect(resolveBirthLocation({ birthPlace: 'Nepraha' })).toBe(null);
         expect(resolveBirthLocation({ birthPlace: 'LA' })).toEqual(expect.objectContaining({
             name: 'Los Angeles'
         }));

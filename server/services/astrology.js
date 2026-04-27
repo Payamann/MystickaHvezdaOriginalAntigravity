@@ -483,8 +483,20 @@ function normalizeSearchText(value) {
         .toLowerCase()
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9\s-]/g, ' ')
+        .replace(/[^a-z0-9\s]/g, ' ')
         .replace(/\s+/g, ' ');
+}
+
+function searchMatchesAlias(search, alias) {
+    const normalizedAlias = normalizeSearchText(alias);
+    if (!normalizedAlias) return false;
+
+    const searchTokens = search.split(' ');
+    if (normalizedAlias.length <= 2) {
+        return search === normalizedAlias || searchTokens.includes(normalizedAlias);
+    }
+
+    return search === normalizedAlias || ` ${search} `.includes(` ${normalizedAlias} `);
 }
 
 function normalizeAstroIntention(value = 'obecny') {
@@ -540,13 +552,7 @@ export function resolveBirthLocation(input = {}) {
     if (!search) return null;
 
     const location = KNOWN_BIRTH_LOCATIONS.find((candidate) => (
-        candidate.aliases.some((alias) => {
-            const normalizedAlias = normalizeSearchText(alias);
-            if (normalizedAlias.length <= 2) {
-                return search === normalizedAlias || search.split(' ').includes(normalizedAlias);
-            }
-            return search === normalizedAlias || search.includes(normalizedAlias);
-        })
+        candidate.aliases.some((alias) => searchMatchesAlias(search, alias))
     ));
 
     if (!location) return null;
