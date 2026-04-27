@@ -95,7 +95,7 @@ Aktualizace: 2026-04-27
    - Stav navic: manualni SQL snippet soubory jsou presunute do `server/scripts/sql/` s README; encoding kontrola ted zahrnuje i `.sql`, `.txt`, `.xml` a `.yml/.yaml` soubory.
    - Stav navic: stare jednorazove mojibake/content repair skripty jsou presunute do `docs/archive/2026-04-stale-scripts/encoding-repair-scripts/`, takze aktivni encoding check uz nepotrebuje souborove vyjimky a `server/scripts/` zustava pro aktualni provozni helpery.
    - Stav navic: stare manualni Gemini probe/image test skripty `server/scripts/test-gemini.js` a `server/scripts/test-gen.js` jsou archivovane v `docs/archive/2026-04-stale-scripts/gemini-one-offs/`.
-   - Stav navic: stare lokalni diagnostiky `server/scripts/verify-horoscope.js` a `server/scripts/debug-reading.js` jsou archivovane mimo aktivni serverove helpery.
+   - Stav navic: stare lokalni diagnostiky `server/scripts/verify-horoscope.js`, `server/scripts/debug-reading.js` a `server/scripts/verify_db_data.js` jsou archivovane mimo aktivni serverove helpery.
    - Stav navic: orphan `server/package-lock.json` bez odpovidajiciho `server/package.json` byl odstranen z aktivniho repozitare a ignorovan, aby nehlasil zastarale dependency a nespletl provozni audit.
    - Stav navic: root `QUICK_START_GUIDE.md` byl presunut do `docs/archive/2026-04-root-artifacts/`, koren tak drzi jen aktivni vstupni dokumenty a runtime soubory.
    - Stav navic: README uz neodkazuje na neexistujici `server/db/migrations/` ani `npm run migrate:up`; popisuje aktualni `migrations/`, manualni SQL snippet adresar a skutecny CSP stav.

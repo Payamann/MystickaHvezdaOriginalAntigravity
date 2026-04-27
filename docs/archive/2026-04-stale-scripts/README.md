@@ -28,6 +28,8 @@ active project tooling.
 - `server-one-offs/` contains old local diagnostics that are no longer part of
   active operations. `verify-horoscope.js` predated CSRF-protected API calls, and
   `debug-reading.js` dumped recent Supabase reading rows directly.
+  `verify_db_data.js` checked the old `user_readings` table instead of the
+  current `readings` table.
 - `tarot-one-offs/` contains the old manual Gemini tarot filename audit. The
   active guard is now `npm run audit:tarot-assets`, which validates
   `data/tarot-cards.json` against actual files.
