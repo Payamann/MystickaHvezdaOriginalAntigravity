@@ -10,6 +10,8 @@ This folder contains backend maintenance and operational helper scripts.
 - Content generators such as `generate-blog.js`, `generate-dictionary.js`, and
   `generate-zodiac-pages.js` write project files. Review their diffs before
   keeping generated output.
+- Tarot asset coverage is checked by `npm run audit:tarot-assets`; old manual
+  filename mapping scripts belong in the stale scripts archive.
 - AI/image generation experiments that are not wired into current operations
   should live under `docs/archive/2026-04-stale-scripts/`, not in this active
   helper directory.
