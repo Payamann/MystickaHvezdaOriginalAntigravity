@@ -37,6 +37,28 @@
         });
     }
 
+    function appendPastLifeFavoriteAction(container, readingId) {
+        if (!container || !readingId) return;
+
+        document.getElementById('favorite-past-life-action')?.remove();
+
+        var action = document.createElement('div');
+        action.id = 'favorite-past-life-action';
+        action.className = 'text-center favorite-reading-action mt-md';
+        action.innerHTML = `
+            <button id="favorite-past-life-btn" class="btn btn--glass favorite-reading-action__button">
+                <span class="favorite-icon">☆</span> Přidat do oblíbených
+            </button>
+        `;
+        container.appendChild(action);
+
+        action.querySelector('#favorite-past-life-btn')?.addEventListener('click', async function() {
+            if (typeof window.toggleFavorite === 'function') {
+                await window.toggleFavorite(readingId, 'favorite-past-life-btn');
+            }
+        });
+    }
+
     function init() {
         var upgradeBtn = document.getElementById('past-life-upgrade-btn');
         var registerBtn = document.getElementById('past-life-register-btn');
@@ -75,7 +97,7 @@
 
             if (!name || name.length < 2) { showError('Zadejte své jméno.'); return; }
             if (!birth) { showError('Zadejte datum narození.'); return; }
-            if (!gender) { showError('Vyberte pohlaví.'); return; }
+            if (!gender) { showError('Vyberte formu výkladu.'); return; }
 
             // Show loading
             setBlockVisible(document.getElementById('form-section'), false);
@@ -119,6 +141,25 @@
 
                 setupShare(name, r);
 
+                if (window.Auth?.saveReading) {
+                    try {
+                        var saveResult = await window.Auth.saveReading('past-life', {
+                            name: name,
+                            birthDate: birth,
+                            gender: gender,
+                            place: place,
+                            result: r,
+                            fallback: !!data.fallback
+                        });
+
+                        if (saveResult?.id) {
+                            appendPastLifeFavoriteAction(document.getElementById('pl-result'), saveResult.id);
+                        }
+                    } catch (saveError) {
+                        console.warn('Past life save failed:', saveError.message);
+                    }
+                }
+
                 document.getElementById('pl-result').classList.add('visible');
                 window.scrollTo({ top: document.getElementById('pl-result').offsetTop - 80, behavior: 'smooth' });
 
@@ -140,10 +181,10 @@
     function setupShare(name, r) {
         var pageUrl = 'https://www.mystickahvezda.cz/minuly-zivot.html';
         var firstName = name.split(' ')[0];
-        var shareText = '\uD83D\uDD2E ' + firstName + ' odhalil/a sv\u016Fj minul\u00FD \u017Eivot: ' +
+        var shareText = '\uD83D\uDD2E ' + firstName + ' má symbolický vhled minulého života: ' +
             (r.era ? 'V \u00E9\u0159e \u201E' + r.era + '\u201C ' : '') +
-            (r.identity ? 'byl/a ' + r.identity.substring(0, 60) + (r.identity.length > 60 ? '\u2026' : '') + '. ' : '') +
-            'Zjisti sv\u00E9 akashick\u00E9 z\u00E1znamy \u2935\uFE0F';
+            (r.identity ? r.identity.substring(0, 60) + (r.identity.length > 60 ? '\u2026' : '') + '. ' : '') +
+            'Vytvo\u0159 si vlastn\u00ED sebereflexn\u00ED v\u00FDklad \u2935\uFE0F';
 
         // Facebook
         var fbBtn = document.getElementById('share-fb');

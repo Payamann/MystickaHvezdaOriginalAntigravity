@@ -755,10 +755,14 @@
 
         async resetPassword(email) {
             try {
+                const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
                 const res = await fetch(`${API_URL}/auth/forgot-password`, {
                     method: 'POST',
                     credentials: 'include',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+                    },
                     body: JSON.stringify({ email })
                 });
                 if (res.ok) {
@@ -874,11 +878,13 @@
                 throw new Error('Auth Required');
             }
 
+            const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
             const res = await fetch(`${API_URL}/${endpoint}`, {
                 method: 'POST',
                 credentials: 'include', // Send auth_token cookie
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    ...(csrfToken && { 'X-CSRF-Token': csrfToken })
                     // No longer need Authorization header - token is in cookie
                 },
                 body: JSON.stringify(body)
@@ -901,12 +907,14 @@
             if (!this.isLoggedIn()) return null;
 
             try {
+                const headers = { 'Content-Type': 'application/json' };
+                const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+                if (csrfToken) headers['X-CSRF-Token'] = csrfToken;
+
                 const res = await fetch(`${API_URL}/user/readings`, {
                     method: 'POST',
                     credentials: 'include', // Send auth_token cookie
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers,
                     body: JSON.stringify({ type, data })
                 });
 
@@ -916,7 +924,7 @@
                     return null;
                 } else {
                     const savedData = await res.json();
-                    return savedData; // Return saved reading with ID
+                    return savedData.reading || savedData; // Return saved reading with ID
                 }
             } catch (e) {
                 console.error('Error saving reading:', e);

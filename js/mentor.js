@@ -90,11 +90,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Check Premium Status
     try {
         const userProfile = await window.Auth.getProfile();
-        // Allow everyone to enter, but track status
-        // Fix: Use window.Auth instead of authClient
-        // Fix: Use subscription_status instead of subscription_tier
-        const premiumStatuses = ['premium_monthly', 'exclusive_monthly', 'vip_majestrat'];
-        window.isPremium = userProfile && premiumStatuses.includes(userProfile.subscription_status);
+        // Allow everyone to enter, but use the shared Auth helper for plan status.
+        window.isPremium = Boolean(userProfile && window.Auth?.isPremium?.());
 
         // Initialize usage tracking for free users
         if (!window.isPremium) {

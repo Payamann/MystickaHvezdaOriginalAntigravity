@@ -2,7 +2,7 @@
  * Modal logic for viewing reading details
  */
 
-import { escapeHtml, apiUrl, authHeaders, getReadingIcon, getReadingTitle } from './shared.js';
+import { escapeHtml, apiUrl, authHeaders, authHeadersWithCsrf, getReadingIcon, getReadingTitle } from './shared.js';
 import { getAllReadings, updateReading, renderReadings, loadReadings } from './readings.js';
 import { loadFavorites } from './favorites.js';
 
@@ -71,7 +71,7 @@ export async function toggleFavorite(id, buttonEl = null) {
         const response = await fetch(`${apiUrl()}/user/readings/${id}/favorite`, {
             method: 'PATCH',
             credentials: 'include',
-            headers: authHeaders()
+            headers: await authHeadersWithCsrf()
         });
 
         if (!response.ok) throw new Error('Failed to toggle favorite');
@@ -119,7 +119,8 @@ export async function deleteReading() {
     try {
         const response = await fetch(`${apiUrl()}/user/readings/${currentReadingId}`, {
             method: 'DELETE',
-            headers: authHeaders()
+            credentials: 'include',
+            headers: await authHeadersWithCsrf()
         });
 
         if (!response.ok) throw new Error('Failed to delete reading');
@@ -216,6 +217,125 @@ function bindReadingImageFallbacks(root) {
     });
 }
 
+function formatStructuredFieldLabel(key) {
+    const labels = {
+        era: 'Období',
+        identity: 'Identita',
+        karmic_lesson: 'Karmická lekce',
+        gifts: 'Dary',
+        patterns: 'Vzorce',
+        mission: 'Mise',
+        message: 'Poselství',
+        strengths: 'Silné stránky',
+        challenges: 'Výzvy'
+    };
+
+    return labels[key] || String(key)
+        .replace(/_/g, ' ')
+        .replace(/^\w/, (char) => char.toUpperCase());
+}
+
+function renderStructuredObjectContent(content) {
+    if (!content || typeof content !== 'object') return '';
+
+    return Object.entries(content)
+        .filter(([, value]) => value !== null && value !== undefined && value !== '')
+        .map(([key, value]) => {
+            const displayValue = typeof value === 'object'
+                ? JSON.stringify(value, null, 2)
+                : String(value);
+
+            return `
+                <section class="reading-structured-field">
+                    <h4 class="reading-structured-field__label">${escapeHtml(formatStructuredFieldLabel(key))}</h4>
+                    <p class="reading-structured-field__value">${escapeHtml(displayValue).replace(/\n/g, '<br>')}</p>
+                </section>
+            `;
+        })
+        .join('');
+}
+
+function renderMetricSummary(title, metrics) {
+    const items = metrics
+        .filter((item) => item.value !== null && item.value !== undefined && item.value !== '')
+        .map((item) => `
+            <span class="reading-metric">
+                <strong>${escapeHtml(item.label)}</strong>
+                <span>${escapeHtml(item.value)}</span>
+            </span>
+        `)
+        .join('');
+
+    if (!items) return '';
+
+    return `
+        <section class="reading-summary-panel">
+            <h3 class="reading-summary-panel__title">${escapeHtml(title)}</h3>
+            <div class="reading-metric-grid">${items}</div>
+        </section>
+    `;
+}
+
+function renderChartSummary(chart) {
+    const summary = chart?.summary;
+    if (!summary) return '';
+
+    return renderMetricSummary('Vypočtená mapa', [
+        { label: 'Slunce', value: summary.sunSign },
+        { label: 'Měsíc', value: summary.moonSign },
+        { label: 'Ascendent', value: summary.ascendantSign || 'nevypočten' },
+        { label: 'Dominantní živel', value: summary.dominantElement },
+        { label: 'Modalita', value: summary.dominantQuality }
+    ]);
+}
+
+function renderSynastrySummary(data) {
+    const scores = data?.synastry?.scores || data?.scores;
+    if (!scores) return '';
+
+    return renderMetricSummary('Skóre vztahu', [
+        { label: 'Celkem', value: `${scores.total ?? '--'} %` },
+        { label: 'Emoce', value: `${scores.emotion ?? '--'} %` },
+        { label: 'Komunikace', value: `${scores.communication ?? '--'} %` },
+        { label: 'Vášeň', value: `${scores.passion ?? '--'} %` },
+        { label: 'Stabilita', value: `${scores.stability ?? '--'} %` }
+    ]);
+}
+
+function renderAstrocartographySummary(astrocartography) {
+    if (!astrocartography || typeof astrocartography !== 'object') return '';
+
+    const recommendations = Array.isArray(astrocartography.recommendations)
+        ? astrocartography.recommendations.slice(0, 3)
+        : [];
+    const lines = Array.isArray(astrocartography.angularLines)
+        ? astrocartography.angularLines.slice(0, 4)
+        : [];
+
+    const recommendationHtml = recommendations.map((item) => `
+        <li>
+            <strong>${escapeHtml(item.city || 'Místo')}</strong>
+            <span>${escapeHtml(item.score ?? '--')} / 100 · ${escapeHtml(item.primaryPlanet?.name || 'planeta')}</span>
+        </li>
+    `).join('');
+    const lineHtml = lines.map((line) => `
+        <li>
+            <strong>${escapeHtml(line.planetName || 'Planeta')} ${escapeHtml(line.angle || '')}</strong>
+            <span>${escapeHtml(line.longitude ?? '--')}°</span>
+        </li>
+    `).join('');
+
+    if (!recommendationHtml && !lineHtml) return '';
+
+    return `
+        <section class="reading-summary-panel">
+            <h3 class="reading-summary-panel__title">Astro mapa</h3>
+            ${recommendationHtml ? `<ul class="reading-summary-list">${recommendationHtml}</ul>` : ''}
+            ${lineHtml ? `<ul class="reading-summary-list reading-summary-list--compact">${lineHtml}</ul>` : ''}
+        </section>
+    `;
+}
+
 function renderReadingContent(reading) {
     const date = new Date(reading.created_at).toLocaleDateString('cs-CZ', {
         day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
@@ -231,6 +351,15 @@ function renderReadingContent(reading) {
     `;
 
     const data = reading.data || {};
+    if (data && typeof data === 'object') {
+        if (reading.type === 'synastry') {
+            contentHtml += renderSynastrySummary(data);
+        }
+        contentHtml += renderChartSummary(data.chart || data.synastry?.person1?.chart);
+        if (reading.type === 'astrocartography') {
+            contentHtml += renderAstrocartographySummary(data.astrocartography);
+        }
+    }
 
     function getTarotImageByName(name) {
         if (!name) return 'img/tarot/tarot_placeholder.webp';
@@ -241,7 +370,9 @@ function renderReadingContent(reading) {
         return `img/tarot/tarot_${normalized}.webp`;
     }
 
-    if (reading.type === 'tarot' && data.cards) {
+    if (typeof data === 'string') {
+        contentHtml += `<div class="reading-plain-text">${escapeHtml(data).replace(/\n/g, '<br>')}</div>`;
+    } else if (reading.type === 'tarot' && data.cards) {
         contentHtml += '<div class="reading-tarot-grid">';
         data.cards.forEach(card => {
             const imagePath = getTarotImageByName(card.name);
@@ -263,11 +394,12 @@ function renderReadingContent(reading) {
 
         const summary = data.response || data.interpretation;
         if (summary) {
+            const escapedSummary = escapeHtml(summary).replace(/\n/g, '<br>');
             contentHtml += `
                 <div class="reading-interpretation">
                     <h4 class="reading-interpretation__title">VÝKLAD KARET</h4>
                     <div class="reading-interpretation__text">
-                        ${summary.replace(/\n/g, '<br>')}
+                        ${escapedSummary}
                     </div>
                 </div>
             `;
@@ -309,14 +441,15 @@ function renderReadingContent(reading) {
                 ${escapeHtml(data.answer)}
             </div>
         `;
-    } else if (data.interpretation || data.text || data.result) {
-        let content = data.interpretation || data.text || data.result;
+    } else if (data.interpretation || data.response || data.text || data.result) {
+        let content = data.interpretation || data.response || data.text || data.result;
 
         if (typeof content === 'string') {
-            const sanitized = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(content) : content;
+            const fallbackHtml = escapeHtml(content).replace(/\n/g, '<br>');
+            const sanitized = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(fallbackHtml) : fallbackHtml;
             contentHtml += `<div class="formatted-content reading-formatted-content">${sanitized}</div>`;
         } else {
-            contentHtml += `<p class="reading-plain-text">${escapeHtml(content)}</p>`;
+            contentHtml += `<div class="reading-structured">${renderStructuredObjectContent(content)}</div>`;
         }
     } else {
         contentHtml += `<pre class="reading-json">${escapeHtml(JSON.stringify(data, null, 2))}</pre>`;

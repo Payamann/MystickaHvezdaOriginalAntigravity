@@ -282,7 +282,7 @@
     function setupShare(name, totem) {
         const pageUrl = 'https://www.mystickahvezda.cz/shamansko-kolo.html';
         const firstName = name.split(' ')[0];
-        const shareText = '🧭 ' + firstName + ' zjistil/a své místo na Šamanském Kole! ' +
+        const shareText = '🧭 ' + firstName + ' má své místo na Šamanském Kole! ' +
             'Totem: ' + totem.animal + ' ' + totem.name +
             ' · ' + totem.direction + ' · ' + totem.element +
             ' · Zjisti i svůj totem ↓';
@@ -355,6 +355,28 @@
         });
     }
 
+    function appendMedicineWheelFavoriteAction(container, readingId) {
+        if (!container || !readingId) return;
+
+        document.getElementById('favorite-medicine-wheel-action')?.remove();
+
+        const action = document.createElement('div');
+        action.id = 'favorite-medicine-wheel-action';
+        action.className = 'text-center favorite-reading-action mt-md';
+        action.innerHTML = `
+            <button id="favorite-medicine-wheel-btn" class="btn btn--glass favorite-reading-action__button">
+                <span class="favorite-icon">☆</span> Přidat do oblíbených
+            </button>
+        `;
+        container.appendChild(action);
+
+        action.querySelector('#favorite-medicine-wheel-btn')?.addEventListener('click', async () => {
+            if (typeof window.toggleFavorite === 'function') {
+                await window.toggleFavorite(readingId, 'favorite-medicine-wheel-btn');
+            }
+        });
+    }
+
     function showPremiumContent(data) {
         document.getElementById('res-strengths').textContent = data.strengths || '';
         document.getElementById('res-challenges').textContent = data.challenges || '';
@@ -416,6 +438,23 @@
 
                 if (res.ok && data.success && data.result && data.result.strengths) {
                     showPremiumContent(data.result);
+                    if (window.Auth?.saveReading) {
+                        try {
+                            const saveResult = await window.Auth.saveReading('medicine-wheel', {
+                                name,
+                                birthDate: birth,
+                                totem,
+                                result: data.result,
+                                fallback: !!data.fallback
+                            });
+
+                            if (saveResult?.id) {
+                                appendMedicineWheelFavoriteAction(document.getElementById('mw-result'), saveResult.id);
+                            }
+                        } catch (saveError) {
+                            console.warn('Medicine wheel save failed:', saveError.message);
+                        }
+                    }
                 } else {
                     showPremiumWall();
                 }

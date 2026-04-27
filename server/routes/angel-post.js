@@ -20,6 +20,14 @@ const postLimiter = rateLimit({
     legacyHeaders: false,
 });
 
+const likeLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000,
+    max: 30,
+    message: { error: 'Příliš mnoho srdíček v krátkém čase. Zkuste to prosím později.' },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
 // Jednoduchý spam filtr
 function isSpam(text) {
     if (!text || text.length < 10) return true;
@@ -48,7 +56,7 @@ router.get('/', async (req, res) => {
         res.json(data || []);
     } catch (err) {
         console.error('[angel-post] GET error:', err.message);
-        res.json([]); // Graceful fallback — client shows demo data
+        res.status(503).json({ error: 'Vzkazy se nepodařilo načíst.' });
     }
 });
 
@@ -82,14 +90,14 @@ router.post('/', postLimiter, async (req, res) => {
                 message: cleanMessage,
                 category: cleanCategory,
                 likes: 0,
-                approved: true, // Auto-approve (lze změnit na false pro moderaci)
+                approved: false,
                 created_at: new Date().toISOString()
             })
             .select('id')
             .single();
 
         if (error) throw error;
-        res.json({ success: true, id: data.id });
+        res.json({ success: true, id: data.id, pendingReview: true });
     } catch (err) {
         console.error('[angel-post] POST error:', err.message);
         res.status(500).json({ error: 'Nelze uložit zprávu.' });
@@ -97,7 +105,7 @@ router.post('/', postLimiter, async (req, res) => {
 });
 
 // POST /api/angel-post/:id/like — přidat srdíčko
-router.post('/:id/like', async (req, res) => {
+router.post('/:id/like', likeLimiter, async (req, res) => {
     try {
         const { id } = req.params;
         if (!id || isNaN(parseInt(id))) return res.status(400).json({ error: 'Invalid ID' });

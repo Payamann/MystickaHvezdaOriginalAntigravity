@@ -22,6 +22,13 @@ export const PREMIUM_PLAN_TYPES = Object.freeze([
     PLAN_TYPES.VIP,
 ]);
 
+export const PLAN_TYPE_RANK = Object.freeze({
+    [PLAN_TYPES.FREE]: 0,
+    [PLAN_TYPES.PREMIUM]: 1,
+    [PLAN_TYPES.EXCLUSIVE]: 2,
+    [PLAN_TYPES.VIP]: 3,
+});
+
 export const SUBSCRIPTION_PLANS = Object.freeze({
     poutnik: {
         name: 'Poutník (Základ)',
@@ -94,16 +101,20 @@ const PRICING_PAGE_PLAN_MAP = Object.freeze({
 });
 
 export const FEATURE_PLAN_MAP = Object.freeze({
+    angel_card_deep: 'pruvodce',
     astrocartography: 'osviceni',
     journal_insights: 'pruvodce',
     mentor: 'pruvodce',
+    medicine_wheel: 'pruvodce',
     monthly_horoscope: 'pruvodce',
     natal_chart: 'pruvodce',
     natalni_interpretace: 'pruvodce',
     numerologie_vyklad: 'pruvodce',
+    past_life: 'pruvodce',
     partnerska_detail: 'pruvodce',
     premium_membership: 'pruvodce',
     rituals: 'pruvodce',
+    runes_deep_reading: 'pruvodce',
     synastry: 'pruvodce',
     tarot_celtic_cross: 'vip-majestrat',
     tarot_multi_card: 'pruvodce',
@@ -163,4 +174,27 @@ export function normalizePlanType(planType, fallback = PLAN_TYPES.FREE) {
 
 export function isPremiumPlanType(planType) {
     return PREMIUM_PLAN_TYPES.includes(normalizePlanType(planType));
+}
+
+export function getPlanById(planId) {
+    return SUBSCRIPTION_PLANS[planId] || null;
+}
+
+export function getRequiredPlanForFeature(featureName, fallbackPlanId = 'pruvodce') {
+    return FEATURE_PLAN_MAP[featureName] || fallbackPlanId;
+}
+
+export function getPlanTypeForPlanId(planId, fallback = PLAN_TYPES.PREMIUM) {
+    return normalizePlanType(getPlanById(planId)?.type, fallback);
+}
+
+export function planTypeMeetsRequirement(currentPlanType, requiredPlanId) {
+    const current = normalizePlanType(currentPlanType);
+    const required = getPlanTypeForPlanId(requiredPlanId);
+    return (PLAN_TYPE_RANK[current] || 0) >= (PLAN_TYPE_RANK[required] || 0);
+}
+
+export function userHasFeatureAccess(user, featureName) {
+    if (!user?.isPremium) return false;
+    return planTypeMeetsRequirement(user.subscription_status, getRequiredPlanForFeature(featureName));
 }

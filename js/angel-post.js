@@ -2,15 +2,8 @@
 
 const catLabels = { laska: '❤️ Láska', zdravi: '💚 Zdraví', kariera: '💼 Kariéra', rodina: '🏠 Rodina', dek: '🙏 Vděčnost', jine: '✨ Jiné' };
 
-const demoMessages = [
-    { nickname: 'Monika', message: 'Drazí andělé, prosím vás o sílu a trpělivost v těžkém čase. Věřím, že vše dopadne dobře.', category: 'zdravi', likes: 23, created_at: new Date(Date.now() - 3600000) },
-    { nickname: 'Anonym', message: 'Děkuji andělům za ochranu mé rodiny. Každý den cítím vaši přítomnost.', category: 'dek', likes: 47, created_at: new Date(Date.now() - 7200000) },
-    { nickname: 'Lucie K.', message: 'Prosím o vedení v mém rozhodování o práci. Chci jít správnou cestou a přinést světu dobro.', category: 'kariera', likes: 18, created_at: new Date(Date.now() - 10800000) },
-    { nickname: 'Tomáš', message: 'Andělé, sešlete mi do cesty správného člověka. Jsem připraven milovat a být milován.', category: 'laska', likes: 31, created_at: new Date(Date.now() - 18000000) },
-    { nickname: 'Anonym', message: 'Modlím se za zdraví svých rodičů. Ať jsou obklopeni vaším světlem.', category: 'zdravi', likes: 52, created_at: new Date(Date.now() - 86400000) },
-];
-
-let localMessages = [...demoMessages];
+let localMessages = [];
+let loadError = false;
 let liked = new Set();
 
 try {
@@ -41,33 +34,67 @@ function renderMessages() {
     const wall = document.getElementById('messages-container');
     if (!wall) return;
 
-    if (localMessages.length === 0) {
-        wall.innerHTML = '<div class="message-empty-state">Zatím žádné vzkazy. Buďte první!</div>';
+    wall.textContent = '';
+
+    if (loadError) {
+        const errorState = document.createElement('div');
+        errorState.className = 'message-empty-state message-empty-state--error';
+        errorState.textContent = 'Vzkazy se teď nepodařilo načíst. Zkuste to prosím za chvíli.';
+        wall.appendChild(errorState);
         return;
     }
 
-    const html = localMessages.map((msg, i) => {
+    if (localMessages.length === 0) {
+        const emptyState = document.createElement('div');
+        emptyState.className = 'message-empty-state';
+        emptyState.textContent = 'Zatím žádné schválené vzkazy. Buďte první, kdo pošle zprávu andělům.';
+        wall.appendChild(emptyState);
+        return;
+    }
+
+    localMessages.forEach((msg, i) => {
         const text = msg.message || msg.text || '';
         const msgKey = msg.id ? String(msg.id) : text.substring(0, 20);
         const ago = timeAgo(msg.created_at);
         const cat = catLabels[msg.category] || '✨ Jiné';
         const isLiked = liked.has(msgKey);
 
-        return `<div class="message-card">
-            <div class="message-meta">
-                <span>👤 ${msg.nickname || 'Anonym'} <span class="category-tag">${cat}</span></span>
-                <span>${ago}</span>
-            </div>
-            <p class="message-text">"${text}"</p>
-            <div class="message-actions">
-                <button class="heart-btn ${isLiked ? 'liked' : ''}" data-index="${i}" aria-label="Podpořit srdíčkem">
-                    ${isLiked ? '❤️' : '🤍'} ${msg.likes}
-                </button>
-            </div>
-        </div>`;
-    }).join('');
+        const card = document.createElement('div');
+        card.className = 'message-card';
 
-    wall.innerHTML = html;
+        const meta = document.createElement('div');
+        meta.className = 'message-meta';
+
+        const author = document.createElement('span');
+        author.append(document.createTextNode(`👤 ${msg.nickname || 'Anonym'} `));
+
+        const category = document.createElement('span');
+        category.className = 'category-tag';
+        category.textContent = msg.pendingReview ? `${cat} · čeká na schválení` : cat;
+        author.appendChild(category);
+
+        const time = document.createElement('span');
+        time.textContent = ago;
+
+        meta.append(author, time);
+
+        const messageText = document.createElement('p');
+        messageText.className = 'message-text';
+        messageText.textContent = `"${text}"`;
+
+        const actions = document.createElement('div');
+        actions.className = 'message-actions';
+
+        const heartBtn = document.createElement('button');
+        heartBtn.className = `heart-btn ${isLiked ? 'liked' : ''}`;
+        heartBtn.dataset.index = String(i);
+        heartBtn.setAttribute('aria-label', 'Podpořit srdíčkem');
+        heartBtn.textContent = `${isLiked ? '❤️' : '🤍'} ${msg.likes}`;
+
+        actions.appendChild(heartBtn);
+        card.append(meta, messageText, actions);
+        wall.appendChild(card);
+    });
 }
 
 function timeAgo(date) {
@@ -123,7 +150,7 @@ async function submitMessage() {
 
     textInput.classList.remove('form-input--invalid');
 
-    const newMsg = { nickname, message: text, category, likes: 0, created_at: new Date() };
+    let newMsg = null;
 
     try {
         const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
@@ -144,11 +171,23 @@ async function submitMessage() {
             return;
         }
 
-        if (data.id) newMsg.id = data.id;
+        newMsg = {
+            id: data.id,
+            nickname,
+            message: text,
+            category,
+            likes: 0,
+            created_at: new Date(),
+            pendingReview: Boolean(data.pendingReview)
+        };
 
     } catch (e) {
-        console.warn('AngelPost API offline, pouzivam lokalni rezim.', e);
+        console.warn('AngelPost API unavailable:', e);
+        showSubmitMessage('error', '❌ Vzkaz se nepodařilo uložit. Zkuste to prosím znovu za chvíli.', 5000);
+        return;
     }
+
+    if (!newMsg) return;
 
     localMessages.unshift(newMsg);
     renderMessages();
@@ -157,7 +196,7 @@ async function submitMessage() {
     document.getElementById('msg-nickname').value = '';
     document.getElementById('char-count').textContent = '0';
 
-    showSubmitMessage('success', '✨ Váš vzkaz byl odeslán andělům!');
+    showSubmitMessage('success', '✨ Váš vzkaz byl odeslán andělům a čeká na schválení.');
 
     setTimeout(() => {
         const wall = document.querySelector('.messages-wall');
@@ -174,12 +213,21 @@ async function loadMessages() {
         const res = await fetch(`${baseUrl}/angel-post?limit=20`);
         if (res.ok) {
             const data = await res.json();
-            if (data.length > 0) {
-                localMessages = [...data, ...demoMessages.slice(0, 3)];
-                renderMessages();
-            }
+            localMessages = Array.isArray(data) ? data : [];
+            loadError = false;
+            renderMessages();
+            return;
         }
-    } catch (e) { /* use demo data */ }
+
+        localMessages = [];
+        loadError = true;
+        renderMessages();
+    } catch (e) {
+        console.warn('AngelPost messages failed to load:', e);
+        localMessages = [];
+        loadError = true;
+        renderMessages();
+    }
 }
 
 // --- INIT (defer ensures DOM is ready) ---

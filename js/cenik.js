@@ -41,12 +41,16 @@ const PLAN_META = {
 };
 
 const FALLBACK_FEATURE_PLAN_MAP = {
+    angel_card_deep: 'pruvodce',
     astrocartography: 'osviceni',
+    medicine_wheel: 'pruvodce',
     synastry: 'pruvodce',
     partnerska_detail: 'pruvodce',
     natalni_interpretace: 'pruvodce',
     numerologie_vyklad: 'pruvodce',
+    past_life: 'pruvodce',
     rituals: 'pruvodce',
+    runes_deep_reading: 'pruvodce',
     mentor: 'pruvodce'
 };
 let featurePlanMap = FALLBACK_FEATURE_PLAN_MAP;

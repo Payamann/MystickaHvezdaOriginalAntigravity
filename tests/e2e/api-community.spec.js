@@ -94,9 +94,10 @@ test.describe('API: /api/angel-post — zápis', () => {
         });
 
         if (res.status() === 201 || res.status() === 200) {
-            const body = await res.text();
+            const data = await res.json();
             // Script tagy by měly být odstraněny
-            expect(body).not.toContain('<script>');
+            expect(JSON.stringify(data)).not.toContain('<script>');
+            expect(data.pendingReview).toBe(true);
         }
         expect([200, 201, 400, 429]).toContain(res.status());
     });

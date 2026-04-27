@@ -4,6 +4,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import { getKnownBirthLocationNames } from '../services/astrology.js';
 
 const ROOT_DIR = path.resolve(process.cwd());
 const DIST_JS_DIR = path.join(ROOT_DIR, 'js', 'dist');
@@ -22,6 +23,7 @@ const NON_PRODUCT_DIRS = new Set([
     'social-media-agent',
     'templates',
     'tests',
+    'test-results',
     'tmp_email_previews'
 ]);
 
@@ -249,6 +251,72 @@ describe('Static HTML CSP hygiene', () => {
         }
     });
 
+    test('product HTML files do not load duplicate script sources', () => {
+        const duplicateScripts = [];
+        const scriptPattern = /<script\b([^>]*)>/gi;
+
+        for (const { file, html } of readProductHtmlFiles()) {
+            const counts = new Map();
+            let match;
+
+            while ((match = scriptPattern.exec(html)) !== null) {
+                const src = getAttribute(match[1], 'src');
+                if (!src) continue;
+                const normalizedSrc = src.split('#')[0].split('?')[0];
+                counts.set(normalizedSrc, (counts.get(normalizedSrc) || 0) + 1);
+            }
+
+            for (const [src, count] of counts) {
+                if (count > 1) {
+                    duplicateScripts.push(`${file}: ${src} appears ${count} times`);
+                }
+            }
+        }
+
+        expect(duplicateScripts).toEqual([]);
+    });
+
+    test('birth place datalists include all locally supported astro locations', () => {
+        const cityNames = getKnownBirthLocationNames();
+        const pages = ['natalni-karta.html', 'partnerska-shoda.html', 'astro-mapa.html'];
+        const missingOptions = [];
+
+        for (const page of pages) {
+            const html = fs.readFileSync(path.join(ROOT_DIR, page), 'utf8');
+            for (const city of cityNames) {
+                if (!html.includes(`<option value="${city}">`)) {
+                    missingOptions.push(`${page}: ${city}`);
+                }
+            }
+        }
+
+        expect(missingOptions).toEqual([]);
+    });
+
+    test('birth place datalist pages load the runtime suggestion hydrator', () => {
+        const pages = ['natalni-karta.html', 'partnerska-shoda.html', 'astro-mapa.html'];
+        const missingScripts = [];
+
+        for (const page of pages) {
+            const html = fs.readFileSync(path.join(ROOT_DIR, page), 'utf8');
+            if (!html.includes('js/dist/birth-location-suggestions.js')) {
+                missingScripts.push(page);
+            }
+        }
+
+        expect(missingScripts).toEqual([]);
+    });
+
+    test('Sentry init loads after public API config on homepage', () => {
+        const html = fs.readFileSync(path.join(ROOT_DIR, 'index.html'), 'utf8');
+        const apiConfigIndex = html.indexOf('js/dist/api-config.js');
+        const sentryInitIndex = html.indexOf('js/dist/sentry-init.js');
+
+        expect(apiConfigIndex).toBeGreaterThan(-1);
+        expect(sentryInitIndex).toBeGreaterThan(-1);
+        expect(sentryInitIndex).toBeGreaterThan(apiConfigIndex);
+    });
+
     test('product HTML local script and stylesheet assets exist', () => {
         const missingAssets = [];
         const scriptPattern = /<script\b([^>]*)>/gi;
@@ -417,6 +485,18 @@ describe('Static HTML CSP hygiene', () => {
     test('public JavaScript does not reference obsolete API aliases', () => {
         const offenders = [...readJsSourceFiles(), ...readBuiltJsFiles()]
             .filter(({ js }) => js.includes('/api/contact/contact'))
+            .map(({ file }) => file);
+
+        expect(offenders).toEqual([]);
+    });
+
+    test('public JavaScript does not ship service placeholder keys', () => {
+        const placeholders = [
+            'SENTRY_DSN_PLACEHOLDER',
+            'BEl62iUYgUivxIkv69yViEuiBIa40HI2jA4B1jbUmnlFdlK0JTYfM22zF9v8BH-_iH7z2qk4nVLVAJjmM0rVv-Q'
+        ];
+        const offenders = [...readJsSourceFiles(), ...readBuiltJsFiles()]
+            .filter(({ js }) => placeholders.some(placeholder => js.includes(placeholder)))
             .map(({ file }) => file);
 
         expect(offenders).toEqual([]);

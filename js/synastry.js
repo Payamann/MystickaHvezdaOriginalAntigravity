@@ -47,6 +47,167 @@ function animateScale(element, axis, value, duration = 1000) {
     });
 }
 
+function normalizeServerSynastryScores(scores) {
+    if (!scores || typeof scores !== 'object') return null;
+
+    const normalized = {
+        totalScore: Number(scores.total),
+        emotionScore: Number(scores.emotion),
+        commScore: Number(scores.communication),
+        passionScore: Number(scores.passion),
+        stabilityScore: Number(scores.stability)
+    };
+
+    return Object.values(normalized).every(Number.isFinite) ? normalized : null;
+}
+
+function optionalInputValue(id) {
+    const value = document.getElementById(id)?.value?.trim();
+    return value || undefined;
+}
+
+function formatPrecisionLabel(precision) {
+    const labels = {
+        birth_time_location_timezone: 'čas + rozpoznané místo',
+        birth_time_utc: 'čas bez rozpoznaného místa',
+        date_noon_location_timezone: 'datum + místo, bez přesného času',
+        date_noon_utc: 'pouze datum'
+    };
+
+    return labels[precision] || 'neurčená přesnost';
+}
+
+function formatSynastryChartLine(person, fallbackName) {
+    const chart = person?.chart;
+    const summary = chart?.summary || {};
+    const location = chart?.location?.name || 'místo nerozpoznáno';
+    const ascendant = summary.ascendantSign || 'bez ascendentu';
+    const sun = summary.sunSign || '--';
+    const moon = summary.moonSign || '--';
+
+    return `${person?.name || fallbackName}: Slunce ${sun}, Měsíc ${moon}, ASC ${ascendant}, ${location}`;
+}
+
+function renderSynastryEngineSummary(container, synastry) {
+    const existing = document.getElementById('synastry-engine-summary');
+    if (existing) existing.remove();
+    if (!container || !synastry?.engine) return;
+
+    const summary = document.createElement('article');
+    summary.id = 'synastry-engine-summary';
+    summary.className = 'synastry-engine-summary';
+
+    const header = document.createElement('div');
+    header.className = 'synastry-engine-summary__header';
+
+    const title = document.createElement('h4');
+    title.textContent = 'Astro výpočet vztahu';
+
+    const badge = document.createElement('span');
+    badge.className = 'synastry-engine-summary__badge';
+    badge.textContent = formatPrecisionLabel(synastry.engine.precision);
+
+    header.append(title, badge);
+
+    const list = document.createElement('ul');
+    list.className = 'synastry-engine-summary__list';
+
+    [
+        formatSynastryChartLine(synastry.person1, 'Osoba A'),
+        formatSynastryChartLine(synastry.person2, 'Osoba B')
+    ].forEach((line) => {
+        const item = document.createElement('li');
+        item.textContent = line;
+        list.appendChild(item);
+    });
+
+    const note = document.createElement('p');
+    note.className = 'synastry-engine-summary__note';
+    note.textContent = 'Přesnější čas a rozpoznané město zpřístupní ascendent, domy a stabilnější vztahové skóre.';
+
+    summary.append(header, list, note);
+
+    const firstGrid = container.querySelector('.grid');
+    if (firstGrid?.nextSibling) {
+        container.insertBefore(summary, firstGrid.nextSibling);
+    } else {
+        container.appendChild(summary);
+    }
+}
+
+function appendSynastryFavoriteAction(container, readingId) {
+    if (!container || !readingId) return;
+
+    document.getElementById('favorite-synastry-action')?.remove();
+
+    const action = document.createElement('div');
+    action.id = 'favorite-synastry-action';
+    action.className = 'text-center favorite-reading-action mt-md';
+    action.innerHTML = `
+        <button id="favorite-synastry-btn" class="btn btn--glass favorite-reading-action__button">
+            <span class="favorite-icon">☆</span> Přidat do oblíbených
+        </button>
+    `;
+    container.appendChild(action);
+
+    action.querySelector('#favorite-synastry-btn')?.addEventListener('click', async () => {
+        if (typeof window.toggleFavorite === 'function') {
+            await window.toggleFavorite(readingId, 'favorite-synastry-btn');
+        }
+    });
+}
+
+function applySynastryScores(scores, showDetails) {
+    if (!scores) return;
+
+    const totalElement = document.getElementById('total-score');
+    if (totalElement) totalElement.textContent = `${scores.totalScore}%`;
+
+    const heartFill = document.getElementById('heart-anim');
+    if (heartFill) {
+        animateScale(heartFill, 'scaleY', scores.totalScore / 100, 1);
+    }
+
+    if (!showDetails) return;
+
+    const detailMap = [
+        ['score-emotion', 'bar-emotion', scores.emotionScore],
+        ['score-comm', 'bar-comm', scores.commScore],
+        ['score-passion', 'bar-passion', scores.passionScore],
+        ['score-stability', 'bar-stability', scores.stabilityScore]
+    ];
+
+    detailMap.forEach(([scoreId, barId, value]) => {
+        const scoreElement = document.getElementById(scoreId);
+        const barElement = document.getElementById(barId);
+        if (scoreElement) scoreElement.textContent = `${value}%`;
+        if (barElement) animateScale(barElement, 'scaleX', value / 100, 1);
+    });
+}
+
+async function fetchCalculatedSynastry(person1, person2) {
+    if (!window.callAPI) return null;
+    const data = await window.callAPI('/synastry/calculate', { person1, person2 });
+    return data.synastry || null;
+}
+
+function trackSynastryCalculation(scores, synastry) {
+    window.MH_ANALYTICS?.trackEvent?.('synastry_calculated', {
+        engine_version: synastry?.engine?.version || null,
+        precision: synastry?.engine?.precision || null,
+        person1_precision: synastry?.engine?.person1Precision || null,
+        person2_precision: synastry?.engine?.person2Precision || null,
+        person1_location_resolved: Boolean(synastry?.person1?.chart?.location),
+        person2_location_resolved: Boolean(synastry?.person2?.chart?.location),
+        total_score: scores?.totalScore ?? null,
+        emotion_score: scores?.emotionScore ?? null,
+        communication_score: scores?.commScore ?? null,
+        passion_score: scores?.passionScore ?? null,
+        stability_score: scores?.stabilityScore ?? null,
+        cross_aspects_count: Array.isArray(synastry?.crossAspects) ? synastry.crossAspects.length : 0
+    });
+}
+
 function initSynastry() {
     const form = document.getElementById('synastry-form');
     if (!form) return;
@@ -62,6 +223,8 @@ function initSynastry() {
         useProfileCheckbox.addEventListener('change', async (e) => {
             const nameInput = document.getElementById('p1-name');
             const dateInput = document.getElementById('p1-date');
+            const timeInput = document.getElementById('p1-time');
+            const placeInput = document.getElementById('p1-place');
 
             if (e.target.checked) {
                 if (!window.Auth?.isLoggedIn()) {
@@ -87,6 +250,15 @@ function initSynastry() {
                         } catch (parseErr) {
                             dateInput.value = user.birth_date;
                         }
+                    }
+
+                    if (user.birth_time && timeInput) {
+                        const time = user.birth_time.toString();
+                        timeInput.value = time.length > 5 ? time.substring(0, 5) : time;
+                    }
+
+                    if (user.birth_place && placeInput) {
+                        placeInput.value = user.birth_place;
                     }
                 } catch (error) {
                     console.error('Synastry Autofill Error:', error);
@@ -127,21 +299,40 @@ async function calculateCompatibility() {
     // Get form data
     const person1 = {
         name: document.getElementById('p1-name').value,
-        birthDate: document.getElementById('p1-date').value
+        birthDate: document.getElementById('p1-date').value,
+        birthTime: optionalInputValue('p1-time'),
+        birthPlace: optionalInputValue('p1-place')
     };
     const person2 = {
         name: document.getElementById('p2-name').value,
-        birthDate: document.getElementById('p2-date').value
+        birthDate: document.getElementById('p2-date').value,
+        birthTime: optionalInputValue('p2-time'),
+        birthPlace: optionalInputValue('p2-place')
     };
 
     // Calculate scores using imported logic
     const scores = calculateSynastryScores(person1, person2);
-    const { emotion: emotionScore, communication: commScore, passion: passionScore, total: totalScore } = scores;
+    const { emotion: emotionScore, communication: commScore, passion: passionScore, stability: stabilityScore, total: totalScore } = scores;
+    let displayedScores = { totalScore, emotionScore, commScore, passionScore, stabilityScore };
+    let calculatedSynastry = null;
+
+    try {
+        calculatedSynastry = await fetchCalculatedSynastry(person1, person2);
+        const serverScores = normalizeServerSynastryScores(calculatedSynastry?.scores);
+        if (serverScores) {
+            displayedScores = serverScores;
+            trackSynastryCalculation(displayedScores, calculatedSynastry);
+        }
+    } catch (calculationError) {
+        console.warn('Synastry engine calculation fallback:', calculationError.message);
+    }
+
     const viewerProfile = window.Auth?.isLoggedIn?.() ? await window.Auth.getProfile() : null;
     const hasActiveSession = !!viewerProfile;
 
     // Show results with animation
     setBlockVisible(resultsDiv, true);
+    renderSynastryEngineSummary(resultsDiv, calculatedSynastry);
     resultsDiv.scrollIntoView({ behavior: 'smooth' });
 
     // Animate scores
@@ -149,10 +340,10 @@ async function calculateCompatibility() {
     const isPremium = hasActiveSession && window.Auth && window.Auth.isPremium();
 
     // Animate Total Score (Always visible)
-    animateValue('total-score', 0, totalScore, 2000);
+    animateValue('total-score', 0, displayedScores.totalScore, 2000);
     const heartFill = document.getElementById('heart-anim');
     if (heartFill) {
-        animateScale(heartFill, 'scaleY', totalScore / 100, 1500);
+        animateScale(heartFill, 'scaleY', displayedScores.totalScore / 100, 1500);
     }
 
     // Detailed Scores - Gated
@@ -171,22 +362,26 @@ async function calculateCompatibility() {
 
     if (isPremium) {
         // Show Real Data
-        animateValue('score-emotion', 0, emotionScore, 1500);
-        animateValue('score-comm', 0, commScore, 1700);
-        animateValue('score-passion', 0, passionScore, 1900);
+        animateValue('score-emotion', 0, displayedScores.emotionScore, 1500);
+        animateValue('score-comm', 0, displayedScores.commScore, 1700);
+        animateValue('score-passion', 0, displayedScores.passionScore, 1900);
+        animateValue('score-stability', 0, displayedScores.stabilityScore, 2100);
 
-        animateScale(document.getElementById('bar-emotion'), 'scaleX', emotionScore / 100);
-        animateScale(document.getElementById('bar-comm'), 'scaleX', commScore / 100);
-        animateScale(document.getElementById('bar-passion'), 'scaleX', passionScore / 100);
+        animateScale(document.getElementById('bar-emotion'), 'scaleX', displayedScores.emotionScore / 100);
+        animateScale(document.getElementById('bar-comm'), 'scaleX', displayedScores.commScore / 100);
+        animateScale(document.getElementById('bar-passion'), 'scaleX', displayedScores.passionScore / 100);
+        animateScale(document.getElementById('bar-stability'), 'scaleX', displayedScores.stabilityScore / 100);
     } else {
         // Soft Gate - Obscure Details
         document.getElementById('score-emotion').textContent = '🔒';
         document.getElementById('score-comm').textContent = '🔒';
         document.getElementById('score-passion').textContent = '🔒';
+        document.getElementById('score-stability').textContent = '🔒';
 
         animateScale(document.getElementById('bar-emotion'), 'scaleX', 0);
         animateScale(document.getElementById('bar-comm'), 'scaleX', 0);
         animateScale(document.getElementById('bar-passion'), 'scaleX', 0);
+        animateScale(document.getElementById('bar-stability'), 'scaleX', 0);
 
         // Add Overlay
         detailCard.classList.add('premium-lock-host');
@@ -216,11 +411,11 @@ async function calculateCompatibility() {
     setBlockVisible(aiResultsDiv, false);
 
     if (!hasActiveSession) {
-        document.getElementById('total-score').textContent = `${totalScore}%`;
+        document.getElementById('total-score').textContent = `${displayedScores.totalScore}%`;
         document.getElementById('verdict-text').textContent =
-            `Celková kompatibilita ${totalScore}% - `;
+            `Celková kompatibilita ${displayedScores.totalScore}% - `;
         setBlockVisible(aiResultsDiv, true);
-        renderTeaser(aiResultsDiv, totalScore);
+        renderTeaser(aiResultsDiv, displayedScores.totalScore);
         btn.textContent = originalText;
         btn.disabled = false;
         return;
@@ -238,17 +433,25 @@ async function calculateCompatibility() {
         const data = await response.json();
 
         if (data.success) {
+            const serverScores = normalizeServerSynastryScores(data.synastry?.scores);
+            if (serverScores) {
+                displayedScores = serverScores;
+                calculatedSynastry = data.synastry;
+                applySynastryScores(displayedScores, isPremium && !data.isTeaser);
+                renderSynastryEngineSummary(resultsDiv, calculatedSynastry);
+            }
+
             // Update verdict
             document.getElementById('verdict-text').textContent =
-                `Celková kompatibilita ${totalScore}% - `;
+                `Celková kompatibilita ${displayedScores.totalScore}% - `;
 
             // Show AI interpretation
             setBlockVisible(aiResultsDiv, true);
 
             if (data.isTeaser) {
                 // RENDER TEASER (Blurred)
-                document.getElementById('total-score').textContent = `${totalScore}%`;
-                renderTeaser(aiResultsDiv);
+                document.getElementById('total-score').textContent = `${displayedScores.totalScore}%`;
+                renderTeaser(aiResultsDiv, displayedScores.totalScore);
             } else {
                 // RENDER FULL CONTENT
                 const contentDiv = aiResultsDiv.querySelector('.ai-content');
@@ -262,13 +465,14 @@ async function calculateCompatibility() {
                 // Save to history if logged in
                 if (window.Auth && window.Auth.saveReading && !data.isTeaser) {
                     try {
-                        await window.Auth.saveReading('synastry', {
+                        const saveResult = await window.Auth.saveReading('synastry', {
                             person1,
                             person2,
                             interpretation: data.response,
-                            scores: { totalScore, emotionScore, commScore, passionScore }
+                            scores: displayedScores,
+                            synastry: data.synastry || calculatedSynastry
                         });
-                        // Add favorite button for synastry? Maybe later.
+                        appendSynastryFavoriteAction(aiResultsDiv, saveResult?.id);
                     } catch (e) {
                         console.warn('Failed to auto-save synastry reading:', e);
                     }
@@ -283,8 +487,8 @@ async function calculateCompatibility() {
 
         // Fallback to static verdict
         let verdict = "";
-        if (totalScore > 85) verdict = "Osudové spojení! Hvězdy vám přejí.";
-        else if (totalScore > 70) verdict = "Velmi silný pár s harmonickými aspekty.";
+        if (displayedScores.totalScore > 85) verdict = "Osudové spojení! Hvězdy vám přejí.";
+        else if (displayedScores.totalScore > 70) verdict = "Velmi silný pár s harmonickými aspekty.";
         else verdict = "Vztah s potenciálem, který vyžaduje práci.";
         document.getElementById('verdict-text').textContent = verdict;
 

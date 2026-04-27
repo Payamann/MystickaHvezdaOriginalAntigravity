@@ -1,0 +1,134 @@
+{
+  "script": "daily_reel.py",
+  "date": "2026-04-28",
+  "quality": "standard",
+  "signs": [
+    "Býk",
+    "Blíženci",
+    "Štír"
+  ],
+  "models": {
+    "creative": "claude-sonnet-4-5",
+    "utility": "claude-sonnet-4-5"
+  },
+  "options": {
+    "skip_suno": false,
+    "skip_thumbnail": false,
+    "skip_descriptions": false,
+    "prefetch_all": false,
+    "force": false
+  },
+  "outputs": {
+    "voiceover": "🗓️ 28. dubna 2026\n\n[mysterious] 28. dubna se otevírá vzácné okno pro vybraná znamení — energie, která přichází jednou za dlouhou dobu. [intense] Většina lidí tohle přehlédne, ale ty ne.\n\n[warm] Býku, [soft] dnes cítíš hlubší potřebu zakořenit se ve věcech, které ti přinášejí skutečnou radost a stabilitu. [gentle] Tvá smyslovost a trpělivost jsou tvými největšími spojenci — důvěřuj tomu, co vnímáš všemi smysly. [serious] Věnuj se praktickým krokům směrem k dlouhodobým cílům, ale nezapomínej si vychutnávat krásu okamžiku.\n\n[upbeat] Blíženci, [confident] pozor na jedno — dnešní energie může svést z cesty, pokud necháš mysl běžet příliš rychle bez jasného zaměření. [mysterious] Tvá mysl dnes plane brilantními nápady a slova ti plynou s neobvyklou lehkostí. [warm] Vesmír ti otevírá dveře k důležitému rozhovoru, který může změnit směr nadcházejících týdnů — důvěřuj své schopnosti vidět obě strany každé mince.\n\n[intense] Štíre, [commanding] sedíš u stolu a najednou to cítíš — ten tlak v hrudi, který říká: teď nebo nikdy. [mysterious] Den přináší hlubokou vnitřní sílu pro dokončení toho, co dlouho odkládáš. [serious] Tvá intuice je dnes mimořádně ostrá — důvěřuj jí při rozhodování v citlivých záležitostech.\n\n[upbeat] Víc najdeš na mystickahvezda.cz — tam máme kompletní rozbory pro všechna znamení. [warm] Sdílej tenhle obsah dál, ať se energie dostane tam, kam má. [gentle] Někdy stačí malá připomínka, aby další člověk našel odvahu k důležitému kroku.",
+    "tiktok_description": "28. dubna 2026 přichází energie, která tě naváže na to, co opravdu chceš — pokud dokážeš rozpoznat znamení kolem sebe 🌙 Tvoje smysly ti dnes řeknou víc než tisíc slov, důvěřuj jim a jednej podle toho, co cítíš. Sleduj nás, ať ti neunikne nic důležitého ✨\n\n#mystickaHvezda #Býk #Blíženci #Štír #horoskop #spiritualita",
+    "facebook_description": "28. dubna se otevírá něco, co moc lidí přehlédne — ale ty ne. Cítíš, že některé okamžiky mají hlubší význam než jiné? 💫 Dnešní energie tě vede k zakořenění v tom, co ti přináší skutečnou radost, a zároveň připomíná, že smysly i intuice dnes nesou důležitou zprávu. Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨\n\n#mystickaHvezda #Býk #Blíženci #Štír #horoskop #astrologie #dennihoroskop #mystika",
+    "suno": "A sunrise-powered groove built on crisp vibraphone pulses and bright shimmering synth layers, racing forward with warm cosmic energy like nebula light breaking across the morning sky. Punchy rhythm drives an uplifting major key melody that feels mysteriously hopeful, a celestial secret unfolding at dawn tempo. Short instrumental, 60-90 seconds, loop-ready.",
+    "thumbnail": "A mystical video thumbnail. The cosmic nebula background: deep space with swirling fuchsia, teal, orange and purple nebulae — dramatic, atmospheric, do not simplify.\n\nThe zodiac wheel: ancient dark obsidian material, weathered and worn, deep navy and cosmic purple tones. Golden filigree engraving outlines exactly 12 segments. The wheel has ONE single ring of 12 segments only — no inner ring, no duplicate symbols. Each sign appears exactly once in its correct astrological position, clockwise from the top: Aries (12 o'clock), Taurus (1 o'clock), Gemini (2 o'clock), Cancer (3 o'clock), Leo (4 o'clock), Virgo (5 o'clock), Libra (6 o'clock), Scorpio (7 o'clock), Sagittarius (8 o'clock), Capricorn (9 o'clock), Aquarius (10 o'clock), Pisces (11 o'clock). Each segment contains ONLY the correct astrological glyph symbol for that sign in soft glowing gold — elegant, not harsh. NO animal illustrations, NO pictograms, NO drawings of lions, crabs, bulls or any creatures — ONLY the standard astrological text symbols (♈♉♊♋♌♍♎♏♐♑♒♓). The wheel feels ancient, sacred, mysterious — NOT mechanical or technical.\n\nExactly three segments glow with a soft ethereal violet-gold light from within — the segments for Taurus, Scorpio, Gemini. These three shine with subtle magical violet-gold light, like moonlight through stained glass, NOT like LED spotlights. The other nine segments remain dark obsidian with faint gold outlines. The contrast is clear but gentle.\n\nThe center of the wheel features a large ornate five-pointed star — 3D CGI rendered, solid gold and champagne metallic material, beveled edges with deep relief, smooth reflective golden surface with subtle engraved filigree detail. It glows with warm radiant golden light, casting soft amber light onto the surrounding segments. It sits proudly in the center like an ancient celestial seal — timeless, elegant, powerful.\n\nThe wheel occupies the upper 55% of the image and floats slightly, with a soft cosmic aura around its edges blending into the nebula behind it.\n\nBelow the wheel, an ornate golden dark metal plaque bearing two lines of inscribed text: '28. dubna' in stylized elegant gold text, and below it 'VESMÍRNÁ ENERGIE' in bold engraved gold lettering.\n\nBelow the plaque, a large ancient parchment scroll — medium warm tone, aged honey and antique tan color, darker than cream but lighter than brown, harmoniously blending with the overall dark cosmic mood — displays two lines of bright glowing gold calligraphic text: 'Co ti dnes' on the first line, and 'hvězdy připravily?' on the second line — vivid, luminous gold, clearly legible even on small mobile screens.\n\nabsolutely NO star icons. NO logos. NO bottom border. NO corner decorations. The very bottom right corner must be completely empty and dark, no elements whatsoever.\n\nPortrait 9:16.",
+    "thumbnail_colors": {
+      "background": "deep space with swirling fuchsia, teal, orange and purple nebulae",
+      "wheel": "deep navy and cosmic purple tones"
+    }
+  },
+  "qa_report": {
+    "voiceover_word_count": 196,
+    "hook_word_count": 23,
+    "hook": "28. dubna se otevírá vzácné okno pro vybraná znamení — energie, která přichází jednou za dlouhou dobu. Většina lidí tohle přehlédne, ale ty ne.",
+    "hashtags": [
+      "#mystickaHvezda",
+      "#Býk",
+      "#Blíženci",
+      "#Štír",
+      "#horoskop",
+      "#spiritualita",
+      "#mystickaHvezda",
+      "#Býk",
+      "#Blíženci",
+      "#Štír",
+      "#horoskop",
+      "#astrologie",
+      "#dennihoroskop",
+      "#mystika"
+    ],
+    "missing_tag_lines": [],
+    "banned_phrase_hits": [],
+    "english_word_hits": [],
+    "gender_hits": {},
+    "issues": [],
+    "status": "ok"
+  },
+  "api_usage": {
+    "total_calls": 8,
+    "by_purpose": {
+      "caption": 2,
+      "horoscope": 3,
+      "proofread": 1,
+      "suno": 1,
+      "voiceover": 1
+    },
+    "by_model": {
+      "claude-sonnet-4-5": 8
+    },
+    "estimated_input_chars": 19733,
+    "estimated_input_tokens": 4936,
+    "max_output_tokens": 4500,
+    "calls": [
+      {
+        "purpose": "horoscope",
+        "model": "claude-sonnet-4-5",
+        "estimated_input_chars": 1031,
+        "estimated_input_tokens": 258,
+        "max_output_tokens": 600
+      },
+      {
+        "purpose": "horoscope",
+        "model": "claude-sonnet-4-5",
+        "estimated_input_chars": 1036,
+        "estimated_input_tokens": 259,
+        "max_output_tokens": 600
+      },
+      {
+        "purpose": "horoscope",
+        "model": "claude-sonnet-4-5",
+        "estimated_input_chars": 1029,
+        "estimated_input_tokens": 258,
+        "max_output_tokens": 600
+      },
+      {
+        "purpose": "voiceover",
+        "model": "claude-sonnet-4-5",
+        "estimated_input_chars": 5684,
+        "estimated_input_tokens": 1421,
+        "max_output_tokens": 800
+      },
+      {
+        "purpose": "proofread",
+        "model": "claude-sonnet-4-5",
+        "estimated_input_chars": 3605,
+        "estimated_input_tokens": 902,
+        "max_output_tokens": 800
+      },
+      {
+        "purpose": "caption",
+        "model": "claude-sonnet-4-5",
+        "estimated_input_chars": 2750,
+        "estimated_input_tokens": 688,
+        "max_output_tokens": 400
+      },
+      {
+        "purpose": "caption",
+        "model": "claude-sonnet-4-5",
+        "estimated_input_chars": 2687,
+        "estimated_input_tokens": 672,
+        "max_output_tokens": 400
+      },
+      {
+        "purpose": "suno",
+        "model": "claude-sonnet-4-5",
+        "estimated_input_chars": 1911,
+        "estimated_input_tokens": 478,
+        "max_output_tokens": 300
+      }
+    ]
+  },
+  "generated_at": "2026-04-26T20:10:31"
+}

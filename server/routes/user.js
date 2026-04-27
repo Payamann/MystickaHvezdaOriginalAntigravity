@@ -9,7 +9,7 @@ import { authenticateToken } from '../middleware.js';
 import { generateToken } from '../auth.js';
 import { supabase } from '../db-supabase.js';
 import rateLimit from 'express-rate-limit';
-import { validatePassword, validateString } from '../utils/validation.js';
+import { validatePassword } from '../utils/validation.js';
 import { blacklistToken, blacklistAllUserTokens } from '../utils/token-blacklist.js';
 
 export const router = express.Router();
@@ -21,6 +21,50 @@ const sensitiveOpLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
 });
+
+const VALID_READING_TYPES = new Set([
+    'angel',
+    'angel-card',
+    'astrocartography',
+    'crystal-ball',
+    'daily-wisdom',
+    'horoscope',
+    'journal',
+    'medicine-wheel',
+    'natal',
+    'natal-chart',
+    'numerology',
+    'oracle',
+    'past-life',
+    'runes',
+    'synastry',
+    'tarot'
+]);
+const MAX_READING_DATA_LENGTH = 50000;
+
+function normalizeReadingData(readingData) {
+    if (readingData === undefined || readingData === null) {
+        throw new Error('Reading data is required.');
+    }
+
+    if (typeof readingData === 'string') {
+        const trimmed = readingData.trim();
+        if (!trimmed) throw new Error('Reading data is required.');
+        if (trimmed.length > MAX_READING_DATA_LENGTH) throw new Error('Reading data is too large.');
+        return trimmed;
+    }
+
+    if (typeof readingData !== 'object' || Array.isArray(readingData)) {
+        throw new Error('Reading data must be an object or string.');
+    }
+
+    const serialized = JSON.stringify(readingData);
+    if (!serialized || serialized.length > MAX_READING_DATA_LENGTH) {
+        throw new Error('Reading data is too large.');
+    }
+
+    return readingData;
+}
 
 // Get user's reading history (with pagination)
 router.get('/readings', authenticateToken, async (req, res) => {
@@ -65,31 +109,32 @@ router.get('/readings', authenticateToken, async (req, res) => {
 router.post('/readings', authenticateToken, async (req, res) => {
     try {
         const { type, data: readingData } = req.body;
+        const cleanType = typeof type === 'string' ? type.trim() : '';
 
-        if (!type || !readingData) {
+        if (!cleanType || readingData === undefined || readingData === null) {
             return res.status(400).json({ error: 'Type and data are required.' });
         }
 
         // Validate type against allowlist
-        const validTypes = ['tarot', 'oracle', 'numerology', 'horoscope', 'angel', 'journal'];
-        if (!validTypes.includes(type)) {
+        if (!VALID_READING_TYPES.has(cleanType)) {
             return res.status(400).json({ error: 'Invalid reading type.' });
         }
 
-        // Validate reading data
-        const validatedData = validateString(readingData, 0, 50000, 'Reading data');
-        if (!validatedData.isValid) {
-            return res.status(400).json({ error: validatedData.error });
+        let validatedData;
+        try {
+            validatedData = normalizeReadingData(readingData);
+        } catch (validationError) {
+            return res.status(400).json({ error: validationError.message });
         }
 
         const { data, error } = await supabase
             .from('readings')
-            .insert({ user_id: req.user.id, type, data: validatedData.value })
+            .insert({ user_id: req.user.id, type: cleanType, data: validatedData })
             .select()
             .single();
 
         if (error) throw error;
-        res.json({ success: true, reading: data });
+        res.json({ success: true, reading: data, id: data.id });
     } catch (error) {
         console.error('Save Reading Error:', error);
         res.status(500).json({ success: false, error: 'Nepodařilo se uložit výklad.' });

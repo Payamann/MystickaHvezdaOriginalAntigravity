@@ -10,6 +10,12 @@ const API_CONFIG = {
     // Stripe publishable key — loaded from server at runtime (see initConfig)
     STRIPE_PUBLISHABLE_KEY: null,
 
+    // Web Push public key — loaded from server at runtime (see initConfig)
+    VAPID_PUBLIC_KEY: null,
+
+    // Sentry browser DSN loaded from server at runtime (see initConfig)
+    SENTRY_DSN: null,
+
     // API Endpoints
     ENDPOINTS: {
         CRYSTAL_BALL: '/crystal-ball',
@@ -20,22 +26,43 @@ const API_CONFIG = {
     }
 };
 
+let _configLoaded = false;
+let _configFetchPromise = null;
+
 /**
  * Loads client-safe config from the server (e.g. Stripe publishable key).
  * Call this once on page load before using STRIPE_PUBLISHABLE_KEY.
  */
 async function initConfig() {
-    try {
-        const res = await fetch(`${API_CONFIG.BASE_URL}/config`);
-        if (res.ok) {
-            const data = await res.json();
-            if (data.stripePublishableKey) {
-                API_CONFIG.STRIPE_PUBLISHABLE_KEY = data.stripePublishableKey;
+    if (_configLoaded) return API_CONFIG;
+    if (_configFetchPromise) return _configFetchPromise;
+
+    _configFetchPromise = (async () => {
+        try {
+            const res = await fetch(`${API_CONFIG.BASE_URL}/config`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.stripePublishableKey) {
+                    API_CONFIG.STRIPE_PUBLISHABLE_KEY = data.stripePublishableKey;
+                }
+                if (data.vapidPublicKey) {
+                    API_CONFIG.VAPID_PUBLIC_KEY = data.vapidPublicKey;
+                }
+                if (data.sentryDsn) {
+                    API_CONFIG.SENTRY_DSN = data.sentryDsn;
+                }
+                _configLoaded = true;
             }
+        } catch (e) {
+            console.warn('Could not load remote config:', e.message);
+        } finally {
+            _configFetchPromise = null;
         }
-    } catch (e) {
-        console.warn('Could not load remote config:', e.message);
-    }
+
+        return API_CONFIG;
+    })();
+
+    return _configFetchPromise;
 }
 
 /**

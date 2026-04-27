@@ -1,0 +1,138 @@
+{
+  "script": "daily_reel2.py",
+  "date": "2026-04-28",
+  "quality": "standard",
+  "signs": [
+    "Váhy"
+  ],
+  "sign": "Váhy",
+  "models": {
+    "creative": "claude-sonnet-4-6",
+    "utility": "claude-sonnet-4-6"
+  },
+  "options": {
+    "skip_suno": false,
+    "skip_thumbnail": false,
+    "skip_descriptions": false,
+    "prefetch_all": false,
+    "force": false,
+    "count": 1
+  },
+  "context": {
+    "astro_context": "Neptun v Beranu — iluze se hroutí, konfrontace s realitou je nevyhnutelná | Saturn v Beranu — karma přichází rychle, každá zkratka se vrací",
+    "weekly_theme": "lidé, kteří tě drží zpátky — nebo si to jen myslíš",
+    "reel_format": "seznam",
+    "narrative_type": {
+      "name": "veřejná samota",
+      "instruction": "Persona je obklopena lidmi ale vnitřně sama — kavárna, výtah, čekárna, obchod, vlak. Kontrast mezi vnějším ruchem a vnitřním tichem {sign}."
+    },
+    "scene_setting": "v práci když ostatní odešli — prázdná místnost"
+  },
+  "outputs": {
+    "voiceover": "🗓️ 28. dubna 2026\n\n[gentle] Váhy nejsou nerozhodné. <break time=\"0.5s\" /> [soft] Čekají, až přestane být výběr o nich. <break time=\"1.0s\" />\n\n[warm] Říkáš: „Chci, ať rozhodnutí přijde od tebe.“ <break time=\"0.3s\" /> [confident] Myslíš: „Nechci nést vinu, když to nevyjde.“ <break time=\"0.3s\" /> [warm] Říkáš: „Nechám ti prostor.“ <break time=\"0.3s\" /> [soft] Myslíš: „Bojím se, že mě ten prostor spolkne taky.“ <break time=\"1.0s\" />\n\n[inviting] Co dnes pořád zvažuješ? Napiš jedno slovo ⬇️ <break time=\"0.3s\" /> [clearly] Příští díl: jak rozpoznáš, kdy tě někdo skutečně drží zpátky.",
+    "tiktok_description": "28. dubna 2026 Neptun v Beranu rozbíjí iluze, které ti dovolují čekat — a Saturn v Beranu přináší účet za každý odložený krok rychleji, než čekáš. ⚖️\nDnes poznáš, jestli druhého člověka skutečně chráníš, nebo jen chráníš sebe před odpovědností za výsledek.\nSleduj profil — příště poznáš konkrétní signály, podle kterých rozpoznáš, kdo tě skutečně drží zpátky 🔍\n\n#mystickaHvezda #Váhy #dennihoroskop #astrologie #horoskop",
+    "facebook_description": "28. dubna 2026 Neptun v Beranu boří jednu konkrétní iluzi — že čekáš kvůli druhým. ⚖️ Saturn v Beranu přitom posílá účet za každý odložený krok dřív, než si stihneš říct, že ještě není čas. Dnes si všimni, jestli skutečně dáváš prostor druhému člověku, nebo si ho dáváš sobě — aby odpovědnost za výsledek ještě chvíli zůstala ve vzduchu. 🔍 Celý výklad najdeš na mystickahvezda.cz/horoskopy.html ✨\n\n#mystickaHvezda #Váhy #horoskop #astrologie #dennihoroskop #mystika",
+    "suno": "Warm instrumental background with light harp arpeggios and a delicate flute melody weaving gently forward, carried by a soft rhythmic pulse of brushed percussion and a steady acoustic guitar strum. Bright major key, graceful and balanced, like morning dew catching golden light across a wide open sky — hopeful, uplifting, and beautifully spacious without ever overpowering a voice. Short instrumental, 60-90 seconds, loop-ready.",
+    "thumbnail": "A mystical video thumbnail for zodiac sign Libra.\n\nBACKGROUND: deep dark space with soft subtle soft rose and lavender nebula with balanced pastel cosmic tones, delicate pink and lilac stardust, harmonious dual-color aurora in rose gold and violet hues — graceful, balanced, romantic — gentle and atmospheric, NOT aggressive. Rich dense star field with thousands of tiny stars. Dark and deep — moody and calm, serving as a backdrop without competing with the foreground. Deep navy and dark indigo tones dominate. NO harsh lightning, NO aggressive neon.\n\nCOMPOSITION: Three elements stacked as one tight unified group, vertically centered in the image. The group fills roughly 80% of the image height. Minimal gap between elements — they feel like one connected unit.\n\nELEMENT 1 — glyph: large ornate Libra symbol (♎) in solid gold — rich champagne gold with deep amber shadows — surface of each stroke covered in intricate engraved filigree scrollwork and decorative patterns. Beveled polished 3D edges catching light. Small ornamental flourishes where strokes meet. Clear 3D depth and volume. Premium, ancient — NOT plain, NOT flat, NOT simple geometry.\n\nELEMENT 2 — immediately below, small gap: dark stone plaque with ornate gold border frame. '28. dubna' in elegant gold lettering on the first line, 'VÁHY' in bold engraved gold capitals on the second line.\n\nELEMENT 3 — immediately below, small gap: compact parchment scroll, aged honey color. Bold serif text in dark brown (#2a1500), NOT cursive, NOT italic: 'Říkáš jedno.' on the first line, 'Myslíš něco jiného.' on the second line.\n\nNO zodiac wheel. NO star icons. NO logos. NO borders. NO corner decorations. NO animals. NO human figures. Bottom corners completely clean.\n\nPortrait 9:16."
+  },
+  "qa_report": {
+    "voiceover_word_count": 54,
+    "hook_word_count": 10,
+    "hook": "Váhy nejsou nerozhodné. Čekají, až přestane být výběr o nich.",
+    "hashtags": [
+      "#mystickaHvezda",
+      "#Váhy",
+      "#dennihoroskop",
+      "#astrologie",
+      "#horoskop",
+      "#mystickaHvezda",
+      "#Váhy",
+      "#horoskop",
+      "#astrologie",
+      "#dennihoroskop",
+      "#mystika"
+    ],
+    "missing_tag_lines": [],
+    "banned_phrase_hits": [],
+    "english_word_hits": [],
+    "gender_hits": {},
+    "issues": [],
+    "status": "ok"
+  },
+  "api_usage": {
+    "total_calls": 8,
+    "by_purpose": {
+      "caption": 2,
+      "horoscope": 1,
+      "proofread": 2,
+      "suno": 1,
+      "thumbnail": 1,
+      "voiceover": 1
+    },
+    "by_model": {
+      "claude-sonnet-4-6": 8
+    },
+    "estimated_input_chars": 28365,
+    "estimated_input_tokens": 7093,
+    "max_output_tokens": 4780,
+    "calls": [
+      {
+        "purpose": "horoscope",
+        "model": "claude-sonnet-4-6",
+        "estimated_input_chars": 1024,
+        "estimated_input_tokens": 256,
+        "max_output_tokens": 600
+      },
+      {
+        "purpose": "voiceover",
+        "model": "claude-sonnet-4-6",
+        "estimated_input_chars": 10356,
+        "estimated_input_tokens": 2589,
+        "max_output_tokens": 800
+      },
+      {
+        "purpose": "proofread",
+        "model": "claude-sonnet-4-6",
+        "estimated_input_chars": 1730,
+        "estimated_input_tokens": 433,
+        "max_output_tokens": 1000
+      },
+      {
+        "purpose": "caption",
+        "model": "claude-sonnet-4-6",
+        "estimated_input_chars": 3804,
+        "estimated_input_tokens": 951,
+        "max_output_tokens": 400
+      },
+      {
+        "purpose": "caption",
+        "model": "claude-sonnet-4-6",
+        "estimated_input_chars": 4294,
+        "estimated_input_tokens": 1074,
+        "max_output_tokens": 400
+      },
+      {
+        "purpose": "proofread",
+        "model": "claude-sonnet-4-6",
+        "estimated_input_chars": 2036,
+        "estimated_input_tokens": 509,
+        "max_output_tokens": 1200
+      },
+      {
+        "purpose": "suno",
+        "model": "claude-sonnet-4-6",
+        "estimated_input_chars": 1747,
+        "estimated_input_tokens": 437,
+        "max_output_tokens": 300
+      },
+      {
+        "purpose": "thumbnail",
+        "model": "claude-sonnet-4-6",
+        "estimated_input_chars": 3374,
+        "estimated_input_tokens": 844,
+        "max_output_tokens": 80
+      }
+    ]
+  },
+  "generated_at": "2026-04-26T20:11:26"
+}

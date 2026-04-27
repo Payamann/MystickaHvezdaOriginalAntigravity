@@ -26,6 +26,42 @@ async function postWithCsrf(page, path, data) {
 }
 
 // ═══════════════════════════════════════════════════════════
+// ASTRO VÝPOČETNÍ ENDPOINTY
+// ═══════════════════════════════════════════════════════════
+
+test.describe('API: astro výpočty bez AI', () => {
+    test('GET /api/natal-chart/calculate vrátí chart', async ({ page }) => {
+        const res = await page.request.get('/api/natal-chart/calculate?birthDate=1990-01-01&birthTime=12:00&birthPlace=Praha');
+        expect(res.status()).toBe(200);
+        const body = await res.json();
+        expect(body.success).toBe(true);
+        expect(body.chart.summary.sunSign).toBe('Kozoroh');
+        expect(body.chart.houses.available).toBe(true);
+    });
+
+    test('POST /api/synastry/calculate s CSRF vrátí serverové skóre', async ({ page }) => {
+        const res = await postWithCsrf(page, '/api/synastry/calculate', {
+            person1: { name: 'A', birthDate: '1990-01-01' },
+            person2: { name: 'B', birthDate: '1992-07-15' },
+        });
+        expect(res.status()).toBe(200);
+        const body = await res.json();
+        expect(body.success).toBe(true);
+        expect(body.synastry.scores.total).toBeGreaterThanOrEqual(0);
+        expect(body.synastry.scores.total).toBeLessThanOrEqual(100);
+    });
+
+    test('GET /api/transits/current vrátí tranzitní snapshot', async ({ page }) => {
+        const res = await page.request.get('/api/transits/current?birthDate=1990-01-01&birthTime=12:00&birthPlace=Praha');
+        expect(res.status()).toBe(200);
+        const body = await res.json();
+        expect(body.success).toBe(true);
+        expect(body.transit.title).toBeTruthy();
+        expect(body.transit.message).toBeTruthy();
+    });
+});
+
+// ═══════════════════════════════════════════════════════════
 // CRYSTAL BALL
 // ═══════════════════════════════════════════════════════════
 
@@ -94,6 +130,50 @@ test.describe('API: /api/tarot', () => {
         });
         // Tarot může kontrolovat auth před validací
         expect([400, 401]).toContain(res.status());
+    });
+});
+
+// ═══════════════════════════════════════════════════════════
+// RUNY
+// ═══════════════════════════════════════════════════════════
+
+test.describe('API: /api/runes', () => {
+
+    test('bez CSRF vrátí 403', async ({ page }) => {
+        const res = await page.request.post('/api/runes', {
+            data: { rune: { name: 'Fehu', meaning: 'hojnost' } },
+        });
+        expect(res.status()).toBe(403);
+    });
+
+    test('s CSRF ale bez auth vrátí 401', async ({ page }) => {
+        const res = await postWithCsrf(page, '/api/runes', {
+            rune: { name: 'Fehu', meaning: 'hojnost' },
+            intention: 'test',
+        });
+        expect(res.status()).toBe(401);
+    });
+});
+
+// ═══════════════════════════════════════════════════════════
+// ANDĚLSKÉ KARTY
+// ═══════════════════════════════════════════════════════════
+
+test.describe('API: /api/angel-card', () => {
+
+    test('bez CSRF vrátí 403', async ({ page }) => {
+        const res = await page.request.post('/api/angel-card', {
+            data: { card: { name: 'Michael', theme: 'Ochrana' } },
+        });
+        expect(res.status()).toBe(403);
+    });
+
+    test('s CSRF ale bez auth vrátí 401', async ({ page }) => {
+        const res = await postWithCsrf(page, '/api/angel-card', {
+            card: { name: 'Michael', theme: 'Ochrana' },
+            intention: 'test',
+        });
+        expect(res.status()).toBe(401);
     });
 });
 

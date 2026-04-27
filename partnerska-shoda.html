@@ -138,9 +138,9 @@
 
                 <p class="hero__subtitle">
 
-                    Hodíte se k sobě? Naše astrologická kalkulačka analyzuje postavení planet obou partnerů
+                    Hodíte se k sobě? Naše symbolická kalkulačka propojí vaše data narození
 
-                    a odhalí silné i slabé stránky vašeho vztahu.
+                    a nabídne vztahový výklad se silnými stránkami i tématy k rozhovoru.
 
                 </p>
 
@@ -210,6 +210,32 @@
 
                                 </div>
 
+                                <div class="synastry-optional-grid">
+
+                                    <div class="form-group">
+
+                                        <label class="block text-sm mb-xs u-text-muted" for="p1-time">Čas narození
+
+                                            <span class="optional-label">volitelně</span></label>
+
+                                        <input type="time" id="p1-time" class="email-form__input w-full">
+
+                                    </div>
+
+                                    <div class="form-group">
+
+                                        <label class="block text-sm mb-xs u-text-muted" for="p1-place">Místo narození
+
+                                            <span class="optional-label">volitelně</span></label>
+
+                                        <input type="text" id="p1-place" class="email-form__input w-full"
+                                            list="birth-place-suggestions"
+                                            placeholder="Praha, Brno...">
+
+                                    </div>
+
+                                </div>
+
                             </div>
 
 
@@ -239,6 +265,61 @@
                                     <input type="date" id="p2-date" class="email-form__input w-full" required>
 
                                 </div>
+
+                                <div class="synastry-optional-grid">
+
+                                    <div class="form-group">
+
+                                        <label class="block text-sm mb-xs u-text-muted" for="p2-time">Čas narození
+
+                                            <span class="optional-label">volitelně</span></label>
+
+                                        <input type="time" id="p2-time" class="email-form__input w-full">
+
+                                    </div>
+
+                                    <div class="form-group">
+
+                                        <label class="block text-sm mb-xs u-text-muted" for="p2-place">Místo narození
+
+                                            <span class="optional-label">volitelně</span></label>
+
+                                        <input type="text" id="p2-place" class="email-form__input w-full"
+                                            list="birth-place-suggestions"
+                                            placeholder="Praha, Brno...">
+
+                                    </div>
+
+                                </div>
+
+                                <datalist id="birth-place-suggestions">
+                                    <option value="Praha">
+                                    <option value="Brno">
+                                    <option value="Ostrava">
+                                    <option value="Plzeň">
+                                    <option value="Liberec">
+                                    <option value="Olomouc">
+                                    <option value="České Budějovice">
+                                    <option value="Hradec Králové">
+                                    <option value="Pardubice">
+                                    <option value="Zlín">
+                                    <option value="Jihlava">
+                                    <option value="Karlovy Vary">
+                                    <option value="Ústí nad Labem">
+                                    <option value="Kladno">
+                                    <option value="Mladá Boleslav">
+                                    <option value="Teplice">
+                                    <option value="Bratislava">
+                                    <option value="Košice">
+                                    <option value="Varšava">
+                                    <option value="Krakov">
+                                    <option value="Vídeň">
+                                    <option value="Berlín">
+                                    <option value="Londýn">
+                                    <option value="Paříž">
+                                    <option value="New York">
+                                    <option value="Los Angeles">
+                                </datalist>
 
                             </div>
 
@@ -355,6 +436,24 @@
                                 <div class="compatibility-bar">
 
                                     <div class="compatibility-bar-fill" id="bar-passion"></div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="mb-lg">
+
+                                <div class="flex-between mb-xs">
+
+                                    <span>Stabilita a závazek (Saturn/Jupiter)</span>
+
+                                    <span id="score-stability">0%</span>
+
+                                </div>
+
+                                <div class="compatibility-bar">
+
+                                    <div class="compatibility-bar-fill" id="bar-stability"></div>
 
                                 </div>
 
@@ -542,6 +641,8 @@
 
 
 
+    <script src="js/dist/favorites-helper.js" defer></script>
+
     <script type="module" src="js/dist/synastry.js?v=2"></script>
 
 
@@ -553,6 +654,7 @@
 
 
     <script src="js/dist/api-config.js?v=5" defer></script>
+    <script src="js/dist/birth-location-suggestions.js" defer></script>
 
     <script src="js/dist/templates.js?v=10" defer></script>
 
@@ -572,7 +674,6 @@
 
 
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"></script>
 </body>
 
 

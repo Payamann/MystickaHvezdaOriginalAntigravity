@@ -5,7 +5,7 @@
 
                 name: 'Červená Aura', color: '#e74c3c', glow: 'rgba(231,76,60,0.5)', keyword: 'SÍLA · VITALITA · VÁŠEŇ',
 
-                desc: 'Červená aura je nejenergetičtějšía nejzákladnější ze všech. Lidé s červenou aurou jsou plní vitality, odvahy a přirozené vůdcovské síly. Jsou pevně zakotveni na zemi a milují fyzický svět.',
+                desc: 'Červená aura je nejenergetičtější a nejzákladnější ze všech. Lidé s červenou aurou jsou plní vitality, odvahy a přirozené vůdcovské síly. Jsou pevně zakotveni na zemi a milují fyzický svět.',
 
                 strengths: 'Přirozené vůdcovství, neúnavná energie, odhodlání, fyzická síla, odvaha čelit výzvám',
 
@@ -23,13 +23,13 @@
 
                 name: 'Oranžová Aura', color: '#e67e22', glow: 'rgba(230,126,34,0.5)', keyword: 'KREATIVITA · RADOST · SMYSLNOST',
 
-                desc: 'Oranžová aura září kreativitou a radostí ze života. Tito lidé jsou přirozenými umělci a bavič. Milují smyslové zážitky a mají dar přinášet radost ostatním svou přirozenou veselostí.',
+                desc: 'Oranžová aura září kreativitou a radostí ze života. Tito lidé jsou přirozenými umělci a baviči. Milují smyslové zážitky a mají dar přinášet radost ostatním svou přirozenou veselostí.',
 
                 strengths: 'Kreativita, charisma, smysl pro humor, schopnost přinášet radost, emocionální inteligence',
 
                 challenges: 'Nestálost, přílišná závislost na vnějším potvrzení, sklony k přehánění',
 
-                crystal: 'Karneol, Jantarein, Slunečník — pro kreativní průtok',
+                crystal: 'Karneol, jantar, sluneční kámen — pro kreativní průtok',
 
                 chakra: 'Sakrální čakra (Svadhisthana) — kreativita, sexualita, emoce',
 
@@ -43,7 +43,7 @@
 
                 desc: 'Žlutá aura je aurou myslitelů, optimistů a komunikátorů. Září jako slunce — přitahuje ostatní svou radostností a intelektuální bystrosti. Tito lidé mají přirozený dar pro učení a vyučování.',
 
-                strengths: 'Analytické myšlení, optimismus, výjimečná komunikace, zvídavost, darek pro pedagogiku',
+                strengths: 'Analytické myšlení, optimismus, výjimečná komunikace, zvídavost, dar pro pedagogiku',
 
                 challenges: 'Úzkostlivá tendence k overthinkingu, potíže s dokončováním projektů, rozptýlenost',
 
@@ -87,7 +87,7 @@
 
                 chakra: 'Krční čakra (Višuddha) — komunikace, pravda, vyjadřování',
 
-                career: 'Terapueti, učitelé, duchovní vůdci, spisovatelé, hudebníci, soudci — vše kde moudrost a slovo mají váhu.'
+                career: 'Terapeuti, učitelé, duchovní vůdci, spisovatelé, hudebníci, soudci — vše kde moudrost a slovo mají váhu.'
 
             },
 
@@ -95,7 +95,7 @@
 
                 name: 'Indigová Aura', color: '#5b2d8e', glow: 'rgba(91,45,142,0.5)', keyword: 'VIZE · INTUICE · SPIRITUALITA',
 
-                desc: 'Indigová aura je vzácná a hluboce duchovní. Tito jedinci jsou vizionáři se silnou šestým smyslem. Vnímají to, co ostatní nevidí, a mají přirozené spojení s vyššími rovinami vědomí.',
+                desc: 'Indigová aura je vzácná a hluboce duchovní. Tito jedinci jsou vizionáři se silným šestým smyslem. Vnímají to, co ostatní nevidí, a mají přirozené spojení s vyššími rovinami vědomí.',
 
                 strengths: 'Telepatie, jasnovidnost, hluboká moudrost, schopnost vidět za povrch věcí, vedení ducha',
 
@@ -155,7 +155,7 @@
 
                 challenges: 'Přílišná citlivost na negativní energie, obtíže v konfrontaci s drsnou realitou světa',
 
-                crystal: 'Selenite, Čirý křišťál, Meskalit — pro čistotu a ochranu',
+                crystal: 'Selenit, čirý křišťál, měsíční kámen — pro čistotu a ochranu',
 
                 chakra: 'Transpersonální čakry — nad fyzickým tělem, spojení s božstvím',
 

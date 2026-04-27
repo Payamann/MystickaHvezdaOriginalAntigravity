@@ -176,8 +176,8 @@ const DICTIONARY_TERMS = [
         content_html: `
             <p>Slovo karma pochází ze sanskrtu a znamená prostě „čin" nebo „jednání". V rámci hinduistické a buddhistické filosofie ale nese mnohem hlubší smysl: je to zákon přesné příčiny a následku, který přesahuje hranice jednoho pozemského života.</p>
             <p>Karma neznamená trest nebo odplatu. Je to <strong>energetická rovnováha</strong>. Každá naše akce vytváří vlnění, které musí dojít ke svému přirozenému závěru – ať v tomto nebo v některém z budoucích životů.</p>
-            <h2>Pozitivní karma vs. Karmanická dluh</h2>
-            <p>Pozitivní karma (dárcovství, soucit, pravdivost) vysvětluje, proč se jedni lidé rodí do příznivých podmínek zdánlivě bez námahy. Karmický dluh naopak vysvětluje, proč jiní lidi opakovaně narážejí na stejný typ bolesti – mají nevyrovnanou emisi energie z minulých životů.</p>
+            <h2>Pozitivní karma vs. karmický dluh</h2>
+            <p>Pozitivní karma (dárcovství, soucit, pravdivost) vysvětluje, proč se jedni lidé rodí do příznivých podmínek zdánlivě bez námahy. Karmický dluh naopak vysvětluje, proč jiní lidé opakovaně narážejí na stejný typ bolesti – mají nevyrovnanou emisi energie z minulých životů.</p>
             <p>Astrologie umisťuje karmické informace do polohy Severního a Jižního dračího uzlu v Natální mapě.</p>
         `,
         related_slugs: ['reinkarnace', 'draci-uzly'],

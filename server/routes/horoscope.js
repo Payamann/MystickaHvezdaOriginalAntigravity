@@ -4,10 +4,11 @@
  * Includes daily/weekly/monthly horoscope with database caching
  */
 import express from 'express';
-import { optionalPremiumCheck, aiLimiter } from '../middleware.js';
+import { optionalPremiumCheck, aiLimiter, trackPaywallHit } from '../middleware.js';
 import { callClaude } from '../services/claude.js';
 import { SYSTEM_PROMPTS } from '../config/prompts.js';
 import { getHoroscopeCacheKey, getCachedHoroscope, saveCachedHoroscope } from '../services/astrology.js';
+import { normalizeHoroscopeAiResponse } from '../services/horoscope-response.js';
 
 export const router = express.Router();
 
@@ -39,6 +40,36 @@ const ZODIAC_NORMALIZATION = {
     'Wodnik': 'Vodnář'
 };
 
+function applyAiLimiter(req, res) {
+    return new Promise((resolve, reject) => {
+        let settled = false;
+
+        const settle = (value) => {
+            if (settled) return;
+            settled = true;
+            res.off('finish', onResponseDone);
+            res.off('close', onResponseDone);
+            resolve(value);
+        };
+        const onResponseDone = () => settle(false);
+
+        res.once('finish', onResponseDone);
+        res.once('close', onResponseDone);
+
+        aiLimiter(req, res, (error) => {
+            if (error) {
+                settled = true;
+                res.off('finish', onResponseDone);
+                res.off('close', onResponseDone);
+                reject(error);
+                return;
+            }
+
+            settle(true);
+        });
+    });
+}
+
 router.post('/', optionalPremiumCheck, async (req, res) => {
     try {
         let { sign, period = 'daily', context = [], lang = 'cs' } = req.body;
@@ -68,6 +99,8 @@ router.post('/', optionalPremiumCheck, async (req, res) => {
 
         // PREMIUM GATE: Free users can only access daily horoscope (bypass in dev)
         if (!req.isPremium && period !== 'daily' && process.env.NODE_ENV !== 'development') {
+            const feature = period === 'weekly' ? 'weekly_horoscope' : 'monthly_horoscope';
+            trackPaywallHit(req.user?.id, feature).catch(() => {});
             const errorMsgs = {
                 'cs': 'Týdenní a měsíční horoskopy jsou dostupné pouze pro Premium uživatele.',
                 'sk': 'Týždenné a mesačné horoskopy sú dostupné iba pre Premium používateľov.',
@@ -102,10 +135,8 @@ router.post('/', optionalPremiumCheck, async (req, res) => {
         console.log(`🔄 Horoscope Cache MISS: ${cacheKey} - Generating new for ${targetLang}...`);
 
         // Apply AI specific rate limit only on cache miss (when actually generating AI content)
-        await new Promise((resolve) => {
-            aiLimiter(req, res, resolve);
-        });
-        if (res.headersSent) {
+        const aiLimiterPassed = await applyAiLimiter(req, res);
+        if (!aiLimiterPassed || res.headersSent) {
             console.log(`⚠️ Horoscope AI Limiter hit for IP: ${req.ip}`);
             return;
         }
@@ -177,8 +208,7 @@ router.post('/', optionalPremiumCheck, async (req, res) => {
 
         const response = await callClaude(periodPrompt, message);
 
-        // Strip markdown code fences if model wraps JSON in ```json ... ```
-        const cleanResponse = response.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '').trim();
+        const { serialized: cleanResponse } = normalizeHoroscopeAiResponse(response);
 
         // Save to DB cache (non-blocking — don't let DB errors kill the response)
         saveCachedHoroscope(cacheKey, sign, period, cleanResponse, periodLabel)
@@ -191,10 +221,11 @@ router.post('/', optionalPremiumCheck, async (req, res) => {
         console.error('[HOROSCOPE] Claude Error:', error.message || error);
 
         // Fallback: return a static horoscope so users aren't left with empty page
-        const { sign: bodySign, lang: bodyLang = 'cs' } = req.body || {};
+        const { sign: bodySign, period: bodyPeriod = 'daily', lang: bodyLang = 'cs' } = req.body || {};
         const signName = bodySign || 'neznámé znamení';
         const supportedLangs = ['cs', 'sk', 'pl'];
         const fallbackTargetLang = supportedLangs.includes(bodyLang) ? bodyLang : 'cs';
+        const fallbackPeriod = ['daily', 'weekly', 'monthly'].includes(bodyPeriod) ? bodyPeriod : 'daily';
 
         // Unique sign-specific fallback content per language — varied opening styles
         const SIGN_FALLBACKS = {
@@ -275,7 +306,7 @@ router.post('/', optionalPremiumCheck, async (req, res) => {
             'sk': { 'daily': 'Denná inšpirácia', 'weekly': 'Týždenný horoskop', 'monthly': 'Mesačný horoskop' },
             'pl': { 'daily': 'Dzienna inspiracja', 'weekly': 'Horoskop tygodniowy', 'monthly': 'Horoskop miesięczny' }
         };
-        const fallbackPeriodLabel = labels[fallbackTargetLang]?.daily || 'Denní inspirace';
+        const fallbackPeriodLabel = labels[fallbackTargetLang]?.[fallbackPeriod] || labels.cs.daily;
 
         const fallbackResponse = JSON.stringify({
             prediction: fb.prediction,

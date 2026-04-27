@@ -6,6 +6,7 @@ import {
     escapeHtml,
     apiUrl,
     authHeaders,
+    authHeadersWithCsrf,
     getZodiacSign,
     getZodiacIconName,
     getReadingTitle,
@@ -872,7 +873,7 @@ async function initProfile() {
                     const response = await fetch(`${apiUrl()}/user/readings`, {
                         method: 'POST',
                         credentials: 'include',
-                        headers: authHeaders(true),
+                        headers: await authHeadersWithCsrf(true),
                         body: JSON.stringify({ type: 'journal', data: text })
                     });
 

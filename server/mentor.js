@@ -1,7 +1,7 @@
 import express from 'express';
 import { calculateMoonPhase } from './services/astrology.js';
 import { supabase } from './db-supabase.js';
-import { authenticateToken, requirePremiumSoft } from './middleware.js';
+import { authenticateToken, requirePremiumSoft, trackPaywallHit } from './middleware.js';
 import { callClaude } from './services/claude.js';
 import { SYSTEM_PROMPTS } from './config/prompts.js';
 import xss from 'xss';
@@ -28,7 +28,7 @@ router.post('/chat', authenticateToken, requirePremiumSoft, async (req, res) => 
         if (!req.isPremium) {
             const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
-            const { data: todayMessages, error: countError } = await supabase
+            const { count: messageCount = 0, error: countError } = await supabase
                 .from('mentor_messages')
                 .select('id', { count: 'exact', head: true })
                 .eq('user_id', userId)
@@ -38,8 +38,8 @@ router.post('/chat', authenticateToken, requirePremiumSoft, async (req, res) => 
             if (countError) {
                 console.error('Mentor message count error:', countError);
             } else {
-                const messageCount = todayMessages?.length || 0;
                 if (messageCount >= 3) {
+                    trackPaywallHit(userId, 'mentor_unlimited').catch(() => {});
                     return res.status(402).json({
                         error: 'Denní limit 3 zpráv byl vyčerpán. Upgrade na Premium pro neomezený přístup.',
                         code: 'PREMIUM_REQUIRED',

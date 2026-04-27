@@ -277,6 +277,12 @@
 
         }
 
+        .message-empty-state--error {
+
+            color: rgba(255, 150, 150, 0.85);
+
+        }
+
 
 
         .message-actions {

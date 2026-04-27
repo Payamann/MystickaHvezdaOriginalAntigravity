@@ -1,3 +1,13 @@
 /* Migrated from kontakt.html static style attributes. */
 html body .mh-inline-214aef499e { width: 100%; margin-bottom: 1rem; }
 html body .mh-inline-eea9efd6c5 { width: 100%; min-height: 150px; border-radius: 12px; }
+
+.contact-form {
+    position: relative;
+    z-index: 2;
+}
+
+#contact-form button[type="submit"] {
+    scroll-margin-top: 120px;
+    scroll-margin-bottom: 260px;
+}

@@ -10,6 +10,7 @@
 import express from 'express';
 import { callClaude } from '../services/claude.js';
 import { getCachedHoroscope, saveCachedHoroscope } from '../services/astrology.js';
+import { normalizeHoroscopeAiResponse } from '../services/horoscope-response.js';
 import { setHtmlContentSecurityPolicy } from '../utils/csp.js';
 
 export const router = express.Router();
@@ -55,6 +56,14 @@ function parseIsoDateStrict(dateStr) {
     if (isNaN(targetDate.getTime())) return null;
 
     return targetDate.toISOString().split('T')[0] === dateStr ? targetDate : null;
+}
+
+function buildFallbackHoroscopePage(signAcc) {
+    return {
+        prediction: `Hvězdy dnes pro ${signAcc} ukazují klidnější energii a potřebu vrátit pozornost k tomu, co je opravdu podstatné. Důvěřuj vnitřnímu hlasu, ale opři ho o jeden konkrétní krok, který můžeš udělat hned teď. Den přeje jednoduchosti, pravdivosti a trpělivému rozhodování.`,
+        affirmation: 'Jdu svým tempem a každý jasný krok mě vede blíž k rovnováze.',
+        luckyNumbers: [3, 7, 12, 21]
+    };
 }
 
 // ============================================================
@@ -134,9 +143,9 @@ router.get('/:sign/:date', async (req, res, next) => {
         const cached = await getCachedHoroscope(cacheKey);
         if (cached) {
             try {
-                parsed = JSON.parse(cached.response);
+                ({ parsed } = normalizeHoroscopeAiResponse(cached.response));
             } catch {
-                parsed = { prediction: cached.response, affirmation: '', luckyNumbers: [] };
+                parsed = buildFallbackHoroscopePage(signData.nameAcc);
             }
         } else {
             // Generate via Claude — stejný model a prompt jako horoskopy.html (horoscope.js)
@@ -151,16 +160,12 @@ router.get('/:sign/:date', async (req, res, next) => {
 
             try {
                 const raw = await callClaude(prompt, message);
-                const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '').trim();
-                await saveCachedHoroscope(cacheKey, signData.name, 'daily', cleaned, 'Denní inspirace');
-                try {
-                    parsed = JSON.parse(cleaned);
-                } catch {
-                    parsed = { prediction: cleaned, affirmation: '', luckyNumbers: [] };
-                }
+                const { parsed: generated, serialized } = normalizeHoroscopeAiResponse(raw);
+                await saveCachedHoroscope(cacheKey, signData.name, 'daily', serialized, 'Denní inspirace');
+                parsed = generated;
             } catch (claudeError) {
                 console.warn(`[HoroscopePage] Claude API failed for ${signData.name}:`, claudeError.message);
-                parsed = { prediction: `Hvězdy dnes pro ${signAcc} připravily zvláštní energii. Důvěřuj svému vnitřnímu hlasu a jednej podle svých hodnot.`, affirmation: 'Má cesta je jedinečná a přesně taková, jaká má být.', luckyNumbers: [3, 7, 12, 21] };
+                parsed = buildFallbackHoroscopePage(signAcc);
             }
         }
 

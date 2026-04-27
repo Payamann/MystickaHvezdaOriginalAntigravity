@@ -12,7 +12,7 @@
 
     <meta name="description"
 
-        content="Objevte svá silová místa na Zemi. Astrokartografická mapa pro cestování a relokaci.">
+        content="Objevte symbolickou astro mapu míst, která mohou podpořit vaše cestování, vztahy nebo osobní růst.">
 
     <meta name="keywords" content="astrokartografie, relokace, cestování, planetární linie">
 
@@ -26,7 +26,7 @@
 
     <meta property="og:description"
 
-        content="Objevte svá silová místa na Zemi. Astrokartografická mapa pro cestování a relokaci.">
+        content="Objevte symbolickou astro mapu míst, která mohou podpořit vaše cestování, vztahy nebo osobní růst.">
 
     <meta property="og:image" content="https://www.mystickahvezda.cz/img/mystical-earth.webp">
 
@@ -153,9 +153,9 @@
 
                 <p class="hero__subtitle">
 
-                    Kde na světě na vás čeká štěstí? Zadejte své narození a objevte planetární linie,
+                    Kde na světě může čekat nový impuls? Zadejte své narození a objevte symbolická místa,
 
-                    které ovlivňují váš osud v různých koutech světa.
+                    která mohou podpořit váš záměr v různých koutech světa.
 
                 </p>
 
@@ -238,8 +238,38 @@
                                 <label for="astro-place" class="form-label">Místo narození</label>
 
                                 <input type="text" id="astro-place" class="form-input" placeholder="Např. Praha"
+                                    list="birth-place-suggestions"
 
                                     required>
+
+                                <datalist id="birth-place-suggestions">
+                                    <option value="Praha">
+                                    <option value="Brno">
+                                    <option value="Ostrava">
+                                    <option value="Plzeň">
+                                    <option value="Liberec">
+                                    <option value="Olomouc">
+                                    <option value="České Budějovice">
+                                    <option value="Hradec Králové">
+                                    <option value="Pardubice">
+                                    <option value="Zlín">
+                                    <option value="Jihlava">
+                                    <option value="Karlovy Vary">
+                                    <option value="Ústí nad Labem">
+                                    <option value="Kladno">
+                                    <option value="Mladá Boleslav">
+                                    <option value="Teplice">
+                                    <option value="Bratislava">
+                                    <option value="Košice">
+                                    <option value="Varšava">
+                                    <option value="Krakov">
+                                    <option value="Vídeň">
+                                    <option value="Berlín">
+                                    <option value="Londýn">
+                                    <option value="Paříž">
+                                    <option value="New York">
+                                    <option value="Los Angeles">
+                                </datalist>
 
                             </div>
 
@@ -313,7 +343,7 @@
 
                 <div class="loading-spinner"></div>
 
-                <span class="u-text-gold">Analyzuji vaše planetární linie...</span>
+                <span class="u-text-gold">Analyzuji symbolickou mapu míst...</span>
 
             </div>
 
@@ -347,9 +377,9 @@
 
                         <p class="card__text">
 
-                            Metoda, která promítá váš natální horoskop na mapu světa. Ukazuje, ve kterých zemích
+                            Symbolický výklad, který propojuje vaše narození, záměr a mapu světa. Ukazuje, ve kterých zemích
 
-                            budou aktivovány konkrétní planety ve vašem horoskopu.
+                            mohou být pro vás zajímavá témata růstu, vztahů nebo kariéry.
 
                         </p>
 
@@ -551,6 +581,7 @@
 
 
 
+    <script src="js/dist/favorites-helper.js" defer></script>
     <script src="js/dist/astro-map.js" defer></script>
 
 
@@ -562,6 +593,7 @@
 
 
     <script src="js/dist/api-config.js?v=5" defer></script>
+    <script src="js/dist/birth-location-suggestions.js" defer></script>
 
     <script src="js/dist/templates.js?v=10" defer></script>
 
@@ -581,7 +613,6 @@
 
 
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"></script>
 </body>
 
 

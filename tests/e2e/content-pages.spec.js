@@ -30,6 +30,30 @@ async function smokeTest(page, path, titleContains) {
 // BLOG
 // ═══════════════════════════════════════════════════════════
 
+test.describe('Runtime config', () => {
+    test('homepage načte veřejnou konfiguraci jen jednou', async ({ page }) => {
+        let configRequests = 0;
+
+        await page.route('**/api/config', route => {
+            configRequests += 1;
+            return route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    stripePublishableKey: null,
+                    vapidPublicKey: null,
+                    sentryDsn: null
+                })
+            });
+        });
+
+        await page.goto('/', { waitUntil: 'domcontentloaded' });
+        await waitForPageReady(page);
+
+        await expect.poll(() => configRequests).toBe(1);
+    });
+});
+
 test.describe('Blog', () => {
 
     test('stránka se načte s 200 a má h1', async ({ page }) => {
@@ -366,5 +390,35 @@ test.describe('Andělská pošta', () => {
         await waitForPageReady(page);
         const content = page.locator('.message, .post, .angel-post, form').first();
         await expect(content).toBeAttached();
+    });
+
+    test('zobrazi prazdny stav bez demo vzkazu', async ({ page }) => {
+        await page.route('**/api/angel-post?limit=20', route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: '[]'
+        }));
+
+        await page.goto('/andelska-posta.html');
+        await waitForPageReady(page);
+
+        const emptyState = page.locator('#messages-container .message-empty-state');
+        await expect(emptyState).toContainText('Zatím žádné schválené vzkazy');
+        await expect(page.locator('#messages-container .message-card')).toHaveCount(0);
+    });
+
+    test('zobrazi chybovy stav pri nedostupnem API', async ({ page }) => {
+        await page.route('**/api/angel-post?limit=20', route => route.fulfill({
+            status: 503,
+            contentType: 'application/json',
+            body: '{"error":"down"}'
+        }));
+
+        await page.goto('/andelska-posta.html');
+        await waitForPageReady(page);
+
+        const errorState = page.locator('#messages-container .message-empty-state--error');
+        await expect(errorState).toContainText('nepodařilo načíst');
+        await expect(page.locator('#messages-container .message-card')).toHaveCount(0);
     });
 });

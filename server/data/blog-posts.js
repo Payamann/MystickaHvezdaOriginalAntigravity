@@ -80,7 +80,7 @@ const PREMIUM_BLOG_POSTS = [
 
             <div style="background: linear-gradient(135deg, rgba(89, 41, 128, 0.1), rgba(15, 23, 42, 0.9)); border-left: 4px solid #b794f4; padding: 2.5rem; margin: 4rem 0; border-radius: 0 15px 15px 0; box-shadow: -5px 0 20px rgba(183, 148, 244, 0.2);">
                 <h3 style="margin-top:0; color:#b794f4; font-size:1.8rem; letter-spacing:0.5px;">Je Váš partner Karmický Učitel? Astrologie zná odpověď.</h3>
-                <p style="font-size:1.1rem; line-height:1.7; margin-bottom: 1.5rem;">Zda je váš vztah pouhým odplynutím staré karmy z minulých životů, nebo má potenciál na stabilní budoucnost, lze velmi přesně vyčíst z překrývajících se Natálních map (Synastrie) – zejména přes polohu Dračích uzlů a planety Pluto.</p>
+                <p style="font-size:1.1rem; line-height:1.7; margin-bottom: 1.5rem;">Zda váš vztah jen dožívá starý karmický vzorec, nebo má potenciál na stabilní budoucnost, může symbolická synastrie naznačit přes překryv natálních témat — zejména přes polohu Dračích uzlů a planety Pluto.</p>
                 <div style="text-align: right;">
                     <a href="../partnerska-shoda.html" style="color: white; text-transform: uppercase; font-weight: bold; padding-bottom: 5px; border-bottom: 2px solid #b794f4; text-decoration: none; letter-spacing: 1px;">Vypracovat profesionální Synastrii &rarr;</a>
                 </div>
@@ -129,7 +129,7 @@ const PREMIUM_BLOG_POSTS = [
             <div style="background: rgba(10, 10, 26, 0.95); border-left: 5px solid var(--color-primary); border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 3rem 2rem; margin: 4rem 0; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
                 <div style="display:flex; flex-direction: column; align-items:center; text-align:center;">
                     <h3 style="margin-top:0; color:var(--color-primary); font-size:1.8rem; margin-bottom:1rem;">Nahlédněte do Křišťálové koule ještě dnes</h3>
-                    <p style="font-size:1.1rem; line-height:1.6; max-width:600px; margin-bottom: 2rem; color: #cbd5e1;">Spojili jsme starodávné věštecké vzorce posvátné geometrie a zkomponovali je do unikátní interaktivní sekce. Zformulujte v duchu naprosto přesnou otázku a objevte rituál zření u nás ve virtuální věštírně.</p>
+                    <p style="font-size:1.1rem; line-height:1.6; max-width:600px; margin-bottom: 2rem; color: #cbd5e1;">Spojili jsme starodávné věštecké vzorce posvátné geometrie a zkomponovali je do unikátní interaktivní sekce. Zformulujte v duchu jasnou otázku a objevte rituál zření u nás ve virtuální věštírně.</p>
                     <a href="../kristalova-koule.html" class="btn btn--secondary" style="font-size:1.15rem; padding:1.2rem 3rem;">Vstoupit k Magické Kouli</a>
                 </div>
             </div>
@@ -167,7 +167,7 @@ const PREMIUM_BLOG_POSTS = [
 
             <div style="background: rgba(41, 128, 185, 0.05); border: 1px solid rgba(41, 128, 185, 0.4); border-radius: 12px; padding: 3rem; margin: 4rem 0; box-shadow: inset 0 0 50px rgba(0,0,0,0.5);">
                 <h3 style="margin-top:0; font-family:'Cinzel', serif; font-size:2rem; text-align:center; margin-bottom: 1.5rem;">Neponechávejte svůj zítřek kruté náhodě</h3>
-                <p style="font-size:1.15rem; line-height: 1.8; text-align:center; margin-bottom: 2.5rem; padding: 0 1rem;">Máte zítra důležitou schůzku? Čeká vás těžká investice nebo rande s vysněnou ženou? Nenechte své tělo ovládat skrytým příbojem. Pomocí precizní výpočetní matice jsme schopni na chlup přesně spočítat vaši aktuální oscilaci a zobrazit vám, kdy nastávají kritické chvíle.</p>
+                <p style="font-size:1.15rem; line-height: 1.8; text-align:center; margin-bottom: 2.5rem; padding: 0 1rem;">Máte zítra důležitou schůzku? Čeká vás těžká investice nebo rande s vysněnou ženou? Nenechte své tělo ovládat skrytým příbojem. Pomocí biorytmické matice zobrazíme orientační oscilaci a naznačíme, kdy mohou nastávat citlivější chvíle.</p>
                 <div style="text-align:center;">
                     <a href="../biorytmy.html" class="btn btn--primary" style="font-size:1.2rem; padding:1.2rem 3rem; letter-spacing:1px; background:linear-gradient(45deg, #1abc9c, #16a085); border:none;">Spočítat mé dnešní Biorytmy</a>
                 </div>
@@ -233,7 +233,7 @@ const PREMIUM_BLOG_POSTS = [
         featured_image: '../img/natal-bg.webp',
         author: 'Mystická Hvězda',
         content_html: `
-            <p>Většina lidí dokáže bez zaváhání odpovědět na otázku „V jakém jsi znamení?“. Mnozí si navíc zjistili i svůj Ascendent nebo pozici Měsíce. Ale skutečná, hlubinná astrologie – ta, která dokáže s matematickou přesností popsat, proč neustále přitahujete konkrétní typ partnerů, nebo proč se vám chronicky nedaří udržet si peníze – se odehrává na úplně jiné úrovni spektra. Tou úrovní jsou <strong>Astrologické domy</strong>.</p>
+            <p>Většina lidí dokáže bez zaváhání odpovědět na otázku „V jakém jsi znamení?“. Mnozí si navíc zjistili i svůj Ascendent nebo pozici Měsíce. Hlubinná astrologie ale pracuje s jemnějším symbolickým jazykem: pomáhá pojmenovat, proč neustále přitahujete konkrétní typ partnerů, nebo proč se vám chronicky nedaří udržet si peníze. Tou úrovní jsou <strong>Astrologické domy</strong>.</p>
             
             <p>Představte si vaši Natální mapu (horoskop) jako divadelní představení. Planety jsou <em>Herci</em> (vyjadřují energetické puzení, "co" se děje). Znamení zvěrokruhu představují <em>Kostýmy a role</em> (určují "jak" se ta energie projeví). Ale Astrologické domy? To jsou <em>Scény</em>. Představují konkrétní oblasti vašeho fyzického života, kde se toto drama odehraje.</p>
             
@@ -321,7 +321,7 @@ const PREMIUM_BLOG_POSTS = [
             <p>Vidět tato čísla znamená, že na velmi hluboké podvědomé úrovni rezonujete správně se svým předurčením. Jste sladěni s aktuálním časoprostorem a vesmír vám posílá doslova "palec nahoru", že máte pokračovat v započaté myšlence nebo projektu.</p>
 
             <h3>11:11 – Velké spirituální probuzení</h3>
-            <p>Tato brána je nejčastějším, vstupním kódem každého, kdo prochází obdobím duchovního otevírání. Číslo 1 je sloup, anténa. Fyzicky vizualizuje vztyčený prst nebo otevřené dvěře (11). Pokud konstantně chytáte na displeji 11:11, vesmír na vás křičí: <strong>"Zaměř se nyní na své myšlenky, protože se právě zhmotňují neuvěřitelnou rychlostí!"</strong> Závoj mezi přáním a realizací je v ten moment extrémně tenký. Nikdy ve chvíli spatření 11:11 nemyslete na své strachy a dluhy, protože si jich manifestujete víc. Dýchejte a myslete na to, co vroucně chcete vytvořit.</p>
+            <p>Tato brána je nejčastějším vstupním kódem každého, kdo prochází obdobím duchovního otevírání. Číslo 1 je sloup, anténa. Fyzicky připomíná vztyčený prst nebo otevřené dveře (11). Pokud konstantně chytáte na displeji 11:11, vesmír vás upozorňuje: <strong>"Zaměř se nyní na své myšlenky, protože se právě zhmotňují neuvěřitelnou rychlostí!"</strong> Závoj mezi přáním a realizací je v ten moment extrémně tenký. Nikdy ve chvíli spatření 11:11 nemyslete na své strachy a dluhy, protože si jich manifestujete víc. Dýchejte a myslete na to, co vroucně chcete vytvořit.</p>
 
             <h3>22:22 nebo 222 – Mistr stavitel a Harmonizace</h3>
             <p>Dvojka je symbolem partnerství, duality a nalezení rovnováhy. Pokud vás přepadlo období spojené s dvojkami, dostáváte zprávu o "tiché vodě". Vyzývá vás k obrovské trpělivosti. Věci ve vašem životě krystalizují, semínko pod zemí klíčí, ale ještě není čas tlačit na pilu nad povrchem. Často se 22 objevuje při hojení těžkých mezilidských vztahů a zotavování z rozchodů.</p>

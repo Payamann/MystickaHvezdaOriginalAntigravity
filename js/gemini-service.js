@@ -14,6 +14,8 @@ async function callAPI(endpoint, data) {
 
     try {
         const headers = { 'Content-Type': 'application/json' };
+        const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+        if (csrfToken) headers['X-CSRF-Token'] = csrfToken;
 
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
             method: 'POST',

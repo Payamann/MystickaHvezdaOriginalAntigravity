@@ -1,6 +1,12 @@
 import request from 'supertest';
 import app from '../index.js';
-import { getPublicPlanManifest, SUBSCRIPTION_PLANS } from '../config/constants.js';
+import {
+    getPublicPlanManifest,
+    getRequiredPlanForFeature,
+    planTypeMeetsRequirement,
+    SUBSCRIPTION_PLANS,
+    userHasFeatureAccess
+} from '../config/constants.js';
 
 describe('Public plan manifest', () => {
     test('is derived from server subscription plans', () => {
@@ -27,8 +33,29 @@ describe('Public plan manifest', () => {
         expect(manifest.pricingPage.monthly.osviceni).toBe('osviceni');
         expect(manifest.pricingPage.yearly.osviceni).toBe('osviceni-rocne');
         expect(manifest.featurePlanMap.astrocartography).toBe('osviceni');
+        expect(manifest.featurePlanMap.angel_card_deep).toBe('pruvodce');
+        expect(manifest.featurePlanMap.runes_deep_reading).toBe('pruvodce');
+        expect(manifest.featurePlanMap.past_life).toBe('pruvodce');
+        expect(manifest.featurePlanMap.medicine_wheel).toBe('pruvodce');
         expect(manifest.featurePlanMap.mentor).toBe('pruvodce');
         expect(manifest.featurePlanMap.tarot_celtic_cross).toBe('vip-majestrat');
+    });
+
+    test('centralized feature gates compare plan hierarchy', () => {
+        expect(getRequiredPlanForFeature('astrocartography')).toBe('osviceni');
+        expect(planTypeMeetsRequirement('premium_monthly', 'pruvodce')).toBe(true);
+        expect(planTypeMeetsRequirement('premium_monthly', 'osviceni')).toBe(false);
+        expect(planTypeMeetsRequirement('exclusive_monthly', 'pruvodce')).toBe(true);
+        expect(planTypeMeetsRequirement('vip_majestrat', 'osviceni')).toBe(true);
+
+        expect(userHasFeatureAccess({
+            isPremium: true,
+            subscription_status: 'exclusive_monthly'
+        }, 'astrocartography')).toBe(true);
+        expect(userHasFeatureAccess({
+            isPremium: true,
+            subscription_status: 'premium_monthly'
+        }, 'astrocartography')).toBe(false);
     });
 
     test('GET /api/plans exposes only public plan fields', async () => {

@@ -177,6 +177,8 @@ describe('🔒 Security Tests', () => {
                 .set('Content-Type', 'application/json')
                 .send('invalid json {')
                 .expect(400);
+
+            expect(res.body.error).toBe('Invalid JSON payload');
         });
     });
 
@@ -304,16 +306,18 @@ describe('🔒 Security Tests', () => {
     describe('Request Size Limits', () => {
         test('Oversized JSON payload rejected', async () => {
             const largePayload = {
-                message: 'x'.repeat(50000) // 50KB
+                message: 'x'.repeat(80000) // Above the 64KB JSON limit
             };
 
             const res = await request(app)
                 .post('/api/newsletter/subscribe')
                 .send(largePayload)
-                .expect((res) => {
-                    // Should either be 413 (Payload Too Large) or 400 (Bad Request)
-                    expect([413, 400]).toContain(res.status);
-                });
+                .expect(413);
+
+            expect(res.body).toEqual({
+                error: 'Payload too large',
+                maxSize: '64KB'
+            });
         });
 
         test('Normal size payload accepted', async () => {

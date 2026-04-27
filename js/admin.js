@@ -17,11 +17,26 @@ document.addEventListener('click', (event) => {
     if (action === 'loadAdminData') {
         loadAdminData();
     }
+    if (action === 'loadAngelMessages') {
+        loadAngelMessages();
+    }
+    if (action === 'approveAngelMessage' && actionTarget.dataset.id) {
+        moderateAngelMessage(actionTarget.dataset.id, true);
+    }
+    if (action === 'unapproveAngelMessage' && actionTarget.dataset.id) {
+        moderateAngelMessage(actionTarget.dataset.id, false);
+    }
+    if (action === 'deleteAngelMessage' && actionTarget.dataset.id) {
+        deleteAngelMessage(actionTarget.dataset.id);
+    }
 });
 
 document.addEventListener('change', (event) => {
     if (event.target && event.target.id === 'funnel-range-days') {
         loadFunnel();
+    }
+    if (event.target && event.target.id === 'angel-message-status') {
+        loadAngelMessages();
     }
 });
 
@@ -51,7 +66,8 @@ async function checkAdminAccess() {
 async function loadAdminData() {
     await Promise.all([
         loadUsers(),
-        loadFunnel()
+        loadFunnel(),
+        loadAngelMessages()
     ]);
 }
 
@@ -208,6 +224,136 @@ async function exportFunnelCsv(view = 'daily') {
     } catch (error) {
         console.error(error);
         errorMsg.textContent = 'CSV export se nepodařil: ' + error.message;
+    }
+}
+
+async function loadAngelMessages() {
+    const statusSelect = document.getElementById('angel-message-status');
+    const status = statusSelect ? statusSelect.value : 'pending';
+    const tbody = document.querySelector('#angel-messages-table tbody');
+    const errorMsg = document.getElementById('error-msg');
+
+    if (!tbody) return;
+
+    tbody.replaceChildren(createTableMessageRow(6, 'Načítám vzkazy...'));
+
+    try {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/admin/angel-messages?status=${encodeURIComponent(status)}&limit=50`, {
+            credentials: 'include'
+        });
+
+        if (response.status === 403) {
+            tbody.replaceChildren(createTableMessageRow(6, 'Přístup odepřen.', 'admin-table-error'));
+            return;
+        }
+
+        const data = await response.json();
+        if (!data.success) throw new Error(data.error);
+
+        renderAngelMessages(data.messages || []);
+        errorMsg.textContent = '';
+    } catch (error) {
+        console.error(error);
+        tbody.replaceChildren(createTableMessageRow(6, 'Moderaci se nepodařilo načíst.', 'admin-table-error'));
+        errorMsg.textContent = 'Chyba při načítání andělských vzkazů: ' + error.message;
+    }
+}
+
+function renderAngelMessages(messages) {
+    const tbody = document.querySelector('#angel-messages-table tbody');
+    tbody.replaceChildren();
+
+    if (!messages || messages.length === 0) {
+        tbody.appendChild(createTableMessageRow(6, 'Žádné vzkazy pro zvolený stav.'));
+        return;
+    }
+
+    messages.forEach(message => {
+        const tr = document.createElement('tr');
+        appendCell(tr, formatDateTime(message.created_at));
+        appendCell(tr, message.nickname || 'Anonym');
+        appendCell(tr, formatDimension(message.category));
+        appendCell(tr, message.message || '', 'admin-message-cell');
+        appendCell(tr, message.approved ? 'Schváleno' : 'Čeká');
+
+        const actionCell = document.createElement('td');
+        actionCell.className = 'admin-actions-cell';
+        if (message.approved) {
+            actionCell.appendChild(createActionButton('Vrátit do fronty', 'unapproveAngelMessage', message.id, 'btn-demote'));
+        } else {
+            actionCell.appendChild(createActionButton('Schválit', 'approveAngelMessage', message.id, 'btn-promote'));
+        }
+        actionCell.appendChild(createActionButton('Smazat', 'deleteAngelMessage', message.id, 'btn-demote'));
+        tr.appendChild(actionCell);
+
+        tbody.appendChild(tr);
+    });
+}
+
+function createActionButton(label, action, id, className) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = `action-btn ${className}`;
+    button.dataset.action = action;
+    button.dataset.id = id;
+    button.textContent = label;
+    return button;
+}
+
+async function getAdminCsrfToken() {
+    if (window.getCSRFToken) return window.getCSRFToken();
+    const response = await fetch(`${API_CONFIG.BASE_URL}/csrf-token`, { credentials: 'include' });
+    const data = await response.json();
+    return data.csrfToken;
+}
+
+async function moderateAngelMessage(id, approved) {
+    const errorMsg = document.getElementById('error-msg');
+
+    try {
+        const csrfToken = await getAdminCsrfToken();
+        const response = await fetch(`${API_CONFIG.BASE_URL}/admin/angel-messages/${encodeURIComponent(id)}`, {
+            method: 'PATCH',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify({ approved })
+        });
+
+        const data = await response.json();
+        if (!data.success) throw new Error(data.error);
+
+        await loadAngelMessages();
+        errorMsg.textContent = '';
+    } catch (error) {
+        console.error(error);
+        errorMsg.textContent = 'Vzkaz se nepodařilo upravit: ' + error.message;
+    }
+}
+
+async function deleteAngelMessage(id) {
+    if (!confirm('Opravdu smazat tento andělský vzkaz?')) return;
+
+    const errorMsg = document.getElementById('error-msg');
+
+    try {
+        const csrfToken = await getAdminCsrfToken();
+        const response = await fetch(`${API_CONFIG.BASE_URL}/admin/angel-messages/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+            credentials: 'include',
+            headers: { 'X-CSRF-Token': csrfToken }
+        });
+
+        const data = await response.json();
+        if (!data.success) throw new Error(data.error);
+
+        await loadAngelMessages();
+        errorMsg.textContent = '';
+    } catch (error) {
+        console.error(error);
+        errorMsg.textContent = 'Vzkaz se nepodařilo smazat: ' + error.message;
     }
 }
 

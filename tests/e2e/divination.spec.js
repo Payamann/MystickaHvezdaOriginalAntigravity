@@ -66,6 +66,15 @@ test.describe('Andělské karty', () => {
         );
         expect(overflow).toBe(false);
     });
+
+    test('po vytažení karty nabídne hluboký vhled', async ({ page }) => {
+        await page.evaluate(() => localStorage.removeItem('angelCardDaily'));
+        await page.reload();
+        await waitForPageReady(page);
+
+        await page.locator('#draw-btn').click();
+        await expect(page.locator('#btn-deep-angel')).toBeVisible({ timeout: 3_000 });
+    });
 });
 
 // ═══════════════════════════════════════════════════════════
@@ -199,6 +208,39 @@ test.describe('Runy', () => {
             await page.waitForTimeout(500);
         }
         await expect(page.locator('body')).toBeVisible();
+    });
+
+    test('hluboký výklad volá správný /api/runes endpoint', async ({ page }) => {
+        await page.evaluate(() => localStorage.removeItem('runeDaily'));
+        await page.reload();
+        await waitForPageReady(page);
+
+        await page.route('**/api/runes', async route => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true, response: 'Testovací runový vhled.' }),
+            });
+        });
+
+        const apiCall = page.waitForRequest(request =>
+            request.url().endsWith('/api/runes') && request.method() === 'POST'
+        );
+
+        await page.evaluate(() => {
+            window.Auth = {
+                isLoggedIn: () => true,
+                showToast: () => {},
+                startPlanCheckout: () => {}
+            };
+            window.getCSRFToken = async () => 'test-csrf';
+        });
+
+        await page.locator('#btn-draw').click();
+        await expect(page.locator('#rune-result')).toHaveClass(/visible/, { timeout: 4_000 });
+        await page.locator('#btn-deep-reading').click();
+        await apiCall;
+        await expect(page.locator('#ai-response-container')).toContainText('Testovací runový vhled.');
     });
 
     test('#loading element existuje v DOM', async ({ page }) => {

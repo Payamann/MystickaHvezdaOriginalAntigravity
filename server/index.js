@@ -29,6 +29,7 @@ import mentorRoutes from './mentor.js';
 import adminRoutes from './admin.js';
 import crypto from 'crypto';
 import { initializeEmailQueueJob } from './jobs/email-queue.js';
+import { initializeDataRetentionJob } from './jobs/data-retention.js';
 import schedule from 'node-schedule';
 import { globalLimiter, staticLimiter, aiLimiter, sensitiveLimiter } from './middleware.js';
 import {
@@ -50,8 +51,10 @@ import horoscopeSubscribeRoutes from './routes/horoscope-subscribe.js';
 import pastLifeRoutes from './routes/past-life.js';
 import medicineWheelRoutes from './routes/medicine-wheel.js';
 import rocniHoroskopRoutes from './routes/rocni-horoskop.js';
+import pushRoutes from './routes/push.js';
 import { spawn } from 'child_process';
 import { getPublicPlanManifest } from './config/constants.js';
+import { getKnownBirthLocationSuggestions } from './services/astrology.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -138,11 +141,13 @@ app.post('/webhook/stripe', express.raw({ type: 'application/json' }), async (re
     }
 });
 
-// Request Body Size Limits - Prevent large payload attacks
-// 10KB for JSON (enough for typical API requests)
+// Request Body Size Limits - Prevent large payload attacks.
+// 64KB keeps API payloads bounded while allowing computed astrology artifacts
+// in saved readings (natal chart, synastry, astrocartography).
 // 5KB for URL-encoded (form submissions)
+const JSON_BODY_LIMIT_BYTES = 64 * 1024;
 app.use(express.json({
-    limit: '10kb',
+    limit: '64kb',
     strict: true, // Only accept arrays and objects
 }));
 app.use(express.urlencoded({
@@ -158,10 +163,10 @@ app.use(cookieParser());
 app.use((req, res, next) => {
     // Check content-length header
     const contentLength = parseInt(req.headers['content-length'] || '0');
-    if (contentLength > 10240) { // 10KB in bytes
+    if (contentLength > JSON_BODY_LIMIT_BYTES) {
         return res.status(413).json({
             error: 'Payload too large',
-            maxSize: '10KB'
+            maxSize: '64KB'
         });
     }
     next();
@@ -523,6 +528,17 @@ app.use('/api/docs', docsRoutes);
 app.get('/api/config', (req, res) => {
     res.json({
         stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY || null,
+        vapidPublicKey: process.env.VAPID_PUBLIC_KEY || null,
+        sentryDsn: process.env.SENTRY_DSN || null,
+    });
+});
+
+// Public birth location suggestions used by astrology tools.
+app.get('/api/birth-locations', (req, res) => {
+    res.set('Cache-Control', 'public, max-age=86400');
+    res.json({
+        success: true,
+        locations: getKnownBirthLocationSuggestions()
     });
 });
 
@@ -552,6 +568,9 @@ app.use('/api/angel-post', angelPostRoutes);
 
 // Horoscope email subscriptions
 app.use('/api/subscribe/horoscope', horoscopeSubscribeRoutes);
+
+// Web Push notification subscriptions
+app.use('/api/push', pushRoutes);
 
 // Past Life — premium feature
 app.use('/api/past-life', aiLimiter, pastLifeRoutes);
@@ -583,6 +602,19 @@ app.use((err, req, res, next) => {
 
     // Return generic error to client (no internal details)
     const statusCode = err.status || 500;
+    if (err.type === 'entity.too.large') {
+        return res.status(413).json({
+            error: 'Payload too large',
+            maxSize: '64KB'
+        });
+    }
+
+    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+        return res.status(400).json({
+            error: 'Invalid JSON payload'
+        });
+    }
+
     res.status(statusCode).json({
         error: 'An error occurred. Please try again later.',
         // Only include details in development mode
@@ -625,6 +657,12 @@ if (isMain || process.env.NODE_ENV === 'production') {
             initializeEmailQueueJob();
         } catch (jobErr) {
             console.error('[JOBS] Failed to init email queue:', jobErr.message);
+        }
+
+        try {
+            initializeDataRetentionJob(schedule);
+        } catch (jobErr) {
+            console.error('[JOBS] Failed to init data retention:', jobErr.message);
         }
 
         // ============================================

@@ -302,7 +302,7 @@ async function displayInterpretation(name, birthDate, birthTime, lifePath, desti
         // Display AI interpretation
         interpretationContainer.innerHTML = `
             <div class="interpretation-section">
-                ${data.fromCache ? '<span class="badge badge--cache">📦 Z cache (deterministic result)</span>' : ''}
+                ${(data.cached || data.fromCache) ? '<span class="badge badge--cache">📦 Z cache (deterministic result)</span>' : ''}
                 <div class="interpretation-content">
                     ${data.response.replace(/```html/g, '').replace(/```/g, '')}
                 </div>
@@ -318,7 +318,8 @@ async function displayInterpretation(name, birthDate, birthTime, lifePath, desti
                 lifePath,
                 destiny,
                 soul,
-                personality
+                personality,
+                response: data.response
             });
             if (window.MH_DEBUG) console.debug('Reading saved:', saveResult);
         }

@@ -9,6 +9,10 @@ let allReadings = [];
 let currentFilter = 'all';
 let displayedCount = 0;
 const PAGE_SIZE = 10;
+const FILTER_ALIASES = {
+    'crystal-ball': ['crystal-ball', 'crystal'],
+    'natal-chart': ['natal-chart', 'natal']
+};
 
 // Getter for allReadings (used by modal.js)
 export function getAllReadings() {
@@ -65,7 +69,8 @@ export function handleFilterChange(e) {
 
 function getFilteredReadings() {
     if (currentFilter === 'all') return allReadings;
-    return allReadings.filter(r => r.type === currentFilter);
+    const acceptedTypes = FILTER_ALIASES[currentFilter] || [currentFilter];
+    return allReadings.filter(r => acceptedTypes.includes(r.type));
 }
 
 export function renderReadings() {

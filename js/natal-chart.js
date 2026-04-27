@@ -24,14 +24,38 @@ const ZODIAC_SIGNS = [
 ];
 
 const PLANETS = [
-    { symbol: '☀️', name: 'Slunce', color: '#FFD700', img: 'img/planets/sun.webp', size: 60, desc: 'Vaše základní podstata a ego.' },
-    { symbol: '🌙', name: 'Měsíc', color: '#C0C0C0', img: 'img/planets/moon.webp', size: 40, desc: 'Emoce, intuice a vnitřní svět.' },
-    { symbol: '☿️', name: 'Merkur', color: '#B0C4DE', img: 'img/planets/mercury.webp', size: 30, desc: 'Komunikace a myšlení.' },
-    { symbol: '♀️', name: 'Venuše', color: '#FFB6C1', img: 'img/planets/venus.webp', size: 35, desc: 'Láska, krása a hodnoty.' },
-    { symbol: '♂️', name: 'Mars', color: '#FF4500', img: 'img/planets/mars.webp', size: 32, desc: 'Energie, akce a touha.' },
-    { symbol: '♃', name: 'Jupiter', color: '#E6E6FA', img: 'img/planets/jupiter.webp', size: 55, desc: 'Štěstí, expanze a růst.' },
-    { symbol: '♄', name: 'Saturn', color: '#708090', img: 'img/planets/saturn_rings.webp', size: 50, hasRing: true, desc: 'Disciplína a zkoušky.' }
+    { id: 'sun', symbol: '☀️', name: 'Slunce', color: '#FFD700', img: 'img/planets/sun.webp', size: 60, desc: 'Vaše základní podstata a ego.' },
+    { id: 'moon', symbol: '🌙', name: 'Měsíc', color: '#C0C0C0', img: 'img/planets/moon.webp', size: 40, desc: 'Emoce, intuice a vnitřní svět.' },
+    { id: 'mercury', symbol: '☿️', name: 'Merkur', color: '#B0C4DE', img: 'img/planets/mercury.webp', size: 30, desc: 'Komunikace a myšlení.' },
+    { id: 'venus', symbol: '♀️', name: 'Venuše', color: '#FFB6C1', img: 'img/planets/venus.webp', size: 35, desc: 'Láska, krása a hodnoty.' },
+    { id: 'mars', symbol: '♂️', name: 'Mars', color: '#FF4500', img: 'img/planets/mars.webp', size: 32, desc: 'Energie, akce a touha.' },
+    { id: 'jupiter', symbol: '♃', name: 'Jupiter', color: '#E6E6FA', img: 'img/planets/jupiter.webp', size: 55, desc: 'Štěstí, expanze a růst.' },
+    { id: 'saturn', symbol: '♄', name: 'Saturn', color: '#708090', img: 'img/planets/saturn_rings.webp', size: 50, hasRing: true, desc: 'Disciplína a zkoušky.' }
 ];
+
+const PLANET_ORBIT_RADII = [35, 55, 78, 101, 124, 146, 165];
+const PLANET_ORBIT_SPEEDS = [0, 30, 25, 40, 60, 120, 180];
+const PLANET_VISUAL_SIZES = [46, 26, 20, 24, 22, 36, 34];
+const ASPECT_SHORT_LABELS = {
+    conjunction: 'konj.',
+    opposition: 'opo.',
+    trine: 'tri.',
+    square: 'kvad.',
+    sextile: 'sex.'
+};
+const NATAL_PLANET_ORDER = [
+    'sun',
+    'moon',
+    'mercury',
+    'venus',
+    'mars',
+    'jupiter',
+    'saturn',
+    'uranus',
+    'neptune',
+    'pluto'
+];
+const SVG_NS = "http://www.w3.org/2000/svg";
 
 function setBlockVisible(element, visible) {
     if (!element) return;
@@ -145,6 +169,27 @@ function renderZodiacRing(group) {
     // Widened ring for larger symbols
     const radius = 222; // Center of the ring text
 
+    for (let degree = 0; degree < 360; degree += 5) {
+        const angleRad = (degree - 90) * (Math.PI / 180);
+        const isSignBoundary = degree % 30 === 0;
+        const isTenDegree = degree % 10 === 0;
+        const inner = isSignBoundary ? 194 : (isTenDegree ? 204 : 210);
+        const outer = isSignBoundary ? 216 : 216;
+
+        const tick = document.createElementNS(SVG_NS, "line");
+        tick.setAttribute("x1", Math.cos(angleRad) * inner);
+        tick.setAttribute("y1", Math.sin(angleRad) * inner);
+        tick.setAttribute("x2", Math.cos(angleRad) * outer);
+        tick.setAttribute("y2", Math.sin(angleRad) * outer);
+        tick.setAttribute(
+            "class",
+            isSignBoundary
+                ? "natal-zodiac-tick natal-zodiac-tick--sign"
+                : (isTenDegree ? "natal-zodiac-tick natal-zodiac-tick--major" : "natal-zodiac-tick")
+        );
+        group.appendChild(tick);
+    }
+
     ZODIAC_SIGNS.forEach((sign, index) => {
         const angleRad = (sign.angle - 90) * (Math.PI / 180);
         const x = Math.cos(angleRad) * radius;
@@ -180,13 +225,8 @@ function renderZodiacRing(group) {
     });
 }
 
-function generatePlanets(group, seed) {
+function generatePlanets(group, seed, planetPositions = null) {
     if (window.MH_DEBUG) console.debug('Generating planets with seed:', seed);
-    // Orbital radii - slightly compressed to make room for larger zodiac ring
-    // Saturn at 165 + RingRadius(~25) = 190 max extent.
-    // Inner zodiac ring will be at 195.
-    const orbitRadii = [0, 35, 60, 85, 110, 135, 165];
-    const orbitSpeeds = [0, 30, 25, 40, 60, 120, 180];
 
     // Clear existing
     group.innerHTML = '';
@@ -198,15 +238,19 @@ function generatePlanets(group, seed) {
     PLANETS.forEach((planet, index) => {
         // Adjust sizes in data (done below via override or permanent change)
         // We will override sizes here for visual consistency
-        const sizes = [46, 26, 20, 24, 22, 36, 34]; // Keeping sizes as is
-        planet.size = sizes[index];
+        planet.size = PLANET_VISUAL_SIZES[index];
 
         const isSun = index === 0;
         const isSaturn = planet.name === 'Saturn';
-        const radius = isSun ? 0 : orbitRadii[index];
-        const speed = isSun ? 0 : orbitSpeeds[index];
+        const calculatedPlanet = planetPositions?.[planet.id];
+        const hasCalculatedLongitude = typeof calculatedPlanet?.longitude === 'number';
+        const radius = isSun && !hasCalculatedLongitude ? 0 : PLANET_ORBIT_RADII[index];
+        const speed = isSun ? 0 : PLANET_ORBIT_SPEEDS[index];
+        const shouldAnimate = !hasCalculatedLongitude && !isSun;
 
-        let angle = (seed * 37 + index * 55) % 360;
+        let angle = hasCalculatedLongitude
+            ? calculatedPlanet.longitude
+            : (seed * 37 + index * 55) % 360;
 
         // Create orbit wrapper for animation
         const orbitWrapper = document.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -223,14 +267,16 @@ function generatePlanets(group, seed) {
             orbitRing.setAttribute("stroke-width", "1");
             group.appendChild(orbitRing);
 
-            const animateOrbit = document.createElementNS("http://www.w3.org/2000/svg", "animateTransform");
-            animateOrbit.setAttribute("attributeName", "transform");
-            animateOrbit.setAttribute("type", "rotate");
-            animateOrbit.setAttribute("from", "0 0 0");
-            animateOrbit.setAttribute("to", "360 0 0");
-            animateOrbit.setAttribute("dur", `${speed}s`);
-            animateOrbit.setAttribute("repeatCount", "indefinite");
-            orbitWrapper.appendChild(animateOrbit);
+            if (shouldAnimate) {
+                const animateOrbit = document.createElementNS("http://www.w3.org/2000/svg", "animateTransform");
+                animateOrbit.setAttribute("attributeName", "transform");
+                animateOrbit.setAttribute("type", "rotate");
+                animateOrbit.setAttribute("from", "0 0 0");
+                animateOrbit.setAttribute("to", "360 0 0");
+                animateOrbit.setAttribute("dur", `${speed}s`);
+                animateOrbit.setAttribute("repeatCount", "indefinite");
+                orbitWrapper.appendChild(animateOrbit);
+            }
         }
 
         const angleRad = (angle - 90) * (Math.PI / 180);
@@ -362,6 +408,235 @@ function generatePlanets(group, seed) {
     });
 }
 
+function getPlanetVisualPoint(planetId, longitude) {
+    const index = PLANETS.findIndex((planet) => planet.id === planetId);
+    if (index < 0 || typeof longitude !== 'number') return null;
+
+    const radius = PLANET_ORBIT_RADII[index];
+    const angleRad = (longitude - 90) * (Math.PI / 180);
+    return {
+        x: Math.cos(angleRad) * radius,
+        y: Math.sin(angleRad) * radius
+    };
+}
+
+function clearNatalComputedLayers() {
+    document.getElementById('houses-layer')?.replaceChildren();
+    document.getElementById('aspects-layer')?.replaceChildren();
+}
+
+function renderNatalHouseLayer(chart) {
+    const layer = document.getElementById('houses-layer');
+    const houses = chart?.houses?.available ? chart.houses.houses : [];
+    if (!layer || !houses.length) return;
+
+    houses.forEach((house) => {
+        const longitude = house.cuspLongitude;
+        if (typeof longitude !== 'number') return;
+
+        const angleRad = (longitude - 90) * (Math.PI / 180);
+        const inner = 26;
+        const outer = 192;
+        const labelRadius = 184;
+        const isAxis = [1, 4, 7, 10].includes(house.house);
+
+        const line = document.createElementNS(SVG_NS, "line");
+        line.setAttribute("x1", Math.cos(angleRad) * inner);
+        line.setAttribute("y1", Math.sin(angleRad) * inner);
+        line.setAttribute("x2", Math.cos(angleRad) * outer);
+        line.setAttribute("y2", Math.sin(angleRad) * outer);
+        line.setAttribute("class", isAxis ? "natal-house-line natal-house-line--axis" : "natal-house-line");
+        layer.appendChild(line);
+
+        const label = document.createElementNS(SVG_NS, "text");
+        label.setAttribute("x", Math.cos(angleRad) * labelRadius);
+        label.setAttribute("y", Math.sin(angleRad) * labelRadius);
+        label.setAttribute("text-anchor", "middle");
+        label.setAttribute("dominant-baseline", "central");
+        label.setAttribute("class", "natal-house-label");
+        label.textContent = String(house.house);
+        layer.appendChild(label);
+    });
+}
+
+function renderNatalAspectLayer(chart) {
+    const layer = document.getElementById('aspects-layer');
+    const visualPlanetIds = new Set(PLANETS.map((planet) => planet.id));
+    const aspects = Array.isArray(chart?.aspects)
+        ? chart.aspects.filter((aspect) => (
+            visualPlanetIds.has(aspect.planetA) && visualPlanetIds.has(aspect.planetB)
+        )).slice(0, 8)
+        : [];
+
+    if (!layer || !aspects.length) return;
+
+    aspects.forEach((aspect) => {
+        const planetA = chart.planets?.[aspect.planetA];
+        const planetB = chart.planets?.[aspect.planetB];
+        const from = getPlanetVisualPoint(aspect.planetA, planetA?.longitude);
+        const to = getPlanetVisualPoint(aspect.planetB, planetB?.longitude);
+        if (!from || !to) return;
+
+        const line = document.createElementNS(SVG_NS, "line");
+        line.setAttribute("x1", from.x);
+        line.setAttribute("y1", from.y);
+        line.setAttribute("x2", to.x);
+        line.setAttribute("y2", to.y);
+        line.setAttribute("class", `natal-aspect-line natal-aspect-line--${aspect.polarity || 'neutral'}`);
+
+        const title = document.createElementNS(SVG_NS, "title");
+        title.textContent = formatAspectSummary(aspect);
+        line.appendChild(title);
+
+        layer.appendChild(line);
+
+        const label = document.createElementNS(SVG_NS, "text");
+        label.setAttribute("x", (from.x + to.x) / 2);
+        label.setAttribute("y", (from.y + to.y) / 2);
+        label.setAttribute("text-anchor", "middle");
+        label.setAttribute("dominant-baseline", "central");
+        label.setAttribute("class", `natal-aspect-label natal-aspect-label--${aspect.polarity || 'neutral'}`);
+        label.textContent = `${ASPECT_SHORT_LABELS[aspect.aspect] || aspect.name} ${aspect.orb}°`;
+        layer.appendChild(label);
+    });
+}
+
+function renderNatalComputedLayers(chart) {
+    clearNatalComputedLayers();
+    if (!chart?.planets) return;
+    renderNatalHouseLayer(chart);
+    renderNatalAspectLayer(chart);
+}
+
+async function fetchCalculatedNatalChart({ birthDate, birthTime, birthPlace, name }) {
+    const params = new URLSearchParams({
+        birthDate,
+        birthTime: birthTime || '',
+        birthPlace: birthPlace || '',
+        name: name || ''
+    });
+    const apiBase = window.API_CONFIG?.BASE_URL || '/api';
+    const response = await fetch(`${apiBase}/natal-chart/calculate?${params.toString()}`, {
+        credentials: 'include'
+    });
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+        throw new Error(data.error || `Natal calculation failed: ${response.status}`);
+    }
+
+    return data.chart;
+}
+
+function formatCalculatedPlanet(planet) {
+    if (!planet?.sign?.name) return '';
+    return `${planet.sign.name} ${planet.degreeText || ''}`.trim();
+}
+
+function formatAspectSummary(aspect) {
+    if (!aspect) return '';
+    const orb = typeof aspect.orb === 'number' ? `, orb ${aspect.orb}°` : '';
+    return `${aspect.planetALabel} ${aspect.name.toLowerCase()} ${aspect.planetBLabel}${orb}`;
+}
+
+function formatPlanetPlacement(planet) {
+    if (!planet) return '';
+
+    const house = typeof planet.house === 'number' ? `, ${planet.house}. dům` : '';
+    const retrograde = planet.retrograde ? ' R' : '';
+    return `${planet.name}: ${planet.sign?.name || '--'} ${planet.degreeText || ''}${retrograde}${house}`.trim();
+}
+
+function renderNatalEngineSummary(chart) {
+    const elementValue = document.getElementById('natal-element-value');
+    const qualityValue = document.getElementById('natal-quality-value');
+    const planetsList = document.getElementById('natal-planets-list');
+    const aspectsList = document.getElementById('natal-aspects-list');
+    const note = document.getElementById('natal-engine-note');
+
+    if (elementValue) {
+        elementValue.textContent = chart.elementBalance?.dominant?.label || '--';
+    }
+    if (qualityValue) {
+        qualityValue.textContent = chart.qualityBalance?.dominant?.label || '--';
+    }
+    if (planetsList) {
+        planetsList.innerHTML = '';
+        const planets = NATAL_PLANET_ORDER
+            .map((planetId) => chart.planets?.[planetId])
+            .filter(Boolean);
+
+        planets.forEach((planet) => {
+            const item = document.createElement('li');
+            item.textContent = formatPlanetPlacement(planet);
+            planetsList.appendChild(item);
+        });
+    }
+    if (aspectsList) {
+        aspectsList.innerHTML = '';
+        const aspects = Array.isArray(chart.aspects) ? chart.aspects.slice(0, 3) : [];
+
+        if (!aspects.length) {
+            const item = document.createElement('li');
+            item.textContent = 'Bez hlavních aspektů v nastaveném orbu.';
+            aspectsList.appendChild(item);
+        } else {
+            aspects.forEach((aspect) => {
+                const item = document.createElement('li');
+                item.textContent = formatAspectSummary(aspect);
+                aspectsList.appendChild(item);
+            });
+        }
+    }
+    if (note) {
+        note.textContent = chart.houses?.available
+            ? `Ascendent a domy: ${chart.houses.system === 'whole_sign' ? 'whole-sign' : chart.houses.system}.`
+            : (chart.houses?.reason || 'Ascendent vyžaduje přesný čas a rozpoznané místo narození.');
+    }
+}
+
+function trackNatalCalculation(chart, input = {}) {
+    window.MH_ANALYTICS?.trackEvent?.('natal_chart_calculated', {
+        engine_version: chart?.engine?.version || null,
+        precision: chart?.engine?.precision || null,
+        has_birth_time: Boolean(input.birthTime),
+        has_birth_place: Boolean(input.birthPlace),
+        location_resolved: Boolean(chart?.location),
+        ascendant_available: Boolean(chart?.houses?.available),
+        dominant_element: chart?.elementBalance?.dominant?.key || null
+    });
+}
+
+function applyComputedNatalChart(chart) {
+    if (!chart?.planets) return false;
+
+    const sun = formatCalculatedPlanet(chart.planets.sun);
+    const moon = formatCalculatedPlanet(chart.planets.moon);
+    const ascendant = chart.houses?.ascendant
+        ? formatCalculatedPlanet(chart.houses.ascendant)
+        : 'bez přesné polohy';
+
+    const sunElement = document.getElementById('res-sun');
+    const moonElement = document.getElementById('res-moon');
+    const ascElement = document.getElementById('res-asc');
+    const tipElement = document.getElementById('tip-sign');
+
+    if (sun && sunElement) {
+        sunElement.textContent = sun;
+        if (tipElement) tipElement.textContent = chart.planets.sun.sign.name;
+    }
+    if (moon && moonElement) {
+        moonElement.textContent = moon;
+    }
+    if (ascElement) {
+        ascElement.textContent = ascendant;
+    }
+
+    renderNatalEngineSummary(chart);
+
+    return true;
+}
+
 async function generateNatalChart(planetsGroup) {
     const btn = document.querySelector('#natal-form button');
     const originalHTML = btn.innerHTML; // Capture full HTML (icons etc.)
@@ -376,6 +651,7 @@ async function generateNatalChart(planetsGroup) {
 
     // Clear previous
     planetsGroup.innerHTML = '';
+    clearNatalComputedLayers();
     setBlockVisible(document.getElementById('chart-results'), false);
 
     // Get or create AI results container
@@ -386,9 +662,17 @@ async function generateNatalChart(planetsGroup) {
     setBlockVisible(aiResultsDiv, false);
 
     try {
-        // Generate pseudo-positions for visual
+        // Generate server-calculated positions for the public chart visual.
         const seed = name.length + birthDate.length;
-        generatePlanets(planetsGroup, seed);
+        let computedChart = null;
+        try {
+            computedChart = await fetchCalculatedNatalChart({ birthDate, birthTime, birthPlace, name });
+            trackNatalCalculation(computedChart, { birthTime, birthPlace });
+        } catch (calcError) {
+            console.warn('Natal engine calculation fallback:', calcError.message);
+        }
+        generatePlanets(planetsGroup, seed, computedChart?.planets);
+        renderNatalComputedLayers(computedChart);
 
         // Update 3D Chart
         if (window.Natal3DInstance) {
@@ -405,64 +689,15 @@ async function generateNatalChart(planetsGroup) {
 
         // Update Transits (Phase 2)
         if (typeof updateTransits === 'function') {
-            updateTransits(birthDate);
-        }
-
-        let sunAngleRaw = 0;
-        let sunSign = ZODIAC_SIGNS[0];
-
-        if (sunSignResult) {
-            sunSign = sunSignResult;
-            // Approximate position in the sign (middle + some day variance?)
-            // For now, place it in the middle of the sign for visual clarity
-            sunAngleRaw = sunSign.angle + 15;
-        } else {
-            // Fallback if date is invalid
-            sunAngleRaw = (seed * 37) % 360;
-            sunSign = getSignFromAngle(sunAngleRaw);
-        }
-
-        // Keep other planets random/demo for now as we don't have an ephemeris library client-side
-        // But we MUST fix the Sun as it defines the "Sign" user sees.
-
-        // Planets already generated above with the same seed - no need to regenerate
-
-        // Hack: Update the Sun's rotation to match the calculated sign
-        const sunOrbit = planetsGroup.querySelector('.planet-node').parentElement;
-        // Sun is index 0. We need to find the element and rotate it correctly.
-        // Actually generatePlanets calculates angles inside loop. 
-        // Let's modify generatePlanets or just manually update the transform of the first element.
-
-        // Better approach: Re-call generatePlanets but pass the Sun Angle explicitly?
-        // Let's just fix the text labels first, and then maybe update the visual rotation if possible.
-        // Actually, easier to just update the text content as that's what user reads.
-        // But visual should match.
-
-        // Let's implement a simple visual fix:
-        const sunNode = planetsGroup.querySelector('.planet-node'); // First one is Sun
-        if (sunNode) {
-            // Sun is at (0,0) usually? No, generatePlanets puts it at (0,0) because index 0 radius is 0?
-            // Wait, lines 200: const radius = isSun ? 0 : orbitRadii[index];
-            // If Sun is at 0,0 (center), its rotation doesn't matter for position usually, BUT
-            // Natal charts usually place Earth at center and Sun on the ring?
-            // Line 27: Sun radius 0... wait.
-            // If Sun is at center, then this is Heliocentric? Or just "Symbolic"?
-            // Ah, looking at the code: "radius = isSun ? 0 : ..."
-            // If Sun is at 0,0, then it's in the CENTER.
-            // But a Natal Chart usually has the Earth in center and Sun in a Zodiac sign ON THE RING.
-            // This existing visualization seems to put Sun in the center (Heliocentric-ish or just "You are the sun"?).
-            // IF the Sun is in the center, it doesn't "have" a zodiac sign visually in this specific chart design.
-            // BUT users expect to see "Sun in Capricorn".
-            // ...
-            // I will leave the visual design as is (Sun center) if that's the intent, 
-            // but I MUST ensure the TEXT below is correct.
+            updateTransits({ birthDate, birthTime, birthPlace, name });
         }
 
         // Show basic results (Text)
-        document.getElementById('res-sun').textContent = `${sunSign.name}`;
-        // Moon and Ascendant are still random/estimated as we don't have real calculation
-        // But Sun is deterministic.
-        document.getElementById('tip-sign').textContent = sunSign.name;
+        if (!applyComputedNatalChart(computedChart)) {
+            const sunSign = sunSignResult || getSignFromAngle((seed * 37) % 360);
+            document.getElementById('res-sun').textContent = `${sunSign.name}`;
+            document.getElementById('tip-sign').textContent = sunSign.name;
+        }
         setBlockVisible(document.getElementById('chart-results'), true);
 
         // Call AI for interpretation
@@ -509,6 +744,10 @@ async function generateNatalChart(planetsGroup) {
         });
 
         if (data.success || data.response) {
+            const finalChart = data.chart || computedChart;
+            applyComputedNatalChart(finalChart);
+            renderNatalComputedLayers(finalChart);
+
             // Display AI interpretation
             setBlockVisible(aiResultsDiv, true);
             const contentDiv = aiResultsDiv.querySelector('.ai-content');
@@ -590,13 +829,14 @@ async function generateNatalChart(planetsGroup) {
             }
 
             // Save to history if logged in and add favorite button
-            if (window.Auth && window.Auth.saveReading) {
+            if (!data.isTeaser && window.Auth && window.Auth.saveReading) {
                 const saveResult = await window.Auth.saveReading('natal-chart', {
                     name,
                     birthDate,
                     birthTime,
                     birthPlace,
-                    interpretation: data.response
+                    interpretation: data.response,
+                    chart: data.chart || computedChart
                 });
 
                 // Store reading ID and add favorite button
@@ -700,9 +940,46 @@ function getZodiacSign(date) {
 }
 
 
-function updateTransits(birthDate) {
+function renderTransitSnapshot(transit) {
     const section = document.getElementById('transits-now');
     if (!section) return;
+
+    const now = transit?.engine?.calculatedAt ? new Date(transit.engine.calculatedAt) : new Date();
+
+    document.getElementById('transit-date').textContent = now.toLocaleDateString('cs-CZ');
+    document.getElementById('transit-title').textContent = transit?.title || `Slunce ve znamení ${transit?.current?.sunSign || '...'}`;
+    document.getElementById('transit-subtitle').textContent = transit?.subtitle || 'aktuální tranzity';
+    document.getElementById('transit-message').textContent = transit?.message || 'Aktuální tranzity se nepodařilo načíst.';
+
+    setBlockVisible(section, true);
+}
+
+async function updateTransits({ birthDate, birthTime, birthPlace, name }) {
+    const section = document.getElementById('transits-now');
+    if (!section) return;
+
+    try {
+        const params = new URLSearchParams({
+            birthDate,
+            birthTime: birthTime || '',
+            birthPlace: birthPlace || '',
+            name: name || ''
+        });
+        const apiBase = window.API_CONFIG?.BASE_URL || '/api';
+        const response = await fetch(`${apiBase}/transits/current?${params.toString()}`, {
+            credentials: 'include'
+        });
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || `Transit calculation failed: ${response.status}`);
+        }
+
+        renderTransitSnapshot(data.transit);
+        return;
+    } catch (transitError) {
+        console.warn('Transit engine fallback:', transitError.message);
+    }
 
     // Dates
     const now = new Date();
@@ -740,7 +1017,7 @@ function updateTransits(birthDate) {
     document.getElementById('transit-date').textContent = now.toLocaleDateString('cs-CZ');
     document.getElementById('transit-title').textContent = title;
     document.getElementById('transit-subtitle').textContent = subtitle;
-    document.getElementById('transit-message').innerHTML = message;
+    document.getElementById('transit-message').textContent = message.replace(/<[^>]*>/g, '');
 
     setBlockVisible(section, true);
 }

@@ -3,10 +3,75 @@
  * Handles rune drawing, shuffling animation, and AI interpretations.
  */
 
-const { apiUrl, authHeaders } = window;
-
 let runesData = [];
 let drawnRune = null;
+
+function apiBase() {
+    return window.API_CONFIG?.BASE_URL || '/api';
+}
+
+async function buildJsonHeaders() {
+    const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+    return {
+        'Content-Type': 'application/json',
+        ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+    };
+}
+
+function appendRuneFavoriteAction(container, readingId) {
+    if (!container || !readingId) return;
+
+    document.getElementById('favorite-rune-action')?.remove();
+
+    const action = document.createElement('div');
+    action.id = 'favorite-rune-action';
+    action.className = 'text-center favorite-reading-action mt-md';
+    action.innerHTML = `
+        <button id="favorite-rune-btn" class="btn btn--glass favorite-reading-action__button">
+            <span class="favorite-icon">☆</span> Přidat do oblíbených
+        </button>
+    `;
+    container.appendChild(action);
+
+    action.querySelector('#favorite-rune-btn')?.addEventListener('click', async () => {
+        if (typeof window.toggleFavorite === 'function') {
+            await window.toggleFavorite(readingId, 'favorite-rune-btn');
+        }
+    });
+}
+
+async function saveRuneReading({ response = null, intention = '', fallback = false } = {}) {
+    if (!drawnRune || !window.Auth?.saveReading) return null;
+
+    if (!window.Auth.isLoggedIn?.()) {
+        window.Auth.showToast?.('Přihlášení vyžadováno', 'Pro uložení runy se prosím přihlaste.', 'info');
+        window.Auth.startPlanCheckout?.('pruvodce', {
+            source: 'runes_save_gate',
+            feature: 'runy_ulozeni',
+            redirect: '/runy.html',
+            authMode: 'register'
+        });
+        return null;
+    }
+
+    const saveResult = await window.Auth.saveReading('runes', {
+        rune: {
+            name: drawnRune.name,
+            symbol: drawnRune.symbol,
+            meaning: drawnRune.meaning,
+            element: drawnRune.element
+        },
+        intention,
+        response,
+        fallback
+    });
+
+    if (saveResult?.id) {
+        window.Auth.showToast?.('Uloženo', 'Runový výklad je uložený v profilu.', 'success');
+    }
+
+    return saveResult;
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
     // 1. Load rune database
@@ -43,8 +108,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (saveBtn) {
-        saveBtn.addEventListener('click', () => {
-            alert('Tato funkce se právě připravuje. Brzy si budete moci ukládat výklady přímo do svého Hvězdného Deníku! ⭐');
+        saveBtn.addEventListener('click', async () => {
+            if (!drawnRune) {
+                window.Auth?.showToast?.('Nejdřív vytáhněte runu', 'Uložit lze až konkrétní runový výklad.', 'info');
+                return;
+            }
+
+            try {
+                const saveResult = await saveRuneReading({
+                    intention: document.getElementById('rune-intention')?.value?.trim() || ''
+                });
+                if (saveResult?.id) {
+                    appendRuneFavoriteAction(document.getElementById('rune-result'), saveResult.id);
+                }
+            } catch (error) {
+                console.error('Rune save failed:', error);
+                window.Auth?.showToast?.('Chyba', 'Runu se nepodařilo uložit.', 'error');
+            }
         });
     }
 
@@ -192,10 +272,10 @@ async function requestDeepReading() {
     btn.innerHTML = 'Šaman přijímá vedení... <div class="loading__spinner loading__spinner--inline"></div>';
 
     try {
-        const response = await fetch(`${apiUrl}/api/runes`, {
+        const response = await fetch(`${apiBase()}/runes`, {
             method: 'POST',
             credentials: 'include',
-            headers: authHeaders(),
+            headers: await buildJsonHeaders(),
             body: JSON.stringify({
                 rune: drawnRune,
                 intention
@@ -204,7 +284,7 @@ async function requestDeepReading() {
 
         const data = await response.json();
 
-        if (response.status === 403) {
+        if (response.status === 401 || response.status === 402 || response.status === 403) {
             sessionStorage.setItem('pendingRuneContext', JSON.stringify({ rune: drawnRune, intention }));
             window.Auth.showToast('Premium vyžadováno', 'Šamanský výklad vyžaduje prémiové členství Hvězdného Průvodce.', 'info');
             window.Auth?.startPlanCheckout?.('pruvodce', {
@@ -231,6 +311,16 @@ async function requestDeepReading() {
         let safeHTML = div.innerHTML.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         aiContainer.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(safeHTML) : safeHTML;
 
+        const saveResult = await saveRuneReading({
+            response: data.response,
+            intention,
+            fallback: !!data.fallback
+        });
+
+        if (saveResult?.id) {
+            appendRuneFavoriteAction(aiContainer, saveResult.id);
+        }
+
         aiContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
     } catch (error) {
@@ -238,5 +328,8 @@ async function requestDeepReading() {
         alert('Nepodařilo se načíst hluboký výklad. Zkuste to prosím znovu.');
         btn.disabled = false;
         btn.innerHTML = 'Získat šamanský výklad (Zkusit znovu)';
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Získat šamanský výklad';
     }
 }

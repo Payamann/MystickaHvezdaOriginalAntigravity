@@ -119,6 +119,169 @@ html body .mh-inline-f62391840f { list-style: none; padding: 0; }
 html body .mh-inline-cb3bb4caa1 { margin-bottom: 0.2rem; }
 html body .mh-inline-e8965e1cb8 { margin: 0; color: var(--color-mystic-gold); }
 
+.natal-engine-summary {
+    margin-top: var(--space-lg);
+    padding: var(--space-md);
+    border: 1px solid rgba(212, 175, 55, 0.22);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.natal-engine-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-md);
+}
+
+.natal-engine-metric {
+    min-width: 0;
+}
+
+.natal-engine-label {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--color-silver-mist);
+    font-size: 0.78rem;
+}
+
+.natal-engine-value {
+    display: block;
+    color: var(--color-starlight);
+    font-size: 0.95rem;
+}
+
+.natal-engine-subtitle {
+    margin: var(--space-md) 0 var(--space-sm);
+    color: var(--color-mystic-gold);
+    font-size: 0.9rem;
+}
+
+.natal-aspects-list {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0;
+    padding-left: 1.15rem;
+    color: var(--color-starlight);
+    font-size: 0.88rem;
+    line-height: 1.45;
+}
+
+.natal-planets-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.35rem 0.75rem;
+    margin: 0 0 var(--space-md);
+    padding-left: 1.15rem;
+    color: var(--color-starlight);
+    font-size: 0.92rem;
+    line-height: 1.45;
+}
+
+@media (max-width: 640px) {
+    .natal-planets-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+.natal-zodiac-tick {
+    stroke: rgba(255, 255, 255, 0.16);
+    stroke-width: 0.75;
+    pointer-events: none;
+}
+
+.natal-zodiac-tick--major {
+    stroke: rgba(255, 255, 255, 0.26);
+    stroke-width: 1;
+}
+
+.natal-zodiac-tick--sign {
+    stroke: rgba(212, 175, 55, 0.42);
+    stroke-width: 1.25;
+}
+
+.natal-house-line {
+    stroke: rgba(212, 175, 55, 0.18);
+    stroke-width: 1;
+    pointer-events: none;
+}
+
+.natal-house-line--axis {
+    stroke: rgba(212, 175, 55, 0.45);
+    stroke-width: 1.5;
+}
+
+.natal-house-label {
+    fill: rgba(255, 255, 255, 0.56);
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    pointer-events: none;
+}
+
+.natal-aspect-line {
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    opacity: 0.62;
+    pointer-events: none;
+}
+
+.natal-aspect-line--harmonious,
+.natal-aspect-line--supportive {
+    stroke: rgba(46, 213, 115, 0.65);
+}
+
+.natal-aspect-line--dynamic,
+.natal-aspect-line--tense {
+    stroke: rgba(255, 107, 107, 0.6);
+}
+
+.natal-aspect-line--intense {
+    stroke: rgba(212, 175, 55, 0.72);
+}
+
+.natal-aspect-line--neutral {
+    stroke: rgba(255, 255, 255, 0.38);
+}
+
+.natal-aspect-label {
+    fill: rgba(255, 255, 255, 0.76);
+    paint-order: stroke;
+    stroke: rgba(5, 5, 16, 0.82);
+    stroke-width: 3px;
+    stroke-linejoin: round;
+    font-family: 'Inter', sans-serif;
+    font-size: 8px;
+    font-weight: 700;
+    pointer-events: none;
+}
+
+.natal-aspect-label--harmonious,
+.natal-aspect-label--supportive {
+    fill: rgba(128, 237, 153, 0.92);
+}
+
+.natal-aspect-label--dynamic,
+.natal-aspect-label--tense {
+    fill: rgba(255, 153, 153, 0.92);
+}
+
+.natal-aspect-label--intense {
+    fill: rgba(255, 220, 130, 0.95);
+}
+
+.natal-engine-note {
+    margin: var(--space-sm) 0 0;
+    color: var(--color-silver-mist);
+    font-size: 0.8rem;
+    line-height: 1.45;
+}
+
+@media (max-width: 520px) {
+    .natal-engine-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .planet-image--normal {
     mix-blend-mode: normal;
 }

@@ -80,11 +80,15 @@
             // Also notify backend that onboarding is complete
             try {
                 const API_URL = window.API_CONFIG?.BASE_URL || '/api';
+                const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
                 const res = await fetch(`${API_URL}/auth/onboarding/complete`, {
                     // Send auth cookie automatically with credentials: 'include'
                     method: 'POST',
                     credentials: 'include',
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+                    }
                 });
 
                 if (!res.ok) {

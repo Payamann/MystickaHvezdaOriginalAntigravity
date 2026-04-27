@@ -28,6 +28,17 @@ function cityMarkerClass(city) {
     return `city-marker--${city.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase()}`;
 }
 
+function formatPrecisionLabel(precision) {
+    const labels = {
+        birth_time_location_timezone: 'čas + rozpoznané místo',
+        birth_time_utc: 'čas bez rozpoznaného místa',
+        date_noon_location_timezone: 'datum + místo, bez přesného času',
+        date_noon_utc: 'pouze datum'
+    };
+
+    return labels[precision] || precision || '--';
+}
+
 // Intention select for personalized results
 const INTENTIONS = {
     'obecny': 'Obecná analýza',
@@ -71,20 +82,6 @@ const CITY_POSITIONS = {
     'moskva': { x: 60, y: 28, aliases: ['moskva', 'rusko'] },
     'reykjavík': { x: 40, y: 22, aliases: ['reykjavík', 'reykjavik', 'island'] },
     'havaj': { x: 3, y: 45, aliases: ['havaj', 'hawaii', 'honolulu'] }
-};
-
-// Planet colors for visualization
-const PLANET_COLORS = {
-    'slunce': '#f1c40f',
-    'měsíc': '#bdc3c7',
-    'merkur': '#9b59b6',
-    'venuše': '#e91e8c',
-    'mars': '#e74c3c',
-    'jupiter': '#d4af37',
-    'saturn': '#7f8c8d',
-    'uran': '#00d9ff',
-    'neptun': '#3498db',
-    'pluto': '#2c3e50'
 };
 
 function startAstroMapUpgradeFlow(source) {
@@ -243,6 +240,7 @@ async function handleFormSubmit(e) {
 
     // Show loading state
     showLoading();
+    clearAngularLines();
 
     try {
         const data = await window.callAPI('/astrocartography', {
@@ -254,8 +252,40 @@ async function handleFormSubmit(e) {
         });
 
         if (data.success) {
-            displayResults(data.response);
-            highlightCitiesFromResponse(data.response);
+            displayResults(data.response, data.astrocartography, data.chart);
+            drawAngularLines(data.astrocartography?.angularLines);
+            if (window.Auth?.saveReading) {
+                try {
+                    const saveResult = await window.Auth.saveReading('astrocartography', {
+                        name,
+                        birthDate,
+                        birthTime,
+                        birthPlace,
+                        intention: INTENTIONS[intention] || intention,
+                        response: data.response,
+                        chart: data.chart,
+                        astrocartography: data.astrocartography,
+                        fallback: !!data.fallback
+                    });
+
+                    if (saveResult?.id) {
+                        appendAstroFavoriteAction(resultsContainer, saveResult.id);
+                    }
+                } catch (saveError) {
+                    console.warn('Astrocartography save failed:', saveError.message);
+                }
+            }
+            highlightCitiesFromResponse(data.response, data.astrocartography?.recommendations);
+            window.MH_ANALYTICS?.trackEvent?.('astrocartography_calculated', {
+                engine_version: data.astrocartography?.engine?.version || data.chart?.engine?.version || null,
+                method: data.astrocartography?.engine?.method || null,
+                precision: data.astrocartography?.precision || data.chart?.engine?.precision || null,
+                location_resolved: Boolean(data.astrocartography?.location || data.chart?.location),
+                intention,
+                recommendations_count: data.astrocartography?.recommendations?.length || 0,
+                angular_lines_count: data.astrocartography?.angularLines?.length || 0,
+                top_recommendation_score: data.astrocartography?.recommendations?.[0]?.score ?? null
+            });
         } else {
             showError(data.error || 'Něco se pokazilo...');
         }
@@ -299,10 +329,180 @@ const PLANET_INTENTIONS = {
     'rodina': ['měsíc', 'venuše'],
 };
 
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function normalizeMapText(value) {
+    return String(value || '')
+        .trim()
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
+}
+
+function clearAngularLines() {
+    document.querySelectorAll('.astro-angular-line').forEach((line) => line.remove());
+}
+
+function setMapTooltip(text, visible) {
+    const tooltip = document.getElementById('map-tooltip');
+    if (!tooltip) return;
+
+    const tooltipText = tooltip.querySelector('p');
+    if (tooltipText) tooltipText.textContent = text || '';
+    tooltip.classList.toggle('is-visible', Boolean(visible));
+}
+
+function classToken(value) {
+    return normalizeMapText(value).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'unknown';
+}
+
+function linePositionClass(x) {
+    const clamped = Math.max(0, Math.min(100, x));
+    return `astro-angular-line--x-${Math.round(clamped / 5) * 5}`;
+}
+
+function drawAngularLines(lines = []) {
+    clearAngularLines();
+    if (!mapContainer || !Array.isArray(lines) || !lines.length) return;
+
+    lines.slice(0, 10).forEach((line) => {
+        const x = Number(line?.map?.x);
+        if (!Number.isFinite(x)) return;
+
+        const element = document.createElement('div');
+        element.className = [
+            'astro-angular-line',
+            `astro-angular-line--${String(line.angle || '').toLowerCase()}`,
+            `astro-angular-line--planet-${classToken(line.planetId || line.planetName)}`,
+            linePositionClass(x)
+        ].join(' ');
+        element.tabIndex = 0;
+        element.setAttribute('role', 'img');
+        element.setAttribute('aria-label', `${line.planetName || 'Planeta'} ${line.angle || ''}`);
+        element.innerHTML = `
+            <span class="astro-angular-line__label">
+                ${escapeHtml(line.planetName || 'Planeta')} ${escapeHtml(line.angle || '')}
+            </span>
+        `;
+
+        const tooltip = `${line.planetName || 'Planeta'} ${line.angle || ''}: ${line.theme || 'planetární meridián'}`;
+        element.addEventListener('mouseenter', () => setMapTooltip(tooltip, true));
+        element.addEventListener('focus', () => setMapTooltip(tooltip, true));
+        element.addEventListener('mouseleave', () => setMapTooltip('', false));
+        element.addEventListener('blur', () => setMapTooltip('', false));
+
+        mapContainer.appendChild(element);
+    });
+}
+
+function appendAstroFavoriteAction(container, readingId) {
+    if (!container || !readingId) return;
+
+    document.getElementById('favorite-astrocartography-action')?.remove();
+
+    const action = document.createElement('div');
+    action.id = 'favorite-astrocartography-action';
+    action.className = 'text-center favorite-reading-action mt-md';
+    action.innerHTML = `
+        <button id="favorite-astrocartography-btn" class="btn btn--glass favorite-reading-action__button">
+            <span class="favorite-icon">☆</span> Přidat do oblíbených
+        </button>
+    `;
+    container.appendChild(action);
+
+    action.querySelector('#favorite-astrocartography-btn')?.addEventListener('click', async () => {
+        if (typeof window.toggleFavorite === 'function') {
+            await window.toggleFavorite(readingId, 'favorite-astrocartography-btn');
+        }
+    });
+}
+
+function formatAiResponse(response) {
+    const cleanText = String(response || '').replace(/<[^>]*>?/gm, '');
+
+    let formattedContent = cleanText
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/__(.*?)__/g, '<strong>$1</strong>')
+        .replace(/^(..)?(Zóna .*?)$/gm, '<h4 class="result-section-title">$1 $2</h4>')
+        .replace(/\n\s*-\s*(.*?)/g, '<li>$1</li>')
+        .replace(/(<li>.*?<\/li>)+/g, '<ul>$&</ul>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>');
+
+    if (!formattedContent.startsWith('<h4')) {
+        formattedContent = '<p>' + formattedContent + '</p>';
+    }
+
+    return window.DOMPurify
+        ? window.DOMPurify.sanitize(formattedContent)
+        : formattedContent;
+}
+
+function renderAstroEngineSummary(astrocartography, chart) {
+    const recommendations = astrocartography?.recommendations || [];
+    const angularLines = astrocartography?.angularLines || [];
+    const chartSummary = chart?.summary || astrocartography?.chartSummary || {};
+    const intention = astrocartography?.intention?.label || 'obecný směr';
+    const precision = chart?.engine?.precision || astrocartography?.precision || null;
+    const location = chart?.location?.name || astrocartography?.location?.name || 'místo nerozpoznáno';
+    const note = astrocartography?.engine?.note || 'Doporučení jsou symbolická a slouží jako podpůrná relokační vrstva.';
+
+    if (!recommendations.length && !chartSummary.sunSign) {
+        return '';
+    }
+
+    const topCards = recommendations.slice(0, 3).map((item) => `
+        <article class="astro-destination-card">
+            <div class="astro-destination-card__header">
+                <strong>${escapeHtml(item.city)}</strong>
+                <span>${escapeHtml(item.score)} / 100</span>
+            </div>
+            <p class="astro-destination-card__meta">
+                ${escapeHtml(item.primaryPlanet?.name || 'Planeta')} v ${escapeHtml(item.primaryPlanet?.sign || 'mapě')} · ${escapeHtml(item.tone || 'rezonance')}
+            </p>
+            <p>${escapeHtml(item.reason || item.practicalUse || '')}</p>
+        </article>
+    `).join('');
+    const lineCards = angularLines.slice(0, 4).map((line) => `
+        <span class="astro-angular-summary__line">
+            ${escapeHtml(line.planetName || 'Planeta')} ${escapeHtml(line.angle || '')}: ${escapeHtml(line.longitude ?? '--')}°
+        </span>
+    `).join('');
+
+    return `
+        <div class="astro-engine-summary">
+            <div class="astro-engine-summary__header">
+                <div>
+                    <span class="eyebrow">Serverový astro engine</span>
+                    <h4>Top místa pro ${escapeHtml(intention)}</h4>
+                </div>
+                <div class="astro-engine-summary__pill">${escapeHtml(astrocartography?.engine?.version || chart?.engine?.version || 'astro-engine')}</div>
+            </div>
+            <div class="astro-engine-summary__facts">
+                <span>Slunce: ${escapeHtml(chartSummary.sunSign || '--')}</span>
+                <span>Měsíc: ${escapeHtml(chartSummary.moonSign || '--')}</span>
+                <span>Ascendent: ${escapeHtml(chartSummary.ascendantSign || '--')}</span>
+                <span>Místo: ${escapeHtml(location)}</span>
+                <span>Přesnost: ${escapeHtml(formatPrecisionLabel(precision))}</span>
+            </div>
+            ${topCards ? `<div class="astro-destination-grid">${topCards}</div>` : ''}
+            ${lineCards ? `<div class="astro-angular-summary">${lineCards}</div>` : ''}
+            <p class="astro-engine-summary__note">${escapeHtml(note)}</p>
+        </div>
+    `;
+}
+
 /**
  * Display AI response
  */
-function displayResults(response) {
+function displayResults(response, astrocartography = null, chart = null) {
     hideLoading();
 
     // Get current intention
@@ -322,31 +522,13 @@ function displayResults(response) {
     */
 
     if (resultsContainer) {
-        // Sanitize AI response:
-        // 1. Strip ALL HTML tags to avoid literal tags appearing in UI
-        let cleanText = response.replace(/<[^>]*>?/gm, '');
-
-        // 2. Format the clean text (Markdown-like)
-        let formattedContent = cleanText
-            // Bold (**text** or __text__)
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/__(.*?)__/g, '<strong>$1</strong>')
-            // Headers (e.g., Zóna... -> make it more prominent if it starts with emoji or looks like a header)
-            .replace(/^(..)?(Zóna .*?)$/gm, '<h4 class="result-section-title">$1 $2</h4>')
-            // Paragraphs and bullets
-            .replace(/\n\s*-\s*(.*?)/g, '<li>$1</li>')
-            .replace(/(<li>.*?<\/li>)+/g, '<ul>$&</ul>')
-            .replace(/\n\n/g, '</p><p>')
-            .replace(/\n/g, '<br>');
-
-        // Wrap in initial paragraph if not already started with header
-        if (!formattedContent.startsWith('<h4')) {
-            formattedContent = '<p>' + formattedContent + '</p>';
-        }
+        const formattedContent = formatAiResponse(response);
+        const engineSummary = renderAstroEngineSummary(astrocartography, chart);
 
         resultsContainer.innerHTML = `
             <div class="astro-result-card" data-animate>
-                <h3 class="result-title">🗺️ Vaše Astrokartografická Mapa</h3>
+                <h3 class="result-title">🗺️ Vaše symbolická astro mapa</h3>
+                ${engineSummary}
                 <div class="result-content">
                     ${formattedContent}
                 </div>
@@ -362,6 +544,7 @@ function displayResults(response) {
  */
 function showError(message) {
     hideLoading();
+    clearAngularLines();
 
     if (resultsContainer) {
         resultsContainer.textContent = '';
@@ -387,11 +570,18 @@ function showError(message) {
 /**
  * Highlight cities mentioned in the AI response on the map
  */
-function highlightCitiesFromResponse(response) {
-    const lowerResponse = response.toLowerCase();
-
+function highlightCitiesFromResponse(response, recommendations = []) {
     // Remove existing city markers
     document.querySelectorAll('.city-marker').forEach(m => m.remove());
+
+    if (Array.isArray(recommendations) && recommendations.length) {
+        recommendations.forEach((destination) => {
+            addCityMarker(destination.city, Number(destination.score) >= 62);
+        });
+        return;
+    }
+
+    const lowerResponse = String(response || '').toLowerCase();
 
     // Find mentioned cities and add markers
     Object.entries(CITY_POSITIONS).forEach(([city, pos]) => {
@@ -442,9 +632,10 @@ function addCityMarker(city, isPositive) {
 
     const marker = document.createElement('div');
     marker.className = `city-marker ${cityMarkerClass(city)} ${isPositive ? 'positive' : 'negative'}`;
+    const label = String(city || '').charAt(0).toUpperCase() + String(city || '').slice(1);
     marker.innerHTML = `
         <span class="marker-dot"></span>
-        <span class="marker-label">${city.charAt(0).toUpperCase() + city.slice(1)}</span>
+        <span class="marker-label">${escapeHtml(label)}</span>
     `;
     marker.title = city;
 

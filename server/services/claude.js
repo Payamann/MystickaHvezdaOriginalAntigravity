@@ -28,6 +28,9 @@ const API_KEY = (() => {
  */
 export async function callClaude(systemPrompt, messageOrHistory, contextData = null) {
     if (USE_MOCK_AI) {
+        if (process.env.MOCK_AI_FORCE_ERROR === 'true') {
+            throw new Error('Forced mock AI error.');
+        }
         return buildMockClaudeResponse(systemPrompt);
     }
 
@@ -126,6 +129,10 @@ export async function callClaude(systemPrompt, messageOrHistory, contextData = n
 }
 
 function buildMockClaudeResponse(systemPrompt = '') {
+    if (process.env.MOCK_AI_FORCE_INVALID_JSON === 'true') {
+        return 'Testovaci AI odpoved pro invalidni JSON fallback.';
+    }
+
     if (systemPrompt.includes('"prediction"') && systemPrompt.includes('"affirmation"')) {
         return JSON.stringify({
             prediction: 'Testovaci horoskop prinasi klidnou energii, jasne priority a jeden prakticky krok pro dnesni den.',

@@ -24,6 +24,13 @@ export function authHeaders(json = false) {
     return headers;
 }
 
+export async function authHeadersWithCsrf(json = false) {
+    const headers = authHeaders(json);
+    const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+    if (csrfToken) headers['X-CSRF-Token'] = csrfToken;
+    return headers;
+}
+
 // Helper: Fetch options with credentials for HttpOnly cookie auth
 export function authFetchOptions(opts = {}) {
     return {
@@ -129,8 +136,22 @@ export function getPlanPriceCzk(planId) {
 // Get icon for reading type
 export function getReadingIcon(type) {
     const icons = {
-        'tarot': 'book-marked', 'horoscope': 'sparkles', 'natal': 'map', 'natal-chart': 'map',
-        'numerology': 'hash', 'synastry': 'heart', 'crystal': 'crystal-ball', 'journal': 'pen-tool'
+        'angel': 'feather',
+        'angel-card': 'feather',
+        'astrocartography': 'map-pinned',
+        'crystal': 'crystal-ball',
+        'crystal-ball': 'crystal-ball',
+        'daily-wisdom': 'sun',
+        'horoscope': 'sparkles',
+        'journal': 'pen-tool',
+        'medicine-wheel': 'compass',
+        'natal': 'map',
+        'natal-chart': 'map',
+        'numerology': 'hash',
+        'past-life': 'history',
+        'runes': 'gem',
+        'synastry': 'heart',
+        'tarot': 'book-marked'
     };
     const iconName = icons[type] || 'star';
     return `<i data-lucide="${iconName}" class="reading-type-icon"></i>`;
@@ -139,9 +160,22 @@ export function getReadingIcon(type) {
 // Get title for reading type
 export function getReadingTitle(type) {
     const titles = {
-        'tarot': 'Tarotový výklad', 'horoscope': 'Horoskop', 'natal': 'Natální karta',
-        'natal-chart': 'Natální karta', 'numerology': 'Numerologie',
-        'synastry': 'Partnerská shoda', 'crystal': 'Křišťálová koule', 'journal': 'Manifestační deník'
+        'angel': 'Andělský vzkaz',
+        'angel-card': 'Andělská karta',
+        'astrocartography': 'Astro mapa',
+        'crystal': 'Křišťálová koule',
+        'crystal-ball': 'Křišťálová koule',
+        'daily-wisdom': 'Denní moudrost',
+        'horoscope': 'Horoskop',
+        'journal': 'Manifestační deník',
+        'medicine-wheel': 'Šamanské kolo',
+        'natal': 'Natální karta',
+        'natal-chart': 'Natální karta',
+        'numerology': 'Numerologie',
+        'past-life': 'Minulý život',
+        'runes': 'Runový výklad',
+        'synastry': 'Partnerská shoda',
+        'tarot': 'Tarotový výklad'
     };
     return titles[type] || 'Výklad';
 }

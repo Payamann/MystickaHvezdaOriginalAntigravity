@@ -47,7 +47,7 @@ const PHASES = [
         maxAge: 15.77,
         illumination: 100,
         tags: ['Vrchol', 'Manifestace', 'Emoce', 'Odhalení', 'Naplnění'],
-        interpretation: 'Úplněk je esoterickem posvátným momentem lunárního cyklu. Měsíc je plně osvětlen a na obloze září jako malé druhé slunce. Emoce jsou zesileny, intuice maximálně naostřena. To, co bylo zaseto, se nyní plně projevuje – dobré i špatné. Věci se vynořují na povrch. Toto je okamžik sklizně, rituálů vděčnosti a propuštění starého, co již neslouží.',
+        interpretation: 'Úplněk je posvátným momentem lunárního cyklu. Měsíc je plně osvětlen a na obloze září jako malé druhé slunce. Emoce jsou zesileny, intuice maximálně naostřena. To, co bylo zaseto, se nyní plně projevuje – dobré i špatné. Věci se vynořují na povrch. Toto je okamžik sklizně, rituálů vděčnosti a propuštění starého, co již neslouží.',
         advice: '🌕 Dnešní praxe: Vytvořte prostor pro rituál vděčnosti. Napište si, co jste od posledního Novolunění dosáhli, a poté vědomě propusťte vše, čeho je třeba se vzdát.'
     },
     {
@@ -56,7 +56,7 @@ const PHASES = [
         minAge: 15.77,
         maxAge: 21.15,
         illumination: 75,
-        tags: ['Sdílení', 'Moudrost', 'Gratitudine', 'Odpočinek'],
+        tags: ['Sdílení', 'Moudrost', 'Vděčnost', 'Odpočinek'],
         interpretation: 'Světlo pomalu ustupuje, ale zkušenost a moudrost ze sklizně Úplňku zůstávají. Toto je čas sdílení – toho, co jste se naučili, prožili a vytvořili. Energie přirozeně volá k introverzi, k předávání vědomostí a k ocenění cesty.',
         advice: '🌖 Dnešní praxe: Podělte se o něco, čemu jste se naučili – ať už s přítelem, v deníku, nebo na sociálních sítích. Moudrost, která není sdílena, chřadne.'
     },

@@ -6,6 +6,7 @@ import express from 'express';
 import { supabase } from '../db-supabase.js';
 import { authenticateToken } from '../middleware.js';
 import rateLimit from 'express-rate-limit';
+import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
@@ -15,6 +16,21 @@ const pushLimiter = rateLimit({
     message: { success: false, error: 'Příliš mnoho pokusů.' }
 });
 
+function getPushUserId(req) {
+    const auth = req.headers.authorization;
+    const bearerToken = auth && auth.startsWith('Bearer ') ? auth.split(' ')[1] : null;
+    const token = bearerToken || req.cookies?.auth_token;
+
+    if (!token) return null;
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        return decoded.id || decoded.userId || null;
+    } catch {
+        return null;
+    }
+}
+
 // POST /subscribe — save Web Push subscription
 router.post('/subscribe', pushLimiter, async (req, res) => {
     const { subscription } = req.body;
@@ -22,16 +38,7 @@ router.post('/subscribe', pushLimiter, async (req, res) => {
         return res.status(400).json({ success: false, error: 'Neplatná subscription.' });
     }
 
-    // Get optional user id from token
-    let userId = null;
-    const auth = req.headers.authorization;
-    if (auth && auth.startsWith('Bearer ')) {
-        try {
-            const jwt = await import('jsonwebtoken');
-            const decoded = jwt.default.verify(auth.split(' ')[1], process.env.JWT_SECRET);
-            userId = decoded.userId;
-        } catch { }
-    }
+    const userId = getPushUserId(req);
 
     try {
         await supabase.from('push_subscriptions').upsert({
@@ -44,6 +51,27 @@ router.post('/subscribe', pushLimiter, async (req, res) => {
         res.json({ success: true, message: 'Přihlášeno k Push notifikacím.' });
     } catch (err) {
         console.error('[Push] Subscribe error:', err);
+        res.status(500).json({ success: false, error: 'Chyba serveru.' });
+    }
+});
+
+// POST /unsubscribe — remove Web Push subscription
+router.post('/unsubscribe', pushLimiter, async (req, res) => {
+    const endpoint = String(req.body?.endpoint || req.body?.subscription?.endpoint || '').trim();
+
+    if (!endpoint || endpoint.length > 2048) {
+        return res.status(400).json({ success: false, error: 'Neplatný endpoint.' });
+    }
+
+    try {
+        await supabase
+            .from('push_subscriptions')
+            .delete()
+            .eq('endpoint', endpoint);
+
+        res.json({ success: true, message: 'Odběr push notifikací byl zrušen.' });
+    } catch (err) {
+        console.error('[Push] Unsubscribe error:', err);
         res.status(500).json({ success: false, error: 'Chyba serveru.' });
     }
 });

@@ -21,6 +21,14 @@
         return n;
     }
 
+    async function getVapidPublicKey() {
+        if (window.API_CONFIG?.VAPID_PUBLIC_KEY) return window.API_CONFIG.VAPID_PUBLIC_KEY;
+        if (typeof window.initConfig === 'function') {
+            await window.initConfig();
+        }
+        return window.API_CONFIG?.VAPID_PUBLIC_KEY || window.VAPID_PUBLIC_KEY || null;
+    }
+
     async function subscribeToPush() {
         try {
             const permission = await Notification.requestPermission();
@@ -30,17 +38,17 @@
             }
 
             const registration = await navigator.serviceWorker.ready;
+            const vapidPublicKey = await getVapidPublicKey();
+            if (!vapidPublicKey) {
+                localStorage.setItem(SUB_KEY, 'intent');
+                return true;
+            }
 
-            // VAPID public key (replace with real key from server on deploy)
-            // For now we use a placeholder – subscription will still save endpoint
             let subscription;
             try {
                 subscription = await registration.pushManager.subscribe({
                     userVisibleOnly: true,
-                    applicationServerKey: urlBase64ToUint8Array(
-                        window.VAPID_PUBLIC_KEY ||
-                        'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBrqLHy9-Ndgo292mkiw'
-                    )
+                    applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
                 });
             } catch {
                 // VAPID not configured yet – just record intent
@@ -65,6 +73,35 @@
             return true;
         } catch (error) {
             console.warn('[Push] Subscription failed:', error);
+            return false;
+        }
+    }
+
+    async function unsubscribeFromPush() {
+        try {
+            const registration = await navigator.serviceWorker.ready;
+            const subscription = await registration.pushManager.getSubscription();
+
+            if (subscription) {
+                const BASE = window.API_CONFIG?.BASE_URL || '/api';
+                const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+                await fetch(`${BASE}/push/unsubscribe`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+                    },
+                    body: JSON.stringify({ endpoint: subscription.endpoint })
+                });
+                await subscription.unsubscribe();
+            }
+
+            localStorage.removeItem(SUB_KEY);
+            return true;
+        } catch (error) {
+            console.warn('[Push] Unsubscribe failed:', error);
+            localStorage.removeItem(SUB_KEY);
             return false;
         }
     }
@@ -144,8 +181,7 @@
             subBtn.addEventListener('click', async () => {
                 const currentStatus = localStorage.getItem(SUB_KEY);
                 if (currentStatus === 'active') {
-                    // Unsubscribe logic (simplified: clear local storage for this demo)
-                    localStorage.removeItem(SUB_KEY);
+                    await unsubscribeFromPush();
                     subBtn.innerHTML = '🔔 Odebírat denní horoskop';
                     subBtn.classList.remove('btn--active');
                     if (window.Auth?.showToast) window.Auth.showToast('Info', 'Odběr horoskopu byl zrušen.', 'info');

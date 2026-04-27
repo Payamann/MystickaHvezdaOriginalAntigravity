@@ -34,6 +34,60 @@
         { name: 'Vítěz', emoji: '🏆', keyword: 'Úspěch', text: 'Vaše vytrvalost byla oceněna. Dnes celebrujte svůj pokrok – i ten nejmenší úspěch si zaslouží uznání. Jste na správné cestě k vítězství.', link: 'fehu.html' },
     ];
 
+    const CARD_IMAGES = {
+        'Andělé Ochránci': 'andele-ochranci',
+        'Hojnost': 'hojnost',
+        'Nový začátek': 'novy-zacatek',
+        'Vnitřní mír': 'vnitrni-mir',
+        'Odvaha': 'odvaha',
+        'Láska': 'laska',
+        'Intuice': 'intuice',
+        'Transformace': 'transformace',
+        'Vděčnost': 'vdecnost',
+        'Harmonie': 'harmonie',
+        'Vůdce': 'vudce',
+        'Propojení': 'propojeni',
+        'Hojení': 'hojeni',
+        'Moudrost': 'moudrost',
+        'Radost': 'radost',
+        'Průlom': 'prulom',
+        'Důvěra': 'duvera',
+        'Kreativita': 'kreativita',
+        'Uvolnění': 'uvolneni',
+        'Záměr': 'zamer',
+        'Kořeny': 'koreny',
+        'Zrcadlo': 'zrcadlo',
+        'Přijetí': 'prijeti',
+        'Zázrak': 'zazrak',
+        'Přátelství': 'pratelstvi',
+        'Ohraničení': 'ohraniceni',
+        'Vizionář': 'vizionar',
+        'Hravost': 'hravost',
+        'Propojen se zemí': 'propojen-se-zemi',
+        'Paradox': 'paradox',
+        'Vítěz': 'vitez'
+    };
+
+    function renderCardSymbol(target, card) {
+        if (!target || !card) return;
+
+        const slug = CARD_IMAGES[card.name];
+        target.textContent = '';
+
+        if (!slug) {
+            target.textContent = card.emoji;
+            return;
+        }
+
+        const image = new Image();
+        image.className = 'kdd-card-image';
+        image.src = `/img/daily-cards/${slug}.webp`;
+        image.alt = `${card.name} - ${card.keyword}`;
+        image.loading = 'eager';
+        image.decoding = 'async';
+        target.appendChild(image);
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         const el = id => document.getElementById(id);
         const cardContainer = el('kdd-card');
@@ -98,7 +152,7 @@
         const card = CARDS[cardIndex];
 
         // Poplate content
-        if (el('kdd-emoji')) el('kdd-emoji').textContent = card.emoji;
+        renderCardSymbol(el('kdd-emoji'), card);
         if (el('kdd-name')) el('kdd-name').textContent = card.name;
         if (el('kdd-keyword')) el('kdd-keyword').textContent = card.keyword;
         if (el('kdd-text')) el('kdd-text').textContent = card.text;

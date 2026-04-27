@@ -253,6 +253,79 @@
                 </section>
 
 
+                <section class="admin-panel mb-xl" aria-labelledby="angel-moderation-title">
+
+                    <div class="admin-panel__header">
+
+                        <div>
+
+                            <h2 id="angel-moderation-title">Moderace Andělské pošty</h2>
+
+                            <p class="admin-panel__subtext">Nové vzkazy jsou veřejné až po ručním schválení.</p>
+
+                        </div>
+
+                        <div class="admin-panel__controls">
+
+                            <label class="admin-select-label" for="angel-message-status">Stav</label>
+
+                            <select id="angel-message-status" class="admin-select">
+
+                                <option value="pending" selected>Čekající</option>
+
+                                <option value="approved">Schválené</option>
+
+                                <option value="all">Vše</option>
+
+                            </select>
+
+                            <button class="btn btn--secondary" data-action="loadAngelMessages">Obnovit vzkazy</button>
+
+                        </div>
+
+                    </div>
+
+                    <div class="admin-table-container admin-table-container--compact">
+
+                        <table id="angel-messages-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Čas</th>
+
+                                    <th>Autor</th>
+
+                                    <th>Kategorie</th>
+
+                                    <th>Vzkaz</th>
+
+                                    <th>Stav</th>
+
+                                    <th>Akce</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                <tr>
+
+                                    <td colspan="6">Načítám vzkazy...</td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+
 
                 <div class="admin-table-container">
 

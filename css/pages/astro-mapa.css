@@ -79,6 +79,189 @@ html body .mh-inline-1095a37166 { opacity: 0.8; }
     transform: translateX(-50%);
 }
 
+.astro-angular-line {
+    position: absolute;
+    top: 7%;
+    bottom: 7%;
+    z-index: 2;
+    width: 0;
+    border-left: 2px solid var(--line-color, var(--color-mystic-gold));
+    opacity: 0.72;
+    filter: drop-shadow(0 0 8px color-mix(in srgb, var(--line-color, #ffd700) 60%, transparent));
+    outline: none;
+}
+
+.astro-angular-line--ic {
+    border-left-style: dashed;
+    opacity: 0.58;
+}
+
+.astro-angular-line--planet-sun { --line-color: #f1c40f; }
+.astro-angular-line--planet-moon { --line-color: #bdc3c7; }
+.astro-angular-line--planet-mercury { --line-color: #9b59b6; }
+.astro-angular-line--planet-venus { --line-color: #e91e8c; }
+.astro-angular-line--planet-mars { --line-color: #e74c3c; }
+.astro-angular-line--planet-jupiter { --line-color: #d4af37; }
+.astro-angular-line--planet-saturn { --line-color: #7f8c8d; }
+.astro-angular-line--planet-uranus { --line-color: #00d9ff; }
+.astro-angular-line--planet-neptune { --line-color: #3498db; }
+.astro-angular-line--planet-pluto { --line-color: #8e44ad; }
+
+.astro-angular-line--x-0 { left: 0%; }
+.astro-angular-line--x-5 { left: 5%; }
+.astro-angular-line--x-10 { left: 10%; }
+.astro-angular-line--x-15 { left: 15%; }
+.astro-angular-line--x-20 { left: 20%; }
+.astro-angular-line--x-25 { left: 25%; }
+.astro-angular-line--x-30 { left: 30%; }
+.astro-angular-line--x-35 { left: 35%; }
+.astro-angular-line--x-40 { left: 40%; }
+.astro-angular-line--x-45 { left: 45%; }
+.astro-angular-line--x-50 { left: 50%; }
+.astro-angular-line--x-55 { left: 55%; }
+.astro-angular-line--x-60 { left: 60%; }
+.astro-angular-line--x-65 { left: 65%; }
+.astro-angular-line--x-70 { left: 70%; }
+.astro-angular-line--x-75 { left: 75%; }
+.astro-angular-line--x-80 { left: 80%; }
+.astro-angular-line--x-85 { left: 85%; }
+.astro-angular-line--x-90 { left: 90%; }
+.astro-angular-line--x-95 { left: 95%; }
+.astro-angular-line--x-100 { left: 100%; }
+
+.astro-angular-line__label {
+    position: absolute;
+    top: 0;
+    left: 0.35rem;
+    padding: 0.12rem 0.38rem;
+    border: 1px solid color-mix(in srgb, var(--line-color, #ffd700) 55%, transparent);
+    border-radius: 999px;
+    background: rgba(5, 5, 16, 0.82);
+    color: #fff;
+    font-size: 0.62rem;
+    white-space: nowrap;
+}
+
+.astro-angular-line:focus .astro-angular-line__label,
+.astro-angular-line:hover .astro-angular-line__label {
+    background: rgba(5, 5, 16, 0.96);
+}
+
+.astro-engine-summary {
+    margin: 0 0 var(--space-lg);
+    padding: var(--space-lg);
+    border: 1px solid rgba(212, 175, 55, 0.22);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.045);
+}
+
+.astro-engine-summary__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+.astro-engine-summary__header h4 {
+    margin: 0.25rem 0 0;
+    color: var(--color-mystic-gold);
+}
+
+.astro-engine-summary__pill {
+    flex: 0 0 auto;
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    background: rgba(212, 175, 55, 0.16);
+    color: var(--color-mystic-gold);
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.astro-engine-summary__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: var(--space-md);
+}
+
+.astro-engine-summary__facts span {
+    padding: 0.35rem 0.65rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 0.84rem;
+}
+
+.astro-destination-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-sm);
+}
+
+.astro-destination-card {
+    min-width: 0;
+    padding: var(--space-md);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-sm);
+    background: rgba(5, 5, 16, 0.38);
+}
+
+.astro-destination-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    color: #fff;
+}
+
+.astro-destination-card__header span {
+    color: var(--color-mystic-gold);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.astro-destination-card__meta,
+.astro-engine-summary__note {
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.86rem;
+}
+
+.astro-destination-card p,
+.astro-engine-summary__note {
+    margin: 0.55rem 0 0;
+}
+
+.astro-angular-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: var(--space-md);
+}
+
+.astro-angular-summary__line {
+    padding: 0.28rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.78rem;
+}
+
+@media (max-width: 768px) {
+    .astro-engine-summary__header {
+        display: block;
+    }
+
+    .astro-engine-summary__pill {
+        display: inline-block;
+        margin-top: var(--space-sm);
+    }
+
+    .astro-destination-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .city-marker--praha { left: 52%; top: 34%; }
 .city-marker--londyn { left: 47%; top: 32%; }
 .city-marker--pariz { left: 48%; top: 34%; }

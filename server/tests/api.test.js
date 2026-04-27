@@ -4,6 +4,7 @@
  */
 
 import request from 'supertest';
+import jwt from 'jsonwebtoken';
 import app from '../index.js';
 import { supabase } from '../db-supabase.js';
 import { isDocAllowed } from '../routes/docs.js';
@@ -11,6 +12,17 @@ import { isDocAllowed } from '../routes/docs.js';
 async function getCsrfToken() {
     const res = await request(app).get('/api/csrf-token').expect(200);
     return res.body.csrfToken;
+}
+
+function createUserToken(overrides = {}) {
+    return jwt.sign({
+        id: 'api-test-user',
+        email: 'api-test@example.com',
+        role: 'user',
+        isPremium: false,
+        subscription_status: 'free',
+        ...overrides
+    }, process.env.JWT_SECRET, { expiresIn: '1h' });
 }
 
 describe('API Endpoint Tests', () => {
@@ -57,6 +69,39 @@ describe('API Endpoint Tests', () => {
         });
     });
 
+    describe('Public Config', () => {
+        test('GET /api/config exposes only client-safe keys', async () => {
+            const res = await request(app)
+                .get('/api/config')
+                .expect(200);
+
+            expect(res.body).toHaveProperty('stripePublishableKey');
+            expect(res.body).toHaveProperty('vapidPublicKey');
+            expect(res.body).toHaveProperty('sentryDsn');
+            expect(res.body).not.toHaveProperty('VAPID_PRIVATE_KEY');
+            expect(res.body).not.toHaveProperty('STRIPE_SECRET_KEY');
+            expect(res.body).not.toHaveProperty('SENTRY_DSN');
+        });
+    });
+
+    describe('Birth Locations', () => {
+        test('GET /api/birth-locations exposes client-safe supported city suggestions', async () => {
+            const res = await request(app)
+                .get('/api/birth-locations')
+                .expect(200);
+
+            expect(res.headers['cache-control']).toContain('max-age=86400');
+            expect(res.body.success).toBe(true);
+            expect(res.body.locations).toEqual(expect.arrayContaining([
+                expect.objectContaining({ name: 'Praha', country: 'CZ' }),
+                expect.objectContaining({ name: 'Krakov', country: 'PL' })
+            ]));
+            expect(res.body.locations[0]).not.toHaveProperty('latitude');
+            expect(res.body.locations[0]).not.toHaveProperty('longitude');
+            expect(res.body.locations[0]).not.toHaveProperty('timeZone');
+        });
+    });
+
     describe('API Docs', () => {
         const originalNodeEnv = process.env.NODE_ENV;
         const originalDocsToken = process.env.DOCS_TOKEN;
@@ -96,6 +141,25 @@ describe('API Endpoint Tests', () => {
             expect(res.text).toContain('paywallToCheckoutRateDelta:');
             expect(res.text).toContain('enum: [daily, segments]');
             expect(res.text).toContain('text/csv:');
+            expect(res.text).toContain('/config:');
+            expect(res.text).toContain('PublicConfig:');
+            expect(res.text).toContain('vapidPublicKey:');
+            expect(res.text).toContain('sentryDsn:');
+            expect(res.text).toContain('/birth-locations:');
+            expect(res.text).toContain('BirthLocationSuggestion:');
+            expect(res.text).toContain('/push/subscribe:');
+            expect(res.text).toContain('/push/unsubscribe:');
+            expect(res.text).toContain('PushSubscription:');
+            expect(res.text).toContain('/natal-chart/calculate:');
+            expect(res.text).toContain('/synastry/calculate:');
+            expect(res.text).toContain('/transits/current:');
+            expect(res.text).toContain('/astrocartography:');
+            expect(res.text).toContain('AstroChart:');
+            expect(res.text).toContain('SynastryCalculation:');
+            expect(res.text).toContain('TransitSnapshot:');
+            expect(res.text).toContain('AstrocartographyInsights:');
+            expect(res.text).toContain('precision:');
+            expect(res.text).toContain('angularLines:');
         });
 
         test('docs access allows non-production without token', () => {
@@ -253,6 +317,72 @@ describe('API Endpoint Tests', () => {
                 expect(res.status).not.toBe(400);
             }
         }, 60000);
+
+        test('Daily horoscope returns structured fallback when AI JSON is invalid', async () => {
+            const originalForceInvalidJson = process.env.MOCK_AI_FORCE_INVALID_JSON;
+            process.env.MOCK_AI_FORCE_INVALID_JSON = 'true';
+
+            try {
+                const csrfToken = await getCsrfToken();
+                const res = await request(app)
+                    .post('/api/horoscope')
+                    .set('x-csrf-token', csrfToken)
+                    .send({
+                        sign: 'Lev',
+                        period: 'daily',
+                        context: [`invalid-json-${Date.now()}`]
+                    })
+                    .expect(200);
+
+                expect(res.body.success).toBe(true);
+                expect(res.body.fallback).toBe(true);
+                expect(res.body.period).toBeTruthy();
+
+                const parsed = JSON.parse(res.body.response);
+                expect(parsed).toEqual(expect.objectContaining({
+                    prediction: expect.any(String),
+                    affirmation: expect.any(String),
+                    luckyNumbers: expect.any(Array)
+                }));
+                expect(parsed.luckyNumbers).toHaveLength(4);
+            } finally {
+                if (originalForceInvalidJson === undefined) {
+                    delete process.env.MOCK_AI_FORCE_INVALID_JSON;
+                } else {
+                    process.env.MOCK_AI_FORCE_INVALID_JSON = originalForceInvalidJson;
+                }
+            }
+        });
+
+        test('Daily horoscope AI limiter returns 429 without hanging', async () => {
+            const originalNodeEnv = process.env.NODE_ENV;
+            process.env.NODE_ENV = 'production';
+
+            try {
+                const csrfToken = await getCsrfToken();
+                const statuses = [];
+                const runId = Date.now();
+
+                for (let i = 0; i < 12; i += 1) {
+                    const res = await request(app)
+                        .post('/api/horoscope')
+                        .set('x-csrf-token', csrfToken)
+                        .send({
+                            sign: 'Beran',
+                            period: 'daily',
+                            context: [`${String.fromCharCode(65 + i)}-${runId}`]
+                        })
+                        .timeout({ response: 4000, deadline: 6000 });
+
+                    statuses.push(res.status);
+                    if (res.status === 429) break;
+                }
+
+                expect(statuses).toContain(429);
+            } finally {
+                process.env.NODE_ENV = originalNodeEnv;
+            }
+        }, 70000);
     });
 
     describe('POST /api/crystal-ball', () => {
@@ -481,6 +611,29 @@ describe('API Endpoint Tests', () => {
 
             expect(res.status).toBe(401);
         });
+
+        test('POST /api/mentor/chat enforces free daily message limit', async () => {
+            const userId = `mentor-free-${Date.now()}`;
+            const today = new Date().toISOString().split('T')[0];
+
+            await supabase.from('mentor_messages').insert([
+                { user_id: userId, role: 'user', content: 'Prvni zprava', created_at: `${today}T08:00:00.000Z` },
+                { user_id: userId, role: 'user', content: 'Druha zprava', created_at: `${today}T09:00:00.000Z` },
+                { user_id: userId, role: 'user', content: 'Treti zprava', created_at: `${today}T10:00:00.000Z` }
+            ]);
+
+            const csrfToken = await getCsrfToken();
+            const token = createUserToken({ id: userId });
+            const res = await request(app)
+                .post('/api/mentor/chat')
+                .set('x-csrf-token', csrfToken)
+                .set('Cookie', `auth_token=${token}`)
+                .send({ message: 'Muzu jeste jednu radu?' })
+                .expect(402);
+
+            expect(res.body.code).toBe('PREMIUM_REQUIRED');
+            expect(res.body.feature).toBe('mentor_unlimited');
+        });
     });
 
     describe('Programmatic Horoscope Sitemap', () => {
@@ -506,6 +659,28 @@ describe('API Endpoint Tests', () => {
             expect(res.text).toContain('/js/dist/main.js');
             expect(res.text).not.toMatch(/<style\b/i);
             expect(res.text).not.toMatch(/\sstyle\s*=/i);
+        });
+
+        test('GET /horoskop/:sign/:date falls back when generated AI JSON is invalid', async () => {
+            const originalForceInvalidJson = process.env.MOCK_AI_FORCE_INVALID_JSON;
+            process.env.MOCK_AI_FORCE_INVALID_JSON = 'true';
+
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const res = await request(app)
+                    .get(`/horoskop/rak/${today}`)
+                    .expect(200);
+
+                expect(res.text).not.toContain('Testovaci AI odpoved pro invalidni JSON fallback.');
+                expect(res.text).toContain('Jdu svým tempem');
+                expect(res.text).toContain('Čísla štěstí');
+            } finally {
+                if (originalForceInvalidJson === undefined) {
+                    delete process.env.MOCK_AI_FORCE_INVALID_JSON;
+                } else {
+                    process.env.MOCK_AI_FORCE_INVALID_JSON = originalForceInvalidJson;
+                }
+            }
         });
     });
 

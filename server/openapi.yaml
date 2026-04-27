@@ -10,6 +10,37 @@ servers:
     description: Produkční server
 
 paths:
+  /config:
+    get:
+      summary: Veřejná klientská konfigurace
+      description: Vrací pouze klientsky bezpečné veřejné klíče a nastavení.
+      responses:
+        '200':
+          description: Klientská konfigurace.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicConfig'
+
+  /birth-locations:
+    get:
+      summary: Podporovaná místa narození
+      description: Vrací klientsky bezpečný seznam měst, která lokální astro engine umí použít pro časové pásmo a domy.
+      responses:
+        '200':
+          description: Seznam podporovaných míst narození.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  locations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BirthLocationSuggestion'
+
   /crystal-ball:
     post:
       summary: Dotaz na křišťálovou kouli
@@ -47,6 +78,218 @@ paths:
           description: Neplatný požadavek (např. chybějící otázka)
         '402':
           description: Limit vyčerpán (vyžaduje Premium)
+
+  /push/subscribe:
+    post:
+      summary: Uložit Web Push subscription
+      description: Uloží endpoint pro prohlížečové push notifikace. Přihlášený uživatel se spáruje podle JWT, anonymní subscription je povolená.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [subscription]
+              properties:
+                subscription:
+                  $ref: '#/components/schemas/PushSubscription'
+      responses:
+        '200':
+          description: Subscription byla uložena.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+        '400':
+          description: Neplatná subscription.
+        '429':
+          description: Příliš mnoho pokusů.
+
+  /push/unsubscribe:
+    post:
+      summary: Zrušit Web Push subscription
+      description: Smaže uložený push endpoint, aby odhlášení v prohlížeči nezůstalo jen lokálním stavem.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                endpoint:
+                  type: string
+                  maxLength: 2048
+                subscription:
+                  $ref: '#/components/schemas/PushSubscription'
+      responses:
+        '200':
+          description: Subscription byla zrušena.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+        '400':
+          description: Neplatný endpoint.
+        '429':
+          description: Příliš mnoho pokusů.
+
+  /natal-chart/calculate:
+    get:
+      summary: Výpočet natální karty bez AI interpretace
+      description: Vrací serverově vypočtené planety, aspekty, dominantní elementy a při rozpoznaném místě také ascendent a whole-sign domy.
+      parameters:
+        - in: query
+          name: birthDate
+          required: true
+          schema:
+            type: string
+            format: date
+          description: Datum narození ve formátu YYYY-MM-DD.
+        - in: query
+          name: birthTime
+          schema:
+            type: string
+            pattern: '^\\d{1,2}:\\d{2}$'
+          description: Čas narození ve formátu HH:mm.
+        - in: query
+          name: birthPlace
+          schema:
+            type: string
+            maxLength: 200
+          description: Místo narození. Rozpoznaná města doplní časové pásmo a souřadnice.
+        - in: query
+          name: name
+          schema:
+            type: string
+            maxLength: 100
+      responses:
+        '200':
+          description: Vypočtená natální data.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  chart:
+                    $ref: '#/components/schemas/AstroChart'
+        '400':
+          description: Neplatné datum narození.
+
+  /synastry/calculate:
+    post:
+      summary: Výpočet partnerské shody bez AI interpretace
+      description: Vrací serverové synastrické skóre a křížové aspekty pro veřejný výpočet shody.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [person1, person2]
+              properties:
+                person1:
+                  $ref: '#/components/schemas/BirthProfile'
+                person2:
+                  $ref: '#/components/schemas/BirthProfile'
+      responses:
+        '200':
+          description: Vypočtená synastrická data.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  synastry:
+                    $ref: '#/components/schemas/SynastryCalculation'
+        '400':
+          description: Neplatná data narození.
+
+  /transits/current:
+    get:
+      summary: Aktuální tranzity vůči natální mapě
+      description: Vrací nejsilnější aktuální tranzitní aspekt bez AI interpretace.
+      parameters:
+        - in: query
+          name: birthDate
+          required: true
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: birthTime
+          schema:
+            type: string
+            pattern: '^\\d{1,2}:\\d{2}$'
+        - in: query
+          name: birthPlace
+          schema:
+            type: string
+            maxLength: 200
+        - in: query
+          name: name
+          schema:
+            type: string
+            maxLength: 100
+      responses:
+        '200':
+          description: Vypočtený tranzitní snapshot.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  transit:
+                    $ref: '#/components/schemas/TransitSnapshot'
+        '400':
+          description: Neplatné datum narození.
+
+  /astrocartography:
+    post:
+      summary: Symbolická astrokartografie
+      description: Premium výklad relokační astrologie nad vypočtenou natální mapou, low-precision MC/IC meridiány a serverovým skóre doporučených míst. Vrstva doporučení stále není plná profesionální ASC/DSC mapová geometrie.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/BirthProfile'
+                - type: object
+                  properties:
+                    intention:
+                      type: string
+                      maxLength: 200
+                      description: Záměr cesty, např. kariera, laska, zdravi, duchovno nebo rodina.
+      responses:
+        '200':
+          description: AI interpretace doplněná strukturovanými astro daty.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  response:
+                    type: string
+                  chart:
+                    $ref: '#/components/schemas/AstroChart'
+                  astrocartography:
+                    $ref: '#/components/schemas/AstrocartographyInsights'
+        '401':
+          description: Neautorizováno.
+        '403':
+          description: Vyžaduje plán Osvícení nebo vyšší.
+        '400':
+          description: Neplatné datum narození.
 
   /dream:
     post:
@@ -133,6 +376,246 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    PublicConfig:
+      type: object
+      properties:
+        stripePublishableKey:
+          type: string
+          nullable: true
+        vapidPublicKey:
+          type: string
+          nullable: true
+        sentryDsn:
+          type: string
+          nullable: true
+    BirthLocationSuggestion:
+      type: object
+      properties:
+        name:
+          type: string
+        country:
+          type: string
+    SuccessMessage:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        error:
+          type: string
+    PushSubscription:
+      type: object
+      required: [endpoint]
+      properties:
+        endpoint:
+          type: string
+          maxLength: 2048
+        expirationTime:
+          type: integer
+          nullable: true
+        keys:
+          type: object
+          properties:
+            p256dh:
+              type: string
+            auth:
+              type: string
+    BirthProfile:
+      type: object
+      required: [birthDate]
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        birthDate:
+          type: string
+          format: date
+        birthTime:
+          type: string
+          pattern: '^\\d{1,2}:\\d{2}$'
+        birthPlace:
+          type: string
+          maxLength: 200
+    AstroChart:
+      type: object
+      properties:
+        engine:
+          type: object
+          additionalProperties: true
+        input:
+          $ref: '#/components/schemas/BirthProfile'
+        location:
+          type: object
+          nullable: true
+          additionalProperties: true
+        calculatedForUtc:
+          type: string
+          format: date-time
+        planets:
+          type: object
+          additionalProperties: true
+        aspects:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        houses:
+          type: object
+          additionalProperties: true
+        summary:
+          type: object
+          additionalProperties: true
+    SynastryCalculation:
+      type: object
+      properties:
+        engine:
+          type: object
+          additionalProperties: true
+        person1:
+          type: object
+          additionalProperties: true
+        person2:
+          type: object
+          additionalProperties: true
+        scores:
+          type: object
+          properties:
+            total:
+              type: integer
+            emotion:
+              type: integer
+            communication:
+              type: integer
+            passion:
+              type: integer
+            stability:
+              type: integer
+        crossAspects:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        summary:
+          type: object
+          additionalProperties: true
+    TransitSnapshot:
+      type: object
+      properties:
+        engine:
+          type: object
+          additionalProperties: true
+        current:
+          type: object
+          additionalProperties: true
+        natal:
+          type: object
+          additionalProperties: true
+        strongestAspect:
+          type: object
+          nullable: true
+          additionalProperties: true
+        aspects:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        title:
+          type: string
+        subtitle:
+          type: string
+        message:
+          type: string
+    AstrocartographyInsights:
+      type: object
+      properties:
+        engine:
+          type: object
+          additionalProperties: true
+        intention:
+          type: object
+          additionalProperties: true
+        chartSummary:
+          type: object
+          additionalProperties: true
+        precision:
+          type: string
+        location:
+          type: object
+          nullable: true
+          properties:
+            name:
+              type: string
+            country:
+              type: string
+              nullable: true
+            source:
+              type: string
+              nullable: true
+        notes:
+          type: array
+          items:
+            type: string
+        angularLines:
+          type: array
+          description: Low-precision planetární MC/IC meridiány pro vykreslení do mapy.
+          items:
+            type: object
+            properties:
+              planetId:
+                type: string
+              planetName:
+                type: string
+              planetSign:
+                type: string
+              angle:
+                type: string
+                enum: [MC, IC]
+              angleLabel:
+                type: string
+              longitude:
+                type: number
+                minimum: -180
+                maximum: 180
+              map:
+                type: object
+                properties:
+                  x:
+                    type: number
+                    minimum: 0
+                    maximum: 100
+              theme:
+                type: string
+        recommendations:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              city:
+                type: string
+              country:
+                type: string
+              score:
+                type: integer
+                minimum: 0
+                maximum: 100
+              tone:
+                type: string
+              primaryPlanet:
+                type: object
+                nullable: true
+                additionalProperties: true
+              map:
+                type: object
+                additionalProperties: true
+              reason:
+                type: string
+              practicalUse:
+                type: string
+              caution:
+                type: string
     FunnelMetricSummary:
       type: object
       properties:

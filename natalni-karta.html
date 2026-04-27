@@ -12,7 +12,7 @@
 
     <meta name="description"
 
-        content="Vytvořte si svou osobní natální kartu a objevte pozice planet v okamžiku vašeho narození.">
+        content="Vytvořte si symbolickou natální kartu a získejte osobní astrologický výklad podle data, času a místa narození.">
 
     <meta name="keywords" content="natální karta, horoskop narození, planety, astrologie">
 
@@ -26,7 +26,7 @@
 
     <meta property="og:description"
 
-        content="Vytvořte si svou osobní natální kartu a objevte pozice planet v okamžiku vašeho narození.">
+        content="Vytvořte si symbolickou natální kartu a získejte osobní astrologický výklad podle data, času a místa narození.">
 
     <meta property="og:image" content="https://www.mystickahvezda.cz/img/icon-natal.webp">
 
@@ -88,13 +88,13 @@
 
         "mainEntity": [
 
-            {"@type": "Question", "name": "Co je natální karta?", "acceptedAnswer": {"@type": "Answer", "text": "Natální karta je diagram rozmístění planet v okamžiku vašeho narození. Tvoří jedinečný kosmický otisk – plán talentů, výzev a životního směřování."}},
+            {"@type": "Question", "name": "Co je natální karta?", "acceptedAnswer": {"@type": "Answer", "text": "Natální karta je astrologický výklad narození. V tomto nástroji pracujeme se slunečním znamením, symbolickou vizualizací a AI interpretací osobního zadání."}},
 
-            {"@type": "Question", "name": "Co potřebuji pro natální kartu?", "acceptedAnswer": {"@type": "Answer", "text": "Datum, čas a místo narození. Přesný čas je klíčový pro výpočet Ascendentu a 12 astrologických domů."}},
+            {"@type": "Question", "name": "Co potřebuji pro natální kartu?", "acceptedAnswer": {"@type": "Answer", "text": "Datum, čas a místo narození. Čím přesnější údaje zadáte, tím osobnější může být výklad. Vizualizace planet je symbolická."}},
 
             {"@type": "Question", "name": "Co je Ascendent?", "acceptedAnswer": {"@type": "Answer", "text": "Ascendent je znamení vycházející na východním obzoru při vašem narození – odhaluje vaši masku vůči ostatním."}},
 
-            {"@type": "Question", "name": "Jak se natální karta liší od horoskopu?", "acceptedAnswer": {"@type": "Answer", "text": "Denní horoskop pracuje jen se Slunečním znamením. Natální karta zahrnuje 10 planet, 12 domů a stovky aspektů. Je řádově přesnější."}}
+            {"@type": "Question", "name": "Jak se natální karta liší od horoskopu?", "acceptedAnswer": {"@type": "Answer", "text": "Denní horoskop pracuje obecně se znamením. Natální karta zde propojuje vaše narození se symbolickou mapou a osobním AI výkladem."}}
 
         ]
 
@@ -155,7 +155,7 @@
 
     "name": "Jak číst natální kartu",
 
-    "description": "Natální karta je mapa oblohy v okamžiku vašeho narození. Tento průvodce vysvětlí, jak ji interpretovat.",
+    "description": "Natální karta je symbolický astrologický průvodce narozením. Tento nástroj vysvětlí, jak s výkladem pracovat.",
 
     "totalTime": "PT10M",
 
@@ -169,7 +169,7 @@
 
             "name": "Zadejte datum a čas narození",
 
-            "text": "Pro přesný výpočet zadejte datum, čas a místo svého narození. Čas by měl být co nejpřesnější."
+            "text": "Zadejte datum, čas a místo svého narození. Údaje slouží pro osobní astrologický výklad a symbolickou vizualizaci."
 
         },
 
@@ -181,7 +181,7 @@
 
             "name": "Vygenerujte natální kartu",
 
-            "text": "Klikněte na tlačítko Zobrazit natální kartu a aplikace vypočítá pozice planet v okamžiku vašeho narození."
+            "text": "Klikněte na tlačítko Zobrazit natální kartu a aplikace vytvoří symbolickou mapu s osobním výkladem."
 
         },
 
@@ -215,9 +215,9 @@
 
             "position": 5,
 
-            "name": "Analyzujte pozice planet",
+            "name": "Prozkoumejte symboliku mapy",
 
-            "text": "Každá planeta v určitém znamení a domě ovlivňuje různé oblasti vašeho života — od lásky po kariéru."
+            "text": "Symbolická mapa a osobní výklad pomáhají číst různé oblasti života — od lásky po kariéru."
 
         }
 
@@ -373,8 +373,38 @@
                                     narození</label>
 
                                 <input type="text" id="birth-place" class="email-form__input u-w-full" placeholder="Např. Praha"
+                                    list="birth-place-suggestions"
 
                                     required>
+
+                                <datalist id="birth-place-suggestions">
+                                    <option value="Praha">
+                                    <option value="Brno">
+                                    <option value="Ostrava">
+                                    <option value="Plzeň">
+                                    <option value="Liberec">
+                                    <option value="Olomouc">
+                                    <option value="České Budějovice">
+                                    <option value="Hradec Králové">
+                                    <option value="Pardubice">
+                                    <option value="Zlín">
+                                    <option value="Jihlava">
+                                    <option value="Karlovy Vary">
+                                    <option value="Ústí nad Labem">
+                                    <option value="Kladno">
+                                    <option value="Mladá Boleslav">
+                                    <option value="Teplice">
+                                    <option value="Bratislava">
+                                    <option value="Košice">
+                                    <option value="Varšava">
+                                    <option value="Krakov">
+                                    <option value="Vídeň">
+                                    <option value="Berlín">
+                                    <option value="Londýn">
+                                    <option value="Paříž">
+                                    <option value="New York">
+                                    <option value="Los Angeles">
+                                </datalist>
 
                             </div>
 
@@ -426,6 +456,36 @@
 
                             </ul>
 
+                            <div id="natal-engine-summary" class="natal-engine-summary" aria-live="polite">
+
+                                <div class="natal-engine-grid">
+
+                                    <div class="natal-engine-metric">
+                                        <span class="natal-engine-label">Dominantní element</span>
+                                        <strong id="natal-element-value" class="natal-engine-value">--</strong>
+                                    </div>
+
+                                    <div class="natal-engine-metric">
+                                        <span class="natal-engine-label">Tempo energie</span>
+                                        <strong id="natal-quality-value" class="natal-engine-value">--</strong>
+                                    </div>
+
+                                </div>
+
+                                <h5 class="natal-engine-subtitle">Planety v mapě</h5>
+                                <ul id="natal-planets-list" class="natal-planets-list">
+                                    <li>Planetární pozice se zobrazí po zadání narození.</li>
+                                </ul>
+
+                                <h5 class="natal-engine-subtitle">Nejsilnější aspekty</h5>
+                                <ul id="natal-aspects-list" class="natal-aspects-list">
+                                    <li>Výpočet se zobrazí po zadání narození.</li>
+                                </ul>
+
+                                <p id="natal-engine-note" class="natal-engine-note"></p>
+
+                            </div>
+
                             <div class="mt-lg p-md mh-inline-f9715488b0"
 
                                >
@@ -434,9 +494,9 @@
 
                                     💡 <strong>Tip astrologa:</strong> Vaše Slunce v <span id="tip-sign">...</span>
 
-                                    naznačuje silnou životní energii,
+                                    naznačuje silnou životní energii.
 
-                                    zatímco Měsíc ukazuje vaše emoční potřeby.
+                                    Prémiový výklad propojí tyto výpočty do osobního příběhu.
 
                                 </p>
 
@@ -608,6 +668,18 @@
 
                             </g>
 
+                            <g id="houses-layer" transform="translate(250, 250)">
+
+                                <!-- Generated by JS -->
+
+                            </g>
+
+                            <g id="aspects-layer" transform="translate(250, 250)">
+
+                                <!-- Generated by JS -->
+
+                            </g>
+
 
 
                             <!-- Planets (Animated) -->
@@ -714,9 +786,9 @@
 
                             </div>
 
-                            <small class="text-muted">Tento výklad vychází z vašeho slunečního znamení a aktuální polohy
+                            <small class="text-muted">Tento výklad vychází ze serverového porovnání aktuálních planet
 
-                                Slunce.</small>
+                                s vaší natální mapou.</small>
 
                         </div>
 
@@ -742,7 +814,7 @@
                         <span class="card__icon">📐</span>
                         <h3 class="card__title">Aspekty</h3>
                         <p class="card__text">
-                            Geometrické vztahy mezi planetami. Odhalují napětí (kvadratury) i harmonii (trigony) ve
+                            Geometrické vztahy v astrologické symbolice. Odhalují napětí i harmonii ve
                             vašem životě.
                         </p>
                     </div>
@@ -757,7 +829,7 @@
                         <span class="card__icon">🔄</span>
                         <h3 class="card__title">Tranzity</h3>
                         <p class="card__text">
-                            Jak aktuální postavení planet ovlivňuje váš natální horoskop právě teď.
+                            Jak aktuální astrologická symbolika doplňuje váš osobní výklad právě teď.
                         </p>
                     </div>
 
@@ -870,7 +942,6 @@
 
     <script src="js/dist/three.min.js" defer></script>
     <script src="js/dist/natal-3d.js?v=1" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" defer></script>
     <script src="js/dist/natal-chart.js?v=5" defer></script>
 
 
@@ -882,6 +953,7 @@
 
 
     <script src="js/dist/api-config.js?v=5" defer></script>
+    <script src="js/dist/birth-location-suggestions.js" defer></script>
 
     <script src="js/dist/templates.js?v=10" defer></script>
 

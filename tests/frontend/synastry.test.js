@@ -2,7 +2,7 @@ import { calculateSynastryScores } from '../../js/utils/synastry-logic.js';
 
 describe('Synastry Logic', () => {
 
-    it('should return deterministic scores based on names', () => {
+    it('should return deterministic scores based on names and dates', () => {
         const input1 = { name: 'Jan', birthDate: '1990-01-01' };
         const input2 = { name: 'Jana', birthDate: '1990-01-01' };
 
@@ -16,6 +16,7 @@ describe('Synastry Logic', () => {
         expect(scores1).toHaveProperty('emotion');
         expect(scores1).toHaveProperty('communication');
         expect(scores1).toHaveProperty('passion');
+        expect(scores1).toHaveProperty('stability');
         expect(scores1).toHaveProperty('total');
     });
 
@@ -33,5 +34,6 @@ describe('Synastry Logic', () => {
     it('should handle missing data gracefully', () => {
         const scores = calculateSynastryScores({}, {});
         expect(scores.total).toBe(0);
+        expect(scores.stability).toBe(0);
     });
 });

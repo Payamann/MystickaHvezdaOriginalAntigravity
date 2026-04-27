@@ -1,6 +1,10 @@
 import jwt from 'jsonwebtoken';
 import rateLimit from 'express-rate-limit';
 import { JWT_SECRET } from './config/jwt.js';
+import {
+    getRequiredPlanForFeature,
+    planTypeMeetsRequirement,
+} from './config/constants.js';
 import { isTokenBlacklisted } from './utils/token-blacklist.js';
 
 // Common rate limiter options
@@ -77,6 +81,46 @@ export const requirePremium = (req, res, next) => {
 export const requirePremiumSoft = (req, res, next) => {
     // Allows access but tags the request
     req.isPremium = !!(req.user && req.user.isPremium);
+    next();
+};
+
+export const requireExclusive = (req, res, next) => {
+    if (process.env.NODE_ENV === 'development') {
+        return next();
+    }
+
+    const isExclusive = planTypeMeetsRequirement(req.user?.subscription_status, 'osviceni');
+
+    if (!req.user || !req.user.isPremium || !isExclusive) {
+        return res.status(403).json({
+            error: 'Tato funkce vyžaduje plán Osvícení nebo vyšší.',
+            requireUpgrade: true,
+            requiredPlan: 'osviceni'
+        });
+    }
+    next();
+};
+
+export const requireFeature = (featureName) => (req, res, next) => {
+    if (process.env.NODE_ENV === 'development') {
+        return next();
+    }
+
+    const requiredPlan = getRequiredPlanForFeature(featureName);
+    const hasAccess = req.user?.isPremium && planTypeMeetsRequirement(req.user?.subscription_status, requiredPlan);
+
+    if (!hasAccess) {
+        const isExclusive = requiredPlan === 'osviceni' || requiredPlan === 'osviceni-rocne' || requiredPlan === 'vip-majestrat';
+        return res.status(403).json({
+            error: isExclusive
+                ? 'Tato funkce vyžaduje plán Osvícení nebo vyšší.'
+                : 'Tato funkce vyžaduje Premium předplatné.',
+            requireUpgrade: true,
+            requiredPlan,
+            feature: featureName
+        });
+    }
+
     next();
 };
 

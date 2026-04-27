@@ -40,6 +40,31 @@ test.describe('Natální karta', () => {
         await expect(chart).toBeAttached();
     });
 
+    test('místo narození nabízí podporovaná města', async ({ page }) => {
+        await expect(page.locator('#birth-place')).toHaveAttribute('list', 'birth-place-suggestions');
+        await expect(page.locator('#birth-place-suggestions option[value="Praha"]')).toBeAttached();
+        await expect(page.locator('#birth-place-suggestions option[value="Mladá Boleslav"]')).toBeAttached();
+        await expect(page.locator('#birth-place-suggestions option[value="Krakov"]')).toBeAttached();
+    });
+
+    test('místo narození se hydratuje ze serverového seznamu', async ({ page }) => {
+        await page.route('**/api/birth-locations', route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({
+                success: true,
+                locations: [
+                    { name: 'Testovací Město', country: 'CZ' }
+                ]
+            })
+        }));
+
+        await page.reload();
+        await waitForPageReady(page);
+
+        await expect(page.locator('#birth-place-suggestions option[value="Testovací Město"]')).toBeAttached();
+    });
+
     test('canonical link existuje', async ({ page }) => {
         const canonical = await page.getAttribute('link[rel="canonical"]', 'href');
         expect(canonical).toBeTruthy();
@@ -68,6 +93,30 @@ test.describe('Natální karta', () => {
         });
         // Nesmí být 403 (CSRF by mělo projít) ani 400 (validace OK)
         expect(res.status()).not.toBe(403);
+    });
+
+    test('veřejný formulář zobrazí vypočtené astro prvky a tranzity', async ({ page }) => {
+        await page.fill('#name', 'Test');
+        await page.fill('#birth-date', '1990-01-01');
+        await page.fill('#birth-time', '12:00');
+        await page.fill('#birth-place', 'Praha');
+        await page.locator('#natal-form button[type="submit"]').click();
+
+        await expect(page.locator('#chart-results')).toBeVisible();
+        await expect(page.locator('#res-sun')).toContainText('Kozoroh');
+        await expect(page.locator('#res-moon')).not.toHaveText('--');
+        await expect(page.locator('#res-asc')).not.toHaveText('--');
+        await expect(page.locator('#natal-element-value')).not.toHaveText('--');
+        await expect(page.locator('#natal-planets-list li')).toHaveCount(10);
+        await expect(page.locator('#natal-planets-list')).toContainText('Pluto');
+        await expect(page.locator('#natal-aspects-list li').first()).not.toContainText('Výpočet se zobrazí');
+        await expect(page.locator('#zodiac-ring .natal-zodiac-tick')).toHaveCount(72);
+        await expect(page.locator('#houses-layer .natal-house-line')).toHaveCount(12);
+        await expect(page.locator('#aspects-layer .natal-aspect-line').first()).toBeAttached();
+        await expect(page.locator('#aspects-layer .natal-aspect-label').first()).toContainText('°');
+        await expect(page.locator('#planets-layer animateTransform')).toHaveCount(0);
+        await expect(page.locator('#transits-now')).toBeVisible();
+        await expect(page.locator('#transit-message')).not.toContainText('Načítám');
     });
 
     test('žádný horizontální scroll na mobilu', async ({ page }) => {
@@ -116,9 +165,41 @@ test.describe('Partnerská shoda', () => {
         await expect(meter).toBeAttached();
     });
 
+    test('detailní rozpad obsahuje stabilitu vztahu', async ({ page }) => {
+        await expect(page.locator('#score-stability')).toBeAttached();
+        await expect(page.locator('#bar-stability')).toBeAttached();
+    });
+
     test('#synastry-form-card existuje', async ({ page }) => {
         const card = page.locator('#synastry-form-card, .synastry-form-card').first();
         await expect(card).toBeAttached();
+    });
+
+    test('formulář přijímá volitelný čas a místo narození', async ({ page }) => {
+        await expect(page.locator('#p1-time')).toBeVisible();
+        await expect(page.locator('#p1-place')).toBeVisible();
+        await expect(page.locator('#p2-time')).toBeVisible();
+        await expect(page.locator('#p2-place')).toBeVisible();
+        await expect(page.locator('#p1-place')).toHaveAttribute('list', 'birth-place-suggestions');
+        await expect(page.locator('#p2-place')).toHaveAttribute('list', 'birth-place-suggestions');
+        await expect(page.locator('#birth-place-suggestions option[value="Varšava"]')).toBeAttached();
+
+        await page.fill('#p1-name', 'Anna');
+        await page.fill('#p1-date', '1990-01-01');
+        await page.fill('#p1-time', '12:00');
+        await page.fill('#p1-place', 'Praha');
+        await page.fill('#p2-name', 'Pavel');
+        await page.fill('#p2-date', '1992-07-15');
+        await page.fill('#p2-time', '08:30');
+        await page.fill('#p2-place', 'Brno');
+
+        await page.locator('#synastry-form button[type="submit"]').click();
+
+        await expect(page.locator('#synastry-results')).toBeVisible();
+        await expect(page.locator('#synastry-engine-summary')).toContainText('Astro výpočet vztahu');
+        await expect(page.locator('#synastry-engine-summary')).toContainText('ASC');
+        await expect(page.locator('#synastry-engine-summary')).toContainText('čas + rozpoznané místo');
+        await expect(page.locator('#total-score')).toContainText('%');
     });
 
     test('canonical link existuje', async ({ page }) => {

@@ -6,6 +6,7 @@ const sections = [
     {
         name: 'api',
         label: 'API endpoints',
+        defaultWorkers: 2,
         files: [
             'tests/e2e/api-oracle.spec.js',
             'tests/e2e/api-community.spec.js',
@@ -25,6 +26,7 @@ const sections = [
     {
         name: 'content',
         label: 'Content and SEO pages',
+        defaultWorkers: 2,
         files: [
             'tests/e2e/content-pages.spec.js',
             'tests/e2e/seo-pages.spec.js',
@@ -34,6 +36,7 @@ const sections = [
     {
         name: 'tools',
         label: 'Astro and divination tools',
+        defaultWorkers: 2,
         files: [
             'tests/e2e/astrology-tools.spec.js',
             'tests/e2e/tarot.spec.js',
@@ -45,6 +48,7 @@ const sections = [
     {
         name: 'checkout',
         label: 'Pricing and payment',
+        defaultWorkers: 1,
         files: [
             'tests/e2e/cenik-payment.spec.js',
         ],

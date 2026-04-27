@@ -432,6 +432,108 @@ export function buildFunnelSegmentsCsv(report) {
         .join('\n');
 }
 
+function normalizeModerationStatus(value) {
+    if (value === 'approved' || value === 'all') return value;
+    return 'pending';
+}
+
+function normalizeAdminListLimit(value, fallback = 50, max = 100) {
+    const parsed = Number.parseInt(value, 10);
+    if (!Number.isFinite(parsed)) return fallback;
+    return Math.min(max, Math.max(1, parsed));
+}
+
+function normalizePositiveIntegerId(value) {
+    const parsed = Number.parseInt(value, 10);
+    return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+}
+
+// Angel Post moderation queue
+router.get('/angel-messages', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const status = normalizeModerationStatus(req.query.status);
+        const limit = normalizeAdminListLimit(req.query.limit);
+        const offset = Math.max(0, Number.parseInt(req.query.offset, 10) || 0);
+
+        let query = supabase
+            .from('angel_messages')
+            .select('id, nickname, message, category, likes, approved, created_at', { count: 'exact' })
+            .order('created_at', { ascending: false })
+            .range(offset, offset + limit - 1);
+
+        if (status === 'pending') query = query.eq('approved', false);
+        if (status === 'approved') query = query.eq('approved', true);
+
+        const { data, error, count } = await query;
+        if (error) throw error;
+
+        res.json({
+            success: true,
+            status,
+            messages: data || [],
+            pagination: {
+                limit,
+                offset,
+                total: count ?? (data || []).length
+            }
+        });
+    } catch (error) {
+        console.error('Admin Angel Messages Error:', error);
+        res.status(500).json({ success: false, error: 'Nepodařilo se načíst andělské vzkazy.' });
+    }
+});
+
+router.patch('/angel-messages/:id', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const id = normalizePositiveIntegerId(req.params.id);
+        if (!id) {
+            return res.status(400).json({ success: false, error: 'Neplatné ID vzkazu.' });
+        }
+
+        if (typeof req.body.approved !== 'boolean') {
+            return res.status(400).json({ success: false, error: 'Hodnota approved musí být boolean.' });
+        }
+
+        const { data, error } = await supabase
+            .from('angel_messages')
+            .update({ approved: req.body.approved })
+            .eq('id', id)
+            .select('id, approved')
+            .single();
+
+        if (error) throw error;
+
+        res.json({
+            success: true,
+            message: data
+        });
+    } catch (error) {
+        console.error('Admin Angel Message Update Error:', error);
+        res.status(500).json({ success: false, error: 'Nepodařilo se upravit andělský vzkaz.' });
+    }
+});
+
+router.delete('/angel-messages/:id', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const id = normalizePositiveIntegerId(req.params.id);
+        if (!id) {
+            return res.status(400).json({ success: false, error: 'Neplatné ID vzkazu.' });
+        }
+
+        const { error } = await supabase
+            .from('angel_messages')
+            .delete()
+            .eq('id', id);
+
+        if (error) throw error;
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Admin Angel Message Delete Error:', error);
+        res.status(500).json({ success: false, error: 'Nepodařilo se smazat andělský vzkaz.' });
+    }
+});
+
 // Get all users with their subscriptions (with pagination)
 router.get('/users', authenticateToken, requireAdmin, async (req, res) => {
     try {

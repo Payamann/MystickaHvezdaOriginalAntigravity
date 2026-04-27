@@ -46,12 +46,12 @@ var E=Object.defineProperty;var A=(e,n)=>()=>(e&&(n=e(e=0)),n);var P=(e,n)=>{for
         </div>
     `;try{let c=window.API_CONFIG?.BASE_URL||"/api",v=window.getCSRFToken?await window.getCSRFToken():null,d=await fetch(`${c}/numerology`,{method:"POST",credentials:"include",headers:{"Content-Type":"application/json",...v&&{"X-CSRF-Token":v}},body:JSON.stringify({name:e,birthDate:n,birthTime:r,lifePath:t,destiny:o,soul:a,personality:u})});if(!d.ok)throw new Error(`API error: ${d.status}`);let m=await d.json();if(s.innerHTML=`
             <div class="interpretation-section">
-                ${m.fromCache?'<span class="badge badge--cache">\u{1F4E6} Z cache (deterministic result)</span>':""}
+                ${m.cached||m.fromCache?'<span class="badge badge--cache">\u{1F4E6} Z cache (deterministic result)</span>':""}
                 <div class="interpretation-content">
                     ${m.response.replace(/```html/g,"").replace(/```/g,"")}
                 </div>
             </div>
-        `,window.Auth&&window.Auth.saveReading){let p=await window.Auth.saveReading("numerology",{name:e,birthDate:n,birthTime:r,lifePath:t,destiny:o,soul:a,personality:u});window.MH_DEBUG&&console.debug("Reading saved:",p)}}catch(c){console.error("AI interpretation error:",c),s.innerHTML=`
+        `,window.Auth&&window.Auth.saveReading){let p=await window.Auth.saveReading("numerology",{name:e,birthDate:n,birthTime:r,lifePath:t,destiny:o,soul:a,personality:u,response:m.response});window.MH_DEBUG&&console.debug("Reading saved:",p)}}catch(c){console.error("AI interpretation error:",c),s.innerHTML=`
             <div class="error-message error-message--inline">
                 <p class="error-message__text">\u274C Nepoda\u0159ilo se na\u010D\xEDst interpretaci. Zkuste to pros\xEDm znovu.</p>
             </div>
