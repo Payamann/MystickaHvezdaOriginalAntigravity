@@ -401,6 +401,11 @@
                     title: 'Registrace je hotová',
                     message: 'Začněte denním horoskopem. Je to nejrychlejší první hodnota po vytvoření účtu.'
                 },
+                homepage_pricing_free_cta: {
+                    path: '/horoskopy.html',
+                    title: 'Registrace je hotová',
+                    message: 'Začněte denním horoskopem a hned uvidíte, co účet zdarma umí.'
+                },
                 newsletter_form: {
                     path: '/horoskopy.html',
                     title: 'Registrace je hotová',

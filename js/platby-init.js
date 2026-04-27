@@ -1,3 +1,7 @@
 import { initPaymentButtons } from './platby.js';
 
-document.addEventListener('DOMContentLoaded', () => initPaymentButtons());
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => initPaymentButtons());
+} else {
+    initPaymentButtons();
+}

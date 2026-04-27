@@ -8,23 +8,44 @@ export function initPaymentButtons() {
 
             if (planId === 'poutnik') {
                 if (!window.Auth?.isLoggedIn()) {
-                    window.Auth?.toggleModal?.();
+                    const authUrl = new URL('/prihlaseni.html', window.location.origin);
+                    authUrl.searchParams.set('mode', 'register');
+                    authUrl.searchParams.set('redirect', '/horoskopy.html');
+                    authUrl.searchParams.set('source', 'homepage_pricing_free_cta');
+                    authUrl.searchParams.set('feature', 'daily_guidance');
+                    window.location.href = `${authUrl.pathname}${authUrl.search}`;
                 } else {
-                    window.location.href = 'profil.html';
+                    window.location.href = '/horoskopy.html';
                 }
                 return;
             }
 
-            handlePaymentClick(planId, btn);
+            handlePaymentClick(planId, btn, {
+                source: 'homepage_pricing_preview',
+                feature: planId === 'osviceni' ? 'astrocartography' : 'premium_membership',
+                redirect: '/cenik.html',
+                authMode: 'register'
+            });
         });
     });
 }
 
-async function handlePaymentClick(planId, btn) {
+async function handlePaymentClick(planId, btn, context = {}) {
     // Check if user is logged in
     if (!window.Auth || !window.Auth.isLoggedIn()) {
         window.Auth?.showToast?.('Přihlášení vyžadováno', 'Pro nákup předplatného se prosím nejdříve přihlaste.', 'info');
-        window.Auth?.toggleModal?.();
+        if (window.Auth?.startPlanCheckout) {
+            window.Auth.startPlanCheckout(planId, context);
+            return;
+        }
+
+        const authUrl = new URL('/prihlaseni.html', window.location.origin);
+        authUrl.searchParams.set('mode', context.authMode || 'register');
+        authUrl.searchParams.set('redirect', context.redirect || '/cenik.html');
+        authUrl.searchParams.set('plan', planId);
+        authUrl.searchParams.set('source', context.source || 'homepage_pricing_preview');
+        if (context.feature) authUrl.searchParams.set('feature', context.feature);
+        window.location.href = `${authUrl.pathname}${authUrl.search}`;
         return;
     }
 
@@ -46,7 +67,11 @@ async function handlePaymentClick(planId, btn) {
                 'Content-Type': 'application/json',
                 ...(csrfToken && { 'X-CSRF-Token': csrfToken })
             },
-            body: JSON.stringify({ planId })
+            body: JSON.stringify({
+                planId,
+                source: context.source || 'homepage_pricing_preview',
+                feature: context.feature || null
+            })
         });
 
         if (!response.ok) {

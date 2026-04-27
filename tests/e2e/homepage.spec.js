@@ -124,6 +124,46 @@ test.describe('Homepage', () => {
         expect(href).toContain('feature=premium_membership');
     });
 
+    test('pricing preview free plan vede neprihlaseneho na aktivacni registraci', async ({ page }) => {
+        await page.evaluate(() => {
+            localStorage.clear();
+            sessionStorage.clear();
+        });
+        await page.locator('[data-plan="poutnik"]').click();
+
+        await page.waitForURL(url => url.pathname === '/prihlaseni.html', { timeout: 10000, waitUntil: 'domcontentloaded' });
+        const url = new URL(page.url());
+        expect(url.searchParams.get('mode')).toBe('register');
+        expect(url.searchParams.get('redirect')).toBe('/horoskopy.html');
+        expect(url.searchParams.get('source')).toBe('homepage_pricing_free_cta');
+        expect(url.searchParams.get('feature')).toBe('daily_guidance');
+    });
+
+    test('pricing preview placeny plan ulozi checkout kontext pred registraci', async ({ page }) => {
+        await page.evaluate(() => {
+            localStorage.clear();
+            sessionStorage.clear();
+        });
+        await page.locator('[data-plan="pruvodce"]').click();
+
+        await page.waitForURL(url => url.pathname === '/prihlaseni.html', { timeout: 10000, waitUntil: 'domcontentloaded' });
+        const url = new URL(page.url());
+        expect(url.searchParams.get('mode')).toBe('register');
+        expect(url.searchParams.get('redirect')).toBe('/cenik.html');
+        expect(url.searchParams.get('plan')).toBe('pruvodce');
+        expect(url.searchParams.get('source')).toBe('homepage_pricing_preview');
+        expect(url.searchParams.get('feature')).toBe('premium_membership');
+
+        const pendingContext = await page.evaluate(() => JSON.parse(sessionStorage.getItem('pending_checkout_context') || '{}'));
+        expect(pendingContext).toEqual(expect.objectContaining({
+            planId: 'pruvodce',
+            source: 'homepage_pricing_preview',
+            feature: 'premium_membership',
+            redirect: '/cenik.html',
+            authMode: 'register'
+        }));
+    });
+
     test('skip-link pro přístupnost existuje', async ({ page }) => {
         const skipLink = page.locator('.skip-link, a[href="#main-content"]').first();
         await expect(skipLink).toBeAttached();
