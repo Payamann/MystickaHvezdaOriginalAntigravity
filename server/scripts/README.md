@@ -14,10 +14,10 @@ This folder contains backend maintenance and operational helper scripts.
   `generate-manual-svgs.js` may rewrite checked-in images; review diffs before
   keeping output.
 - Tarot asset coverage is checked by `npm run audit:tarot-assets`; old manual
-  filename mapping scripts belong in the stale scripts archive.
-- One-time AI/image generation experiments, broad asset converters, and old
-  HTML mutators should live under `docs/archive/2026-04-stale-scripts/`, not in
-  this active helper directory.
+  filename mapping/conversion scripts belong in the stale scripts archive.
+- One-time AI/image generation experiments, broad asset converters, old HTML
+  mutators, and obsolete CSS purge helpers should live under
+  `docs/archive/2026-04-stale-scripts/`, not in this active helper directory.
 - Verification scripts such as `verify-production.js` may hit live services
   depending on your environment.
 - SQL snippets for manual Supabase setup live in `server/scripts/sql/`.

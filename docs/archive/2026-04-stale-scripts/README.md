@@ -23,6 +23,8 @@ active project tooling.
   patchers that predate the current build, CSP, and audit workflow.
   `update-seo.js` is archived there because it would reapply stale OG/JSON-LD
   snippets across HTML files instead of using the current audited page metadata.
+  The old PurgeCSS runner/config is archived there as well; PurgeCSS is no
+  longer a project dependency and the active CSS build is `npm run build:css`.
 - `gemini-one-offs/` contains old manual Gemini probe/image test scripts that
   were not referenced by package scripts or active documentation. Current server
   AI runtime uses Anthropic; image generation helpers should be reviewed before
@@ -39,7 +41,9 @@ active project tooling.
   code paths instead.
 - `tarot-one-offs/` contains the old manual Gemini tarot filename audit. The
   active guard is now `npm run audit:tarot-assets`, which validates
-  `data/tarot-cards.json` against actual files.
+  `data/tarot-cards.json` against actual files. It also contains the old
+  `process-tarot-images.js` batch converter, which expected a missing
+  `temp_new_tarot/` source directory and historical filename mappings.
 - `angel-one-offs/` contains old one-time angel card data patchers. The current
   `data/angel-cards.json` already contains archetype assignments.
 - `asset-one-offs/` contains old one-time asset converters/generators. The logo
