@@ -205,6 +205,23 @@ test.describe('Login stránka', () => {
         expect(activationFlag).toBeNull();
     });
 
+    test('registrace z free CTA ceniku presmeruje na denni horoskopy', async ({ page }) => {
+        await mockSuccessfulRegister(page, 'pricing-free@example.com');
+
+        await page.goto('/prihlaseni.html?mode=register&redirect=/horoskopy.html&source=pricing_free_cta');
+        await waitForPageReady(page);
+
+        await Promise.all([
+            page.waitForURL(url => url.pathname === '/horoskopy.html', { timeout: 7000 }),
+            submitRegisterForm(page, 'pricing-free@example.com'),
+        ]);
+        await waitForPageReady(page);
+
+        expect(new URL(page.url()).pathname).toBe('/horoskopy.html');
+        const activationFlag = await page.evaluate(() => sessionStorage.getItem('post_auth_activation'));
+        expect(activationFlag).toBeNull();
+    });
+
     test('registrace bez aktivacniho kontextu presmeruje do onboardingu', async ({ page }) => {
         await mockSuccessfulRegister(page, 'onboarding@example.com');
 

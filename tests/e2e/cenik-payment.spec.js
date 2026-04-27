@@ -57,6 +57,14 @@ test.describe('Ceník — platební tlačítka', () => {
         await expect(page.locator('.card--pricing .card__features li .feature-icon')).toHaveCount(10);
     });
 
+    test('free CTA nese aktivacni kontext pro rychlou prvni hodnotu', async ({ page }) => {
+        const href = await page.locator('[data-pricing-free-cta]').getAttribute('href');
+        expect(href).toContain('mode=register');
+        expect(href).toContain('redirect=/horoskopy.html');
+        expect(href).toContain('source=pricing_free_cta');
+        expect(href).toContain('feature=daily_guidance');
+    });
+
     test('feature kontext zobrazi doporuceny plan a umi ho zvyraznit', async ({ page }) => {
         await page.goto('/cenik.html?source=inline_paywall&feature=astrocartography');
         await waitForPageReady(page);

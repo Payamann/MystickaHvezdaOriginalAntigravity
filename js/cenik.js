@@ -176,7 +176,11 @@ function updatePricingCopy() {
 
         if (freeDescription) freeDescription.textContent = 'Pro první seznámení bez závazku';
         setFeatureText(freeFeatures[2], 'Vyzkoušejte si, co vám sedne nejvíc');
-        if (freeCta) freeCta.textContent = 'Začít zdarma';
+        if (freeCta) {
+            freeCta.textContent = 'Začít zdarma';
+            freeCta.href = 'prihlaseni.html?mode=register&redirect=/horoskopy.html&source=pricing_free_cta&feature=daily_guidance';
+            freeCta.dataset.pricingFreeCta = 'true';
+        }
     }
 
     if (guideCard) {
@@ -401,6 +405,18 @@ function bindProductLinks() {
     });
 }
 
+function bindFreePlanCta() {
+    document.querySelector('[data-pricing-free-cta]')?.addEventListener('click', (event) => {
+        const link = event.currentTarget;
+        window.MH_ANALYTICS?.trackCTA?.('pricing_free_cta', {
+            destination: link.getAttribute('href') || '/prihlaseni.html',
+            auth_mode: 'register',
+            source: 'pricing_free_cta',
+            feature: 'daily_guidance'
+        });
+    });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     await loadPlanManifest();
     setPrices('monthly');
@@ -433,6 +449,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     bindCheckoutButtons(context);
     bindProductLinks();
+    bindFreePlanCta();
 
     if (context.source !== 'pricing_page' || context.feature || context.recommendedPlan !== 'pruvodce') {
         window.requestAnimationFrame(() => {

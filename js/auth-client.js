@@ -396,6 +396,11 @@
                     title: 'Vítejte v Mystické Hvězdě',
                     message: 'Začněte dnešním horoskopem a uvidíte první osobní hodnotu hned.'
                 },
+                pricing_free_cta: {
+                    path: '/horoskopy.html',
+                    title: 'Registrace je hotová',
+                    message: 'Začněte denním horoskopem. Je to nejrychlejší první hodnota po vytvoření účtu.'
+                },
                 newsletter_form: {
                     path: '/horoskopy.html',
                     title: 'Registrace je hotová',
