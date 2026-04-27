@@ -1,6 +1,8 @@
 /**
  * Email newsletter service using Resend
- * Usage: node server/scripts/send-newsletter.js
+ * Usage:
+ *   node server/scripts/send-newsletter.js        # dry run
+ *   node server/scripts/send-newsletter.js --send # send to active subscribers
  * 
  * Setup:
  * 1. npm install resend
@@ -19,6 +21,7 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 const FROM = process.env.FROM_EMAIL || 'Mystická Hvězda <newsletter@mystickahvezda.cz>';
 const DOMAIN = 'https://www.mystickahvezda.cz';
 const BATCH_SIZE = 50; // Resend free tier limit per request
+const SHOULD_SEND = process.argv.includes('--send');
 
 // ── Email HTML template ──────────────────────────────────────────────────────
 function buildEmailHtml({ subject, preheader, headline, body, ctaText, ctaUrl, week }) {
@@ -152,7 +155,7 @@ async function sendNewsletter(newsletterData) {
 }
 
 // ── Example newsletter content ──────────────────────────────────────────────
-await sendNewsletter({
+const defaultNewsletter = {
     subject: '🌙 Váš týdenní lunární přehled – energie a tipy pro tento týden',
     preheader: 'Měsíc v Rybách přináší čas introspekce a snění.',
     headline: 'Lunární energie tohoto týdne: Měsíc v Rybách',
@@ -167,4 +170,15 @@ await sendNewsletter({
     <p style="margin-top:16px;">Kompletní lunární kalendář a countdown do příštího Novolunění najdete na stránce Lunace.</p>`,
     ctaText: '🌙 Zobrazit lunární kalendář →',
     ctaUrl: `${DOMAIN}/lunace.html`
-});
+};
+
+if (SHOULD_SEND) {
+    await sendNewsletter(defaultNewsletter);
+} else {
+    const week = Math.ceil((new Date() - new Date(new Date().getFullYear(), 0, 1)) / (7 * 86400000));
+    const html = buildEmailHtml({ ...defaultNewsletter, week });
+    console.log('[DRY RUN] Newsletter nebyl odeslán.');
+    console.log(`[DRY RUN] Subject: ${defaultNewsletter.subject}`);
+    console.log(`[DRY RUN] HTML size: ${(html.length / 1024).toFixed(1)} KB`);
+    console.log('[DRY RUN] Pro skutečné odeslání spusťte: node server/scripts/send-newsletter.js --send');
+}

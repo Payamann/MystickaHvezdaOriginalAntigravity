@@ -20,6 +20,8 @@ This folder contains backend maintenance and operational helper scripts.
   `docs/archive/2026-04-stale-scripts/`, not in this active helper directory.
 - Verification scripts such as `verify-production.js` may hit live services
   depending on your environment.
+- `send-newsletter.js` defaults to dry-run output. Passing `--send` is required
+  before it loads subscribers and sends through Resend.
 - SQL snippets for manual Supabase setup live in `server/scripts/sql/`.
 - Versioned migrations live in `server/migrations/` or top-level `migrations/`;
   prefer migrations for schema changes that must be reproducible.

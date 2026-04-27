@@ -136,6 +136,7 @@ Hotovo:
 - Stará asset one-off sada `convert-logo.js`, `generate-planet-svgs.js` a `convert-angel-archetypes.js` je archivovaná; aktivní helpery už neobsahují chybějící logo vstup ani Gemini generátor vedle deterministické SVG varianty.
 - Staré hromadné SEO/asset mutátory `update-seo.js`, `convert-images.js`, `optimize-bg.js` a `optimize-map.js` jsou archivované, aby aktivní skripty nevybízely k přepisu HTML/metadat nebo assetů mimo auditovaný workflow.
 - Historický `process-tarot-images.js` a starý PurgeCSS runner/config jsou archivované; první čekal na chybějící `temp_new_tarot/`, druhé už nemělo projektovou dependency.
+- `send-newsletter.js` už při prostém spuštění neposílá e-maily; default je dry-run a reálné odeslání vyžaduje explicitní `--send`.
 
 Zbývá:
 
