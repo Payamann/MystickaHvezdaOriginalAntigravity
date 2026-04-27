@@ -26,16 +26,20 @@ SKIPPED_DIRS = {
     ".claire",
     ".pytest_cache",
     "coverage",
-    "docs",
     "node_modules",
     "playwright-report",
     "social-media-agent",
     "tmp",
     "tmp_email_previews",
 }
+SKIPPED_PREFIXES = (
+    "docs/archive/",
+)
 
 def should_scan(path):
     rel_path = path.relative_to(ROOT_DIR).as_posix()
+    if any(rel_path.startswith(prefix) for prefix in SKIPPED_PREFIXES):
+        return False
     return path.suffix in SCANNED_EXTENSIONS
 
 

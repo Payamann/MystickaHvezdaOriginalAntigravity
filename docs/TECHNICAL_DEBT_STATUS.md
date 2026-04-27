@@ -130,6 +130,10 @@ Hotovo:
 - Tarot má doplněný chybějící asset `tarot_sestka_mecu.webp`, opravený překlep v textu Šestky mečů a nový `audit:tarot-assets` v `test:verify`.
 - Starý ruční tarot filename audit `check-missing-cards.js` je archivovaný; aktuální ochrana je `audit:tarot-assets`.
 - Jednorázový `.cjs` angel archetype patcher je archivovaný; aktivní `server/scripts/` už nedrží CommonJS helper.
+- Encoding kontrola už nevynechává celé `docs/`, ale jen `docs/archive/`; aktivní stavové a provozní dokumenty tím pádem hlídá proti mojibake.
+- Service-role DB diagnostika `db-check.js` je archivovaná mimo aktivní helpery, protože vypisovala uživatelské e-maily a části zpráv do konzole.
+- Ruční `test-horoskop-email.js` smoke je archivovaný, protože spouštěl Claude/PDF/e-mail side efekty mimo standardní aplikační a platební flow.
+- Stará asset one-off sada `convert-logo.js`, `generate-planet-svgs.js` a `convert-angel-archetypes.js` je archivovaná; aktivní helpery už neobsahují chybějící logo vstup ani Gemini generátor vedle deterministické SVG varianty.
 
 Zbývá:
 

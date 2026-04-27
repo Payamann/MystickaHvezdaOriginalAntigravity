@@ -101,6 +101,10 @@ Aktualizace: 2026-04-27
    - Stav navic: README uz neodkazuje na neexistujici `server/db/migrations/` ani `npm run migrate:up`; popisuje aktualni `migrations/`, manualni SQL snippet adresar a skutecny CSP stav.
    - Stav navic: README uz nema placeholder GitHub URL/Issues ani tvrzeni o neexistujicim `LICENSE` souboru.
    - Stav navic: `.gitattributes` definuje LF pro zdrojove textove soubory a binary pravidla pro assety, aby se omezil dalsi line-ending a binarni churn.
+   - Stav navic: encoding kontrola uz nevynechava cele `docs/`, ale jen `docs/archive/`; aktivni dokumentace je tim padem chranena proti mojibake stejne jako kod.
+   - Stav navic: manualni service-role DB diagnostika `server/scripts/db-check.js`, ktera vypisovala uzivatelske emaily a casti zprav, je archivovana mimo aktivni helpery.
+   - Stav navic: manualni paid email smoke `server/scripts/test-horoskop-email.js` je archivovany, aby aktivni helpery nespoustely Claude/PDF/email side efekty bez zamerneho provozniho toku.
+   - Stav navic: stare asset one-offy `convert-logo.js`, `generate-planet-svgs.js` a `convert-angel-archetypes.js` jsou archivovane; aktivni helpery uz nedrzi chybejici logo vstup ani Gemini SVG generator vedle deterministicke varianty.
    - Stav navic: public JS uz nepise produkcni `console.log`; diagnostika v bootstrapu, premium gatech, tarotu, snari, natalni karte, mentorovi a share flow je pod `window.MH_DEBUG`/`console.debug` a staticky test hlida zdrojove i buildovane soubory mimo vendor.
    - Stav navic: `npm run audit:site` ted validuje i `manifest.json` ikony, chybici `img/icon-192.png` byl doplnen, precache seznam ho zahrnuje a duplicitni PNG-only PWA generator byl archivovan; aktivni generator je `npm run build:pwa-icons`.
    - Stav navic: stary `add-pwa-support.js` HTML patcher byl archivovan, protoze by dnes znovu vnasel inline service worker skript proti CSP smeru projektu; aktivni registrace bezi pres `js/dist/register-sw.js`.

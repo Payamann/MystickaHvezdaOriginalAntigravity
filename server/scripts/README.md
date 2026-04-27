@@ -10,13 +10,16 @@ This folder contains backend maintenance and operational helper scripts.
 - Content generators such as `generate-blog.js`, `generate-dictionary.js`, and
   `generate-zodiac-pages.js` write project files. Review their diffs before
   keeping generated output.
+- Deterministic asset generators such as `create-pwa-icons.js` and
+  `generate-manual-svgs.js` may rewrite checked-in images; review diffs before
+  keeping output.
 - Tarot asset coverage is checked by `npm run audit:tarot-assets`; old manual
   filename mapping scripts belong in the stale scripts archive.
-- AI/image generation experiments that are not wired into current operations
+- One-time AI/image generation experiments and already-applied asset converters
   should live under `docs/archive/2026-04-stale-scripts/`, not in this active
   helper directory.
-- Debug/verification scripts such as `db-check.js` and `verify-production.js`
-  may hit live services depending on your environment.
+- Verification scripts such as `verify-production.js` may hit live services
+  depending on your environment.
 - SQL snippets for manual Supabase setup live in `server/scripts/sql/`.
 - Versioned migrations live in `server/migrations/` or top-level `migrations/`;
   prefer migrations for schema changes that must be reproducible.
