@@ -53,6 +53,7 @@ const sections = [
         files: [
             'tests/e2e/annual-horoscope.spec.js',
             'tests/e2e/cenik-payment.spec.js',
+            'tests/e2e/checkout-fallbacks.spec.js',
         ],
     },
 ];

@@ -17,17 +17,31 @@ function resetChatInput() {
     chatInput.rows = 1;
 }
 
+function buildMentorUpgradeUrl(source = 'mentor_inline_upsell') {
+    const pricingUrl = new URL('/cenik.html', window.location.origin);
+    pricingUrl.searchParams.set('plan', 'pruvodce');
+    pricingUrl.searchParams.set('source', source);
+    pricingUrl.searchParams.set('feature', 'mentor');
+    return `${pricingUrl.pathname}${pricingUrl.search}`;
+}
+
 function startMentorUpgradeFlow(source = 'mentor_inline_upsell') {
     window.MH_ANALYTICS?.trackCTA?.(source, {
         plan_id: 'pruvodce',
         feature: 'mentor'
     });
-    window.Auth?.startPlanCheckout?.('pruvodce', {
-        source,
-        feature: 'mentor',
-        redirect: '/cenik.html',
-        authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
-    });
+
+    if (window.Auth?.startPlanCheckout) {
+        window.Auth.startPlanCheckout('pruvodce', {
+            source,
+            feature: 'mentor',
+            redirect: '/cenik.html',
+            authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
+        });
+        return;
+    }
+
+    window.location.href = buildMentorUpgradeUrl(source);
 }
 
 function runAfterComponentsLoaded(callback) {
@@ -299,11 +313,11 @@ function showTeaserResponse() {
             <div class="lock-icon">🔒</div>
             <h3>Odemkněte plnou odpověď</h3>
             <p>Využili jste své volné otázky pro dnešní den.</p>
-            <a href="cenik.html" class="btn btn--primary btn--sm">Získat Premium</a>
+            <a href="${buildMentorUpgradeUrl('mentor_teaser_gate')}" class="btn btn--primary btn--sm mentor-upgrade-btn">Získat Premium</a>
         </div>
     `;
     messagesContainer?.insertBefore(div, typingIndicator);
-    div.querySelector('a[href="cenik.html"]')?.addEventListener('click', (event) => {
+    div.querySelector('.mentor-upgrade-btn')?.addEventListener('click', (event) => {
         event.preventDefault();
         startMentorUpgradeFlow('mentor_teaser_gate');
     });
@@ -388,12 +402,12 @@ function showPaywall() {
                 Hvězdný Mentor je exkluzivní průvodce pro naše předplatitele.<br>
                 Získejte neomezený přístup k moudrosti hvězd.
             </p>
-            <a href="/cenik.html" class="btn btn--primary">Získat Premium</a>
+            <a href="${buildMentorUpgradeUrl('mentor_paywall_overlay')}" class="btn btn--primary mentor-paywall-upgrade-btn">Získat Premium</a>
         </div>
     `;
 
     overlay.classList.add('limit-reached-overlay--visible');
-    overlay.querySelector('a[href="/cenik.html"]')?.addEventListener('click', (event) => {
+    overlay.querySelector('.mentor-paywall-upgrade-btn')?.addEventListener('click', (event) => {
         event.preventDefault();
         startMentorUpgradeFlow('mentor_paywall_overlay');
     });

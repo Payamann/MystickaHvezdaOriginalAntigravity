@@ -341,18 +341,31 @@
         document.body.removeChild(ta);
     }
 
+    function buildMedicineWheelUpgradeUrl() {
+        const pricingUrl = new URL('/cenik.html', window.location.origin);
+        pricingUrl.searchParams.set('plan', 'pruvodce');
+        pricingUrl.searchParams.set('source', 'medicine_wheel_premium_wall');
+        pricingUrl.searchParams.set('feature', 'shamanske_kolo_plne_cteni');
+        return `${pricingUrl.pathname}${pricingUrl.search}`;
+    }
+
     function startMedicineWheelUpgradeFlow() {
         window.MH_ANALYTICS?.trackCTA?.('medicine_wheel_premium_wall', {
             plan_id: 'pruvodce',
             feature: 'shamanske_kolo_plne_cteni'
         });
 
-        window.Auth?.startPlanCheckout?.('pruvodce', {
-            source: 'medicine_wheel_premium_wall',
-            feature: 'shamanske_kolo_plne_cteni',
-            redirect: '/cenik.html',
-            authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
-        });
+        if (window.Auth?.startPlanCheckout) {
+            window.Auth.startPlanCheckout('pruvodce', {
+                source: 'medicine_wheel_premium_wall',
+                feature: 'shamanske_kolo_plne_cteni',
+                redirect: '/cenik.html',
+                authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
+            });
+            return;
+        }
+
+        window.location.href = buildMedicineWheelUpgradeUrl();
     }
 
     function appendMedicineWheelFavoriteAction(container, readingId) {
@@ -389,7 +402,7 @@
         setBlockVisible('mw-premium-content', false);
         setBlockVisible('mw-premium-wall', true);
         document
-            .querySelector('#mw-premium-wall a[href="cenik.html"]')
+            .querySelector('#mw-premium-wall .medicine-wheel-upgrade-btn')
             ?.addEventListener('click', (event) => {
                 event.preventDefault();
                 startMedicineWheelUpgradeFlow();

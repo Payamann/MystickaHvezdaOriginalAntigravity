@@ -129,7 +129,7 @@
         ctaText.textContent = 'Chcete afirmace ka\u017ed\u00e9 r\u00e1no p\u0159\u00edmo do e-mailu spolu s personalizovan\u00fdm horoskopem?';
       }
 
-      const ctaButton = document.querySelector('[data-animate] a[href="cenik.html"]');
+      const ctaButton = document.querySelector('[data-animate] a[href*="cenik.html"]');
       if (ctaButton) ctaButton.textContent = '\u2728 Vyzkou\u0161et Premium';
     },
 

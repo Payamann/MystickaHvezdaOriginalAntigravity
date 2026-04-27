@@ -28,13 +28,32 @@
         setBlockVisible(document.getElementById('pl-error'), false);
     }
 
+    function buildPastLifeCheckoutUrl(source) {
+        var pricingUrl = new URL('/cenik.html', window.location.origin);
+        pricingUrl.searchParams.set('plan', 'pruvodce');
+        pricingUrl.searchParams.set('source', source);
+        pricingUrl.searchParams.set('feature', 'minuly_zivot');
+        return pricingUrl.pathname + pricingUrl.search;
+    }
+
     function startPastLifeCheckout(source, authMode) {
-        window.Auth?.startPlanCheckout?.('pruvodce', {
-            source: source || 'past_life_premium_wall',
-            feature: 'minuly_zivot',
-            redirect: '/cenik.html',
-            authMode: authMode || 'register'
+        var checkoutSource = source || 'past_life_premium_wall';
+        window.MH_ANALYTICS?.trackCTA?.(checkoutSource, {
+            plan_id: 'pruvodce',
+            feature: 'minuly_zivot'
         });
+
+        if (window.Auth?.startPlanCheckout) {
+            window.Auth.startPlanCheckout('pruvodce', {
+                source: checkoutSource,
+                feature: 'minuly_zivot',
+                redirect: '/cenik.html',
+                authMode: authMode || 'register'
+            });
+            return;
+        }
+
+        window.location.href = buildPastLifeCheckoutUrl(checkoutSource);
     }
 
     function appendPastLifeFavoriteAction(container, readingId) {

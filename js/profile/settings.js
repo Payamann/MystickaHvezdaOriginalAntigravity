@@ -10,12 +10,21 @@ function startProfileUpgradeCheckout(source = 'profile_subscription_card') {
         feature: 'subscription_management'
     });
 
-    window.Auth?.startPlanCheckout?.('pruvodce', {
-        source,
-        feature: 'subscription_management',
-        redirect: '/cenik.html',
-        authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
-    });
+    if (window.Auth?.startPlanCheckout) {
+        window.Auth.startPlanCheckout('pruvodce', {
+            source,
+            feature: 'subscription_management',
+            redirect: '/cenik.html',
+            authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
+        });
+        return;
+    }
+
+    const pricingUrl = new URL('/cenik.html', window.location.origin);
+    pricingUrl.searchParams.set('plan', 'pruvodce');
+    pricingUrl.searchParams.set('source', source);
+    pricingUrl.searchParams.set('feature', 'subscription_management');
+    window.location.href = `${pricingUrl.pathname}${pricingUrl.search}`;
 }
 
 export function initSettingsForm() {

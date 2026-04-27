@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const bannerText = document.getElementById('freemium-banner-text');
     if (bannerText) bannerText.innerHTML = 'Dnes zbývá: <strong id="freemium-count">...</strong> výkladů zdarma';
 
-    const bannerLink = document.querySelector('#freemium-banner a[href="cenik.html"]');
+    const bannerLink = document.querySelector('#freemium-banner a[href*="cenik.html"]');
     if (bannerLink) bannerLink.textContent = 'Získat Premium';
 
     const closeBtn = document.querySelector('#freemium-banner [data-action="closeBanner"]');

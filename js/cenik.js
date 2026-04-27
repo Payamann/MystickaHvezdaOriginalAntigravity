@@ -388,7 +388,12 @@ function bindCheckoutButtons(context) {
                 billing_interval: currentBilling
             });
 
-            window.Auth?.startPlanCheckout?.(planId, checkoutContext);
+            if (window.Auth?.startPlanCheckout) {
+                window.Auth.startPlanCheckout(planId, checkoutContext);
+                return;
+            }
+
+            startRecommendedCheckout(planId, checkoutContext);
         });
     });
 }

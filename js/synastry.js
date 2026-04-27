@@ -9,18 +9,31 @@ document.addEventListener('DOMContentLoaded', () => {
     initSynastry();
 });
 
+function buildSynastryUpgradeUrl(source = 'synastry_teaser_overlay') {
+    const pricingUrl = new URL('/cenik.html', window.location.origin);
+    pricingUrl.searchParams.set('plan', 'pruvodce');
+    pricingUrl.searchParams.set('source', source);
+    pricingUrl.searchParams.set('feature', 'partnerska_detail');
+    return `${pricingUrl.pathname}${pricingUrl.search}`;
+}
+
 function startSynastryUpgradeFlow(source) {
     window.MH_ANALYTICS?.trackCTA?.(source, {
         plan_id: 'pruvodce',
         feature: 'partnerska_detail'
     });
 
-    window.Auth?.startPlanCheckout?.('pruvodce', {
-        source,
-        feature: 'partnerska_detail',
-        redirect: '/cenik.html',
-        authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
-    });
+    if (window.Auth?.startPlanCheckout) {
+        window.Auth.startPlanCheckout('pruvodce', {
+            source,
+            feature: 'partnerska_detail',
+            redirect: '/cenik.html',
+            authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
+        });
+        return;
+    }
+
+    window.location.href = buildSynastryUpgradeUrl(source);
 }
 
 function setBlockVisible(element, visible) {
@@ -557,7 +570,7 @@ function renderTeaser(container, totalScore = null) {
             <div class="synastry-teaser-card">
                 <h3 class="synastry-teaser-card__title">Odemkněte tajemství vašeho vztahu</h3>
                 <p class="synastry-teaser-card__copy">Zjistěte, proč máte ${document.getElementById('total-score').textContent} shodu a co vás čeká.</p>
-                <a href="cenik.html" class="btn btn--primary">Odemknout plný rozbor (199 Kč)</a>
+                <a href="${buildSynastryUpgradeUrl('synastry_teaser_overlay')}" class="btn btn--primary synastry-upgrade-btn">Odemknout plný rozbor (199 Kč)</a>
             </div>
         `;
         container.classList.add('teaser-overlay-host');
@@ -566,7 +579,7 @@ function renderTeaser(container, totalScore = null) {
         if (teaserCopy) {
             teaserCopy.textContent = `Zjistěte, proč máte ${scoreLabel} shodu a co vás čeká.`;
         }
-        overlay.querySelector('a[href="cenik.html"]')?.addEventListener('click', (event) => {
+        overlay.querySelector('.synastry-upgrade-btn')?.addEventListener('click', (event) => {
             event.preventDefault();
             startSynastryUpgradeFlow('synastry_teaser_overlay');
         });

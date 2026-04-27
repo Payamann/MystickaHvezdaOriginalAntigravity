@@ -6,6 +6,33 @@ import {
     NUMBER_MEANINGS
 } from './utils/numerology-logic.js';
 
+function buildNumerologyUpgradeUrl(source = 'numerology_inline_gate') {
+    const pricingUrl = new URL('/cenik.html', window.location.origin);
+    pricingUrl.searchParams.set('plan', 'pruvodce');
+    pricingUrl.searchParams.set('source', source);
+    pricingUrl.searchParams.set('feature', 'numerologie_vyklad');
+    return `${pricingUrl.pathname}${pricingUrl.search}`;
+}
+
+function startNumerologyUpgradeFlow(source = 'numerology_inline_gate', authMode = 'register') {
+    window.MH_ANALYTICS?.trackCTA?.(source, {
+        plan_id: 'pruvodce',
+        feature: 'numerologie_vyklad'
+    });
+
+    if (window.Auth?.startPlanCheckout) {
+        window.Auth.startPlanCheckout('pruvodce', {
+            source,
+            feature: 'numerologie_vyklad',
+            redirect: '/cenik.html',
+            authMode
+        });
+        return;
+    }
+
+    window.location.href = buildNumerologyUpgradeUrl(source);
+}
+
 // === FORM HANDLING ===
 document.addEventListener('DOMContentLoaded', async () => {
     const form = document.getElementById('numerology-form');
@@ -88,12 +115,7 @@ async function handleFormSubmit(e) {
     // Restriction: Must be logged in
     if (!window.Auth || !window.Auth.isLoggedIn()) {
         window.Auth?.showToast?.('Přihlášení vyžadováno', 'Pro výpočet numerologie se prosím přihlaste.', 'info');
-        window.Auth?.startPlanCheckout?.('pruvodce', {
-            source: 'numerology_auth_gate',
-            feature: 'numerologie_vyklad',
-            redirect: '/cenik.html',
-            authMode: 'register'
-        });
+        startNumerologyUpgradeFlow('numerology_auth_gate', 'register');
         return;
     }
 
@@ -251,12 +273,7 @@ async function displayInterpretation(name, birthDate, birthTime, lifePath, desti
                 if (window.Premium?.showTrialPaywall) {
                     window.Premium.showTrialPaywall('numerologie_vyklad');
                 } else {
-                    window.Auth?.startPlanCheckout?.('pruvodce', {
-                        source: 'numerology_inline_gate',
-                        feature: 'numerologie_vyklad',
-                        redirect: '/cenik.html',
-                        authMode: 'register'
-                    });
+                    startNumerologyUpgradeFlow('numerology_inline_gate', 'register');
                 }
             });
         }

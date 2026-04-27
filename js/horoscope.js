@@ -7,6 +7,34 @@ document.addEventListener('DOMContentLoaded', () => {
     initHoroscope();
 });
 
+function buildHoroscopeUpgradeUrl(period) {
+    const pricingUrl = new URL('/cenik.html', window.location.origin);
+    pricingUrl.searchParams.set('plan', 'pruvodce');
+    pricingUrl.searchParams.set('source', 'horoscope_inline_upsell');
+    pricingUrl.searchParams.set('feature', `${period}_horoscope`);
+    return `${pricingUrl.pathname}${pricingUrl.search}`;
+}
+
+function startHoroscopeUpgradeFlow(period, reason) {
+    window.MH_ANALYTICS?.trackCTA?.('horoscope_inline_upsell', {
+        plan_id: 'pruvodce',
+        period,
+        reason
+    });
+
+    if (window.Auth?.startPlanCheckout) {
+        window.Auth.startPlanCheckout('pruvodce', {
+            source: 'horoscope_inline_upsell',
+            feature: `${period}_horoscope`,
+            redirect: '/cenik.html',
+            authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
+        });
+        return;
+    }
+
+    window.location.href = buildHoroscopeUpgradeUrl(period);
+}
+
 function buildHoroscopeUpsell(period) {
     const isWeekly = period === 'weekly';
     const title = isWeekly ? 'Odemknete tydenni vyhled' : 'Odemknete mesicni vyhled';
@@ -21,7 +49,7 @@ function buildHoroscopeUpsell(period) {
             <p class="horoscope-upsell__copy">${copy}</p>
             <div class="horoscope-upsell__actions">
                 <button type="button" class="btn btn--primary horoscope-upsell-btn" data-plan="pruvodce" data-source="horoscope_inline_upsell" data-feature="${period}_horoscope">Odemknout Hvezdneho Pruvodce</button>
-                <a href="/cenik.html?plan=pruvodce&source=horoscope_inline_upsell&feature=${period}_horoscope" class="btn btn--glass">Nejdriv si projit plany</a>
+                <a href="${buildHoroscopeUpgradeUrl(period)}" class="btn btn--glass">Nejdriv si projit plany</a>
             </div>
         </div>
     `;
@@ -71,17 +99,7 @@ function initHoroscope() {
 
         const upsellBtn = detailText.querySelector('.horoscope-upsell-btn');
         upsellBtn?.addEventListener('click', () => {
-            window.MH_ANALYTICS?.trackCTA?.('horoscope_inline_upsell', {
-                plan_id: 'pruvodce',
-                period,
-                reason
-            });
-            window.Auth?.startPlanCheckout?.('pruvodce', {
-                source: 'horoscope_inline_upsell',
-                feature: `${period}_horoscope`,
-                redirect: '/cenik.html',
-                authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
-            });
+            startHoroscopeUpgradeFlow(period, reason);
         });
 
         if (detailSection) {

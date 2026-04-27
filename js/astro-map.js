@@ -12,6 +12,14 @@ const resultsContainer = document.getElementById('astro-results');
 const loadingIndicator = document.getElementById('astro-loading');
 const mapContainer = document.querySelector('.map-container');
 
+function buildAstroMapPricingUrl(source) {
+    const pricingUrl = new URL('/cenik.html', window.location.origin);
+    pricingUrl.searchParams.set('plan', 'osviceni');
+    pricingUrl.searchParams.set('source', source);
+    pricingUrl.searchParams.set('feature', 'astrocartography');
+    return `${pricingUrl.pathname}${pricingUrl.search}`;
+}
+
 function setBlockVisible(element, visible) {
     if (!element) return;
     element.hidden = !visible;
@@ -90,20 +98,26 @@ function startAstroMapUpgradeFlow(source) {
         feature: 'astrocartography'
     });
 
-    window.Auth?.startPlanCheckout?.('osviceni', {
-        source,
-        feature: 'astrocartography',
-        redirect: '/cenik.html',
-        authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
-    });
+    if (window.Auth?.startPlanCheckout) {
+        window.Auth.startPlanCheckout('osviceni', {
+            source,
+            feature: 'astrocartography',
+            redirect: '/cenik.html',
+            authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
+        });
+        return;
+    }
+
+    window.location.href = buildAstroMapPricingUrl(source);
 }
 
 function showAstroMapUpgradeGate() {
+    const source = 'astro_map_exclusive_gate';
     showError(`
         <div class="text-center">
             <h3>🔭 Osvícení funkce</h3>
             <p class="mb-lg">Astrokartografie je dostupná od plánu Osvícení (499 Kč/měsíc).</p>
-            <a href="cenik.html" class="btn btn--primary astro-map-upgrade-btn">Zobrazit plány</a>
+            <a href="${buildAstroMapPricingUrl(source)}" class="btn btn--primary astro-map-upgrade-btn">Zobrazit plány</a>
         </div>
     `);
 
@@ -111,7 +125,7 @@ function showAstroMapUpgradeGate() {
         ?.querySelector('.astro-map-upgrade-btn')
         ?.addEventListener('click', (event) => {
             event.preventDefault();
-            startAstroMapUpgradeFlow('astro_map_exclusive_gate');
+            startAstroMapUpgradeFlow(source);
         });
 }
 

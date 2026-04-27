@@ -25,13 +25,31 @@ function initCrystalBall() {
     let isThinking = false;
     let cooldownTimer = null;
 
+    function buildCrystalCheckoutUrl(source) {
+        const pricingUrl = new URL('/cenik.html', window.location.origin);
+        pricingUrl.searchParams.set('plan', 'pruvodce');
+        pricingUrl.searchParams.set('source', source);
+        pricingUrl.searchParams.set('feature', 'kristalova_koule');
+        return `${pricingUrl.pathname}${pricingUrl.search}`;
+    }
+
     function startCrystalCheckout(source, authMode = 'register') {
-        window.Auth?.startPlanCheckout?.('pruvodce', {
-            source,
-            feature: 'kristalova_koule',
-            redirect: '/cenik.html',
-            authMode
+        window.MH_ANALYTICS?.trackCTA?.(source, {
+            plan_id: 'pruvodce',
+            feature: 'kristalova_koule'
         });
+
+        if (window.Auth?.startPlanCheckout) {
+            window.Auth.startPlanCheckout('pruvodce', {
+                source,
+                feature: 'kristalova_koule',
+                redirect: '/cenik.html',
+                authMode
+            });
+            return;
+        }
+
+        window.location.href = buildCrystalCheckoutUrl(source);
     }
 
     if (bannerUpgradeBtn) {

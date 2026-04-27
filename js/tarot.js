@@ -12,18 +12,33 @@ function getTarotPlanForSpread(spreadType) {
     return spreadType === 'Celtic Cross' ? 'vip-majestrat' : 'pruvodce';
 }
 
+function buildTarotUpgradeUrl(spreadType, source = 'tarot_inline_upsell') {
+    const planId = getTarotPlanForSpread(spreadType);
+    const pricingUrl = new URL('/cenik.html', window.location.origin);
+    pricingUrl.searchParams.set('plan', planId);
+    pricingUrl.searchParams.set('source', source);
+    pricingUrl.searchParams.set('feature', spreadType === 'Celtic Cross' ? 'tarot_celtic_cross' : 'tarot_multi_card');
+    return `${pricingUrl.pathname}${pricingUrl.search}`;
+}
+
 function startTarotUpgradeFlow(spreadType, source = 'tarot_inline_upsell') {
     const planId = getTarotPlanForSpread(spreadType);
     window.MH_ANALYTICS?.trackCTA?.(source, {
         plan_id: planId,
         spread_type: spreadType
     });
-    window.Auth?.startPlanCheckout?.(planId, {
-        source,
-        feature: spreadType === 'Celtic Cross' ? 'tarot_celtic_cross' : 'tarot_multi_card',
-        redirect: '/cenik.html',
-        authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
-    });
+
+    if (window.Auth?.startPlanCheckout) {
+        window.Auth.startPlanCheckout(planId, {
+            source,
+            feature: spreadType === 'Celtic Cross' ? 'tarot_celtic_cross' : 'tarot_multi_card',
+            redirect: '/cenik.html',
+            authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
+        });
+        return;
+    }
+
+    window.location.href = buildTarotUpgradeUrl(spreadType, source);
 }
 
 function bindTarotImageFallbacks(root) {
@@ -240,7 +255,7 @@ async function startReading(spreadType, isSoftGated = false) {
                                             Hvězdný Průvodce je exkluzivní zdroj moudrosti pro naše předplatitele.<br>
                                             Odemkněte plný potenciál a získejte přístup ke všem výkladům.
                                         </p>
-                                        <a href="cenik.html" class="btn btn--primary">Získat Premium</a>
+                                        <a href="${buildTarotUpgradeUrl(spreadType, 'tarot_locked_card')}" class="btn btn--primary tarot-upgrade-btn">Získat Premium</a>
                                     </div>
                                     <img src="img/tarot-back.webp" class="tarot-card-image--locked" alt="Locked">
                                 ` : (card.image ? `
@@ -262,7 +277,7 @@ async function startReading(spreadType, isSoftGated = false) {
                 <div class="text-center mt-xl p-lg tarot-soft-gate">
                     <h3 class="tarot-soft-gate__title">Odemkněte svůj osud</h3>
                     <p class="mb-lg">Právě jste nahlédli za oponu. Zbývajících ${numCards - 1} karet skrývá klíč k pochopení celé situace.</p>
-                    <a href="cenik.html" class="btn btn--primary">Získat Premium a odhalit vše</a>
+                    <a href="${buildTarotUpgradeUrl(spreadType, 'tarot_teaser_banner')}" class="btn btn--primary tarot-upgrade-btn">Získat Premium a odhalit vše</a>
                 </div>
             ` : ''}
         </div>
@@ -270,7 +285,7 @@ async function startReading(spreadType, isSoftGated = false) {
 
     resultsContainer.classList.remove('hidden');
     bindTarotImageFallbacks(resultsContainer);
-    resultsContainer.querySelectorAll('a[href="cenik.html"]').forEach((link) => {
+    resultsContainer.querySelectorAll('.tarot-upgrade-btn').forEach((link) => {
         link.addEventListener('click', (event) => {
             event.preventDefault();
             const source = link.closest('.premium-lock-overlay') ? 'tarot_locked_card' : 'tarot_teaser_banner';

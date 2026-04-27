@@ -42,17 +42,31 @@ function apiBase() {
     return window.API_CONFIG?.BASE_URL || '/api';
 }
 
+function buildAngelUpgradeUrl(source) {
+    const pricingUrl = new URL('/cenik.html', window.location.origin);
+    pricingUrl.searchParams.set('plan', 'pruvodce');
+    pricingUrl.searchParams.set('source', source);
+    pricingUrl.searchParams.set('feature', 'andelske_karty_hluboky_vhled');
+    return `${pricingUrl.pathname}${pricingUrl.search}`;
+}
+
 function startAngelUpgradeFlow(source, authMode = 'register') {
     window.MH_ANALYTICS?.trackCTA?.(source, {
         plan_id: 'pruvodce',
         feature: 'andelske_karty_hluboky_vhled'
     });
-    window.Auth?.startPlanCheckout?.('pruvodce', {
-        source,
-        feature: 'andelske_karty_hluboky_vhled',
-        redirect: '/cenik.html',
-        authMode
-    });
+
+    if (window.Auth?.startPlanCheckout) {
+        window.Auth.startPlanCheckout('pruvodce', {
+            source,
+            feature: 'andelske_karty_hluboky_vhled',
+            redirect: '/cenik.html',
+            authMode
+        });
+        return;
+    }
+
+    window.location.href = buildAngelUpgradeUrl(source);
 }
 
 function getDeepInsightHost() {

@@ -57,6 +57,33 @@ const NATAL_PLANET_ORDER = [
 ];
 const SVG_NS = "http://www.w3.org/2000/svg";
 
+function buildNatalUpgradeUrl(source = 'natal_teaser_gate') {
+    const pricingUrl = new URL('/cenik.html', window.location.origin);
+    pricingUrl.searchParams.set('plan', 'pruvodce');
+    pricingUrl.searchParams.set('source', source);
+    pricingUrl.searchParams.set('feature', 'natalni_interpretace');
+    return `${pricingUrl.pathname}${pricingUrl.search}`;
+}
+
+function startNatalUpgradeFlow(source = 'natal_teaser_gate') {
+    window.MH_ANALYTICS?.trackCTA?.(source, {
+        plan_id: 'pruvodce',
+        feature: 'natalni_interpretace'
+    });
+
+    if (window.Auth?.startPlanCheckout) {
+        window.Auth.startPlanCheckout('pruvodce', {
+            source,
+            feature: 'natalni_interpretace',
+            redirect: '/cenik.html',
+            authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
+        });
+        return;
+    }
+
+    window.location.href = buildNatalUpgradeUrl(source);
+}
+
 function setBlockVisible(element, visible) {
     if (!element) return;
     element.hidden = !visible;
@@ -809,22 +836,13 @@ async function generateNatalChart(planetsGroup) {
                 teaserMsg.innerHTML = `
                     <div class="teaser-content">
                         <p>✨ Chcete odemknout svůj úplný osud?</p>
-                        <a href="/cenik" class="btn btn--premium">Získat Premium</a>
+                        <a href="${buildNatalUpgradeUrl('natal_teaser_gate')}" class="btn btn--premium natal-teaser-upgrade-btn">Získat Premium</a>
                     </div>
                 `;
                 contentDiv.appendChild(teaserMsg);
-                teaserMsg.querySelector('a[href="/cenik"]')?.addEventListener('click', (event) => {
+                teaserMsg.querySelector('.natal-teaser-upgrade-btn')?.addEventListener('click', (event) => {
                     event.preventDefault();
-                    window.MH_ANALYTICS?.trackCTA?.('natal_teaser_gate', {
-                        plan_id: 'pruvodce',
-                        feature: 'natalni_interpretace'
-                    });
-                    window.Auth?.startPlanCheckout?.('pruvodce', {
-                        source: 'natal_teaser_gate',
-                        feature: 'natalni_interpretace',
-                        redirect: '/cenik.html',
-                        authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
-                    });
+                    startNatalUpgradeFlow('natal_teaser_gate');
                 });
             }
 

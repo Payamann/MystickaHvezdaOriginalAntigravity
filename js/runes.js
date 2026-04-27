@@ -18,6 +18,33 @@ async function buildJsonHeaders() {
     };
 }
 
+function buildRuneUpgradeUrl(source, feature) {
+    const pricingUrl = new URL('/cenik.html', window.location.origin);
+    pricingUrl.searchParams.set('plan', 'pruvodce');
+    pricingUrl.searchParams.set('source', source);
+    pricingUrl.searchParams.set('feature', feature);
+    return `${pricingUrl.pathname}${pricingUrl.search}`;
+}
+
+function startRuneUpgradeFlow(source, feature, redirect = '/cenik.html') {
+    window.MH_ANALYTICS?.trackCTA?.(source, {
+        plan_id: 'pruvodce',
+        feature
+    });
+
+    if (window.Auth?.startPlanCheckout) {
+        window.Auth.startPlanCheckout('pruvodce', {
+            source,
+            feature,
+            redirect,
+            authMode: 'register'
+        });
+        return;
+    }
+
+    window.location.href = buildRuneUpgradeUrl(source, feature);
+}
+
 function appendRuneFavoriteAction(container, readingId) {
     if (!container || !readingId) return;
 
@@ -45,12 +72,7 @@ async function saveRuneReading({ response = null, intention = '', fallback = fal
 
     if (!window.Auth.isLoggedIn?.()) {
         window.Auth.showToast?.('Přihlášení vyžadováno', 'Pro uložení runy se prosím přihlaste.', 'info');
-        window.Auth.startPlanCheckout?.('pruvodce', {
-            source: 'runes_save_gate',
-            feature: 'runy_ulozeni',
-            redirect: '/runy.html',
-            authMode: 'register'
-        });
+        startRuneUpgradeFlow('runes_save_gate', 'runy_ulozeni', '/runy.html');
         return null;
     }
 
@@ -252,13 +274,8 @@ async function requestDeepReading() {
     if (!window.Auth || !window.Auth.isLoggedIn()) {
         const intention = document.getElementById('rune-intention')?.value || '';
         sessionStorage.setItem('pendingRuneContext', JSON.stringify({ rune: drawnRune, intention }));
-        window.Auth.showToast('Přihlášení vyžadováno', 'Hluboký výklad run vyžaduje bezplatné přihlášení nebo předplatné.', 'info');
-        window.Auth?.startPlanCheckout?.('pruvodce', {
-            source: 'runes_auth_gate',
-            feature: 'runy_hluboky_vyklad',
-            redirect: '/cenik.html',
-            authMode: 'register'
-        });
+        window.Auth?.showToast?.('Přihlášení vyžadováno', 'Hluboký výklad run vyžaduje bezplatné přihlášení nebo předplatné.', 'info');
+        startRuneUpgradeFlow('runes_auth_gate', 'runy_hluboky_vyklad');
         return;
     }
 
@@ -286,13 +303,8 @@ async function requestDeepReading() {
 
         if (response.status === 401 || response.status === 402 || response.status === 403) {
             sessionStorage.setItem('pendingRuneContext', JSON.stringify({ rune: drawnRune, intention }));
-            window.Auth.showToast('Premium vyžadováno', 'Šamanský výklad vyžaduje prémiové členství Hvězdného Průvodce.', 'info');
-            window.Auth?.startPlanCheckout?.('pruvodce', {
-                source: 'runes_premium_gate',
-                feature: 'runy_hluboky_vyklad',
-                redirect: '/cenik.html',
-                authMode: 'register'
-            });
+            window.Auth?.showToast?.('Premium vyžadováno', 'Šamanský výklad vyžaduje prémiové členství Hvězdného Průvodce.', 'info');
+            startRuneUpgradeFlow('runes_premium_gate', 'runy_hluboky_vyklad');
             return;
         }
 
