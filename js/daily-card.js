@@ -95,6 +95,63 @@
         }, 2200);
     }
 
+    async function copyTextToClipboard(text) {
+        if (navigator.clipboard?.writeText) {
+            try {
+                await navigator.clipboard.writeText(text);
+                return true;
+            } catch (error) {
+                if (window.MH_DEBUG) console.debug('Clipboard API copy failed, trying textarea fallback:', error);
+            }
+        }
+
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.setAttribute('readonly', '');
+        textarea.className = 'kdd-share-copy-buffer';
+
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        textarea.setSelectionRange(0, textarea.value.length);
+
+        try {
+            return document.execCommand('copy');
+        } catch (error) {
+            if (window.MH_DEBUG) console.debug('Textarea copy fallback failed:', error);
+            return false;
+        } finally {
+            textarea.remove();
+        }
+    }
+
+    function showManualShareFallback(button, shareUrl) {
+        if (!button || !shareUrl) return;
+
+        const container = button.closest('div') || button.parentElement;
+        if (!container) return;
+
+        let fallback = container.querySelector('.kdd-share-fallback');
+        if (!fallback) {
+            fallback = document.createElement('div');
+            fallback.className = 'kdd-share-fallback';
+            fallback.setAttribute('role', 'status');
+            fallback.innerHTML = `
+                <span>Odkaz je připravený ke zkopírování:</span>
+                <input type="text" readonly aria-label="Odkaz pro sdílení karty dne">
+            `;
+            container.appendChild(fallback);
+        }
+
+        const input = fallback.querySelector('input');
+        if (!input) return;
+
+        input.value = shareUrl;
+        fallback.hidden = false;
+        input.focus();
+        input.select();
+    }
+
     async function shareCard(card, button) {
         if (!card) return;
 
@@ -111,17 +168,31 @@
             destination: shareUrl
         });
 
+        const shareText = `${sharePayload.title}\n\n${sharePayload.text}\n${sharePayload.url}`;
+
         try {
             if (navigator.share) {
-                await navigator.share(sharePayload);
-                return;
+                try {
+                    await navigator.share(sharePayload);
+                    setTemporaryButtonLabel(button, 'Sdíleno');
+                    return;
+                } catch (shareError) {
+                    if (shareError?.name === 'AbortError') return;
+                    if (window.MH_DEBUG) console.debug('Web Share API failed, trying clipboard fallback:', shareError);
+                }
             }
 
-            await navigator.clipboard.writeText(`${sharePayload.title}\n\n${sharePayload.text}\n${sharePayload.url}`);
-            setTemporaryButtonLabel(button, 'Zkopírováno');
+            const copied = await copyTextToClipboard(shareText);
+            if (copied) {
+                setTemporaryButtonLabel(button, 'Zkopírováno');
+            } else {
+                showManualShareFallback(button, shareUrl);
+                setTemporaryButtonLabel(button, 'Odkaz připraven');
+            }
         } catch (error) {
             if (window.MH_DEBUG) console.debug('Daily card share failed:', error);
-            setTemporaryButtonLabel(button, 'Zkuste znovu');
+            showManualShareFallback(button, shareUrl);
+            setTemporaryButtonLabel(button, 'Odkaz připraven');
         }
     }
 

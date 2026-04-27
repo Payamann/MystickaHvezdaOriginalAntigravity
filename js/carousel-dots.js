@@ -4,35 +4,62 @@
         var container = document.querySelector('.carousel-container');
         if (!track || !container) return;
 
+        var viewport = container.querySelector('.carousel-track-container');
         var slides = Array.from(track.querySelectorAll('.carousel-slide'));
-        if (!slides.length) return;
+        if (!viewport || !slides.length) return;
 
         var dots = document.createElement('div');
         dots.className = 'carousel-dots';
 
         var current = 0;
+        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        function update(index) {
-            current = index;
+        function getStepSize() {
+            var firstSlide = slides[0];
+            var gap = parseFloat(getComputedStyle(track).gap) || 0;
+            return firstSlide.getBoundingClientRect().width + gap;
+        }
+
+        function update(index, shouldScroll) {
+            current = Math.max(0, Math.min(index, slides.length - 1));
             dots.querySelectorAll('.carousel-dot').forEach(function (dot, dotIndex) {
-                dot.classList.toggle('active', dotIndex === index);
+                var isActive = dotIndex === current;
+                dot.classList.toggle('active', isActive);
+                dot.setAttribute('aria-current', isActive ? 'true' : 'false');
+                dot.setAttribute('aria-pressed', isActive ? 'true' : 'false');
             });
+
+            if (shouldScroll) {
+                viewport.scrollTo({
+                    left: getStepSize() * current,
+                    behavior: reduceMotion ? 'auto' : 'smooth'
+                });
+            }
         }
 
         slides.forEach(function (_, index) {
             var dot = document.createElement('button');
             dot.className = 'carousel-dot' + (index === 0 ? ' active' : '');
-            dot.setAttribute('aria-label', 'Slide ' + (index + 1));
-            dot.addEventListener('click', function () { update(index); });
+            dot.type = 'button';
+            dot.setAttribute('aria-label', 'Přejít na referenci ' + (index + 1));
+            dot.setAttribute('aria-current', index === 0 ? 'true' : 'false');
+            dot.setAttribute('aria-pressed', index === 0 ? 'true' : 'false');
+            dot.addEventListener('click', function () { update(index, true); });
             dots.appendChild(dot);
         });
 
         container.after(dots);
 
-        var prev = container.querySelector('.carousel-btn.prev');
-        var next = container.querySelector('.carousel-btn.next');
+        var ticking = false;
 
-        if (prev) prev.addEventListener('click', function () { update(Math.max(0, current - 1)); });
-        if (next) next.addEventListener('click', function () { update(Math.min(slides.length - 1, current + 1)); });
+        viewport.addEventListener('scroll', function () {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(function () {
+                var step = getStepSize();
+                if (step > 0) update(Math.round(viewport.scrollLeft / step), false);
+                ticking = false;
+            });
+        }, { passive: true });
     });
 })();

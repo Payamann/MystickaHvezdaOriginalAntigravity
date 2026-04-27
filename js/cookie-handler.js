@@ -36,6 +36,33 @@
         hide();
     }
 
+    function getSavedPrefs() {
+        try {
+            var saved = JSON.parse(localStorage.getItem(K) || 'null');
+            if (saved && typeof saved === 'object') {
+                return {
+                    analytics: !!saved.analytics,
+                    marketing: !!saved.marketing
+                };
+            }
+        } catch (e) {
+            localStorage.removeItem(K);
+        }
+
+        return {
+            analytics: true,
+            marketing: false
+        };
+    }
+
+    function applySavedPrefsToControls() {
+        var prefs = getSavedPrefs();
+        var a = document.getElementById('cookie-analytics');
+        var m = document.getElementById('cookie-marketing');
+        if (a) a.checked = prefs.analytics;
+        if (m) m.checked = prefs.marketing;
+    }
+
     /** Check if consent was already given (supports old 'cookieConsent' key too) */
     function alreadyConsented() {
         if (localStorage.getItem(K)) return true;
@@ -52,17 +79,7 @@
         return false;
     }
 
-    function init() {
-        if (alreadyConsented()) {
-            hide();
-            return;
-        }
-
-        // Show banner after 1s on first visit
-        setTimeout(function () {
-            if (!alreadyConsented()) show();
-        }, 1000);
-
+    function bindControls() {
         var ac = document.getElementById('cookie-accept');
         var rj = document.getElementById('cookie-reject');
         var sv = document.getElementById('cookie-save');
@@ -83,6 +100,34 @@
                 save(!!(a && a.checked), !!(m && m.checked));
             });
         }
+    }
+
+    function bindManageLinks() {
+        document.querySelectorAll('a[href="#cookie-banner"]').forEach(function (link) {
+            if (link.dataset.mhCookieManageBound) return;
+            link.dataset.mhCookieManageBound = '1';
+            link.addEventListener('click', function (event) {
+                event.preventDefault();
+                applySavedPrefsToControls();
+                show();
+                document.getElementById('cookie-analytics')?.focus();
+            });
+        });
+    }
+
+    function init() {
+        bindControls();
+        bindManageLinks();
+
+        if (alreadyConsented()) {
+            hide();
+            return;
+        }
+
+        // Show banner after 1s on first visit
+        setTimeout(function () {
+            if (!alreadyConsented()) show();
+        }, 1000);
     }
 
     // Handle both: script loaded before DOM ready AND after (dynamic injection)

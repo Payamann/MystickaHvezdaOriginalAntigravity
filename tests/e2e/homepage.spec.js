@@ -60,6 +60,31 @@ test.describe('Homepage', () => {
         expect(href).toContain('feature=daily_guidance');
     });
 
+    test('header a pricing CTA maji funkcni fallback odkazy bez JavaScriptu', async ({ page }) => {
+        await expect(page.locator('#auth-register-btn')).toHaveAttribute('href', /prihlaseni\.html\?mode=register/);
+        await expect(page.locator('#auth-btn')).toHaveAttribute('href', /prihlaseni\.html\?source=header_login/);
+        await expect(page.locator('#mobile-auth-register-btn')).toHaveAttribute('href', /source=mobile_menu/);
+        await expect(page.locator('#mobile-auth-btn')).toHaveAttribute('href', /source=mobile_menu_login/);
+
+        await expect(page.locator('[data-plan="poutnik"]')).toHaveAttribute('href', /homepage_pricing_free_cta/);
+        await expect(page.locator('[data-plan="pruvodce"]')).toHaveAttribute('href', /plan=pruvodce/);
+        await expect(page.locator('[data-plan="osviceni"]')).toHaveAttribute('href', /feature=astrocartography/);
+    });
+
+    test('homepage vstupy na kartu dne vedou na andelskou kartu na strance, ne na tarot', async ({ page }) => {
+        const heroDailyCard = page.locator('#hero-daily-card-link');
+        await expect(heroDailyCard).toBeVisible();
+        const heroHref = await heroDailyCard.getAttribute('href');
+        expect(heroHref).toBe('#sluzby');
+        expect(heroHref).not.toContain('tarot');
+
+        const previewDailyCard = page.locator('.hero__daily-preview a').filter({ hasText: 'Andělská karta dne' });
+        await expect(previewDailyCard).toBeVisible();
+        const previewHref = await previewDailyCard.getAttribute('href');
+        expect(previewHref).toBe('#sluzby');
+        expect(previewHref).not.toContain('tarot');
+    });
+
     test('h1 tag existuje a obsahuje text', async ({ page }) => {
         const h1 = page.locator('h1').first();
         await expect(h1).toBeVisible();
@@ -122,6 +147,93 @@ test.describe('Homepage', () => {
         expect(href).toContain('plan=pruvodce');
         expect(href).toContain('source=homepage_bottom_cta');
         expect(href).toContain('feature=premium_membership');
+    });
+
+    test('homepage copy nepouziva nedolozene NASA tvrzeni a nema duplicitni pricing nadpis', async ({ page }) => {
+        const bodyText = await page.locator('body').innerText();
+        const normalizedBodyText = bodyText.toLowerCase();
+        expect(bodyText).not.toContain('efemeridami NASA');
+        expect(bodyText).not.toContain('Začněte zdarma. Přechod na Premium udělejte až ve chvíli, kdy chcete víc.');
+        expect(bodyText).toContain('ověřenými astronomickými výpočty');
+        expect(normalizedBodyText).toContain('ceník bez překvapení');
+        expect(bodyText).toContain('Začněte zdarma, plaťte až za hlubší výklady');
+        expect(normalizedBodyText).toContain('srovnání plánů');
+        expect(bodyText).toContain('Co se odemyká v jednotlivých plánech');
+    });
+
+    test('reference ukazuji transparentni souhrn hodnoceni', async ({ page }) => {
+        const summary = page.locator('.testimonial-summary');
+        await expect(summary).toBeVisible();
+        await expect(summary).toContainText('4,6/5');
+        await expect(summary).toContainText('9');
+        await expect(summary).toContainText('5×');
+        await expect(summary).toContainText('4×');
+        await expect(page.locator('.testimonial-disclaimer')).toContainText('Souhrn vychází z příběhů uvedených níže');
+    });
+
+    test('homepage odpovida na hlavni otazky duvery pred registraci a platbou', async ({ page }) => {
+        const bodyText = await page.locator('body').innerText();
+
+        expect(bodyText).toContain('Jak vzniká osobní výklad');
+        expect(bodyText).toContain('Nejde o lékařskou, právní ani finanční radu');
+        expect(bodyText).toContain('Ještě před registrací vidíte, co dostanete');
+        expect(bodyText).toContain('Jak hodnocení ověřujeme');
+        expect(bodyText).toContain('Co dostanete bez placení');
+        expect(bodyText).toContain('Za co dává smysl platit');
+        expect(bodyText).toContain('Jak zrušit předplatné');
+        expect(bodyText).toContain('Správa předplatného');
+        expect(bodyText).toContain('Platby, soukromí a pravidla služby:');
+        expect(bodyText).toContain('Než si vytvoříte účet');
+        expect(bodyText).toContain('Provozovatel služby Mystická Hvězda');
+
+        await expect(page.locator('.sample-output-card')).toHaveCount(3);
+        await expect(page.locator('.cancel-flow-card')).toBeVisible();
+
+        const trustLinks = page.locator('.pricing-trust-links');
+        await expect(trustLinks.locator('a[href="podminky.html"]')).toBeVisible();
+        await expect(trustLinks.locator('a[href="soukromi.html"]')).toBeVisible();
+        await expect(trustLinks.locator('a[href="#cookie-banner"]')).toBeVisible();
+        await expect(trustLinks.locator('a[href="kontakt.html"]')).toBeVisible();
+    });
+
+    test('odkaz sprava cookies z ceniku znovu otevre cookie banner', async ({ page }) => {
+        await page.evaluate(() => {
+            localStorage.setItem('mh_cookie_prefs', JSON.stringify({
+                analytics: false,
+                marketing: true,
+                ts: Date.now()
+            }));
+        });
+
+        await page.reload();
+        await waitForPageReady(page);
+
+        const banner = page.locator('#cookie-banner');
+        await expect(banner).toBeHidden();
+
+        const manageCookies = page.locator('.pricing-trust-links a[href="#cookie-banner"]');
+        await manageCookies.scrollIntoViewIfNeeded();
+        await manageCookies.click();
+
+        await expect(banner).toBeVisible();
+        await expect(page.locator('#cookie-analytics')).not.toBeChecked();
+        await expect(page.locator('#cookie-marketing')).toBeChecked();
+    });
+
+    test('tecky carouselu referenci jsou funkcni a posouvaji obsah', async ({ page }) => {
+        const carousel = page.locator('.carousel-container');
+        await carousel.scrollIntoViewIfNeeded();
+
+        const dots = page.locator('.carousel-dot');
+        await expect(dots).toHaveCount(9);
+
+        const viewport = page.locator('.carousel-track-container');
+        const initialScroll = await viewport.evaluate((node) => node.scrollLeft);
+
+        await dots.nth(3).click();
+
+        await expect(dots.nth(3)).toHaveAttribute('aria-current', 'true');
+        await expect.poll(() => viewport.evaluate((node) => node.scrollLeft)).toBeGreaterThan(initialScroll);
     });
 
     test('pricing preview free plan vede neprihlaseneho na aktivacni registraci', async ({ page }) => {
@@ -239,6 +351,90 @@ test.describe('Homepage', () => {
 
         await expect.poll(() => page.evaluate(() => window.__dailyCardShareText || '')).toContain('Hravost');
         await expect.poll(() => page.evaluate(() => window.__dailyCardShareText || '')).toContain('andelske-karty.html');
+    });
+
+    test('sdileni karty dne ma textarea fallback pri nedostupne clipboard API', async ({ page }) => {
+        await page.evaluate(() => {
+            const now = new Date();
+            const today = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+            localStorage.setItem('mh_kdd_date', today);
+            localStorage.setItem('mh_kdd_index', '27');
+            localStorage.removeItem('mh_kdd_last_flip_date');
+        });
+
+        await page.reload();
+        await waitForPageReady(page);
+
+        const card = page.locator('#kdd-card');
+        await card.scrollIntoViewIfNeeded();
+        await card.click();
+        await expect(page.locator('#kdd-message')).toBeVisible();
+
+        await page.evaluate(() => {
+            Object.defineProperty(navigator, 'share', {
+                configurable: true,
+                value: undefined
+            });
+            Object.defineProperty(navigator, 'clipboard', {
+                configurable: true,
+                value: {
+                    writeText: async () => {
+                        throw new Error('clipboard denied');
+                    }
+                }
+            });
+            document.execCommand = (command) => {
+                if (command !== 'copy') return false;
+                window.__dailyCardFallbackText = document.activeElement?.value || '';
+                return true;
+            };
+        });
+
+        await page.locator('#kdd-share-btn').click();
+
+        await expect(page.locator('#kdd-share-btn')).toContainText('Zkopírováno');
+        await expect.poll(() => page.evaluate(() => window.__dailyCardFallbackText || '')).toContain('Hravost');
+        await expect.poll(() => page.evaluate(() => window.__dailyCardFallbackText || '')).toContain('andelske-karty.html');
+    });
+
+    test('sdileni karty dne ukaze rucni odkaz kdyz automaticke kopirovani selze', async ({ page }) => {
+        await page.evaluate(() => {
+            const now = new Date();
+            const today = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+            localStorage.setItem('mh_kdd_date', today);
+            localStorage.setItem('mh_kdd_index', '27');
+            localStorage.removeItem('mh_kdd_last_flip_date');
+        });
+
+        await page.reload();
+        await waitForPageReady(page);
+
+        const card = page.locator('#kdd-card');
+        await card.scrollIntoViewIfNeeded();
+        await card.click();
+        await expect(page.locator('#kdd-message')).toBeVisible();
+
+        await page.evaluate(() => {
+            Object.defineProperty(navigator, 'share', {
+                configurable: true,
+                value: undefined
+            });
+            Object.defineProperty(navigator, 'clipboard', {
+                configurable: true,
+                value: {
+                    writeText: async () => {
+                        throw new Error('clipboard denied');
+                    }
+                }
+            });
+            document.execCommand = () => false;
+        });
+
+        await page.locator('#kdd-share-btn').click();
+
+        await expect(page.locator('#kdd-share-btn')).toContainText('Odkaz připraven');
+        await expect(page.locator('.kdd-share-fallback')).toBeVisible();
+        await expect(page.locator('.kdd-share-fallback input')).toHaveValue(/andelske-karty\.html/);
     });
 
     test('skip-link pro přístupnost existuje', async ({ page }) => {

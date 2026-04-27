@@ -36,10 +36,38 @@ const CONVERSION_LINK_CHECKS = [
         path: '/',
         name: 'Homepage daily angel card CTAs',
         snippets: [
+            'id="hero-daily-card-link"',
+            'href="#sluzby"',
+            'Andělská karta dne',
+            'prihlaseni.html?mode=register&source=header&feature=account',
+            'prihlaseni.html?source=mobile_menu_login',
             'id="kdd-lexicon-link" href="andelske-karty.html?source=homepage_daily_card_detail&feature=daily_angel_card"',
             'id="kdd-full-reading-link"',
             'source=homepage_daily_card_full_reading',
             'feature=andelske_karty_hluboky_vhled'
+        ]
+    },
+    {
+        path: '/',
+        name: 'Homepage trust and pricing copy',
+        snippets: [
+            '4,6/5 z 9 anonymizovaných příběhů',
+            'Soukromí na prvním místě',
+            'testimonial-summary',
+            'Jak hodnocení ověřujeme',
+            'Jak vzniká osobní výklad',
+            'Ještě před registrací vidíte, co dostanete',
+            'Co dostanete bez placení',
+            'Ceník bez překvapení',
+            'Začněte zdarma, plaťte až za hlubší výklady',
+            'Jak zrušit předplatné',
+            'Platby, soukromí a pravidla služby:',
+            'Než si vytvoříte účet',
+            'Provozovatel služby Mystická Hvězda',
+            'ověřenými astronomickými výpočty',
+            'Srovnání plánů',
+            'Co se odemyká v jednotlivých plánech',
+            'Prioritní 24/7 podpora (do 2 h)'
         ]
     },
     {

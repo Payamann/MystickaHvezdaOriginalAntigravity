@@ -3,7 +3,7 @@
  * Provides offline caching with stale-while-revalidate strategy
  */
 
-const CACHE_NAME = 'mysticka-hvezda-a097c09f57aa';
+const CACHE_NAME = 'mysticka-hvezda-04f450f8c3ee';
 const MAX_RUNTIME_CACHE_SIZE = 150;
 const STATIC_ASSETS = [
     '/',
@@ -24,7 +24,9 @@ const STATIC_ASSETS = [
     '/js/dist/templates.js',
     '/js/dist/auth-client.js',
     '/js/dist/cenik.js',
+    '/js/dist/cookie-handler.js',
     '/js/dist/crystal-ball.js',
+    '/js/dist/daily-card.js',
     '/js/dist/index-lazy-load.js',
     '/js/gemini-service.js',
     '/js/dist/mobile-nav.js',
