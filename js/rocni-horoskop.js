@@ -6,12 +6,23 @@ const ANNUAL_HOROSCOPE_PRODUCT = {
     currency: 'CZK'
 };
 
+function getAnnualContext() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+        source: params.get('source') || 'annual_horoscope_page',
+        feature: params.get('feature') || ANNUAL_HOROSCOPE_PRODUCT.id
+    };
+}
+
 function trackAnnualProductView() {
+    const context = getAnnualContext();
     window.MH_ANALYTICS?.trackEvent?.('one_time_product_viewed', {
         product_id: ANNUAL_HOROSCOPE_PRODUCT.id,
         product_type: ANNUAL_HOROSCOPE_PRODUCT.type,
         price: ANNUAL_HOROSCOPE_PRODUCT.price,
-        currency: ANNUAL_HOROSCOPE_PRODUCT.currency
+        currency: ANNUAL_HOROSCOPE_PRODUCT.currency,
+        source: context.source,
+        feature: context.feature
     });
 }
 
@@ -19,6 +30,7 @@ function handleAnnualPaymentStatus() {
     const params = new URLSearchParams(window.location.search);
     const status = params.get('status');
     const sessionId = params.get('session_id') || null;
+    const context = getAnnualContext();
 
     if (status === 'success') {
         document.getElementById('bannerSuccess')?.classList.add('visible');
@@ -31,7 +43,9 @@ function handleAnnualPaymentStatus() {
         window.MH_ANALYTICS?.trackPaymentResult?.('success', {
             product_id: ANNUAL_HOROSCOPE_PRODUCT.id,
             product_type: ANNUAL_HOROSCOPE_PRODUCT.type,
-            session_id: sessionId
+            session_id: sessionId,
+            source: context.source,
+            feature: context.feature
         });
         window.MH_ANALYTICS?.trackPurchaseCompleted?.(
             ANNUAL_HOROSCOPE_PRODUCT.id,
@@ -41,7 +55,8 @@ function handleAnnualPaymentStatus() {
                 product_type: ANNUAL_HOROSCOPE_PRODUCT.type,
                 product_name: ANNUAL_HOROSCOPE_PRODUCT.name,
                 transaction_id: sessionId || undefined,
-                source: 'annual_horoscope_success'
+                source: context.source,
+                feature: context.feature
             }
         );
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -49,7 +64,9 @@ function handleAnnualPaymentStatus() {
         document.getElementById('bannerCancel')?.classList.add('visible');
         window.MH_ANALYTICS?.trackPaymentResult?.('cancel', {
             product_id: ANNUAL_HOROSCOPE_PRODUCT.id,
-            product_type: ANNUAL_HOROSCOPE_PRODUCT.type
+            product_type: ANNUAL_HOROSCOPE_PRODUCT.type,
+            source: context.source,
+            feature: context.feature
         });
     }
 }
@@ -70,6 +87,20 @@ function getOrderBody() {
         sign: document.getElementById('sign')?.value || '',
         email: document.getElementById('email')?.value.trim() || ''
     };
+}
+
+function bindAnnualUpgradeLinks() {
+    document.querySelectorAll('[data-annual-upgrade]').forEach((link) => {
+        link.addEventListener('click', () => {
+            window.MH_ANALYTICS?.trackCTA?.('annual_horoscope_success_upgrade', {
+                product_id: ANNUAL_HOROSCOPE_PRODUCT.id,
+                destination: link.getAttribute('href') || '/cenik.html',
+                source: 'annual_horoscope_success',
+                feature: 'daily_guidance',
+                plan_id: 'pruvodce'
+            });
+        });
+    });
 }
 
 async function getCsrfToken() {
@@ -102,7 +133,9 @@ function bindAnnualOrderForm() {
             window.MH_ANALYTICS?.trackCheckoutStarted?.(ANNUAL_HOROSCOPE_PRODUCT.id, {
                 product_type: ANNUAL_HOROSCOPE_PRODUCT.type,
                 value: ANNUAL_HOROSCOPE_PRODUCT.price,
-                currency: ANNUAL_HOROSCOPE_PRODUCT.currency
+                currency: ANNUAL_HOROSCOPE_PRODUCT.currency,
+                source: getAnnualContext().source,
+                feature: getAnnualContext().feature
             });
 
             const csrfToken = await getCsrfToken();
@@ -110,7 +143,10 @@ function bindAnnualOrderForm() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
                 credentials: 'include',
-                body: JSON.stringify(getOrderBody())
+                body: JSON.stringify({
+                    ...getOrderBody(),
+                    source: getAnnualContext().source
+                })
             });
             const data = await res.json();
 
@@ -122,7 +158,9 @@ function bindAnnualOrderForm() {
         } catch (err) {
             window.MH_ANALYTICS?.trackEvent?.('one_time_checkout_failed', {
                 product_id: ANNUAL_HOROSCOPE_PRODUCT.id,
-                error_message: err.message
+                error_message: err.message,
+                source: getAnnualContext().source,
+                feature: getAnnualContext().feature
             });
             errorElement.textContent = err.message;
             errorElement.hidden = false;
@@ -136,6 +174,7 @@ function initAnnualHoroscopePage() {
     trackAnnualProductView();
     handleAnnualPaymentStatus();
     bindAnnualScrollButtons();
+    bindAnnualUpgradeLinks();
     bindAnnualOrderForm();
 }
 

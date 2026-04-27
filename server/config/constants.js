@@ -105,6 +105,7 @@ export const FEATURE_PLAN_MAP = Object.freeze({
     andelske_karty_hluboky_vhled: 'pruvodce',
     astrocartography: 'osviceni',
     crystal_ball_unlimited: 'pruvodce',
+    daily_guidance: 'pruvodce',
     horoskopy: 'pruvodce',
     hvezdny_mentor: 'pruvodce',
     journal_insights: 'pruvodce',

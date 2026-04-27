@@ -50,6 +50,7 @@ const sections = [
         label: 'Pricing and payment',
         defaultWorkers: 1,
         files: [
+            'tests/e2e/annual-horoscope.spec.js',
             'tests/e2e/cenik-payment.spec.js',
         ],
     },

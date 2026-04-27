@@ -45,6 +45,7 @@ const FALLBACK_FEATURE_PLAN_MAP = {
     andelske_karty_hluboky_vhled: 'pruvodce',
     astrocartography: 'osviceni',
     crystal_ball_unlimited: 'pruvodce',
+    daily_guidance: 'pruvodce',
     horoskopy: 'pruvodce',
     hvezdny_mentor: 'pruvodce',
     journal_insights: 'pruvodce',

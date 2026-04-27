@@ -35,6 +35,13 @@ function getStripeClient() {
     return stripeClient;
 }
 
+function cleanCheckoutSource(value) {
+    if (typeof value !== 'string') return 'annual_horoscope_page';
+    const trimmed = value.trim();
+    if (!trimmed) return 'annual_horoscope_page';
+    return trimmed.replace(/[^\w:-]/g, '_').slice(0, 80);
+}
+
 router.get('/product', (_req, res) => {
     res.json({
         id: PRODUCT.id,
@@ -49,6 +56,7 @@ router.post('/checkout', async (req, res) => {
     const { birthDate, sign } = req.body;
     const customerName = typeof req.body.name === 'string' ? req.body.name.trim() : '';
     const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+    const source = cleanCheckoutSource(req.body.source);
 
     if (!customerName || !birthDate || !sign || !email) {
         return res.status(400).json({ error: 'Vyplňte všechna pole.' });
@@ -88,12 +96,13 @@ router.post('/checkout', async (req, res) => {
             }],
             mode: 'payment',
             locale: 'cs',
-            success_url: `${APP_URL}/rocni-horoskop.html?status=success&session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${APP_URL}/rocni-horoskop.html?status=cancel`,
+            success_url: `${APP_URL}/rocni-horoskop.html?status=success&source=${encodeURIComponent(source)}&session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${APP_URL}/rocni-horoskop.html?status=cancel&source=${encodeURIComponent(source)}`,
             metadata: {
                 productType: PRODUCT.type,
                 productId: PRODUCT.id,
                 productYear: PRODUCT.year,
+                source,
                 customerName,
                 birthDate,
                 sign,

@@ -564,6 +564,8 @@ async function handleRocniHoroskopPurchase(session, stripeEventId = null) {
     });
 
     await recordFunnelEvent('one_time_purchase_completed', {
+        source: session.metadata?.source || 'annual_horoscope_checkout',
+        feature: productId,
         stripeSessionId: session.id,
         stripeEventId,
         metadata: {

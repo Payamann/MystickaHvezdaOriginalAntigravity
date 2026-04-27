@@ -211,6 +211,17 @@
     }
     .form-note span { color: var(--gold); }
 
+    .order-summary {
+      display: grid; gap: 10px; margin-top: 18px;
+    }
+    .order-summary div {
+      display: flex; justify-content: space-between; gap: 16px;
+      padding: 12px 0; border-top: 1px solid rgba(212,175,55,0.1);
+      font-size: 13px;
+    }
+    .order-summary strong { color: #f5ead0; }
+    .order-summary span { color: var(--text-dim); text-align: right; }
+
     .trust-strip {
       max-width: 900px; margin: -36px auto 76px; padding: 0 24px;
       display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px;
@@ -295,4 +306,6 @@
       .trust-strip { grid-template-columns: 1fr; margin-top: -28px; }
       .form-card { padding: 28px 20px; }
       .sample-box { padding: 28px 20px; }
+      .order-summary div { display: block; }
+      .order-summary span { display: block; margin-top: 3px; text-align: left; }
     }

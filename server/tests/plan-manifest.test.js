@@ -35,6 +35,7 @@ describe('Public plan manifest', () => {
         expect(manifest.featurePlanMap.astrocartography).toBe('osviceni');
         expect(manifest.featurePlanMap.angel_card_deep).toBe('pruvodce');
         expect(manifest.featurePlanMap.andelske_karty_hluboky_vhled).toBe('pruvodce');
+        expect(manifest.featurePlanMap.daily_guidance).toBe('pruvodce');
         expect(manifest.featurePlanMap.runes_deep_reading).toBe('pruvodce');
         expect(manifest.featurePlanMap.runy_hluboky_vyklad).toBe('pruvodce');
         expect(manifest.featurePlanMap.past_life).toBe('pruvodce');
