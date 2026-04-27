@@ -56,7 +56,7 @@ const PREMIUM_BLOG_POSTS = [
     {
         slug: 'iluze-spriznene-duse-karmicke-vztahy',
         title: 'Iluze jménem "Spřízněná duše": Proč nás tytéž vztahy chronicky stahují ke dnu?',
-        short_description: 'Motýlci v břiše, pocit, že se znáte staletí, a pak náhlý a zničující pád. Proč astrolgická praxe nabádá k maximální opatrnosti před karmickými svazky?',
+        short_description: 'Motýlci v břiše, pocit, že se znáte staletí, a pak náhlý a zničující pád. Proč astrologická praxe nabádá k maximální opatrnosti před karmickými svazky?',
         category: 'Vztahy',
         featured_image: '../img/synastry-bg.webp',
         author: 'Mystický Průvodce',
