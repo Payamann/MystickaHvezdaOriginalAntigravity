@@ -134,6 +134,7 @@ Hotovo:
 - Service-role DB diagnostika `db-check.js` je archivovaná mimo aktivní helpery, protože vypisovala uživatelské e-maily a části zpráv do konzole.
 - Ruční `test-horoskop-email.js` smoke je archivovaný, protože spouštěl Claude/PDF/e-mail side efekty mimo standardní aplikační a platební flow.
 - Stará asset one-off sada `convert-logo.js`, `generate-planet-svgs.js` a `convert-angel-archetypes.js` je archivovaná; aktivní helpery už neobsahují chybějící logo vstup ani Gemini generátor vedle deterministické SVG varianty.
+- Staré hromadné SEO/asset mutátory `update-seo.js`, `convert-images.js`, `optimize-bg.js` a `optimize-map.js` jsou archivované, aby aktivní skripty nevybízely k přepisu HTML/metadat nebo assetů mimo auditovaný workflow.
 
 Zbývá:
 

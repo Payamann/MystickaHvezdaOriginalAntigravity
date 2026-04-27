@@ -21,6 +21,8 @@ active project tooling.
   patch logic, and are not part of active project validation.
 - `bulk-html-mutators/` contains old broad HTML/CSS/SEO/performance/image
   patchers that predate the current build, CSP, and audit workflow.
+  `update-seo.js` is archived there because it would reapply stale OG/JSON-LD
+  snippets across HTML files instead of using the current audited page metadata.
 - `gemini-one-offs/` contains old manual Gemini probe/image test scripts that
   were not referenced by package scripts or active documentation. Current server
   AI runtime uses Anthropic; image generation helpers should be reviewed before
@@ -43,7 +45,9 @@ active project tooling.
 - `asset-one-offs/` contains old one-time asset converters/generators. The logo
   converter expected a missing `img/logo-3d.png`, the Gemini planet SVG
   generator is superseded by deterministic checked-in SVGs, and the angel
-  archetype PNG-to-WebP conversion has already been applied.
+  archetype PNG-to-WebP conversion has already been applied. The broad image
+  converter and old background/map optimizers are archived as well because they
+  rewrite checked-in assets from missing or intentionally preserved source files.
 
 They are archived for traceability so they do not appear as runnable current
 tools in `scripts/`.
