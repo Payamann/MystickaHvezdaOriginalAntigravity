@@ -147,6 +147,7 @@ async function runPublicChecks() {
     await runServiceWorkerCheck();
     await runIndexChecks();
     await runPublicPageChecks();
+    await runRedirectChecks();
     await runAstroCalculationChecks();
 }
 
@@ -213,6 +214,17 @@ async function runPublicPageChecks() {
         if (!response.ok || !contentType.includes('text/html') || !text.includes('<html')) {
             throw new Error(`Public page check failed for ${path}.`);
         }
+    }
+}
+
+async function runRedirectChecks() {
+    const redirectRes = await measure('Legacy shaman wheel redirect', () => fetchChecked('/shamanske-kolo.html?source=smoke', {
+        method: 'HEAD',
+        redirect: 'manual'
+    }));
+    const location = redirectRes.headers.get('location') || '';
+    if (redirectRes.status !== 301 || location !== '/shamansko-kolo.html?source=smoke') {
+        throw new Error(`Legacy shaman wheel redirect mismatch: ${redirectRes.status} ${location}`);
     }
 }
 
