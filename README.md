@@ -50,8 +50,8 @@ Comprehensive astrology web application with AI-powered horoscopes, tarot readin
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/mystickahvezda.git
-cd mystickahvezda
+git clone https://github.com/Payamann/MystickaHvezdaOriginalAntigravity.git
+cd MystickaHvezdaOriginalAntigravity
 ```
 
 ### 2. Install dependencies
@@ -334,13 +334,12 @@ All PRs must pass CI checks (lint + tests).
 
 ## License
 
-MIT License — See [LICENSE](LICENSE) file
+No `LICENSE` file is currently tracked in this repository. Add one before distributing the project under an open-source license.
 
 ## Support
 
 - 📧 **Email**: support@mystickahvezda.cz
-- 🐛 **Issues**: [GitHub Issues](https://github.com/yourusername/mystickahvezda/issues)
-- 💬 **Discord**: [Community Server](https://discord.gg/mystickahvezda)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/Payamann/MystickaHvezdaOriginalAntigravity/issues)
 
 ## Changelog
 

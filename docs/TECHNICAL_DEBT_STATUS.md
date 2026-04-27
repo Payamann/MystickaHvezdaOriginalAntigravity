@@ -124,6 +124,7 @@ Hotovo:
 - Testovací odeslání push notifikací používá sdílený `requireAdmin` middleware a regresní test hlídá odmítnutí běžného uživatele.
 - Kořen repozitáře je o další krok čistší: stale quick-start je v archivu a orphan server lockfile už nezkresluje dependency audit.
 - README už popisuje aktuální CSP a migrační stav: žádný neexistující `npm run migrate:up` ani neexistující `server/db/migrations/` odkaz.
+- README už nemá placeholder GitHub/Issues odkazy ani tvrzení o neexistujícím `LICENSE` souboru.
 - Staré ruční Gemini probe/image test skripty jsou mimo aktivní `server/scripts/` a leží v archivu stale skriptů.
 - Staré lokální diagnostiky `verify-horoscope.js`, `debug-reading.js` a `verify_db_data.js` jsou mimo aktivní `server/scripts/`, protože neodpovídaly aktuálnímu CSRF/databázovému workflow.
 - Tarot má doplněný chybějící asset `tarot_sestka_mecu.webp`, opravený překlep v textu Šestky mečů a nový `audit:tarot-assets` v `test:verify`.
