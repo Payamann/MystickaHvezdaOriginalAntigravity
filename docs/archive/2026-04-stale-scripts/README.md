@@ -25,6 +25,9 @@ active project tooling.
   were not referenced by package scripts or active documentation. Current server
   AI runtime uses Anthropic; image generation helpers should be reviewed before
   being promoted back to active tooling.
+- `server-one-offs/` contains old local diagnostics that are no longer part of
+  active operations. `verify-horoscope.js` predated CSRF-protected API calls, and
+  `debug-reading.js` dumped recent Supabase reading rows directly.
 
 They are archived for traceability so they do not appear as runnable current
 tools in `scripts/`.

@@ -13,8 +13,8 @@ This folder contains backend maintenance and operational helper scripts.
 - AI/image generation experiments that are not wired into current operations
   should live under `docs/archive/2026-04-stale-scripts/`, not in this active
   helper directory.
-- Debug/verification scripts such as `db-check.js`, `debug-reading.js`, and
-  `verify-production.js` may hit live services depending on your environment.
+- Debug/verification scripts such as `db-check.js` and `verify-production.js`
+  may hit live services depending on your environment.
 - SQL snippets for manual Supabase setup live in `server/scripts/sql/`.
 - Versioned migrations live in `server/migrations/` or top-level `migrations/`;
   prefer migrations for schema changes that must be reproducible.
