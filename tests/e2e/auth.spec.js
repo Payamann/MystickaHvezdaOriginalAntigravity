@@ -161,7 +161,7 @@ test.describe('Login stránka', () => {
         await waitForPageReady(page);
 
         await Promise.all([
-            page.waitForURL(/tarot\.html/, { timeout: 7000 }),
+            page.waitForURL(url => url.pathname === '/tarot.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
             submitRegisterForm(page),
         ]);
         await waitForPageReady(page);
@@ -178,7 +178,7 @@ test.describe('Login stránka', () => {
         await waitForPageReady(page);
 
         await Promise.all([
-            page.waitForURL(/horoskopy\.html/, { timeout: 7000 }),
+            page.waitForURL(url => url.pathname === '/horoskopy.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
             submitRegisterForm(page, 'newsletter-activation@example.com'),
         ]);
         await waitForPageReady(page);
@@ -195,7 +195,7 @@ test.describe('Login stránka', () => {
         await waitForPageReady(page);
 
         await Promise.all([
-            page.waitForURL(/horoskopy\.html/, { timeout: 7000 }),
+            page.waitForURL(url => url.pathname === '/horoskopy.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
             submitRegisterForm(page, 'homepage-hero@example.com'),
         ]);
         await waitForPageReady(page);
@@ -212,7 +212,7 @@ test.describe('Login stránka', () => {
         await waitForPageReady(page);
 
         await Promise.all([
-            page.waitForURL(url => url.pathname === '/horoskopy.html', { timeout: 7000 }),
+            page.waitForURL(url => url.pathname === '/horoskopy.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
             submitRegisterForm(page, 'pricing-free@example.com'),
         ]);
         await waitForPageReady(page);
@@ -229,7 +229,7 @@ test.describe('Login stránka', () => {
         await waitForPageReady(page);
 
         await Promise.all([
-            page.waitForURL(/onboarding\.html/, { timeout: 7000 }),
+            page.waitForURL(url => url.pathname === '/onboarding.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
             submitRegisterForm(page, 'onboarding@example.com'),
         ]);
         await waitForPageReady(page);

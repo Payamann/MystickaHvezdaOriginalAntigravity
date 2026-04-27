@@ -42,6 +42,32 @@
         }
     }
 
+    function buildRegisterUrl(email) {
+        const authUrl = new URL('/prihlaseni.html', window.location.origin);
+        authUrl.searchParams.set('mode', 'register');
+        authUrl.searchParams.set('redirect', '/horoskopy.html');
+        authUrl.searchParams.set('source', 'newsletter_popup');
+        authUrl.searchParams.set('feature', 'daily_guidance');
+        authUrl.searchParams.set('email', email);
+        return `${authUrl.pathname}${authUrl.search}`;
+    }
+
+    function showRegisterCta(messageElement, email) {
+        const link = document.createElement('a');
+        link.className = 'mh-popup-register-link';
+        link.href = buildRegisterUrl(email);
+        link.textContent = 'Vytvořit účet zdarma';
+        link.addEventListener('click', () => {
+            window.MH_ANALYTICS?.trackCTA?.('newsletter_popup_register_cta', {
+                destination: link.getAttribute('href') || '/prihlaseni.html',
+                source: 'newsletter_popup',
+                feature: 'daily_guidance'
+            });
+        });
+
+        messageElement.append(document.createElement('br'), link);
+    }
+
     async function subscribe(email) {
         const btn = document.getElementById('mh-popup-submit');
         const msg = document.getElementById('mh-popup-msg');
@@ -66,7 +92,12 @@
             if (data.success) {
                 msg.textContent = '🌟 Skvělé! Brzy vám přijde první hvězdná zpráva.';
                 msg.className = 'mh-popup-msg mh-popup-msg--success';
-                setTimeout(dismiss, 2500);
+                showRegisterCta(msg, email);
+                btn.textContent = 'Odběr aktivní';
+                window.MH_ANALYTICS?.trackEvent?.('newsletter_popup_subscribed', {
+                    source: 'web_popup'
+                });
+                setTimeout(dismiss, 10000);
             } else {
                 msg.textContent = data.error || 'Chyba. Zkuste to znovu.';
                 msg.className = 'mh-popup-msg mh-popup-msg--error';
@@ -145,8 +176,8 @@
         document.getElementById('mh-popup-close').addEventListener('click', dismiss);
         document.getElementById('mh-popup-submit').addEventListener('click', () => {
             const email = document.getElementById('mh-popup-email').value.trim();
-            if (!email) {
-                document.getElementById('mh-popup-msg').textContent = 'Zadejte prosím emailovou adresu.';
+            if (!email || !email.includes('@')) {
+                document.getElementById('mh-popup-msg').textContent = 'Zadejte prosím platný e-mail.';
                 document.getElementById('mh-popup-msg').className = 'mh-popup-msg mh-popup-msg--error';
                 return;
             }

@@ -405,6 +405,11 @@
                     path: '/horoskopy.html',
                     title: 'Registrace je hotová',
                     message: 'Když už jste uvnitř, vezměte si hned první hodnotu přes osobní horoskop.'
+                },
+                newsletter_popup: {
+                    path: '/horoskopy.html',
+                    title: 'Registrace je hotová',
+                    message: 'Navážete na odběr rovnou denním horoskopem a první osobní hodnotou.'
                 }
             };
 

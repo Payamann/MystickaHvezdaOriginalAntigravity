@@ -20,6 +20,7 @@ const sections = [
             'tests/e2e/homepage.spec.js',
             'tests/e2e/navigation.spec.js',
             'tests/e2e/auth.spec.js',
+            'tests/e2e/newsletter-popup.spec.js',
             'tests/e2e/profil.spec.js',
         ],
     },

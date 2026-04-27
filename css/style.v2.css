@@ -3717,6 +3717,26 @@ body.page-mentor .header {
   color: #f87171;
 }
 
+.mh-popup-register-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.75rem;
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, #ffd700, #b8860b);
+  color: #050510 !important;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 0 18px rgba(255, 215, 0, 0.28);
+}
+
+.mh-popup-register-link:hover {
+  color: #050510 !important;
+  transform: translateY(-1px);
+}
+
 .mh-popup-fineprint {
   margin: 1rem 0 0;
   color: rgba(255, 255, 255, 0.3);
