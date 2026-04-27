@@ -39,7 +39,7 @@ const CONVERSION_LINK_CHECKS = [
             'id="hero-daily-card-link"',
             'href="#sluzby"',
             'Andělská karta dne',
-            'prihlaseni.html?mode=register&source=header&feature=account',
+            'prihlaseni.html?mode=register&source=header_register&feature=account',
             'prihlaseni.html?source=mobile_menu_login',
             'id="kdd-lexicon-link" href="andelske-karty.html?source=homepage_daily_card_detail&feature=daily_angel_card"',
             'id="kdd-full-reading-link"',
