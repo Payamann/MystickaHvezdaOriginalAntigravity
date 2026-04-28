@@ -24,6 +24,7 @@
     "test:e2e:sections:mobile": "node scripts/run-e2e-sections.mjs --project=mobile-chrome",
     "test:e2e:api": "node scripts/run-e2e-sections.mjs --section=api",
     "test:e2e:core": "node scripts/run-e2e-sections.mjs --section=core",
+    "test:e2e:business": "node scripts/run-e2e-sections.mjs --section=core,checkout",
     "test:e2e:content": "node scripts/run-e2e-sections.mjs --section=content",
     "test:e2e:tools": "node scripts/run-e2e-sections.mjs --section=tools",
     "test:e2e:checkout": "node scripts/run-e2e-sections.mjs --section=checkout",

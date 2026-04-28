@@ -103,7 +103,7 @@ for (let index = 0; index < args.length; index += 1) {
 }
 
 const requestedSections = selectedSection
-    ? sections.filter((section) => section.name === selectedSection)
+    ? sections.filter((section) => selectedSection.split(',').map((name) => name.trim()).includes(section.name))
     : sections;
 
 if (listSections) {
@@ -118,8 +118,11 @@ if (listSections) {
     process.exit(0);
 }
 
-if (requestedSections.length === 0) {
-    console.error(`Unknown E2E section: ${selectedSection}`);
+if (selectedSection && requestedSections.length !== selectedSection.split(',').map((name) => name.trim()).filter(Boolean).length) {
+    const requestedNames = selectedSection.split(',').map((name) => name.trim()).filter(Boolean);
+    const foundNames = new Set(requestedSections.map((section) => section.name));
+    const unknownNames = requestedNames.filter((name) => !foundNames.has(name));
+    console.error(`Unknown E2E section(s): ${unknownNames.join(', ')}`);
     console.error(`Available sections: ${sections.map((section) => section.name).join(', ')}`);
     process.exit(1);
 }
