@@ -9,6 +9,7 @@ const BASE_URL = (process.env.VERIFY_BASE_URL || (isLocal
 const EMAIL = process.env.VERIFY_EMAIL;
 const PASSWORD = process.env.VERIFY_PASSWORD;
 const RUN_AI_CHECKS = process.env.VERIFY_RUN_AI === 'true';
+const EXPECTED_DEPLOY_SHA = process.env.VERIFY_EXPECTED_SHA || null;
 const EXPECTED_SITEMAP_URL = process.env.VERIFY_EXPECTED_SITEMAP_URL || 'https://www.mystickahvezda.cz/sitemap.xml';
 const PUBLIC_PAGE_PATHS = (process.env.VERIFY_PUBLIC_PATHS || [
     '/',
@@ -215,6 +216,12 @@ async function runPublicChecks() {
     }
     if (health.checks?.db !== 'ok' || health.checks?.ai !== 'ok') {
         throw new Error(`Health dependencies are not ok: ${JSON.stringify(health.checks)}`);
+    }
+    if (EXPECTED_DEPLOY_SHA) {
+        const liveCommit = health.deployment?.commit || '';
+        if (!liveCommit || (!liveCommit.startsWith(EXPECTED_DEPLOY_SHA) && !EXPECTED_DEPLOY_SHA.startsWith(liveCommit))) {
+            throw new Error(`Deployment commit mismatch. Expected ${EXPECTED_DEPLOY_SHA}, got ${liveCommit || 'none'}.`);
+        }
     }
 
     await runPublicConfigCheck();

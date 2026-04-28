@@ -360,6 +360,24 @@ function getPushNotificationStatus() {
     return 'partial';
 }
 
+function getDeploymentMetadata() {
+    return {
+        commit: process.env.RAILWAY_GIT_COMMIT_SHA ||
+            process.env.VERCEL_GIT_COMMIT_SHA ||
+            process.env.GIT_COMMIT_SHA ||
+            process.env.COMMIT_SHA ||
+            null,
+        branch: process.env.RAILWAY_GIT_BRANCH ||
+            process.env.VERCEL_GIT_COMMIT_REF ||
+            process.env.GIT_BRANCH ||
+            null,
+        environment: process.env.RAILWAY_ENVIRONMENT_NAME ||
+            process.env.NODE_ENV ||
+            'development',
+        service: process.env.RAILWAY_SERVICE_NAME || null
+    };
+}
+
 function getPublicClientConfig() {
     const pushNotificationStatus = getPushNotificationStatus();
 
@@ -369,7 +387,8 @@ function getPublicClientConfig() {
         sentryDsn: process.env.SENTRY_DSN || null,
         features: {
             pushNotifications: pushNotificationStatus === 'configured'
-        }
+        },
+        deployment: getDeploymentMetadata()
     };
 }
 
@@ -391,7 +410,8 @@ function getRuntimeHealth() {
         },
         features: {
             pushNotifications: getPushNotificationStatus()
-        }
+        },
+        deployment: getDeploymentMetadata()
     };
 }
 

@@ -160,7 +160,7 @@ async function assertHttpOk(url, options = {}) {
     return { response, text };
 }
 
-async function runSmokeChecks(baseUrl) {
+async function runSmokeChecks(baseUrl, expectedSha = null) {
     const normalizedBase = baseUrl.replace(/\/$/, '');
     const health = await assertHttpOk(`${normalizedBase}/api/health`, {
         headers: { Accept: 'application/json' }
@@ -168,6 +168,10 @@ async function runSmokeChecks(baseUrl) {
     const healthBody = JSON.parse(health.text);
     if (healthBody.status !== 'ok') {
         throw new Error(`Health is not ok: ${health.text.slice(0, 240)}`);
+    }
+    const liveCommit = healthBody.deployment?.commit || null;
+    if (expectedSha && liveCommit && !liveCommit.startsWith(expectedSha) && !expectedSha.startsWith(liveCommit)) {
+        throw new Error(`Health deployment commit mismatch. Expected ${expectedSha}, got ${liveCommit}.`);
     }
     console.log(`[smoke] health ok: ${healthBody.timestamp || 'no timestamp'}`);
 
@@ -203,7 +207,7 @@ async function main() {
 
     if (!args.skipRemote) await waitForChecks({ ...args, sha });
     if (!args.skipRailway) await waitForRailwayStatus({ ...args, sha });
-    if (!args.skipSmoke) await runSmokeChecks(args.baseUrl);
+    if (!args.skipSmoke) await runSmokeChecks(args.baseUrl, sha);
 
     console.log('[deploy-guard] DEPLOY OK');
 }

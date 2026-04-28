@@ -72,6 +72,7 @@ describe('API Endpoint Tests', () => {
             expect(res.body).toHaveProperty('status');
             expect(res.body).toHaveProperty('timestamp');
             expect(res.body).toHaveProperty('checks');
+            expect(res.body).toHaveProperty('deployment');
         });
 
         test('Health check checks has db and ai fields', async () => {
@@ -80,6 +81,25 @@ describe('API Endpoint Tests', () => {
             expect(res.body.checks).toHaveProperty('db');
             expect(res.body.checks).toHaveProperty('ai');
             expect(res.body.features).toHaveProperty('pushNotifications');
+            expect(res.body.deployment).toHaveProperty('commit');
+        });
+
+        test('Health check exposes safe deployment metadata when available', async () => {
+            await withTemporaryEnv({
+                RAILWAY_GIT_COMMIT_SHA: 'abc123deploy',
+                RAILWAY_GIT_BRANCH: 'main',
+                RAILWAY_ENVIRONMENT_NAME: 'production',
+                RAILWAY_SERVICE_NAME: 'web'
+            }, async () => {
+                const res = await request(app).get('/api/health');
+
+                expect(res.body.deployment).toEqual({
+                    commit: 'abc123deploy',
+                    branch: 'main',
+                    environment: 'production',
+                    service: 'web'
+                });
+            });
         });
 
         test('Health check recognizes Supabase and Anthropic production config', async () => {
