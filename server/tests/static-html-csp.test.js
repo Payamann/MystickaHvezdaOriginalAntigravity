@@ -23,6 +23,7 @@ const NON_PRODUCT_DIRS = new Set([
     'social-media-agent',
     'templates',
     'tests',
+    'tmp',
     'test-results',
     'tmp_email_previews'
 ]);

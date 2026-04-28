@@ -141,6 +141,19 @@ test.describe('Horoskopy', () => {
         await expect(page.locator('#detail-name')).toContainText('Ryby');
     });
 
+    test('ulozene znameni z onboardingu automaticky otevre osobni horoskop', async ({ page }) => {
+        await page.evaluate(() => {
+            localStorage.setItem('mh_zodiac', 'lev');
+            localStorage.setItem('mh_user_prefs', JSON.stringify({ sign: 'lev' }));
+        });
+
+        await page.reload();
+        await waitForPageReady(page);
+
+        await expect(page.locator('.zodiac-card.active')).toContainText('Lev');
+        await expect(page.locator('#detail-name')).toContainText('Lev');
+    });
+
     // ── Freemium banner ──────────────────────────────────────────────────────
 
     test('freemium banner element existuje v DOM', async ({ page }) => {

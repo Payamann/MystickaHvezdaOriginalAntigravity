@@ -107,6 +107,21 @@ test.describe('Login stránka', () => {
         expect(await passwordInput.getAttribute('type')).toBe('password');
     });
 
+    test('heslo lze zobrazit a znovu skryt bez ztraty hodnoty', async ({ page }) => {
+        const passwordInput = page.locator('#password').first();
+        const toggle = page.locator('[data-password-toggle="password"]').first();
+
+        await passwordInput.fill('TestPassword123!');
+        await toggle.click();
+        await expect(passwordInput).toHaveAttribute('type', 'text');
+        await expect(toggle).toHaveText('Skrýt');
+        await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+
+        await toggle.click();
+        await expect(passwordInput).toHaveAttribute('type', 'password');
+        await expect(passwordInput).toHaveValue('TestPassword123!');
+    });
+
     test('submit tlačítko je viditelné', async ({ page }) => {
         const submitBtn = page.locator('#auth-submit').first();
         await expect(submitBtn).toBeVisible();
@@ -158,6 +173,24 @@ test.describe('Login stránka', () => {
             page.locator('#signup-safety-note').first(),
             page.locator('#auth-submit').first(),
         ]);
+    });
+
+    test('mobilni cookie lista neblokuje registracni formular', async ({ page }) => {
+        await page.setViewportSize({ width: 390, height: 844 });
+        await page.evaluate(() => {
+            localStorage.removeItem('mh_cookie_prefs');
+            localStorage.removeItem('cookieConsent');
+        });
+        await page.goto('/prihlaseni.html?mode=register&source=homepage_hero&feature=daily_guidance');
+        await waitForPageReady(page);
+
+        const banner = page.locator('#cookie-banner');
+        await expect(banner).toBeVisible({ timeout: 4000 });
+
+        const box = await banner.boundingBox();
+        expect(box?.height || 0).toBeLessThan(190);
+        expect(box?.width || 0).toBeLessThanOrEqual(366);
+        await expect(page.locator('#auth-submit')).toBeVisible();
     });
 
     test('registrace z headeru pouziva lidsky account kontext', async ({ page }) => {
@@ -236,6 +269,25 @@ test.describe('Login stránka', () => {
         await expect(page.locator('#checkout-context-banner')).not.toContainText('tarot_multi_card');
     });
 
+    test('checkout banner umi lidsky popsat premium aliasy z paywallu', async ({ page }) => {
+        const cases = [
+            { feature: 'tarot_celtic_cross', expected: 'Keltsk' },
+            { feature: 'natal_chart', expected: 'Nat' },
+            { feature: 'runes_deep_reading', expected: 'run' },
+            { feature: 'rituals', expected: 'ritu' }
+        ];
+
+        for (const item of cases) {
+            await page.goto(`/prihlaseni.html?mode=register&redirect=/cenik.html&plan=pruvodce&source=inline_paywall&feature=${item.feature}`);
+            await waitForPageReady(page);
+
+            const banner = page.locator('#checkout-context-banner');
+            await expect(banner).toBeVisible();
+            await expect(banner).toContainText(item.expected);
+            await expect(banner).not.toContainText(item.feature);
+        }
+    });
+
     test('registrace s feature kontextem presmeruje na aktivacni stranku', async ({ page }) => {
         await mockSuccessfulRegister(page);
 
@@ -268,6 +320,23 @@ test.describe('Login stránka', () => {
         await waitForPageReady(page);
 
         expect(new URL(page.url()).pathname).toBe('/andelske-karty.html');
+        const activationFlag = await page.evaluate(() => sessionStorage.getItem('post_auth_activation'));
+        expect(activationFlag).toBeNull();
+    });
+
+    test('registrace ze samanskeho kola se vraci na kanonickou stranku bez legacy presmerovani', async ({ page }) => {
+        await mockSuccessfulRegister(page, 'shaman-wheel@example.com');
+
+        await page.goto('/prihlaseni.html?mode=register&feature=shamanske_kolo_plne_cteni');
+        await waitForPageReady(page);
+
+        await Promise.all([
+            page.waitForURL(url => url.pathname === '/shamansko-kolo.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
+            submitRegisterForm(page, 'shaman-wheel@example.com'),
+        ]);
+        await waitForPageReady(page);
+
+        expect(new URL(page.url()).pathname).toBe('/shamansko-kolo.html');
         const activationFlag = await page.evaluate(() => sessionStorage.getItem('post_auth_activation'));
         expect(activationFlag).toBeNull();
     });
@@ -337,6 +406,25 @@ test.describe('Login stránka', () => {
         await waitForPageReady(page);
 
         expect(new URL(page.url()).pathname).toBe('/onboarding.html');
+    });
+
+    test('registrace z headeru zachova kontext v onboardingu', async ({ page }) => {
+        await mockSuccessfulRegister(page, 'header-onboarding@example.com');
+
+        await page.goto('/prihlaseni.html?mode=register&source=header_register&feature=account');
+        await waitForPageReady(page);
+
+        await Promise.all([
+            page.waitForURL(url => url.pathname === '/onboarding.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
+            submitRegisterForm(page, 'header-onboarding@example.com'),
+        ]);
+        await waitForPageReady(page);
+
+        const url = new URL(page.url());
+        expect(url.pathname).toBe('/onboarding.html');
+        expect(url.searchParams.get('source')).toBe('header_register');
+        expect(url.searchParams.get('feature')).toBe('account');
+        await expect(page.locator('#step-1 .step-title')).toContainText('osobním horoskopem');
     });
 
     // ── Klientská validace ────────────────────────────────────────────────────

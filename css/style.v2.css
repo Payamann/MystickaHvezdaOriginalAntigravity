@@ -4751,6 +4751,18 @@ body.page-mentor .header {
 
 }
 
+.newsletter-kicker {
+
+  margin: var(--space-lg) 0 var(--space-sm);
+
+  color: rgba(255, 255, 255, 0.74);
+
+  font-family: var(--font-body);
+
+  font-weight: 700;
+
+}
+
 
 
 .email-form__input {
@@ -4786,6 +4798,22 @@ body.page-mentor .header {
   outline: none;
 
   border-color: var(--color-mystic-gold);
+
+}
+
+.newsletter-trust-note {
+
+  max-width: 520px;
+
+  margin: var(--space-sm) auto 0;
+
+  color: rgba(255, 255, 255, 0.62);
+
+  font-family: var(--font-body);
+
+  font-size: var(--text-sm);
+
+  line-height: 1.5;
 
 }
 
@@ -13122,6 +13150,7 @@ a.card.card--interactive-hover:hover {
 
 }
 
+body.page-home .cookie-banner,
 body.page-login .cookie-banner,
 body.page-pricing .cookie-banner,
 body.page-profile .cookie-banner,
@@ -13133,6 +13162,7 @@ body.page-mentor .cookie-banner {
 
 }
 
+body.page-home .cookie-banner__text,
 body.page-login .cookie-banner__text,
 body.page-pricing .cookie-banner__text,
 body.page-profile .cookie-banner__text,
@@ -13142,6 +13172,7 @@ body.page-mentor .cookie-banner__text {
 
 }
 
+body.page-home .cookie-banner__actions .btn,
 body.page-login .cookie-banner__actions .btn,
 body.page-pricing .cookie-banner__actions .btn,
 body.page-profile .cookie-banner__actions .btn,
@@ -13223,6 +13254,21 @@ body.page-mentor .cookie-banner__actions .btn {
 
   }
 
+  body.page-home .cookie-banner,
+  body.page-pricing .cookie-banner {
+
+    left: 12px;
+
+    right: 12px;
+
+    bottom: 12px;
+
+    max-width: none !important;
+
+    padding: 0.7rem 0.75rem;
+
+  }
+
   body.page-login .cookie-banner__text {
 
     font-size: 0.82rem;
@@ -13238,6 +13284,15 @@ body.page-mentor .cookie-banner__actions .btn {
   body.page-mentor .cookie-banner__text {
 
     font-size: 0.8rem;
+
+  }
+
+  body.page-home .cookie-banner__text,
+  body.page-pricing .cookie-banner__text {
+
+    font-size: 0.78rem;
+
+    line-height: 1.35;
 
   }
 
@@ -13259,11 +13314,113 @@ body.page-mentor .cookie-banner__actions .btn {
 
   }
 
+  body.page-home .cookie-banner__content,
+  body.page-pricing .cookie-banner__content {
+
+    gap: 0.55rem;
+
+  }
+
+  body.page-home .cookie-banner__actions,
+  body.page-pricing .cookie-banner__actions {
+
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 0.45rem;
+
+  }
+
+  body.page-home .cookie-banner__actions .btn,
+  body.page-pricing .cookie-banner__actions .btn {
+
+    width: 100%;
+
+    min-height: 40px;
+
+    padding: 0.6rem 0.7rem;
+
+    font-size: 0.74rem;
+
+  }
+
+  body.page-home #cookie-accept,
+  body.page-pricing #cookie-accept {
+
+    grid-column: 1 / -1;
+
+  }
+
+  body.page-login .cookie-banner {
+
+    bottom: 8px;
+
+    padding: 0.52rem 0.58rem;
+
+  }
+
+  body.page-login .cookie-banner__text {
+
+    font-size: 0.72rem;
+
+    line-height: 1.28;
+
+  }
+
+  body.page-login .cookie-banner__content {
+
+    gap: 0.42rem;
+
+  }
+
+  body.page-login .cookie-banner__content > div:not(.cookie-banner__actions) {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 0.3rem 0.55rem;
+
+    font-size: 0.72rem;
+
+    line-height: 1.15;
+
+  }
+
+  body.page-login .cookie-banner__actions {
+
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 0.45rem;
+
+  }
+
   body.page-login .cookie-banner__actions .btn {
 
-    padding: 0.7rem 0.9rem;
+    width: 100%;
 
-    font-size: 0.82rem;
+    min-height: 34px;
+
+    padding: 0.46rem 0.58rem;
+
+    font-size: 0.68rem;
+
+  }
+
+  body.page-login #cookie-accept {
+
+    grid-column: 1 / -1;
+
+  }
+
+  body.page-login .cookie-banner__actions .btn {
+
+    padding: 0.46rem 0.58rem;
+
+    font-size: 0.68rem;
 
   }
 
@@ -13296,6 +13453,13 @@ body.page-mentor .cookie-banner__actions .btn {
   }
 
   body.page-mentor.cookie-banner-active {
+
+    padding-bottom: 0;
+
+  }
+
+  body.page-home.cookie-banner-active,
+  body.page-pricing.cookie-banner-active {
 
     padding-bottom: 0;
 

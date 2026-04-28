@@ -7,6 +7,17 @@ function readScript(relativePath) {
     return fs.readFileSync(path.join(ROOT_DIR, relativePath), 'utf8');
 }
 
+function extractStringMap(source, declarationName) {
+    const match = source.match(new RegExp(`const ${declarationName} = \\{([\\s\\S]*?)\\};`));
+    if (!match) {
+        throw new Error(`${declarationName} map not found`);
+    }
+
+    return Object.fromEntries(
+        [...match[1].matchAll(/'([^']+)'\s*:\s*'([^']+)'/g)].map((entry) => [entry[1], entry[2]])
+    );
+}
+
 describe('manual script guardrails', () => {
     test('dry-run guarded scripts lazy-load live services', () => {
         const guardedScripts = [
@@ -44,5 +55,16 @@ describe('manual script guardrails', () => {
         expect(source).toContain("args.includes('--write')");
         expect(source).toContain('if (!SHOULD_WRITE)');
         expect(source).toContain('[DRY RUN]');
+    });
+
+    test('exit intent feature map uses existing pages and covered auth features', () => {
+        const source = readScript('js/exit-intent.js');
+        const authContextSource = readScript('js/prihlaseni.js');
+        const featureMap = extractStringMap(source, 'FEATURE_MAP');
+
+        for (const [pageSlug, feature] of Object.entries(featureMap)) {
+            expect(fs.existsSync(path.join(ROOT_DIR, `${pageSlug}.html`))).toBe(true);
+            expect(authContextSource).toMatch(new RegExp(`['"]?${feature}['"]?\\s*:`));
+        }
     });
 });

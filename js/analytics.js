@@ -154,7 +154,7 @@ window.MH_ANALYTICS = MH_ANALYTICS;
 
 document.addEventListener('click', (event) => {
     const target = event.target.closest(
-        '#hero-cta-btn, #cta-banner-btn, #auth-register-btn, #mobile-auth-register-btn, #auth-btn, #mobile-auth-btn, a[data-plan]'
+        '#hero-cta-btn, #hero-daily-card-link, #cta-banner-btn, #auth-register-btn, #mobile-auth-register-btn, #auth-btn, #mobile-auth-btn, a[data-plan]'
     );
     if (!target) return;
 
@@ -163,6 +163,11 @@ document.addEventListener('click', (event) => {
 
     if (target.matches('#hero-cta-btn')) {
         MH_ANALYTICS.trackCTA('homepage_hero', { label, destination: href || '/prihlaseni.html?mode=register' });
+        return;
+    }
+
+    if (target.matches('#hero-daily-card-link')) {
+        MH_ANALYTICS.trackCTA('homepage_daily_card_hero', { label, destination: href || '#sluzby' });
         return;
     }
 

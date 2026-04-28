@@ -6,28 +6,21 @@
 
 <head>
 
-    <meta charset="UTF-8">    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>*</text></svg>">
-<link rel="apple-touch-icon" href="img/icon-192.webp">
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>*</text></svg>">
+    <link rel="apple-touch-icon" href="img/icon-192.webp">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
     <title>Vítejte v Mystické Hvězdě | Nastavení</title>
 
     <meta name="robots" content="noindex, nofollow">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-
-    <link
-
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap&subset=latin,latin-ext"
-
-        rel="stylesheet"  >
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap&subset=latin,latin-ext" rel="stylesheet"></noscript>
-
+    <meta name="theme-color" content="#0a0a1a">
+    <link rel="stylesheet" href="/fonts/local-fonts.css">
     <link rel="stylesheet" href="css/style.v2.min.css?v=11">
     <link rel="stylesheet" href="css/pages/onboarding.css">
-<!-- DOMPurify for XSS protection (must load synchronously before other scripts use it) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"></script>
+    <script src="js/dist/api-config.js?v=5" defer></script>
     <script src="/js/dist/analytics-init.js" defer></script>
 </head>
 
@@ -66,6 +59,21 @@
                 <h1 class="step-title">Vítejte v Mystické Hvězdě</h1>
 
                 <p class="step-subtitle">Vyberte znamení a téma. Pak vás vezmeme rovnou na první osobní výklad.</p>
+
+                <div class="onboarding-value-strip" aria-label="Co získáte po dokončení">
+                    <div>
+                        <strong>Bez karty</strong>
+                        <span>účet zdarma</span>
+                    </div>
+                    <div>
+                        <strong>30 sekund</strong>
+                        <span>jen první volba</span>
+                    </div>
+                    <div>
+                        <strong>Hned výklad</strong>
+                        <span>bez hledání v menu</span>
+                    </div>
+                </div>
 
                 <button class="btn btn--primary btn-full" data-action="goStep" data-step="2">Vybrat znamení →</button>
 
@@ -150,6 +158,8 @@
 
                     <button class="interest-chip" data-action="toggleInterest" data-interest="tarot" aria-pressed="false">🃏 Tarot</button>
 
+                    <button class="interest-chip" data-action="toggleInterest" data-interest="andelske-karty" aria-pressed="false">🪽 Andělské karty</button>
+
                     <button class="interest-chip" data-action="toggleInterest" data-interest="numerologie" aria-pressed="false">🔢 Numerologie</button>
 
                     <button class="interest-chip" data-action="toggleInterest" data-interest="vztahy" aria-pressed="false">❤️ Vztahy</button>
@@ -165,6 +175,14 @@
                     <button class="interest-chip" data-action="toggleInterest" data-interest="kariera" aria-pressed="false">💼 Kariéra</button>
 
                     <button class="interest-chip" data-action="toggleInterest" data-interest="astrokartografie" aria-pressed="false">🌍 Astrokartografie</button>
+
+                    <button class="interest-chip" data-action="toggleInterest" data-interest="runy" aria-pressed="false">ᚱ Runy</button>
+
+                    <button class="interest-chip" data-action="toggleInterest" data-interest="shamanske-kolo" aria-pressed="false">🜃 Šamanské kolo</button>
+
+                    <button class="interest-chip" data-action="toggleInterest" data-interest="kristalova-koule" aria-pressed="false">🔮 Křišťálová koule</button>
+
+                    <button class="interest-chip" data-action="toggleInterest" data-interest="minuly-zivot" aria-pressed="false">🕯️ Minulý život</button>
 
                 </div>
 

@@ -88,6 +88,84 @@ function extractObjectKeys(block) {
     return keys;
 }
 
+function extractObjectPaths(block, groupName) {
+    const paths = [];
+    let depth = 0;
+    let quote = null;
+    let escaped = false;
+    let currentKey = null;
+
+    for (const line of block.split(/\r?\n/)) {
+        const keyMatch = depth === 0
+            ? line.trim().match(/^'?([a-z0-9_-]+)'?\s*:/)
+            : null;
+        if (keyMatch) currentKey = keyMatch[1];
+
+        const pathMatch = currentKey
+            ? line.match(/path\s*:\s*['"]([^'"]+)['"]/)
+            : null;
+        if (pathMatch) {
+            paths.push({ group: groupName, key: currentKey, routePath: pathMatch[1] });
+        }
+
+        for (const char of line) {
+            if (escaped) {
+                escaped = false;
+                continue;
+            }
+
+            if (quote) {
+                if (char === '\\') {
+                    escaped = true;
+                } else if (char === quote) {
+                    quote = null;
+                }
+                continue;
+            }
+
+            if (char === '"' || char === "'" || char === '`') {
+                quote = char;
+            } else if (char === '{') {
+                depth += 1;
+            } else if (char === '}') {
+                depth = Math.max(0, depth - 1);
+            }
+        }
+
+        if (depth === 0) currentKey = null;
+    }
+
+    return paths;
+}
+
+function extractAssignedObjectKeys(source, objectName) {
+    const keys = new Set();
+    const assignPattern = new RegExp(`Object\\.assign\\(${objectName},\\s*\\{([\\s\\S]*?)\\}\\);`, 'g');
+
+    for (const match of source.matchAll(assignPattern)) {
+        for (const key of extractObjectKeys(match[1])) {
+            keys.add(key);
+        }
+    }
+
+    return keys;
+}
+
+function extractAssignedObjectPaths(source, objectName, groupName) {
+    const paths = [];
+    const assignPattern = new RegExp(`Object\\.assign\\(${objectName},\\s*\\{([\\s\\S]*?)\\}\\);`, 'g');
+
+    for (const match of source.matchAll(assignPattern)) {
+        paths.push(...extractObjectPaths(match[1], groupName));
+    }
+
+    return paths;
+}
+
+function unionSets(...sets) {
+    return new Set(sets.flatMap((set) => [...set]));
+}
+
 const scannedFiles = [
     ...fs.readdirSync(rootDir, { withFileTypes: true })
         .filter((entry) => entry.isFile() && entry.name.endsWith('.html'))
@@ -113,15 +191,41 @@ for (const file of scannedFiles) {
     for (const match of source.matchAll(/searchParams\.set\(['"]feature['"],\s*['"]([a-z0-9_-]+)['"]\)/g)) {
         usedFeatures.add(match[1]);
     }
+
+    if (source.includes('const FEATURE_MAP')) {
+        for (const match of source.matchAll(/['"][a-z0-9_-]+['"]\s*:\s*['"]([a-z0-9_-]+)['"]/g)) {
+            usedFeatures.add(match[1]);
+        }
+    }
 }
 
 const loginSource = fs.readFileSync(path.join(rootDir, 'js', 'prihlaseni.js'), 'utf8');
 const authClientSource = fs.readFileSync(path.join(rootDir, 'js', 'auth-client.js'), 'utf8');
-const featureLabels = extractObjectKeys(extractBlock(loginSource, 'FEATURE_LABELS'));
-const signupContexts = extractObjectKeys(extractBlock(loginSource, 'SIGNUP_CONTEXT_BY_FEATURE'));
+const onboardingSource = fs.readFileSync(path.join(rootDir, 'js', 'onboarding.js'), 'utf8');
+const pricingSource = fs.readFileSync(path.join(rootDir, 'js', 'cenik.js'), 'utf8');
+const premiumGatesSource = fs.readFileSync(path.join(rootDir, 'js', 'premium-gates.js'), 'utf8');
+for (const feature of extractObjectKeys(extractBlock(pricingSource, 'FALLBACK_FEATURE_PLAN_MAP'))) {
+    usedFeatures.add(feature);
+}
+for (const feature of extractObjectKeys(extractBlock(premiumGatesSource, 'featurePaywalls'))) {
+    usedFeatures.add(feature);
+}
+const featureLabels = unionSets(
+    extractObjectKeys(extractBlock(loginSource, 'FEATURE_LABELS')),
+    extractAssignedObjectKeys(loginSource, 'FEATURE_LABELS')
+);
+const signupContexts = unionSets(
+    extractObjectKeys(extractBlock(loginSource, 'SIGNUP_CONTEXT_BY_FEATURE')),
+    extractAssignedObjectKeys(loginSource, 'SIGNUP_CONTEXT_BY_FEATURE')
+);
 const signupSources = extractObjectKeys(extractBlock(loginSource, 'SIGNUP_CONTEXT_BY_SOURCE'));
-const activationFeatures = extractObjectKeys(extractBlock(authClientSource, 'featureMap'));
-const activationSources = extractObjectKeys(extractBlock(authClientSource, 'sourceMap'));
+const activationFeatureBlock = extractBlock(authClientSource, 'featureMap');
+const activationSourceBlock = extractBlock(authClientSource, 'sourceMap');
+const activationFeatures = unionSets(
+    extractObjectKeys(activationFeatureBlock),
+    extractAssignedObjectKeys(authClientSource, 'featureMap')
+);
+const activationSources = extractObjectKeys(activationSourceBlock);
 const activationOptionalFeatures = new Set(['account']);
 
 const missingLabels = [...usedFeatures].filter((feature) => !featureLabels.has(feature)).sort();
@@ -133,14 +237,40 @@ const missingActivationFeatures = [...signupContexts]
 const missingActivationSources = [...signupSources]
     .filter((source) => !activationSources.has(source))
     .sort();
+const missingActivationPaths = [
+    ...extractObjectPaths(activationFeatureBlock, 'featureMap'),
+    ...extractAssignedObjectPaths(authClientSource, 'featureMap', 'featureMap'),
+    ...extractObjectPaths(activationSourceBlock, 'sourceMap')
+]
+    .filter(({ routePath }) => routePath.startsWith('/'))
+    .filter(({ routePath }) => !fs.existsSync(path.join(rootDir, routePath.slice(1))))
+    .map(({ group, key, routePath }) => `${group}.${key}: ${routePath}`)
+    .sort();
+const missingOnboardingPaths = [
+    ...onboardingSource.matchAll(/(?:withSource|new URL)\(\s*['"]([^'"]+\.html)['"]/g)
+]
+    .map((match) => match[1])
+    .filter((routePath) => routePath.startsWith('/'))
+    .filter((routePath, index, all) => all.indexOf(routePath) === index)
+    .filter((routePath) => !fs.existsSync(path.join(rootDir, routePath.slice(1))))
+    .sort();
 
-if (missingLabels.length || missingContexts.length || missingActivationFeatures.length || missingActivationSources.length) {
+if (
+    missingLabels.length ||
+    missingContexts.length ||
+    missingActivationFeatures.length ||
+    missingActivationSources.length ||
+    missingActivationPaths.length ||
+    missingOnboardingPaths.length
+) {
     console.error('[auth-feature-contexts] Missing auth feature coverage.');
     if (missingLabels.length) console.error(`Missing FEATURE_LABELS: ${missingLabels.join(', ')}`);
     if (missingContexts.length) console.error(`Missing SIGNUP_CONTEXT_BY_FEATURE: ${missingContexts.join(', ')}`);
     if (missingActivationFeatures.length) console.error(`Missing post-auth activation features: ${missingActivationFeatures.join(', ')}`);
     if (missingActivationSources.length) console.error(`Missing post-auth activation sources: ${missingActivationSources.join(', ')}`);
+    if (missingActivationPaths.length) console.error(`Missing post-auth activation target pages: ${missingActivationPaths.join(', ')}`);
+    if (missingOnboardingPaths.length) console.error(`Missing onboarding target pages: ${missingOnboardingPaths.join(', ')}`);
     process.exitCode = 1;
 } else {
-    console.log(`[auth-feature-contexts] OK: ${usedFeatures.size} feature context(s) covered.`);
+    console.log(`[auth-feature-contexts] OK: ${usedFeatures.size} feature context(s) covered and activation/onboarding targets exist.`);
 }

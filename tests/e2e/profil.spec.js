@@ -98,6 +98,76 @@ test.describe('Profil stránka', () => {
 // ONBOARDING
 // ═══════════════════════════════════════════════════════════
 
+test.describe('Profil aktivace', () => {
+    async function mockLoggedInProfile(page) {
+        const user = {
+            id: 'profile-user-1',
+            email: 'profil-activation@example.com',
+            first_name: 'Pavel',
+            birth_date: '1990-08-10',
+            subscription_status: 'free'
+        };
+
+        await page.addInitScript((authUser) => {
+            localStorage.setItem('auth_user', JSON.stringify(authUser));
+            localStorage.setItem('mh_zodiac', 'lev');
+        }, user);
+
+        await page.route('**/api/auth/profile', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true, user })
+            });
+        });
+        await page.route('**/api/plans', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true, plans: [], featurePlanMap: {} })
+            });
+        });
+        await page.route('**/api/user/readings', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true, readings: [] })
+            });
+        });
+        await page.route('**/api/payment/subscription/status', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ planType: 'free', status: 'active', canCancel: false })
+            });
+        });
+    }
+
+    test('prvni akce navazuje na ulozene znameni a ma meritelny kontext', async ({ page }) => {
+        await mockLoggedInProfile(page);
+
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+
+        await expect(page.locator('#profile-dashboard')).toBeVisible();
+        await expect(page.locator('#daily-guidance-title')).toContainText('Lev');
+
+        const dailyHref = await page.locator('[data-daily-action="daily_horoscope"]').getAttribute('href');
+        expect(dailyHref).toContain('horoskopy.html');
+        expect(dailyHref).toContain('source=profile_daily');
+        expect(dailyHref).toContain('feature=daily_guidance');
+        expect(dailyHref).toContain('sign=lev');
+        expect(dailyHref).toContain('#lev');
+
+        const firstReadingHref = await page.locator('[data-activation-step="first_reading"]').getAttribute('href');
+        expect(firstReadingHref).toContain('horoskopy.html');
+        expect(firstReadingHref).toContain('source=profile_activation');
+        expect(firstReadingHref).toContain('feature=daily_guidance');
+        expect(firstReadingHref).toContain('sign=lev');
+        await expect(page.locator('[data-activation-step="first_reading"]')).toContainText('horoskopem pro Lev');
+    });
+});
+
 test.describe('Onboarding', () => {
 
     test.beforeEach(async ({ page }) => {
@@ -130,6 +200,21 @@ test.describe('Onboarding', () => {
             '.step, .onboarding-step, [class*="step"], .wizard-step, form'
         ).first();
         await expect(steps).toBeAttached();
+    });
+
+    test('prvni krok jasne vysvetluje rychlou hodnotu bez karty', async ({ page }) => {
+        const valueStrip = page.locator('.onboarding-value-strip');
+        await expect(valueStrip).toBeVisible();
+        await expect(valueStrip.locator('div')).toHaveCount(3);
+        await expect(valueStrip).toContainText('Bez karty');
+        await expect(valueStrip).toContainText('Hned výklad');
+    });
+
+    test('onboarding netaha externi fonty ani nepouzity sanitizer z CDN', async ({ page }) => {
+        const html = await page.content();
+        expect(html).toContain('/fonts/local-fonts.css');
+        expect(html).not.toContain('fonts.googleapis.com');
+        expect(html).not.toContain('cdnjs.cloudflare.com/ajax/libs/dompurify');
     });
 
     test('žádný horizontální scroll na mobilu', async ({ page }) => {
@@ -189,6 +274,68 @@ test.describe('Onboarding', () => {
         expect(stored.prefs.sign).toBe('beran');
     });
 
+    test('dokonceni posila backend notifikaci s CSRF tokenem', async ({ page }) => {
+        let completionCsrfHeader = null;
+
+        await page.route('**/api/csrf-token', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ csrfToken: 'test-onboarding-csrf-token' })
+            });
+        });
+        await page.route('**/api/auth/onboarding/complete', async (route) => {
+            completionCsrfHeader = route.request().headers()['x-csrf-token'] || null;
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+
+        await page.goto('/onboarding.html');
+        await waitForPageReady(page);
+
+        await page.locator('#step-1 [data-action="goStep"][data-step="2"]').click();
+        await page.locator('.zodiac-btn[data-sign="beran"]').click();
+        await page.locator('#btn-step2').click();
+
+        await Promise.all([
+            page.waitForURL(url => url.pathname === '/horoskopy.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
+            page.locator('#finish-onboarding-btn').click(),
+        ]);
+
+        expect(completionCsrfHeader).toBe('test-onboarding-csrf-token');
+    });
+
+    test('dokonceni neceka na zaseknuty CSRF endpoint', async ({ page }) => {
+        let completionRequests = 0;
+
+        await page.route('**/api/csrf-token', () => new Promise(() => {}));
+        await page.route('**/api/auth/onboarding/complete', async (route) => {
+            completionRequests += 1;
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+
+        await page.goto('/onboarding.html');
+        await waitForPageReady(page);
+
+        await page.locator('#step-1 [data-action="goStep"][data-step="2"]').click();
+        await page.locator('.zodiac-btn[data-sign="beran"]').click();
+        await page.locator('#btn-step2').click();
+
+        await Promise.all([
+            page.waitForURL(url => url.pathname === '/horoskopy.html', { timeout: 5000, waitUntil: 'domcontentloaded' }),
+            page.locator('#finish-onboarding-btn').click(),
+        ]);
+
+        expect(completionRequests).toBe(0);
+    });
+
     test('vybrane tema meni prvni cil po onboardingu', async ({ page }) => {
         await mockOnboardingComplete(page);
 
@@ -208,6 +355,157 @@ test.describe('Onboarding', () => {
         const url = new URL(page.url());
         expect(url.pathname).toBe('/tarot.html');
         expect(url.searchParams.get('source')).toBe('onboarding_complete');
+    });
+
+    test('kontext andelske karty predvybere spravny prvni vyklad', async ({ page }) => {
+        await mockOnboardingComplete(page);
+
+        await page.goto('/onboarding.html?source=homepage_daily_card_full_reading&feature=daily_angel_card');
+        await waitForPageReady(page);
+
+        await expect(page.locator('#step-1 .step-title')).toContainText('andělskou kartou');
+        await page.locator('#step-1 [data-action="goStep"][data-step="2"]').click();
+        await page.locator('.zodiac-btn[data-sign="ryby"]').click();
+        await page.locator('#btn-step2').click();
+
+        await expect(page.locator('.interest-chip[data-interest="andelske-karty"]')).toHaveAttribute('aria-pressed', 'true');
+        await expect(page.locator('#finish-onboarding-btn')).toContainText('andělské karty');
+
+        await Promise.all([
+            page.waitForURL(url => url.pathname === '/andelske-karty.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
+            page.locator('#finish-onboarding-btn').click(),
+        ]);
+
+        const url = new URL(page.url());
+        expect(url.pathname).toBe('/andelske-karty.html');
+        expect(url.searchParams.get('source')).toBe('onboarding_complete');
+        expect(url.searchParams.get('entry_source')).toBe('homepage_daily_card_full_reading');
+        expect(url.searchParams.get('entry_feature')).toBe('daily_angel_card');
+    });
+
+    test('rucni zmena predvybraneho tematu ma prednost pred kontextem', async ({ page }) => {
+        await mockOnboardingComplete(page);
+
+        await page.goto('/onboarding.html?source=homepage_daily_card_full_reading&feature=daily_angel_card');
+        await waitForPageReady(page);
+
+        await page.locator('#step-1 [data-action="goStep"][data-step="2"]').click();
+        await page.locator('.zodiac-btn[data-sign="ryby"]').click();
+        await page.locator('#btn-step2').click();
+        await page.locator('.interest-chip[data-interest="tarot"]').click();
+
+        await expect(page.locator('#finish-onboarding-btn')).toContainText('tarotový výklad');
+
+        await Promise.all([
+            page.waitForURL(url => url.pathname === '/tarot.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
+            page.locator('#finish-onboarding-btn').click(),
+        ]);
+
+        const url = new URL(page.url());
+        expect(url.pathname).toBe('/tarot.html');
+        expect(url.searchParams.get('entry_feature')).toBe('daily_angel_card');
+    });
+
+    test('preskoceni s feature kontextem navaze na puvodni funkci', async ({ page }) => {
+        await mockOnboardingComplete(page);
+
+        await page.goto('/onboarding.html?source=tarot_inline_upsell&feature=tarot');
+        await waitForPageReady(page);
+
+        await Promise.all([
+            page.waitForURL(url => url.pathname === '/tarot.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
+            page.locator('[data-action="skipOnboarding"]').click(),
+        ]);
+
+        const url = new URL(page.url());
+        expect(url.pathname).toBe('/tarot.html');
+        expect(url.searchParams.get('source')).toBe('onboarding_skip');
+        expect(url.searchParams.get('entry_source')).toBe('tarot_inline_upsell');
+        expect(url.searchParams.get('entry_feature')).toBe('tarot');
+    });
+
+    test('mentor kontext predvybere pruvodce a upravi prvni krok', async ({ page }) => {
+        await mockOnboardingComplete(page);
+
+        await page.goto('/onboarding.html?source=mentor_inline_upsell&feature=hvezdny_mentor');
+        await waitForPageReady(page);
+
+        await expect(page.locator('.interest-chip[data-interest="spiritualita"]')).toHaveAttribute('aria-pressed', 'true');
+        await expect(page.locator('#step-1 .step-title')).toContainText('průvodcem');
+
+        const skipHref = await page.locator('[data-action="skipOnboarding"]').getAttribute('href');
+        expect(skipHref).toContain('/mentor.html');
+        expect(skipHref).toContain('entry_feature=hvezdny_mentor');
+    });
+
+    test('samanske kolo v onboardingu vede na kanonickou stranku', async ({ page }) => {
+        await mockOnboardingComplete(page);
+
+        await page.goto('/onboarding.html?source=shaman_inline_upsell&feature=shamanske_kolo_plne_cteni');
+        await waitForPageReady(page);
+
+        await expect(page.locator('.interest-chip[data-interest="shamanske-kolo"]')).toHaveAttribute('aria-pressed', 'true');
+
+        const skipHref = await page.locator('[data-action="skipOnboarding"]').getAttribute('href');
+        expect(skipHref).toContain('/shamansko-kolo.html');
+        expect(skipHref).not.toContain('/shamanske-kolo.html');
+
+        await page.locator('#step-1 [data-action="goStep"][data-step="2"]').click();
+        await page.locator('.zodiac-btn[data-sign="rak"]').click();
+        await page.locator('#btn-step2').click();
+
+        await Promise.all([
+            page.waitForURL(url => url.pathname === '/shamansko-kolo.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
+            page.locator('#finish-onboarding-btn').click(),
+        ]);
+
+        const url = new URL(page.url());
+        expect(url.pathname).toBe('/shamansko-kolo.html');
+        expect(url.searchParams.get('source')).toBe('onboarding_complete');
+        expect(url.searchParams.get('entry_feature')).toBe('shamanske_kolo_plne_cteni');
+    });
+
+    test('navrat do onboardingu obnovi ulozene znameni a tema', async ({ page }) => {
+        await page.evaluate(() => {
+            localStorage.setItem('mh_zodiac', 'lev');
+            localStorage.setItem('mh_interests', JSON.stringify(['numerologie']));
+            localStorage.setItem('mh_user_prefs', JSON.stringify({ sign: 'lev' }));
+        });
+
+        await page.reload();
+        await waitForPageReady(page);
+        await page.locator('#step-1 [data-action="goStep"][data-step="2"]').click();
+
+        await expect(page.locator('.zodiac-btn[data-sign="lev"]')).toHaveAttribute('aria-pressed', 'true');
+        await expect(page.locator('#btn-step2')).toBeEnabled();
+
+        await page.locator('#btn-step2').click();
+
+        await expect(page.locator('.interest-chip[data-interest="numerologie"]')).toHaveAttribute('aria-pressed', 'true');
+        await expect(page.locator('#finish-onboarding-btn')).toContainText('numerologii');
+    });
+
+    test('dokonceni chrani proti dvojkliku a posila jen jeden completion request', async ({ page }) => {
+        let completionRequests = 0;
+        await page.route('**/api/auth/onboarding/complete', async (route) => {
+            completionRequests += 1;
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+
+        await page.locator('#step-1 [data-action="goStep"][data-step="2"]').click();
+        await page.locator('.zodiac-btn[data-sign="beran"]').click();
+        await page.locator('#btn-step2').click();
+
+        await Promise.all([
+            page.waitForURL(url => url.pathname === '/horoskopy.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
+            page.locator('#finish-onboarding-btn').dblclick(),
+        ]);
+
+        expect(completionRequests).toBe(1);
     });
 });
 

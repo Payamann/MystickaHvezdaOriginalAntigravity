@@ -31,13 +31,23 @@ document.addEventListener('DOMContentLoaded', () => {
         synastry: 'Partnerská shoda',
         partnerska_detail: 'Detail partnerské shody',
         numerologie_vyklad: 'Numerologický výklad',
+        numerology: 'Numerologický výklad',
         natalni_interpretace: 'Interpretace natální karty',
         runy_hluboky_vyklad: 'Hloubkový výklad run',
         shamanske_kolo_plne_cteni: 'Plné čtení šamanského kola',
         minuly_zivot: 'Minulý život',
         kristalova_koule: 'Křišťálová koule',
         rituals: 'Lunární rituály',
-        mentor: 'Hvězdný průvodce'
+        mentor: 'Hvězdný průvodce',
+        hvezdny_mentor: 'Hvězdný průvodce',
+        angel_card_deep: 'Andělské karty',
+        crystal_ball_unlimited: 'Křišťálová koule',
+        journal_insights: 'Vzorce v deníku',
+        medicine_wheel: 'Šamanské kolo',
+        natal_chart: 'Natální karta',
+        past_life: 'Minulý život',
+        runes_deep_reading: 'Hloubkový výklad run',
+        tarot_celtic_cross: 'Keltský kříž'
     };
 
     const SIGNUP_CONTEXT_BY_FEATURE = {
@@ -169,6 +179,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    Object.assign(SIGNUP_CONTEXT_BY_FEATURE, {
+        hvezdny_mentor: SIGNUP_CONTEXT_BY_FEATURE.mentor,
+        angel_card_deep: SIGNUP_CONTEXT_BY_FEATURE.andelske_karty_hluboky_vhled,
+        crystal_ball_unlimited: SIGNUP_CONTEXT_BY_FEATURE.kristalova_koule,
+        journal_insights: SIGNUP_CONTEXT_BY_FEATURE.mentor,
+        medicine_wheel: SIGNUP_CONTEXT_BY_FEATURE.shamanske_kolo_plne_cteni,
+        natal_chart: SIGNUP_CONTEXT_BY_FEATURE.natalni_interpretace,
+        numerology: SIGNUP_CONTEXT_BY_FEATURE.numerologie_vyklad,
+        past_life: SIGNUP_CONTEXT_BY_FEATURE.minuly_zivot,
+        runes_deep_reading: SIGNUP_CONTEXT_BY_FEATURE.runy_hluboky_vyklad,
+        synastry: SIGNUP_CONTEXT_BY_FEATURE.partnerska_detail,
+        tarot_celtic_cross: SIGNUP_CONTEXT_BY_FEATURE.tarot_multi_card,
+        rituals: {
+            title: 'Lunární rituály po registraci',
+            copy: 'Po vytvoření účtu budete pokračovat k rituálům a můžete začít osobní praxí podle aktuální energie.',
+            stepTitle: 'Otevřeme lunární rituály',
+            stepCopy: 'První krok povede rovnou k praxi, ne do prázdného profilu.'
+        }
+    });
+
     const SIGNUP_CONTEXT_BY_SOURCE = {
         homepage_hero: SIGNUP_CONTEXT_BY_FEATURE.daily_guidance,
         pricing_free_cta: {
@@ -288,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (checkoutContextTitle) checkoutContextTitle.textContent = plan.title;
             if (checkoutContextCopy) {
                 checkoutContextCopy.textContent = featureLabel
-                    ? `${featureLabel} vás přivedla sem. ${plan.copy}`
+                    ? `Navazujete na funkci: ${featureLabel}. ${plan.copy}`
                     : plan.copy;
             }
             if (checkoutContextLabel) {
@@ -321,6 +351,25 @@ document.addEventListener('DOMContentLoaded', () => {
             source,
             redirect_target: redirectTarget,
             pending_plan: pendingPlan
+        });
+    };
+
+    const bindPasswordToggles = () => {
+        document.querySelectorAll('[data-password-toggle]').forEach((button) => {
+            if (button.dataset.bound === 'true') return;
+            button.dataset.bound = 'true';
+
+            button.addEventListener('click', () => {
+                const input = document.getElementById(button.dataset.passwordToggle);
+                if (!input) return;
+
+                const nextType = input.type === 'password' ? 'text' : 'password';
+                input.type = nextType;
+                const isVisible = nextType === 'text';
+                button.textContent = isVisible ? 'Skrýt' : 'Zobrazit';
+                button.setAttribute('aria-pressed', isVisible ? 'true' : 'false');
+                button.setAttribute('aria-label', isVisible ? 'Skrýt heslo' : 'Zobrazit heslo');
+            });
         });
     };
 
@@ -389,6 +438,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         renderCheckoutContext();
     };
+
+    bindPasswordToggles();
 
     if (isResetMode && hash) {
         setBlockVisible(loginForm, false);

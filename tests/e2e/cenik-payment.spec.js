@@ -65,6 +65,45 @@ test.describe('Ceník — platební tlačítka', () => {
         expect(href).toContain('feature=daily_guidance');
     });
 
+    test('rychla volba v ceniku nabizi 3 jasne dalsi kroky', async ({ page }) => {
+        const guide = page.locator('.pricing-decision');
+        await expect(guide).toBeVisible();
+        await expect(guide.locator('[data-pricing-choice]')).toHaveCount(3);
+    });
+
+    test('rychla volba zdarma zvyrazni bezplatny tarif', async ({ page }) => {
+        await page.locator('[data-pricing-choice="free"]').click();
+
+        const freeCard = page.locator('.card--pricing', { has: page.locator('[data-pricing-free-cta]') });
+        await expect(freeCard).toHaveClass(/pricing-card--recommended/);
+        await expect(page.locator('[data-pricing-choice="free"]')).toHaveAttribute('aria-pressed', 'true');
+    });
+
+    test('rychla volba pruvodce respektuje aktualni rocni billing', async ({ page }) => {
+        await page.locator('#toggle-yearly').click();
+        await page.locator('[data-pricing-choice="pruvodce"]').click();
+
+        const yearlyGuideCard = page.locator('.card--pricing', { has: page.locator('[data-plan="pruvodce-rocne"]') });
+        await expect(yearlyGuideCard).toHaveClass(/pricing-card--recommended/);
+    });
+
+    test('mobilni cookie lista v ceniku zustava kompaktni', async ({ page }) => {
+        await page.setViewportSize({ width: 390, height: 844 });
+        await page.evaluate(() => {
+            localStorage.removeItem('mh_cookie_prefs');
+            localStorage.removeItem('cookieConsent');
+        });
+        await page.goto('/cenik.html');
+        await waitForPageReady(page);
+
+        const banner = page.locator('#cookie-banner');
+        await expect(banner).toBeVisible({ timeout: 4000 });
+
+        const box = await banner.boundingBox();
+        expect(box?.height || 0).toBeLessThan(190);
+        expect(box?.width || 0).toBeLessThanOrEqual(366);
+    });
+
     test('feature kontext zobrazi doporuceny plan a umi ho zvyraznit', async ({ page }) => {
         await page.goto('/cenik.html?source=inline_paywall&feature=astrocartography');
         await waitForPageReady(page);

@@ -25,7 +25,7 @@ const PLAN_META = {
     },
     osviceni: {
         name: 'Osvícení',
-        headline: 'Pro chvíli, kdy chceš jít víc do hloubky a odemknout pokročilé nástroje.',
+        headline: 'Pro chvíli, kdy chcete jít víc do hloubky a odemknout pokročilé nástroje.',
         recommendedFor: 'Doporučeno pro astrokartografii a hlubší analýzy.'
     },
     'osviceni-rocne': {
@@ -324,20 +324,33 @@ function renderRecommendationBanner(context) {
     });
 }
 
-function highlightRecommendedPlan(planId) {
-    if (!planId) return false;
-
+function highlightPricingCard(card) {
     document.querySelectorAll('.card--pricing').forEach((card) => {
         card.classList.remove('pricing-card--recommended');
     });
 
-    const button = document.querySelector(`.plan-checkout-btn[data-plan="${planId}"]`);
-    const card = button?.closest('.card--pricing');
     if (!card) return false;
 
     card.classList.add('pricing-card--recommended');
     card.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return true;
+}
+
+function highlightRecommendedPlan(planId) {
+    if (!planId) return false;
+
+    const button = document.querySelector(`.plan-checkout-btn[data-plan="${planId}"]`);
+    const card = button?.closest('.card--pricing');
+    return highlightPricingCard(card);
+}
+
+function resolveDisplayedPlanId(planKey) {
+    return priceConfig[currentBilling]?.[planKey]?.planId || priceConfig.monthly?.[planKey]?.planId || planKey;
+}
+
+function highlightFreePlan() {
+    const card = document.querySelector('[data-pricing-free-cta]')?.closest('.card--pricing');
+    return highlightPricingCard(card);
 }
 
 function startRecommendedCheckout(planId, context) {
@@ -422,6 +435,35 @@ function bindFreePlanCta() {
     });
 }
 
+function bindPricingDecisionGuide(context) {
+    const choices = document.querySelectorAll('[data-pricing-choice]');
+    choices.forEach((button) => {
+        button.addEventListener('click', () => {
+            const choice = button.dataset.pricingChoice;
+            if (!choice) return;
+
+            choices.forEach((item) => {
+                item.classList.toggle('is-active', item === button);
+                item.setAttribute('aria-pressed', item === button ? 'true' : 'false');
+            });
+
+            window.MH_ANALYTICS?.trackCTA?.('pricing_decision_choice', {
+                choice,
+                source: context.source || 'pricing_page',
+                feature: context.feature || null,
+                billing_interval: currentBilling
+            });
+
+            if (choice === 'free') {
+                highlightFreePlan();
+                return;
+            }
+
+            highlightRecommendedPlan(resolveDisplayedPlanId(choice));
+        });
+    });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     await loadPlanManifest();
     setPrices('monthly');
@@ -455,6 +497,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     bindCheckoutButtons(context);
     bindProductLinks();
     bindFreePlanCta();
+    bindPricingDecisionGuide(context);
 
     if (context.source !== 'pricing_page' || context.feature || context.recommendedPlan !== 'pruvodce') {
         window.requestAnimationFrame(() => {

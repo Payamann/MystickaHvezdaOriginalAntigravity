@@ -195,9 +195,61 @@ body {
 
             color: rgba(255, 255, 255, 0.55);
 
-            margin-bottom: 2rem;
+            margin-bottom: 1.4rem;
 
             line-height: 1.6;
+
+        }
+
+        .onboarding-value-strip {
+
+            display: grid;
+
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+
+            gap: 0.55rem;
+
+            margin-bottom: 1.45rem;
+
+        }
+
+        .onboarding-value-strip div {
+
+            padding: 0.75rem 0.6rem;
+
+            border: 1px solid rgba(212, 175, 55, 0.16);
+
+            border-radius: 12px;
+
+            background: rgba(212, 175, 55, 0.055);
+
+            text-align: center;
+
+        }
+
+        .onboarding-value-strip strong {
+
+            display: block;
+
+            color: #fff;
+
+            font-size: 0.78rem;
+
+            line-height: 1.2;
+
+        }
+
+        .onboarding-value-strip span {
+
+            display: block;
+
+            margin-top: 0.2rem;
+
+            color: rgba(255,255,255,0.55);
+
+            font-size: 0.68rem;
+
+            line-height: 1.25;
 
         }
 
@@ -367,6 +419,10 @@ body {
 html body .mh-inline-1b85280107 { color:rgba(255,255,255,0.2);text-decoration:none; }
 html body .mh-inline-8fa84d4622 { opacity:.4;cursor:not-allowed; }
 html body #btn-step2.onboarding-next-enabled { opacity:1;cursor:pointer; }
+html body .onboarding-pending {
+    cursor: wait;
+    opacity: 0.78;
+}
 
 /* Migrated from onboarding.html remaining static style attributes. */
 html body .mh-inline-7aedee2011 { text-align:center;margin-top:1.5rem;font-size:0.78rem; }
@@ -384,6 +440,8 @@ html body .mh-inline-1b85280107:focus {
 
 @media (max-width: 560px) {
     .onboarding {
+        align-items: flex-start;
+        min-height: 100dvh;
         padding: 1rem;
     }
 
@@ -402,5 +460,15 @@ html body .mh-inline-1b85280107:focus {
     .interest-chip {
         max-width: 100%;
         white-space: normal;
+    }
+
+    .onboarding-value-strip {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-height: 760px) {
+    .onboarding {
+        align-items: flex-start;
     }
 }

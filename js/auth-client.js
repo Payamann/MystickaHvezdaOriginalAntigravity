@@ -415,7 +415,7 @@
                     message: 'Runy jsou silný první krok, pokud chcete okamžitý osobní výklad.'
                 },
                 shamanske_kolo_plne_cteni: {
-                    path: '/shamanske-kolo.html',
+                    path: '/shamansko-kolo.html',
                     title: 'Vítejte v Mystické Hvězdě',
                     message: 'Šamanské kolo vás rychle dostane k hlubšímu prvnímu zážitku.'
                 },
@@ -430,6 +430,24 @@
                     message: 'Křišťálová koule je rychlý první moment, který ukáže osobní vedení v praxi.'
                 }
             };
+
+            Object.assign(featureMap, {
+                angel_card_deep: featureMap.andelske_karty_hluboky_vhled,
+                crystal_ball_unlimited: featureMap.kristalova_koule,
+                journal_insights: featureMap.mentor,
+                medicine_wheel: featureMap.shamanske_kolo_plne_cteni,
+                natal_chart: featureMap.natalni_interpretace,
+                numerology: featureMap.numerologie_vyklad,
+                past_life: featureMap.minuly_zivot,
+                rituals: {
+                    path: '/ritualy/',
+                    title: 'Vítejte v Mystické Hvězdě',
+                    message: 'Začněte lunárním rituálem a vezměte si první praktický krok.'
+                },
+                runes_deep_reading: featureMap.runy_hluboky_vyklad,
+                synastry: featureMap.partnerska_detail,
+                tarot_celtic_cross: featureMap.tarot_multi_card
+            });
 
             const sourceMap = {
                 homepage_hero: {
@@ -512,6 +530,12 @@
             const safeRedirect = typeof context.redirect === 'string' && context.redirect.startsWith('/') && !context.redirect.startsWith('//')
                 ? context.redirect
                 : '/profil.html';
+            const buildOnboardingRedirect = () => {
+                const onboardingUrl = new URL('/onboarding.html', window.location.origin);
+                if (context.source) onboardingUrl.searchParams.set('source', context.source);
+                if (context.feature) onboardingUrl.searchParams.set('feature', context.feature);
+                return `${onboardingUrl.pathname}${onboardingUrl.search}`;
+            };
 
             if (options.mode === 'register') {
                 const activation = this.getPostAuthActivationConfig(context);
@@ -532,7 +556,7 @@
                 }
 
                 if (safeRedirect === '/profil.html') {
-                    return '/onboarding.html';
+                    return buildOnboardingRedirect();
                 }
             }
 

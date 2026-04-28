@@ -75,6 +75,96 @@ html body .pricing-toggle--active {
     font-weight: 700 !important;
 }
 
+.pricing-decision {
+    padding: 0 0 2rem;
+}
+
+.pricing-decision__header {
+    max-width: 760px;
+    margin: 0 auto 1.1rem;
+    text-align: center;
+}
+
+.pricing-decision__eyebrow {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    color: var(--color-mystic-gold);
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.pricing-decision__header h2 {
+    margin: 0;
+    color: #fff;
+    font-family: var(--font-heading);
+    font-size: clamp(1.55rem, 3vw, 2.25rem);
+    line-height: 1.15;
+}
+
+.pricing-decision__header p {
+    max-width: 620px;
+    margin: 0.75rem auto 0;
+    color: rgba(255,255,255,0.68);
+    line-height: 1.65;
+}
+
+.pricing-decision__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.9rem;
+}
+
+.pricing-decision__option {
+    min-height: 150px;
+    padding: 1.1rem;
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 16px;
+    background: rgba(255,255,255,0.035);
+    color: rgba(255,255,255,0.74);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.pricing-decision__option:hover,
+.pricing-decision__option:focus-visible,
+.pricing-decision__option.is-active {
+    border-color: rgba(212,175,55,0.42);
+    background: rgba(212,175,55,0.08);
+    outline: none;
+    transform: translateY(-2px);
+}
+
+.pricing-decision__option--featured {
+    border-color: rgba(212,175,55,0.28);
+    background: rgba(212,175,55,0.06);
+}
+
+.pricing-decision__label {
+    display: block;
+    margin-bottom: 0.55rem;
+    color: var(--color-mystic-gold);
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.pricing-decision__option strong {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.pricing-decision__option span:last-child {
+    display: block;
+    font-size: 0.86rem;
+    line-height: 1.55;
+}
+
 .pricing-plan-recommendation {
     max-width: 760px;
     margin: 1.25rem auto 0;
@@ -126,4 +216,32 @@ html body .pricing-toggle--active {
 
 .pricing-card--recommended {
     box-shadow: 0 0 0 2px rgba(212,175,55,0.45), 0 18px 50px rgba(0,0,0,0.35);
+}
+
+@media (max-width: 900px) {
+    .pricing-decision__grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 560px) {
+    html body .mh-inline-fd21170680 {
+        padding-top: 5.5rem;
+        padding-bottom: 2rem;
+    }
+
+    html body .mh-inline-44e3a01151 {
+        font-size: 2.25rem;
+        line-height: 1.12;
+    }
+
+    html body .mh-inline-9536a1e4b5 {
+        font-size: 0.95rem;
+        line-height: 1.55;
+    }
+
+    .hero__trust-badge {
+        gap: 0.4rem;
+        padding: 0.45rem 0.75rem;
+    }
 }

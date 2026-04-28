@@ -54,10 +54,54 @@ test.describe('Homepage', () => {
     test('hero registrace zachovává zdroj a aktivační feature', async ({ page }) => {
         const heroCta = page.locator('#hero-cta-btn');
         await expect(heroCta).toBeVisible();
+        await expect(heroCta).toHaveClass(/btn--primary/);
         const href = await heroCta.getAttribute('href');
         expect(href).toContain('mode=register');
         expect(href).toContain('source=homepage_hero');
         expect(href).toContain('feature=daily_guidance');
+    });
+
+    test('hero karta dne ma vlastni analyticky signal', async ({ page }) => {
+        await page.evaluate(() => {
+            window.MH_ANALYTICS_QUEUE = [];
+        });
+
+        await page.locator('#hero-daily-card-link').click();
+
+        const event = await page.evaluate(() => window.MH_ANALYTICS_QUEUE.find(
+            (item) => item.name === 'cta_clicked' && item.location === 'homepage_daily_card_hero'
+        ));
+
+        expect(event).toEqual(expect.objectContaining({
+            destination: '#sluzby'
+        }));
+    });
+
+    test('mobilni cookie lista na homepage nezakryva prvni dojem', async ({ page }) => {
+        await page.setViewportSize({ width: 393, height: 851 });
+        await page.evaluate(() => {
+            localStorage.removeItem('mh_cookie_prefs');
+            localStorage.removeItem('cookieConsent');
+        });
+        await page.goto('/');
+        await waitForPageReady(page);
+
+        const banner = page.locator('#cookie-banner');
+        await expect(banner).toBeVisible({ timeout: 4000 });
+        await expect(banner).toHaveClass(/visible/, { timeout: 5000 });
+        await page.waitForTimeout(650);
+
+        const metrics = await page.evaluate(() => {
+            const bannerRect = document.getElementById('cookie-banner').getBoundingClientRect();
+            const acceptRect = document.getElementById('cookie-accept').getBoundingClientRect();
+            return {
+                bannerHeight: bannerRect.height,
+                acceptBottom: acceptRect.bottom,
+                viewportHeight: window.innerHeight
+            };
+        });
+        expect(metrics.bannerHeight).toBeLessThan(260);
+        expect(metrics.acceptBottom).toBeLessThanOrEqual(metrics.viewportHeight);
     });
 
     test('header a pricing CTA maji funkcni fallback odkazy bez JavaScriptu', async ({ page }) => {
@@ -68,7 +112,10 @@ test.describe('Homepage', () => {
 
         await expect(page.locator('[data-plan="poutnik"]')).toHaveAttribute('href', /homepage_pricing_free_cta/);
         await expect(page.locator('[data-plan="pruvodce"]')).toHaveAttribute('href', /plan=pruvodce/);
+        await expect(page.locator('[data-plan="pruvodce"]')).toHaveText(/Odemknout Průvodce/);
         await expect(page.locator('[data-plan="osviceni"]')).toHaveAttribute('href', /feature=astrocartography/);
+        await expect(page.locator('[data-plan="osviceni"]')).toHaveText(/Odemknout Osvícení/);
+        await expect(page.locator('[data-plan="vip-majestrat"]')).toHaveText(/Zobrazit VIP plán/);
     });
 
     test('header registrace neotevira stary modal a vede na dedikovanou registraci', async ({ page, isMobile }) => {
@@ -184,6 +231,22 @@ test.describe('Homepage', () => {
         expect(href).toContain('feature=premium_membership');
     });
 
+    test('spodni newsletter vede na registraci s dennim kontextem a e-mailem', async ({ page }) => {
+        await expect(page.locator('.newsletter-trust-note')).toContainText('Bez spamu');
+
+        await page.locator('#email-subscribe').fill('newsletter@example.com');
+        await Promise.all([
+            page.waitForURL(url => url.pathname === '/prihlaseni.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
+            page.locator('#newsletter-form button[type="submit"]').click(),
+        ]);
+
+        const url = new URL(page.url());
+        expect(url.searchParams.get('mode')).toBe('register');
+        expect(url.searchParams.get('source')).toBe('newsletter_form');
+        expect(url.searchParams.get('feature')).toBe('daily_guidance');
+        expect(url.searchParams.get('email')).toBe('newsletter@example.com');
+    });
+
     test('homepage copy nepouziva nedolozene NASA tvrzeni a nema duplicitni pricing nadpis', async ({ page }) => {
         const bodyText = await page.locator('body').innerText();
         const normalizedBodyText = bodyText.toLowerCase();
@@ -199,11 +262,26 @@ test.describe('Homepage', () => {
     test('reference ukazuji transparentni souhrn hodnoceni', async ({ page }) => {
         const summary = page.locator('.testimonial-summary');
         await expect(summary).toBeVisible();
-        await expect(summary).toContainText('4,6/5');
-        await expect(summary).toContainText('9');
-        await expect(summary).toContainText('5×');
-        await expect(summary).toContainText('4×');
+
+        const computedSummary = await page.evaluate(() => {
+            const ratings = Array.from(document.querySelectorAll('[data-review-rating]'))
+                .map((item) => Number(item.dataset.reviewRating))
+                .filter((rating) => Number.isFinite(rating) && rating > 0);
+            const average = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
+            return {
+                avg: `${average.toFixed(1).replace('.', ',')}/5`,
+                count: String(ratings.length),
+                five: `${ratings.filter((rating) => rating === 5).length}×`,
+                four: `${ratings.filter((rating) => rating === 4).length}×`,
+            };
+        });
+
+        await expect(summary.locator('[data-review-summary="avg"]')).toHaveText(computedSummary.avg);
+        await expect(summary.locator('[data-review-summary="count"]')).toHaveText(computedSummary.count);
+        await expect(summary.locator('[data-review-summary="five"]')).toHaveText(computedSummary.five);
+        await expect(summary.locator('[data-review-summary="four"]')).toHaveText(computedSummary.four);
         await expect(page.locator('.testimonial-disclaimer')).toContainText('Souhrn vychází z příběhů uvedených níže');
+        await expect(page.locator('.review-verification')).toContainText('Souhrn se počítá pouze z anonymizovaných příběhů');
     });
 
     test('homepage odpovida na hlavni otazky duvery pred registraci a platbou', async ({ page }) => {

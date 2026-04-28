@@ -68,13 +68,19 @@
 
                     <div class="form-group">
                         <label for="password" class="form-label">Heslo</label>
-                        <input type="password" id="password" name="password" class="form-input" placeholder="********" required autocomplete="current-password" aria-describedby="password-help">
+                        <div class="password-input-wrap">
+                            <input type="password" id="password" name="password" class="form-input" placeholder="********" required autocomplete="current-password" aria-describedby="password-help">
+                            <button type="button" class="password-toggle" data-password-toggle="password" aria-label="Zobrazit heslo" aria-pressed="false">Zobrazit</button>
+                        </div>
                         <p id="password-help" class="login-form-help" hidden>Minimálně 8 znaků. Heslo nikomu neposíláme e-mailem.</p>
                     </div>
 
                     <div class="form-group mh-inline-59ce1fef8d" id="confirm-password-field-wrapper">
                         <label for="confirm-password-reg" class="form-label">Potvrďte heslo</label>
-                        <input type="password" id="confirm-password-reg" name="confirm_password" class="form-input" placeholder="********" autocomplete="new-password">
+                        <div class="password-input-wrap">
+                            <input type="password" id="confirm-password-reg" name="confirm_password" class="form-input" placeholder="********" autocomplete="new-password">
+                            <button type="button" class="password-toggle" data-password-toggle="confirm-password-reg" aria-label="Zobrazit potvrzení hesla" aria-pressed="false">Zobrazit</button>
+                        </div>
                     </div>
 
                     <div class="form-group mh-inline-716d8554e4" id="gdpr-consent-wrapper">
@@ -104,11 +110,17 @@
                 <form id="reset-password-form" class="mh-inline-59ce1fef8d">
                     <div class="form-group">
                         <label for="new-password" class="form-label">Nové heslo</label>
-                        <input type="password" id="new-password" class="form-input" placeholder="********" required minlength="8">
+                        <div class="password-input-wrap">
+                            <input type="password" id="new-password" class="form-input" placeholder="********" required minlength="8">
+                            <button type="button" class="password-toggle" data-password-toggle="new-password" aria-label="Zobrazit nové heslo" aria-pressed="false">Zobrazit</button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="confirm-password" class="form-label">Potvrďte heslo</label>
-                        <input type="password" id="confirm-password" class="form-input" placeholder="********" required minlength="8">
+                        <div class="password-input-wrap">
+                            <input type="password" id="confirm-password" class="form-input" placeholder="********" required minlength="8">
+                            <button type="button" class="password-toggle" data-password-toggle="confirm-password" aria-label="Zobrazit potvrzení nového hesla" aria-pressed="false">Zobrazit</button>
+                        </div>
                     </div>
                     <button type="submit" class="btn btn--primary btn--glow mh-inline-c0b8a97c16">Nastavit nové heslo</button>
                 </form>

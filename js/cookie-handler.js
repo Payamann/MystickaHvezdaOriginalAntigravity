@@ -4,6 +4,7 @@
     window.MH_COOKIE_HANDLER_INIT = true;
 
     var K = 'mh_cookie_prefs';
+    var preferencesOpen = false;
 
     /** Hide banner completely (after consent given) */
     function hide() {
@@ -12,6 +13,7 @@
             b.classList.remove('visible');
             b.hidden = true;
         }
+        preferencesOpen = false;
         if (document.body) document.body.classList.remove('cookie-banner-active');
     }
 
@@ -19,6 +21,7 @@
     function show() {
         var b = document.getElementById('cookie-banner');
         if (b) {
+            preferencesOpen = true;
             b.hidden = false;
             if (document.body) document.body.classList.add('cookie-banner-active');
             requestAnimationFrame(function () { b.classList.add('visible'); });
@@ -120,7 +123,11 @@
         bindManageLinks();
 
         if (alreadyConsented()) {
-            hide();
+            if (preferencesOpen) {
+                applySavedPrefsToControls();
+            } else {
+                hide();
+            }
             return;
         }
 

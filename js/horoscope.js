@@ -35,6 +35,18 @@ function startHoroscopeUpgradeFlow(period, reason) {
     window.location.href = buildHoroscopeUpgradeUrl(period);
 }
 
+function getSavedZodiacSign() {
+    const personalizedSign = window.MH_PERSONALIZATION?.getSign?.();
+    if (personalizedSign) return personalizedSign;
+
+    try {
+        const prefs = JSON.parse(localStorage.getItem('mh_user_prefs') || '{}');
+        return prefs.sign || localStorage.getItem('mh_zodiac') || null;
+    } catch {
+        return localStorage.getItem('mh_zodiac') || null;
+    }
+}
+
 function buildHoroscopeUpsell(period) {
     const isWeekly = period === 'weekly';
     const title = isWeekly ? 'Odemknete tydenni vyhled' : 'Odemknete mesicni vyhled';
@@ -385,17 +397,15 @@ function initHoroscope() {
             }
         }
 
-        if (window.MH_PERSONALIZATION) {
-            const userSign = window.MH_PERSONALIZATION.getSign();
-            if (userSign) {
-                const card = Array.from(zodiacCards).find((item) => {
-                    const href = item.getAttribute('href');
-                    return href && href.substring(1) === userSign;
-                });
-                if (card) {
-                    selectZodiac(card, true);
-                    return true;
-                }
+        const userSign = getSavedZodiacSign();
+        if (userSign) {
+            const card = Array.from(zodiacCards).find((item) => {
+                const href = item.getAttribute('href');
+                return href && href.substring(1) === userSign;
+            });
+            if (card) {
+                selectZodiac(card, true);
+                return true;
             }
         }
         return false;

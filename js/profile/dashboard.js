@@ -368,6 +368,20 @@ function getReadingKinds(readings) {
     return new Set((readings || []).map(reading => reading.type));
 }
 
+function buildDailyHoroscopeHref(sign, source = 'profile_daily') {
+    const url = new URL('/horoskopy.html', window.location.origin);
+    url.searchParams.set('source', source);
+    url.searchParams.set('feature', 'daily_guidance');
+
+    if (sign?.slug) {
+        url.searchParams.set('sign', sign.slug);
+        url.hash = sign.slug;
+    }
+
+    const relativeUrl = `${url.pathname}${url.search}${url.hash}`;
+    return relativeUrl.startsWith('/') ? relativeUrl.slice(1) : relativeUrl;
+}
+
 function getLastReadingLabel(readings) {
     if (!readings?.length) return 'Zatím žádný uložený výklad';
 
@@ -407,7 +421,7 @@ function renderDailyGuidance(user, readings, subscription) {
 
     focusEl.textContent = focus;
 
-    const horoscopeHref = sign?.slug ? `horoskopy.html?sign=${encodeURIComponent(sign.slug)}` : 'horoskopy.html';
+    const horoscopeHref = buildDailyHoroscopeHref(sign);
     const actions = [
         {
             href: horoscopeHref,
@@ -417,7 +431,7 @@ function renderDailyGuidance(user, readings, subscription) {
             primary: true
         },
         {
-            href: 'tarot.html',
+            href: 'tarot.html?source=profile_daily&feature=tarot',
             label: readingKinds.has('tarot') ? 'Navázat dalším tarotem' : 'Vyložit kartu dne',
             description: 'Jeden symbol pro rozhodnutí, které máte před sebou.',
             action: 'daily_tarot'
@@ -463,6 +477,14 @@ function renderActivationChecklist(user, readings, subscription) {
     const sign = getProfileSign(user);
     const streak = calculateStreak(readings);
     const isPremium = isPremiumSubscription(subscription);
+    const firstReadingHref = sign
+        ? buildDailyHoroscopeHref(sign, 'profile_activation')
+        : 'tarot.html?source=profile_activation&feature=tarot';
+    const firstReadingDescription = kinds.size
+        ? 'Už máte první stopu, ke které se dá vracet.'
+        : sign
+            ? `Začněte dnešním horoskopem pro ${sign.name}, ať první krok naváže na profil.`
+            : 'Začněte tarotem, horoskopem nebo křišťálovou koulí.';
 
     const items = [
         {
@@ -477,16 +499,16 @@ function renderActivationChecklist(user, readings, subscription) {
             title: 'Osobní profil je doplněný',
             description: sign ? `Dnešní vedení se může opřít o znamení ${sign.name}.` : 'Doplňte datum narození nebo znamení pro přesnější návraty.',
             done: Boolean(sign),
-            href: sign ? '#tab-settings' : 'onboarding.html?source=profile_activation',
+            href: sign ? '#tab-settings' : 'onboarding.html?source=profile_activation&feature=daily_guidance',
             action: sign ? 'open_settings' : 'start_onboarding'
         },
         {
             key: 'first_reading',
             title: 'První výklad je v historii',
-            description: kinds.size ? 'Už máte první stopu, ke které se dá vracet.' : 'Začněte tarotem, horoskopem nebo křišťálovou koulí.',
+            description: firstReadingDescription,
             done: kinds.size > 0,
-            href: kinds.size > 0 ? '#tab-history' : 'tarot.html',
-            action: kinds.size > 0 ? 'open_history' : 'start_tarot'
+            href: kinds.size > 0 ? '#tab-history' : firstReadingHref,
+            action: kinds.size > 0 ? 'open_history' : sign ? 'start_daily_horoscope' : 'start_tarot'
         },
         {
             key: 'daily_reflection',

@@ -14,6 +14,7 @@
             const authUrl = new URL('/prihlaseni.html', window.location.origin);
             authUrl.searchParams.set('mode', 'register');
             authUrl.searchParams.set('source', 'newsletter_form');
+            authUrl.searchParams.set('feature', 'daily_guidance');
             authUrl.searchParams.set('redirect', '/profil.html');
             authUrl.searchParams.set('email', email);
             window.location.href = `${authUrl.pathname}${authUrl.search}`;

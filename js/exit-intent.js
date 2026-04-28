@@ -14,8 +14,8 @@
         'numerologie': 'numerologie_vyklad',
         'runy': 'runy_hluboky_vyklad',
         'natalni-karta': 'natalni_interpretace',
-        'mentor': 'hvezdny_mentor',
-        'shamanske-kolo': 'shamanske_kolo_plne_cteni',
+        'mentor': 'mentor',
+        'shamansko-kolo': 'shamanske_kolo_plne_cteni',
         'minuly-zivot': 'minuly_zivot',
         'kristalova-koule': 'kristalova_koule'
     };
