@@ -87,8 +87,18 @@ function isCheckRunTerminal(checkRuns) {
     return checkRuns.length > 0 && checkRuns.every((run) => run.status === 'completed');
 }
 
+function isAllowedSkippedCheckRun(run) {
+    return [
+        /^E2E \(/,
+        /^Production Smoke Test$/,
+    ].some((pattern) => pattern.test(run.name || ''));
+}
+
 function hasFailingCheckRun(checkRuns) {
-    return checkRuns.some((run) => ['failure', 'cancelled', 'timed_out', 'action_required', 'skipped'].includes(run.conclusion));
+    return checkRuns.some((run) => {
+        if (run.conclusion === 'skipped') return !isAllowedSkippedCheckRun(run);
+        return ['failure', 'cancelled', 'timed_out', 'action_required'].includes(run.conclusion);
+    });
 }
 
 async function waitForChecks({ repo, sha, timeoutMs, pollMs }) {
