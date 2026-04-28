@@ -106,6 +106,29 @@ test.describe('Homepage', () => {
         expect(analyticsPosts).toBe(0);
     });
 
+    test('first-party page view neprenasi citlive query parametry', async ({ page }) => {
+        const analyticsPayloads = [];
+
+        await page.route('**/api/analytics/event', async (route) => {
+            analyticsPayloads.push(JSON.parse(route.request().postData() || '{}'));
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true, accepted: 1 })
+            });
+        });
+
+        await page.goto('/?email=jana@example.com&token=secret123&audit=page-view');
+        await waitForPageReady(page);
+
+        await expect.poll(() => analyticsPayloads.some((payload) => payload.eventName === 'page_view')).toBe(true);
+        const pageView = analyticsPayloads.find((payload) => payload.eventName === 'page_view');
+
+        expect(pageView.path).toBe('/');
+        expect(pageView.metadata.url).not.toContain('email=');
+        expect(pageView.metadata.url).not.toContain('token=');
+    });
+
     test('mobilni cookie lista na homepage nezakryva prvni dojem', async ({ page }) => {
         await page.setViewportSize({ width: 393, height: 851 });
         await page.evaluate(() => {

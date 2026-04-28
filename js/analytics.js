@@ -11,6 +11,7 @@ const MH_ANALYTICS_CLIENT_KEY = 'mh_analytics_client_id';
 window.MH_ANALYTICS_QUEUE = window.MH_ANALYTICS_QUEUE || [];
 
 let mhAnalyticsCsrfPromise = null;
+let mhAnalyticsPageViewTracked = false;
 
 function getAnalyticsPreference() {
     try {
@@ -149,7 +150,7 @@ const MH_ANALYTICS = {
     trackPageView(pageName = document.title) {
         this.trackEvent('page_view', {
             page: pageName,
-            url: window.location.href
+            url: `${window.location.origin}${window.location.pathname}`
         });
     },
 
@@ -254,6 +255,18 @@ const MH_ANALYTICS = {
 // Create global aliases
 window.trackEvent = window.trackEvent || ((eventName, data) => MH_ANALYTICS.trackEvent(eventName, data));
 window.MH_ANALYTICS = MH_ANALYTICS;
+
+function trackInitialPageView() {
+    if (mhAnalyticsPageViewTracked) return;
+    mhAnalyticsPageViewTracked = true;
+    MH_ANALYTICS.trackPageView(document.title);
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', trackInitialPageView, { once: true });
+} else {
+    trackInitialPageView();
+}
 
 document.addEventListener('click', (event) => {
     const target = event.target.closest(
