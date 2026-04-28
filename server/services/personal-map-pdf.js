@@ -553,6 +553,42 @@ body {
   line-height: 1.5;
 }
 
+.mh-pdf-page--mantra {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28mm 24mm 26mm;
+  text-align: center;
+}
+
+.mantra-shell {
+  width: 100%;
+  max-width: 150mm;
+  border-top: 1px solid rgba(212,175,55,.34);
+  border-bottom: 1px solid rgba(212,175,55,.34);
+  padding: 18mm 10mm;
+}
+
+.mantra-sentence {
+  margin: 5mm auto 7mm;
+  max-width: 135mm;
+  font-family: CinzelLocal, Georgia, serif;
+  color: #fff8e8;
+  font-size: 25pt;
+  line-height: 1.18;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-wrap: balance;
+}
+
+.mantra-copy {
+  max-width: 122mm;
+  margin: 0 auto;
+  color: rgba(244,234,214,.8);
+  font-size: 12pt;
+  line-height: 1.65;
+}
+
 .intro-panel {
   border: 1px solid rgba(255,215,0,.28);
   padding: 18mm 16mm;
@@ -605,6 +641,95 @@ body {
   margin-top: 2mm;
   color: #fff8e8;
   font-size: 11pt;
+}
+
+.mh-pdf-page--signature {
+  padding: 30mm 22mm 24mm;
+}
+
+.signature-layout {
+  min-height: 235mm;
+  display: grid;
+  grid-template-columns: 64mm minmax(0, 1fr);
+  gap: 13mm;
+  align-items: center;
+}
+
+.signature-seal {
+  position: relative;
+  width: 58mm;
+  height: 58mm;
+  border: 1px solid rgba(212,175,55,.44);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #f1cf76;
+  background: transparent;
+  box-shadow: none;
+}
+
+.signature-seal::before,
+.signature-seal::after {
+  content: '';
+  position: absolute;
+  border: 1px solid rgba(212,175,55,.2);
+  border-radius: 50%;
+}
+
+.signature-seal::before { inset: 7mm; }
+.signature-seal::after {
+  inset: 15mm;
+}
+
+.signature-glyph {
+  font-family: CinzelLocal, Georgia, serif;
+  font-size: 29pt;
+  line-height: 1;
+}
+
+.signature-title {
+  margin: 4mm 0 6mm;
+  font-family: CinzelLocal, Georgia, serif;
+  color: #f1cf76;
+  font-size: 24pt;
+  line-height: 1.14;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+}
+
+.signature-copy {
+  color: rgba(244,234,214,.86);
+  font-size: 12.4pt;
+  line-height: 1.66;
+}
+
+.signature-copy p { margin: 0 0 4.4mm; }
+
+.signature-keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3mm;
+  margin-top: 8mm;
+}
+
+.signature-keywords span {
+  border: 1px solid rgba(212,175,55,.24);
+  padding: 2mm 4mm;
+  font-family: InterLocal, Arial, sans-serif;
+  font-size: 7.6pt;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(241,207,118,.82);
+  background: rgba(10,12,30,.58);
+}
+
+.signature-question {
+  margin-top: 10mm;
+  padding: 6mm 7mm;
+  border-left: 2px solid rgba(212,175,55,.62);
+  background: rgba(212,175,55,.07);
+  color: rgba(255,248,232,.9);
+  font-size: 12pt;
 }
 
 .page-rail {
@@ -843,6 +968,51 @@ body {
   margin: 0 0 4.4mm;
 }
 
+.mh-pdf-page--journal {
+  padding: 27mm 19mm 23mm;
+}
+
+.journal-title {
+  margin: 4mm 0 5mm;
+  font-family: CinzelLocal, Georgia, serif;
+  color: #f1cf76;
+  font-size: 22pt;
+  line-height: 1.16;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+}
+
+.journal-subtitle {
+  max-width: 142mm;
+  margin: 0 0 8mm;
+  color: rgba(244,234,214,.74);
+}
+
+.journal-row {
+  display: grid;
+  grid-template-columns: 13mm 1fr;
+  gap: 5mm;
+  padding: 4.2mm 0;
+  border-top: 1px solid rgba(212,175,55,.18);
+}
+
+.journal-index {
+  font-family: CinzelLocal, Georgia, serif;
+  color: rgba(241,207,118,.62);
+  font-size: 13pt;
+}
+
+.journal-row p {
+  margin: 0 0 3mm;
+  color: rgba(244,234,214,.88);
+}
+
+.journal-lines {
+  height: 11mm;
+  border-top: 1px solid rgba(244,234,214,.18);
+  border-bottom: 1px solid rgba(244,234,214,.12);
+}
+
 .mh-pdf-page--closing {
   display: flex;
   flex-direction: column;
@@ -910,11 +1080,34 @@ body {
     </div>
   </section>
 
+  <section class="mh-pdf-page mh-pdf-page--signature">
+    <div class="signature-layout">
+      <div class="signature-seal" aria-hidden="true">
+        <div class="signature-glyph">${escapeHtml(glyph)}</div>
+      </div>
+      <div>
+        <div class="content-kicker">Osobní hvězdný podpis</div>
+        <h2 class="signature-title">${escapeHtml(starSignature.title)}</h2>
+        <div class="signature-copy">${paragraphs(starSignature.text)}</div>
+        <div class="signature-keywords">${keywordHtml}</div>
+        <div class="signature-question">${escapeHtml(starSignature.guidingQuestion)}</div>
+      </div>
+    </div>
+  </section>
+
   <section class="mh-pdf-page mh-pdf-page--essence">
     <div class="content-kicker">Osobní syntéza</div>
     <h2 class="essence-title">Čtyři věci, které si máš přečíst pomalu</h2>
     <p class="essence-subtitle">Tahle stránka je záměrně krátká. Má fungovat jako první zrcadlo: ne jako hotová pravda, ale jako destilace témat, ke kterým se ve výkladu budeš vracet.</p>
     <div class="insight-grid">${cardItems(sections.essence)}</div>
+  </section>
+
+  <section class="mh-pdf-page mh-pdf-page--mantra">
+    <div class="mantra-shell">
+      <div class="content-kicker">Tvoje věta roku</div>
+      <div class="mantra-sentence">${escapeHtml(yearMantra.sentence)}</div>
+      <div class="mantra-copy">${paragraphs(yearMantra.text)}</div>
+    </div>
   </section>
 
   ${sectionPage({
@@ -987,6 +1180,13 @@ body {
     </div>
   </section>
 
+  <section class="mh-pdf-page mh-pdf-page--journal">
+    <div class="content-kicker">Otázky k návratu</div>
+    <h2 class="journal-title">Stránka, ke které se vrátíš později</h2>
+    <p class="journal-subtitle">Neodpovídej hned dokonale. Tyto otázky mají otevřít prostor, ve kterém výklad přestane být jen textem a začne se potkávat s běžným dnem.</p>
+    ${journalItems(sections.journalPrompts)}
+  </section>
+
   <section class="mh-pdf-page mh-pdf-page--closing">
     <div class="content-kicker">Závěrečné poselství</div>
     <h2 class="closing-title">Tvoje další světlo</h2>
@@ -1051,12 +1251,24 @@ export const samplePersonalMapData = {
     year: 2026,
     productName: 'Osobní mapa zbytku roku 2026',
     sections: {
+        starSignature: {
+            title: 'Strážkyně tiché rovnováhy',
+            text: `Tvůj hvězdný podpis není o tom, že máš být pořád vyrovnaná. Je spíš o schopnosti rozpoznat, kdy se rovnováha změnila v tiché potlačení sebe. Působíš jako člověk, který umí dát věcem tvar, uklidnit prostor a najít slova tam, kde ostatní cítí jen napětí. Jenže právě tahle schopnost tě někdy svádí k tomu, abys zůstala klidná i ve chvíli, kdy by bylo zdravější být pravdivá.
+
+V tomto období se tvoje vnitřní síla bude ukazovat méně v tom, kolik zvládneš ustát, a víc v tom, co už odmítneš držet sama. Tvoje mapa neříká, že máš přestat být laskavá. Ukazuje, kde se laskavost konečně potřebuje obrátit i k tobě. Právě tam začne tvůj rok působit méně jako čekání a víc jako vědomý návrat.`,
+            keywords: ['rovnováha', 'pravda', 'návrat'],
+            guidingQuestion: 'Kde se snažíš udržet klid tak moc, až přestáváš slyšet sebe?'
+        },
         essence: [
             { title: 'Hlavní dar', text: 'Tvůj dar je cit pro rovnováhu, ale ne tu povrchní, kdy se všichni usmívají a nikdo neřekne pravdu. Umíš vycítit, kde se místnost sevře, kde někdo mluví opatrněji a kde se pod slušností skrývá únava. Letos se tenhle dar učíš používat jinak: ne k tomu, abys všechno uhladila, ale abys poznala, kde už máš chránit i sebe.' },
             { title: 'Opakující se vzorec', text: 'Když se bojíš zklamání, začneš být příliš rozumná. Vysvětlíš si cizí mlčení, přepíšeš vlastní reakci a čekáš, až se věci samy vyjasní. V běžném dni to poznáš podle chvíle, kdy už máš připravenou omluvu za někoho jiného. Tenhle rok tě vede k jedné jednodušší větě dřív, než se z ticha stane vnitřní tlak a zbytečně tě unaví.' },
             { title: 'Prahové téma', text: 'Stojíš na prahu větší jednoduchosti. Ne všechno musíš zachránit, pochopit do posledního detailu nebo vysvětlit tak jemně, aby to nikoho nezatížilo. Zbytek roku tě povede k rozhodnutím, která budou méně zdvořilá k chaosu a laskavější k tobě. Nejvíc to ucítíš tam, kde se ti uleví hned po tom, co přestaneš vyjednávat sama se sebou a čekat na dokonalé pochopení.' },
             { title: 'Co se chce změnit', text: 'Klid už nemá být odměna až po práci, po rozhovoru, po uklidnění druhých a po vyřešení všeho, co visí ve vzduchu. Má být základ, ze kterého se rozhoduješ. Pokud si letos dovolíš brát vlastní vnitřní prostor vážně, některé vztahy se pročistí a některé úkoly konečně ztratí neviditelnou moc nad tvým dnem, i když to nikdo zvenku nepotvrdí.' }
         ],
+        yearMantra: {
+            sentence: 'Nemusím se zmenšit, aby kolem mě mohl být skutečný klid.',
+            text: `Tahle věta je pro tebe kotva hlavně ve chvílích, kdy začneš automaticky uhlazovat atmosféru. Vrať se k ní, když budeš chtít odpovědět dřív, než si uvědomíš, co opravdu cítíš. Vrať se k ní, když budeš přemýšlet, jestli nejsi moc náročná. Nejde o vzdor. Jde o připomenutí, že skutečný klid nemůže stát na tom, že se v něm ty sama ztratíš. Pokud tě věta nejdřív znejistí, je to v pořádku. Pravda bývá nezvykle jednoduchá.`
+        },
         mainTheme: `V tomto období se v tobě probouzí potřeba jednoduššího života. Ne proto, že bys měla méně cítit, ale proto, že už nechceš dávat svou pozornost věcem, které tě pokaždé nechají prázdnou. Jako Váhy přirozeně vnímáš náladu druhých lidí a často ji začneš vyrovnávat dřív, než se vůbec zeptáš, jestli je to tvoje práce. Právě tady se letos láme starý způsob fungování: přestane stačit, že je kolem tebe klid, pokud uvnitř tebe zůstává nevyřčené napětí.
 
 Zbytek roku tě povede k jemné, ale pevné hranici. Ne k tvrdosti. Spíš k tichému rozhodnutí, že harmonie nemá vznikat tím, že se zmenšíš. Vztahy, práce i každodenní volby budou testovat, jestli umíš zůstat laskavá a zároveň konkrétní. Poznáš to podle drobných okamžiků: zpráva, na kterou se ti nechce odpovědět hned; schůzka, po které jsi unavená ještě dřív, než začne; nabídka, která vypadá hezky, ale v těle se stáhne jako příliš těsné šaty.
@@ -1104,6 +1316,14 @@ Poznáš to podle zvláštní úlevy, která přijde, když přestaneš opravova
         ritual: `Večer si zapal jednu svíčku nebo nech na stole jen malé světlo. Na papír napiš tři věty: co už nechci vyrovnávat za druhé, kde si přeju víc pravdy a jaký jeden malý krok udělám do sedmi dnů. Potom polož ruku na střed hrudi a třikrát se zeptej: „Co už vím, ale pořád si to dovoluji zpochybňovat?“ Nehledej hezkou odpověď. Napiš první větu, která přijde.
 
 Papír si nech na místě, kam se běžně díváš. Ne jako úkol, ale jako kotvu. Kdykoli začneš znovu vysvětlovat, omlouvat nebo oddalovat jasné rozhodnutí, vrať se k jedné větě z papíru. Právě opakovaný návrat k jednoduché pravdě bude v tomto období silnější než velké sliby.`,
+        journalPrompts: [
+            'Kde jsem si v poslední době spletla klid s odkládáním pravdy?',
+            'Který vztah mi ukazuje, že vysvětluji víc, než je zdravé?',
+            'Co bych tento měsíc zjednodušila, kdybych se nebála reakce okolí?',
+            'Kde moje tělo říká ne dřív, než ho hlava stihne přepsat?',
+            'Jak by vypadal jeden laskavý krok, který nezradí moje hranice?',
+            'Co už nepotřebuji nést do dalšího období jen proto, že jsem to nesla dlouho?'
+        ],
         closing: `Jano, tvůj další krok nemusí být hlasitý. Stačí, když bude pravdivý. Když přestaneš hledat dokonalou chvíli a začneš věřit jemnému vnitřnímu ano, uvidíš, že klid není odměna na konci cesty. Je to způsob, jak po ní můžeš jít už teď. Ne všechno se vyřeší jedním rozhodnutím, ale jedno rozhodnutí může změnit způsob, jakým se k sobě začneš vracet.
 
 Zbytek roku ti nebude brát citlivost. Spíš tě naučí, aby citlivost konečně patřila i tobě. Aby ses neptala jen na to, co druhý potřebuje, ale i na to, co se děje v tobě, když pořád dáváš. Aby ses nebála, že jasnější hranice zničí blízkost. Skutečná blízkost se nezničí pravdou. Jen se ukáže, jestli byla dost pevná na to, aby pravdu unesla.
