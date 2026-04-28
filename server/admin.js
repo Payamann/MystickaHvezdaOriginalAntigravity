@@ -453,10 +453,24 @@ function analyticsPathFromEvent(event) {
     return normalizeDimension(metadata.path || metadata.page) || '(unknown)';
 }
 
+const ANALYTICS_REDACTED_VALUE = '[redacted]';
+
+function analyticsVisitorFromEvent(event) {
+    const metadata = event?.metadata && typeof event.metadata === 'object' ? event.metadata : {};
+    return normalizeDimension(event?.user_id || metadata.clientId || metadata.client_id);
+}
+
+function analyticsVisitFromEvent(event) {
+    const metadata = event?.metadata && typeof event.metadata === 'object' ? event.metadata : {};
+    return normalizeDimension(metadata.visitId || metadata.visit_id || metadata.sessionId || metadata.session_id);
+}
+
 function createAnalyticsDailyBucket(date) {
     return {
         date,
         total: 0,
+        visitors: 0,
+        visits: 0,
         pageViews: 0,
         ctaClicks: 0,
         signups: 0,
@@ -470,6 +484,10 @@ export function buildAnalyticsReport(events = [], { days = DEFAULT_ANALYTICS_DAY
     const byFeature = {};
     const byPath = {};
     const byDay = {};
+    const visitorIds = new Set();
+    const visitIds = new Set();
+    const visitorsByDay = {};
+    const visitsByDay = {};
     const recentErrors = [];
     const feedback = {
         total: 0,
@@ -484,12 +502,26 @@ export function buildAnalyticsReport(events = [], { days = DEFAULT_ANALYTICS_DAY
         const metadata = event?.metadata && typeof event.metadata === 'object' ? event.metadata : {};
         const path = analyticsPathFromEvent(event);
         const date = getEventDate(event.created_at) || 'unknown';
+        const visitorId = analyticsVisitorFromEvent(event);
+        const visitId = analyticsVisitFromEvent(event);
 
         incrementCounter(byEvent, eventType);
         incrementCounter(byFeature, feature);
         incrementCounter(byPath, path);
 
         if (!byDay[date]) byDay[date] = createAnalyticsDailyBucket(date);
+        if (!visitorsByDay[date]) visitorsByDay[date] = new Set();
+        if (!visitsByDay[date]) visitsByDay[date] = new Set();
+
+        if (visitorId) {
+            visitorIds.add(visitorId);
+            visitorsByDay[date].add(visitorId);
+        }
+        if (visitId && visitId !== ANALYTICS_REDACTED_VALUE) {
+            visitIds.add(visitId);
+            visitsByDay[date].add(visitId);
+        }
+
         byDay[date].total += 1;
         if (eventType === 'page_view') byDay[date].pageViews += 1;
         if (eventType === 'cta_clicked') byDay[date].ctaClicks += 1;
@@ -514,6 +546,11 @@ export function buildAnalyticsReport(events = [], { days = DEFAULT_ANALYTICS_DAY
         }
     }
 
+    for (const [date, day] of Object.entries(byDay)) {
+        day.visitors = visitorsByDay[date]?.size || 0;
+        day.visits = visitsByDay[date]?.size || 0;
+    }
+
     const total = events.length;
     if (feedback.total > 0) {
         feedback.positiveRate = Math.round((feedback.yes / feedback.total) * 100);
@@ -523,6 +560,8 @@ export function buildAnalyticsReport(events = [], { days = DEFAULT_ANALYTICS_DAY
         periodDays: days,
         total,
         summary: {
+            visitors: visitorIds.size,
+            visits: visitIds.size,
             pageViews: byEvent.page_view || 0,
             ctaClicks: byEvent.cta_clicked || 0,
             signups: byEvent.signup_completed || 0,
@@ -540,10 +579,12 @@ export function buildAnalyticsReport(events = [], { days = DEFAULT_ANALYTICS_DAY
 }
 
 export function buildAnalyticsDailyCsv(report) {
-    const header = ['date', 'total', 'page_views', 'cta_clicks', 'signups', 'checkouts', 'errors'];
+    const header = ['date', 'total', 'visitors', 'visits', 'page_views', 'cta_clicks', 'signups', 'checkouts', 'errors'];
     const rows = report.daily.map((day) => [
         day.date,
         day.total,
+        day.visitors,
+        day.visits,
         day.pageViews,
         day.ctaClicks,
         day.signups,

@@ -313,21 +313,21 @@ describe('Admin first-party analytics helpers', () => {
                 id: 'evt-1',
                 event_type: 'page_view',
                 feature: null,
-                metadata: { path: '/' },
+                metadata: { path: '/', clientId: 'client-1', visitId: 'visit-1' },
                 created_at: '2026-04-28T08:00:00.000Z'
             },
             {
                 id: 'evt-2',
                 event_type: 'cta_clicked',
                 feature: 'daily_guidance',
-                metadata: { path: '/', label: 'Začít zdarma' },
+                metadata: { path: '/', label: 'Začít zdarma', clientId: 'client-1', visitId: 'visit-1' },
                 created_at: '2026-04-28T08:10:00.000Z'
             },
             {
                 id: 'evt-3',
                 event_type: 'client_error',
                 feature: 'homepage',
-                metadata: { path: '/', message: 'Script failed' },
+                metadata: { path: '/', message: 'Script failed', clientId: 'client-2', visitId: 'visit-2' },
                 created_at: '2026-04-28T08:20:00.000Z'
             },
             {
@@ -347,6 +347,8 @@ describe('Admin first-party analytics helpers', () => {
         ], { days: 7 });
 
         expect(report.summary).toMatchObject({
+            visitors: 2,
+            visits: 2,
             pageViews: 1,
             ctaClicks: 1,
             clientErrors: 1,
@@ -361,13 +363,15 @@ describe('Admin first-party analytics helpers', () => {
         expect(report.daily[0]).toMatchObject({
             date: '2026-04-28',
             total: 5,
+            visitors: 2,
+            visits: 2,
             errors: 1
         });
         expect(report.recentErrors[0]).toMatchObject({
             eventType: 'client_error',
             message: 'Script failed'
         });
-        expect(buildAnalyticsDailyCsv(report)).toContain('page_views');
+        expect(buildAnalyticsDailyCsv(report)).toContain('date,total,visitors,visits,page_views');
         expect(buildAnalyticsDailyCsv(report)).toContain('2026-04-28');
     });
 });
@@ -473,7 +477,7 @@ describe('Admin funnel API access control', () => {
 
         expect(csvRes.headers['content-type']).toContain('text/csv');
         expect(csvRes.headers['content-disposition']).toContain('analytics-daily-1d.csv');
-        expect(csvRes.text).toContain('date,total,page_views');
+        expect(csvRes.text).toContain('date,total,visitors,visits,page_views');
     });
 });
 
