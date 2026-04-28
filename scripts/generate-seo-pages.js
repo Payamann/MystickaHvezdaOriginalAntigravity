@@ -12,6 +12,7 @@ const DATA_FILE = path.join(ROOT_DIR, 'data', 'zodiac-matrix.json');
 const TEMPLATE_FILE = path.join(ROOT_DIR, 'templates', 'compatibility-template.html');
 const OUTPUT_DIR = path.join(ROOT_DIR, 'partnerska-shoda');
 const ENV_FILE = path.join(ROOT_DIR, 'server', '.env');
+const SHOULD_WRITE = process.argv.includes('--write') || process.env.GENERATE_SEO_PAGES_ALLOW_WRITE === 'true';
 
 // Parse .env manually
 let GEMINI_API_KEY = '';
@@ -22,8 +23,10 @@ try {
         GEMINI_API_KEY = match[1].trim();
     }
 } catch (e) {
-    console.error('Error reading .env file:', e);
-    process.exit(1);
+    if (SHOULD_WRITE) {
+        console.error('Error reading .env file:', e);
+        process.exit(1);
+    }
 }
 
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
@@ -31,11 +34,6 @@ const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/
 // Load Data
 const zodiacSigns = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
 const template = fs.readFileSync(TEMPLATE_FILE, 'utf8');
-
-// Ensure output dir exists
-if (!fs.existsSync(OUTPUT_DIR)) {
-    fs.mkdirSync(OUTPUT_DIR, { recursive: true });
-}
 
 // System Prompt
 const SYSTEM_PROMPT = `Jsi expert na partnerskou astrologii. Píšeš poutavé, mystické, ale realistické rozbory pro web.
@@ -148,6 +146,19 @@ function extractSummary(html) {
 
 // Main Loop
 async function main() {
+    if (!SHOULD_WRITE) {
+        console.log('[DRY RUN] generate-seo-pages.js is guarded by default.');
+        console.log('Use --write or GENERATE_SEO_PAGES_ALLOW_WRITE=true to write pages and call Gemini.');
+        return;
+    }
+    if (!GEMINI_API_KEY) {
+        console.error('Missing GEMINI_API_KEY in server/.env.');
+        process.exit(1);
+    }
+    if (!fs.existsSync(OUTPUT_DIR)) {
+        fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+    }
+
     console.log('✨ Starting Programmatic SEO Generation (Enhanced)...');
 
     // Generating just a few combinations for demonstration and speed

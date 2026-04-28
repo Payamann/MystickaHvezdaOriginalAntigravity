@@ -73,6 +73,37 @@ describe('manual script guardrails', () => {
         expect(apiStatsIndex).toBeGreaterThan(envIndex);
     });
 
+    test('paid content helper scripts are dry-run guarded by default', () => {
+        const guardedScripts = [
+            {
+                path: 'scripts/daily_reel.py',
+                envFlag: 'DAILY_REEL_ALLOW_WRITE',
+                dryRun: '[DRY RUN] daily_reel.py is guarded by default.',
+                guard: 'if not explicit_write_enabled(args):'
+            },
+            {
+                path: 'scripts/evening_post.py',
+                envFlag: 'EVENING_POST_ALLOW_WRITE',
+                dryRun: '[DRY RUN] evening_post.py is guarded by default.',
+                guard: 'if not explicit_generation_enabled(args):'
+            },
+            {
+                path: 'scripts/generate-seo-pages.js',
+                envFlag: 'GENERATE_SEO_PAGES_ALLOW_WRITE',
+                dryRun: '[DRY RUN] generate-seo-pages.js is guarded by default.',
+                guard: 'if (!SHOULD_WRITE)'
+            }
+        ];
+
+        for (const script of guardedScripts) {
+            const source = readScript(script.path);
+            expect(source).toContain('--write');
+            expect(source).toContain(script.envFlag);
+            expect(source).toContain(script.dryRun);
+            expect(source).toContain(script.guard);
+        }
+    });
+
     test('deploy verification fails loudly when expected commit metadata is missing', () => {
         const deployGuard = readScript('scripts/deploy-guard.mjs');
         const productionVerifier = readScript('server/scripts/verify-production.js');

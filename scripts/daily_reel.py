@@ -8,9 +8,9 @@ Daily Reel — Voiceover Generator pro Mystickou Hvězdu
 4. Přes Claude API zformátuje do voiceover scriptu s [] stylovými tagy
 
 Usage:
-    python daily_reel.py
-    python daily_reel.py --date 2026-04-07               # konkrétní datum
-    python daily_reel.py --signs Beran Rak Štír           # konkrétní 3 znamení
+    python daily_reel.py                                  # dry-run guard, no live API/write
+    python daily_reel.py --write --date 2026-04-07
+    python daily_reel.py --write --signs Beran Rak Lev
 """
 
 import sys
@@ -71,7 +71,17 @@ CREATIVE_MODEL = os.environ.get("DAILY_REEL_CREATIVE_MODEL", "claude-sonnet-4-5"
 UTILITY_MODEL  = os.environ.get("DAILY_REEL_UTILITY_MODEL", CREATIVE_MODEL)
 API_STATS = ApiUsageStats()
 
-if not SUPABASE_URL or not SUPABASE_KEY or not ANTHROPIC_KEY:
+def require_live_environment():
+    if not SUPABASE_URL or not SUPABASE_KEY or not ANTHROPIC_KEY:
+        print("[CHYBA] Chybi promenne prostredi: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ANTHROPIC_API_KEY")
+        print("  Nastav je v server/.env nebo v systemovem prostredi.")
+        sys.exit(1)
+
+
+def explicit_write_enabled(args) -> bool:
+    return bool(args.write) or os.environ.get("DAILY_REEL_ALLOW_WRITE") == "true"
+
+if False and (not SUPABASE_URL or not SUPABASE_KEY or not ANTHROPIC_KEY):
     print("[CHYBA] Chybí proměnné prostředí: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ANTHROPIC_API_KEY")
     print("  Nastav je v server/.env nebo v systémovém prostředí.")
     sys.exit(1)
@@ -705,8 +715,16 @@ def main():
                         help="Pokud vystupni soubor existuje, nepousti API a jen vypise existujici cestu")
     parser.add_argument("--force", action="store_true",
                         help="Povoli prepsani existujiciho vystupniho souboru")
+    parser.add_argument("--write", action="store_true",
+                        help="Explicitne povoli zapis vystupu a live API volani")
     args = parser.parse_args()
 
+    if not explicit_write_enabled(args):
+        print("[DRY RUN] daily_reel.py is guarded by default.")
+        print("Use --write or DAILY_REEL_ALLOW_WRITE=true to write output files and call live APIs.")
+        return
+
+    require_live_environment()
     API_STATS.reset()
     target_date = args.date or str(date.today())
     quality = args.quality
@@ -866,6 +884,7 @@ def main():
             "skip_descriptions": args.skip_descriptions,
             "prefetch_all": args.prefetch_all,
             "force": args.force,
+            "write": True,
         },
         "outputs": {
             "voiceover": script,

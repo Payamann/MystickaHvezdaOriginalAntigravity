@@ -15,11 +15,12 @@ Typy:
   blog_promo       — propagace blogového článku (min 1x za 5 dní)
 
 Usage:
-    python evening_post.py                        # automatický výběr
-    python evening_post.py --type educational     # vynutit typ
-    python evening_post.py --topic "Merkur"       # vynutit téma
+    python evening_post.py                        # dry-run guard, no live API/write
+    python evening_post.py --write                # automaticky vyber a uloz post
+    python evening_post.py --write --type educational
+    python evening_post.py --write --topic "Merkur"
     python evening_post.py --score 8.5            # zalogovat skóre posledního postu
-    python evening_post.py --date 2026-04-07      # konkrétní datum
+    python evening_post.py --write --date 2026-04-07
 """
 
 import sys
@@ -55,7 +56,16 @@ def _load_env():
 _load_env()
 
 ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
-if not ANTHROPIC_KEY:
+def require_live_environment():
+    if not ANTHROPIC_KEY:
+        print("[CHYBA] Chybi ANTHROPIC_API_KEY v server/.env")
+        sys.exit(1)
+
+
+def explicit_generation_enabled(args) -> bool:
+    return bool(args.write) or os.environ.get("EVENING_POST_ALLOW_WRITE") == "true"
+
+if False and not ANTHROPIC_KEY:
     print("[CHYBA] Chybí ANTHROPIC_API_KEY v server/.env")
     sys.exit(1)
 
@@ -907,6 +917,8 @@ def main():
     parser.add_argument("--type",  default=None, choices=POST_TYPES, help="Vynutit typ postu")
     parser.add_argument("--topic", default=None, help="Vynutit téma (substring)")
     parser.add_argument("--score", default=None, type=float, help="Zalogovat skóre posledního postu (1–10)")
+    parser.add_argument("--write", action="store_true",
+                        help="Explicitne povoli generovani, zapis vystupu a live API volani")
     args = parser.parse_args()
 
     mem = load_memory()
@@ -916,6 +928,13 @@ def main():
         mem = log_score(args.score, mem)
         save_memory(mem)
         return
+
+    if not explicit_generation_enabled(args):
+        print("[DRY RUN] evening_post.py is guarded by default.")
+        print("Use --write or EVENING_POST_ALLOW_WRITE=true to generate output files and call live APIs.")
+        return
+
+    require_live_environment()
 
     target_date = args.date or str(date.today())
     d = date.fromisoformat(target_date)

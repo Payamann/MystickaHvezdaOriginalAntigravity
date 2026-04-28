@@ -17,9 +17,10 @@ This directory contains active project helper scripts.
 
 - `daily_reel.py`, `daily_reel2.py`, `thumbnail.py`, `thumbnail2.py`, and `evening_post.py` generate social/video drafts.
 - Generated drafts and small state files belong in `scripts/output/`, not directly in `scripts/`.
-- `daily_reel2.py` is dry-run guarded by default. Use `--write` or
-  `DAILY_REEL2_ALLOW_WRITE=true` only when you intentionally want output files
-  and live API calls.
+- `daily_reel.py`, `daily_reel2.py`, `evening_post.py`, and
+  `generate-seo-pages.js` are dry-run guarded by default. Use their `--write`
+  flag or matching `*_ALLOW_WRITE=true` env only when you intentionally want
+  output files and live API calls.
 - `astro_events_2026.json` is source configuration used by the reel generators.
 - `daily_reel2.py` prints a captions command. Override the captions helper path
   with `CAPTIONS_TOOL` when it is not in the default user desktop location.
