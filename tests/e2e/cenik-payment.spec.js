@@ -187,6 +187,25 @@ test.describe('Ceník — platební tlačítka', () => {
         expect(href).toContain('feature=premium_membership');
     });
 
+    test('trial paywall fallback copy nezveda zbytecne platebni treni', async ({ page }) => {
+        await page.goto('/tests/premium-test.html');
+        await waitForPageReady(page);
+        await page.waitForFunction(() => !!window.Premium?.showTrialPaywall);
+
+        await page.evaluate(() => {
+            window.Premium._plansById = new Map();
+            window.Premium._featurePlanMap = {};
+            window.Premium.showTrialPaywall('numerologie_vyklad');
+        });
+
+        const footer = page.locator('.paywall-footer');
+        await expect(footer).toBeVisible();
+        await expect(footer).toContainText('7 dní zdarma');
+        await expect(footer).toContainText('Bez závazků');
+        await expect(footer).toContainText('Zrušení jedním kliknutím');
+        await expect(footer).not.toContainText('Karta požadována');
+    });
+
     test('zruseny checkout zobrazi recovery panel s kontextovym navratem', async ({ page }) => {
         await page.goto('/cenik.html?payment=cancel&plan=pruvodce&source=inline_paywall&feature=tarot_multi_card');
         await waitForPageReady(page);

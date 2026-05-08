@@ -456,7 +456,7 @@ window.Premium = {
                     <button class="btn btn--primary paywall-upgrade">🌟 Vyzkoušet 7 dní zdarma</button>
                     <button class="btn btn--ghost paywall-close">Teď ne</button>
                 </div>
-                <p class="paywall-footer">${this.getPlanFooter(planId, 'Zrušíš kdykoliv • Karta požadována po trialu • 199 Kč/měsíc')}</p>
+                <p class="paywall-footer">${this.getPlanFooter(planId, '7 dní zdarma • Bez závazků • Zrušení jedním kliknutím')}</p>
             </div>
         `;
 
