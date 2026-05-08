@@ -357,6 +357,7 @@ test.describe('Ceník — platební tlačítka', () => {
             metadata: expect.objectContaining({
                 path: '/cenik.html',
                 product_id: 'osobni_mapa_2026',
+                label: 'Osobní mapa zbytku roku 2026',
                 entry_source: 'pricing_page',
                 entry_feature: 'premium_membership',
                 destination: 'osobni-mapa.html?source=pricing_addon'

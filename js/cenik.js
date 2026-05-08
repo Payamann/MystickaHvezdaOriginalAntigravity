@@ -454,6 +454,12 @@ function getEntryMetadata(context) {
     };
 }
 
+function getPricingLinkLabel(element, fallback) {
+    return element.querySelector('strong span:first-child')?.textContent?.trim()
+        || element.textContent?.trim()
+        || fallback;
+}
+
 function renderCheckoutCancelRecovery(context) {
     const heroSubtitle = document.querySelector('.section--hero .hero__subtitle');
     if (!heroSubtitle) return;
@@ -713,9 +719,10 @@ function bindProductLinks(context) {
         link.addEventListener('click', async (event) => {
             const href = link.getAttribute('href') || null;
             const productId = link.dataset.product || null;
+            const label = getPricingLinkLabel(link, 'one_time_product');
             window.MH_ANALYTICS?.trackCTA?.('pricing_one_time_product', {
                 product_id: productId,
-                label: link.textContent?.trim() || 'one_time_product',
+                label,
                 destination: href
             });
 
@@ -725,7 +732,7 @@ function bindProductLinks(context) {
                 metadata: getEntryMetadata(context)
             }, {
                 product_id: productId,
-                label: link.textContent?.trim() || 'one_time_product',
+                label,
                 destination: href
             });
 
