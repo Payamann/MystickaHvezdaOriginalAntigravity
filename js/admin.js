@@ -220,8 +220,8 @@ async function loadFunnel() {
     const errorMsg = document.getElementById('error-msg');
 
     summary.replaceChildren(createLoadingBlock('Načítám funnel...'));
-    segmentTbody.replaceChildren(createTableMessageRow(8, 'Načítám data...'));
-    dailyTbody.replaceChildren(createTableMessageRow(9, 'Načítám data...'));
+    segmentTbody.replaceChildren(createTableMessageRow(9, 'Načítám data...'));
+    dailyTbody.replaceChildren(createTableMessageRow(8, 'Načítám data...'));
     tbody.replaceChildren(createTableMessageRow(5, 'Načítám data...'));
 
     try {
@@ -231,8 +231,8 @@ async function loadFunnel() {
 
         if (response.status === 403) {
             summary.replaceChildren(createLoadingBlock('Přístup odepřen (nejste admin).'));
-            segmentTbody.replaceChildren(createTableMessageRow(8, 'Přístup odepřen.', 'admin-table-error'));
-            dailyTbody.replaceChildren(createTableMessageRow(9, 'Přístup odepřen.', 'admin-table-error'));
+            segmentTbody.replaceChildren(createTableMessageRow(9, 'Přístup odepřen.', 'admin-table-error'));
+            dailyTbody.replaceChildren(createTableMessageRow(8, 'Přístup odepřen.', 'admin-table-error'));
             tbody.replaceChildren(createTableMessageRow(5, 'Přístup odepřen.', 'admin-table-error'));
             return;
         }
@@ -245,8 +245,8 @@ async function loadFunnel() {
     } catch (error) {
         console.error(error);
         summary.replaceChildren(createLoadingBlock('Funnel se nepodařilo načíst.'));
-        segmentTbody.replaceChildren(createTableMessageRow(8, 'Segmenty nejsou dostupné.', 'admin-table-error'));
-        dailyTbody.replaceChildren(createTableMessageRow(7, 'Denní report není dostupný.', 'admin-table-error'));
+        segmentTbody.replaceChildren(createTableMessageRow(9, 'Segmenty nejsou dostupné.', 'admin-table-error'));
+        dailyTbody.replaceChildren(createTableMessageRow(8, 'Denní report není dostupný.', 'admin-table-error'));
         tbody.replaceChildren(createTableMessageRow(5, 'Funnel report není dostupný.', 'admin-table-error'));
         errorMsg.textContent = 'Chyba při načítání funnelu: ' + error.message;
     }
@@ -610,7 +610,8 @@ function renderFunnel(report) {
     const metrics = report.metrics || {};
     const summary = document.getElementById('funnel-summary');
     const metricCards = [
-        ['Paywall views', formatInteger(metrics.paywallViewed), `${formatPercent(metrics.paywallToCheckoutRate)} pokračuje do checkoutu`],
+        ['Paywall views', formatInteger(metrics.paywallViewed), `${formatPercent(metrics.paywallToPricingIntentRate)} klikne na placený plán`],
+        ['Ceník intent', formatInteger(metrics.pricingIntent), `${formatPercent(metrics.pricingIntentToCheckoutRate)} pokračuje do checkoutu`],
         ['Checkouty', formatInteger(metrics.checkoutStarted), 'Zahájené Stripe checkout sessions'],
         ['Premium konverze', formatInteger(metrics.subscriptionCompleted), `${formatPercent(metrics.conversionRate)} z checkoutů`],
         ['Jednorázové nákupy', formatInteger(metrics.oneTimeCompleted), 'Roční horoskop a další produkty'],
@@ -749,7 +750,7 @@ function renderFunnelSegments(rows) {
     tbody.replaceChildren();
 
     if (!rows || rows.length === 0) {
-        tbody.appendChild(createTableMessageRow(8, 'Zatím tu nejsou žádné source + feature segmenty.'));
+        tbody.appendChild(createTableMessageRow(9, 'Zatím tu nejsou žádné source + feature segmenty.'));
         return;
     }
 
@@ -758,11 +759,12 @@ function renderFunnelSegments(rows) {
         appendCell(tr, formatDimension(row.source));
         appendCell(tr, formatDimension(row.feature));
         appendCell(tr, formatInteger(row.paywallViewed));
+        appendCell(tr, formatInteger(row.pricingIntent));
         appendCell(tr, formatInteger(row.checkoutStarted));
         appendCell(tr, formatInteger(row.purchaseCompleted));
         appendCell(tr, formatRatePair(row));
         appendCell(tr, formatRatePair(row.previous));
-        appendCell(tr, `${formatRateDelta(row.paywallToCheckoutRateDelta)} / ${formatRateDelta(row.checkoutToPurchaseRateDelta)}`);
+        appendCell(tr, `${formatRateDelta(row.paywallToPricingIntentRateDelta)} / ${formatRateDelta(row.pricingIntentToCheckoutRateDelta)} / ${formatRateDelta(row.checkoutToPurchaseRateDelta)}`);
         tbody.appendChild(tr);
     });
 }
@@ -772,7 +774,7 @@ function renderFunnelDaily(rows) {
     tbody.replaceChildren();
 
     if (!rows || rows.length === 0) {
-        tbody.appendChild(createTableMessageRow(7, 'Zatím tu nejsou žádná denní data.'));
+        tbody.appendChild(createTableMessageRow(8, 'Zatím tu nejsou žádná denní data.'));
         return;
     }
 
@@ -780,6 +782,7 @@ function renderFunnelDaily(rows) {
         const tr = document.createElement('tr');
         appendCell(tr, row.date || '-');
         appendCell(tr, formatInteger(row.paywallViewed));
+        appendCell(tr, formatInteger(row.pricingIntent));
         appendCell(tr, formatInteger(row.checkoutStarted));
         appendCell(tr, formatInteger(row.subscriptionCompleted));
         appendCell(tr, formatInteger(row.oneTimeCompleted));
@@ -918,7 +921,7 @@ function formatPercent(value) {
 }
 
 function formatRatePair(row = {}) {
-    return `${formatPercent(row.paywallToCheckoutRate)} / ${formatPercent(row.checkoutToPurchaseRate)}`;
+    return `${formatPercent(row.paywallToPricingIntentRate)} / ${formatPercent(row.pricingIntentToCheckoutRate)} / ${formatPercent(row.checkoutToPurchaseRate)}`;
 }
 
 function formatRateDelta(value) {

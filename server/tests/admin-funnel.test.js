@@ -112,7 +112,10 @@ describe('Admin funnel report helpers', () => {
         expect(report.totalEvents).toBe(8);
         expect(report.metrics.checkoutStarted).toBe(2);
         expect(report.metrics.paywallViewed).toBe(0);
+        expect(report.metrics.pricingIntent).toBe(0);
         expect(report.metrics.paywallToCheckoutRate).toBe(0);
+        expect(report.metrics.paywallToPricingIntentRate).toBe(0);
+        expect(report.metrics.pricingIntentToCheckoutRate).toBe(0);
         expect(report.metrics.subscriptionCompleted).toBe(1);
         expect(report.metrics.oneTimeCompleted).toBe(1);
         expect(report.metrics.failures).toBe(2);
@@ -139,16 +142,22 @@ describe('Admin funnel report helpers', () => {
             { event_name: 'paywall_viewed', source: 'inline_paywall', feature: 'tarot', created_at: '2026-04-20T10:01:00.000Z' },
             { event_name: 'login_gate_viewed', source: 'inline_login_gate', feature: 'mentor', created_at: '2026-04-20T10:02:00.000Z' },
             { event_name: 'login_gate_viewed', source: 'inline_login_gate', feature: 'mentor', created_at: '2026-04-20T10:03:00.000Z' },
+            { event_name: 'pricing_plan_cta_clicked', source: 'inline_paywall', feature: 'tarot', plan_id: 'pruvodce', created_at: '2026-04-20T10:03:30.000Z' },
+            { event_name: 'pricing_plan_cta_clicked', source: 'inline_login_gate', feature: 'mentor', plan_id: 'pruvodce', created_at: '2026-04-20T10:03:45.000Z' },
             { event_name: 'checkout_session_created', source: 'inline_paywall', feature: 'tarot', created_at: '2026-04-20T10:04:00.000Z' },
             { event_name: 'checkout_session_created', source: 'inline_login_gate', feature: 'mentor', created_at: '2026-04-20T10:05:00.000Z' },
         ]);
 
         expect(report.metrics.paywallViewed).toBe(4);
+        expect(report.metrics.pricingIntent).toBe(2);
         expect(report.metrics.checkoutStarted).toBe(2);
+        expect(report.metrics.paywallToPricingIntentRate).toBe(50);
+        expect(report.metrics.pricingIntentToCheckoutRate).toBe(100);
         expect(report.metrics.paywallToCheckoutRate).toBe(50);
         expect(report.daily[0]).toEqual(expect.objectContaining({
             date: '2026-04-20',
             paywallViewed: 4,
+            pricingIntent: 2,
             checkoutStarted: 2
         }));
     });
@@ -199,6 +208,7 @@ describe('Admin funnel report helpers', () => {
         const report = buildFunnelReport([
             { event_name: 'paywall_viewed', source: 'pricing', feature: 'tarot', created_at: '2026-04-20T10:00:00.000Z' },
             { event_name: 'paywall_viewed', source: 'pricing', feature: 'tarot', created_at: '2026-04-20T10:01:00.000Z' },
+            { event_name: 'pricing_plan_cta_clicked', source: 'pricing', feature: 'tarot', plan_id: 'pruvodce', created_at: '2026-04-20T10:01:30.000Z' },
             { event_name: 'checkout_session_created', source: 'pricing', feature: 'tarot', created_at: '2026-04-20T10:02:00.000Z' },
             { event_name: 'subscription_checkout_completed', source: 'pricing', feature: 'tarot', created_at: '2026-04-20T10:03:00.000Z' },
             { event_name: 'paywall_viewed', source: 'inline_paywall', feature: 'mentor', created_at: '2026-04-20T10:04:00.000Z' },
@@ -208,22 +218,30 @@ describe('Admin funnel report helpers', () => {
         expect(report.sourceFeatureSegments[0]).toMatchObject({
             source: 'pricing',
             feature: 'tarot',
-            totalEvents: 4,
+            totalEvents: 5,
             paywallViewed: 2,
+            pricingIntent: 1,
             checkoutStarted: 1,
             purchaseCompleted: 1,
             failures: 0,
+            paywallToPricingIntentRate: 50,
+            pricingIntentToCheckoutRate: 100,
             paywallToCheckoutRate: 50,
             checkoutToPurchaseRate: 100
         });
         expect(report.sourceFeatureSegments[0].previous).toMatchObject({
             totalEvents: 0,
             paywallViewed: 0,
+            pricingIntent: 0,
             checkoutStarted: 0,
             purchaseCompleted: 0,
+            paywallToPricingIntentRate: 0,
+            pricingIntentToCheckoutRate: 0,
             paywallToCheckoutRate: 0,
             checkoutToPurchaseRate: 0
         });
+        expect(report.sourceFeatureSegments[0].paywallToPricingIntentRateDelta).toBeNull();
+        expect(report.sourceFeatureSegments[0].pricingIntentToCheckoutRateDelta).toBeNull();
         expect(report.sourceFeatureSegments[0].paywallToCheckoutRateDelta).toBeNull();
         expect(report.sourceFeatureSegments[0].checkoutToPurchaseRateDelta).toBeNull();
 
@@ -232,9 +250,12 @@ describe('Admin funnel report helpers', () => {
             feature: 'mentor',
             totalEvents: 2,
             paywallViewed: 1,
+            pricingIntent: 0,
             checkoutStarted: 0,
             purchaseCompleted: 0,
             failures: 1,
+            paywallToPricingIntentRate: 0,
+            pricingIntentToCheckoutRate: 0,
             paywallToCheckoutRate: 0,
             checkoutToPurchaseRate: 0
         }));
@@ -243,9 +264,11 @@ describe('Admin funnel report helpers', () => {
     test('compares source and feature conversion segments against the previous period', () => {
         const report = buildFunnelReport([
             { event_name: 'paywall_viewed', source: 'pricing', feature: 'tarot', created_at: '2026-04-17T10:00:00.000Z' },
+            { event_name: 'pricing_plan_cta_clicked', source: 'pricing', feature: 'tarot', plan_id: 'pruvodce', created_at: '2026-04-17T10:00:30.000Z' },
             { event_name: 'checkout_session_created', source: 'pricing', feature: 'tarot', created_at: '2026-04-17T10:01:00.000Z' },
             { event_name: 'paywall_viewed', source: 'pricing', feature: 'tarot', created_at: '2026-04-24T10:00:00.000Z' },
             { event_name: 'paywall_viewed', source: 'pricing', feature: 'tarot', created_at: '2026-04-24T10:01:00.000Z' },
+            { event_name: 'pricing_plan_cta_clicked', source: 'pricing', feature: 'tarot', plan_id: 'pruvodce', created_at: '2026-04-24T10:01:30.000Z' },
             { event_name: 'checkout_session_created', source: 'pricing', feature: 'tarot', created_at: '2026-04-24T10:02:00.000Z' },
             { event_name: 'subscription_checkout_completed', source: 'pricing', feature: 'tarot', created_at: '2026-04-24T10:03:00.000Z' },
         ], {
@@ -257,16 +280,27 @@ describe('Admin funnel report helpers', () => {
         expect(report.sourceFeatureSegments[0]).toMatchObject({
             source: 'pricing',
             feature: 'tarot',
-            totalEvents: 4,
+            totalEvents: 5,
+            paywallViewed: 2,
+            pricingIntent: 1,
+            checkoutStarted: 1,
+            purchaseCompleted: 1,
+            paywallToPricingIntentRate: 50,
+            pricingIntentToCheckoutRate: 100,
             paywallToCheckoutRate: 50,
             checkoutToPurchaseRate: 100,
+            paywallToPricingIntentRateDelta: -50,
+            pricingIntentToCheckoutRateDelta: 0,
             paywallToCheckoutRateDelta: -50,
             checkoutToPurchaseRateDelta: 100,
             previous: expect.objectContaining({
-                totalEvents: 2,
+                totalEvents: 3,
                 paywallViewed: 1,
+                pricingIntent: 1,
                 checkoutStarted: 1,
                 purchaseCompleted: 0,
+                paywallToPricingIntentRate: 100,
+                pricingIntentToCheckoutRate: 100,
                 paywallToCheckoutRate: 100,
                 checkoutToPurchaseRate: 0
             })
@@ -276,27 +310,29 @@ describe('Admin funnel report helpers', () => {
     test('exports daily funnel report as CSV', () => {
         const report = buildFunnelReport([
             { event_name: 'paywall_viewed', source: 'inline_paywall', feature: 'tarot', created_at: '2026-04-20T10:00:00.000Z' },
+            { event_name: 'pricing_plan_cta_clicked', source: 'inline_paywall', feature: 'tarot', plan_id: 'pruvodce', created_at: '2026-04-20T10:02:00.000Z' },
             { event_name: 'checkout_session_created', source: 'inline_paywall', feature: 'tarot', created_at: '2026-04-20T10:04:00.000Z' },
             { event_name: 'subscription_checkout_completed', source: 'pricing', feature: 'tarot', plan_id: 'pruvodce', created_at: '2026-04-21T10:04:00.000Z' },
         ]);
 
         expect(buildFunnelDailyCsv(report)).toBe([
-            '"date","paywall_viewed","checkout_started","subscription_completed","one_time_completed","failures","refunds"',
-            '"2026-04-20","1","1","0","0","0","0"',
-            '"2026-04-21","0","0","1","0","0","0"'
+            '"date","paywall_viewed","pricing_intent","checkout_started","subscription_completed","one_time_completed","failures","refunds"',
+            '"2026-04-20","1","1","1","0","0","0","0"',
+            '"2026-04-21","0","0","0","1","0","0","0"'
         ].join('\n'));
     });
 
     test('exports source and feature segments as CSV', () => {
         const report = buildFunnelReport([
             { event_name: 'paywall_viewed', source: 'pricing', feature: 'tarot', created_at: '2026-04-20T10:00:00.000Z' },
+            { event_name: 'pricing_plan_cta_clicked', source: 'pricing', feature: 'tarot', plan_id: 'pruvodce', created_at: '2026-04-20T10:00:30.000Z' },
             { event_name: 'checkout_session_created', source: 'pricing', feature: 'tarot', created_at: '2026-04-20T10:01:00.000Z' },
             { event_name: 'subscription_checkout_completed', source: 'pricing', feature: 'tarot', created_at: '2026-04-20T10:02:00.000Z' },
         ]);
 
         expect(buildFunnelSegmentsCsv(report)).toBe([
-            '"source","feature","total_events","paywall_viewed","checkout_started","purchase_completed","failures","paywall_to_checkout_rate","checkout_to_purchase_rate","previous_paywall_to_checkout_rate","previous_checkout_to_purchase_rate","paywall_to_checkout_rate_delta","checkout_to_purchase_rate_delta"',
-            '"pricing","tarot","3","1","1","1","0","100","100","0","0","",""'
+            '"source","feature","total_events","paywall_viewed","pricing_intent","checkout_started","purchase_completed","failures","paywall_to_pricing_intent_rate","pricing_intent_to_checkout_rate","paywall_to_checkout_rate","checkout_to_purchase_rate","previous_paywall_to_pricing_intent_rate","previous_pricing_intent_to_checkout_rate","previous_paywall_to_checkout_rate","previous_checkout_to_purchase_rate","paywall_to_pricing_intent_rate_delta","pricing_intent_to_checkout_rate_delta","paywall_to_checkout_rate_delta","checkout_to_purchase_rate_delta"',
+            '"pricing","tarot","4","1","1","1","1","0","100","100","100","100","0","0","0","0","","","",""'
         ].join('\n'));
     });
 
@@ -674,6 +710,14 @@ describe('Admin funnel API access control', () => {
                 created_at: new Date().toISOString()
             },
             {
+                event_name: 'pricing_plan_cta_clicked',
+                source,
+                feature: 'tarot',
+                plan_id: 'pruvodce',
+                metadata,
+                created_at: new Date().toISOString()
+            },
+            {
                 event_name: 'checkout_session_created',
                 source,
                 feature: 'tarot',
@@ -704,7 +748,7 @@ describe('Admin funnel API access control', () => {
         expect(res.headers['content-type']).toContain('text/csv');
         expect(res.headers['content-disposition']).toContain('funnel-segments-1d.csv');
         expect(res.text).toContain('"source","feature","total_events"');
-        expect(res.text).toContain(`"${source}","tarot","3","1","1","1","0","100","100"`);
+        expect(res.text).toContain(`"${source}","tarot","4","1","1","1","1","0","100","100","100","100"`);
 
         const tarotCardsRes = await request(app)
             .get('/api/admin/funnel?days=1&format=csv&view=tarot-cards')
@@ -714,7 +758,7 @@ describe('Admin funnel API access control', () => {
         expect(tarotCardsRes.headers['content-type']).toContain('text/csv');
         expect(tarotCardsRes.headers['content-disposition']).toContain('funnel-tarot-cards-1d.csv');
         expect(tarotCardsRes.text).toContain('"card","entry_source","utm_source","campaign"');
-        expect(tarotCardsRes.text).toContain('"Hvězda","tarot_card_detail","pinterest","tarot_card_hvezda","3","1","1","1","0","100","100"');
+        expect(tarotCardsRes.text).toContain('"Hvězda","tarot_card_detail","pinterest","tarot_card_hvezda","4","1","1","1","0","100","100"');
     });
 
     test('admin can fetch first-party analytics report and CSV', async () => {

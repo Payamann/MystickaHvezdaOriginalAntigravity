@@ -34,6 +34,15 @@ const FUNNEL_REFUND_EVENTS = new Set([
     'payment_refunded',
 ]);
 
+const FUNNEL_PAYWALL_VIEW_EVENTS = new Set([
+    'paywall_viewed',
+    'login_gate_viewed',
+]);
+
+const FUNNEL_PRICING_INTENT_EVENTS = new Set([
+    'pricing_plan_cta_clicked',
+]);
+
 function incrementCounter(counter, key) {
     const normalizedKey = key || 'unknown';
     counter[normalizedKey] = (counter[normalizedKey] || 0) + 1;
@@ -84,6 +93,7 @@ function createDailyBucket(date) {
     return {
         date,
         paywallViewed: 0,
+        pricingIntent: 0,
         checkoutStarted: 0,
         subscriptionCompleted: 0,
         oneTimeCompleted: 0,
@@ -187,9 +197,12 @@ function createSourceFeatureSegment(source, feature) {
         feature,
         totalEvents: 0,
         paywallViewed: 0,
+        pricingIntent: 0,
         checkoutStarted: 0,
         purchaseCompleted: 0,
         failures: 0,
+        paywallToPricingIntentRate: 0,
+        pricingIntentToCheckoutRate: 0,
         paywallToCheckoutRate: 0,
         checkoutToPurchaseRate: 0
     };
@@ -202,7 +215,8 @@ function getSourceFeatureSegmentKey(source, feature) {
 function addFunnelConversionCounts(segment, eventName) {
     segment.totalEvents += 1;
 
-    if (eventName === 'paywall_viewed' || eventName === 'login_gate_viewed') segment.paywallViewed += 1;
+    if (FUNNEL_PAYWALL_VIEW_EVENTS.has(eventName)) segment.paywallViewed += 1;
+    if (FUNNEL_PRICING_INTENT_EVENTS.has(eventName)) segment.pricingIntent += 1;
     if (eventName === 'checkout_session_created') segment.checkoutStarted += 1;
     if (eventName === 'subscription_checkout_completed' || eventName === 'one_time_purchase_completed') segment.purchaseCompleted += 1;
     if (FUNNEL_FAILURE_EVENTS.has(eventName)) segment.failures += 1;
@@ -235,6 +249,12 @@ function buildSourceFeatureSegmentMap(events) {
 function applySourceFeatureRates(segment) {
     return {
         ...segment,
+        paywallToPricingIntentRate: segment.paywallViewed > 0
+            ? Math.round((segment.pricingIntent / segment.paywallViewed) * 1000) / 10
+            : 0,
+        pricingIntentToCheckoutRate: segment.pricingIntent > 0
+            ? Math.round((segment.checkoutStarted / segment.pricingIntent) * 1000) / 10
+            : 0,
         paywallToCheckoutRate: segment.paywallViewed > 0
             ? Math.round((segment.checkoutStarted / segment.paywallViewed) * 1000) / 10
             : 0,
@@ -259,6 +279,12 @@ function buildSourceFeatureSegments(events, previousEvents = [], limit = 10) {
         }))
         .map(segment => ({
             ...segment,
+            paywallToPricingIntentRateDelta: segment.previous.paywallViewed > 0
+                ? Math.round((segment.paywallToPricingIntentRate - segment.previous.paywallToPricingIntentRate) * 10) / 10
+                : null,
+            pricingIntentToCheckoutRateDelta: segment.previous.pricingIntent > 0
+                ? Math.round((segment.pricingIntentToCheckoutRate - segment.previous.pricingIntentToCheckoutRate) * 10) / 10
+                : null,
             paywallToCheckoutRateDelta: segment.previous.paywallViewed > 0
                 ? Math.round((segment.paywallToCheckoutRate - segment.previous.paywallToCheckoutRate) * 10) / 10
                 : null,
@@ -295,9 +321,12 @@ function createTarotCardSegment(card, entrySource, utmSource, campaign) {
         campaign,
         totalEvents: 0,
         paywallViewed: 0,
+        pricingIntent: 0,
         checkoutStarted: 0,
         purchaseCompleted: 0,
         failures: 0,
+        paywallToPricingIntentRate: 0,
+        pricingIntentToCheckoutRate: 0,
         paywallToCheckoutRate: 0,
         checkoutToPurchaseRate: 0
     };
@@ -655,7 +684,8 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
         if (date) {
             if (!byDay[date]) byDay[date] = createDailyBucket(date);
 
-            if (eventName === 'paywall_viewed' || eventName === 'login_gate_viewed') byDay[date].paywallViewed += 1;
+            if (FUNNEL_PAYWALL_VIEW_EVENTS.has(eventName)) byDay[date].paywallViewed += 1;
+            if (FUNNEL_PRICING_INTENT_EVENTS.has(eventName)) byDay[date].pricingIntent += 1;
             if (eventName === 'checkout_session_created') byDay[date].checkoutStarted += 1;
             if (eventName === 'subscription_checkout_completed') byDay[date].subscriptionCompleted += 1;
             if (eventName === 'one_time_purchase_completed') byDay[date].oneTimeCompleted += 1;
@@ -664,7 +694,8 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
         }
     }
 
-    const paywallViewed = (byEvent.paywall_viewed || 0) + (byEvent.login_gate_viewed || 0);
+    const paywallViewed = [...FUNNEL_PAYWALL_VIEW_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
+    const pricingIntent = [...FUNNEL_PRICING_INTENT_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
     const checkoutStarted = byEvent.checkout_session_created || 0;
     const subscriptionCompleted = byEvent.subscription_checkout_completed || 0;
     const oneTimeCompleted = byEvent.one_time_purchase_completed || 0;
@@ -678,6 +709,12 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
     const paywallToCheckoutRate = paywallViewed > 0
         ? Math.round((checkoutStarted / paywallViewed) * 1000) / 10
         : 0;
+    const paywallToPricingIntentRate = paywallViewed > 0
+        ? Math.round((pricingIntent / paywallViewed) * 1000) / 10
+        : 0;
+    const pricingIntentToCheckoutRate = pricingIntent > 0
+        ? Math.round((checkoutStarted / pricingIntent) * 1000) / 10
+        : 0;
 
     return {
         generatedAt: new Date().toISOString(),
@@ -689,6 +726,7 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
         totalEvents: currentEvents.length,
         metrics: {
             paywallViewed,
+            pricingIntent,
             checkoutStarted,
             subscriptionCompleted,
             oneTimeCompleted,
@@ -698,6 +736,8 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
             cancelRequests,
             conversionRate,
             paywallToCheckoutRate,
+            paywallToPricingIntentRate,
+            pricingIntentToCheckoutRate,
             estimatedValueCzk: Math.round(estimatedMinorValue / 100)
         },
         byEvent,
@@ -731,6 +771,7 @@ export function buildFunnelDailyCsv(report) {
     const header = [
         'date',
         'paywall_viewed',
+        'pricing_intent',
         'checkout_started',
         'subscription_completed',
         'one_time_completed',
@@ -741,6 +782,7 @@ export function buildFunnelDailyCsv(report) {
     const rows = (report.daily || []).map(row => [
         row.date,
         row.paywallViewed,
+        row.pricingIntent,
         row.checkoutStarted,
         row.subscriptionCompleted,
         row.oneTimeCompleted,
@@ -759,13 +801,20 @@ export function buildFunnelSegmentsCsv(report) {
         'feature',
         'total_events',
         'paywall_viewed',
+        'pricing_intent',
         'checkout_started',
         'purchase_completed',
         'failures',
+        'paywall_to_pricing_intent_rate',
+        'pricing_intent_to_checkout_rate',
         'paywall_to_checkout_rate',
         'checkout_to_purchase_rate',
+        'previous_paywall_to_pricing_intent_rate',
+        'previous_pricing_intent_to_checkout_rate',
         'previous_paywall_to_checkout_rate',
         'previous_checkout_to_purchase_rate',
+        'paywall_to_pricing_intent_rate_delta',
+        'pricing_intent_to_checkout_rate_delta',
         'paywall_to_checkout_rate_delta',
         'checkout_to_purchase_rate_delta'
     ];
@@ -775,13 +824,20 @@ export function buildFunnelSegmentsCsv(report) {
         row.feature,
         row.totalEvents,
         row.paywallViewed,
+        row.pricingIntent,
         row.checkoutStarted,
         row.purchaseCompleted,
         row.failures,
+        row.paywallToPricingIntentRate,
+        row.pricingIntentToCheckoutRate,
         row.paywallToCheckoutRate,
         row.checkoutToPurchaseRate,
+        row.previous?.paywallToPricingIntentRate ?? 0,
+        row.previous?.pricingIntentToCheckoutRate ?? 0,
         row.previous?.paywallToCheckoutRate ?? 0,
         row.previous?.checkoutToPurchaseRate ?? 0,
+        row.paywallToPricingIntentRateDelta,
+        row.pricingIntentToCheckoutRateDelta,
         row.paywallToCheckoutRateDelta,
         row.checkoutToPurchaseRateDelta
     ]);
