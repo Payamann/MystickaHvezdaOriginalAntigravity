@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { waitForPageReady } from './helpers.js';
+import { waitForPageReady, MOBILE_VIEWPORT } from './helpers.js';
 
 test.describe('Roční horoskop — jednorázový checkout', () => {
     test('objednávkový formulář ukazuje hodnotu a jistotu platby', async ({ page }) => {
@@ -10,6 +10,30 @@ test.describe('Roční horoskop — jednorázový checkout', () => {
         await expect(page.locator('.order-summary')).toContainText('199 Kč jednorázově');
         await expect(page.locator('.order-summary')).toContainText('PDF do e-mailu');
         await expect(page.locator('.form-note')).toContainText('žádné opakované strhávání');
+    });
+
+    test('mobilni CTA skok nezakryje formular fixni navigaci', async ({ page }) => {
+        await page.setViewportSize(MOBILE_VIEWPORT);
+        await page.goto('/rocni-horoskop.html?source=pricing_addon');
+        await waitForPageReady(page);
+
+        await page.locator('[data-scroll-target="form"]').click();
+        await expect.poll(() => page.evaluate(() =>
+            Math.round(document.getElementById('form')?.getBoundingClientRect().top || 9999)
+        )).toBeLessThanOrEqual(150);
+
+        const metrics = await page.evaluate(() => {
+            const nav = document.querySelector('.site-nav')?.getBoundingClientRect();
+            const form = document.getElementById('form')?.getBoundingClientRect();
+            return {
+                navBottom: nav?.bottom || 0,
+                formTop: form?.top || 0,
+                overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
+            };
+        });
+
+        expect(metrics.formTop).toBeGreaterThan(metrics.navBottom + 12);
+        expect(metrics.overflow).toBe(false);
     });
 
     test('odeslání formuláře posílá zdroj do one-time checkoutu', async ({ page }) => {
