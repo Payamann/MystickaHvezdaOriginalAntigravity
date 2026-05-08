@@ -116,6 +116,43 @@ describe('Public funnel event endpoint', () => {
         expect(res.status).toBe(200);
         expect(res.body.success).toBe(true);
     });
+
+    test('accepts pricing free and product intent before navigation', async () => {
+        const csrfToken = await getCsrfToken();
+        const freeRes = await request(app)
+            .post('/api/payment/funnel-event')
+            .set('x-csrf-token', csrfToken)
+            .send({
+                eventName: 'pricing_free_cta_clicked',
+                source: 'pricing_free_cta',
+                feature: 'daily_guidance',
+                metadata: {
+                    path: '/cenik.html',
+                    destination: '/prihlaseni.html',
+                    auth_mode: 'register'
+                }
+            });
+
+        expect(freeRes.status).toBe(200);
+        expect(freeRes.body.success).toBe(true);
+
+        const productRes = await request(app)
+            .post('/api/payment/funnel-event')
+            .set('x-csrf-token', csrfToken)
+            .send({
+                eventName: 'pricing_product_cta_clicked',
+                source: 'pricing_addon',
+                feature: 'osobni_mapa_2026',
+                metadata: {
+                    path: '/cenik.html',
+                    product_id: 'osobni_mapa_2026',
+                    destination: '/osobni-mapa.html?source=pricing_addon'
+                }
+            });
+
+        expect(productRes.status).toBe(200);
+        expect(productRes.body.success).toBe(true);
+    });
 });
 
 describe('Checkout funnel context metadata', () => {

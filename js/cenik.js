@@ -437,6 +437,23 @@ function waitForFunnelEventBeforeNavigation(funnelEventPromise) {
     ]);
 }
 
+function shouldControlTrackedNavigation(event) {
+    return event.button === 0
+        && !event.metaKey
+        && !event.ctrlKey
+        && !event.shiftKey
+        && !event.altKey
+        && !event.defaultPrevented;
+}
+
+function getEntryMetadata(context) {
+    return {
+        ...(context.metadata || {}),
+        entry_source: context.source || null,
+        entry_feature: context.feature || null
+    };
+}
+
 function renderCheckoutCancelRecovery(context) {
     const heroSubtitle = document.querySelector('.section--hero .hero__subtitle');
     if (!heroSubtitle) return;
@@ -691,26 +708,68 @@ function bindCheckoutButtons(context) {
     });
 }
 
-function bindProductLinks() {
+function bindProductLinks(context) {
     document.querySelectorAll('[data-product]').forEach((link) => {
-        link.addEventListener('click', () => {
+        link.addEventListener('click', async (event) => {
+            const href = link.getAttribute('href') || null;
+            const productId = link.dataset.product || null;
             window.MH_ANALYTICS?.trackCTA?.('pricing_one_time_product', {
-                product_id: link.dataset.product || null,
+                product_id: productId,
                 label: link.textContent?.trim() || 'one_time_product',
-                destination: link.getAttribute('href') || null
+                destination: href
             });
+
+            const funnelEvent = trackPricingFunnelEvent('pricing_product_cta_clicked', {
+                source: 'pricing_addon',
+                feature: productId,
+                metadata: getEntryMetadata(context)
+            }, {
+                product_id: productId,
+                label: link.textContent?.trim() || 'one_time_product',
+                destination: href
+            });
+
+            if (!href || !shouldControlTrackedNavigation(event)) {
+                void funnelEvent;
+                return;
+            }
+
+            event.preventDefault();
+            await waitForFunnelEventBeforeNavigation(funnelEvent);
+            window.location.href = link.href;
         });
     });
 }
 
-function bindFreePlanCta() {
+function bindFreePlanCta(context) {
     document.querySelector('[data-pricing-free-cta]')?.addEventListener('click', (event) => {
         const link = event.currentTarget;
+        const href = link.getAttribute('href') || '/prihlaseni.html';
         window.MH_ANALYTICS?.trackCTA?.('pricing_free_cta', {
-            destination: link.getAttribute('href') || '/prihlaseni.html',
+            destination: href,
             auth_mode: 'register',
             source: 'pricing_free_cta',
             feature: 'daily_guidance'
+        });
+
+        const funnelEvent = trackPricingFunnelEvent('pricing_free_cta_clicked', {
+            source: 'pricing_free_cta',
+            feature: 'daily_guidance',
+            metadata: getEntryMetadata(context)
+        }, {
+            label: link.textContent?.trim() || 'free_signup',
+            destination: href,
+            auth_mode: 'register'
+        });
+
+        if (!shouldControlTrackedNavigation(event)) {
+            void funnelEvent;
+            return;
+        }
+
+        event.preventDefault();
+        waitForFunnelEventBeforeNavigation(funnelEvent).then(() => {
+            window.location.href = link.href;
         });
     });
 }
@@ -776,8 +835,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     bindCheckoutButtons(context);
-    bindProductLinks();
-    bindFreePlanCta();
+    bindProductLinks(context);
+    bindFreePlanCta(context);
     bindPricingDecisionGuide(context);
 
     if (context.source !== 'pricing_page' || context.feature || context.recommendedPlan !== 'pruvodce') {

@@ -259,6 +259,111 @@ test.describe('Ceník — platební tlačítka', () => {
         }));
     });
 
+    test('free CTA zapise serverovy funnel intent pred registraci', async ({ page }) => {
+        let resolveFreeIntent;
+        const freeIntent = new Promise((resolve) => {
+            resolveFreeIntent = resolve;
+        });
+
+        await page.route('**/api/csrf-token', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ csrfToken: 'e2e-pricing-free-token' })
+            });
+        });
+
+        await page.route('**/api/payment/funnel-event', async (route) => {
+            const payload = route.request().postDataJSON();
+            if (payload?.eventName === 'pricing_free_cta_clicked') {
+                resolveFreeIntent(payload);
+            }
+
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+
+        await page.goto('/cenik.html?source=homepage_cta&feature=daily_guidance');
+        await waitForPageReady(page);
+
+        await Promise.all([
+            freeIntent,
+            page.waitForURL(/prihlaseni\.html/),
+            page.locator('[data-pricing-free-cta]').click()
+        ]);
+
+        await expect.poll(async () => {
+            const payload = await freeIntent;
+            return payload;
+        }).toEqual(expect.objectContaining({
+            eventName: 'pricing_free_cta_clicked',
+            source: 'pricing_free_cta',
+            feature: 'daily_guidance',
+            metadata: expect.objectContaining({
+                path: '/cenik.html',
+                entry_source: 'homepage_cta',
+                entry_feature: 'daily_guidance',
+                auth_mode: 'register'
+            })
+        }));
+    });
+
+    test('produktovy doplnek zapise serverovy funnel intent pred navigaci', async ({ page }) => {
+        let resolveProductIntent;
+        const productIntent = new Promise((resolve) => {
+            resolveProductIntent = resolve;
+        });
+
+        await page.route('**/api/csrf-token', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ csrfToken: 'e2e-pricing-product-token' })
+            });
+        });
+
+        await page.route('**/api/payment/funnel-event', async (route) => {
+            const payload = route.request().postDataJSON();
+            if (payload?.eventName === 'pricing_product_cta_clicked') {
+                resolveProductIntent(payload);
+            }
+
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+
+        await page.goto('/cenik.html?source=pricing_page&feature=premium_membership');
+        await waitForPageReady(page);
+
+        await Promise.all([
+            productIntent,
+            page.waitForURL(/osobni-mapa\.html/),
+            page.locator('[data-product="osobni_mapa_2026"]').click()
+        ]);
+
+        await expect.poll(async () => {
+            const payload = await productIntent;
+            return payload;
+        }).toEqual(expect.objectContaining({
+            eventName: 'pricing_product_cta_clicked',
+            source: 'pricing_addon',
+            feature: 'osobni_mapa_2026',
+            metadata: expect.objectContaining({
+                path: '/cenik.html',
+                product_id: 'osobni_mapa_2026',
+                entry_source: 'pricing_page',
+                entry_feature: 'premium_membership',
+                destination: 'osobni-mapa.html?source=pricing_addon'
+            })
+        }));
+    });
+
     test('zruseny checkout zobrazi recovery panel s kontextovym navratem', async ({ page }) => {
         await page.goto('/cenik.html?payment=cancel&plan=pruvodce&source=inline_paywall&feature=tarot_multi_card');
         await waitForPageReady(page);
