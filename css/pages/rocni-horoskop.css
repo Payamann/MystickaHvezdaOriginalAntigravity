@@ -149,6 +149,16 @@
       color: rgba(232,224,208,0.75); font-size: 14.5px; line-height: 1.85;
       font-style: italic; text-align: center;
     }
+    .sample-cta {
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      margin-top: 24px; text-align: center;
+    }
+    .hero-cta--sample {
+      padding: 14px 28px; font-size: 14px;
+    }
+    .sample-cta__note {
+      color: var(--text-dim); font-size: 12.5px;
+    }
 
     /* ── FORM ── */
     .form-section {
@@ -307,6 +317,7 @@
       .trust-strip { grid-template-columns: 1fr; margin-top: -28px; }
       .form-card { padding: 28px 20px; }
       .sample-box { padding: 28px 20px; }
+      .sample-cta .hero-cta { width: 100%; }
       .order-summary div { display: block; }
       .order-summary span { display: block; margin-top: 3px; text-align: left; }
     }

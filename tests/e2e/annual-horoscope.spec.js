@@ -45,7 +45,7 @@ test.describe('Roční horoskop — jednorázový checkout', () => {
 
         await Promise.all([
             productIntent,
-            page.locator('[data-scroll-target="form"]').click()
+            page.locator('.hero > [data-scroll-target="form"]').click()
         ]);
         await expect.poll(async () => {
             const payload = await productIntent;
@@ -78,6 +78,64 @@ test.describe('Roční horoskop — jednorázový checkout', () => {
 
         expect(metrics.formTop).toBeGreaterThan(metrics.navBottom + 12);
         expect(metrics.overflow).toBe(false);
+    });
+
+    test('ukazka vykladu ma primy nakupni krok na formular', async ({ page }) => {
+        let resolveProductIntent;
+        const productIntent = new Promise((resolve) => {
+            resolveProductIntent = resolve;
+        });
+
+        await page.route('**/api/csrf-token', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ csrfToken: 'e2e-annual-sample-token' })
+            });
+        });
+
+        await page.route('**/api/payment/funnel-event', async (route) => {
+            const payload = route.request().postDataJSON();
+            if (payload?.eventName === 'one_time_product_cta_clicked') {
+                resolveProductIntent(payload);
+            }
+
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+
+        await page.goto('/rocni-horoskop.html?source=homepage_spotlight_secondary');
+        await waitForPageReady(page);
+
+        const sampleCta = page.locator('.sample-cta [data-scroll-target="form"]');
+        await expect(sampleCta).toBeVisible();
+        await expect(sampleCta).toContainText('199 Kč');
+
+        await Promise.all([
+            productIntent,
+            sampleCta.click()
+        ]);
+
+        await expect.poll(async () => {
+            const payload = await productIntent;
+            return payload;
+        }).toEqual(expect.objectContaining({
+            eventName: 'one_time_product_cta_clicked',
+            source: 'homepage_spotlight_secondary',
+            feature: 'rocni_horoskop_2026',
+            metadata: expect.objectContaining({
+                cta_location: 'sample_after_preview',
+                product_id: 'rocni_horoskop_2026',
+                target: 'form'
+            })
+        }));
+
+        await expect.poll(() => page.evaluate(() =>
+            Math.round(document.getElementById('form')?.getBoundingClientRect().top || 9999)
+        )).toBeLessThanOrEqual(150);
     });
 
     test('odeslání formuláře posílá zdroj do one-time checkoutu', async ({ page }) => {

@@ -124,12 +124,16 @@ function handleAnnualPaymentStatus() {
     }
 }
 
+function getAnnualCtaLocation(button) {
+    return button.dataset.ctaLocation || button.className || 'annual_horoscope_page';
+}
+
 function bindAnnualScrollButtons() {
     document.querySelectorAll('[data-scroll-target]').forEach((button) => {
         button.addEventListener('click', () => {
             const target = document.getElementById(button.dataset.scrollTarget);
             trackAnnualEvent('one_time_product_cta_clicked', {
-                cta_location: button.className || 'annual_horoscope_page',
+                cta_location: getAnnualCtaLocation(button),
                 target: button.dataset.scrollTarget || null
             });
             target?.scrollIntoView({ behavior: 'smooth' });
