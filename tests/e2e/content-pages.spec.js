@@ -677,6 +677,65 @@ test.describe('Aura', () => {
 
 test.describe('Osobní mapa', () => {
 
+    test('hero CTA komunikuje cenu a meri prvni placeny zamer', async ({ page }) => {
+        let resolveProductIntent;
+        const productIntent = new Promise((resolve) => {
+            resolveProductIntent = resolve;
+        });
+
+        await page.route('**/api/csrf-token', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ csrfToken: 'e2e-personal-map-hero-token' })
+            });
+        });
+
+        await page.route('**/api/payment/funnel-event', async (route) => {
+            const payload = route.request().postDataJSON();
+            if (payload?.eventName === 'one_time_product_cta_clicked') {
+                resolveProductIntent(payload);
+            }
+
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+
+        await page.goto('/osobni-mapa.html?source=e2e_personal_map_hero');
+        await waitForPageReady(page);
+
+        const heroCta = page.locator('.pm-hero__actions [data-scroll-target="order"]').first();
+        await expect(heroCta).toContainText('Chci mapu za 299 Kč');
+        await expect(heroCta).toHaveAttribute('data-cta-location', 'hero');
+
+        await Promise.all([
+            productIntent,
+            heroCta.click()
+        ]);
+        await expect.poll(async () => {
+            const payload = await productIntent;
+            return payload;
+        }).toEqual(expect.objectContaining({
+            eventName: 'one_time_product_cta_clicked',
+            source: 'e2e_personal_map_hero',
+            feature: 'osobni_mapa_2026',
+            planId: 'osobni_mapa_2026',
+            planType: 'personal_map',
+            metadata: expect.objectContaining({
+                cta_location: 'hero',
+                product_id: 'osobni_mapa_2026',
+                target: 'order'
+            })
+        }));
+
+        await expect.poll(() => page.evaluate(() =>
+            Math.round(document.getElementById('order')?.getBoundingClientRect().top || 9999)
+        )).toBeLessThanOrEqual(140);
+    });
+
     test('landing ukazuje nákupní shrnutí a CTA odscrolluje k formuláři', async ({ page }) => {
         let resolveProductIntent;
         const productIntent = new Promise((resolve) => {
