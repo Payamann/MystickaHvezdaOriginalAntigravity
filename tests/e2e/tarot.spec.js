@@ -247,10 +247,31 @@ test.describe('Tarot', () => {
                 || cookie.bottom < cta.top
                 || cookie.top > cta.bottom
             ));
+            const overlappedVisibleCtas = [...document.querySelectorAll('a.btn, button.btn, button[type="submit"], [data-cta-location]')]
+                .filter((element) => !element.closest('#cookie-banner'))
+                .map((element) => {
+                    const rect = element.getBoundingClientRect();
+                    const style = getComputedStyle(element);
+                    const visible = rect.width > 0
+                        && rect.height > 0
+                        && rect.bottom >= 0
+                        && rect.top <= window.innerHeight
+                        && style.visibility !== 'hidden'
+                        && style.display !== 'none';
+                    const overlaps = !!(cookie && visible && !(
+                        cookie.right < rect.left
+                        || cookie.left > rect.right
+                        || cookie.bottom < rect.top
+                        || cookie.top > rect.bottom
+                    ));
+                    return overlaps ? (element.textContent || '').trim().replace(/\s+/g, ' ') : null;
+                })
+                .filter(Boolean);
 
             return {
                 ctaBottom: Math.round(cta?.bottom || 9999),
                 cookieTop: Math.round(cookie?.top || window.innerHeight),
+                overlappedVisibleCtas,
                 overlapsCookie,
                 overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth
             };
@@ -258,6 +279,7 @@ test.describe('Tarot', () => {
 
         expect(metrics.overflow).toBe(false);
         expect(metrics.overlapsCookie).toBe(false);
+        expect(metrics.overlappedVisibleCtas).toEqual([]);
         expect(metrics.ctaBottom).toBeLessThanOrEqual(metrics.cookieTop);
     });
 });
