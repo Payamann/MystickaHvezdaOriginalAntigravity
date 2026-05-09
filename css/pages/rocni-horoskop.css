@@ -256,6 +256,22 @@
       display: inline-block; margin-top: 14px; color: #000; background: linear-gradient(135deg, #c9a227, #e8c94f);
       padding: 12px 18px; border-radius: 8px; font-weight: 700; text-decoration: none;
     }
+    .status-actions {
+      display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
+      margin-top: 24px;
+    }
+    .status-action {
+      min-height: 46px; display: inline-flex; align-items: center; justify-content: center;
+      padding: 13px 20px; font-size: 14px;
+    }
+    .status-action--ghost {
+      background: transparent; color: var(--gold-light); border: 1px solid rgba(212,175,55,0.34);
+      border-radius: 8px; font-weight: 700; letter-spacing: 0.4px; cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    }
+    .status-action--ghost:hover {
+      border-color: rgba(212,175,55,0.58); background: rgba(212,175,55,0.08); transform: translateY(-2px);
+    }
 
     .form-error {
       background: rgba(220,50,50,0.1); border: 1px solid rgba(220,50,50,0.3);
@@ -318,6 +334,8 @@
       .form-card { padding: 28px 20px; }
       .sample-box { padding: 28px 20px; }
       .sample-cta .hero-cta { width: 100%; }
+      .status-actions { flex-direction: column; }
+      .status-action { width: 100%; }
       .order-summary div { display: block; }
       .order-summary span { display: block; margin-top: 3px; text-align: left; }
     }

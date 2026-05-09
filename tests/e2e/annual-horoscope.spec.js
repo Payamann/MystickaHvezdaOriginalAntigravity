@@ -138,6 +138,65 @@ test.describe('Roční horoskop — jednorázový checkout', () => {
         )).toBeLessThanOrEqual(150);
     });
 
+    test('zrusena platba ma recovery CTA zpet k objednavce', async ({ page }) => {
+        let resolveRecoveryIntent;
+        const recoveryIntent = new Promise((resolve) => {
+            resolveRecoveryIntent = resolve;
+        });
+
+        await page.route('**/api/csrf-token', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ csrfToken: 'e2e-annual-cancel-token' })
+            });
+        });
+
+        await page.route('**/api/payment/funnel-event', async (route) => {
+            const payload = route.request().postDataJSON();
+            if (payload?.eventName === 'one_time_product_cta_clicked') {
+                resolveRecoveryIntent(payload);
+            }
+
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+
+        await page.setViewportSize(MOBILE_VIEWPORT);
+        await page.goto('/rocni-horoskop.html?status=cancel&source=pricing_addon');
+        await waitForPageReady(page);
+
+        await expect(page.locator('#bannerCancel')).toBeVisible();
+        await expect(page.locator('[data-cta-location="cancel_recovery"]')).toBeVisible();
+        await expect(page.locator('[data-cta-location="cancel_sample_review"]')).toBeVisible();
+
+        await Promise.all([
+            recoveryIntent,
+            page.locator('[data-cta-location="cancel_recovery"]').click()
+        ]);
+
+        await expect.poll(async () => {
+            const payload = await recoveryIntent;
+            return payload;
+        }).toEqual(expect.objectContaining({
+            eventName: 'one_time_product_cta_clicked',
+            source: 'pricing_addon',
+            feature: 'rocni_horoskop_2026',
+            metadata: expect.objectContaining({
+                cta_location: 'cancel_recovery',
+                product_id: 'rocni_horoskop_2026',
+                target: 'form'
+            })
+        }));
+
+        await expect.poll(() => page.evaluate(() =>
+            Math.round(document.getElementById('form')?.getBoundingClientRect().top || 9999)
+        )).toBeLessThanOrEqual(150);
+    });
+
     test('odeslání formuláře posílá zdroj do one-time checkoutu', async ({ page }) => {
         let checkoutPayload = null;
         let resolveFormStarted;

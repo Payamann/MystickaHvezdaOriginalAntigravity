@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Roční Horoskop na míru 2026 — Mystická Hvězda</title>
   <meta name="description" content="Personalizovaný roční horoskop vytvořený speciálně pro tebe. 6 oblastí života, konkrétní předpovědi, klíčové měsíce. Doručení do e-mailu jako PDF.">
-      <link rel="stylesheet" href="css/pages/rocni-horoskop.css?v=3">
+      <link rel="stylesheet" href="css/pages/rocni-horoskop.css?v=4">
 <link rel="canonical" href="https://www.mystickahvezda.cz/rocni-horoskop.html">
   <meta property="og:title" content="Roční Horoskop na míru 2026 — Mystická Hvězda">
   <meta property="og:description" content="Personalizovaný roční horoskop pro tvé znamení. Doručení do e-mailu do 5 minut.">
@@ -89,7 +89,17 @@
   <div class="status-banner-inner cancel">
     <div class="status-icon">◌</div>
     <div class="status-title">Platba zrušena</div>
-    <div class="status-text">Platba nebyla dokončena. Pokud chceš pokračovat, vyplň formulář níže.</div>
+    <div class="status-text">
+      Platba nebyla dokončena. Objednávka se neztratila, můžeš se vrátit zpět k formuláři nebo si ještě jednou projít ukázku.
+    </div>
+    <div class="status-actions">
+      <button class="hero-cta status-action" type="button" data-scroll-target="form" data-cta-location="cancel_recovery">
+        Vrátit se k objednávce →
+      </button>
+      <button class="status-action status-action--ghost" type="button" data-scroll-target="sample" data-cta-location="cancel_sample_review">
+        Projít ukázku výkladu
+      </button>
+    </div>
   </div>
 </div>
 
@@ -163,7 +173,7 @@
 </div>
 
 <!-- SAMPLE -->
-<div class="sample-section">
+<div class="sample-section" id="sample">
   <div class="sample-label">Ukázka z výkladu</div>
   <div class="sample-box">
     <div class="sample-box-title">Láska &amp; Vztahy · Ukázka pro Váhy</div>
@@ -175,7 +185,7 @@
   </div>
   <div class="sample-cta">
     <button class="hero-cta hero-cta--sample" type="button" data-scroll-target="form" data-cta-location="sample_after_preview">
-      Objednat roční horoskop za 199 Kč →
+      Objednat za 199 Kč →
     </button>
     <span class="sample-cta__note">jednorázově · bez předplatného · PDF do e-mailu</span>
   </div>
