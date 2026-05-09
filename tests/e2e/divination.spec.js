@@ -350,6 +350,38 @@ test.describe('Minulý život', () => {
         expect(registerHref).toContain('feature=minuly_zivot');
     });
 
+    test('mobilní premium CTA není překryté cookie bannerem', async ({ page }) => {
+        await page.setViewportSize(MOBILE_VIEWPORT);
+        await page.goto('/minuly-zivot.html');
+        await waitForPageReady(page);
+
+        await expect(page.locator('#premium-wall')).toBeVisible();
+        await expect(page.locator('#past-life-upgrade-btn')).toContainText('Získat Průvodce za 199 Kč/měsíc');
+
+        const metrics = await page.evaluate(() => {
+            const cta = document.getElementById('past-life-upgrade-btn')?.getBoundingClientRect();
+            const banner = document.getElementById('cookie-banner')?.getBoundingClientRect();
+            const overlapsCookie = !!(cta && banner && !(
+                banner.right < cta.left
+                || banner.left > cta.right
+                || banner.bottom < cta.top
+                || banner.top > cta.bottom
+            ));
+
+            return {
+                ctaTop: Math.round(cta?.top || 9999),
+                ctaBottom: Math.round(cta?.bottom || 9999),
+                cookieTop: Math.round(banner?.top || window.innerHeight),
+                overlapsCookie,
+                overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth
+            };
+        });
+
+        expect(metrics.overflow).toBe(false);
+        expect(metrics.overlapsCookie).toBe(false);
+        expect(metrics.ctaBottom).toBeLessThanOrEqual(metrics.cookieTop);
+    });
+
     test('sdílecí tlačítka existují v DOM', async ({ page }) => {
         const shareBtns = page.locator('#share-native, #share-fb, #share-x, #share-copy');
         const count = await shareBtns.count();

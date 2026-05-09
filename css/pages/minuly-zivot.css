@@ -258,6 +258,49 @@ html body .mh-inline-86d8ab1c6e { color:var(--color-mystic-gold); margin-bottom:
 html body .mh-inline-12c80dc879 { color:rgba(255,255,255,0.6); margin-bottom:1.5rem; font-size:0.95rem; }
 html body .mh-inline-9e19b1226c { text-align:center; margin-bottom:0.25rem; font-size:1.3rem; }
 html body .mh-inline-c837e68b57 { text-align:center; color:rgba(255,255,255,0.4); font-size:0.85rem; margin-bottom:1.75rem; }
+
+@media (max-width: 600px) {
+    body.page-past-life .past-life-hero {
+        min-height: auto;
+        padding: 5rem 1rem 1.25rem;
+    }
+
+    body.page-past-life .past-life-form-section {
+        padding: 0 0.9rem 3rem;
+    }
+
+    body.page-past-life .premium-wall {
+        padding: 1.45rem 1.05rem;
+        border-radius: 18px;
+        margin-bottom: 3rem;
+    }
+
+    body.page-past-life .mh-inline-3e013ac1d3 {
+        font-size: 2.1rem;
+        margin-bottom: 0.55rem;
+    }
+
+    body.page-past-life .mh-inline-86d8ab1c6e {
+        margin-bottom: 0.55rem;
+        font-size: 1.45rem;
+        line-height: 1.22;
+    }
+
+    body.page-past-life .mh-inline-12c80dc879 {
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+        line-height: 1.55;
+    }
+
+    body.page-past-life #past-life-upgrade-btn,
+    body.page-past-life #past-life-register-btn {
+        width: 100%;
+        min-height: 48px;
+        padding: 0.85rem 0.95rem;
+        font-size: 0.9rem;
+        line-height: 1.25;
+    }
+}
 html body .mh-inline-62b6e9a287 { color:rgba(255,255,255,0.3); font-size:0.85em; }
 html body .mh-inline-1696ec4f54 { text-align:center; font-size:0.7rem; color:rgba(255,255,255,0.25); margin-top:0.75rem; }
 html body .mh-inline-8fb01e8dda { color:rgba(255,255,255,0.5); margin-top:1.5rem; font-size:0.95rem; }
