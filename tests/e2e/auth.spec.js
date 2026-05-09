@@ -320,6 +320,48 @@ test.describe('Login stránka', () => {
         ]);
     });
 
+    test('mobilni placeny checkout kontext je videt pred formularem', async ({ page }) => {
+        await page.setViewportSize(MOBILE_VIEWPORT);
+        await page.evaluate(() => {
+            localStorage.removeItem('mh_cookie_prefs');
+            localStorage.removeItem('cookieConsent');
+        });
+        await page.goto('/prihlaseni.html?mode=register&redirect=/cenik.html&plan=pruvodce&source=pricing_email&feature=premium_membership');
+        await waitForPageReady(page);
+        await expect(page.locator('#cookie-banner')).toBeVisible({ timeout: 4000 });
+        await expect.poll(() => page.evaluate(() => {
+            const buttons = Array.from(document.querySelectorAll('#cookie-banner button'));
+            return buttons.length === 3 && buttons.every((button) => {
+                const rect = button.getBoundingClientRect();
+                return rect.top >= 0 && rect.bottom <= window.innerHeight;
+            });
+        }), { timeout: 6000 }).toBe(true);
+
+        const metrics = await page.evaluate(() => {
+            const context = document.getElementById('checkout-context-banner')?.getBoundingClientRect();
+            const email = document.getElementById('email')?.getBoundingClientRect();
+            const submit = document.getElementById('auth-submit')?.getBoundingClientRect();
+            const cookie = document.getElementById('cookie-banner')?.getBoundingClientRect();
+            const overlaps = (a, b) => !!(a && b && !(
+                b.right < a.left
+                || b.left > a.right
+                || b.bottom < a.top
+                || b.top > a.bottom
+            ));
+            return {
+                contextBeforeEmail: Math.round(context?.bottom || 9999) <= Math.round(email?.top || 0),
+                contextVisible: !!context && context.top >= 0 && context.bottom <= window.innerHeight,
+                submitVisible: !!submit && submit.top >= 0 && submit.bottom <= window.innerHeight,
+                submitOverlapsCookie: overlaps(submit, cookie)
+            };
+        });
+
+        expect(metrics.contextBeforeEmail).toBe(true);
+        expect(metrics.contextVisible).toBe(true);
+        expect(metrics.submitVisible).toBe(true);
+        expect(metrics.submitOverlapsCookie).toBe(false);
+    });
+
     test('checkout banner neukazuje interni feature identifikatory', async ({ page }) => {
         await page.goto('/prihlaseni.html?mode=register&redirect=/cenik.html&plan=pruvodce&source=tarot_freemium_banner&feature=tarot_multi_card');
         await waitForPageReady(page);

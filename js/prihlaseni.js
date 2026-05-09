@@ -407,6 +407,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         document.body.classList.toggle('auth-register-mode', isRegisterMode);
+        document.body.classList.toggle('auth-checkout-plan-mode', isRegisterMode && Boolean(requestedPlan));
 
         if (forgotPasswordLink) {
             setBlockVisible(forgotPasswordLink, !isRegisterMode);
