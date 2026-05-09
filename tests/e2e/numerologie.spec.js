@@ -193,4 +193,39 @@ test.describe('Numerologie', () => {
         );
         expect(hasHorizontalScroll).toBe(false);
     });
+
+    test('mobilni cookie lista neprekryva submit CTA', async ({ page }) => {
+        await page.setViewportSize(MOBILE_VIEWPORT);
+        await page.evaluate(() => {
+            localStorage.removeItem('mh_cookie_prefs');
+            localStorage.removeItem('cookieConsent');
+        });
+        await page.goto('/numerologie.html?source=e2e_numerology_cookie');
+        await waitForPageReady(page);
+
+        await expect(page.locator('#cookie-banner')).toBeVisible();
+        await expect(page.locator('#numerology-form button[type="submit"]')).toBeVisible();
+
+        const metrics = await page.evaluate(() => {
+            const cta = document.querySelector('#numerology-form button[type="submit"]')?.getBoundingClientRect();
+            const cookie = document.getElementById('cookie-banner')?.getBoundingClientRect();
+            const overlapsCookie = !!(cta && cookie && !(
+                cookie.right < cta.left
+                || cookie.left > cta.right
+                || cookie.bottom < cta.top
+                || cookie.top > cta.bottom
+            ));
+
+            return {
+                ctaBottom: Math.round(cta?.bottom || 9999),
+                cookieTop: Math.round(cookie?.top || window.innerHeight),
+                overlapsCookie,
+                overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth
+            };
+        });
+
+        expect(metrics.overflow).toBe(false);
+        expect(metrics.overlapsCookie).toBe(false);
+        expect(metrics.ctaBottom).toBeLessThanOrEqual(metrics.cookieTop);
+    });
 });

@@ -143,3 +143,129 @@ html body .mh-inline-bc2787405c { color: var(--color-silver-mist); opacity: 0.8;
     margin: 0;
     color: #e74c3c;
 }
+
+@media (max-width: 480px) {
+    body.page-numerology .section--hero {
+        padding-top: 5.25rem;
+        padding-bottom: 0.45rem;
+    }
+
+    body.page-numerology .hero__title {
+        margin-bottom: 0.55rem;
+        font-size: 2.25rem;
+        line-height: 1.05;
+    }
+
+    body.page-numerology .hero__subtitle {
+        max-width: 22rem;
+        margin: 0 auto;
+        font-size: 1rem;
+        line-height: 1.42;
+    }
+
+    body.page-numerology .numerology-calculator-section {
+        padding-top: 0.35rem;
+        padding-bottom: 2.5rem;
+    }
+
+    body.page-numerology .numerology-calculator-card {
+        width: calc(100% - 1.4rem);
+        padding: 0.95rem 0.85rem 1rem;
+        border-radius: 16px;
+    }
+
+    body.page-numerology .numerology-calculator-card .flex-between {
+        margin-bottom: 0.65rem;
+    }
+
+    body.page-numerology .numerology-calculator-card .card__title {
+        font-size: 1.45rem;
+        line-height: 1.15;
+    }
+
+    body.page-numerology .num-form {
+        display: grid;
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        gap: 0.55rem;
+    }
+
+    body.page-numerology .num-form .form-group {
+        margin-bottom: 0;
+    }
+
+    body.page-numerology .num-form .form-label {
+        margin-bottom: 0.25rem;
+        font-size: 0.9rem;
+        line-height: 1.2;
+    }
+
+    body.page-numerology .num-form .form-input {
+        min-height: 42px;
+        margin-bottom: 0 !important;
+        padding: 0.65rem 0.8rem;
+        font-size: 1rem;
+    }
+
+    body.page-numerology .num-form small {
+        display: none;
+    }
+
+    body.page-numerology .numerology-submit-btn {
+        width: 100%;
+        min-height: 44px;
+        margin-top: 0.1rem;
+        padding: 0.7rem 0.9rem;
+        font-size: 0.78rem;
+        line-height: 1.15;
+    }
+
+    body.page-numerology .cookie-banner {
+        left: 12px;
+        right: 12px;
+        bottom: 8px;
+        width: auto;
+        max-width: none !important;
+        padding: 0.48rem 0.54rem;
+    }
+
+    body.page-numerology .cookie-banner__content {
+        gap: 0.28rem;
+    }
+
+    body.page-numerology .cookie-banner__text {
+        font-size: 0.66rem;
+        line-height: 1.18;
+    }
+
+    body.page-numerology .cookie-banner__content > div:not(.cookie-banner__actions) {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.16rem 0.42rem;
+        font-size: 0.6rem;
+        line-height: 1.1;
+    }
+
+    body.page-numerology .cookie-banner__actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.3rem;
+    }
+
+    body.page-numerology .cookie-banner__actions .btn {
+        width: 100%;
+        min-height: 32px;
+        padding: 0.36rem 0.44rem;
+        font-size: 0.58rem;
+        line-height: 1.1;
+    }
+
+    body.page-numerology #cookie-accept {
+        grid-column: 1 / -1;
+    }
+
+    body.page-numerology.cookie-banner-active {
+        padding-bottom: 0;
+    }
+}

@@ -13,6 +13,10 @@ window.Premium = {
         return div.innerHTML;
     },
 
+    _hasLoginCookie() {
+        return document.cookie.split(';').some((part) => part.trim() === 'logged_in=1');
+    },
+
     async checkStatus() {
         if (window.Auth?.isPremium?.()) {
             if (window.MH_DEBUG) console.debug('Premium verified locally');
@@ -20,6 +24,7 @@ window.Premium = {
         }
 
         if (window.Auth && !window.Auth.isLoggedIn()) return false;
+        if (!window.Auth && !this._hasLoginCookie()) return false;
 
         try {
             const response = await fetch(`${this.getApiBaseUrl()}/payment/subscription/status`, {
