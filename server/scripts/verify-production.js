@@ -67,7 +67,9 @@ const CONVERSION_LINK_CHECKS = [
             'Než si vytvoříš účet',
             'Provozovatel služby Mystická Hvězda',
             'Nenahrazují lékařskou, psychologickou, právní ani finanční pomoc',
-            'Výpočty pod povrchem',
+            'Ne další ezoterická stránka',
+            'Denní rituál, ne náhodné klikání',
+            'Paměť výkladů, ne jednorázový obsah',
             'Chceš porovnat všechny tarify',
             'Otevřít celý ceník'
         ]
