@@ -46,6 +46,13 @@ SIGN_EN = {
     'Kozoroh': 'Capricorn', 'Vodnář': 'Aquarius', 'Ryby': 'Pisces',
 }
 
+SIGN_GLYPH = {
+    'Beran': '♈', 'Býk': '♉', 'Blíženci': '♊',
+    'Rak': '♋', 'Lev': '♌', 'Panna': '♍',
+    'Váhy': '♎', 'Štír': '♏', 'Střelec': '♐',
+    'Kozoroh': '♑', 'Vodnář': '♒', 'Ryby': '♓',
+}
+
 # Energie každého znamení pro výběr svitku
 SIGN_ENERGY = {
     'Beran':    'fire',    'Lev':      'fire',    'Střelec':  'fire',
@@ -239,18 +246,20 @@ def build_prompt(date_str: str, bg_color: str, wheel_color: str,
     date_cs   = format_date_cs(date_str)
     line1, line2 = scroll
     signs_en  = ", ".join(SIGN_EN[s] for s in signs)
+    glyphs    = " ".join(SIGN_GLYPH[s] for s in signs)
+    talismans = "; ".join(f"{SIGN_EN[s]} = {SIGN_GLYPH[s]}" for s in signs)
 
     return f"""A mystical video thumbnail. The cosmic nebula background: {bg_color} — dramatic, atmospheric, do not simplify.
 
-The zodiac wheel: ancient dark obsidian material, weathered and worn, {wheel_color}. Golden filigree engraving outlines exactly 12 segments. The wheel has ONE single ring of 12 segments only — no inner ring, no duplicate symbols. Each sign appears exactly once in its correct astrological position, clockwise from the top: Aries (12 o'clock), Taurus (1 o'clock), Gemini (2 o'clock), Cancer (3 o'clock), Leo (4 o'clock), Virgo (5 o'clock), Libra (6 o'clock), Scorpio (7 o'clock), Sagittarius (8 o'clock), Capricorn (9 o'clock), Aquarius (10 o'clock), Pisces (11 o'clock). Each segment contains ONLY the correct astrological glyph symbol for that sign in soft glowing gold — elegant, not harsh. NO animal illustrations, NO pictograms, NO drawings of lions, crabs, bulls or any creatures — ONLY the standard astrological text symbols (♈♉♊♋♌♍♎♏♐♑♒♓). The wheel feels ancient, sacred, mysterious — NOT mechanical or technical.
+Main visual: three separate floating obsidian talisman medallions, arranged in a clean triangular composition, not touching each other. Each medallion contains ONE large correct zodiac glyph in glowing violet-gold metal. Use only these three glyphs and no others: {glyphs}. The three medallions are: {talismans}. Each glyph must be centered, simple, elegant, and clearly readable on a small mobile screen.
 
-Exactly three segments glow with a soft ethereal violet-gold light from within — the segments for {signs_en}. These three shine with subtle magical violet-gold light, like moonlight through stained glass, NOT like LED spotlights. The other nine segments remain dark obsidian with faint gold outlines. The contrast is clear but gentle.
+CRITICAL ACCURACY RULES: NO full zodiac wheel. NO 12-segment circle. NO extra zodiac symbols. NO duplicated glyphs. NO animal drawings, no pictograms, no constellations shaped like animals, no decorative fake symbols. If a symbol is uncertain, make the medallion abstract instead of inventing another zodiac glyph.
 
-The center of the wheel features a large ornate five-pointed star — 3D CGI rendered, solid gold and champagne metallic material, beveled edges with deep relief, smooth reflective golden surface with subtle engraved filigree detail. It glows with warm radiant golden light, casting soft amber light onto the surrounding segments. It sits proudly in the center like an ancient celestial seal — timeless, elegant, powerful.
+The three medallions glow with soft ethereal violet-gold light from within, like moonlight through stained glass, not like LED spotlights. The rest of the image stays deep, premium, cosmic, and uncluttered.
 
-The wheel occupies the upper 55% of the image and floats slightly, with a soft cosmic aura around its edges blending into the nebula behind it.
+Behind the medallions, place one subtle ornate five-pointed star seal in dark gold, slightly blurred and secondary, never competing with the three glyphs.
 
-Below the wheel, an ornate golden dark metal plaque bearing two lines of inscribed text: '{date_cs}' in stylized elegant gold text, and below it '{plaque_sub}' in bold engraved gold lettering.
+Below the medallions, an ornate golden dark metal plaque bearing two lines of inscribed text: '{date_cs}' in stylized elegant gold text, and below it '{plaque_sub}' in bold engraved gold lettering.
 
 Below the plaque, a large ancient parchment scroll — medium warm tone, aged honey and antique tan color, darker than cream but lighter than brown, harmoniously blending with the overall dark cosmic mood — displays two lines of bright glowing gold calligraphic text: '{line1}' on the first line, and '{line2}' on the second line — vivid, luminous gold, clearly legible even on small mobile screens.
 
@@ -264,11 +273,11 @@ def print_checklist(signs: list, plaque_sub: str, scroll: tuple):
     print("\n📋 CHECKLIST — zkontroluj po vygenerování:")
     print(f"  [ ] Hvězdička / logo vpravo dole — nesmí být")
     print(f"  [ ] Spodní border — nesmí být")
-    print(f"  [ ] Svítí právě 3 segmenty: {', '.join(SIGN_EN[s] for s in signs)}")
+    print(f"  [ ] Jsou vidět právě 3 talismany: {', '.join(SIGN_EN[s] for s in signs)}")
+    print(f"  [ ] Glyphy jsou správně: {' '.join(SIGN_GLYPH[s] for s in signs)}")
     print(f"  [ ] Plaketa čitelná: {plaque_sub}")
     print(f"  [ ] Svitek čitelný: {scroll[0]} / {scroll[1]}")
-    print(f"  [ ] Kolo má JEDEN kruh, žádné duplikáty")
-    print(f"  [ ] Portál uprostřed kola viditelný")
+    print(f"  [ ] Není tam celé 12segmentové kolo ani extra znamení")
     print(f"  [ ] Nic useknuté dole (9:16 formát)\n")
 
 # ─── Generování pro jeden den ─────────────────────────────────────────────────

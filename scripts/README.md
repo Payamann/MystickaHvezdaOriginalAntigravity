@@ -16,6 +16,10 @@ This directory contains active project helper scripts.
 ## Content Helpers
 
 - `daily_reel.py`, `daily_reel2.py`, `thumbnail.py`, `thumbnail2.py`, and `evening_post.py` generate social/video drafts.
+- `auto_daily_reel2_video.py` assembles a Daily Reel 2 draft into a video:
+  it keeps bracketed delivery tags for ElevenLabs, writes a clean transcript for
+  captions, can call ElevenLabs TTS + Forced Alignment, then renders the final
+  vertical MP4 with FFmpeg.
 - Generated drafts and small state files belong in `scripts/output/`, not directly in `scripts/`.
 - `daily_reel.py`, `daily_reel2.py`, `evening_post.py`, and
   `generate-seo-pages.js` are dry-run guarded by default. Use their `--write`
@@ -24,6 +28,31 @@ This directory contains active project helper scripts.
 - `astro_events_2026.json` is source configuration used by the reel generators.
 - `daily_reel2.py` prints a captions command. Override the captions helper path
   with `CAPTIONS_TOOL` when it is not in the default user desktop location.
+
+### Daily Reel 2 Video MVP
+
+Dry-run without ElevenLabs credits:
+
+```powershell
+python scripts\auto_daily_reel2_video.py --date 2026-05-07 --sign Kozoroh --base-video "C:\path\template.mp4" --dry-run
+```
+
+Render with ElevenLabs:
+
+```powershell
+python scripts\auto_daily_reel2_video.py --date 2026-05-07 --sign Kozoroh --base-video "C:\path\template.mp4"
+```
+
+Required environment variables:
+
+- `ELEVENLABS_API_KEY`
+- `ELEVENLABS_VOICE_ID` or `--voice-name`
+
+Optional:
+
+- `ELEVENLABS_MODEL_ID`, default `eleven_v3`
+- `ELEVENLABS_STABILITY`, `ELEVENLABS_SIMILARITY`, `ELEVENLABS_STYLE`,
+  `ELEVENLABS_SPEED`, `ELEVENLABS_SPEAKER_BOOST`
 
 ## One-Off Maintenance
 
