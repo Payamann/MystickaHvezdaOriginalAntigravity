@@ -157,7 +157,7 @@ function bindAnnualUpgradeLinks() {
                 product_id: ANNUAL_HOROSCOPE_PRODUCT.id,
                 destination: link.getAttribute('href') || '/cenik.html',
                 source: 'annual_horoscope_success',
-                feature: 'daily_guidance',
+                feature: 'premium_membership',
                 plan_id: 'pruvodce'
             });
         });

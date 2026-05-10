@@ -277,9 +277,10 @@ test.describe('Roční horoskop — jednorázový checkout', () => {
         await waitForPageReady(page);
 
         await expect(page.locator('#bannerSuccess')).toBeVisible();
+        await expect(page.locator('[data-annual-upgrade]')).toContainText('Průvodce');
         const upgradeHref = await page.locator('[data-annual-upgrade]').getAttribute('href');
         expect(upgradeHref).toContain('plan=pruvodce');
         expect(upgradeHref).toContain('source=annual_horoscope_success');
-        expect(upgradeHref).toContain('feature=daily_guidance');
+        expect(upgradeHref).toContain('feature=premium_membership');
     });
 });

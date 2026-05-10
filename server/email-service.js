@@ -844,25 +844,88 @@ export async function sendPersonalMapLifecycleSequence({
       source,
       stripeSessionId
     };
+    const dedupeBase = orderId || stripeSessionId || `${productId}:${email}`;
 
-    await scheduleEmailLater({
+    const reflectionResult = await scheduleEmailLater({
       email,
       template: 'personal_map_reflection_day1',
       data: baseData,
-      delaySeconds: delays.reflectionDay1 ?? 86400
+      delaySeconds: delays.reflectionDay1 ?? 86400,
+      dedupeKey: `personal_map:${dedupeBase}:reflection_day1`
     });
 
-    await scheduleEmailLater({
+    const pruvodceResult = await scheduleEmailLater({
       email,
       template: 'personal_map_pruvodce_day3',
       data: baseData,
-      delaySeconds: delays.pruvodceDay3 ?? 259200
+      delaySeconds: delays.pruvodceDay3 ?? 259200,
+      dedupeKey: `personal_map:${dedupeBase}:pruvodce_day3`
     });
 
+    const results = [reflectionResult, pruvodceResult];
+    const scheduled = results.filter(result => !result.skipped).length;
     console.log(`[EMAIL] Personal map lifecycle sequence scheduled for ${email}`);
-    return { success: true, scheduled: 2 };
+    return { success: true, scheduled, skipped: results.length - scheduled };
   } catch (error) {
     console.error('[EMAIL] Failed to schedule personal map lifecycle sequence:', error);
+    throw error;
+  }
+}
+
+/**
+ * Schedule post-purchase lifecycle emails for the annual horoscope PDF.
+ * The first email turns the PDF into a concrete ritual, the second bridges to a subscription.
+ */
+export async function sendAnnualHoroscopeLifecycleSequence({
+  orderId = null,
+  email,
+  name,
+  sign,
+  productId = 'rocni_horoskop_2026',
+  year = new Date().getFullYear(),
+  source = 'annual_horoscope_checkout',
+  stripeSessionId = null,
+  delays = {}
+}) {
+  if (!email) {
+    throw new Error('Missing email for annual horoscope lifecycle sequence.');
+  }
+
+  try {
+    const { scheduleEmailLater } = await import('./jobs/email-queue.js');
+    const baseData = {
+      orderId,
+      name,
+      sign,
+      productId,
+      year,
+      source,
+      stripeSessionId
+    };
+    const dedupeBase = orderId || stripeSessionId || `${productId}:${email}`;
+
+    const reflectionResult = await scheduleEmailLater({
+      email,
+      template: 'annual_horoscope_reflection_day1',
+      data: baseData,
+      delaySeconds: delays.reflectionDay1 ?? 86400,
+      dedupeKey: `annual_horoscope:${dedupeBase}:reflection_day1`
+    });
+
+    const pruvodceResult = await scheduleEmailLater({
+      email,
+      template: 'annual_horoscope_pruvodce_day3',
+      data: baseData,
+      delaySeconds: delays.pruvodceDay3 ?? 259200,
+      dedupeKey: `annual_horoscope:${dedupeBase}:pruvodce_day3`
+    });
+
+    const results = [reflectionResult, pruvodceResult];
+    const scheduled = results.filter(result => !result.skipped).length;
+    console.log(`[EMAIL] Annual horoscope lifecycle sequence scheduled for ${email}`);
+    return { success: true, scheduled, skipped: results.length - scheduled };
+  } catch (error) {
+    console.error('[EMAIL] Failed to schedule annual horoscope lifecycle sequence:', error);
     throw error;
   }
 }
@@ -988,6 +1051,76 @@ EMAIL_TEMPLATES.personal_map_pruvodce_day3 = {
   }
 };
 
+EMAIL_TEMPLATES.annual_horoscope_reflection_day1 = {
+  subject: 'První krok s ročním horoskopem',
+  getHtml: (data) => {
+    const name = formatEmailName(data.name);
+    const year = escapeHtml(data.year || new Date().getFullYear());
+    const horoscopeUrl = toAbsoluteUrl('/horoskopy.html?source=annual_horoscope_email_day1&feature=daily_guidance&utm_source=email&utm_campaign=annual_horoscope_day1');
+    const productUrl = toAbsoluteUrl('/rocni-horoskop.html?source=annual_horoscope_email_day1&feature=rocni_horoskop_2026&utm_source=email&utm_campaign=annual_horoscope_day1');
+
+    return getBaseTemplate(`
+    <h1 class="h1">Nečti celý rok najednou</h1>
+    <p>${name}, roční horoskop je nejsilnější, když z něj nevytvoříš dlouhý seznam předpovědí.</p>
+    <p>Dnes si vyber jen jednu část pro rok ${year}: měsíc, vztahové téma nebo větu, u které cítíš jasné ano nebo lehké napětí.</p>
+
+    <div class="feature-item">
+      <strong>Krátký postup na 5 minut:</strong>
+      <ul style="margin-top:10px;padding-left:20px;">
+        <li>Otevři PDF a najdi jednu větu, která tě zastavila.</li>
+        <li>Napiš si, co pro tebe znamená v příštích 7 dnech.</li>
+        <li>Vyber jeden malý krok, který nepůsobí dramaticky, ale je konkrétní.</li>
+      </ul>
+    </div>
+
+    <p>Pokud chceš roční téma zasadit do dnešní energie, otevři si denní horoskop a porovnej, kde se potkávají.</p>
+
+    <div class="cta-box">
+      <a href="${horoscopeUrl}" class="btn">Otevřít dnešní horoskop &rarr;</a>
+    </div>
+
+    <p style="font-size:13px;opacity:0.62;text-align:center;margin-top:2rem;">
+      Tohle je navazující e-mail k nákupu Ročního horoskopu. K produktu se můžeš vrátit také tady:
+      <a href="${productUrl}" style="color:#d4af37;">Roční horoskop</a>.
+    </p>
+  `, 'První krok s Ročním horoskopem', 'Vyber jednu větu z ročního horoskopu a převeď ji do konkrétního kroku pro tento týden.');
+  }
+};
+
+EMAIL_TEMPLATES.annual_horoscope_pruvodce_day3 = {
+  subject: 'Roční téma potřebuje denní oporu',
+  getHtml: (data) => {
+    const name = formatEmailName(data.name);
+    const year = escapeHtml(data.year || new Date().getFullYear());
+    const pricingUrl = toAbsoluteUrl('/cenik.html?source=annual_horoscope_email_day3&feature=premium_membership&plan=pruvodce&utm_source=email&utm_campaign=annual_horoscope_day3');
+    const horoscopeUrl = toAbsoluteUrl('/horoskopy.html?source=annual_horoscope_email_day3&feature=daily_guidance&utm_source=email&utm_campaign=annual_horoscope_day3');
+
+    return getBaseTemplate(`
+    <h1 class="h1">Výhled ukáže směr. Rytmus tě udrží v pohybu.</h1>
+    <p>${name}, roční horoskop pro ${year} ti dává mapu větších témat: kde šetřit sílu, kdy jednat a čemu dát čas.</p>
+    <p>Jenže v běžném týdnu se rozhoduje podle malých signálů. Právě tam dává smysl mít po ruce Průvodce, který tě vrací k otázce: co z toho pro mě platí dnes?</p>
+
+    <div class="feature-item">
+      <strong>Hvězdný Průvodce naváže na roční výhled:</strong>
+      <ul style="margin-top:10px;padding-left:20px;">
+        <li>denní a týdenní horoskopy pro průběžné vedení,</li>
+        <li>tarot a mentor pro otázky, které se po PDF objeví,</li>
+        <li>jedno místo pro návraty, když nechceš velké téma řešit jen v hlavě.</li>
+      </ul>
+    </div>
+
+    <div class="cta-box">
+      <a href="${pricingUrl}" class="btn">Odemknout Průvodce &rarr;</a>
+    </div>
+
+    <p style="font-size:13px;opacity:0.62;text-align:center;margin-top:2rem;">
+      Chceš zatím zůstat u volného obsahu? Otevři si
+      <a href="${horoscopeUrl}" style="color:#d4af37;">dnešní horoskop</a>.
+    </p>
+  `, 'Navázat na Roční horoskop', 'Roční horoskop ti dal směr. Průvodce ti pomůže vracet se k němu v běžných dnech.');
+  }
+};
+
 const SIGN_NAMES_EMAIL = {
   beran: 'Beran', byk: 'Býk', blizenci: 'Blíženci', rak: 'Rak',
   lev: 'Lev', panna: 'Panna', vahy: 'Váhy', stir: 'Štír',
@@ -1106,6 +1239,7 @@ export default {
   sendWeeklyFeatureEmail,
   sendTrialReminderEmails,
   sendPersonalMapLifecycleSequence,
+  sendAnnualHoroscopeLifecycleSequence,
   sendHoroscopePdf,
   sendPersonalMapPdf,
   EMAIL_TEMPLATES

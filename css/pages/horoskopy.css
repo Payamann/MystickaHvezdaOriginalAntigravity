@@ -95,3 +95,73 @@ html body .mh-inline-78489344ad { font-size: 12rem; opacity: 0.1; }
 .favorite-reading-action__button {
     min-width: 200px;
 }
+
+.horoscope-feedback {
+    margin-top: var(--space-xl);
+    padding: 1rem;
+    border: 1px solid rgba(212, 175, 55, 0.22);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.045);
+}
+
+.horoscope-feedback__header {
+    display: grid;
+    gap: 0.2rem;
+    margin-bottom: 0.85rem;
+    color: rgba(255, 255, 255, 0.88);
+}
+
+.horoscope-feedback__eyebrow {
+    color: var(--color-mystic-gold);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.horoscope-feedback__chips,
+.horoscope-feedback__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 0.65rem;
+}
+
+.horoscope-feedback__chip {
+    min-height: 36px;
+    padding: 0.45rem 0.72rem;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.07);
+    color: rgba(255, 255, 255, 0.84);
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.horoscope-feedback__chip:hover,
+.horoscope-feedback__chip.is-selected {
+    border-color: rgba(212, 175, 55, 0.55);
+    background: rgba(212, 175, 55, 0.14);
+    color: #fff;
+}
+
+.horoscope-feedback__status {
+    min-height: 1.3rem;
+    margin: 0.7rem 0 0;
+    color: rgba(255, 255, 255, 0.62);
+    font-size: 0.82rem;
+}
+
+.horoscope-feedback__status[data-state="success"] {
+    color: rgba(180, 230, 180, 0.92);
+}
+
+.horoscope-feedback__status[data-state="error"] {
+    color: rgba(255, 165, 165, 0.92);
+}
+
+@media (max-width: 560px) {
+    .horoscope-feedback__actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

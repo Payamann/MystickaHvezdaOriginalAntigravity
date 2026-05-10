@@ -109,6 +109,18 @@ const FEATURE_PREVIEW_DESTINATIONS = {
 };
 
 const SOURCE_RECOMMENDATION_COPY = {
+    annual_horoscope_email_day3: {
+        eyebrow: 'Navazuje na Roční horoskop',
+        title: 'Roční výhled dal směr. Průvodce drží denní rytmus.',
+        text: 'Roční horoskop ukázal hlavní témata roku. Hvězdný Průvodce k tomu přidá denní a týdenní výklady, tarot a návrat k otázce: co z toho pro mě platí právě dnes?',
+        actionLabel: 'Ukázat plán Průvodce'
+    },
+    annual_horoscope_success: {
+        eyebrow: 'Další krok po Ročním horoskopu',
+        title: 'PDF dá velký směr. Průvodce pomáhá vracet se k němu každý den.',
+        text: 'Roční horoskop je jednorázový výhled. Hvězdný Průvodce z něj udělá pravidelnou oporu přes horoskopy, tarot, historii výkladů a osobní návratový rituál.',
+        actionLabel: 'Ukázat plán Průvodce'
+    },
     personal_map_email_day3: {
         eyebrow: 'Navazuje na Osobn\u00ed mapu',
         title: 'Mapa ti dala sm\u011br. Pr\u016fvodce pom\u016f\u017ee dr\u017eet rytmus.',

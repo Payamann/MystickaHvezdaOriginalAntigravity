@@ -220,8 +220,8 @@ async function loadFunnel() {
     const errorMsg = document.getElementById('error-msg');
 
     summary.replaceChildren(createLoadingBlock('Načítám funnel...'));
-    segmentTbody.replaceChildren(createTableMessageRow(9, 'Načítám data...'));
-    dailyTbody.replaceChildren(createTableMessageRow(8, 'Načítám data...'));
+    segmentTbody.replaceChildren(createTableMessageRow(7, 'Načítám data...'));
+    dailyTbody.replaceChildren(createTableMessageRow(5, 'Načítám data...'));
     tbody.replaceChildren(createTableMessageRow(5, 'Načítám data...'));
 
     try {
@@ -231,8 +231,8 @@ async function loadFunnel() {
 
         if (response.status === 403) {
             summary.replaceChildren(createLoadingBlock('Přístup odepřen (nejste admin).'));
-            segmentTbody.replaceChildren(createTableMessageRow(9, 'Přístup odepřen.', 'admin-table-error'));
-            dailyTbody.replaceChildren(createTableMessageRow(8, 'Přístup odepřen.', 'admin-table-error'));
+            segmentTbody.replaceChildren(createTableMessageRow(7, 'Přístup odepřen.', 'admin-table-error'));
+            dailyTbody.replaceChildren(createTableMessageRow(5, 'Přístup odepřen.', 'admin-table-error'));
             tbody.replaceChildren(createTableMessageRow(5, 'Přístup odepřen.', 'admin-table-error'));
             return;
         }
@@ -245,8 +245,8 @@ async function loadFunnel() {
     } catch (error) {
         console.error(error);
         summary.replaceChildren(createLoadingBlock('Funnel se nepodařilo načíst.'));
-        segmentTbody.replaceChildren(createTableMessageRow(9, 'Segmenty nejsou dostupné.', 'admin-table-error'));
-        dailyTbody.replaceChildren(createTableMessageRow(8, 'Denní report není dostupný.', 'admin-table-error'));
+        segmentTbody.replaceChildren(createTableMessageRow(7, 'Segmenty nejsou dostupné.', 'admin-table-error'));
+        dailyTbody.replaceChildren(createTableMessageRow(5, 'Denní report není dostupný.', 'admin-table-error'));
         tbody.replaceChildren(createTableMessageRow(5, 'Funnel report není dostupný.', 'admin-table-error'));
         errorMsg.textContent = 'Chyba při načítání funnelu: ' + error.message;
     }
@@ -497,6 +497,9 @@ function renderBusiness(report) {
         ['Business score', `${formatInteger(report.score)}/100`, `Za posledních ${report.periodDays} dnů`],
         ['Návštěvníci', formatInteger(summary.visitors), formatDeltaHint(deltas.visitors, 'proti předchozímu období')],
         ['Registrace', formatInteger(summary.signups), `${formatPercent(summary.visitorToSignupRate)} visitor -> signup`],
+        ['První hodnota', formatInteger(summary.firstValueCompleted), `${formatPercent(summary.signupToFirstValueRate)} signup -> výklad`],
+        ['Aktivace', formatInteger(summary.activationCompleted), `${formatPercent(summary.signupToActivationRate)} signup -> aktivace`],
+        ['Návratový rituál', formatInteger(summary.dailyRitualCompleted), 'Večerní reflexe a návraty'],
         ['Checkouty', formatInteger(summary.checkoutStarted), `${formatPercent(summary.signupToCheckoutRate)} signup -> checkout`],
         ['Nákupy', formatInteger(summary.purchases), `${formatPercent(summary.checkoutToPurchaseRate)} checkout -> purchase`],
         ['Odhad příjmu', formatCurrency(summary.estimatedValueCzk), formatDeltaHint(deltas.estimatedValueCzk, 'proti předchozímu období')],
@@ -610,11 +613,17 @@ function renderFunnel(report) {
     const metrics = report.metrics || {};
     const summary = document.getElementById('funnel-summary');
     const metricCards = [
+        ['První hodnota', formatInteger(metrics.firstValueCompleted), `${formatPercent(metrics.firstValueToCheckoutRate)} do checkoutu`],
+        ['Aktivace', formatInteger(metrics.activationCompleted), `${formatPercent(metrics.activationToCheckoutRate)} do checkoutu`],
+        ['Feedback výkladů', formatInteger(metrics.readingFeedbackSubmitted), 'Reakce po uloženém výkladu'],
+        ['Denní rituály', formatInteger(metrics.dailyRitualCompleted), 'Reflexe a návraty v profilu'],
         ['Paywall views', formatInteger(metrics.paywallViewed), `${formatPercent(metrics.paywallToPricingIntentRate)} klikne na placený plán`],
         ['Nákupní intent', formatInteger(metrics.pricingIntent), `${formatPercent(metrics.pricingIntentToCheckoutRate)} pokračuje do checkoutu`],
         ['Checkouty', formatInteger(metrics.checkoutStarted), 'Zahájené Stripe checkout sessions'],
         ['Premium konverze', formatInteger(metrics.subscriptionCompleted), `${formatPercent(metrics.conversionRate)} z checkoutů`],
         ['Jednorázové nákupy', formatInteger(metrics.oneTimeCompleted), 'Roční horoskop a další produkty'],
+        ['PDF doručena', formatInteger(metrics.oneTimePdfDelivered), `${formatPercent(metrics.oneTimeDeliveryRate)} z jednorázových nákupů`],
+        ['Lifecycle sekvence', formatInteger(metrics.oneTimeLifecycleScheduled), `${formatPercent(metrics.oneTimeLifecycleScheduleRate)} po doručení PDF`],
         ['Selhání', formatInteger(metrics.failures), 'Validace, Stripe nebo platba'],
         ['Refundy', formatInteger(metrics.refunds), 'Vrácené platby'],
         ['Odhad hodnoty', formatCurrency(metrics.estimatedValueCzk), `Za posledních ${report.days} dní`],
@@ -750,7 +759,7 @@ function renderFunnelSegments(rows) {
     tbody.replaceChildren();
 
     if (!rows || rows.length === 0) {
-        tbody.appendChild(createTableMessageRow(9, 'Zatím tu nejsou žádné source + feature segmenty.'));
+        tbody.appendChild(createTableMessageRow(7, 'Zatím tu nejsou žádné source + feature segmenty.'));
         return;
     }
 
@@ -758,10 +767,8 @@ function renderFunnelSegments(rows) {
         const tr = document.createElement('tr');
         appendCell(tr, formatDimension(row.source));
         appendCell(tr, formatDimension(row.feature));
-        appendCell(tr, formatInteger(row.paywallViewed));
-        appendCell(tr, formatInteger(row.pricingIntent));
-        appendCell(tr, formatInteger(row.checkoutStarted));
-        appendCell(tr, formatInteger(row.purchaseCompleted));
+        appendCell(tr, formatActivationCounts(row));
+        appendCell(tr, formatMonetizationCounts(row));
         appendCell(tr, formatRatePair(row));
         appendCell(tr, formatRatePair(row.previous));
         appendCell(tr, `${formatRateDelta(row.paywallToPricingIntentRateDelta)} / ${formatRateDelta(row.pricingIntentToCheckoutRateDelta)} / ${formatRateDelta(row.checkoutToPurchaseRateDelta)}`);
@@ -774,20 +781,17 @@ function renderFunnelDaily(rows) {
     tbody.replaceChildren();
 
     if (!rows || rows.length === 0) {
-        tbody.appendChild(createTableMessageRow(8, 'Zatím tu nejsou žádná denní data.'));
+        tbody.appendChild(createTableMessageRow(5, 'Zatím tu nejsou žádná denní data.'));
         return;
     }
 
     [...rows].reverse().forEach(row => {
         const tr = document.createElement('tr');
         appendCell(tr, row.date || '-');
-        appendCell(tr, formatInteger(row.paywallViewed));
-        appendCell(tr, formatInteger(row.pricingIntent));
-        appendCell(tr, formatInteger(row.checkoutStarted));
-        appendCell(tr, formatInteger(row.subscriptionCompleted));
-        appendCell(tr, formatInteger(row.oneTimeCompleted));
-        appendCell(tr, formatInteger(row.failures));
-        appendCell(tr, formatInteger(row.refunds));
+        appendCell(tr, formatActivationCounts(row));
+        appendCell(tr, formatDailyFunnelCounts(row));
+        appendCell(tr, formatDailyPurchaseCounts(row));
+        appendCell(tr, `${formatInteger(row.failures)} / ${formatInteger(row.refunds)}`);
         tbody.appendChild(tr);
     });
 }
@@ -918,6 +922,39 @@ function formatCurrency(value) {
 
 function formatPercent(value) {
     return `${integerFormatter.format(Number(value) || 0)} %`;
+}
+
+function formatActivationCounts(row = {}) {
+    return [
+        row.firstValueCompleted,
+        row.activationCompleted,
+        row.readingFeedbackSubmitted,
+        row.dailyRitualCompleted
+    ].map(formatInteger).join(' / ');
+}
+
+function formatMonetizationCounts(row = {}) {
+    return [
+        row.paywallViewed,
+        row.pricingIntent,
+        row.checkoutStarted,
+        row.purchaseCompleted
+    ].map(formatInteger).join(' / ');
+}
+
+function formatDailyFunnelCounts(row = {}) {
+    return [
+        row.paywallViewed,
+        row.pricingIntent,
+        row.checkoutStarted
+    ].map(formatInteger).join(' / ');
+}
+
+function formatDailyPurchaseCounts(row = {}) {
+    return [
+        row.subscriptionCompleted,
+        row.oneTimeCompleted
+    ].map(formatInteger).join(' / ');
 }
 
 function formatRatePair(row = {}) {

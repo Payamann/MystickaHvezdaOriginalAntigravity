@@ -140,11 +140,46 @@ export async function scheduleEmailLater(emailConfig) {
             email,
             template,
             data = {},
-            delaySeconds = 0
+            delaySeconds = 0,
+            dedupeKey = null
         } = emailConfig;
+        const cleanDedupeKey = typeof dedupeKey === 'string' && dedupeKey.trim()
+            ? dedupeKey.trim()
+            : (typeof data?.dedupeKey === 'string' && data.dedupeKey.trim() ? data.dedupeKey.trim() : null);
+        const queuedData = cleanDedupeKey && data && typeof data === 'object' && !Array.isArray(data)
+            ? { ...data, dedupeKey: cleanDedupeKey }
+            : data;
 
         const scheduledFor = new Date();
         scheduledFor.setSeconds(scheduledFor.getSeconds() + delaySeconds);
+
+        if (cleanDedupeKey) {
+            const { data: existingEmails, error: existingError } = await supabase
+                .from('email_queue')
+                .select('id, data, scheduled_for, status')
+                .eq('email_to', email)
+                .eq('template', template)
+                .in('status', ['pending', 'sent'])
+                .limit(50);
+
+            if (existingError) {
+                throw existingError;
+            }
+
+            const existingEmail = (existingEmails || []).find((emailRecord) => {
+                return parseQueuedEmailData(emailRecord.data).dedupeKey === cleanDedupeKey;
+            });
+
+            if (existingEmail) {
+                console.log(`[JOB] Email already scheduled: ${template} for ${email} (${cleanDedupeKey})`);
+                return {
+                    success: true,
+                    scheduledFor: existingEmail.scheduled_for ? new Date(existingEmail.scheduled_for) : null,
+                    skipped: true,
+                    existingId: existingEmail.id
+                };
+            }
+        }
 
         const { error } = await supabase
             .from('email_queue')
@@ -152,7 +187,7 @@ export async function scheduleEmailLater(emailConfig) {
                 user_id: userId || null,
                 email_to: email,
                 template,
-                data,
+                data: queuedData,
                 scheduled_for: scheduledFor.toISOString(),
                 status: 'pending',
                 retry_count: 0,
@@ -166,7 +201,7 @@ export async function scheduleEmailLater(emailConfig) {
         const delayMinutes = Math.round(delaySeconds / 60);
         console.log(`[JOB] Email scheduled: ${template} for ${email} in ${delayMinutes} minutes`);
 
-        return { success: true, scheduledFor };
+        return { success: true, scheduledFor, skipped: false };
 
     } catch (error) {
         console.error('[JOB] Error scheduling email:', error);

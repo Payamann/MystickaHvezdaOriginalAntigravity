@@ -842,6 +842,10 @@ async function initProfile() {
     updateStats(readings);
     renderJournalEntries(readings);
 
+    if (window.location.hash === '#journal-input') {
+        focusJournalInput();
+    }
+
     if (!listenersAttached) {
         document.getElementById('logout-btn')?.addEventListener('click', handleLogout);
         document.getElementById('daily-guidance-card')?.addEventListener('click', handleDailyGuidanceClick);
@@ -889,7 +893,7 @@ async function initProfile() {
                 if (!text) return;
 
                 journalBtn.disabled = true;
-                journalBtn.innerHTML = '<span class="loading-spinner--sm"></span> Vysílám...';
+                journalBtn.innerHTML = '<span class="loading-spinner--sm"></span> Ukládám...';
 
                 try {
                     const response = await fetch(`${apiUrl()}/user/readings`, {
@@ -901,7 +905,7 @@ async function initProfile() {
 
                     if (response.ok) {
                         input.value = '';
-                        window.Auth?.showToast?.('Přání vysláno', 'Vaše slova se nesou ke hvězdám...', 'success');
+                        window.Auth?.showToast?.('Reflexe uložena', 'Vrátíš se k ní v historii výkladů.', 'success');
                         if (window.createStardust) window.createStardust(journalBtn);
                         const refreshedReadings = await loadReadings();
                         updateStats(refreshedReadings);
@@ -920,7 +924,7 @@ async function initProfile() {
                     window.Auth?.showToast?.('Chyba', 'Vesmír momentálně neodpovídá.', 'error');
                 } finally {
                     journalBtn.disabled = false;
-                    journalBtn.innerHTML = '✨ Vyslat přání';
+                    journalBtn.innerHTML = 'Uložit reflexi';
                 }
             });
         }

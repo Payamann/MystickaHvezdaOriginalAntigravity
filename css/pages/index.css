@@ -52,6 +52,7 @@ html body .mh-inline-7e933fa469 { display: none; }
 html body .mh-inline-2838413c62 { margin-left:1rem; }
 html body .mh-inline-5934739565 { margin-top:0.75rem;font-size:0.8rem;color:rgba(255,255,255,0.35); }
 html body .mh-inline-75eb901596 { display:none; }
+html body #hero-cta-logged-in:not([hidden]) { display:flex; }
 html body .mh-inline-a1c87fa9fa { animation-delay: 0.7s; }
 html body .mh-inline-a45663e82a { margin-top:2.5rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem; }
 html body .mh-inline-31187612be { display:block;text-decoration:none;color:inherit;padding:1.25rem;border:1px solid rgba(255,255,255,0.08);border-radius:16px;background:rgba(255,255,255,0.04); }

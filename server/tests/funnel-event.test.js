@@ -117,6 +117,28 @@ describe('Public funnel event endpoint', () => {
         expect(res.body.success).toBe(true);
     });
 
+    test('accepts activation and ritual events with product context', async () => {
+        const csrfToken = await getCsrfToken();
+
+        for (const eventName of ['first_value_completed', 'reading_feedback_submitted', 'daily_ritual_completed', 'activation_completed', 'return_ritual_completed']) {
+            const res = await request(app)
+                .post('/api/payment/funnel-event')
+                .set('x-csrf-token', csrfToken)
+                .send({
+                    eventName,
+                    source: 'reading_save',
+                    feature: 'horoscope',
+                    metadata: {
+                        path: '/horoskopy.html',
+                        resonance: 'fits'
+                    }
+                });
+
+            expect(res.status).toBe(200);
+            expect(res.body.success).toBe(true);
+        }
+    });
+
     test('accepts pricing free and product intent before navigation', async () => {
         const csrfToken = await getCsrfToken();
         const freeRes = await request(app)

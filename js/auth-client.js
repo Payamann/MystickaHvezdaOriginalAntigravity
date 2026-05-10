@@ -1088,10 +1088,77 @@
                     return null;
                 } else {
                     const savedData = await res.json();
-                    return savedData.reading || savedData; // Return saved reading with ID
+                    const savedReading = savedData.reading || savedData;
+                    window.MH_ANALYTICS?.trackEvent?.('feature_reading_saved', {
+                        feature: type,
+                        reading_type: type,
+                        source: 'auth_save_reading',
+                        has_saved_id: Boolean(savedReading?.id)
+                    });
+
+                    if (type !== 'journal') {
+                        try {
+                            if (!localStorage.getItem('mh_first_value_completed')) {
+                                localStorage.setItem('mh_first_value_completed', '1');
+                                window.MH_ANALYTICS?.trackEvent?.('first_value_completed', {
+                                    feature: type,
+                                    reading_type: type,
+                                    source: 'auth_save_reading'
+                                });
+                            }
+                        } catch {
+                            window.MH_ANALYTICS?.trackEvent?.('first_value_completed', {
+                                feature: type,
+                                reading_type: type,
+                                source: 'auth_save_reading'
+                            });
+                        }
+                    }
+
+                    window.dispatchEvent?.(new CustomEvent('reading:saved', {
+                        detail: { reading: savedReading, type }
+                    }));
+
+                    return savedReading; // Return saved reading with ID
                 }
             } catch (e) {
                 console.error('Error saving reading:', e);
+                return null;
+            }
+        },
+
+        async saveReadingFeedback(readingId, feedback = {}) {
+            if (!this.isLoggedIn() || !readingId) return null;
+
+            try {
+                const headers = { 'Content-Type': 'application/json' };
+                const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+                if (csrfToken) headers['X-CSRF-Token'] = csrfToken;
+
+                const res = await fetch(`${API_URL}/user/readings/${encodeURIComponent(readingId)}/feedback`, {
+                    method: 'PATCH',
+                    credentials: 'include',
+                    headers,
+                    body: JSON.stringify(feedback)
+                });
+
+                const result = await res.json().catch(() => ({}));
+                if (!res.ok) {
+                    console.warn('Failed to save reading feedback:', result);
+                    return null;
+                }
+
+                window.MH_ANALYTICS?.trackEvent?.('reading_feedback_submitted', {
+                    feature: feedback.feature || null,
+                    resonance: feedback.resonance || null,
+                    focus: feedback.focus || null,
+                    next_action: feedback.nextAction || null,
+                    source: feedback.source || 'reading_feedback'
+                });
+
+                return result;
+            } catch (e) {
+                console.error('Error saving reading feedback:', e);
                 return null;
             }
         },

@@ -154,8 +154,8 @@
                 font-size: 0.66rem;
             }
 
-            body.auth-register-mode .login-form-help,
-            body.auth-register-mode .signup-safety-note {
+            body.auth-register-mode .login-form-help:not(.mh-block-visible),
+            body.auth-register-mode .signup-safety-note:not(.mh-block-visible) {
                 display: none !important;
             }
 

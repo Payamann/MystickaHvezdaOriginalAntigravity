@@ -57,6 +57,7 @@ describe('One-time order inputs', () => {
             product_id: 'osobni_mapa_2026',
             customer_email: 'test@example.com',
             customer_name: 'Test User',
+            status: 'checkout_created',
             payload: {
                 birthDate: '1990-01-01',
                 birthTime: '12:30',
@@ -65,5 +66,9 @@ describe('One-time order inputs', () => {
         });
 
         await expect(markOneTimeOrderInputFulfilled(order.id)).resolves.toBe(true);
+        await expect(getOneTimeOrderInput(order.id)).resolves.toMatchObject({
+            id: order.id,
+            status: 'fulfilled'
+        });
     });
 });

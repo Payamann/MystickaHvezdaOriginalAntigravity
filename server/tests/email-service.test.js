@@ -17,7 +17,8 @@ jest.unstable_mockModule('resend', () => ({
 const {
     sendEmail,
     htmlToPlainText,
-    sendPersonalMapLifecycleSequence
+    sendPersonalMapLifecycleSequence,
+    sendAnnualHoroscopeLifecycleSequence
 } = await import('../email-service.js');
 const { supabase } = await import('../db-supabase.js');
 
@@ -122,6 +123,27 @@ describe('Email service deliverability payload', () => {
         expect(payload.text).toContain('Odemknout');
     });
 
+    test('renders annual horoscope upsell email with tracked pricing link and escaped customer data', async () => {
+        await sendEmail({
+            to: 'recipient@example.com',
+            template: 'annual_horoscope_pruvodce_day3',
+            data: {
+                name: 'Jana <script>alert(1)</script>',
+                sign: 'lev',
+                productId: 'rocni_horoskop_2026',
+                year: '2026'
+            }
+        });
+
+        const payload = sendMock.mock.calls[0][0];
+        expect(payload.html).toContain('source=annual_horoscope_email_day3');
+        expect(payload.html).toContain('plan=pruvodce');
+        expect(payload.html).toContain('feature=premium_membership');
+        expect(payload.html).not.toContain('<script>');
+        expect(payload.html).not.toContain('alert(1)');
+        expect(payload.text).toContain('Odemknout');
+    });
+
     test('schedules anonymous personal map lifecycle without sensitive form focus', async () => {
         await sendPersonalMapLifecycleSequence({
             orderId: 'order-email-sequence-test',
@@ -160,6 +182,67 @@ describe('Email service deliverability payload', () => {
             stripeSessionId: 'cs_test_lifecycle'
         });
         expect(firstPayload.focus).toBeUndefined();
+    });
+
+    test('schedules annual horoscope lifecycle with order context only', async () => {
+        const email = `annual-buyer-${Date.now()}@example.com`;
+
+        const firstSchedule = await sendAnnualHoroscopeLifecycleSequence({
+            orderId: 'order-annual-sequence-test',
+            email,
+            name: 'Jana',
+            sign: 'lev',
+            productId: 'rocni_horoskop_2026',
+            year: '2026',
+            source: 'annual_horoscope_checkout',
+            stripeSessionId: 'cs_test_annual_lifecycle',
+            delays: {
+                reflectionDay1: 60,
+                pruvodceDay3: 120
+            }
+        });
+        const duplicateSchedule = await sendAnnualHoroscopeLifecycleSequence({
+            orderId: 'order-annual-sequence-test',
+            email,
+            name: 'Jana',
+            sign: 'lev',
+            productId: 'rocni_horoskop_2026',
+            year: '2026',
+            source: 'annual_horoscope_checkout',
+            stripeSessionId: 'cs_test_annual_lifecycle',
+            delays: {
+                reflectionDay1: 60,
+                pruvodceDay3: 120
+            }
+        });
+
+        const { data: queued } = await supabase
+            .from('email_queue')
+            .select('*')
+            .eq('email_to', email)
+            .order('scheduled_for', { ascending: true });
+
+        expect(firstSchedule).toMatchObject({ success: true, scheduled: 2, skipped: 0 });
+        expect(duplicateSchedule).toMatchObject({ success: true, scheduled: 0, skipped: 2 });
+        expect(queued).toHaveLength(2);
+        expect(queued.map(emailRecord => emailRecord.template)).toEqual([
+            'annual_horoscope_reflection_day1',
+            'annual_horoscope_pruvodce_day3'
+        ]);
+        expect(queued.every(emailRecord => emailRecord.user_id === null)).toBe(true);
+
+        const firstPayload = typeof queued[0].data === 'string'
+            ? JSON.parse(queued[0].data)
+            : queued[0].data;
+        expect(firstPayload).toMatchObject({
+            orderId: 'order-annual-sequence-test',
+            productId: 'rocni_horoskop_2026',
+            year: '2026',
+            source: 'annual_horoscope_checkout',
+            stripeSessionId: 'cs_test_annual_lifecycle'
+        });
+        expect(firstPayload.dedupeKey).toBe('annual_horoscope:order-annual-sequence-test:reflection_day1');
+        expect(firstPayload.birthDate).toBeUndefined();
     });
 
     test('converts html links into readable plain text', () => {

@@ -50,6 +50,104 @@ function getSavedZodiacSign() {
     }
 }
 
+function setHoroscopeFeedbackStatus(strip, message, state = 'neutral') {
+    const status = strip?.querySelector?.('.horoscope-feedback__status');
+    if (!status) return;
+    status.textContent = message;
+    status.dataset.state = state;
+}
+
+async function saveHoroscopeFeedback(readingId, payload, strip, trigger) {
+    if (!readingId || !window.Auth?.saveReadingFeedback) return null;
+
+    if (trigger) trigger.disabled = true;
+    setHoroscopeFeedbackStatus(strip, 'Ukládám zpětnou vazbu...', 'pending');
+
+    const result = await window.Auth.saveReadingFeedback(readingId, {
+        ...payload,
+        feature: 'daily_guidance',
+        source: 'horoscope_feedback_strip'
+    });
+
+    if (trigger) trigger.disabled = false;
+
+    if (!result?.success) {
+        setHoroscopeFeedbackStatus(strip, 'Nepodařilo se uložit. Zkus to znovu.', 'error');
+        return null;
+    }
+
+    setHoroscopeFeedbackStatus(strip, 'Uloženo. Další vhledy se díky tomu můžou lépe zaměřit.', 'success');
+    return result;
+}
+
+function renderHoroscopeFeedbackAction(container, readingId, period) {
+    if (!container || !readingId) return;
+
+    container.querySelector('.horoscope-feedback')?.remove();
+
+    const showWeeklyUpgrade = !window.Auth?.isPremium?.();
+    const wrapper = document.createElement('div');
+    wrapper.className = 'horoscope-feedback';
+    wrapper.innerHTML = `
+        <div class="horoscope-feedback__header">
+            <span class="horoscope-feedback__eyebrow">Další krok</span>
+            <strong>Co s tebou tenhle vhled udělal?</strong>
+        </div>
+        <div class="horoscope-feedback__chips" aria-label="Zpětná vazba k výkladu">
+            <button type="button" class="horoscope-feedback__chip" data-resonance="fits">Sedí</button>
+            <button type="button" class="horoscope-feedback__chip" data-resonance="neutral">Ještě nevím</button>
+            <button type="button" class="horoscope-feedback__chip" data-resonance="miss">Netrefilo se</button>
+        </div>
+        <div class="horoscope-feedback__chips" aria-label="Téma pro navazující vhled">
+            <button type="button" class="horoscope-feedback__chip" data-focus="relationships">Vztahy</button>
+            <button type="button" class="horoscope-feedback__chip" data-focus="work">Práce</button>
+            <button type="button" class="horoscope-feedback__chip" data-focus="energy">Energie</button>
+        </div>
+        <div class="horoscope-feedback__actions">
+            <a class="btn btn--glass btn--sm" href="/profil.html#journal-input" data-next-action="journal">Zapsat reflexi</a>
+            ${showWeeklyUpgrade ? '<button type="button" class="btn btn--secondary btn--sm" data-next-action="premium">Odemknout týdenní souvislost</button>' : ''}
+        </div>
+        <p class="horoscope-feedback__status" aria-live="polite"></p>
+    `;
+
+    wrapper.addEventListener('click', async (event) => {
+        const resonanceBtn = event.target.closest('[data-resonance]');
+        const focusBtn = event.target.closest('[data-focus]');
+        const nextActionEl = event.target.closest('[data-next-action]');
+        const clickedEl = resonanceBtn || focusBtn || nextActionEl;
+        if (!clickedEl) return;
+
+        const payload = {};
+        if (resonanceBtn) payload.resonance = resonanceBtn.dataset.resonance;
+        if (focusBtn) payload.focus = focusBtn.dataset.focus;
+        if (nextActionEl) payload.nextAction = nextActionEl.dataset.nextAction;
+
+        wrapper.querySelectorAll('.horoscope-feedback__chip').forEach((chip) => {
+            if ((payload.resonance && chip.dataset.resonance)
+                || (payload.focus && chip.dataset.focus)) {
+                chip.classList.toggle('is-selected', chip === clickedEl);
+            }
+        });
+
+        if (nextActionEl?.tagName === 'A') {
+            event.preventDefault();
+            await saveHoroscopeFeedback(readingId, payload, wrapper, null);
+            window.location.href = nextActionEl.getAttribute('href');
+            return;
+        }
+
+        if (payload.nextAction === 'premium') {
+            await saveHoroscopeFeedback(readingId, payload, wrapper, clickedEl);
+            startHoroscopeUpgradeFlow('weekly', period === 'daily' ? 'feedback_weekly_context' : 'feedback_premium_context');
+            return;
+        }
+
+        await saveHoroscopeFeedback(readingId, payload, wrapper, clickedEl);
+    });
+
+    container.appendChild(wrapper);
+}
+
 function buildHoroscopeUpsell(period) {
     const isWeekly = period === 'weekly';
     const title = isWeekly ? 'Odemknete tydenni vyhled' : 'Odemknete mesicni vyhled';
@@ -353,6 +451,8 @@ function initHoroscope() {
                             await toggleFavorite(window.currentHoroscopeReadingId, 'favorite-horoscope-btn');
                         });
                     }
+
+                    renderHoroscopeFeedbackAction(contentContainer, saveResult.id, currentPeriod);
                 }
             }
         } catch (error) {

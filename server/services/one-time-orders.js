@@ -102,7 +102,7 @@ export async function getOneTimeOrderInput(orderId) {
 
     const { data, error } = await supabase
         .from('one_time_order_inputs')
-        .select('id, product_type, product_id, customer_email, customer_name, payload')
+        .select('id, product_type, product_id, customer_email, customer_name, payload, status, fulfilled_at')
         .eq('id', cleanOrderId)
         .maybeSingle();
 

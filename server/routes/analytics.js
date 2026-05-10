@@ -28,6 +28,11 @@ const ALLOWED_EVENTS = new Set([
     'client_error',
     'error',
     'feedback_submitted',
+    'first_value_completed',
+    'reading_feedback_submitted',
+    'daily_ritual_completed',
+    'activation_completed',
+    'return_ritual_completed',
     'production_smoke_checked'
 ]);
 

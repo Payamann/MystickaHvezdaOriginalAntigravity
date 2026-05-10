@@ -90,6 +90,45 @@ test.describe('Homepage', () => {
         await expect.poll(() => page.evaluate(() => localStorage.getItem('auth_user'))).toBeNull();
     });
 
+    test('prihlaseny uzivatel vidi navratovy ritual misto registracniho CTA', async ({ page }) => {
+        await page.route('**/api/auth/profile', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    success: true,
+                    user: {
+                        id: 'homepage-user',
+                        email: 'homepage@example.com',
+                        name: 'Pavel',
+                        subscription_status: 'free'
+                    }
+                })
+            });
+        });
+
+        await page.context().addCookies([{
+            name: 'logged_in',
+            value: '1',
+            url: 'http://localhost:3001'
+        }]);
+        await page.evaluate(() => {
+            localStorage.setItem('auth_user', JSON.stringify({
+                id: 'homepage-user',
+                email: 'homepage@example.com',
+                subscription_status: 'free'
+            }));
+        });
+
+        await page.reload();
+        await waitForPageReady(page);
+
+        const loggedInCta = page.locator('#hero-cta-logged-in');
+        await expect(loggedInCta).toBeVisible();
+        await expect(page.locator('#hero-cta-container')).toBeHidden();
+        await expect(loggedInCta.locator('a', { hasText: 'Otevřít dnešní rituál' })).toHaveAttribute('href', 'profil.html#daily-guidance-card');
+    });
+
     test('hero karta dne ma vlastni analyticky signal', async ({ page }) => {
         await page.evaluate(() => {
             window.MH_ANALYTICS_QUEUE = [];

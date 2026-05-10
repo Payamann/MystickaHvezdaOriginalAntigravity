@@ -139,6 +139,11 @@ const PUBLIC_FUNNEL_EVENTS = new Set([
     'pricing_plan_cta_clicked',
     'pricing_product_cta_clicked',
     'pricing_recommendation_clicked',
+    'first_value_completed',
+    'reading_feedback_submitted',
+    'daily_ritual_completed',
+    'activation_completed',
+    'return_ritual_completed',
     'one_time_product_cta_clicked',
     'one_time_form_started',
     'one_time_form_validation_failed',
@@ -665,6 +670,116 @@ async function handleCheckoutCompleted(session, stripeEventId = null) {
     return handleSubscriptionCheckoutCompleted(session, stripeEventId);
 }
 
+async function recordOneTimeLifecycleScheduled({
+    source,
+    productId,
+    productType,
+    sequence,
+    sequenceResult,
+    session,
+    stripeEventId
+}) {
+    if (!sequenceResult || sequenceResult.scheduled <= 0) return;
+
+    await recordFunnelEvent('one_time_lifecycle_sequence_scheduled', {
+        source,
+        feature: productId,
+        stripeSessionId: session.id,
+        stripeEventId,
+        metadata: {
+            productType,
+            productId,
+            sequence,
+            emailsScheduled: sequenceResult.scheduled,
+            emailsSkipped: sequenceResult.skipped || 0
+        }
+    });
+}
+
+async function ensureAnnualHoroscopeLifecycle({
+    orderInput,
+    session,
+    stripeEventId,
+    productId,
+    productYear,
+    source,
+    customerEmail,
+    customerName,
+    sign
+}) {
+    if (!customerEmail || !customerName || !sign) return null;
+
+    try {
+        const { sendAnnualHoroscopeLifecycleSequence } = await import('./email-service.js');
+        const sequenceResult = await sendAnnualHoroscopeLifecycleSequence({
+            orderId: orderInput?.id || session.metadata?.orderId || null,
+            email: customerEmail,
+            name: customerName,
+            sign,
+            productId,
+            year: productYear,
+            source,
+            stripeSessionId: session.id
+        });
+
+        await recordOneTimeLifecycleScheduled({
+            source,
+            productId,
+            productType: 'rocni_horoskop',
+            sequence: 'annual_horoscope_post_purchase',
+            sequenceResult,
+            session,
+            stripeEventId
+        });
+
+        return sequenceResult;
+    } catch (sequenceError) {
+        console.warn(`[HOROSKOP] Lifecycle sequence scheduling failed for paid session ${session.id}:`, sequenceError.message);
+        return null;
+    }
+}
+
+async function ensurePersonalMapLifecycle({
+    orderInput,
+    session,
+    stripeEventId,
+    productId,
+    source,
+    customerEmail,
+    customerName,
+    sign
+}) {
+    if (!customerEmail || !customerName || !sign) return null;
+
+    try {
+        const { sendPersonalMapLifecycleSequence } = await import('./email-service.js');
+        const sequenceResult = await sendPersonalMapLifecycleSequence({
+            orderId: orderInput?.id || session.metadata?.orderId || null,
+            email: customerEmail,
+            name: customerName,
+            sign,
+            productId,
+            source,
+            stripeSessionId: session.id
+        });
+
+        await recordOneTimeLifecycleScheduled({
+            source,
+            productId,
+            productType: 'personal_map',
+            sequence: 'personal_map_post_purchase',
+            sequenceResult,
+            session,
+            stripeEventId
+        });
+
+        return sequenceResult;
+    } catch (sequenceError) {
+        console.warn(`[PERSONAL_MAP] Lifecycle sequence scheduling failed for paid session ${session.id}:`, sequenceError.message);
+        return null;
+    }
+}
+
 /**
  * Handle one-time purchase of Roční Horoskop na míru
  * Generates PDF via Claude + Playwright, sends via Resend
@@ -673,10 +788,28 @@ async function handleRocniHoroskopPurchase(session, stripeEventId = null) {
     const orderInput = await getOneTimeOrderInput(session.metadata?.orderId);
     const payload = orderInput?.payload || {};
     const productId = session.metadata?.productId || orderInput?.product_id || 'rocni_horoskop_2026';
+    const productYear = session.metadata?.productYear || new Date().getFullYear();
+    const source = session.metadata?.source || 'annual_horoscope_checkout';
     const customerName = orderInput?.customer_name || session.metadata?.customerName;
     const birthDate = payload.birthDate || session.metadata?.birthDate;
     const sign = payload.sign || session.metadata?.sign;
     const customerEmail = orderInput?.customer_email || session.metadata?.email || session.customer_email || session.customer_details?.email;
+
+    if (orderInput?.status === 'fulfilled') {
+        console.warn(`[HOROSKOP] Paid session ${session.id} already fulfilled; skipping duplicate delivery.`);
+        await ensureAnnualHoroscopeLifecycle({
+            orderInput,
+            session,
+            stripeEventId,
+            productId,
+            productYear,
+            source,
+            customerEmail,
+            customerName,
+            sign
+        });
+        return;
+    }
 
     if (!customerName || !birthDate || !sign || !customerEmail) {
         console.error('[HOROSKOP] Missing metadata in checkout session:', session.id);
@@ -692,7 +825,7 @@ async function handleRocniHoroskopPurchase(session, stripeEventId = null) {
     });
 
     await recordFunnelEvent('one_time_purchase_completed', {
-        source: session.metadata?.source || 'annual_horoscope_checkout',
+        source,
         feature: productId,
         stripeSessionId: session.id,
         stripeEventId,
@@ -715,6 +848,30 @@ async function handleRocniHoroskopPurchase(session, stripeEventId = null) {
 
             await sendHoroscopePdf({ to: customerEmail, name: customerName, sign, pdfBuffer });
             await markOneTimeOrderInputFulfilled(orderInput?.id);
+            await recordFunnelEvent('one_time_pdf_delivered', {
+                source,
+                feature: productId,
+                stripeSessionId: session.id,
+                stripeEventId,
+                metadata: {
+                    productType: 'rocni_horoskop',
+                    productId,
+                    deliveryChannel: 'email'
+                }
+            });
+
+            await ensureAnnualHoroscopeLifecycle({
+                orderInput,
+                session,
+                stripeEventId,
+                productId,
+                productYear,
+                source,
+                customerEmail,
+                customerName,
+                sign
+            });
+
             console.log(`[HOROSKOP] PDF sent for paid session ${session.id}`);
         } catch (err) {
             console.error(`[HOROSKOP] PDF generation/delivery failed for paid session ${session.id}:`, err.message);
@@ -740,6 +897,22 @@ async function handlePersonalMapPurchase(session, stripeEventId = null) {
     const focus = payload.focus || session.metadata?.focus || '';
     const customerEmail = orderInput?.customer_email || session.metadata?.email || session.customer_email || session.customer_details?.email;
     const year = Number(productYear) || new Date().getFullYear();
+    const source = session.metadata?.source || 'personal_map_checkout';
+
+    if (orderInput?.status === 'fulfilled') {
+        console.warn(`[PERSONAL_MAP] Paid session ${session.id} already fulfilled; skipping duplicate delivery.`);
+        await ensurePersonalMapLifecycle({
+            orderInput,
+            session,
+            stripeEventId,
+            productId,
+            source,
+            customerEmail,
+            customerName,
+            sign
+        });
+        return;
+    }
 
     if (!customerName || !birthDate || !sign || !customerEmail || !focus) {
         console.error('[PERSONAL_MAP] Missing metadata in checkout session:', session.id);
@@ -755,7 +928,7 @@ async function handlePersonalMapPurchase(session, stripeEventId = null) {
     });
 
     await recordFunnelEvent('one_time_purchase_completed', {
-        source: session.metadata?.source || 'personal_map_checkout',
+        source,
         feature: productId,
         stripeSessionId: session.id,
         stripeEventId,
@@ -770,7 +943,7 @@ async function handlePersonalMapPurchase(session, stripeEventId = null) {
     setImmediate(async () => {
         try {
             const { generatePersonalMapContent, renderPersonalMapPdf } = await import('./services/personal-map-pdf.js');
-            const { sendPersonalMapLifecycleSequence, sendPersonalMapPdf } = await import('./email-service.js');
+            const { sendPersonalMapPdf } = await import('./email-service.js');
 
             const sections = await generatePersonalMapContent({
                 name: customerName,
@@ -795,7 +968,7 @@ async function handlePersonalMapPurchase(session, stripeEventId = null) {
             await sendPersonalMapPdf({ to: customerEmail, name: customerName, sign, pdfBuffer });
             await markOneTimeOrderInputFulfilled(orderInput?.id);
             await recordFunnelEvent('one_time_pdf_delivered', {
-                source: session.metadata?.source || 'personal_map_checkout',
+                source,
                 feature: productId,
                 stripeSessionId: session.id,
                 stripeEventId,
@@ -806,31 +979,16 @@ async function handlePersonalMapPurchase(session, stripeEventId = null) {
                 }
             });
 
-            try {
-                await sendPersonalMapLifecycleSequence({
-                    orderId: orderInput?.id || session.metadata?.orderId || null,
-                    email: customerEmail,
-                    name: customerName,
-                    sign,
-                    productId,
-                    source: session.metadata?.source || 'personal_map_checkout',
-                    stripeSessionId: session.id
-                });
-                await recordFunnelEvent('one_time_lifecycle_sequence_scheduled', {
-                    source: session.metadata?.source || 'personal_map_checkout',
-                    feature: productId,
-                    stripeSessionId: session.id,
-                    stripeEventId,
-                    metadata: {
-                        productType: 'personal_map',
-                        productId,
-                        sequence: 'personal_map_post_purchase',
-                        emailsScheduled: 2
-                    }
-                });
-            } catch (sequenceError) {
-                console.warn(`[PERSONAL_MAP] Lifecycle sequence scheduling failed for paid session ${session.id}:`, sequenceError.message);
-            }
+            await ensurePersonalMapLifecycle({
+                orderInput,
+                session,
+                stripeEventId,
+                productId,
+                source,
+                customerEmail,
+                customerName,
+                sign
+            });
 
             console.log(`[PERSONAL_MAP] PDF sent for paid session ${session.id}`);
         } catch (err) {

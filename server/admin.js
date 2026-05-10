@@ -48,6 +48,11 @@ const FUNNEL_PRICING_INTENT_EVENTS = new Set([
     'one_time_form_started',
 ]);
 
+const FUNNEL_RITUAL_COMPLETION_EVENTS = new Set([
+    'daily_ritual_completed',
+    'return_ritual_completed',
+]);
+
 function incrementCounter(counter, key) {
     const normalizedKey = key || 'unknown';
     counter[normalizedKey] = (counter[normalizedKey] || 0) + 1;
@@ -97,11 +102,17 @@ function estimateEventMinorValue(event) {
 function createDailyBucket(date) {
     return {
         date,
+        firstValueCompleted: 0,
+        activationCompleted: 0,
+        dailyRitualCompleted: 0,
+        readingFeedbackSubmitted: 0,
         paywallViewed: 0,
         pricingIntent: 0,
         checkoutStarted: 0,
         subscriptionCompleted: 0,
         oneTimeCompleted: 0,
+        oneTimePdfDelivered: 0,
+        oneTimeLifecycleScheduled: 0,
         failures: 0,
         refunds: 0
     };
@@ -201,10 +212,16 @@ function createSourceFeatureSegment(source, feature) {
         source,
         feature,
         totalEvents: 0,
+        firstValueCompleted: 0,
+        activationCompleted: 0,
+        dailyRitualCompleted: 0,
+        readingFeedbackSubmitted: 0,
         paywallViewed: 0,
         pricingIntent: 0,
         checkoutStarted: 0,
         purchaseCompleted: 0,
+        oneTimePdfDelivered: 0,
+        oneTimeLifecycleScheduled: 0,
         failures: 0,
         paywallToPricingIntentRate: 0,
         pricingIntentToCheckoutRate: 0,
@@ -221,9 +238,15 @@ function addFunnelConversionCounts(segment, eventName) {
     segment.totalEvents += 1;
 
     if (FUNNEL_PAYWALL_VIEW_EVENTS.has(eventName)) segment.paywallViewed += 1;
+    if (eventName === 'first_value_completed') segment.firstValueCompleted += 1;
+    if (eventName === 'activation_completed') segment.activationCompleted += 1;
+    if (FUNNEL_RITUAL_COMPLETION_EVENTS.has(eventName)) segment.dailyRitualCompleted += 1;
+    if (eventName === 'reading_feedback_submitted') segment.readingFeedbackSubmitted += 1;
     if (FUNNEL_PRICING_INTENT_EVENTS.has(eventName)) segment.pricingIntent += 1;
     if (eventName === 'checkout_session_created') segment.checkoutStarted += 1;
     if (eventName === 'subscription_checkout_completed' || eventName === 'one_time_purchase_completed') segment.purchaseCompleted += 1;
+    if (eventName === 'one_time_pdf_delivered') segment.oneTimePdfDelivered += 1;
+    if (eventName === 'one_time_lifecycle_sequence_scheduled') segment.oneTimeLifecycleScheduled += 1;
     if (FUNNEL_FAILURE_EVENTS.has(eventName)) segment.failures += 1;
 }
 
@@ -254,6 +277,12 @@ function buildSourceFeatureSegmentMap(events) {
 function applySourceFeatureRates(segment) {
     return {
         ...segment,
+        firstValueToCheckoutRate: segment.firstValueCompleted > 0
+            ? Math.round((segment.checkoutStarted / segment.firstValueCompleted) * 1000) / 10
+            : 0,
+        activationToCheckoutRate: segment.activationCompleted > 0
+            ? Math.round((segment.checkoutStarted / segment.activationCompleted) * 1000) / 10
+            : 0,
         paywallToPricingIntentRate: segment.paywallViewed > 0
             ? Math.round((segment.pricingIntent / segment.paywallViewed) * 1000) / 10
             : 0,
@@ -292,6 +321,12 @@ function buildSourceFeatureSegments(events, previousEvents = [], limit = 10) {
                 : null,
             paywallToCheckoutRateDelta: segment.previous.paywallViewed > 0
                 ? Math.round((segment.paywallToCheckoutRate - segment.previous.paywallToCheckoutRate) * 10) / 10
+                : null,
+            firstValueToCheckoutRateDelta: segment.previous.firstValueCompleted > 0
+                ? Math.round((segment.firstValueToCheckoutRate - segment.previous.firstValueToCheckoutRate) * 10) / 10
+                : null,
+            activationToCheckoutRateDelta: segment.previous.activationCompleted > 0
+                ? Math.round((segment.activationToCheckoutRate - segment.previous.activationToCheckoutRate) * 10) / 10
                 : null,
             checkoutToPurchaseRateDelta: segment.previous.checkoutStarted > 0
                 ? Math.round((segment.checkoutToPurchaseRate - segment.previous.checkoutToPurchaseRate) * 10) / 10
@@ -453,7 +488,19 @@ function businessPeriodSummary(analyticsReport = {}, funnelReport = {}) {
     const purchases = (metrics.subscriptionCompleted || 0) + (metrics.oneTimeCompleted || 0);
     const visitors = summary.visitors || 0;
     const signups = summary.signups || 0;
+    const firstValueCompleted = metrics.firstValueCompleted || 0;
+    const activationCompleted = metrics.activationCompleted || 0;
+    const dailyRitualCompleted = metrics.dailyRitualCompleted || 0;
     const checkoutStarted = Math.max(summary.checkouts || 0, metrics.checkoutStarted || 0);
+    const oneTimeCompleted = metrics.oneTimeCompleted || 0;
+    const oneTimePdfDelivered = metrics.oneTimePdfDelivered || 0;
+    const oneTimeLifecycleScheduled = metrics.oneTimeLifecycleScheduled || 0;
+    const oneTimeDeliveryRate = typeof metrics.oneTimeDeliveryRate === 'number'
+        ? metrics.oneTimeDeliveryRate
+        : rate(oneTimePdfDelivered, oneTimeCompleted);
+    const oneTimeLifecycleScheduleRate = typeof metrics.oneTimeLifecycleScheduleRate === 'number'
+        ? metrics.oneTimeLifecycleScheduleRate
+        : rate(oneTimeLifecycleScheduled, oneTimePdfDelivered);
 
     return {
         visitors,
@@ -461,18 +508,29 @@ function businessPeriodSummary(analyticsReport = {}, funnelReport = {}) {
         pageViews: summary.pageViews || 0,
         ctaClicks: summary.ctaClicks || 0,
         signups,
+        firstValueCompleted,
+        activationCompleted,
+        dailyRitualCompleted,
         checkoutStarted,
         purchases,
         subscriptionCompleted: metrics.subscriptionCompleted || 0,
-        oneTimeCompleted: metrics.oneTimeCompleted || 0,
+        oneTimeCompleted,
+        oneTimePdfDelivered,
+        oneTimeLifecycleScheduled,
         failures: metrics.failures || 0,
         refunds: metrics.refunds || 0,
         cancelRequests: metrics.cancelRequests || 0,
         estimatedValueCzk: metrics.estimatedValueCzk || 0,
         visitorToSignupRate: rate(signups, visitors),
+        signupToFirstValueRate: rate(firstValueCompleted, signups),
+        signupToActivationRate: rate(activationCompleted, signups),
         visitorToCheckoutRate: rate(checkoutStarted, visitors),
         signupToCheckoutRate: rate(checkoutStarted, signups),
+        firstValueToCheckoutRate: rate(checkoutStarted, firstValueCompleted),
+        activationToCheckoutRate: rate(checkoutStarted, activationCompleted),
         checkoutToPurchaseRate: rate(purchases, checkoutStarted),
+        oneTimeDeliveryRate,
+        oneTimeLifecycleScheduleRate,
         purchaseValuePerVisitorCzk: visitors > 0 ? Math.round(((metrics.estimatedValueCzk || 0) / visitors) * 100) / 100 : 0
     };
 }
@@ -488,7 +546,7 @@ function buildBusinessSignals(summary, userStats, analyticsReport = {}) {
     const errorRate = rate(errorCount, analyticsReport.total || 0);
     const failureRate = rate(summary.failures, summary.checkoutStarted);
 
-    return [
+    const signals = [
         createBusinessSignal(
             'Akvizice',
             statusFromThreshold(summary.visitors, { ok: 500, warning: 100 }),
@@ -502,6 +560,13 @@ function buildBusinessSignals(summary, userStats, analyticsReport = {}) {
             `${summary.visitorToSignupRate} % visitor -> signup`,
             'Měří, jestli homepage, obsah a CTA mění anonymní návštěvu na účet.',
             summary.visitorToSignupRate < 1.5 ? 'Zjednodušit první CTA a posílit slib denního osobního rituálu.' : 'Rozšiřovat zdroje, které už přivádí registrace.'
+        ),
+        createBusinessSignal(
+            'Aktivace',
+            statusFromThreshold(summary.signupToActivationRate, { ok: 55, warning: 25 }),
+            `${summary.signupToActivationRate} % signup -> aktivace`,
+            'Měří, jestli nový uživatel opravdu dostane osobní výklad a nezasekne se jen u registrace.',
+            summary.signupToActivationRate < 25 ? 'Zkrátit cestu na první výklad a po něm nabídnout reflexi.' : 'Navázat upgrade a návratový rituál na už prožitou hodnotu.'
         ),
         createBusinessSignal(
             'Monetizace',
@@ -525,6 +590,19 @@ function buildBusinessSignals(summary, userStats, analyticsReport = {}) {
             (userStats.activeSubscribers || 0) < 5 ? 'Dostat první placené uživatele přes jednorázový produkt a onboarding.' : 'Zavést retenční a win-back sekvence.'
         )
     ];
+
+    if (summary.oneTimeCompleted > 0 || summary.oneTimePdfDelivered > 0) {
+        const lifecycleRisk = Math.min(summary.oneTimeDeliveryRate || 0, summary.oneTimeLifecycleScheduleRate || 0);
+        signals.push(createBusinessSignal(
+            'PDF cesta',
+            statusFromThreshold(lifecycleRisk, { ok: 95, warning: 80 }),
+            `${summary.oneTimeDeliveryRate} % PDF / ${summary.oneTimeLifecycleScheduleRate} % sekvence`,
+            'Měří, jestli jednorázový nákup opravdu doručí výstup a spustí návratovou cestu k Průvodci.',
+            lifecycleRisk < 80 ? 'Nejdřív zkontrolovat doručování PDF a plánování lifecycle e-mailů.' : 'Škálovat jednorázové produkty jako vstup do členství.'
+        ));
+    }
+
+    return signals;
 }
 
 function buildBusinessActions(summary, previousSummary, userStats, analyticsReport = {}) {
@@ -551,7 +629,7 @@ function buildBusinessActions(summary, previousSummary, userStats, analyticsRepo
         ));
     }
 
-    if (summary.signups > 0 && summary.signupToCheckoutRate < 8) {
+    if (summary.signups > 0 && summary.signupToActivationRate < 35) {
         actions.push(createBusinessAction(
             3,
             'Posílit aktivaci po registraci',
@@ -561,13 +639,43 @@ function buildBusinessActions(summary, previousSummary, userStats, analyticsRepo
         ));
     }
 
-    if (summary.checkoutStarted > 0 && summary.checkoutToPurchaseRate < 35) {
+    if (summary.activationCompleted > 0 && summary.activationToCheckoutRate < 8) {
         actions.push(createBusinessAction(
             4,
+            'Napojit upgrade na prozitou hodnotu',
+            'Aktivovaní lidé už viděli hodnotu; slabší checkout intent znamená, že paywall přichází pozdě, brzy nebo bez kontextu.',
+            'CRO',
+            'Po prvním výkladu testovat jemný týdenní kontext Průvodce proti současné obecné premium nabídce.'
+        ));
+    }
+
+    if (summary.checkoutStarted > 0 && summary.checkoutToPurchaseRate < 35) {
+        actions.push(createBusinessAction(
+            5,
             'Otestovat trial a roční default',
             'Lidé už mají nákupní záměr, takže zlepšení checkout konverze se projeví přímo v příjmu.',
             'Pricing',
             'A/B test: 7denní trial Průvodce vs. současný model, roční plán jako doporučená volba.'
+        ));
+    }
+
+    if (summary.oneTimeCompleted > 0 && summary.oneTimeDeliveryRate < 95) {
+        actions.push(createBusinessAction(
+            5,
+            'Zkontrolovat doručení jednorázových PDF',
+            'Zaplacený jednorázový produkt musí dorazit bez ruční práce, jinak ztrácí důvěru i šanci na upsell.',
+            'Engineering',
+            'Projít poslední one_time_purchase_completed bez one_time_pdf_delivered a ověřit generování PDF, e-mail i fulfillment stav objednávky.'
+        ));
+    }
+
+    if (summary.oneTimePdfDelivered > 0 && summary.oneTimeLifecycleScheduleRate < 95) {
+        actions.push(createBusinessAction(
+            5,
+            'Dotáhnout post-purchase sekvence',
+            'Doručené PDF bez navazujícího rituálu nechává peníze i návrat uživatele na stole.',
+            'Lifecycle',
+            'Ověřit, že každý doručený roční horoskop plánuje den 1 reflexi a den 3 nabídku Průvodce.'
         ));
     }
 
@@ -607,9 +715,18 @@ function calculateBusinessScore(summary, userStats, analyticsReport = {}) {
     if (summary.visitorToSignupRate < 1.5) score -= 18;
     else if (summary.visitorToSignupRate < 4) score -= 8;
 
-    if (summary.signups > 0 && summary.signupToCheckoutRate < 8) score -= 14;
+    if (summary.signups > 0 && summary.signupToActivationRate < 25) score -= 14;
+    else if (summary.signups > 0 && summary.signupToActivationRate < 55) score -= 7;
+
+    if (summary.activationCompleted > 0 && summary.activationToCheckoutRate < 8) score -= 8;
     if (summary.checkoutStarted > 0 && summary.checkoutToPurchaseRate < 20) score -= 16;
     else if (summary.checkoutStarted > 0 && summary.checkoutToPurchaseRate < 45) score -= 8;
+
+    if (summary.oneTimeCompleted > 0 && summary.oneTimeDeliveryRate < 80) score -= 10;
+    else if (summary.oneTimeCompleted > 0 && summary.oneTimeDeliveryRate < 95) score -= 5;
+
+    if (summary.oneTimePdfDelivered > 0 && summary.oneTimeLifecycleScheduleRate < 80) score -= 6;
+    else if (summary.oneTimePdfDelivered > 0 && summary.oneTimeLifecycleScheduleRate < 95) score -= 3;
 
     if (failureRate > 10) score -= 10;
     else if (failureRate > 3) score -= 5;
@@ -649,8 +766,12 @@ export function buildBusinessReport({
         deltas: {
             visitors: countDelta(summary.visitors, previousSummary.visitors),
             signups: countDelta(summary.signups, previousSummary.signups),
+            firstValueCompleted: countDelta(summary.firstValueCompleted, previousSummary.firstValueCompleted),
+            activationCompleted: countDelta(summary.activationCompleted, previousSummary.activationCompleted),
             checkoutStarted: countDelta(summary.checkoutStarted, previousSummary.checkoutStarted),
             purchases: countDelta(summary.purchases, previousSummary.purchases),
+            oneTimePdfDelivered: countDelta(summary.oneTimePdfDelivered, previousSummary.oneTimePdfDelivered),
+            oneTimeLifecycleScheduled: countDelta(summary.oneTimeLifecycleScheduled, previousSummary.oneTimeLifecycleScheduled),
             estimatedValueCzk: countDelta(summary.estimatedValueCzk, previousSummary.estimatedValueCzk)
         },
         userStats: normalizedUserStats,
@@ -689,11 +810,17 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
         if (date) {
             if (!byDay[date]) byDay[date] = createDailyBucket(date);
 
+            if (eventName === 'first_value_completed') byDay[date].firstValueCompleted += 1;
+            if (eventName === 'activation_completed') byDay[date].activationCompleted += 1;
+            if (FUNNEL_RITUAL_COMPLETION_EVENTS.has(eventName)) byDay[date].dailyRitualCompleted += 1;
+            if (eventName === 'reading_feedback_submitted') byDay[date].readingFeedbackSubmitted += 1;
             if (FUNNEL_PAYWALL_VIEW_EVENTS.has(eventName)) byDay[date].paywallViewed += 1;
             if (FUNNEL_PRICING_INTENT_EVENTS.has(eventName)) byDay[date].pricingIntent += 1;
             if (eventName === 'checkout_session_created') byDay[date].checkoutStarted += 1;
             if (eventName === 'subscription_checkout_completed') byDay[date].subscriptionCompleted += 1;
             if (eventName === 'one_time_purchase_completed') byDay[date].oneTimeCompleted += 1;
+            if (eventName === 'one_time_pdf_delivered') byDay[date].oneTimePdfDelivered += 1;
+            if (eventName === 'one_time_lifecycle_sequence_scheduled') byDay[date].oneTimeLifecycleScheduled += 1;
             if (FUNNEL_FAILURE_EVENTS.has(eventName)) byDay[date].failures += 1;
             if (FUNNEL_REFUND_EVENTS.has(eventName)) byDay[date].refunds += 1;
         }
@@ -701,9 +828,15 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
 
     const paywallViewed = [...FUNNEL_PAYWALL_VIEW_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
     const pricingIntent = [...FUNNEL_PRICING_INTENT_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
+    const firstValueCompleted = byEvent.first_value_completed || 0;
+    const activationCompleted = byEvent.activation_completed || 0;
+    const dailyRitualCompleted = [...FUNNEL_RITUAL_COMPLETION_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
+    const readingFeedbackSubmitted = byEvent.reading_feedback_submitted || 0;
     const checkoutStarted = byEvent.checkout_session_created || 0;
     const subscriptionCompleted = byEvent.subscription_checkout_completed || 0;
     const oneTimeCompleted = byEvent.one_time_purchase_completed || 0;
+    const oneTimePdfDelivered = byEvent.one_time_pdf_delivered || 0;
+    const oneTimeLifecycleScheduled = byEvent.one_time_lifecycle_sequence_scheduled || 0;
     const invoicePaid = byEvent.subscription_invoice_paid || 0;
     const failures = [...FUNNEL_FAILURE_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
     const refunds = [...FUNNEL_REFUND_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
@@ -720,6 +853,18 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
     const pricingIntentToCheckoutRate = pricingIntent > 0
         ? Math.round((checkoutStarted / pricingIntent) * 1000) / 10
         : 0;
+    const firstValueToCheckoutRate = firstValueCompleted > 0
+        ? Math.round((checkoutStarted / firstValueCompleted) * 1000) / 10
+        : 0;
+    const activationToCheckoutRate = activationCompleted > 0
+        ? Math.round((checkoutStarted / activationCompleted) * 1000) / 10
+        : 0;
+    const oneTimeDeliveryRate = oneTimeCompleted > 0
+        ? Math.round((oneTimePdfDelivered / oneTimeCompleted) * 1000) / 10
+        : 0;
+    const oneTimeLifecycleScheduleRate = oneTimePdfDelivered > 0
+        ? Math.round((oneTimeLifecycleScheduled / oneTimePdfDelivered) * 1000) / 10
+        : 0;
 
     return {
         generatedAt: new Date().toISOString(),
@@ -730,11 +875,17 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
         limit,
         totalEvents: currentEvents.length,
         metrics: {
+            firstValueCompleted,
+            activationCompleted,
+            dailyRitualCompleted,
+            readingFeedbackSubmitted,
             paywallViewed,
             pricingIntent,
             checkoutStarted,
             subscriptionCompleted,
             oneTimeCompleted,
+            oneTimePdfDelivered,
+            oneTimeLifecycleScheduled,
             invoicePaid,
             failures,
             refunds,
@@ -743,6 +894,10 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
             paywallToCheckoutRate,
             paywallToPricingIntentRate,
             pricingIntentToCheckoutRate,
+            firstValueToCheckoutRate,
+            activationToCheckoutRate,
+            oneTimeDeliveryRate,
+            oneTimeLifecycleScheduleRate,
             estimatedValueCzk: Math.round(estimatedMinorValue / 100)
         },
         byEvent,
@@ -775,22 +930,34 @@ function csvCell(value) {
 export function buildFunnelDailyCsv(report) {
     const header = [
         'date',
+        'first_value_completed',
+        'activation_completed',
+        'daily_ritual_completed',
+        'reading_feedback_submitted',
         'paywall_viewed',
         'pricing_intent',
         'checkout_started',
         'subscription_completed',
         'one_time_completed',
+        'one_time_pdf_delivered',
+        'one_time_lifecycle_scheduled',
         'failures',
         'refunds'
     ];
 
     const rows = (report.daily || []).map(row => [
         row.date,
+        row.firstValueCompleted,
+        row.activationCompleted,
+        row.dailyRitualCompleted,
+        row.readingFeedbackSubmitted,
         row.paywallViewed,
         row.pricingIntent,
         row.checkoutStarted,
         row.subscriptionCompleted,
         row.oneTimeCompleted,
+        row.oneTimePdfDelivered,
+        row.oneTimeLifecycleScheduled,
         row.failures,
         row.refunds
     ]);
@@ -805,21 +972,33 @@ export function buildFunnelSegmentsCsv(report) {
         'source',
         'feature',
         'total_events',
+        'first_value_completed',
+        'activation_completed',
+        'daily_ritual_completed',
+        'reading_feedback_submitted',
         'paywall_viewed',
         'pricing_intent',
         'checkout_started',
         'purchase_completed',
+        'one_time_pdf_delivered',
+        'one_time_lifecycle_scheduled',
         'failures',
         'paywall_to_pricing_intent_rate',
         'pricing_intent_to_checkout_rate',
+        'first_value_to_checkout_rate',
+        'activation_to_checkout_rate',
         'paywall_to_checkout_rate',
         'checkout_to_purchase_rate',
         'previous_paywall_to_pricing_intent_rate',
         'previous_pricing_intent_to_checkout_rate',
+        'previous_first_value_to_checkout_rate',
+        'previous_activation_to_checkout_rate',
         'previous_paywall_to_checkout_rate',
         'previous_checkout_to_purchase_rate',
         'paywall_to_pricing_intent_rate_delta',
         'pricing_intent_to_checkout_rate_delta',
+        'first_value_to_checkout_rate_delta',
+        'activation_to_checkout_rate_delta',
         'paywall_to_checkout_rate_delta',
         'checkout_to_purchase_rate_delta'
     ];
@@ -828,21 +1007,33 @@ export function buildFunnelSegmentsCsv(report) {
         row.source,
         row.feature,
         row.totalEvents,
+        row.firstValueCompleted,
+        row.activationCompleted,
+        row.dailyRitualCompleted,
+        row.readingFeedbackSubmitted,
         row.paywallViewed,
         row.pricingIntent,
         row.checkoutStarted,
         row.purchaseCompleted,
+        row.oneTimePdfDelivered,
+        row.oneTimeLifecycleScheduled,
         row.failures,
         row.paywallToPricingIntentRate,
         row.pricingIntentToCheckoutRate,
+        row.firstValueToCheckoutRate,
+        row.activationToCheckoutRate,
         row.paywallToCheckoutRate,
         row.checkoutToPurchaseRate,
         row.previous?.paywallToPricingIntentRate ?? 0,
         row.previous?.pricingIntentToCheckoutRate ?? 0,
+        row.previous?.firstValueToCheckoutRate ?? 0,
+        row.previous?.activationToCheckoutRate ?? 0,
         row.previous?.paywallToCheckoutRate ?? 0,
         row.previous?.checkoutToPurchaseRate ?? 0,
         row.paywallToPricingIntentRateDelta,
         row.pricingIntentToCheckoutRateDelta,
+        row.firstValueToCheckoutRateDelta,
+        row.activationToCheckoutRateDelta,
         row.paywallToCheckoutRateDelta,
         row.checkoutToPurchaseRateDelta
     ]);

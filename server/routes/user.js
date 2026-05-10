@@ -12,6 +12,7 @@ import rateLimit from 'express-rate-limit';
 import { validatePassword } from '../utils/validation.js';
 import { blacklistToken, blacklistAllUserTokens } from '../utils/token-blacklist.js';
 import { isProductionRuntime } from '../config/runtime.js';
+import { recordFunnelEvent } from '../payment.js';
 
 export const router = express.Router();
 
@@ -42,6 +43,62 @@ const VALID_READING_TYPES = new Set([
     'tarot'
 ]);
 const MAX_READING_DATA_LENGTH = 50000;
+const VALID_FEEDBACK_RESONANCE = new Set(['fits', 'neutral', 'miss']);
+const VALID_FEEDBACK_FOCUS = new Set(['relationships', 'work', 'energy', 'self', 'timing']);
+const VALID_FEEDBACK_NEXT_ACTION = new Set(['journal', 'weekly', 'premium', 'another_reading', 'none']);
+
+function cleanFeedbackValue(value, maxLength = 80) {
+    if (typeof value !== 'string') return null;
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+    return trimmed.slice(0, maxLength);
+}
+
+function normalizeReadingFeedback(body = {}) {
+    const resonance = cleanFeedbackValue(body.resonance);
+    const focus = cleanFeedbackValue(body.focus);
+    const nextAction = cleanFeedbackValue(body.nextAction);
+    const note = cleanFeedbackValue(body.note, 240);
+
+    if (!resonance && !focus && !nextAction && !note) {
+        throw new Error('Feedback payload is required.');
+    }
+
+    if (resonance && !VALID_FEEDBACK_RESONANCE.has(resonance)) {
+        throw new Error('Invalid feedback resonance.');
+    }
+
+    if (focus && !VALID_FEEDBACK_FOCUS.has(focus)) {
+        throw new Error('Invalid feedback focus.');
+    }
+
+    if (nextAction && !VALID_FEEDBACK_NEXT_ACTION.has(nextAction)) {
+        throw new Error('Invalid feedback next action.');
+    }
+
+    return {
+        ...(resonance && { resonance }),
+        ...(focus && { focus }),
+        ...(nextAction && { nextAction }),
+        ...(note && { note }),
+        submittedAt: new Date().toISOString()
+    };
+}
+
+async function getExistingValueReadingCount(userId) {
+    const { count, error } = await supabase
+        .from('readings')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .neq('type', 'journal');
+
+    if (error) {
+        console.warn('[READINGS] Could not count previous value readings:', error.message);
+        return null;
+    }
+
+    return count || 0;
+}
 
 function normalizeReadingData(readingData) {
     if (readingData === undefined || readingData === null) {
@@ -128,6 +185,10 @@ router.post('/readings', authenticateToken, async (req, res) => {
             return res.status(400).json({ error: validationError.message });
         }
 
+        const previousValueReadingCount = cleanType !== 'journal'
+            ? await getExistingValueReadingCount(req.user.id)
+            : null;
+
         const { data, error } = await supabase
             .from('readings')
             .insert({ user_id: req.user.id, type: cleanType, data: validatedData })
@@ -135,6 +196,36 @@ router.post('/readings', authenticateToken, async (req, res) => {
             .single();
 
         if (error) throw error;
+
+        if (cleanType === 'journal') {
+            await recordFunnelEvent('daily_ritual_completed', {
+                userId: req.user.id,
+                source: 'profile_journal',
+                feature: 'journal',
+                metadata: {
+                    reading_id: data.id
+                }
+            });
+        } else if (previousValueReadingCount === 0) {
+            await recordFunnelEvent('first_value_completed', {
+                userId: req.user.id,
+                source: 'reading_save',
+                feature: cleanType,
+                metadata: {
+                    reading_id: data.id
+                }
+            });
+            await recordFunnelEvent('activation_completed', {
+                userId: req.user.id,
+                source: 'reading_save',
+                feature: cleanType,
+                metadata: {
+                    reading_id: data.id,
+                    activation_type: 'first_saved_reading'
+                }
+            });
+        }
+
         res.json({ success: true, reading: data, id: data.id });
     } catch (error) {
         console.error('Save Reading Error:', error);
@@ -159,6 +250,80 @@ router.get('/readings/:id', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error('Get Reading Error:', error);
         res.status(500).json({ success: false, error: 'Nepodařilo se načíst výklad.' });
+    }
+});
+
+// Save lightweight feedback on a reading without creating a separate table
+router.patch('/readings/:id/feedback', authenticateToken, async (req, res) => {
+    try {
+        let feedback;
+        try {
+            feedback = normalizeReadingFeedback(req.body || {});
+        } catch (validationError) {
+            return res.status(400).json({ success: false, error: validationError.message });
+        }
+
+        const { data: current, error: fetchError } = await supabase
+            .from('readings')
+            .select('id,type,data')
+            .eq('id', req.params.id)
+            .eq('user_id', req.user.id)
+            .single();
+
+        if (fetchError?.code === 'PGRST116' || !current) {
+            return res.status(404).json({ success: false, error: 'Reading not found.' });
+        }
+        if (fetchError) throw fetchError;
+
+        if (current.type === 'journal') {
+            return res.status(400).json({ success: false, error: 'Journal entries do not accept reading feedback.' });
+        }
+
+        if (!current.data || typeof current.data !== 'object' || Array.isArray(current.data)) {
+            return res.status(400).json({ success: false, error: 'Reading data cannot accept feedback.' });
+        }
+
+        const previousFeedback = current.data.feedback
+            && typeof current.data.feedback === 'object'
+            && !Array.isArray(current.data.feedback)
+            ? current.data.feedback
+            : {};
+        const updatedData = {
+            ...current.data,
+            feedback: {
+                ...previousFeedback,
+                ...feedback
+            }
+        };
+
+        const { data, error } = await supabase
+            .from('readings')
+            .update({ data: updatedData })
+            .eq('id', req.params.id)
+            .eq('user_id', req.user.id)
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        const feedbackFeature = cleanFeedbackValue(req.body?.feature, 120) || current.type;
+
+        await recordFunnelEvent('reading_feedback_submitted', {
+            userId: req.user.id,
+            source: cleanFeedbackValue(req.body?.source, 120) || 'reading_feedback',
+            feature: feedbackFeature,
+            metadata: {
+                reading_id: current.id,
+                resonance: feedback.resonance || null,
+                focus: feedback.focus || null,
+                next_action: feedback.nextAction || null
+            }
+        });
+
+        res.json({ success: true, reading: data, feedback: data.data.feedback });
+    } catch (error) {
+        console.error('Reading Feedback Error:', error);
+        res.status(500).json({ success: false, error: 'Could not save reading feedback.' });
     }
 });
 

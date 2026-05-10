@@ -125,6 +125,134 @@ test.describe('Horoskopy', () => {
         await expect(page.locator('body')).toBeVisible();
     });
 
+    test('logged-in daily horoscope renders feedback strip and submits payload', async ({ page }) => {
+        await page.context().addCookies([{
+            name: 'logged_in',
+            value: '1',
+            url: 'http://localhost:3001'
+        }]);
+
+        await page.goto('/horoskopy.html');
+        await waitForPageReady(page);
+
+        await page.evaluate(() => {
+            sessionStorage.clear();
+            window.__feedbackPayloads = [];
+            window.__checkoutPayloads = [];
+            window.callAPI = async () => ({
+                success: true,
+                response: {
+                    prediction: 'Dnes se drz jednoho konkretniho kroku.',
+                    affirmation: 'Vsimam si jasneho smeru.',
+                    luckyNumbers: [3, 7, 12]
+                }
+            });
+            window.Auth = {
+                isLoggedIn: () => true,
+                isPremium: () => false,
+                saveReading: async (type, data) => ({ id: 'reading-e2e-horoscope', type, data }),
+                saveReadingFeedback: async (id, payload) => {
+                    window.__feedbackPayloads.push({ id, payload });
+                    return { success: true, feedback: payload };
+                },
+                startPlanCheckout: (planId, context) => {
+                    window.__checkoutPayloads.push({ planId, context });
+                }
+            };
+        });
+
+        await page.locator('.zodiac-card', { hasText: 'Beran' }).first().click();
+
+        const feedback = page.locator('.horoscope-feedback');
+        await expect(feedback).toBeVisible();
+        await expect(feedback.locator('[data-next-action="journal"]')).toHaveAttribute('href', '/profil.html#journal-input');
+
+        await feedback.locator('[data-resonance="fits"]').click();
+
+        await expect(feedback.locator('.horoscope-feedback__status')).toContainText('Uloženo');
+        await expect(feedback.locator('[data-resonance="fits"]')).toHaveClass(/is-selected/);
+        await expect.poll(async () => page.evaluate(() => window.__feedbackPayloads?.length || 0)).toBe(1);
+
+        const payloads = await page.evaluate(() => window.__feedbackPayloads);
+        expect(payloads[0]).toMatchObject({
+            id: 'reading-e2e-horoscope',
+            payload: {
+                resonance: 'fits',
+                feature: 'daily_guidance',
+                source: 'horoscope_feedback_strip'
+            }
+        });
+
+        await feedback.locator('[data-next-action="premium"]').click();
+
+        await expect.poll(async () => page.evaluate(() => window.__feedbackPayloads?.length || 0)).toBe(2);
+        const checkoutPayloads = await page.evaluate(() => window.__checkoutPayloads);
+        expect(checkoutPayloads).toEqual([
+            expect.objectContaining({
+                planId: 'pruvodce',
+                context: expect.objectContaining({
+                    source: 'horoscope_inline_upsell',
+                    feature: 'weekly_horoscope',
+                    redirect: '/cenik.html'
+                })
+            })
+        ]);
+    });
+
+    test('feedback journal action saves next step before profile redirect', async ({ page }) => {
+        await page.context().addCookies([{
+            name: 'logged_in',
+            value: '1',
+            url: 'http://localhost:3001'
+        }]);
+
+        await page.goto('/horoskopy.html');
+        await waitForPageReady(page);
+
+        await page.evaluate(() => {
+            sessionStorage.clear();
+            window.__feedbackPayloads = [];
+            window.callAPI = async () => ({
+                success: true,
+                response: {
+                    prediction: 'Vecer si zapiš jednu větu, která drží směr.',
+                    affirmation: 'Vracím se k tomu, co je podstatné.',
+                    luckyNumbers: [1, 8, 14]
+                }
+            });
+            window.Auth = {
+                isLoggedIn: () => true,
+                isPremium: () => false,
+                saveReading: async (type, data) => ({ id: 'reading-e2e-journal-link', type, data }),
+                saveReadingFeedback: async (id, payload) => {
+                    window.__feedbackPayloads.push({ id, payload });
+                    sessionStorage.setItem('__feedbackPayloads', JSON.stringify(window.__feedbackPayloads));
+                    return { success: true, feedback: payload };
+                },
+                startPlanCheckout: () => {}
+            };
+        });
+
+        await page.locator('.zodiac-card', { hasText: 'Beran' }).first().click();
+
+        await Promise.all([
+            page.waitForURL(/profil\.html#journal-input/),
+            page.locator('.horoscope-feedback [data-next-action="journal"]').click(),
+        ]);
+
+        const payloads = await page.evaluate(() => JSON.parse(sessionStorage.getItem('__feedbackPayloads') || '[]'));
+        expect(payloads).toEqual([
+            expect.objectContaining({
+                id: 'reading-e2e-journal-link',
+                payload: expect.objectContaining({
+                    nextAction: 'journal',
+                    feature: 'daily_guidance',
+                    source: 'horoscope_feedback_strip'
+                })
+            })
+        ]);
+    });
+
     test('URL parametr sign automaticky otevře konkrétní znamení', async ({ page }) => {
         await page.goto('/horoskopy.html?sign=beran');
         await waitForPageReady(page);

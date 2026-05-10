@@ -99,7 +99,7 @@ test.describe('Profil stránka', () => {
 // ═══════════════════════════════════════════════════════════
 
 test.describe('Profil aktivace', () => {
-    async function mockLoggedInProfile(page) {
+    async function mockLoggedInProfile(page, options = {}) {
         const user = {
             id: 'profile-user-1',
             email: 'profil-activation@example.com',
@@ -107,6 +107,7 @@ test.describe('Profil aktivace', () => {
             birth_date: '1990-08-10',
             subscription_status: 'free'
         };
+        const readings = [...(options.readings || [])];
 
         await page.context().addCookies([{
             name: 'logged_in',
@@ -134,10 +135,27 @@ test.describe('Profil aktivace', () => {
             });
         });
         await page.route('**/api/user/readings', async (route) => {
+            if (route.request().method() === 'POST') {
+                const payload = route.request().postDataJSON();
+                const reading = {
+                    id: `reading-${readings.length + 1}`,
+                    type: payload.type,
+                    data: payload.data,
+                    created_at: new Date().toISOString()
+                };
+                readings.unshift(reading);
+                await route.fulfill({
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify({ success: true, reading })
+                });
+                return;
+            }
+
             await route.fulfill({
                 status: 200,
                 contentType: 'application/json',
-                body: JSON.stringify({ success: true, readings: [] })
+                body: JSON.stringify({ success: true, readings })
             });
         });
         await page.route('**/api/payment/subscription/status', async (route) => {
@@ -171,6 +189,45 @@ test.describe('Profil aktivace', () => {
         expect(firstReadingHref).toContain('feature=daily_guidance');
         expect(firstReadingHref).toContain('sign=lev');
         await expect(page.locator('[data-activation-step="first_reading"]')).toContainText('horoskopem pro Lev');
+    });
+
+    test('vecerni reflexe ulozi journal a oznaci navratovy ritual', async ({ page }) => {
+        await mockLoggedInProfile(page);
+
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+
+        await page.evaluate(() => {
+            window.__profileEvents = [];
+            window.MH_ANALYTICS = {
+                trackEvent: (eventName, payload) => window.__profileEvents.push({ eventName, payload }),
+                trackCTA: () => {}
+            };
+        });
+
+        await page.locator('#journal-input').fill('Dnes si odnasim jeden jasny krok.');
+        await page.locator('#journal-submit').click();
+
+        await expect(page.locator('#journal-submit')).toHaveText('Uložit reflexi');
+        await expect(page.locator('#journal-entries')).toContainText('Dnes si odnasim jeden jasny krok.');
+        await expect(page.locator('[data-activation-step="daily_reflection"]')).toHaveAttribute('data-completed', 'true');
+
+        const events = await page.evaluate(() => window.__profileEvents);
+        expect(events).toEqual(expect.arrayContaining([
+            expect.objectContaining({
+                eventName: 'profile_journal_saved',
+                payload: expect.objectContaining({ source: 'profile_dashboard' })
+            })
+        ]));
+    });
+
+    test('prichod z vykladu s journal hashem rovnou zaměří reflexi', async ({ page }) => {
+        await mockLoggedInProfile(page);
+
+        await page.goto('/profil.html#journal-input');
+        await waitForPageReady(page);
+
+        await expect.poll(async () => page.evaluate(() => document.activeElement?.id)).toBe('journal-input');
     });
 });
 

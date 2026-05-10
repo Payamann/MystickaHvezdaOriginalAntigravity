@@ -71,6 +71,22 @@ describe('Admin funnel report helpers', () => {
             },
             {
                 id: 'evt-5',
+                event_name: 'one_time_pdf_delivered',
+                source: 'rocni-horoskop',
+                feature: 'rocni_horoskop',
+                created_at: '2026-04-21T08:03:00.000Z',
+                metadata: { order_id: 'order-1', product_id: 'rocni_horoskop_2026' }
+            },
+            {
+                id: 'evt-6',
+                event_name: 'one_time_lifecycle_sequence_scheduled',
+                source: 'rocni-horoskop',
+                feature: 'rocni_horoskop',
+                created_at: '2026-04-21T08:04:00.000Z',
+                metadata: { order_id: 'order-1', sequence: 'annual_horoscope_post_purchase' }
+            },
+            {
+                id: 'evt-7',
                 event_name: 'checkout_session_failed',
                 source: 'pricing',
                 feature: 'mentor',
@@ -79,7 +95,7 @@ describe('Admin funnel report helpers', () => {
                 metadata: {}
             },
             {
-                id: 'evt-6',
+                id: 'evt-8',
                 event_name: 'subscription_payment_failed',
                 source: 'email',
                 feature: 'renewal',
@@ -88,7 +104,7 @@ describe('Admin funnel report helpers', () => {
                 metadata: {}
             },
             {
-                id: 'evt-7',
+                id: 'evt-9',
                 event_name: 'payment_refunded',
                 source: 'support',
                 feature: 'refund',
@@ -96,7 +112,7 @@ describe('Admin funnel report helpers', () => {
                 metadata: {}
             },
             {
-                id: 'evt-8',
+                id: 'evt-10',
                 event_name: 'subscription_cancel_requested',
                 source: 'profile',
                 feature: 'billing',
@@ -109,7 +125,7 @@ describe('Admin funnel report helpers', () => {
             limit: 1000
         });
 
-        expect(report.totalEvents).toBe(8);
+        expect(report.totalEvents).toBe(10);
         expect(report.metrics.checkoutStarted).toBe(2);
         expect(report.metrics.paywallViewed).toBe(0);
         expect(report.metrics.pricingIntent).toBe(0);
@@ -123,6 +139,10 @@ describe('Admin funnel report helpers', () => {
         expect(report.metrics.cancelRequests).toBe(1);
         expect(report.metrics.conversionRate).toBe(50);
         expect(report.metrics.estimatedValueCzk).toBe(498);
+        expect(report.metrics.oneTimePdfDelivered).toBe(1);
+        expect(report.metrics.oneTimeLifecycleScheduled).toBe(1);
+        expect(report.metrics.oneTimeDeliveryRate).toBe(100);
+        expect(report.metrics.oneTimeLifecycleScheduleRate).toBe(100);
         expect(report.topSources[0]).toEqual({ key: 'pricing', count: 4 });
         expect(report.topPlans).toContainEqual({ key: 'pruvodce', count: 2 });
         expect(report.daily).toContainEqual(expect.objectContaining({
@@ -133,7 +153,22 @@ describe('Admin funnel report helpers', () => {
             failures: 0,
             refunds: 0
         }));
-        expect(report.recentEvents).toHaveLength(8);
+        expect(report.daily).toContainEqual(expect.objectContaining({
+            date: '2026-04-21',
+            oneTimeCompleted: 1,
+            oneTimePdfDelivered: 1,
+            oneTimeLifecycleScheduled: 1,
+            failures: 1,
+            refunds: 0
+        }));
+        expect(report.sourceFeatureSegments).toContainEqual(expect.objectContaining({
+            source: 'rocni-horoskop',
+            feature: 'rocni_horoskop',
+            purchaseCompleted: 1,
+            oneTimePdfDelivered: 1,
+            oneTimeLifecycleScheduled: 1
+        }));
+        expect(report.recentEvents).toHaveLength(10);
     });
 
     test('calculates paywall to checkout rate', () => {
@@ -180,6 +215,37 @@ describe('Admin funnel report helpers', () => {
             checkoutStarted: 0,
             failures: 1,
             pricingIntentToCheckoutRate: 0
+        }));
+    });
+
+    test('aggregates activation and ritual funnel events', () => {
+        const report = buildFunnelReport([
+            { event_name: 'first_value_completed', source: 'reading_save', feature: 'horoscope', created_at: '2026-04-20T10:00:00.000Z' },
+            { event_name: 'activation_completed', source: 'reading_save', feature: 'horoscope', created_at: '2026-04-20T10:00:01.000Z' },
+            { event_name: 'reading_feedback_submitted', source: 'horoscope_feedback_strip', feature: 'horoscope', created_at: '2026-04-20T10:01:00.000Z' },
+            { event_name: 'daily_ritual_completed', source: 'profile_journal', feature: 'journal', created_at: '2026-04-20T20:00:00.000Z' },
+            { event_name: 'return_ritual_completed', source: 'profile_return', feature: 'journal', created_at: '2026-04-20T20:05:00.000Z' },
+            { event_name: 'checkout_session_created', source: 'horoscope_feedback_strip', feature: 'weekly_horoscope', created_at: '2026-04-20T10:03:00.000Z' }
+        ]);
+
+        expect(report.metrics.firstValueCompleted).toBe(1);
+        expect(report.metrics.activationCompleted).toBe(1);
+        expect(report.metrics.readingFeedbackSubmitted).toBe(1);
+        expect(report.metrics.dailyRitualCompleted).toBe(2);
+        expect(report.metrics.firstValueToCheckoutRate).toBe(100);
+        expect(report.metrics.activationToCheckoutRate).toBe(100);
+        expect(report.daily[0]).toEqual(expect.objectContaining({
+            firstValueCompleted: 1,
+            activationCompleted: 1,
+            readingFeedbackSubmitted: 1,
+            dailyRitualCompleted: 2,
+            checkoutStarted: 1
+        }));
+        expect(report.sourceFeatureSegments).toContainEqual(expect.objectContaining({
+            source: 'reading_save',
+            feature: 'horoscope',
+            firstValueCompleted: 1,
+            activationCompleted: 1
         }));
     });
 
@@ -330,16 +396,20 @@ describe('Admin funnel report helpers', () => {
 
     test('exports daily funnel report as CSV', () => {
         const report = buildFunnelReport([
+            { event_name: 'first_value_completed', source: 'reading_save', feature: 'tarot', created_at: '2026-04-20T09:58:00.000Z' },
+            { event_name: 'activation_completed', source: 'reading_save', feature: 'tarot', created_at: '2026-04-20T09:59:00.000Z' },
             { event_name: 'paywall_viewed', source: 'inline_paywall', feature: 'tarot', created_at: '2026-04-20T10:00:00.000Z' },
+            { event_name: 'reading_feedback_submitted', source: 'horoscope_feedback_strip', feature: 'daily_guidance', created_at: '2026-04-20T10:01:00.000Z' },
             { event_name: 'pricing_plan_cta_clicked', source: 'inline_paywall', feature: 'tarot', plan_id: 'pruvodce', created_at: '2026-04-20T10:02:00.000Z' },
             { event_name: 'checkout_session_created', source: 'inline_paywall', feature: 'tarot', created_at: '2026-04-20T10:04:00.000Z' },
+            { event_name: 'daily_ritual_completed', source: 'profile_journal', feature: 'journal', created_at: '2026-04-21T08:00:00.000Z' },
             { event_name: 'subscription_checkout_completed', source: 'pricing', feature: 'tarot', plan_id: 'pruvodce', created_at: '2026-04-21T10:04:00.000Z' },
         ]);
 
         expect(buildFunnelDailyCsv(report)).toBe([
-            '"date","paywall_viewed","pricing_intent","checkout_started","subscription_completed","one_time_completed","failures","refunds"',
-            '"2026-04-20","1","1","1","0","0","0","0"',
-            '"2026-04-21","0","0","0","1","0","0","0"'
+            '"date","first_value_completed","activation_completed","daily_ritual_completed","reading_feedback_submitted","paywall_viewed","pricing_intent","checkout_started","subscription_completed","one_time_completed","one_time_pdf_delivered","one_time_lifecycle_scheduled","failures","refunds"',
+            '"2026-04-20","1","1","0","1","1","1","1","0","0","0","0","0","0"',
+            '"2026-04-21","0","0","1","0","0","0","0","1","0","0","0","0","0"'
         ].join('\n'));
     });
 
@@ -352,8 +422,8 @@ describe('Admin funnel report helpers', () => {
         ]);
 
         expect(buildFunnelSegmentsCsv(report)).toBe([
-            '"source","feature","total_events","paywall_viewed","pricing_intent","checkout_started","purchase_completed","failures","paywall_to_pricing_intent_rate","pricing_intent_to_checkout_rate","paywall_to_checkout_rate","checkout_to_purchase_rate","previous_paywall_to_pricing_intent_rate","previous_pricing_intent_to_checkout_rate","previous_paywall_to_checkout_rate","previous_checkout_to_purchase_rate","paywall_to_pricing_intent_rate_delta","pricing_intent_to_checkout_rate_delta","paywall_to_checkout_rate_delta","checkout_to_purchase_rate_delta"',
-            '"pricing","tarot","4","1","1","1","1","0","100","100","100","100","0","0","0","0","","","",""'
+            '"source","feature","total_events","first_value_completed","activation_completed","daily_ritual_completed","reading_feedback_submitted","paywall_viewed","pricing_intent","checkout_started","purchase_completed","one_time_pdf_delivered","one_time_lifecycle_scheduled","failures","paywall_to_pricing_intent_rate","pricing_intent_to_checkout_rate","first_value_to_checkout_rate","activation_to_checkout_rate","paywall_to_checkout_rate","checkout_to_purchase_rate","previous_paywall_to_pricing_intent_rate","previous_pricing_intent_to_checkout_rate","previous_first_value_to_checkout_rate","previous_activation_to_checkout_rate","previous_paywall_to_checkout_rate","previous_checkout_to_purchase_rate","paywall_to_pricing_intent_rate_delta","pricing_intent_to_checkout_rate_delta","first_value_to_checkout_rate_delta","activation_to_checkout_rate_delta","paywall_to_checkout_rate_delta","checkout_to_purchase_rate_delta"',
+            '"pricing","tarot","4","0","0","0","0","1","1","1","1","0","0","0","100","100","0","0","100","100","0","0","0","0","0","0","","","","","",""'
         ].join('\n'));
     });
 
@@ -633,6 +703,20 @@ describe('Admin business cockpit helpers', () => {
         ], { days: 30 });
         const funnelReport = buildFunnelReport([
             {
+                id: 'funnel-first-value',
+                event_name: 'first_value_completed',
+                source: 'reading_save',
+                feature: 'horoscope',
+                created_at: '2026-04-28T08:05:00.000Z'
+            },
+            {
+                id: 'funnel-activation',
+                event_name: 'activation_completed',
+                source: 'reading_save',
+                feature: 'horoscope',
+                created_at: '2026-04-28T08:05:10.000Z'
+            },
+            {
                 id: 'funnel-checkout',
                 event_name: 'checkout_session_created',
                 source: 'pricing',
@@ -673,10 +757,18 @@ describe('Admin business cockpit helpers', () => {
         expect(report.summary).toMatchObject({
             visitors: 1,
             signups: 1,
+            firstValueCompleted: 1,
+            activationCompleted: 1,
             checkoutStarted: 1,
             purchases: 2,
+            oneTimeCompleted: 1,
+            oneTimePdfDelivered: 0,
+            oneTimeLifecycleScheduled: 0,
             visitorToSignupRate: 100,
+            signupToActivationRate: 100,
             checkoutToPurchaseRate: 100,
+            oneTimeDeliveryRate: 0,
+            oneTimeLifecycleScheduleRate: 0,
             estimatedValueCzk: 498
         });
         expect(report.userStats).toMatchObject({
@@ -686,7 +778,14 @@ describe('Admin business cockpit helpers', () => {
             estimatedMrrCzk: 199
         });
         expect(report.deltas.visitors).toMatchObject({ current: 1, previous: 1, delta: 0 });
-        expect(report.signals).toHaveLength(5);
+        expect(report.signals).toHaveLength(7);
+        expect(report.signals).toContainEqual(expect.objectContaining({
+            label: 'PDF cesta',
+            status: 'critical'
+        }));
+        expect(report.recommendedActions).toContainEqual(expect.objectContaining({
+            title: 'Zkontrolovat doručení jednorázových PDF'
+        }));
         expect(report.recommendedActions[0]).toMatchObject({
             title: 'Zvýšit kvalitní návštěvnost'
         });
@@ -769,7 +868,7 @@ describe('Admin funnel API access control', () => {
         expect(res.headers['content-type']).toContain('text/csv');
         expect(res.headers['content-disposition']).toContain('funnel-segments-1d.csv');
         expect(res.text).toContain('"source","feature","total_events"');
-        expect(res.text).toContain(`"${source}","tarot","4","1","1","1","1","0","100","100","100","100"`);
+        expect(res.text).toContain(`"${source}","tarot","4","0","0","0","0","1","1","1","1","0","0","0","100","100","0","0","100","100"`);
 
         const tarotCardsRes = await request(app)
             .get('/api/admin/funnel?days=1&format=csv&view=tarot-cards')
@@ -886,6 +985,18 @@ describe('Admin funnel API access control', () => {
         ]);
         await supabase.from('funnel_events').insert([
             {
+                event_name: 'first_value_completed',
+                source,
+                feature: 'horoscope',
+                created_at: new Date().toISOString()
+            },
+            {
+                event_name: 'activation_completed',
+                source,
+                feature: 'horoscope',
+                created_at: new Date().toISOString()
+            },
+            {
                 event_name: 'checkout_session_created',
                 source,
                 feature: 'premium_membership',
@@ -914,6 +1025,9 @@ describe('Admin funnel API access control', () => {
 
         expect(res.body.success).toBe(true);
         expect(res.body.report.summary.signups).toBeGreaterThanOrEqual(1);
+        expect(res.body.report.summary.firstValueCompleted).toBeGreaterThanOrEqual(1);
+        expect(res.body.report.summary.activationCompleted).toBeGreaterThanOrEqual(1);
+        expect(res.body.report.summary.signupToActivationRate).toBeGreaterThan(0);
         expect(res.body.report.summary.checkoutStarted).toBeGreaterThanOrEqual(1);
         expect(res.body.report.summary.purchases).toBeGreaterThanOrEqual(1);
         expect(res.body.report.userStats.activeSubscribers).toBeGreaterThanOrEqual(1);

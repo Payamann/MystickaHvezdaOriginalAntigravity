@@ -6,6 +6,11 @@
 import request from 'supertest';
 import app from '../index.js';
 import crypto from 'crypto';
+import {
+    createOneTimeOrderInput,
+    markOneTimeOrderInputFulfilled
+} from '../services/one-time-orders.js';
+import { supabase } from '../db-supabase.js';
 
 const WEBHOOK_URL = '/webhook/stripe';
 const TEST_WEBHOOK_SECRET = 'test-webhook-secret'; // matches setup.js STRIPE_WEBHOOK_SECRET
@@ -166,6 +171,145 @@ describe('💳 Stripe Webhook Tests', () => {
 
             // Should not be 500 (unhandled crash)
             expect(res.status).not.toBe(500);
+        });
+
+        test('fulfilled annual horoscope duplicate still ensures lifecycle emails', async () => {
+            const email = `annual-webhook-retry-${Date.now()}@example.com`;
+            const order = await createOneTimeOrderInput({
+                productType: 'rocni_horoskop',
+                productId: 'rocni_horoskop_2026',
+                customerEmail: email,
+                customerName: 'Jana Test',
+                payload: {
+                    birthDate: '1990-08-10',
+                    sign: 'lev'
+                }
+            });
+            await markOneTimeOrderInputFulfilled(order.id);
+
+            const sessionId = `cs_test_annual_retry_${Date.now()}`;
+            const payload = JSON.stringify({
+                id: `evt_annual_retry_${Date.now()}`,
+                type: 'checkout.session.completed',
+                data: {
+                    object: {
+                        id: sessionId,
+                        mode: 'payment',
+                        payment_status: 'paid',
+                        amount_total: 19900,
+                        currency: 'czk',
+                        metadata: {
+                            productType: 'rocni_horoskop',
+                            productId: 'rocni_horoskop_2026',
+                            productYear: '2026',
+                            orderId: order.id,
+                            source: 'annual_horoscope_checkout'
+                        }
+                    }
+                },
+                livemode: false
+            });
+            const sigHeader = computeStripeSignature(payload, TEST_WEBHOOK_SECRET);
+
+            await request(app)
+                .post(WEBHOOK_URL)
+                .set('Content-Type', 'application/json')
+                .set('stripe-signature', sigHeader)
+                .send(payload)
+                .expect(200);
+
+            const { data: queued } = await supabase
+                .from('email_queue')
+                .select('*')
+                .eq('email_to', email)
+                .in('template', ['annual_horoscope_reflection_day1', 'annual_horoscope_pruvodce_day3']);
+
+            expect(queued).toHaveLength(2);
+
+            const { data: events } = await supabase
+                .from('funnel_events')
+                .select('*')
+                .eq('stripe_session_id', sessionId)
+                .eq('event_name', 'one_time_lifecycle_sequence_scheduled');
+
+            expect(events).toContainEqual(expect.objectContaining({
+                source: 'annual_horoscope_checkout',
+                feature: 'rocni_horoskop_2026',
+                metadata: expect.objectContaining({
+                    sequence: 'annual_horoscope_post_purchase',
+                    emailsScheduled: 2
+                })
+            }));
+        });
+
+        test('fulfilled personal map duplicate still ensures lifecycle emails', async () => {
+            const email = `map-webhook-retry-${Date.now()}@example.com`;
+            const order = await createOneTimeOrderInput({
+                productType: 'personal_map',
+                productId: 'osobni_mapa_2026',
+                customerEmail: email,
+                customerName: 'Jana Test',
+                payload: {
+                    birthDate: '1990-08-10',
+                    sign: 'lev',
+                    focus: 'prace'
+                }
+            });
+            await markOneTimeOrderInputFulfilled(order.id);
+
+            const sessionId = `cs_test_map_retry_${Date.now()}`;
+            const payload = JSON.stringify({
+                id: `evt_map_retry_${Date.now()}`,
+                type: 'checkout.session.completed',
+                data: {
+                    object: {
+                        id: sessionId,
+                        mode: 'payment',
+                        payment_status: 'paid',
+                        amount_total: 29900,
+                        currency: 'czk',
+                        metadata: {
+                            productType: 'personal_map',
+                            productId: 'osobni_mapa_2026',
+                            productYear: '2026',
+                            orderId: order.id,
+                            source: 'personal_map_checkout'
+                        }
+                    }
+                },
+                livemode: false
+            });
+            const sigHeader = computeStripeSignature(payload, TEST_WEBHOOK_SECRET);
+
+            await request(app)
+                .post(WEBHOOK_URL)
+                .set('Content-Type', 'application/json')
+                .set('stripe-signature', sigHeader)
+                .send(payload)
+                .expect(200);
+
+            const { data: queued } = await supabase
+                .from('email_queue')
+                .select('*')
+                .eq('email_to', email)
+                .in('template', ['personal_map_reflection_day1', 'personal_map_pruvodce_day3']);
+
+            expect(queued).toHaveLength(2);
+
+            const { data: events } = await supabase
+                .from('funnel_events')
+                .select('*')
+                .eq('stripe_session_id', sessionId)
+                .eq('event_name', 'one_time_lifecycle_sequence_scheduled');
+
+            expect(events).toContainEqual(expect.objectContaining({
+                source: 'personal_map_checkout',
+                feature: 'osobni_mapa_2026',
+                metadata: expect.objectContaining({
+                    sequence: 'personal_map_post_purchase',
+                    emailsScheduled: 2
+                })
+            }));
         });
     });
 });
