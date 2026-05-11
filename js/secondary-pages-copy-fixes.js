@@ -681,12 +681,12 @@
       document.title = 'Ro\u010dn\u00ed horoskop na m\u00edru 2026 | Mystick\u00e1 Hv\u011bzda';
       setMetaByName(
         'description',
-        'Personalizovan\u00fd ro\u010dn\u00ed horoskop vytvo\u0159en\u00fd speci\u00e1ln\u011b pro tebe. 6 oblast\u00ed \u017eivota, konkr\u00e9tn\u00ed p\u0159edpov\u011bdi a kl\u00ed\u010dov\u00e9 m\u011bs\u00edce doru\u010den\u00e9 do e-mailu jako PDF.'
+        'Personalizovan\u00fd ro\u010dn\u00ed horoskop jako jednor\u00e1zov\u00e9 PDF: \u0161est oblast\u00ed \u017eivota, kl\u00ed\u010dov\u00e1 t\u00e9mata roku, m\u011bs\u00edce pro pozornost a praktick\u00e9 ot\u00e1zky k sebereflexi.'
       );
       setMetaByProperty('og:title', 'Ro\u010dn\u00ed horoskop na m\u00edru 2026 | Mystick\u00e1 Hv\u011bzda');
       setMetaByProperty(
         'og:description',
-        'Personalizovan\u00fd ro\u010dn\u00ed horoskop pro tv\u00e9 znamen\u00ed. Doru\u010den\u00ed do e-mailu do 5 minut.'
+        'Jednor\u00e1zov\u00e9 PDF pro rok 2026: osobn\u00ed t\u00e9mata, oblasti \u017eivota a m\u011bs\u00edce, ke kter\u00fdm se m\u016f\u017ee\u0161 vracet.'
       );
     },
 

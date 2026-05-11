@@ -6,10 +6,16 @@ test.describe('Roční horoskop — jednorázový checkout', () => {
         await page.goto('/rocni-horoskop.html?source=pricing_addon');
         await waitForPageReady(page);
 
+        await expect(page.locator('.hero-sub')).toContainText('oblasti pro pozornost');
         await expect(page.locator('.order-summary')).toBeVisible();
         await expect(page.locator('.order-summary')).toContainText('199 Kč jednorázově');
         await expect(page.locator('.order-summary')).toContainText('PDF do e-mailu');
-        await expect(page.locator('.form-note')).toContainText('žádné opakované strhávání');
+        await expect(page.locator('.order-summary')).toContainText('měsíce pro pozornost');
+        await expect(page.locator('.form-note')).toContainText('Platební údaje zadáváš ve Stripe');
+        await expect(page.locator('.form-note')).toContainText('sebereflexi, ne odborná rada');
+        await expect(page.locator('body')).not.toContainText('konkrétní předpovědi');
+        await expect(page.locator('body')).not.toContainText('kdy věci přijdou samy');
+        await expect(page.locator('body')).not.toContainText('nejbezpečnější platební bránu');
     });
 
     test('mobilni CTA skok nezakryje formular fixni navigaci', async ({ page }) => {
@@ -278,6 +284,7 @@ test.describe('Roční horoskop — jednorázový checkout', () => {
 
         await expect(page.locator('#bannerSuccess')).toBeVisible();
         await expect(page.locator('[data-annual-upgrade]')).toContainText('Průvodce');
+        await expect(page.locator('[data-annual-upgrade]')).not.toContainText('7 dní');
         const upgradeHref = await page.locator('[data-annual-upgrade]').getAttribute('href');
         expect(upgradeHref).toContain('plan=pruvodce');
         expect(upgradeHref).toContain('source=annual_horoscope_success');
