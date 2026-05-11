@@ -191,6 +191,8 @@ const CONVERSION_LINK_CHECKS = [
         path: '/horoskopy.html',
         name: 'Horoscope intent cluster',
         snippets: [
+            'praktický astrologický rámec',
+            'ne jako pevnou předpověď',
             'data-analytics-cta="horoscope_hub_weekly"',
             'tydenni-horoskop.html?source=horoscope_hub&amp;feature=weekly_horoscope',
             'data-analytics-feature="lunar_calendar"',

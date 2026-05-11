@@ -36,6 +36,15 @@ test.describe('Horoskopy', () => {
         await expect(subtitle).toBeVisible();
     });
 
+    test('hero copy nepůsobí jako pevná předpověď', async ({ page }) => {
+        const subtitle = page.locator('.hero__subtitle').first();
+        await expect(subtitle).toContainText('ne jako pevnou předpověď');
+
+        const description = await page.locator('meta[name="description"]').getAttribute('content');
+        expect(description).toContain('praktický astrologický rámec');
+        expect(description).not.toContain('Přesné předpovědi');
+    });
+
     // ── Zodiac grid ─────────────────────────────────────────────────────────
 
     test('zobrazí přesně 12 zodiac karet', async ({ page }) => {

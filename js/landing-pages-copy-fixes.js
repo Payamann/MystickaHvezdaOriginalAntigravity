@@ -18,11 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (path.endsWith('/horoskopy.html') || path.endsWith('horoskopy.html')) {
         document.title = 'Denní Horoskop Zdarma — Všechna Znamení Dnes | Mystická Hvězda';
-        setMeta('meta[name="description"]', 'Denní horoskop zdarma pro všech 12 znamení zvěrokruhu. Přesné předpovědi pro lásku, kariéru a zdraví. Zjistěte, co vám hvězdy přináší dnes.');
+        setMeta('meta[name="description"]', 'Denní, týdenní a měsíční horoskopy pro 12 znamení jako praktický astrologický rámec pro vztahy, práci a vnitřní klid.');
         setMeta('meta[property="og:title"]', 'Denní Horoskop Zdarma — Všechna Znamení Dnes | Mystická Hvězda');
-        setMeta('meta[property="og:description"]', 'Denní horoskop zdarma pro všech 12 znamení zvěrokruhu. Přesné předpovědi pro lásku, kariéru a zdraví. Zjistěte, co vám hvězdy přináší dnes.');
+        setMeta('meta[property="og:description"]', 'Horoskopy pro 12 znamení jako denní rámec pro témata, otázky a další krok.');
         setHtml('.hero__title', 'Denní <span class="text-gradient">horoskop</span>');
-        setText('.hero__subtitle', 'Energie planet se mění každý den. Zjistěte, jak je dnes využít pro svůj prospěch, vztahy a vnitřní klid.');
+        setText('.hero__subtitle', 'Astrologický kontext pro dnešní den. Berte ho jako mapu témat a otázek, ne jako pevnou předpověď.');
     }
 
     if (path.endsWith('/natalni-karta.html') || path.endsWith('natalni-karta.html')) {

@@ -168,6 +168,7 @@ describe('manual script guardrails', () => {
             'natalni-karta.html?source=past_life_intent_cluster',
             'data-analytics-cta="lunar_practice_today"',
             'mentor.html?source=lunar_practice',
+            'ne jako pevnou předpověď',
             'data-analytics-cta="horoscope_hub_weekly"',
             'data-analytics-cta="numerology_hub_personal_year"',
             'data-analytics-cta="tarot_intent_three_card"',
