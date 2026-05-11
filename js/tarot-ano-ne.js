@@ -158,7 +158,18 @@
         const reservedBottom = getVisibleCookieBannerOffset();
         const availableHeight = Math.max(320, viewportHeight - reservedBottom);
         const rect = panel.getBoundingClientRect();
-        const targetTop = window.scrollY + rect.top - Math.max(86, (availableHeight - rect.height) / 2);
+        let targetTop = window.scrollY + rect.top - Math.max(86, (availableHeight - rect.height) / 2);
+        const resetButton = document.getElementById('btn-reset');
+
+        if (reservedBottom && resetButton) {
+            const bannerTop = viewportHeight - reservedBottom + 16;
+            const resetRect = resetButton.getBoundingClientRect();
+            const predictedResetBottom = resetRect.bottom - (targetTop - window.scrollY);
+            const overlap = predictedResetBottom - (bannerTop - 8);
+            if (overlap > 0) {
+                targetTop += overlap;
+            }
+        }
 
         window.scrollTo({
             top: Math.max(0, targetTop),

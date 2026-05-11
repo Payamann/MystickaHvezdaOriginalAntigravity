@@ -12,7 +12,7 @@ body.page-home {
     }
 
     body.page-home .cookie-banner {
-        bottom: 8px;
+        bottom: 16px;
         padding: 0.56rem 0.62rem;
     }
 
@@ -32,6 +32,8 @@ body.page-home {
     }
 
     body.page-home .cookie-banner__actions {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 0.3rem;
     }
 
@@ -40,6 +42,10 @@ body.page-home {
         padding: 0.36rem 0.44rem;
         font-size: 0.58rem;
         line-height: 1.1;
+    }
+
+    body.page-home #cookie-accept {
+        grid-column: auto;
     }
 
     body.page-home.cookie-banner-active .hero__trust-strip {

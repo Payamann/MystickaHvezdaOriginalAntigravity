@@ -8624,9 +8624,11 @@ body.cookie-banner-active {
 
     width: 100%;
 
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
     justify-content: stretch;
 
-    gap: 0.6rem;
+    gap: 0.4rem;
 
   }
 
@@ -8639,6 +8641,12 @@ body.cookie-banner-active {
     padding: 0.48rem 0.58rem;
 
     font-size: 0.68rem;
+
+  }
+
+  #cookie-accept {
+
+    grid-column: auto;
 
   }
 
@@ -13563,9 +13571,9 @@ body.page-mentor .cookie-banner__actions .btn {
 
     display: grid;
 
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
 
-    gap: 0.45rem;
+    gap: 0.4rem;
 
   }
 
@@ -13576,16 +13584,16 @@ body.page-mentor .cookie-banner__actions .btn {
 
     min-height: 40px;
 
-    padding: 0.6rem 0.7rem;
+    padding: 0.5rem 0.45rem;
 
-    font-size: 0.74rem;
+    font-size: 0.68rem;
 
   }
 
   body.page-home #cookie-accept,
   body.page-pricing #cookie-accept {
 
-    grid-column: 1 / -1;
+    grid-column: auto;
 
   }
 

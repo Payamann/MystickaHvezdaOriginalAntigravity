@@ -379,8 +379,8 @@ body.page-pricing .cookie-banner__content > div:not(.cookie-banner__actions) {
 
 body.page-pricing .cookie-banner__actions {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.32rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.3rem;
 }
 
 body.page-pricing .cookie-banner__actions .btn {
@@ -392,7 +392,7 @@ body.page-pricing .cookie-banner__actions .btn {
 }
 
 body.page-pricing #cookie-accept {
-    grid-column: 1 / -1;
+    grid-column: auto;
 }
 
 @media (min-width: 1024px) {
