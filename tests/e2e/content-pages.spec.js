@@ -256,6 +256,8 @@ test.describe('O nás', () => {
         await expect(page.locator('.hero__title')).toContainText('jasnější další krok');
         await expect(page.locator('.hero__subtitle')).toContainText('ne jako slib pevného osudu');
         await expect(page.locator('script[src*="secondary-pages-copy-fixes.js"]')).toHaveAttribute('src', /secondary-pages-copy-fixes\.js\?v=2/);
+        await expect(page.locator('.card--service', { hasText: 'Naše mise' })).toContainText('mapu témat');
+        await expect(page.locator('.card--service', { hasText: 'Osobní přístup' })).toContainText('Nepředstíráme osobní guru péči');
         await expect(page.locator('.stat-item')).toHaveCount(4);
         await expect(page.locator('.stat-item')).toContainText([
             /Ceny předem/,
@@ -271,6 +273,8 @@ test.describe('O nás', () => {
         expect(bodyText).not.toContain('nejpřísnější ochraně');
         expect(bodyText).not.toContain('klid duše');
         expect(bodyText).not.toContain('víc než vesmírná předpověď');
+        expect(bodyText).not.toContain('Nepoužíváme strojové šablony');
+        expect(bodyText).not.toContain('odbornou péčí');
         expect(bodyText).not.toContain('5K+');
         expect(bodyText).not.toContain('4.9');
         expect(bodyText).not.toContain('12K+');
