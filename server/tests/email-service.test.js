@@ -208,6 +208,83 @@ describe('Email service deliverability payload', () => {
         expect(payload.text).toContain('šamanské kolo');
     });
 
+    test('renders grounded lifecycle copy for premium, discount and reactivation emails', async () => {
+        const scenarios = [
+            {
+                template: 'onboarding_welcome',
+                data: { plan: 'premium_monthly' },
+                expected: ['Prémiový plán je aktivní', 'jedním konkrétním výkladem', 'Osobnímu průvodci pro konkrétní otázky']
+            },
+            {
+                template: 'onboarding_features',
+                data: {
+                    features: ['Hvězdný průvodce', 'Tarotový výklad', '<script>alert(1)</script>']
+                },
+                expected: ['Navázat na první otázku', 'konkrétní otázku', 'Otevřít průvodce']
+            },
+            {
+                template: 'discount_applied',
+                data: { discount: 25, months: 3 },
+                expected: ['Sleva na předplatné je připravená', 'historii, návraty a delší práci']
+            },
+            {
+                template: 'upgrade_reminder_day7',
+                data: {},
+                expected: ['Když se téma vrací, pomůže historie', 'Základní plán stačí na první krok']
+            },
+            {
+                template: 'upgrade_reminder_day14',
+                data: {},
+                expected: ['Sleva končí za 24 hodin', 'levnější první období']
+            },
+            {
+                template: 'churn_recovery_day25',
+                data: {},
+                expected: ['Můžeš navázat tam, kde jsi skončil', 'historie a oblíbené nástroje zůstávají']
+            },
+            {
+                template: 'feature_weekly',
+                data: {},
+                expected: ['Téma týdne', 'jaký první krok z něj udělat', 'Otevřít téma týdne']
+            }
+        ];
+
+        const bannedPhrases = [
+            'Tvůj osud se začíná odkrývat',
+            'Dárek přímo z hvězd',
+            'vesmír má pro tebe připraveno',
+            'Vidím, co ti chybí',
+            'Hvězdná příležitost končí',
+            'Nechej si poradit od hvězd',
+            'Tvůj osud stále čeká',
+            'Objevuj skryté možnosti',
+            'Vše, co hledáš venku',
+            'kde na tebe čeká úspěch',
+            '<script>alert(1)</script>',
+            'alert(1)'
+        ];
+
+        for (const scenario of scenarios) {
+            sendMock.mockClear();
+            await sendEmail({
+                to: 'recipient@example.com',
+                template: scenario.template,
+                data: scenario.data
+            });
+
+            const payload = sendMock.mock.calls[0][0];
+            const combinedOutput = `${payload.subject}\n${payload.html}\n${payload.text}`;
+
+            for (const phrase of scenario.expected) {
+                expect(combinedOutput).toContain(phrase);
+            }
+
+            for (const phrase of bannedPhrases) {
+                expect(combinedOutput).not.toContain(phrase);
+            }
+        }
+    });
+
     test('renders activation day 6 one-time offer with product attribution', async () => {
         await sendEmail({
             to: 'recipient@example.com',

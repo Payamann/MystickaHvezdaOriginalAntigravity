@@ -148,6 +148,20 @@ function formatEmailName(value = '', fallback = 'Ahoj') {
   return escapeHtml(cleaned || fallback);
 }
 
+function sanitizeInlineText(value = '', fallback = '') {
+  return String(value || '')
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<[^>]+>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 240) || fallback;
+}
+
+function escapeInlineText(value = '', fallback = '') {
+  return escapeHtml(sanitizeInlineText(value, fallback));
+}
+
 const ACTIVATION_FEATURES = {
   daily_guidance: {
     label: 'denní horoskop',
@@ -583,21 +597,20 @@ function getBaseTemplate(content, title = 'Mystická Hvězda', previewText = '')
  */
 export const EMAIL_TEMPLATES = {
   onboarding_welcome: {
-    subject: 'Vítej v Mystické Hvězdě! 🌟',
+    subject: 'Prémiový plán je aktivní',
     getHtml: (data) => getBaseTemplate(`
-      <div style="display:none;max-height:0;overflow:hidden;">Tvůj osobní tarot, horoskopy a duchovní vedení — vše je připraveno.</div>
-      <h1 class="h1">Vítej mezi hvězdami!</h1>
-      <p>Gratuluji! Právě jsi učinil první krok na cestě k hlubšímu sebepoznání.</p>
-      <p>Tvůj prémiový plán <span class="highlight">${data.plan === 'premium_monthly' ? 'Hvězdný Průvodce' : 'Osvícení'}</span> je nyní aktivní. Tvůj osud se začíná odkrývat...</p>
+      <div style="display:none;max-height:0;overflow:hidden;">Tarot, horoskopy a osobní průvodce jsou připravené. Začni jedním konkrétním výkladem.</div>
+      <h1 class="h1">Prémiový plán je aktivní</h1>
+      <p>Tvůj plán <span class="highlight">${data.plan === 'premium_monthly' ? 'Hvězdný Průvodce' : 'Osvícení'}</span> je připravený. Největší smysl má začít jedním konkrétním výkladem a ověřit, co ti dává praktickou hodnotu.</p>
       
       <div class="feature-item">
         <strong>Máš nyní neomezený přístup k:</strong>
         <ul style="margin-top: 10px; padding-left: 20px;">
           <li>📖 Neomezeným tarotovým výkladům</li>
           <li>⭐ Detailním osobním horoskopům</li>
-          <li>✨ Duchovnímu průvodci pro tvé hluboké otázky</li>
+          <li>✨ Osobnímu průvodci pro konkrétní otázky</li>
           <li>🗺️ Natalním kartám a astromapě</li>
-          <li>🔢 Numerologickému rozboru</li>
+          <li>🔢 Numerologickým cyklům a uložené historii</li>
         </ul>
       </div>
 
@@ -606,33 +619,39 @@ export const EMAIL_TEMPLATES = {
       </div>
       
       <p style="font-size: 14px; text-align: center; opacity: 0.8;">
-        "Hvězdy nenutí, ale vedou." Nech se vést svou vlastní intuicí.
+        Vrať se k profilu pokaždé, když chceš porovnat nový výklad s tím, co už sis uložil.
       </p>
-    `, 'Vítej v Mystické Hvězdě!')
+    `, 'Prémiový plán je aktivní')
   },
 
   onboarding_features: {
-    subject: 'Tvůj nový svět se otevírá ✨',
-    getHtml: (data) => getBaseTemplate(`
-      <h1 class="h1">Objevuj skryté možnosti</h1>
-      <p>Včera jsi se připojil k naší komunitě. Dnes je čas podívat se hlouběji pod povrch...</p>
-      
-      <p>Zde jsou funkce, které ti pomohou najít odpovědi, které hledáš:</p>
-      
-      ${(data.features || ['Duchovní průvodce', 'Tarotový výklad', 'Astromapa']).map(f => `
-        <div class="feature-item">
-          <strong>✨ ${f}</strong>
-        </div>
-      `).join('')}
+    subject: 'Vyber první navazující krok',
+    getHtml: (data) => {
+      const featureNames = (data.features || ['Hvězdný průvodce', 'Tarotový výklad', 'Astromapa'])
+        .map(feature => sanitizeInlineText(feature))
+        .filter(Boolean);
 
-      <div class="cta-box">
-        <a href="${process.env.APP_URL}/mentor.html" class="btn">Potkat svého Duchovního průvodce →</a>
-      </div>
-      
-      <p style="font-style: italic; opacity: 0.8; text-align: center;">
-        "Vše, co hledáš venku, je již uvnitř tebe."
-      </p>
-    `, 'Objevuj Mystickou Hvězdu')
+      return getBaseTemplate(`
+        <h1 class="h1">Navázat na první otázku</h1>
+        <p>Včera jsi aktivoval účet. Dnes stačí vybrat jeden nástroj, který naváže na téma, se kterým jsi přišel.</p>
+
+        <p>Tyhle funkce dávají smysl, když máš konkrétní otázku nebo se chceš vrátit k uloženému výkladu:</p>
+
+        ${featureNames.map(f => `
+          <div class="feature-item">
+            <strong>✨ ${escapeHtml(f)}</strong>
+          </div>
+        `).join('')}
+
+        <div class="cta-box">
+          <a href="${process.env.APP_URL}/mentor.html" class="btn">Otevřít průvodce →</a>
+        </div>
+
+        <p style="font-style: italic; opacity: 0.8; text-align: center;">
+          Nejlepší další krok je ten, který si můžeš hned ověřit v běžném dni.
+        </p>
+      `, 'Navazující krok');
+    }
   },
 
   activation_first_step_day0: {
@@ -747,37 +766,37 @@ export const EMAIL_TEMPLATES = {
   },
 
   discount_applied: {
-    subject: '💝 Skvělá zpráva - máš slevu!',
+    subject: 'Sleva je připravená',
     getHtml: (data) => getBaseTemplate(`
-      <h1 class="h1">Dárek přímo z hvězd!</h1>
+      <h1 class="h1">Sleva na předplatné je připravená</h1>
       <div style="text-align: center; margin-bottom: 30px;">
-        <p>Abychom ti zpříjemnili tvou cestu, přichystali jsme pro tebe něco speciálního:</p>
+        <p>Pokud se chceš k výkladům vracet pravidelně, můžeš využít zvýhodněné první období:</p>
         <div style="font-size: 48px; color: #d4af37; font-weight: 700; margin: 20px 0;">
           ${data.discount || 25}% SLEVA
         </div>
         <p>na tvé předplatné po dobu <span class="highlight">${data.months || 3} měsíců</span>.</p>
       </div>
 
-      <p style="text-align: center;">Zůstaň s námi a pokračuj v objevování hloubky svého bytí.</p>
+      <p style="text-align: center;">Slevu najdeš v profilu. Největší smysl dává ve chvíli, kdy chceš historii, návraty a delší práci s jedním tématem.</p>
 
       <div class="cta-box">
-        <a href="${process.env.APP_URL}/profil.html" class="btn">Uplatnit dar →</a>
+        <a href="${process.env.APP_URL}/profil.html" class="btn">Otevřít profil →</a>
       </div>
-    `, 'Dárek pro tebe')
+    `, 'Sleva je připravená')
   },
   upgrade_reminder_day7: {
-    subject: 'Vidím, co ti chybí... 👀',
+    subject: 'Chceš se vracet pravidelně?',
     getHtml: (data) => getBaseTemplate(`
-      <h1 class="h1">Tvé otázky si zaslouží více</h1>
-      <p>Používáš základní plán, ale vesmír má pro tebe připraveno mnohem více odpovědí...</p>
+      <h1 class="h1">Když se téma vrací, pomůže historie</h1>
+      <p>Základní plán stačí na první krok. Premium dává smysl ve chvíli, kdy chceš delší historii, návraty k výkladům a pravidelný rytmus.</p>
       
       <div class="feature-item">
         <strong>S plánem Hvězdný Průvodce získáš:</strong>
         <ul style="margin-top: 10px; padding-left: 20px;">
           <li>✨ <strong>Neomezené</strong> tarotové výklady</li>
           <li>📅 Týdenní a měsíční horoskopy</li>
-          <li><strong>Duchovní průvodce:</strong> Máte k dispozici svého osobního mentora, který zná vaše hvězdné nastavení.</li>
-          <li>🔢 Hloubkovou numerologii</li>
+          <li><strong>Hvězdný průvodce:</strong> osobní odpovědi na konkrétní otázky</li>
+          <li>🔢 Numerologické cykly a uloženou historii</li>
         </ul>
       </div>
 
@@ -788,9 +807,9 @@ export const EMAIL_TEMPLATES = {
   },
 
   upgrade_reminder_day14: {
-    subject: '⏰ Poslední šance - 25% sleva na Premium',
+    subject: 'Sleva na Premium končí za 24 hodin',
     getHtml: (data) => getBaseTemplate(`
-      <h1 class="h1">Hvězdná příležitost končí</h1>
+      <h1 class="h1">Sleva končí za 24 hodin</h1>
       <div style="background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.3); padding: 25px; border-radius: 12px; text-align: center; margin-bottom: 25px;">
         <p>Tato limitovaná nabídka vyprší již za 24 hodin:</p>
         <div style="font-size: 32px; color: #ff6b6b; font-weight: 700; margin: 15px 0;">
@@ -799,7 +818,7 @@ export const EMAIL_TEMPLATES = {
         <p><strong>🎁 25% SLEVA na první 3 měsíce</strong></p>
       </div>
 
-      <p style="text-align: center;">Nechej si poradit od hvězd za poloviční cenu.</p>
+      <p style="text-align: center;">Pokud chceš pokračovat v pravidelných výkladech, teď je levnější první období.</p>
 
       <div class="cta-box">
         <a href="${process.env.APP_URL}/cenik.html?utm_source=email&utm_campaign=upgrade_day14" class="btn" style="background: linear-gradient(135deg, #ff6b6b, #ee5253); color: white !important;">Aktivovat slevu 25% →</a>
@@ -808,10 +827,10 @@ export const EMAIL_TEMPLATES = {
   },
 
   churn_recovery_day25: {
-    subject: '💔 Chceme tě zpátky - 30% sleva čeká',
+    subject: '30% sleva pro návrat',
     getHtml: (data) => getBaseTemplate(`
-      <h1 class="h1">Chybíš nám...</h1>
-      <p>Všimli jsme si, že jsi se na chvíli odmlčel. Víme, že cesta životem bývá klikatá a někdy potřebujeme pauzu.</p>
+      <h1 class="h1">Můžeš navázat tam, kde jsi skončil</h1>
+      <p>Všimli jsme si, že ses chvíli nevrátil. Pokud se chceš znovu pustit do výkladů, historie a oblíbené nástroje zůstávají v profilu.</p>
       
       <div style="background: rgba(52,152,219,0.1); border: 2px solid #3498db; padding: 25px; border-radius: 12px; text-align: center; margin: 25px 0;">
         <p style="text-transform: uppercase; letter-spacing: 1px; font-size: 13px; color: #3498db; margin-bottom: 10px;">Speciální nabídka pro návrat</p>
@@ -819,35 +838,42 @@ export const EMAIL_TEMPLATES = {
         <p>na tvé první 3 měsíce Premium</p>
       </div>
 
-      <p style="text-align: center;">Tvůj osud stále čeká na odhalení. Vrátíš se?</p>
+      <p style="text-align: center;">Sleva pomůže hlavně tehdy, když se chceš vracet pravidelně a porovnávat témata v čase.</p>
 
       <div class="cta-box">
-        <a href="${process.env.APP_URL}/cenik.html?utm_source=email&utm_campaign=churn_recovery" class="btn" style="background: linear-gradient(135deg, #3498db, #2980b9); color: white !important;">Vrátit se ke hvězdám →</a>
+        <a href="${process.env.APP_URL}/cenik.html?utm_source=email&utm_campaign=churn_recovery" class="btn" style="background: linear-gradient(135deg, #3498db, #2980b9); color: white !important;">Obnovit Premium →</a>
       </div>
-    `, 'Vrať se k nám')
+    `, 'Sleva pro návrat')
   },
 
   feature_weekly: {
     subject: 'Nový týden, nová cesta k objevování ✨',
-    getHtml: (data) => getBaseTemplate(`
-      <h1 class="h1">Pohled do hloubky</h1>
-      <div class="feature-item">
-        <h2 style="color: #d4af37; margin-top: 0; font-family: 'Cinzel', serif;">${data.feature_title || 'Astrokartografie'}</h2>
-        <p>${data.feature_description || 'Zjisti, kde na světě je tvá energie nejsilnější a kde na tebe čeká úspěch...'}</p>
-        
-        ${data.benefits ? `
-          <ul style="margin-top: 10px; padding-left: 20px;">
-            ${data.benefits.map(b => `<li>${b}</li>`).join('')}
-          </ul>
-        ` : ''}
-      </div>
+    getHtml: (data) => {
+      const featureUrl = toAbsoluteUrl(data.feature_url || '/profil.html') || toAbsoluteUrl('/profil.html');
+      const benefits = Array.isArray(data.benefits)
+        ? data.benefits.map(benefit => sanitizeInlineText(benefit)).filter(Boolean)
+        : [];
 
-      <p style="text-align: center;">Využij potenciál tohoto týdne naplno.</p>
+      return getBaseTemplate(`
+        <h1 class="h1">Téma týdne</h1>
+        <div class="feature-item">
+          <h2 style="color: #d4af37; margin-top: 0; font-family: 'Cinzel', serif;">${escapeInlineText(data.feature_title, 'Astrokartografie')}</h2>
+          <p>${escapeInlineText(data.feature_description, 'Podívej se, které téma se tento týden vyplatí otevřít a jaký první krok z něj udělat.')}</p>
 
-      <div class="cta-box">
-        <a href="${data.feature_url || process.env.APP_URL + '/profil.html'}" class="btn">Vyzkoušet nyní →</a>
-      </div>
-    `, 'Týdenní inspirace')
+          ${benefits.length ? `
+            <ul style="margin-top: 10px; padding-left: 20px;">
+              ${benefits.map(b => `<li>${escapeHtml(b)}</li>`).join('')}
+            </ul>
+          ` : ''}
+        </div>
+
+        <p style="text-align: center;">Vyber si jeden nástroj a vrať se k němu, až budeš mít konkrétní otázku.</p>
+
+        <div class="cta-box">
+          <a href="${escapeHtml(featureUrl)}" class="btn">Otevřít téma týdne →</a>
+        </div>
+      `, 'Týdenní inspirace');
+    }
   },
   admin_contact_notification: {
     subject: (data) => `[Kontakt] ${data.subject} — od ${data.name}`,
