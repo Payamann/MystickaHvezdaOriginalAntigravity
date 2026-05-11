@@ -83,13 +83,15 @@ export function renderReadings() {
         container.innerHTML = `
             <div class="empty-state">
                 <div class="empty-state__icon">🔮</div>
-                <h4 class="empty-state__title">${currentFilter === 'all' ? 'Zatím nemáte žádné výklady' : 'Žádné výklady tohoto typu'}</h4>
-                <p class="empty-state__text">${currentFilter === 'all' ? 'Vydejte se na cestu za poznáním hvězd!' : 'Zkuste jiný typ výkladu.'}</p>
+                <h4 class="empty-state__title">${currentFilter === 'all' ? 'Historie zatím čeká na první stopu' : 'Tady zatím není žádný výklad tohoto typu'}</h4>
+                <p class="empty-state__text">${currentFilter === 'all'
+                    ? 'Začni jedním výkladem. Jakmile vznikne první záznam, profil se přestane tvářit jako archiv a začne ukazovat, k čemu se máš vracet.'
+                    : 'Filtr je prázdný. Zkus jiný typ výkladu nebo se vrať na celou historii.'}</p>
                 ${currentFilter === 'all' ? `
                     <div class="empty-state__actions">
-                        <a href="tarot.html" class="btn btn--primary btn--sm">🃏 Tarot</a>
-                        <a href="kristalova-koule.html" class="btn btn--glass btn--sm">🔮 Křišťálová koule</a>
-                        <a href="horoskopy.html" class="btn btn--glass btn--sm">⭐ Horoskop</a>
+                        <a href="tarot.html?source=profile_history_empty&feature=tarot" class="btn btn--primary btn--sm">🃏 Tarot</a>
+                        <a href="kristalova-koule.html?source=profile_history_empty&feature=kristalova_koule" class="btn btn--glass btn--sm">🔮 Křišťálová koule</a>
+                        <a href="horoskopy.html?source=profile_history_empty&feature=daily_guidance" class="btn btn--glass btn--sm">⭐ Horoskop</a>
                     </div>
                 ` : ''}
             </div>

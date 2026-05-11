@@ -294,6 +294,28 @@ test.describe('Profil aktivace', () => {
         await expect(firstReading).toContainText('symbolickým směrem');
     });
 
+    test('prazdna historie vede k meritelne prvni stope', async ({ page }) => {
+        await mockLoggedInProfile(page);
+
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+
+        const history = page.locator('#readings-list .empty-state');
+        await expect(history).toContainText('první stopu');
+        await expect(history).toContainText('k čemu se máš vracet');
+
+        const tarotHref = await history.locator('a[href*="tarot.html"]').getAttribute('href');
+        const crystalHref = await history.locator('a[href*="kristalova-koule.html"]').getAttribute('href');
+        const horoscopeHref = await history.locator('a[href*="horoskopy.html"]').getAttribute('href');
+
+        expect(tarotHref).toContain('source=profile_history_empty');
+        expect(tarotHref).toContain('feature=tarot');
+        expect(crystalHref).toContain('source=profile_history_empty');
+        expect(crystalHref).toContain('feature=kristalova_koule');
+        expect(horoscopeHref).toContain('source=profile_history_empty');
+        expect(horoscopeHref).toContain('feature=daily_guidance');
+    });
+
     test('pamet ritualu navaze na zpetnou vazbu a nabidne konkretni dalsi krok', async ({ page }) => {
         await mockLoggedInProfile(page, {
             readings: [

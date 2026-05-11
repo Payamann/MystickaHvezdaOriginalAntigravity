@@ -7,13 +7,13 @@ var et=Object.defineProperty;var Z=(e,t)=>()=>(e&&(t=e(e=0)),t);var tt=(e,t)=>{f
             `,e.querySelector('[data-readings-action="reload"]')?.addEventListener("click",()=>location.reload())),[]}}function Ae(e){T=e.target.value,R=0,M()}function lt(){if(T==="all")return L;let e=st[T]||[T];return L.filter(t=>e.includes(t.type))}function M(){let e=document.getElementById("readings-list");if(!e)return;let t=lt();if(t.length===0){e.innerHTML=`
             <div class="empty-state">
                 <div class="empty-state__icon">\u{1F52E}</div>
-                <h4 class="empty-state__title">${T==="all"?"Zat\xEDm nem\xE1te \u017E\xE1dn\xE9 v\xFDklady":"\u017D\xE1dn\xE9 v\xFDklady tohoto typu"}</h4>
-                <p class="empty-state__text">${T==="all"?"Vydejte se na cestu za pozn\xE1n\xEDm hv\u011Bzd!":"Zkuste jin\xFD typ v\xFDkladu."}</p>
+                <h4 class="empty-state__title">${T==="all"?"Historie zat\xEDm \u010Dek\xE1 na prvn\xED stopu":"Tady zat\xEDm nen\xED \u017E\xE1dn\xFD v\xFDklad tohoto typu"}</h4>
+                <p class="empty-state__text">${T==="all"?"Za\u010Dni jedn\xEDm v\xFDkladem. Jakmile vznikne prvn\xED z\xE1znam, profil se p\u0159estane tv\xE1\u0159it jako archiv a za\u010Dne ukazovat, k \u010Demu se m\xE1\u0161 vracet.":"Filtr je pr\xE1zdn\xFD. Zkus jin\xFD typ v\xFDkladu nebo se vra\u0165 na celou historii."}</p>
                 ${T==="all"?`
                     <div class="empty-state__actions">
-                        <a href="tarot.html" class="btn btn--primary btn--sm">\u{1F0CF} Tarot</a>
-                        <a href="kristalova-koule.html" class="btn btn--glass btn--sm">\u{1F52E} K\u0159i\u0161\u0165\xE1lov\xE1 koule</a>
-                        <a href="horoskopy.html" class="btn btn--glass btn--sm">\u2B50 Horoskop</a>
+                        <a href="tarot.html?source=profile_history_empty&feature=tarot" class="btn btn--primary btn--sm">\u{1F0CF} Tarot</a>
+                        <a href="kristalova-koule.html?source=profile_history_empty&feature=kristalova_koule" class="btn btn--glass btn--sm">\u{1F52E} K\u0159i\u0161\u0165\xE1lov\xE1 koule</a>
+                        <a href="horoskopy.html?source=profile_history_empty&feature=daily_guidance" class="btn btn--glass btn--sm">\u2B50 Horoskop</a>
                     </div>
                 `:""}
             </div>
