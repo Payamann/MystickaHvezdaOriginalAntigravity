@@ -181,6 +181,25 @@ function getRequestedTarotCardName() {
     return TAROT_CARDS_ARRAY.find((name) => normalizeTarotCardName(name) === normalizedCard) || null;
 }
 
+function getRequestedSpreadType() {
+    const params = new URLSearchParams(window.location.search);
+    const requested = normalizeTarotCardName([
+        params.get('spread'),
+        params.get('intent'),
+        params.get('feature')
+    ].filter(Boolean).join(' '));
+
+    if (!requested) return null;
+    if (requested.includes('celtic') || requested.includes('keltsky') || requested.includes('tarot_celtic_cross')) {
+        return 'Celtic Cross';
+    }
+    if (requested.includes('three') || requested.includes('tri') || requested.includes('3') || requested.includes('tarot_multi_card')) {
+        return 'Tři karty';
+    }
+
+    return null;
+}
+
 function renderRequestedCardContext(cardName) {
     if (!cardName || document.getElementById('tarot-card-context')) return;
 
@@ -245,28 +264,42 @@ function initTarot() {
         }
     }
 
-    // Handle Selection Logic
-    spreadCards.forEach(card => {
-        card.addEventListener('click', () => {
-            // Remove featured from all
-            spreadCards.forEach(c => {
-                c.classList.remove('featured');
-                const btn = c.querySelector('.btn');
-                if (btn) {
-                    btn.classList.remove('btn--primary');
-                    btn.classList.add('btn--glass');
-                }
-            });
+    function selectSpreadCard(card) {
+        if (!card) return false;
 
-            // Add featured to clicked
-            card.classList.add('featured');
-            const btn = card.querySelector('.btn');
+        spreadCards.forEach(c => {
+            c.classList.remove('featured');
+            const btn = c.querySelector('.btn');
             if (btn) {
-                btn.classList.remove('btn--glass');
-                btn.classList.add('btn--primary');
+                btn.classList.remove('btn--primary');
+                btn.classList.add('btn--glass');
             }
         });
+
+        card.classList.add('featured');
+        const btn = card.querySelector('.btn');
+        if (btn) {
+            btn.classList.remove('btn--glass');
+            btn.classList.add('btn--primary');
+        }
+        return true;
+    }
+
+    function selectSpreadType(spreadType) {
+        if (!spreadType) return false;
+        const target = [...spreadCards].find(card =>
+            card.querySelector('.spread-trigger')?.dataset.spreadType === spreadType
+        );
+        return selectSpreadCard(target);
+    }
+
+    spreadCards.forEach(card => {
+        card.addEventListener('click', () => {
+            selectSpreadCard(card);
+        });
     });
+
+    selectSpreadType(getRequestedSpreadType());
 
     spreadButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {

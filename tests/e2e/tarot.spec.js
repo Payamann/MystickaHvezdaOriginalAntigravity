@@ -64,6 +64,20 @@ test.describe('Tarot', () => {
         await expect(spread).toBeAttached();
     });
 
+    test('landing intent predvybere odpovidajici tarotovy rozklad', async ({ page }) => {
+        await page.goto('/tarot.html?source=e2e_three_card_landing&feature=tarot_multi_card&intent=three_cards&spread=three_cards');
+        await waitForPageReady(page);
+
+        const threeCard = page.locator('.t-spread-card', { has: page.locator('[data-spread-type="Tři karty"]') });
+        await expect(threeCard).toHaveClass(/featured/);
+
+        await page.goto('/tarot.html?source=e2e_celtic_landing&feature=tarot_celtic_cross&intent=celtic_cross&spread=celtic_cross');
+        await waitForPageReady(page);
+
+        const celtic = page.locator('.t-spread-card', { has: page.locator('[data-spread-type="Celtic Cross"]') });
+        await expect(celtic).toHaveClass(/featured/);
+    });
+
     test('spread trigger tlačítka jsou klikatelná', async ({ page }) => {
         const triggers = page.locator('.spread-trigger');
         const count = await triggers.count();
@@ -305,6 +319,7 @@ test.describe('Tarot 3 karty landing', () => {
         expect(href).toContain('source=tarot_three_card_landing');
         expect(href).toContain('feature=tarot_multi_card');
         expect(href).toContain('intent=three_cards');
+        expect(href).toContain('spread=three_cards');
 
         const faqTypes = await page.locator('script[type="application/ld+json"]').evaluateAll((scripts) => scripts.map((script) => {
             try {
@@ -348,6 +363,7 @@ test.describe('Keltsky kriz tarot landing', () => {
         expect(href).toContain('source=tarot_celtic_cross_landing');
         expect(href).toContain('feature=tarot_celtic_cross');
         expect(href).toContain('intent=celtic_cross');
+        expect(href).toContain('spread=celtic_cross');
 
         const pricing = page.locator('[data-analytics-cta="tarot_celtic_intent_pricing"]');
         await expect(pricing).toHaveAttribute('href', /plan=vip-majestrat/);
