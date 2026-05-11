@@ -453,37 +453,8 @@
     },
 
     'o-nas.html': () => {
-      document.title = 'O n\u00e1s | Mystick\u00e1 Hv\u011bzda';
-      setMetaByName(
-        'description',
-        'Poznejte p\u0159\u00edb\u011bh a posl\u00e1n\u00ed Mystick\u00e9 Hv\u011bzdy. Seznamte se s na\u0161\u00edm p\u0159\u00edstupem k astrologii, tarotu a digit\u00e1ln\u00ed spiritualit\u011b.'
-      );
-      setMetaByProperty('og:title', 'O n\u00e1s | P\u0159\u00edb\u011bh a mise Mystick\u00e9 Hv\u011bzdy');
-      setMetaByProperty(
-        'og:description',
-        'Zjist\u011bte, kdo stoj\u00ed za Mystickou Hv\u011bzdou. Spojujeme moudrost hv\u011bzd s modern\u00ed empati\u00ed.'
-      );
-      updateJsonLd(
-        (data) => data?.mainEntity?.['@type'] === 'Organization',
-        {
-          mainEntity: {
-            ...JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent).mainEntity,
-            name: 'Mystick\u00e1 Hv\u011bzda',
-            description: 'Profesion\u00e1ln\u00ed astrologick\u00e1 platforma nab\u00edzej\u00edc\u00ed personalizovan\u00e9 horoskopy, tarotov\u00e9 v\u00fdklady a numerologick\u00e9 anal\u00fdzy.'
-          }
-        }
-      );
-
       setText('.skip-link', 'P\u0159esko\u010dit na obsah');
       setText('.section__badge', 'O n\u00e1s');
-      setHtml(
-        '.hero__title',
-        'Va\u0161e \u00fato\u010di\u0161t\u011b pro <br><span class="text-gradient text-glow">klid du\u0161e</span>'
-      );
-      setText(
-        '.hero__subtitle',
-        'Mystick\u00e1 Hv\u011bzda je v\u00edc ne\u017e vesm\u00edrn\u00e1 p\u0159edpov\u011b\u010f. Je to bezpe\u010dn\u00fd p\u0159\u00edstav v digit\u00e1ln\u00edm sv\u011bt\u011b, kde najdete pochopen\u00ed, nad\u011bji a sm\u011br.'
-      );
     },
 
     'ochrana-soukromi.html': () => {

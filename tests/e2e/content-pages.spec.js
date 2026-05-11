@@ -223,6 +223,62 @@ test.describe('FAQ', () => {
         const count = await questions.count();
         expect(count).toBeGreaterThanOrEqual(1);
     });
+
+    test('soukromí vysvětluje konkrétně bez absolutních slibů', async ({ page }) => {
+        await page.goto('/faq.html');
+        await waitForPageReady(page);
+
+        const privacyQuestion = page.locator('details', { hasText: 'Jsou mé údaje v bezpečí?' });
+        await privacyQuestion.locator('summary').click();
+        const privacyAnswer = privacyQuestion.locator('.faq-content');
+        await expect(privacyAnswer).toContainText('Platební údaje zpracovává Stripe');
+        await expect(privacyAnswer).toContainText('neposkytujeme třetím stranám pro marketing');
+
+        const fullText = await page.locator('body').textContent();
+        expect(fullText).not.toContain('Absolutně. Vaše osobní údaje');
+        expect(fullText).not.toContain('Nikdy je nesdílíme');
+
+        const privacyLink = privacyAnswer.locator('a[href="soukromi.html"]').first();
+        await expect(privacyLink).toBeVisible();
+    });
+});
+
+test.describe('O nás', () => {
+
+    test('důvěra stojí na konkrétním zacházení s daty', async ({ page }) => {
+        await page.goto('/o-nas.html');
+        await waitForPageReady(page);
+
+        const trustCard = page.locator('.card--service', { hasText: 'Praktická důvěra' });
+        await expect(trustCard).toBeVisible();
+        await expect(trustCard).toContainText('Platební údaje zpracovává Stripe');
+        await expect(trustCard.locator('a[href="soukromi.html"]')).toBeVisible();
+        await expect(page.locator('.hero__title')).toContainText('jasnější další krok');
+        await expect(page.locator('.hero__subtitle')).toContainText('ne jako slib pevného osudu');
+        await expect(page.locator('.stat-item')).toHaveCount(4);
+        await expect(page.locator('.stat-item')).toContainText([
+            /Ceny předem/,
+            /Stripe/,
+            /Souhlas/,
+            /Kontakt/,
+        ]);
+        await expect(page.locator('#expert-team')).toContainText('Mystika s jasnými hranicemi');
+        await expect(page.locator('#expert-team')).toContainText('Bez osudových jistot');
+
+        const bodyText = await page.locator('body').innerText();
+        expect(bodyText).not.toContain('Absolutní důvěra');
+        expect(bodyText).not.toContain('nejpřísnější ochraně');
+        expect(bodyText).not.toContain('klid duše');
+        expect(bodyText).not.toContain('víc než vesmírná předpověď');
+        expect(bodyText).not.toContain('5K+');
+        expect(bodyText).not.toContain('4.9');
+        expect(bodyText).not.toContain('12K+');
+        expect(bodyText).not.toContain('24/7');
+        expect(bodyText).not.toContain('Elena Hvězdná');
+        expect(bodyText).not.toContain('Jan Mystik');
+        expect(bodyText).not.toContain('Od roku 2018');
+        expect(bodyText).not.toContain('nejmodernější českou platformu');
+    });
 });
 
 // ═══════════════════════════════════════════════════════════
