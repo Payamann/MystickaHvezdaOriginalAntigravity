@@ -500,6 +500,7 @@ function renderBusiness(report) {
         ['První hodnota', formatInteger(summary.firstValueCompleted), `${formatPercent(summary.signupToFirstValueRate)} signup -> výklad`],
         ['Aktivace', formatInteger(summary.activationCompleted), `${formatPercent(summary.signupToActivationRate)} signup -> aktivace`],
         ['Návratový rituál', formatInteger(summary.dailyRitualCompleted), 'Večerní reflexe a návraty'],
+        ['Paměť profilu', formatInteger(summary.profileRitualMemoryViewed), `${formatPercent(summary.profileRitualMemoryClickRate)} klik do dalšího kroku`],
         ['Checkouty', formatInteger(summary.checkoutStarted), `${formatPercent(summary.signupToCheckoutRate)} signup -> checkout`],
         ['Nákupy', formatInteger(summary.purchases), `${formatPercent(summary.checkoutToPurchaseRate)} checkout -> purchase`],
         ['Odhad příjmu', formatCurrency(summary.estimatedValueCzk), formatDeltaHint(deltas.estimatedValueCzk, 'proti předchozímu období')],

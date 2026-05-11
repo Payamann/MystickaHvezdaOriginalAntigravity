@@ -484,6 +484,7 @@ function createBusinessAction(priority, title, impact, owner, nextStep) {
 
 function businessPeriodSummary(analyticsReport = {}, funnelReport = {}) {
     const summary = analyticsReport.summary || {};
+    const ritualMemory = summary.ritualMemory || {};
     const metrics = funnelReport.metrics || {};
     const purchases = (metrics.subscriptionCompleted || 0) + (metrics.oneTimeCompleted || 0);
     const visitors = summary.visitors || 0;
@@ -491,6 +492,10 @@ function businessPeriodSummary(analyticsReport = {}, funnelReport = {}) {
     const firstValueCompleted = metrics.firstValueCompleted || 0;
     const activationCompleted = metrics.activationCompleted || 0;
     const dailyRitualCompleted = metrics.dailyRitualCompleted || 0;
+    const readingFeedbackSubmitted = metrics.readingFeedbackSubmitted || 0;
+    const profileRitualMemoryViewed = ritualMemory.views || 0;
+    const profileRitualMemoryClicked = ritualMemory.clicks || 0;
+    const profileRitualMemoryUpgradeClicks = ritualMemory.upgradeClicks || 0;
     const checkoutStarted = Math.max(summary.checkouts || 0, metrics.checkoutStarted || 0);
     const oneTimeCompleted = metrics.oneTimeCompleted || 0;
     const oneTimePdfDelivered = metrics.oneTimePdfDelivered || 0;
@@ -511,6 +516,13 @@ function businessPeriodSummary(analyticsReport = {}, funnelReport = {}) {
         firstValueCompleted,
         activationCompleted,
         dailyRitualCompleted,
+        readingFeedbackSubmitted,
+        profileRitualMemoryViewed,
+        profileRitualMemoryClicked,
+        profileRitualMemoryJournalClicks: ritualMemory.journalClicks || 0,
+        profileRitualMemoryHistoryClicks: ritualMemory.historyClicks || 0,
+        profileRitualMemoryThemeClicks: ritualMemory.themeClicks || 0,
+        profileRitualMemoryUpgradeClicks,
         checkoutStarted,
         purchases,
         subscriptionCompleted: metrics.subscriptionCompleted || 0,
@@ -524,6 +536,8 @@ function businessPeriodSummary(analyticsReport = {}, funnelReport = {}) {
         visitorToSignupRate: rate(signups, visitors),
         signupToFirstValueRate: rate(firstValueCompleted, signups),
         signupToActivationRate: rate(activationCompleted, signups),
+        profileRitualMemoryClickRate: rate(profileRitualMemoryClicked, profileRitualMemoryViewed),
+        profileRitualMemoryUpgradeRate: rate(profileRitualMemoryUpgradeClicks, profileRitualMemoryViewed),
         visitorToCheckoutRate: rate(checkoutStarted, visitors),
         signupToCheckoutRate: rate(checkoutStarted, signups),
         firstValueToCheckoutRate: rate(checkoutStarted, firstValueCompleted),
@@ -602,6 +616,26 @@ function buildBusinessSignals(summary, userStats, analyticsReport = {}) {
         ));
     }
 
+    if (summary.profileRitualMemoryViewed > 0 || summary.readingFeedbackSubmitted > 0 || summary.dailyRitualCompleted > 0) {
+        const hasMemoryViews = summary.profileRitualMemoryViewed > 0;
+        const statusValue = hasMemoryViews
+            ? summary.profileRitualMemoryClickRate
+            : Math.max(summary.readingFeedbackSubmitted, summary.dailyRitualCompleted);
+        signals.push(createBusinessSignal(
+            'Paměť profilu',
+            hasMemoryViews
+                ? statusFromThreshold(statusValue, { ok: 35, warning: 15 })
+                : statusFromThreshold(statusValue, { ok: 50, warning: 10 }),
+            hasMemoryViews
+                ? `${summary.profileRitualMemoryClickRate} % klik do dalšího kroku`
+                : `${summary.readingFeedbackSubmitted} feedbacků / ${summary.dailyRitualCompleted} rituálů`,
+            'Měří, jestli uložené výklady, zpětná vazba a reflexe vedou uživatele k dalšímu konkrétnímu kroku v profilu.',
+            hasMemoryViews && summary.profileRitualMemoryClickRate < 15
+                ? 'Zpřesnit primární CTA v Paměti rituálu podle nejsilnějšího tématu.'
+                : 'Sledovat, které téma nejčastěji vede k reflexi, historii nebo upgrade intentu.'
+        ));
+    }
+
     return signals;
 }
 
@@ -646,6 +680,16 @@ function buildBusinessActions(summary, previousSummary, userStats, analyticsRepo
             'Aktivovaní lidé už viděli hodnotu; slabší checkout intent znamená, že paywall přichází pozdě, brzy nebo bez kontextu.',
             'CRO',
             'Po prvním výkladu testovat jemný týdenní kontext Průvodce proti současné obecné premium nabídce.'
+        ));
+    }
+
+    if (summary.profileRitualMemoryViewed >= 20 && summary.profileRitualMemoryClickRate < 15) {
+        actions.push(createBusinessAction(
+            4,
+            'Zpřesnit Paměť profilu',
+            'Paměť má už dost zobrazení, ale nevede lidi do dalšího kroku. Bez toho se z ní stane jen informační karta.',
+            'Product',
+            'Pro top téma otestovat jeden primární krok: reflexe dnes, navázat výkladem nebo upgrade až po opakované stopě.'
         ));
     }
 
@@ -719,6 +763,7 @@ function calculateBusinessScore(summary, userStats, analyticsReport = {}) {
     else if (summary.signups > 0 && summary.signupToActivationRate < 55) score -= 7;
 
     if (summary.activationCompleted > 0 && summary.activationToCheckoutRate < 8) score -= 8;
+    if (summary.profileRitualMemoryViewed >= 20 && summary.profileRitualMemoryClickRate < 15) score -= 5;
     if (summary.checkoutStarted > 0 && summary.checkoutToPurchaseRate < 20) score -= 16;
     else if (summary.checkoutStarted > 0 && summary.checkoutToPurchaseRate < 45) score -= 8;
 
@@ -1222,6 +1267,16 @@ export function buildAnalyticsReport(events = [], { days = DEFAULT_ANALYTICS_DAY
         no: 0,
         positiveRate: null
     };
+    const ritualMemory = {
+        views: 0,
+        clicks: 0,
+        journalClicks: 0,
+        historyClicks: 0,
+        themeClicks: 0,
+        upgradeClicks: 0,
+        clickRate: 0,
+        upgradeRate: 0
+    };
 
     for (const event of events.slice(0, limit)) {
         const eventType = normalizeDimension(event.event_type) || 'unknown';
@@ -1260,6 +1315,17 @@ export function buildAnalyticsReport(events = [], { days = DEFAULT_ANALYTICS_DAY
             if (feedbackValue === 'yes') feedback.yes += 1;
             if (feedbackValue === 'no') feedback.no += 1;
         }
+        if (eventType === 'profile_ritual_memory_viewed') {
+            ritualMemory.views += 1;
+        }
+        if (eventType === 'cta_clicked' && normalizeDimension(metadata.location) === 'profile_ritual_memory') {
+            const memoryAction = normalizeDimension(metadata.action);
+            ritualMemory.clicks += 1;
+            if (memoryAction === 'memory_journal') ritualMemory.journalClicks += 1;
+            if (memoryAction === 'memory_history') ritualMemory.historyClicks += 1;
+            if (memoryAction === 'memory_theme') ritualMemory.themeClicks += 1;
+            if (memoryAction === 'memory_upgrade') ritualMemory.upgradeClicks += 1;
+        }
         if (eventType === 'client_error' || eventType === 'server_error' || eventType === 'error') {
             byDay[date].errors += 1;
             recentErrors.push({
@@ -1282,6 +1348,8 @@ export function buildAnalyticsReport(events = [], { days = DEFAULT_ANALYTICS_DAY
     if (feedback.total > 0) {
         feedback.positiveRate = Math.round((feedback.yes / feedback.total) * 100);
     }
+    ritualMemory.clickRate = rate(ritualMemory.clicks, ritualMemory.views);
+    ritualMemory.upgradeRate = rate(ritualMemory.upgradeClicks, ritualMemory.views);
 
     return {
         periodDays: days,
@@ -1295,7 +1363,8 @@ export function buildAnalyticsReport(events = [], { days = DEFAULT_ANALYTICS_DAY
             checkouts: byEvent.begin_checkout || 0,
             clientErrors: byEvent.client_error || 0,
             serverErrors: byEvent.server_error || 0,
-            feedback
+            feedback,
+            ritualMemory
         },
         byEvent,
         topFeatures: topCounter(byFeature),

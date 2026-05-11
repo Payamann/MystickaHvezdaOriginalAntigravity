@@ -552,6 +552,56 @@ describe('Admin first-party analytics helpers', () => {
         expect(buildAnalyticsDailyCsv(report)).toContain('2026-04-28');
     });
 
+    test('measures profile ritual memory engagement separately from generic CTA clicks', () => {
+        const report = buildAnalyticsReport([
+            {
+                id: 'memory-view-1',
+                event_type: 'profile_ritual_memory_viewed',
+                feature: 'ritual_memory',
+                metadata: { path: '/profil.html', clientId: 'client-1', visitId: 'visit-1' },
+                created_at: '2026-04-28T08:00:00.000Z'
+            },
+            {
+                id: 'memory-view-2',
+                event_type: 'profile_ritual_memory_viewed',
+                feature: 'ritual_memory',
+                metadata: { path: '/profil.html', clientId: 'client-2', visitId: 'visit-2' },
+                created_at: '2026-04-28T08:05:00.000Z'
+            },
+            {
+                id: 'memory-journal',
+                event_type: 'cta_clicked',
+                feature: 'ritual_memory',
+                metadata: { path: '/profil.html', location: 'profile_ritual_memory', action: 'memory_journal' },
+                created_at: '2026-04-28T08:10:00.000Z'
+            },
+            {
+                id: 'memory-upgrade',
+                event_type: 'cta_clicked',
+                feature: 'ritual_memory',
+                metadata: { path: '/profil.html', location: 'profile_ritual_memory', action: 'memory_upgrade' },
+                created_at: '2026-04-28T08:12:00.000Z'
+            },
+            {
+                id: 'other-cta',
+                event_type: 'cta_clicked',
+                feature: 'pricing',
+                metadata: { path: '/cenik.html', location: 'pricing_plan_cta', action: 'checkout' },
+                created_at: '2026-04-28T08:15:00.000Z'
+            }
+        ], { days: 7 });
+
+        expect(report.summary.ritualMemory).toMatchObject({
+            views: 2,
+            clicks: 2,
+            journalClicks: 1,
+            upgradeClicks: 1,
+            clickRate: 100,
+            upgradeRate: 50
+        });
+        expect(report.summary.ctaClicks).toBe(3);
+    });
+
     test('segments first-party analytics by campaign attribution', () => {
         const report = buildAnalyticsReport([
             {
@@ -789,6 +839,56 @@ describe('Admin business cockpit helpers', () => {
         expect(report.recommendedActions[0]).toMatchObject({
             title: 'Zvýšit kvalitní návštěvnost'
         });
+    });
+
+    test('promotes profile ritual memory as a business signal when engagement is weak', () => {
+        const memoryViews = Array.from({ length: 20 }, (_, index) => ({
+            id: `memory-view-${index}`,
+            event_type: 'profile_ritual_memory_viewed',
+            feature: 'ritual_memory',
+            metadata: {
+                path: '/profil.html',
+                clientId: `client-${index}`,
+                visitId: `visit-${index}`
+            },
+            created_at: `2026-04-28T08:${String(index).padStart(2, '0')}:00.000Z`
+        }));
+        const analyticsReport = buildAnalyticsReport([
+            ...memoryViews,
+            {
+                id: 'memory-click',
+                event_type: 'cta_clicked',
+                feature: 'ritual_memory',
+                metadata: { path: '/profil.html', location: 'profile_ritual_memory', action: 'memory_journal' },
+                created_at: '2026-04-28T09:00:00.000Z'
+            }
+        ], { days: 30 });
+        const report = buildBusinessReport({
+            analyticsReport,
+            previousAnalyticsReport: buildAnalyticsReport([], { days: 30 }),
+            funnelReport: buildFunnelReport([
+                { event_name: 'daily_ritual_completed', source: 'profile', feature: 'daily_guidance', created_at: '2026-04-28T08:00:00.000Z' },
+                { event_name: 'reading_feedback_submitted', source: 'profile_history', feature: 'profile_history', created_at: '2026-04-28T08:02:00.000Z' }
+            ], { days: 30 }),
+            previousFunnelReport: buildFunnelReport([], { days: 30 }),
+            userStats: {},
+            days: 30
+        });
+
+        expect(report.summary).toMatchObject({
+            profileRitualMemoryViewed: 20,
+            profileRitualMemoryClicked: 1,
+            profileRitualMemoryClickRate: 5,
+            readingFeedbackSubmitted: 1,
+            dailyRitualCompleted: 1
+        });
+        expect(report.signals).toContainEqual(expect.objectContaining({
+            label: 'Paměť profilu',
+            status: 'critical'
+        }));
+        expect(report.recommendedActions).toContainEqual(expect.objectContaining({
+            title: 'Zpřesnit Paměť profilu'
+        }));
     });
 });
 
