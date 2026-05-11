@@ -662,22 +662,22 @@
     },
 
     'shamansko-kolo.html': () => {
-      document.title = '\u0160amansk\u00e9 kolo | Indi\u00e1nsk\u00e1 moudrost | Mystick\u00e1 Hv\u011bzda';
+      document.title = '\u0160amansk\u00e9 kolo | symbolick\u00fd totemov\u00fd v\u00fdklad | Mystick\u00e1 Hv\u011bzda';
       setMetaByName(
         'description',
-        'Odhalte sv\u00e9 m\u00edsto na \u0160amansk\u00e9m kole indi\u00e1nsk\u00fdch n\u00e1rod\u016f Severn\u00ed Ameriky. Zjist\u011bte sv\u016fj m\u011bs\u00ed\u010dn\u00ed totem, sv\u011btovou stranu, \u017eivel a duchovn\u00ed poselstv\u00ed.'
+        'Prozkoumejte symbolick\u00fd r\u00e1mec \u0160amansk\u00e9ho kola: m\u011bs\u00ed\u010dn\u00ed totem, sv\u011btovou stranu a \u017eivel podle data narozen\u00ed jako inspiraci k sebereflexi, ne jako pevn\u00e9 ur\u010den\u00ed identity.'
       );
-      setMetaByProperty('og:title', '\u0160amansk\u00e9 kolo | Indi\u00e1nsk\u00e1 moudrost | Mystick\u00e1 Hv\u011bzda');
+      setMetaByProperty('og:title', '\u0160amansk\u00e9 kolo | symbolick\u00fd totemov\u00fd v\u00fdklad | Mystick\u00e1 Hv\u011bzda');
       setMetaByProperty(
         'og:description',
-        'Odhalte sv\u00e9 m\u00edsto na \u0160amansk\u00e9m kole. V\u00e1\u0161 m\u011bs\u00ed\u010dn\u00ed totem, sv\u011btov\u00e1 strana a duchovn\u00ed poselstv\u00ed inspirovan\u00e9 indi\u00e1nskou moudrost\u00ed.'
+        'Zjist\u011bte sv\u016fj m\u011bs\u00ed\u010dn\u00ed totem, sv\u011btovou stranu a \u017eivel jako symbolick\u00fd r\u00e1mec pro sebereflexi. V\u00fdklad je inspirac\u00ed, ne pevnou p\u0159edpov\u011bd\u00ed ani kulturn\u00edm n\u00e1rokem.'
       );
       setMetaByProperty('og:site_name', 'Mystick\u00e1 Hv\u011bzda');
       updateJsonLd(
         (data) => data?.url === 'https://www.mystickahvezda.cz/shamansko-kolo.html',
         {
-          name: '\u0160amansk\u00e9 kolo | Indi\u00e1nsk\u00e1 moudrost',
-          description: 'Odhalte sv\u00e9 m\u00edsto na \u0160amansk\u00e9m kole indi\u00e1nsk\u00fdch n\u00e1rod\u016f Severn\u00ed Ameriky.'
+          name: '\u0160amansk\u00e9 kolo | symbolick\u00fd totemov\u00fd v\u00fdklad',
+          description: 'Symbolick\u00fd r\u00e1mec \u0160amansk\u00e9ho kola pro m\u011bs\u00ed\u010dn\u00ed totem, sv\u011btovou stranu, \u017eivel a sebereflexi.'
         }
       );
     }

@@ -255,7 +255,7 @@ test.describe('O nás', () => {
         await expect(trustCard.locator('a[href="soukromi.html"]')).toBeVisible();
         await expect(page.locator('.hero__title')).toContainText('jasnější další krok');
         await expect(page.locator('.hero__subtitle')).toContainText('ne jako slib pevného osudu');
-        await expect(page.locator('script[src*="secondary-pages-copy-fixes.js"]')).toHaveAttribute('src', /secondary-pages-copy-fixes\.js\?v=2/);
+        await expect(page.locator('script[src*="secondary-pages-copy-fixes.js"]')).toHaveAttribute('src', /secondary-pages-copy-fixes\.js\?v=3/);
         await expect(page.locator('.card--service', { hasText: 'Naše mise' })).toContainText('mapu témat');
         await expect(page.locator('.card--service', { hasText: 'Osobní přístup' })).toContainText('Nepředstíráme osobní guru péči');
         await expect(page.locator('.stat-item')).toHaveCount(4);
@@ -789,6 +789,33 @@ test.describe('Lunace', () => {
 
         await expect(page.locator('.faq-section')).toContainText('neurčují emoce ani rozhodnutí');
         await expect(page.locator('.faq-section')).toContainText('ne jako pevné pravidlo');
+    });
+});
+
+// ═══════════════════════════════════════════════════════════
+// ŠAMANSKÉ KOLO — detailní testy
+// ═══════════════════════════════════════════════════════════
+
+test.describe('Šamanské kolo', () => {
+    test.beforeEach(async ({ page }) => {
+        await page.goto('/shamansko-kolo.html', { waitUntil: 'domcontentloaded' });
+        await waitForPageReady(page);
+    });
+
+    test('rámuje totemový výklad jako sebereflexi bez deterministických a kulturních claimů', async ({ page }) => {
+        await expect(page.locator('.mw-hero__badge')).toContainText('Symbolický kruh směrů a živlů');
+        await expect(page.locator('.mw-hero__desc')).toContainText('symbolický rámec');
+        await expect(page.locator('.mw-hero__desc')).toContainText('ne jako pevné určení identity nebo osudu');
+        await expect(page.locator('.mw-form__subtitle')).toContainText('symbolický rámec pro další otázku');
+        await expect(page.locator('.mw-premium-wall__title')).toContainText('plné symbolické čtení');
+        await expect(page.locator('.mw-premium-wall__desc')).toContainText('bez slibů pevného osudu');
+        await expect(page.locator('script[src*="secondary-pages-copy-fixes.js"]')).toHaveAttribute('src', /secondary-pages-copy-fixes\.js\?v=3/);
+
+        const bodyText = await page.locator('body').innerText();
+        expect(bodyText).not.toContain('Indiánská moudrost Severní Ameriky');
+        expect(bodyText).not.toContain('zakódované ve vašem datu narození');
+        expect(bodyText).not.toContain('kolečko odhalí vaši cestu');
+        expect(bodyText).not.toContain('osobní duchovní poselství čekají na vás');
     });
 });
 
