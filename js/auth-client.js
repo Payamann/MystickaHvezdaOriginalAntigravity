@@ -463,6 +463,16 @@
                     title: 'Vítejte v Mystické Hvězdě',
                     message: 'Začněte osobním horoskopem a získejte rychlý první vhled.'
                 },
+                lunar_calendar: {
+                    path: '/lunace.html',
+                    title: 'Vítejte v Mystické Hvězdě',
+                    message: 'Začněte lunárním kalendářem a vezměte si z aktuální fáze měsíce konkrétní krok.'
+                },
+                zodiac_signs: {
+                    path: '/horoskop/',
+                    title: 'Vítejte v Mystické Hvězdě',
+                    message: 'Začněte přehledem znamení a rychle se vraťte k horoskopu, který odpovídá vašemu tématu.'
+                },
                 ritual_memory: {
                     path: '/profil.html',
                     title: 'Paměť rituálu je připravená',

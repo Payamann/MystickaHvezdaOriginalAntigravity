@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
         weekly_horoscope: 'Týdenní horoskop',
         monthly_horoscope: 'Měsíční horoskop',
         horoskopy: 'Horoskopy',
+        lunar_calendar: 'Lunární kalendář',
+        zodiac_signs: 'Znamení zvěrokruhu',
         premium_membership: 'Premium členství',
         subscription_management: 'Správa předplatného',
         vip_membership: 'VIP členství',
@@ -112,6 +114,18 @@ document.addEventListener('DOMContentLoaded', () => {
             copy: 'Po vytvoření účtu budete pokračovat k horoskopům a můžete otevřít širší měsíční vedení.',
             stepTitle: 'Otevřeme horoskopy',
             stepCopy: 'Začnete denním vhledem a snadno přejdete na měsíční vedení.'
+        },
+        lunar_calendar: {
+            title: 'Lunární kalendář po registraci',
+            copy: 'Po vytvoření účtu budete pokračovat k lunárnímu kalendáři a uvidíte, jak dnešní fáze měsíce ovlivní praktický krok.',
+            stepTitle: 'Otevřeme lunární kalendář',
+            stepCopy: 'Začnete konkrétním rytmem dne, ne prázdným profilem.'
+        },
+        zodiac_signs: {
+            title: 'Znamení zvěrokruhu po registraci',
+            copy: 'Po vytvoření účtu budete pokračovat k přehledu znamení a můžete si vybrat osobní vstup do horoskopů.',
+            stepTitle: 'Otevřeme znamení zvěrokruhu',
+            stepCopy: 'Navážete na téma, které jste otevřeli, a rychle najdete vlastní znamení.'
         },
         ritual_memory: {
             title: 'Paměť rituálu po registraci',

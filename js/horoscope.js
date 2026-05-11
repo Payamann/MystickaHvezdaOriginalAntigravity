@@ -168,6 +168,10 @@ function buildHoroscopeUpsell(period) {
     `;
 }
 
+function normalizeHoroscopePeriod(period) {
+    return ['daily', 'weekly', 'monthly'].includes(period) ? period : null;
+}
+
 function initHoroscope() {
     const zodiacCards = document.querySelectorAll('.zodiac-card');
     const detailSection = document.getElementById('horoscope-detail-section');
@@ -183,6 +187,24 @@ function initHoroscope() {
     const detailRelationships = document.getElementById('detail-relationships');
     const detailNumbers = document.getElementById('detail-numbers');
     const sectionBadge = document.querySelector('.horoscope-wrapper .section__badge');
+    const periodLabels = {
+        daily: 'Denni horoskop',
+        weekly: 'Tydenni horoskop',
+        monthly: 'Mesicni horoskop'
+    };
+
+    const setActivePeriod = (period) => {
+        currentPeriod = normalizeHoroscopePeriod(period) || 'daily';
+        tabs.forEach((item) => {
+            const isActive = item.dataset.tab === currentPeriod;
+            item.classList.toggle('active', isActive);
+            item.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+
+        if (sectionBadge) {
+            sectionBadge.textContent = periodLabels[currentPeriod] || 'Denni horoskop';
+        }
+    };
 
     const contentContainer = document.querySelector('.horoscope-content');
     const loadingState = document.createElement('div');
@@ -237,23 +259,7 @@ function initHoroscope() {
                 }
             }
 
-            tabs.forEach((item) => {
-                item.classList.remove('active');
-                item.setAttribute('aria-selected', 'false');
-            });
-            tab.classList.add('active');
-            tab.setAttribute('aria-selected', 'true');
-
-            currentPeriod = selectedTab;
-
-            const periodLabels = {
-                daily: 'Denni horoskop',
-                weekly: 'Tydenni horoskop',
-                monthly: 'Mesicni horoskop'
-            };
-            if (sectionBadge) {
-                sectionBadge.textContent = periodLabels[currentPeriod] || 'Denni horoskop';
-            }
+            setActivePeriod(selectedTab);
 
             const activeZodiac = document.querySelector('.zodiac-card.active');
             if (activeZodiac) {
@@ -261,6 +267,11 @@ function initHoroscope() {
             }
         });
     });
+
+    const requestedPeriod = normalizeHoroscopePeriod(new URLSearchParams(window.location.search).get('period'));
+    if (requestedPeriod) {
+        setActivePeriod(requestedPeriod);
+    }
 
     const selectZodiac = async (card, skipScroll = false) => {
         zodiacCards.forEach((item) => item.classList.remove('active'));
