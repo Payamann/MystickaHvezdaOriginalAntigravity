@@ -632,10 +632,24 @@ test.describe('Ceník — platební tlačítka', () => {
         expect(previewHref).toContain('entry_feature=tarot_multi_card');
 
         const downsellHref = await recovery.locator('[data-cancel-downsell]').getAttribute('href');
-        expect(downsellHref).toContain('/rocni-horoskop.html');
+        await expect(recovery.locator('[data-cancel-downsell]')).toContainText('Jednorázová Osobní mapa');
+        expect(downsellHref).toContain('/osobni-mapa.html');
         expect(downsellHref).toContain('source=checkout_cancel_recovery');
         expect(downsellHref).toContain('entry_plan=pruvodce');
         expect(page.url()).not.toContain('payment=cancel');
+    });
+
+    test('zruseny checkout z horoskopu nabizi rocni horoskop jako nizsi zavazek', async ({ page }) => {
+        await page.goto('/cenik.html?payment=cancel&plan=pruvodce&source=inline_paywall&feature=daily_guidance');
+        await waitForPageReady(page);
+
+        const recovery = page.locator('#pricing-cancel-recovery');
+        await expect(recovery).toBeVisible();
+        await expect(recovery.locator('[data-cancel-downsell]')).toContainText('Jednorázový roční horoskop');
+
+        const downsellHref = await recovery.locator('[data-cancel-downsell]').getAttribute('href');
+        expect(downsellHref).toContain('/rocni-horoskop.html');
+        expect(downsellHref).toContain('entry_feature=daily_guidance');
     });
 
     // ── Kritický test: nepřihlášený uživatel → správné přesměrování ──────────

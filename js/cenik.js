@@ -15,7 +15,7 @@ let currentBilling = 'monthly';
 const PLAN_META = {
     pruvodce: {
         name: 'Hvězdný Průvodce',
-        headline: 'Nejrychlejší cesta k plným výkladům a každodennímu vedení.',
+        headline: 'Plné výklady, historie a pravidelný návrat k jednomu tématu.',
         recommendedFor: 'Většina lidí začíná tady.'
     },
     'pruvodce-rocne': {
@@ -116,6 +116,51 @@ const FEATURE_PREVIEW_DESTINATIONS = {
         params: { feature: 'tarot_multi_card', intent: 'three_cards', spread: 'three_cards' }
     },
     weekly_horoscope: { path: '/horoskopy.html', label: 'Nejd\u0159\u00edv otev\u0159\u00edt horoskopy zdarma' }
+};
+
+const CANCEL_DOWNSELL_PRODUCTS = {
+    rocni_horoskop_2026: {
+        path: '/rocni-horoskop.html',
+        label: 'Jednorázový roční horoskop',
+        productId: 'rocni_horoskop_2026'
+    },
+    osobni_mapa_2026: {
+        path: '/osobni-mapa.html',
+        label: 'Jednorázová Osobní mapa',
+        productId: 'osobni_mapa_2026'
+    }
+};
+
+const CANCEL_DOWNSELL_FEATURE_PRODUCTS = {
+    angel_card_deep: 'osobni_mapa_2026',
+    andelske_karty_hluboky_vhled: 'osobni_mapa_2026',
+    astrocartography: 'osobni_mapa_2026',
+    crystal_ball_unlimited: 'osobni_mapa_2026',
+    daily_guidance: 'rocni_horoskop_2026',
+    horoskopy: 'rocni_horoskop_2026',
+    hvezdny_mentor: 'osobni_mapa_2026',
+    journal_insights: 'osobni_mapa_2026',
+    kristalova_koule: 'osobni_mapa_2026',
+    medicine_wheel: 'osobni_mapa_2026',
+    mentor: 'osobni_mapa_2026',
+    minuly_zivot: 'osobni_mapa_2026',
+    monthly_horoscope: 'rocni_horoskop_2026',
+    natal_chart: 'osobni_mapa_2026',
+    natalni_interpretace: 'osobni_mapa_2026',
+    numerologie_vyklad: 'osobni_mapa_2026',
+    numerology: 'osobni_mapa_2026',
+    partnerska_detail: 'osobni_mapa_2026',
+    past_life: 'osobni_mapa_2026',
+    ritual_memory: 'osobni_mapa_2026',
+    rituals: 'rocni_horoskop_2026',
+    runes_deep_reading: 'osobni_mapa_2026',
+    runy_hluboky_vyklad: 'osobni_mapa_2026',
+    shamanske_kolo_plne_cteni: 'osobni_mapa_2026',
+    synastry: 'osobni_mapa_2026',
+    tarot: 'osobni_mapa_2026',
+    tarot_celtic_cross: 'osobni_mapa_2026',
+    tarot_multi_card: 'osobni_mapa_2026',
+    weekly_horoscope: 'rocni_horoskop_2026'
 };
 
 const SOURCE_RECOMMENDATION_COPY = {
@@ -301,12 +346,12 @@ function updatePricingCopy() {
         setFeatureText(guideFeatures[0], 'Neomezené výklady a každodenní vedení bez čekání');
         setFeatureText(guideFeatures[1], 'Plný rozbor natální karty, numerologie a vztahů');
         setFeatureText(guideFeatures[2], 'Historie výkladů a osobní profil pro pravidelný návrat');
-        setFeatureText(guideFeatures[3], 'Nejrychlejší cesta k tomu, aby web dával hodnotu každý den');
+        setFeatureText(guideFeatures[3], 'Hodnota roste hlavně při opakovaném návratu a uložené historii');
         if (guideCta) guideCta.textContent = 'Odemknout Hvězdného Průvodce';
     }
 
     if (premiumReasonsTitle) {
-        premiumReasonsTitle.textContent = 'Neplatíte za další ikonky. Platíte za hlubší odpovědi a pravidelný návrat k tomu, co vám pomáhá.';
+        premiumReasonsTitle.textContent = 'Neplatíte za další ikonky. Platíte za historii, souvislosti a pravidelný návrat k tomu, co řešíte.';
     }
 }
 
@@ -441,12 +486,29 @@ function getPreviewDestination(context) {
 }
 
 function getCancelDownsellDestination(context) {
-    const url = new URL('/rocni-horoskop.html', window.location.origin);
+    const product = getCancelDownsellProduct(context);
+    const url = new URL(product.path, window.location.origin);
     url.searchParams.set('source', 'checkout_cancel_recovery');
     if (context.source) url.searchParams.set('entry_source', context.source);
     if (context.feature) url.searchParams.set('entry_feature', context.feature);
     if (context.recommendedPlan) url.searchParams.set('entry_plan', context.recommendedPlan);
-    return `${url.pathname}${url.search}`;
+    return {
+        ...product,
+        href: `${url.pathname}${url.search}`
+    };
+}
+
+function getCancelDownsellProduct(context) {
+    if (context.source?.includes('annual_horoscope')) {
+        return CANCEL_DOWNSELL_PRODUCTS.osobni_mapa_2026;
+    }
+
+    if (context.source?.includes('personal_map')) {
+        return CANCEL_DOWNSELL_PRODUCTS.rocni_horoskop_2026;
+    }
+
+    const productId = CANCEL_DOWNSELL_FEATURE_PRODUCTS[context.feature] || 'rocni_horoskop_2026';
+    return CANCEL_DOWNSELL_PRODUCTS[productId] || CANCEL_DOWNSELL_PRODUCTS.rocni_horoskop_2026;
 }
 
 async function trackPricingFunnelEvent(eventName, context, metadata = {}) {
@@ -521,7 +583,7 @@ function renderCheckoutCancelRecovery(context) {
 
     const planMeta = PLAN_META[context.recommendedPlan] || PLAN_META.pruvodce;
     const previewDestination = getPreviewDestination(context);
-    const downsellHref = getCancelDownsellDestination(context);
+    const downsellProduct = getCancelDownsellDestination(context);
     const panel = document.createElement('div');
     panel.id = 'pricing-cancel-recovery';
     panel.className = 'pricing-cancel-recovery';
@@ -532,7 +594,7 @@ function renderCheckoutCancelRecovery(context) {
         <div class="pricing-cancel-recovery__actions">
             <button type="button" class="pricing-cancel-recovery__primary" data-cancel-retry>Zobrazit vybran\u00fd pl\u00e1n</button>
             ${previewDestination ? `<a class="pricing-cancel-recovery__secondary" href="${previewDestination.href}" data-cancel-preview>${previewDestination.label}</a>` : ''}
-            <a class="pricing-cancel-recovery__secondary" href="${downsellHref}" data-cancel-downsell>Jednor\u00e1zov\u00fd ro\u010dn\u00ed horoskop</a>
+            <a class="pricing-cancel-recovery__secondary" href="${downsellProduct.href}" data-cancel-downsell>${downsellProduct.label}</a>
         </div>
     `;
 
@@ -578,7 +640,7 @@ function renderCheckoutCancelRecovery(context) {
         void trackPricingFunnelEvent('pricing_downsell_clicked', context, {
             recovery: true,
             destination: link.getAttribute('href') || null,
-            product: 'rocni_horoskop_2026'
+            product: downsellProduct.productId
         });
     });
 }
