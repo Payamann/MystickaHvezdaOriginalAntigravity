@@ -19,7 +19,102 @@
             max-width: 560px;
             margin: 0 auto;
             padding: 0 1rem 4rem;
+            scroll-margin-top: 5.5rem;
         }
+
+        .past-life-intent-section {
+            padding: 0 1rem 4rem;
+            scroll-margin-top: 5.5rem;
+        }
+
+        .past-life-intent-section .container {
+            max-width: 1120px;
+        }
+
+        .past-life-intent-header {
+            max-width: 780px;
+            margin: 0 auto var(--space-lg);
+            text-align: center;
+        }
+
+        .past-life-intent-header h2 {
+            margin: 0.55rem 0 0.85rem;
+            color: var(--color-starlight);
+            font-family: var(--font-heading);
+            font-size: clamp(1.75rem, 4vw, 2.45rem);
+            line-height: 1.18;
+        }
+
+        .past-life-intent-header p {
+            margin: 0;
+            color: rgba(255,255,255,0.76);
+            line-height: 1.7;
+        }
+
+        .past-life-intent-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: var(--space-md);
+        }
+
+        .past-life-intent-card {
+            display: flex;
+            min-height: 100%;
+            flex-direction: column;
+            gap: 0.55rem;
+            padding: var(--space-lg);
+            border: 1px solid rgba(255, 255, 255, 0.11);
+            border-radius: var(--radius-md);
+            background: rgba(255,255,255,0.045);
+            color: inherit;
+            text-decoration: none;
+            transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+        }
+
+        .past-life-intent-card:hover,
+        .past-life-intent-card:focus-visible {
+            border-color: rgba(212,175,55,0.52);
+            background: rgba(212,175,55,0.08);
+            transform: translateY(-2px);
+            outline: none;
+        }
+
+        .past-life-intent-card--primary {
+            border-color: rgba(212,175,55,0.58);
+            background: linear-gradient(135deg, rgba(212,175,55,0.14), rgba(139,90,180,0.12));
+        }
+
+        .past-life-intent-card span {
+            color: var(--color-mystic-gold);
+            font-size: 0.74rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .past-life-intent-card strong {
+            color: var(--color-starlight);
+            font-family: var(--font-heading);
+            font-size: 1.08rem;
+            line-height: 1.25;
+        }
+
+        .past-life-intent-card em {
+            color: var(--color-silver-mist);
+            font-style: normal;
+            line-height: 1.55;
+        }
+
+        @media (max-width: 720px) {
+            .past-life-intent-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .past-life-intent-card {
+                padding: var(--space-md);
+            }
+        }
+
         .past-life-form {
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(212,175,55,0.2);

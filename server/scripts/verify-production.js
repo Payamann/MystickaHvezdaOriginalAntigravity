@@ -106,6 +106,17 @@ const CONVERSION_LINK_CHECKS = [
         ]
     },
     {
+        path: '/minuly-zivot.html',
+        name: 'Past life symbolic intent cluster',
+        snippets: [
+            'past-life-intent-section',
+            'data-analytics-cta="past_life_intent_symbolic"',
+            'mentor.html?source=past_life_intent_cluster',
+            'natalni-karta.html?source=past_life_intent_cluster',
+            'partnerska-shoda.html?source=past_life_intent_cluster'
+        ]
+    },
+    {
         path: '/jak-to-funguje.html',
         name: 'How it works signup CTA',
         snippets: [

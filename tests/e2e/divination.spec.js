@@ -379,6 +379,18 @@ test.describe('Minulý život', () => {
         expect(registerHref).toContain('feature=minuly_zivot');
     });
 
+    test('symbolický intent cluster vede na správné další kroky', async ({ page }) => {
+        const section = page.locator('.past-life-intent-section');
+        await expect(section).toBeVisible();
+        await expect(section).toContainText('archetypální příběh, ne doslovný důkaz');
+        await expect(section.locator('.past-life-intent-card')).toHaveCount(6);
+
+        await expect(section.locator('[data-analytics-cta="past_life_intent_symbolic"]')).toHaveAttribute('href', '#form-section');
+        await expect(section.locator('[data-analytics-cta="past_life_intent_mentor"]')).toHaveAttribute('href', /mentor\.html\?source=past_life_intent_cluster/);
+        await expect(section.locator('[data-analytics-cta="past_life_intent_natal"]')).toHaveAttribute('href', /natalni-karta\.html\?source=past_life_intent_cluster/);
+        await expect(section.locator('[data-analytics-cta="past_life_intent_relationship"]')).toHaveAttribute('href', /partnerska-shoda\.html\?source=past_life_intent_cluster/);
+    });
+
     test('mobilní premium CTA není překryté cookie bannerem', async ({ page }) => {
         await page.setViewportSize(MOBILE_VIEWPORT);
         await page.goto('/minuly-zivot.html');
