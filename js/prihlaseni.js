@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         lunar_calendar: {
             title: 'Lunární kalendář po registraci',
-            copy: 'Po vytvoření účtu budete pokračovat k lunárnímu kalendáři a uvidíte, jak dnešní fáze měsíce ovlivní praktický krok.',
+            copy: 'Po vytvoření účtu budete pokračovat k lunárnímu kalendáři a vezmete si z dnešní fáze jeden praktický krok.',
             stepTitle: 'Otevřeme lunární kalendář',
             stepCopy: 'Začnete konkrétním rytmem dne, ne prázdným profilem.'
         },
@@ -219,9 +219,9 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         minuly_zivot: {
             title: 'Minulý život po registraci',
-            copy: 'Po vytvoření účtu se vrátíte k výkladu minulého života a můžete pokračovat bez ztráty kontextu.',
+            copy: 'Po vytvoření účtu se vrátíte k symbolickému výkladu minulého života a můžete pokračovat bez ztráty kontextu.',
             stepTitle: 'Otevřeme minulý život',
-            stepCopy: 'Začnete přímo funkcí, která slibuje nejhlubší první zážitek.'
+            stepCopy: 'Začnete archetypálním příběhem pro sebereflexi, ne tvrdým slibem.'
         },
         kristalova_koule: {
             title: 'Křišťálová koule po registraci',
@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tarot_celtic_cross: SIGNUP_CONTEXT_BY_FEATURE.tarot_multi_card,
         rituals: {
             title: 'Lunární rituály po registraci',
-            copy: 'Po vytvoření účtu budete pokračovat k rituálům a můžete začít osobní praxí podle aktuální energie.',
+            copy: 'Po vytvoření účtu budete pokračovat k rituálům a můžete začít osobní praxí podle aktuálního rytmu.',
             stepTitle: 'Otevřeme lunární rituály',
             stepCopy: 'První krok povede rovnou k praxi, ne do prázdného profilu.'
         }

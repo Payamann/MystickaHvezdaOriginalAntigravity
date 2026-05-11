@@ -506,17 +506,17 @@
                 shamanske_kolo_plne_cteni: {
                     path: '/shamansko-kolo.html',
                     title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Šamanské kolo vás rychle dostane k hlubšímu prvnímu zážitku.'
+                    message: 'Šamanské kolo vás rychle navede ke konkrétnímu symbolickému směru.'
                 },
                 minuly_zivot: {
                     path: '/minuly-zivot.html',
                     title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Minulý život je silný vstupní zážitek, pokud chcete začít něčím hlubokým.'
+                    message: 'Minulý život berte jako symbolický rámec pro sebereflexi a první osobní téma.'
                 },
                 kristalova_koule: {
                     path: '/kristalova-koule.html',
                     title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Křišťálová koule je rychlý první moment, který ukáže osobní vedení v praxi.'
+                    message: 'Křišťálová koule pomůže formulovat první otázku a vzít si krátký osobní vhled.'
                 }
             };
 

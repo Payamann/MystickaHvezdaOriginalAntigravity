@@ -256,12 +256,12 @@ const SIGNUP_INTENT_DESTINATIONS = {
     minuly_zivot: {
         feature: 'minuly_zivot',
         href: () => 'minuly-zivot.html?source=profile_signup_intent&feature=minuly_zivot',
-        description: () => 'Navázat výkladem minulého života, kvůli kterému účet vznikl.'
+        description: () => 'Navázat symbolickým výkladem minulého života, kvůli kterému účet vznikl.'
     },
     past_life: {
         feature: 'minuly_zivot',
         href: () => 'minuly-zivot.html?source=profile_signup_intent&feature=minuly_zivot',
-        description: () => 'Navázat výkladem minulého života, kvůli kterému účet vznikl.'
+        description: () => 'Navázat symbolickým výkladem minulého života, kvůli kterému účet vznikl.'
     },
     kristalova_koule: {
         feature: 'kristalova_koule',

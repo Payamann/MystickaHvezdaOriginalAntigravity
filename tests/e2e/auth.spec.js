@@ -483,6 +483,30 @@ test.describe('Login stránka', () => {
         expect(activationFlag).toBeNull();
     });
 
+    test('registrace z minuleho zivota drzi symbolicky trust copy', async ({ page }) => {
+        await mockSuccessfulRegister(page, 'past-life-symbolic@example.com');
+
+        await page.goto('/prihlaseni.html?mode=register&feature=minuly_zivot');
+        await waitForPageReady(page);
+
+        await expect(page.locator('#checkout-context-title')).toContainText('Minulý život');
+        await expect(page.locator('#signup-next-step-copy')).toContainText('archetypálním příběhem pro sebereflexi');
+
+        await Promise.all([
+            page.waitForURL(url => url.pathname === '/minuly-zivot.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
+            submitRegisterForm(page, 'past-life-symbolic@example.com'),
+        ]);
+        await waitForPageReady(page);
+
+        const url = new URL(page.url());
+        expect(url.pathname).toBe('/minuly-zivot.html');
+        expect(url.searchParams.get('source')).toBe('signup_activation');
+        expect(url.searchParams.get('feature')).toBe('minuly_zivot');
+        expect(url.searchParams.get('entry_feature')).toBe('minuly_zivot');
+        const activationFlag = await page.evaluate(() => sessionStorage.getItem('post_auth_activation'));
+        expect(activationFlag).toBeNull();
+    });
+
     test('registrace s newsletter zdrojem presmeruje na horoskopy', async ({ page }) => {
         await mockSuccessfulRegister(page, 'newsletter-activation@example.com');
 
