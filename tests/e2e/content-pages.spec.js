@@ -255,6 +255,7 @@ test.describe('O nás', () => {
         await expect(trustCard.locator('a[href="soukromi.html"]')).toBeVisible();
         await expect(page.locator('.hero__title')).toContainText('jasnější další krok');
         await expect(page.locator('.hero__subtitle')).toContainText('ne jako slib pevného osudu');
+        await expect(page.locator('script[src*="secondary-pages-copy-fixes.js"]')).toHaveAttribute('src', /secondary-pages-copy-fixes\.js\?v=2/);
         await expect(page.locator('.stat-item')).toHaveCount(4);
         await expect(page.locator('.stat-item')).toContainText([
             /Ceny předem/,
