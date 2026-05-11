@@ -16,9 +16,20 @@ const EXPECTED_CANONICAL_URL = process.env.VERIFY_CANONICAL_URL || 'https://www.
 const PUBLIC_PAGE_PATHS = (process.env.VERIFY_PUBLIC_PATHS || [
     '/',
     '/horoskopy.html',
+    '/tydenni-horoskop.html',
+    '/mesicni-horoskop.html',
     '/natalni-karta.html',
     '/tarot.html',
+    '/tarot-zdarma.html',
+    '/tarot-karta-dne.html',
+    '/tarot-tri-karty.html',
+    '/tarot-keltsky-kriz.html',
+    '/tarot-laska.html',
+    '/tarot-ano-ne.html',
     '/partnerska-shoda.html',
+    '/osobni-rok-2026.html',
+    '/partnerska-numerologie.html',
+    '/vyznam-data-narozeni.html',
     '/astro-mapa.html',
     '/cenik.html'
 ].join(','))
@@ -108,6 +119,36 @@ const CONVERSION_LINK_CHECKS = [
             'id="freemium-banner-text">Dnes zbývá:',
             'source=runes_freemium_banner',
             '>Získat Premium ›</a>'
+        ]
+    },
+    {
+        path: '/horoskopy.html',
+        name: 'Horoscope intent cluster',
+        snippets: [
+            'data-analytics-cta="horoscope_hub_weekly"',
+            'tydenni-horoskop.html?source=horoscope_hub&amp;feature=weekly_horoscope',
+            'data-analytics-feature="lunar_calendar"',
+            'lunace.html?source=horoscope_hub&amp;feature=lunar_calendar'
+        ]
+    },
+    {
+        path: '/numerologie.html',
+        name: 'Numerology intent cluster',
+        snippets: [
+            'data-analytics-cta="numerology_hub_personal_year"',
+            'osobni-rok-2026.html?source=numerology_hub&amp;intent=personal_year',
+            'data-analytics-cta="numerology_hub_partner"',
+            'partnerska-numerologie.html?source=numerology_hub&amp;intent=partner_numbers'
+        ]
+    },
+    {
+        path: '/tarot.html',
+        name: 'Tarot intent cluster',
+        snippets: [
+            'data-analytics-cta="tarot_intent_three_card"',
+            'tarot-tri-karty.html?source=tarot_intent_cluster&amp;intent=three_card',
+            'data-analytics-cta="tarot_intent_celtic_cross"',
+            'tarot-keltsky-kriz.html?source=tarot_intent_cluster&amp;intent=celtic_cross'
         ]
     }
 ];

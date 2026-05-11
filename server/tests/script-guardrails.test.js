@@ -127,6 +127,36 @@ describe('manual script guardrails', () => {
         expect(productionVerifier).toContain('Add ${VERIFY_APEX_URL} as a Railway custom domain');
     });
 
+    test('production verifier covers intent landing clusters', () => {
+        const source = readScript('server/scripts/verify-production.js');
+
+        [
+            '/tydenni-horoskop.html',
+            '/mesicni-horoskop.html',
+            '/osobni-rok-2026.html',
+            '/partnerska-numerologie.html',
+            '/vyznam-data-narozeni.html',
+            '/tarot-zdarma.html',
+            '/tarot-tri-karty.html',
+            '/tarot-keltsky-kriz.html',
+            '/tarot-laska.html',
+            '/tarot-ano-ne.html'
+        ].forEach((path) => {
+            expect(source).toContain(`'${path}'`);
+        });
+
+        [
+            'Horoscope intent cluster',
+            'Numerology intent cluster',
+            'Tarot intent cluster',
+            'data-analytics-cta="horoscope_hub_weekly"',
+            'data-analytics-cta="numerology_hub_personal_year"',
+            'data-analytics-cta="tarot_intent_three_card"'
+        ].forEach((snippet) => {
+            expect(source).toContain(snippet);
+        });
+    });
+
     test('local server does not run scheduled jobs by default', () => {
         const source = readScript('server/index.js');
         const runtime = readScript('server/config/runtime.js');
