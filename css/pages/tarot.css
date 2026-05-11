@@ -155,10 +155,77 @@ html body .mh-inline-4665ff48a5 { font-size: 4rem; }
     color: var(--color-silver-mist);
 }
 
+.tarot-intent-section {
+    padding-top: 1.5rem;
+}
+
+.tarot-intent-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.tarot-intent-card {
+    display: flex;
+    min-height: 100%;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: 1.15rem;
+    border: 1px solid rgba(212, 175, 55, 0.22);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.035);
+    color: inherit;
+    text-decoration: none;
+    transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.tarot-intent-card:hover,
+.tarot-intent-card:focus-visible {
+    border-color: rgba(212, 175, 55, 0.45);
+    background: rgba(212, 175, 55, 0.07);
+    transform: translateY(-2px);
+    outline: none;
+}
+
+.tarot-intent-card--featured {
+    border-color: rgba(212, 175, 55, 0.42);
+    background: linear-gradient(180deg, rgba(212, 175, 55, 0.12), rgba(255, 255, 255, 0.035));
+}
+
+.tarot-intent-card__kicker {
+    color: var(--color-mystic-gold);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.tarot-intent-card strong {
+    color: var(--color-starlight);
+    font-family: var(--font-heading);
+    font-size: 1.14rem;
+    line-height: 1.2;
+}
+
+.tarot-intent-card p {
+    margin: 0;
+    color: var(--color-silver-mist);
+    font-size: 0.92rem;
+    line-height: 1.55;
+}
+
 @media (max-width: 680px) {
     .tarot-meaning-bridge {
         align-items: stretch;
         flex-direction: column;
+    }
+
+    .tarot-intent-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .tarot-intent-card {
+        padding: 1rem;
     }
 }
 
