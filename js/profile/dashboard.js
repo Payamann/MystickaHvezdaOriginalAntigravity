@@ -1304,14 +1304,6 @@ async function initProfile() {
         setProfileBlockVisible(loginRequired, true);
         setProfileBlockVisible(dashboard, false);
         if (greeting) greeting.textContent = 'Přihlaste se pro zobrazení vašeho profilu';
-
-        const loginBtn = document.getElementById('profile-login-btn');
-        if (loginBtn && !loginBtn.dataset.listenerAttached) {
-            loginBtn.addEventListener('click', () => {
-                window.location.href = 'prihlaseni.html?redirect=/profil.html';
-            });
-            loginBtn.dataset.listenerAttached = 'true';
-        }
         return;
     }
 

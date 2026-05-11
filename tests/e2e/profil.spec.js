@@ -45,6 +45,32 @@ test.describe('Profil stránka', () => {
         await expect(loginBtn).toBeAttached();
     });
 
+    test('login gate vysvetluje hodnotu uctu a zachova meritelny kontext', async ({ page }) => {
+        const gate = page.locator('#login-required');
+        await expect(gate).toContainText('historii, oblíbené výklady a návratové poznámky');
+        await expect(gate).toContainText('Bez přihlášení nic neukládáme do osobního profilu');
+
+        const loginHref = await page.locator('#profile-login-btn').getAttribute('href');
+        const registerHref = await page.locator('#login-required a[href*="mode=register"]').getAttribute('href');
+
+        expect(loginHref).toContain('source=profile_gate_login');
+        expect(loginHref).toContain('feature=account');
+        expect(loginHref).toContain('redirect=/profil.html');
+        expect(registerHref).toContain('source=profile_gate_register');
+        expect(registerHref).toContain('feature=account');
+        expect(registerHref).toContain('redirect=/profil.html');
+
+        await Promise.all([
+            page.waitForURL(url => url.pathname === '/prihlaseni.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
+            page.locator('#profile-login-btn').click(),
+        ]);
+
+        const clickedUrl = new URL(page.url());
+        expect(clickedUrl.searchParams.get('source')).toBe('profile_gate_login');
+        expect(clickedUrl.searchParams.get('feature')).toBe('account');
+        expect(clickedUrl.searchParams.get('redirect')).toBe('/profil.html');
+    });
+
     test('user info elementy existují v DOM', async ({ page }) => {
         // Elementy pro zobrazení info uživatele (skryté do přihlášení)
         const userEmail = page.locator('#user-email');
