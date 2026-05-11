@@ -380,6 +380,8 @@ test.describe('Minulý život', () => {
     });
 
     test('symbolický intent cluster vede na správné další kroky', async ({ page }) => {
+        await expect(page.locator('.past-life-hero p, .hero__subtitle').first()).toContainText('symbolický obraz');
+
         const section = page.locator('.past-life-intent-section');
         await expect(section).toBeVisible();
         await expect(section).toContainText('archetypální příběh, ne doslovný důkaz');

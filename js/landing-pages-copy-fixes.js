@@ -81,10 +81,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (path.endsWith('/minuly-zivot.html') || path.endsWith('minuly-zivot.html')) {
         document.title = 'Minulý Život — Akashické Záznamy | Mystická Hvězda';
-        setMeta('meta[name="description"]', 'Odhalte svůj minulý život prostřednictvím akashických záznamů. Zjistěte, jaké karmické lekce nesete a co máte v tomto životě dokončit.');
+        setMeta('meta[name="description"]', 'Vytvořte si symbolický výklad minulého života pro sebereflexi. Objevte archetypální příběh, karmické motivy, dary a téma, které může inspirovat současný život.');
         setMeta('meta[property="og:title"]', 'Minulý Život — Akashické Záznamy | Mystická Hvězda');
-        setMeta('meta[property="og:description"]', 'Odhalte svůj minulý život prostřednictvím akashických záznamů. Zjistěte, jaké karmické lekce nesete a co máte v tomto životě dokončit.');
+        setMeta('meta[property="og:description"]', 'Symbolický výklad minulého života pro sebereflexi: archetypální příběh, karmické motivy, dary a téma pro současný život.');
         setHtml('.past-life-hero h1, .hero__title', 'Minulý život a <span class="text-gradient">akashické záznamy</span>');
-        setText('.past-life-hero p, .hero__subtitle', 'Podívejte se za oponu minulých inkarnací a zjistěte, jaké dary, vzorce a karmické lekce si nesete do současného života.');
+        setText('.past-life-hero p, .hero__subtitle', 'Vytvořte symbolický obraz minulého života, který může odhalit opakující se motivy, dary a téma pro současnou cestu.');
     }
 });
