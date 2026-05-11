@@ -126,6 +126,17 @@ const CONVERSION_LINK_CHECKS = [
         ]
     },
     {
+        path: '/shamansko-kolo.html',
+        name: 'Shaman wheel intent cluster',
+        snippets: [
+            'mw-intent-section',
+            'data-analytics-cta="shaman_wheel_intent_birth"',
+            'blog/shamansko-kolo-totemove-zvire.html?source=shaman_wheel_intent_cluster',
+            'runy.html?source=shaman_wheel_intent_cluster',
+            'mentor.html?source=shaman_wheel_intent_cluster'
+        ]
+    },
+    {
         path: '/kristalova-koule.html',
         name: 'Crystal ball freemium CTA',
         snippets: [

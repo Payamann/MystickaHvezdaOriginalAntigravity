@@ -145,6 +145,15 @@ test.describe('Šamanské kolo', () => {
         await expect(form).toBeAttached();
     });
 
+    test('stranka rozlisuje kdy pouzit samanske kolo', async ({ page }) => {
+        const cluster = page.locator('.mw-intent-section');
+        await expect(cluster).toBeVisible();
+        await expect(cluster.locator('.mw-intent-card')).toHaveCount(6);
+        await expect(cluster.locator('[data-analytics-cta="shaman_wheel_intent_birth"]')).toHaveAttribute('href', '#mw-form-section');
+        await expect(cluster.locator('[data-analytics-cta="shaman_wheel_intent_runes"]')).toHaveAttribute('href', /runy\.html/);
+        await expect(cluster.locator('[data-analytics-cta="shaman_wheel_intent_mentor"]')).toHaveAttribute('href', /mentor\.html/);
+    });
+
     test('.mw-submit-btn nebo submit tlačítko existuje', async ({ page }) => {
         const btn = page.locator('.mw-submit-btn, button[class*="mw-submit"], button[type="submit"]').first();
         await expect(btn).toBeAttached();
