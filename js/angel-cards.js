@@ -237,6 +237,15 @@ function scrollAngelResultsIntoView(behavior = 'smooth') {
     });
 }
 
+function scheduleMobileAngelResultsScroll(behavior = 'smooth') {
+    if (!window.matchMedia('(max-width: 700px)').matches) return;
+
+    scrollAngelResultsIntoView(behavior);
+    setTimeout(() => scrollAngelResultsIntoView(behavior), 320);
+    setTimeout(() => scrollAngelResultsIntoView(behavior), 900);
+    setTimeout(() => scrollAngelResultsIntoView(behavior), 1600);
+}
+
 function setCardBack(backEl, card) {
     if (!backEl || !card) return;
 
@@ -456,7 +465,7 @@ async function requestDeepInsight() {
             },
             body: JSON.stringify({
                 card: drawnCard,
-                intention: 'hluboký vhled ke kartě dne'
+                intention: 'hluboký vhled k andělské kartě'
             })
         });
 
@@ -481,7 +490,7 @@ async function requestDeepInsight() {
                     theme: drawnCard.theme,
                     message: drawnCard.message
                 },
-                intention: 'hluboký vhled ke kartě dne',
+                intention: 'hluboký vhled k andělské kartě',
                 response: data.response,
                 fallback: !!data.fallback
             });
@@ -519,7 +528,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (linkedDailyCard) {
         drawnCard = linkedDailyCard;
         revealPreDrawnCard({
-            message: `Tvoje karta z dnešního poselství: ${linkedDailyCard.name}`
+            message: `Tvoje andělská karta: ${linkedDailyCard.name}`
         });
     } else {
         checkDailyLock();
@@ -550,9 +559,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     window.addEventListener('mh_cookie_banner_visible', () => {
-        if (window.matchMedia('(max-width: 700px)').matches) {
-            scrollAngelResultsIntoView();
-        }
+        scheduleMobileAngelResultsScroll();
     });
 });
 
@@ -662,9 +669,7 @@ function revealPreDrawnCard(options = {}) {
     if (results) {
         setBlockVisible(results, true);
         results.classList.add('animate-in');
-        if (window.matchMedia('(max-width: 700px)').matches) {
-            requestAnimationFrame(() => scrollAngelResultsIntoView('auto'));
-        }
+        requestAnimationFrame(() => scheduleMobileAngelResultsScroll('auto'));
     }
 
     ensureDeepInsightElements();
@@ -758,10 +763,7 @@ function drawCard() {
             requestAnimationFrame(() => {
                 results.classList.add('animate-in');
                 ensureDeepInsightElements();
-                if (window.matchMedia('(max-width: 700px)').matches) {
-                    scrollAngelResultsIntoView();
-                    setTimeout(() => scrollAngelResultsIntoView(), 320);
-                }
+                scheduleMobileAngelResultsScroll();
             });
         }
     }, 800);

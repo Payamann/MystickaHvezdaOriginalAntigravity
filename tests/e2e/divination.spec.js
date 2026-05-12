@@ -100,6 +100,37 @@ test.describe('Andělské karty', () => {
         await expect(page.locator('#btn-deep-angel')).toBeVisible({ timeout: 3_000 });
     });
 
+    test('hluboky vhled posila andelsky zamer, ne Kartu dne', async ({ page }) => {
+        let payload = null;
+        await page.route('**/api/angel-card', async route => {
+            payload = route.request().postDataJSON();
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true, response: 'Andělská odpověď pro test.' })
+            });
+        });
+
+        await page.evaluate(() => {
+            localStorage.removeItem('angelCardDaily');
+            window.Auth = {
+                ...(window.Auth || {}),
+                isLoggedIn: () => true,
+                isPremium: () => true,
+                saveReading: async () => ({ id: 'test-angel-reading' })
+            };
+            window.getCSRFToken = async () => 'csrf.test.token';
+        });
+
+        await page.locator('#draw-btn').click();
+        await expect(page.locator('#btn-deep-angel')).toBeVisible({ timeout: 3_000 });
+        await page.locator('#btn-deep-angel').click();
+        await expect(page.locator('#angel-ai-response')).toContainText('Andělská odpověď');
+
+        expect(payload?.intention).toBe('hluboký vhled k andělské kartě');
+        expect(payload?.intention).not.toContain('kartě dne');
+    });
+
     test('mobilní výsledek po vytažení není překrytý cookie bannerem', async ({ page }) => {
         await page.setViewportSize(MOBILE_VIEWPORT);
         await page.evaluate(() => {
@@ -149,7 +180,8 @@ test.describe('Andělské karty', () => {
         await expect.poll(() => page.locator('.angel-card-inner').evaluate(element => getComputedStyle(element).transform))
             .not.toBe('matrix(1, 0, 0, 1, 0, 0)');
         await expect(page.locator('#angel-results')).toHaveClass(/mh-block-visible/);
-        await expect(page.locator('.angel-return-message')).toContainText('Intuice');
+        await expect(page.locator('#angel-results h3')).toContainText('Poselství andělské karty');
+        await expect(page.locator('.angel-return-message')).toContainText('Tvoje andělská karta: Intuice');
         await expect(page.locator('.angel-name')).toHaveText('Intuice');
         await expect(page.locator('.angel-theme')).toHaveText('Vhled');
         await expect(page.locator('#angel-short-message')).toContainText('smysl');
