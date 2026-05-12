@@ -757,7 +757,7 @@ test.describe('Onboarding', () => {
         await page.goto('/onboarding.html?source=homepage_daily_card_full_reading&feature=daily_angel_card');
         await waitForPageReady(page);
 
-        await expect(page.locator('#step-1 .step-title')).toContainText('andělskou kartou');
+        await expect(page.locator('#step-1 .step-title')).toContainText('Andělskými kartami');
         await page.locator('#step-1 [data-action="goStep"][data-step="2"]').click();
         await page.locator('.zodiac-btn[data-sign="ryby"]').click();
         await page.locator('#btn-step2').click();

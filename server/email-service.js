@@ -206,11 +206,11 @@ const ACTIVATION_FEATURES = {
     day3: 'Vztahový vhled má větší hodnotu, když naváže na tarot nebo natální kartu.'
   },
   daily_angel_card: {
-    label: 'andělská karta',
+    label: 'Karta dne',
     path: '/andelske-karty.html',
-    day0: 'Otevři kartu dne a vezmi si jeden jednoduchý signál pro dnešek.',
-    day1: 'Vrať se ke kartě a zapiš si, co se opravdu potvrdilo.',
-    day3: 'Opakovaná karta nebo téma může být začátek osobního rituálu.'
+    day0: 'Otevři denní symbol z homepage v Andělských kartách a vezmi si jeden jednoduchý signál pro dnešek.',
+    day1: 'Vrať se ke Kartě dne a zapiš si, co se opravdu potvrdilo.',
+    day3: 'Opakovaný symbol nebo téma může být začátek osobního rituálu.'
   },
   natalni_interpretace: {
     label: 'natální karta',

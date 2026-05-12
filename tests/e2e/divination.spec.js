@@ -57,7 +57,9 @@ test.describe('Andělské karty', () => {
         const cluster = page.locator('.angel-intent-section');
         await expect(cluster).toBeVisible();
         await expect(cluster.locator('.angel-intent-card')).toHaveCount(6);
-        await expect(cluster.locator('[data-analytics-cta="angel_intent_daily_card"]')).toHaveAttribute('href', '#draw-btn');
+        const drawIntent = cluster.locator('[data-analytics-cta="angel_intent_draw_card"]');
+        await expect(drawIntent).toHaveAttribute('href', '#draw-btn');
+        await expect(drawIntent).toHaveAttribute('data-analytics-feature', 'andelske_karty_hluboky_vhled');
         await expect(cluster.locator('[data-analytics-cta="angel_intent_how_it_works"]')).toHaveAttribute('href', /jak-funguji-andelske-karty\.html/);
         await expect(cluster.locator('[data-analytics-cta="angel_intent_crystal_ball"]')).toHaveAttribute('href', /kristalova-koule\.html/);
         await expect(cluster.locator('[data-analytics-cta="angel_intent_mentor"]')).toHaveAttribute('href', /mentor\.html/);

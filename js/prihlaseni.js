@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tarot: 'Tarot',
         tarot_daily_card_profile_save: 'Tarot karta dne',
         tarot_multi_card: 'Vícekartový tarot',
-        daily_angel_card: 'Andělská karta dne',
+        daily_angel_card: 'Karta dne',
         andelske_karty_hluboky_vhled: 'Andělské karty',
         synastry: 'Partnerská shoda',
         partnerska_detail: 'Detail partnerské shody',
@@ -164,10 +164,10 @@ document.addEventListener('DOMContentLoaded', () => {
             stepCopy: 'Registrace naváže na výklad, který jste chtěli odemknout.'
         },
         daily_angel_card: {
-            title: 'Andělská karta po registraci',
-            copy: 'Po vytvoření účtu se vrátíte k denní kartě a můžete si uložit svůj první vhled.',
-            stepTitle: 'Vrátíme vás k andělské kartě',
-            stepCopy: 'Nepřijdete o poselství, kvůli kterému jste klikli.'
+            title: 'Karta dne po registraci',
+            copy: 'Po vytvoření účtu se vrátíte k dennímu symbolu z homepage a navážete na něj v Andělských kartách.',
+            stepTitle: 'Vrátíme vás k dennímu symbolu',
+            stepCopy: 'Nepřijdete o Kartu dne, kvůli které jste klikli.'
         },
         andelske_karty_hluboky_vhled: {
             title: 'Andělské karty po registraci',
@@ -281,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const SIGNUP_CONTEXT_BY_REDIRECT = {
         '/horoskopy.html': SIGNUP_CONTEXT_BY_FEATURE.daily_guidance,
         '/tarot.html': SIGNUP_CONTEXT_BY_FEATURE.tarot,
-        '/andelske-karty.html': SIGNUP_CONTEXT_BY_FEATURE.daily_angel_card,
+        '/andelske-karty.html': SIGNUP_CONTEXT_BY_FEATURE.andelske_karty_hluboky_vhled,
         '/partnerska-shoda.html': SIGNUP_CONTEXT_BY_FEATURE.partnerska_detail,
         '/natalni-karta.html': SIGNUP_CONTEXT_BY_FEATURE.natalni_interpretace,
         '/numerologie.html': SIGNUP_CONTEXT_BY_FEATURE.numerologie_vyklad,

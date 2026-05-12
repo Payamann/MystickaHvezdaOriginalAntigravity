@@ -461,7 +461,7 @@ test.describe('Login stránka', () => {
         await page.goto('/prihlaseni.html?mode=register&feature=daily_angel_card');
         await waitForPageReady(page);
 
-        await expect(page.locator('#checkout-context-title')).toContainText('Andělská karta');
+        await expect(page.locator('#checkout-context-title')).toContainText('Karta dne');
 
         await Promise.all([
             page.waitForURL(url => url.pathname === '/andelske-karty.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
@@ -476,6 +476,17 @@ test.describe('Login stránka', () => {
         expect(url.searchParams.get('entry_feature')).toBe('daily_angel_card');
         const activationFlag = await page.evaluate(() => sessionStorage.getItem('post_auth_activation'));
         expect(activationFlag).toBeNull();
+    });
+
+    test('registrace s redirectem na andelske karty nepouziva kontext Karty dne', async ({ page }) => {
+        await page.goto('/prihlaseni.html?mode=register&redirect=/andelske-karty.html');
+        await waitForPageReady(page);
+
+        const contextTitle = page.locator('#checkout-context-title');
+        const contextCopy = page.locator('#checkout-context-copy');
+        await expect(contextTitle).toContainText('Andělské karty');
+        await expect(contextCopy).toContainText('andělským kartám');
+        await expect(contextTitle).not.toContainText('Karta dne');
     });
 
     test('registrace ze samanskeho kola se vraci na kanonickou stranku bez legacy presmerovani', async ({ page }) => {

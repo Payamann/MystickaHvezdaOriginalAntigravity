@@ -77,7 +77,7 @@ const CONTEXT_COPY_BY_INTEREST = {
         subtitle: 'Vyberte znamení a téma. Potom otevřeme tarot, aby registrace hned vedla k výkladu.'
     },
     'andelske-karty': {
-        title: 'Navážeme andělskou kartou',
+        title: 'Navážeme Andělskými kartami',
         subtitle: 'Vyberte znamení a téma. Potom otevřeme andělské karty bez ztráty kontextu.'
     },
     numerologie: {

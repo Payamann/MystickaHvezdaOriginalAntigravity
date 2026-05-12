@@ -446,7 +446,7 @@
                 daily_angel_card: {
                     path: '/andelske-karty.html',
                     title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Vracíme vás k andělské kartě dne, aby první vhled navázal na to, kvůli čemu jste přišli.'
+                    message: 'Vracíme vás k dennímu symbolu z homepage, aby první vhled navázal na to, kvůli čemu jste přišli.'
                 },
                 andelske_karty_hluboky_vhled: {
                     path: '/andelske-karty.html',
