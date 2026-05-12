@@ -93,6 +93,8 @@ test.describe('Andělské karty', () => {
         await waitForPageReady(page);
 
         await page.locator('#draw-btn').click();
+        await expect.poll(() => page.locator('.angel-card-inner').evaluate(element => getComputedStyle(element).transform))
+            .not.toBe('matrix(1, 0, 0, 1, 0, 0)');
         await expect(page.locator('#btn-deep-angel')).toBeVisible({ timeout: 3_000 });
     });
 
@@ -102,6 +104,8 @@ test.describe('Andělské karty', () => {
         await waitForPageReady(page);
 
         await expect(page.locator('#draw-btn')).toHaveClass(/is-flipped/);
+        await expect.poll(() => page.locator('.angel-card-inner').evaluate(element => getComputedStyle(element).transform))
+            .not.toBe('matrix(1, 0, 0, 1, 0, 0)');
         await expect(page.locator('#angel-results')).toHaveClass(/mh-block-visible/);
         await expect(page.locator('.angel-return-message')).toContainText('Intuice');
         await expect(page.locator('.angel-name')).toHaveText('Intuice');

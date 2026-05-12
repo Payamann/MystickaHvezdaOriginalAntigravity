@@ -157,6 +157,12 @@
 
         }
 
+        .angel-card-back:not(.angel-card-back--daily) .angel-card-overlay {
+
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.99) 0%, rgba(0, 0, 0, 0.95) 24%, rgba(0, 0, 0, 0.62) 58%, rgba(0, 0, 0, 0.14) 100%);
+
+        }
+
 
 
         .angel-card-content {

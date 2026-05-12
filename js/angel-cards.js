@@ -230,6 +230,11 @@ function animateCardTilt(inner, transform) {
     });
 }
 
+function cancelCardTilt(inner) {
+    if (!inner) return;
+    inner.getAnimations().forEach(animation => animation.cancel());
+}
+
 function apiBase() {
     return window.API_CONFIG?.BASE_URL || '/api';
 }
@@ -584,7 +589,7 @@ function revealPreDrawnCard(options = {}) {
 
     // Skip animation lock
     const inner = container.querySelector('.angel-card-inner');
-    if (inner) animateCardTilt(inner, 'rotateX(0deg) rotateY(0deg)');
+    if (inner) cancelCardTilt(inner);
     // Turn off transition temporarily so it just appears flipped
     if (inner) inner.classList.add('angel-card-inner--no-transition');
 
@@ -686,7 +691,7 @@ function drawCard() {
     // Trigger Flip
     // Reset any transform from mouse move
     const inner = container.querySelector('.angel-card-inner');
-    if (inner) animateCardTilt(inner, 'rotateX(0deg) rotateY(0deg)');
+    if (inner) cancelCardTilt(inner);
 
     container.classList.add('is-flipped');
     container.classList.remove('glow-effect');
