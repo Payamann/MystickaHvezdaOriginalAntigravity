@@ -67,7 +67,8 @@ const CONVERSION_LINK_CHECKS = [
         name: 'Angel cards intent cluster',
         snippets: [
             'angel-intent-section',
-            'data-analytics-cta="angel_intent_daily_card"',
+            'data-analytics-cta="angel_intent_draw_card"',
+            'data-analytics-feature="andelske_karty_hluboky_vhled"',
             'blog/jak-funguji-andelske-karty.html?source=angel_intent_cluster',
             'kristalova-koule.html?source=angel_intent_cluster',
             'mentor.html?source=angel_intent_cluster'
