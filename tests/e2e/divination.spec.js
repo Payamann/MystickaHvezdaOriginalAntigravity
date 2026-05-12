@@ -412,6 +412,9 @@ test.describe('Minulý život', () => {
         await expect(page.locator('#premium-wall')).toBeVisible();
         await expect(page.locator('#past-life-upgrade-btn')).toContainText('Získat Průvodce za 199 Kč/měsíc');
 
+        await page.locator('#past-life-upgrade-btn').scrollIntoViewIfNeeded();
+        await page.waitForTimeout(100);
+
         const metrics = await page.evaluate(() => {
             const cta = document.getElementById('past-life-upgrade-btn')?.getBoundingClientRect();
             const banner = document.getElementById('cookie-banner')?.getBoundingClientRect();
