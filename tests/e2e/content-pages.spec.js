@@ -454,7 +454,7 @@ test.describe('Tarot zdarma', () => {
         await waitForPageReady(page);
 
         await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /symbolick.*rámec/);
-        await expect(page.locator('script[src*="secondary-pages-copy-fixes.js"]')).toHaveAttribute('src', /v=5/);
+        await expect(page.locator('script[src*="secondary-pages-copy-fixes.js"]')).toHaveAttribute('src', /v=6/);
         await expect(page.locator('.section__text').first()).toContainText('ne slib pevné budoucnosti');
         await expect(page.locator('main')).toContainText('Bez registrace, bez platební karty, s jasným dalším krokem');
         await expect(page.locator('main')).toContainText('Jak z výkladu získat víc');
