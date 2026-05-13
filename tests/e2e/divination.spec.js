@@ -38,6 +38,10 @@ test.describe('Andělské karty', () => {
     test('rozlišuje Andělské karty od homepage Karty dne', async ({ page }) => {
         const main = page.locator('main');
         await expect(page).toHaveTitle(/Andělské karty/);
+        await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', 'Andělské karty | Mystická Hvězda');
+        const metaDescription = await page.getAttribute('meta[name="description"]', 'content');
+        expect(metaDescription).toContain('balíčku 44 karet');
+        expect(metaDescription).not.toContain('Andělská karta dne');
         await expect(page.locator('.hero__subtitle')).toContainText('Karta dne je rychlý symbol');
         await expect(main).toContainText('44 karet');
         await expect(main).not.toContainText('41 karet');

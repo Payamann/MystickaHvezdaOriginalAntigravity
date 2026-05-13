@@ -80,7 +80,7 @@ const FEATURE_PREVIEW_DESTINATIONS = {
     andelske_karty_hluboky_vhled: { path: '/andelske-karty.html', label: 'Nejd\u0159\u00edv otev\u0159\u00edt and\u011blsk\u00e9 karty zdarma' },
     astrocartography: { path: '/astro-mapa.html', label: 'Nejd\u0159\u00edv otev\u0159\u00edt astro mapu' },
     crystal_ball_unlimited: { path: '/kristalova-koule.html', label: 'Nejd\u0159\u00edv otev\u0159\u00edt k\u0159i\u0161\u0165\u00e1lovou kouli' },
-    daily_angel_card: { path: '/andelske-karty.html', label: 'Nejd\u0159\u00edv otev\u0159\u00edt Kartu dne zdarma' },
+    daily_angel_card: { path: '/andelske-karty.html', label: 'Nejd\u0159\u00edv otev\u0159\u00edt and\u011blskou kartu zdarma' },
     daily_guidance: { path: '/horoskopy.html', label: 'Nejd\u0159\u00edv otev\u0159\u00edt denn\u00ed horoskop zdarma' },
     horoskopy: { path: '/horoskopy.html', label: 'Nejd\u0159\u00edv otev\u0159\u00edt horoskopy zdarma' },
     hvezdny_mentor: { path: '/mentor.html', label: 'Nejd\u0159\u00edv otev\u0159\u00edt Hv\u011bzdn\u00e9ho pr\u016fvodce' },

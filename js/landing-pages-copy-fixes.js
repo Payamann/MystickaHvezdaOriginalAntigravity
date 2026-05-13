@@ -36,9 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (path.endsWith('/andelske-karty.html') || path.endsWith('andelske-karty.html')) {
         document.title = 'Andělské karty | Mystická Hvězda';
-        setMeta('meta[name="description"]', 'Vytáhněte si andělskou kartu z balíčku 44 poselství. Jemná andělská podpora, symbolika a hlubší vhled pro vaši duši.');
+        setMeta('meta[name="description"]', 'Vytáhněte si samostatnou andělskou kartu z balíčku 44 karet. Krátká Karta dne z homepage je jen rychlý symbol; tady začíná andělský výklad.');
         setMeta('meta[property="og:title"]', 'Andělské karty | Mystická Hvězda');
-        setMeta('meta[property="og:description"]', 'Vytáhněte si andělskou kartu z balíčku 44 poselství. Jemná andělská podpora, symbolika a hlubší vhled pro vaši duši.');
+        setMeta('meta[property="og:description"]', 'Samostatný andělský výklad s laskavým poselstvím a možností hlubšího vhledu.');
         setHtml('.hero__title', 'Andělské <span class="text-gradient">karty</span>');
         setText('.hero__subtitle', 'Samostatný výklad z andělského balíčku 44 karet. Karta dne je rychlý symbol; tady otevíráš hlubší andělské poselství.');
     }

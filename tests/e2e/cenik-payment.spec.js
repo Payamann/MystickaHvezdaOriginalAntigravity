@@ -254,6 +254,22 @@ test.describe('Ceník — platební tlačítka', () => {
         expect(href).toContain('entry_feature=numerologie_vyklad');
     });
 
+    test('daily angel pricing preview nemate Kartu dne s andelskym vykladem', async ({ page }) => {
+        await page.goto('/cenik.html?source=homepage_daily_card_full_reading&feature=daily_angel_card&plan=pruvodce');
+        await waitForPageReady(page);
+
+        const previewLink = page.locator('[data-preview-destination]');
+        await expect(previewLink).toBeVisible();
+        await expect(previewLink).toContainText('andělskou kartu zdarma');
+        await expect(previewLink).not.toContainText('Kartu dne');
+
+        const href = await previewLink.getAttribute('href');
+        expect(href).toContain('/andelske-karty.html');
+        expect(href).toContain('source=pricing_recommendation_preview');
+        expect(href).toContain('entry_source=homepage_daily_card_full_reading');
+        expect(href).toContain('entry_feature=daily_angel_card');
+    });
+
     test('profilova pamet ma v ceniku vlastni navazujici upgrade kontext', async ({ page }) => {
         await page.goto('/cenik.html?source=profile_memory&feature=ritual_memory');
         await waitForPageReady(page);

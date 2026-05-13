@@ -614,15 +614,15 @@
     },
 
     'andelske-karty.html': () => {
-      document.title = 'And\u011blsk\u00e1 karta dne | Mystick\u00e1 Hv\u011bzda';
+      document.title = 'And\u011blsk\u00e9 karty | Mystick\u00e1 Hv\u011bzda';
       setMetaByName(
         'description',
-        'Vyt\u00e1hn\u011bte si svou and\u011blskou kartu pro dne\u0161n\u00ed den. Jemn\u00e1 and\u011blsk\u00e1 podpora a poselstv\u00ed sv\u011btla pro va\u0161i du\u0161i.'
+        'Vyt\u00e1hn\u011bte si samostatnou and\u011blskou kartu z bal\u00ed\u010dku 44 karet. Kr\u00e1tk\u00e1 Karta dne z homepage je jen rychl\u00fd symbol; tady za\u010d\u00edn\u00e1 and\u011blsk\u00fd v\u00fdklad.'
       );
-      setMetaByProperty('og:title', 'And\u011blsk\u00e1 karta dne | Mystick\u00e1 Hv\u011bzda');
+      setMetaByProperty('og:title', 'And\u011blsk\u00e9 karty | Mystick\u00e1 Hv\u011bzda');
       setMetaByProperty(
         'og:description',
-        'Zastavte se a nechte se v\u00e9st. Vyt\u00e1hn\u011bte si and\u011blskou kartu s laskav\u00fdm poselstv\u00edm.'
+        'Samostatn\u00fd and\u011blsk\u00fd v\u00fdklad s laskav\u00fdm poselstv\u00edm a mo\u017enost\u00ed hlub\u0161\u00edho vhledu.'
       );
     },
 
