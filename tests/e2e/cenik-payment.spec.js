@@ -12,6 +12,13 @@
 import { test, expect } from '@playwright/test';
 import { waitForPageReady } from './helpers.js';
 
+async function waitForPath(page, pathname, options = {}) {
+    await page.waitForURL(
+        url => url.pathname === pathname,
+        { timeout: 10000, waitUntil: 'domcontentloaded', ...options }
+    );
+}
+
 test.describe('Ceník — platební tlačítka', () => {
 
     test.beforeEach(async ({ page }) => {
@@ -46,6 +53,26 @@ test.describe('Ceník — platební tlačítka', () => {
     test('tlačítko Osvícení má data-plan="osviceni"', async ({ page }) => {
         const btn = page.locator('[data-plan="osviceni"]');
         await expect(btn).toBeVisible();
+    });
+
+    test('placene CTA maji prihlasovaci fallback i bez cenik.js', async ({ page }) => {
+        await page.route('**/js/dist/cenik.js*', route => route.abort());
+        await page.goto('/cenik.html', { waitUntil: 'domcontentloaded' });
+
+        const guideCta = page.locator('.plan-checkout-btn[data-plan="pruvodce"]');
+        await expect(guideCta).toHaveAttribute('href', /prihlaseni\.html\?mode=register/);
+        await expect(guideCta).toHaveAttribute('href', /plan=pruvodce/);
+
+        await Promise.all([
+            waitForPath(page, '/prihlaseni.html'),
+            guideCta.click(),
+        ]);
+
+        const url = new URL(page.url());
+        expect(url.searchParams.get('mode')).toBe('register');
+        expect(url.searchParams.get('redirect')).toBe('/cenik.html');
+        expect(url.searchParams.get('plan')).toBe('pruvodce');
+        expect(url.searchParams.get('source')).toBe('pricing_page');
     });
 
     test('bezny cenik nezobrazuje VIP jako hlavni checkout CTA', async ({ page }) => {
@@ -464,7 +491,7 @@ test.describe('Ceník — platební tlačítka', () => {
         await expect(gate).not.toContainText('Přihlásit se zdarma');
 
         await Promise.all([
-            page.waitForURL(/prihlaseni\.html/),
+            waitForPath(page, '/prihlaseni.html'),
             gate.locator('.login-gate-btn').click(),
         ]);
 
@@ -506,7 +533,7 @@ test.describe('Ceník — platební tlačítka', () => {
 
         await Promise.all([
             pricingIntent,
-            page.waitForURL(/prihlaseni\.html/),
+            waitForPath(page, '/prihlaseni.html'),
             page.locator('.plan-checkout-btn[data-plan="pruvodce"]').click()
         ]);
 
@@ -559,7 +586,7 @@ test.describe('Ceník — platební tlačítka', () => {
 
         await Promise.all([
             freeIntent,
-            page.waitForURL(/prihlaseni\.html/),
+            waitForPath(page, '/prihlaseni.html'),
             page.locator('[data-pricing-free-cta]').click()
         ]);
 
@@ -666,6 +693,198 @@ test.describe('Ceník — platební tlačítka', () => {
         const downsellHref = await recovery.locator('[data-cancel-downsell]').getAttribute('href');
         expect(downsellHref).toContain('/rocni-horoskop.html');
         expect(downsellHref).toContain('entry_feature=daily_guidance');
+    });
+
+    test('selhani checkout session zachova kontext a zaloguje recovery navrat', async ({ page }) => {
+        let recoveryReturnPayload = null;
+
+        await page.route('**/api/payment/funnel-event', async (route) => {
+            const payload = route.request().postDataJSON();
+            if (payload?.eventName === 'checkout_returned_failure') {
+                recoveryReturnPayload = payload;
+            }
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+
+        await page.goto('/cenik.html?payment=failure&reason=session_failed&plan=pruvodce&source=inline_paywall&feature=tarot_multi_card&utm_source=email&utm_campaign=tarot_return', { waitUntil: 'domcontentloaded' });
+        await waitForPageReady(page);
+
+        const recovery = page.locator('#pricing-cancel-recovery');
+        await expect(recovery).toBeVisible();
+        await expect(recovery).toContainText('Platbu se nepoda');
+        await expect(recovery).toContainText('Stripe Checkoutu');
+        await expect(recovery.locator('[data-cancel-retry]')).toContainText('Zkusit platbu znovu');
+        await expect(recovery.locator('[data-cancel-preview]')).not.toContainText('zdarma');
+
+        await expect.poll(() => recoveryReturnPayload).toEqual(expect.objectContaining({
+            eventName: 'checkout_returned_failure',
+            source: 'inline_paywall',
+            feature: 'tarot_multi_card',
+            planId: 'pruvodce',
+            metadata: expect.objectContaining({
+                payment_state: 'failure',
+                reason: 'session_failed',
+                recovery: true,
+                utm_source: 'email',
+                utm_campaign: 'tarot_return'
+            })
+        }));
+        expect(page.url()).not.toContain('payment=failure');
+    });
+
+    test('retry po selhani checkoutu spusti novou checkout session se stejnym kontextem', async ({ page }) => {
+        let checkoutPayload = null;
+
+        await page.route('**/api/payment/create-checkout-session', async (route) => {
+            checkoutPayload = route.request().postDataJSON();
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    url: '/profil.html?payment=success&plan=pruvodce&session_id=cs_test_recovery_retry'
+                })
+            });
+        });
+
+        await page.context().addCookies([{
+            name: 'logged_in',
+            value: '1',
+            url: 'http://localhost:3001'
+        }]);
+
+        await page.addInitScript(() => {
+            localStorage.setItem('auth_user', JSON.stringify({
+                id: 'retry-user',
+                email: 'retry@example.com',
+                role: 'user'
+            }));
+        });
+
+        await page.goto('/cenik.html?payment=failure&reason=session_failed&plan=pruvodce&source=inline_paywall&feature=tarot_multi_card&utm_source=email&utm_campaign=tarot_return', { waitUntil: 'domcontentloaded' });
+        await waitForPageReady(page);
+
+        const recovery = page.locator('#pricing-cancel-recovery');
+        await expect(recovery).toBeVisible();
+        await expect(recovery.locator('[data-cancel-retry]')).toContainText('Zkusit platbu znovu');
+
+        await Promise.all([
+            page.waitForURL(url => (
+                url.pathname === '/profil.html'
+                && url.searchParams.get('session_id') === 'cs_test_recovery_retry'
+            ), { timeout: 10000 }),
+            recovery.locator('[data-cancel-retry]').click()
+        ]);
+
+        expect(checkoutPayload).toEqual(expect.objectContaining({
+            planId: 'pruvodce',
+            source: 'inline_paywall',
+            feature: 'tarot_multi_card',
+            metadata: expect.objectContaining({
+                entry_source: 'inline_paywall',
+                entry_feature: 'tarot_multi_card',
+                utm_source: 'email',
+                utm_campaign: 'tarot_return'
+            })
+        }));
+    });
+
+    test('retry po selhani rocniho planu drzi yearly kontext i billing interval', async ({ page }) => {
+        let checkoutPayload = null;
+
+        await page.route('**/api/payment/create-checkout-session', async (route) => {
+            checkoutPayload = route.request().postDataJSON();
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    url: '/profil.html?payment=success&plan=pruvodce-rocne&session_id=cs_test_recovery_retry_yearly'
+                })
+            });
+        });
+
+        await page.context().addCookies([{
+            name: 'logged_in',
+            value: '1',
+            url: 'http://localhost:3001'
+        }]);
+
+        await page.addInitScript(() => {
+            localStorage.setItem('auth_user', JSON.stringify({
+                id: 'retry-yearly-user',
+                email: 'retry-yearly@example.com',
+                role: 'user'
+            }));
+        });
+
+        await page.goto('/cenik.html?payment=failure&reason=session_failed&plan=pruvodce-rocne&source=annual_horoscope_success&feature=premium_membership&utm_source=email&utm_campaign=annual_return', { waitUntil: 'domcontentloaded' });
+        await waitForPageReady(page);
+
+        await expect(page.locator('#toggle-yearly')).toHaveAttribute('aria-pressed', 'true');
+
+        const recovery = page.locator('#pricing-cancel-recovery');
+        await expect(recovery).toBeVisible();
+
+        await Promise.all([
+            page.waitForURL(url => (
+                url.pathname === '/profil.html'
+                && url.searchParams.get('session_id') === 'cs_test_recovery_retry_yearly'
+            ), { timeout: 10000 }),
+            recovery.locator('[data-cancel-retry]').click()
+        ]);
+
+        expect(checkoutPayload).toEqual(expect.objectContaining({
+            planId: 'pruvodce-rocne',
+            source: 'annual_horoscope_success',
+            feature: 'premium_membership',
+            billingInterval: 'yearly',
+            metadata: expect.objectContaining({
+                entry_source: 'annual_horoscope_success',
+                entry_feature: 'premium_membership',
+                utm_source: 'email',
+                utm_campaign: 'annual_return'
+            })
+        }));
+    });
+
+    test('prihlaseny checkout pri chybe API vrati uzivatele na recovery panel', async ({ page }) => {
+        await page.route('**/api/payment/create-checkout-session', async (route) => {
+            await route.fulfill({
+                status: 500,
+                contentType: 'application/json',
+                body: JSON.stringify({ error: 'Stripe unavailable' })
+            });
+        });
+
+        await page.context().addCookies([{
+            name: 'logged_in',
+            value: '1',
+            url: 'http://localhost:3001'
+        }]);
+
+        await page.addInitScript(() => {
+            localStorage.setItem('auth_user', JSON.stringify({
+                id: 'e2e-user',
+                email: 'e2e@example.com',
+                role: 'user'
+            }));
+        });
+
+        await page.goto('/cenik.html?source=inline_paywall&feature=tarot_multi_card&plan=pruvodce&utm_source=email', { waitUntil: 'domcontentloaded' });
+        await waitForPageReady(page);
+
+        await page.locator('[data-plan="pruvodce"]').click();
+
+        const recovery = page.locator('#pricing-cancel-recovery');
+        await expect(recovery).toBeVisible();
+        await expect(recovery.locator('[data-cancel-retry]')).toContainText('Zkusit platbu znovu');
+        const previewHref = await recovery.locator('[data-cancel-preview]').getAttribute('href');
+        expect(previewHref).toContain('entry_source=inline_paywall');
+        expect(previewHref).toContain('entry_feature=tarot_multi_card');
+        expect(page.url()).not.toContain('payment=failure');
     });
 
     // ── Kritický test: nepřihlášený uživatel → správné přesměrování ──────────
@@ -796,12 +1015,12 @@ test.describe('Ceník — platební tlačítka', () => {
             }));
         });
 
-        await page.goto('/cenik.html?source=inline_paywall&feature=numerologie_vyklad&plan=pruvodce');
+        await page.goto('/cenik.html?source=inline_paywall&feature=numerologie_vyklad&plan=pruvodce', { waitUntil: 'domcontentloaded' });
         await waitForPageReady(page);
         await page.locator('#toggle-yearly').click();
 
         await Promise.all([
-            page.waitForURL(/profil\.html\?payment=success/),
+            waitForPath(page, '/profil.html'),
             page.locator('[data-plan="pruvodce-rocne"]').click(),
         ]);
 
@@ -842,11 +1061,11 @@ test.describe('Ceník — platební tlačítka', () => {
             }));
         });
 
-        await page.goto('/cenik.html?source=personal_map_email_day3&feature=premium_membership&plan=pruvodce&utm_source=email&utm_campaign=personal_map_day3&utm_content=day3_cta');
+        await page.goto('/cenik.html?source=personal_map_email_day3&feature=premium_membership&plan=pruvodce&utm_source=email&utm_campaign=personal_map_day3&utm_content=day3_cta', { waitUntil: 'domcontentloaded' });
         await waitForPageReady(page);
 
         await Promise.all([
-            page.waitForURL(/profil\.html\?payment=success/),
+            waitForPath(page, '/profil.html'),
             page.locator('[data-plan="pruvodce"]').click(),
         ]);
 
@@ -894,11 +1113,11 @@ test.describe('Ceník — platební tlačítka', () => {
             }));
         });
 
-        await page.goto('/cenik.html?source=annual_horoscope_email_day3&feature=premium_membership&plan=pruvodce&utm_source=email&utm_campaign=annual_horoscope_day3&utm_content=day3_cta');
+        await page.goto('/cenik.html?source=annual_horoscope_email_day3&feature=premium_membership&plan=pruvodce&utm_source=email&utm_campaign=annual_horoscope_day3&utm_content=day3_cta', { waitUntil: 'domcontentloaded' });
         await waitForPageReady(page);
 
         await Promise.all([
-            page.waitForURL(/profil\.html\?payment=success/),
+            waitForPath(page, '/profil.html'),
             page.locator('[data-plan="pruvodce"]').click(),
         ]);
 
@@ -955,11 +1174,11 @@ test.describe('Ceník — platební tlačítka', () => {
             sessionStorage.clear();
         });
 
-        await page.goto('/cenik.html?source=inline_paywall&feature=numerologie_vyklad');
+        await page.goto('/cenik.html?source=inline_paywall&feature=numerologie_vyklad', { waitUntil: 'domcontentloaded' });
         await waitForPageReady(page);
 
         await Promise.all([
-            page.waitForURL(/prihlaseni\.html/),
+            waitForPath(page, '/prihlaseni.html'),
             page.locator('[data-plan="pruvodce"]').click(),
         ]);
 
@@ -970,7 +1189,7 @@ test.describe('Ceník — platební tlačítka', () => {
         await page.locator('#gdpr-consent').check();
 
         await Promise.all([
-            page.waitForURL(/profil\.html\?payment=success/),
+            waitForPath(page, '/profil.html'),
             page.locator('#auth-submit').click(),
         ]);
 

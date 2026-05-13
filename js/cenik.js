@@ -511,6 +511,14 @@ function getCancelDownsellProduct(context) {
     return CANCEL_DOWNSELL_PRODUCTS[productId] || CANCEL_DOWNSELL_PRODUCTS.rocni_horoskop_2026;
 }
 
+function getRecoveryPreviewLabel(label) {
+    return (label || 'Vr\u00e1tit se k p\u016fvodn\u00edmu v\u00fdkladu')
+        .replace(/\s+zdarma\b/gi, '')
+        .replace(/\bbezplatn[ýá]\s+/gi, '')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+}
+
 async function trackPricingFunnelEvent(eventName, context, metadata = {}) {
     try {
         const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
@@ -574,7 +582,7 @@ function getPricingLinkLabel(element, fallback) {
         || fallback;
 }
 
-function renderCheckoutCancelRecovery(context) {
+function renderCheckoutCancelRecovery(context, paymentState = 'cancel') {
     const heroSubtitle = document.querySelector('.section--hero .hero__subtitle');
     if (!heroSubtitle) return;
 
@@ -584,16 +592,19 @@ function renderCheckoutCancelRecovery(context) {
     const planMeta = PLAN_META[context.recommendedPlan] || PLAN_META.pruvodce;
     const previewDestination = getPreviewDestination(context);
     const downsellProduct = getCancelDownsellDestination(context);
+    const isFailure = paymentState === 'failure';
+    const previewLabel = previewDestination ? getRecoveryPreviewLabel(previewDestination.label) : null;
     const panel = document.createElement('div');
     panel.id = 'pricing-cancel-recovery';
     panel.className = 'pricing-cancel-recovery';
     panel.innerHTML = `
-        <div class="pricing-cancel-recovery__eyebrow">Platba nebyla dokon\u010dena</div>
-        <strong class="pricing-cancel-recovery__title">M\u016f\u017eete pokra\u010dovat bez hled\u00e1n\u00ed</strong>
+        <div class="pricing-cancel-recovery__eyebrow">${isFailure ? 'Platbu se nepoda\u0159ilo spustit' : 'Platba nebyla dokon\u010dena'}</div>
+        <strong class="pricing-cancel-recovery__title">${isFailure ? 'Kontext jsme zachovali. Zkuste bezpe\u010dn\u011b nav\u00e1zat.' : 'M\u016f\u017eete pokra\u010dovat bez hled\u00e1n\u00ed.'}</strong>
         <p class="pricing-cancel-recovery__text">${planMeta.name}: ${planMeta.headline}</p>
+        <p class="pricing-cancel-recovery__note">Karta z\u016fst\u00e1v\u00e1 ve Stripe Checkoutu; Mystick\u00e1 Hv\u011bzda ji na webu neukl\u00e1d\u00e1. Cena a vybran\u00fd pl\u00e1n se zobraz\u00ed znovu p\u0159ed potvrzen\u00edm platby.</p>
         <div class="pricing-cancel-recovery__actions">
-            <button type="button" class="pricing-cancel-recovery__primary" data-cancel-retry>Zobrazit vybran\u00fd pl\u00e1n</button>
-            ${previewDestination ? `<a class="pricing-cancel-recovery__secondary" href="${previewDestination.href}" data-cancel-preview>${previewDestination.label}</a>` : ''}
+            <button type="button" class="pricing-cancel-recovery__primary" data-cancel-retry>${isFailure ? 'Zkusit platbu znovu' : 'Zobrazit vybran\u00fd pl\u00e1n a cenu'}</button>
+            ${previewDestination ? `<a class="pricing-cancel-recovery__secondary" href="${previewDestination.href}" data-cancel-preview>${previewLabel}</a>` : ''}
             <a class="pricing-cancel-recovery__secondary" href="${downsellProduct.href}" data-cancel-downsell>${downsellProduct.label}</a>
         </div>
     `;
@@ -607,8 +618,13 @@ function renderCheckoutCancelRecovery(context) {
             plan_id: context.recommendedPlan
         });
         void trackPricingFunnelEvent('pricing_recommendation_clicked', context, {
-            recovery: true
+            recovery: true,
+            payment_state: paymentState
         });
+        if (isFailure) {
+            startRecommendedCheckout(context.recommendedPlan, context);
+            return;
+        }
         if (!highlightRecommendedPlan(context.recommendedPlan)) {
             startRecommendedCheckout(context.recommendedPlan, context);
         }
@@ -624,6 +640,7 @@ function renderCheckoutCancelRecovery(context) {
         });
         void trackPricingFunnelEvent('pricing_preview_clicked', context, {
             recovery: true,
+            payment_state: paymentState,
             destination: link.getAttribute('href') || null,
             label: link.textContent?.trim() || 'preview'
         });
@@ -639,6 +656,7 @@ function renderCheckoutCancelRecovery(context) {
         });
         void trackPricingFunnelEvent('pricing_downsell_clicked', context, {
             recovery: true,
+            payment_state: paymentState,
             destination: link.getAttribute('href') || null,
             product: downsellProduct.productId
         });
@@ -653,18 +671,37 @@ function showPaymentReturnState(context) {
         return;
     }
 
-    if (paymentState === 'cancel') {
-        window.MH_ANALYTICS?.trackPaymentResult?.('cancel', {
+    if (paymentState === 'cancel' || paymentState === 'failure') {
+        const result = paymentState === 'failure' ? 'failure' : 'cancel';
+        window.MH_ANALYTICS?.trackPaymentResult?.(result, {
             source: context.source || 'pricing_page_return',
             feature: context.feature || null,
+            plan_id: context.recommendedPlan || null,
+            reason: params.get('reason') || null,
             ...(context.metadata || {})
         });
-        window.Auth?.showToast?.(
+        void trackPricingFunnelEvent(
+            paymentState === 'failure' ? 'checkout_returned_failure' : 'checkout_returned_cancel',
+            context,
+            {
+                payment_state: paymentState,
+                reason: params.get('reason') || null,
+                recovery: true
+            }
+        );
+        if (paymentState === 'failure') {
+            window.Auth?.showToast?.(
+                'Platbu se nepoda\u0159ilo spustit',
+                'Zachovali jsme vybran\u00fd pl\u00e1n i p\u016fvodn\u00ed kontext, abyste mohli nav\u00e1zat bez hled\u00e1n\u00ed.',
+                'error'
+            );
+        }
+        if (paymentState !== 'failure') window.Auth?.showToast?.(
             'Platba byla zrušena',
             'Platbu jste nedokončili. Ceník zůstává otevřený, takže můžete pokračovat kdykoliv.',
             'info'
         );
-        renderCheckoutCancelRecovery(context);
+        renderCheckoutCancelRecovery(context, paymentState);
     }
 
     history.replaceState({}, document.title, sanitizeRedirectUrl(window.location.href));
@@ -752,6 +789,11 @@ function highlightRecommendedPlan(planId) {
     return highlightPricingCard(card);
 }
 
+function resolveBillingIntervalFromPlan(planId) {
+    if (typeof planId !== 'string' || planId.length === 0) return null;
+    return planId.endsWith('-rocne') ? 'yearly' : 'monthly';
+}
+
 function resolveDisplayedPlanId(planKey) {
     return priceConfig[currentBilling]?.[planKey]?.planId || priceConfig.monthly?.[planKey]?.planId || planKey;
 }
@@ -777,10 +819,12 @@ function highlightOneTimeProducts() {
 }
 
 function startRecommendedCheckout(planId, context) {
+    const resolvedBillingInterval = resolveBillingIntervalFromPlan(planId) || currentBilling;
     const checkoutContext = {
         source: context.source || 'pricing_recommendation',
         feature: context.feature || null,
         metadata: context.metadata || {},
+        billing_interval: resolvedBillingInterval,
         redirect: '/cenik.html',
         authMode: 'register'
     };
@@ -827,7 +871,7 @@ function bindCheckoutButtons(context) {
                 ...(context.metadata || {})
             });
 
-            await waitForFunnelEventBeforeNavigation(trackPricingFunnelEvent('pricing_plan_cta_clicked', {
+            void waitForFunnelEventBeforeNavigation(trackPricingFunnelEvent('pricing_plan_cta_clicked', {
                 ...context,
                 recommendedPlan: planId
             }, {
@@ -950,10 +994,11 @@ function bindPricingDecisionGuide(context) {
 
 document.addEventListener('DOMContentLoaded', async () => {
     await loadPlanManifest();
-    setPrices('monthly');
+    const context = resolveCheckoutContext();
+    const initialBilling = resolveBillingIntervalFromPlan(context.recommendedPlan) || 'monthly';
+    setPrices(initialBilling);
     updatePricingCopy();
 
-    const context = resolveCheckoutContext();
     showPaymentReturnState(context);
     renderRecommendationBanner(context);
 

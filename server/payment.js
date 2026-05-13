@@ -13,6 +13,7 @@ import {
     sanitizeOneTimePurchaseMetadata
 } from './services/one-time-orders.js';
 import { isProductionRuntime } from './config/runtime.js';
+import { sendOperationalAlert } from './services/alerts.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -129,6 +130,41 @@ export function buildPricingCancelUrl({ planId = null, source = null, feature = 
     return url.toString();
 }
 
+export function buildProfileSuccessUrl({
+    planId = null,
+    source = null,
+    feature = null,
+    sessionId = '{CHECKOUT_SESSION_ID}',
+    metadata = {}
+} = {}) {
+    const url = new URL('/profil.html', APP_URL);
+    url.searchParams.set('payment', 'success');
+    if (planId) url.searchParams.set('plan', planId);
+    if (sessionId) url.searchParams.set('session_id', sessionId);
+    if (source) url.searchParams.set('source', source);
+    if (feature) url.searchParams.set('feature', feature);
+
+    const contextMetadata = buildCheckoutContextMetadata(metadata);
+    const successParamMap = {
+        entry_source: 'entry_source',
+        entry_feature: 'entry_feature',
+        utm_source: 'utm_source',
+        utm_medium: 'utm_medium',
+        utm_campaign: 'utm_campaign',
+        utm_content: 'utm_content',
+        requested_card: 'card',
+        card_param: 'card'
+    };
+
+    Object.entries(successParamMap).forEach(([key, param]) => {
+        if (contextMetadata[key] && !url.searchParams.has(param)) {
+            url.searchParams.set(param, contextMetadata[key]);
+        }
+    });
+
+    return url.toString().replace('%7BCHECKOUT_SESSION_ID%7D', '{CHECKOUT_SESSION_ID}');
+}
+
 const PUBLIC_FUNNEL_EVENTS = new Set([
     'paywall_viewed',
     'paywall_cta_clicked',
@@ -148,8 +184,184 @@ const PUBLIC_FUNNEL_EVENTS = new Set([
     'one_time_form_started',
     'one_time_form_validation_failed',
     'one_time_checkout_failed',
+    'checkout_returned_cancel',
+    'checkout_returned_failure',
     'upgrade_cta_viewed',
 ]);
+const OPERATIONAL_ALERT_FUNNEL_EVENTS = new Set([
+    'checkout_session_failed',
+    'stripe_webhook_failed',
+]);
+const BLOCKED_CHECKOUT_SUBSCRIPTION_STATUSES = new Set([
+    'active',
+    'trialing',
+    'cancel_pending',
+    'past_due'
+]);
+const WEBHOOK_EVENT_RESERVATION_STALE_MS = Number.isFinite(Number.parseInt(process.env.STRIPE_WEBHOOK_RESERVATION_STALE_MS || '', 10))
+    && Number.parseInt(process.env.STRIPE_WEBHOOK_RESERVATION_STALE_MS || '', 10) > 0
+    ? Number.parseInt(process.env.STRIPE_WEBHOOK_RESERVATION_STALE_MS || '', 10)
+    : 10 * 60 * 1000;
+
+function parseWebhookReservationTimestamp(value) {
+    if (!value) return null;
+    const parsed = Date.parse(value);
+    return Number.isFinite(parsed) ? parsed : null;
+}
+
+function isWebhookReservationStale(reservation, nowMs = Date.now()) {
+    const createdAtMs = parseWebhookReservationTimestamp(reservation?.created_at);
+    const processedAtMs = parseWebhookReservationTimestamp(reservation?.processed_at);
+    const referenceMs = createdAtMs ?? processedAtMs;
+    if (!referenceMs) return true;
+    return (nowMs - referenceMs) >= WEBHOOK_EVENT_RESERVATION_STALE_MS;
+}
+
+async function sendWebhookReservationAlert(stage, event, details = {}) {
+    await sendOperationalAlert('stripe_webhook_failed', {
+        severity: 'critical',
+        summary: 'Stripe webhook event reservation failed',
+        dedupeKey: `stripe_webhook_failed:reservation:${stage}:${event?.id || 'unknown'}`,
+        metadata: {
+            stage,
+            stripeEventId: event?.id || null,
+            eventType: event?.type || null,
+            ...details
+        }
+    });
+}
+
+async function markWebhookEventFailed(event, error) {
+    const { error: failedUpdateError } = await supabase
+        .from('payment_events')
+        .update({
+            status: 'failed',
+            processed_at: new Date().toISOString()
+        })
+        .eq('event_id', event.id)
+        .eq('status', 'processing');
+
+    if (failedUpdateError) {
+        await sendWebhookReservationAlert('mark_failed_failed', event, {
+            error: failedUpdateError.message,
+            processingError: error?.message || String(error)
+        });
+        throw new Error(`Event failure status update failed: ${failedUpdateError.message}`);
+    }
+}
+
+async function throwOnEntitlementWriteError(error, {
+    handler,
+    operation,
+    stripeEventId = null,
+    stripeSubscriptionId = null,
+    stripeSessionId = null,
+    userId = null
+} = {}) {
+    if (!error) return;
+
+    await sendOperationalAlert('stripe_webhook_failed', {
+        severity: 'critical',
+        summary: 'Stripe webhook entitlement write failed',
+        dedupeKey: `stripe_webhook_failed:entitlement_write:${handler || 'unknown'}:${operation || 'unknown'}:${stripeEventId || 'unknown'}`,
+        metadata: {
+            stage: 'entitlement_write',
+            handler: handler || null,
+            operation: operation || null,
+            stripeEventId,
+            stripeSubscriptionId,
+            stripeSessionId,
+            userId,
+            error: error.message || String(error)
+        }
+    });
+
+    const entitlementError = new Error(
+        `[STRIPE] Critical entitlement write failed in ${handler || 'unknown'} (${operation || 'unknown'}): ${error.message || String(error)}`
+    );
+    entitlementError.criticalEntitlementWrite = true;
+    throw entitlementError;
+}
+
+async function reserveWebhookEvent(event) {
+    const reservePayload = {
+        event_id: event.id,
+        event_type: event.type,
+        status: 'processing',
+        created_at: new Date().toISOString(),
+        processed_at: null
+    };
+
+    const { error: reserveError } = await supabase
+        .from('payment_events')
+        .insert(reservePayload);
+
+    if (!reserveError) {
+        return { shouldProcess: true, reservationState: 'new' };
+    }
+
+    if (reserveError.code !== '23505') {
+        await sendWebhookReservationAlert('insert_failed', event, { error: reserveError.message });
+        throw new Error(`Event reservation failed: ${reserveError.message}`);
+    }
+
+    const { data: existingReservation, error: existingReservationError } = await supabase
+        .from('payment_events')
+        .select('event_id, event_type, status, created_at, processed_at')
+        .eq('event_id', event.id)
+        .maybeSingle();
+
+    if (existingReservationError) {
+        await sendWebhookReservationAlert('duplicate_fetch_failed', event, { error: existingReservationError.message });
+        throw new Error(`Event reservation lookup failed: ${existingReservationError.message}`);
+    }
+
+    if (!existingReservation) {
+        await sendWebhookReservationAlert('duplicate_missing_row', event);
+        throw new Error('Event reservation conflict but row is missing');
+    }
+
+    if (existingReservation.status === 'success') {
+        console.log(`[STRIPE] Event ${event.id} already processed successfully. Skipping.`);
+        return { shouldProcess: false, reservationState: 'already_success' };
+    }
+
+    if (existingReservation.status === 'processing' && !isWebhookReservationStale(existingReservation)) {
+        console.log(`[STRIPE] Event ${event.id} is currently processing in another worker. Skipping.`);
+        return { shouldProcess: false, reservationState: 'in_progress' };
+    }
+
+    const { data: reclaimedRows, error: reclaimError } = await supabase
+        .from('payment_events')
+        .update({
+            status: 'processing',
+            event_type: event.type,
+            created_at: new Date().toISOString(),
+            processed_at: null
+        })
+        .eq('event_id', event.id)
+        .neq('status', 'success')
+        .select('event_id');
+
+    if (reclaimError) {
+        await sendWebhookReservationAlert('reclaim_failed', event, {
+            previousStatus: existingReservation.status || null,
+            error: reclaimError.message
+        });
+        throw new Error(`Event reservation reclaim failed: ${reclaimError.message}`);
+    }
+
+    if (!Array.isArray(reclaimedRows) || reclaimedRows.length === 0) {
+        await sendWebhookReservationAlert('reclaim_no_rows', event, {
+            previousStatus: existingReservation.status || null,
+            previousCreatedAt: existingReservation.created_at || null
+        });
+        return { shouldProcess: false, reservationState: 'reclaim_lost_race' };
+    }
+
+    console.log(`[STRIPE] Reclaimed webhook event reservation ${event.id} (previous status: ${existingReservation.status || 'unknown'}).`);
+    return { shouldProcess: true, reservationState: 'reclaimed' };
+}
 
 function cleanFunnelValue(value, fallback = null, maxLength = 120) {
     if (typeof value !== 'string') return fallback;
@@ -180,6 +392,17 @@ export async function recordFunnelEvent(eventName, {
     stripeEventId = null,
     metadata = {}
 } = {}) {
+    queueFunnelOperationalAlert(eventName, {
+        userId,
+        source,
+        feature,
+        planId,
+        planType,
+        stripeSessionId,
+        stripeEventId,
+        metadata
+    });
+
     try {
         await supabase.from('funnel_events').insert({
             user_id: userId,
@@ -195,6 +418,53 @@ export async function recordFunnelEvent(eventName, {
     } catch (error) {
         console.warn('[FUNNEL] Could not record funnel event:', eventName, error.message);
     }
+}
+
+function queueFunnelOperationalAlert(eventName, {
+    userId = null,
+    source = null,
+    feature = null,
+    planId = null,
+    planType = null,
+    stripeSessionId = null,
+    stripeEventId = null,
+    metadata = {}
+} = {}) {
+    if (!OPERATIONAL_ALERT_FUNNEL_EVENTS.has(eventName)) return;
+
+    const cleanMetadata = metadata && typeof metadata === 'object' && !Array.isArray(metadata)
+        ? metadata
+        : {};
+    const alertMetadata = {
+        userId,
+        source,
+        feature,
+        planId,
+        planType,
+        stripeSessionId,
+        stripeEventId,
+        ...cleanMetadata
+    };
+    const eventType = cleanMetadata.eventType || null;
+    const productType = cleanMetadata.product_type || cleanMetadata.productType || null;
+    const dedupeParts = [
+        eventName,
+        eventType,
+        source,
+        feature,
+        planId,
+        planType,
+        productType
+    ].filter(Boolean);
+
+    sendOperationalAlert(eventName, {
+        severity: 'critical',
+        summary: eventName === 'checkout_session_failed'
+            ? 'Stripe Checkout session creation failed'
+            : 'Stripe webhook processing failed',
+        dedupeKey: dedupeParts.join(':'),
+        metadata: alertMetadata
+    }).catch(() => {});
 }
 
 export function sanitizeFunnelMetadata(metadata) {
@@ -376,6 +646,52 @@ router.post('/create-checkout-session', authenticateToken, async (req, res) => {
 
         // Get or create Stripe customer to link subscriptions
         const customerId = await getOrCreateStripeCustomer(user.id, user.email);
+        const { data: existingSubscription, error: existingSubscriptionError } = await supabase
+            .from('subscriptions')
+            .select('plan_type, status, stripe_subscription_id, current_period_end')
+            .eq('user_id', user.id)
+            .maybeSingle();
+
+        if (existingSubscriptionError) {
+            console.warn('[STRIPE] Could not load existing subscription before checkout session create:', existingSubscriptionError.message);
+        }
+
+        const hasBlockingSubscription = Boolean(existingSubscription?.stripe_subscription_id) &&
+            BLOCKED_CHECKOUT_SUBSCRIPTION_STATUSES.has(existingSubscription?.status);
+
+        if (hasBlockingSubscription) {
+            let portalUrl = null;
+            try {
+                const portalSession = await stripe.billingPortal.sessions.create({
+                    customer: customerId,
+                    return_url: buildPricingCancelUrl({ planId, source, feature, metadata: checkoutContextMetadata })
+                });
+                portalUrl = portalSession.url;
+            } catch (portalError) {
+                console.warn('[STRIPE] Could not create billing portal session for duplicate checkout block:', portalError.message);
+            }
+
+            await recordFunnelEvent('checkout_validation_failed', {
+                userId: user.id,
+                source,
+                feature,
+                planId,
+                planType: plan.type,
+                metadata: {
+                    ...checkoutContextMetadata,
+                    reason: 'existing_subscription_checkout_blocked',
+                    existingPlanType: existingSubscription?.plan_type || null,
+                    existingStatus: existingSubscription?.status || null
+                }
+            });
+
+            return res.status(409).json({
+                error: 'Už máš aktivní předplatné. Sprav ho v zákaznickém portálu.',
+                code: 'SUBSCRIPTION_ALREADY_ACTIVE',
+                portalUrl
+            });
+        }
+
         const stripePriceId = getConfiguredStripePriceId(planId);
 
         const session = await stripe.checkout.sessions.create({
@@ -385,7 +701,7 @@ router.post('/create-checkout-session', authenticateToken, async (req, res) => {
             mode: 'subscription',
             payment_method_collection: 'always',
             locale: 'cs',
-            success_url: `${APP_URL}/profil.html?payment=success&plan=${encodeURIComponent(planId)}&session_id={CHECKOUT_SESSION_ID}`,
+            success_url: buildProfileSuccessUrl({ planId, source, feature, metadata: checkoutContextMetadata }),
             cancel_url: buildPricingCancelUrl({ planId, source, feature, metadata: checkoutContextMetadata }),
             client_reference_id: user.id,
             metadata: {
@@ -570,32 +886,38 @@ export async function handleStripeWebhook(rawBody, sig) {
 
     if (!STRIPE_WEBHOOK_SECRET) {
         console.error('[STRIPE] CRITICAL: STRIPE_WEBHOOK_SECRET not set. Rejecting webhook.');
+        await sendOperationalAlert('stripe_webhook_failed', {
+            severity: 'critical',
+            summary: 'Stripe webhook secret is not configured',
+            dedupeKey: 'stripe_webhook_failed:configuration',
+            metadata: {
+                stage: 'configuration',
+                error: 'Webhook secret not configured'
+            }
+        });
         throw new Error('Webhook secret not configured');
     }
     try {
         event = stripe.webhooks.constructEvent(rawBody, sig, STRIPE_WEBHOOK_SECRET);
     } catch (err) {
         console.error('[STRIPE] Webhook signature verification failed:', err.message);
+        await sendOperationalAlert('stripe_webhook_failed', {
+            severity: 'warning',
+            summary: 'Stripe webhook signature verification failed',
+            dedupeKey: 'stripe_webhook_failed:signature_verification',
+            metadata: {
+                stage: 'signature_verification',
+                error: err.message
+            }
+        });
         throw new Error('Webhook signature verification failed');
     }
 
     console.log(`[STRIPE] Webhook received: ${event.type} (ID: ${event.id})`);
 
-    const { error: reserveError } = await supabase
-        .from('payment_events')
-        .insert({
-            event_id: event.id,
-            event_type: event.type,
-            status: 'processing'
-        });
-
-    if (reserveError) {
-        if (reserveError.code === '23505') {
-            console.log(`[STRIPE] Event ${event.id} already reserved/processed. Skipping.`);
-            return;
-        }
-        console.error(`[STRIPE] Failed to reserve event ${event.id}: ${reserveError.message}`);
-        throw new Error(`Event reservation failed: ${reserveError.message}`);
+    const reservation = await reserveWebhookEvent(event);
+    if (!reservation.shouldProcess) {
+        return;
     }
 
     try {
@@ -648,11 +970,7 @@ export async function handleStripeWebhook(rawBody, sig) {
                 error: err.message
             }
         });
-        await supabase
-            .from('payment_events')
-            .delete()
-            .eq('event_id', event.id)
-            .eq('status', 'processing');
+        await markWebhookEventFailed(event, err);
         throw err; // Re-throw to make Stripe retry
     }
 }
@@ -1035,7 +1353,22 @@ async function handleSubscriptionCheckoutCompleted(session, stripeEventId = null
 
     if (!userId) {
         console.error('[STRIPE] checkout.session.completed: no userId found');
-        return;
+        await sendOperationalAlert('stripe_webhook_failed', {
+            severity: 'critical',
+            summary: 'Stripe checkout webhook is missing user mapping',
+            dedupeKey: `stripe_webhook_failed:missing_user_id:${stripeEventId || session.id || 'unknown'}`,
+            metadata: {
+                stage: 'missing_user_id',
+                handler: 'handleSubscriptionCheckoutCompleted',
+                stripeEventId,
+                stripeSessionId: session.id || null,
+                stripeSubscriptionId: stripeSubscriptionId || null,
+                source: session.metadata?.source || null,
+                feature: session.metadata?.feature || null
+            }
+        });
+
+        throw new Error('[STRIPE] checkout.session.completed missing userId mapping');
     }
 
     console.log(`[STRIPE] Checkout completed for user ${userId}, plan: ${planType}`);
@@ -1070,10 +1403,18 @@ async function handleSubscriptionCheckoutCompleted(session, stripeEventId = null
 
     // Save Stripe customer ID on the user
     if (stripeCustomerId) {
-        await supabase
+        const { error: userUpdateError } = await supabase
             .from('users')
             .update({ stripe_customer_id: stripeCustomerId, is_premium: true })
             .eq('id', userId);
+        await throwOnEntitlementWriteError(userUpdateError, {
+            handler: 'handleSubscriptionCheckoutCompleted',
+            operation: 'users.update_stripe_customer_id_and_premium',
+            stripeEventId,
+            stripeSubscriptionId,
+            stripeSessionId: session.id,
+            userId
+        });
     }
 
     const { data: existingSubscription, error: existingSubscriptionError } = await supabase
@@ -1097,65 +1438,69 @@ async function handleSubscriptionCheckoutCompleted(session, stripeEventId = null
         stripe_subscription_id: stripeSubscriptionId || null
     };
 
-    const { error } = await supabase
+    const { error: subscriptionUpsertError } = await supabase
         .from('subscriptions')
         .upsert(subData, { onConflict: 'user_id' });
+    await throwOnEntitlementWriteError(subscriptionUpsertError, {
+        handler: 'handleSubscriptionCheckoutCompleted',
+        operation: 'subscriptions.upsert',
+        stripeEventId,
+        stripeSubscriptionId,
+        stripeSessionId: session.id,
+        userId
+    });
 
-    if (error) {
-        console.error('[STRIPE] Supabase upsert error:', error);
-    } else {
-        console.log(`[STRIPE] User ${userId} upgraded to ${planType}.`);
+    console.log(`[STRIPE] User ${userId} upgraded to ${planType}.`);
 
-        await recordFunnelEvent('subscription_checkout_completed', {
-            userId,
-            source: session.metadata?.source,
-            feature: session.metadata?.feature,
-            planId: session.metadata?.planId,
-            planType,
-            stripeSessionId: session.id,
-            stripeEventId,
-            metadata: {
-                status: subStatus,
-                billingInterval,
-                isFirstPaidSubscription
-            }
-        });
+    await recordFunnelEvent('subscription_checkout_completed', {
+        userId,
+        source: session.metadata?.source,
+        feature: session.metadata?.feature,
+        planId: session.metadata?.planId,
+        planType,
+        stripeSessionId: session.id,
+        stripeEventId,
+        metadata: {
+            status: subStatus,
+            billingInterval,
+            isFirstPaidSubscription
+        }
+    });
 
-        // RETENTION: Send onboarding emails + automation sequences
-        if (userEmail) {
-            try {
-                await sendOnboardingEmails(userId, userEmail, planType);
+    // RETENTION: Send onboarding emails + automation sequences
+    if (userEmail) {
+        try {
+            await sendOnboardingEmails(userId, userEmail, planType);
 
-                // Trigger upgrade reminders (Day 7, 14) for free users upgrading
-                // Only send if it's their first purchase
-                if (isFirstPaidSubscription) {
-                    // First purchase - send reminders and churn prevention
-                    // Skip upgrade reminders for trial users (they already paid/are trialing)
-                    if (subStatus !== 'trialing') {
-                        try {
-                            await sendUpgradeReminders(userId, userEmail);
-                            await sendChurnRecoveryEmail(userId, userEmail);
-                            console.log(`[RETENTION] Email sequences scheduled for new subscriber ${userId}`);
-                        } catch (seqError) {
-                            console.warn(`[RETENTION] Failed to schedule sequences for ${userId}:`, seqError.message);
-                        }
-                    }
-                }
-
-                // Schedule trial reminder emails if this is a trial subscription
-                if (subStatus === 'trialing' && currentPeriodEnd) {
+            // Trigger upgrade reminders (Day 7, 14) for free users upgrading
+            // Only send if it's their first purchase
+            if (isFirstPaidSubscription) {
+                // First purchase - send reminders and churn prevention
+                // Skip upgrade reminders for trial users (they already paid/are trialing)
+                if (subStatus !== 'trialing') {
                     try {
-                        const { sendTrialReminderEmails } = await import('./email-service.js');
-                        await sendTrialReminderEmails(userId, userEmail, currentPeriodEnd);
-                        console.log(`[RETENTION] Trial reminders scheduled for ${userId}`);
-                    } catch (trialEmailError) {
-                        console.warn(`[RETENTION] Trial reminder scheduling failed:`, trialEmailError.message);
+                        await sendUpgradeReminders(userId, userEmail);
+                        await sendChurnRecoveryEmail(userId, userEmail);
+                        console.log(`[RETENTION] Email sequences scheduled for new subscriber ${userId}`);
+                    } catch (seqError) {
+                        console.warn(`[RETENTION] Failed to schedule sequences for ${userId}:`, seqError.message);
                     }
                 }
-            } catch (emailError) {
-                console.warn(`[RETENTION] Onboarding email failed for user ${userId}:`, emailError.message);
-                // Don't block subscription if emails fail
             }
+
+            // Schedule trial reminder emails if this is a trial subscription
+            if (subStatus === 'trialing' && currentPeriodEnd) {
+                try {
+                    const { sendTrialReminderEmails } = await import('./email-service.js');
+                    await sendTrialReminderEmails(userId, userEmail, currentPeriodEnd);
+                    console.log(`[RETENTION] Trial reminders scheduled for ${userId}`);
+                } catch (trialEmailError) {
+                    console.warn(`[RETENTION] Trial reminder scheduling failed:`, trialEmailError.message);
+                }
+            }
+        } catch (emailError) {
+            console.warn(`[RETENTION] Onboarding email failed for user ${userId}:`, emailError.message);
+            // Don't block subscription if emails fail
         }
     }
 }
@@ -1245,15 +1590,32 @@ async function handleInvoicePaid(invoice, stripeEventId = null) {
         const stripeSub = await stripe.subscriptions.retrieve(stripeSubscriptionId);
         const currentPeriodEnd = new Date(stripeSub.current_period_end * 1000).toISOString();
 
-        await supabase
+        const { error: subscriptionUpdateError } = await supabase
             .from('subscriptions')
             .update({
                 status: 'active',
                 current_period_end: currentPeriodEnd
             })
             .eq('stripe_subscription_id', stripeSubscriptionId);
+        await throwOnEntitlementWriteError(subscriptionUpdateError, {
+            handler: 'handleInvoicePaid',
+            operation: 'subscriptions.update_active_period_end',
+            stripeEventId,
+            stripeSubscriptionId,
+            userId: sub.user_id
+        });
 
-        await supabase.from('users').update({ is_premium: true }).eq('id', sub.user_id);
+        const { error: userPremiumUpdateError } = await supabase
+            .from('users')
+            .update({ is_premium: true })
+            .eq('id', sub.user_id);
+        await throwOnEntitlementWriteError(userPremiumUpdateError, {
+            handler: 'handleInvoicePaid',
+            operation: 'users.update_is_premium_true',
+            stripeEventId,
+            stripeSubscriptionId,
+            userId: sub.user_id
+        });
 
         await recordFunnelEvent('subscription_invoice_paid', {
             userId: sub.user_id,
@@ -1269,6 +1631,9 @@ async function handleInvoicePaid(invoice, stripeEventId = null) {
         console.log(`[STRIPE] Subscription renewed for user ${sub.user_id} until ${currentPeriodEnd}`);
     } catch (e) {
         console.error('[STRIPE] Failed to process invoice.paid:', e.message);
+        if (e?.criticalEntitlementWrite) {
+            throw e;
+        }
     }
 }
 
@@ -1284,20 +1649,23 @@ async function handleInvoicePaymentFailed(invoice, stripeEventId = null) {
         .update({ status: 'past_due' })
         .eq('stripe_subscription_id', stripeSubscriptionId);
 
-    if (error) {
-        console.error('[STRIPE] Failed to mark subscription as past_due:', error);
-    } else {
-        await recordFunnelEvent('subscription_payment_failed', {
-            stripeEventId,
-            metadata: {
-                stripeSubscriptionId,
-                amountDue: invoice.amount_due || null,
-                currency: invoice.currency || null,
-                attemptCount: invoice.attempt_count || null
-            }
-        });
-        console.log(`[STRIPE] Subscription ${stripeSubscriptionId} marked as past_due`);
-    }
+    await throwOnEntitlementWriteError(error, {
+        handler: 'handleInvoicePaymentFailed',
+        operation: 'subscriptions.update_past_due',
+        stripeEventId,
+        stripeSubscriptionId
+    });
+
+    await recordFunnelEvent('subscription_payment_failed', {
+        stripeEventId,
+        metadata: {
+            stripeSubscriptionId,
+            amountDue: invoice.amount_due || null,
+            currency: invoice.currency || null,
+            attemptCount: invoice.attempt_count || null
+        }
+    });
+    console.log(`[STRIPE] Subscription ${stripeSubscriptionId} marked as past_due`);
 }
 
 /**
@@ -1325,17 +1693,34 @@ async function handleSubscriptionUpdated(subscription, stripeEventId = null) {
         status = 'cancel_pending';
     }
 
-    await supabase
+    const { error: subscriptionUpdateError } = await supabase
         .from('subscriptions')
         .update({
             status,
             current_period_end: currentPeriodEnd
         })
         .eq('stripe_subscription_id', stripeSubscriptionId);
+    await throwOnEntitlementWriteError(subscriptionUpdateError, {
+        handler: 'handleSubscriptionUpdated',
+        operation: 'subscriptions.update_status_period_end',
+        stripeEventId,
+        stripeSubscriptionId,
+        userId: sub.user_id
+    });
 
     // Update is_premium flag
     const isPremium = (status === 'active' || status === 'trialing' || status === 'cancel_pending');
-    await supabase.from('users').update({ is_premium: isPremium }).eq('id', sub.user_id);
+    const { error: userPremiumUpdateError } = await supabase
+        .from('users')
+        .update({ is_premium: isPremium })
+        .eq('id', sub.user_id);
+    await throwOnEntitlementWriteError(userPremiumUpdateError, {
+        handler: 'handleSubscriptionUpdated',
+        operation: 'users.update_is_premium',
+        stripeEventId,
+        stripeSubscriptionId,
+        userId: sub.user_id
+    });
 
     await recordFunnelEvent('subscription_updated', {
         userId: sub.user_id,
@@ -1369,7 +1754,7 @@ async function handleSubscriptionDeleted(subscription, stripeEventId = null) {
         return;
     }
 
-    await supabase
+    const { error: subscriptionDeleteUpdateError } = await supabase
         .from('subscriptions')
         .update({
             status: 'cancelled',
@@ -1377,8 +1762,25 @@ async function handleSubscriptionDeleted(subscription, stripeEventId = null) {
             stripe_subscription_id: null
         })
         .eq('user_id', sub.user_id);
+    await throwOnEntitlementWriteError(subscriptionDeleteUpdateError, {
+        handler: 'handleSubscriptionDeleted',
+        operation: 'subscriptions.update_cancelled_free',
+        stripeEventId,
+        stripeSubscriptionId,
+        userId: sub.user_id
+    });
 
-    await supabase.from('users').update({ is_premium: false }).eq('id', sub.user_id);
+    const { error: userPremiumDisableError } = await supabase
+        .from('users')
+        .update({ is_premium: false })
+        .eq('id', sub.user_id);
+    await throwOnEntitlementWriteError(userPremiumDisableError, {
+        handler: 'handleSubscriptionDeleted',
+        operation: 'users.update_is_premium_false',
+        stripeEventId,
+        stripeSubscriptionId,
+        userId: sub.user_id
+    });
 
     await recordFunnelEvent('subscription_cancelled', {
         userId: sub.user_id,
