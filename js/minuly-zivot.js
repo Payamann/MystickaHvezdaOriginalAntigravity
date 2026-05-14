@@ -28,6 +28,17 @@
         setBlockVisible(document.getElementById('pl-error'), false);
     }
 
+    function escapeHtml(value) {
+        var div = document.createElement('div');
+        div.textContent = String(value || '');
+        return div.innerHTML;
+    }
+
+    function hasPremiumAccess() {
+        return !!(window.Auth && window.Auth.isLoggedIn && window.Auth.isLoggedIn()
+            && window.Auth.isPremium && window.Auth.isPremium());
+    }
+
     function buildPastLifeCheckoutUrl(source) {
         var pricingUrl = new URL('/cenik.html', window.location.origin);
         pricingUrl.searchParams.set('plan', 'pruvodce');
@@ -56,19 +67,99 @@
         window.location.href = buildPastLifeCheckoutUrl(checkoutSource);
     }
 
-    function startPastLifeRegistration() {
-        window.MH_ANALYTICS?.trackCTA?.('past_life_register_gate', {
+    function startPastLifeLogin() {
+        window.MH_ANALYTICS?.trackCTA?.('past_life_login_gate', {
             destination: '/prihlaseni.html',
             feature: 'minuly_zivot',
-            auth_mode: 'register'
+            auth_mode: 'login'
         });
 
         var authUrl = new URL('/prihlaseni.html', window.location.origin);
-        authUrl.searchParams.set('mode', 'register');
+        authUrl.searchParams.set('mode', 'login');
         authUrl.searchParams.set('redirect', '/minuly-zivot.html');
-        authUrl.searchParams.set('source', 'past_life_register_gate');
+        authUrl.searchParams.set('source', 'past_life_login_gate');
         authUrl.searchParams.set('feature', 'minuly_zivot');
         window.location.href = authUrl.pathname + authUrl.search;
+    }
+
+    function buildPastLifePayload() {
+        return {
+            name: document.getElementById('pl-name').value.trim(),
+            birthDate: document.getElementById('pl-birth').value,
+            place: (document.getElementById('pl-place').value || '').trim(),
+            gender: selectedGender
+        };
+    }
+
+    function getPreviewArchetype(payload) {
+        var month = Number(String(payload.birthDate).split('-')[1]) || 1;
+        var archetypes = [
+            'strážce příběhů a rodové paměti',
+            'poutník mezi dvěma světy',
+            'léčitel tichých zlomů',
+            'tvůrce, který hledá skrytý řád'
+        ];
+        var energy = payload.gender === 'muz'
+            ? 'aktivní ochranná energie'
+            : (payload.gender === 'zena' ? 'citlivá tvořivá energie' : 'vyvážená pozorující energie');
+
+        return {
+            archetype: archetypes[(month - 1) % archetypes.length],
+            energy: energy
+        };
+    }
+
+    function showPastLifeUpgradePreview(payload, source) {
+        var formSection = document.getElementById('form-section');
+        var existing = document.getElementById('past-life-preview-gate');
+        var firstName = (payload.name || 'tvé jméno').split(/\s+/)[0];
+        var preview = getPreviewArchetype(payload);
+
+        if (!existing) {
+            existing = document.createElement('div');
+            existing.id = 'past-life-preview-gate';
+            existing.className = 'past-life-preview-gate';
+            formSection.appendChild(existing);
+        }
+
+        existing.innerHTML = `
+            <div class="past-life-preview-gate__badge">Náhled před odemčením</div>
+            <h3>Výklad pro ${escapeHtml(firstName)} je připravený k odemčení</h3>
+            <p>Neodeslali jsme datum narození na prémiový výklad. Tohle je jen lokální náhled struktury, abys věděl, co přesně se otevře po pokračování.</p>
+            <div class="past-life-preview-gate__sample">
+                <span>Možná stopa: ${escapeHtml(preview.archetype)}</span>
+                <span>Forma výkladu: ${escapeHtml(preview.energy)}</span>
+                <span>Odemkne se: éra, role duše, karmická lekce, dary, opakující vzorce a další krok.</span>
+            </div>
+            <div class="past-life-preview-gate__actions">
+                <button type="button" class="btn btn--primary past-life-preview-gate__cta">Odemknout celý výklad</button>
+                <button type="button" class="btn btn--secondary past-life-preview-gate__edit">Upravit údaje</button>
+            </div>
+        `;
+
+        window.MH_ANALYTICS?.trackAction?.('paywall_viewed', {
+            source: source,
+            feature: 'minuly_zivot',
+            plan_id: 'pruvodce',
+            has_birth_date: Boolean(payload.birthDate),
+            has_place: Boolean(payload.place)
+        });
+
+        existing.querySelector('.past-life-preview-gate__cta')?.addEventListener('click', function() {
+            sessionStorage.setItem('pendingPastLifeContext', JSON.stringify(payload));
+            startPastLifeCheckout(source, window.Auth?.isLoggedIn?.() ? 'login' : 'register');
+        });
+
+        existing.querySelector('.past-life-preview-gate__edit')?.addEventListener('click', function() {
+            window.MH_ANALYTICS?.trackAction?.('paywall_dismissed', {
+                source: source,
+                feature: 'minuly_zivot'
+            });
+            existing.remove();
+            document.getElementById('pl-name')?.focus();
+        });
+
+        existing.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     function appendPastLifeFavoriteAction(container, readingId) {
@@ -107,7 +198,7 @@
         if (registerBtn) {
             registerBtn.addEventListener('click', function(event) {
                 event.preventDefault();
-                startPastLifeRegistration();
+                startPastLifeLogin();
             });
         }
 
@@ -124,14 +215,21 @@
         // Submit
         document.getElementById('pl-submit').addEventListener('click', async function() {
             hideError();
-            var name = document.getElementById('pl-name').value.trim();
-            var birth = document.getElementById('pl-birth').value;
-            var place = (document.getElementById('pl-place').value || '').trim();
-            var gender = selectedGender;
+            var payload = buildPastLifePayload();
+            var name = payload.name;
+            var birth = payload.birthDate;
+            var place = payload.place;
+            var gender = payload.gender;
 
             if (!name || name.length < 2) { showError('Zadejte své jméno.'); return; }
             if (!birth) { showError('Zadejte datum narození.'); return; }
             if (!gender) { showError('Vyberte formu výkladu.'); return; }
+
+            if (!hasPremiumAccess()) {
+                sessionStorage.setItem('pendingPastLifeContext', JSON.stringify(payload));
+                showPastLifeUpgradePreview(payload, window.Auth?.isLoggedIn?.() ? 'past_life_free_submit_gate' : 'past_life_submit_gate');
+                return;
+            }
 
             // Show loading
             setBlockVisible(document.getElementById('form-section'), false);
@@ -150,7 +248,7 @@
                         'Content-Type': 'application/json',
                         'X-CSRF-Token': csrfData.csrfToken || ''
                     },
-                    body: JSON.stringify({ name: name, birthDate: birth, gender: gender, place: place })
+                    body: JSON.stringify(payload)
                 });
 
                 var data = await res.json();
@@ -283,11 +381,14 @@
     // Auth check
     function checkAuth() {
         var isLoggedIn = window.Auth && window.Auth.isLoggedIn && window.Auth.isLoggedIn();
-        var isPremium = window.Auth && window.Auth.isPremium && window.Auth.isPremium();
+        var isPremium = hasPremiumAccess();
 
-        if (!isLoggedIn || !isPremium) {
-            setBlockVisible(document.getElementById('pl-form-wrap'), false);
+        if (!isPremium) {
+            setBlockVisible(document.getElementById('pl-form-wrap'), true);
             setBlockVisible(document.getElementById('premium-wall'), true);
+            document.getElementById('past-life-register-btn').textContent = isLoggedIn
+                ? 'Zkontrolovat účet'
+                : 'Přihlásit se k aktivnímu účtu';
         } else {
             setBlockVisible(document.getElementById('pl-form-wrap'), true);
             setBlockVisible(document.getElementById('premium-wall'), false);

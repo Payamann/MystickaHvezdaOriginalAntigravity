@@ -260,12 +260,12 @@
 
         .premium-wall {
             text-align: center;
-            padding: 3rem 1.5rem;
-            background: rgba(255,255,255,0.03);
+            padding: 1.35rem 1.25rem;
+            background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(139,90,180,0.08));
             border: 1px solid rgba(212,175,55,0.2);
             border-radius: 20px;
-            max-width: 480px;
-            margin: 0 auto 4rem;
+            max-width: 560px;
+            margin: 0 auto 1rem;
         }
         .loading-dots span {
             display: inline-block;
@@ -400,3 +400,68 @@ html body .mh-inline-62b6e9a287 { color:rgba(255,255,255,0.3); font-size:0.85em;
 html body .mh-inline-1696ec4f54 { text-align:center; font-size:0.7rem; color:rgba(255,255,255,0.25); margin-top:0.75rem; }
 html body .mh-inline-8fb01e8dda { color:rgba(255,255,255,0.5); margin-top:1.5rem; font-size:0.95rem; }
 html body .mh-inline-5d5d1926b8 { text-align:center; margin-top:2rem; }
+
+.past-life-preview-gate {
+    margin: 1.25rem auto 4rem;
+    padding: 1.35rem;
+    border: 1px solid rgba(212,175,55,0.34);
+    border-radius: 20px;
+    background:
+        radial-gradient(circle at top left, rgba(212,175,55,0.16), transparent 36%),
+        linear-gradient(135deg, rgba(18, 14, 30, 0.96), rgba(45, 29, 60, 0.9));
+    color: rgba(255,255,255,0.78);
+    box-shadow: 0 18px 48px rgba(0,0,0,0.24);
+}
+
+.past-life-preview-gate__badge {
+    display: inline-flex;
+    margin-bottom: 0.8rem;
+    padding: 0.28rem 0.7rem;
+    border: 1px solid rgba(212,175,55,0.34);
+    border-radius: 999px;
+    color: var(--color-mystic-gold);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.past-life-preview-gate h3 {
+    margin: 0 0 0.55rem;
+    color: var(--color-starlight);
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+}
+
+.past-life-preview-gate p {
+    margin: 0;
+    line-height: 1.65;
+}
+
+.past-life-preview-gate__sample {
+    display: grid;
+    gap: 0.45rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    background: rgba(255,255,255,0.055);
+}
+
+.past-life-preview-gate__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+@media (max-width: 600px) {
+    .past-life-preview-gate {
+        padding: 1.05rem;
+    }
+
+    .past-life-preview-gate__actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

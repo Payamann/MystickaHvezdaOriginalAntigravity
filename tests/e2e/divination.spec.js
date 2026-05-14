@@ -679,14 +679,94 @@ test.describe('Minulý život', () => {
     test('premium wall CTA odkazy nesou tracking kontext', async ({ page }) => {
         const upgradeHref = await page.locator('#past-life-upgrade-btn').getAttribute('href');
         expect(upgradeHref).toContain('plan=pruvodce');
-        expect(upgradeHref).toContain('source=past_life_banner_upgrade');
+        expect(upgradeHref).toContain('source=past_life_premium_wall');
         expect(upgradeHref).toContain('feature=minuly_zivot');
 
         const registerHref = await page.locator('#past-life-register-btn').getAttribute('href');
-        expect(registerHref).toContain('mode=register');
+        expect(registerHref).toContain('mode=login');
         expect(registerHref).toContain('redirect=/minuly-zivot.html');
-        expect(registerHref).toContain('source=past_life_register_gate');
+        expect(registerHref).toContain('source=past_life_login_gate');
         expect(registerHref).toContain('feature=minuly_zivot');
+    });
+
+    test('odhlaseny navstevnik vyplni formular a vidi zamceny preview bez API volani', async ({ page }) => {
+        let apiCalled = false;
+        await page.route('**/api/past-life', route => {
+            apiCalled = true;
+            return route.fulfill({
+                status: 500,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: false })
+            });
+        });
+
+        await page.evaluate(() => {
+            window.__pastLifeCheckoutPayloads = [];
+            window.Auth = {
+                isLoggedIn: () => false,
+                isPremium: () => false,
+                showToast: () => {},
+                startPlanCheckout: (planId, context) => window.__pastLifeCheckoutPayloads.push({ planId, context })
+            };
+            window.MH_ANALYTICS = {
+                trackAction: () => {},
+                trackCTA: () => {}
+            };
+            window.dispatchEvent(new Event('auth:changed'));
+        });
+
+        await expect(page.locator('#pl-form-wrap')).toBeVisible();
+        await expect(page.locator('#premium-wall')).toBeVisible();
+        await page.locator('#pl-name').fill('Jana Testovaci');
+        await page.locator('#pl-birth').fill('1992-03-15');
+        await page.locator('[data-gender="neutral"]').click();
+        await page.locator('#pl-submit').click();
+
+        await expect(page.locator('#past-life-preview-gate')).toBeVisible();
+        await expect(page.locator('#past-life-preview-gate')).toContainText('Odemknout');
+        expect(apiCalled).toBe(false);
+        expect(await page.evaluate(() => window.__pastLifeCheckoutPayloads.length)).toBe(0);
+
+        await page.locator('.past-life-preview-gate__cta').click();
+        expect(await page.evaluate(() => window.__pastLifeCheckoutPayloads[0])).toMatchObject({
+            planId: 'pruvodce',
+            context: {
+                source: 'past_life_submit_gate',
+                feature: 'minuly_zivot'
+            }
+        });
+    });
+
+    test('free prihlaseny uzivatel vidi preview a checkout zdroj free gate', async ({ page }) => {
+        await page.evaluate(() => {
+            window.__pastLifeCheckoutPayloads = [];
+            window.Auth = {
+                isLoggedIn: () => true,
+                isPremium: () => false,
+                showToast: () => {},
+                startPlanCheckout: (planId, context) => window.__pastLifeCheckoutPayloads.push({ planId, context })
+            };
+            window.MH_ANALYTICS = {
+                trackAction: () => {},
+                trackCTA: () => {}
+            };
+            window.dispatchEvent(new Event('auth:changed'));
+        });
+
+        await page.locator('#pl-name').fill('Pavel Test');
+        await page.locator('#pl-birth').fill('1988-11-20');
+        await page.locator('[data-gender="muz"]').click();
+        await page.locator('#pl-submit').click();
+
+        await expect(page.locator('#past-life-preview-gate')).toBeVisible();
+        await page.locator('.past-life-preview-gate__cta').click();
+        expect(await page.evaluate(() => window.__pastLifeCheckoutPayloads[0])).toMatchObject({
+            planId: 'pruvodce',
+            context: {
+                source: 'past_life_free_submit_gate',
+                feature: 'minuly_zivot'
+            }
+        });
     });
 
     test('symbolický intent cluster vede na správné další kroky', async ({ page }) => {
@@ -709,7 +789,7 @@ test.describe('Minulý život', () => {
         await waitForPageReady(page);
 
         await expect(page.locator('#premium-wall')).toBeVisible();
-        await expect(page.locator('#past-life-upgrade-btn')).toContainText('Získat Průvodce za 199 Kč/měsíc');
+        await expect(page.locator('#past-life-upgrade-btn')).toContainText('Odemknout');
 
         await page.locator('#past-life-upgrade-btn').scrollIntoViewIfNeeded();
         await page.waitForTimeout(100);
@@ -743,6 +823,11 @@ test.describe('Minulý život', () => {
         const count = await shareBtns.count();
         // Aspoň jedno tlačítko
         expect(count).toBeGreaterThanOrEqual(1);
+    });
+
+    test('past-life bundle ma cache-busting verzi', async ({ page }) => {
+        const src = await page.locator('script[src*="minuly-zivot.js"]').first().getAttribute('src');
+        expect(src).toContain('v=2');
     });
 
     test('vstupní pole přijímají data', async ({ page }) => {
