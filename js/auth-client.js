@@ -10,6 +10,19 @@
         if (element) element.hidden = hidden;
     }
 
+    function setGdprRequirement(required) {
+        const gdprInput = document.getElementById('gdpr-consent');
+        if (!gdprInput) return;
+
+        if (required) {
+            gdprInput.setAttribute('required', 'required');
+            return;
+        }
+
+        gdprInput.removeAttribute('required');
+        gdprInput.checked = false;
+    }
+
     function setAuthButtonPremiumLabel(button, isPremium) {
         if (!button) return;
         button.textContent = 'Odhlásit';
@@ -217,14 +230,33 @@
                 if (!res.ok) throw new Error(data.error);
 
                 if (data.requireEmailVerification) {
+                    const standaloneContext = this.getStandaloneAuthContext();
+                    const pendingPlan = this.getPendingCheckoutPlan();
+                    const standalonePlan = !pendingPlan && standaloneContext?.plan ? standaloneContext.plan : null;
+                    const checkoutContext = pendingPlan
+                        ? this.getPendingCheckoutContext()
+                        : standalonePlan
+                            ? {
+                                source: standaloneContext.source || 'standalone_auth_plan',
+                                feature: standaloneContext.feature || null
+                            }
+                            : null;
+                    const authSource = checkoutContext?.source || standaloneContext?.source || null;
+                    const authFeature = checkoutContext?.feature || standaloneContext?.feature || null;
+                    window.MH_ANALYTICS?.trackAuthCompleted?.('register', {
+                        source: authSource,
+                        feature: authFeature,
+                        entry_source: authSource,
+                        entry_feature: authFeature
+                    });
                     this.showToast('Ověření emailu', 'Pro dokončení registrace potvrďte prosím svůj email. 📧', 'success');
                     this.closeModal(); // Close modal but don't login yet
-                    return { success: true, verificationRequired: true };
+                    return { success: true, verificationRequired: true, analyticsTracked: true };
                 }
 
                 this.loginSuccess(data, { mode: 'register' });
                 this.showToast('Vítejte!', 'Registrace proběhla úspěšně. 🌟', 'success');
-                return { success: true };
+                return { success: true, analyticsTracked: true };
             } catch (e) {
                 return { success: false, error: e.message };
             }
@@ -286,7 +318,7 @@
                 if (!res.ok) throw new Error(data.error);
 
                 this.loginSuccess(data, { mode: 'login' });
-                return { success: true };
+                return { success: true, analyticsTracked: true };
             } catch (e) {
                 return { success: false, error: e.message };
             }
@@ -328,6 +360,16 @@
             }
             this.updateUI();
             this.closeModal();
+
+            const authMode = options.mode === 'register' ? 'register' : 'login';
+            const authSource = checkoutContext?.source || standaloneContext?.source || null;
+            const authFeature = checkoutContext?.feature || standaloneContext?.feature || null;
+            window.MH_ANALYTICS?.trackAuthCompleted?.(authMode, {
+                source: authSource,
+                feature: authFeature,
+                entry_source: authSource,
+                entry_feature: authFeature
+            });
 
             // After login/register success: check for pending plan redirect
             if (checkoutPlan) {
@@ -751,6 +793,43 @@
             this._startCheckout(planId, context);
         },
 
+        buildCheckoutRecoveryUrl(planId, context = {}, reason = 'session_failed') {
+            const target = typeof context.redirect === 'string' && context.redirect.startsWith('/') && !context.redirect.startsWith('//')
+                ? context.redirect
+                : '/cenik.html';
+            const url = new URL(target, window.location.origin);
+            const metadata = context.metadata && typeof context.metadata === 'object' && !Array.isArray(context.metadata)
+                ? context.metadata
+                : {};
+            const source = context.source || this.getPendingCheckoutContext().source || 'auth_pending_plan';
+            const feature = context.feature || metadata.entry_feature || null;
+
+            url.searchParams.set('payment', 'failure');
+            url.searchParams.set('reason', reason);
+            if (planId) url.searchParams.set('plan', planId);
+            if (source) url.searchParams.set('source', source);
+            if (feature) url.searchParams.set('feature', feature);
+
+            const paramMap = {
+                entry_source: 'entry_source',
+                'entry_feature': 'entry_feature',
+                utm_source: 'utm_source',
+                utm_medium: 'utm_medium',
+                utm_campaign: 'utm_campaign',
+                utm_content: 'utm_content',
+                requested_card: 'card',
+                card_param: 'card'
+            };
+
+            Object.entries(paramMap).forEach(([key, param]) => {
+                if (metadata[key] && !url.searchParams.has(param)) {
+                    url.searchParams.set(param, String(metadata[key]));
+                }
+            });
+
+            return `${url.pathname}${url.search}${url.hash}`;
+        },
+
         async logout() {
             // Call server logout endpoint to clear HttpOnly cookie
             const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
@@ -917,11 +996,6 @@
                         const confirmPassword = form.confirm_password?.value;
                         const birthDate = form.birth_date?.value;
 
-                        if (!birthDate) {
-                            this.showToast('Chyba', 'Datum narození je povinné.', 'error');
-                            return;
-                        }
-
                         if (password !== confirmPassword) {
                             this.showToast('Chyba', 'Hesla se neshodují.', 'error');
                             return;
@@ -1026,6 +1100,7 @@
                 setHidden(registerFields, true);
                 setHidden(confirmPwField, true);
                 setHidden(gdprWrapper, true);
+                setGdprRequirement(false);
                 return;
             }
 
@@ -1042,6 +1117,7 @@
                 setHidden(fields, false);
                 setHidden(confirmPwField, false);
                 setHidden(gdprWrapper, false);
+                setGdprRequirement(true);
             } else {
                 title.textContent = 'Přihlášení';
                 btn.textContent = 'Přihlásit se';
@@ -1049,6 +1125,7 @@
                 setHidden(fields, true);
                 setHidden(confirmPwField, true);
                 setHidden(gdprWrapper, true);
+                setGdprRequirement(false);
             }
         },
 
@@ -1080,6 +1157,7 @@
                     setHidden(fields, false);
                     setHidden(confirmPwField, false);
                     setHidden(gdprWrapper, false);
+                    setGdprRequirement(true);
                 } else {
                     title.textContent = 'Přihlášení';
                     btn.textContent = 'Přihlásit se';
@@ -1087,6 +1165,7 @@
                     setHidden(fields, true);
                     setHidden(confirmPwField, true);
                     setHidden(gdprWrapper, true);
+                    setGdprRequirement(false);
                 }
             }
         },
@@ -1273,11 +1352,11 @@
                     window.location.href = data.url;
                 } else {
                     console.warn('Checkout session failed:', data);
-                    window.location.href = context.redirect || '/cenik.html';
+                    window.location.href = this.buildCheckoutRecoveryUrl(planId, context, 'session_failed');
                 }
             } catch (e) {
                 console.error('Checkout error:', e);
-                window.location.href = context.redirect || '/cenik.html';
+                window.location.href = this.buildCheckoutRecoveryUrl(planId, context, 'network_error');
             }
         },
     };

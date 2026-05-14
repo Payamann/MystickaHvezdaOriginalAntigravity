@@ -60,6 +60,29 @@ async function submitRegisterForm(page, email = 'activation@example.com') {
     await page.locator('#auth-submit').click();
 }
 
+async function mockSuccessfulLogin(page, email = 'login@example.com') {
+    await page.route('**/api/auth/login', async (route) => {
+        await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({
+                user: {
+                    id: `e2e-${email}`,
+                    email,
+                    role: 'user',
+                    subscription_status: 'free'
+                }
+            })
+        });
+    });
+}
+
+async function submitLoginForm(page, email = 'login@example.com') {
+    await page.locator('#email').fill(email);
+    await page.locator('#password').fill('TestPassword123!');
+    await page.locator('#auth-submit').click();
+}
+
 test.describe('Login stránka', () => {
 
     test.beforeEach(async ({ page }) => {
@@ -422,7 +445,7 @@ test.describe('Login stránka', () => {
         await waitForPageReady(page);
 
         await Promise.all([
-            page.waitForURL(/profil\.html\?payment=success/, { timeout: 10000, waitUntil: 'domcontentloaded' }),
+            page.waitForRequest((request) => request.url().includes('/profil.html?payment=success'), { timeout: 10000 }),
             submitRegisterForm(page, 'direct-checkout@example.com'),
         ]);
 
@@ -431,6 +454,83 @@ test.describe('Login stránka', () => {
             source: 'pricing_email',
             feature: 'premium_membership'
         }));
+    });
+
+    test('registrace s email verifikaci posila signup analytics jen jednou', async ({ page }) => {
+        await page.route('**/api/auth/register', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    success: true,
+                    requireEmailVerification: true
+                })
+            });
+        });
+
+        await page.goto('/prihlaseni.html?mode=register&source=homepage_hero&feature=daily_guidance');
+        await waitForPageReady(page);
+
+        await page.evaluate(() => {
+            window.__mhTrackAuthCompletedCalls = [];
+            const analytics = window.MH_ANALYTICS || (window.MH_ANALYTICS = {});
+            const originalTrackAuthCompleted = typeof analytics.trackAuthCompleted === 'function'
+                ? analytics.trackAuthCompleted.bind(analytics)
+                : null;
+
+            analytics.trackAuthCompleted = (...args) => {
+                window.__mhTrackAuthCompletedCalls.push(args);
+                return originalTrackAuthCompleted ? originalTrackAuthCompleted(...args) : undefined;
+            };
+        });
+
+        await submitRegisterForm(page, 'verify-once@example.com');
+
+        await expect.poll(async () => page.evaluate(() => window.__mhTrackAuthCompletedCalls)).toEqual([
+            [
+                'register',
+                expect.objectContaining({
+                    source: 'homepage_hero',
+                    feature: 'daily_guidance',
+                    entry_source: 'homepage_hero',
+                    ['entry_feature']: 'daily_guidance'
+                })
+            ]
+        ]);
+    });
+
+    test('prihlaseni posila login analytics jen jednou', async ({ page }) => {
+        await mockSuccessfulLogin(page, 'login-once@example.com');
+
+        await page.goto('/prihlaseni.html?source=header_login&feature=account');
+        await waitForPageReady(page);
+
+        await page.evaluate(() => {
+            window.__mhTrackAuthCompletedCalls = [];
+            const analytics = window.MH_ANALYTICS || (window.MH_ANALYTICS = {});
+            const originalTrackAuthCompleted = typeof analytics.trackAuthCompleted === 'function'
+                ? analytics.trackAuthCompleted.bind(analytics)
+                : null;
+
+            analytics.trackAuthCompleted = (...args) => {
+                window.__mhTrackAuthCompletedCalls.push(args);
+                return originalTrackAuthCompleted ? originalTrackAuthCompleted(...args) : undefined;
+            };
+        });
+
+        await submitLoginForm(page, 'login-once@example.com');
+
+        await expect.poll(async () => page.evaluate(() => window.__mhTrackAuthCompletedCalls)).toEqual([
+            [
+                'login',
+                expect.objectContaining({
+                    source: 'header_login',
+                    feature: 'account',
+                    entry_source: 'header_login',
+                    ['entry_feature']: 'account'
+                })
+            ]
+        ]);
     });
 
     test('registrace s feature kontextem presmeruje na aktivacni stranku', async ({ page }) => {
@@ -696,6 +796,86 @@ test.describe('Login stránka', () => {
         // Skryté pole pro registraci — musí být v DOM (může být vícekrát)
         const wrapper = page.locator('#confirm-password-field-wrapper').first();
         await expect(wrapper).toBeAttached();
+    });
+});
+
+test.describe('Auth modal', () => {
+    test('modal registrace vysvetli datum narozeni a nevyzaduje ho pred vytvorenim uctu', async ({ page }) => {
+        let registerPayload = null;
+
+        await page.route('**/api/auth/register', async (route) => {
+            registerPayload = route.request().postDataJSON();
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    success: true,
+                    requireEmailVerification: true
+                })
+            });
+        });
+
+        await page.goto('/tarot.html?source=e2e_auth_modal');
+        await waitForPageReady(page);
+        await page.evaluate(() => window.Auth.openModal('register'));
+
+        const modal = page.locator('#auth-modal');
+        await expect(modal).toBeVisible();
+        await expect(page.locator('#register-fields')).toBeVisible();
+        await expect(page.locator('#birth-date-privacy-note')).toContainText('Nepovinné');
+        await expect(page.locator('#birth-date-privacy-note')).toContainText('jen pro osobní výklady');
+        await expect(page.locator('input[name="birth_date"]')).not.toHaveAttribute('required', '');
+
+        await page.locator('#auth-modal input[name="email"]').fill('modal-register@example.com');
+        await page.locator('#auth-modal input[name="password"]').fill('TestPassword123!');
+        await page.locator('#auth-modal input[name="confirm_password"]').fill('TestPassword123!');
+        await page.locator('#auth-modal #auth-submit').click();
+
+        await expect.poll(() => registerPayload).toEqual(expect.objectContaining({
+            email: 'modal-register@example.com',
+            password: 'TestPassword123!',
+            password_confirm: 'TestPassword123!'
+        }));
+        expect(registerPayload.birth_date).toBe('');
+    });
+
+    test('modal registrace s email verifikaci posila signup analytics event v register modu', async ({ page }) => {
+        await page.route('**/api/auth/register', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    success: true,
+                    requireEmailVerification: true
+                })
+            });
+        });
+
+        await page.goto('/tarot.html?source=e2e_auth_modal');
+        await waitForPageReady(page);
+
+        await page.evaluate(() => {
+            window.__mhTrackAuthCompletedCalls = [];
+            const analytics = window.MH_ANALYTICS || (window.MH_ANALYTICS = {});
+            const originalTrackAuthCompleted = typeof analytics.trackAuthCompleted === 'function'
+                ? analytics.trackAuthCompleted.bind(analytics)
+                : null;
+
+            analytics.trackAuthCompleted = (...args) => {
+                window.__mhTrackAuthCompletedCalls.push(args);
+                return originalTrackAuthCompleted ? originalTrackAuthCompleted(...args) : undefined;
+            };
+        });
+
+        await page.evaluate(() => window.Auth.openModal('register'));
+        await page.locator('#auth-modal input[name="email"]').fill('modal-verify-analytics@example.com');
+        await page.locator('#auth-modal input[name="password"]').fill('TestPassword123!');
+        await page.locator('#auth-modal input[name="confirm_password"]').fill('TestPassword123!');
+        await page.locator('#auth-modal #auth-submit').click();
+
+        await expect.poll(async () => page.evaluate(() => (
+            window.__mhTrackAuthCompletedCalls.find((call) => call?.[0] === 'register') || null
+        ))).not.toBeNull();
     });
 });
 

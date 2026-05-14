@@ -552,22 +552,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error(result.error || 'Registrace se nepodařila.');
                 }
 
-                window.MH_ANALYTICS?.trackAuthCompleted?.('register', {
-                    method: 'email',
-                    redirect_target: redirectTarget,
-                    pending_plan: pendingPlan
-                });
+                if (!result.analyticsTracked) {
+                    window.MH_ANALYTICS?.trackAuthCompleted?.('register', {
+                        method: 'email',
+                        redirect_target: redirectTarget,
+                        pending_plan: pendingPlan
+                    });
+                }
             } else {
                 const result = await window.Auth.login(email, password);
                 if (!result.success) {
                     throw new Error(result.error || 'Přihlášení se nepodařilo.');
                 }
 
-                window.MH_ANALYTICS?.trackAuthCompleted?.('login', {
-                    method: 'email',
-                    redirect_target: redirectTarget,
-                    pending_plan: pendingPlan
-                });
+                if (!result.analyticsTracked) {
+                    window.MH_ANALYTICS?.trackAuthCompleted?.('login', {
+                        method: 'email',
+                        redirect_target: redirectTarget,
+                        pending_plan: pendingPlan
+                    });
+                }
 
                 window.Auth.showToast?.('Vítejte zpět', 'Byli jste úspěšně přihlášeni.', 'success');
             }
