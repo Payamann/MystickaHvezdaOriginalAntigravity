@@ -5,6 +5,7 @@
 
 let runesData = [];
 let drawnRune = null;
+const RUNES_DEEP_FEATURE = 'runy_hluboky_vyklad';
 
 function apiBase() {
     return window.API_CONFIG?.BASE_URL || '/api';
@@ -26,6 +27,12 @@ function buildRuneUpgradeUrl(source, feature) {
     return `${pricingUrl.pathname}${pricingUrl.search}`;
 }
 
+function escapeHtml(value) {
+    const div = document.createElement('div');
+    div.textContent = String(value ?? '');
+    return div.innerHTML;
+}
+
 function startRuneUpgradeFlow(source, feature, redirect = '/cenik.html') {
     window.MH_ANALYTICS?.trackCTA?.(source, {
         plan_id: 'pruvodce',
@@ -45,6 +52,53 @@ function startRuneUpgradeFlow(source, feature, redirect = '/cenik.html') {
     window.location.href = buildRuneUpgradeUrl(source, feature);
 }
 
+function showRuneUpgradePreview(source = 'runes_inline_gate', intention = '') {
+    const aiContainer = document.getElementById('ai-response-container');
+    if (!aiContainer || !drawnRune) return;
+
+    const escapedRuneName = escapeHtml(drawnRune.name || 'vyta\u017Een\u00E1 runa');
+    const escapedRuneMeaning = escapeHtml(drawnRune.meaning || '');
+    const escapedIntention = escapeHtml(intention || 'tv\u016Fj aktu\u00E1ln\u00ED z\u00E1m\u011Br');
+
+    aiContainer.hidden = false;
+    aiContainer.classList.add('mh-block-visible', 'runes-upgrade-preview');
+    aiContainer.innerHTML = `
+        <div class="runes-upgrade-preview__lock" aria-hidden="true">\uD83D\uDD12</div>
+        <h4>Odemknout hlubok\u00FD v\u00FDklad runy ${escapedRuneName}</h4>
+        <p>Z\u00E1kladn\u00ED poselstv\u00ED u\u017E m\u00E1\u0161. Pln\u00FD v\u00FDklad propojuje runu, tv\u016Fj z\u00E1m\u011Br a konkr\u00E9tn\u00ED dal\u0161\u00ED krok pro dne\u0161ek.</p>
+        <div class="runes-upgrade-preview__sample">
+            <strong>N\u00E1hled odem\u010Den\u00E9 \u010D\u00E1sti:</strong>
+            <span>Pro z\u00E1m\u011Br \u201E${escapedIntention}\u201C by se otev\u0159el osobn\u00ED v\u00FDklad, jak energie ${escapedRuneName}${escapedRuneMeaning ? ` (${escapedRuneMeaning})` : ''} mluv\u00ED do tv\u00E9 situace.</span>
+        </div>
+        <div class="runes-upgrade-preview__actions">
+            <button type="button" class="btn btn--gold runes-upgrade-preview__cta">Odemknout \u0161amansk\u00FD v\u00FDklad</button>
+            <button type="button" class="btn btn--ghost runes-upgrade-preview__free">Z\u016Fstat u runy zdarma</button>
+        </div>
+    `;
+
+    window.MH_ANALYTICS?.trackAction?.('paywall_viewed', {
+        source,
+        feature: RUNES_DEEP_FEATURE,
+        plan_id: 'pruvodce',
+        rune: drawnRune.name || '',
+        has_intention: Boolean(intention)
+    });
+
+    aiContainer.querySelector('.runes-upgrade-preview__cta')?.addEventListener('click', () => {
+        startRuneUpgradeFlow(source, RUNES_DEEP_FEATURE);
+    });
+
+    aiContainer.querySelector('.runes-upgrade-preview__free')?.addEventListener('click', () => {
+        window.MH_ANALYTICS?.trackAction?.('paywall_dismissed', {
+            source,
+            feature: RUNES_DEEP_FEATURE
+        });
+        aiContainer.hidden = true;
+        aiContainer.classList.remove('mh-block-visible', 'runes-upgrade-preview');
+    });
+
+    aiContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
 function appendRuneFavoriteAction(container, readingId) {
     if (!container || !readingId) return;
 
@@ -116,6 +170,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 3. Check Daily Lock
     checkDailyLock();
+    updateRuneFreemiumBanner();
 
     // 4. Attach listeners
     if (runeEl) {
@@ -197,6 +252,23 @@ function checkDailyLock() {
     }
 }
 
+function updateRuneFreemiumBanner() {
+    const countEl = document.getElementById('freemium-count');
+    if (!countEl) return;
+
+    const today = new Date().toISOString().split('T')[0];
+    let used = 0;
+
+    try {
+        const savedData = JSON.parse(localStorage.getItem('runeDaily') || 'null');
+        used = savedData?.date === today && savedData?.runeData ? 1 : 0;
+    } catch {
+        used = 0;
+    }
+
+    countEl.textContent = `${Math.max(0, 1 - used)} / 1`;
+}
+
 function revealPreDrawnRune() {
     const runeEl = document.getElementById('active-rune');
     const drawBtn = document.getElementById('btn-draw');
@@ -248,6 +320,7 @@ async function drawRune() {
         date: today,
         runeData: drawnRune
     }));
+    updateRuneFreemiumBanner();
 
     // Show results
     showResultData();
@@ -274,8 +347,8 @@ async function requestDeepReading() {
     if (!window.Auth || !window.Auth.isLoggedIn()) {
         const intention = document.getElementById('rune-intention')?.value || '';
         sessionStorage.setItem('pendingRuneContext', JSON.stringify({ rune: drawnRune, intention }));
-        window.Auth?.showToast?.('Přihlášení vyžadováno', 'Hluboký výklad run vyžaduje bezplatné přihlášení nebo předplatné.', 'info');
-        startRuneUpgradeFlow('runes_auth_gate', 'runy_hluboky_vyklad');
+        window.Auth?.showToast?.('V\u00FDklad je zam\u010Den\u00FD', 'Runa dne z\u016Fst\u00E1v\u00E1 zdarma. Pln\u00FD \u0161amansk\u00FD v\u00FDklad odemkne\u0161 a\u017E po rozhodnut\u00ED.', 'info');
+        showRuneUpgradePreview('runes_auth_gate', intention.trim());
         return;
     }
 
@@ -303,8 +376,8 @@ async function requestDeepReading() {
 
         if (response.status === 401 || response.status === 402 || response.status === 403) {
             sessionStorage.setItem('pendingRuneContext', JSON.stringify({ rune: drawnRune, intention }));
-            window.Auth?.showToast?.('Premium vyžadováno', 'Šamanský výklad vyžaduje prémiové členství Hvězdného Průvodce.', 'info');
-            startRuneUpgradeFlow('runes_premium_gate', 'runy_hluboky_vyklad');
+            window.Auth?.showToast?.('Premium vy\u017Eadov\u00E1no', '\u0160amansk\u00FD v\u00FDklad vy\u017Eaduje pr\u00E9miov\u00E9 \u010Dlenstv\u00ED Hv\u011Bzdn\u00E9ho Pr\u016Fvodce.', 'info');
+            showRuneUpgradePreview('runes_premium_gate', intention);
             return;
         }
 
@@ -317,6 +390,7 @@ async function requestDeepReading() {
 
         // Show response safely
         aiContainer.hidden = false;
+        aiContainer.classList.remove('runes-upgrade-preview');
         aiContainer.classList.add('mh-block-visible');
         const div = document.createElement('div');
         div.textContent = data.response;

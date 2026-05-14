@@ -318,6 +318,59 @@ html body .mh-inline-bfc941424f { display: none; margin-top: 1.5rem; padding: 1.
 html body .mh-inline-29c2910ad2 { background: rgba(10, 10, 15, 0.5); border-top: 1px solid rgba(255,255,255,0.05); }
 html body .mh-inline-a8470d2eb9 { max-width: 800px; }
 
+.runes-upgrade-preview {
+    display: block;
+    border-color: rgba(212, 175, 55, 0.32);
+    background:
+        radial-gradient(circle at top left, rgba(212, 175, 55, 0.16), transparent 36%),
+        linear-gradient(135deg, rgba(15, 16, 27, 0.94), rgba(44, 35, 61, 0.9));
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.22);
+}
+
+.runes-upgrade-preview__lock {
+    display: inline-flex;
+    width: 2.35rem;
+    height: 2.35rem;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+    border: 1px solid rgba(212, 175, 55, 0.32);
+    border-radius: 999px;
+    background: rgba(212, 175, 55, 0.12);
+}
+
+.runes-upgrade-preview h4 {
+    margin: 0 0 0.55rem;
+    color: var(--color-starlight);
+    font-family: var(--font-heading);
+    font-size: 1.28rem;
+}
+
+.runes-upgrade-preview p {
+    margin: 0;
+}
+
+.runes-upgrade-preview__sample {
+    display: grid;
+    gap: 0.35rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.055);
+}
+
+.runes-upgrade-preview__sample strong {
+    color: var(--color-mystic-gold);
+}
+
+.runes-upgrade-preview__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.1rem;
+}
+
 /* Migrated from runy.html remaining static style attributes. */
 html body .mh-inline-de33ec85ca { color: var(--color-silver-mist); margin: 0; }
 html body .mh-inline-7c806d36e5 { font-family: var(--font-heading); color: var(--color-mystic-gold); margin-bottom: 1.5rem; }
@@ -393,6 +446,11 @@ html body .mh-inline-ea59635151 { color: var(--color-starlight); margin: 2rem 0 
 
     .runes-intent-card {
         padding: var(--space-md);
+    }
+
+    .runes-upgrade-preview__actions .btn {
+        width: 100%;
+        justify-content: center;
     }
 
     body.page-runes .cookie-banner {

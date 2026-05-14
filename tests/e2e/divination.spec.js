@@ -501,6 +501,102 @@ test.describe('Runy', () => {
         await expect(page.locator('#ai-response-container')).toContainText('Testovací runový vhled.');
     });
 
+    test('odhlaseny hluboky vyklad ukaze preview paywall bez okamziteho checkoutu', async ({ page }) => {
+        await page.evaluate(() => localStorage.removeItem('runeDaily'));
+        await page.reload();
+        await waitForPageReady(page);
+
+        let apiCalled = false;
+        await page.route('**/api/runes', route => {
+            apiCalled = true;
+            return route.fulfill({
+                status: 500,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: false })
+            });
+        });
+
+        await page.evaluate(() => {
+            window.__runesCheckoutPayloads = [];
+            window.Auth = {
+                isLoggedIn: () => false,
+                isPremium: () => false,
+                showToast: () => {},
+                startPlanCheckout: (planId, context) => window.__runesCheckoutPayloads.push({ planId, context })
+            };
+            window.MH_ANALYTICS = {
+                trackAction: () => {},
+                trackCTA: () => {}
+            };
+        });
+
+        await page.locator('#btn-draw').click();
+        await expect(page.locator('#rune-result')).toHaveClass(/visible/, { timeout: 4_000 });
+        await page.locator('#rune-intention').fill('potrebuji jasno v rozhodnuti');
+        await page.locator('#btn-deep-reading').click();
+
+        await expect(page.locator('.runes-upgrade-preview')).toBeVisible();
+        await expect(page.locator('.runes-upgrade-preview')).toContainText('Odemknout');
+        expect(apiCalled).toBe(false);
+        expect(page.url()).toContain('/runy.html');
+        expect(await page.evaluate(() => window.__runesCheckoutPayloads.length)).toBe(0);
+
+        await page.locator('.runes-upgrade-preview__cta').click();
+        expect(await page.evaluate(() => window.__runesCheckoutPayloads[0])).toMatchObject({
+            planId: 'pruvodce',
+            context: {
+                source: 'runes_auth_gate',
+                feature: 'runy_hluboky_vyklad'
+            }
+        });
+    });
+
+    test('free uzivatel po 402 vidi preview paywall a checkout az po CTA', async ({ page }) => {
+        await page.evaluate(() => localStorage.removeItem('runeDaily'));
+        await page.reload();
+        await waitForPageReady(page);
+
+        await page.route('**/api/runes', async route => {
+            await route.fulfill({
+                status: 402,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: false, error: 'Premium required' })
+            });
+        });
+
+        await page.evaluate(() => {
+            window.__runesCheckoutPayloads = [];
+            window.Auth = {
+                isLoggedIn: () => true,
+                isPremium: () => false,
+                showToast: () => {},
+                startPlanCheckout: (planId, context) => window.__runesCheckoutPayloads.push({ planId, context })
+            };
+            window.getCSRFToken = async () => 'test-csrf';
+            window.MH_ANALYTICS = {
+                trackAction: () => {},
+                trackCTA: () => {}
+            };
+        });
+
+        await page.locator('#btn-draw').click();
+        await expect(page.locator('#rune-result')).toHaveClass(/visible/, { timeout: 4_000 });
+        await page.locator('#rune-intention').fill('chci pochopit vztah');
+        await page.locator('#btn-deep-reading').click();
+
+        await expect(page.locator('.runes-upgrade-preview')).toBeVisible();
+        expect(await page.evaluate(() => window.__runesCheckoutPayloads.length)).toBe(0);
+
+        await page.locator('.runes-upgrade-preview__cta').click();
+        expect(await page.evaluate(() => window.__runesCheckoutPayloads[0])).toMatchObject({
+            planId: 'pruvodce',
+            context: {
+                source: 'runes_premium_gate',
+                feature: 'runy_hluboky_vyklad'
+            }
+        });
+    });
+
     test('#loading element existuje v DOM', async ({ page }) => {
         await expect(page.locator('#loading, .loading, .loading-spinner').first()).toBeAttached();
     });
@@ -508,6 +604,11 @@ test.describe('Runy', () => {
     test('canonical link existuje', async ({ page }) => {
         const canonical = await page.getAttribute('link[rel="canonical"]', 'href');
         expect(canonical).toBeTruthy();
+    });
+
+    test('runes bundle ma cache-busting verzi', async ({ page }) => {
+        const src = await page.locator('script[src*="runes.js"]').first().getAttribute('src');
+        expect(src).toContain('v=2');
     });
 
     test('žádný horizontální scroll na mobilu', async ({ page }) => {
