@@ -362,10 +362,14 @@ function initTarot() {
     deckCards.forEach(card => {
         card.classList.add('tarot-card--clickable');
         card.addEventListener('click', () => {
-            // Default to currently selected spread or 'Jedna karta'
+            // Route deck starts through the visible spread CTA so auth, limits, and paywall tracking stay consistent.
             const selectedBtn = document.querySelector('.t-spread-card.featured .btn');
-            const spreadType = selectedBtn ? selectedBtn.dataset.spreadType : 'Jedna karta';
-            startReading(spreadType);
+            if (selectedBtn) {
+                selectedBtn.click();
+                return;
+            }
+
+            startReading('Jedna karta');
         });
     });
 }

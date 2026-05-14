@@ -323,13 +323,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function handleFormSubmit(e) {
     e.preventDefault();
 
-    // Restriction: Must be logged in
-    if (!window.Auth || !window.Auth.isLoggedIn()) {
-        window.Auth?.showToast?.('Přihlášení vyžadováno', 'Pro výpočet numerologie se prosím přihlaste.', 'info');
-        startNumerologyUpgradeFlow('numerology_auth_gate', 'register');
-        return;
-    }
-
     const name = document.getElementById('num-name').value.trim();
     const birthDate = document.getElementById('num-date').value;
     const birthTime = document.getElementById('num-time').value;
@@ -358,6 +351,15 @@ async function handleFormSubmit(e) {
 
     // Display results
     displayResults(name, lifePath, destiny, soul, personality);
+    window.MH_ANALYTICS?.trackAction?.('numerology_result_viewed', {
+        feature: 'numerologie_vyklad',
+        source: new URLSearchParams(window.location.search).get('source') || NUMEROLOGY_RESULT_SOURCE,
+        auth_state: window.Auth?.isLoggedIn?.() ? 'logged_in' : 'anonymous',
+        life_path: String(lifePath),
+        destiny: String(destiny),
+        soul: String(soul),
+        personality: String(personality)
+    });
 
     // Show AI interpretation (with premium gate)
     await displayInterpretation(name, birthDate, birthTime, lifePath, destiny, soul, personality);
@@ -470,15 +472,16 @@ async function displayInterpretation(name, birthDate, birthTime, lifePath, desti
 
                 <div class="numerology-premium-shell">
                     <div class="premium-locked numerology-premium-preview">
-                        <h4>Hluboký Rozbor</h4>
-                        <p>Objevte tajemství vašich čísel s pomocí starodávné moudrosti. Každé číslo nese v sobě mocné poselství...</p>
-                        <p class="numerology-premium-preview__muted">Vaše životní cesta ${lifePath} symbolizuje...</p>
+                        <h4>Plný numerologický rozbor</h4>
+                        <p>Základní čísla už máte. Plný rozbor propojí životní cestu, osud, duši a osobnost do jednoho doporučení pro aktuální období.</p>
+                        <p class="numerology-premium-preview__muted">Pro životní cestu ${lifePath} by se odemkl konkrétní další krok, osobní cyklus a doporučení pro načasování.</p>
+                        <p class="numerology-premium-preview__muted">Základní výpočet proběhl v prohlížeči. Plný AI výklad se odemyká až po pokračování.</p>
                     </div>
 
                     <div class="premium-lock-overlay">
                         <div class="lock-icon">🔒</div>
                         <p class="lock-text">Detailní rozbor je Premium funkce</p>
-                        <button class="btn btn--gold unlock-btn numerology-upgrade-btn">🌟 Vyzkoušet 7 dní zdarma</button>
+                        <button class="btn btn--gold unlock-btn numerology-upgrade-btn">Odemknout plný rozbor</button>
                     </div>
                 </div>
             </div>

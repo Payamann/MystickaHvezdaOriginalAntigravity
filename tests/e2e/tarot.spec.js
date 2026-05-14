@@ -187,6 +187,53 @@ test.describe('Tarot', () => {
         });
     });
 
+    test('klik na balicek respektuje vybrany placeny rozklad a neobejde gate', async ({ page }) => {
+        await page.goto('/tarot.html?source=e2e_deck_click_gate&feature=tarot_multi_card');
+        await waitForPageReady(page);
+
+        await page.evaluate(() => {
+            localStorage.removeItem('tarot_free_usage');
+            window.Auth = {
+                isLoggedIn: () => true,
+                isPremium: () => false,
+                showToast: () => {},
+                saveReading: async () => ({ id: 'test-reading' })
+            };
+            window.getCSRFToken = async () => 'test-csrf-token';
+            window.__tarotFunnelEvents = [];
+
+            const originalFetch = window.fetch.bind(window);
+            window.fetch = async (input, init = {}) => {
+                const url = typeof input === 'string' ? input : input?.url;
+                if (url && url.includes('/api/payment/funnel-event')) {
+                    window.__tarotFunnelEvents.push(JSON.parse(init.body || '{}'));
+                    return new Response(JSON.stringify({ success: true }), {
+                        status: 200,
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                }
+                return originalFetch(input, init);
+            };
+        });
+
+        await page.locator('.t-spread-card').nth(1).click();
+        await expect(page.locator('.t-spread-card').nth(1)).toHaveClass(/featured/);
+        await page.locator('.tarot-deck .tarot-card').first().click();
+
+        await expect(page.locator('#tarot-results')).toBeVisible({ timeout: 9000 });
+        await expect(page.locator('#tarot-results .tarot-flip-card')).toHaveCount(3);
+        await expect(page.locator('#tarot-results .locked-card')).toHaveCount(2);
+        await expect(page.locator('.tarot-soft-gate')).toBeVisible();
+
+        const events = await page.evaluate(() => window.__tarotFunnelEvents);
+        expect(events).toContainEqual(expect.objectContaining({
+            eventName: 'paywall_viewed',
+            source: 'tarot_teaser_banner',
+            feature: 'tarot_multi_card',
+            planId: 'pruvodce'
+        }));
+    });
+
     // ── Freemium banner ──────────────────────────────────────────────────────
 
     test('#freemium-banner existuje v DOM', async ({ page }) => {

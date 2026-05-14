@@ -126,6 +126,25 @@ test.describe('Numerologie', () => {
         await expect(page.locator('#daily-cycles')).toBeAttached();
     });
 
+    test('odhlaseny navstevnik vidi zakladni cisla pred upgrade vyzvou', async ({ page }) => {
+        await page.goto('/numerologie.html?source=life_number_result&feature=numerologie_vyklad');
+        await waitForPageReady(page);
+
+        await page.locator('#num-name').fill('Jana Novakova');
+        await page.locator('#num-date').fill('1990-06-15');
+        await page.locator('#num-time').fill('14:30');
+        await page.locator('#numerology-form button[type="submit"]').click();
+
+        await expect(page.locator('#numerology-results')).toBeVisible({ timeout: 2500 });
+        await expect(page.locator('#card-lifepath .number-value')).toHaveText(/\d+/);
+        await expect(page.locator('#card-destiny .number-value')).toHaveText(/\d+/);
+        await expect(page.locator('#num-interpretation .numerology-premium-shell')).toBeVisible();
+        await expect(page.locator('.numerology-upgrade-btn')).toContainText('Odemknout');
+        expect(page.url()).toContain('/numerologie.html');
+        expect(page.url()).not.toContain('/prihlaseni.html');
+        expect(page.url()).not.toContain('/cenik.html');
+    });
+
     // ── Canonical a SEO ──────────────────────────────────────────────────────
 
     test('canonical link obsahuje "numerologi"', async ({ page }) => {
