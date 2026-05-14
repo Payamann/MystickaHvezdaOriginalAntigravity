@@ -4,6 +4,29 @@
 
 // DOM elementy — inicializujeme v DOMContentLoaded (bezpečná inicializace)
 let chatInput, sendBtn, messagesContainer, typingIndicator;
+const MENTOR_DAILY_LIMIT = 3;
+const MENTOR_PENDING_PROMPT_KEY = 'mentor_pending_prompt_v1';
+const MENTOR_PENDING_PROMPT_MAX_AGE_MS = 30 * 60 * 1000;
+
+function getMentorUsageStorageKey(date = new Date()) {
+    return `mh_daily_mentor_${date.toDateString()}`;
+}
+
+function readMentorUsageCount(date = new Date()) {
+    try {
+        return Math.max(0, Number.parseInt(localStorage.getItem(getMentorUsageStorageKey(date)) || '0', 10) || 0);
+    } catch {
+        return 0;
+    }
+}
+
+function writeMentorUsageCount(count, date = new Date()) {
+    try {
+        localStorage.setItem(getMentorUsageStorageKey(date), String(Math.max(0, count)));
+    } catch {
+        // Storage can fail in strict privacy modes; server-side quota still protects the limit.
+    }
+}
 
 function resizeChatInput() {
     if (!chatInput) return;
@@ -49,6 +72,68 @@ function buildMentorUpgradeUrl(source = 'mentor_inline_upsell') {
     return `${pricingUrl.pathname}${pricingUrl.search}`;
 }
 
+function buildMentorSignupUrl(source = 'mentor_entry_auth_gate') {
+    const signupUrl = new URL('/prihlaseni.html', window.location.origin);
+    signupUrl.searchParams.set('mode', 'register');
+    signupUrl.searchParams.set('redirect', '/mentor.html');
+    signupUrl.searchParams.set('source', source);
+    signupUrl.searchParams.set('feature', 'mentor');
+    return `${signupUrl.pathname}${signupUrl.search}`;
+}
+
+function savePendingMentorPrompt(prompt, source = 'mentor_entry_auth_gate') {
+    const cleanPrompt = String(prompt || '').trim().slice(0, 2000);
+    if (!cleanPrompt) return;
+
+    try {
+        sessionStorage.setItem(MENTOR_PENDING_PROMPT_KEY, JSON.stringify({
+            prompt: cleanPrompt,
+            source,
+            createdAt: Date.now()
+        }));
+    } catch {
+        // Losing the pending prompt is preferable to blocking signup.
+    }
+}
+
+function restorePendingMentorPrompt() {
+    if (!chatInput) return;
+
+    let pending;
+    try {
+        pending = JSON.parse(sessionStorage.getItem(MENTOR_PENDING_PROMPT_KEY) || 'null');
+    } catch {
+        pending = null;
+    }
+
+    if (!pending?.prompt || (Date.now() - Number(pending.createdAt || 0)) > MENTOR_PENDING_PROMPT_MAX_AGE_MS) {
+        try { sessionStorage.removeItem(MENTOR_PENDING_PROMPT_KEY); } catch {}
+        return;
+    }
+
+    chatInput.value = pending.prompt;
+    resizeChatInput();
+    sendBtn?.removeAttribute('disabled');
+    chatInput.focus();
+    chatInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    try { sessionStorage.removeItem(MENTOR_PENDING_PROMPT_KEY); } catch {}
+    window.MH_ANALYTICS?.trackAction?.('mentor_prompt_restored_after_signup', {
+        source: pending.source || 'mentor_entry_auth_gate',
+        feature: 'mentor'
+    });
+}
+
+function startMentorSignupFlow(prompt, source = 'mentor_entry_auth_gate') {
+    savePendingMentorPrompt(prompt, source);
+    window.MH_ANALYTICS?.trackCTA?.(source, {
+        feature: 'mentor',
+        destination: '/prihlaseni.html',
+        auth_mode: 'register'
+    });
+    window.location.href = buildMentorSignupUrl(source);
+}
+
 function startMentorUpgradeFlow(source = 'mentor_inline_upsell') {
     window.MH_ANALYTICS?.trackCTA?.(source, {
         plan_id: 'pruvodce',
@@ -68,21 +153,23 @@ function startMentorUpgradeFlow(source = 'mentor_inline_upsell') {
     window.location.href = buildMentorUpgradeUrl(source);
 }
 
-function runAfterComponentsLoaded(callback) {
-    let hasRun = false;
-    const run = () => {
-        if (hasRun) return;
-        hasRun = true;
-        callback();
-    };
+function trackMentorPaywallDismissed(source) {
+    window.MH_ANALYTICS?.trackAction?.('paywall_dismissed', {
+        source,
+        feature: 'mentor'
+    });
+}
 
-    if (document.querySelector('.header') || !document.getElementById('header-placeholder')) {
-        run();
-        return;
+function keepMentorFree(source, overlay = null) {
+    trackMentorPaywallDismissed(source);
+    overlay?.classList.remove('limit-reached-overlay--visible');
+    messagesContainer?.classList.remove('chat-messages--blurred');
+
+    if (chatInput) {
+        chatInput.disabled = true;
+        chatInput.placeholder = 'Denní limit zdarma je vyčerpaný. Ke starším odpovědím se můžeš vrátit tady.';
     }
-
-    document.addEventListener('components:loaded', run, { once: true });
-    window.setTimeout(run, 1200);
+    if (sendBtn) sendBtn.disabled = true;
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -117,9 +204,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Auth token je HttpOnly cookie — JS k němu nemá přístup.
     // Používáme window.Auth.isLoggedIn() které čte user data z localStorage.
     if (!window.Auth?.isLoggedIn()) {
-        window.Auth?.showToast?.('Přihlášení vyžadováno', 'Pro vstup do Hvězdného Průvodce se prosím přihlaste.', 'info');
-        runAfterComponentsLoaded(() => startMentorUpgradeFlow('mentor_entry_auth_gate'));
-
         document.addEventListener('auth:changed', () => {
             if (window.Auth?.isLoggedIn()) window.location.reload();
         }, { once: true });
@@ -139,6 +223,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Load History for everyone (if any)
         loadHistory();
+        restorePendingMentorPrompt();
 
     } catch (error) {
         console.error('Failed to verify subscription:', error);
@@ -149,12 +234,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function initUsageTracking() {
-    const today = new Date().toISOString().split('T')[0];
-    const usage = JSON.parse(localStorage.getItem('mentor_usage') || '{}');
-
-    if (usage.date !== today) {
-        localStorage.setItem('mentor_usage', JSON.stringify({ date: today, count: 0 }));
-    }
+    writeMentorUsageCount(readMentorUsageCount());
 }
 
 async function loadHistory() {
@@ -223,8 +303,8 @@ async function sendMessage() {
 
     // 0. Auth Check (token je HttpOnly cookie, kontrolujeme přes Auth objekt)
     if (!window.Auth?.isLoggedIn()) {
-        window.Auth?.showToast?.('Přihlášení vyžadováno', 'Pro konverzaci s Průvodcem se prosím přihlaste.', 'info');
-        startMentorUpgradeFlow('mentor_chat_auth_gate');
+        window.Auth?.showToast?.('Účet zdarma uloží otázku', 'Vytvořte si účet a Průvodce se vrátí přesně k této otázce.', 'info');
+        startMentorSignupFlow(text, 'mentor_entry_auth_gate');
         document.addEventListener('auth:changed', () => {
             if (window.Auth?.isLoggedIn()) window.location.reload();
         }, { once: true });
@@ -305,26 +385,11 @@ async function sendMessage() {
 }
 
 function checkUsageLimit() {
-    const today = new Date().toISOString().split('T')[0];
-    const usage = JSON.parse(localStorage.getItem('mentor_usage') || '{}');
-
-    // Allow 5 messages, trigger gate on 6th
-    if (usage.date === today && usage.count >= 5) {
-        return true;
-    }
-    return false;
+    return readMentorUsageCount() >= MENTOR_DAILY_LIMIT;
 }
 
 function incrementUsage() {
-    const today = new Date().toISOString().split('T')[0];
-    const usage = JSON.parse(localStorage.getItem('mentor_usage') || '{}');
-    let count = usage.count || 0;
-
-    if (usage.date !== today) {
-        count = 0;
-    }
-
-    localStorage.setItem('mentor_usage', JSON.stringify({ date: today, count: count + 1 }));
+    writeMentorUsageCount(readMentorUsageCount() + 1);
 }
 
 function showTeaserResponse() {
@@ -332,19 +397,27 @@ function showTeaserResponse() {
     const div = document.createElement('div');
     div.className = 'message message--mentor message--blurred';
     div.innerHTML = `
-        <p>Hvězdy naznačují, že tvá cesta je...</p>
-        <p class="blur-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        <p>Hvězdný průvodce zachytil vzorec: ptáš se na rozhodnutí, ale odpověď začíná u hranice, kterou teď chráníš.</p>
+        <p class="blur-text">V plné odpovědi bys dostal jeden konkrétní další krok, návaznou otázku a propojení s předchozí historií chatu.</p>
         <div class="premium-lock-overlay">
             <div class="lock-icon">🔒</div>
-            <h3>Odemkněte plnou odpověď</h3>
-            <p>Využili jste své volné otázky pro dnešní den.</p>
-            <a href="${buildMentorUpgradeUrl('mentor_teaser_gate')}" class="btn btn--primary btn--sm mentor-upgrade-btn">Získat Premium</a>
+            <h3>Odemknout návazný krok</h3>
+            <p>Zamčeno: konkrétní další krok k této otázce a navazující otázka pro pokračování.</p>
+            <div class="mentor-paywall__actions">
+                <a href="${buildMentorUpgradeUrl('mentor_teaser_gate')}" class="btn btn--primary btn--sm mentor-upgrade-btn">Odemknout vedení</a>
+                <button type="button" class="btn btn--ghost btn--sm mentor-paywall-dismiss-btn">Zůstat u dnešního chatu</button>
+            </div>
         </div>
     `;
     messagesContainer?.insertBefore(div, typingIndicator);
     div.querySelector('.mentor-upgrade-btn')?.addEventListener('click', (event) => {
         event.preventDefault();
         startMentorUpgradeFlow('mentor_teaser_gate');
+    });
+    div.querySelector('.mentor-paywall-dismiss-btn')?.addEventListener('click', () => {
+        div.remove();
+        keepMentorFree('mentor_teaser_gate');
+        addMessage('Denní bezplatný limit je dnes vyčerpaný. Tvoje dosavadní odpovědi zůstávají v chatu a další otázku můžeš položit zítra.', 'mentor');
     });
     scrollToBottom();
 }
@@ -422,12 +495,14 @@ function showPaywall() {
     overlay.innerHTML = `
         <div class="mentor-paywall">
             <div class="mentor-paywall__icon">🔒</div>
-            <h2 class="mentor-paywall__title">Pouze pro Premium</h2>
+            <h2 class="mentor-paywall__title">Denní limit zdarma je vyčerpaný</h2>
             <p class="mentor-paywall__copy">
-                Hvězdný průvodce navazuje na vaše otázky, profil a předchozí témata.<br>
-                Premium odemyká delší rozhovor, historii souvislostí a konkrétnější další kroky.
+                Zamčený výstup: navazující odpověď k poslední otázce, jeden konkrétní další krok a propojení s historií chatu.
             </p>
-            <a href="${buildMentorUpgradeUrl('mentor_paywall_overlay')}" class="btn btn--primary mentor-paywall-upgrade-btn">Pokračovat s Premium</a>
+            <div class="mentor-paywall__actions">
+                <a href="${buildMentorUpgradeUrl('mentor_paywall_overlay')}" class="btn btn--primary mentor-paywall-upgrade-btn">Odemknout vedení</a>
+                <button type="button" class="btn btn--ghost mentor-paywall-dismiss-btn">Zůstat u dnešního chatu</button>
+            </div>
         </div>
     `;
 
@@ -436,7 +511,10 @@ function showPaywall() {
         event.preventDefault();
         startMentorUpgradeFlow('mentor_paywall_overlay');
     });
+    overlay.querySelector('.mentor-paywall-dismiss-btn')?.addEventListener('click', () => {
+        keepMentorFree('mentor_paywall_overlay', overlay);
+    });
 
     // Add blur effect to messages if any (or just cover them)
-    messagesContainer.classList.add('chat-messages--blurred');
+    messagesContainer?.classList.add('chat-messages--blurred');
 }

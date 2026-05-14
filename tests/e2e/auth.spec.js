@@ -235,7 +235,7 @@ test.describe('Login stránka', () => {
         expect(overlap.consent).toBe(false);
     });
 
-    test('mobilni mentor auth gate ma registracni CTA nad cookie listou', async ({ page }) => {
+    test('mobilni mentor auth gate prijde az po otazce a ma registracni CTA nad cookie listou', async ({ page }) => {
         await page.setViewportSize(MOBILE_VIEWPORT);
         await page.evaluate(() => {
             localStorage.removeItem('mh_cookie_prefs');
@@ -245,7 +245,20 @@ test.describe('Login stránka', () => {
         await page.goto('/mentor.html?source=e2e_mentor_auth_gate');
         await waitForPageReady(page);
 
+        await expect(page).toHaveURL(/mentor\.html/);
+        await page.locator('#chat-input').fill('Co mám dnes pochopit ve vztahu?');
+
+        await Promise.all([
+            page.waitForURL(/prihlaseni\.html.*source=mentor_entry_auth_gate/),
+            page.locator('#send-btn').click()
+        ]);
+
         await expect(page).toHaveURL(/prihlaseni\.html.*source=mentor_entry_auth_gate/);
+        const url = new URL(page.url());
+        expect(url.searchParams.get('mode')).toBe('register');
+        expect(url.searchParams.get('redirect')).toBe('/mentor.html');
+        expect(url.searchParams.get('feature')).toBe('mentor');
+        expect(url.searchParams.has('plan')).toBe(false);
         await expect(page.locator('#auth-submit')).toContainText('Vytvořit účet zdarma');
         await expect(page.locator('#gdpr-consent-wrapper')).toBeVisible();
 

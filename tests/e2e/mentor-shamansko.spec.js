@@ -86,15 +86,45 @@ test.describe('Mentor — Hvězdný průvodce', () => {
         await expect(page.locator('#send-btn')).toBeEnabled();
     });
 
-    test('premium gate copy v bundle komunikuje konkrétní hodnotu bez vágní moudrosti hvězd', async ({ page }) => {
+    test('odhlaseny navstevnik vidi hodnotu pred registraci a prompt se ulozi bez planu', async ({ page }) => {
+        await page.context().clearCookies();
+        await page.goto('/mentor.html?source=e2e_mentor_value_first');
+        await waitForPageReady(page);
+
+        await expect(page).toHaveURL(/mentor\.html/);
+        await expect(page.locator('.mentor-starter-card')).toHaveCount(4);
+
+        await page.locator('#chat-input').fill('Jaký další krok mám dnes udělat?');
+        await expect(page.locator('#send-btn')).toBeEnabled();
+        await Promise.all([
+            page.waitForURL(/prihlaseni\.html.*source=mentor_entry_auth_gate/),
+            page.locator('#send-btn').click()
+        ]);
+
+        const url = new URL(page.url());
+        expect(url.searchParams.get('mode')).toBe('register');
+        expect(url.searchParams.get('redirect')).toBe('/mentor.html');
+        expect(url.searchParams.get('feature')).toBe('mentor');
+        expect(url.searchParams.has('plan')).toBe(false);
+
+        const pendingPrompt = await page.evaluate(() => JSON.parse(sessionStorage.getItem('mentor_pending_prompt_v1') || 'null'));
+        expect(pendingPrompt.prompt).toContain('další krok');
+        expect(pendingPrompt.source).toBe('mentor_entry_auth_gate');
+    });
+
+    test('premium gate copy v bundle komunikuje konkrétní hodnotu a únik bez checkout tlaku', async ({ page }) => {
         const response = await page.request.get('/js/dist/mentor.js');
         expect(response.status()).toBe(200);
         const source = await response.text();
 
-        expect(source).toContain('del\\u0161\\xED rozhovor');
-        expect(source).toContain('historii souvislost');
-        expect(source).toContain('konkr\\xE9tn\\u011Bj\\u0161\\xED dal\\u0161\\xED kroky');
-        expect(source).toContain('Pokra\\u010Dovat s Premium');
+        expect(source).toContain('mh_daily_mentor_');
+        expect(source).toContain('jeden konkr\\xE9tn\\xED dal\\u0161\\xED krok');
+        expect(source).toContain('Odemknout veden\\xED');
+        expect(source).toContain('Z\\u016Fstat u dne\\u0161n\\xEDho chatu');
+        expect(source).toContain('paywall_dismissed');
+        expect(source).toContain('Denn\\xED limit zdarma je vy\\u010Derpan\\xFD');
+        expect(source).not.toContain('Lorem ipsum');
+        expect(source).not.toContain('Pouze pro Premium');
         expect(source).not.toContain('moudrosti hv');
         expect(source).not.toContain('neomezen\\xFD p');
     });
