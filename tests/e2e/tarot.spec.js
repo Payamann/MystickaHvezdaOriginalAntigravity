@@ -30,6 +30,13 @@ test.describe('Tarot', () => {
         await assertBasicSEO(page, { titleContains: 'Tarot' });
     });
 
+    test('SEO snippet cílí na tarot online a 78 karet', async ({ page }) => {
+        await expect(page).toHaveTitle('Tarot online: výklad z 78 karet | Mystická Hvězda');
+        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /jedna karta zdarma/);
+        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /78 karet/);
+        await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', 'Tarot online: výklad z 78 karet | Mystická Hvězda');
+    });
+
     test('h1 je viditelný', async ({ page }) => {
         const h1 = page.locator('h1').first();
         await expect(h1).toBeVisible();
@@ -384,6 +391,7 @@ test.describe('Tarot 3 karty landing', () => {
         await waitForPageReady(page);
 
         await expect(page.locator('.tarot-three-intent-card')).toHaveCount(4);
+        await expect(page.locator('a[href*="tarot-zdarma.html?source=tarot_three_card_faq"]')).toBeVisible();
         const hasHorizontalScroll = await page.evaluate(() =>
             document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
         );
@@ -582,6 +590,7 @@ test.describe('Tarot Ano/Ne', () => {
 
         await expect(page.locator('.tarot-yes-no-trust-item')).toHaveCount(3);
         await expect(page.locator('.tarot-yes-no-faq-item')).toHaveCount(4);
+        await expect(page.locator('a[href*="tarot-zdarma.html?source=tarot_yes_no_faq"]')).toBeVisible();
 
         const ldTypes = await page.locator('script[type="application/ld+json"]').evaluateAll((scripts) => scripts.map((script) => {
             try {

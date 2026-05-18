@@ -453,15 +453,17 @@ test.describe('Tarot zdarma', () => {
         await page.goto('/tarot-zdarma.html');
         await waitForPageReady(page);
 
-        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /symbolick.*rámec/);
-        await expect(page.locator('script[src*="secondary-pages-copy-fixes.js"]')).toHaveAttribute('src', /v=6/);
+        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /jednu kartu zdarma/);
+        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /bez registrace/);
+        await expect(page.locator('script[src*="secondary-pages-copy-fixes.js"]')).toHaveAttribute('src', /v=7/);
         await expect(page.locator('.section__text').first()).toContainText('ne slib pevné budoucnosti');
         await expect(page.locator('main')).toContainText('Bez registrace, bez platební karty, s jasným dalším krokem');
         await expect(page.locator('main')).toContainText('Jak z výkladu získat víc');
         await expect(page.locator('main')).toContainText('Bez osudových jistot');
 
         const structuredData = await page.locator('script[type="application/ld+json"]').first().textContent();
-        expect(structuredData).toContain('symbolický rámec');
+        expect(structuredData).toContain('symbolický tarotový výklad');
+        expect(structuredData).toContain('bez registrace');
         expect(structuredData).not.toContain('Zkuste tarot výklad zdarma online. Vyberte si kartu a získejte okamžitý výklad.');
 
         const bodyText = await page.locator('body').textContent();
@@ -483,6 +485,16 @@ test.describe('Tarot karta dne', () => {
 
     test('stránka se načte a má h1', async ({ page }) => {
         await smokeTest(page, '/tarot-karta-dne.html', 'karta');
+    });
+
+    test('SEO snippet cílí na denní tarotovou kartu, ne obecný tarot', async ({ page }) => {
+        await page.goto('/tarot-karta-dne.html');
+        await waitForPageReady(page);
+
+        await expect(page).toHaveTitle('Tarot karta dne zdarma online | Mystická Hvězda');
+        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /tarot kartu dne zdarma/);
+        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /bez registrace/);
+        await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', 'Tarot karta dne zdarma online | Mystická Hvězda');
     });
 
     test('primární CTA vede do tarot nástroje s atribucí', async ({ page }) => {
@@ -754,6 +766,7 @@ test.describe('Tarot na lásku', () => {
         await expect(page.locator('.love-tarot-intent-card')).toHaveCount(5);
         await expect(page.locator('a[href*="tarot.html?source=tarot_love_intent"][href*="spread=three_cards"]')).toBeVisible();
         await expect(page.locator('a[href*="cenik.html?plan=pruvodce"][href*="source=tarot_love_landing"]')).toBeVisible();
+        await expect(page.locator('a[href*="tarot-zdarma.html?source=tarot_love_faq"]')).toBeVisible();
 
         const ldTypes = await page.locator('script[type="application/ld+json"]').evaluateAll((scripts) => scripts.map((script) => {
             try {

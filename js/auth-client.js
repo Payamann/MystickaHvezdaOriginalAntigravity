@@ -5,6 +5,16 @@
     const POST_AUTH_ACTIVATION_KEY = 'post_auth_activation';
     const POST_AUTH_REDIRECT_PENDING_KEY = 'post_auth_redirect_pending';
     const SIGNUP_INTENT_KEY = 'mh_signup_intent';
+    const CHECKOUT_METADATA_PARAM_KEYS = [
+        'entry_source',
+        'entry_feature',
+        'utm_source',
+        'utm_medium',
+        'utm_campaign',
+        'utm_content',
+        'requested_card',
+        'card_param'
+    ];
 
     function setHidden(element, hidden) {
         if (element) element.hidden = hidden;
@@ -42,6 +52,78 @@
 
     function hasLoginCookie() {
         return document.cookie.split(';').some((cookie) => cookie.trim() === 'logged_in=1');
+    }
+
+    function sanitizeCheckoutMetadataValue(value, maxLength = 120) {
+        if (value == null) return null;
+
+        const cleaned = String(value).trim().replace(/[^\w.:-]/g, '');
+        if (!cleaned) return null;
+
+        return cleaned.slice(0, maxLength);
+    }
+
+    function setCheckoutMetadataValue(metadata, key, value) {
+        const sanitized = sanitizeCheckoutMetadataValue(value);
+        if (sanitized) metadata[key] = sanitized;
+    }
+
+    function getCheckoutMetadataFromParams(params, context = {}) {
+        const metadata = {};
+        const contextMetadata = context.metadata && typeof context.metadata === 'object' && !Array.isArray(context.metadata)
+            ? context.metadata
+            : {};
+
+        setCheckoutMetadataValue(
+            metadata,
+            'entry_source',
+            params.get('entry_source') || contextMetadata.entry_source || params.get('source') || context.source
+        );
+        setCheckoutMetadataValue(
+            metadata,
+            'entry_feature',
+            params.get('entry_feature') || contextMetadata.entry_feature || params.get('feature') || context.feature
+        );
+
+        [
+            'utm_source',
+            'utm_medium',
+            'utm_campaign',
+            'utm_content',
+            'requested_card'
+        ].forEach((key) => {
+            setCheckoutMetadataValue(metadata, key, params.get(key) || contextMetadata[key]);
+        });
+        setCheckoutMetadataValue(metadata, 'card_param', params.get('card') || params.get('card_param') || contextMetadata.card_param);
+
+        return metadata;
+    }
+
+    function appendCheckoutContextToAuthUrl(authUrl, context = {}) {
+        const params = new URLSearchParams();
+        const metadata = getCheckoutMetadataFromParams(params, context);
+        const billingInterval = context.billing_interval || context.billingInterval || null;
+
+        if (billingInterval) {
+            authUrl.searchParams.set('billing_interval', billingInterval);
+        }
+
+        const paramMap = {
+            entry_source: 'entry_source',
+            entry_feature: 'entry_feature',
+            utm_source: 'utm_source',
+            utm_medium: 'utm_medium',
+            utm_campaign: 'utm_campaign',
+            utm_content: 'utm_content',
+            requested_card: 'requested_card',
+            card_param: 'card'
+        };
+
+        CHECKOUT_METADATA_PARAM_KEYS.forEach((key) => {
+            if (metadata[key]) {
+                authUrl.searchParams.set(paramMap[key] || key, metadata[key]);
+            }
+        });
     }
 
     function readCachedUser() {
@@ -238,7 +320,9 @@
                         : standalonePlan
                             ? {
                                 source: standaloneContext.source || 'standalone_auth_plan',
-                                feature: standaloneContext.feature || null
+                                feature: standaloneContext.feature || null,
+                                metadata: standaloneContext.metadata || {},
+                                billing_interval: standaloneContext.billing_interval || null
                             }
                             : null;
                     const authSource = checkoutContext?.source || standaloneContext?.source || null;
@@ -338,6 +422,8 @@
                         planId: standalonePlan,
                         source: standaloneContext.source || 'standalone_auth_plan',
                         feature: standaloneContext.feature || null,
+                        metadata: standaloneContext.metadata || {},
+                        billing_interval: standaloneContext.billing_interval || null,
                         redirect: typeof standaloneContext.redirect === 'string'
                             && standaloneContext.redirect.startsWith('/')
                             && !standaloneContext.redirect.startsWith('//')
@@ -395,13 +481,17 @@
             const source = params.get('source') || null;
             const feature = params.get('feature') || null;
             const plan = params.get('plan') || null;
+            const billingInterval = params.get('billing_interval') || params.get('billingInterval') || null;
+            const metadata = getCheckoutMetadataFromParams(params, { source, feature });
 
             return {
                 mode,
                 redirect,
                 source,
                 feature,
-                plan
+                plan,
+                billing_interval: billingInterval,
+                metadata
             };
         },
 
@@ -822,17 +912,14 @@
                     ? context.redirect
                     : '/cenik.html';
                 const authMode = context.authMode === 'login' ? 'login' : 'register';
+                const checkoutContext = {
+                    ...context,
+                    redirect: redirectTarget,
+                    authMode
+                };
 
-                this.setPendingCheckout(planId, {
-                    ...context,
-                    redirect: redirectTarget,
-                    authMode
-                });
-                void this.trackCheckoutAuthRequired(planId, {
-                    ...context,
-                    redirect: redirectTarget,
-                    authMode
-                });
+                this.setPendingCheckout(planId, checkoutContext);
+                void this.trackCheckoutAuthRequired(planId, checkoutContext);
 
                 const authUrl = new URL('/prihlaseni.html', window.location.origin);
                 authUrl.searchParams.set('mode', authMode);
@@ -841,6 +928,7 @@
 
                 if (context.source) authUrl.searchParams.set('source', context.source);
                 if (context.feature) authUrl.searchParams.set('feature', context.feature);
+                appendCheckoutContextToAuthUrl(authUrl, checkoutContext);
 
                 window.location.href = `${authUrl.pathname}${authUrl.search}`;
                 return;

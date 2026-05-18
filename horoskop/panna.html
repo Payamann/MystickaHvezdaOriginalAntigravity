@@ -1,353 +1,221 @@
 <!DOCTYPE html>
-
 <html lang="cs">
-
 <head>
-
     <meta charset="UTF-8">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔮</text></svg>">
-  <link rel="apple-touch-icon" href="../img/icon-192.webp">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-
-    <title>♍ Panna (Virgo) – Horoskop, vlastnosti a láska | Mystická Hvězda</title>
-
-    <meta name="description" content="Panna (23. srpna – 22. září): Vše o vlastnostech, silných stránkách, slabostech a partnerské kompatibilitě tohoto znamení. Element: Země, vládce: Merkur.">
-
+    <title>Panna / Virgo znamení: vlastnosti, láska a horoskop | Mystická Hvězda</title>
+    <meta name="description" content="Panna / Virgo znamení (23. srpna – 22. září): vlastnosti, láska, silné stránky, slabiny a partnerská kompatibilita. Pokračujte na natální kartu pro osobní výklad.">
     <meta name="robots" content="index, follow">
 
-
-
     <!-- Open Graph -->
-
-    <meta property="og:title" content="♍ Panna – Horoskop a vlastnosti | Mystická Hvězda">
-
-    <meta property="og:description" content="Panna (23. srpna – 22. září): Vlastnosti, silné stránky, slabiny a partnerská kompatibilita.">
-
+    <meta property="og:title" content="Panna / Virgo znamení | Mystická Hvězda">
+    <meta property="og:description" content="Panna (23. srpna – 22. září): vlastnosti, láska, silné stránky, slabiny a další krok k osobní natální kartě.">
     <meta property="og:type" content="article">
-
-    <meta property="og:image" content="https://www.mystickahvezda.cz/img/hero-3d.webp">
-
+    <meta property="og:image" content="../img/hero-bg-2.webp">
     <meta property="og:url" content="https://www.mystickahvezda.cz/horoskop/panna.html">
-
-
+    <link rel="canonical" href="https://www.mystickahvezda.cz/horoskop/panna.html">
 
     <!-- Fonts & Styles -->
     <link rel="stylesheet" href="/fonts/local-fonts.css">
-    <link rel="stylesheet" href="../css/style.v2.min.css?v=4">
-    <link rel="stylesheet" href="../css/pages/horoskop-panna.css">
-
-
+    <link rel="stylesheet" href="../css/style.v2.css">
 
     <script type="application/ld+json">{
-
   "@context": "https://schema.org",
-
   "@type": "FAQPage",
-
   "mainEntity": [
-
     {
-
       "@type": "Question",
-
       "name": "Jaké jsou silné stránky znamení Panna?",
-
       "acceptedAnswer": {
-
         "@type": "Answer",
-
         "text": "Analytičnost, Preciznost, Spolehlivost, Skromnost, Pracovitost"
-
       }
-
     },
-
     {
-
       "@type": "Question",
-
       "name": "S jakými znameními je Panna nejkompatibilnější?",
-
       "acceptedAnswer": {
-
         "@type": "Answer",
-
         "text": "Kozoroh, Býk, Rak, Štír"
-
       }
-
     },
-
     {
-
       "@type": "Question",
-
       "name": "Kdy se rodí Panna?",
-
       "acceptedAnswer": {
-
         "@type": "Answer",
-
         "text": "23. srpna – 22. září"
-
       }
-
     }
-
   ]
-
 }</script>
-<link rel="canonical" href="https://www.mystickahvezda.cz/horoskop/panna.html">
 
-    <script type="application/ld+json">
-
-    {
-
-        "@context": "https://schema.org",
-
-        "@type": "BreadcrumbList",
-
-        "itemListElement": [
-
-            {"@type":"ListItem","position":1,"name":"Domů","item":"https://www.mystickahvezda.cz/"},
-
-            {"@type":"ListItem","position":2,"name":"Horoskopy","item":"https://www.mystickahvezda.cz/horoskopy.html"},
-
-            {"@type":"ListItem","position":3,"name":"Horoskop Panna","item":"https://www.mystickahvezda.cz/horoskop/panna.html"}
-
-        ]
-
-    }
-
-    </script>
-
-    <script src="/js/dist/analytics-init.js" defer></script>
+    <style>
+        .sign-hero { padding: 5rem 0 3rem; text-align: center; }
+        .sign-emoji { font-size: 5rem; display: block; margin-bottom: 1rem; animation: float 4s ease-in-out infinite; }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-15px)} }
+        .sign-dates { color: var(--color-mystic-gold); font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 2rem; }
+        .sign-meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin: 2rem 0; max-width: 700px; margin-inline: auto; }
+        .meta-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.2rem; text-align: center; }
+        .meta-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--color-text-mutated); margin-bottom: 0.4rem; }
+        .meta-value { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--color-mystic-gold); }
+        .sign-content { max-width: 800px; margin: 0 auto; }
+        .traits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 2rem 0; }
+        .traits-card { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 2rem; border: 1px solid rgba(255,255,255,0.08); }
+        .traits-card.strengths { border-top: 3px solid #27ae60; }
+        .traits-card.weaknesses { border-top: 3px solid #e74c3c; }
+        .traits-card h3 { margin-top: 0; }
+        .traits-card ul { padding-left: 1.2rem; }
+        .traits-card li { margin-bottom: 0.5rem; }
+        .bread a { color: var(--color-mystic-gold); text-decoration: none; }
+        .bread { font-size: 0.9rem; color: var(--color-text-mutated); margin-bottom: 2rem; }
+        @media(max-width:600px) { .traits-grid { grid-template-columns: 1fr; } }
+    </style>
 </head>
-
 <body>
-
     <div class="stars" aria-hidden="true"></div>
-
-    <div id="header-placeholder"></div>
-
-
+    <header class="header">
+        <div class="container">
+            <div class="header__inner">
+                <a href="../index.html" class="logo">
+                    <span style="margin-left: 10px;">Mystická<span class="text-gradient">Hvězda</span></span>
+                </a>
+                <nav class="nav">
+                    <button class="nav__toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+                    <ul class="nav__list">
+                        <li><a href="../index.html" class="nav__link">Domů</a></li>
+                        <li><a href="../horoskopy.html" class="nav__link active">Horoskopy</a></li>
+                        <li><a href="../blog.html" class="nav__link">Blog</a></li>
+                        <li><a href="../slovnik.html" class="nav__link">Slovník</a></li>
+                        <li><a href="../natalni-karta.html" class="nav__link">Natální Karta</a></li>
+                        <li><a href="../tarot.html" class="nav__link">Tarot</a></li>
+                    </ul>
+                    <div class="auth-buttons" style="display: flex; gap: 0.5rem; align-items: center;">
+                        <a href="#" id="auth-register-btn" class="btn btn--secondary" style="margin-left: 1rem; font-size: 0.9em; padding: 0.5rem 1rem;">Registrace</a>
+                        <a href="#" id="auth-btn" class="btn btn--primary">Přihlásit</a>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
 
     <main>
-
         <section class="sign-hero">
-
             <div class="container">
-
                 <div class="bread"><a href="../index.html">Domů</a> &raquo; <a href="../horoskopy.html">Horoskopy</a> &raquo; Panna</div>
-
                 <span class="sign-emoji">♍</span>
-
                 <h1 class="hero__title">Panna <span class="text-gradient">(Virgo)</span></h1>
-
                 <p class="sign-dates">📅 23. srpna – 22. září</p>
 
-
+                <div style="max-width: 760px; margin: 0 auto 2rem; background: rgba(10,10,26,0.68); border: 1px solid rgba(235,192,102,0.22); border-radius: 18px; padding: 1.4rem 1.6rem; text-align: left; color: #e5e7eb; line-height: 1.7;">
+                    <strong style="color: var(--color-mystic-gold);">Rychlá odpověď:</strong>
+                    Panna je Virgo, znamení zvěrokruhu pro období 23. srpna – 22. září. Patří k elementu Země, vládne mu Merkur a v astrologii popisuje základní temperament, vztahový styl a první vrstvu osobního horoskopu.
+                </div>
 
                 <div class="sign-meta-grid">
-
                     <div class="meta-card">
-
                         <div class="meta-label">Element</div>
-
                         <div class="meta-value">Země</div>
-
                     </div>
-
                     <div class="meta-card">
-
                         <div class="meta-label">Vládce</div>
-
                         <div class="meta-value">Merkur</div>
-
                     </div>
-
                     <div class="meta-card">
-
                         <div class="meta-label">Modalita</div>
-
                         <div class="meta-value">Mutabilní</div>
-
                     </div>
-
                 </div>
-
             </div>
-
         </section>
 
-
-
-        <section class="section mh-inline-4b4645626b">
-
+        <section class="section" style="padding-top:0;">
             <div class="container">
-
                 <div class="sign-content">
-
-                    <div class="mh-inline-193bf78eb1">
-
+                    <div style="background: rgba(10,10,26,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 3rem; font-size: 1.1rem; line-height: 1.8; color: var(--color-text-light); margin-bottom: 2rem;">
                         
-
             <p>Panna je druhé Merkurem ovládané znamení, ale zásadně jiné od Blíženců. Kde Blíženci sbírají informace napříč tématy, Panna je hloubí, třídí a analyzuje s precizností chirurga. Pracuje v elementu Země – to znamená, že její analytická mysl je vždy zakotvená v praktické realitě.</p>
-
             <p>Panny jsou mistryně detailu. Vidí chyby, nekonzistence a nedostatky tam, kde ostatní nic nepostřehnou. Tato schopnost z nich dělá vynikající pracovníky v oborech jako medicína, věda, redakce, právo nebo data. Jejich výzvou je naučit se tuto pozorovatelnost neobrátit destruktivně na sebe i na ostatní.</p>
-
             <p>Perfekcionismus Panny je dvojsečná zbraň. Přináší vynikající výsledky, ale také chronickou nespokojenost – pocit, že nic není nikdy dost dobré. Duchovní lekcí Panny je přijmout nedokonalost jako součást krásy.</p>
-
         
-
                     </div>
-
-
 
                     <div class="traits-grid">
-
                         <div class="traits-card strengths">
-
                             <h3>✅ Silné stránky</h3>
-
                             <ul><li>Analytičnost</li>
-
                     <li>Preciznost</li>
-
                     <li>Spolehlivost</li>
-
                     <li>Skromnost</li>
-
                     <li>Pracovitost</li></ul>
-
                         </div>
-
                         <div class="traits-card weaknesses">
-
                             <h3>⚠️ Slabé stránky</h3>
-
                             <ul><li>Kritičnost</li>
-
                     <li>Perfekcionismus</li>
-
                     <li>Přílišná sebekritika</li>
-
                     <li>Úzkostnost</li></ul>
-
                         </div>
-
                     </div>
 
-
-
-                    <div class="mh-inline-d06e9c7466">
-
-                        <h2 class="mh-inline-4402068d2a">💖 Partnerská kompatibilita</h2>
-
-                        <p class="mh-inline-4b8725d196">Znamení, se kterými Panna přirozeně rezonuje:</p>
-
+                    <div style="background: rgba(10,10,26,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 2.5rem; margin-bottom: 2rem;">
+                        <h2 style="margin-top:0; color: var(--color-mystic-gold);">💞 Partnerská kompatibilita</h2>
+                        <p style="color: var(--color-text-mutated); margin-bottom: 1.5rem;">Znamení, se kterými Panna přirozeně rezonuje:</p>
                         <div>
-
-        <span class="mh-inline-fbd88e1f89">Kozoroh</span>
-
-        <span class="mh-inline-fbd88e1f89">Býk</span>
-
-        <span class="mh-inline-fbd88e1f89">Rak</span>
-
-        <span class="mh-inline-fbd88e1f89">Štír</span></div>
-
-                        <div class="mh-inline-7bbe1bad5b">
-
-                            <a href="../partnerska-shoda.html" class="btn btn--secondary mh-inline-7bc7df6f7b">Partnerská shoda s Pannou</a>
-
+        <span style="display:inline-block; padding: 0.4rem 1rem; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); border-radius: 50px; color: #d4af37; margin: 0.3rem; font-size: 0.95rem;">Kozoroh</span>
+        <span style="display:inline-block; padding: 0.4rem 1rem; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); border-radius: 50px; color: #d4af37; margin: 0.3rem; font-size: 0.95rem;">Býk</span>
+        <span style="display:inline-block; padding: 0.4rem 1rem; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); border-radius: 50px; color: #d4af37; margin: 0.3rem; font-size: 0.95rem;">Rak</span>
+        <span style="display:inline-block; padding: 0.4rem 1rem; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); border-radius: 50px; color: #d4af37; margin: 0.3rem; font-size: 0.95rem;">Štír</span></div>
+                        <div style="margin-top: 2rem; text-align: center;">
+                            <a href="../partnerska-shoda.html" class="btn btn--secondary" style="font-size: 1rem;">Partnerská shoda s Pannou</a>
                         </div>
-
                     </div>
 
-
-
-                    <div class="mh-inline-d06e9c7466">
-
-                        <h2 class="mh-inline-4402068d2a">🔢 Šťastná čísla</h2>
-
-                        <div class="mh-inline-9332d69215"><span class="mh-inline-131f4acf9b">5</span> <span class="mh-inline-131f4acf9b">14</span> <span class="mh-inline-131f4acf9b">15</span> <span class="mh-inline-131f4acf9b">23</span> <span class="mh-inline-131f4acf9b">32</span></div>
-
+                    <div style="background: rgba(10,10,26,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 2.5rem; margin-bottom: 2rem;">
+                        <h2 style="margin-top:0; color: var(--color-mystic-gold);">🔢 Šťastná čísla</h2>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center; margin-top: 1rem;"><span style="display:inline-flex; align-items:center; justify-content:center; width: 3rem; height: 3rem; border-radius: 50%; background: rgba(155,89,182,0.2); border: 1px solid rgba(155,89,182,0.4); font-family:'Cinzel',serif; font-size:1.1rem; color:white;">5</span> <span style="display:inline-flex; align-items:center; justify-content:center; width: 3rem; height: 3rem; border-radius: 50%; background: rgba(155,89,182,0.2); border: 1px solid rgba(155,89,182,0.4); font-family:'Cinzel',serif; font-size:1.1rem; color:white;">14</span> <span style="display:inline-flex; align-items:center; justify-content:center; width: 3rem; height: 3rem; border-radius: 50%; background: rgba(155,89,182,0.2); border: 1px solid rgba(155,89,182,0.4); font-family:'Cinzel',serif; font-size:1.1rem; color:white;">15</span> <span style="display:inline-flex; align-items:center; justify-content:center; width: 3rem; height: 3rem; border-radius: 50%; background: rgba(155,89,182,0.2); border: 1px solid rgba(155,89,182,0.4); font-family:'Cinzel',serif; font-size:1.1rem; color:white;">23</span> <span style="display:inline-flex; align-items:center; justify-content:center; width: 3rem; height: 3rem; border-radius: 50%; background: rgba(155,89,182,0.2); border: 1px solid rgba(155,89,182,0.4); font-family:'Cinzel',serif; font-size:1.1rem; color:white;">32</span></div>
                     </div>
 
-
-
-                    <div class="mh-inline-25b581f3be">
-
-                        <h2 class="mh-inline-b6e7a09b6a">Vaše hvězdná mapa jde hlouběji</h2>
-
-                        <p class="mh-inline-335b2b315e">Sluneční znamení je jen jedno ze stovek bodů vaší Natální mapy. Zjistěte, kde skutečně leží váš Ascendent, Měsíc v znamení a pozice klíčových planet.</p>
-
-                        <a href="../natalni-karta.html" class="btn btn--primary mh-inline-7698c61416">Vygenerovat Natální kartu</a>
-
+                    <div style="background: linear-gradient(135deg, rgba(155,89,182,0.15), rgba(10,10,26,0.9)); border: 1px solid rgba(155,89,182,0.3); border-radius: 20px; padding: 3rem; text-align: center; margin-bottom: 2rem;">
+                        <h2 style="margin-top:0; font-family:'Cinzel',serif; font-size: 1.8rem;">Vaše hvězdná mapa jde hlouběji</h2>
+                        <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 2rem; color: #cbd5e1;">Sluneční znamení je jen jedno ze stovek bodů vaší Natální mapy. Zjistěte, kde skutečně leží váš Ascendent, Měsíc v znamení a pozice klíčových planet.</p>
+                        <a href="../natalni-karta.html?source=seo_zodiac_sign&feature=natal_chart&sign=panna" class="btn btn--primary" style="font-size: 1.1rem; padding: 1.2rem 2.5rem;">Vygenerovat Natální kartu</a>
                     </div>
-
-
 
                     <!-- FAQ Section -->
-
-                    <div class="mh-inline-3b8b2dcaff">
-
-                        <h2 class="mh-inline-4402068d2a">❓ Nejčastější otázky o Panna</h2>
-
-                        <div class="mh-inline-a16a3a1c04">
-
-                            <details class="mh-inline-29f7fc9f5d">
-
-                                <summary class="mh-inline-96182ef7ae">Kdy se rodí Panna?</summary>
-
-                                <p class="mh-inline-3394c33a27">23. srpna – 22. září</p>
-
+                    <div style="background: rgba(10,10,26,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 2.5rem;">
+                        <h2 style="margin-top:0; color: var(--color-mystic-gold);">❓ Nejčastější otázky o Panna</h2>
+                        <div style="margin-top: 1.5rem;">
+                            <details style="border-bottom: 1px solid rgba(255,255,255,0.05); padding: 1rem 0; cursor: pointer;">
+                                <summary style="font-weight:600; color:white;">Kdy se rodí Panna?</summary>
+                                <p style="margin: 1rem 0 0; color: var(--color-text-mutated);">23. srpna – 22. září</p>
                             </details>
-
-                            <details class="mh-inline-29f7fc9f5d">
-
-                                <summary class="mh-inline-96182ef7ae">Jaký je element a vládce Panna?</summary>
-
-                                <p class="mh-inline-3394c33a27">Element: <strong>Země</strong>. Vládnoucí planeta: <strong>Merkur</strong>. Modalita: <strong>Mutabilní</strong>.</p>
-
+                            <details style="border-bottom: 1px solid rgba(255,255,255,0.05); padding: 1rem 0; cursor: pointer;">
+                                <summary style="font-weight:600; color:white;">Jaký je element a vládce Panna?</summary>
+                                <p style="margin: 1rem 0 0; color: var(--color-text-mutated);">Element: <strong>Země</strong>. Vládnoucí planeta: <strong>Merkur</strong>. Modalita: <strong>Mutabilní</strong>.</p>
                             </details>
-
-                            <details class="mh-inline-a987fea24e">
-
-                                <summary class="mh-inline-96182ef7ae">S jakými znameními je Panna nejkompatibilnější?</summary>
-
-                                <p class="mh-inline-3394c33a27">Nejharmoničtější vztahy bývají se znameními: Kozoroh, Býk, Rak, Štír. Pro přesnou analýzu doporučujeme výpočet Synastrie (porovnání dvou Natálních map).</p>
-
+                            <details style="padding: 1rem 0; cursor: pointer;">
+                                <summary style="font-weight:600; color:white;">S jakými znameními je Panna nejkompatibilnější?</summary>
+                                <p style="margin: 1rem 0 0; color: var(--color-text-mutated);">Nejharmoničtější vztahy bývají se znameními: Kozoroh, Býk, Rak, Štír. Pro přesnou analýzu doporučujeme výpočet Synastrie (porovnání dvou Natálních map).</p>
                             </details>
-
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
-
         </section>
-
     </main>
 
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__bottom">
+                <p>© 2026 Mystická Hvězda. Všechna práva vyhrazena.</p>
+            </div>
+        </div>
+    </footer>
 
-
-    <div id="footer-placeholder"></div>
-
-
-
-    <script src="../js/dist/api-config.js" defer></script>
-    <script src="../js/dist/templates.js" defer></script>
-
-    <script src="../js/dist/auth-client.js" defer></script>
-
-    <script src="../js/dist/components.js" defer></script>
-
-    <script type="module" src="../js/dist/main.js"></script>
-
+    <script src="../js/api-config.js" defer></script>
+    <script src="../js/auth-client.js" defer></script>
+    <script src="../js/components.js" defer></script>
+    <script type="module" src="../js/main.js"></script>
 </body>
-
 </html>

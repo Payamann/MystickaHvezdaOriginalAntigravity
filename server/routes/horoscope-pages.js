@@ -336,9 +336,9 @@ router.get('/:sign/:date', async (req, res, next) => {
       <div class="container horoscope-day-cta-container">
         <div class="cta-banner" data-animate>
           <div class="cta-banner__content">
-            <h2 class="cta-banner__title">Chcete přesnější horoskop?</h2>
-            <p class="cta-banner__text">Zadejte datum, čas a místo narození pro plně personalizovaný natální výklad s přesností až 95 %.</p>
-            <a href="/cenik.html" class="btn btn--primary btn--lg">Vyzkoušet zdarma</a>
+            <h2 class="cta-banner__title">Chcete osobnější výklad?</h2>
+            <p class="cta-banner__text">Zadejte datum, čas a místo narození pro natální kartu, která doplní obecný horoskop o osobní kontext a konkrétní témata k sebereflexi.</p>
+            <a href="/natalni-karta.html?source=seo_horoscope_day&feature=natalni_karta" class="btn btn--primary btn--lg">Vytvořit natální kartu</a>
           </div>
         </div>
       </div>

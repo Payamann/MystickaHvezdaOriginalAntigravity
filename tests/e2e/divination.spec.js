@@ -37,10 +37,11 @@ test.describe('Andělské karty', () => {
 
     test('rozlišuje Andělské karty od homepage Karty dne', async ({ page }) => {
         const main = page.locator('main');
-        await expect(page).toHaveTitle(/Andělské karty/);
-        await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', 'Andělské karty | Mystická Hvězda');
+        await expect(page).toHaveTitle('Andělské karty online: 44 karet | Mystická Hvězda');
+        await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', 'Andělské karty online: 44 karet | Mystická Hvězda');
         const metaDescription = await page.getAttribute('meta[name="description"]', 'content');
         expect(metaDescription).toContain('balíčku 44 karet');
+        expect(metaDescription).toContain('Odlišný výklad');
         expect(metaDescription).not.toContain('Andělská karta dne');
         await expect(page.locator('.hero__subtitle')).toContainText('Karta dne je rychlý symbol');
         await expect(main).toContainText('44 karet');
@@ -259,10 +260,13 @@ test.describe('Křišťálová koule', () => {
     });
 
     test('meta popis drží symbolický rámec bez AI věštby', async ({ page }) => {
-        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /symbolick.*průvodce/);
+        await expect(page).toHaveTitle('Křišťálová koule online: osobní otázka | Mystická Hvězda');
+        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /křišťálové koule online/);
+        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /osobní otázku/);
         await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', /bez slibu pevné budoucnosti/);
 
         const structuredData = await page.locator('script[type="application/ld+json"]').first().textContent();
+        expect(structuredData).toContain('Křišťálová koule online');
         expect(structuredData).toContain('Symbolický vhled');
 
         const headText = await page.locator('head').textContent();
@@ -433,6 +437,13 @@ test.describe('Runy', () => {
 
     test('h1 je viditelný', async ({ page }) => {
         await expect(page.locator('h1').first()).toBeVisible();
+    });
+
+    test('SEO snippet cílí na denní runu zdarma', async ({ page }) => {
+        await expect(page).toHaveTitle('Runy online: denní runa zdarma | Mystická Hvězda');
+        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /denní runu zdarma/);
+        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /Elder Futhark/);
+        await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', 'Runy online: denní runa zdarma | Mystická Hvězda');
     });
 
     test('#btn-draw nebo tlačítko pro vytažení runy existuje', async ({ page }) => {

@@ -256,6 +256,22 @@ function hasExplicitOption(args, optionName) {
     return args.some((arg) => arg === optionName || arg.startsWith(`${optionName}=`));
 }
 
+function getNumericOption(args, optionName) {
+    for (let index = 0; index < args.length; index += 1) {
+        const arg = args[index];
+        if (arg === optionName) {
+            const parsed = Number.parseInt(args[index + 1], 10);
+            return Number.isFinite(parsed) ? parsed : null;
+        }
+        if (arg.startsWith(`${optionName}=`)) {
+            const parsed = Number.parseInt(arg.split('=')[1], 10);
+            return Number.isFinite(parsed) ? parsed : null;
+        }
+    }
+
+    return null;
+}
+
 const results = [];
 
 for (const section of requestedSections) {
@@ -271,6 +287,8 @@ for (const section of requestedSections) {
     const defaultGlobalTimeoutArgs = section.defaultGlobalTimeout && !hasExplicitOption(passthroughArgs, '--global-timeout')
         ? [`--global-timeout=${section.defaultGlobalTimeout}`]
         : [];
+    const effectiveGlobalTimeout = getNumericOption(passthroughArgs, '--global-timeout') || section.defaultGlobalTimeout || null;
+    const processTimeout = effectiveGlobalTimeout ? effectiveGlobalTimeout + 60_000 : 30 * 60_000;
 
     console.log('');
     console.log(`=== E2E section: ${section.name} (${section.label}) | ${projectLabel} ===`);
@@ -298,10 +316,15 @@ for (const section of requestedSections) {
     const result = spawnSync(process.execPath, commandArgs, {
         stdio: 'inherit',
         shell: false,
+        timeout: processTimeout,
+        killSignal: 'SIGTERM',
     });
 
     if (result.error) {
         console.error(`Failed to start Playwright for section "${section.name}": ${result.error.message}`);
+        if (result.error.code === 'ETIMEDOUT') {
+            console.error(`[e2e] Section "${section.name}" exceeded watchdog timeout (${Math.round(processTimeout / 1000)}s).`);
+        }
     }
 
     const durationSeconds = Math.round((Date.now() - startedAt) / 1000);

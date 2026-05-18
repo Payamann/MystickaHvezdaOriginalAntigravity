@@ -54,6 +54,9 @@ social-media-agent/output/
 social-media-agent/.pytest-tmp/
 
 # Local social/video helper drafts
+scripts/output/
+artifacts/
+polymarket-bot/
 scripts/output/evening_*.txt
 scripts/output/thumbnail*.txt
 scripts/output/voiceover*.txt

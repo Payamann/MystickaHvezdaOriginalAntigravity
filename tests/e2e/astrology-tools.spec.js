@@ -29,6 +29,16 @@ test.describe('Natální karta', () => {
         expect(title.includes('natáln') || title.includes('karta')).toBe(true);
     });
 
+    test('SEO snippet cílí na natální kartu podle narození', async ({ page }) => {
+        await expect(page).toHaveTitle('Natální karta online: výklad narození | Mystická Hvězda');
+        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /datum, čas a místo narození/);
+        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /ascendentu/);
+        await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+            'content',
+            'Natální karta online: výklad narození | Mystická Hvězda'
+        );
+    });
+
     test('h1 je viditelný', async ({ page }) => {
         await expect(page.locator('h1').first()).toBeVisible();
     });
@@ -175,6 +185,16 @@ test.describe('Partnerská shoda', () => {
     test('title obsahuje "Shoda" nebo "Partner"', async ({ page }) => {
         const title = await page.title().then(t => t.toLowerCase());
         expect(title.includes('shoda') || title.includes('partner')).toBe(true);
+    });
+
+    test('SEO snippet cílí na partnerskou shodu znamení', async ({ page }) => {
+        await expect(page).toHaveTitle('Partnerská shoda znamení online | Mystická Hvězda');
+        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /Porovnej dvě znamení/);
+        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /Základní výklad zdarma/);
+        await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+            'content',
+            'Partnerská shoda znamení online | Mystická Hvězda'
+        );
     });
 
     test('h1 je viditelný', async ({ page }) => {

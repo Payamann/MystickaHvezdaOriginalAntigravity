@@ -17,6 +17,11 @@ function buildPage(sign) {
     const compatList = sign.compatible_signs.map(c => `
         <span style="display:inline-block; padding: 0.4rem 1rem; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); border-radius: 50px; color: #d4af37; margin: 0.3rem; font-size: 0.95rem;">${c}</span>`).join('');
     const luckyNums = sign.lucky_numbers.map(n => `<span style="display:inline-flex; align-items:center; justify-content:center; width: 3rem; height: 3rem; border-radius: 50%; background: rgba(155,89,182,0.2); border: 1px solid rgba(155,89,182,0.4); font-family:'Cinzel',serif; font-size:1.1rem; color:white;">${n}</span>`).join(' ');
+    const natalCtaLink = sign.natal_cta.link.includes('source=')
+        ? sign.natal_cta.link
+        : `${sign.natal_cta.link}?source=seo_zodiac_sign&feature=natal_chart&sign=${sign.slug}`;
+    const answerSummary = sign.answer_summary
+        || `${sign.name} je ${sign.en}, znamení zvěrokruhu pro období ${sign.dates}. Patří k elementu ${sign.element}, vládne mu ${sign.ruling_planet} a v astrologii popisuje základní temperament, vztahový styl a první vrstvu osobního horoskopu.`;
 
     const faqSchema = JSON.stringify({
         "@context": "https://schema.org",
@@ -45,21 +50,20 @@ function buildPage(sign) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>${sign.emoji} ${sign.name} (${sign.en}) – Horoskop, vlastnosti a láska | Mystická Hvězda</title>
-    <meta name="description" content="${sign.name} (${sign.dates}): Vše o vlastnostech, silných stránkách, slabostech a partnerské kompatibilitě tohoto znamení. Element: ${sign.element}, vládce: ${sign.ruling_planet}.">
+    <title>${sign.name} / ${sign.en} znamení: vlastnosti, láska a horoskop | Mystická Hvězda</title>
+    <meta name="description" content="${sign.name} / ${sign.en} znamení (${sign.dates}): vlastnosti, láska, silné stránky, slabiny a partnerská kompatibilita. Pokračujte na natální kartu pro osobní výklad.">
     <meta name="robots" content="index, follow">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="${sign.emoji} ${sign.name} – Horoskop a vlastnosti | Mystická Hvězda">
-    <meta property="og:description" content="${sign.name} (${sign.dates}): Vlastnosti, silné stránky, slabiny a partnerská kompatibilita.">
+    <meta property="og:title" content="${sign.name} / ${sign.en} znamení | Mystická Hvězda">
+    <meta property="og:description" content="${sign.name} (${sign.dates}): vlastnosti, láska, silné stránky, slabiny a další krok k osobní natální kartě.">
     <meta property="og:type" content="article">
-    <meta property="og:image" content="../img/hero-bg-2.png">
+    <meta property="og:image" content="../img/hero-bg-2.webp">
     <meta property="og:url" content="https://www.mystickahvezda.cz/horoskop/${sign.slug}.html">
+    <link rel="canonical" href="https://www.mystickahvezda.cz/horoskop/${sign.slug}.html">
 
     <!-- Fonts & Styles -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/fonts/local-fonts.css">
     <link rel="stylesheet" href="../css/style.v2.css">
 
     <script type="application/ld+json">${faqSchema}</script>
@@ -121,6 +125,11 @@ function buildPage(sign) {
                 <h1 class="hero__title">${sign.name} <span class="text-gradient">(${sign.en})</span></h1>
                 <p class="sign-dates">📅 ${sign.dates}</p>
 
+                <div style="max-width: 760px; margin: 0 auto 2rem; background: rgba(10,10,26,0.68); border: 1px solid rgba(235,192,102,0.22); border-radius: 18px; padding: 1.4rem 1.6rem; text-align: left; color: #e5e7eb; line-height: 1.7;">
+                    <strong style="color: var(--color-mystic-gold);">Rychlá odpověď:</strong>
+                    ${answerSummary}
+                </div>
+
                 <div class="sign-meta-grid">
                     <div class="meta-card">
                         <div class="meta-label">Element</div>
@@ -173,7 +182,7 @@ function buildPage(sign) {
                     <div style="background: linear-gradient(135deg, rgba(155,89,182,0.15), rgba(10,10,26,0.9)); border: 1px solid rgba(155,89,182,0.3); border-radius: 20px; padding: 3rem; text-align: center; margin-bottom: 2rem;">
                         <h2 style="margin-top:0; font-family:'Cinzel',serif; font-size: 1.8rem;">Vaše hvězdná mapa jde hlouběji</h2>
                         <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 2rem; color: #cbd5e1;">Sluneční znamení je jen jedno ze stovek bodů vaší Natální mapy. Zjistěte, kde skutečně leží váš Ascendent, Měsíc v znamení a pozice klíčových planet.</p>
-                        <a href="${sign.natal_cta.link}" class="btn btn--primary" style="font-size: 1.1rem; padding: 1.2rem 2.5rem;">${sign.natal_cta.label}</a>
+                        <a href="${natalCtaLink}" class="btn btn--primary" style="font-size: 1.1rem; padding: 1.2rem 2.5rem;">${sign.natal_cta.label}</a>
                     </div>
 
                     <!-- FAQ Section -->

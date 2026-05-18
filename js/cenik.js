@@ -470,6 +470,24 @@ function setCheckoutMetadataValue(metadata, key, value) {
     if (sanitized) metadata[key] = sanitized;
 }
 
+function appendCheckoutMetadataParams(url, metadata = {}) {
+    const paramMap = {
+        entry_source: 'entry_source',
+        entry_feature: 'entry_feature',
+        utm_source: 'utm_source',
+        utm_medium: 'utm_medium',
+        utm_campaign: 'utm_campaign',
+        utm_content: 'utm_content',
+        requested_card: 'requested_card',
+        card_param: 'card'
+    };
+
+    Object.entries(paramMap).forEach(([key, param]) => {
+        const sanitized = sanitizeCheckoutMetadataValue(metadata[key]);
+        if (sanitized) url.searchParams.set(param, sanitized);
+    });
+}
+
 function resolveCheckoutMetadata(params, pendingContext = {}, recoveryContext = null) {
     const metadata = {};
     const pendingMetadata = pendingContext.metadata && typeof pendingContext.metadata === 'object' && !Array.isArray(pendingContext.metadata)
@@ -908,6 +926,8 @@ function startRecommendedCheckout(planId, context) {
     authUrl.searchParams.set('plan', planId);
     authUrl.searchParams.set('source', checkoutContext.source);
     if (checkoutContext.feature) authUrl.searchParams.set('feature', checkoutContext.feature);
+    authUrl.searchParams.set('billing_interval', checkoutContext.billing_interval);
+    appendCheckoutMetadataParams(authUrl, checkoutContext.metadata);
     window.location.href = `${authUrl.pathname}${authUrl.search}`;
 }
 

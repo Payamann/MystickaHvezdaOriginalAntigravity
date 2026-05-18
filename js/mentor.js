@@ -215,16 +215,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
     if (sendBtn) sendBtn.addEventListener('click', sendMessage);
-    // Wait for auth-client to initialize (if needed) but we can check token directly
-    // Auth token je HttpOnly cookie — JS k němu nemá přístup.
-    // Používáme window.Auth.isLoggedIn() které čte user data z localStorage.
+    // Wait for auth-client to initialize (if needed) but we can check token directly.
+    // Odhlášený návštěvník má nejdřív vidět hodnotu: starter otázky a chat input.
+    // Registrace se spouští až při odeslání otázky, kdy prompt uložíme pro návrat.
     if (!window.Auth?.isLoggedIn()) {
-        window.Auth?.showToast?.('Přihlášení vyžadováno', 'Pro vstup do Hvězdného Průvodce se prosím přihlaste.', 'info');
-        runAfterComponentsLoaded(() => startMentorUpgradeFlow('mentor_entry_auth_gate'));
-
         document.addEventListener('auth:changed', () => {
             if (window.Auth?.isLoggedIn()) window.location.reload();
         }, { once: true });
+        window.isPremium = false;
         return;
     }
 

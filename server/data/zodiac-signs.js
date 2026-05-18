@@ -8,6 +8,7 @@ const ZODIAC_SIGNS = [
         element: 'Oheň',
         ruling_planet: 'Mars',
         dates: '21. března – 19. dubna',
+        answer_summary: 'Beran je Aries, první znamení zvěrokruhu. Patří k ohnivému elementu, vládne mu Mars a symbolizuje začátek, odvahu, přímou akci a vztahový styl, který potřebuje jiskru i prostor pro vlastní tempo.',
         modality: 'Kardinální',
         color: '#e74c3c',
         lucky_numbers: [1, 9, 19, 28],
@@ -234,7 +235,7 @@ const ZODIAC_SIGNS = [
         natal_cta: { label: 'Vygenerovat Natální kartu', link: '../natalni-karta.html' }
     },
     {
-        slug: 'vodnár',
+        slug: 'vodnar',
         name: 'Vodnář',
         en: 'Aquarius',
         emoji: '♒',

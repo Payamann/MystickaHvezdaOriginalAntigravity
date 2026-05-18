@@ -33,7 +33,10 @@ SKIPPED_DIRS = {
     "tmp_email_previews",
 }
 SKIPPED_PREFIXES = (
+    "artifacts/",
     "docs/archive/",
+    "polymarket-bot/",
+    "scripts/output/",
 )
 
 def should_scan(path):

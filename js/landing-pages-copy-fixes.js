@@ -17,55 +17,55 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     if (path.endsWith('/horoskopy.html') || path.endsWith('horoskopy.html')) {
-        document.title = 'Denní Horoskop Zdarma — Všechna Znamení Dnes | Mystická Hvězda';
-        setMeta('meta[name="description"]', 'Denní, týdenní a měsíční horoskopy pro 12 znamení jako praktický astrologický rámec pro vztahy, práci a vnitřní klid.');
-        setMeta('meta[property="og:title"]', 'Denní Horoskop Zdarma — Všechna Znamení Dnes | Mystická Hvězda');
-        setMeta('meta[property="og:description"]', 'Horoskopy pro 12 znamení jako denní rámec pro témata, otázky a další krok.');
+        document.title = 'Horoskop na dnes pro 12 znamení | Mystická Hvězda';
+        setMeta('meta[name="description"]', 'Denní horoskop pro Berana až Ryby: témata dne, vztahy, práce a malý krok. Česky online, zdarma, s návazností na lunární fáze.');
+        setMeta('meta[property="og:title"]', 'Horoskop na dnes pro 12 znamení | Mystická Hvězda');
+        setMeta('meta[property="og:description"]', 'Vyber si své znamení a získej denní horoskop jako praktický rámec pro vztahy, práci a další krok.');
         setHtml('.hero__title', 'Denní <span class="text-gradient">horoskop</span>');
         setText('.hero__subtitle', 'Astrologický kontext pro dnešní den. Berte ho jako mapu témat a otázek, ne jako pevnou předpověď.');
     }
 
     if (path.endsWith('/natalni-karta.html') || path.endsWith('natalni-karta.html')) {
-        document.title = 'Natální Karta | Mystická Hvězda';
-        setMeta('meta[name="description"]', 'Vytvořte si svou osobní natální kartu a objevte pozice planet v okamžiku vašeho narození.');
-        setMeta('meta[property="og:title"]', 'Natální Karta | Mystická Hvězda');
-        setMeta('meta[property="og:description"]', 'Vytvořte si svou osobní natální kartu a objevte pozice planet v okamžiku vašeho narození.');
+        document.title = 'Natální karta online: výklad narození | Mystická Hvězda';
+        setMeta('meta[name="description"]', 'Zadej datum, čas a místo narození a získej symbolickou natální kartu s výkladem planet, ascendentu a témat pro sebereflexi.');
+        setMeta('meta[property="og:title"]', 'Natální karta online: výklad narození | Mystická Hvězda');
+        setMeta('meta[property="og:description"]', 'Vytvoř si natální kartu podle data, času a místa narození. Získej osobní astrologický výklad a témata pro sebereflexi.');
         setHtml('.hero__title', 'Natální karta jako <span class="text-gradient">klíč k sebepoznání</span>');
         setText('.hero__subtitle', 'Vaše natální karta není jen obrázek. Je to mapa vaší duše, talentů a výzev, které jste si přišli prožít.');
     }
 
     if (path.endsWith('/andelske-karty.html') || path.endsWith('andelske-karty.html')) {
-        document.title = 'Andělské karty | Mystická Hvězda';
-        setMeta('meta[name="description"]', 'Vytáhněte si samostatnou andělskou kartu z balíčku 44 karet. Krátká Karta dne z homepage je jen rychlý symbol; tady začíná andělský výklad.');
-        setMeta('meta[property="og:title"]', 'Andělské karty | Mystická Hvězda');
-        setMeta('meta[property="og:description"]', 'Samostatný andělský výklad s laskavým poselstvím a možností hlubšího vhledu.');
-        setHtml('.hero__title', 'Andělské <span class="text-gradient">karty</span>');
-        setText('.hero__subtitle', 'Samostatný výklad z andělského balíčku 44 karet. Karta dne je rychlý symbol; tady otevíráš hlubší andělské poselství.');
+        document.title = 'Andělská karta dne online | 44 karet | Mystická Hvězda';
+        setMeta('meta[name="description"]', 'Vytáhni si andělskou kartu dne online z balíčku 44 karet. Rychlé denní poselství zdarma a jasná cesta k hlubšímu andělskému výkladu.');
+        setMeta('meta[property="og:title"]', 'Andělská karta dne online | 44 karet | Mystická Hvězda');
+        setMeta('meta[property="og:description"]', 'Andělská karta dne online: rychlé poselství, symbol dne a možnost hlubšího výkladu ze 44 karet.');
+        setHtml('.hero__title', 'Andělská <span class="text-gradient">karta dne</span>');
+        setText('.hero__subtitle', 'Vytáhni si jednu andělskou kartu pro dnešní den. Krátké denní poselství je první krok; hlubší andělský výklad otevřeš až po kartě.');
     }
 
     if (path.endsWith('/runy.html') || path.endsWith('runy.html')) {
-        document.title = 'Věštění z Run | Mystická Hvězda';
-        setMeta('meta[name="description"]', 'Vytáhněte si denní runu. Prastarý severský systém Elder Futhark vám nabídne poselství a radu na dnešní den.');
-        setMeta('meta[property="og:title"]', 'Věštění z Run | Mystická Hvězda');
-        setMeta('meta[property="og:description"]', 'Vytáhněte si denní runu. Prastarý severský systém Elder Futhark vám nabídne poselství a radu na dnešní den.');
+        document.title = 'Runy online: denní runa zdarma | Mystická Hvězda';
+        setMeta('meta[name="description"]', 'Vytáhni si denní runu zdarma. Runový výklad Elder Futhark online pro téma dne, rozhodnutí a další krok bez registrace.');
+        setMeta('meta[property="og:title"]', 'Runy online: denní runa zdarma | Mystická Hvězda');
+        setMeta('meta[property="og:description"]', 'Denní runa zdarma a runový výklad Elder Futhark online pro téma dne, rozhodnutí a další krok.');
         setHtml('.hero__title', 'Věštění z <span class="text-gradient">run</span>');
         setText('.hero__subtitle', 'Sáhněte do pomyslného měšce a vytáhněte si kámen s poselstvím na dnešní den. Prastará severská moudrost čeká.');
     }
 
     if (path.endsWith('/lunace.html') || path.endsWith('lunace.html')) {
-        document.title = 'Dnešní Lunární Fáze | Co říká Měsíc právě dnes | Mystická Hvězda';
-        setMeta('meta[name="description"]', 'Zjistěte, v jaké fázi je dnes Měsíc a jak ji můžete použít jako praktický rámec pro denní rytmus, vztahy a reflexi.');
-        setMeta('meta[property="og:title"]', 'Dnešní Lunární Fáze | Mystická Hvězda');
+        document.title = 'Lunární fáze dnes | Energie Měsíce | Mystická Hvězda';
+        setMeta('meta[name="description"]', 'Zjistěte dnešní fázi Měsíce a její symbolický význam pro denní rytmus, vztahy, plánování a sebereflexi. Praktický lunární kalendář česky.');
+        setMeta('meta[property="og:title"]', 'Lunární fáze dnes | Mystická Hvězda');
         setMeta('meta[property="og:description"]', 'Aktuální fáze Měsíce jako symbolický rytmus pro dnešní krok, reflexi a jemnější plánování.');
         setHtml('.hero__title', 'Dnešní <span class="text-gradient">lunární fáze</span>');
         setText('.hero__subtitle', 'Vezměte aktuální fázi jako jednoduchý rytmus pro dnešní krok, ne jako pevný osud.');
     }
 
     if (path.endsWith('/kristalova-koule.html') || path.endsWith('kristalova-koule.html')) {
-        document.title = 'Křišťálová Koule | Mystická Hvězda';
-        setMeta('meta[name="description"]', 'Křišťálová koule jako symbolický průvodce pro osobní otázku. Pojmenujte situaci, získejte vhled a jeden další krok bez slibu pevné budoucnosti.');
-        setMeta('meta[property="og:title"]', 'Křišťálová Koule | Mystická Hvězda');
-        setMeta('meta[property="og:description"]', 'Symbolický vhled pro osobní otázku: pojmenujte situaci a odneste si jeden další krok bez slibu pevné budoucnosti.');
+        document.title = 'Křišťálová koule online: osobní otázka | Mystická Hvězda';
+        setMeta('meta[name="description"]', 'Zeptej se křišťálové koule online. Symbolický vhled pro osobní otázku, jasnější situaci a jeden další krok bez slibu pevné budoucnosti.');
+        setMeta('meta[property="og:title"]', 'Křišťálová koule online: osobní otázka | Mystická Hvězda');
+        setMeta('meta[property="og:description"]', 'Polož osobní otázku a získej symbolický vhled, jasnější situaci a další krok bez slibu pevné budoucnosti.');
         setHtml('.hero__title', 'Křišťálová koule a <span class="text-gradient">hlas intuice</span>');
         const existingSubtitle = document.querySelector('.hero__subtitle');
         if (existingSubtitle) {

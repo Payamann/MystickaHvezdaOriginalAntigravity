@@ -140,8 +140,8 @@ function initNatalChart() {
 
         useProfileCheckbox.addEventListener('change', async (e) => {
             if (e.target.checked) {
-                // Check login status first via token presence
-                if (!window.Auth?.token) {
+                // Auth token is stored in an HttpOnly cookie; use the public auth state helper.
+                if (!window.Auth?.isLoggedIn?.()) {
                     if (window.Auth?.showToast) {
                         window.Auth.showToast('Info', 'Pro použití profilu se prosím přihlaste.', 'info');
                     } else {

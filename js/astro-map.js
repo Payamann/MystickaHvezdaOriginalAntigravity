@@ -155,7 +155,7 @@ function init() {
 
         useProfileCheckbox.addEventListener('change', async (e) => {
             if (e.target.checked) {
-                if (!window.Auth?.token) {
+                if (!window.Auth?.isLoggedIn?.()) {
                     if (window.Auth?.showToast) {
                         window.Auth.showToast('Info', 'Pro použití profilu se prosím přihlaste.', 'info');
                     } else {

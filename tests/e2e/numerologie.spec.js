@@ -30,6 +30,16 @@ test.describe('Numerologie', () => {
         expect(title.toLowerCase()).toContain('numerologi');
     });
 
+    test('SEO snippet pojmenovává životní číslo a výklad zdarma', async ({ page }) => {
+        await expect(page).toHaveTitle('Numerologie online: životní číslo a osud | Mystická Hvězda');
+        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /životní číslo/);
+        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /zdarma/);
+        await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+            'content',
+            'Numerologie online: životní číslo a osud | Mystická Hvězda'
+        );
+    });
+
     test('h1 je viditelný', async ({ page }) => {
         const h1 = page.locator('h1').first();
         await expect(h1).toBeVisible();

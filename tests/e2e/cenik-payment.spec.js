@@ -1232,13 +1232,18 @@ test.describe('Ceník — platební tlačítka', () => {
             sessionStorage.clear();
         });
 
-        await page.goto('/cenik.html?source=inline_paywall&feature=numerologie_vyklad', { waitUntil: 'domcontentloaded' });
+        await page.goto('/cenik.html?source=inline_paywall&feature=numerologie_vyklad&utm_source=email&utm_campaign=numerology_postauth', { waitUntil: 'domcontentloaded' });
         await waitForPageReady(page);
 
         await Promise.all([
             waitForPath(page, '/prihlaseni.html'),
             page.locator('[data-plan="pruvodce"]').click(),
         ]);
+
+        const authUrl = new URL(page.url());
+        expect(authUrl.searchParams.get('billing_interval')).toBe('monthly');
+        expect(authUrl.searchParams.get('utm_source')).toBe('email');
+        expect(authUrl.searchParams.get('utm_campaign')).toBe('numerology_postauth');
 
         await expect(page.locator('#checkout-context-banner')).toBeVisible();
         await page.locator('#email').fill('postauth@example.com');
@@ -1259,7 +1264,14 @@ test.describe('Ceník — platební tlačítka', () => {
         expect(checkoutPayload).toEqual(expect.objectContaining({
             planId: 'pruvodce',
             source: 'inline_paywall',
-            feature: 'numerologie_vyklad'
+            feature: 'numerologie_vyklad',
+            billingInterval: 'monthly',
+            metadata: expect.objectContaining({
+                entry_source: 'inline_paywall',
+                entry_feature: 'numerologie_vyklad',
+                utm_source: 'email',
+                utm_campaign: 'numerology_postauth'
+            })
         }));
 
         const pending = await page.evaluate(() => sessionStorage.getItem('pending_plan'));

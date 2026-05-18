@@ -136,7 +136,15 @@ function bindAnnualScrollButtons() {
                 cta_location: getAnnualCtaLocation(button),
                 target: button.dataset.scrollTarget || null
             });
-            target?.scrollIntoView({ behavior: 'smooth' });
+            if (!target) return;
+
+            const navBottom = document.querySelector('.site-nav')?.getBoundingClientRect().bottom || 0;
+            const targetTop = target.getBoundingClientRect().top + window.scrollY;
+            const offset = Math.max(88, navBottom + 16);
+            window.scrollTo({
+                top: Math.max(0, targetTop - offset),
+                behavior: 'smooth'
+            });
         });
     });
 }

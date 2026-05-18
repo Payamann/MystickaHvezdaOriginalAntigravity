@@ -175,10 +175,24 @@ const scannedFiles = [
         .flatMap((dir) => collectFiles(dir))
 ];
 
+const allowedAuthTokenReferenceFiles = new Set([
+    path.join(rootDir, 'js', 'profile', 'shared.js')
+]);
+
 const usedFeatures = new Set();
+const authTokenReferences = [];
 for (const file of scannedFiles) {
     if (file.includes(`${path.sep}js${path.sep}dist${path.sep}`)) continue;
     const source = fs.readFileSync(file, 'utf8');
+
+    if (!allowedAuthTokenReferenceFiles.has(file)) {
+        const lines = source.split(/\r?\n/);
+        lines.forEach((line, index) => {
+            if (/\bAuth\??\.token\b/.test(line)) {
+                authTokenReferences.push(`${path.relative(rootDir, file)}:${index + 1}`);
+            }
+        });
+    }
 
     for (const match of source.matchAll(/[?&]feature=([a-z0-9_-]+)/g)) {
         usedFeatures.add(match[1]);
@@ -261,7 +275,8 @@ if (
     missingActivationFeatures.length ||
     missingActivationSources.length ||
     missingActivationPaths.length ||
-    missingOnboardingPaths.length
+    missingOnboardingPaths.length ||
+    authTokenReferences.length
 ) {
     console.error('[auth-feature-contexts] Missing auth feature coverage.');
     if (missingLabels.length) console.error(`Missing FEATURE_LABELS: ${missingLabels.join(', ')}`);
@@ -270,6 +285,7 @@ if (
     if (missingActivationSources.length) console.error(`Missing post-auth activation sources: ${missingActivationSources.join(', ')}`);
     if (missingActivationPaths.length) console.error(`Missing post-auth activation target pages: ${missingActivationPaths.join(', ')}`);
     if (missingOnboardingPaths.length) console.error(`Missing onboarding target pages: ${missingOnboardingPaths.join(', ')}`);
+    if (authTokenReferences.length) console.error(`Disallowed Auth.token references: ${authTokenReferences.join(', ')}`);
     process.exitCode = 1;
 } else {
     console.log(`[auth-feature-contexts] OK: ${usedFeatures.size} feature context(s) covered and activation/onboarding targets exist.`);

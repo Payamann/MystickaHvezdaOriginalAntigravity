@@ -1,355 +1,222 @@
 <!DOCTYPE html>
-
 <html lang="cs">
-
 <head>
-
     <meta charset="UTF-8">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔮</text></svg>">
-  <link rel="apple-touch-icon" href="../img/icon-192.webp">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-
-    <title>♏ Štír (Scorpio) – Horoskop, vlastnosti a láska | Mystická Hvězda</title>
-
-    <meta name="description" content="Štír (23. října – 21. listopadu): Vše o vlastnostech, silných stránkách, slabostech a partnerské kompatibilitě tohoto znamení. Element: Voda, vládce: Pluto / Mars.">
-
+    <title>Štír / Scorpio znamení: vlastnosti, láska a horoskop | Mystická Hvězda</title>
+    <meta name="description" content="Štír / Scorpio znamení (23. října – 21. listopadu): vlastnosti, láska, silné stránky, slabiny a partnerská kompatibilita. Pokračujte na natální kartu pro osobní výklad.">
     <meta name="robots" content="index, follow">
 
-
-
     <!-- Open Graph -->
-
-    <meta property="og:title" content="♏ Štír – Horoskop a vlastnosti | Mystická Hvězda">
-
-    <meta property="og:description" content="Štír (23. října – 21. listopadu): Vlastnosti, silné stránky, slabiny a partnerská kompatibilita.">
-
+    <meta property="og:title" content="Štír / Scorpio znamení | Mystická Hvězda">
+    <meta property="og:description" content="Štír (23. října – 21. listopadu): vlastnosti, láska, silné stránky, slabiny a další krok k osobní natální kartě.">
     <meta property="og:type" content="article">
-
-    <meta property="og:image" content="https://www.mystickahvezda.cz/img/hero-3d.webp">
-
+    <meta property="og:image" content="../img/hero-bg-2.webp">
     <meta property="og:url" content="https://www.mystickahvezda.cz/horoskop/stir.html">
-
-
+    <link rel="canonical" href="https://www.mystickahvezda.cz/horoskop/stir.html">
 
     <!-- Fonts & Styles -->
     <link rel="stylesheet" href="/fonts/local-fonts.css">
-    <link rel="stylesheet" href="../css/style.v2.min.css?v=4">
-    <link rel="stylesheet" href="../css/pages/horoskop-stir.css">
-
-
+    <link rel="stylesheet" href="../css/style.v2.css">
 
     <script type="application/ld+json">{
-
   "@context": "https://schema.org",
-
   "@type": "FAQPage",
-
   "mainEntity": [
-
     {
-
       "@type": "Question",
-
       "name": "Jaké jsou silné stránky znamení Štír?",
-
       "acceptedAnswer": {
-
         "@type": "Answer",
-
         "text": "Hloubka, Intenzita, Odhodlání, Transformační síla, Intuice"
-
       }
-
     },
-
     {
-
       "@type": "Question",
-
       "name": "S jakými znameními je Štír nejkompatibilnější?",
-
       "acceptedAnswer": {
-
         "@type": "Answer",
-
         "text": "Rak, Ryby, Kozoroh, Panna"
-
       }
-
     },
-
     {
-
       "@type": "Question",
-
       "name": "Kdy se rodí Štír?",
-
       "acceptedAnswer": {
-
         "@type": "Answer",
-
         "text": "23. října – 21. listopadu"
-
       }
-
     }
-
   ]
-
 }</script>
-<link rel="canonical" href="https://www.mystickahvezda.cz/horoskop/stir.html">
 
-    <script type="application/ld+json">
-
-    {
-
-        "@context": "https://schema.org",
-
-        "@type": "BreadcrumbList",
-
-        "itemListElement": [
-
-            {"@type":"ListItem","position":1,"name":"Domů","item":"https://www.mystickahvezda.cz/"},
-
-            {"@type":"ListItem","position":2,"name":"Horoskopy","item":"https://www.mystickahvezda.cz/horoskopy.html"},
-
-            {"@type":"ListItem","position":3,"name":"Horoskop Štír","item":"https://www.mystickahvezda.cz/horoskop/stir.html"}
-
-        ]
-
-    }
-
-    </script>
-
-    <script src="/js/dist/analytics-init.js" defer></script>
+    <style>
+        .sign-hero { padding: 5rem 0 3rem; text-align: center; }
+        .sign-emoji { font-size: 5rem; display: block; margin-bottom: 1rem; animation: float 4s ease-in-out infinite; }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-15px)} }
+        .sign-dates { color: var(--color-mystic-gold); font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 2rem; }
+        .sign-meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin: 2rem 0; max-width: 700px; margin-inline: auto; }
+        .meta-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.2rem; text-align: center; }
+        .meta-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--color-text-mutated); margin-bottom: 0.4rem; }
+        .meta-value { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--color-mystic-gold); }
+        .sign-content { max-width: 800px; margin: 0 auto; }
+        .traits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 2rem 0; }
+        .traits-card { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 2rem; border: 1px solid rgba(255,255,255,0.08); }
+        .traits-card.strengths { border-top: 3px solid #27ae60; }
+        .traits-card.weaknesses { border-top: 3px solid #e74c3c; }
+        .traits-card h3 { margin-top: 0; }
+        .traits-card ul { padding-left: 1.2rem; }
+        .traits-card li { margin-bottom: 0.5rem; }
+        .bread a { color: var(--color-mystic-gold); text-decoration: none; }
+        .bread { font-size: 0.9rem; color: var(--color-text-mutated); margin-bottom: 2rem; }
+        @media(max-width:600px) { .traits-grid { grid-template-columns: 1fr; } }
+    </style>
 </head>
-
 <body>
-
     <div class="stars" aria-hidden="true"></div>
-
-    <div id="header-placeholder"></div>
-
-
+    <header class="header">
+        <div class="container">
+            <div class="header__inner">
+                <a href="../index.html" class="logo">
+                    <span style="margin-left: 10px;">Mystická<span class="text-gradient">Hvězda</span></span>
+                </a>
+                <nav class="nav">
+                    <button class="nav__toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+                    <ul class="nav__list">
+                        <li><a href="../index.html" class="nav__link">Domů</a></li>
+                        <li><a href="../horoskopy.html" class="nav__link active">Horoskopy</a></li>
+                        <li><a href="../blog.html" class="nav__link">Blog</a></li>
+                        <li><a href="../slovnik.html" class="nav__link">Slovník</a></li>
+                        <li><a href="../natalni-karta.html" class="nav__link">Natální Karta</a></li>
+                        <li><a href="../tarot.html" class="nav__link">Tarot</a></li>
+                    </ul>
+                    <div class="auth-buttons" style="display: flex; gap: 0.5rem; align-items: center;">
+                        <a href="#" id="auth-register-btn" class="btn btn--secondary" style="margin-left: 1rem; font-size: 0.9em; padding: 0.5rem 1rem;">Registrace</a>
+                        <a href="#" id="auth-btn" class="btn btn--primary">Přihlásit</a>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
 
     <main>
-
         <section class="sign-hero">
-
             <div class="container">
-
                 <div class="bread"><a href="../index.html">Domů</a> &raquo; <a href="../horoskopy.html">Horoskopy</a> &raquo; Štír</div>
-
                 <span class="sign-emoji">♏</span>
-
                 <h1 class="hero__title">Štír <span class="text-gradient">(Scorpio)</span></h1>
-
                 <p class="sign-dates">📅 23. října – 21. listopadu</p>
 
-
+                <div style="max-width: 760px; margin: 0 auto 2rem; background: rgba(10,10,26,0.68); border: 1px solid rgba(235,192,102,0.22); border-radius: 18px; padding: 1.4rem 1.6rem; text-align: left; color: #e5e7eb; line-height: 1.7;">
+                    <strong style="color: var(--color-mystic-gold);">Rychlá odpověď:</strong>
+                    Štír je Scorpio, znamení zvěrokruhu pro období 23. října – 21. listopadu. Patří k elementu Voda, vládne mu Pluto / Mars a v astrologii popisuje základní temperament, vztahový styl a první vrstvu osobního horoskopu.
+                </div>
 
                 <div class="sign-meta-grid">
-
                     <div class="meta-card">
-
                         <div class="meta-label">Element</div>
-
                         <div class="meta-value">Voda</div>
-
                     </div>
-
                     <div class="meta-card">
-
                         <div class="meta-label">Vládce</div>
-
                         <div class="meta-value">Pluto / Mars</div>
-
                     </div>
-
                     <div class="meta-card">
-
                         <div class="meta-label">Modalita</div>
-
                         <div class="meta-value">Fixní</div>
-
                     </div>
-
                 </div>
-
             </div>
-
         </section>
 
-
-
-        <section class="section mh-inline-496f55dcb1">
-
+        <section class="section" style="padding-top:0;">
             <div class="container">
-
                 <div class="sign-content">
-
-                    <div class="mh-inline-ea333011c8">
-
+                    <div style="background: rgba(10,10,26,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 3rem; font-size: 1.1rem; line-height: 1.8; color: var(--color-text-light); margin-bottom: 2rem;">
                         
-
             <p>Štír je nejintenzivnějším a nejkomplexnějším znamením zvěrokruhu. Vládnou mu dvě planety: původní Mars (odvaha, energie, sexualita) a Pluto (smrt, znovuzrození, transformace, moc). Tato kombinace dává Štírům přítomnost, která je cítit, i když mlčí.</p>
-
             <p>Štíři žijí v hlubinách – psychologických, emočních i spirituálních. Povrchní konverzace je v agonii. Potřebují pravdu, celou pravdu a nic než pravdu. A za tu samou pravdivost odměňují absolutní loajalitou.</p>
-
             <p>Jejich archetypem je Fénix – mýtický pták, který se opakovaně rodí z vlastního popela. Štíři prochází v životě hlubokými transformacemi, z nichž vycházejí silnější. Naučili se ztrátu, zradu, devastaci – a přežili.</p>
-
         
-
                     </div>
-
-
 
                     <div class="traits-grid">
-
                         <div class="traits-card strengths">
-
                             <h3>✅ Silné stránky</h3>
-
                             <ul><li>Hloubka</li>
-
                     <li>Intenzita</li>
-
                     <li>Odhodlání</li>
-
                     <li>Transformační síla</li>
-
                     <li>Intuice</li></ul>
-
                         </div>
-
                         <div class="traits-card weaknesses">
-
                             <h3>⚠️ Slabé stránky</h3>
-
                             <ul><li>Žárlivost</li>
-
                     <li>Manipulace</li>
-
                     <li>Mstivost</li>
-
                     <li>Uzavřenost</li>
-
                     <li>Posedlost</li></ul>
-
                         </div>
-
                     </div>
 
-
-
-                    <div class="mh-inline-0d8e79959c">
-
-                        <h2 class="mh-inline-9866471f23">💖 Partnerská kompatibilita</h2>
-
-                        <p class="mh-inline-6f7206cca0">Znamení, se kterými Štír přirozeně rezonuje:</p>
-
+                    <div style="background: rgba(10,10,26,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 2.5rem; margin-bottom: 2rem;">
+                        <h2 style="margin-top:0; color: var(--color-mystic-gold);">💞 Partnerská kompatibilita</h2>
+                        <p style="color: var(--color-text-mutated); margin-bottom: 1.5rem;">Znamení, se kterými Štír přirozeně rezonuje:</p>
                         <div>
-
-        <span class="mh-inline-ac174c6eb6">Rak</span>
-
-        <span class="mh-inline-ac174c6eb6">Ryby</span>
-
-        <span class="mh-inline-ac174c6eb6">Kozoroh</span>
-
-        <span class="mh-inline-ac174c6eb6">Panna</span></div>
-
-                        <div class="mh-inline-8c82b3df29">
-
-                            <a href="../partnerska-shoda.html" class="btn btn--secondary mh-inline-c10aa1a14d">Partnerská shoda se Štírem</a>
-
+        <span style="display:inline-block; padding: 0.4rem 1rem; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); border-radius: 50px; color: #d4af37; margin: 0.3rem; font-size: 0.95rem;">Rak</span>
+        <span style="display:inline-block; padding: 0.4rem 1rem; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); border-radius: 50px; color: #d4af37; margin: 0.3rem; font-size: 0.95rem;">Ryby</span>
+        <span style="display:inline-block; padding: 0.4rem 1rem; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); border-radius: 50px; color: #d4af37; margin: 0.3rem; font-size: 0.95rem;">Kozoroh</span>
+        <span style="display:inline-block; padding: 0.4rem 1rem; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); border-radius: 50px; color: #d4af37; margin: 0.3rem; font-size: 0.95rem;">Panna</span></div>
+                        <div style="margin-top: 2rem; text-align: center;">
+                            <a href="../partnerska-shoda.html" class="btn btn--secondary" style="font-size: 1rem;">Partnerská shoda se Štírem</a>
                         </div>
-
                     </div>
 
-
-
-                    <div class="mh-inline-0d8e79959c">
-
-                        <h2 class="mh-inline-9866471f23">🔢 Šťastná čísla</h2>
-
-                        <div class="mh-inline-fb64e3d639"><span class="mh-inline-d5230e94e1">8</span> <span class="mh-inline-d5230e94e1">11</span> <span class="mh-inline-d5230e94e1">18</span> <span class="mh-inline-d5230e94e1">22</span></div>
-
+                    <div style="background: rgba(10,10,26,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 2.5rem; margin-bottom: 2rem;">
+                        <h2 style="margin-top:0; color: var(--color-mystic-gold);">🔢 Šťastná čísla</h2>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center; margin-top: 1rem;"><span style="display:inline-flex; align-items:center; justify-content:center; width: 3rem; height: 3rem; border-radius: 50%; background: rgba(155,89,182,0.2); border: 1px solid rgba(155,89,182,0.4); font-family:'Cinzel',serif; font-size:1.1rem; color:white;">8</span> <span style="display:inline-flex; align-items:center; justify-content:center; width: 3rem; height: 3rem; border-radius: 50%; background: rgba(155,89,182,0.2); border: 1px solid rgba(155,89,182,0.4); font-family:'Cinzel',serif; font-size:1.1rem; color:white;">11</span> <span style="display:inline-flex; align-items:center; justify-content:center; width: 3rem; height: 3rem; border-radius: 50%; background: rgba(155,89,182,0.2); border: 1px solid rgba(155,89,182,0.4); font-family:'Cinzel',serif; font-size:1.1rem; color:white;">18</span> <span style="display:inline-flex; align-items:center; justify-content:center; width: 3rem; height: 3rem; border-radius: 50%; background: rgba(155,89,182,0.2); border: 1px solid rgba(155,89,182,0.4); font-family:'Cinzel',serif; font-size:1.1rem; color:white;">22</span></div>
                     </div>
 
-
-
-                    <div class="mh-inline-180517bd24">
-
-                        <h2 class="mh-inline-05603130ed">Vaše hvězdná mapa jde hlouběji</h2>
-
-                        <p class="mh-inline-3280044631">Sluneční znamení je jen jedno ze stovek bodů vaší Natální mapy. Zjistěte, kde skutečně leží váš Ascendent, Měsíc v znamení a pozice klíčových planet.</p>
-
-                        <a href="../natalni-karta.html" class="btn btn--primary mh-inline-06975470f5">Vygenerovat Natální kartu</a>
-
+                    <div style="background: linear-gradient(135deg, rgba(155,89,182,0.15), rgba(10,10,26,0.9)); border: 1px solid rgba(155,89,182,0.3); border-radius: 20px; padding: 3rem; text-align: center; margin-bottom: 2rem;">
+                        <h2 style="margin-top:0; font-family:'Cinzel',serif; font-size: 1.8rem;">Vaše hvězdná mapa jde hlouběji</h2>
+                        <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 2rem; color: #cbd5e1;">Sluneční znamení je jen jedno ze stovek bodů vaší Natální mapy. Zjistěte, kde skutečně leží váš Ascendent, Měsíc v znamení a pozice klíčových planet.</p>
+                        <a href="../natalni-karta.html?source=seo_zodiac_sign&feature=natal_chart&sign=stir" class="btn btn--primary" style="font-size: 1.1rem; padding: 1.2rem 2.5rem;">Vygenerovat Natální kartu</a>
                     </div>
-
-
 
                     <!-- FAQ Section -->
-
-                    <div class="mh-inline-8008d3a24c">
-
-                        <h2 class="mh-inline-9866471f23">❓ Nejčastější otázky o Štír</h2>
-
-                        <div class="mh-inline-97669d448c">
-
-                            <details class="mh-inline-10d3cc9973">
-
-                                <summary class="mh-inline-b9237cead1">Kdy se rodí Štír?</summary>
-
-                                <p class="mh-inline-a826edb74e">23. října – 21. listopadu</p>
-
+                    <div style="background: rgba(10,10,26,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 2.5rem;">
+                        <h2 style="margin-top:0; color: var(--color-mystic-gold);">❓ Nejčastější otázky o Štír</h2>
+                        <div style="margin-top: 1.5rem;">
+                            <details style="border-bottom: 1px solid rgba(255,255,255,0.05); padding: 1rem 0; cursor: pointer;">
+                                <summary style="font-weight:600; color:white;">Kdy se rodí Štír?</summary>
+                                <p style="margin: 1rem 0 0; color: var(--color-text-mutated);">23. října – 21. listopadu</p>
                             </details>
-
-                            <details class="mh-inline-10d3cc9973">
-
-                                <summary class="mh-inline-b9237cead1">Jaký je element a vládce Štír?</summary>
-
-                                <p class="mh-inline-a826edb74e">Element: <strong>Voda</strong>. Vládnoucí planeta: <strong>Pluto / Mars</strong>. Modalita: <strong>Fixní</strong>.</p>
-
+                            <details style="border-bottom: 1px solid rgba(255,255,255,0.05); padding: 1rem 0; cursor: pointer;">
+                                <summary style="font-weight:600; color:white;">Jaký je element a vládce Štír?</summary>
+                                <p style="margin: 1rem 0 0; color: var(--color-text-mutated);">Element: <strong>Voda</strong>. Vládnoucí planeta: <strong>Pluto / Mars</strong>. Modalita: <strong>Fixní</strong>.</p>
                             </details>
-
-                            <details class="mh-inline-508d22de4c">
-
-                                <summary class="mh-inline-b9237cead1">S jakými znameními je Štír nejkompatibilnější?</summary>
-
-                                <p class="mh-inline-a826edb74e">Nejharmoničtější vztahy bývají se znameními: Rak, Ryby, Kozoroh, Panna. Pro přesnou analýzu doporučujeme výpočet Synastrie (porovnání dvou Natálních map).</p>
-
+                            <details style="padding: 1rem 0; cursor: pointer;">
+                                <summary style="font-weight:600; color:white;">S jakými znameními je Štír nejkompatibilnější?</summary>
+                                <p style="margin: 1rem 0 0; color: var(--color-text-mutated);">Nejharmoničtější vztahy bývají se znameními: Rak, Ryby, Kozoroh, Panna. Pro přesnou analýzu doporučujeme výpočet Synastrie (porovnání dvou Natálních map).</p>
                             </details>
-
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
-
         </section>
-
     </main>
 
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__bottom">
+                <p>© 2026 Mystická Hvězda. Všechna práva vyhrazena.</p>
+            </div>
+        </div>
+    </footer>
 
-
-    <div id="footer-placeholder"></div>
-
-
-
-    <script src="../js/dist/api-config.js" defer></script>
-    <script src="../js/dist/templates.js" defer></script>
-
-    <script src="../js/dist/auth-client.js" defer></script>
-
-    <script src="../js/dist/components.js" defer></script>
-
-    <script type="module" src="../js/dist/main.js"></script>
-
+    <script src="../js/api-config.js" defer></script>
+    <script src="../js/auth-client.js" defer></script>
+    <script src="../js/components.js" defer></script>
+    <script type="module" src="../js/main.js"></script>
 </body>
-
 </html>

@@ -185,15 +185,15 @@
     },
 
     'astro-mapa.html': () => {
-      document.title = 'Astrokartografie | Mystick\u00e1 Hv\u011bzda';
+      document.title = 'Astro mapa míst | Astrokartografie | Mystická Hvězda';
       setMetaByName(
         'description',
-        'Astrokartografie jako symbolick\u00e1 mapa prost\u0159ed\u00ed: porovnejte m\u00edsta pro cestov\u00e1n\u00ed, relokaci a osobn\u00ed z\u00e1m\u011br bez slibu, \u017ee planeta ur\u010d\u00ed v\u00fdsledek.'
+        'Astro mapa míst ukazuje symbolický vztah narození, prostředí a záměru. Porovnejte města pro cestování, relokaci nebo osobní růst.'
       );
-      setMetaByProperty('og:title', 'Astrokartografie | Mystick\u00e1 Hv\u011bzda');
+      setMetaByProperty('og:title', 'Astro mapa míst | Mystická Hvězda');
       setMetaByProperty(
         'og:description',
-        'Porovnejte symbolick\u00e1 t\u00e9mata m\u00edst pro cestov\u00e1n\u00ed, relokaci nebo rozhodnut\u00ed. Mapa je podklad k \u00favaze, ne jistota v\u00fdsledku.'
+        'Porovnejte místa pro cestování, relokaci a osobní záměr pomocí symbolické astrokartografie.'
       );
 
       setText('.skip-link', 'P\u0159esko\u010dit na obsah');
@@ -369,15 +369,15 @@
     },
 
     'faq.html': () => {
-      document.title = '\u010casto kladen\u00e9 dotazy | Mystick\u00e1 Hv\u011bzda';
+      document.title = 'FAQ k výkladům, platbám a soukromí | Mystická Hvězda';
       setMetaByName(
         'description',
-        'Odpov\u011bdi na ot\u00e1zky o v\u00fdkladech, pr\u00e1ci s daty, soukrom\u00ed, platb\u00e1ch a hranic\u00edch slu\u017eby Mystick\u00e1 Hv\u011bzda.'
+        'Odpovědi na nejčastější otázky o výkladech, registraci, předplatném, platbách, práci s osobními daty a hranicích služby Mystická Hvězda.'
       );
-      setMetaByProperty('og:title', '\u010casto kladen\u00e9 dotazy | Mystick\u00e1 Hv\u011bzda');
+      setMetaByProperty('og:title', 'FAQ k výkladům, platbám a soukromí | Mystická Hvězda');
       setMetaByProperty(
         'og:description',
-        'Odpov\u011bdi k v\u00fdklad\u016fm, soukrom\u00ed, platb\u00e1m a tomu, kde jsou hranice slu\u017eby Mystick\u00e1 Hv\u011bzda.'
+        'Odpovědi na nejčastější otázky o výkladech, registraci, předplatném a práci s daty.'
       );
       updateJsonLd(
         (data) => data?.['@type'] === 'FAQPage',
@@ -399,15 +399,15 @@
     },
 
     'kontakt.html': () => {
-      document.title = 'Kontakt | Mystick\u00e1 Hv\u011bzda';
+      document.title = 'Kontakt a podpora | Mystická Hvězda';
       setMetaByName(
         'description',
-        'Kontaktujte n\u00e1s s dotazy, p\u0159ipom\u00ednkami nebo n\u00e1vrhy. R\u00e1di v\u00e1m pom\u016f\u017eeme s horoskopy, tarotem i p\u0159edplatn\u00fdm.'
+        'Napište nám dotaz k výkladům, účtu, předplatnému nebo spolupráci. Mystická Hvězda odpovídá e-mailem a pomáhá s používáním webu.'
       );
-      setMetaByProperty('og:title', 'Kontakt | Mystick\u00e1 Hv\u011bzda');
+      setMetaByProperty('og:title', 'Kontakt a podpora | Mystická Hvězda');
       setMetaByProperty(
         'og:description',
-        'M\u00e1te dotaz? Napi\u0161te n\u00e1m a ozveme se co nejd\u0159\u00edve.'
+        'Máte dotaz k výkladům, účtu nebo předplatnému? Napište nám a ozveme se co nejdříve.'
       );
       updateJsonLd(
         (data) => data?.['@type'] === 'ContactPage',
@@ -482,10 +482,10 @@
     },
 
     'blog.html': () => {
-      document.title = 'Astrologick\u00fd blog | Horoskopy, tarot a numerologie | Mystick\u00e1 Hv\u011bzda';
+      document.title = 'Blog Mystická Hvězda | Tarot, horoskopy a numerologie';
       setMetaByName(
         'description',
-        'Astrologick\u00fd blog Mystick\u00e9 Hv\u011bzdy: \u010dl\u00e1nky o horoskopech, tarotu, numerologii a duchovn\u00edm r\u016fstu. Praktick\u00e9 tipy pro sebepozn\u00e1n\u00ed i ka\u017edodenn\u00ed \u017eivot.'
+        'Články o horoskopech, tarotu, numerologii, lunárních cyklech a sebereflexi. Praktické návody, významy symbolů a cesty k vlastním výkladům.'
       );
       setText('.hero__title', 'Mystick\u00fd Blog');
       const gradient = document.querySelector('.hero__title .text-gradient');
@@ -497,15 +497,15 @@
     },
 
     'slovnik.html': () => {
-      document.title = 'Ezoterick\u00fd slovn\u00edk | Mystick\u00e1 Hv\u011bzda';
+      document.title = 'Ezoterický slovník pojmů | Mystická Hvězda';
       setMetaByName(
         'description',
-        'Va\u0161e encyklopedie astrologick\u00fdch, mystick\u00fdch a esoterick\u00fdch pojm\u016f. Objevte hlub\u0161\u00ed smysl symbol\u016f, praktik a duchovn\u00edch koncept\u016f.'
+        'Vysvětlení astrologických, tarotových, numerologických a ezoterických pojmů v češtině. Najděte význam symbolů a souvislosti pro vlastní výklad.'
       );
-      setMetaByProperty('og:title', 'Ezoterick\u00fd slovn\u00edk | Mystick\u00e1 Hv\u011bzda');
+      setMetaByProperty('og:title', 'Ezoterický slovník pojmů | Mystická Hvězda');
       setMetaByProperty(
         'og:description',
-        'Komplexn\u00ed ezoterick\u00fd slovn\u00edk pojm\u016f z astrologie, tarotu, numerologie a spirituality.'
+        'Vysvětlení astrologických, tarotových, numerologických a ezoterických pojmů v češtině.'
       );
       setHtml('.hero__title', 'Ezoterick\u00fd <span class="text-gradient">Slovn\u00edk</span>');
       setText(
@@ -532,15 +532,15 @@
     },
 
     'tarot-zdarma.html': () => {
-      document.title = 'Tarot v\u00fdklad zdarma online | Mystick\u00e1 Hv\u011bzda';
+      document.title = 'Tarot zdarma online bez registrace | Mystick\u00e1 Hv\u011bzda';
       setMetaByName(
         'description',
-        'Bezplatn\u00fd tarotov\u00fd v\u00fdklad jako symbolick\u00fd r\u00e1mec pro reflexi, jasn\u011bj\u0161\u00ed ot\u00e1zku a jeden dal\u0161\u00ed krok. Bez registrace a bez platebn\u00ed karty.'
+        'Vyber si jednu kartu zdarma, z\u00edskej symbolick\u00fd v\u00fdklad a dal\u0161\u00ed krok. Online tarot \u010desky, bez registrace i bez platebn\u00ed karty.'
       );
-      setMetaByProperty('og:title', 'Tarot v\u00fdklad zdarma online | Mystick\u00e1 Hv\u011bzda');
+      setMetaByProperty('og:title', 'Tarot zdarma online bez registrace | Mystick\u00e1 Hv\u011bzda');
       setMetaByProperty(
         'og:description',
-        'Vyberte si kartu nebo metodu a z\u00edskejte symbolick\u00fd vhled bez slibu pevn\u00e9 budoucnosti.'
+        'Vyber si kartu zdarma a z\u00edskej symbolick\u00fd tarotov\u00fd v\u00fdklad pro dne\u0161n\u00ed ot\u00e1zku. \u010cesky online, bez registrace.'
       );
       setText('.section__title', 'Tarot v\u00fdklad zdarma online');
       setText(
@@ -614,21 +614,25 @@
     },
 
     'andelske-karty.html': () => {
-      document.title = 'And\u011blsk\u00e9 karty | Mystick\u00e1 Hv\u011bzda';
+      document.title = 'And\u011blsk\u00e1 karta dne online | 44 karet | Mystick\u00e1 Hv\u011bzda';
       setMetaByName(
         'description',
-        'Vyt\u00e1hn\u011bte si samostatnou and\u011blskou kartu z bal\u00ed\u010dku 44 karet. Kr\u00e1tk\u00e1 Karta dne z homepage je jen rychl\u00fd symbol; tady za\u010d\u00edn\u00e1 and\u011blsk\u00fd v\u00fdklad.'
+        'Vyt\u00e1hni si and\u011blskou kartu dne online z bal\u00ed\u010dku 44 karet. Rychl\u00e9 denn\u00ed poselstv\u00ed zdarma a jasn\u00e1 cesta k hlub\u0161\u00edmu and\u011blsk\u00e9mu v\u00fdkladu.'
       );
-      setMetaByProperty('og:title', 'And\u011blsk\u00e9 karty | Mystick\u00e1 Hv\u011bzda');
+      setMetaByProperty('og:title', 'And\u011blsk\u00e1 karta dne online | 44 karet | Mystick\u00e1 Hv\u011bzda');
       setMetaByProperty(
         'og:description',
-        'Samostatn\u00fd and\u011blsk\u00fd v\u00fdklad s laskav\u00fdm poselstv\u00edm a mo\u017enost\u00ed hlub\u0161\u00edho vhledu.'
+        'And\u011blsk\u00e1 karta dne online: rychl\u00e9 poselstv\u00ed, symbol dne a mo\u017enost hlub\u0161\u00edho v\u00fdkladu ze 44 karet.'
       );
     },
 
     'jak-to-funguje.html': () => {
-      document.title = 'Jak to funguje | Mystick\u00e1 Hv\u011bzda';
-      setMetaByProperty('og:title', 'Jak to funguje | Mystick\u00e1 Hv\u011bzda');
+      document.title = 'Jak fungují výklady | Data, AI a hranice | Mystická Hvězda';
+      setMetaByName(
+        'description',
+        'Podívejte se, jak Mystická Hvězda pracuje s datem narození, symbolickými výpočty a AI interpretací, a kde jsou jasné hranice výkladu.'
+      );
+      setMetaByProperty('og:title', 'Jak fungují výklady | Mystická Hvězda');
       setMetaByProperty(
         'og:description',
         'Jak z dat vznik\u00e1 symbolick\u00fd v\u00fdklad: v\u00fdpo\u010det r\u00e1mce, interpretace a jasn\u00e9 hranice slu\u017eby.'
@@ -636,8 +640,8 @@
       updateJsonLd(
         (data) => data?.url === 'https://www.mystickahvezda.cz/jak-to-funguje.html',
         {
-          name: 'Jak to funguje | Mystick\u00e1 Hv\u011bzda',
-          description: 'Jak z dat vznik\u00e1 symbolick\u00fd v\u00fdklad: v\u00fdpo\u010det r\u00e1mce, interpretace a jasn\u00e9 hranice slu\u017eby.'
+          name: 'Jak fungují výklady | Mystická Hvězda',
+          description: 'Jak z dat vzniká symbolický výklad: výpočet rámce, interpretace a jasné hranice služby.'
         }
       );
       setText('.hero__badge', 'Transparentn\u00ed cesta');
@@ -678,28 +682,28 @@
     },
 
     'rocni-horoskop.html': () => {
-      document.title = 'Ro\u010dn\u00ed horoskop na m\u00edru 2026 | Mystick\u00e1 Hv\u011bzda';
+      document.title = 'Roční horoskop 2026 na míru | Mystická Hvězda';
       setMetaByName(
         'description',
-        'Personalizovan\u00fd ro\u010dn\u00ed horoskop jako jednor\u00e1zov\u00e9 PDF: \u0161est oblast\u00ed \u017eivota, kl\u00ed\u010dov\u00e1 t\u00e9mata roku, m\u011bs\u00edce pro pozornost a praktick\u00e9 ot\u00e1zky k sebereflexi.'
+        'Personalizovaný roční horoskop jako PDF: šest oblastí života, klíčová témata roku, měsíce pro pozornost a praktické otázky k sebereflexi.'
       );
-      setMetaByProperty('og:title', 'Ro\u010dn\u00ed horoskop na m\u00edru 2026 | Mystick\u00e1 Hv\u011bzda');
+      setMetaByProperty('og:title', 'Roční horoskop 2026 na míru | Mystická Hvězda');
       setMetaByProperty(
         'og:description',
-        'Jednor\u00e1zov\u00e9 PDF pro rok 2026: osobn\u00ed t\u00e9mata, oblasti \u017eivota a m\u011bs\u00edce, ke kter\u00fdm se m\u016f\u017ee\u0161 vracet.'
+        'Jednorázový PDF výklad roku s klíčovými tématy, oblastmi života a praktickými otázkami k sebereflexi.'
       );
     },
 
     'shamansko-kolo.html': () => {
-      document.title = '\u0160amansk\u00e9 kolo | symbolick\u00fd totemov\u00fd v\u00fdklad | Mystick\u00e1 Hv\u011bzda';
+      document.title = 'Šamanské kolo | Totemový výklad | Mystická Hvězda';
       setMetaByName(
         'description',
-        'Prozkoumejte symbolick\u00fd r\u00e1mec \u0160amansk\u00e9ho kola: m\u011bs\u00ed\u010dn\u00ed totem, sv\u011btovou stranu a \u017eivel podle data narozen\u00ed jako inspiraci k sebereflexi, ne jako pevn\u00e9 ur\u010den\u00ed identity.'
+        'Objevte symbolický totem, světovou stranu a živel podle data narození. Šamanské kolo slouží jako rámec pro sebereflexi, ne jako pevné určení identity.'
       );
-      setMetaByProperty('og:title', '\u0160amansk\u00e9 kolo | symbolick\u00fd totemov\u00fd v\u00fdklad | Mystick\u00e1 Hv\u011bzda');
+      setMetaByProperty('og:title', 'Šamanské kolo | Mystická Hvězda');
       setMetaByProperty(
         'og:description',
-        'Zjist\u011bte sv\u016fj m\u011bs\u00ed\u010dn\u00ed totem, sv\u011btovou stranu a \u017eivel jako symbolick\u00fd r\u00e1mec pro sebereflexi. V\u00fdklad je inspirac\u00ed, ne pevnou p\u0159edpov\u011bd\u00ed ani kulturn\u00edm n\u00e1rokem.'
+        'Symbolický totem, světová strana a živel podle data narození jako jemný rámec pro sebereflexi.'
       );
       setMetaByProperty('og:site_name', 'Mystick\u00e1 Hv\u011bzda');
       updateJsonLd(

@@ -120,6 +120,19 @@ test.describe('SEO horoskop stránky — struktura', () => {
         expect(res.status()).toBe(200);
     });
 
+    test('horoscope CTA routes to natal chart without precision claim', async ({ page }) => {
+        await page.goto(`/horoskop/beran/${getTodayStr()}`);
+        await page.waitForLoadState('domcontentloaded');
+
+        await expect(page.getByText('s přesností až 95 %')).toHaveCount(0);
+        const cta = page.getByRole('link', { name: 'Vytvořit natální kartu' });
+        await expect(cta).toBeVisible();
+        await expect(cta).toHaveAttribute(
+            'href',
+            '/natalni-karta.html?source=seo_horoscope_day&feature=natalni_karta',
+        );
+    });
+
     // ── Rychlost ─────────────────────────────────────────────────────────────
 
     test('SEO stránka odpoví do 5 sekund', async ({ page }) => {

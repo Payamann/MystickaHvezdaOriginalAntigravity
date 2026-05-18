@@ -41,8 +41,18 @@ test.describe('Horoskopy', () => {
         await expect(subtitle).toContainText('ne jako pevnou předpověď');
 
         const description = await page.locator('meta[name="description"]').getAttribute('content');
-        expect(description).toContain('praktický astrologický rámec');
+        expect(description).toContain('Denní horoskop pro Berana až Ryby');
+        expect(description).toContain('zdarma');
         expect(description).not.toContain('Přesné předpovědi');
+    });
+
+    test('SEO snippet cílí na horoskop na dnes a 12 znamení', async ({ page }) => {
+        await expect(page).toHaveTitle('Horoskop na dnes pro 12 znamení | Mystická Hvězda');
+        await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+            'content',
+            'Horoskop na dnes pro 12 znamení | Mystická Hvězda'
+        );
+        await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', /Vyber si své znamení/);
     });
 
     // ── Zodiac grid ─────────────────────────────────────────────────────────
