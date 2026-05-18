@@ -217,6 +217,24 @@ describe('manual script guardrails', () => {
         expect(envExample).toContain('DISABLE_DAILY_HOROSCOPE_EMAILS=false');
     });
 
+    test('production background jobs handle process and promise failures locally', () => {
+        const serverSource = readScript('server/index.js');
+        const emailQueueSource = readScript('server/jobs/email-queue.js');
+        const dataRetentionSource = readScript('server/jobs/data-retention.js');
+
+        expect(serverSource).toContain("child.on('error'");
+        expect(serverSource).toContain("child.stdout?.on('data'");
+        expect(serverSource).toContain("alertBackgroundJobFailure('social_agent_failed'");
+        expect(serverSource).toContain("process.platform === 'win32' ? 'python' : 'python3'");
+
+        expect(emailQueueSource).toContain("processEmailQueue().catch(err =>");
+        expect(emailQueueSource).toContain('[JOB] Error on scheduled email queue run:');
+
+        expect(dataRetentionSource).toContain('prunePersonalDataCaches()');
+        expect(dataRetentionSource).toContain(".catch((error) =>");
+        expect(dataRetentionSource).toContain('[DATA_RETENTION] Scheduled cache pruning failed:');
+    });
+
     test('exit intent feature map uses existing pages and covered auth features', () => {
         const source = readScript('js/exit-intent.js');
         const authContextSource = readScript('js/prihlaseni.js');

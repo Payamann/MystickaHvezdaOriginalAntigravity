@@ -64,7 +64,7 @@ import { spawn } from 'child_process';
 import { getPublicPlanManifest } from './config/constants.js';
 import { getKnownBirthLocationSuggestions } from './services/astrology.js';
 import { recordServerEvent } from './services/telemetry.js';
-import { createServer5xxAlertMonitor } from './services/alerts.js';
+import { createServer5xxAlertMonitor, sendOperationalAlert } from './services/alerts.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -113,6 +113,19 @@ function getBackgroundJobStatus() {
         general: shouldRunScheduledJobs() ? 'enabled' : 'disabled',
         dailyHoroscopeEmail: shouldRunDailyHoroscopeEmails() ? 'enabled' : 'disabled'
     };
+}
+
+function alertBackgroundJobFailure(type, summary, error, metadata = {}) {
+    const message = error?.message || String(error);
+    sendOperationalAlert(type, {
+        severity: 'critical',
+        summary,
+        dedupeKey: `${type}:${metadata.action || metadata.job || message}`,
+        metadata: {
+            ...metadata,
+            error: message
+        }
+    }).catch(() => {});
 }
 
 async function runDailyHoroscopeJob(reason = 'scheduled') {
@@ -879,15 +892,54 @@ if (isMain || isProductionRuntime()) {
                 const agentPath = path.resolve(rootDir, 'social-media-agent', 'railway_runner.py');
                 console.log(`[SOCIAL] Triggering agent: ${action}`);
 
-                const pythonPath = process.env.PYTHON_PATH || 'python';
-                const child = spawn(pythonPath, [agentPath, action]);
+                if (!fs.existsSync(agentPath)) {
+                    const error = new Error(`Social media agent runner not found: ${agentPath}`);
+                    console.warn(`[SOCIAL] ${error.message}`);
+                    alertBackgroundJobFailure('social_agent_failed', 'Social media agent runner is missing', error, { action });
+                    return null;
+                }
 
-                child.stdout.on('data', (data) => console.log(`[SOCIAL-OUT] ${data}`));
-                child.stderr.on('data', (data) => console.error(`[SOCIAL-ERR] ${data}`));
+                const pythonPath = process.env.PYTHON_PATH || (process.platform === 'win32' ? 'python' : 'python3');
+                let child;
+
+                try {
+                    child = spawn(pythonPath, [agentPath, action], { stdio: ['ignore', 'pipe', 'pipe'] });
+                } catch (error) {
+                    console.error(`[SOCIAL] Failed to start agent (${action}):`, error);
+                    alertBackgroundJobFailure('social_agent_failed', 'Social media agent failed to start', error, {
+                        action,
+                        pythonPath
+                    });
+                    return null;
+                }
+
+                let spawnFailed = false;
+
+                child.on('error', (error) => {
+                    spawnFailed = true;
+                    console.error(`[SOCIAL] Agent process error (${action}):`, error);
+                    alertBackgroundJobFailure('social_agent_failed', 'Social media agent process error', error, {
+                        action,
+                        pythonPath
+                    });
+                });
+
+                child.stdout?.on('data', (data) => console.log(`[SOCIAL-OUT] ${data}`));
+                child.stderr?.on('data', (data) => console.error(`[SOCIAL-ERR] ${data}`));
 
                 child.on('close', (code) => {
                     console.log(`[SOCIAL] Agent process finished with code ${code}`);
+                    if (code !== 0 && !spawnFailed) {
+                        const error = new Error(`Social media agent exited with code ${code}`);
+                        alertBackgroundJobFailure('social_agent_failed', 'Social media agent exited unsuccessfully', error, {
+                            action,
+                            pythonPath,
+                            exitCode: code
+                        });
+                    }
                 });
+
+                return child;
             };
 
             // 1. Generate new content daily (08:00 UTC)

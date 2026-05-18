@@ -273,8 +273,10 @@ export async function scheduleEmailLater(emailConfig) {
  */
 export function initializeEmailQueueJob() {
     // Every 1 minute, check for emails to send
-    const job = schedule.scheduleJob('*/1 * * * *', async () => {
-        await processEmailQueue();
+    const job = schedule.scheduleJob('*/1 * * * *', () => {
+        processEmailQueue().catch(err => {
+            console.error('[JOB] Error on scheduled email queue run:', err);
+        });
     });
 
     console.log('[JOB] Email queue processor initialized (runs every 1 minute)');

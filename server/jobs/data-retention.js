@@ -146,10 +146,15 @@ export function initializeDataRetentionJob(schedule) {
         return null;
     }
 
-    const job = schedule.scheduleJob('30 3 * * *', async () => {
-        const summary = await prunePersonalDataCaches();
-        const deletedTotal = summary.results.reduce((sum, row) => sum + row.deleted, 0);
-        console.warn(`[DATA_RETENTION] Pruned ${deletedTotal} old personal cache rows before ${summary.cutoff}.`);
+    const job = schedule.scheduleJob('30 3 * * *', () => {
+        prunePersonalDataCaches()
+            .then((summary) => {
+                const deletedTotal = summary.results.reduce((sum, row) => sum + row.deleted, 0);
+                console.warn(`[DATA_RETENTION] Pruned ${deletedTotal} old personal cache rows before ${summary.cutoff}.`);
+            })
+            .catch((error) => {
+                console.error('[DATA_RETENTION] Scheduled cache pruning failed:', error);
+            });
     });
 
     console.warn('[DATA_RETENTION] Daily personal cache pruning scheduled (03:30 UTC).');
