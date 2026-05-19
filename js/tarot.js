@@ -7,7 +7,7 @@
 let TAROT_CARDS = {};
 // Convert to array for backward compatibility
 let TAROT_CARDS_ARRAY = [];
-const TAROT_PAYMENT_REASSURANCE = 'Cena a případné zkušební období se zobrazí ve Stripe před potvrzením.';
+const TAROT_PAYMENT_REASSURANCE = 'Cena se zobraz\u00ed ve Stripe p\u0159ed potvrzen\u00edm. Zru\u0161en\u00ed najdete v profilu.';
 
 function getTarotPlanForSpread(spreadType) {
     return spreadType === 'Celtic Cross' ? 'vip-majestrat' : 'pruvodce';

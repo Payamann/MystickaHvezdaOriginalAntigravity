@@ -56,7 +56,7 @@ const NATAL_PLANET_ORDER = [
     'pluto'
 ];
 const SVG_NS = "http://www.w3.org/2000/svg";
-const NATAL_PAYMENT_REASSURANCE = 'Cena a p\u0159\u00edpadn\u00e9 zku\u0161ebn\u00ed obdob\u00ed se zobraz\u00ed ve Stripe p\u0159ed potvrzen\u00edm.';
+const NATAL_PAYMENT_REASSURANCE = 'Cena se zobraz\u00ed ve Stripe p\u0159ed potvrzen\u00edm. Zru\u0161en\u00ed najdete v profilu.';
 
 function buildNatalUpgradeUrl(source = 'natal_teaser_gate') {
     const pricingUrl = new URL('/cenik.html', window.location.origin);

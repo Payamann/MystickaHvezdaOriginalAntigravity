@@ -14,6 +14,7 @@ describe('Mentor paywall copy contract', () => {
         expect(source).toContain('jeden konkrétní další krok');
         expect(source).toContain('feature: \'mentor\'');
         expect(source).toContain('MENTOR_PAYMENT_REASSURANCE');
+        expect(source).toContain('Cena se zobraz\\u00ed ve Stripe p\\u0159ed potvrzen\\u00edm. Zru\\u0161en\\u00ed najdete v profilu.');
         expect(source).toContain('mentor-paywall__reassurance');
     });
 

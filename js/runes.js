@@ -6,7 +6,7 @@
 let runesData = [];
 let drawnRune = null;
 const RUNES_DEEP_FEATURE = 'runy_hluboky_vyklad';
-const RUNES_PAYMENT_REASSURANCE = 'Cena a p\u0159\u00edpadn\u00e9 zku\u0161ebn\u00ed obdob\u00ed se zobraz\u00ed ve Stripe p\u0159ed potvrzen\u00edm.';
+const RUNES_PAYMENT_REASSURANCE = 'Cena se zobraz\u00ed ve Stripe p\u0159ed potvrzen\u00edm. Zru\u0161en\u00ed najdete v profilu.';
 
 function apiBase() {
     return window.API_CONFIG?.BASE_URL || '/api';

@@ -168,7 +168,7 @@ test.describe('Tarot', () => {
         await expect(page.locator('#tarot-results .locked-card')).toHaveCount(2);
         await expect(page.locator('.tarot-soft-gate')).toContainText('Odemkněte celý tříkartový výklad');
         await expect(page.locator('.tarot-soft-gate .tarot-upgrade-btn')).toContainText('Odemknout celý tarotový výklad');
-        await expect(page.locator('.tarot-soft-gate')).toContainText('Cena a případné zkušební období se zobrazí ve Stripe před potvrzením.');
+        await expect(page.locator('.tarot-soft-gate')).toContainText('Cena se zobraz\u00ed ve Stripe p\u0159ed potvrzen\u00edm. Zru\u0161en\u00ed najdete v profilu.');
         await expect(page.locator('.tarot-soft-gate')).not.toContainText('Získat Premium');
         await expect(page.locator('.tarot-soft-gate')).not.toContainText('7 dní zdarma');
         const upgradeHref = await page.locator('.tarot-soft-gate .tarot-upgrade-btn').getAttribute('href');

@@ -548,7 +548,7 @@ test.describe('Runy', () => {
 
         await expect(page.locator('.runes-upgrade-preview')).toBeVisible();
         await expect(page.locator('.runes-upgrade-preview')).toContainText('Odemknout');
-        await expect(page.locator('.runes-upgrade-preview__reassurance')).toContainText('Cena a případné zkušební období se zobrazí ve Stripe před potvrzením.');
+        await expect(page.locator('.runes-upgrade-preview__reassurance')).toContainText('Cena se zobraz\u00ed ve Stripe p\u0159ed potvrzen\u00edm. Zru\u0161en\u00ed najdete v profilu.');
         expect(apiCalled).toBe(false);
         expect(page.url()).toContain('/runy.html');
         expect(await page.evaluate(() => window.__runesCheckoutPayloads.length)).toBe(0);
@@ -597,7 +597,7 @@ test.describe('Runy', () => {
         await page.locator('#btn-deep-reading').click();
 
         await expect(page.locator('.runes-upgrade-preview')).toBeVisible();
-        await expect(page.locator('.runes-upgrade-preview__reassurance')).toContainText('Cena a případné zkušební období se zobrazí ve Stripe před potvrzením.');
+        await expect(page.locator('.runes-upgrade-preview__reassurance')).toContainText('Cena se zobraz\u00ed ve Stripe p\u0159ed potvrzen\u00edm. Zru\u0161en\u00ed najdete v profilu.');
         expect(await page.evaluate(() => window.__runesCheckoutPayloads.length)).toBe(0);
 
         await page.locator('.runes-upgrade-preview__cta').click();
