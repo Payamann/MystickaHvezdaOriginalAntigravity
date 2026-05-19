@@ -34,8 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
         tarot_multi_card: 'Vícekartový tarot',
         daily_angel_card: 'Karta dne',
         andelske_karty_hluboky_vhled: 'Andělské karty',
+        angel_numbers: 'Andělská čísla',
         synastry: 'Partnerská shoda',
         partnerska_detail: 'Detail partnerské shody',
+        compatibility: 'Partnerská shoda',
         numerologie_vyklad: 'Numerologický výklad',
         numerology: 'Numerologický výklad',
         annual_horoscope: 'Roční horoskop na míru',
@@ -240,7 +242,9 @@ document.addEventListener('DOMContentLoaded', () => {
     Object.assign(SIGNUP_CONTEXT_BY_FEATURE, {
         hvezdny_mentor: SIGNUP_CONTEXT_BY_FEATURE.mentor,
         angel_card_deep: SIGNUP_CONTEXT_BY_FEATURE.andelske_karty_hluboky_vhled,
+        angel_numbers: SIGNUP_CONTEXT_BY_FEATURE.andelske_karty_hluboky_vhled,
         crystal_ball_unlimited: SIGNUP_CONTEXT_BY_FEATURE.kristalova_koule,
+        compatibility: SIGNUP_CONTEXT_BY_FEATURE.partnerska_detail,
         journal_insights: SIGNUP_CONTEXT_BY_FEATURE.mentor,
         medicine_wheel: SIGNUP_CONTEXT_BY_FEATURE.shamanske_kolo_plne_cteni,
         natal_chart: SIGNUP_CONTEXT_BY_FEATURE.natalni_interpretace,
@@ -415,10 +419,37 @@ document.addEventListener('DOMContentLoaded', () => {
             : '/profil.html'
     );
 
+    const getGrowthLoop = () => window.MH_GROWTH_LOOP || null;
+
+    const getFeatureLabel = (feature) => {
+        if (!feature) return null;
+        return FEATURE_LABELS[feature] || getGrowthLoop()?.getFeatureLabel?.(feature, feature) || feature;
+    };
+
+    const getManifestSignupContext = () => {
+        const activation = getGrowthLoop()?.getPostSignupActivation?.({
+            source: requestedSource,
+            feature: requestedFeature,
+            redirect: getSafeRedirectTarget()
+        });
+        if (!activation?.featureId) return null;
+
+        const label = getFeatureLabel(activation.featureId);
+        if (!label) return null;
+
+        return {
+            title: `${label} po registraci`,
+            copy: 'Po vytvoření účtu budete pokračovat k prvnímu konkrétnímu kroku bez návratu do obecného katalogu.',
+            stepTitle: `Otevřeme ${label}`,
+            stepCopy: 'Registrace zachová původní zdroj kliknutí a naváže rovnou první hodnotou.'
+        };
+    };
+
     const getSignupContext = () => (
         SIGNUP_CONTEXT_BY_FEATURE[requestedFeature]
         || SIGNUP_CONTEXT_BY_SOURCE[requestedSource]
         || SIGNUP_CONTEXT_BY_REDIRECT[getSafeRedirectTarget()]
+        || getManifestSignupContext()
         || GENERIC_SIGNUP_CONTEXT
     );
 
@@ -432,7 +463,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!checkoutContextBanner) return;
 
         const plan = requestedPlan ? PLAN_COPY[requestedPlan] : null;
-        const featureLabel = requestedFeature ? FEATURE_LABELS[requestedFeature] || requestedFeature : null;
+        const featureLabel = getFeatureLabel(requestedFeature);
 
         if (plan) {
             if (checkoutContextTitle) checkoutContextTitle.textContent = plan.title;

@@ -128,6 +128,9 @@ npm run check:encoding
 # Check Claude hook validators
 npm run check:hooks
 
+# Check paid CTA source/feature coverage and growth-loop manifest
+npm run audit:growth-loop
+
 # Run sectioned desktop E2E tests with stable defaults
 npm run test:e2e:sections
 

@@ -62,6 +62,7 @@ import pushRoutes from './routes/push.js';
 import analyticsRoutes from './routes/analytics.js';
 import { spawn } from 'child_process';
 import { getPublicPlanManifest } from './config/constants.js';
+import { getPublicGrowthLoopManifest } from './config/growth-loop.js';
 import { getKnownBirthLocationSuggestions } from './services/astrology.js';
 import { recordServerEvent } from './services/telemetry.js';
 import { createServer5xxAlertMonitor, sendOperationalAlert } from './services/alerts.js';
@@ -809,6 +810,14 @@ app.get('/api/plans', (req, res) => {
     res.json({
         success: true,
         ...getPublicPlanManifest()
+    });
+});
+
+// Public growth-loop manifest for conversion QA and tracking audits.
+app.get('/api/growth-loop', (req, res) => {
+    res.json({
+        success: true,
+        ...getPublicGrowthLoopManifest()
     });
 });
 

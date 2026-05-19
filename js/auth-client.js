@@ -654,7 +654,9 @@
 
             Object.assign(featureMap, {
                 angel_card_deep: featureMap.andelske_karty_hluboky_vhled,
+                angel_numbers: featureMap.andelske_karty_hluboky_vhled,
                 crystal_ball_unlimited: featureMap.kristalova_koule,
+                compatibility: featureMap.partnerska_detail,
                 journal_insights: featureMap.mentor,
                 medicine_wheel: featureMap.shamanske_kolo_plne_cteni,
                 natal_chart: featureMap.natalni_interpretace,
@@ -705,7 +707,22 @@
                 }
             };
 
-            return featureMap[feature] || sourceMap[source] || null;
+            const manifestActivation = window.MH_GROWTH_LOOP?.getPostSignupActivation?.({
+                ...context,
+                source,
+                feature
+            });
+            const copyConfig = featureMap[feature] || sourceMap[source] || null;
+
+            if (manifestActivation?.path) {
+                return {
+                    path: manifestActivation.path,
+                    title: copyConfig?.title || 'Vítejte v Mystické Hvězdě',
+                    message: copyConfig?.message || 'Začněte prvním osobním výkladem, který naváže na důvod registrace.'
+                };
+            }
+
+            return copyConfig;
         },
 
         setPostAuthActivation(context = {}) {
@@ -724,19 +741,27 @@
             if (!context.source && !context.feature && !destination) return;
 
             try {
-                localStorage.setItem(SIGNUP_INTENT_KEY, JSON.stringify({
+                const intent = window.MH_GROWTH_LOOP?.buildSignupIntent?.(context, destination) || {
                     source: context.source || null,
                     feature: context.feature || null,
                     plan: context.plan || null,
+                    redirect: context.redirect || null,
                     destination: destination || context.redirect || null,
                     createdAt: Date.now()
-                }));
+                };
+                localStorage.setItem(SIGNUP_INTENT_KEY, JSON.stringify(intent));
             } catch (error) {
                 console.warn('Unable to remember signup intent:', error);
             }
         },
 
         buildPostAuthActivationUrl(path, context = {}) {
+            const activationUrl = window.MH_GROWTH_LOOP?.buildActivationUrl?.(path, context, {
+                source: 'signup_activation',
+                preserveFeature: true
+            });
+            if (activationUrl) return activationUrl;
+
             const url = new URL(path || '/profil.html', window.location.origin);
             url.searchParams.set('source', 'signup_activation');
 

@@ -8,6 +8,7 @@ This directory contains active project helper scripts.
 - `build-js.mjs` - esbuild bundling for frontend JavaScript.
 - `check-hooks.mjs` - smoke test for Claude hook validators.
 - `analyze-funnel-segments.mjs` - offline analysis for admin funnel segment CSV exports.
+- `audit-growth-loop.mjs` - static audit for paid CTA source/feature coverage and the shared growth-loop manifest. Use `--write` to export `tmp/growth-loop-cta-inventory.json`.
 - `generate-sitemap-from-canonicals.mjs` - safe sitemap helper that derives URLs from indexable canonical HTML pages, preserves existing metadata, writes a review file by default, and only overwrites `sitemap.xml` with `--write`.
 - `generate-ga-snippet.js` - manual GA4 snippet/config helper.
 - `update-service-worker-cache.mjs` - validates precache assets and updates the service worker cache version.

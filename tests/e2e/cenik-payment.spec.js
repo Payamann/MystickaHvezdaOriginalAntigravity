@@ -452,7 +452,7 @@ test.describe('Ceník — platební tlačítka', () => {
         expect(href).toBe('cenik.html');
     });
 
-    test('trial paywall fallback copy nezveda zbytecne platebni treni', async ({ page }) => {
+    test('trial paywall bez manifestu neslibuje neovereny trial', async ({ page }) => {
         await page.goto('/tests/premium-test.html');
         await waitForPageReady(page);
         await page.waitForFunction(() => !!window.Premium?.showTrialPaywall);
@@ -465,10 +465,39 @@ test.describe('Ceník — platební tlačítka', () => {
 
         const footer = page.locator('.paywall-footer');
         await expect(footer).toBeVisible();
-        await expect(footer).toContainText('7 dní zdarma');
-        await expect(footer).toContainText('Bez závazků');
-        await expect(footer).toContainText('Zrušení jedním kliknutím');
+        await expect(footer).toContainText('Cena se zobrazí ve Stripe před potvrzením');
+        await expect(footer).toContainText('Zrušení v profilu');
+        await expect(footer).not.toContainText('7 dní zdarma');
         await expect(footer).not.toContainText('Karta požadována');
+        await expect(page.locator('.paywall-trial-badge')).toHaveCount(0);
+        await expect(page.locator('.paywall-upgrade')).not.toContainText('7 dní zdarma');
+    });
+
+    test('trial paywall s manifestem ukaze overeny trial a Stripe reassurance', async ({ page }) => {
+        await page.goto('/tests/premium-test.html');
+        await waitForPageReady(page);
+        await page.waitForFunction(() => !!window.Premium?.showTrialPaywall);
+
+        await page.evaluate(() => {
+            window.Premium._plansById = new Map([
+                ['pruvodce', {
+                    id: 'pruvodce',
+                    name: 'Hvězdný Průvodce (Měsíční)',
+                    priceLabel: '199 Kč',
+                    interval: 'month',
+                    trialDays: 7
+                }]
+            ]);
+            window.Premium._featurePlanMap = { numerologie_vyklad: 'pruvodce' };
+            window.Premium.showTrialPaywall('numerologie_vyklad');
+        });
+
+        const footer = page.locator('.paywall-footer');
+        await expect(page.locator('.paywall-trial-badge')).toContainText('7 DNÍ ZDARMA');
+        await expect(page.locator('.paywall-upgrade')).toContainText('Vyzkoušet 7 dní zdarma');
+        await expect(footer).toContainText('7 dní zdarma');
+        await expect(footer).toContainText('Cena se zobrazí ve Stripe před potvrzením');
+        await expect(footer).toContainText('Zrušení v profilu');
     });
 
     test('login gate copy jasne oddeluje ucet zdarma od placeneho checkoutu', async ({ page }) => {

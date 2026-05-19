@@ -52,6 +52,53 @@ describe('CTR sprint static SEO pages', () => {
     expect(html).toContain('application/ld+json');
   });
 
+  it('links high-opportunity horoscope and partner pages from the horoscope hub', async () => {
+    const html = await readPage('horoskopy.html');
+
+    expect(html).toContain('id="horoscope-priority-links"');
+    expect(html).toContain('Nejhledanější vstupy');
+    expect(html).toContain('horoskop/beran.html');
+    expect(html).toContain('Beran / Aries: vlastnosti, láska a horoskop');
+    expect(html).toContain('partnerska-shoda/sagittarius-pisces.html');
+    expect(html).toContain('Střelec a Ryby ve vztahu');
+    expect(html).toContain('partnerska-shoda/aquarius-taurus.html');
+    expect(html).toContain('Vodnář a Býk ve vztahu');
+    expect(html).toContain('partnerska-shoda/capricorn-leo.html');
+    expect(html).toContain('partnerska-shoda/virgo-leo.html');
+    expect(html).toContain('natalni-karta.html?source=horoscope_priority_links&amp;feature=natal_chart');
+  });
+
+  it('links priority partner pair pages from the public compatibility hub', async () => {
+    const html = await readPage('partnerska-shoda.html');
+
+    expect(html).toContain('id="synastry-priority-links"');
+    expect(html).toContain('Nejhledanější dvojice');
+    [
+      ['partnerska-shoda/sagittarius-pisces.html', 'Střelec a Ryby ve vztahu'],
+      ['partnerska-shoda/aquarius-taurus.html', 'Vodnář a Býk ve vztahu'],
+      ['partnerska-shoda/capricorn-leo.html', 'Kozoroh a Lev ve vztahu'],
+      ['partnerska-shoda/virgo-leo.html', 'Panna a Lev ve vztahu'],
+      ['partnerska-shoda/aries-aries.html', 'Beran a Beran ve vztahu'],
+      ['partnerska-shoda/scorpio-cancer.html', 'Štír a Rak ve vztahu']
+    ].forEach(([href, anchor]) => {
+      expect(html).toContain(href);
+      expect(html).toContain(anchor);
+    });
+  });
+
+  it('links supporting angel-card topics from the angel card hub', async () => {
+    const html = await readPage('andelske-karty.html');
+
+    expect(html).toContain('id="angel-topic-links"');
+    expect(html).toContain('Navazující témata');
+    expect(html).toContain('blog/andelska-cisla-1111.html?source=angel_topic_links&amp;feature=angel_numbers&amp;intent=1111');
+    expect(html).toContain('Andělské číslo 1111: význam a poselství');
+    expect(html).toContain('blog/jak-funguji-andelske-karty.html?source=angel_topic_links');
+    expect(html).toContain('Jak fungují andělské karty');
+    expect(html).toContain('blog/pruvodce-energie-ochrana.html?source=angel_topic_links');
+    expect(html).toContain('kristalova-koule.html?source=angel_topic_links&amp;feature=kristalova_koule&amp;intent=yes_no_question');
+  });
+
   it.each([
     ['partnerska-shoda/sagittarius-pisces.html', 'Střelec a Ryby', 'sagittarius-pisces'],
     ['partnerska-shoda/aquarius-taurus.html', 'Vodnář a Býk', 'aquarius-taurus'],

@@ -13234,6 +13234,8 @@ a.card.card--interactive-hover:hover {
 
   -webkit-backdrop-filter: blur(8px);
 
+  overflow-y: auto;
+
 }
 
 .paywall-content {
@@ -13249,6 +13251,10 @@ a.card.card--interactive-hover:hover {
   background: linear-gradient(145deg, rgba(18, 12, 35, 0.98), rgba(8, 8, 22, 0.98));
 
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+
+  max-height: min(90vh, 720px);
+
+  overflow-y: auto;
 
   text-align: center;
 
@@ -13313,6 +13319,8 @@ a.card.card--interactive-hover:hover {
   color: rgba(255, 255, 255, 0.48);
 
   font-size: 0.85rem;
+
+  line-height: 1.45;
 
 }
 

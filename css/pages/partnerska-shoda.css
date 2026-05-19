@@ -250,6 +250,14 @@ html body .mh-inline-de7ffff2a8 { opacity: 0.8; }
     color: var(--color-silver-mist);
 }
 
+.synastry-upgrade-reassurance {
+    max-width: 28rem;
+    margin: 0.75rem auto 0;
+    color: rgba(255, 255, 255, 0.62);
+    font-size: 0.85rem;
+    line-height: 1.45;
+}
+
 .synastry-ai {
     margin-top: var(--space-xl);
     padding: var(--space-xl);

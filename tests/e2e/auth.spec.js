@@ -571,6 +571,68 @@ test.describe('Login stránka', () => {
         expect(activationFlag).toBeNull();
     });
 
+    const activationClusterScenarios = [
+        {
+            name: 'numerologie',
+            email: 'activation-numerology@example.com',
+            source: 'life_number_result',
+            feature: 'numerologie_vyklad',
+            expectedPath: '/numerologie.html'
+        },
+        {
+            name: 'natalni karta',
+            email: 'activation-natal@example.com',
+            source: 'natal_chart_gate',
+            feature: 'natalni_interpretace',
+            expectedPath: '/natalni-karta.html'
+        },
+        {
+            name: 'partnerska shoda',
+            email: 'activation-synastry@example.com',
+            source: 'synastry_gate',
+            feature: 'synastry',
+            expectedPath: '/partnerska-shoda.html'
+        },
+        {
+            name: 'kristalova koule',
+            email: 'activation-crystal@example.com',
+            source: 'crystal_ball_gate',
+            feature: 'kristalova_koule',
+            expectedPath: '/kristalova-koule.html'
+        },
+        {
+            name: 'mentor',
+            email: 'activation-mentor@example.com',
+            source: 'mentor_inline_upsell',
+            feature: 'hvezdny_mentor',
+            expectedPath: '/mentor.html'
+        }
+    ];
+
+    for (const scenario of activationClusterScenarios) {
+        test(`registrace z clusteru ${scenario.name} drzi prvni hodnotu`, async ({ page }) => {
+            await mockSuccessfulRegister(page, scenario.email);
+
+            await page.goto(`/prihlaseni.html?mode=register&redirect=/profil.html&source=${scenario.source}&feature=${scenario.feature}`);
+            await waitForPageReady(page);
+
+            await Promise.all([
+                page.waitForURL(url => url.pathname === scenario.expectedPath, { timeout: 10000, waitUntil: 'commit' }),
+                submitRegisterForm(page, scenario.email),
+            ]);
+            await waitForPageReady(page);
+
+            const url = new URL(page.url());
+            expect(url.pathname).toBe(scenario.expectedPath);
+            expect(url.searchParams.get('source')).toBe('signup_activation');
+            expect(url.searchParams.get('feature')).toBe(scenario.feature);
+            expect(url.searchParams.get('entry_source')).toBe(scenario.source);
+            expect(url.searchParams.get('entry_feature')).toBe(scenario.feature);
+            const activationFlag = await page.evaluate(() => sessionStorage.getItem('post_auth_activation'));
+            expect(activationFlag).toBeNull();
+        });
+    }
+
     test('registrace z andelske karty se vraci k andelskym kartam', async ({ page }) => {
         await mockSuccessfulRegister(page, 'angel-card@example.com');
 

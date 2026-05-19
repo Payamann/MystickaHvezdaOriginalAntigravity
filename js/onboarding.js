@@ -68,6 +68,32 @@ const SOURCE_INTEREST_MAP = {
     homepage_daily_card_full_reading: 'andelske-karty'
 };
 
+const FEATURE_PATH_INTEREST_MAP = {
+    '/andelske-karty.html': 'andelske-karty',
+    '/astro-mapa.html': 'astrokartografie',
+    '/horoskopy.html': 'horoskopy',
+    '/kristalova-koule.html': 'kristalova-koule',
+    '/mentor.html': 'spiritualita',
+    '/minuly-zivot.html': 'minuly-zivot',
+    '/natalni-karta.html': 'natalni-karta',
+    '/numerologie.html': 'numerologie',
+    '/partnerska-shoda.html': 'vztahy',
+    '/runy.html': 'runy',
+    '/shamansko-kolo.html': 'shamanske-kolo',
+    '/tarot.html': 'tarot',
+    '/tarot-keltsky-kriz.html': 'tarot'
+};
+
+const FEATURE_CLUSTER_INTEREST_MAP = {
+    divination: 'spiritualita',
+    horoscopes: 'horoskopy',
+    mentor: 'spiritualita',
+    natal: 'natalni-karta',
+    numerology: 'numerologie',
+    relationships: 'vztahy',
+    tarot: 'tarot'
+};
+
 const CONTEXT_COPY_BY_INTEREST = {
     horoskopy: {
         title: 'Začni jedním rituálem, ne dalším menu',
@@ -127,9 +153,29 @@ function getOnboardingContext() {
     };
 }
 
+function getManifestInterest(featureId) {
+    const feature = window.MH_GROWTH_LOOP?.getFeature?.(featureId);
+    if (!feature) return '';
+
+    const path = (() => {
+        try {
+            return new URL(feature.primaryPath, window.location.origin).pathname;
+        } catch {
+            return feature.primaryPath || '';
+        }
+    })();
+
+    return FEATURE_PATH_INTEREST_MAP[path] || FEATURE_CLUSTER_INTEREST_MAP[feature.cluster] || '';
+}
+
 function getContextDefaultInterest() {
     const { source, feature } = getOnboardingContext();
-    return FEATURE_INTEREST_MAP[feature] || SOURCE_INTEREST_MAP[source] || '';
+    const sourceDefaultFeature = window.MH_GROWTH_LOOP?.getSourceDefaultFeature?.(source) || '';
+    return getManifestInterest(feature)
+        || FEATURE_INTEREST_MAP[feature]
+        || getManifestInterest(sourceDefaultFeature)
+        || SOURCE_INTEREST_MAP[source]
+        || '';
 }
 
 function appendEntryContext(url) {
@@ -144,6 +190,12 @@ function formatAppUrl(url) {
 }
 
 function withSource(path, source = 'onboarding_complete') {
+    const manifestUrl = window.MH_GROWTH_LOOP?.buildActivationUrl?.(path, getOnboardingContext(), {
+        source,
+        includeFeature: false
+    });
+    if (manifestUrl) return manifestUrl;
+
     const url = new URL(path, window.location.origin);
     url.searchParams.set('source', source);
     appendEntryContext(url);
@@ -159,7 +211,10 @@ function buildHoroscopeDestination(source = 'onboarding_complete') {
     }
 
     appendEntryContext(url);
-    return formatAppUrl(url);
+    return window.MH_GROWTH_LOOP?.buildActivationUrl?.(formatAppUrl(url), getOnboardingContext(), {
+        source,
+        includeFeature: false
+    }) || formatAppUrl(url);
 }
 
 const INTEREST_DESTINATIONS = {

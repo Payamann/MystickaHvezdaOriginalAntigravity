@@ -190,6 +190,74 @@ function compactAttributionMetadata(context = mhAnalyticsAttributionContext) {
     return Object.fromEntries(Object.entries(metadata).filter(([, value]) => value !== null && value !== undefined));
 }
 
+function compactTrackingPayload(payload = {}) {
+    return Object.fromEntries(
+        Object.entries(payload).filter(([, value]) => value !== null && value !== undefined && value !== '')
+    );
+}
+
+function readUrlParam(href, key) {
+    if (!href) return null;
+
+    try {
+        const url = new URL(href, window.location.origin);
+        return cleanAttributionValue(url.searchParams.get(key));
+    } catch {
+        return null;
+    }
+}
+
+function buildCtaTrackingContext(target, href, defaults = {}) {
+    const dataset = target?.dataset || {};
+    const source = cleanAttributionValue(dataset.analyticsSource)
+        || readUrlParam(href, 'source')
+        || defaults.source
+        || defaults.location
+        || null;
+    const feature = cleanAttributionValue(dataset.analyticsFeature)
+        || readUrlParam(href, 'feature')
+        || defaults.feature
+        || null;
+    const productId = cleanAttributionValue(dataset.analyticsProduct)
+        || cleanAttributionValue(dataset.product)
+        || readUrlParam(href, 'product_id')
+        || readUrlParam(href, 'product')
+        || defaults.product_id
+        || null;
+    const planId = cleanAttributionValue(dataset.analyticsPlan)
+        || cleanAttributionValue(dataset.plan)
+        || readUrlParam(href, 'plan')
+        || defaults.plan_id
+        || null;
+
+    return compactTrackingPayload({
+        source,
+        feature,
+        product_id: productId,
+        plan_id: planId,
+        entry_source: cleanAttributionValue(dataset.analyticsEntrySource)
+            || readUrlParam(href, 'entry_source')
+            || defaults.entry_source
+            || null,
+        entry_feature: cleanAttributionValue(dataset.analyticsEntryFeature)
+            || readUrlParam(href, 'entry_feature')
+            || defaults.entry_feature
+            || null,
+        intent: cleanAttributionValue(dataset.analyticsIntent)
+            || readUrlParam(href, 'intent')
+            || defaults.intent
+            || null,
+        variant: cleanAttributionValue(dataset.analyticsVariant)
+            || readUrlParam(href, 'variant')
+            || defaults.variant
+            || null,
+        step: cleanAttributionValue(dataset.analyticsStep)
+            || readUrlParam(href, 'step')
+            || defaults.step
+            || null
+    });
+}
+
 function captureAttributionContext() {
     const current = getCurrentAttributionTouch();
     const local = getBrowserStorage('localStorage');
@@ -470,44 +538,80 @@ document.addEventListener('click', (event) => {
         MH_ANALYTICS.trackCTA(target.dataset.analyticsCta, {
             label,
             destination: href || null,
-            feature: target.dataset.analyticsFeature || null,
-            intent: target.dataset.analyticsIntent || null,
-            product_id: target.dataset.analyticsProduct || null,
-            plan_id: target.dataset.analyticsPlan || target.dataset.plan || null
+            ...buildCtaTrackingContext(target, href, {
+                location: target.dataset.analyticsCta
+            })
         });
         return;
     }
 
     if (target.matches('#hero-cta-btn')) {
-        MH_ANALYTICS.trackCTA('homepage_hero', { label, destination: href || '/prihlaseni.html?mode=register' });
+        MH_ANALYTICS.trackCTA('homepage_hero', {
+            label,
+            destination: href || '/prihlaseni.html?mode=register',
+            ...buildCtaTrackingContext(target, href, {
+                source: 'homepage_hero',
+                feature: 'daily_guidance'
+            })
+        });
         return;
     }
 
     if (target.matches('#hero-daily-card-link')) {
-        MH_ANALYTICS.trackCTA('homepage_daily_card_hero', { label, destination: href || '#sluzby' });
+        MH_ANALYTICS.trackCTA('homepage_daily_card_hero', {
+            label,
+            destination: href || '#sluzby',
+            ...buildCtaTrackingContext(target, href, {
+                source: 'homepage_daily_card_hero',
+                feature: 'daily_angel_card'
+            })
+        });
         return;
     }
 
     if (target.matches('#cta-banner-btn')) {
-        MH_ANALYTICS.trackCTA('homepage_cta_banner', { label, destination: href || '/cenik.html' });
+        MH_ANALYTICS.trackCTA('homepage_cta_banner', {
+            label,
+            destination: href || '/cenik.html',
+            ...buildCtaTrackingContext(target, href, {
+                source: 'homepage_cta_banner',
+                feature: 'daily_guidance'
+            })
+        });
         return;
     }
 
     if (target.matches('#auth-register-btn, #mobile-auth-register-btn')) {
-        MH_ANALYTICS.trackCTA('header_register', { label, destination: href || 'auth_modal_register' });
+        MH_ANALYTICS.trackCTA('header_register', {
+            label,
+            destination: href || 'auth_modal_register',
+            ...buildCtaTrackingContext(target, href, {
+                source: 'header_register',
+                feature: 'account'
+            })
+        });
         return;
     }
 
     if (target.matches('#auth-btn, #mobile-auth-btn') && !(window.Auth?.isLoggedIn?.())) {
-        MH_ANALYTICS.trackCTA('header_login', { label, destination: href || 'auth_modal_login' });
+        MH_ANALYTICS.trackCTA('header_login', {
+            label,
+            destination: href || 'auth_modal_login',
+            ...buildCtaTrackingContext(target, href, {
+                source: 'header_login'
+            })
+        });
         return;
     }
 
     if (target.matches('a[data-plan]')) {
         MH_ANALYTICS.trackCTA('homepage_pricing_preview', {
             label,
-            plan_id: target.dataset.plan || null,
-            destination: href || '/cenik.html'
+            destination: href || '/cenik.html',
+            ...buildCtaTrackingContext(target, href, {
+                source: 'homepage_pricing_preview',
+                plan_id: target.dataset.plan || null
+            })
         });
     }
 });

@@ -3,6 +3,9 @@
  * Checkout validation, webhook persistence and premium checks read from here.
  */
 
+export { FEATURE_PLAN_MAP } from './growth-loop.js';
+import { FEATURE_PLAN_MAP } from './growth-loop.js';
+
 export const PLAN_TYPES = Object.freeze({
     FREE: 'free',
     PREMIUM: 'premium_monthly',
@@ -106,38 +109,6 @@ const PRICING_PAGE_PLAN_MAP = Object.freeze({
         pruvodce: 'pruvodce-rocne',
         osviceni: 'osviceni-rocne',
     }),
-});
-
-export const FEATURE_PLAN_MAP = Object.freeze({
-    angel_card_deep: 'pruvodce',
-    andelske_karty_hluboky_vhled: 'pruvodce',
-    astrocartography: 'osviceni',
-    crystal_ball_unlimited: 'pruvodce',
-    daily_guidance: 'pruvodce',
-    horoskopy: 'pruvodce',
-    hvezdny_mentor: 'pruvodce',
-    journal_insights: 'pruvodce',
-    kristalova_koule: 'pruvodce',
-    mentor: 'pruvodce',
-    medicine_wheel: 'pruvodce',
-    monthly_horoscope: 'pruvodce',
-    minuly_zivot: 'pruvodce',
-    natal_chart: 'pruvodce',
-    natalni_interpretace: 'pruvodce',
-    numerologie_vyklad: 'pruvodce',
-    past_life: 'pruvodce',
-    partnerska_detail: 'pruvodce',
-    premium_membership: 'pruvodce',
-    ritual_memory: 'pruvodce',
-    rituals: 'pruvodce',
-    runy_hluboky_vyklad: 'pruvodce',
-    runes_deep_reading: 'pruvodce',
-    shamanske_kolo_plne_cteni: 'pruvodce',
-    synastry: 'pruvodce',
-    tarot: 'pruvodce',
-    tarot_celtic_cross: 'vip-majestrat',
-    tarot_multi_card: 'pruvodce',
-    weekly_horoscope: 'pruvodce',
 });
 
 const priceFormatter = new Intl.NumberFormat('cs-CZ', {

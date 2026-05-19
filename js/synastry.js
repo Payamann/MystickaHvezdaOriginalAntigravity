@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 const SYNASTRY_FEATURE = 'partnerska_detail';
 const SYNASTRY_PLAN_ID = 'pruvodce';
 const SYNASTRY_RESULT_SOURCE = 'partner_match_result';
+const SYNASTRY_PAYMENT_REASSURANCE = 'Cena a případné zkušební období se zobrazí ve Stripe před potvrzením.';
 
 function buildSynastryUpgradeUrl(source = 'synastry_teaser_overlay') {
     const pricingUrl = new URL('/cenik.html', window.location.origin);
@@ -78,6 +79,16 @@ function startSynastryUpgradeFlow(source) {
     }
 
     window.location.href = buildSynastryUpgradeUrl(source);
+}
+
+function getSynastryUpgradeLabel(context = 'detail') {
+    return context === 'teaser'
+        ? 'Odemknout plný vztahový rozbor'
+        : 'Odemknout detailní rozbor';
+}
+
+function getSynastryPaymentReassuranceHtml() {
+    return `<p class="synastry-upgrade-reassurance">${SYNASTRY_PAYMENT_REASSURANCE}</p>`;
 }
 
 function setBlockVisible(element, visible) {
@@ -501,7 +512,8 @@ async function calculateCompatibility() {
             <div class="lock-icon">🔒</div>
             <h3 class="synastry-lock-title">Detailní rozbor</h3>
             <p class="synastry-lock-copy">Emoce, komunikace a vášeň jsou dostupné pouze pro Hvězdné Průvodce.</p>
-            <button class="btn btn--primary btn--sm mt-md synastry-upgrade-btn">🌟 Vyzkoušet 7 dní zdarma</button>
+            <button class="btn btn--primary btn--sm mt-md synastry-upgrade-btn">${getSynastryUpgradeLabel('detail')}</button>
+            ${getSynastryPaymentReassuranceHtml()}
         `;
         detailCard.appendChild(overlay);
 
@@ -666,7 +678,8 @@ function renderTeaser(container, totalScore = null) {
             <div class="synastry-teaser-card">
                 <h3 class="synastry-teaser-card__title">Odemkněte tajemství vašeho vztahu</h3>
                 <p class="synastry-teaser-card__copy">Zjistěte, proč máte ${document.getElementById('total-score').textContent} shodu a co vás čeká.</p>
-                <a href="${buildSynastryUpgradeUrl('synastry_teaser_overlay')}" class="btn btn--primary synastry-upgrade-btn">Odemknout plný rozbor (199 Kč)</a>
+                <a href="${buildSynastryUpgradeUrl('synastry_teaser_overlay')}" class="btn btn--primary synastry-upgrade-btn">${getSynastryUpgradeLabel('teaser')}</a>
+                ${getSynastryPaymentReassuranceHtml()}
             </div>
         `;
         container.classList.add('teaser-overlay-host');

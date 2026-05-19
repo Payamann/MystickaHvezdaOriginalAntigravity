@@ -981,7 +981,7 @@ function bindCheckoutButtons(context) {
             const isLoggedIn = !!window.Auth?.isLoggedIn?.();
             const checkoutContext = {
                 source: context.source || 'pricing_page',
-                feature: context.feature || null,
+                feature: context.feature || 'premium_membership',
                 metadata: context.metadata || {},
                 billing_interval: currentBilling,
                 redirect: '/cenik.html',

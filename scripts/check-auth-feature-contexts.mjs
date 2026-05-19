@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { FEATURE_CATALOG } from '../server/config/growth-loop.js';
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ignoredDirs = new Set(['.git', '.claude', 'node_modules', 'dist']);
@@ -28,8 +29,9 @@ function collectFiles(dir, files = []) {
 }
 
 function extractBlock(source, declarationName) {
-    const declarationStart = source.indexOf(`const ${declarationName} = {`);
-    if (declarationStart === -1) return '';
+    const declarationMatch = new RegExp(`const\\s+${declarationName}\\s*=`).exec(source);
+    if (!declarationMatch) return '';
+    const declarationStart = declarationMatch.index;
 
     const objectStart = source.indexOf('{', declarationStart);
     if (objectStart === -1) return '';
@@ -166,6 +168,12 @@ function unionSets(...sets) {
     return new Set(sets.flatMap((set) => [...set]));
 }
 
+function routeExists(routePath) {
+    if (!routePath?.startsWith('/')) return true;
+    const cleanPath = routePath.split('?')[0].split('#')[0];
+    return fs.existsSync(path.join(rootDir, cleanPath.slice(1)));
+}
+
 const scannedFiles = [
     ...fs.readdirSync(rootDir, { withFileTypes: true })
         .filter((entry) => entry.isFile() && entry.name.endsWith('.html'))
@@ -215,6 +223,7 @@ for (const file of scannedFiles) {
 
 const loginSource = fs.readFileSync(path.join(rootDir, 'js', 'prihlaseni.js'), 'utf8');
 const authClientSource = fs.readFileSync(path.join(rootDir, 'js', 'auth-client.js'), 'utf8');
+const growthClientSource = fs.readFileSync(path.join(rootDir, 'js', 'growth-loop-client.js'), 'utf8');
 const onboardingSource = fs.readFileSync(path.join(rootDir, 'js', 'onboarding.js'), 'utf8');
 const pricingSource = fs.readFileSync(path.join(rootDir, 'js', 'cenik.js'), 'utf8');
 const premiumGatesSource = fs.readFileSync(path.join(rootDir, 'js', 'premium-gates.js'), 'utf8');
@@ -268,6 +277,17 @@ const missingOnboardingPaths = [
     .filter((routePath, index, all) => all.indexOf(routePath) === index)
     .filter((routePath) => !fs.existsSync(path.join(rootDir, routePath.slice(1))))
     .sort();
+const growthClientFallbackFeatures = extractObjectKeys(extractBlock(growthClientSource, 'FALLBACK_FEATURES'));
+const growthLoopActivationFeatures = Object.values(FEATURE_CATALOG)
+    .filter((feature) => feature.activationStep === 'first_value');
+const missingGrowthClientFallbackFeatures = growthLoopActivationFeatures
+    .filter((feature) => !growthClientFallbackFeatures.has(feature.id))
+    .map((feature) => feature.id)
+    .sort();
+const missingGrowthLoopManifestPaths = growthLoopActivationFeatures
+    .filter((feature) => !routeExists(feature.primaryPath))
+    .map((feature) => `${feature.id}: ${feature.primaryPath}`)
+    .sort();
 
 if (
     missingLabels.length ||
@@ -276,6 +296,8 @@ if (
     missingActivationSources.length ||
     missingActivationPaths.length ||
     missingOnboardingPaths.length ||
+    missingGrowthClientFallbackFeatures.length ||
+    missingGrowthLoopManifestPaths.length ||
     authTokenReferences.length
 ) {
     console.error('[auth-feature-contexts] Missing auth feature coverage.');
@@ -285,6 +307,8 @@ if (
     if (missingActivationSources.length) console.error(`Missing post-auth activation sources: ${missingActivationSources.join(', ')}`);
     if (missingActivationPaths.length) console.error(`Missing post-auth activation target pages: ${missingActivationPaths.join(', ')}`);
     if (missingOnboardingPaths.length) console.error(`Missing onboarding target pages: ${missingOnboardingPaths.join(', ')}`);
+    if (missingGrowthClientFallbackFeatures.length) console.error(`Missing growth-loop client fallback features: ${missingGrowthClientFallbackFeatures.join(', ')}`);
+    if (missingGrowthLoopManifestPaths.length) console.error(`Missing growth-loop manifest target pages: ${missingGrowthLoopManifestPaths.join(', ')}`);
     if (authTokenReferences.length) console.error(`Disallowed Auth.token references: ${authTokenReferences.join(', ')}`);
     process.exitCode = 1;
 } else {

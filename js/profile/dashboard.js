@@ -645,6 +645,36 @@ function buildDailyHoroscopeHref(sign, source = 'profile_daily') {
     return relativeUrl.startsWith('/') ? relativeUrl.slice(1) : relativeUrl;
 }
 
+function getGrowthSignupIntentConfig(featureId) {
+    const staticConfig = SIGNUP_INTENT_DESTINATIONS[featureId];
+    if (staticConfig) return staticConfig;
+
+    const growth = window.MH_GROWTH_LOOP;
+    const feature = growth?.getFeature?.(featureId);
+    if (!feature || ['activation', 'pricing', 'profile'].includes(feature.cluster)) {
+        return null;
+    }
+
+    const activationFeature = growth.getActivationFeatureId?.(featureId) || featureId;
+    return {
+        feature: activationFeature,
+        href: () => growth.getFeatureDestination(featureId, '/horoskopy.html'),
+        description: () => `Navázat na registrační záměr: ${feature.label}.`
+    };
+}
+
+function getManifestSignupHref(config, sign) {
+    const fallbackHref = config.href(sign);
+    const feature = window.MH_GROWTH_LOOP?.getFeature?.(config.feature);
+    if (!feature) return fallbackHref;
+
+    if (config.feature === 'daily_guidance' || feature.primaryPath === '/horoskopy.html') {
+        return buildDailyHoroscopeHref(sign, 'profile_signup_intent');
+    }
+
+    return window.MH_GROWTH_LOOP.getFeatureDestination(config.feature, fallbackHref);
+}
+
 function readSignupIntent() {
     try {
         const intent = JSON.parse(localStorage.getItem(SIGNUP_INTENT_KEY) || 'null');
@@ -682,11 +712,11 @@ function addSignupIntentAttribution(href, intent, fallbackFeature) {
 
 function getSignupIntentDestination(sign) {
     const intent = readSignupIntent();
-    const config = intent?.feature ? SIGNUP_INTENT_DESTINATIONS[intent.feature] : null;
+    const config = intent?.feature ? getGrowthSignupIntentConfig(intent.feature) : null;
     if (!config) return null;
 
     return {
-        href: addSignupIntentAttribution(config.href(sign), intent, config.feature),
+        href: addSignupIntentAttribution(getManifestSignupHref(config, sign), intent, config.feature),
         description: config.description(sign),
         feature: config.feature
     };
@@ -704,11 +734,11 @@ function buildAttributedRelativeHref(href, params = {}) {
 
 function getPaymentReturnDestination(sign, paymentContext) {
     const feature = paymentContext?.feature || paymentContext?.entryFeature || null;
-    const config = feature ? SIGNUP_INTENT_DESTINATIONS[feature] : null;
+    const config = feature ? getGrowthSignupIntentConfig(feature) : null;
     if (!config) return null;
 
     return {
-        href: buildAttributedRelativeHref(config.href(sign), {
+        href: buildAttributedRelativeHref(getManifestSignupHref(config, sign), {
             source: 'profile_payment_return',
             feature: config.feature,
             entry_source: paymentContext.source || paymentContext.entrySource,

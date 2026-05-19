@@ -94,14 +94,36 @@ window.Premium = {
         return `${icon} Odemknout ${name} - ${plan.priceLabel}${suffix}`;
     },
 
-    getPlanFooter(planId, fallbackFooter) {
+    getPlanTrialDays(planId) {
         const plan = this._plansById.get(planId);
-        if (!plan) return fallbackFooter;
+        const trialDays = Number(plan?.trialDays || 0);
+        return Number.isFinite(trialDays) && trialDays > 0 ? trialDays : 0;
+    },
+
+    getConservativePaymentFooter() {
+        return 'Cena se zobrazí ve Stripe před potvrzením • Zrušení v profilu';
+    },
+
+    getPlanFooter(planId, fallbackFooter = null) {
+        const plan = this._plansById.get(planId);
+        if (!plan) return fallbackFooter || this.getConservativePaymentFooter();
 
         const parts = [];
-        if (plan.trialDays > 0) parts.push(`${plan.trialDays} dn\u00ed zdarma`);
-        parts.push('Bez z\u00e1vazk\u016f', 'Zru\u0161en\u00ed jedn\u00edm kliknut\u00edm');
+        const trialDays = this.getPlanTrialDays(planId);
+        if (trialDays > 0) parts.push(`${trialDays} dn\u00ed zdarma`);
+        parts.push('Cena se zobraz\u00ed ve Stripe p\u0159ed potvrzen\u00edm', 'Zru\u0161en\u00ed v profilu');
         return parts.join(' \u2022 ');
+    },
+
+    getPlanTrialBadge(planId) {
+        const trialDays = this.getPlanTrialDays(planId);
+        return trialDays > 0 ? `${trialDays} DN\u00cd ZDARMA` : '';
+    },
+
+    getTrialCtaLabel(planId, fallbackLabel) {
+        const trialDays = this.getPlanTrialDays(planId);
+        if (trialDays > 0) return `\ud83c\udf1f Vyzkou\u0161et ${trialDays} dn\u00ed zdarma`;
+        return this.getPlanCtaLabel(planId, fallbackLabel || '\ud83c\udf1f Odemknout Hv\u011bzdn\u00e9ho Pr\u016fvodce');
     },
 
     getFeaturePlanId(featureName, fallbackPlanId = 'pruvodce') {
@@ -155,12 +177,13 @@ window.Premium = {
         window.location.href = `${pricingUrl.pathname}${pricingUrl.search}`;
     },
 
-    createOverlay({ icon, title, message, benefits, ctaLabel, footer }) {
+    createOverlay({ icon, title, message, benefits, ctaLabel, footer, badgeLabel = '' }) {
         const overlay = document.createElement('div');
         overlay.className = 'paywall-overlay';
         overlay.innerHTML = `
             <div class="paywall-content">
                 <div class="paywall-icon">${this._escapeHTML(icon)}</div>
+                ${badgeLabel ? `<div class="paywall-trial-badge">${this._escapeHTML(badgeLabel)}</div>` : ''}
                 <h3 class="paywall-title">${this._escapeHTML(title)}</h3>
                 <p class="paywall-message">${this._escapeHTML(message)}</p>
                 <div class="paywall-benefits">
@@ -276,8 +299,8 @@ window.Premium = {
                 title: 'Astrokartografie a místa, která vás volají',
                 message: 'Tato pokročilá mapa patří do plánu Osvícení a ukáže, kde se podporuje práce, vztahy i vnitřní růst.',
                 planId: 'osviceni',
-                ctaLabel: this.getPlanCtaLabel('osviceni', '🔭 Odemknout Osvícení – 499 Kč/měsíc'),
-                footer: this.getPlanFooter('osviceni', '7 dní zdarma • Zrušení jedním kliknutím'),
+                ctaLabel: this.getPlanCtaLabel('osviceni', '🔭 Odemknout Osvícení'),
+                footer: this.getPlanFooter('osviceni'),
                 benefits: ['✓ Hvězdná mapa míst', '✓ Linie pro vztahy, práci a růst', '✓ Pokročilé interpretace', '✓ Roční kontext a hlubší analýzy']
             },
             journal_insights: {
@@ -307,8 +330,8 @@ window.Premium = {
             title: config.title,
             message: displayMessage,
             benefits: config.benefits,
-            ctaLabel: this.getPlanCtaLabel(planId, config.ctaLabel || '🌟 Odemknout Hvězdného Průvodce – 199 Kč/měsíc'),
-            footer: this.getPlanFooter(planId, config.footer || '7 dní zdarma • Bez závazků • Zrušení jedním kliknutím')
+            ctaLabel: this.getPlanCtaLabel(planId, config.ctaLabel || '🌟 Odemknout Hvězdného Průvodce'),
+            footer: this.getPlanFooter(planId, config.footer)
         });
 
         this.bindOverlayActions(overlay, () => this.startUpgradeFlow(planId, featureName, 'inline_paywall'), {
@@ -331,8 +354,8 @@ window.Premium = {
                 '✓ Exkluzivní lunární rituály',
                 '✓ Prioritní odpovědi duchovního průvodce'
             ],
-            ctaLabel: this.getPlanCtaLabel('osviceni', '🔭 Probudit se — 499 Kč/měsíc'),
-            footer: this.getPlanFooter('osviceni', 'Bez závazků • Zrušení jedním kliknutím')
+            ctaLabel: this.getPlanCtaLabel('osviceni', '🔭 Odemknout Osvícení'),
+            footer: this.getPlanFooter('osviceni')
         });
 
         this.bindOverlayActions(overlay, () => this.startUpgradeFlow('osviceni', featureName, 'exclusive_paywall'), {
@@ -446,26 +469,16 @@ window.Premium = {
 
         const selectedBenefits = benefits[featureName] || benefits.default;
 
-        const overlay = document.createElement('div');
-        overlay.className = 'paywall-overlay';
-        overlay.innerHTML = `
-                <div class="paywall-content">
-                <div class="paywall-icon">✨</div>
-                <div class="paywall-trial-badge">7 DNÍ ZDARMA</div>
-                <h3 class="paywall-title">Hvězdný Průvodce</h3>
-                <p class="paywall-message">${this._escapeHTML(featureMessages[featureName] || 'Tato funkce je součástí Hvězdného Průvodce.')}</p>
-                <div class="paywall-benefits">
-                    ${selectedBenefits.map((item) => `<div class="benefit-item">${item}</div>`).join('')}
-                </div>
-                <div class="paywall-actions">
-                    <button class="btn btn--primary paywall-upgrade">🌟 Vyzkoušet 7 dní zdarma</button>
-                    <button class="btn btn--ghost paywall-close">Teď ne</button>
-                </div>
-                <p class="paywall-footer">${this.getPlanFooter(planId, '7 dní zdarma • Bez závazků • Zrušení jedním kliknutím')}</p>
-            </div>
-        `;
+        const overlay = this.createOverlay({
+            icon: '✨',
+            badgeLabel: this.getPlanTrialBadge(planId),
+            title: 'Hvězdný Průvodce',
+            message: featureMessages[featureName] || 'Tato funkce je součástí Hvězdného Průvodce.',
+            benefits: selectedBenefits,
+            ctaLabel: this.getTrialCtaLabel(planId, '🌟 Odemknout Hvězdného Průvodce'),
+            footer: this.getPlanFooter(planId)
+        });
 
-        document.body.appendChild(overlay);
         this.bindOverlayActions(overlay, () => this.startUpgradeFlow(planId, featureName, 'trial_paywall'), {
             source: 'trial_paywall',
             feature: featureName,
