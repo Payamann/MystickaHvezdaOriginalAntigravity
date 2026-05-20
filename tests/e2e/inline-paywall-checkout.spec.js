@@ -8,56 +8,132 @@ async function waitForPath(page, pathname, options = {}) {
     );
 }
 
+async function setupCheckoutRoutes(page, {
+    userId,
+    email,
+    checkoutSessionId,
+    csrfToken
+}) {
+    const state = {
+        authPayload: null,
+        checkoutPayload: null,
+        funnelEvents: []
+    };
+
+    await page.route('**/api/csrf-token', async (route) => {
+        await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ csrfToken })
+        });
+    });
+
+    await page.route('**/api/payment/funnel-event', async (route) => {
+        state.funnelEvents.push(route.request().postDataJSON());
+        await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ success: true })
+        });
+    });
+
+    await page.route('**/api/auth/register', async (route) => {
+        state.authPayload = route.request().postDataJSON();
+        await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({
+                success: true,
+                user: {
+                    id: userId,
+                    email,
+                    role: 'user',
+                    subscription_status: 'free'
+                }
+            })
+        });
+    });
+
+    await page.route('**/api/payment/create-checkout-session', async (route) => {
+        state.checkoutPayload = route.request().postDataJSON();
+        await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({
+                id: checkoutSessionId,
+                url: `/profil.html?payment=success&plan=pruvodce&session_id=${checkoutSessionId}`
+            })
+        });
+    });
+
+    return state;
+}
+
+async function expectAuthUrl(page, { source, feature }) {
+    const authUrl = new URL(page.url());
+    expect(authUrl.searchParams.get('mode')).toBe('register');
+    expect(authUrl.searchParams.get('redirect')).toBe('/cenik.html');
+    expect(authUrl.searchParams.get('plan')).toBe('pruvodce');
+    expect(authUrl.searchParams.get('source')).toBe(source);
+    expect(authUrl.searchParams.get('feature')).toBe(feature);
+    expect(authUrl.searchParams.get('entry_source')).toBe(source);
+    expect(authUrl.searchParams.get('entry_feature')).toBe(feature);
+}
+
+async function submitRegistration(page, email) {
+    await page.locator('#email').fill(email);
+    await page.locator('#password').fill('TestPassword123!');
+    await page.locator('#confirm-password-reg').fill('TestPassword123!');
+    await page.locator('#gdpr-consent').check();
+
+    await Promise.all([
+        waitForPath(page, '/profil.html'),
+        page.locator('#auth-submit').click(),
+    ]);
+}
+
+function expectCheckoutState(state, {
+    email,
+    source,
+    feature
+}) {
+    expect(state.authPayload).toEqual(expect.objectContaining({
+        email,
+        password: 'TestPassword123!',
+        password_confirm: 'TestPassword123!'
+    }));
+    expect(state.checkoutPayload).toEqual(expect.objectContaining({
+        planId: 'pruvodce',
+        source,
+        feature,
+        billingInterval: null,
+        metadata: expect.objectContaining({
+            entry_source: source,
+            entry_feature: feature
+        })
+    }));
+    expect(state.funnelEvents.find((event) => (
+        event.eventName === 'checkout_auth_required'
+        && event.source === source
+        && event.feature === feature
+    )) || null).toEqual(expect.objectContaining({
+        planId: 'pruvodce',
+        metadata: expect.objectContaining({
+            redirect: '/cenik.html',
+            auth_mode: 'register',
+            entry_source: source,
+            entry_feature: feature
+        })
+    }));
+}
+
 test.describe('Inline paywall checkout handoff', () => {
     test('tarot multi-card inline paywall preserves checkout context through registration', async ({ page }) => {
-        let authPayload = null;
-        let checkoutPayload = null;
-        const funnelEvents = [];
-
-        await page.route('**/api/csrf-token', async (route) => {
-            await route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify({ csrfToken: 'e2e-inline-paywall-token' })
-            });
-        });
-
-        await page.route('**/api/payment/funnel-event', async (route) => {
-            funnelEvents.push(route.request().postDataJSON());
-            await route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify({ success: true })
-            });
-        });
-
-        await page.route('**/api/auth/register', async (route) => {
-            authPayload = route.request().postDataJSON();
-            await route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify({
-                    success: true,
-                    user: {
-                        id: 'inline-paywall-tarot-user',
-                        email: 'inline-paywall-tarot@example.com',
-                        role: 'user',
-                        subscription_status: 'free'
-                    }
-                })
-            });
-        });
-
-        await page.route('**/api/payment/create-checkout-session', async (route) => {
-            checkoutPayload = route.request().postDataJSON();
-            await route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify({
-                    id: 'cs_test_inline_paywall_tarot',
-                    url: '/profil.html?payment=success&plan=pruvodce&session_id=cs_test_inline_paywall_tarot'
-                })
-            });
+        const state = await setupCheckoutRoutes(page, {
+            userId: 'inline-paywall-tarot-user',
+            email: 'inline-paywall-tarot@example.com',
+            checkoutSessionId: 'cs_test_inline_paywall_tarot',
+            csrfToken: 'e2e-inline-paywall-token'
         });
 
         await page.goto('/tarot.html?source=e2e_inline_paywall');
@@ -76,57 +152,65 @@ test.describe('Inline paywall checkout handoff', () => {
             page.locator('.paywall-overlay .paywall-upgrade').click(),
         ]);
 
-        const authUrl = new URL(page.url());
-        expect(authUrl.searchParams.get('mode')).toBe('register');
-        expect(authUrl.searchParams.get('redirect')).toBe('/cenik.html');
-        expect(authUrl.searchParams.get('plan')).toBe('pruvodce');
-        expect(authUrl.searchParams.get('source')).toBe('inline_paywall');
-        expect(authUrl.searchParams.get('feature')).toBe('tarot_multi_card');
-        expect(authUrl.searchParams.get('entry_source')).toBe('inline_paywall');
-        expect(authUrl.searchParams.get('entry_feature')).toBe('tarot_multi_card');
+        await expectAuthUrl(page, {
+            source: 'inline_paywall',
+            feature: 'tarot_multi_card'
+        });
 
         await expect(page.locator('#checkout-context-banner')).toBeVisible();
         await expect(page.locator('#checkout-context-banner')).toContainText(/tarot/i);
         await expect(page.locator('#checkout-context-banner')).toContainText(/checkout/i);
 
-        await page.locator('#email').fill('inline-paywall-tarot@example.com');
-        await page.locator('#password').fill('TestPassword123!');
-        await page.locator('#confirm-password-reg').fill('TestPassword123!');
-        await page.locator('#gdpr-consent').check();
+        await submitRegistration(page, 'inline-paywall-tarot@example.com');
+
+        expectCheckoutState(state, {
+            email: 'inline-paywall-tarot@example.com',
+            source: 'inline_paywall',
+            feature: 'tarot_multi_card'
+        });
+        expect(await page.evaluate(() => sessionStorage.getItem('pending_plan'))).toBeNull();
+    });
+
+    test('numerology trial paywall preserves checkout context through registration', async ({ page }) => {
+        const state = await setupCheckoutRoutes(page, {
+            userId: 'trial-paywall-numerology-user',
+            email: 'trial-paywall-numerology@example.com',
+            checkoutSessionId: 'cs_test_trial_paywall_numerology',
+            csrfToken: 'e2e-trial-paywall-token'
+        });
+
+        await page.goto('/numerologie.html?source=e2e_trial_paywall');
+        await waitForPageReady(page);
+        await page.evaluate(() => {
+            localStorage.clear();
+            sessionStorage.clear();
+        });
+
+        await page.evaluate(() => window.Premium.showTrialPaywall('numerologie_vyklad'));
+        await expect(page.locator('.paywall-overlay')).toBeVisible();
+        await expect(page.locator('.paywall-overlay')).toContainText(/numerolog/i);
 
         await Promise.all([
-            waitForPath(page, '/profil.html'),
-            page.locator('#auth-submit').click(),
+            waitForPath(page, '/prihlaseni.html'),
+            page.locator('.paywall-overlay .paywall-upgrade').click(),
         ]);
 
-        expect(authPayload).toEqual(expect.objectContaining({
-            email: 'inline-paywall-tarot@example.com',
-            password: 'TestPassword123!',
-            password_confirm: 'TestPassword123!'
-        }));
-        expect(checkoutPayload).toEqual(expect.objectContaining({
-            planId: 'pruvodce',
-            source: 'inline_paywall',
-            feature: 'tarot_multi_card',
-            billingInterval: null,
-            metadata: expect.objectContaining({
-                entry_source: 'inline_paywall',
-                entry_feature: 'tarot_multi_card'
-            })
-        }));
-        await expect.poll(() => funnelEvents.find((event) => (
-            event.eventName === 'checkout_auth_required'
-            && event.source === 'inline_paywall'
-            && event.feature === 'tarot_multi_card'
-        )) || null).toEqual(expect.objectContaining({
-            planId: 'pruvodce',
-            metadata: expect.objectContaining({
-                redirect: '/cenik.html',
-                auth_mode: 'register',
-                entry_source: 'inline_paywall',
-                entry_feature: 'tarot_multi_card'
-            })
-        }));
+        await expectAuthUrl(page, {
+            source: 'trial_paywall',
+            feature: 'numerologie_vyklad'
+        });
+
+        await expect(page.locator('#checkout-context-banner')).toBeVisible();
+        await expect(page.locator('#checkout-context-banner')).toContainText(/numerolog/i);
+        await expect(page.locator('#checkout-context-banner')).toContainText(/checkout/i);
+
+        await submitRegistration(page, 'trial-paywall-numerology@example.com');
+
+        expectCheckoutState(state, {
+            email: 'trial-paywall-numerology@example.com',
+            source: 'trial_paywall',
+            feature: 'numerologie_vyklad'
+        });
         expect(await page.evaluate(() => sessionStorage.getItem('pending_plan'))).toBeNull();
     });
 });
