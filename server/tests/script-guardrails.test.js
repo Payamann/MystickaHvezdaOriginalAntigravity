@@ -121,6 +121,9 @@ describe('manual script guardrails', () => {
         expect(deployGuard).toContain('Health deployment metadata missing');
         expect(deployGuard).toContain('[smoke] deployment commit ok:');
         expect(deployGuard).toContain('const smokeExpectedSha = args.skipRemote && args.skipRailway ? null : sha;');
+        expect(deployGuard).toContain('fetchLiveDeploymentCommit');
+        expect(deployGuard).toContain('Production health currently reports deployment commit');
+        expect(deployGuard).toContain('Check Railway GitHub integration/status');
         expect(productionVerifier).toContain('Deployment commit verified');
         expect(productionVerifier).toContain("got ${liveCommit || 'none'}");
         expect(productionVerifier).toContain('runApexDomainDiagnostic');

@@ -160,6 +160,19 @@ async function assertHttpOk(url, options = {}) {
     return { response, text };
 }
 
+async function fetchLiveDeploymentCommit(baseUrl) {
+    const normalizedBase = baseUrl.replace(/\/$/, '');
+    try {
+        const health = await assertHttpOk(`${normalizedBase}/api/health`, {
+            headers: { Accept: 'application/json' }
+        });
+        const healthBody = JSON.parse(health.text);
+        return healthBody.deployment?.commit || null;
+    } catch (error) {
+        return `unavailable: ${error.message}`;
+    }
+}
+
 async function runSmokeChecks(baseUrl, expectedSha = null) {
     const normalizedBase = baseUrl.replace(/\/$/, '');
     const health = await assertHttpOk(`${normalizedBase}/api/health`, {
@@ -212,7 +225,17 @@ async function main() {
     }
 
     if (!args.skipRemote) await waitForChecks({ ...args, sha });
-    if (!args.skipRailway) await waitForRailwayStatus({ ...args, sha });
+    if (!args.skipRailway) {
+        try {
+            await waitForRailwayStatus({ ...args, sha });
+        } catch (error) {
+            if (error.message.includes('Timed out waiting for Railway status')) {
+                const liveCommit = await fetchLiveDeploymentCommit(args.baseUrl);
+                throw new Error(`${error.message}. Production health currently reports deployment commit ${liveCommit || 'none'}; target is ${sha}. Check Railway GitHub integration/status for ${args.repo}@${sha}.`);
+            }
+            throw error;
+        }
+    }
     const smokeExpectedSha = args.skipRemote && args.skipRailway ? null : sha;
     if (!args.skipSmoke) await runSmokeChecks(args.baseUrl, smokeExpectedSha);
 
