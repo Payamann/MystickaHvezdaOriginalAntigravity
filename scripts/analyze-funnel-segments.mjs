@@ -17,14 +17,20 @@ const OPTIONAL_COLUMNS = [
     'paywall_viewed',
     'pricing_intent',
     'checkout_auth_required',
+    'checkout_post_verification_pending',
+    'checkout_post_verification_recovered',
     'checkout_requested',
     'checkout_started',
     'purchase_completed',
     'failures',
     'paywall_to_pricing_intent_rate',
+    'pricing_intent_to_auth_handoff_rate',
+    'auth_handoff_to_checkout_request_rate',
+    'post_verification_recovery_rate',
     'pricing_intent_to_checkout_request_rate',
     'checkout_request_to_session_rate',
     'pricing_intent_to_checkout_rate',
+    'paywall_to_checkout_request_rate',
     'first_value_to_checkout_rate',
     'activation_to_checkout_rate',
     'paywall_to_checkout_rate',
@@ -318,6 +324,8 @@ function normalizeRow(record) {
         paywall_viewed: parseNumber(record.paywall_viewed),
         pricing_intent: parseNumber(record.pricing_intent),
         checkout_auth_required: parseNumber(record.checkout_auth_required),
+        checkout_post_verification_pending: parseNumber(record.checkout_post_verification_pending),
+        checkout_post_verification_recovered: parseNumber(record.checkout_post_verification_recovered),
         checkout_requested: parseNumber(record.checkout_requested),
         checkout_started: parseNumber(record.checkout_started),
         purchase_completed: parseNumber(record.purchase_completed),
@@ -436,7 +444,16 @@ function buildDataQualityNotes(rows) {
             notes.push(`${row.source}/${row.feature}: checkout_requested exists with no checkout_auth_required. This may be fine for logged-in users; verify logged-out auth handoff coverage separately.`);
         }
         if (row.checkout_auth_required > row.checkout_requested && row.checkout_requested === 0) {
-            notes.push(`${row.source}/${row.feature}: auth handoff exists but no checkout request. Check whether users complete auth and pending checkout resumes.`);
+            if (row.checkout_post_verification_pending > 0 && row.checkout_post_verification_recovered === 0) {
+                notes.push(`${row.source}/${row.feature}: auth handoff reached email verification but no recovery yet. Wait for verification or inspect reminder/recovery path before changing checkout.`);
+            } else if (row.checkout_post_verification_recovered > 0) {
+                notes.push(`${row.source}/${row.feature}: post-verification recovery exists but no checkout request. Check _startCheckout and /payment/create-checkout-session after login.`);
+            } else {
+                notes.push(`${row.source}/${row.feature}: auth handoff exists but no checkout request. Check whether users complete auth and pending checkout resumes.`);
+            }
+        }
+        if (row.checkout_post_verification_recovered > row.checkout_post_verification_pending) {
+            notes.push(`${row.source}/${row.feature}: recovered post-verification checkouts exceed pending records. Check event attribution continuity.`);
         }
         if (row.purchase_completed > row.checkout_started) {
             notes.push(`${row.source}/${row.feature}: purchase_completed exceeds checkout_started. Check whether webhook completion keeps the same source/feature.`);

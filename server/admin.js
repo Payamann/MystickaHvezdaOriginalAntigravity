@@ -56,6 +56,14 @@ const FUNNEL_CHECKOUT_AUTH_REQUIRED_EVENTS = new Set([
     'checkout_auth_required',
 ]);
 
+const FUNNEL_CHECKOUT_POST_VERIFICATION_PENDING_EVENTS = new Set([
+    'checkout_post_verification_pending',
+]);
+
+const FUNNEL_CHECKOUT_POST_VERIFICATION_RECOVERED_EVENTS = new Set([
+    'checkout_post_verification_recovered',
+]);
+
 const FUNNEL_RITUAL_COMPLETION_EVENTS = new Set([
     'daily_ritual_completed',
     'return_ritual_completed',
@@ -117,6 +125,8 @@ function createDailyBucket(date) {
         paywallViewed: 0,
         pricingIntent: 0,
         checkoutAuthRequired: 0,
+        checkoutPostVerificationPending: 0,
+        checkoutPostVerificationRecovered: 0,
         checkoutRequested: 0,
         checkoutStarted: 0,
         subscriptionCompleted: 0,
@@ -229,6 +239,8 @@ function createSourceFeatureSegment(source, feature) {
         paywallViewed: 0,
         pricingIntent: 0,
         checkoutAuthRequired: 0,
+        checkoutPostVerificationPending: 0,
+        checkoutPostVerificationRecovered: 0,
         checkoutRequested: 0,
         checkoutStarted: 0,
         purchaseCompleted: 0,
@@ -236,6 +248,9 @@ function createSourceFeatureSegment(source, feature) {
         oneTimeLifecycleScheduled: 0,
         failures: 0,
         paywallToPricingIntentRate: 0,
+        pricingIntentToAuthHandoffRate: 0,
+        authHandoffToCheckoutRequestRate: 0,
+        postVerificationRecoveryRate: 0,
         pricingIntentToCheckoutRequestRate: 0,
         checkoutRequestToSessionRate: 0,
         pricingIntentToCheckoutRate: 0,
@@ -259,6 +274,8 @@ function addFunnelConversionCounts(segment, eventName) {
     if (eventName === 'reading_feedback_submitted') segment.readingFeedbackSubmitted += 1;
     if (FUNNEL_PRICING_INTENT_EVENTS.has(eventName)) segment.pricingIntent += 1;
     if (FUNNEL_CHECKOUT_AUTH_REQUIRED_EVENTS.has(eventName)) segment.checkoutAuthRequired += 1;
+    if (FUNNEL_CHECKOUT_POST_VERIFICATION_PENDING_EVENTS.has(eventName)) segment.checkoutPostVerificationPending += 1;
+    if (FUNNEL_CHECKOUT_POST_VERIFICATION_RECOVERED_EVENTS.has(eventName)) segment.checkoutPostVerificationRecovered += 1;
     if (FUNNEL_CHECKOUT_REQUEST_EVENTS.has(eventName)) segment.checkoutRequested += 1;
     if (eventName === 'checkout_session_created') segment.checkoutStarted += 1;
     if (eventName === 'subscription_checkout_completed' || eventName === 'one_time_purchase_completed') segment.purchaseCompleted += 1;
@@ -303,6 +320,15 @@ function applySourceFeatureRates(segment) {
         paywallToPricingIntentRate: segment.paywallViewed > 0
             ? Math.round((segment.pricingIntent / segment.paywallViewed) * 1000) / 10
             : 0,
+        pricingIntentToAuthHandoffRate: segment.pricingIntent > 0
+            ? Math.round((segment.checkoutAuthRequired / segment.pricingIntent) * 1000) / 10
+            : 0,
+        authHandoffToCheckoutRequestRate: segment.checkoutAuthRequired > 0
+            ? Math.round((segment.checkoutRequested / segment.checkoutAuthRequired) * 1000) / 10
+            : 0,
+        postVerificationRecoveryRate: segment.checkoutPostVerificationPending > 0
+            ? Math.round((segment.checkoutPostVerificationRecovered / segment.checkoutPostVerificationPending) * 1000) / 10
+            : 0,
         pricingIntentToCheckoutRequestRate: segment.pricingIntent > 0
             ? Math.round((segment.checkoutRequested / segment.pricingIntent) * 1000) / 10
             : 0,
@@ -341,6 +367,15 @@ function buildSourceFeatureSegments(events, previousEvents = [], limit = 10) {
             ...segment,
             paywallToPricingIntentRateDelta: segment.previous.paywallViewed > 0
                 ? Math.round((segment.paywallToPricingIntentRate - segment.previous.paywallToPricingIntentRate) * 10) / 10
+                : null,
+            pricingIntentToAuthHandoffRateDelta: segment.previous.pricingIntent > 0
+                ? Math.round((segment.pricingIntentToAuthHandoffRate - segment.previous.pricingIntentToAuthHandoffRate) * 10) / 10
+                : null,
+            authHandoffToCheckoutRequestRateDelta: segment.previous.checkoutAuthRequired > 0
+                ? Math.round((segment.authHandoffToCheckoutRequestRate - segment.previous.authHandoffToCheckoutRequestRate) * 10) / 10
+                : null,
+            postVerificationRecoveryRateDelta: segment.previous.checkoutPostVerificationPending > 0
+                ? Math.round((segment.postVerificationRecoveryRate - segment.previous.postVerificationRecoveryRate) * 10) / 10
                 : null,
             pricingIntentToCheckoutRequestRateDelta: segment.previous.pricingIntent > 0
                 ? Math.round((segment.pricingIntentToCheckoutRequestRate - segment.previous.pricingIntentToCheckoutRequestRate) * 10) / 10
@@ -901,6 +936,8 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
             if (FUNNEL_PAYWALL_VIEW_EVENTS.has(eventName)) byDay[date].paywallViewed += 1;
             if (FUNNEL_PRICING_INTENT_EVENTS.has(eventName)) byDay[date].pricingIntent += 1;
             if (FUNNEL_CHECKOUT_AUTH_REQUIRED_EVENTS.has(eventName)) byDay[date].checkoutAuthRequired += 1;
+            if (FUNNEL_CHECKOUT_POST_VERIFICATION_PENDING_EVENTS.has(eventName)) byDay[date].checkoutPostVerificationPending += 1;
+            if (FUNNEL_CHECKOUT_POST_VERIFICATION_RECOVERED_EVENTS.has(eventName)) byDay[date].checkoutPostVerificationRecovered += 1;
             if (FUNNEL_CHECKOUT_REQUEST_EVENTS.has(eventName)) byDay[date].checkoutRequested += 1;
             if (eventName === 'checkout_session_created') byDay[date].checkoutStarted += 1;
             if (eventName === 'subscription_checkout_completed') byDay[date].subscriptionCompleted += 1;
@@ -915,6 +952,8 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
     const paywallViewed = [...FUNNEL_PAYWALL_VIEW_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
     const pricingIntent = [...FUNNEL_PRICING_INTENT_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
     const checkoutAuthRequired = [...FUNNEL_CHECKOUT_AUTH_REQUIRED_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
+    const checkoutPostVerificationPending = [...FUNNEL_CHECKOUT_POST_VERIFICATION_PENDING_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
+    const checkoutPostVerificationRecovered = [...FUNNEL_CHECKOUT_POST_VERIFICATION_RECOVERED_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
     const checkoutRequested = [...FUNNEL_CHECKOUT_REQUEST_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
     const firstValueCompleted = byEvent.first_value_completed || 0;
     const activationCompleted = byEvent.activation_completed || 0;
@@ -937,6 +976,15 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
         : 0;
     const paywallToPricingIntentRate = paywallViewed > 0
         ? Math.round((pricingIntent / paywallViewed) * 1000) / 10
+        : 0;
+    const pricingIntentToAuthHandoffRate = pricingIntent > 0
+        ? Math.round((checkoutAuthRequired / pricingIntent) * 1000) / 10
+        : 0;
+    const authHandoffToCheckoutRequestRate = checkoutAuthRequired > 0
+        ? Math.round((checkoutRequested / checkoutAuthRequired) * 1000) / 10
+        : 0;
+    const postVerificationRecoveryRate = checkoutPostVerificationPending > 0
+        ? Math.round((checkoutPostVerificationRecovered / checkoutPostVerificationPending) * 1000) / 10
         : 0;
     const pricingIntentToCheckoutRequestRate = pricingIntent > 0
         ? Math.round((checkoutRequested / pricingIntent) * 1000) / 10
@@ -979,6 +1027,8 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
             paywallViewed,
             pricingIntent,
             checkoutAuthRequired,
+            checkoutPostVerificationPending,
+            checkoutPostVerificationRecovered,
             checkoutRequested,
             checkoutStarted,
             subscriptionCompleted,
@@ -992,6 +1042,9 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
             conversionRate,
             paywallToCheckoutRate,
             paywallToPricingIntentRate,
+            pricingIntentToAuthHandoffRate,
+            authHandoffToCheckoutRequestRate,
+            postVerificationRecoveryRate,
             pricingIntentToCheckoutRequestRate,
             checkoutRequestToSessionRate,
             pricingIntentToCheckoutRate,
@@ -1039,6 +1092,8 @@ export function buildFunnelDailyCsv(report) {
         'paywall_viewed',
         'pricing_intent',
         'checkout_auth_required',
+        'checkout_post_verification_pending',
+        'checkout_post_verification_recovered',
         'checkout_requested',
         'checkout_started',
         'subscription_completed',
@@ -1058,6 +1113,8 @@ export function buildFunnelDailyCsv(report) {
         row.paywallViewed,
         row.pricingIntent,
         row.checkoutAuthRequired,
+        row.checkoutPostVerificationPending,
+        row.checkoutPostVerificationRecovered,
         row.checkoutRequested,
         row.checkoutStarted,
         row.subscriptionCompleted,
@@ -1085,6 +1142,8 @@ export function buildFunnelSegmentsCsv(report) {
         'paywall_viewed',
         'pricing_intent',
         'checkout_auth_required',
+        'checkout_post_verification_pending',
+        'checkout_post_verification_recovered',
         'checkout_requested',
         'checkout_started',
         'purchase_completed',
@@ -1092,6 +1151,9 @@ export function buildFunnelSegmentsCsv(report) {
         'one_time_lifecycle_scheduled',
         'failures',
         'paywall_to_pricing_intent_rate',
+        'pricing_intent_to_auth_handoff_rate',
+        'auth_handoff_to_checkout_request_rate',
+        'post_verification_recovery_rate',
         'pricing_intent_to_checkout_request_rate',
         'checkout_request_to_session_rate',
         'pricing_intent_to_checkout_rate',
@@ -1101,6 +1163,9 @@ export function buildFunnelSegmentsCsv(report) {
         'paywall_to_checkout_rate',
         'checkout_to_purchase_rate',
         'previous_paywall_to_pricing_intent_rate',
+        'previous_pricing_intent_to_auth_handoff_rate',
+        'previous_auth_handoff_to_checkout_request_rate',
+        'previous_post_verification_recovery_rate',
         'previous_pricing_intent_to_checkout_request_rate',
         'previous_checkout_request_to_session_rate',
         'previous_pricing_intent_to_checkout_rate',
@@ -1110,6 +1175,9 @@ export function buildFunnelSegmentsCsv(report) {
         'previous_paywall_to_checkout_rate',
         'previous_checkout_to_purchase_rate',
         'paywall_to_pricing_intent_rate_delta',
+        'pricing_intent_to_auth_handoff_rate_delta',
+        'auth_handoff_to_checkout_request_rate_delta',
+        'post_verification_recovery_rate_delta',
         'pricing_intent_to_checkout_request_rate_delta',
         'checkout_request_to_session_rate_delta',
         'pricing_intent_to_checkout_rate_delta',
@@ -1131,6 +1199,8 @@ export function buildFunnelSegmentsCsv(report) {
         row.paywallViewed,
         row.pricingIntent,
         row.checkoutAuthRequired,
+        row.checkoutPostVerificationPending,
+        row.checkoutPostVerificationRecovered,
         row.checkoutRequested,
         row.checkoutStarted,
         row.purchaseCompleted,
@@ -1138,6 +1208,9 @@ export function buildFunnelSegmentsCsv(report) {
         row.oneTimeLifecycleScheduled,
         row.failures,
         row.paywallToPricingIntentRate,
+        row.pricingIntentToAuthHandoffRate,
+        row.authHandoffToCheckoutRequestRate,
+        row.postVerificationRecoveryRate,
         row.pricingIntentToCheckoutRequestRate,
         row.checkoutRequestToSessionRate,
         row.pricingIntentToCheckoutRate,
@@ -1147,6 +1220,9 @@ export function buildFunnelSegmentsCsv(report) {
         row.paywallToCheckoutRate,
         row.checkoutToPurchaseRate,
         row.previous?.paywallToPricingIntentRate ?? 0,
+        row.previous?.pricingIntentToAuthHandoffRate ?? 0,
+        row.previous?.authHandoffToCheckoutRequestRate ?? 0,
+        row.previous?.postVerificationRecoveryRate ?? 0,
         row.previous?.pricingIntentToCheckoutRequestRate ?? 0,
         row.previous?.checkoutRequestToSessionRate ?? 0,
         row.previous?.pricingIntentToCheckoutRate ?? 0,
@@ -1156,6 +1232,9 @@ export function buildFunnelSegmentsCsv(report) {
         row.previous?.paywallToCheckoutRate ?? 0,
         row.previous?.checkoutToPurchaseRate ?? 0,
         row.paywallToPricingIntentRateDelta,
+        row.pricingIntentToAuthHandoffRateDelta,
+        row.authHandoffToCheckoutRequestRateDelta,
+        row.postVerificationRecoveryRateDelta,
         row.pricingIntentToCheckoutRequestRateDelta,
         row.checkoutRequestToSessionRateDelta,
         row.pricingIntentToCheckoutRateDelta,
