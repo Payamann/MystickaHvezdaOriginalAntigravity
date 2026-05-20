@@ -40,6 +40,42 @@ Use this loop for autonomous work blocks:
 8. Deploy to `origin/main` only when the change belongs in production and then require `deploy:guard` or production health plus `verify:production`.
 9. End with the next P0 recommendation.
 
+## Anti-Stuck Protocol
+
+Autonomous work should not stop just because one path is blocked. Use this protocol whenever a task stalls for more than one tool run, one external dependency, or one failed gate.
+
+1. Classify the blocker:
+   - `credential`: missing token, expired auth, unavailable API quota.
+   - `external`: Railway/GitHub/Stripe status missing or pending.
+   - `data`: post-deploy window has too few events to justify product changes.
+   - `test`: local regression or flaky E2E.
+   - `scope`: next action would require pricing, Stripe, legal, or product decision.
+2. Try one direct recovery:
+   - rerun once if the failure is transient,
+   - run the smallest diagnostic command,
+   - inspect the exact file or endpoint that owns the failure.
+3. If still blocked, do not keep polling indefinitely. Write a blocker note with:
+   - current commit,
+   - exact command or endpoint,
+   - observed failure,
+   - safest next human action.
+4. Switch to the next non-blocked P0/P1 slice that does not depend on the blocker:
+   - add missing test coverage for the suspected flow,
+   - improve admin/analyzer diagnostics,
+   - run visual or E2E smoke on the affected flow,
+   - prepare a small refactor behind existing behavior.
+5. Commit only completed, green, self-contained work. Do not commit raw production exports or unrelated dirty files.
+6. End the cycle with:
+   - shipped/verified work,
+   - unresolved blocker,
+   - next autonomous slice.
+
+Timeboxing:
+
+- Do not spend more than 20 minutes waiting on external deploy/check status without new information.
+- Do not spend more than 30 minutes on live data if the post-deploy cohort has no meaningful events.
+- Do not broaden scope after a failure; narrow it to the smallest reproducible flow.
+
 ## Decision Rules
 
 Revenue funnel decisions:
@@ -101,4 +137,3 @@ npm.cmd run verify:production
 - Daily revenue truth monitor: export post-deploy, 24h, 7d, and 30d windows; report only aggregate counts and next P0.
 - Twice-weekly production smoke: run production health and public smoke checks; notify only on failure or changed deploy state.
 - Weekly sprint planner: summarize what changed, what data says, and the next 3 implementation slices.
-
