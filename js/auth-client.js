@@ -2,6 +2,7 @@
     const API_URL = window.API_CONFIG?.BASE_URL || '/api';
     const PENDING_PLAN_KEY = 'pending_plan';
     const PENDING_CONTEXT_KEY = 'pending_checkout_context';
+    const PENDING_AUTH_REQUIRED_EVENTS_KEY = 'mh_pending_checkout_auth_required_events';
     const POST_VERIFICATION_CHECKOUT_KEY = 'mh_post_verification_checkout';
     const POST_VERIFICATION_CHECKOUT_TTL_MS = 7 * 24 * 60 * 60 * 1000;
     const POST_AUTH_ACTIVATION_KEY = 'post_auth_activation';
@@ -156,6 +157,7 @@
             this.updateUI();
             this.setupListeners();
             this.handleRedirect();
+            void this.flushPendingCheckoutAuthRequiredEvents();
             this.maybeShowPostAuthActivation();
             this.refreshSession(); // Auto-sync profile on load
             // Auto-refresh token every 15 minutes (faster detection of trial expiration)
@@ -336,6 +338,11 @@
                     const checkoutPlan = pendingPlan || standalonePlan;
                     if (checkoutPlan && checkoutContext) {
                         this.rememberPostVerificationCheckout(checkoutPlan, checkoutContext);
+                        void this.trackCheckoutPostVerificationEvent(
+                            'checkout_post_verification_pending',
+                            checkoutPlan,
+                            checkoutContext
+                        );
                     }
                     const authSource = checkoutContext?.source || standaloneContext?.source || null;
                     const authFeature = checkoutContext?.feature || standaloneContext?.feature || null;
@@ -475,6 +482,13 @@
             // After login/register success: check for pending plan redirect
             if (checkoutPlan) {
                 sessionStorage.removeItem(POST_AUTH_REDIRECT_PENDING_KEY);
+                if (postVerificationCheckout) {
+                    void this.trackCheckoutPostVerificationEvent(
+                        'checkout_post_verification_recovered',
+                        checkoutPlan,
+                        checkoutContext
+                    );
+                }
                 this._startCheckout(checkoutPlan, checkoutContext);
                 return;
             }
@@ -951,6 +965,96 @@
             localStorage.removeItem(POST_VERIFICATION_CHECKOUT_KEY);
         },
 
+        getQueuedCheckoutAuthRequiredEvents() {
+            try {
+                const parsed = JSON.parse(sessionStorage.getItem(PENDING_AUTH_REQUIRED_EVENTS_KEY) || '[]');
+                return Array.isArray(parsed) ? parsed.filter((event) => event?.id && event?.payload) : [];
+            } catch {
+                sessionStorage.removeItem(PENDING_AUTH_REQUIRED_EVENTS_KEY);
+                return [];
+            }
+        },
+
+        setQueuedCheckoutAuthRequiredEvents(events = []) {
+            const cleanEvents = Array.isArray(events) ? events.slice(-8) : [];
+            if (!cleanEvents.length) {
+                sessionStorage.removeItem(PENDING_AUTH_REQUIRED_EVENTS_KEY);
+                return;
+            }
+            sessionStorage.setItem(PENDING_AUTH_REQUIRED_EVENTS_KEY, JSON.stringify(cleanEvents));
+        },
+
+        buildCheckoutAuthRequiredPayload(planId, context = {}) {
+            const storedContext = this.sanitizeCheckoutContextForStorage(planId, context);
+            return {
+                eventName: 'checkout_auth_required',
+                source: storedContext.source || 'auth_pending_plan',
+                feature: storedContext.feature || null,
+                planId: storedContext.planId || planId,
+                metadata: {
+                    path: window.location.pathname,
+                    redirect: storedContext.redirect || null,
+                    auth_mode: storedContext.authMode || null,
+                    billing_interval: storedContext.billing_interval || null,
+                    ...(storedContext.metadata || {})
+                }
+            };
+        },
+
+        queueCheckoutAuthRequiredEvent(planId, context = {}) {
+            const payload = this.buildCheckoutAuthRequiredPayload(planId, context);
+            const event = {
+                id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`,
+                payload,
+                createdAt: Date.now()
+            };
+            this.setQueuedCheckoutAuthRequiredEvents([
+                ...this.getQueuedCheckoutAuthRequiredEvents(),
+                event
+            ]);
+            return event.id;
+        },
+
+        async sendServerFunnelEvent(payload) {
+            const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+            if (!csrfToken) return false;
+
+            const res = await fetch(`${API_URL}/payment/funnel-event`, {
+                method: 'POST',
+                credentials: 'include',
+                keepalive: true,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
+                },
+                body: JSON.stringify(payload)
+            });
+
+            return res.ok;
+        },
+
+        async flushPendingCheckoutAuthRequiredEvents() {
+            if (this._flushingCheckoutAuthRequiredEvents) return;
+            const queuedEvents = this.getQueuedCheckoutAuthRequiredEvents();
+            if (!queuedEvents.length) return;
+
+            this._flushingCheckoutAuthRequiredEvents = true;
+            const remaining = [];
+            try {
+                for (const event of queuedEvents) {
+                    try {
+                        const sent = await this.sendServerFunnelEvent(event.payload);
+                        if (!sent) remaining.push(event);
+                    } catch {
+                        remaining.push(event);
+                    }
+                }
+                this.setQueuedCheckoutAuthRequiredEvents(remaining);
+            } finally {
+                this._flushingCheckoutAuthRequiredEvents = false;
+            }
+        },
+
         setPendingCheckout(planId, context = {}) {
             if (!planId) return;
 
@@ -971,52 +1075,30 @@
 
         async trackCheckoutAuthRequired(planId, context = {}) {
             try {
-                const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
-                if (!csrfToken) return;
-
-                const rawMetadata = context.metadata && typeof context.metadata === 'object' && !Array.isArray(context.metadata)
-                    ? context.metadata
-                    : {};
-                const allowedMetadata = {};
-                [
-                    'entry_source',
-                    'entry_feature',
-                    'utm_source',
-                    'utm_medium',
-                    'utm_campaign',
-                    'utm_content',
-                    'requested_card',
-                    'card_param'
-                ].forEach((key) => {
-                    if (rawMetadata[key] != null && rawMetadata[key] !== '') {
-                        allowedMetadata[key] = rawMetadata[key];
-                    }
-                });
-
-                await fetch(`${API_URL}/payment/funnel-event`, {
-                    method: 'POST',
-                    credentials: 'include',
-                    keepalive: true,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-Token': csrfToken
-                    },
-                    body: JSON.stringify({
-                        eventName: 'checkout_auth_required',
-                        source: context.source || 'auth_pending_plan',
-                        feature: context.feature || null,
-                        planId,
-                        metadata: {
-                            path: window.location.pathname,
-                            redirect: context.redirect || null,
-                            auth_mode: context.authMode || null,
-                            billing_interval: context.billing_interval || context.billingInterval || null,
-                            ...allowedMetadata
-                        }
-                    })
-                });
+                await this.sendServerFunnelEvent(this.buildCheckoutAuthRequiredPayload(planId, context));
             } catch (error) {
                 console.warn('[FUNNEL] Could not record checkout auth requirement:', error.message);
+            }
+        },
+
+        async trackCheckoutPostVerificationEvent(eventName, planId, context = {}) {
+            try {
+                const storedContext = this.sanitizeCheckoutContextForStorage(planId, context);
+                await this.sendServerFunnelEvent({
+                    eventName,
+                    source: storedContext.source || 'auth_pending_plan',
+                    feature: storedContext.feature || null,
+                    planId: storedContext.planId || planId,
+                    metadata: {
+                        path: window.location.pathname,
+                        redirect: storedContext.redirect || null,
+                        auth_mode: storedContext.authMode || null,
+                        billing_interval: storedContext.billing_interval || null,
+                        ...(storedContext.metadata || {})
+                    }
+                });
+            } catch (error) {
+                console.warn('[FUNNEL] Could not record post-verification checkout event:', error.message);
             }
         },
 
@@ -1035,7 +1117,7 @@
                 };
 
                 this.setPendingCheckout(planId, checkoutContext);
-                void this.trackCheckoutAuthRequired(planId, checkoutContext);
+                this.queueCheckoutAuthRequiredEvent(planId, checkoutContext);
 
                 const authUrl = new URL('/prihlaseni.html', window.location.origin);
                 authUrl.searchParams.set('mode', authMode);

@@ -472,6 +472,55 @@ test.describe('Login stránka', () => {
         }));
     });
 
+    test('rychla navigace na auth flushne checkout auth handoff event', async ({ page }) => {
+        const funnelEvents = [];
+
+        await page.route('**/api/payment/funnel-event', async (route) => {
+            funnelEvents.push(route.request().postDataJSON());
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+
+        await page.evaluate(() => {
+            localStorage.clear();
+            sessionStorage.clear();
+        });
+        await page.goto('/tarot.html', { waitUntil: 'domcontentloaded' });
+        await waitForPageReady(page);
+
+        await page.evaluate(() => {
+            window.Auth.startPlanCheckout('pruvodce', {
+                source: 'inline_paywall',
+                feature: 'tarot_multi_card',
+                redirect: '/cenik.html',
+                metadata: {
+                    entry_source: 'inline_paywall',
+                    entry_feature: 'tarot_multi_card'
+                }
+            });
+        });
+
+        await page.waitForURL(
+            url => url.pathname === '/prihlaseni.html' && url.searchParams.get('plan') === 'pruvodce',
+            { timeout: 10000, waitUntil: 'domcontentloaded' }
+        );
+
+        await expect.poll(() => funnelEvents.find((event) => event.eventName === 'checkout_auth_required') || null).toEqual(expect.objectContaining({
+            source: 'inline_paywall',
+            feature: 'tarot_multi_card',
+            planId: 'pruvodce',
+            metadata: expect.objectContaining({
+                redirect: '/cenik.html',
+                entry_source: 'inline_paywall',
+                entry_feature: 'tarot_multi_card'
+            })
+        }));
+        await expect.poll(() => page.evaluate(() => sessionStorage.getItem('mh_pending_checkout_auth_required_events'))).toBeNull();
+    });
+
     test('checkout intent prezije email verifikaci a obnovi se pri dalsim prihlaseni', async ({ page }) => {
         test.setTimeout(60000);
 
@@ -502,6 +551,16 @@ test.describe('Login stránka', () => {
             }
         ];
         const checkoutPayloads = [];
+        const funnelEvents = [];
+
+        await page.route('**/api/payment/funnel-event', async (route) => {
+            funnelEvents.push(route.request().postDataJSON());
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
 
         await page.route('**/api/auth/register', async (route) => {
             await route.fulfill({
@@ -571,6 +630,18 @@ test.describe('Login stránka', () => {
                     })
                 })
             }));
+            await expect.poll(() => funnelEvents.find((event) => (
+                event.eventName === 'checkout_post_verification_pending'
+                && event.feature === scenario.feature
+            )) || null).toEqual(expect.objectContaining({
+                source: scenario.source,
+                feature: scenario.feature,
+                planId: 'pruvodce',
+                metadata: expect.objectContaining({
+                    entry_source: scenario.entrySource,
+                    entry_feature: scenario.feature
+                })
+            }));
             expect(checkoutPayloads.find((payload) => payload.feature === scenario.feature)).toBeUndefined();
 
             await page.goto('/prihlaseni.html?mode=login');
@@ -589,6 +660,18 @@ test.describe('Login stránka', () => {
                 source: scenario.source,
                 feature: scenario.feature,
                 billingInterval: null,
+                metadata: expect.objectContaining({
+                    entry_source: scenario.entrySource,
+                    entry_feature: scenario.feature
+                })
+            }));
+            await expect.poll(() => funnelEvents.find((event) => (
+                event.eventName === 'checkout_post_verification_recovered'
+                && event.feature === scenario.feature
+            )) || null).toEqual(expect.objectContaining({
+                source: scenario.source,
+                feature: scenario.feature,
+                planId: 'pruvodce',
                 metadata: expect.objectContaining({
                     entry_source: scenario.entrySource,
                     entry_feature: scenario.feature

@@ -50,6 +50,8 @@ export const CORE_FUNNEL_EVENTS = Object.freeze([
     'pricing_product_cta_clicked',
     'one_time_product_cta_clicked',
     'checkout_auth_required',
+    'checkout_post_verification_pending',
+    'checkout_post_verification_recovered',
     'checkout_session_requested',
     'checkout_session_created',
     'subscription_checkout_completed',
@@ -59,6 +61,8 @@ export const CORE_FUNNEL_EVENTS = Object.freeze([
 export const REVENUE_HEALTH_EVENTS = Object.freeze([
     'subscription_invoice_paid',
     'subscription_payment_failed',
+    'checkout_post_verification_pending',
+    'checkout_post_verification_recovered',
     'checkout_session_failed',
     'one_time_checkout_failed',
     'payment_refunded',
