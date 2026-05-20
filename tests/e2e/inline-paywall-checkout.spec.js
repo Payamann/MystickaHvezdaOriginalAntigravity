@@ -351,4 +351,61 @@ test.describe('Inline paywall checkout handoff', () => {
         });
         expect(await page.evaluate(() => sessionStorage.getItem('pending_plan'))).toBeNull();
     });
+
+    test('runes deep-reading gate preserves checkout context through registration', async ({ page }) => {
+        const state = await setupCheckoutRoutes(page, {
+            userId: 'runes-deep-user',
+            email: 'runes-deep@example.com',
+            checkoutSessionId: 'cs_test_runes_deep',
+            csrfToken: 'e2e-runes-deep-token'
+        });
+
+        await page.goto('/runy.html?source=e2e_runes_deep');
+        await waitForPageReady(page);
+        await expect.poll(() => page.evaluate(() => typeof window.Auth?.startPlanCheckout)).toBe('function');
+        await page.evaluate(() => {
+            localStorage.clear();
+            sessionStorage.clear();
+            Object.assign(window.Auth, {
+                isLoggedIn: () => false,
+                isPremium: () => false,
+                showToast: () => {}
+            });
+            window.MH_ANALYTICS = {
+                trackAction: () => {},
+                trackCTA: () => {}
+            };
+        });
+
+        await page.locator('#btn-draw').click();
+        await expect(page.locator('#rune-result')).toHaveClass(/visible/, { timeout: 4000 });
+        await page.locator('#rune-intention').fill('potrebuji jasny dalsi krok');
+        await page.locator('#btn-deep-reading').click();
+
+        await expect(page.locator('.runes-upgrade-preview')).toBeVisible();
+        await expect(page.locator('.runes-upgrade-preview')).toContainText(/v[yý]klad|runa/i);
+
+        await Promise.all([
+            waitForPath(page, '/prihlaseni.html'),
+            page.locator('.runes-upgrade-preview__cta').click(),
+        ]);
+
+        await expectAuthUrl(page, {
+            source: 'runes_auth_gate',
+            feature: 'runy_hluboky_vyklad'
+        });
+
+        await expect(page.locator('#checkout-context-banner')).toBeVisible();
+        await expect(page.locator('#checkout-context-banner')).toContainText(/run|šamansk|samansk/i);
+        await expect(page.locator('#checkout-context-banner')).toContainText(/checkout/i);
+
+        await submitRegistration(page, 'runes-deep@example.com');
+
+        expectCheckoutState(state, {
+            email: 'runes-deep@example.com',
+            source: 'runes_auth_gate',
+            feature: 'runy_hluboky_vyklad'
+        });
+        expect(await page.evaluate(() => sessionStorage.getItem('pending_plan'))).toBeNull();
+    });
 });

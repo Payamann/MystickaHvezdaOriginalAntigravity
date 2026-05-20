@@ -25,6 +25,8 @@ function buildRuneUpgradeUrl(source, feature) {
     pricingUrl.searchParams.set('plan', 'pruvodce');
     pricingUrl.searchParams.set('source', source);
     pricingUrl.searchParams.set('feature', feature);
+    pricingUrl.searchParams.set('entry_source', source);
+    pricingUrl.searchParams.set('entry_feature', feature);
     return `${pricingUrl.pathname}${pricingUrl.search}`;
 }
 
@@ -44,6 +46,10 @@ function startRuneUpgradeFlow(source, feature, redirect = '/cenik.html') {
         window.Auth.startPlanCheckout('pruvodce', {
             source,
             feature,
+            metadata: {
+                entry_source: source,
+                entry_feature: feature
+            },
             redirect,
             authMode: 'register'
         });
