@@ -81,6 +81,7 @@ app.disable('x-powered-by');
 const PORT = process.env.PORT || 3001;
 const CANONICAL_HOST = 'www.mystickahvezda.cz';
 const APEX_HOST = 'mystickahvezda.cz';
+const HEALTH_CHECK_PATH = '/api/health';
 
 app.use((req, res, next) => {
     if (isProductionRuntime() && req.hostname === APEX_HOST && req.path !== '/webhook/stripe') {
@@ -361,6 +362,11 @@ app.use(helmet({
 app.use(setBaseContentSecurityPolicy);
 app.use(rejectDisallowedCorsOrigin);
 
+// Health checks must stay reachable before production HTTPS/www redirects.
+app.get(HEALTH_CHECK_PATH, (req, res) => {
+    res.json(getRuntimeHealth());
+});
+
 // Force HTTPS in production (early, before any routes)
 if (isProductionRuntime()) {
     app.use((req, res, next) => {
@@ -570,11 +576,6 @@ function getRuntimeHealth() {
         deployment: getDeploymentMetadata()
     };
 }
-
-// Health Check Endpoint (Moved UP to bypass Rate Limiting)
-app.get('/api/health', (req, res) => {
-    res.json(getRuntimeHealth());
-});
 
 // ============================================
 // HOROSCOPE CACHE SYSTEM (Database-backed)
