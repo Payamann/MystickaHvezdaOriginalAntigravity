@@ -52,6 +52,10 @@ const FUNNEL_CHECKOUT_REQUEST_EVENTS = new Set([
     'checkout_session_requested',
 ]);
 
+const FUNNEL_CHECKOUT_AUTH_REQUIRED_EVENTS = new Set([
+    'checkout_auth_required',
+]);
+
 const FUNNEL_RITUAL_COMPLETION_EVENTS = new Set([
     'daily_ritual_completed',
     'return_ritual_completed',
@@ -112,6 +116,7 @@ function createDailyBucket(date) {
         readingFeedbackSubmitted: 0,
         paywallViewed: 0,
         pricingIntent: 0,
+        checkoutAuthRequired: 0,
         checkoutRequested: 0,
         checkoutStarted: 0,
         subscriptionCompleted: 0,
@@ -223,6 +228,7 @@ function createSourceFeatureSegment(source, feature) {
         readingFeedbackSubmitted: 0,
         paywallViewed: 0,
         pricingIntent: 0,
+        checkoutAuthRequired: 0,
         checkoutRequested: 0,
         checkoutStarted: 0,
         purchaseCompleted: 0,
@@ -252,6 +258,7 @@ function addFunnelConversionCounts(segment, eventName) {
     if (FUNNEL_RITUAL_COMPLETION_EVENTS.has(eventName)) segment.dailyRitualCompleted += 1;
     if (eventName === 'reading_feedback_submitted') segment.readingFeedbackSubmitted += 1;
     if (FUNNEL_PRICING_INTENT_EVENTS.has(eventName)) segment.pricingIntent += 1;
+    if (FUNNEL_CHECKOUT_AUTH_REQUIRED_EVENTS.has(eventName)) segment.checkoutAuthRequired += 1;
     if (FUNNEL_CHECKOUT_REQUEST_EVENTS.has(eventName)) segment.checkoutRequested += 1;
     if (eventName === 'checkout_session_created') segment.checkoutStarted += 1;
     if (eventName === 'subscription_checkout_completed' || eventName === 'one_time_purchase_completed') segment.purchaseCompleted += 1;
@@ -893,6 +900,7 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
             if (eventName === 'reading_feedback_submitted') byDay[date].readingFeedbackSubmitted += 1;
             if (FUNNEL_PAYWALL_VIEW_EVENTS.has(eventName)) byDay[date].paywallViewed += 1;
             if (FUNNEL_PRICING_INTENT_EVENTS.has(eventName)) byDay[date].pricingIntent += 1;
+            if (FUNNEL_CHECKOUT_AUTH_REQUIRED_EVENTS.has(eventName)) byDay[date].checkoutAuthRequired += 1;
             if (FUNNEL_CHECKOUT_REQUEST_EVENTS.has(eventName)) byDay[date].checkoutRequested += 1;
             if (eventName === 'checkout_session_created') byDay[date].checkoutStarted += 1;
             if (eventName === 'subscription_checkout_completed') byDay[date].subscriptionCompleted += 1;
@@ -906,6 +914,7 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
 
     const paywallViewed = [...FUNNEL_PAYWALL_VIEW_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
     const pricingIntent = [...FUNNEL_PRICING_INTENT_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
+    const checkoutAuthRequired = [...FUNNEL_CHECKOUT_AUTH_REQUIRED_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
     const checkoutRequested = [...FUNNEL_CHECKOUT_REQUEST_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
     const firstValueCompleted = byEvent.first_value_completed || 0;
     const activationCompleted = byEvent.activation_completed || 0;
@@ -969,6 +978,7 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
             readingFeedbackSubmitted,
             paywallViewed,
             pricingIntent,
+            checkoutAuthRequired,
             checkoutRequested,
             checkoutStarted,
             subscriptionCompleted,
@@ -1028,6 +1038,7 @@ export function buildFunnelDailyCsv(report) {
         'reading_feedback_submitted',
         'paywall_viewed',
         'pricing_intent',
+        'checkout_auth_required',
         'checkout_requested',
         'checkout_started',
         'subscription_completed',
@@ -1046,6 +1057,7 @@ export function buildFunnelDailyCsv(report) {
         row.readingFeedbackSubmitted,
         row.paywallViewed,
         row.pricingIntent,
+        row.checkoutAuthRequired,
         row.checkoutRequested,
         row.checkoutStarted,
         row.subscriptionCompleted,
@@ -1072,6 +1084,7 @@ export function buildFunnelSegmentsCsv(report) {
         'reading_feedback_submitted',
         'paywall_viewed',
         'pricing_intent',
+        'checkout_auth_required',
         'checkout_requested',
         'checkout_started',
         'purchase_completed',
@@ -1117,6 +1130,7 @@ export function buildFunnelSegmentsCsv(report) {
         row.readingFeedbackSubmitted,
         row.paywallViewed,
         row.pricingIntent,
+        row.checkoutAuthRequired,
         row.checkoutRequested,
         row.checkoutStarted,
         row.purchaseCompleted,

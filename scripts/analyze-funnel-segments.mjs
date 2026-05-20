@@ -16,6 +16,7 @@ const OPTIONAL_COLUMNS = [
     'activation_completed',
     'paywall_viewed',
     'pricing_intent',
+    'checkout_auth_required',
     'checkout_requested',
     'checkout_started',
     'purchase_completed',
@@ -59,6 +60,15 @@ const STEP_DEFINITIONS = [
         action: ({ source, feature }) => `Rewrite the ${feature} paywall reached from ${source}: show one locked outcome, one primary CTA, and preserve source/feature params into pricing.`
     },
     {
+        id: 'pricing_intent_to_auth_handoff',
+        label: 'pricing intent -> auth handoff',
+        fromColumn: 'pricing_intent',
+        toColumn: 'checkout_auth_required',
+        rateColumn: 'pricing_intent_to_auth_handoff_rate',
+        deltaColumn: 'pricing_intent_to_auth_handoff_rate_delta',
+        action: ({ source, feature }) => `Audit the ${source}/${feature} paid CTA before auth: verify the click calls Auth.startPlanCheckout, records checkout_auth_required, and routes to register/login with pending checkout context.`
+    },
+    {
         id: 'pricing_intent_to_checkout_request',
         label: 'pricing intent -> checkout request',
         fromColumn: 'pricing_intent',
@@ -66,6 +76,15 @@ const STEP_DEFINITIONS = [
         rateColumn: 'pricing_intent_to_checkout_request_rate',
         deltaColumn: 'pricing_intent_to_checkout_request_rate_delta',
         action: ({ source, feature }) => `Audit the ${source}/${feature} paid-plan auth handoff: preserve pending plan context, clarify the registration CTA, and verify the checkout request fires after login.`
+    },
+    {
+        id: 'auth_handoff_to_checkout_request',
+        label: 'auth handoff -> checkout request',
+        fromColumn: 'checkout_auth_required',
+        toColumn: 'checkout_requested',
+        rateColumn: 'auth_handoff_to_checkout_request_rate',
+        deltaColumn: 'auth_handoff_to_checkout_request_rate_delta',
+        action: ({ source, feature }) => `Audit the post-auth recovery for ${source}/${feature}: confirm pending_plan survives registration/login and _startCheckout reaches /payment/create-checkout-session.`
     },
     {
         id: 'checkout_request_to_session',
@@ -298,6 +317,8 @@ function normalizeRow(record) {
         reading_feedback_submitted: parseNumber(record.reading_feedback_submitted),
         paywall_viewed: parseNumber(record.paywall_viewed),
         pricing_intent: parseNumber(record.pricing_intent),
+        checkout_auth_required: parseNumber(record.checkout_auth_required),
+        checkout_requested: parseNumber(record.checkout_requested),
         checkout_started: parseNumber(record.checkout_started),
         purchase_completed: parseNumber(record.purchase_completed),
         one_time_pdf_delivered: parseNumber(record.one_time_pdf_delivered),
@@ -410,6 +431,12 @@ function buildDataQualityNotes(rows) {
     for (const row of rows) {
         if (row.checkout_started > row.pricing_intent && row.pricing_intent === 0) {
             notes.push(`${row.source}/${row.feature}: checkout_started exists with no pricing_intent. Check attribution continuity or direct-checkout tracking.`);
+        }
+        if (row.checkout_requested > 0 && row.checkout_auth_required === 0 && row.pricing_intent > 0) {
+            notes.push(`${row.source}/${row.feature}: checkout_requested exists with no checkout_auth_required. This may be fine for logged-in users; verify logged-out auth handoff coverage separately.`);
+        }
+        if (row.checkout_auth_required > row.checkout_requested && row.checkout_requested === 0) {
+            notes.push(`${row.source}/${row.feature}: auth handoff exists but no checkout request. Check whether users complete auth and pending checkout resumes.`);
         }
         if (row.purchase_completed > row.checkout_started) {
             notes.push(`${row.source}/${row.feature}: purchase_completed exceeds checkout_started. Check whether webhook completion keeps the same source/feature.`);

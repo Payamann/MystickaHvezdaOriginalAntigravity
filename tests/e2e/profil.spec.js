@@ -280,31 +280,86 @@ test.describe('Profil aktivace', () => {
         await expect(firstReading).toContainText('numerologick');
     });
 
-    test('uspesna platba navaze premium aktivaci na puvodni placeny zamer', async ({ page }) => {
-        await mockLoggedInProfile(page, {
-            user: { subscription_status: 'premium_monthly' },
-            subscription: { planType: 'premium_monthly', status: 'active', canCancel: true }
+    test('prazdny profil pouzije growth-loop manifest jako primarni routing', async ({ page }) => {
+        await mockLoggedInProfile(page);
+        await page.route('**/api/growth-loop', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    version: 'test-profile-growth-loop',
+                    features: [
+                        {
+                            id: 'tarot_multi_card',
+                            label: 'Manifest tarot',
+                            cluster: 'tarot',
+                            primaryPath: '/tarot-keltsky-kriz.html',
+                            activationStep: 'first_value'
+                        }
+                    ],
+                    products: [],
+                    featurePlanMap: {},
+                    trackingPayloadKeys: []
+                })
+            });
+        });
+        await page.addInitScript(() => {
+            localStorage.setItem('mh_signup_intent', JSON.stringify({
+                source: 'inline_paywall',
+                feature: 'tarot_multi_card',
+                plan: 'pruvodce',
+                createdAt: Date.now()
+            }));
         });
 
-        await page.goto('/profil.html?payment=success&plan=pruvodce&session_id=cs_test_return&source=inline_paywall&feature=numerologie_vyklad&entry_source=inline_paywall&entry_feature=numerologie_vyklad');
+        await page.goto('/profil.html');
         await waitForPageReady(page);
 
-        const activation = page.locator('#premium-activation-card');
-        await expect(activation).toBeVisible();
-        await expect(activation).toHaveAttribute('data-source', 'inline_paywall');
-        await expect(activation).toHaveAttribute('data-feature', 'numerologie_vyklad');
-
-        const firstAction = activation.locator('[data-activation-target]').first();
-        const href = await firstAction.getAttribute('href');
-        expect(href).toContain('numerologie.html');
-        expect(href).toContain('source=profile_payment_return');
-        expect(href).toContain('feature=numerologie_vyklad');
-        expect(href).toContain('entry_source=inline_paywall');
-        expect(href).toContain('entry_feature=numerologie_vyklad');
-        expect(href).toContain('plan=pruvodce');
-        await expect(firstAction).toContainText('kde platba');
-        expect(new URL(page.url()).searchParams.has('payment')).toBe(false);
+        const firstReading = page.locator('[data-activation-step="first_reading"]');
+        const firstReadingHref = await firstReading.getAttribute('href');
+        expect(firstReadingHref).toContain('tarot-keltsky-kriz.html');
+        expect(firstReadingHref).toContain('source=profile_signup_intent');
+        expect(firstReadingHref).toContain('feature=tarot_multi_card');
+        expect(firstReadingHref).toContain('entry_source=inline_paywall');
+        expect(firstReadingHref).toContain('entry_feature=tarot_multi_card');
+        expect(firstReadingHref).toContain('plan=pruvodce');
     });
+
+    const paymentReturnCases = [
+        ['tarot_multi_card', 'tarot.html'],
+        ['numerologie_vyklad', 'numerologie.html'],
+        ['natalni_interpretace', 'natalni-karta.html'],
+        ['partnerska_detail', 'partnerska-shoda.html'],
+        ['mentor', 'mentor.html']
+    ];
+
+    for (const [feature, expectedPath] of paymentReturnCases) {
+        test(`uspesna platba navaze premium aktivaci na ${feature}`, async ({ page }) => {
+            await mockLoggedInProfile(page, {
+                user: { subscription_status: 'premium_monthly' },
+                subscription: { planType: 'premium_monthly', status: 'active', canCancel: true }
+            });
+
+            await page.goto(`/profil.html?payment=success&plan=pruvodce&session_id=cs_test_return&source=inline_paywall&feature=${feature}&entry_source=inline_paywall&entry_feature=${feature}`);
+            await waitForPageReady(page);
+
+            const activation = page.locator('#premium-activation-card');
+            await expect(activation).toBeVisible();
+            await expect(activation).toHaveAttribute('data-source', 'inline_paywall');
+            await expect(activation).toHaveAttribute('data-feature', feature);
+
+            const firstAction = activation.locator('[data-activation-target]').first();
+            const href = await firstAction.getAttribute('href');
+            expect(href).toContain(expectedPath);
+            expect(href).toContain('source=profile_payment_return');
+            expect(href).toContain(`feature=${feature}`);
+            expect(href).toContain('entry_source=inline_paywall');
+            expect(href).toContain(`entry_feature=${feature}`);
+            expect(href).toContain('plan=pruvodce');
+            await expect(firstAction).toContainText('kde platba');
+            expect(new URL(page.url()).searchParams.has('payment')).toBe(false);
+        });
+    }
 
     test('prazdny profil drzi symbolicky zamer minuleho zivota', async ({ page }) => {
         await mockLoggedInProfile(page);
@@ -752,10 +807,8 @@ test.describe('Onboarding', () => {
         await page.locator('.zodiac-btn[data-sign="beran"]').click();
         await page.locator('#btn-step2').click();
 
-        await Promise.all([
-            page.waitForURL(url => url.pathname === '/horoskopy.html', { timeout: 5000, waitUntil: 'domcontentloaded' }),
-            page.locator('#finish-onboarding-btn').click(),
-        ]);
+        await page.locator('#finish-onboarding-btn').click();
+        await expect.poll(() => new URL(page.url()).pathname, { timeout: 5000 }).toBe('/horoskopy.html');
 
         expect(completionRequests).toBe(0);
     });

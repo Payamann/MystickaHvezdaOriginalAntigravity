@@ -36,9 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (path.endsWith('/numerologie.html') || path.endsWith('numerologie.html')) {
-        document.title = 'Numerologie Online | Mystická Hvězda';
-        setMeta('meta[name="description"]', 'Numerologie jako symbolický rámec pro silné stránky, vztahy a opakující se vzorce. Výpočet čísla životní cesty, osobního tématu a duše.');
-        setMeta('meta[property="og:title"]', 'Numerologie Online | Mystická Hvězda');
+        document.title = 'Numerologie online: životní číslo a osud | Mystická Hvězda';
+        setMeta('meta[name="description"]', 'Numerologie online zdarma: spočítej životní číslo, číslo duše a osobní téma jako symbolický rámec pro další krok.');
+        setMeta('meta[property="og:title"]', 'Numerologie online: životní číslo a osud | Mystická Hvězda');
         setMeta('meta[property="og:description"]', 'Výpočet čísel pro sebereflexi a další krok, ne pevné určení osudu.');
         setHtml('.hero__title', '<span class="text-gradient">Numerologie</span>');
         setText('.hero__subtitle', 'Každé číslo berte jako symbolický rámec pro silné stránky, vztahy a opakující se vzorce. Výklad pomáhá pojmenovat další krok, ne určit váš osud.');
@@ -48,10 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (path.endsWith('/partnerska-shoda.html') || path.endsWith('partnerska-shoda.html')) {
-        document.title = 'Partnerská Shoda | Mystická Hvězda';
-        setMeta('meta[name="description"]', 'Zjistěte kompatibilitu mezi dvěma znameními. Synastrie a analýza partnerského vztahu.');
-        setMeta('meta[property="og:title"]', 'Partnerská Shoda | Mystická Hvězda');
-        setMeta('meta[property="og:description"]', 'Zjistěte kompatibilitu mezi dvěma znameními. Synastrie a analýza partnerského vztahu.');
+        document.title = 'Partnerská shoda znamení online | Mystická Hvězda';
+        setMeta('meta[name="description"]', 'Porovnej dvě znamení a vztahovou dynamiku. Základní výklad zdarma, hlubší rozpad jako navazující osobní krok.');
+        setMeta('meta[property="og:title"]', 'Partnerská shoda znamení online | Mystická Hvězda');
+        setMeta('meta[property="og:description"]', 'Porovnej dvě znamení a vztahovou dynamiku. Základní výklad zdarma, hlubší rozpad jako navazující osobní krok.');
         setHtml('.hero__title', 'Partnerská <span class="text-gradient">shoda</span>');
         setText('.hero__subtitle', 'Porovnejte dvě energie, podívejte se na emoce, komunikaci i vášeň a zjistěte, kde se opravdu potkáváte.');
     }

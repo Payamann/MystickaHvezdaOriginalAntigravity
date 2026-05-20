@@ -237,7 +237,7 @@ async function main() {
         console.log(JSON.stringify(summary, null, 2));
     } else {
         console.log(`Live funnel CSV exported: ${args.output}`);
-        console.log(`Events: ${summary.totalEvents} | segments: ${summary.segments} | checkout_requested: ${summary.metrics.checkoutRequested || 0} | checkout_started: ${summary.metrics.checkoutStarted || 0} | purchases: ${(summary.metrics.subscriptionCompleted || 0) + (summary.metrics.oneTimeCompleted || 0)}`);
+        console.log(`Events: ${summary.totalEvents} | segments: ${summary.segments} | checkout_auth_required: ${summary.metrics.checkoutAuthRequired || 0} | checkout_requested: ${summary.metrics.checkoutRequested || 0} | checkout_started: ${summary.metrics.checkoutStarted || 0} | purchases: ${(summary.metrics.subscriptionCompleted || 0) + (summary.metrics.oneTimeCompleted || 0)}`);
         if (entitlementAudit) {
             console.log(`Entitlements: active premium ${entitlementAudit.activePremiumSubscriptions}, premium flag mismatches ${entitlementAudit.premiumFlagMismatches}`);
         }

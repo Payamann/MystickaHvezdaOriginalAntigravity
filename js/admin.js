@@ -620,6 +620,7 @@ function renderFunnel(report) {
         ['Denní rituály', formatInteger(metrics.dailyRitualCompleted), 'Reflexe a návraty v profilu'],
         ['Paywall views', formatInteger(metrics.paywallViewed), `${formatPercent(metrics.paywallToPricingIntentRate)} klikne na placený plán`],
         ['Nákupní intent', formatInteger(metrics.pricingIntent), `${formatPercent(metrics.pricingIntentToCheckoutRate)} pokračuje do checkoutu`],
+        ['Auth handoff', formatInteger(metrics.checkoutAuthRequired), 'Kliky, které vyžadují registraci nebo přihlášení'],
         ['Checkouty', formatInteger(metrics.checkoutStarted), 'Zahájené Stripe checkout sessions'],
         ['Premium konverze', formatInteger(metrics.subscriptionCompleted), `${formatPercent(metrics.conversionRate)} z checkoutů`],
         ['Jednorázové nákupy', formatInteger(metrics.oneTimeCompleted), 'Roční horoskop a další produkty'],
@@ -938,6 +939,7 @@ function formatMonetizationCounts(row = {}) {
     return [
         row.paywallViewed,
         row.pricingIntent,
+        row.checkoutAuthRequired,
         row.checkoutStarted,
         row.purchaseCompleted
     ].map(formatInteger).join(' / ');
@@ -947,6 +949,7 @@ function formatDailyFunnelCounts(row = {}) {
     return [
         row.paywallViewed,
         row.pricingIntent,
+        row.checkoutAuthRequired,
         row.checkoutStarted
     ].map(formatInteger).join(' / ');
 }

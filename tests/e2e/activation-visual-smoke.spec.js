@@ -73,14 +73,16 @@ async function mockOnboardingComplete(page) {
     });
 }
 
-async function mockLoggedInProfile(page) {
+async function mockLoggedInProfile(page, options = {}) {
     const user = {
         id: 'activation-smoke-profile-user',
         email: 'activation-smoke-profile@example.com',
         first_name: 'Pavel',
         birth_date: '1990-08-10',
-        subscription_status: 'free'
+        subscription_status: 'free',
+        ...(options.user || {})
     };
+    const subscription = options.subscription || { planType: 'free', status: 'active', canCancel: false };
 
     await page.context().addCookies([{
         name: 'logged_in',
@@ -124,7 +126,7 @@ async function mockLoggedInProfile(page) {
         await route.fulfill({
             status: 200,
             contentType: 'application/json',
-            body: JSON.stringify({ planType: 'free', status: 'active', canCancel: false })
+            body: JSON.stringify(subscription)
         });
     });
 }
@@ -219,6 +221,29 @@ test.describe('Activation visual smoke', () => {
             expect(firstReadingHref).toContain('feature=numerologie_vyklad');
             expect(firstReadingHref).toContain('entry_source=life_number_result');
             expect(firstReadingHref).toContain('entry_feature=numerologie_vyklad');
+            await expectNoHorizontalOverflow(page);
+        });
+
+        test(`payment return keeps one dominant next step on ${name}`, async ({ page }) => {
+            await preparePage(page, viewport);
+            await mockLoggedInProfile(page, {
+                user: { subscription_status: 'premium_monthly' },
+                subscription: { planType: 'premium_monthly', status: 'active', canCancel: true }
+            });
+
+            await page.goto('/profil.html?payment=success&plan=pruvodce&session_id=cs_visual_return&source=partner_match_result&feature=partnerska_detail&entry_source=partner_match_result&entry_feature=partnerska_detail');
+            await waitForPageReady(page);
+
+            const activation = page.locator('#premium-activation-card');
+            await expectWithinViewport(page, activation);
+            await expect(activation).toHaveAttribute('data-feature', 'partnerska_detail');
+
+            const firstAction = activation.locator('[data-activation-target]').first();
+            await expectWithinViewport(page, firstAction);
+            const href = await firstAction.getAttribute('href');
+            expect(href).toContain('partnerska-shoda.html');
+            expect(href).toContain('source=profile_payment_return');
+            expect(href).toContain('entry_source=partner_match_result');
             await expectNoHorizontalOverflow(page);
         });
     }

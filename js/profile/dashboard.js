@@ -647,24 +647,28 @@ function buildDailyHoroscopeHref(sign, source = 'profile_daily') {
 
 function getGrowthSignupIntentConfig(featureId) {
     const staticConfig = SIGNUP_INTENT_DESTINATIONS[featureId];
-    if (staticConfig) return staticConfig;
-
     const growth = window.MH_GROWTH_LOOP;
-    const feature = growth?.getFeature?.(featureId);
+    const canonicalFeature = growth?.getActivationFeatureId?.(featureId) || staticConfig?.feature || featureId;
+    const feature = growth?.getFeature?.(featureId) || growth?.getFeature?.(canonicalFeature);
     if (!feature || ['activation', 'pricing', 'profile'].includes(feature.cluster)) {
-        return null;
+        return staticConfig ? {
+            feature: staticConfig.feature || canonicalFeature,
+            destinationFeature: featureId,
+            fallbackHref: staticConfig.href,
+            description: staticConfig.description
+        } : null;
     }
 
-    const activationFeature = growth.getActivationFeatureId?.(featureId) || featureId;
     return {
-        feature: activationFeature,
-        href: () => growth.getFeatureDestination(featureId, '/horoskopy.html'),
-        description: () => `Navázat na registrační záměr: ${feature.label}.`
+        feature: canonicalFeature,
+        destinationFeature: featureId,
+        fallbackHref: staticConfig?.href,
+        description: staticConfig?.description || (() => `Navázat na registrační záměr: ${feature.label}.`)
     };
 }
 
 function getManifestSignupHref(config, sign) {
-    const fallbackHref = config.href(sign);
+    const fallbackHref = config.fallbackHref?.(sign) || 'horoskopy.html?source=profile_signup_intent&feature=daily_guidance';
     const feature = window.MH_GROWTH_LOOP?.getFeature?.(config.feature);
     if (!feature) return fallbackHref;
 
@@ -672,7 +676,7 @@ function getManifestSignupHref(config, sign) {
         return buildDailyHoroscopeHref(sign, 'profile_signup_intent');
     }
 
-    return window.MH_GROWTH_LOOP.getFeatureDestination(config.feature, fallbackHref);
+    return window.MH_GROWTH_LOOP.getFeatureDestination(config.destinationFeature || config.feature, fallbackHref);
 }
 
 function readSignupIntent() {
@@ -706,6 +710,10 @@ function addSignupIntentAttribution(href, intent, fallbackFeature) {
         url.searchParams.set('entry_feature', intent.feature);
     }
 
+    if (intent?.plan) {
+        url.searchParams.set('plan', intent.plan);
+    }
+
     const relativeUrl = `${url.pathname}${url.search}${url.hash}`;
     return relativeUrl.startsWith('/') ? relativeUrl.slice(1) : relativeUrl;
 }
@@ -730,6 +738,23 @@ function buildAttributedRelativeHref(href, params = {}) {
 
     const relativeUrl = `${url.pathname}${url.search}${url.hash}`;
     return relativeUrl.startsWith('/') ? relativeUrl.slice(1) : relativeUrl;
+}
+
+function getProfileCtaContextFromHref(href) {
+    if (!href || href.startsWith('#')) return {};
+
+    try {
+        const url = new URL(href, window.location.origin);
+        return {
+            source: url.searchParams.get('source') || null,
+            feature: url.searchParams.get('feature') || null,
+            entry_source: url.searchParams.get('entry_source') || null,
+            entry_feature: url.searchParams.get('entry_feature') || null,
+            plan_id: url.searchParams.get('plan') || null
+        };
+    } catch {
+        return {};
+    }
 }
 
 function getPaymentReturnDestination(sign, paymentContext) {
@@ -1187,7 +1212,8 @@ function handleDailyGuidanceClick(event) {
 
     window.MH_ANALYTICS?.trackCTA?.('profile_daily_guidance', {
         action,
-        destination
+        destination,
+        ...getProfileCtaContextFromHref(destination)
     });
 
     if (action === 'daily_journal') {
@@ -1208,7 +1234,8 @@ function handleActivationChecklistClick(event) {
         step,
         action,
         completed,
-        destination: link.getAttribute('href')
+        destination: link.getAttribute('href'),
+        ...getProfileCtaContextFromHref(link.getAttribute('href'))
     });
 
     if (action === 'open_settings') {
@@ -1246,7 +1273,8 @@ function handleRitualMemoryClick(event) {
     window.MH_ANALYTICS?.trackCTA?.('profile_ritual_memory', {
         action,
         theme: link.dataset.memoryTheme || null,
-        destination
+        destination,
+        ...getProfileCtaContextFromHref(destination)
     });
 
     if (action === 'memory_journal') {

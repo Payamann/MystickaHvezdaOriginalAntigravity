@@ -433,15 +433,16 @@ describe('Admin funnel report helpers', () => {
             { event_name: 'paywall_viewed', source: 'inline_paywall', feature: 'tarot', created_at: '2026-04-20T10:00:00.000Z' },
             { event_name: 'reading_feedback_submitted', source: 'horoscope_feedback_strip', feature: 'daily_guidance', created_at: '2026-04-20T10:01:00.000Z' },
             { event_name: 'pricing_plan_cta_clicked', source: 'inline_paywall', feature: 'tarot', plan_id: 'pruvodce', created_at: '2026-04-20T10:02:00.000Z' },
+            { event_name: 'checkout_auth_required', source: 'inline_paywall', feature: 'tarot', plan_id: 'pruvodce', created_at: '2026-04-20T10:03:00.000Z' },
             { event_name: 'checkout_session_created', source: 'inline_paywall', feature: 'tarot', created_at: '2026-04-20T10:04:00.000Z' },
             { event_name: 'daily_ritual_completed', source: 'profile_journal', feature: 'journal', created_at: '2026-04-21T08:00:00.000Z' },
             { event_name: 'subscription_checkout_completed', source: 'pricing', feature: 'tarot', plan_id: 'pruvodce', created_at: '2026-04-21T10:04:00.000Z' },
         ]);
 
         expect(buildFunnelDailyCsv(report)).toBe([
-            '"date","first_value_completed","activation_completed","daily_ritual_completed","reading_feedback_submitted","paywall_viewed","pricing_intent","checkout_requested","checkout_started","subscription_completed","one_time_completed","one_time_pdf_delivered","one_time_lifecycle_scheduled","failures","refunds"',
-            '"2026-04-20","1","1","0","1","1","1","0","1","0","0","0","0","0","0"',
-            '"2026-04-21","0","0","1","0","0","0","0","0","1","0","0","0","0","0"'
+            '"date","first_value_completed","activation_completed","daily_ritual_completed","reading_feedback_submitted","paywall_viewed","pricing_intent","checkout_auth_required","checkout_requested","checkout_started","subscription_completed","one_time_completed","one_time_pdf_delivered","one_time_lifecycle_scheduled","failures","refunds"',
+            '"2026-04-20","1","1","0","1","1","1","1","0","1","0","0","0","0","0","0"',
+            '"2026-04-21","0","0","1","0","0","0","0","0","0","1","0","0","0","0","0"'
         ].join('\n'));
     });
 
@@ -449,13 +450,14 @@ describe('Admin funnel report helpers', () => {
         const report = buildFunnelReport([
             { event_name: 'paywall_viewed', source: 'pricing', feature: 'tarot', created_at: '2026-04-20T10:00:00.000Z' },
             { event_name: 'pricing_plan_cta_clicked', source: 'pricing', feature: 'tarot', plan_id: 'pruvodce', created_at: '2026-04-20T10:00:30.000Z' },
+            { event_name: 'checkout_auth_required', source: 'pricing', feature: 'tarot', plan_id: 'pruvodce', created_at: '2026-04-20T10:00:45.000Z' },
             { event_name: 'checkout_session_created', source: 'pricing', feature: 'tarot', created_at: '2026-04-20T10:01:00.000Z' },
             { event_name: 'subscription_checkout_completed', source: 'pricing', feature: 'tarot', created_at: '2026-04-20T10:02:00.000Z' },
         ]);
 
         expect(buildFunnelSegmentsCsv(report)).toBe([
-            '"source","feature","total_events","first_value_completed","activation_completed","daily_ritual_completed","reading_feedback_submitted","paywall_viewed","pricing_intent","checkout_requested","checkout_started","purchase_completed","one_time_pdf_delivered","one_time_lifecycle_scheduled","failures","paywall_to_pricing_intent_rate","pricing_intent_to_checkout_request_rate","checkout_request_to_session_rate","pricing_intent_to_checkout_rate","first_value_to_checkout_rate","activation_to_checkout_rate","paywall_to_checkout_request_rate","paywall_to_checkout_rate","checkout_to_purchase_rate","previous_paywall_to_pricing_intent_rate","previous_pricing_intent_to_checkout_request_rate","previous_checkout_request_to_session_rate","previous_pricing_intent_to_checkout_rate","previous_first_value_to_checkout_rate","previous_activation_to_checkout_rate","previous_paywall_to_checkout_request_rate","previous_paywall_to_checkout_rate","previous_checkout_to_purchase_rate","paywall_to_pricing_intent_rate_delta","pricing_intent_to_checkout_request_rate_delta","checkout_request_to_session_rate_delta","pricing_intent_to_checkout_rate_delta","first_value_to_checkout_rate_delta","activation_to_checkout_rate_delta","paywall_to_checkout_request_rate_delta","paywall_to_checkout_rate_delta","checkout_to_purchase_rate_delta"',
-            '"pricing","tarot","4","0","0","0","0","1","1","0","1","1","0","0","0","100","0","0","100","0","0","0","100","100","0","0","0","0","0","0","0","0","0","","","","","","","","",""'
+            '"source","feature","total_events","first_value_completed","activation_completed","daily_ritual_completed","reading_feedback_submitted","paywall_viewed","pricing_intent","checkout_auth_required","checkout_requested","checkout_started","purchase_completed","one_time_pdf_delivered","one_time_lifecycle_scheduled","failures","paywall_to_pricing_intent_rate","pricing_intent_to_checkout_request_rate","checkout_request_to_session_rate","pricing_intent_to_checkout_rate","first_value_to_checkout_rate","activation_to_checkout_rate","paywall_to_checkout_request_rate","paywall_to_checkout_rate","checkout_to_purchase_rate","previous_paywall_to_pricing_intent_rate","previous_pricing_intent_to_checkout_request_rate","previous_checkout_request_to_session_rate","previous_pricing_intent_to_checkout_rate","previous_first_value_to_checkout_rate","previous_activation_to_checkout_rate","previous_paywall_to_checkout_request_rate","previous_paywall_to_checkout_rate","previous_checkout_to_purchase_rate","paywall_to_pricing_intent_rate_delta","pricing_intent_to_checkout_request_rate_delta","checkout_request_to_session_rate_delta","pricing_intent_to_checkout_rate_delta","first_value_to_checkout_rate_delta","activation_to_checkout_rate_delta","paywall_to_checkout_request_rate_delta","paywall_to_checkout_rate_delta","checkout_to_purchase_rate_delta"',
+            '"pricing","tarot","5","0","0","0","0","1","1","1","0","1","1","0","0","0","100","0","0","100","0","0","0","100","100","0","0","0","0","0","0","0","0","0","","","","","","","","",""'
         ].join('\n'));
     });
 
@@ -1000,7 +1002,7 @@ describe('Admin funnel API access control', () => {
         expect(res.headers['content-type']).toContain('text/csv');
         expect(res.headers['content-disposition']).toContain('funnel-segments-1d.csv');
         expect(res.text).toContain('"source","feature","total_events"');
-        expect(res.text).toContain(`"${source}","tarot","4","0","0","0","0","1","1","0","1","1","0","0","0","100","0","0","100","0","0","0","100","100"`);
+        expect(res.text).toContain(`"${source}","tarot","4","0","0","0","0","1","1","0","0","1","1","0","0","0","100","0","0","100","0","0","0","100","100"`);
 
         const tarotCardsRes = await request(app)
             .get('/api/admin/funnel?days=1&format=csv&view=tarot-cards')
