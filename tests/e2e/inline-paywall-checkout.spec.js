@@ -513,4 +513,60 @@ test.describe('Inline paywall checkout handoff', () => {
             feature: 'andelske_karty_hluboky_vhled'
         });
     });
+
+    test('medicine wheel premium wall starts checkout with entry context for logged-in free user', async ({ page }) => {
+        const state = await setupCheckoutRoutes(page, {
+            userId: 'medicine-wheel-user',
+            email: 'medicine-wheel@example.com',
+            checkoutSessionId: 'cs_test_medicine_wheel',
+            csrfToken: 'e2e-medicine-wheel-token'
+        });
+
+        await page.route('**/api/medicine-wheel', async route => {
+            await route.fulfill({
+                status: 402,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    success: false,
+                    error: 'Premium required'
+                })
+            });
+        });
+
+        await page.goto('/shamansko-kolo.html?source=e2e_medicine_wheel');
+        await waitForPageReady(page);
+        await expect.poll(() => page.evaluate(() => typeof window.Auth?.startPlanCheckout)).toBe('function');
+        await page.evaluate(() => {
+            localStorage.clear();
+            sessionStorage.clear();
+            Object.assign(window.Auth, {
+                isLoggedIn: () => true,
+                isPremium: () => false,
+                showToast: () => {}
+            });
+            window.MH_ANALYTICS = {
+                trackAction: () => {},
+                trackCTA: () => {},
+                trackCheckoutStarted: () => {}
+            };
+        });
+
+        await page.locator('#mw-name').fill('Pavel');
+        await page.locator('#mw-birth').fill('1990-01-01');
+        await page.locator('#mw-submit').click();
+
+        const premiumWall = page.locator('#mw-premium-wall');
+        await expect(premiumWall).toBeVisible({ timeout: 5000 });
+        await expect(premiumWall).toContainText(/symbolick|čten|cten/i);
+
+        await Promise.all([
+            waitForPath(page, '/profil.html'),
+            premiumWall.locator('.medicine-wheel-upgrade-btn').click(),
+        ]);
+
+        expectDirectCheckoutState(state, {
+            source: 'medicine_wheel_premium_wall',
+            feature: 'shamanske_kolo_plne_cteni'
+        });
+    });
 });

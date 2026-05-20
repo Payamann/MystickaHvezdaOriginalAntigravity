@@ -346,6 +346,8 @@
         pricingUrl.searchParams.set('plan', 'pruvodce');
         pricingUrl.searchParams.set('source', 'medicine_wheel_premium_wall');
         pricingUrl.searchParams.set('feature', 'shamanske_kolo_plne_cteni');
+        pricingUrl.searchParams.set('entry_source', 'medicine_wheel_premium_wall');
+        pricingUrl.searchParams.set('entry_feature', 'shamanske_kolo_plne_cteni');
         return `${pricingUrl.pathname}${pricingUrl.search}`;
     }
 
@@ -359,6 +361,10 @@
             window.Auth.startPlanCheckout('pruvodce', {
                 source: 'medicine_wheel_premium_wall',
                 feature: 'shamanske_kolo_plne_cteni',
+                metadata: {
+                    entry_source: 'medicine_wheel_premium_wall',
+                    entry_feature: 'shamanske_kolo_plne_cteni'
+                },
                 redirect: '/cenik.html',
                 authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
             });
