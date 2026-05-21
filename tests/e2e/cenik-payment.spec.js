@@ -1192,7 +1192,11 @@ test.describe('Ceník — platební tlačítka', () => {
             planId: 'pruvodce-rocne',
             source: 'inline_paywall',
             feature: 'numerologie_vyklad',
-            billingInterval: 'yearly'
+            billingInterval: 'yearly',
+            metadata: expect.objectContaining({
+                entry_source: 'inline_paywall',
+                entry_feature: 'numerologie_vyklad'
+            })
         }));
     });
 
