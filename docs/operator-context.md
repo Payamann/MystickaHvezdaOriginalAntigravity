@@ -139,6 +139,8 @@ npm.cmd run deploy:guard
 npm.cmd run verify:production
 ```
 
+If frequent heartbeat smoke runs hit a production natal-chart rate limit (`429`) while `/api/health` is ok, use `$env:VERIFY_SKIP_ASTRO='true'; npm.cmd run verify:production` for the next lightweight health/public-page pass. Keep full deploy confirmation on the default verifier with astro checks enabled.
+
 ## Automation Cadence
 
 - Daily revenue truth monitor: export post-deploy, 24h, 7d, and 30d windows; report only aggregate counts and next P0.

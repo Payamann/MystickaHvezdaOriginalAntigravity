@@ -13,6 +13,7 @@ const EXPECTED_DEPLOY_SHA = process.env.VERIFY_EXPECTED_SHA || null;
 const EXPECTED_SITEMAP_URL = process.env.VERIFY_EXPECTED_SITEMAP_URL || 'https://www.mystickahvezda.cz/sitemap.xml';
 const VERIFY_APEX_URL = process.env.VERIFY_APEX_URL || 'https://mystickahvezda.cz';
 const EXPECTED_CANONICAL_URL = process.env.VERIFY_CANONICAL_URL || 'https://www.mystickahvezda.cz';
+const SKIP_ASTRO_CHECKS = process.env.VERIFY_SKIP_ASTRO === 'true';
 const PUBLIC_PAGE_PATHS = (process.env.VERIFY_PUBLIC_PATHS || [
     '/',
     '/horoskopy.html',
@@ -394,7 +395,11 @@ async function runPublicChecks() {
     await runConversionLinkChecks();
     await runRedirectChecks();
     await runApexDomainDiagnostic();
-    await runAstroCalculationChecks();
+    if (SKIP_ASTRO_CHECKS) {
+        console.log('[Astro checks] skipped: set VERIFY_SKIP_ASTRO=false or unset it to enable natal calculation checks.');
+    } else {
+        await runAstroCalculationChecks();
+    }
 }
 
 async function runAnalyticsEndpointCheck() {

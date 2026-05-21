@@ -127,6 +127,8 @@ describe('manual script guardrails', () => {
         expect(productionVerifier).toContain('Deployment commit verified');
         expect(productionVerifier).toContain("got ${liveCommit || 'none'}");
         expect(productionVerifier).toContain('runApexDomainDiagnostic');
+        expect(productionVerifier).toContain('VERIFY_SKIP_ASTRO');
+        expect(productionVerifier).toContain('[Astro checks] skipped');
         expect(productionVerifier).toContain('Add ${VERIFY_APEX_URL} as a Railway custom domain');
     });
 
