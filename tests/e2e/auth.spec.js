@@ -1269,6 +1269,79 @@ test.describe('Login stránka', () => {
         expect(await page.evaluate(() => localStorage.getItem('mh_post_verification_checkout'))).toBeNull();
     });
 
+    test('expired post-verification checkout se zahodi a nepusti checkout', async ({ page }) => {
+        let checkoutRequests = 0;
+        const funnelEvents = [];
+
+        await page.route('**/api/payment/funnel-event', async (route) => {
+            funnelEvents.push(route.request().postDataJSON());
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+
+        await page.route('**/api/auth/login', async (route) => {
+            const payload = route.request().postDataJSON();
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    user: {
+                        id: 'expired-post-verification-checkout',
+                        email: payload.email,
+                        role: 'user',
+                        subscription_status: 'free'
+                    }
+                })
+            });
+        });
+
+        await page.route('**/api/payment/create-checkout-session', async (route) => {
+            checkoutRequests += 1;
+            await route.fulfill({
+                status: 500,
+                contentType: 'application/json',
+                body: JSON.stringify({ error: 'expired checkout should not resume' })
+            });
+        });
+
+        await page.goto('/prihlaseni.html?mode=login&redirect=/profil.html&source=header_login');
+        await waitForPageReady(page);
+        await page.evaluate(() => {
+            localStorage.clear();
+            sessionStorage.clear();
+            localStorage.setItem('mh_post_verification_checkout', JSON.stringify({
+                planId: 'pruvodce',
+                createdAt: Date.now() - (10080 * 60 * 1000) - 1000,
+                context: {
+                    planId: 'pruvodce',
+                    source: 'inline_paywall',
+                    feature: 'tarot_multi_card',
+                    redirect: '/cenik.html',
+                    authMode: 'register',
+                    metadata: {
+                        entry_source: 'inline_paywall',
+                        entry_feature: 'tarot_multi_card'
+                    }
+                }
+            }));
+        });
+
+        await Promise.all([
+            page.waitForURL(
+                url => url.pathname === '/profil.html',
+                { timeout: 10000, waitUntil: 'domcontentloaded' }
+            ),
+            submitLoginForm(page, 'expired-post-verification@example.com'),
+        ]);
+
+        expect(checkoutRequests).toBe(0);
+        expect(funnelEvents.find((event) => event.eventName === 'checkout_post_verification_recovered')).toBeUndefined();
+        expect(await page.evaluate(() => localStorage.getItem('mh_post_verification_checkout'))).toBeNull();
+    });
+
     test('registrace s email verifikaci posila signup analytics jen jednou', async ({ page }) => {
         await page.route('**/api/auth/register', async (route) => {
             await route.fulfill({
