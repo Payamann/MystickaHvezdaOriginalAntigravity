@@ -34,6 +34,25 @@ const SCENARIOS = [
         },
         expectedMode: 'login',
         mockCheckoutSubmit: true
+    },
+    {
+        name: 'register-weekly-horoscope-inline-flow',
+        path: '/prihlaseni.html',
+        params: {
+            mode: 'register',
+            redirect: '/cenik.html',
+            plan: 'pruvodce',
+            source: 'horoscope_inline_upsell',
+            feature: 'weekly_horoscope',
+            entry_source: 'horoscope_inline_upsell',
+            entry_feature: 'weekly_horoscope'
+        },
+        expectedMode: 'register',
+        entryFlow: {
+            path: '/horoskopy.html',
+            tab: 'weekly',
+            triggerSelector: '.horoscope-upsell-btn'
+        }
     }
 ];
 
@@ -174,8 +193,24 @@ async function inspectScenario(page, scenario, viewportName, baseUrl) {
     const submitState = scenario.mockCheckoutSubmit
         ? await installMockCheckoutSubmitRoutes(page, scenario)
         : null;
-    const targetUrl = scenarioUrl(baseUrl, scenario);
-    await page.goto(targetUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 });
+    if (scenario.entryFlow) {
+        const entryUrl = new URL(scenario.entryFlow.path, `${baseUrl}/`);
+        entryUrl.searchParams.set('cache', String(Date.now()));
+        await page.goto(entryUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 30_000 });
+        await page.waitForSelector(`[data-tab="${scenario.entryFlow.tab}"]`, { state: 'visible', timeout: 10_000 });
+        await page.locator(`[data-tab="${scenario.entryFlow.tab}"]`).click();
+        await page.waitForSelector(scenario.entryFlow.triggerSelector, { state: 'visible', timeout: 10_000 });
+        await Promise.all([
+            page.waitForURL(url => url.pathname === scenario.path, {
+                timeout: 10_000,
+                waitUntil: 'domcontentloaded'
+            }),
+            page.locator(scenario.entryFlow.triggerSelector).click()
+        ]);
+    } else {
+        const targetUrl = scenarioUrl(baseUrl, scenario);
+        await page.goto(targetUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 });
+    }
     await page.waitForSelector('#auth-submit', { state: 'visible', timeout: 10_000 });
     await page.waitForTimeout(1_000);
 
