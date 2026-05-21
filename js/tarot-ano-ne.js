@@ -81,6 +81,8 @@
         pricingUrl.searchParams.set('plan', TAROT_YES_NO_PLAN_ID);
         pricingUrl.searchParams.set('source', source);
         pricingUrl.searchParams.set('feature', TAROT_YES_NO_FEATURE);
+        pricingUrl.searchParams.set('entry_source', source);
+        pricingUrl.searchParams.set('entry_feature', TAROT_YES_NO_FEATURE);
         return `${pricingUrl.pathname}${pricingUrl.search}`;
     }
 
@@ -127,6 +129,10 @@
             window.Auth.startPlanCheckout(TAROT_YES_NO_PLAN_ID, {
                 source,
                 feature: TAROT_YES_NO_FEATURE,
+                metadata: {
+                    entry_source: source,
+                    entry_feature: TAROT_YES_NO_FEATURE
+                },
                 redirect: '/cenik.html',
                 authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
             });

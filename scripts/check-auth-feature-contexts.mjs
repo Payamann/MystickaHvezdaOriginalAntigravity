@@ -61,6 +61,10 @@ function extractObjectKeys(block) {
             : null;
 
         if (match) keys.add(match[1]);
+        if (!match && depth === 0) {
+            const shorthandMatch = line.trim().match(/^([a-zA-Z_$][\w$]*)\s*,?\s*(?:\/\/.*)?$/);
+            if (shorthandMatch) keys.add(shorthandMatch[1]);
+        }
 
         for (const char of line) {
             if (escaped) {
@@ -174,6 +178,133 @@ function routeExists(routePath) {
     return fs.existsSync(path.join(rootDir, cleanPath.slice(1)));
 }
 
+function lineForIndex(source, index) {
+    return source.slice(0, index).split(/\r?\n/).length;
+}
+
+function findClosingToken(source, openIndex, openChar, closeChar) {
+    let depth = 0;
+    let quote = null;
+    let escaped = false;
+
+    for (let index = openIndex; index < source.length; index += 1) {
+        const char = source[index];
+        if (escaped) {
+            escaped = false;
+            continue;
+        }
+
+        if (quote) {
+            if (char === '\\') {
+                escaped = true;
+            } else if (char === quote) {
+                quote = null;
+            }
+            continue;
+        }
+
+        if (char === '"' || char === "'" || char === '`') {
+            quote = char;
+        } else if (char === openChar) {
+            depth += 1;
+        } else if (char === closeChar) {
+            depth -= 1;
+            if (depth === 0) return index;
+        }
+    }
+
+    return -1;
+}
+
+function splitTopLevelArgs(source) {
+    const args = [];
+    let start = 0;
+    let roundDepth = 0;
+    let squareDepth = 0;
+    let curlyDepth = 0;
+    let quote = null;
+    let escaped = false;
+
+    for (let index = 0; index < source.length; index += 1) {
+        const char = source[index];
+        if (escaped) {
+            escaped = false;
+            continue;
+        }
+
+        if (quote) {
+            if (char === '\\') {
+                escaped = true;
+            } else if (char === quote) {
+                quote = null;
+            }
+            continue;
+        }
+
+        if (char === '"' || char === "'" || char === '`') {
+            quote = char;
+        } else if (char === '(') {
+            roundDepth += 1;
+        } else if (char === ')') {
+            roundDepth = Math.max(0, roundDepth - 1);
+        } else if (char === '[') {
+            squareDepth += 1;
+        } else if (char === ']') {
+            squareDepth = Math.max(0, squareDepth - 1);
+        } else if (char === '{') {
+            curlyDepth += 1;
+        } else if (char === '}') {
+            curlyDepth = Math.max(0, curlyDepth - 1);
+        } else if (char === ',' && roundDepth === 0 && squareDepth === 0 && curlyDepth === 0) {
+            args.push(source.slice(start, index).trim());
+            start = index + 1;
+        }
+    }
+
+    const tail = source.slice(start).trim();
+    if (tail) args.push(tail);
+    return args;
+}
+
+function collectDirectCheckoutContextIssues(source, file) {
+    const issues = [];
+    const callPattern = /window\.Auth\.startPlanCheckout\s*\(/g;
+    const requiredKeys = ['source', 'feature', 'redirect', 'metadata'];
+
+    for (const match of source.matchAll(callPattern)) {
+        const openIndex = source.indexOf('(', match.index);
+        const closeIndex = findClosingToken(source, openIndex, '(', ')');
+        if (openIndex === -1 || closeIndex === -1) {
+            issues.push(`${path.relative(rootDir, file)}:${lineForIndex(source, match.index || 0)} could not parse startPlanCheckout call`);
+            continue;
+        }
+
+        const args = splitTopLevelArgs(source.slice(openIndex + 1, closeIndex));
+        const contextArg = (args[1] || '').trim();
+        if (!contextArg) {
+            issues.push(`${path.relative(rootDir, file)}:${lineForIndex(source, match.index || 0)} missing checkout context object`);
+            continue;
+        }
+
+        if (!contextArg.startsWith('{')) continue;
+
+        const objectEnd = findClosingToken(contextArg, 0, '{', '}');
+        if (objectEnd === -1) {
+            issues.push(`${path.relative(rootDir, file)}:${lineForIndex(source, match.index || 0)} could not parse checkout context object`);
+            continue;
+        }
+
+        const objectSource = contextArg.slice(1, objectEnd);
+        const keys = extractObjectKeys(objectSource);
+        const missingKeys = requiredKeys.filter((key) => !keys.has(key));
+        if (missingKeys.length) {
+            issues.push(`${path.relative(rootDir, file)}:${lineForIndex(source, match.index || 0)} missing ${missingKeys.join(', ')}`);
+        }
+    }
+
+    return issues;
+}
+
 const scannedFiles = [
     ...fs.readdirSync(rootDir, { withFileTypes: true })
         .filter((entry) => entry.isFile() && entry.name.endsWith('.html'))
@@ -189,9 +320,11 @@ const allowedAuthTokenReferenceFiles = new Set([
 
 const usedFeatures = new Set();
 const authTokenReferences = [];
+const checkoutContextIssues = [];
 for (const file of scannedFiles) {
     if (file.includes(`${path.sep}js${path.sep}dist${path.sep}`)) continue;
     const source = fs.readFileSync(file, 'utf8');
+    checkoutContextIssues.push(...collectDirectCheckoutContextIssues(source, file));
 
     if (!allowedAuthTokenReferenceFiles.has(file)) {
         const lines = source.split(/\r?\n/);
@@ -298,7 +431,8 @@ if (
     missingOnboardingPaths.length ||
     missingGrowthClientFallbackFeatures.length ||
     missingGrowthLoopManifestPaths.length ||
-    authTokenReferences.length
+    authTokenReferences.length ||
+    checkoutContextIssues.length
 ) {
     console.error('[auth-feature-contexts] Missing auth feature coverage.');
     if (missingLabels.length) console.error(`Missing FEATURE_LABELS: ${missingLabels.join(', ')}`);
@@ -310,6 +444,7 @@ if (
     if (missingGrowthClientFallbackFeatures.length) console.error(`Missing growth-loop client fallback features: ${missingGrowthClientFallbackFeatures.join(', ')}`);
     if (missingGrowthLoopManifestPaths.length) console.error(`Missing growth-loop manifest target pages: ${missingGrowthLoopManifestPaths.join(', ')}`);
     if (authTokenReferences.length) console.error(`Disallowed Auth.token references: ${authTokenReferences.join(', ')}`);
+    if (checkoutContextIssues.length) console.error(`Incomplete direct startPlanCheckout context: ${checkoutContextIssues.join('; ')}`);
     process.exitCode = 1;
 } else {
     console.log(`[auth-feature-contexts] OK: ${usedFeatures.size} feature context(s) covered and activation/onboarding targets exist.`);

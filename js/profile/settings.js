@@ -14,6 +14,10 @@ function startProfileUpgradeCheckout(source = 'profile_subscription_card') {
         window.Auth.startPlanCheckout('pruvodce', {
             source,
             feature: 'subscription_management',
+            metadata: {
+                entry_source: source,
+                entry_feature: 'subscription_management'
+            },
             redirect: '/cenik.html',
             authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
         });
@@ -24,6 +28,8 @@ function startProfileUpgradeCheckout(source = 'profile_subscription_card') {
     pricingUrl.searchParams.set('plan', 'pruvodce');
     pricingUrl.searchParams.set('source', source);
     pricingUrl.searchParams.set('feature', 'subscription_management');
+    pricingUrl.searchParams.set('entry_source', source);
+    pricingUrl.searchParams.set('entry_feature', 'subscription_management');
     window.location.href = `${pricingUrl.pathname}${pricingUrl.search}`;
 }
 
