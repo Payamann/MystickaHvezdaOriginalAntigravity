@@ -1269,6 +1269,100 @@ test.describe('Login stránka', () => {
         expect(await page.evaluate(() => localStorage.getItem('mh_post_verification_checkout'))).toBeNull();
     });
 
+    test('post-verification telemetry outage neblokuje checkout recovery', async ({ page }) => {
+        const checkoutPayloads = [];
+        let recoveryTelemetryAttempts = 0;
+
+        await page.route('**/api/payment/funnel-event', async (route) => {
+            const payload = route.request().postDataJSON();
+            if (payload.eventName === 'checkout_post_verification_recovered') {
+                recoveryTelemetryAttempts += 1;
+            }
+            await route.fulfill({
+                status: 503,
+                contentType: 'application/json',
+                body: JSON.stringify({ error: 'temporary telemetry outage' })
+            });
+        });
+
+        await page.route('**/api/auth/login', async (route) => {
+            const payload = route.request().postDataJSON();
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    user: {
+                        id: 'verified-telemetry-outage',
+                        email: payload.email,
+                        role: 'user',
+                        subscription_status: 'free'
+                    }
+                })
+            });
+        });
+
+        await page.route('**/api/payment/create-checkout-session', async (route) => {
+            const payload = route.request().postDataJSON();
+            checkoutPayloads.push(payload);
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    id: 'cs_telemetry_outage_resume',
+                    url: '/profil.html?payment=success&plan=pruvodce&session_id=cs_telemetry_outage_resume'
+                })
+            });
+        });
+
+        await page.goto('/prihlaseni.html?mode=login');
+        await waitForPageReady(page);
+        await page.evaluate(() => {
+            localStorage.clear();
+            sessionStorage.clear();
+            localStorage.setItem('mh_post_verification_checkout', JSON.stringify({
+                planId: 'pruvodce',
+                createdAt: Date.now(),
+                context: {
+                    planId: 'pruvodce',
+                    source: 'trial_paywall',
+                    feature: 'numerologie_vyklad',
+                    redirect: '/cenik.html',
+                    authMode: 'register',
+                    metadata: {
+                        entry_source: 'trial_paywall',
+                        entry_feature: 'numerologie_vyklad',
+                        utm_source: 'email',
+                        utm_campaign: 'numerology_recovery'
+                    }
+                }
+            }));
+        });
+
+        await Promise.all([
+            page.waitForURL(
+                url => url.pathname === '/profil.html' && url.searchParams.get('session_id') === 'cs_telemetry_outage_resume',
+                { timeout: 10000, waitUntil: 'domcontentloaded' }
+            ),
+            submitLoginForm(page, 'verify-telemetry-outage@example.com'),
+        ]);
+
+        expect(checkoutPayloads).toEqual([
+            expect.objectContaining({
+                planId: 'pruvodce',
+                source: 'trial_paywall',
+                feature: 'numerologie_vyklad',
+                metadata: expect.objectContaining({
+                    entry_source: 'trial_paywall',
+                    entry_feature: 'numerologie_vyklad',
+                    utm_source: 'email',
+                    utm_campaign: 'numerology_recovery'
+                })
+            })
+        ]);
+        await expect.poll(() => recoveryTelemetryAttempts, { timeout: 5000 }).toBeGreaterThanOrEqual(1);
+        expect(await page.evaluate(() => localStorage.getItem('mh_post_verification_checkout'))).toBeNull();
+    });
+
     test('expired post-verification checkout se zahodi a nepusti checkout', async ({ page }) => {
         let checkoutRequests = 0;
         const funnelEvents = [];
