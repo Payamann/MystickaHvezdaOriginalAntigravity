@@ -205,6 +205,14 @@ async function runSmokeChecks(baseUrl, expectedSha = null) {
         throw new Error('Homepage did not return expected HTML.');
     }
     console.log('[smoke] homepage ok');
+
+    execFileSync(process.execPath, [
+        'scripts/production-critical-assets-smoke.mjs',
+        '--base-url',
+        normalizedBase
+    ], {
+        stdio: 'inherit'
+    });
 }
 
 async function main() {
