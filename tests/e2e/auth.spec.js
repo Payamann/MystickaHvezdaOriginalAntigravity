@@ -368,6 +368,24 @@ test.describe('Login stránka', () => {
         ]);
     });
 
+    test('login s pending checkout kontextem ukazuje placene navazani', async ({ page }) => {
+        await page.goto('/prihlaseni.html?mode=login&redirect=/cenik.html&plan=pruvodce&source=trial_paywall&feature=numerologie_vyklad&entry_source=trial_paywall&entry_feature=numerologie_vyklad');
+        await waitForPageReady(page);
+
+        await expect(page.locator('#checkout-context-banner')).toBeVisible();
+        await expect(page.locator('#login-page-title')).toContainText('pokračujte k odemčení');
+        await expect(page.locator('#login-page-subtitle')).toContainText('Stripe checkout');
+        await expect(page.locator('#auth-submit')).toContainText('Přihlásit se a pokračovat');
+        await expect(page.locator('#auth-submit')).not.toContainText('zdarma');
+        await expect.poll(() => page.evaluate(() => document.body.classList.contains('auth-checkout-plan-mode'))).toBe(true);
+
+        await expectLocatorsWithinViewport(page, [
+            page.locator('#checkout-context-banner').first(),
+            page.locator('#email').first(),
+            page.locator('#auth-submit').first(),
+        ]);
+    });
+
     test('mobilni placeny checkout kontext je videt pred formularem', async ({ page }) => {
         await page.setViewportSize(MOBILE_VIEWPORT);
         await page.evaluate(() => {

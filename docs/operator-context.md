@@ -141,6 +141,7 @@ Production checks:
 npm.cmd run deploy:guard
 npm.cmd run verify:production
 npm.cmd run smoke:production:tool-runtime
+npm.cmd run smoke:production:auth-handoff
 ```
 
 If frequent heartbeat smoke runs hit a production natal-chart rate limit (`429`) while `/api/health` is ok, use `$env:VERIFY_SKIP_ASTRO='true'; npm.cmd run verify:production` for the next lightweight health/public-page pass. Keep full deploy confirmation on the default verifier with astro checks enabled.

@@ -604,7 +604,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         document.body.classList.toggle('auth-register-mode', isRegisterMode);
-        document.body.classList.toggle('auth-checkout-plan-mode', isRegisterMode && Boolean(requestedPlan));
+        document.body.classList.toggle('auth-checkout-plan-mode', Boolean(requestedPlan));
 
         if (forgotPasswordLink) {
             setBlockVisible(forgotPasswordLink, !isRegisterMode);
@@ -636,8 +636,13 @@ document.addEventListener('DOMContentLoaded', () => {
             authSubmitBtn.textContent = requestedPlan ? 'Vytvořit účet a pokračovat' : 'Vytvořit účet zdarma';
             if (toggleBtn) toggleBtn.textContent = 'Máte účet? Přihlaste se';
         } else {
-            if (loginHeader) loginHeader.textContent = 'Vítejte zpět';
-            if (loginSubtitle) loginSubtitle.textContent = 'Přihlaste se ke svému účtu a pokračujte tam, kde jste skončili.';
+            if (requestedPlan) {
+                if (loginHeader) loginHeader.textContent = 'Přihlaste se a pokračujte k odemčení';
+                if (loginSubtitle) loginSubtitle.textContent = 'Po přihlášení zachováme vybraný plán a otevřeme bezpečný Stripe checkout.';
+            } else {
+                if (loginHeader) loginHeader.textContent = 'Vítejte zpět';
+                if (loginSubtitle) loginSubtitle.textContent = 'Přihlaste se ke svému účtu a pokračujte tam, kde jste skončili.';
+            }
             setBlockVisible(socialProofEl, false);
             setBlockVisible(signupValuePanel, false);
             setBlockVisible(passwordHelp, false);
@@ -658,7 +663,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 gdprConsent.required = false;
                 gdprConsent.checked = false;
             }
-            authSubmitBtn.textContent = 'Přihlásit se';
+            authSubmitBtn.textContent = requestedPlan ? 'Přihlásit se a pokračovat' : 'Přihlásit se';
             if (toggleBtn) toggleBtn.textContent = 'Nemáte účet? Zaregistrujte se zdarma →';
         }
 
