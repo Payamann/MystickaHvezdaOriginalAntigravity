@@ -243,8 +243,8 @@ test.describe('FAQ', () => {
         expect(structuredData).toContain('symbolickou interpretaci');
         expect(structuredData).toContain('Zrušení zastaví další obnovení');
         expect(structuredData).not.toContain('přesných astronomických dat');
-        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /práci s daty/);
-        await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', /hranice služby/);
+        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /práci s (osobními )?daty/);
+        await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', /hranic(e|ích) služby/);
         await expect(page.locator('.hero__subtitle')).toContainText('kde jsou hranice služby');
         await expect(page.locator('script[src*="secondary-pages-copy-fixes.js"]')).toHaveAttribute('src', /v=5/);
 

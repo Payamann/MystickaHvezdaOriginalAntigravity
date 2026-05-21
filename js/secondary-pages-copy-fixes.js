@@ -377,7 +377,7 @@
       setMetaByProperty('og:title', 'FAQ k výkladům, platbám a soukromí | Mystická Hvězda');
       setMetaByProperty(
         'og:description',
-        'Odpovědi na nejčastější otázky o výkladech, registraci, předplatném a práci s daty.'
+        'Odpovědi na nejčastější otázky o výkladech, registraci, předplatném, práci s daty a hranicích služby.'
       );
       updateJsonLd(
         (data) => data?.['@type'] === 'FAQPage',
