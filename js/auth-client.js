@@ -1690,11 +1690,15 @@
                     ...context,
                     source
                 });
-                window.MH_ANALYTICS?.trackCheckoutStarted?.(planId, {
-                    ...checkoutMetadata,
-                    source,
-                    feature: context.feature || null
-                });
+                try {
+                    window.MH_ANALYTICS?.trackCheckoutStarted?.(planId, {
+                        ...checkoutMetadata,
+                        source,
+                        feature: context.feature || null
+                    });
+                } catch (analyticsError) {
+                    console.warn('[FUNNEL] Checkout start analytics failed:', analyticsError.message);
+                }
                 const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
                 const res = await fetch(`${API_URL}/payment/create-checkout-session`, {
                     method: 'POST',

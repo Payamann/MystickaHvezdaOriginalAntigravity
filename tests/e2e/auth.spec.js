@@ -1001,6 +1001,68 @@ test.describe('Login stránka', () => {
         await expect.poll(() => page.evaluate(() => sessionStorage.getItem('mh_pending_checkout_auth_required_events'))).toBeNull();
     });
 
+    test('checkout start analytics outage neblokuje checkout session', async ({ page }) => {
+        let checkoutPayload = null;
+
+        await page.route('**/api/payment/create-checkout-session', async (route) => {
+            checkoutPayload = route.request().postDataJSON();
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    id: 'cs_checkout_start_analytics_outage',
+                    url: '/profil.html?payment=success&plan=pruvodce&session_id=cs_checkout_start_analytics_outage'
+                })
+            });
+        });
+
+        await page.goto('/tarot.html', { waitUntil: 'domcontentloaded' });
+        await waitForPageReady(page);
+        await page.evaluate(() => {
+            document.cookie = 'logged_in=1; path=/';
+            const user = {
+                id: 'checkout-start-analytics-outage-user',
+                email: 'checkout-start-analytics-outage@example.com',
+                role: 'user',
+                subscription_status: 'free'
+            };
+            localStorage.setItem('auth_user', JSON.stringify(user));
+            window.Auth.user = user;
+
+            const analytics = window.MH_ANALYTICS || (window.MH_ANALYTICS = {});
+            analytics.trackCheckoutStarted = () => {
+                throw new Error('temporary analytics outage');
+            };
+        });
+
+        await Promise.all([
+            page.waitForURL(
+                url => url.pathname === '/profil.html' && url.searchParams.get('session_id') === 'cs_checkout_start_analytics_outage',
+                { timeout: 10000, waitUntil: 'domcontentloaded' }
+            ),
+            page.evaluate(() => window.Auth.startPlanCheckout('pruvodce', {
+                source: 'inline_paywall',
+                feature: 'tarot_multi_card',
+                redirect: '/cenik.html',
+                metadata: {
+                    entry_source: 'inline_paywall',
+                    entry_feature: 'tarot_multi_card'
+                }
+            })),
+        ]);
+
+        expect(checkoutPayload).toEqual(expect.objectContaining({
+            planId: 'pruvodce',
+            source: 'inline_paywall',
+            feature: 'tarot_multi_card',
+            billingInterval: null,
+            metadata: expect.objectContaining({
+                entry_source: 'inline_paywall',
+                entry_feature: 'tarot_multi_card'
+            })
+        }));
+    });
+
     test('checkout intent prezije email verifikaci a obnovi se pri dalsim prihlaseni', async ({ page }) => {
         test.setTimeout(60000);
 
