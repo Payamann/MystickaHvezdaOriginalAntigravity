@@ -1149,6 +1149,87 @@ test.describe('Osobní mapa', () => {
         }));
     });
 
+    test('analytics outage neblokuje personal map checkout', async ({ page }) => {
+        let checkoutPayload = null;
+
+        await page.addInitScript(() => {
+            let analyticsValue = null;
+            Object.defineProperty(window, 'MH_ANALYTICS', {
+                configurable: true,
+                get: () => analyticsValue,
+                set: (value) => {
+                    analyticsValue = value && typeof value === 'object'
+                        ? {
+                            ...value,
+                            trackEvent: () => {
+                                throw new Error('personal map analytics unavailable');
+                            },
+                            trackCheckoutStarted: () => {
+                                throw new Error('personal map checkout analytics unavailable');
+                            }
+                        }
+                        : value;
+                }
+            });
+        });
+
+        await page.route('**/api/csrf-token', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ csrfToken: 'e2e-personal-map-analytics-token' })
+            });
+        });
+
+        await page.route('**/api/payment/funnel-event', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+
+        await page.route('**/api/osobni-mapa/checkout', async (route) => {
+            checkoutPayload = route.request().postDataJSON();
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    url: '/osobni-mapa.html?status=success&source=pricing_addon&session_id=cs_test_personal_map_analytics'
+                })
+            });
+        });
+
+        await page.goto('/osobni-mapa.html?source=pricing_addon');
+        await waitForPageReady(page);
+
+        await page.locator('#name').fill('Jana');
+        await page.locator('#email').fill('jana@example.cz');
+        await page.locator('#birthDate').fill('1990-01-01');
+        await page.locator('#birthTime').fill('12:30');
+        await page.locator('#birthPlace').fill('Praha');
+        await page.locator('#sign').selectOption('beran');
+        await page.locator('#grammaticalGender').selectOption('feminine');
+        await page.locator('#focus').fill('Chci pochopit hlavni tema zbytku roku.');
+
+        await Promise.all([
+            page.waitForURL(/status=success/),
+            page.locator('#submitBtn').click(),
+        ]);
+
+        expect(checkoutPayload).toEqual(expect.objectContaining({
+            name: 'Jana',
+            email: 'jana@example.cz',
+            birthDate: '1990-01-01',
+            birthTime: '12:30',
+            birthPlace: 'Praha',
+            sign: 'beran',
+            grammaticalGender: 'feminine',
+            focus: 'Chci pochopit hlavni tema zbytku roku.',
+            source: 'pricing_addon'
+        }));
+    });
+
     test('úspěšná platba ukáže upsell na Průvodce a schová objednávku', async ({ page }) => {
         await page.goto('/osobni-mapa.html?status=success&source=e2e_success&session_id=cs_test_123');
         await waitForPageReady(page);

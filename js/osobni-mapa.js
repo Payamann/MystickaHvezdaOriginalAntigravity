@@ -29,9 +29,24 @@
         };
     }
 
+    function trackAnalytics(methodName, ...args) {
+        const method = window.MH_ANALYTICS?.[methodName];
+        if (typeof method !== 'function') {
+            return false;
+        }
+
+        try {
+            method.apply(window.MH_ANALYTICS, args);
+            return true;
+        } catch (error) {
+            console.warn(`[Personal map analytics] ${methodName} failed:`, error?.message || error);
+            return false;
+        }
+    }
+
     function trackEvent(eventName, payload = {}) {
         const eventPayload = getBaseEventPayload(payload);
-        window.MH_ANALYTICS?.trackEvent?.(eventName, eventPayload);
+        trackAnalytics('trackEvent', eventName, eventPayload);
         void trackFunnelEvent(eventName, eventPayload);
     }
 
@@ -95,14 +110,14 @@
         if (status === 'success') {
             document.getElementById('bannerSuccess')?.classList.add('visible');
             document.getElementById('order')?.setAttribute('hidden', 'true');
-            window.MH_ANALYTICS?.trackPaymentResult?.('success', {
+            trackAnalytics('trackPaymentResult', 'success', {
                 product_id: PRODUCT.id,
                 product_type: PRODUCT.type,
                 session_id: sessionId,
                 source: attribution.source,
                 feature: attribution.feature
             });
-            window.MH_ANALYTICS?.trackPurchaseCompleted?.(PRODUCT.id, PRODUCT.price, PRODUCT.currency, {
+            trackAnalytics('trackPurchaseCompleted', PRODUCT.id, PRODUCT.price, PRODUCT.currency, {
                 product_type: PRODUCT.type,
                 product_name: PRODUCT.name,
                 transaction_id: sessionId || undefined,
@@ -119,7 +134,7 @@
 
         if (status === 'cancel') {
             document.getElementById('bannerCancel')?.classList.add('visible');
-            window.MH_ANALYTICS?.trackPaymentResult?.('cancel', {
+            trackAnalytics('trackPaymentResult', 'cancel', {
                 product_id: PRODUCT.id,
                 product_type: PRODUCT.type,
                 source: attribution.source,
@@ -269,7 +284,7 @@
                     createdAt: new Date().toISOString()
                 }));
 
-                window.MH_ANALYTICS?.trackCheckoutStarted?.(PRODUCT.id, {
+                trackAnalytics('trackCheckoutStarted', PRODUCT.id, {
                     product_type: PRODUCT.type,
                     value: PRODUCT.price,
                     currency: PRODUCT.currency,
