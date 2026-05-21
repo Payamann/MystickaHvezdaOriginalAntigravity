@@ -27,11 +27,15 @@ Primary funnel: visit -> first value -> signup -> onboarding completed -> saved 
   - `84d17132` updated operator context after pricing smoke deploy
   - `2e2b99d7` made revenue truth monitoring resilient to GitHub status API limits
   - `f2ea54dd` added exact production commit verification helper
+  - `106f5108` kept mobile pricing recommendations visible with the cookie banner and bound pricing checkout handlers before the plan manifest finishes loading
+  - `2db6348e` added regression coverage for logged-in pricing checkout when `/api/plans` is slow
 - Latest known revenue truth:
-  - Latest post-deploy windows still have insufficient paid funnel events
+  - Production is verified on `2db6348e`
+  - Latest post-deploy windows after `2db6348e` still have insufficient paid funnel events
   - First-party analytics ingestion is active and production health is ok
   - 24h/7d/30d historical windows still show `checkout_auth_required > 0` and `checkout_requested = 0`
   - Do not treat the older windows as proof that the latest fix failed; use fresh post-deploy cohorts first
+  - If the next fresh post-deploy paid event again shows `checkout_auth_required > 0` and `checkout_requested = 0`, prioritize post-auth checkout resume/debug with segment detail
 
 ## Default Operator Loop
 
