@@ -633,6 +633,56 @@ test.describe('Homepage', () => {
         }));
     });
 
+    test('pricing preview prihlaseneho posila checkout metadata', async ({ page, context }) => {
+        let checkoutPayload = null;
+
+        await context.addCookies([{
+            name: 'logged_in',
+            value: '1',
+            url: BASE_URL
+        }]);
+        await page.evaluate(() => {
+            localStorage.setItem('auth_user', JSON.stringify({
+                id: 'homepage-pricing-user',
+                email: 'pricing-user@example.com',
+                subscription_status: 'free'
+            }));
+            sessionStorage.clear();
+        });
+        await page.reload();
+        await waitForPageReady(page);
+
+        await page.route('**/api/payment/create-checkout-session', async (route) => {
+            checkoutPayload = route.request().postDataJSON();
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    id: 'cs_homepage_pricing_preview',
+                    url: '/profil.html?payment=success&plan=pruvodce&session_id=cs_homepage_pricing_preview'
+                })
+            });
+        });
+
+        await Promise.all([
+            page.waitForURL(
+                url => url.pathname === '/profil.html' && url.searchParams.get('session_id') === 'cs_homepage_pricing_preview',
+                { timeout: 10000, waitUntil: 'domcontentloaded' }
+            ),
+            page.locator('[data-plan="pruvodce"]').click(),
+        ]);
+
+        expect(checkoutPayload).toEqual(expect.objectContaining({
+            planId: 'pruvodce',
+            source: 'homepage_pricing_preview',
+            feature: 'premium_membership',
+            metadata: expect.objectContaining({
+                entry_source: 'homepage_pricing_preview',
+                entry_feature: 'premium_membership'
+            })
+        }));
+    });
+
     test('pricing preview posila vyssi plany do celeho ceniku', async ({ page }) => {
         const fullPricingLink = page.locator('a[href*="homepage_pricing_full_compare"]');
         await expect(fullPricingLink).toBeVisible();

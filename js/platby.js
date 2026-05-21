@@ -36,12 +36,35 @@ function getHomepagePricingFeature(planId) {
     return 'premium_membership';
 }
 
+function buildCheckoutMetadata(context = {}) {
+    const source = context.source || 'homepage_pricing_preview';
+    const feature = context.feature || null;
+    const metadata = context.metadata && typeof context.metadata === 'object' && !Array.isArray(context.metadata)
+        ? { ...context.metadata }
+        : {};
+
+    if (source && !metadata.entry_source) metadata.entry_source = source;
+    if (feature && !metadata.entry_feature) metadata.entry_feature = feature;
+
+    return metadata;
+}
+
 async function handlePaymentClick(planId, btn, context = {}) {
+    const source = context.source || 'homepage_pricing_preview';
+    const feature = context.feature || null;
+    const metadata = buildCheckoutMetadata({ ...context, source, feature });
+
     // Check if user is logged in
     if (!window.Auth || !window.Auth.isLoggedIn()) {
         window.Auth?.showToast?.('Přihlášení vyžadováno', 'Pro nákup předplatného se prosím nejdříve přihlaste.', 'info');
         if (window.Auth?.startPlanCheckout) {
-            window.Auth.startPlanCheckout(planId, context);
+            window.Auth.startPlanCheckout(planId, {
+                ...context,
+                source,
+                feature,
+                metadata,
+                redirect: context.redirect || '/cenik.html'
+            });
             return;
         }
 
@@ -49,8 +72,10 @@ async function handlePaymentClick(planId, btn, context = {}) {
         authUrl.searchParams.set('mode', context.authMode || 'register');
         authUrl.searchParams.set('redirect', context.redirect || '/cenik.html');
         authUrl.searchParams.set('plan', planId);
-        authUrl.searchParams.set('source', context.source || 'homepage_pricing_preview');
-        if (context.feature) authUrl.searchParams.set('feature', context.feature);
+        authUrl.searchParams.set('source', source);
+        if (feature) authUrl.searchParams.set('feature', feature);
+        if (metadata.entry_source) authUrl.searchParams.set('entry_source', metadata.entry_source);
+        if (metadata.entry_feature) authUrl.searchParams.set('entry_feature', metadata.entry_feature);
         window.location.href = `${authUrl.pathname}${authUrl.search}`;
         return;
     }
@@ -75,8 +100,9 @@ async function handlePaymentClick(planId, btn, context = {}) {
             },
             body: JSON.stringify({
                 planId,
-                source: context.source || 'homepage_pricing_preview',
-                feature: context.feature || null
+                source,
+                feature,
+                metadata
             })
         });
 
