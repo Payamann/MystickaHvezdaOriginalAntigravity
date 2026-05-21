@@ -31,9 +31,11 @@ Primary funnel: visit -> first value -> signup -> onboarding completed -> saved 
   - `2db6348e` added regression coverage for logged-in pricing checkout when `/api/plans` is slow
   - `2dbb0bc7` added mobile pricing recommendation regression coverage while the cookie banner is visible
   - `ae561a5f` added checkout recovery coverage for preserving billing interval through email verification
+  - `ca9eb58b` added post-verification checkout failure recovery coverage and included it in `test:e2e:checkout-recovery`
+  - `8a107bc9` preserves `billing_interval` on checkout recovery URLs after session creation failures
 - Latest known revenue truth:
-  - Production is verified on `ae561a5f`
-  - Latest post-deploy windows after `ae561a5f` still have insufficient paid funnel events
+  - Production is verified on `8a107bc9`
+  - Latest post-deploy windows after `8a107bc9` still have insufficient paid funnel events
   - First-party analytics ingestion is active and production health is ok
   - 24h/7d/30d historical windows still show `checkout_auth_required > 0` and `checkout_requested = 0`
   - Do not treat the older windows as proof that the latest fix failed; use fresh post-deploy cohorts first
