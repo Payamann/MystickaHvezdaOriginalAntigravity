@@ -1106,6 +1106,85 @@ test.describe('Ceník — platební tlačítka', () => {
 
     // ── Kritický test: nepřihlášený uživatel → správné přesměrování ──────────
 
+    test('prihlaseny checkout funguje i pred dokoncenim plan manifestu', async ({ page }) => {
+        let checkoutPayload = null;
+        let releasePlanManifest;
+        let planManifestRequested = false;
+        const planManifestGate = new Promise((resolve) => {
+            releasePlanManifest = resolve;
+        });
+
+        await page.route('**/api/plans', async (route) => {
+            planManifestRequested = true;
+            await planManifestGate;
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    success: true,
+                    plans: [],
+                    pricingPage: {},
+                    featurePlanMap: {}
+                })
+            });
+        });
+
+        await page.route('**/api/payment/create-checkout-session', async (route) => {
+            checkoutPayload = route.request().postDataJSON();
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    id: 'cs_test_slow_manifest',
+                    url: '/profil.html?payment=success&plan=pruvodce&session_id=cs_test_slow_manifest'
+                })
+            });
+        });
+
+        await page.context().addCookies([{
+            name: 'logged_in',
+            value: '1',
+            url: BASE_URL
+        }]);
+
+        await page.addInitScript(() => {
+            localStorage.setItem('auth_user', JSON.stringify({
+                id: 'slow-manifest-user',
+                email: 'slow-manifest@example.com',
+                role: 'user'
+            }));
+        });
+
+        try {
+            await page.goto('/cenik.html?source=personal_map_email_day3&feature=premium_membership&plan=pruvodce&utm_source=email&utm_campaign=personal_map_day3', { waitUntil: 'domcontentloaded' });
+            await waitForPageReady(page);
+            await expect.poll(() => planManifestRequested).toBe(true);
+
+            await Promise.all([
+                page.waitForURL(url => (
+                    url.pathname === '/profil.html'
+                    && url.searchParams.get('session_id') === 'cs_test_slow_manifest'
+                ), { timeout: 10000 }),
+                page.locator('[data-plan="pruvodce"]').click(),
+            ]);
+        } finally {
+            releasePlanManifest();
+        }
+
+        expect(checkoutPayload).toEqual(expect.objectContaining({
+            planId: 'pruvodce',
+            source: 'personal_map_email_day3',
+            feature: 'premium_membership',
+            billingInterval: 'monthly',
+            metadata: expect.objectContaining({
+                entry_source: 'personal_map_email_day3',
+                entry_feature: 'premium_membership',
+                utm_source: 'email',
+                utm_campaign: 'personal_map_day3'
+            })
+        }));
+    });
+
     test('klik na checkout bez přihlášení přesměruje na prihlaseni.html', async ({ page }) => {
         // Ujistíme se, že není přihlášen (čistý stav)
         await page.evaluate(() => {
