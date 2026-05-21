@@ -38,9 +38,13 @@ Primary funnel: visit -> first value -> signup -> onboarding completed -> saved 
   - `92136557` added coverage that checkout recovery still starts when post-verification telemetry is temporarily unavailable
   - `aed3f6d8` added coverage that `checkout_auth_required` survives a temporary funnel-event outage and retries with the original handoff context
   - `430077b2` added coverage that `checkout_auth_form_submitted` telemetry outages do not block registration or checkout creation
+  - `f78cedbf` guarded checkout session creation against `checkout_started` analytics failures
+  - `1fb1b40d` guarded post-auth checkout resume against auth-completed analytics failures
+  - `77ab0e02` guarded signup activation redirects against activation analytics failures
+  - `a90ea939` guarded reading save, first-value completion, and reading feedback against analytics failures
 - Latest known revenue truth:
-  - Production is verified on `430077b2`
-  - Latest post-deploy windows after `430077b2` still have insufficient paid funnel events
+  - Production is verified on `a90ea939`
+  - Latest post-deploy windows after `a90ea939` still have insufficient paid funnel events
   - First-party analytics ingestion is active and production health is ok
   - 24h/7d/30d historical windows still show `checkout_auth_required > 0` and `checkout_requested = 0`
   - Do not treat the older windows as proof that the latest fix failed; use fresh post-deploy cohorts first
