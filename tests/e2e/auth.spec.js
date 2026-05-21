@@ -2054,6 +2054,65 @@ test.describe('Login stránka', () => {
         expect(activationFlag).toBeNull();
     });
 
+    test('save reading analytics outage neblokuje ulozeni prvni hodnoty', async ({ page }) => {
+        await page.route('**/api/user/readings', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    reading: {
+                        id: 'reading_analytics_outage',
+                        type: 'tarot',
+                        data: { cards: ['The Star'] }
+                    }
+                })
+            });
+        });
+
+        await page.goto('/tarot.html', { waitUntil: 'domcontentloaded' });
+        await waitForPageReady(page);
+        const savedReading = await page.evaluate(async () => {
+            document.cookie = 'logged_in=1; path=/';
+            const user = {
+                id: 'reading-analytics-outage-user',
+                email: 'reading-analytics-outage@example.com',
+                role: 'user',
+                subscription_status: 'free'
+            };
+            localStorage.setItem('auth_user', JSON.stringify(user));
+            localStorage.removeItem('mh_first_value_completed');
+            window.Auth.user = user;
+            window.__readingSavedEvents = [];
+            window.addEventListener('reading:saved', (event) => {
+                window.__readingSavedEvents.push({
+                    id: event.detail?.reading?.id || null,
+                    type: event.detail?.type || null
+                });
+            });
+
+            const analytics = window.MH_ANALYTICS || (window.MH_ANALYTICS = {});
+            analytics.trackEvent = (eventName) => {
+                if (eventName === 'feature_reading_saved' || eventName === 'first_value_completed') {
+                    throw new Error('temporary reading analytics outage');
+                }
+            };
+
+            return window.Auth.saveReading('tarot', { cards: ['The Star'] });
+        });
+
+        expect(savedReading).toEqual(expect.objectContaining({
+            id: 'reading_analytics_outage',
+            type: 'tarot'
+        }));
+        await expect.poll(() => page.evaluate(() => localStorage.getItem('mh_first_value_completed'))).toBe('1');
+        await expect.poll(() => page.evaluate(() => window.__readingSavedEvents)).toEqual([
+            {
+                id: 'reading_analytics_outage',
+                type: 'tarot'
+            }
+        ]);
+    });
+
     test('registrace z free CTA ceniku presmeruje na denni horoskopy', async ({ page }) => {
         await mockSuccessfulRegister(page, 'pricing-free@example.com');
 

@@ -1613,7 +1613,7 @@
                 } else {
                     const savedData = await res.json();
                     const savedReading = savedData.reading || savedData;
-                    window.MH_ANALYTICS?.trackEvent?.('feature_reading_saved', {
+                    this.trackEventSafely('feature_reading_saved', {
                         feature: type,
                         reading_type: type,
                         source: 'auth_save_reading',
@@ -1624,14 +1624,14 @@
                         try {
                             if (!localStorage.getItem('mh_first_value_completed')) {
                                 localStorage.setItem('mh_first_value_completed', '1');
-                                window.MH_ANALYTICS?.trackEvent?.('first_value_completed', {
+                                this.trackEventSafely('first_value_completed', {
                                     feature: type,
                                     reading_type: type,
                                     source: 'auth_save_reading'
                                 });
                             }
                         } catch {
-                            window.MH_ANALYTICS?.trackEvent?.('first_value_completed', {
+                            this.trackEventSafely('first_value_completed', {
                                 feature: type,
                                 reading_type: type,
                                 source: 'auth_save_reading'
@@ -1672,7 +1672,7 @@
                     return null;
                 }
 
-                window.MH_ANALYTICS?.trackEvent?.('reading_feedback_submitted', {
+                this.trackEventSafely('reading_feedback_submitted', {
                     feature: feedback.feature || null,
                     resonance: feedback.resonance || null,
                     focus: feedback.focus || null,
