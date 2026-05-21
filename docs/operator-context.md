@@ -14,7 +14,7 @@ Primary funnel: visit -> first value -> signup -> onboarding completed -> saved 
 
 - Production branch: `origin/main`
 - Railway deploy target: `Payamann/MystickaHvezdaOriginalAntigravity` on `main`
-- Latest verified production commit: `cbab2c2d`
+- Latest verified production commit: `84d17132`
 - Latest important funnel work:
   - `56291416` preserved paywall checkout handoff context
   - `4bd2f08e` connected profile recovery to the growth funnel
@@ -24,8 +24,9 @@ Primary funnel: visit -> first value -> signup -> onboarding completed -> saved 
   - `69b64063` preserved homepage and pending checkout metadata through pricing/auth handoff
   - `0ed0104d` fixed mobile paid auth handoff layout and verified production auth/tool smokes
   - `cbab2c2d` added read-only production pricing handoff smoke
+  - `84d17132` updated operator context after pricing smoke deploy
 - Latest known revenue truth:
-  - Post-deploy window after `cbab2c2d` still has insufficient paid funnel events
+  - Post-deploy window after `84d17132` still has insufficient paid funnel events
   - First-party analytics ingestion is active and production health is ok
   - 24h/7d/30d historical windows still show `checkout_auth_required > 0` and `checkout_requested = 0`
   - Do not treat the older windows as proof that the latest fix failed; use fresh post-deploy cohorts first
@@ -125,6 +126,8 @@ node scripts/analyze-funnel-segments.mjs (Join-Path $dir '7d.csv') --top 10 --mi
 `monitor:revenue-truth:production` also prints a read-only first-party analytics pulse for the post-deploy window. If `analytics_events > 0` and `funnel_events = 0`, ingestion is alive and the blocker is lack of paid funnel activity rather than a broken analytics endpoint. When a post-deploy window is present, 24h/7d/30d summaries are labeled `basis=historical_context`; use them to pick test coverage or diagnostics, not to justify a runtime fix before fresh post-deploy events arrive. Each run also writes an aggregate-only `monitor-summary.json` in the chosen temp output directory; read `next_action` first in the next heartbeat.
 
 For frequent 10-15 minute heartbeats, prefer `npm.cmd run monitor:revenue-truth:production:summary -- --output-dir <temp-dir>` first. It writes the same aggregate `monitor-summary.json` and skips the verbose segment analyzer; run the full monitor only when `next_action` or fresh paid events require segment detail.
+
+If GitHub commit status API returns 403 during frequent monitoring, the summary monitor falls back to a short production-health timestamp window so the operator gets an aggregate report instead of stalling. Use `--github-status-fallback-minutes <N>` only when a different heartbeat window is needed.
 
 Core checks:
 

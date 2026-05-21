@@ -144,6 +144,8 @@ describe('manual script guardrails', () => {
         expect(source).toContain('monitor-summary.json');
         expect(source).toContain('next_action');
         expect(source).toContain('--summary-only');
+        expect(source).toContain('GitHub deployment status unavailable');
+        expect(source).toContain('--github-status-fallback-minutes');
     });
 
     test('production verifier covers intent landing clusters', () => {

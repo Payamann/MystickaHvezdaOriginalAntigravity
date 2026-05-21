@@ -10,6 +10,7 @@ const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const DEFAULT_REPO = 'Payamann/MystickaHvezdaOriginalAntigravity';
 const DEFAULT_BASE_URL = 'https://www.mystickahvezda.cz';
 const ANALYTICS_PULSE_LIMIT = 5000;
+const DEFAULT_GITHUB_STATUS_FALLBACK_MINUTES = 15;
 
 dotenv.config({ path: path.join(rootDir, 'server', '.env') });
 
@@ -17,6 +18,7 @@ function usage() {
     return [
         'Usage: node scripts/revenue-truth-monitor.mjs [--since ISO | --since-railway-status | --since-live-production] [--output-dir <temp-dir>]',
         '       [--sha <commit>] [--repo owner/name] [--base-url https://...] [--top 10] [--min-events 1] [--min-step 1] [--allow-repo-output] [--summary-only]',
+        '       [--github-status-fallback-minutes 15]',
         '',
         'Exports post-deploy, 24h, 7d, and 30d live funnel windows outside the repo,',
         'then runs the funnel leak analyzer for each generated CSV.'
@@ -37,7 +39,11 @@ function parseArgs(argv) {
         minStep: '1',
         allowRepoOutput: false,
         skipAnalyticsPulse: false,
-        summaryOnly: false
+        summaryOnly: false,
+        githubStatusFallbackMinutes: Number.parseInt(
+            process.env.REVENUE_TRUTH_STATUS_FALLBACK_MINUTES || String(DEFAULT_GITHUB_STATUS_FALLBACK_MINUTES),
+            10
+        )
     };
 
     for (let index = 0; index < argv.length; index += 1) {
@@ -89,6 +95,10 @@ function parseArgs(argv) {
             args.skipAnalyticsPulse = true;
         } else if (arg === '--summary-only') {
             args.summaryOnly = true;
+        } else if (arg === '--github-status-fallback-minutes') {
+            args.githubStatusFallbackMinutes = Number.parseInt(next(), 10);
+        } else if (arg.startsWith('--github-status-fallback-minutes=')) {
+            args.githubStatusFallbackMinutes = Number.parseInt(arg.slice('--github-status-fallback-minutes='.length), 10);
         } else {
             throw new Error(`Unknown argument: ${arg}\n${usage()}`);
         }
@@ -111,6 +121,12 @@ function assertOutsideRepo(outputDir, allowRepoOutput) {
     }
 
     return resolvedOutputDir;
+}
+
+function safeIsoTimestamp(value, fallback = new Date()) {
+    const date = value ? new Date(value) : fallback;
+    if (Number.isNaN(date.getTime())) return fallback.toISOString();
+    return date.toISOString();
 }
 
 function resolveSupabaseUrl(value) {
@@ -165,7 +181,10 @@ async function fetchLiveProductionDeployment({ baseUrl }) {
     }
 
     console.log(`[revenue-truth] live production commit: ${commit} branch=${health.deployment?.branch || 'unknown'} health_timestamp=${health.timestamp || 'unknown'}`);
-    return commit;
+    return {
+        commit,
+        healthTimestamp: safeIsoTimestamp(health.timestamp)
+    };
 }
 
 async function getRailwayStatusSince({ repo, sha }) {
@@ -186,6 +205,17 @@ async function getRailwayStatusSince({ repo, sha }) {
     return since;
 }
 
+function fallbackSinceFromHealth({ error, liveDeployment, fallbackMinutes }) {
+    const minutes = Number.isFinite(fallbackMinutes) && fallbackMinutes > 0
+        ? fallbackMinutes
+        : DEFAULT_GITHUB_STATUS_FALLBACK_MINUTES;
+    const reference = new Date(liveDeployment.healthTimestamp);
+    const since = new Date(reference.getTime() - (minutes * 60_000)).toISOString();
+
+    console.log(`[revenue-truth] GitHub deployment status unavailable (${error.message}); using ${minutes}m fallback window from production health timestamp ${liveDeployment.healthTimestamp}.`);
+    return since;
+}
+
 async function resolveSince(args) {
     const selectedModes = [args.since, args.sinceRailwayStatus, args.sinceLiveProduction].filter(Boolean).length;
     if (selectedModes > 1) {
@@ -193,8 +223,17 @@ async function resolveSince(args) {
     }
     if (args.since) return args.since;
     if (args.sinceLiveProduction) {
-        args.sha = await fetchLiveProductionDeployment(args);
-        return getRailwayStatusSince(args);
+        const liveDeployment = await fetchLiveProductionDeployment(args);
+        args.sha = liveDeployment.commit;
+        try {
+            return await getRailwayStatusSince(args);
+        } catch (error) {
+            return fallbackSinceFromHealth({
+                error,
+                liveDeployment,
+                fallbackMinutes: args.githubStatusFallbackMinutes
+            });
+        }
     }
     if (args.sinceRailwayStatus) {
         return getRailwayStatusSince(args);
