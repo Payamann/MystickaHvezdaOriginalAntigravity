@@ -129,6 +129,7 @@ Core checks:
 ```powershell
 npm.cmd run audit:growth-loop
 npm.cmd run check:paywall-trust
+npm.cmd run test:e2e:checkout-recovery
 npm.cmd run test:e2e:funnel-smoke
 npm.cmd run test:e2e:checkout
 npm.cmd run test:verify
