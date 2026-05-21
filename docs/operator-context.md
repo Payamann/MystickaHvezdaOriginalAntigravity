@@ -29,9 +29,11 @@ Primary funnel: visit -> first value -> signup -> onboarding completed -> saved 
   - `f2ea54dd` added exact production commit verification helper
   - `106f5108` kept mobile pricing recommendations visible with the cookie banner and bound pricing checkout handlers before the plan manifest finishes loading
   - `2db6348e` added regression coverage for logged-in pricing checkout when `/api/plans` is slow
+  - `2dbb0bc7` added mobile pricing recommendation regression coverage while the cookie banner is visible
+  - `ae561a5f` added checkout recovery coverage for preserving billing interval through email verification
 - Latest known revenue truth:
-  - Production is verified on `2db6348e`
-  - Latest post-deploy windows after `2db6348e` still have insufficient paid funnel events
+  - Production is verified on `ae561a5f`
+  - Latest post-deploy windows after `ae561a5f` still have insufficient paid funnel events
   - First-party analytics ingestion is active and production health is ok
   - 24h/7d/30d historical windows still show `checkout_auth_required > 0` and `checkout_requested = 0`
   - Do not treat the older windows as proof that the latest fix failed; use fresh post-deploy cohorts first
