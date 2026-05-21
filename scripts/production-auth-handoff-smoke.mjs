@@ -37,6 +37,21 @@ const SCENARIOS = [
         mockCheckoutSubmit: true
     },
     {
+        name: 'register-paid-natal',
+        path: '/prihlaseni.html',
+        params: {
+            mode: 'register',
+            redirect: '/cenik.html',
+            plan: 'pruvodce',
+            source: 'natal_teaser_gate',
+            feature: 'natalni_interpretace',
+            entry_source: 'natal_teaser_gate',
+            entry_feature: 'natalni_interpretace'
+        },
+        expectedMode: 'register',
+        mockCheckoutSubmit: true
+    },
+    {
         name: 'register-weekly-horoscope-inline-flow',
         path: '/prihlaseni.html',
         params: {

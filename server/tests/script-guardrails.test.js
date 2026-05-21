@@ -180,6 +180,8 @@ describe('manual script guardrails', () => {
         const authHandoff = readScript('scripts/production-auth-handoff-smoke.mjs');
         expect(authHandoff).toContain("name: 'register-paid-tarot'");
         expect(authHandoff).toMatch(/name: 'register-paid-tarot'[\s\S]*?mockCheckoutSubmit: true/);
+        expect(authHandoff).toContain("name: 'register-paid-natal'");
+        expect(authHandoff).toMatch(/name: 'register-paid-natal'[\s\S]*?source: 'natal_teaser_gate'[\s\S]*?feature: 'natalni_interpretace'[\s\S]*?mockCheckoutSubmit: true/);
         expect(authHandoff).toContain('checkout_auth_required');
         expect(authHandoff).toContain('checkout_auth_page_viewed');
         expect(authHandoff).toContain('payment_events=');
