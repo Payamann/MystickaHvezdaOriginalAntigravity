@@ -1001,6 +1001,73 @@ test.describe('Login stránka', () => {
         await expect.poll(() => page.evaluate(() => sessionStorage.getItem('mh_pending_checkout_auth_required_events'))).toBeNull();
     });
 
+    test('auth page analytics outage neblokuje registraci s pending checkoutem', async ({ page }) => {
+        const email = 'auth-page-analytics-outage@example.com';
+
+        await page.addInitScript(() => {
+            let analyticsValue = null;
+            Object.defineProperty(window, 'MH_ANALYTICS', {
+                configurable: true,
+                get: () => analyticsValue,
+                set: (value) => {
+                    analyticsValue = value && typeof value === 'object'
+                        ? {
+                            ...value,
+                            trackAuthViewed: () => {
+                                throw new Error('temporary auth view analytics outage');
+                            },
+                            trackAuthCompleted: () => {
+                                throw new Error('temporary auth completed analytics outage');
+                            }
+                        }
+                        : value;
+                }
+            });
+        });
+
+        await page.route('**/api/payment/funnel-event', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+
+        await page.route('**/api/auth/register', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    success: true,
+                    requireEmailVerification: true
+                })
+            });
+        });
+
+        await page.goto('/prihlaseni.html?mode=register&redirect=/cenik.html&plan=pruvodce&source=inline_paywall&feature=tarot_multi_card&entry_source=inline_paywall&entry_feature=tarot_multi_card');
+        await waitForPageReady(page);
+        await expect(page.locator('#checkout-context-banner')).toBeVisible();
+
+        await submitRegisterForm(page, email);
+
+        await expect.poll(async () => page.evaluate(() => {
+            const raw = localStorage.getItem('mh_post_verification_checkout');
+            return raw ? JSON.parse(raw) : null;
+        })).toEqual(expect.objectContaining({
+            planId: 'pruvodce',
+            context: expect.objectContaining({
+                source: 'inline_paywall',
+                feature: 'tarot_multi_card',
+                metadata: expect.objectContaining({
+                    entry_source: 'inline_paywall',
+                    entry_feature: 'tarot_multi_card'
+                })
+            })
+        }));
+        await expect(page.locator('body')).not.toContainText('temporary auth completed analytics outage');
+        await expect(page.locator('#auth-submit')).toBeEnabled();
+    });
+
     test('checkout start analytics outage neblokuje checkout session', async ({ page }) => {
         let checkoutPayload = null;
 

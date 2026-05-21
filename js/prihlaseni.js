@@ -490,6 +490,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const trackAuthAnalytics = (methodName, ...args) => {
+        const method = window.MH_ANALYTICS?.[methodName];
+        if (typeof method !== 'function') {
+            return false;
+        }
+
+        try {
+            method.apply(window.MH_ANALYTICS, args);
+            return true;
+        } catch (error) {
+            console.warn(`[AUTH] ${methodName} analytics failed:`, error?.message || error);
+            return false;
+        }
+    };
+
     const getGrowthLoop = () => window.MH_GROWTH_LOOP || null;
 
     const getFeatureLabel = (feature) => {
@@ -569,7 +584,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const trackAuthView = (source = 'page_load') => {
-        window.MH_ANALYTICS?.trackAuthViewed?.(isRegisterMode ? 'register' : 'login', {
+        trackAuthAnalytics('trackAuthViewed', isRegisterMode ? 'register' : 'login', {
             source,
             redirect_target: redirectTarget,
             pending_plan: pendingPlan
@@ -753,7 +768,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 if (!result.analyticsTracked) {
-                    window.MH_ANALYTICS?.trackAuthCompleted?.('register', {
+                    trackAuthAnalytics('trackAuthCompleted', 'register', {
                         method: 'email',
                         redirect_target: redirectTarget,
                         pending_plan: pendingPlan
@@ -766,7 +781,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 if (!result.analyticsTracked) {
-                    window.MH_ANALYTICS?.trackAuthCompleted?.('login', {
+                    trackAuthAnalytics('trackAuthCompleted', 'login', {
                         method: 'email',
                         redirect_target: redirectTarget,
                         pending_plan: pendingPlan
