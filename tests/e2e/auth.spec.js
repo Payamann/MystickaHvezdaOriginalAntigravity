@@ -1043,6 +1043,120 @@ test.describe('Login stránka', () => {
         }
     });
 
+    test('post-verification checkout failure vrati na cenik s puvodnim kontextem', async ({ page }) => {
+        const checkoutPayloads = [];
+        const funnelEvents = [];
+
+        await page.route('**/api/payment/funnel-event', async (route) => {
+            funnelEvents.push(route.request().postDataJSON());
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+
+        await page.route('**/api/auth/login', async (route) => {
+            const payload = route.request().postDataJSON();
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    user: {
+                        id: 'verified-natal-failure',
+                        email: payload.email,
+                        role: 'user',
+                        subscription_status: 'free'
+                    }
+                })
+            });
+        });
+
+        await page.route('**/api/payment/create-checkout-session', async (route) => {
+            checkoutPayloads.push(route.request().postDataJSON());
+            await route.fulfill({
+                status: 503,
+                contentType: 'application/json',
+                body: JSON.stringify({ error: 'temporary stripe outage' })
+            });
+        });
+
+        await page.goto('/prihlaseni.html?mode=login');
+        await waitForPageReady(page);
+        await page.evaluate(() => {
+            localStorage.clear();
+            sessionStorage.clear();
+            localStorage.setItem('mh_post_verification_checkout', JSON.stringify({
+                planId: 'pruvodce',
+                createdAt: Date.now(),
+                context: {
+                    planId: 'pruvodce',
+                    source: 'natal_teaser_gate',
+                    feature: 'natalni_interpretace',
+                    redirect: '/cenik.html',
+                    authMode: 'register',
+                    billing_interval: 'yearly',
+                    metadata: {
+                        entry_source: 'natal_teaser_gate',
+                        entry_feature: 'natalni_interpretace',
+                        utm_source: 'email',
+                        utm_campaign: 'natal_recovery'
+                    }
+                }
+            }));
+        });
+
+        await Promise.all([
+            page.waitForURL(
+                url => url.pathname === '/cenik.html' && url.searchParams.get('payment') === 'failure',
+                { timeout: 10000, waitUntil: 'domcontentloaded' }
+            ),
+            submitLoginForm(page, 'verify-natal-failure@example.com'),
+        ]);
+
+        expect(checkoutPayloads).toEqual([
+            expect.objectContaining({
+                planId: 'pruvodce',
+                source: 'natal_teaser_gate',
+                feature: 'natalni_interpretace',
+                billingInterval: 'yearly',
+                metadata: expect.objectContaining({
+                    entry_source: 'natal_teaser_gate',
+                    entry_feature: 'natalni_interpretace',
+                    utm_source: 'email',
+                    utm_campaign: 'natal_recovery'
+                })
+            })
+        ]);
+
+        const failureUrl = new URL(page.url());
+        expect(failureUrl.pathname).toBe('/cenik.html');
+        expect(failureUrl.searchParams.get('payment')).toBe('failure');
+        expect(failureUrl.searchParams.get('reason')).toBe('session_failed');
+        expect(failureUrl.searchParams.get('plan')).toBe('pruvodce');
+        expect(failureUrl.searchParams.get('source')).toBe('natal_teaser_gate');
+        expect(failureUrl.searchParams.get('feature')).toBe('natalni_interpretace');
+        expect(failureUrl.searchParams.get('entry_source')).toBe('natal_teaser_gate');
+        expect(failureUrl.searchParams.get('entry_feature')).toBe('natalni_interpretace');
+        expect(failureUrl.searchParams.get('utm_source')).toBe('email');
+        expect(failureUrl.searchParams.get('utm_campaign')).toBe('natal_recovery');
+
+        await expect.poll(() => funnelEvents.find((event) => (
+            event.eventName === 'checkout_post_verification_recovered'
+            && event.feature === 'natalni_interpretace'
+        )) || null).toEqual(expect.objectContaining({
+            source: 'natal_teaser_gate',
+            feature: 'natalni_interpretace',
+            planId: 'pruvodce',
+            metadata: expect.objectContaining({
+                billing_interval: 'yearly',
+                entry_source: 'natal_teaser_gate',
+                entry_feature: 'natalni_interpretace'
+            })
+        }));
+        expect(await page.evaluate(() => localStorage.getItem('mh_post_verification_checkout'))).toBeNull();
+    });
+
     test('registrace s email verifikaci posila signup analytics jen jednou', async ({ page }) => {
         await page.route('**/api/auth/register', async (route) => {
             await route.fulfill({
