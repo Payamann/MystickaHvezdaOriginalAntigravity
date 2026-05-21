@@ -212,28 +212,33 @@ function readSummary(summaryPath) {
     return JSON.parse(readFileSync(summaryPath, 'utf8'));
 }
 
-function formatDecision(metrics = {}) {
+function formatDecision(metrics = {}, { historicalContext = false } = {}) {
     const authRequired = metrics.checkoutAuthRequired || 0;
     const checkoutRequested = metrics.checkoutRequested || 0;
     const checkoutStarted = metrics.checkoutStarted || 0;
     const purchases = (metrics.subscriptionCompleted || 0) + (metrics.oneTimeCompleted || 0);
+    const prefix = historicalContext ? 'Historical context only: ' : '';
 
     if (authRequired > 0 && checkoutRequested === 0) {
-        return 'P0: post-auth checkout resume/debug';
+        return `${prefix}P0: post-auth checkout resume/debug`;
     }
     if (checkoutRequested > 0 && checkoutStarted === 0) {
-        return 'P0: server/Stripe session creation';
+        return `${prefix}P0: server/Stripe session creation`;
     }
     if (checkoutStarted > 0 && purchases === 0) {
-        return 'P0: checkout trust/cancel recovery';
+        return `${prefix}P0: checkout trust/cancel recovery`;
     }
     if ((metrics.totalEvents || 0) === 0) {
-        return 'No product change: insufficient post-deploy funnel events';
+        return historicalContext
+            ? 'Historical context only: no funnel events in this aggregate window'
+            : 'No product change: insufficient post-deploy funnel events';
     }
-    return 'Monitor: no critical revenue leak in this aggregate window';
+    return historicalContext
+        ? 'Historical context only: no critical revenue leak in this aggregate window'
+        : 'Monitor: no critical revenue leak in this aggregate window';
 }
 
-function printSummary(label, summary) {
+function printSummary(label, summary, { historicalContext = false } = {}) {
     if (!summary) {
         console.log(`[revenue-truth] ${label}: summary unavailable`);
         return;
@@ -250,7 +255,8 @@ function printSummary(label, summary) {
         `checkout_requested=${metrics.checkoutRequested || 0}`,
         `checkout_started=${metrics.checkoutStarted || 0}`,
         `purchases=${purchases}`,
-        `decision="${formatDecision({ ...metrics, totalEvents: summary.totalEvents || 0 })}"`
+        `basis=${historicalContext ? 'historical_context' : 'primary_window'}`,
+        `decision="${formatDecision({ ...metrics, totalEvents: summary.totalEvents || 0 }, { historicalContext })}"`
     ].join(' '));
 }
 
@@ -330,6 +336,8 @@ async function main() {
     args.since = await resolveSince(args);
     const outputDir = assertOutsideRepo(args.outputDir, args.allowRepoOutput);
     const supabase = args.skipAnalyticsPulse ? null : createSupabaseClient();
+    const windows = windowDefinitions(args.since);
+    const hasPostDeployWindow = windows.some((windowDef) => windowDef.slug === 'post-deploy');
     mkdirSync(outputDir, { recursive: true });
 
     console.log(`[revenue-truth] output_dir=${outputDir}`);
@@ -338,7 +346,7 @@ async function main() {
         console.log('[revenue-truth] analytics pulse skipped: missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY.');
     }
 
-    for (const windowDef of windowDefinitions(args.since)) {
+    for (const windowDef of windows) {
         const csvPath = path.join(outputDir, `${windowDef.slug}.csv`);
         const summaryPath = path.join(outputDir, `${windowDef.slug}.json`);
 
@@ -351,7 +359,9 @@ async function main() {
         ]);
 
         const summary = readSummary(summaryPath);
-        printSummary(windowDef.label, summary);
+        printSummary(windowDef.label, summary, {
+            historicalContext: hasPostDeployWindow && windowDef.slug !== 'post-deploy'
+        });
         if (windowDef.slug === 'post-deploy') {
             await printAnalyticsPulse(windowDef.label, summary, supabase);
         }
