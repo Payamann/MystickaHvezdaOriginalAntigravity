@@ -386,6 +386,44 @@ test.describe('Login stránka', () => {
         ]);
     });
 
+    test('mobilni login s pending checkout kontextem nekryje cookie banner', async ({ page }) => {
+        await page.setViewportSize(MOBILE_VIEWPORT);
+        await page.evaluate(() => {
+            localStorage.removeItem('mh_cookie_prefs');
+            localStorage.removeItem('cookieConsent');
+        });
+        await page.goto('/prihlaseni.html?mode=login&redirect=/cenik.html&plan=pruvodce&source=trial_paywall&feature=numerologie_vyklad&entry_source=trial_paywall&entry_feature=numerologie_vyklad');
+        await waitForPageReady(page);
+
+        await expect(page.locator('#checkout-context-banner')).toBeVisible();
+        await expect(page.locator('#auth-submit')).toContainText('Přihlásit se a pokračovat');
+        await expect(page.locator('#cookie-banner')).toBeVisible({ timeout: 4000 });
+
+        const metrics = await page.evaluate(() => {
+            const context = document.getElementById('checkout-context-banner')?.getBoundingClientRect();
+            const email = document.getElementById('email')?.getBoundingClientRect();
+            const submit = document.getElementById('auth-submit')?.getBoundingClientRect();
+            const cookie = document.getElementById('cookie-banner')?.getBoundingClientRect();
+            const overlaps = (a, b) => !!(a && b && !(
+                b.right < a.left
+                || b.left > a.right
+                || b.bottom < a.top
+                || b.top > a.bottom
+            ));
+            return {
+                contextVisible: !!context && context.top >= 0 && context.bottom <= window.innerHeight,
+                contextBeforeEmail: Math.round(context?.bottom || 9999) <= Math.round(email?.top || 0),
+                submitVisible: !!submit && submit.top >= 0 && submit.bottom <= window.innerHeight,
+                submitOverlapsCookie: overlaps(submit, cookie)
+            };
+        });
+
+        expect(metrics.contextVisible).toBe(true);
+        expect(metrics.contextBeforeEmail).toBe(true);
+        expect(metrics.submitVisible).toBe(true);
+        expect(metrics.submitOverlapsCookie).toBe(false);
+    });
+
     test('mobilni placeny checkout kontext je videt pred formularem', async ({ page }) => {
         await page.setViewportSize(MOBILE_VIEWPORT);
         await page.evaluate(() => {

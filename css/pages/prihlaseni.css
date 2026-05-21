@@ -224,6 +224,60 @@
                 line-height: 1.32;
             }
 
+            body.page-login.auth-checkout-plan-mode:not(.auth-register-mode) .login-section {
+                align-items: flex-start;
+                padding-top: 4.45rem;
+                padding-bottom: 12rem;
+            }
+
+            body.page-login.auth-checkout-plan-mode:not(.auth-register-mode) .login-card {
+                padding-top: 0.9rem;
+            }
+
+            body.page-login.auth-checkout-plan-mode:not(.auth-register-mode) .login-card__title {
+                max-width: 17rem;
+                margin-right: auto;
+                margin-left: auto;
+                margin-bottom: 0.14rem;
+                font-size: 1.32rem;
+                line-height: 1.06;
+            }
+
+            body.page-login.auth-checkout-plan-mode:not(.auth-register-mode) .login-card .hero__subtitle {
+                display: none;
+            }
+
+            body.page-login.auth-checkout-plan-mode:not(.auth-register-mode) #checkout-context-banner {
+                margin-top: 0.48rem;
+                padding: 0.58rem 0.72rem;
+                border-radius: 14px;
+            }
+
+            body.page-login.auth-checkout-plan-mode:not(.auth-register-mode) #checkout-context-label {
+                margin-bottom: 0.22rem;
+                font-size: 0.62rem;
+                line-height: 1.18;
+            }
+
+            body.page-login.auth-checkout-plan-mode:not(.auth-register-mode) #checkout-context-title {
+                margin-bottom: 0.14rem;
+                font-size: 0.9rem;
+                line-height: 1.22;
+            }
+
+            body.page-login.auth-checkout-plan-mode:not(.auth-register-mode) #checkout-context-copy {
+                font-size: 0.76rem;
+                line-height: 1.32;
+            }
+
+            body.page-login.auth-checkout-plan-mode:not(.auth-register-mode) #login-form {
+                margin-top: 0.55rem;
+            }
+
+            body.page-login.auth-checkout-plan-mode:not(.auth-register-mode) .login-card .form-group {
+                margin-bottom: 0.5rem;
+            }
+
             body.auth-register-mode .mh-inline-68221bb3c6 {
                 margin-top: 1rem;
             }
