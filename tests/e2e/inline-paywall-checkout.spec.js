@@ -92,7 +92,30 @@ async function submitRegistration(page, email) {
     ]);
 }
 
-function expectCheckoutState(state, {
+async function expectFunnelEvent(state, eventName, {
+    source,
+    feature,
+    step
+}) {
+    const metadata = {
+        redirect: '/cenik.html',
+        auth_mode: 'register',
+        entry_source: source,
+        entry_feature: feature
+    };
+    if (step) metadata.step = step;
+
+    await expect.poll(() => state.funnelEvents.find((event) => (
+        event.eventName === eventName
+        && event.source === source
+        && event.feature === feature
+    )) || null).toEqual(expect.objectContaining({
+        planId: 'pruvodce',
+        metadata: expect.objectContaining(metadata)
+    }));
+}
+
+async function expectCheckoutState(state, {
     email,
     source,
     feature
@@ -112,19 +135,20 @@ function expectCheckoutState(state, {
             entry_feature: feature
         })
     }));
-    expect(state.funnelEvents.find((event) => (
-        event.eventName === 'checkout_auth_required'
-        && event.source === source
-        && event.feature === feature
-    )) || null).toEqual(expect.objectContaining({
-        planId: 'pruvodce',
-        metadata: expect.objectContaining({
-            redirect: '/cenik.html',
-            auth_mode: 'register',
-            entry_source: source,
-            entry_feature: feature
-        })
-    }));
+    await expectFunnelEvent(state, 'checkout_auth_required', {
+        source,
+        feature
+    });
+    await expectFunnelEvent(state, 'checkout_auth_page_viewed', {
+        source,
+        feature,
+        step: 'auth_page_viewed'
+    });
+    await expectFunnelEvent(state, 'checkout_auth_form_submitted', {
+        source,
+        feature,
+        step: 'register_form_submitted'
+    });
 }
 
 function expectDirectCheckoutState(state, {
@@ -180,7 +204,7 @@ test.describe('Inline paywall checkout handoff', () => {
 
         await submitRegistration(page, 'inline-paywall-tarot@example.com');
 
-        expectCheckoutState(state, {
+        await expectCheckoutState(state, {
             email: 'inline-paywall-tarot@example.com',
             source: 'inline_paywall',
             feature: 'tarot_multi_card'
@@ -223,7 +247,7 @@ test.describe('Inline paywall checkout handoff', () => {
 
         await submitRegistration(page, 'trial-paywall-numerology@example.com');
 
-        expectCheckoutState(state, {
+        await expectCheckoutState(state, {
             email: 'trial-paywall-numerology@example.com',
             source: 'trial_paywall',
             feature: 'numerologie_vyklad'
@@ -289,7 +313,7 @@ test.describe('Inline paywall checkout handoff', () => {
 
         await submitRegistration(page, 'natal-teaser@example.com');
 
-        expectCheckoutState(state, {
+        await expectCheckoutState(state, {
             email: 'natal-teaser@example.com',
             source: 'natal_teaser_gate',
             feature: 'natalni_interpretace'
@@ -361,7 +385,7 @@ test.describe('Inline paywall checkout handoff', () => {
 
         await submitRegistration(page, 'partner-match@example.com');
 
-        expectCheckoutState(state, {
+        await expectCheckoutState(state, {
             email: 'partner-match@example.com',
             source: 'partner_match_result',
             feature: 'partnerska_detail'
@@ -418,7 +442,7 @@ test.describe('Inline paywall checkout handoff', () => {
 
         await submitRegistration(page, 'runes-deep@example.com');
 
-        expectCheckoutState(state, {
+        await expectCheckoutState(state, {
             email: 'runes-deep@example.com',
             source: 'runes_auth_gate',
             feature: 'runy_hluboky_vyklad'
