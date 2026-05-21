@@ -437,6 +437,16 @@
             }
         },
 
+        trackEventSafely(eventName, payload = {}) {
+            try {
+                window.MH_ANALYTICS?.trackEvent?.(eventName, payload);
+                return true;
+            } catch (analyticsError) {
+                console.warn('[FUNNEL] Analytics event failed:', eventName, analyticsError.message);
+                return false;
+            }
+        },
+
         loginSuccess(data, options = {}) {
             // Token is now in HttpOnly cookie (set by server)
             // We only store user data in localStorage
@@ -836,7 +846,7 @@
                     );
                 }
 
-                window.MH_ANALYTICS?.trackEvent?.('signup_activation_landed', {
+                this.trackEventSafely('signup_activation_landed', {
                     source: activation.source || 'direct',
                     feature: activation.feature || null,
                     destination: activation.path
@@ -872,7 +882,7 @@
                         feature: context.feature
                     });
 
-                    window.MH_ANALYTICS?.trackEvent?.('signup_activation_redirected', {
+                    this.trackEventSafely('signup_activation_redirected', {
                         source: context.source || 'register',
                         feature: context.feature || null,
                         destination: activation.path

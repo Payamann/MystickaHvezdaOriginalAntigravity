@@ -2024,6 +2024,36 @@ test.describe('Login stránka', () => {
         expect(activationFlag).toBeNull();
     });
 
+    test('signup activation analytics outage neblokuje presmerovani na prvni hodnotu', async ({ page }) => {
+        await mockSuccessfulRegister(page, 'activation-analytics-outage@example.com');
+
+        await page.goto('/prihlaseni.html?mode=register&source=homepage_hero&feature=daily_guidance');
+        await waitForPageReady(page);
+        await page.evaluate(() => {
+            const analytics = window.MH_ANALYTICS || (window.MH_ANALYTICS = {});
+            analytics.trackEvent = (eventName) => {
+                if (eventName === 'signup_activation_redirected' || eventName === 'signup_activation_landed') {
+                    throw new Error('temporary activation analytics outage');
+                }
+            };
+        });
+
+        await Promise.all([
+            page.waitForURL(url => url.pathname === '/horoskopy.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
+            submitRegisterForm(page, 'activation-analytics-outage@example.com'),
+        ]);
+        await waitForPageReady(page);
+
+        const url = new URL(page.url());
+        expect(url.pathname).toBe('/horoskopy.html');
+        expect(url.searchParams.get('source')).toBe('signup_activation');
+        expect(url.searchParams.get('feature')).toBe('daily_guidance');
+        expect(url.searchParams.get('entry_source')).toBe('homepage_hero');
+        expect(url.searchParams.get('entry_feature')).toBe('daily_guidance');
+        const activationFlag = await page.evaluate(() => sessionStorage.getItem('post_auth_activation'));
+        expect(activationFlag).toBeNull();
+    });
+
     test('registrace z free CTA ceniku presmeruje na denni horoskopy', async ({ page }) => {
         await mockSuccessfulRegister(page, 'pricing-free@example.com');
 
