@@ -477,6 +477,13 @@ function analyzeWindowSegments(csvPath, args) {
     }
 }
 
+function annotateSegmentAnalysis(segmentAnalysis = {}) {
+    return {
+        ...segmentAnalysis,
+        top_segment_actions: (segmentAnalysis.top_segment_actions || []).map(annotateSegmentAction)
+    };
+}
+
 function printSummary(label, summary, { historicalContext = false, diagnosticBaseline = false } = {}) {
     if (!summary) {
         console.log(`[revenue-truth] ${label}: summary unavailable`);
@@ -743,7 +750,7 @@ async function main() {
         printSummary(windowDef.label, summary, { historicalContext, diagnosticBaseline });
         const windowReport = buildWindowReport(windowDef, summary, { historicalContext, diagnosticBaseline });
         if (windowReport) {
-            windowReport.segment_analysis = analyzeWindowSegments(csvPath, args);
+            windowReport.segment_analysis = annotateSegmentAnalysis(analyzeWindowSegments(csvPath, args));
             windowReport.recommended_segment_action = chooseSegmentActionForDecision(windowReport, {
                 skipCoveredHistoricalDiagnostics: windowReport.basis === 'historical_context'
                     || windowReport.basis === 'diagnostic_baseline'
