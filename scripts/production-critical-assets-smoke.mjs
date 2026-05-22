@@ -1,8 +1,9 @@
 const PRODUCTION_BASE_URL = 'https://www.mystickahvezda.cz';
 const DEFAULT_LOCAL_BASE_URL = `http://localhost:${process.env.PLAYWRIGHT_PORT || '3001'}`;
-const REQUIRED_AUTH_CLIENT_VERSION = '11';
+const REQUIRED_AUTH_CLIENT_VERSION = '20260522-recovery-flush';
 const REQUIRED_AUTH_CLIENT_MARKERS = [
     'getStandaloneAuthContext',
+    'flushCheckoutPostVerificationEvent',
     'billingInterval',
     'entry_feature'
 ];
