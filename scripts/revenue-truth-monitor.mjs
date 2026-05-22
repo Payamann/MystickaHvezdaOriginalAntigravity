@@ -98,6 +98,12 @@ const AUTH_HANDOFF_SMOKE_COVERAGE = [
         step_ids: ['paywall_to_pricing_intent', 'paywall_to_checkout']
     },
     {
+        source: 'exit_intent_partnerska-shoda',
+        feature: 'partnerska_detail',
+        scenario: 'register-partner-exit-intent-bridge',
+        step_ids: ['auth_handoff_to_auth_page', 'auth_handoff_to_checkout_request', 'auth_page_to_auth_form_submit']
+    },
+    {
         source: 'runes_auth_gate',
         feature: 'runy_hluboky_vyklad',
         scenario: 'register-paid-runes',

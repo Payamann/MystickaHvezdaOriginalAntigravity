@@ -193,6 +193,26 @@ const SCENARIOS = [
         mockCheckoutSubmit: true
     },
     {
+        name: 'register-partner-exit-intent-bridge',
+        path: '/prihlaseni.html',
+        params: {
+            mode: 'register',
+            redirect: '/cenik.html',
+            plan: 'pruvodce',
+            source: 'exit_intent_partnerska-shoda',
+            feature: 'partnerska_detail',
+            entry_source: 'exit_intent_partnerska-shoda',
+            entry_feature: 'partnerska_detail'
+        },
+        expectedMode: 'register',
+        entryFlow: {
+            type: 'exit-intent-bridge',
+            path: '/partnerska-shoda.html',
+            triggerSelector: '#exit-cta'
+        },
+        mockCheckoutSubmit: true
+    },
+    {
         name: 'register-paid-runes',
         path: '/prihlaseni.html',
         params: {
@@ -562,6 +582,47 @@ async function enterSynastryResultBridge(page, baseUrl, scenario) {
     ]);
 }
 
+async function enterExitIntentBridge(page, baseUrl, scenario) {
+    const entryUrl = new URL(scenario.entryFlow.path, `${baseUrl}/`);
+    entryUrl.searchParams.set('cache', String(Date.now()));
+    await page.goto(entryUrl.toString(), { waitUntil: 'domcontentloaded', timeout: 30_000 });
+    await page.waitForFunction(
+        () => Array.from(document.scripts).some((script) => script.src.includes('/js/dist/exit-intent.js')),
+        null,
+        { timeout: 10_000 }
+    );
+    await page.waitForFunction(() => typeof window.Auth?.startPlanCheckout === 'function', null, { timeout: 10_000 });
+    await page.evaluate(() => {
+        localStorage.clear();
+        sessionStorage.clear();
+        Object.assign(window.Auth || {}, {
+            isLoggedIn: () => false,
+            isPremium: () => false,
+            getProfile: async () => null,
+            showToast: () => {}
+        });
+    });
+    await page.dispatchEvent('body', 'pointerdown');
+    const triggerTimestamp = await page.evaluate(() => Date.now());
+    await page.evaluate((timestamp) => {
+        const originalDateNow = Date.now.bind(Date);
+        Date.now = () => timestamp + 16_000;
+        document.dispatchEvent(new MouseEvent('mouseleave', {
+            clientY: 0,
+            bubbles: true
+        }));
+        Date.now = originalDateNow;
+    }, triggerTimestamp);
+    await page.waitForSelector(scenario.entryFlow.triggerSelector, { state: 'visible', timeout: 10_000 });
+    await Promise.all([
+        page.waitForURL(url => url.pathname === scenario.path, {
+            timeout: 10_000,
+            waitUntil: 'domcontentloaded'
+        }),
+        page.locator(scenario.entryFlow.triggerSelector).click()
+    ]);
+}
+
 async function enterNumerologyTrialPaywallBridge(page, baseUrl, scenario) {
     const entryUrl = new URL(scenario.entryFlow.path, `${baseUrl}/`);
     entryUrl.searchParams.set('cache', String(Date.now()));
@@ -739,6 +800,8 @@ async function inspectScenario(page, scenario, viewportName, baseUrl, telemetry)
             await enterNatalLoginGateBridge(page, baseUrl, scenario);
         } else if (scenario.entryFlow.type === 'synastry-result-bridge') {
             await enterSynastryResultBridge(page, baseUrl, scenario);
+        } else if (scenario.entryFlow.type === 'exit-intent-bridge') {
+            await enterExitIntentBridge(page, baseUrl, scenario);
         } else if (scenario.entryFlow.type === 'numerology-trial-paywall-bridge') {
             await enterNumerologyTrialPaywallBridge(page, baseUrl, scenario);
         } else if (scenario.entryFlow.type === 'numerology-result-premium-bridge') {

@@ -169,6 +169,8 @@ describe('manual script guardrails', () => {
         expect(source).toContain("scenario: 'register-natal-login-gate-bridge'");
         expect(source).toMatch(/scenario: 'register-natal-login-gate-bridge'[\s\S]*?step_ids: \['paywall_to_pricing_intent', 'paywall_to_checkout'\]/);
         expect(source).toContain("scenario: 'register-partner-match-result-bridge'");
+        expect(source).toContain("scenario: 'register-partner-exit-intent-bridge'");
+        expect(source).toMatch(/scenario: 'register-partner-exit-intent-bridge'[\s\S]*?'auth_handoff_to_checkout_request'/);
         expect(source).toContain("'paywall_to_pricing_intent'");
         expect(source).toContain("'paywall_to_checkout'");
         expect(source).toContain('production_smoke_coverage');
@@ -224,6 +226,9 @@ describe('manual script guardrails', () => {
         expect(authHandoff).toMatch(/name: 'register-partner-match-result-bridge'[\s\S]*?source: 'partner_match_result'[\s\S]*?feature: 'partnerska_detail'[\s\S]*?type: 'synastry-result-bridge'[\s\S]*?mockCheckoutSubmit: true/);
         expect(authHandoff).toMatch(/name: 'register-partner-match-result-bridge'[\s\S]*?expectedPaymentEvents: \['paywall_viewed', 'paywall_cta_clicked'\]/);
         expect(authHandoff).toContain('enterSynastryResultBridge');
+        expect(authHandoff).toContain("name: 'register-partner-exit-intent-bridge'");
+        expect(authHandoff).toMatch(/name: 'register-partner-exit-intent-bridge'[\s\S]*?source: 'exit_intent_partnerska-shoda'[\s\S]*?feature: 'partnerska_detail'[\s\S]*?type: 'exit-intent-bridge'[\s\S]*?mockCheckoutSubmit: true/);
+        expect(authHandoff).toContain('enterExitIntentBridge');
         expect(authHandoff).toContain("name: 'register-paid-runes'");
         expect(authHandoff).toMatch(/name: 'register-paid-runes'[\s\S]*?source: 'runes_auth_gate'[\s\S]*?feature: 'runy_hluboky_vyklad'[\s\S]*?mockCheckoutSubmit: true/);
         expect(authHandoff).toContain("name: 'register-paid-angel-cards'");
