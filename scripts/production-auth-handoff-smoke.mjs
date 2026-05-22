@@ -82,6 +82,21 @@ const SCENARIOS = [
         mockCheckoutSubmit: true
     },
     {
+        name: 'register-paid-angel-cards',
+        path: '/prihlaseni.html',
+        params: {
+            mode: 'register',
+            redirect: '/cenik.html',
+            plan: 'pruvodce',
+            source: 'angel_card_auth_gate',
+            feature: 'andelske_karty_hluboky_vhled',
+            entry_source: 'angel_card_auth_gate',
+            entry_feature: 'andelske_karty_hluboky_vhled'
+        },
+        expectedMode: 'register',
+        mockCheckoutSubmit: true
+    },
+    {
         name: 'register-weekly-horoscope-inline-flow',
         path: '/prihlaseni.html',
         params: {
