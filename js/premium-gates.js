@@ -234,6 +234,24 @@ window.Premium = {
         }
     },
 
+    trackPaywallCtaClick({ source = 'premium_gate', feature = null, planId = null, label = 'upgrade' } = {}) {
+        window.MH_ANALYTICS?.trackEvent?.('paywall_cta_clicked', {
+            label,
+            source,
+            feature,
+            plan_id: planId
+        });
+        void this.trackServerFunnelEvent('paywall_cta_clicked', {
+            source,
+            feature,
+            planId,
+            metadata: {
+                path: window.location.pathname,
+                label
+            }
+        });
+    },
+
     startUpgradeFlow(planId, featureName, source = 'paywall', authMode = null) {
         const metadata = this.buildCheckoutMetadata(source, featureName);
         const checkoutContext = {
@@ -283,20 +301,11 @@ window.Premium = {
             const source = context.source || 'premium_gate';
             const feature = context.feature || null;
             const planId = context.planId || null;
-            window.MH_ANALYTICS?.trackEvent?.('paywall_cta_clicked', {
-                label: btn.textContent?.trim() || 'upgrade',
-                source,
-                feature,
-                plan_id: planId
-            });
-            void this.trackServerFunnelEvent('paywall_cta_clicked', {
+            this.trackPaywallCtaClick({
                 source,
                 feature,
                 planId,
-                metadata: {
-                    path: window.location.pathname,
-                    label: btn.textContent?.trim() || 'upgrade'
-                }
+                label: btn.textContent?.trim() || 'upgrade'
             });
             btn.textContent = 'Přesměrovávám...';
             btn.disabled = true;
@@ -457,6 +466,12 @@ window.Premium = {
 
         container.appendChild(gate);
         gate.querySelector('.login-gate-btn').addEventListener('click', () => {
+            this.trackPaywallCtaClick({
+                source,
+                feature: featureName || null,
+                planId,
+                label: gate.querySelector('.login-gate-btn')?.textContent?.trim() || 'login_gate'
+            });
             this.startUpgradeFlow(planId, featureName, source, 'register');
         });
     },

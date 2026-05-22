@@ -554,6 +554,22 @@ test.describe('Ceník — platební tlačítka', () => {
     });
 
     test('login gate copy jasne oddeluje ucet zdarma od placeneho checkoutu', async ({ page }) => {
+        const funnelEvents = [];
+        await page.route('**/api/csrf-token', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ csrfToken: 'login-gate-cta-token' })
+            });
+        });
+        await page.route('**/api/payment/funnel-event', async (route) => {
+            funnelEvents.push(route.request().postDataJSON());
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
         await page.goto('/tests/premium-test.html');
         await waitForPageReady(page);
         await page.waitForFunction(() => !!window.Premium?.showLoginGate);
@@ -583,6 +599,16 @@ test.describe('Ceník — platební tlačítka', () => {
         expect(url.searchParams.get('feature')).toBe('natalni_interpretace');
         expect(url.searchParams.get('entry_source')).toBe('natal_teaser_gate');
         expect(url.searchParams.get('entry_feature')).toBe('natalni_interpretace');
+        await expect.poll(() => funnelEvents.find((event) => (
+            event.eventName === 'paywall_cta_clicked'
+            && event.source === 'natal_teaser_gate'
+            && event.feature === 'natalni_interpretace'
+        )) || null).toEqual(expect.objectContaining({
+            planId: 'pruvodce',
+            metadata: expect.objectContaining({
+                path: '/tests/premium-test.html'
+            })
+        }));
     });
 
     test('premium gate fallback bez Auth preskoci cenik a drzi pending checkout', async ({ page }) => {
