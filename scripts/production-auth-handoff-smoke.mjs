@@ -97,6 +97,36 @@ const SCENARIOS = [
         mockCheckoutSubmit: true
     },
     {
+        name: 'register-paid-mentor',
+        path: '/prihlaseni.html',
+        params: {
+            mode: 'register',
+            redirect: '/cenik.html',
+            plan: 'pruvodce',
+            source: 'mentor_teaser_gate',
+            feature: 'mentor',
+            entry_source: 'mentor_teaser_gate',
+            entry_feature: 'mentor'
+        },
+        expectedMode: 'register',
+        mockCheckoutSubmit: true
+    },
+    {
+        name: 'register-pricing-premium-membership',
+        path: '/prihlaseni.html',
+        params: {
+            mode: 'register',
+            redirect: '/cenik.html',
+            plan: 'pruvodce',
+            source: 'pricing_page',
+            feature: 'premium_membership',
+            entry_source: 'pricing_page',
+            entry_feature: 'premium_membership'
+        },
+        expectedMode: 'register',
+        mockCheckoutSubmit: true
+    },
+    {
         name: 'register-weekly-horoscope-inline-flow',
         path: '/prihlaseni.html',
         params: {

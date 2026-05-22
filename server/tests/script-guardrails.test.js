@@ -188,6 +188,10 @@ describe('manual script guardrails', () => {
         expect(authHandoff).toMatch(/name: 'register-paid-runes'[\s\S]*?source: 'runes_auth_gate'[\s\S]*?feature: 'runy_hluboky_vyklad'[\s\S]*?mockCheckoutSubmit: true/);
         expect(authHandoff).toContain("name: 'register-paid-angel-cards'");
         expect(authHandoff).toMatch(/name: 'register-paid-angel-cards'[\s\S]*?source: 'angel_card_auth_gate'[\s\S]*?feature: 'andelske_karty_hluboky_vhled'[\s\S]*?mockCheckoutSubmit: true/);
+        expect(authHandoff).toContain("name: 'register-paid-mentor'");
+        expect(authHandoff).toMatch(/name: 'register-paid-mentor'[\s\S]*?source: 'mentor_teaser_gate'[\s\S]*?feature: 'mentor'[\s\S]*?mockCheckoutSubmit: true/);
+        expect(authHandoff).toContain("name: 'register-pricing-premium-membership'");
+        expect(authHandoff).toMatch(/name: 'register-pricing-premium-membership'[\s\S]*?source: 'pricing_page'[\s\S]*?feature: 'premium_membership'[\s\S]*?mockCheckoutSubmit: true/);
         expect(authHandoff).toContain('checkout_auth_required');
         expect(authHandoff).toContain('checkout_auth_page_viewed');
         expect(authHandoff).toContain('payment_events=');
