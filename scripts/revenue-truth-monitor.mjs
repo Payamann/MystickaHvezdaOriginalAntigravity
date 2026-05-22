@@ -12,6 +12,62 @@ const DEFAULT_REPO = 'Payamann/MystickaHvezdaOriginalAntigravity';
 const DEFAULT_BASE_URL = 'https://www.mystickahvezda.cz';
 const ANALYTICS_PULSE_LIMIT = 5000;
 const DEFAULT_GITHUB_STATUS_FALLBACK_MINUTES = 15;
+const AUTH_HANDOFF_SMOKE_COVERAGE = [
+    {
+        source: 'horoscope_inline_upsell',
+        feature: 'weekly_horoscope',
+        scenario: 'register-weekly-horoscope-inline-flow',
+        step_ids: ['auth_handoff_to_auth_page', 'auth_handoff_to_checkout_request', 'auth_page_to_auth_form_submit']
+    },
+    {
+        source: 'inline_paywall',
+        feature: 'tarot_multi_card',
+        scenario: 'register-paid-tarot',
+        step_ids: ['auth_handoff_to_checkout_request', 'auth_page_to_auth_form_submit']
+    },
+    {
+        source: 'trial_paywall',
+        feature: 'numerologie_vyklad',
+        scenario: 'login-paid-numerology',
+        step_ids: ['auth_handoff_to_checkout_request', 'auth_page_to_auth_form_submit']
+    },
+    {
+        source: 'natal_teaser_gate',
+        feature: 'natalni_interpretace',
+        scenario: 'register-paid-natal',
+        step_ids: ['auth_handoff_to_checkout_request', 'auth_page_to_auth_form_submit']
+    },
+    {
+        source: 'partner_match_result',
+        feature: 'partnerska_detail',
+        scenario: 'register-paid-partner-match',
+        step_ids: ['auth_handoff_to_checkout_request', 'auth_page_to_auth_form_submit']
+    },
+    {
+        source: 'runes_auth_gate',
+        feature: 'runy_hluboky_vyklad',
+        scenario: 'register-paid-runes',
+        step_ids: ['auth_handoff_to_checkout_request', 'auth_page_to_auth_form_submit']
+    },
+    {
+        source: 'angel_card_auth_gate',
+        feature: 'andelske_karty_hluboky_vhled',
+        scenario: 'register-paid-angel-cards',
+        step_ids: ['auth_handoff_to_checkout_request', 'auth_page_to_auth_form_submit']
+    },
+    {
+        source: 'mentor_teaser_gate',
+        feature: 'mentor',
+        scenario: 'register-paid-mentor',
+        step_ids: ['auth_handoff_to_checkout_request', 'auth_page_to_auth_form_submit']
+    },
+    {
+        source: 'pricing_page',
+        feature: 'premium_membership',
+        scenario: 'register-pricing-premium-membership',
+        step_ids: ['auth_handoff_to_checkout_request', 'auth_page_to_auth_form_submit']
+    }
+];
 
 dotenv.config({ path: path.join(rootDir, 'server', '.env') });
 
@@ -384,6 +440,30 @@ function analyticsPulseDiagnosis({ analyticsEvents, funnelEvents }) {
     return 'First-party analytics and funnel events both have activity in this window.';
 }
 
+function findAuthHandoffSmokeCoverage(segmentAction) {
+    if (!segmentAction?.source || !segmentAction?.feature || !segmentAction?.step_id) return null;
+    const coverage = AUTH_HANDOFF_SMOKE_COVERAGE.find((item) => (
+        item.source === segmentAction.source
+        && item.feature === segmentAction.feature
+        && item.step_ids.includes(segmentAction.step_id)
+    ));
+    if (!coverage) return null;
+
+    return {
+        kind: 'production_auth_handoff_smoke',
+        scenario: coverage.scenario,
+        command: 'npm.cmd run smoke:production:auth-handoff'
+    };
+}
+
+function annotateSegmentAction(segmentAction) {
+    if (!segmentAction) return null;
+    const productionSmokeCoverage = findAuthHandoffSmokeCoverage(segmentAction);
+    return productionSmokeCoverage
+        ? { ...segmentAction, production_smoke_coverage: productionSmokeCoverage }
+        : segmentAction;
+}
+
 async function printAnalyticsPulse(label, summary, supabase) {
     if (!summary?.since || !summary?.periodEnd || !supabase) return null;
 
@@ -437,29 +517,36 @@ async function printAnalyticsPulse(label, summary, supabase) {
     return pulse;
 }
 
-function chooseSegmentActionForDecision(windowDef) {
+function chooseSegmentActionForDecision(windowDef, { skipCoveredHistoricalAuth = false } = {}) {
     const actions = windowDef?.segment_analysis?.top_segment_actions || [];
     const decision = windowDef?.decision || '';
+    const eligibleActions = skipCoveredHistoricalAuth
+        ? actions.filter((item) => !findAuthHandoffSmokeCoverage(item))
+        : actions;
     let selected = actions[0] || null;
 
     if (/post-auth checkout resume/i.test(decision)) {
-        selected = actions.find((item) => (
+        selected = eligibleActions.find((item) => (
             item.step_id === 'auth_handoff_to_checkout_request'
             || item.step_id === 'auth_handoff_to_auth_page'
             || item.step_id === 'auth_page_to_auth_form_submit'
-        )) || selected;
+        )) || eligibleActions[0] || selected;
     } else if (/server\/Stripe session creation/i.test(decision)) {
-        selected = actions.find((item) => item.step_id === 'checkout_request_to_session') || selected;
+        selected = eligibleActions.find((item) => item.step_id === 'checkout_request_to_session') || eligibleActions[0] || selected;
     } else if (/checkout trust\/cancel recovery/i.test(decision)) {
-        selected = actions.find((item) => item.step_id === 'checkout_to_purchase') || selected;
+        selected = eligibleActions.find((item) => item.step_id === 'checkout_to_purchase') || eligibleActions[0] || selected;
     }
 
-    return selected;
+    return annotateSegmentAction(selected);
 }
 
 function formatSegmentAction(segmentAction) {
     if (!segmentAction) return null;
-    return `${segmentAction.step_label}: ${segmentAction.source}/${segmentAction.feature} (${segmentAction.denominator}->${segmentAction.next}, lost ${segmentAction.loss}). ${segmentAction.action}`;
+    const coverage = segmentAction.production_smoke_coverage;
+    const coverageNote = coverage
+        ? ` Covered by ${coverage.scenario} in production auth handoff smoke; wait for fresh real paid events before shipping a runtime fix for this segment.`
+        : '';
+    return `${segmentAction.step_label}: ${segmentAction.source}/${segmentAction.feature} (${segmentAction.denominator}->${segmentAction.next}, lost ${segmentAction.loss}). ${segmentAction.action}${coverageNote}`;
 }
 
 function deriveNextAction(primaryWindow, windows = []) {
@@ -475,9 +562,18 @@ function deriveNextAction(primaryWindow, windows = []) {
         ));
         if (diagnosticWindow) {
             const topSegment = formatTopSegment(diagnosticWindow);
+            const coveredSegment = diagnosticWindow?.recommended_segment_action?.production_smoke_coverage
+                ? diagnosticWindow.recommended_segment_action
+                : null;
+            const uncoveredSegment = coveredSegment
+                ? formatSegmentAction(chooseSegmentActionForDecision(diagnosticWindow, { skipCoveredHistoricalAuth: true }))
+                : null;
             return [
                 `Latest deploy window has no paid funnel events; stable diagnostic baseline says: ${diagnosticWindow.decision}`,
-                topSegment ? `Top segment: ${topSegment}` : null
+                topSegment ? `Top segment: ${topSegment}` : null,
+                coveredSegment && uncoveredSegment && uncoveredSegment !== topSegment
+                    ? `Next uncovered diagnostic slice: ${uncoveredSegment}`
+                    : null
             ].filter(Boolean).join('. ');
         }
         return 'Repeat monitor later; use historical windows for diagnostics and test coverage only.';

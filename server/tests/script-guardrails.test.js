@@ -154,6 +154,12 @@ describe('manual script guardrails', () => {
         expect(source).toContain('segment_analysis');
         expect(source).toContain('top_segment_actions');
         expect(source).toContain('recommended_segment_action');
+        expect(source).toContain('AUTH_HANDOFF_SMOKE_COVERAGE');
+        expect(source).toContain('findAuthHandoffSmokeCoverage');
+        expect(source).toContain("scenario: 'register-weekly-horoscope-inline-flow'");
+        expect(source).toContain('production_smoke_coverage');
+        expect(source).toContain('skipCoveredHistoricalAuth');
+        expect(source).toContain('Next uncovered diagnostic slice');
     });
 
     test('production browser smokes keep telemetry read-only', () => {
