@@ -178,6 +178,8 @@ describe('manual script guardrails', () => {
         expect(source).toContain('skipCoveredHistoricalDiagnostics');
         expect(source).toContain('skipCoveredHistoricalDiagnostics && eligibleActions.length === 0');
         expect(source).toContain('Next uncovered diagnostic slice');
+        expect(source).toContain('next uncovered historical diagnostic slice');
+        expect(source).toContain('historical top diagnostic actions are already covered by production auth smoke');
     });
 
     test('production browser smokes keep telemetry read-only', () => {

@@ -662,6 +662,22 @@ function deriveNextAction(primaryWindow, windows = []) {
                     : null
             ].filter(Boolean).join('. ');
         }
+        const historicalWindows = windows.filter((windowDef) => (
+            windowDef.basis === 'historical_context'
+            && windowDef.events > 0
+        ));
+        const uncoveredHistoricalSegment = historicalWindows
+            .map((windowDef) => chooseSegmentActionForDecision(windowDef, { skipCoveredHistoricalDiagnostics: true }))
+            .find(Boolean);
+        if (uncoveredHistoricalSegment) {
+            return `Repeat monitor later; next uncovered historical diagnostic slice: ${formatSegmentAction(uncoveredHistoricalSegment)}`;
+        }
+        const coveredHistoricalSegment = historicalWindows
+            .flatMap((windowDef) => windowDef.segment_analysis?.top_segment_actions || [])
+            .find((segmentAction) => segmentAction.production_smoke_coverage);
+        if (coveredHistoricalSegment) {
+            return 'Repeat monitor later; historical top diagnostic actions are already covered by production auth smoke, so wait for fresh real paid events before changing runtime checkout flow.';
+        }
         return 'Repeat monitor later; use historical windows for diagnostics and test coverage only.';
     }
     const topSegment = formatTopSegment(primaryWindow);
