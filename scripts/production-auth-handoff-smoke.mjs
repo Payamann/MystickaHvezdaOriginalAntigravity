@@ -69,6 +69,7 @@ const SCENARIOS = [
             path: '/natalni-karta.html',
             triggerSelector: '.login-gate-btn'
         },
+        expectedPaymentEvents: ['login_gate_viewed', 'paywall_cta_clicked'],
         mockCheckoutSubmit: true
     },
     {
@@ -104,6 +105,7 @@ const SCENARIOS = [
             path: '/partnerska-shoda.html',
             triggerSelector: '[data-synastry-upgrade]'
         },
+        expectedPaymentEvents: ['paywall_viewed', 'paywall_cta_clicked'],
         mockCheckoutSubmit: true
     },
     {
@@ -472,6 +474,22 @@ function validatePaymentFunnelEvent(events, eventName, scenario, errors, expecte
     return event;
 }
 
+function expectedPaymentEventNames(scenario) {
+    const names = new Set(['checkout_auth_page_viewed']);
+    if (scenario.entryFlow) names.add('checkout_auth_required');
+    if (scenario.mockCheckoutSubmit) names.add('checkout_auth_form_submitted');
+    (scenario.expectedPaymentEvents || []).forEach((eventName) => names.add(eventName));
+    return Array.from(names);
+}
+
+function validateExpectedPaymentEvents(events, scenario, errors) {
+    expectedPaymentEventNames(scenario).forEach((eventName) => {
+        if (!findPaymentFunnelEvent(events, eventName, scenario)) {
+            errors.push(`missing expected payment funnel event ${eventName}`);
+        }
+    });
+}
+
 async function inspectScenario(page, scenario, viewportName, baseUrl, telemetry) {
     await clearScenarioStorage(page, baseUrl);
 
@@ -639,6 +657,11 @@ async function inspectScenario(page, scenario, viewportName, baseUrl, telemetry)
         .events('payment_funnel')
         .slice(paymentFunnelStartIndex)
         .map((event) => event.eventName || '<unnamed>');
+    validateExpectedPaymentEvents(
+        telemetry.events('payment_funnel').slice(paymentFunnelStartIndex),
+        scenario,
+        errors
+    );
 
     return {
         name: scenario.name,

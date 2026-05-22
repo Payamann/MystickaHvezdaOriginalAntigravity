@@ -196,11 +196,13 @@ describe('manual script guardrails', () => {
         expect(authHandoff).toMatch(/name: 'register-paid-natal'[\s\S]*?source: 'natal_teaser_gate'[\s\S]*?feature: 'natalni_interpretace'[\s\S]*?mockCheckoutSubmit: true/);
         expect(authHandoff).toContain("name: 'register-natal-login-gate-bridge'");
         expect(authHandoff).toMatch(/name: 'register-natal-login-gate-bridge'[\s\S]*?source: 'natal_teaser_gate'[\s\S]*?feature: 'natalni_interpretace'[\s\S]*?type: 'natal-login-gate-bridge'[\s\S]*?mockCheckoutSubmit: true/);
+        expect(authHandoff).toMatch(/name: 'register-natal-login-gate-bridge'[\s\S]*?expectedPaymentEvents: \['login_gate_viewed', 'paywall_cta_clicked'\]/);
         expect(authHandoff).toContain('enterNatalLoginGateBridge');
         expect(authHandoff).toContain("name: 'register-paid-partner-match'");
         expect(authHandoff).toMatch(/name: 'register-paid-partner-match'[\s\S]*?source: 'partner_match_result'[\s\S]*?feature: 'partnerska_detail'[\s\S]*?mockCheckoutSubmit: true/);
         expect(authHandoff).toContain("name: 'register-partner-match-result-bridge'");
         expect(authHandoff).toMatch(/name: 'register-partner-match-result-bridge'[\s\S]*?source: 'partner_match_result'[\s\S]*?feature: 'partnerska_detail'[\s\S]*?type: 'synastry-result-bridge'[\s\S]*?mockCheckoutSubmit: true/);
+        expect(authHandoff).toMatch(/name: 'register-partner-match-result-bridge'[\s\S]*?expectedPaymentEvents: \['paywall_viewed', 'paywall_cta_clicked'\]/);
         expect(authHandoff).toContain('enterSynastryResultBridge');
         expect(authHandoff).toContain("name: 'register-paid-runes'");
         expect(authHandoff).toMatch(/name: 'register-paid-runes'[\s\S]*?source: 'runes_auth_gate'[\s\S]*?feature: 'runy_hluboky_vyklad'[\s\S]*?mockCheckoutSubmit: true/);
@@ -212,6 +214,9 @@ describe('manual script guardrails', () => {
         expect(authHandoff).toMatch(/name: 'register-pricing-premium-membership'[\s\S]*?source: 'pricing_page'[\s\S]*?feature: 'premium_membership'[\s\S]*?mockCheckoutSubmit: true/);
         expect(authHandoff).toContain('checkout_auth_required');
         expect(authHandoff).toContain('checkout_auth_page_viewed');
+        expect(authHandoff).toContain('expectedPaymentEventNames');
+        expect(authHandoff).toContain('validateExpectedPaymentEvents');
+        expect(authHandoff).toContain('missing expected payment funnel event');
         expect(authHandoff).toContain('payment_events=');
         expect(authHandoff).toContain('clearScenarioStorage');
         expect(authHandoff).toContain("new URL('/api/health'");
