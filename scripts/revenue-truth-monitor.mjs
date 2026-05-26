@@ -59,6 +59,21 @@ const AUTH_HANDOFF_SMOKE_COVERAGE = [
         ]
     },
     {
+        source: 'tarot_auth_gate',
+        feature: 'tarot_celtic_cross',
+        scenario: 'register-tarot-celtic-auth-gate-bridge',
+        step_ids: [
+            'paywall_to_pricing_intent',
+            'paywall_to_checkout',
+            'pricing_intent_to_auth_handoff',
+            'pricing_intent_to_checkout',
+            'pricing_intent_to_checkout_request',
+            'auth_handoff_to_auth_page',
+            'auth_handoff_to_checkout_request',
+            'auth_page_to_auth_form_submit'
+        ]
+    },
+    {
         source: 'tarot_yes_no_result',
         feature: 'tarot_multi_card',
         scenario: 'register-tarot-yes-no-result-bridge',

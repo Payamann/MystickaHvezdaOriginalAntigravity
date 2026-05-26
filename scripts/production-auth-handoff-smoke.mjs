@@ -63,6 +63,27 @@ const SCENARIOS = [
         mockCheckoutSubmit: true
     },
     {
+        name: 'register-tarot-celtic-auth-gate-bridge',
+        path: '/prihlaseni.html',
+        params: {
+            mode: 'register',
+            redirect: '/cenik.html',
+            plan: 'vip-majestrat',
+            source: 'tarot_auth_gate',
+            feature: 'tarot_celtic_cross',
+            entry_source: 'tarot_auth_gate',
+            entry_feature: 'tarot_celtic_cross'
+        },
+        expectedMode: 'register',
+        entryFlow: {
+            type: 'tarot-auth-gate-bridge',
+            path: '/tarot.html',
+            triggerSelector: '[data-spread-type="Celtic Cross"]'
+        },
+        expectedPaymentEvents: ['paywall_viewed', 'paywall_cta_clicked'],
+        mockCheckoutSubmit: true
+    },
+    {
         name: 'register-tarot-yes-no-result-bridge',
         path: '/prihlaseni.html',
         params: {

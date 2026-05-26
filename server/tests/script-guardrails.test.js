@@ -165,6 +165,8 @@ describe('manual script guardrails', () => {
         expect(source).toContain("scenario: 'register-tarot-inline-paywall-bridge'");
         expect(source).toContain("scenario: 'register-tarot-auth-gate-bridge'");
         expect(source).toMatch(/source: 'tarot_auth_gate'[\s\S]*?scenario: 'register-tarot-auth-gate-bridge'[\s\S]*?'auth_page_to_auth_form_submit'/);
+        expect(source).toContain("scenario: 'register-tarot-celtic-auth-gate-bridge'");
+        expect(source).toMatch(/feature: 'tarot_celtic_cross'[\s\S]*?scenario: 'register-tarot-celtic-auth-gate-bridge'[\s\S]*?'auth_page_to_auth_form_submit'/);
         expect(source).toContain("scenario: 'register-tarot-yes-no-result-bridge'");
         expect(source).toMatch(/source: 'tarot_yes_no_result'[\s\S]*?scenario: 'register-tarot-yes-no-result-bridge'[\s\S]*?'pricing_intent_to_auth_handoff'/);
         expect(source).toContain("scenario: 'register-numerology-trial-paywall-bridge'");
@@ -218,6 +220,9 @@ describe('manual script guardrails', () => {
         expect(authHandoff).toMatch(/name: 'register-tarot-auth-gate-bridge'[\s\S]*?source: 'tarot_auth_gate'[\s\S]*?feature: 'tarot_multi_card'[\s\S]*?type: 'tarot-auth-gate-bridge'[\s\S]*?mockCheckoutSubmit: true/);
         expect(authHandoff).toMatch(/name: 'register-tarot-auth-gate-bridge'[\s\S]*?expectedPaymentEvents: \['paywall_viewed', 'paywall_cta_clicked'\]/);
         expect(authHandoff).toContain('enterTarotAuthGateBridge');
+        expect(authHandoff).toContain("name: 'register-tarot-celtic-auth-gate-bridge'");
+        expect(authHandoff).toMatch(/name: 'register-tarot-celtic-auth-gate-bridge'[\s\S]*?plan: 'vip-majestrat'[\s\S]*?source: 'tarot_auth_gate'[\s\S]*?feature: 'tarot_celtic_cross'[\s\S]*?type: 'tarot-auth-gate-bridge'[\s\S]*?mockCheckoutSubmit: true/);
+        expect(authHandoff).toMatch(/name: 'register-tarot-celtic-auth-gate-bridge'[\s\S]*?expectedPaymentEvents: \['paywall_viewed', 'paywall_cta_clicked'\]/);
         expect(authHandoff).toContain("name: 'register-tarot-yes-no-result-bridge'");
         expect(authHandoff).toMatch(/name: 'register-tarot-yes-no-result-bridge'[\s\S]*?source: 'tarot_yes_no_result'[\s\S]*?feature: 'tarot_multi_card'[\s\S]*?type: 'tarot-yes-no-result-bridge'[\s\S]*?mockCheckoutSubmit: true/);
         expect(authHandoff).toMatch(/name: 'register-tarot-yes-no-result-bridge'[\s\S]*?expectedPaymentEvents: \['paywall_viewed', 'paywall_cta_clicked'\]/);
