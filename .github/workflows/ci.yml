@@ -53,7 +53,9 @@ jobs:
         run: npm ci
 
       - name: Install Playwright browser for PDF tests
-        run: npx playwright install --with-deps chromium
+        # GitHub-hosted runners already contain Chromium's Linux libraries.
+        # Avoid apt-based --with-deps installs, which can hang indefinitely.
+        run: npx playwright install chromium
 
       - name: Run encoding check
         run: npm run check:encoding
