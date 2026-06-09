@@ -881,24 +881,27 @@ describe('API Endpoint Tests', () => {
             expect(res.text).not.toMatch(/\sstyle\s*=/i);
         });
 
-        test('GET /horoskop/:sign/:date falls back when generated AI JSON is invalid', async () => {
-            const originalForceInvalidJson = process.env.MOCK_AI_FORCE_INVALID_JSON;
-            process.env.MOCK_AI_FORCE_INVALID_JSON = 'true';
+        test('GET /horoskop/:sign/:date uses deterministic content without paid AI', async () => {
+            const originalForceError = process.env.MOCK_AI_FORCE_ERROR;
+            process.env.MOCK_AI_FORCE_ERROR = 'true';
 
             try {
                 const today = new Date().toISOString().split('T')[0];
-                const res = await request(app)
+                const first = await request(app)
+                    .get(`/horoskop/rak/${today}`)
+                    .expect(200);
+                const second = await request(app)
                     .get(`/horoskop/rak/${today}`)
                     .expect(200);
 
-                expect(res.text).not.toContain('Testovaci AI odpoved pro invalidni JSON fallback.');
-                expect(res.text).toContain('Jdu svým tempem');
-                expect(res.text).toContain('Čísla štěstí');
+                expect(first.text).not.toContain('Testovaci AI odpoved');
+                expect(first.text).toContain('Čísla štěstí');
+                expect(first.text).toBe(second.text);
             } finally {
-                if (originalForceInvalidJson === undefined) {
-                    delete process.env.MOCK_AI_FORCE_INVALID_JSON;
+                if (originalForceError === undefined) {
+                    delete process.env.MOCK_AI_FORCE_ERROR;
                 } else {
-                    process.env.MOCK_AI_FORCE_INVALID_JSON = originalForceInvalidJson;
+                    process.env.MOCK_AI_FORCE_ERROR = originalForceError;
                 }
             }
         });

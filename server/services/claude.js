@@ -12,7 +12,11 @@ const CLAUDE_MODEL = 'claude-sonnet-4-5';
 
 const REQUEST_TIMEOUT_MS = 30000;
 const MAX_RETRIES = 2;
+const DEFAULT_DAILY_AI_CALL_LIMIT = 120;
+const MAX_DAILY_AI_CALL_LIMIT = 10000;
 const USE_MOCK_AI = process.env.MOCK_AI === 'true' || process.env.NODE_ENV === 'test';
+let aiBudgetDate = null;
+let aiRequestsReserved = 0;
 
 const API_KEY = (() => {
     const key = process.env.ANTHROPIC_API_KEY;
@@ -21,6 +25,42 @@ const API_KEY = (() => {
     }
     return key;
 })();
+
+export function normalizeDailyAICallLimit(value) {
+    const parsed = Number.parseInt(value, 10);
+    if (!Number.isFinite(parsed)) return DEFAULT_DAILY_AI_CALL_LIMIT;
+    return Math.min(MAX_DAILY_AI_CALL_LIMIT, Math.max(1, parsed));
+}
+
+export function reserveDailyAIRequest({
+    now = new Date(),
+    limit = normalizeDailyAICallLimit(process.env.AI_DAILY_CALL_LIMIT)
+} = {}) {
+    const dateKey = now.toISOString().slice(0, 10);
+    if (aiBudgetDate !== dateKey) {
+        aiBudgetDate = dateKey;
+        aiRequestsReserved = 0;
+    }
+
+    if (aiRequestsReserved >= limit) {
+        const error = new Error(`Daily AI request limit reached (${limit}).`);
+        error.code = 'AI_DAILY_BUDGET_EXHAUSTED';
+        throw error;
+    }
+
+    aiRequestsReserved += 1;
+    return {
+        date: aiBudgetDate,
+        limit,
+        used: aiRequestsReserved,
+        remaining: limit - aiRequestsReserved
+    };
+}
+
+export function resetDailyAIRequestBudget() {
+    aiBudgetDate = null;
+    aiRequestsReserved = 0;
+}
 
 /**
  * Calls the Claude API with a system prompt and user message.
@@ -69,6 +109,7 @@ export async function callClaude(systemPrompt, messageOrHistory, contextData = n
     let lastError;
     for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
         try {
+            reserveDailyAIRequest();
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
@@ -108,6 +149,10 @@ export async function callClaude(systemPrompt, messageOrHistory, contextData = n
 
         } catch (error) {
             lastError = error;
+            if (error.code === 'AI_DAILY_BUDGET_EXHAUSTED') {
+                console.error('[Claude Service] Daily request budget exhausted');
+                throw error;
+            }
             if (error.name === 'AbortError') {
                 console.error('[Claude Service] Request timed out');
                 if (attempt < MAX_RETRIES) {

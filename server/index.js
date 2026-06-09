@@ -178,7 +178,7 @@ async function runDailyHoroscopeJob(reason = 'scheduled') {
     }
 }
 
-async function prefillHoroscopeCache() {
+async function warmHoroscopePages() {
     const signs = ['beran', 'byk', 'blizenci', 'rak', 'lev', 'panna', 'vahy', 'stir', 'strelec', 'kozoroh', 'vodnar', 'ryby'];
     const dates = [0, 1, 2].map(offset => {
         const d = new Date();
@@ -186,17 +186,17 @@ async function prefillHoroscopeCache() {
         return d.toISOString().split('T')[0];
     });
 
-    console.log(`[CRON] Prefilling horoscope cache for: ${dates.join(', ')}...`);
+    console.log(`[CRON] Warming horoscope pages for: ${dates.join(', ')}...`);
     for (const date of dates) {
         for (const sign of signs) {
             try {
                 await fetch(`https://www.mystickahvezda.cz/horoskop/${sign}/${date}`);
             } catch (e) {
-                console.error(`[CRON] Prefill failed for ${sign}/${date}: ${e.message}`);
+                console.error(`[CRON] Horoscope page warmup failed for ${sign}/${date}: ${e.message}`);
             }
             await new Promise(r => setTimeout(r, 1000));
         }
-        console.log(`[CRON] Prefill done for ${date}.`);
+        console.log(`[CRON] Horoscope page warmup done for ${date}.`);
     }
 }
 
@@ -1023,12 +1023,12 @@ if (isMain || isProductionRuntime()) {
                 console.warn('📵 Social Media Agent scheduler disabled (set ENABLE_SOCIAL_AGENT_SCHEDULER=true to enable).');
             }
 
-            // Prefill horoscope cache — every day at 05:00 UTC (6:00 CET)
-            // Hits all 12 sign URLs; Claude generates and saves to the production cache.
+            // Warm public horoscope HTML/CDN — every day at 05:00 UTC.
+            // These crawlable GET routes are deterministic and never call paid AI.
             schedule.scheduleJob('0 5 * * *', () => {
-                runBackgroundTask('horoscope_prefill', prefillHoroscopeCache);
+                runBackgroundTask('horoscope_page_warmup', warmHoroscopePages);
             });
-            console.warn('📅 Horoscope prefill cron scheduled (05:00 UTC).');
+            console.warn('📅 Horoscope page warmup scheduled (05:00 UTC).');
         } else {
             console.warn('[JOBS] General scheduled jobs skipped for this environment.');
         }

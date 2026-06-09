@@ -8,8 +8,7 @@
  * long-tail searches like "horoskop štír 12 března 2026".
  */
 import express from 'express';
-import { callClaude } from '../services/claude.js';
-import { getCachedHoroscope, saveCachedHoroscope } from '../services/astrology.js';
+import { getCachedHoroscope } from '../services/astrology.js';
 import { normalizeHoroscopeAiResponse } from '../services/horoscope-response.js';
 import { setHtmlContentSecurityPolicy } from '../utils/csp.js';
 
@@ -58,11 +57,61 @@ function parseIsoDateStrict(dateStr) {
     return targetDate.toISOString().split('T')[0] === dateStr ? targetDate : null;
 }
 
-function buildFallbackHoroscopePage(signAcc) {
+const FALLBACK_THEMES = Object.freeze([
+    {
+        theme: 'jasných priorit',
+        guidance: 'Vyber si jednu věc, která má skutečnou váhu, a dej jí přednost před drobným rozptýlením.',
+        affirmation: 'Volím jasně a svou energii dávám tomu, co má pro mě opravdový význam.'
+    },
+    {
+        theme: 'klidné odvahy',
+        guidance: 'Udělej malý krok, který už delší dobu odkládáš, ale netlač na výsledek.',
+        affirmation: 'Jednám odvážně, klidně a důvěřuji tempu, které je pro mě udržitelné.'
+    },
+    {
+        theme: 'pravdivé komunikace',
+        guidance: 'Pojmenuj své potřeby jednoduše a nech druhé odpovědět bez domýšlení jejich záměrů.',
+        affirmation: 'Mluvím pravdivě a zároveň nechávám prostor pro porozumění.'
+    },
+    {
+        theme: 'obnovy vnitřní rovnováhy',
+        guidance: 'Vrať se k činnosti, po které se cítíš pevněji, a dopřej jí dnes konkrétní čas.',
+        affirmation: 'Vrátím se k sobě pokaždé, když vědomě zvolím klid a jednoduchost.'
+    },
+    {
+        theme: 'trpělivého dokončení',
+        guidance: 'Nezačínej další úkol, dokud neposuneš alespoň o jeden krok to, co už máš otevřené.',
+        affirmation: 'Dokončuji podstatné věci s trpělivostí a čistou pozorností.'
+    },
+    {
+        theme: 'otevřenosti novému pohledu',
+        guidance: 'Zkus se na známou situaci podívat očima člověka, který v ní nehledá chybu, ale možnost.',
+        affirmation: 'Dovoluji si vidět nové možnosti tam, kde dříve byla jen překážka.'
+    }
+]);
+
+function stableSeed(value) {
+    let seed = 0;
+    for (const character of value) {
+        seed = ((seed * 31) + character.codePointAt(0)) >>> 0;
+    }
+    return seed;
+}
+
+function buildFallbackHoroscopePage(signData, dateStr) {
+    const seed = stableSeed(`${signData.name}:${dateStr}`);
+    const theme = FALLBACK_THEMES[seed % FALLBACK_THEMES.length];
+    const luckyNumbers = [];
+
+    for (let offset = 0; luckyNumbers.length < 4; offset += 1) {
+        const number = ((seed + (offset * 11)) % 49) + 1;
+        if (!luckyNumbers.includes(number)) luckyNumbers.push(number);
+    }
+
     return {
-        prediction: `Hvězdy dnes pro ${signAcc} ukazují klidnější energii a potřebu vrátit pozornost k tomu, co je opravdu podstatné. Důvěřuj vnitřnímu hlasu, ale opři ho o jeden konkrétní krok, který můžeš udělat hned teď. Den přeje jednoduchosti, pravdivosti a trpělivému rozhodování.`,
-        affirmation: 'Jdu svým tempem a každý jasný krok mě vede blíž k rovnováze.',
-        luckyNumbers: [3, 7, 12, 21]
+        prediction: `Dne ${formatCzechDate(dateStr)} se pro ${signData.nameAcc} otevírá téma ${theme.theme}. ${theme.guidance} Večer si všimni, co se změnilo, když místo spěchu dostal prostor vědomý krok.`,
+        affirmation: theme.affirmation,
+        luckyNumbers
     };
 }
 
@@ -145,28 +194,11 @@ router.get('/:sign/:date', async (req, res, next) => {
             try {
                 ({ parsed } = normalizeHoroscopeAiResponse(cached.response));
             } catch {
-                parsed = buildFallbackHoroscopePage(signData.nameAcc);
+                parsed = buildFallbackHoroscopePage(signData, date);
             }
         } else {
-            // Generate via Claude — stejný model a prompt jako horoskopy.html (horoscope.js)
-            const signAccMap = {
-                'Beran': 'Berana', 'Býk': 'Býka', 'Blíženci': 'Blížence', 'Rak': 'Raka',
-                'Lev': 'Lva', 'Panna': 'Pannu', 'Váhy': 'Váhy', 'Štír': 'Štíra',
-                'Střelec': 'Střelce', 'Kozoroh': 'Kozoroha', 'Vodnář': 'Vodnáře', 'Ryby': 'Ryby'
-            };
-            const signAcc = signAccMap[signData.name] || signData.name;
-            const prompt = `Jsi laskavý astrologický průvodce. Generuješ denní horoskop pro ${signAcc} na den ${czechDate}.\nOdpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).\nStruktura:\n{\n  "prediction": "Text horoskopu (přesně 3 věty) specifický pro ${signAcc}. Hlavní energie dne a jedna konkrétní rada vycházející z vlastností tohoto znamení.",\n  "affirmation": "Osobní denní mantra — silná, poetická, specifická pro ${signAcc} a jeho element. 15–25 slov, první osoba, přítomný čas.",\n  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]\n}\nText piš česky, poeticky a povzbudivě. DŮLEŽITÉ: Text piš VŽDY v tykání — 2. osoba jednotného čísla (ty/tě/ti/tvé/tvůj). NIKDY nepoužívej vykání.`;
-            const message = `Vygeneruj horoskop pro znamení ${signData.name} na ${czechDate}.`;
-
-            try {
-                const raw = await callClaude(prompt, message);
-                const { parsed: generated, serialized } = normalizeHoroscopeAiResponse(raw);
-                await saveCachedHoroscope(cacheKey, signData.name, 'daily', serialized, 'Denní inspirace');
-                parsed = generated;
-            } catch (claudeError) {
-                console.warn(`[HoroscopePage] Claude API failed for ${signData.name}:`, claudeError.message);
-                parsed = buildFallbackHoroscopePage(signAcc);
-            }
+            // Public crawlable GET routes must never initiate paid AI requests.
+            parsed = buildFallbackHoroscopePage(signData, date);
         }
 
         const prevDate = shiftDate(date, -1);

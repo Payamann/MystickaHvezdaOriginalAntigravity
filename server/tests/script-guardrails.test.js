@@ -351,6 +351,16 @@ describe('manual script guardrails', () => {
         expect(source).toContain('set ENABLE_SOCIAL_AGENT_SCHEDULER=true to enable');
     });
 
+    test('crawlable horoscope pages cannot invoke paid AI', () => {
+        const source = readScript('server/routes/horoscope-pages.js');
+
+        expect(source).not.toContain("from '../services/claude.js'");
+        expect(source).not.toContain('callClaude(');
+        expect(source).not.toContain('saveCachedHoroscope(');
+        expect(source).toContain('Public crawlable GET routes must never initiate paid AI requests.');
+        expect(source).toContain('buildFallbackHoroscopePage(signData, date)');
+    });
+
     test('production background jobs handle process and promise failures locally', () => {
         const serverSource = readScript('server/index.js');
         const emailQueueSource = readScript('server/jobs/email-queue.js');
@@ -360,7 +370,7 @@ describe('manual script guardrails', () => {
         expect(serverSource).toContain("child.stdout?.on('data'");
         expect(serverSource).toContain("alertBackgroundJobFailure('social_agent_failed'");
         expect(serverSource).toContain('function runBackgroundTask(label, task, metadata = {})');
-        expect(serverSource).toContain("runBackgroundTask('horoscope_prefill'");
+        expect(serverSource).toContain("runBackgroundTask('horoscope_page_warmup'");
         expect(serverSource).toContain("runBackgroundTask('daily_horoscope_startup_catchup'");
         expect(serverSource).toContain("process.platform === 'win32' ? 'python' : 'python3'");
         expect(serverSource).not.toMatch(/schedule\.scheduleJob\([^;\n]*async/);
