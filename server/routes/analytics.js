@@ -25,6 +25,7 @@ const ALLOWED_EVENTS = new Set([
     'purchase_completed',
     'billing_portal_opened',
     'subscription_action',
+    'seo_landing_viewed',
     'client_error',
     'error',
     'feedback_submitted',

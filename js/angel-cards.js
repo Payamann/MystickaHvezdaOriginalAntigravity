@@ -5,6 +5,11 @@
 
 let angelCardsData = [];
 let drawnCard = null;
+let angelFirstValueTracked = false;
+
+const ANGEL_CARD_FEATURE = 'andelske_karty_hluboky_vhled';
+const ANGEL_CARD_PLAN_ID = 'pruvodce';
+const ANGEL_CARD_RESULT_SOURCE = 'angel_card_result';
 
 const DAILY_CARD_FALLBACKS = {
     'andele-ochranci': {
@@ -315,27 +320,56 @@ function getDailyCardFromUrl() {
 
 function buildAngelUpgradeUrl(source) {
     const pricingUrl = new URL('/cenik.html', window.location.origin);
-    pricingUrl.searchParams.set('plan', 'pruvodce');
+    pricingUrl.searchParams.set('plan', ANGEL_CARD_PLAN_ID);
     pricingUrl.searchParams.set('source', source);
-    pricingUrl.searchParams.set('feature', 'andelske_karty_hluboky_vhled');
+    pricingUrl.searchParams.set('feature', ANGEL_CARD_FEATURE);
     pricingUrl.searchParams.set('entry_source', source);
-    pricingUrl.searchParams.set('entry_feature', 'andelske_karty_hluboky_vhled');
+    pricingUrl.searchParams.set('entry_feature', ANGEL_CARD_FEATURE);
     return `${pricingUrl.pathname}${pricingUrl.search}`;
+}
+
+async function trackAngelFunnelEvent(eventName, source, metadata = {}) {
+    try {
+        const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+        if (!csrfToken) return;
+
+        await fetch(`${apiBase()}/payment/funnel-event`, {
+            method: 'POST',
+            credentials: 'include',
+            keepalive: true,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify({
+                eventName,
+                source,
+                feature: ANGEL_CARD_FEATURE,
+                planId: ANGEL_CARD_PLAN_ID,
+                metadata: {
+                    path: window.location.pathname,
+                    ...metadata
+                }
+            })
+        });
+    } catch (error) {
+        console.warn('[Angel cards funnel] Could not record event:', error.message);
+    }
 }
 
 function startAngelUpgradeFlow(source, authMode = 'register') {
     window.MH_ANALYTICS?.trackCTA?.(source, {
-        plan_id: 'pruvodce',
-        feature: 'andelske_karty_hluboky_vhled'
+        plan_id: ANGEL_CARD_PLAN_ID,
+        feature: ANGEL_CARD_FEATURE
     });
 
     if (window.Auth?.startPlanCheckout) {
-        window.Auth.startPlanCheckout('pruvodce', {
+        window.Auth.startPlanCheckout(ANGEL_CARD_PLAN_ID, {
             source,
-            feature: 'andelske_karty_hluboky_vhled',
+            feature: ANGEL_CARD_FEATURE,
             metadata: {
                 entry_source: source,
-                entry_feature: 'andelske_karty_hluboky_vhled'
+                entry_feature: ANGEL_CARD_FEATURE
             },
             redirect: '/cenik.html',
             authMode
@@ -414,6 +448,30 @@ function renderDeepInsightText(container, text) {
         });
     container.hidden = false;
     container.classList.add('mh-block-visible');
+}
+
+function trackAngelFirstValue(source = ANGEL_CARD_RESULT_SOURCE) {
+    if (!drawnCard || angelFirstValueTracked) return;
+    angelFirstValueTracked = true;
+
+    const metadata = {
+        source,
+        feature: ANGEL_CARD_FEATURE,
+        first_value_type: 'angel_card_result',
+        card_name: String(drawnCard.name || '').slice(0, 80),
+        card_theme: String(drawnCard.theme || '').slice(0, 80),
+        is_daily_card_detail: Boolean(drawnCard.isDailyCardDetail),
+        seo_cluster: 'angel_cards',
+        seo_page_type: 'free_tool'
+    };
+
+    if (window.MH_ANALYTICS?.trackFirstValueCompleted) {
+        window.MH_ANALYTICS.trackFirstValueCompleted(ANGEL_CARD_FEATURE, metadata);
+    } else {
+        window.MH_ANALYTICS?.trackEvent?.('first_value_completed', metadata);
+    }
+
+    void trackAngelFunnelEvent('first_value_completed', source, metadata);
 }
 
 function appendFavoriteAction(container, readingId) {
@@ -765,6 +823,7 @@ function drawCard() {
         const results = document.getElementById('angel-results');
         if (results) {
             setBlockVisible(results, true);
+            trackAngelFirstValue(ANGEL_CARD_RESULT_SOURCE);
             // Trigger animation frame
             requestAnimationFrame(() => {
                 results.classList.add('animate-in');

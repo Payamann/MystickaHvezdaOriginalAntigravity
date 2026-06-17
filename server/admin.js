@@ -1350,6 +1350,8 @@ function createAnalyticsAttributionSegment(source, campaign, medium, entryFeatur
         entryFeature,
         totalEvents: 0,
         visitors: 0,
+        seoLandingViews: 0,
+        firstValueCompleted: 0,
         pageViews: 0,
         ctaClicks: 0,
         signups: 0,
@@ -1383,6 +1385,8 @@ function addAnalyticsAttributionEvent(segments, event) {
     const visitorId = analyticsVisitorFromEvent(event);
     segment.totalEvents += 1;
     if (visitorId) segment.visitorIds.add(visitorId);
+    if (eventType === 'seo_landing_viewed') segment.seoLandingViews += 1;
+    if (eventType === 'first_value_completed') segment.firstValueCompleted += 1;
     if (eventType === 'page_view') segment.pageViews += 1;
     if (eventType === 'cta_clicked') segment.ctaClicks += 1;
     if (eventType === 'signup_completed') segment.signups += 1;
@@ -1408,6 +1412,8 @@ function buildAnalyticsAttributionSegments(events, limit = 12) {
                 entryFeature: segment.entryFeature,
                 totalEvents: segment.totalEvents,
                 visitors,
+                seoLandingViews: segment.seoLandingViews,
+                firstValueCompleted: segment.firstValueCompleted,
                 pageViews: segment.pageViews,
                 ctaClicks: segment.ctaClicks,
                 signups: segment.signups,
@@ -1420,7 +1426,9 @@ function buildAnalyticsAttributionSegments(events, limit = 12) {
         })
         .sort((a, b) => b.checkouts - a.checkouts
             || b.signups - a.signups
+            || b.firstValueCompleted - a.firstValueCompleted
             || b.ctaClicks - a.ctaClicks
+            || b.seoLandingViews - a.seoLandingViews
             || b.pageViews - a.pageViews
             || b.totalEvents - a.totalEvents
             || a.source.localeCompare(b.source)
@@ -1591,6 +1599,8 @@ export function buildAnalyticsAttributionCsv(report) {
         'entry_feature',
         'total_events',
         'visitors',
+        'seo_landing_views',
+        'first_value_completed',
         'page_views',
         'cta_clicks',
         'signups',
@@ -1607,6 +1617,8 @@ export function buildAnalyticsAttributionCsv(report) {
         segment.entryFeature,
         segment.totalEvents,
         segment.visitors,
+        segment.seoLandingViews,
+        segment.firstValueCompleted,
         segment.pageViews,
         segment.ctaClicks,
         segment.signups,

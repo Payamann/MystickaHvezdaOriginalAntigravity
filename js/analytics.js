@@ -22,11 +22,64 @@ const MH_ATTRIBUTION_QUERY_KEYS = [
     'entry_feature'
 ];
 const MH_ATTRIBUTION_EMAIL_RE = /[^\s@]+@[^\s@]+\.[^\s@]+/g;
+const MH_SEO_LANDING_PAGES = {
+    '/tarot-ano-ne.html': {
+        source: 'seo_tarot_yes_no',
+        feature: 'tarot',
+        seo_cluster: 'tarot',
+        seo_page_type: 'free_tool',
+        seo_intent: 'yes_no_answer'
+    },
+    '/andelske-karty.html': {
+        source: 'seo_angel_card_daily',
+        feature: 'daily_angel_card',
+        seo_cluster: 'angel_cards',
+        seo_page_type: 'free_tool',
+        seo_intent: 'daily_guidance'
+    },
+    '/tarot.html': {
+        source: 'seo_tarot_hub',
+        feature: 'tarot',
+        seo_cluster: 'tarot',
+        seo_page_type: 'tool_hub',
+        seo_intent: 'tarot_reading'
+    },
+    '/horoskopy.html': {
+        source: 'seo_horoscope_hub',
+        feature: 'horoskopy',
+        seo_cluster: 'horoscope',
+        seo_page_type: 'hub',
+        seo_intent: 'daily_horoscope'
+    }
+};
+const MH_SEO_LANDING_PATTERNS = [
+    {
+        pattern: /^\/tarot-vyznam\/[^/]+\.html$/,
+        context: {
+            source: 'seo_tarot_card_meaning',
+            feature: 'tarot',
+            seo_cluster: 'tarot_meanings',
+            seo_page_type: 'card_detail',
+            seo_intent: 'card_meaning'
+        }
+    },
+    {
+        pattern: /^\/horoskop\/[^/]+\.html$/,
+        context: {
+            source: 'seo_horoscope_sign',
+            feature: 'horoskopy',
+            seo_cluster: 'horoscope',
+            seo_page_type: 'sign_detail',
+            seo_intent: 'zodiac_sign'
+        }
+    }
+];
 
 window.MH_ANALYTICS_QUEUE = window.MH_ANALYTICS_QUEUE || [];
 
 let mhAnalyticsCsrfPromise = null;
 let mhAnalyticsPageViewTracked = false;
+let mhSeoLandingViewTracked = false;
 let mhAnalyticsAttributionContext = null;
 
 function getAnalyticsPreference() {
@@ -194,6 +247,24 @@ function compactTrackingPayload(payload = {}) {
     return Object.fromEntries(
         Object.entries(payload).filter(([, value]) => value !== null && value !== undefined && value !== '')
     );
+}
+
+function getSeoLandingContext(path = safeLandingPath()) {
+    const directContext = MH_SEO_LANDING_PAGES[path];
+    if (directContext) return directContext;
+
+    const patternMatch = MH_SEO_LANDING_PATTERNS.find(({ pattern }) => pattern.test(path));
+    return patternMatch?.context || null;
+}
+
+function detectSeoLandingSignal(metadata = compactAttributionMetadata()) {
+    const medium = `${metadata.first_medium || ''} ${metadata.last_medium || ''}`.toLowerCase();
+    const source = `${metadata.first_source || ''} ${metadata.last_source || ''} ${metadata.referrer_host || ''}`.toLowerCase();
+
+    if (/\b(organic|seo|search)\b/.test(medium)) return 'organic';
+    if (/(google|bing|seznam|yahoo|duckduckgo|search)/.test(source)) return 'search_referrer_or_tagged';
+    if (metadata.first_source || metadata.last_source || metadata.referrer_host) return 'attributed';
+    return 'direct_or_internal';
 }
 
 function readUrlParam(href, key) {
@@ -454,6 +525,13 @@ const MH_ANALYTICS = {
         });
     },
 
+    trackFirstValueCompleted(feature = null, context = {}) {
+        this.trackEvent('first_value_completed', {
+            feature,
+            ...context
+        });
+    },
+
     trackPaymentResult(status = 'unknown', context = {}) {
         this.trackEvent('payment_returned', {
             payment_status: status,
@@ -513,10 +591,26 @@ const MH_ANALYTICS = {
 window.trackEvent = window.trackEvent || ((eventName, data) => MH_ANALYTICS.trackEvent(eventName, data));
 window.MH_ANALYTICS = MH_ANALYTICS;
 
+function trackSeoLandingView() {
+    if (mhSeoLandingViewTracked) return;
+
+    const context = getSeoLandingContext();
+    if (!context) return;
+
+    mhSeoLandingViewTracked = true;
+    const attributionMetadata = compactAttributionMetadata();
+    MH_ANALYTICS.trackEvent('seo_landing_viewed', compactTrackingPayload({
+        ...context,
+        seo_landing_path: safeLandingPath(),
+        seo_signal: detectSeoLandingSignal(attributionMetadata)
+    }));
+}
+
 function trackInitialPageView() {
     if (mhAnalyticsPageViewTracked) return;
     mhAnalyticsPageViewTracked = true;
     MH_ANALYTICS.trackPageView(document.title);
+    trackSeoLandingView();
 }
 
 if (document.readyState === 'loading') {

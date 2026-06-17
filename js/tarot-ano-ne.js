@@ -71,6 +71,7 @@
 
     let used = false;
     let lastResult = null;
+    let firstValueTracked = false;
 
     const TAROT_YES_NO_FEATURE = 'tarot_multi_card';
     const TAROT_YES_NO_PLAN_ID = 'pruvodce';
@@ -190,6 +191,28 @@
             has_question: Boolean(question),
             question_length: Math.min((question || '').length, 200)
         };
+    }
+
+    function trackTarotYesNoFirstValue(answerKey, ans, question) {
+        if (firstValueTracked) return;
+        firstValueTracked = true;
+
+        const metadata = {
+            ...getResultMetadata(answerKey, ans, question),
+            source: TAROT_YES_NO_RESULT_SOURCE,
+            feature: TAROT_YES_NO_FEATURE,
+            first_value_type: 'tarot_yes_no_result',
+            seo_cluster: 'tarot',
+            seo_page_type: 'free_tool'
+        };
+
+        if (window.MH_ANALYTICS?.trackFirstValueCompleted) {
+            window.MH_ANALYTICS.trackFirstValueCompleted(TAROT_YES_NO_FEATURE, metadata);
+        } else {
+            window.MH_ANALYTICS?.trackEvent?.('first_value_completed', metadata);
+        }
+
+        void trackTarotYesNoFunnelEvent('first_value_completed', TAROT_YES_NO_RESULT_SOURCE, metadata);
     }
 
     function wrapCanvasText(ctx, text, maxWidth) {
@@ -429,6 +452,7 @@
             document.getElementById('result-text').textContent = text;
             const panel = document.getElementById('result-panel');
             panel.classList.add('show');
+            trackTarotYesNoFirstValue(key, ans, q);
             revealTarotYesNoNextStep(key, ans, q);
             scrollTarotResultIntoView(panel);
             setTimeout(() => scrollTarotResultIntoView(panel), 320);

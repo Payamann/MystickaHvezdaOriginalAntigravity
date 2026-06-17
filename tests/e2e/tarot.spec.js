@@ -573,6 +573,68 @@ test.describe('Tarot Ano/Ne', () => {
         expect(href).toContain('feature=tarot_multi_card');
     });
 
+    test('SEO landing a prvni odpoved se propisi do analytics a funnelu', async ({ page }) => {
+        await page.addInitScript(() => {
+            localStorage.removeItem('mh_attribution_first_touch');
+            sessionStorage.removeItem('mh_attribution_last_touch');
+        });
+        await page.goto('/tarot-ano-ne.html?utm_source=google&utm_medium=organic&utm_campaign=tarot_ano_ne');
+        await waitForPageReady(page);
+
+        await page.evaluate(() => {
+            window.__tarotFunnelEvents = [];
+            window.getCSRFToken = async () => 'e2e-tarot-seo-token';
+
+            const originalFetch = window.fetch.bind(window);
+            window.fetch = async (input, init = {}) => {
+                const url = typeof input === 'string' ? input : input?.url;
+                if (url && url.includes('/api/payment/funnel-event')) {
+                    window.__tarotFunnelEvents.push(JSON.parse(init.body || '{}'));
+                    return new Response(JSON.stringify({ success: true }), {
+                        status: 200,
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                }
+                return originalFetch(input, init);
+            };
+        });
+
+        const seoLanding = await page.evaluate(() => window.MH_ANALYTICS_QUEUE.find((event) => event.name === 'seo_landing_viewed'));
+        expect(seoLanding).toEqual(expect.objectContaining({
+            source: 'seo_tarot_yes_no',
+            feature: 'tarot',
+            seo_cluster: 'tarot',
+            first_source: 'google',
+            first_medium: 'organic',
+            first_campaign: 'tarot_ano_ne'
+        }));
+
+        await page.fill('#question-input', 'Mam dnes udelat prvni krok?');
+        await page.locator('.tarot-card').first().click();
+        await expect(page.locator('#result-panel')).toHaveClass(/show/, { timeout: 2500 });
+        await expect.poll(() => page.evaluate(() => window.__tarotFunnelEvents.some((event) => event.eventName === 'first_value_completed'))).toBe(true);
+
+        const events = await page.evaluate(() => ({
+            firstValue: window.MH_ANALYTICS_QUEUE.find((event) => event.name === 'first_value_completed' && event.first_value_type === 'tarot_yes_no_result'),
+            funnelEvents: window.__tarotFunnelEvents
+        }));
+
+        expect(events.firstValue).toEqual(expect.objectContaining({
+            source: 'tarot_yes_no_result',
+            feature: 'tarot_multi_card',
+            first_value_type: 'tarot_yes_no_result',
+            first_source: 'google',
+            first_medium: 'organic',
+            first_campaign: 'tarot_ano_ne'
+        }));
+        expect(events.funnelEvents).toContainEqual(expect.objectContaining({
+            eventName: 'first_value_completed',
+            source: 'tarot_yes_no_result',
+            feature: 'tarot_multi_card',
+            planId: 'pruvodce'
+        }));
+    });
+
     test('výsledek tarot ano/ne lze uložit jako sdílitelný obrázek', async ({ page }) => {
         await page.goto('/tarot-ano-ne.html');
         await waitForPageReady(page);

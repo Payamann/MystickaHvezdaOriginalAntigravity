@@ -734,6 +734,37 @@ describe('Admin first-party analytics helpers', () => {
                 created_at: '2026-04-28T08:02:00.000Z'
             },
             {
+                id: 'pin-seo-1',
+                event_type: 'seo_landing_viewed',
+                feature: 'tarot',
+                metadata: {
+                    path: '/tarot-ano-ne.html',
+                    clientId: 'client-pin',
+                    visitId: 'visit-pin',
+                    first_source: 'pinterest',
+                    first_medium: 'organic',
+                    first_campaign: 'tarot_meanings',
+                    entry_feature: 'tarot'
+                },
+                created_at: '2026-04-28T08:03:00.000Z'
+            },
+            {
+                id: 'pin-first-value-1',
+                event_type: 'first_value_completed',
+                feature: 'tarot_multi_card',
+                metadata: {
+                    path: '/tarot-ano-ne.html',
+                    clientId: 'client-pin',
+                    visitId: 'visit-pin',
+                    first_source: 'pinterest',
+                    first_medium: 'organic',
+                    first_campaign: 'tarot_meanings',
+                    entry_feature: 'tarot',
+                    first_value_type: 'tarot_yes_no_result'
+                },
+                created_at: '2026-04-28T08:03:30.000Z'
+            },
+            {
                 id: 'pin-3',
                 event_type: 'signup_completed',
                 feature: 'tarot',
@@ -784,8 +815,10 @@ describe('Admin first-party analytics helpers', () => {
             campaign: 'tarot_meanings',
             medium: 'organic',
             entryFeature: 'tarot',
-            totalEvents: 4,
+            totalEvents: 6,
             visitors: 1,
+            seoLandingViews: 1,
+            firstValueCompleted: 1,
             pageViews: 1,
             ctaClicks: 1,
             signups: 1,
@@ -800,6 +833,7 @@ describe('Admin first-party analytics helpers', () => {
             pageViews: 1
         }));
         expect(buildAnalyticsAttributionCsv(report)).toContain('source,campaign,medium,entry_feature');
+        expect(buildAnalyticsAttributionCsv(report)).toContain('seo_landing_views,first_value_completed');
         expect(buildAnalyticsAttributionCsv(report)).toContain('"pinterest","tarot_meanings","organic","tarot"');
     });
 });

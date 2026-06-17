@@ -81,6 +81,7 @@ describe('First-party analytics endpoint', () => {
         expect(normalizeAnalyticsEventName('action_saved_reading')).toBe('action_saved_reading');
         expect(normalizeAnalyticsEventName('astrocartography_calculated')).toBe('astrocartography_calculated');
         expect(normalizeAnalyticsEventName('password_reset_requested')).toBe('password_reset_requested');
+        expect(normalizeAnalyticsEventName('seo_landing_viewed')).toBe('seo_landing_viewed');
         expect(normalizeAnalyticsEventName('first_value_completed')).toBe('first_value_completed');
         expect(normalizeAnalyticsEventName('reading_feedback_submitted')).toBe('reading_feedback_submitted');
         expect(normalizeAnalyticsEventName('bad-event-name')).toBeNull();

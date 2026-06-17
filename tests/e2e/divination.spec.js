@@ -103,6 +103,68 @@ test.describe('Andělské karty', () => {
         await expect(page.locator('#btn-deep-angel')).toBeVisible({ timeout: 3_000 });
     });
 
+    test('SEO landing a vylozeni andelske karty se propisi do analytics a funnelu', async ({ page }) => {
+        await page.addInitScript(() => {
+            localStorage.removeItem('mh_attribution_first_touch');
+            sessionStorage.removeItem('mh_attribution_last_touch');
+        });
+        await page.evaluate(() => localStorage.removeItem('angelCardDaily'));
+        await page.goto('/andelske-karty.html?utm_source=google&utm_medium=organic&utm_campaign=andelska_karta_dne');
+        await waitForPageReady(page);
+
+        await page.evaluate(() => {
+            window.__angelFunnelEvents = [];
+            window.getCSRFToken = async () => 'e2e-angel-seo-token';
+
+            const originalFetch = window.fetch.bind(window);
+            window.fetch = async (input, init = {}) => {
+                const url = typeof input === 'string' ? input : input?.url;
+                if (url && url.includes('/api/payment/funnel-event')) {
+                    window.__angelFunnelEvents.push(JSON.parse(init.body || '{}'));
+                    return new Response(JSON.stringify({ success: true }), {
+                        status: 200,
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                }
+                return originalFetch(input, init);
+            };
+        });
+
+        const seoLanding = await page.evaluate(() => window.MH_ANALYTICS_QUEUE.find((event) => event.name === 'seo_landing_viewed'));
+        expect(seoLanding).toEqual(expect.objectContaining({
+            source: 'seo_angel_card_daily',
+            feature: 'daily_angel_card',
+            seo_cluster: 'angel_cards',
+            first_source: 'google',
+            first_medium: 'organic',
+            first_campaign: 'andelska_karta_dne'
+        }));
+
+        await page.locator('#draw-btn').click();
+        await expect(page.locator('#btn-deep-angel')).toBeVisible({ timeout: 3_000 });
+        await expect.poll(() => page.evaluate(() => window.__angelFunnelEvents.some((event) => event.eventName === 'first_value_completed'))).toBe(true);
+
+        const events = await page.evaluate(() => ({
+            firstValue: window.MH_ANALYTICS_QUEUE.find((event) => event.name === 'first_value_completed' && event.first_value_type === 'angel_card_result'),
+            funnelEvents: window.__angelFunnelEvents
+        }));
+
+        expect(events.firstValue).toEqual(expect.objectContaining({
+            source: 'angel_card_result',
+            feature: 'andelske_karty_hluboky_vhled',
+            first_value_type: 'angel_card_result',
+            first_source: 'google',
+            first_medium: 'organic',
+            first_campaign: 'andelska_karta_dne'
+        }));
+        expect(events.funnelEvents).toContainEqual(expect.objectContaining({
+            eventName: 'first_value_completed',
+            source: 'angel_card_result',
+            feature: 'andelske_karty_hluboky_vhled',
+            planId: 'pruvodce'
+        }));
+    });
+
     test('hluboky vhled posila andelsky zamer, ne Kartu dne', async ({ page }) => {
         let payload = null;
         await page.route('**/api/angel-card', async route => {
