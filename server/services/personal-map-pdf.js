@@ -18,10 +18,7 @@ function getChromiumLaunchOptions() {
 
 async function setPdfPageContent(page, html) {
     await page.setContent(html, { waitUntil: 'load', timeout: 30000 });
-    await page.evaluate(() => {
-        if (!document.fonts?.ready) return true;
-        return document.fonts.ready.then(() => true);
-    });
+    await page.evaluate('document.fonts?.ready ? document.fonts.ready.then(() => true) : true');
 }
 
 async function closePage(page) {
