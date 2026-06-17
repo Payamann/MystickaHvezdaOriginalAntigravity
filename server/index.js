@@ -25,6 +25,7 @@ import authRoutes from './auth.js';
 import newsletterRoutes from './newsletter.js';
 import contactRoutes from './contact.js';
 import paymentRoutes, { handleStripeWebhook } from './payment.js';
+import { handleResendWebhook } from './resend-webhook.js';
 import mentorRoutes from './mentor.js';
 import adminRoutes from './admin.js';
 import crypto from 'crypto';
@@ -84,7 +85,8 @@ const APEX_HOST = 'mystickahvezda.cz';
 const HEALTH_CHECK_PATH = '/api/health';
 
 app.use((req, res, next) => {
-    if (isProductionRuntime() && req.hostname === APEX_HOST && req.path !== '/webhook/stripe') {
+    const isWebhookPath = req.path === '/webhook/stripe' || req.path === '/webhook/resend';
+    if (isProductionRuntime() && req.hostname === APEX_HOST && !isWebhookPath) {
         return res.redirect(308, `https://${CANONICAL_HOST}${req.originalUrl}`);
     }
     return next();
@@ -292,6 +294,17 @@ app.post('/webhook/stripe', express.raw({ type: 'application/json' }), async (re
         res.sendStatus(200);
     } catch (err) {
         console.error('[STRIPE] Webhook error:', err.message);
+        res.status(400).json({ success: false, error: 'Webhook processing failed' });
+    }
+});
+
+// Resend inbound email webhook must be before express.json() to preserve raw body for signature verification.
+app.post('/webhook/resend', express.raw({ type: 'application/json' }), async (req, res) => {
+    try {
+        const result = await handleResendWebhook(req.body, req.headers);
+        res.json({ received: true, ...result });
+    } catch (err) {
+        console.error('[RESEND] Webhook error:', err.message);
         res.status(400).json({ success: false, error: 'Webhook processing failed' });
     }
 });

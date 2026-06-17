@@ -28,7 +28,11 @@ router.post('/', contactLimiter, async (req, res) => {
         // Validated inputs are ready to use; do not log contact details or message bodies.
 
         // Send notification to admin (fire-and-forget)
-        const adminEmail = process.env.ADMIN_EMAIL || process.env.FROM_EMAIL || 'support@mystickahvezda.cz';
+        const adminEmail = process.env.ADMIN_EMAIL ||
+            process.env.SUPPORT_FORWARD_EMAIL ||
+            process.env.SUPPORT_EMAIL ||
+            process.env.REPLY_TO_EMAIL ||
+            'support@mystickahvezda.cz';
         sendEmail({
             to: adminEmail,
             template: 'admin_contact_notification',

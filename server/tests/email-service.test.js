@@ -43,6 +43,7 @@ describe('Email service deliverability payload', () => {
         const payload = sendMock.mock.calls[0][0];
         expect(payload.from).toBe('Mysticka Hvezda <noreply@mystickahvezda.cz>');
         expect(payload.to).toBe('recipient@example.com');
+        expect(payload.replyTo).toBe('support@mystickahvezda.cz');
         expect(payload.html).toContain('Test funkce');
         expect(payload.text).toContain('Test funkce');
         expect(payload.text).not.toMatch(/<[^>]+>/);

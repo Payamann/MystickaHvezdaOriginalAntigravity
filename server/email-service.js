@@ -9,9 +9,11 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 
 let resend = null;
 const DEFAULT_FROM_EMAIL = 'noreply@mystickahvezda.cz';
+const DEFAULT_SUPPORT_EMAIL = 'support@mystickahvezda.cz';
 const DEFAULT_BRAND_NAME = 'Mysticka Hvezda';
 const FROM_EMAIL = formatFromEmail(process.env.FROM_EMAIL || DEFAULT_FROM_EMAIL);
-const REPLY_TO_EMAIL = sanitizeHeaderValue(process.env.REPLY_TO_EMAIL || process.env.SUPPORT_EMAIL || '');
+const SUPPORT_EMAIL = sanitizeHeaderValue(process.env.SUPPORT_EMAIL || DEFAULT_SUPPORT_EMAIL);
+const REPLY_TO_EMAIL = sanitizeHeaderValue(process.env.REPLY_TO_EMAIL || SUPPORT_EMAIL);
 const APP_URL = process.env.APP_URL || 'https://www.mystickahvezda.cz';
 
 // Validate email configuration on startup
@@ -579,7 +581,7 @@ function getBaseTemplate(content, title = 'Mystická Hvězda', previewText = '')
             <tr>
               <td class="footer">
                 <p>© 2026 Mystická Hvězda | Tvoje cesta k sebepoznání</p>
-                <p>Napiš nám na <a href="mailto:support@mystickahvezda.cz">support@mystickahvezda.cz</a></p>
+                <p>Napiš nám na <a href="mailto:${escapeHtml(SUPPORT_EMAIL)}">${escapeHtml(SUPPORT_EMAIL)}</a></p>
                 <p style="margin-top: 20px; opacity: 0.6;">
                   Pokud si nepřeješ dostávat tyto e-maily, můžeš se odhlásit v nastavení profilu.
                 </p>
