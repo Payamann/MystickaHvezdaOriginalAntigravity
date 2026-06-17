@@ -50,13 +50,13 @@ function buildPage(sign) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>${sign.name} / ${sign.en} znamení: vlastnosti, láska a horoskop | Mystická Hvězda</title>
-    <meta name="description" content="${sign.name} / ${sign.en} znamení (${sign.dates}): vlastnosti, láska, silné stránky, slabiny a partnerská kompatibilita. Pokračujte na natální kartu pro osobní výklad.">
+    <title>${sign.name} znamení (${sign.en}): vlastnosti, láska a kompatibilita</title>
+    <meta name="description" content="${sign.name} znamení česky: období ${sign.dates}, vlastnosti, láska, silné stránky, slabiny a kompatibilita. Navazuje na osobní horoskop.">
     <meta name="robots" content="index, follow">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="${sign.name} / ${sign.en} znamení | Mystická Hvězda">
-    <meta property="og:description" content="${sign.name} (${sign.dates}): vlastnosti, láska, silné stránky, slabiny a další krok k osobní natální kartě.">
+    <meta property="og:title" content="${sign.name} znamení (${sign.en}): vlastnosti a láska">
+    <meta property="og:description" content="${sign.name} znamení: období, povaha, láska, silné stránky, slabiny a kompatibilita s dalšími znameními.">
     <meta property="og:type" content="article">
     <meta property="og:image" content="../img/hero-bg-2.webp">
     <meta property="og:url" content="https://www.mystickahvezda.cz/horoskop/${sign.slug}.html">

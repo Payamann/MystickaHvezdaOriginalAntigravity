@@ -39,8 +39,8 @@ function buildMetadata(slug) {
   }
 
   const pair = `${first} a ${second}`;
-  const title = `${pair} ve vztahu | Partnerská shoda | Mystická Hvězda`;
-  const description = `Hodí se k sobě ${pair}? Praktický rozbor lásky, komunikace, výzev a další krok: spočítejte synastrii podle dat narození.`;
+  const title = `${pair}: láska, vztah a kompatibilita | Mystická Hvězda`;
+  const description = `${pair} ve vztahu: láska, komunikace, silné stránky i výzvy. Spočítejte přesnou partnerskou shodu podle dat narození.`;
   const ctaHref = `../partnerska-shoda.html?source=seo_partner_pair&feature=compatibility&pair=${slug}#form`;
 
   return {

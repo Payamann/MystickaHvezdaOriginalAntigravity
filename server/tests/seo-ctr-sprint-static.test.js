@@ -35,7 +35,7 @@ describe('CTR sprint static SEO pages', () => {
     const html = await readPage('horoskop/beran.html');
 
     expectCoreMetadata(html);
-    expect(html).toContain('Beran / Aries znamení');
+    expect(html).toContain('Beran znamení (Aries): vlastnosti, láska a kompatibilita');
     expect(html).toContain('Beran je Aries, první znamení zvěrokruhu');
     expect(html).toContain('../natalni-karta.html?source=seo_zodiac_sign&feature=natal_chart&sign=beran');
     expect(html).toContain('application/ld+json');
@@ -45,7 +45,7 @@ describe('CTR sprint static SEO pages', () => {
     const html = await readPage('andelske-karty.html');
 
     expectCoreMetadata(html);
-    expect(html).toContain('Andělská karta dne online | 44 karet | Mystická Hvězda');
+    expect(html).toContain('Andělská karta dne zdarma online | 44 karet');
     expect(html).toContain('Andělská <span class="text-gradient">karta dne</span>');
     expect(html).toContain('Jaký je rozdíl mezi kartou dne a andělským výkladem?');
     expect(html).toContain('Vytáhnout andělskou kartu');
@@ -108,10 +108,20 @@ describe('CTR sprint static SEO pages', () => {
     const html = await readPage(relativePath);
 
     expectCoreMetadata(html);
-    expect(html).toContain(`${pair} ve vztahu | Partnerská shoda | Mystická Hvězda`);
-    expect(html).toContain(`Hodí se k sobě ${pair}? Praktický rozbor lásky`);
+    expect(html).toContain(`${pair}: láska, vztah a kompatibilita | Mystická Hvězda`);
+    expect(html).toContain(`${pair} ve vztahu: láska, komunikace`);
     expect(html).toContain(`../partnerska-shoda.html?source=seo_partner_pair&feature=compatibility&pair=${slug}#form`);
     expect(html).toContain('application/ld+json');
+  });
+
+  it('expands tarot card detail snippets with Czech love work and yes-no intent', async () => {
+    const html = await readPage('tarot-vyznam/kralovna-poharu.html');
+
+    expectCoreMetadata(html);
+    expect(html).toContain('Královna pohárů tarot význam: láska, práce, ano/ne');
+    expect(html).toContain('Královna pohárů jako odpověď ano/ne');
+    expect(html).toContain('Význam karty Královna pohárů v tarotu');
+    expect(html).toContain('/tarot.html?source=tarot_card_detail_next_step');
   });
 
   it.each([

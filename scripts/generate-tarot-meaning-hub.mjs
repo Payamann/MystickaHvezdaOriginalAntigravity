@@ -150,6 +150,18 @@ function getReadingAngles(group, name, meaning) {
     return base[group] || base.major;
 }
 
+function getYesNoSignal(group, name, meaning) {
+    const signals = {
+        major: `${name} jako ano/ne odpověď většinou říká: podívej se na hlavní téma situace dřív, než zvolíš pevné ano nebo ne.`,
+        wands: `${name} v otázce ano/ne podporuje akci, pokud je záměr jasný a nejde jen o impulz.`,
+        cups: `${name} v otázce ano/ne vede k citům, důvěře a tomu, jestli odpověď opravdu ladí se srdcem.`,
+        swords: `${name} v otázce ano/ne žádá fakta, jasná slova a rozhodnutí bez domýšlení.`,
+        pentacles: `${name} v otázce ano/ne míří k praxi: času, stabilitě, tělu, penězům a reálnému kroku.`
+    };
+
+    return signals[group] || `Karta ${name} v otázce ano/ne nese téma „${meaning}“ a chce nejdřív zpřesnit otázku.`;
+}
+
 function getRelatedCards(entries, index, limit = 3) {
     const [name] = entries[index];
     const group = getCardGroup(name);
@@ -220,8 +232,9 @@ function buildDetailPage(name, card, relatedCards = []) {
     const angles = getReadingAngles(group, name, meaning);
     const canonical = detailCanonical(name);
     const encodedName = encodeURIComponent(name);
-    const description = compactText(`Karta ${name} v tarotu znamená: ${meaning}. Výklad pro lásku, práci i osobní rozhodnutí s přímým vstupem do online tarotu.`);
-    const title = `${name} tarot význam | ${groupLabel} | Mystická Hvězda`;
+    const description = compactText(`Význam karty ${name} v tarotu: ${meaning}. Láska, práce, ano/ne odpověď a další krok pro online výklad.`);
+    const title = `${name} tarot význam: láska, práce, ano/ne | Mystická Hvězda`;
+    const yesNoSignal = getYesNoSignal(group, name, meaning);
     const relatedLinks = buildRelatedCardLinks(relatedCards);
     const articleSchema = {
         '@context': 'https://schema.org',
@@ -348,6 +361,9 @@ ${jsonLd([articleSchema, breadcrumbSchema, faqSchema])}
 
                     <h2>${escapeHtml(name)} v práci a rozhodování</h2>
                     <p>${escapeHtml(angles.work)}</p>
+
+                    <h2>${escapeHtml(name)} jako odpověď ano/ne</h2>
+                    <p>${escapeHtml(yesNoSignal)}</p>
 
                     <h2>Co si z karty odnést dnes</h2>
                     <p>${escapeHtml(angles.action)}</p>
