@@ -2,6 +2,12 @@
 
 Goal: people can write to `support@mystickahvezda.cz`, transactional emails can be sent from the app, and replies go to a real inbox.
 
+## Current project decision
+
+2026-06-18: Treat Resend as the app transactional email sender, not as the primary mailbox. Finish a real mailbox for `support@mystickahvezda.cz` through Google Workspace, Zoho, Fastmail, or another mailbox provider, then keep app emails on Resend with `Reply-To: support@mystickahvezda.cz`.
+
+2026-06-18 registration QA found Supabase Auth returning `over_email_send_rate_limit` after signup attempts. Supabase Auth confirmation emails must be moved to a custom SMTP sender, preferably the same Resend account/domain used by the app, before registration can be considered production-safe.
+
 ## Runtime env
 
 Set these in production:
