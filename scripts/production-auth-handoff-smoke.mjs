@@ -927,16 +927,23 @@ async function inspectScenario(page, scenario, viewportName, baseUrl, telemetry)
             await page.locator('#confirm-password-reg').fill('SmokePassword123!');
             await page.locator('#gdpr-consent').check();
         }
-        await Promise.all([
-            page.waitForURL(url => (
-                url.pathname === '/profil.html'
-                && url.searchParams.get('session_id') === `cs_smoke_${scenario.name}`
-            ), {
-                timeout: 10_000,
+        const expectedSessionId = `cs_smoke_${scenario.name}`;
+        const isExpectedSuccessUrl = (url) => (
+            url.pathname === '/profil.html'
+            && url.searchParams.get('session_id') === expectedSessionId
+        );
+        await page.locator('#auth-submit').click();
+        try {
+            await page.waitForURL(isExpectedSuccessUrl, {
+                timeout: 15_000,
                 waitUntil: 'domcontentloaded'
-            }),
-            page.locator('#auth-submit').click()
-        ]);
+            });
+        } catch (error) {
+            const currentUrl = new URL(page.url());
+            if (!isExpectedSuccessUrl(currentUrl)) {
+                throw error;
+            }
+        }
 
         const postSubmit = await page.evaluate(() => ({
             finalPath: window.location.pathname,
