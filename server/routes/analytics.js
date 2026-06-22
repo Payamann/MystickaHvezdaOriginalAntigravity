@@ -147,6 +147,19 @@ function normalizeEventPayload(body = {}, req) {
 }
 
 async function recordAnalyticsEvent(event, userId = null) {
+    if (event.event_type === 'signup_completed' && userId) {
+        const { data: existingSignup, error: existingSignupError } = await supabase
+            .from('analytics_events')
+            .select('id')
+            .eq('user_id', userId)
+            .eq('event_type', 'signup_completed')
+            .limit(1);
+
+        if (!existingSignupError && Array.isArray(existingSignup) && existingSignup.length > 0) {
+            return true;
+        }
+    }
+
     const { error } = await supabase.from('analytics_events').insert({
         user_id: userId,
         event_type: event.event_type,

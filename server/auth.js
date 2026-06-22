@@ -98,6 +98,72 @@ const logDebug = (msg) => {
     console.log(`[DEBUG] ${msg}`);
 };
 
+function cleanAnalyticsValue(value, maxLength = 120) {
+    if (typeof value !== 'string') return null;
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+    return trimmed.slice(0, maxLength);
+}
+
+function getRegisterReferrerContext(req) {
+    const metadata = {
+        auth_mode: 'register',
+        server_recorded: true
+    };
+
+    try {
+        const referrer = req.get?.('referer') || req.get?.('referrer') || '';
+        if (!referrer) return { feature: null, metadata };
+
+        const url = new URL(referrer, APP_URL);
+        metadata.path = cleanAnalyticsValue(url.pathname, 160);
+
+        const source = cleanAnalyticsValue(url.searchParams.get('source'));
+        const feature = cleanAnalyticsValue(url.searchParams.get('feature'));
+        const entrySource = cleanAnalyticsValue(url.searchParams.get('entry_source')) || source;
+        const entryFeature = cleanAnalyticsValue(url.searchParams.get('entry_feature')) || feature;
+        const plan = cleanAnalyticsValue(url.searchParams.get('plan'), 80);
+        const redirect = cleanAnalyticsValue(url.searchParams.get('redirect'), 180);
+
+        if (source) metadata.source = source;
+        if (feature) metadata.feature = feature;
+        if (entrySource) metadata.entry_source = entrySource;
+        if (entryFeature) metadata.entry_feature = entryFeature;
+        if (plan) metadata.plan = plan;
+        if (redirect && redirect.startsWith('/') && !redirect.startsWith('//')) {
+            metadata.redirect = redirect;
+        }
+
+        return { feature, metadata };
+    } catch {
+        return { feature: null, metadata };
+    }
+}
+
+async function recordServerSignupCompleted(userId, req) {
+    if (!userId) return false;
+
+    try {
+        const { feature, metadata } = getRegisterReferrerContext(req);
+        const { error } = await supabase.from('analytics_events').insert({
+            user_id: userId,
+            event_type: 'signup_completed',
+            feature,
+            metadata
+        });
+
+        if (error) {
+            console.warn('[AUTH] Could not record server signup analytics:', error.message);
+            return false;
+        }
+
+        return true;
+    } catch (error) {
+        console.warn('[AUTH] Could not record server signup analytics:', error.message);
+        return false;
+    }
+}
+
 async function ensureUserRecordFromAuth(authUser) {
     const { data: users, error: dbError } = await supabase
         .from('users')
@@ -285,6 +351,7 @@ router.post('/register', authLimiter, async (req, res) => {
             const user = await ensureUserRecordFromAuth(data.user);
             const token = await generateToken(user.id);
             const subscriptionState = getAuthSubscriptionState(user.subscriptions);
+            await recordServerSignupCompleted(user.id, req);
 
             res.cookie('auth_token', token, COOKIE_OPTIONS);
             res.cookie('logged_in', '1', INDICATOR_COOKIE_OPTIONS);
