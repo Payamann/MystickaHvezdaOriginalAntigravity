@@ -70,6 +70,44 @@ html body .mh-inline-4665ff48a5 { font-size: 4rem; }
     margin-top: var(--space-xl);
 }
 
+.tarot-profile-cta {
+    max-width: 620px;
+    margin: 1.75rem auto 0;
+    padding: 1.25rem;
+    border: 1px solid rgba(139, 211, 230, 0.28);
+    border-radius: 10px;
+    background: rgba(10, 24, 38, 0.72);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
+    text-align: center;
+}
+
+.tarot-profile-cta__eyebrow {
+    margin: 0 0 0.35rem;
+    color: rgba(139, 211, 230, 0.9);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.tarot-profile-cta h3 {
+    margin: 0 0 0.45rem;
+    color: var(--color-mystic-gold);
+    font-family: 'Cinzel', serif;
+    font-size: 1.25rem;
+}
+
+.tarot-profile-cta p:not(.tarot-profile-cta__eyebrow) {
+    max-width: 34rem;
+    margin: 0 auto 1rem;
+    color: var(--color-silver-mist);
+    line-height: 1.55;
+}
+
+.tarot-profile-cta__button {
+    min-width: 220px;
+}
+
 .tarot-soft-gate {
     max-width: 600px;
     margin: 2rem auto;
@@ -394,6 +432,15 @@ body.page-tarot .tarot-intent-card {
 
     body.page-tarot .spread-trigger {
         min-height: 42px;
+    }
+
+    body.page-tarot .tarot-profile-cta {
+        padding: 1rem 0.9rem;
+    }
+
+    body.page-tarot .tarot-profile-cta__button {
+        width: 100%;
+        min-width: 0;
     }
 
     body.page-tarot .cookie-banner {

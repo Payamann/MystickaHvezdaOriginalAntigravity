@@ -880,6 +880,54 @@ html body .mh-block-visible {
     color: var(--color-silver-mist);
 }
 
+.angel-profile-cta {
+    max-width: 34rem;
+    margin: 1rem auto;
+    padding: 1.15rem;
+    border: 1px solid rgba(139, 211, 230, 0.28);
+    border-radius: 10px;
+    background: rgba(10, 24, 38, 0.72);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.angel-profile-cta__eyebrow {
+    margin: 0 0 0.35rem;
+    color: rgba(139, 211, 230, 0.9);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.angel-profile-cta h3 {
+    margin: 0 0 0.45rem;
+    color: var(--color-mystic-gold);
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+}
+
+.angel-profile-cta p:not(.angel-profile-cta__eyebrow) {
+    margin: 0 auto 1rem;
+    color: var(--color-silver-mist);
+    line-height: 1.55;
+}
+
+.angel-profile-cta__button {
+    min-width: 220px;
+}
+
+@media (max-width: 480px) {
+    .angel-profile-cta {
+        padding: 1rem 0.9rem;
+    }
+
+    .angel-profile-cta__button {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
 .angel-ai-response .insight-section {
     margin-top: 1rem;
     padding-top: 1rem;

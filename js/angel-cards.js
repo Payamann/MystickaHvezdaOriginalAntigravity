@@ -328,6 +328,34 @@ function buildAngelUpgradeUrl(source) {
     return `${pricingUrl.pathname}${pricingUrl.search}`;
 }
 
+function cleanAngelContextValue(value, maxLength = 120) {
+    if (value === null || value === undefined) return null;
+    const cleaned = String(value).trim();
+    if (!cleaned) return null;
+    return cleaned.slice(0, maxLength);
+}
+
+function buildAngelProfileSignupUrl(source = 'angel_card_save_profile') {
+    const params = new URLSearchParams(window.location.search);
+    const authUrl = new URL('/prihlaseni.html', window.location.origin);
+    const entrySource = cleanAngelContextValue(params.get('source'));
+    const entryFeature = cleanAngelContextValue(params.get('feature'));
+
+    authUrl.searchParams.set('mode', 'register');
+    authUrl.searchParams.set('redirect', '/andelske-karty.html');
+    authUrl.searchParams.set('source', source);
+    authUrl.searchParams.set('feature', ANGEL_CARD_FEATURE);
+    authUrl.searchParams.set('entry_source', entrySource || ANGEL_CARD_RESULT_SOURCE);
+    authUrl.searchParams.set('entry_feature', entryFeature || ANGEL_CARD_FEATURE);
+
+    ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'].forEach((key) => {
+        const value = cleanAngelContextValue(params.get(key));
+        if (value) authUrl.searchParams.set(key, value);
+    });
+
+    return `${authUrl.pathname}${authUrl.search}`;
+}
+
 async function trackAngelFunnelEvent(eventName, source, metadata = {}) {
     try {
         const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
@@ -384,6 +412,49 @@ function getDeepInsightHost() {
     return document.querySelector('#angel-results .message-box') || document.getElementById('angel-results');
 }
 
+function ensureAngelProfileCta() {
+    const existing = document.getElementById('angel-profile-cta');
+    if (window.Auth?.isLoggedIn?.()) {
+        existing?.remove();
+        return null;
+    }
+
+    const host = getDeepInsightHost();
+    if (!host) return null;
+    if (existing) return existing;
+
+    const source = 'angel_card_save_profile';
+    const profileCta = document.createElement('div');
+    profileCta.id = 'angel-profile-cta';
+    profileCta.className = 'angel-profile-cta';
+    profileCta.setAttribute('aria-label', 'Registrace profilu zdarma po andelske karte');
+    profileCta.innerHTML = `
+        <p class="angel-profile-cta__eyebrow">Profil zdarma</p>
+        <h3>Chce&scaron; se k poselstv&iacute;m vracet?</h3>
+        <p>Profil zdarma ti otev&#345;e n&aacute;vazn&eacute; v&yacute;klady a denn&iacute; veden&iacute; bez platebn&iacute; karty.</p>
+        <a href="${buildAngelProfileSignupUrl(source)}"
+           class="btn btn--secondary angel-profile-cta__button"
+           data-analytics-cta="${source}"
+           data-analytics-feature="${ANGEL_CARD_FEATURE}"
+           data-analytics-intent="free_profile_after_result">Vytvo&#345;it profil zdarma</a>
+    `;
+
+    const deepAction = document.getElementById('angel-deep-action');
+    if (deepAction && deepAction.parentElement === host) {
+        deepAction.insertAdjacentElement('afterend', profileCta);
+        return profileCta;
+    }
+
+    const shareAction = document.getElementById('btn-share-card')?.closest('div');
+    if (shareAction && shareAction.parentElement === host) {
+        host.insertBefore(profileCta, shareAction);
+        return profileCta;
+    }
+
+    host.appendChild(profileCta);
+    return profileCta;
+}
+
 function ensureDeepInsightElements() {
     const host = getDeepInsightHost();
     if (!host) return {};
@@ -409,6 +480,8 @@ function ensureDeepInsightElements() {
             host.appendChild(action);
         }
     }
+
+    ensureAngelProfileCta();
 
     let response = document.getElementById('angel-ai-response');
     if (!response) {

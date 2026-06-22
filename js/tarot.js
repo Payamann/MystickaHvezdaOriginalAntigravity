@@ -80,6 +80,19 @@ function buildTarotUpgradeUrl(spreadType, source = 'tarot_inline_upsell') {
     return `${authUrl.pathname}${authUrl.search}`;
 }
 
+function buildTarotProfileSignupUrl(spreadType, source = 'tarot_result_save_profile') {
+    const feature = getTarotFeatureForSpread(spreadType);
+    const authUrl = new URL('/prihlaseni.html', window.location.origin);
+    authUrl.searchParams.set('mode', 'register');
+    authUrl.searchParams.set('redirect', '/tarot.html');
+    authUrl.searchParams.set('source', source);
+    authUrl.searchParams.set('feature', feature);
+    const entryContext = appendTarotEntryContextToUrl(authUrl);
+    authUrl.searchParams.set('entry_source', entryContext.entry_source || source);
+    authUrl.searchParams.set('entry_feature', entryContext.entry_feature || feature);
+    return `${authUrl.pathname}${authUrl.search}`;
+}
+
 async function trackTarotFunnelEvent(eventName, source, spreadType, metadata = {}) {
     try {
         const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
@@ -402,6 +415,27 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+function getTarotProfileSignupHtml(spreadType) {
+    if (window.Auth?.isLoggedIn?.()) return '';
+
+    const source = 'tarot_result_save_profile';
+    const feature = getTarotFeatureForSpread(spreadType);
+    const signupUrl = buildTarotProfileSignupUrl(spreadType, source);
+
+    return `
+        <div class="tarot-profile-cta" aria-label="Registrace profilu zdarma po tarotovem vykladu">
+            <p class="tarot-profile-cta__eyebrow">Profil zdarma</p>
+            <h3>Chce&scaron; se k v&yacute;klad&#367;m vracet?</h3>
+            <p>V profilu zdarma nav&aacute;&zcaron;e&scaron; na dne&scaron;n&iacute; karty osobn&#283;j&scaron;&iacute;mi v&yacute;klady a denn&iacute;m veden&iacute;m. Bez platebn&iacute; karty.</p>
+            <a href="${signupUrl}"
+               class="btn btn--secondary tarot-profile-cta__button"
+               data-analytics-cta="${source}"
+               data-analytics-feature="${feature}"
+               data-analytics-intent="free_profile_after_result">Vytvo&#345;it profil zdarma</a>
+        </div>
+    `;
+}
+
 async function startReading(spreadType, isSoftGated = false) {
     const deckContainer = document.querySelector('.tarot-deck');
     if (!deckContainer) return;
@@ -593,6 +627,7 @@ async function startReading(spreadType, isSoftGated = false) {
 
     // IMPORTANT: Set innerHTML FIRST, then trigger async AI summary
     interpretationsContainer.innerHTML = interpretationsHtml;
+    interpretationsContainer.insertAdjacentHTML('afterend', getTarotProfileSignupHtml(spreadType));
 
     // Trigger spiritual summary after DOM is updated
     if (numCards > 1 && !isSoftGated) {
