@@ -79,8 +79,85 @@ function latestReading(readings) {
     return [...readings].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0] || null;
 }
 
+function normalizeReadingText(value) {
+    if (value === null || value === undefined) return '';
+    if (typeof value === 'string') {
+        return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    }
+    if (Array.isArray(value)) {
+        return value.map(normalizeReadingText).join(' ');
+    }
+    if (typeof value === 'object') {
+        return Object.values(value).map(normalizeReadingText).join(' ');
+    }
+    return String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
+
+function isTarotYesNoReading(reading) {
+    const data = reading?.data || {};
+    return reading?.type === 'tarot' && (
+        data.tool === 'tarot_yes_no' ||
+        data.source === 'tarot_yes_no_result' ||
+        reading?.source === 'tarot_yes_no_save_journal' ||
+        reading?.feature === 'tarot_yes_no'
+    );
+}
+
+function hasRelationshipSignal(reading) {
+    const text = normalizeReadingText([
+        reading?.title,
+        reading?.source,
+        reading?.feature,
+        reading?.data
+    ]);
+    return [
+        'vztah',
+        'partner',
+        'partnerka',
+        'laska',
+        'miluje',
+        'milovat',
+        'rozchod',
+        'rande',
+        'manzel',
+        'manzelka',
+        'ozvat',
+        'sance'
+    ].some((signal) => text.includes(signal));
+}
+
+function tarotYesNoSecondaryStep(reading) {
+    if (hasRelationshipSignal(reading)) {
+        return {
+            href: 'partnerska-shoda.html?source=profile_history_next_step&feature=compatibility&intent=relationship_follow_up#form',
+            label: 'Prověřit partnerskou shodu',
+            feature: 'compatibility',
+            intent: 'relationship_follow_up'
+        };
+    }
+
+    return {
+        href: 'tarot-tri-karty.html?source=profile_history_next_step&feature=tarot_multi_card&intent=three_cards_follow_up',
+        label: 'Rozšířit na tři karty',
+        feature: 'tarot_multi_card',
+        intent: 'three_cards_follow_up'
+    };
+}
+
 function historyNextStepConfig(reading) {
     const type = reading?.type || 'reading';
+
+    if (isTarotYesNoReading(reading)) {
+        return {
+            title: 'Navázat na odpověď ano/ne',
+            description: 'Uložená odpověď má největší hodnotu, když se k ní vrátíš jednou konkrétní navazující otázkou.',
+            href: 'tarot-ano-ne.html?source=profile_history_next_step&feature=tarot_yes_no&intent=yes_no_follow_up',
+            label: 'Položit navazující otázku',
+            feature: 'tarot_yes_no',
+            intent: 'yes_no_follow_up',
+            secondary: tarotYesNoSecondaryStep(reading)
+        };
+    }
 
     if (type === 'synastry') {
         return {
@@ -89,7 +166,13 @@ function historyNextStepConfig(reading) {
             href: 'tarot-ano-ne.html?source=profile_history_next_step&feature=tarot_yes_no&intent=relationship_follow_up',
             label: 'Zeptat se tarotu ano/ne',
             feature: 'tarot_yes_no',
-            intent: 'relationship_follow_up'
+            intent: 'relationship_follow_up',
+            secondary: {
+                href: 'partnerska-shoda.html?source=profile_history_next_step&feature=compatibility&intent=relationship_context#form',
+                label: 'Vrátit se ke shodě',
+                feature: 'compatibility',
+                intent: 'relationship_context'
+            }
         };
     }
 
@@ -100,7 +183,13 @@ function historyNextStepConfig(reading) {
             href: 'tarot-ano-ne.html?source=profile_history_next_step&feature=tarot_yes_no&intent=follow_up',
             label: 'Položit další otázku',
             feature: 'tarot_yes_no',
-            intent: 'follow_up'
+            intent: 'follow_up',
+            secondary: {
+                href: 'tarot-tri-karty.html?source=profile_history_next_step&feature=tarot_multi_card&intent=three_cards_follow_up',
+                label: 'Rozšířit na tři karty',
+                feature: 'tarot_multi_card',
+                intent: 'three_cards_follow_up'
+            }
         };
     }
 
@@ -110,7 +199,13 @@ function historyNextStepConfig(reading) {
         href: 'partnerska-shoda.html?source=profile_history_next_step&feature=partnerska_detail&intent=relationship_follow_up',
         label: 'Prověřit vztahové téma',
         feature: 'partnerska_detail',
-        intent: 'relationship_follow_up'
+        intent: 'relationship_follow_up',
+        secondary: {
+            href: 'tarot-tri-karty.html?source=profile_history_next_step&feature=tarot_multi_card&intent=three_cards_follow_up',
+            label: 'Rozšířit na tři karty',
+            feature: 'tarot_multi_card',
+            intent: 'three_cards_follow_up'
+        }
     };
 }
 
@@ -140,6 +235,7 @@ function renderHistoryNextStep(readings) {
             <div class="profile-history-next-step__actions">
                 ${latest?.id ? `<button class="btn btn--glass btn--sm" data-reading-action="view" data-reading-id="${escapeHtml(latest.id)}">Vrátit se k poslednímu výkladu</button>` : ''}
                 <a href="${escapeHtml(nextStep.href)}" class="btn btn--primary btn--sm" data-profile-history-next-step="${escapeHtml(nextStep.intent)}" data-analytics-cta="profile_history_next_step" data-analytics-feature="${escapeHtml(nextStep.feature)}">${escapeHtml(nextStep.label)}</a>
+                ${nextStep.secondary ? `<a href="${escapeHtml(nextStep.secondary.href)}" class="btn btn--glass btn--sm" data-profile-history-next-step="${escapeHtml(nextStep.secondary.intent)}" data-analytics-cta="profile_history_next_step_secondary" data-analytics-feature="${escapeHtml(nextStep.secondary.feature)}">${escapeHtml(nextStep.secondary.label)}</a>` : ''}
             </div>
         </div>
     `;
@@ -163,9 +259,9 @@ export function renderReadings() {
         container.innerHTML = `
             <div class="empty-state">
                 <div class="empty-state__icon">🔮</div>
-                <h4 class="empty-state__title">${currentFilter === 'all' ? 'Deník výkladů zatím čeká na první odpověď' : 'Tady zatím není žádný výklad tohoto typu'}</h4>
+                <h4 class="empty-state__title">${currentFilter === 'all' ? 'Ulož první odpověď a vrať se k ní později' : 'Tady zatím není žádný výklad tohoto typu'}</h4>
                 <p class="empty-state__text">${currentFilter === 'all'
-                    ? 'Tady se budou držet tvoje otázky, odpovědi a opakující se témata. Začni krátkým výkladem, ať má profil první signál pro návrat.'
+                    ? 'Deník drží tvoje otázky, odpovědi a opakující se témata pohromadě. Začni krátkým výkladem ano/ne, ulož první odpověď a vrať se k ní, až budeš řešit další krok.'
                     : 'Filtr je prázdný. Zkus jiný typ výkladu nebo se vrať na celou historii.'}</p>
                 ${currentFilter === 'all' ? `
                     <div class="empty-state__actions">

@@ -556,16 +556,53 @@ test.describe('Tarot Ano/Ne', () => {
         await expect(h1).toBeAttached();
     });
 
-    test('po výběru karty ukáže další kroky a prémiový bridge', async ({ page }) => {
+    test('po výběru karty ukáže compact locked insight bridge a měřený upgrade', async ({ page }) => {
+        const funnelEvents = [];
+        await page.route('**/api/payment/funnel-event', async (route) => {
+            funnelEvents.push(JSON.parse(route.request().postData() || '{}'));
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+
         await page.goto('/tarot-ano-ne.html');
         await waitForPageReady(page);
+        await page.evaluate(() => {
+            window.getCSRFToken = async () => 'e2e-tarot-bridge-token';
+            window.__tarotCheckoutCalls = [];
+            window.Auth = Object.assign({}, window.Auth || {}, {
+                isLoggedIn: () => false,
+                startPlanCheckout: (...args) => {
+                    window.__tarotCheckoutCalls.push(args);
+                }
+            });
+        });
 
         await page.fill('#question-input', 'Mám dnes udělat první krok?');
         await page.locator('.tarot-card').first().click();
 
         await expect(page.locator('#result-panel')).toHaveClass(/show/, { timeout: 2500 });
         await expect(page.locator('#tarot-yes-no-next-step')).toBeVisible();
-        await expect(page.locator('.tarot-yes-no-next-card')).toHaveCount(4);
+        await expect(page.locator('#tarot-yes-no-next-step')).toContainText('Odemknout proč a další krok');
+        await expect(page.locator('#tarot-yes-no-next-step')).toContainText('Zamčený vhled');
+        await expect(page.locator('#tarot-yes-no-locked-preview-text')).toBeVisible();
+        await expect(page.locator('[data-tarot-yes-no-save-bridge]')).toBeVisible();
+        await expect(page.locator('[data-tarot-yes-no-intent="relationship_question"]')).toBeVisible();
+        await expect(page.locator('.tarot-yes-no-next-actions .btn')).toHaveCount(3);
+        await expect.poll(() => funnelEvents.some((event) => event.eventName === 'paywall_viewed')).toBe(true);
+
+        const paywallViewed = funnelEvents.find((event) => event.eventName === 'paywall_viewed');
+        expect(paywallViewed).toEqual(expect.objectContaining({
+            source: 'tarot_yes_no_result',
+            feature: 'tarot_multi_card',
+            planId: 'pruvodce'
+        }));
+        expect(paywallViewed.metadata).toEqual(expect.objectContaining({
+            bridge_variant: 'compact_locked_insight',
+            answer_key: expect.any(String)
+        }));
 
         const upgradeLink = page.locator('[data-tarot-yes-no-upgrade]').first();
         await expect(upgradeLink).toBeVisible();
@@ -573,6 +610,37 @@ test.describe('Tarot Ano/Ne', () => {
         expect(href).toContain('plan=pruvodce');
         expect(href).toContain('source=tarot_yes_no_result');
         expect(href).toContain('feature=tarot_multi_card');
+        expect(href).toContain('entry_source=tarot_yes_no_result');
+        expect(href).toContain('entry_feature=tarot_multi_card');
+
+        await upgradeLink.click();
+        await expect.poll(() => funnelEvents.some((event) => event.eventName === 'paywall_cta_clicked')).toBe(true);
+        const paywallClicked = funnelEvents.find((event) => event.eventName === 'paywall_cta_clicked');
+        expect(paywallClicked).toEqual(expect.objectContaining({
+            source: 'tarot_yes_no_result',
+            feature: 'tarot_multi_card',
+            planId: 'pruvodce'
+        }));
+        expect(paywallClicked.metadata).toEqual(expect.objectContaining({
+            bridge_variant: 'compact_locked_insight',
+            answer_key: expect.any(String),
+            destination: '/cenik.html'
+        }));
+
+        const checkoutCall = await page.evaluate(() => window.__tarotCheckoutCalls?.[0] || null);
+        expect(checkoutCall?.[0]).toBe('pruvodce');
+        expect(checkoutCall?.[1]).toEqual(expect.objectContaining({
+            source: 'tarot_yes_no_result',
+            feature: 'tarot_multi_card',
+            redirect: '/cenik.html',
+            authMode: 'register'
+        }));
+        expect(checkoutCall?.[1]?.metadata).toEqual(expect.objectContaining({
+            entry_source: 'tarot_yes_no_result',
+            entry_feature: 'tarot_multi_card',
+            bridge_variant: 'compact_locked_insight',
+            answer_key: expect.any(String)
+        }));
     });
 
     test('SEO landing a prvni odpoved se propisi do analytics a funnelu', async ({ page }) => {

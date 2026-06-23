@@ -78,7 +78,30 @@
     const TAROT_YES_NO_PLAN_ID = 'pruvodce';
     const TAROT_YES_NO_RESULT_SOURCE = 'tarot_yes_no_result';
     const TAROT_YES_NO_TOOL = 'tarot_yes_no';
+    const TAROT_YES_NO_BRIDGE_VARIANT = 'compact_locked_insight';
     const PENDING_READING_STORAGE_KEY = 'mh_pending_reading';
+    const lockedInsightPreviews = {
+        ano: {
+            title: 'Proč karta říká ano?',
+            text: 'Odemčený výklad ukáže, co tento souhlas podporuje, kde nepřeskočit detail a jaký první krok má teď nejmenší odpor.'
+        },
+        spise_ano: {
+            title: 'Co z rozhodnutí udělá skutečné ano?',
+            text: 'Odemčený výklad rozliší příležitost od podmínky a ukáže, jaký krok posílí šanci ve váš prospěch.'
+        },
+        nejasne: {
+            title: 'Proč odpověď zatím není pevná?',
+            text: 'Odemčený výklad pojmenuje, co je ještě v pohybu, jak otázku zúžit a kdy se vrátit pro jasnější signál.'
+        },
+        spise_ne: {
+            title: 'Co vás karta varuje nepřehlédnout?',
+            text: 'Odemčený výklad ukáže slabé místo, bezpečnější alternativu a jeden krok, který sníží riziko špatného rozhodnutí.'
+        },
+        ne: {
+            title: 'Kde je skutečný důvod ne?',
+            text: 'Odemčený výklad oddělí zavřené dveře od strachu a ukáže, kam přesunout energii, aby odpověď měla praktický smysl.'
+        }
+    };
 
     function buildTarotYesNoUpgradeUrl(source = TAROT_YES_NO_RESULT_SOURCE) {
         const pricingUrl = new URL('/cenik.html', window.location.origin);
@@ -126,11 +149,15 @@
     function startTarotYesNoUpgradeFlow(source = TAROT_YES_NO_RESULT_SOURCE) {
         window.MH_ANALYTICS?.trackCTA?.(source, {
             plan_id: TAROT_YES_NO_PLAN_ID,
-            feature: TAROT_YES_NO_FEATURE
+            feature: TAROT_YES_NO_FEATURE,
+            bridge_variant: TAROT_YES_NO_BRIDGE_VARIANT,
+            answer_key: lastResult?.answerKey || null
         });
 
         void trackTarotYesNoFunnelEvent('paywall_cta_clicked', source, {
-            destination: '/cenik.html'
+            destination: '/cenik.html',
+            bridge_variant: TAROT_YES_NO_BRIDGE_VARIANT,
+            answer_key: lastResult?.answerKey || null
         });
 
         if (window.Auth?.startPlanCheckout) {
@@ -139,7 +166,9 @@
                 feature: TAROT_YES_NO_FEATURE,
                 metadata: {
                     entry_source: source,
-                    entry_feature: TAROT_YES_NO_FEATURE
+                    entry_feature: TAROT_YES_NO_FEATURE,
+                    bridge_variant: TAROT_YES_NO_BRIDGE_VARIANT,
+                    answer_key: lastResult?.answerKey || null
                 },
                 redirect: '/cenik.html',
                 authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
@@ -193,10 +222,18 @@
 
     function getResultMetadata(answerKey, ans, question) {
         return {
+            bridge_variant: TAROT_YES_NO_BRIDGE_VARIANT,
             answer_key: answerKey,
             answer_label: ans.label,
             has_question: Boolean(question),
             question_length: Math.min((question || '').length, 200)
+        };
+    }
+
+    function getLockedInsightPreview(answerKey) {
+        return lockedInsightPreviews[answerKey] || {
+            title: 'Co za odpovědí stojí?',
+            text: 'Odemčený výklad ukáže hlubší kontext odpovědi, riziko a jeden další praktický krok.'
         };
     }
 
@@ -485,13 +522,24 @@
     function revealTarotYesNoNextStep(answerKey, ans, question) {
         const nextStep = document.getElementById('tarot-yes-no-next-step');
         const answerBadge = document.getElementById('tarot-yes-no-next-answer');
+        const lockedTitle = document.getElementById('tarot-yes-no-locked-title');
+        const lockedPreview = document.getElementById('tarot-yes-no-locked-preview-text');
         if (!nextStep) return;
 
         if (answerBadge) {
             answerBadge.textContent = ans.label.toLowerCase();
         }
 
+        const insightPreview = getLockedInsightPreview(answerKey);
+        if (lockedTitle) {
+            lockedTitle.textContent = insightPreview.title;
+        }
+        if (lockedPreview) {
+            lockedPreview.textContent = insightPreview.text;
+        }
+
         nextStep.dataset.answerKey = answerKey;
+        nextStep.dataset.bridgeVariant = TAROT_YES_NO_BRIDGE_VARIANT;
         setBlockVisible(nextStep, true);
 
         const metadata = getResultMetadata(answerKey, ans, question);
@@ -510,6 +558,15 @@
             link.addEventListener('click', (event) => {
                 event.preventDefault();
                 startTarotYesNoUpgradeFlow(link.dataset.tarotYesNoUpgrade || TAROT_YES_NO_RESULT_SOURCE);
+            });
+        });
+
+        document.querySelectorAll('[data-tarot-yes-no-save-bridge]').forEach((button) => {
+            if (button.dataset.tarotYesNoBound === 'true') return;
+            button.dataset.tarotYesNoBound = 'true';
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+                void saveTarotYesNoReading();
             });
         });
 

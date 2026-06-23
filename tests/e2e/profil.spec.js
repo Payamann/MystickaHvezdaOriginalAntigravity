@@ -48,7 +48,7 @@ test.describe('Profil stránka', () => {
     test('login gate vysvetluje hodnotu uctu a zachova meritelny kontext', async ({ page }) => {
         const gate = page.locator('#login-required');
         await expect(page.locator('#profile-greeting')).toContainText('výklady na jednom místě');
-        await expect(gate).toContainText('historii, oblíbené výklady a návratové poznámky');
+        await expect(gate).toContainText('otázky, odpovědi a návratové poznámky');
         await expect(gate).toContainText('Bez přihlášení nic neukládáme do osobního profilu');
         await expect(page.locator('script[src*="/js/dist/profile/dashboard.js"]').first()).toHaveAttribute('src', /dashboard\.js\?v=20/);
 
@@ -464,7 +464,7 @@ test.describe('Profil aktivace', () => {
         await waitForPageReady(page);
 
         const history = page.locator('#readings-list .empty-state');
-        await expect(history).toContainText('první signál');
+        await expect(history).toContainText('Ulož první odpověď');
         await expect(history).toContainText('otázky, odpovědi');
 
         const tarotHref = await history.locator('a[href*="tarot-ano-ne.html"]').getAttribute('href');
@@ -507,7 +507,61 @@ test.describe('Profil aktivace', () => {
         await expect(savedCard).toBeVisible();
         await expect(savedCard).toHaveClass(/reading-item--just-saved/);
         await expect(page.locator('#tab-btn-history')).toHaveAttribute('aria-selected', 'true');
-        await expect(page.locator('.profile-history-next-step')).toContainText('Další krok po uložení');
+        const nextStep = page.locator('.profile-history-next-step');
+        await expect(nextStep).toContainText('Další krok po uložení');
+        await expect(nextStep).toContainText('Navázat na odpověď ano/ne');
+        await expect(nextStep).toContainText('Položit navazující otázku');
+        await expect(nextStep).toContainText('Prověřit partnerskou shodu');
+
+        const primary = nextStep.locator('[data-profile-history-next-step="yes_no_follow_up"]');
+        await expect(primary).toHaveAttribute('href', /tarot-ano-ne\.html\?source=profile_history_next_step&feature=tarot_yes_no&intent=yes_no_follow_up/);
+        const secondary = nextStep.locator('[data-profile-history-next-step="relationship_follow_up"]');
+        await expect(secondary).toHaveAttribute('href', /partnerska-shoda\.html\?source=profile_history_next_step&feature=compatibility&intent=relationship_follow_up#form/);
+
+        await expect.poll(() => page.evaluate(() => (
+            window.MH_ANALYTICS_QUEUE || []
+        ).some((event) => event.name === 'profile_history_next_step_viewed'))).toBe(true);
+        await primary.evaluate((element) => {
+            element.addEventListener('click', (event) => event.preventDefault(), { capture: true, once: true });
+        });
+        await primary.click();
+        await expect.poll(() => page.evaluate(() => (
+            window.MH_ANALYTICS_QUEUE || []
+        ).some((event) => (
+            event.name === 'profile_history_next_step_clicked' &&
+            event.feature === 'tarot_yes_no' &&
+            event.intent === 'yes_no_follow_up'
+        )))).toBe(true);
+    });
+
+    test('tarot ano/ne historie bez vztahoveho signalu nabizi tri karty jako sekundarni krok', async ({ page }) => {
+        await mockLoggedInProfile(page, {
+            readings: [
+                {
+                    id: 'reading-tarot-yes-no-work',
+                    type: 'tarot',
+                    source: 'tarot_yes_no_save_journal',
+                    feature: 'tarot_yes_no',
+                    created_at: '2026-06-22T10:00:00.000Z',
+                    data: {
+                        tool: 'tarot_yes_no',
+                        source: 'tarot_yes_no_result',
+                        question: 'Mám přijmout novou nabídku?',
+                        result_label: 'SPÍŠE ANO',
+                        result_key: 'spise_ano',
+                        result_text: 'Jdi po konkrétní podmínce.'
+                    }
+                }
+            ]
+        });
+
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+
+        const nextStep = page.locator('.profile-history-next-step');
+        await expect(nextStep).toContainText('Navázat na odpověď ano/ne');
+        await expect(nextStep).toContainText('Rozšířit na tři karty');
+        await expect(nextStep.locator('[data-profile-history-next-step="three_cards_follow_up"]')).toHaveAttribute('href', /tarot-tri-karty\.html\?source=profile_history_next_step&feature=tarot_multi_card&intent=three_cards_follow_up/);
     });
 
     test('prazdne oblibene bez vykladu vedou k meritelne prvni akci', async ({ page }) => {
@@ -656,7 +710,7 @@ test.describe('Profil aktivace', () => {
         await page.goto('/profil.html');
         await waitForPageReady(page);
 
-        await page.locator('[data-reading-action="view"][data-reading-id="reading-horoscope-1"]').click();
+        await page.locator('.reading-item[data-reading-id="reading-horoscope-1"] [data-reading-action="view"]').click();
         await expect(page.locator('#reading-modal')).toBeVisible();
         await expect(page.locator('.reading-feedback')).toBeVisible();
 

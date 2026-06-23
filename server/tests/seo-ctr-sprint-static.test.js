@@ -55,20 +55,29 @@ describe('CTR sprint static SEO pages', () => {
   it('keeps tarot yes-no optimized for GSC intent and profile save flow', async () => {
     const html = await readPage('tarot-ano-ne.html');
     const js = await readPage('js/tarot-ano-ne.js');
+    const profileReadingsJs = await readPage('js/profile/readings.js');
 
     expectCoreMetadata(html);
     expect(html).toContain('Tarot ano/ne zdarma | Karty ano ne online');
     expect(html).toContain('Tarot ano/ne zdarma online');
     expect(html).toContain('id="btn-save-reading"');
+    expect(html).toContain('Odemknout proč a další krok');
+    expect(html).toContain('Zamčený vhled');
+    expect(html).toContain('data-tarot-yes-no-save-bridge');
+    expect(html).toContain('partnerska-shoda.html?source=tarot_yes_no_result&feature=compatibility&intent=relationship_question#form');
     expect(html).toContain('Hledáš ano ne tarot, karty ano ne nebo odpověď ano ne?');
     expect(html).toContain('Nejlepší otázka je konkrétní a dnešní');
     expect(html).toContain('Věštba ano ne funguje nejlépe');
     expect(html).toContain('Kam pokračovat');
     expect(html).toContain('Můžu použít karty ano ne jako věštbu?');
     expect(html).toContain('Je to stejné jako karty ano ne?');
-    ['reading_start', 'reading_complete', 'save_click', 'reading_save_clicked', 'reading_saved', 'login_click', 'mh_pending_reading'].forEach((needle) => {
+    ['reading_start', 'reading_complete', 'save_click', 'reading_save_clicked', 'reading_saved', 'login_click', 'mh_pending_reading', 'compact_locked_insight', 'bridge_variant', 'answer_key', 'paywall_viewed', 'paywall_cta_clicked', 'Auth.startPlanCheckout'].forEach((needle) => {
       expect(js).toContain(needle);
     });
+    expect(profileReadingsJs).toContain('Navázat na odpověď ano/ne');
+    expect(profileReadingsJs).toContain('profile_history_next_step');
+    expect(profileReadingsJs).toContain('yes_no_follow_up');
+    expect(profileReadingsJs).toContain('tarot-tri-karty.html?source=profile_history_next_step&feature=tarot_multi_card&intent=three_cards_follow_up');
   });
 
   it('keeps tarot hubs linking into the yes-no sprint page', async () => {

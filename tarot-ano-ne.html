@@ -202,30 +202,26 @@
 
                 </div>
 
-                <section id="tarot-yes-no-next-step" class="tarot-yes-no-next-step" aria-labelledby="tarot-yes-no-next-title" hidden>
+                <section id="tarot-yes-no-next-step" class="tarot-yes-no-next-step tarot-yes-no-next-step--compact" aria-labelledby="tarot-yes-no-next-title" hidden>
                     <div class="tarot-yes-no-next-header">
                         <span class="section__badge">Další krok</span>
-                        <h2 id="tarot-yes-no-next-title">Odpověď <span id="tarot-yes-no-next-answer">karty</span> je jen začátek.</h2>
-                        <p>Pokud chcete vědět proč, co vás brzdí a jaký krok dává smysl teď, navazuje na tuto kartu hlubší výklad.</p>
+                        <h2 id="tarot-yes-no-next-title">Odpověď <span id="tarot-yes-no-next-answer">karty</span> ukazuje směr. Teď zjistěte proč.</h2>
+                        <p>Krátké ano/ne je první hodnota. Hlubší výklad naváže na výsledek, motiv, riziko a jeden další krok.</p>
                     </div>
 
-                    <div class="tarot-yes-no-next-grid">
-                        <a class="tarot-yes-no-next-card tarot-yes-no-next-card--primary" href="cenik.html?plan=pruvodce&source=tarot_yes_no_result&feature=tarot_multi_card" data-tarot-yes-no-upgrade="tarot_yes_no_result">
-                            <strong>Odemknout hlubší výklad</strong>
-                            <span>Vícekartový tarot, Hvězdný průvodce a osobní kontext v jednom plánu.</span>
+                    <div class="tarot-yes-no-locked-preview" aria-live="polite">
+                        <span class="tarot-yes-no-locked-preview__label">Zamčený vhled</span>
+                        <strong id="tarot-yes-no-locked-title">Co za odpovědí stojí?</strong>
+                        <p id="tarot-yes-no-locked-preview-text">Vyberte kartu a ukážeme, jaký hlubší kontext se dá odemknout.</p>
+                        <span class="tarot-yes-no-locked-preview__veil" aria-hidden="true">✦ ✦ ✦</span>
+                    </div>
+
+                    <div class="tarot-yes-no-next-actions" aria-label="Další akce po odpovědi tarot ano ne">
+                        <a class="btn btn--primary" href="cenik.html?plan=pruvodce&source=tarot_yes_no_result&feature=tarot_multi_card&entry_source=tarot_yes_no_result&entry_feature=tarot_multi_card" data-tarot-yes-no-upgrade="tarot_yes_no_result">
+                            Odemknout proč a další krok
                         </a>
-                        <a class="tarot-yes-no-next-card" href="tarot.html?source=tarot_yes_no_intent&feature=tarot" data-tarot-yes-no-intent="one_card">
-                            <strong>Jedna karta</strong>
-                            <span>Rychlý symbol pro první krok, který dnes řešíte.</span>
-                        </a>
-                        <a class="tarot-yes-no-next-card" href="tarot.html?source=tarot_yes_no_intent&feature=tarot_multi_card" data-tarot-yes-no-intent="three_cards">
-                            <strong>Tři karty</strong>
-                            <span>Minulost, přítomnost a směr, který z odpovědi vyplývá.</span>
-                        </a>
-                        <a class="tarot-yes-no-next-card" href="andelske-karty.html?source=tarot_yes_no_intent&feature=angel_card_deep" data-tarot-yes-no-intent="angel_card_deep">
-                            <strong>Andělské karty</strong>
-                            <span>Jemnější vedení, když je odpověď citlivá nebo nejistá.</span>
-                        </a>
+                        <button class="btn btn--secondary" type="button" data-tarot-yes-no-save-bridge>Uložit do Deníku</button>
+                        <a class="btn btn--ghost" href="partnerska-shoda.html?source=tarot_yes_no_result&feature=compatibility&intent=relationship_question#form" data-tarot-yes-no-intent="relationship_question">Zeptat se vztahově</a>
                     </div>
                 </section>
 
