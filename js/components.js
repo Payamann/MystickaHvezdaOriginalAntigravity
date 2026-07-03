@@ -21,7 +21,7 @@
     // Cookie handler — loads after analytics so consent update event is always caught
     if (!window.MH_COOKIE_HANDLER_INIT && !document.querySelector('script[src*="cookie-handler.js"]')) {
         const ch = document.createElement('script');
-        ch.src = basePath + 'js/dist/cookie-handler.js?v=20260513-cookie-compact';
+        ch.src = basePath + 'js/dist/cookie-handler.js?v=20260703-consent-event';
         ch.defer = true;
         document.head.appendChild(ch);
     }

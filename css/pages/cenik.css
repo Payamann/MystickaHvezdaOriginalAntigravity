@@ -9,6 +9,7 @@
         .price-amount { font-size: 2.5rem !important; font-weight: 700; color: #fff; line-height: 1.1; }
         .price-suffix { font-size: 0.8rem !important; color: rgba(255,255,255,0.4); margin-top: 0.2rem; }
         .pricing-soon-badge { background: rgba(46,204,113,0.15); color: #2ecc71; font-size: 0.7rem; padding: 1px 6px; border-radius: 20px; font-weight: 800; margin-left: 4px; }
+        .pricing-trial-note { margin: 0 0 0.5rem; color: var(--color-mystic-gold); font-size: 0.82rem; font-weight: 600; text-align: center; }
         .btn-full { width: 100%; margin-top: auto; }
         .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
         .hero__trust-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 50px; font-size: 0.75rem; margin-top: 1.5rem; color: rgba(255,255,255,0.65); flex-wrap: wrap; justify-content: center; }

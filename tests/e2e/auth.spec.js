@@ -55,7 +55,6 @@ async function submitRegisterForm(page, email = 'activation@example.com') {
     await expect(page.locator('#confirm-password-field-wrapper')).toBeVisible();
     await page.locator('#email').fill(email);
     await page.locator('#password').fill('TestPassword123!');
-    await page.locator('#confirm-password-reg').fill('TestPassword123!');
     await page.locator('#gdpr-consent').check();
     await page.locator('#auth-submit').click();
 }
@@ -170,7 +169,6 @@ test.describe('Login stránka', () => {
             page.locator('.login-section #login-form, #login-form').first(),
             page.locator('#email').first(),
             page.locator('#password').first(),
-            page.locator('#confirm-password-reg').first(),
             page.locator('#gdpr-consent-wrapper').first(),
             page.locator('#auth-submit').first(),
         ]);

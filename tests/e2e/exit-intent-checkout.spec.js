@@ -84,7 +84,6 @@ async function submitRegisterForm(page, email) {
     await expect(page.locator('#confirm-password-field-wrapper')).toBeVisible();
     await page.locator('#email').fill(email);
     await page.locator('#password').fill('TestPassword123!');
-    await page.locator('#confirm-password-reg').fill('TestPassword123!');
     await page.locator('#gdpr-consent').check();
     await page.locator('#auth-submit').click();
 }
@@ -186,7 +185,6 @@ test.describe('Exit intent checkout handoff', () => {
 
         await page.locator('#email').fill('exit-intent-horoscope@example.com');
         await page.locator('#password').fill('TestPassword123!');
-        await page.locator('#confirm-password-reg').fill('TestPassword123!');
         await page.locator('#gdpr-consent').check();
 
         await Promise.all([

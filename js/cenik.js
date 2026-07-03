@@ -319,7 +319,7 @@ function updatePricingCopy() {
     }
 
     if (heroTrustBadge) {
-        heroTrustBadge.innerHTML = '<span>Účet zdarma bez karty</span><span>|</span><span>Jasná cena před platbou</span><span>|</span><span>Zrušíte kdykoliv</span>';
+        heroTrustBadge.innerHTML = '<span>Účet zdarma bez karty</span><span>|</span><span>7 dní premium zdarma</span><span>|</span><span>Zrušíte kdykoliv</span>';
     }
 
     const freeCard = pricingCards[0];
@@ -349,7 +349,7 @@ function updatePricingCopy() {
         setFeatureText(guideFeatures[1], 'Plný rozbor natální karty, numerologie a vztahů');
         setFeatureText(guideFeatures[2], 'Historie výkladů a osobní profil pro pravidelný návrat');
         setFeatureText(guideFeatures[3], 'Hodnota roste hlavně při opakovaném návratu a uložené historii');
-        if (guideCta) guideCta.textContent = 'Odemknout Hvězdného Průvodce';
+        if (guideCta) guideCta.textContent = 'Vyzkoušet 7 dní zdarma';
     }
 
     if (premiumReasonsTitle) {

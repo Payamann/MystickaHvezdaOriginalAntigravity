@@ -1866,6 +1866,25 @@ async function handleSubscriptionCheckoutCompleted(session, stripeEventId = null
         }
     });
 
+    // Server-side purchase event: the client-side purchase_completed depends on
+    // cookie consent and the buyer returning to profil.html, so it undercounts.
+    const { error: purchaseAnalyticsError } = await supabase.from('analytics_events').insert({
+        user_id: userId,
+        event_type: 'purchase_completed',
+        feature: session.metadata?.feature || 'premium_membership',
+        metadata: {
+            source: 'stripe_webhook',
+            plan_id: session.metadata?.planId || null,
+            plan_type: planType,
+            status: subStatus,
+            billing_interval: billingInterval,
+            stripe_session_id: session.id
+        }
+    });
+    if (purchaseAnalyticsError) {
+        console.warn('[STRIPE] Could not record purchase_completed analytics event:', purchaseAnalyticsError.message);
+    }
+
     // RETENTION: Send onboarding emails + automation sequences
     if (userEmail) {
         try {

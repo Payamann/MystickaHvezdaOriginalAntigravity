@@ -40,7 +40,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <link rel="stylesheet" href="css/site.min.css?v=1">
-    <link rel="stylesheet" href="css/pages/cenik.css?v=8">
+    <link rel="stylesheet" href="css/pages/cenik.css?v=9">
     <script defer src="https://js.stripe.com/v3/"></script>
     <script src="https://cdn.jsdelivr.net/npm/lucide@1.13.0/dist/umd/lucide.min.js" integrity="sha384-EHKCF1r0kkLgXLXtUe79iQzyUeZou+h3FZLoZWdcIAyctVNKMHqqy5wqYWQFUq6k" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
@@ -60,7 +60,7 @@
                 <span class="section__badge">Předplatné</span>
                 <h1 class="hero__title mh-inline-44e3a01151">Začněte zdarma. <span class="text-gradient">Plaťte až za hlubší osobní vedení.</span></h1>
                 <p class="hero__subtitle mh-inline-9536a1e4b5">Bezplatný účet vytvoří denní návyk. Hvězdný Průvodce odemkne plné výklady, historii, osobní profil a týdenní i měsíční vedení pro chvíle, kdy se chcete vracet pravidelně.</p>
-                <div class="hero__trust-badge"><span>Účet zdarma bez karty</span><span>|</span><span>Jasná cena před platbou</span><span>|</span><span>Zrušíte kdykoliv</span></div>
+                <div class="hero__trust-badge"><span>Účet zdarma bez karty</span><span>|</span><span>7 dní premium zdarma</span><span>|</span><span>Zrušíte kdykoliv</span></div>
             </div>
         </section>
 
@@ -125,19 +125,21 @@
                         <h4 class="card__title mh-inline-db5d8166dc">Hvězdný Průvodce</h4>
                         <p class="card__text mh-inline-c6c050eb74">Nejlepší poměr ceny a skutečné hodnoty</p>
                         <div class="card__price" data-price-plan="pruvodce"><span class="price-amount">199 Kč</span><span class="price-suffix">/měsíc</span></div>
+                        <p class="pricing-trial-note">Prvních 7 dní zdarma. Zrušíte kdykoliv v profilu.</p>
                         <ul class="card__features">
                             <li><i data-lucide="check" class="feature-icon"></i> Neomezené výklady a denní vedení</li>
                             <li><i data-lucide="check" class="feature-icon"></i> Natální karta a numerologický rozbor</li>
                             <li><i data-lucide="check" class="feature-icon"></i> Minulý život, rituály a plné horoskopy</li>
                             <li><i data-lucide="check" class="feature-icon"></i> Plán, na kterém většina lidí opravdu zůstane</li>
                         </ul>
-                        <a href="prihlaseni.html?mode=register&redirect=/cenik.html&plan=pruvodce&source=pricing_page&feature=premium_membership" class="btn btn--primary btn-full plan-checkout-btn" data-plan="pruvodce">Chci plný přístup</a>
+                        <a href="prihlaseni.html?mode=register&redirect=/cenik.html&plan=pruvodce&source=pricing_page&feature=premium_membership" class="btn btn--primary btn-full plan-checkout-btn" data-plan="pruvodce">Vyzkoušet 7 dní zdarma</a>
                     </div>
 
                     <div class="card card--pricing">
                         <h4 class="card__title">Osvícení</h4>
                         <p class="card__text mh-inline-b3f39e388b">Pro ty, kdo chtějí ještě víc detailu</p>
                         <div class="card__price" data-price-plan="osviceni"><span class="price-amount">499 Kč</span><span class="price-suffix">/měsíc</span></div>
+                        <p class="pricing-trial-note">Prvních 7 dní zdarma. Zrušíte kdykoliv v profilu.</p>
                         <ul class="card__features">
                             <li><i data-lucide="check" class="feature-icon"></i> Vše z Průvodce</li>
                             <li><i data-lucide="check" class="feature-icon"></i> Astrokartografie a pokročilé analýzy</li>
@@ -154,8 +156,8 @@
                         <span>Pokud ještě nemáš účet, uložíme vybraný plán a po registraci tě vrátíme zpět k platbě.</span>
                     </div>
                     <div>
-                        <strong>2. Cena až ve Stripe Checkoutu</strong>
-                        <span>Platební údaje zadáváš jen ve Stripe. Před potvrzením vždy vidíš plán, cenu i období.</span>
+                        <strong>2. Prvních 7 dní zdarma, cena až ve Stripe</strong>
+                        <span>Platební údaje zadáváš jen ve Stripe. Před potvrzením vždy vidíš plán, cenu i období — a prvních 7 dní nic neplatíš.</span>
                     </div>
                     <div>
                         <strong>3. Správa v profilu</strong>
@@ -336,6 +338,6 @@
     <script src="js/dist/templates.js?v=14" defer></script>
     <script src="js/dist/components.js?v=20260522-premium-gate-cache" defer></script>
     <script type="module" src="js/dist/main.js?v=12"></script>
-    <script src="js/dist/cenik.js?v=20260514-checkout-recovery" defer></script>
+    <script src="js/dist/cenik.js?v=20260703-trial-visible" defer></script>
 </body>
 </html>

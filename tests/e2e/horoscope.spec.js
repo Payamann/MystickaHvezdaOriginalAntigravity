@@ -202,7 +202,6 @@ test.describe('Horoskopy', () => {
 
         await page.locator('#email').fill('monthly-horoscope@example.com');
         await page.locator('#password').fill('TestPassword123!');
-        await page.locator('#confirm-password-reg').fill('TestPassword123!');
         await page.locator('#gdpr-consent').check();
 
         await Promise.all([

@@ -73,6 +73,38 @@
         }
     }
 
+    /**
+     * Report the consent decision server-side without identifiers, so the
+     * rejected/accepted split is measurable even for users who decline
+     * analytics (their client-side events are dropped by design).
+     */
+    function reportConsentChoice(analytics, marketing) {
+        if (!window.fetch) return;
+        try {
+            fetch('/api/csrf-token')
+                .then(function (res) { return res.ok ? res.json() : null; })
+                .then(function (data) {
+                    var token = data && data.csrfToken;
+                    if (!token) return;
+                    return fetch('/api/analytics/event', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-Token': token
+                        },
+                        body: JSON.stringify({
+                            eventName: 'cookie_consent_choice',
+                            metadata: {
+                                analytics_allowed: analytics,
+                                marketing_allowed: marketing
+                            }
+                        })
+                    });
+                })
+                .catch(function () {});
+        } catch (e) { /* consent reporting must never block the banner */ }
+    }
+
     /** Save consent, fire GA event immediately, hide banner */
     function save(analytics, marketing) {
         localStorage.setItem(K, JSON.stringify({ analytics: analytics, marketing: marketing, ts: Date.now() }));
@@ -81,6 +113,7 @@
         window.dispatchEvent(new CustomEvent('mh_cookie_consent', {
             detail: { analytics: analytics, marketing: marketing }
         }));
+        reportConsentChoice(analytics, marketing);
         hide();
     }
 

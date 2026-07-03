@@ -71,7 +71,6 @@ async function setupCheckoutRoutes(page, {
 async function submitRegistration(page, email) {
     await page.locator('#email').fill(email);
     await page.locator('#password').fill('TestPassword123!');
-    await page.locator('#confirm-password-reg').fill('TestPassword123!');
     await page.locator('#gdpr-consent').check();
 
     await Promise.all([

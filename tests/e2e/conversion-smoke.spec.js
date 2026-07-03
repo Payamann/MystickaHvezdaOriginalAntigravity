@@ -84,7 +84,7 @@ test.describe('Conversion smoke', () => {
                 await expectNoHorizontalOverflow(page);
             });
 
-            await test.step('register form blocks password mismatch with inline accessible errors', async () => {
+            await test.step('register form blocks too-short password without calling register', async () => {
                 const { page } = mobile;
                 const registerRequests = [];
                 await page.route('**/api/auth/register', async (route) => {
@@ -104,14 +104,11 @@ test.describe('Conversion smoke', () => {
                 await expect.poll(() => page.evaluate(() => Boolean(window.Auth))).toBe(true);
 
                 await page.locator('#email').fill('smoke@example.com');
-                await page.locator('#password').fill('TestPassword123!');
-                await page.locator('#confirm-password-reg').fill('OtherPassword123!');
+                await page.locator('#password').fill('short');
                 await page.locator('#gdpr-consent').check();
                 await page.locator('#auth-submit').click({ noWaitAfter: true });
 
-                await expect(page.locator('#confirm-password-reg')).toHaveAttribute('aria-invalid', 'true');
-                await expect(page.locator('#confirm-password-field-wrapper .form-field-error')).toContainText('Hesla se neshod');
-                await expect(page.locator('#login-form .form-error-summary')).toContainText('Hesla se neshod');
+                await expect(page.locator('#password:invalid')).toBeAttached();
                 expect(registerRequests).toEqual([]);
                 await expectNoHorizontalOverflow(page);
             });

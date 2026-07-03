@@ -58,7 +58,6 @@ async function mockSuccessfulRegister(page, email = 'activation-smoke@example.co
 async function submitRegisterForm(page, email = 'activation-smoke@example.com') {
     await page.locator('#email').fill(email);
     await page.locator('#password').fill('TestPassword123!');
-    await page.locator('#confirm-password-reg').fill('TestPassword123!');
     await page.locator('#gdpr-consent').check();
     await page.locator('#auth-submit').click();
 }

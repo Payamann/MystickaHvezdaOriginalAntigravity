@@ -39,18 +39,6 @@
           }
         ]
       }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"Stop\",\"additionalContext\":\"REMINDER: Pokud jsi v této odpovědi vygeneroval Instagram posty pro Mystickou Hvězdu, IHNED spusť log_post.py pro každý post. Viz CLAUDE.md instrukce.\"}}'",
-            "timeout": 5,
-            "statusMessage": "Checking post logging..."
-          }
-        ]
-      }
     ]
   }
 }

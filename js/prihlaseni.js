@@ -321,8 +321,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const socialProofEl = document.getElementById('login-social-proof');
     const passwordInput = document.getElementById('password');
     const passwordHelp = document.getElementById('password-help');
-    const confirmPwWrapper = document.getElementById('confirm-password-field-wrapper');
-    const confirmPwInput = document.getElementById('confirm-password-reg');
     const registerFields = document.getElementById('register-fields');
     const gdprWrapper = document.getElementById('gdpr-consent-wrapper');
     const gdprConsent = document.getElementById('gdpr-consent');
@@ -394,7 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const clearAuthErrors = () => {
         getFormUx().clearFormSummary?.(loginForm);
-        [passwordInput, confirmPwInput, gdprConsent].forEach(clearFieldError);
+        [passwordInput, gdprConsent].forEach(clearFieldError);
     };
 
     const validateRegisterFields = () => {
@@ -404,13 +402,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const message = 'Heslo musí mít alespoň 8 znaků.';
             setFieldError(passwordInput, message);
             showAuthError(message, passwordInput);
-            return false;
-        }
-
-        if (confirmPwInput && passwordInput && passwordInput.value !== confirmPwInput.value) {
-            const message = 'Hesla se neshodují.';
-            setFieldError(confirmPwInput, message);
-            showAuthError(message, confirmPwInput);
             return false;
         }
 
@@ -562,8 +553,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (checkoutContextTitle) checkoutContextTitle.textContent = plan.title;
             if (checkoutContextCopy) {
                 checkoutContextCopy.textContent = featureLabel
-                    ? `Navazujete na funkci: ${featureLabel}. ${plan.copy} Po registraci zachováme tento kontext a rovnou otevřeme bezpečný checkout.`
-                    : `${plan.copy} Po registraci zachováme vybraný plán a rovnou otevřeme bezpečný checkout.`;
+                    ? `Navazujete na funkci: ${featureLabel}. ${plan.copy} Po registraci rovnou otevřeme bezpečný checkout — prvních 7 dní zdarma.`
+                    : `${plan.copy} Po registraci rovnou otevřeme bezpečný checkout — prvních 7 dní zdarma.`;
             }
             if (checkoutContextLabel) {
                 checkoutContextLabel.textContent = requestedSource ? 'Pokračujete k odemčení' : 'Pokračujete k plánu';
@@ -636,24 +627,26 @@ document.addEventListener('DOMContentLoaded', () => {
             renderSignupValuePanel();
             if (requestedPlan) {
                 if (loginHeader) loginHeader.textContent = 'Vytvořte účet a pokračujte k odemčení';
-                if (loginSubtitle) loginSubtitle.textContent = 'Nejdřív bezpečně založíte účet. Placený plán potvrdíte až v dalším kroku ve Stripe checkoutu.';
+                if (loginSubtitle) loginSubtitle.textContent = 'Účet slouží jen ke správě předplatného a zabere ~30 vteřin. Prvních 7 dní je zdarma — kartu zadáte až ve Stripe checkoutu a zrušit jde jedním kliknutím v profilu.';
             } else {
                 if (loginHeader) loginHeader.textContent = 'Vytvořte si účet zdarma';
                 if (loginSubtitle) loginSubtitle.textContent = 'Stačí e-mail a heslo. Platební kartu nevyžadujeme a osobní údaje doplníte až u výkladu, který je opravdu potřebuje.';
+            }
+            if (signupSafetyNote) {
+                signupSafetyNote.textContent = requestedPlan
+                    ? 'Po registraci rovnou otevřeme bezpečný Stripe checkout se 7 dny zdarma. Výklady slouží jako osobní inspirace a nenahrazují odbornou péči.'
+                    : 'Registrace je zdarma a bez platební karty. Výklady slouží jako osobní inspirace a nenahrazují odbornou péči.';
             }
             setBlockVisible(socialProofEl, true);
             setBlockVisible(signupValuePanel, true);
             setBlockVisible(passwordHelp, true);
             setBlockVisible(signupSafetyNote, true);
-            setBlockVisible(confirmPwWrapper, true);
             setBlockVisible(registerFields, false);
             setBlockVisible(gdprWrapper, true);
             if (passwordInput) {
                 passwordInput.autocomplete = 'new-password';
                 passwordInput.minLength = 8;
             }
-            if (confirmPwInput) confirmPwInput.required = true;
-            if (confirmPwInput) confirmPwInput.minLength = 8;
             if (gdprConsent) gdprConsent.required = true;
             authSubmitBtn.textContent = requestedPlan ? 'Vytvořit účet a pokračovat' : 'Vytvořit účet zdarma';
             if (toggleBtn) toggleBtn.textContent = 'Máte účet? Přihlaste se';
@@ -669,17 +662,11 @@ document.addEventListener('DOMContentLoaded', () => {
             setBlockVisible(signupValuePanel, false);
             setBlockVisible(passwordHelp, false);
             setBlockVisible(signupSafetyNote, false);
-            setBlockVisible(confirmPwWrapper, false);
             setBlockVisible(registerFields, false);
             setBlockVisible(gdprWrapper, false);
             if (passwordInput) {
                 passwordInput.autocomplete = 'current-password';
                 passwordInput.removeAttribute('minlength');
-            }
-            if (confirmPwInput) {
-                confirmPwInput.required = false;
-                confirmPwInput.removeAttribute('minlength');
-                confirmPwInput.value = '';
             }
             if (gdprConsent) {
                 gdprConsent.required = false;
@@ -699,12 +686,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     bindPasswordToggles();
 
-    [passwordInput, confirmPwInput].forEach((input) => {
-        input?.addEventListener('input', () => {
-            clearFieldError(input);
-            if (confirmPwInput) clearFieldError(confirmPwInput);
-            getFormUx().clearFormSummary?.(loginForm);
-        });
+    passwordInput?.addEventListener('input', () => {
+        clearFieldError(passwordInput);
+        getFormUx().clearFormSummary?.(loginForm);
     });
 
     gdprConsent?.addEventListener('change', () => {
@@ -723,6 +707,11 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         applyMode();
         trackAuthView();
+
+        const emailField = document.getElementById('email');
+        if (emailField && !emailField.value) {
+            emailField.focus();
+        }
     }
 
     loginForm?.addEventListener('submit', async (event) => {
@@ -756,19 +745,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             if (isRegisterMode) {
-                const confirmPassword = confirmPwInput?.value || '';
-
-                if (password !== confirmPassword) {
-                    throw new Error('Hesla se neshodují.');
-                }
-
                 if (password.length < 8) {
                     throw new Error('Heslo musí mít alespoň 8 znaků.');
                 }
 
-                const result = await window.Auth.register(email, password, {
-                    password_confirm: confirmPassword
-                });
+                const result = await window.Auth.register(email, password);
 
                 if (!result.success) {
                     throw new Error(result.error || 'Registrace se nepodařila.');

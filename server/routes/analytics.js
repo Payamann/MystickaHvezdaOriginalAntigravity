@@ -34,7 +34,8 @@ const ALLOWED_EVENTS = new Set([
     'daily_ritual_completed',
     'activation_completed',
     'return_ritual_completed',
-    'production_smoke_checked'
+    'production_smoke_checked',
+    'cookie_consent_choice'
 ]);
 
 const ALLOWED_EVENT_PREFIXES = [
