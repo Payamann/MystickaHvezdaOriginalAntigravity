@@ -10,7 +10,12 @@ Mystická Hvězda provides professional tools for self-discovery, spiritual grow
 - **Numerology:** Detailed path of life and soul calculations. [numerologie.html](https://www.mystickahvezda.cz/numerologie.html)
 - **AI Oracle:** Real-time answers from a mystical crystal ball. [kristalova-koule.html](https://www.mystickahvezda.cz/kristalova-koule.html)
 - **Astrocartography:** Planetary lines and strength places mapping. [astro-mapa.html](https://www.mystickahvezda.cz/astro-mapa.html)
-- **Names Database:** Esoteric meanings, origin, and numerology for 280+ Czech names. [jmena/](https://www.mystickahvezda.cz/jmena/)
+- **Names Database:** Esoteric meanings, origin, and numerology for 280+ Czech names, each with its own page. [jmena/](https://www.mystickahvezda.cz/jmena/)
+- **Dream Dictionary:** 164 dream symbols with interpretations and reflection prompts. [snar.html](https://www.mystickahvezda.cz/snar.html)
+- **Life-Path Numbers:** Meanings for numerology numbers 1-9 and master numbers 11, 22, 33. [numerologie/zivotni-cislo-1.html](https://www.mystickahvezda.cz/numerologie/zivotni-cislo-1.html)
+- **Angel Card Meanings:** 44 angel cards with messages and daily practices. [andelske-karty.html](https://www.mystickahvezda.cz/andelske-karty.html)
+- **Tarot Card Meanings:** All 78 tarot cards explained. [tarot-vyznam-karet.html](https://www.mystickahvezda.cz/tarot-vyznam-karet.html)
+- **Zodiac Compatibility:** All 78 sign pair combinations. [partnerska-shoda.html](https://www.mystickahvezda.cz/partnerska-shoda.html)
 
 ## Full Documentation
 For a deep dive into our methodology and extended context, visit [llms-full.txt](https://www.mystickahvezda.cz/llms-full.txt)
