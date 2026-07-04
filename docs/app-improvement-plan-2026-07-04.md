@@ -117,7 +117,13 @@ Tier 1 shipped in this branch:
 - **1.4** Verified as already-handled (see above); no change needed.
 - **1.5** `js/pwa-install.js`: captures `beforeinstallprompt`, offers install on 2nd+ visit after cookie consent, never stacks with the push banner, 30-day dismiss cooldown, `pwa_install_*` analytics. Loaded on index, horoskopy, profil, tarot.
 
-Next up (not in this branch): Tier 0.2 funnel re-measurement against live data, then Tier 2 starting with the free-user lifecycle email sequence.
+Tier 2 status (same day, second pass):
+- **2.1 — already built, gap closed.** `sendActivationLifecycleSequence` (Day 0/1/3/6 with dedupe + premium-skip) fires from `POST /api/auth/onboarding/complete` in `server/auth.js` for every registered user, free included; the original exploration finding was stale. The real gap was that the email queue ignored `email_preferences` — `server/jobs/email-queue.js` now maps marketing templates to preference categories (`upgrade_reminders`, `churn_recovery`, `weekly_features`, `promotional`), honors `unsubscribe_all`, and marks skipped sends with the reason.
+- **2.2 — already built.** `sendPersonalMapLifecycleSequence` and `sendAnnualHoroscopeLifecycleSequence` (Day 1 product value, Day 3 subscription bridge) fire from the Stripe webhook in `server/payment.js`. No change needed; the new preference gating also covers these.
+- **2.3 — shipped.** `npm run jmena:generate` (`scripts/generate-jmena-pages.mjs`) renders 280 static name pages into `jmena/` from `data/jmena.json` (origin, meaning, nameday, numerology + number meaning, aura, element, personality/love/career, related-name chips, numerology tool bridges with `source=jmena_detail`) plus a static all-names link hub in `jmena/index.html`. Sitemap regenerated to 676 URLs; `audit:site` green.
+- **2.4 — not started** (run as a measured experiment when funnel volume allows).
+
+Next up (not in this branch): Tier 0.2 funnel re-measurement against live data, Tier 2.4 checkout-cancel experiment.
 
 ## Suggested sequence
 
