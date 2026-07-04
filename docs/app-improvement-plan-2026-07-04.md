@@ -96,9 +96,9 @@ State: the checkout-cancel recovery panel on `cenik.html?payment=cancel` ships a
 
 ## Tier 3 - Later / bigger bets
 
-- Deepen SK/PL localization using `sk/tarot-ano-nie.html` (626 words, FAQ schema, hreflang) as the template; current SK/PL pages are ~70-word stubs. Start with the 5 highest-traffic tools.
-- Numerology-number and angel-card-meaning programmatic clusters (roadmap P2).
-- Per-dream pages generated from `data/dreams.json` (split of `snar.html`); `ritualy/` expansion (currently 2 pages).
+- ~~Deepen SK/PL localization~~ — shipped for the 5 top tools in both languages (explainers + FAQ + FAQPage schema).
+- ~~Numerology-number and angel-card-meaning programmatic clusters~~ — shipped: `npm run numerologie:generate` (12 life-path pages from `data/numerology-numbers.json`, hub in `kalkulacka-cisla-osudu.html`) and `npm run andelske-karty:generate` (44 card-meaning pages with archetype interpretive layer, hub in `andelske-karty.html`). Sitemap: 896 URLs.
+- ~~Per-dream pages from `data/dreams.json`~~ — shipped (164 pages, `npm run snar:generate`). Remaining: `ritualy/` expansion (currently 2 pages).
 - Ops hardening from `docs/audit-hardening-2026-04-30.md`: alerting on Stripe webhook failures and 4xx/5xx spikes; a real Lighthouse/WebPageTest pass against production.
 
 ## Measurement
