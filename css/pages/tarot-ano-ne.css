@@ -199,6 +199,66 @@
 
         }
 
+        .card-front-image {
+            width: 62%;
+            max-width: 68px;
+            height: auto;
+            border-radius: 6px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+        }
+
+        .card-front-name {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.88);
+            line-height: 1.25;
+        }
+
+        .result-card-image {
+            display: block;
+            width: 140px;
+            max-width: 40vw;
+            height: auto;
+            margin: 0 auto 1rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(212, 175, 55, 0.5);
+        }
+
+        .result-card-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.05rem;
+            color: #f3d98b;
+            margin: 0 0 0.35rem;
+        }
+
+        .result-question {
+            color: rgba(255, 255, 255, 0.68);
+            font-size: 0.95rem;
+            font-style: italic;
+            line-height: 1.6;
+            margin: 0 0 1rem;
+        }
+
+        .result-next-step-text {
+            margin-top: 1rem;
+            padding: 0.9rem 1rem;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            background: rgba(212, 175, 55, 0.08);
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.92rem;
+            line-height: 1.6;
+            text-align: left;
+        }
+
+        .result-next-step-text:not(:empty)::before {
+            content: 'Další krok: ';
+            font-weight: 700;
+            color: #f3d98b;
+        }
+
 
 
         .result-panel {
@@ -754,4 +814,29 @@ html body .mh-inline-418361a818 { color:rgba(255,255,255,0.65);line-height:1.8; 
     .tarot-yes-no-related-card {
         min-height: auto;
     }
+
+    /* Karty musí být viditelné nad foldem na mobilu - zúžit odsazení nad otázkou a kartami. */
+    html body .mh-inline-0bf3eb4e93 {
+        padding-top: 1.75rem;
+    }
+
+    .section__badge {
+        margin-bottom: 0.4rem;
+    }
+
+    html body .mh-inline-f8cea551e3 {
+        margin: 1rem 0 1rem;
+    }
+
+    .cards-area {
+        margin: 1rem 0 1.5rem;
+        gap: 0.5rem;
+    }
+
+    .tarot-card {
+        width: clamp(56px, 15vw, 80px);
+        height: clamp(92px, 25vw, 130px);
+    }
 }
+
+.tarot-yes-no-seo-subheading { font-size: 1.05rem; }

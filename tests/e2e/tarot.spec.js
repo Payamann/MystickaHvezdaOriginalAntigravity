@@ -575,6 +575,57 @@ test.describe('Tarot Ano/Ne', () => {
         expect(href).toContain('feature=tarot_multi_card');
     });
 
+    test('výsledek ukazuje skutečnou taženou kartu, otázku a další krok', async ({ page }) => {
+        await page.goto('/tarot-ano-ne.html');
+        await waitForPageReady(page);
+
+        await page.fill('#question-input', 'Mám dnes udělat první krok?');
+        await page.locator('.tarot-card').first().click();
+
+        await expect(page.locator('#result-panel')).toHaveClass(/show/, { timeout: 2500 });
+
+        // Skutečná karta (obrázek + jméno), ne jen emoji.
+        const resultImage = page.locator('#result-card-image');
+        await expect(resultImage).toBeVisible();
+        const imageSrc = await resultImage.getAttribute('src');
+        expect(imageSrc).toMatch(/img\/tarot\/.+\.webp$/);
+        await expect(page.locator('#result-card-name')).not.toBeEmpty();
+
+        // Verdikt je jeden ze tří možných.
+        const title = await page.locator('#result-title').textContent();
+        expect(['ANO', 'NE', 'NEJASNÉ']).toContain(title.trim());
+
+        // Otázka uživatele je zopakovaná ve výsledku.
+        await expect(page.locator('#result-question')).toContainText('Mám dnes udělat první krok?');
+
+        // Vysvětlení (proč) a konkrétní další krok jsou vyplněné.
+        await expect(page.locator('#result-text')).not.toBeEmpty();
+        await expect(page.locator('#result-next-step-text')).not.toBeEmpty();
+
+        // Malá karta v balíčku má taky obrázek a jméno karty, ne jen emoji.
+        const flippedCard = page.locator('.tarot-card.flipped').first();
+        await expect(flippedCard.locator('.card-front-image')).toBeVisible();
+        await expect(flippedCard.locator('.card-front-name')).not.toBeEmpty();
+    });
+
+    test('hierarchie CTA po výsledku: uložit do deníku je primární a první', async ({ page }) => {
+        await page.goto('/tarot-ano-ne.html');
+        await waitForPageReady(page);
+
+        await page.fill('#question-input', 'Mám dnes udělat první krok?');
+        await page.locator('.tarot-card').first().click();
+
+        await expect(page.locator('#result-panel')).toHaveClass(/show/, { timeout: 2500 });
+
+        const actionButtons = page.locator('#result-panel .btn');
+        await expect(actionButtons.nth(0)).toHaveAttribute('id', 'btn-save-reading');
+        await expect(actionButtons.nth(0)).toHaveClass(/btn--primary/);
+        await expect(actionButtons.nth(1)).toHaveAttribute('id', 'btn-reset');
+        await expect(actionButtons.nth(1)).toHaveClass(/btn--secondary/);
+        await expect(actionButtons.nth(2)).toHaveAttribute('id', 'btn-save-result-image');
+        await expect(actionButtons.nth(2)).toHaveClass(/btn--ghost/);
+    });
+
     test('SEO landing a prvni odpoved se propisi do analytics a funnelu', async ({ page }) => {
         const funnelEvents = [];
         await page.route('**/api/payment/funnel-event', async (route) => {

@@ -40,37 +40,62 @@ test.describe('Profil stránka', () => {
         await expect(page.locator('#profile-dashboard')).toBeAttached();
     });
 
-    test('#profile-login-btn nebo login odkaz existuje', async ({ page }) => {
-        const loginBtn = page.locator('#profile-login-btn, a[href*="prihlaseni"], button[id*="login"]').first();
+    test('#profile-register-btn nebo login odkaz existuje', async ({ page }) => {
+        const loginBtn = page.locator('#profile-register-btn, a[href*="prihlaseni"], button[id*="login"]').first();
         await expect(loginBtn).toBeAttached();
     });
 
-    test('login gate vysvetluje hodnotu uctu a zachova meritelny kontext', async ({ page }) => {
+    test('guest nahled deniku ukazuje ukazkove zaznamy a zachova meritelny kontext', async ({ page }) => {
         const gate = page.locator('#login-required');
         await expect(page.locator('#profile-greeting')).toContainText('výklady na jednom místě');
-        await expect(gate).toContainText('historii, oblíbené výklady a návratové poznámky');
+        await expect(gate).toContainText('Takhle vypadá tvůj deník výkladů');
         await expect(gate).toContainText('Bez přihlášení nic neukládáme do osobního profilu');
-        await expect(page.locator('script[src*="/js/dist/profile/dashboard.js"]').first()).toHaveAttribute('src', /dashboard\.js\?v=20/);
+        await expect(page.locator('script[src*="/js/dist/profile/dashboard.js"]').first()).toHaveAttribute('src', /dashboard\.js\?v=21/);
 
-        const loginHref = await page.locator('#profile-login-btn').getAttribute('href');
-        const registerHref = await page.locator('#login-required a[href*="mode=register"]').getAttribute('href');
+        const previewItems = gate.locator('.profile-guest-preview__item');
+        await expect(previewItems).toHaveCount(2);
+        await expect(previewItems.nth(0)).toContainText('Ukázka');
+        await expect(previewItems.nth(0)).toContainText('Tarotový výklad');
+        await expect(previewItems.nth(1)).toContainText('Ukázka');
+        await expect(previewItems.nth(1)).toContainText('Horoskop');
 
-        expect(loginHref).toContain('source=profile_gate_login');
-        expect(loginHref).toContain('feature=profile_history');
-        expect(loginHref).toContain('redirect=/profil.html');
-        expect(registerHref).toContain('source=profile_gate_register');
+        const registerHref = await page.locator('#profile-register-btn').getAttribute('href');
+        const tryFreeHref = await page.locator('#profile-try-free-btn').getAttribute('href');
+
+        expect(registerHref).toContain('mode=register');
+        expect(registerHref).toContain('source=journal_preview');
         expect(registerHref).toContain('feature=profile_history');
         expect(registerHref).toContain('redirect=/profil.html');
+        expect(tryFreeHref).toContain('tarot-ano-ne.html');
+        expect(tryFreeHref).toContain('source=journal_preview');
+        expect(tryFreeHref).toContain('feature=tarot_yes_no');
 
         await Promise.all([
             page.waitForURL(url => url.pathname === '/prihlaseni.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
-            page.locator('#profile-login-btn').click(),
+            page.locator('#profile-register-btn').click(),
         ]);
 
         const clickedUrl = new URL(page.url());
-        expect(clickedUrl.searchParams.get('source')).toBe('profile_gate_login');
+        expect(clickedUrl.searchParams.get('mode')).toBe('register');
+        expect(clickedUrl.searchParams.get('source')).toBe('journal_preview');
         expect(clickedUrl.searchParams.get('feature')).toBe('profile_history');
         expect(clickedUrl.searchParams.get('redirect')).toBe('/profil.html');
+    });
+
+    test('guest preview posila profile_guest_preview_viewed event', async ({ page }) => {
+        await page.addInitScript(() => {
+            window.__guestEvents = [];
+            window.MH_ANALYTICS = {
+                trackEvent: (eventName, payload) => window.__guestEvents.push({ eventName, payload }),
+                trackCTA: () => {}
+            };
+        });
+
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+
+        await expect.poll(async () => page.evaluate(() => window.__guestEvents
+            .filter(event => event.eventName === 'profile_guest_preview_viewed').length)).toBe(1);
     });
 
     test('user info elementy existují v DOM', async ({ page }) => {
@@ -457,26 +482,81 @@ test.describe('Profil aktivace', () => {
         await expect(firstReading).toContainText('symbolickým směrem');
     });
 
-    test('prazdna historie vede k meritelne prvni stope', async ({ page }) => {
+    test('nulova historie zobrazi aktivacni hero se 3 akcemi', async ({ page }) => {
         await mockLoggedInProfile(page);
 
         await page.goto('/profil.html');
         await waitForPageReady(page);
 
-        const history = page.locator('#readings-list .empty-state');
-        await expect(history).toContainText('první signál');
-        await expect(history).toContainText('otázky, odpovědi');
+        const hero = page.locator('#readings-list .profile-activation-hero');
+        await expect(hero).toBeVisible();
+        await expect(hero).toContainText('Tvůj deník čeká na první výklad');
+        await expect(hero).toContainText('Výklady se ukládají sem');
 
-        const tarotHref = await history.locator('a[href*="tarot-ano-ne.html"]').getAttribute('href');
-        const threeCardsHref = await history.locator('a[href*="tarot-tri-karty.html"]').getAttribute('href');
-        const crystalHref = await history.locator('a[href*="kristalova-koule.html"]').getAttribute('href');
+        const tarotHref = await hero.locator('a[href*="tarot-ano-ne.html"]').getAttribute('href');
+        const cardOfDayHref = await hero.locator('a[href*="tarot-karta-dne.html"]').getAttribute('href');
+        const horoscopeHref = await hero.locator('a[href*="horoskopy.html"]').getAttribute('href');
 
-        expect(tarotHref).toContain('source=profile_history_empty');
+        expect(tarotHref).toContain('source=profile_activation');
         expect(tarotHref).toContain('feature=tarot_yes_no');
-        expect(threeCardsHref).toContain('source=profile_history_empty');
-        expect(threeCardsHref).toContain('feature=tarot_multi_card');
-        expect(crystalHref).toContain('source=profile_history_empty');
-        expect(crystalHref).toContain('feature=kristalova_koule');
+        expect(cardOfDayHref).toContain('source=profile_activation');
+        expect(horoscopeHref).toContain('source=profile_activation');
+    });
+
+    test('aktivacni hero posila profile_activation_viewed event', async ({ page }) => {
+        await mockLoggedInProfile(page);
+        await page.addInitScript(() => {
+            window.__profileEvents = [];
+            let analyticsValue = null;
+            Object.defineProperty(window, 'MH_ANALYTICS', {
+                configurable: true,
+                get: () => analyticsValue,
+                set: (value) => {
+                    analyticsValue = value && typeof value === 'object'
+                        ? {
+                            ...value,
+                            trackEvent: (eventName, payload) => {
+                                window.__profileEvents.push({ eventName, payload });
+                                return value.trackEvent?.call(value, eventName, payload);
+                            },
+                            trackCTA: (...args) => value.trackCTA?.call(value, ...args)
+                        }
+                        : value;
+                }
+            });
+        });
+
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+
+        await expect.poll(async () => page.evaluate(() => window.__profileEvents
+            .filter(event => event.eventName === 'profile_activation_viewed').length)).toBe(1);
+    });
+
+    test('vyklad jineho typu nez filtr zobrazi puvodni prazdny stav s prvni stopou', async ({ page }) => {
+        await mockLoggedInProfile(page, {
+            readings: [
+                {
+                    id: 'reading-tarot-1',
+                    type: 'tarot',
+                    created_at: '2026-05-10T10:00:00.000Z',
+                    is_favorite: false,
+                    data: {
+                        question: 'Co si mám dnes pohlídat?',
+                        cards: ['Hvězda'],
+                        interpretation: 'Vrať se k jedné konkrétní otázce.'
+                    }
+                }
+            ]
+        });
+
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+
+        await page.locator('#readings-filter').selectOption('horoscope');
+
+        const history = page.locator('#readings-list .empty-state');
+        await expect(history).toContainText('Tady zatím není žádný výklad tohoto typu');
     });
 
     test('pending tarot ano/ne vyklad se po prihlaseni ulozi a zvyrazni v historii', async ({ page }) => {

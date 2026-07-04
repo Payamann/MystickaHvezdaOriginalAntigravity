@@ -61,6 +61,21 @@ nákupu (client event je závislý na consentu a návratu na profil).
 - [x] Preview 390×844: auth plan-mód celý nad foldem, autofocus na e-mail, trial v banneru i pod CTA; ceník s trial notou a novým CTA; cookie reject flow bez chyb
 - [x] E2E lokálně nelze (chybí .env) — specs upraveny textově, ověří CI/deploy-guard
 
+## Fáze 2 — swarm (2026-07-04)
+
+- [x] Tarot ano/ne: skutečná karta ze 78 (35 ano/21 ne/22 nejasné, data/tarot-cards.json, obrázky ověřeny 78/78), zopakovaná otázka, mechanismus + další krok; karty na mobilu z 1546 px na 331 px; „Uložit odpověď do deníku" = primární CTA
+- [x] Profil: guest náhled deníku (2 demo záznamy + Ukázka badge, eventy profile_guest_preview_viewed) + aktivační hero pro 0 výkladů (profile_activation_viewed); vrácen login odkaz pro vracející se
+- [x] SK: sk/tarot-ano-nie.html (626 slov, FAQ schema, _sk analytics, vlastní JS) + title fix sk/kristalova-koule.html; sitemap 396 URL; hreflang cs↔sk na obou stranách
+- [x] Homepage hero: primární CTA → tarot-ano-ne (value-first místo registrace), konzistentně v index.html + analytics.js + e2e
+- [x] Integrace: oprava CSP (inline styly SK stránky → třída), centrální build:js, celá verifikační suite zelená, jest 459/459, vizuální kontrola všech ploch na mobilu 390×844
+
+### Review Fáze 2
+Swarm 3× Sonnet paralelně (disjunktní soubory, bez commitů/buildů u agentů,
+integrace centrálně) — fungovalo; náklady ~380k subagent tokenů. Agent A
+narazil na session limit před závěrečnou zprávou, ale práce na disku byla
+kompletní a kvalitní. Jediný integrační zásah: CSP inline styly na SK stránce
+a vrácení login odkazu do profilové brány.
+
 ### Review Fáze 1
 Změněno: prihlaseni (pole -1, trial copy, autofocus), cenik (trial 4×), tarot bridge
 + freemium banner, server purchase event, consent event. Vše ověřeno v preview

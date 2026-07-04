@@ -55,11 +55,11 @@ test.describe('Homepage CTA smoke', () => {
 
             const heroCta = page.locator('#hero-cta-btn');
             await expectWithinViewport(page, heroCta);
-            expectQuery(await heroCta.getAttribute('href'), {
-                mode: 'register',
+            const heroUrl = expectQuery(await heroCta.getAttribute('href'), {
                 source: 'homepage_hero',
-                feature: 'daily_guidance'
+                feature: 'tarot_yes_no'
             });
+            expect(heroUrl.pathname).toBe('/tarot-ano-ne.html');
 
             if (mobile) {
                 const navToggle = page.locator('.nav__toggle');

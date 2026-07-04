@@ -29,6 +29,7 @@ const PENDING_READING_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 let ritualMemoryViewTracked = false;
 let dailyGuidanceViewTracked = false;
 let activationChecklistViewTracked = false;
+let guestPreviewViewTracked = false;
 let activePaymentReturnContext = null;
 
 function callProfileAnalytics(methodName, ...args) {
@@ -1661,6 +1662,16 @@ async function initProfile() {
         setProfileBlockVisible(loginRequired, true);
         setProfileBlockVisible(dashboard, false);
         if (greeting) greeting.textContent = 'Přihlas se a měj výklady na jednom místě';
+        if (!guestPreviewViewTracked) {
+            guestPreviewViewTracked = true;
+            trackProfileEvent('profile_guest_preview_viewed', {
+                source: 'journal_preview',
+                feature: 'profile_history'
+            });
+        }
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
         return;
     }
 

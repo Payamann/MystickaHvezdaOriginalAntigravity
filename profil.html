@@ -21,9 +21,9 @@
     <script src="https://cdn.jsdelivr.net/npm/lucide@1.13.0/dist/umd/lucide.min.js" integrity="sha384-EHKCF1r0kkLgXLXtUe79iQzyUeZou+h3FZLoZWdcIAyctVNKMHqqy5wqYWQFUq6k" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link rel="stylesheet" href="css/style.v2.min.css?v=11">
     <link rel="stylesheet" href="css/pages/profil.css">
-    <link rel="stylesheet" href="css/profile-refresh.css?v=3">
+    <link rel="stylesheet" href="css/profile-refresh.css?v=4">
     <script src="js/dist/growth-loop-client.js?v=1" defer></script>
-    <script type="module" src="/js/dist/profile/dashboard.js?v=20" defer></script>
+    <script type="module" src="/js/dist/profile/dashboard.js?v=21" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" integrity="sha384-XQqX/4yiUGu+oyr87jvWzRuqBUK/adrY0DunhL+tID9m/9dwSpV8h9Fk/Sg6ifVQ" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body class="page-profile">
@@ -41,15 +41,47 @@
 
         <section class="section">
             <div class="container">
-                <div id="login-required" class="card glass-card profile-guest-card text-center mh-inline-6f6243d92c">
-                    <div class="profile-guest-card__icon">✦</div>
-                    <h2>Deník výkladů začíná první otázkou</h2>
-                    <p class="profile-guest-card__lead">Profil drží tvoje otázky, odpovědi a návratové poznámky pohromadě.</p>
-                    <p class="profile-guest-card__text">Začni krátkým výkladem, nebo se přihlas a vrať se k uloženým odpovědím. Bez přihlášení nic neukládáme do osobního profilu.</p>
+                <div id="login-required" class="card glass-card profile-guest-card mh-inline-6f6243d92c">
+                    <div class="profile-guest-preview__intro text-center">
+                        <div class="profile-guest-card__icon">✦</div>
+                        <h2>Takhle vypadá tvůj deník výkladů</h2>
+                        <p class="profile-guest-card__lead">Profil drží tvoje otázky, odpovědi a návratové poznámky pohromadě.</p>
+                        <p class="profile-guest-card__text">Bez přihlášení nic neukládáme do osobního profilu — níže je ukázka, jak vypadá deník po prvním uloženém výkladu.</p>
+                    </div>
+
+                    <div class="profile-guest-preview__list" aria-hidden="true">
+                        <div class="reading-item card profile-guest-preview__item">
+                            <span class="profile-guest-preview__badge">Ukázka</span>
+                            <div class="reading-item__inner">
+                                <div class="reading-item__left">
+                                    <span class="reading-item__icon" aria-hidden="true"><i data-lucide="book-marked" class="reading-type-icon"></i></span>
+                                    <div>
+                                        <strong>Tarotový výklad</strong>
+                                        <p class="reading-item__date">3. července 2026, 08:12</p>
+                                        <p class="profile-guest-preview__excerpt">Otázka: „Mám se do toho pustit hned, nebo počkat?“ — Karta Hvězda ukazuje, že důvěra teď funguje víc než dokonalý plán.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="reading-item card profile-guest-preview__item">
+                            <span class="profile-guest-preview__badge">Ukázka</span>
+                            <div class="reading-item__inner">
+                                <div class="reading-item__left">
+                                    <span class="reading-item__icon" aria-hidden="true"><i data-lucide="sparkles" class="reading-type-icon"></i></span>
+                                    <div>
+                                        <strong>Horoskop</strong>
+                                        <p class="reading-item__date">2. července 2026, 19:04</p>
+                                        <p class="profile-guest-preview__excerpt">Denní horoskop pro Lva: soustřeď se na jeden rozhovor, který odkládáš. Zbytek dne se odvíjí od něj.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="profile-guest-card__actions">
-                        <a href="tarot-ano-ne.html?source=profile_gate_first_reading&amp;feature=tarot_yes_no" class="btn btn--primary" data-analytics-cta="profile_gate_first_reading" data-analytics-feature="tarot_yes_no">Udělat první výklad</a>
-                        <a href="prihlaseni.html?source=profile_gate_login&amp;feature=profile_history&amp;redirect=/profil.html" id="profile-login-btn" class="btn btn--secondary" data-analytics-cta="profile_gate_login" data-analytics-feature="profile_history">Přihlásit se</a>
-                        <a href="prihlaseni.html?mode=register&amp;source=profile_gate_register&amp;feature=profile_history&amp;redirect=/profil.html" class="btn btn--secondary" data-analytics-cta="profile_gate_register" data-analytics-feature="profile_history">Vytvořit účet zdarma</a>
+                        <a href="prihlaseni.html?mode=register&amp;source=journal_preview&amp;feature=profile_history&amp;redirect=/profil.html" id="profile-register-btn" class="btn btn--primary" data-analytics-cta="journal_preview_register" data-analytics-feature="profile_history">Vytvořit profil zdarma</a>
+                        <a href="tarot-ano-ne.html?source=journal_preview&amp;feature=tarot_yes_no" id="profile-try-free-btn" class="btn btn--secondary" data-analytics-cta="journal_preview_try_free" data-analytics-feature="tarot_yes_no">Nejdřív si vyzkoušej výklad zdarma</a>
+                        <a href="prihlaseni.html?source=profile_gate_login&amp;feature=profile_history&amp;redirect=/profil.html" id="profile-login-btn" class="btn btn--text" data-analytics-cta="profile_gate_login" data-analytics-feature="profile_history">Máš už účet? Přihlas se</a>
                     </div>
                 </div>
 

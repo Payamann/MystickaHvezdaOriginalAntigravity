@@ -76,8 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const heroButton = document.getElementById('hero-cta-btn');
     if (heroButton) {
-        heroButton.textContent = 'Vytvořit účet zdarma →';
-        heroButton.setAttribute('href', 'prihlaseni.html?mode=register&source=homepage_hero&feature=daily_guidance');
+        heroButton.textContent = 'Polož otázku kartám zdarma →';
+        heroButton.setAttribute('href', 'tarot-ano-ne.html?source=homepage_hero&feature=tarot_yes_no');
     }
 
     const heroTrust = document.getElementById('hero-cta-trust');

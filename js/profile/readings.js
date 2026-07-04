@@ -15,6 +15,7 @@ const FILTER_ALIASES = {
 };
 let emptyHistoryViewTracked = false;
 let historyNextStepViewTracked = false;
+let activationHeroViewTracked = false;
 
 // Getter for allReadings (used by modal.js)
 export function getAllReadings() {
@@ -145,11 +146,49 @@ function renderHistoryNextStep(readings) {
     `;
 }
 
+function renderActivationHero() {
+    if (!activationHeroViewTracked) {
+        activationHeroViewTracked = true;
+        window.MH_ANALYTICS?.trackEvent?.('profile_activation_viewed', {
+            source: 'profile_history',
+            feature: 'profile_history'
+        });
+    }
+
+    return `
+        <div class="card glass-card profile-activation-hero">
+            <div class="profile-activation-hero__icon" aria-hidden="true">✦</div>
+            <h4 class="profile-activation-hero__title">Tvůj deník čeká na první výklad</h4>
+            <p class="profile-activation-hero__lead">Výklady se ukládají sem, takže se k nim kdykoliv vrátíš a příště na ně navážeš dalším krokem.</p>
+            <div class="profile-activation-hero__grid">
+                <a href="tarot-ano-ne.html?source=profile_activation&feature=tarot_yes_no" class="profile-activation-hero__card" data-analytics-cta="profile_activation_tarot_yes_no" data-analytics-feature="tarot_yes_no">
+                    <strong>Tarot ano/ne</strong>
+                    <span>Rychlá odpověď na jednu konkrétní otázku.</span>
+                </a>
+                <a href="tarot-karta-dne.html?source=profile_activation" class="profile-activation-hero__card" data-analytics-cta="profile_activation_card_of_day" data-analytics-feature="tarot_daily_card_profile_save">
+                    <strong>Karta dne</strong>
+                    <span>Jeden symbol, který nastaví směr pro dnešek.</span>
+                </a>
+                <a href="horoskopy.html?source=profile_activation" class="profile-activation-hero__card" data-analytics-cta="profile_activation_daily_horoscope" data-analytics-feature="daily_guidance">
+                    <strong>Denní horoskop</strong>
+                    <span>Osobní vedení pro tvoje znamení na dnešek.</span>
+                </a>
+            </div>
+        </div>
+    `;
+}
+
 export function renderReadings() {
     const container = document.getElementById('readings-list');
     if (!container) return;
 
     const filtered = getFilteredReadings();
+
+    if (currentFilter === 'all' && allReadings.length === 0) {
+        container.innerHTML = renderActivationHero();
+        updatePagination(0, 0);
+        return;
+    }
 
     if (filtered.length === 0) {
         if (currentFilter === 'all' && !emptyHistoryViewTracked) {

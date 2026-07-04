@@ -1,10 +1,10 @@
-function r(e){if(!e)return"";let t=document.createElement("div");return t.textContent=e,t.innerHTML}function d(){return window.API_CONFIG?.BASE_URL||"/api"}function c(e=!1){let t=window.Auth?.token,a={};return t&&(a.Authorization=`Bearer ${t}`),e&&(a["Content-Type"]="application/json"),a}function u(e){return`<i data-lucide="${{angel:"feather","angel-card":"feather",astrocartography:"map-pinned",crystal:"crystal-ball","crystal-ball":"crystal-ball","daily-wisdom":"sun",horoscope:"sparkles",journal:"pen-tool","medicine-wheel":"compass",natal:"map","natal-chart":"map",numerology:"hash","past-life":"history",runes:"gem",synastry:"heart",tarot:"book-marked"}[e]||"star"}" class="reading-type-icon"></i>`}function p(e){return{angel:"And\u011Blsk\xFD vzkaz","angel-card":"And\u011Blsk\xE1 karta",astrocartography:"Astro mapa",crystal:"K\u0159i\u0161\u0165\xE1lov\xE1 koule","crystal-ball":"K\u0159i\u0161\u0165\xE1lov\xE1 koule","daily-wisdom":"Denn\xED moudrost",horoscope:"Horoskop",journal:"Manifesta\u010Dn\xED den\xEDk","medicine-wheel":"\u0160amansk\xE9 kolo",natal:"Nat\xE1ln\xED karta","natal-chart":"Nat\xE1ln\xED karta",numerology:"Numerologie","past-life":"Minul\xFD \u017Eivot",runes:"Runov\xFD v\xFDklad",synastry:"Partnersk\xE1 shoda",tarot:"Tarotov\xFD v\xFDklad"}[e]||"V\xFDklad"}var i=[],o="all",s=0,_=10,h={"crystal-ball":["crystal-ball","crystal"],"natal-chart":["natal-chart","natal"]},m=!1,f=!1;function P(){return i}function z(e,t){let a=i.find(n=>n.id===e);a&&Object.assign(a,t)}async function $(){let e=document.getElementById("readings-list");try{let t=await fetch(`${d()}/user/readings`,{credentials:"include",headers:c()});if(!t.ok)throw new Error("Failed to load readings");return i=(await t.json()).readings||[],s=0,l(),i}catch(t){return console.error("Error loading readings:",t),e&&(e.innerHTML=`
+function r(t){if(!t)return"";let e=document.createElement("div");return e.textContent=t,e.innerHTML}function c(){return window.API_CONFIG?.BASE_URL||"/api"}function u(t=!1){let e=window.Auth?.token,a={};return e&&(a.Authorization=`Bearer ${e}`),t&&(a["Content-Type"]="application/json"),a}function p(t){return`<i data-lucide="${{angel:"feather","angel-card":"feather",astrocartography:"map-pinned",crystal:"crystal-ball","crystal-ball":"crystal-ball","daily-wisdom":"sun",horoscope:"sparkles",journal:"pen-tool","medicine-wheel":"compass",natal:"map","natal-chart":"map",numerology:"hash","past-life":"history",runes:"gem",synastry:"heart",tarot:"book-marked"}[t]||"star"}" class="reading-type-icon"></i>`}function f(t){return{angel:"And\u011Blsk\xFD vzkaz","angel-card":"And\u011Blsk\xE1 karta",astrocartography:"Astro mapa",crystal:"K\u0159i\u0161\u0165\xE1lov\xE1 koule","crystal-ball":"K\u0159i\u0161\u0165\xE1lov\xE1 koule","daily-wisdom":"Denn\xED moudrost",horoscope:"Horoskop",journal:"Manifesta\u010Dn\xED den\xEDk","medicine-wheel":"\u0160amansk\xE9 kolo",natal:"Nat\xE1ln\xED karta","natal-chart":"Nat\xE1ln\xED karta",numerology:"Numerologie","past-life":"Minul\xFD \u017Eivot",runes:"Runov\xFD v\xFDklad",synastry:"Partnersk\xE1 shoda",tarot:"Tarotov\xFD v\xFDklad"}[t]||"V\xFDklad"}var i=[],o="all",s=0,h=10,v={"crystal-ball":["crystal-ball","crystal"],"natal-chart":["natal-chart","natal"]},_=!1,m=!1,y=!1;function T(){return i}function A(t,e){let a=i.find(n=>n.id===t);a&&Object.assign(a,e)}async function $(){let t=document.getElementById("readings-list");try{let e=await fetch(`${c()}/user/readings`,{credentials:"include",headers:u()});if(!e.ok)throw new Error("Failed to load readings");return i=(await e.json()).readings||[],s=0,d(),i}catch(e){return console.error("Error loading readings:",e),t&&(t.innerHTML=`
                 <div class="empty-state">
                     <div class="empty-state__icon">\u26A0\uFE0F</div>
                     <p class="empty-state__text">Nepoda\u0159ilo se na\u010D\xEDst historii.</p>
                     <button class="btn btn--glass btn--sm" data-readings-action="reload">Zkusit znovu</button>
                 </div>
-            `,e.querySelector('[data-readings-action="reload"]')?.addEventListener("click",()=>location.reload())),[]}}function A(e){o=e.target.value,s=0,l()}function v(){if(o==="all")return i;let e=h[o]||[o];return i.filter(t=>e.includes(t.type))}function b(e){return[...e].sort((t,a)=>new Date(a.created_at)-new Date(t.created_at))[0]||null}function g(e){let t=e?.type||"reading";return t==="synastry"?{title:"Nav\xE1zat jednou konkr\xE9tn\xED vztahovou ot\xE1zkou",description:"Kdy\u017E u\u017E zn\xE1\u0161 dynamiku vztahu, dal\u0161\xED krok je kr\xE1tk\xE1 ot\xE1zka ano/ne k tomu, co te\u010F ud\u011Blat.",href:"tarot-ano-ne.html?source=profile_history_next_step&feature=tarot_yes_no&intent=relationship_follow_up",label:"Zeptat se tarotu ano/ne",feature:"tarot_yes_no",intent:"relationship_follow_up"}:t==="tarot"?{title:"Polo\u017Eit navazuj\xEDc\xED ot\xE1zku",description:"Den\xEDk m\xE1 nejv\u011Bt\u0161\xED hodnotu, kdy\u017E na prvn\xED odpov\u011B\u010F nav\xE1\u017Ee\u0161 jedn\xEDm dal\u0161\xEDm konkr\xE9tn\xEDm krokem.",href:"tarot-ano-ne.html?source=profile_history_next_step&feature=tarot_yes_no&intent=follow_up",label:"Polo\u017Eit dal\u0161\xED ot\xE1zku",feature:"tarot_yes_no",intent:"follow_up"}:{title:"Prom\u011Bnit v\xFDklad v dal\u0161\xED krok",description:"Vyber si jednu praktickou ot\xE1zku a nech Den\xEDk dr\u017Eet souvislost mezi odpov\u011B\u010Fmi.",href:"partnerska-shoda.html?source=profile_history_next_step&feature=partnerska_detail&intent=relationship_follow_up",label:"Prov\u011B\u0159it vztahov\xE9 t\xE9ma",feature:"partnerska_detail",intent:"relationship_follow_up"}}function k(e){if(o!=="all"||e.length===0)return"";let t=b(e),a=g(t);return f||(f=!0,window.MH_ANALYTICS?.trackEvent?.("profile_history_next_step_viewed",{source:"profile_history",feature:"profile_history",reading_count:e.length,latest_type:t?.type||null})),`
+            `,t.querySelector('[data-readings-action="reload"]')?.addEventListener("click",()=>location.reload())),[]}}function L(t){o=t.target.value,s=0,d()}function k(){if(o==="all")return i;let t=v[o]||[o];return i.filter(e=>t.includes(e.type))}function g(t){return[...t].sort((e,a)=>new Date(a.created_at)-new Date(e.created_at))[0]||null}function b(t){let e=t?.type||"reading";return e==="synastry"?{title:"Nav\xE1zat jednou konkr\xE9tn\xED vztahovou ot\xE1zkou",description:"Kdy\u017E u\u017E zn\xE1\u0161 dynamiku vztahu, dal\u0161\xED krok je kr\xE1tk\xE1 ot\xE1zka ano/ne k tomu, co te\u010F ud\u011Blat.",href:"tarot-ano-ne.html?source=profile_history_next_step&feature=tarot_yes_no&intent=relationship_follow_up",label:"Zeptat se tarotu ano/ne",feature:"tarot_yes_no",intent:"relationship_follow_up"}:e==="tarot"?{title:"Polo\u017Eit navazuj\xEDc\xED ot\xE1zku",description:"Den\xEDk m\xE1 nejv\u011Bt\u0161\xED hodnotu, kdy\u017E na prvn\xED odpov\u011B\u010F nav\xE1\u017Ee\u0161 jedn\xEDm dal\u0161\xEDm konkr\xE9tn\xEDm krokem.",href:"tarot-ano-ne.html?source=profile_history_next_step&feature=tarot_yes_no&intent=follow_up",label:"Polo\u017Eit dal\u0161\xED ot\xE1zku",feature:"tarot_yes_no",intent:"follow_up"}:{title:"Prom\u011Bnit v\xFDklad v dal\u0161\xED krok",description:"Vyber si jednu praktickou ot\xE1zku a nech Den\xEDk dr\u017Eet souvislost mezi odpov\u011B\u010Fmi.",href:"partnerska-shoda.html?source=profile_history_next_step&feature=partnerska_detail&intent=relationship_follow_up",label:"Prov\u011B\u0159it vztahov\xE9 t\xE9ma",feature:"partnerska_detail",intent:"relationship_follow_up"}}function w(t){if(o!=="all"||t.length===0)return"";let e=g(t),a=b(e);return m||(m=!0,window.MH_ANALYTICS?.trackEvent?.("profile_history_next_step_viewed",{source:"profile_history",feature:"profile_history",reading_count:t.length,latest_type:e?.type||null})),`
         <div class="profile-history-next-step">
             <div class="profile-history-next-step__copy">
                 <span class="profile-history-next-step__eyebrow">Dal\u0161\xED krok po ulo\u017Een\xED</span>
@@ -12,11 +12,31 @@ function r(e){if(!e)return"";let t=document.createElement("div");return t.textCo
                 <p>${r(a.description)}</p>
             </div>
             <div class="profile-history-next-step__actions">
-                ${t?.id?`<button class="btn btn--glass btn--sm" data-reading-action="view" data-reading-id="${r(t.id)}">Vr\xE1tit se k posledn\xEDmu v\xFDkladu</button>`:""}
+                ${e?.id?`<button class="btn btn--glass btn--sm" data-reading-action="view" data-reading-id="${r(e.id)}">Vr\xE1tit se k posledn\xEDmu v\xFDkladu</button>`:""}
                 <a href="${r(a.href)}" class="btn btn--primary btn--sm" data-profile-history-next-step="${r(a.intent)}" data-analytics-cta="profile_history_next_step" data-analytics-feature="${r(a.feature)}">${r(a.label)}</a>
             </div>
         </div>
-    `}function l(){let e=document.getElementById("readings-list");if(!e)return;let t=v();if(t.length===0){o==="all"&&!m&&(m=!0,window.MH_ANALYTICS?.trackEvent?.("profile_empty_history_viewed",{source:"profile_history",feature:"profile_history"})),e.innerHTML=`
+    `}function x(){return y||(y=!0,window.MH_ANALYTICS?.trackEvent?.("profile_activation_viewed",{source:"profile_history",feature:"profile_history"})),`
+        <div class="card glass-card profile-activation-hero">
+            <div class="profile-activation-hero__icon" aria-hidden="true">\u2726</div>
+            <h4 class="profile-activation-hero__title">Tv\u016Fj den\xEDk \u010Dek\xE1 na prvn\xED v\xFDklad</h4>
+            <p class="profile-activation-hero__lead">V\xFDklady se ukl\xE1daj\xED sem, tak\u017Ee se k nim kdykoliv vr\xE1t\xED\u0161 a p\u0159\xED\u0161t\u011B na n\u011B nav\xE1\u017Ee\u0161 dal\u0161\xEDm krokem.</p>
+            <div class="profile-activation-hero__grid">
+                <a href="tarot-ano-ne.html?source=profile_activation&feature=tarot_yes_no" class="profile-activation-hero__card" data-analytics-cta="profile_activation_tarot_yes_no" data-analytics-feature="tarot_yes_no">
+                    <strong>Tarot ano/ne</strong>
+                    <span>Rychl\xE1 odpov\u011B\u010F na jednu konkr\xE9tn\xED ot\xE1zku.</span>
+                </a>
+                <a href="tarot-karta-dne.html?source=profile_activation" class="profile-activation-hero__card" data-analytics-cta="profile_activation_card_of_day" data-analytics-feature="tarot_daily_card_profile_save">
+                    <strong>Karta dne</strong>
+                    <span>Jeden symbol, kter\xFD nastav\xED sm\u011Br pro dne\u0161ek.</span>
+                </a>
+                <a href="horoskopy.html?source=profile_activation" class="profile-activation-hero__card" data-analytics-cta="profile_activation_daily_horoscope" data-analytics-feature="daily_guidance">
+                    <strong>Denn\xED horoskop</strong>
+                    <span>Osobn\xED veden\xED pro tvoje znamen\xED na dne\u0161ek.</span>
+                </a>
+            </div>
+        </div>
+    `}function d(){let t=document.getElementById("readings-list");if(!t)return;let e=k();if(o==="all"&&i.length===0){t.innerHTML=x(),l(0,0);return}if(e.length===0){o==="all"&&!_&&(_=!0,window.MH_ANALYTICS?.trackEvent?.("profile_empty_history_viewed",{source:"profile_history",feature:"profile_history"})),t.innerHTML=`
             <div class="empty-state">
                 <div class="empty-state__icon">\u{1F52E}</div>
                 <h4 class="empty-state__title">${o==="all"?"Den\xEDk v\xFDklad\u016F zat\xEDm \u010Dek\xE1 na prvn\xED odpov\u011B\u010F":"Tady zat\xEDm nen\xED \u017E\xE1dn\xFD v\xFDklad tohoto typu"}</h4>
@@ -29,13 +49,13 @@ function r(e){if(!e)return"";let t=document.createElement("div");return t.textCo
                     </div>
                 `:""}
             </div>
-        `,y(0,0);return}let a=t.slice(0,s+_);s=a.length,e.innerHTML=`${k(t)}${a.map(n=>`
+        `,l(0,0);return}let a=e.slice(0,s+h);s=a.length,t.innerHTML=`${w(e)}${a.map(n=>`
         <div class="reading-item card" data-reading-id="${r(n.id)}" role="button" tabindex="0">
             <div class="reading-item__inner">
                 <div class="reading-item__left">
-                    <span class="reading-item__icon" aria-hidden="true">${u(n.type)}</span>
+                    <span class="reading-item__icon" aria-hidden="true">${p(n.type)}</span>
                     <div>
-                        <strong>${r(p(n.type))}</strong>
+                        <strong>${r(f(n.type))}</strong>
                         <p class="reading-item__date">
                             ${new Date(n.created_at).toLocaleDateString("cs-CZ",{day:"numeric",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit"})}
                         </p>
@@ -51,4 +71,4 @@ function r(e){if(!e)return"";let t=document.createElement("div");return t.textCo
                 </div>
             </div>
         </div>
-    `).join("")}`,y(s,t.length)}function T(){l()}function y(e,t){let a=document.getElementById("readings-pagination");if(a)if(e<t){a.hidden=!1,a.classList.add("profile-block-visible");let n=document.getElementById("readings-load-more");n&&(n.textContent=`Na\u010D\xEDst dal\u0161\xED (${t-e} zb\xFDv\xE1)`)}else a.hidden=!0,a.classList.remove("profile-block-visible")}export{P as getAllReadings,A as handleFilterChange,$ as loadReadings,l as renderReadings,T as showMoreReadings,z as updateReading};
+    `).join("")}`,l(s,e.length)}function j(){d()}function l(t,e){let a=document.getElementById("readings-pagination");if(a)if(t<e){a.hidden=!1,a.classList.add("profile-block-visible");let n=document.getElementById("readings-load-more");n&&(n.textContent=`Na\u010D\xEDst dal\u0161\xED (${e-t} zb\xFDv\xE1)`)}else a.hidden=!0,a.classList.remove("profile-block-visible")}export{T as getAllReadings,L as handleFilterChange,$ as loadReadings,d as renderReadings,j as showMoreReadings,A as updateReading};

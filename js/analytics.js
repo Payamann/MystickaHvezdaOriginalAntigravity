@@ -642,10 +642,10 @@ document.addEventListener('click', (event) => {
     if (target.matches('#hero-cta-btn')) {
         MH_ANALYTICS.trackCTA('homepage_hero', {
             label,
-            destination: href || '/prihlaseni.html?mode=register',
+            destination: href || '/tarot-ano-ne.html',
             ...buildCtaTrackingContext(target, href, {
                 source: 'homepage_hero',
-                feature: 'daily_guidance'
+                feature: 'tarot_yes_no'
             })
         });
         return;
