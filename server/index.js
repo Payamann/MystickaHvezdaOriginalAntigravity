@@ -30,6 +30,7 @@ import mentorRoutes from './mentor.js';
 import adminRoutes from './admin.js';
 import crypto from 'crypto';
 import { initializeEmailQueueJob } from './jobs/email-queue.js';
+import { isAfterDailyHoroscopeSendWindow, isAfterDailyPushSendWindow } from './utils/send-window.js';
 import { initializeDataRetentionJob } from './jobs/data-retention.js';
 import schedule from 'node-schedule';
 import { globalLimiter, staticLimiter, aiLimiter, sensitiveLimiter } from './middleware.js';
@@ -131,19 +132,7 @@ function getSocialAgentSchedulerStatus() {
     return hasEnvValue('ANTHROPIC_API_KEY') ? 'enabled' : 'missing_api_key';
 }
 
-const DAILY_HOROSCOPE_SEND_HOUR_UTC = 7;
 let dailyHoroscopeJobRunning = false;
-
-function isAfterDailyHoroscopeSendWindow(date = new Date()) {
-    return date.getUTCHours() >= DAILY_HOROSCOPE_SEND_HOUR_UTC;
-}
-
-// 06:00 UTC = 8:00 CEST / 7:00 CET — matches the "ráno v 8:00" opt-in promise.
-const DAILY_PUSH_SEND_HOUR_UTC = 6;
-
-function isAfterDailyPushSendWindow(date = new Date()) {
-    return date.getUTCHours() >= DAILY_PUSH_SEND_HOUR_UTC;
-}
 
 async function runDailyPushJob(reason = 'scheduled') {
     try {
