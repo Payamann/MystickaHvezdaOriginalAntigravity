@@ -7,6 +7,7 @@ import express from 'express';
 import crypto from 'crypto';
 import rateLimit from 'express-rate-limit';
 import { supabase } from '../db-supabase.js';
+import { renderUnsubscribePage } from '../utils/unsubscribe-page.js';
 
 const router = express.Router();
 
@@ -17,17 +18,6 @@ const subscribeLimiter = rateLimit({
 });
 
 const VALID_SIGNS = ['Beran', 'Býk', 'Blíženci', 'Rak', 'Lev', 'Panna', 'Váhy', 'Štír', 'Střelec', 'Kozoroh', 'Vodnář', 'Ryby'];
-
-function renderUnsubscribePage({ title, message }) {
-    return `<!DOCTYPE html><html lang="cs"><head><meta charset="utf-8">
-            <title>${title} — Mystická Hvězda</title>
-            <link rel="stylesheet" href="/css/style.v2.min.css?v=11">
-            </head><body class="unsubscribe-page"><div class="unsubscribe-page__box">
-            <h1>${title}</h1>
-            <p>${message}</p>
-            <a href="/">← Zpět na Mystickou Hvězdu</a>
-            </div></body></html>`;
-}
 
 // POST /api/subscribe/horoscope
 router.post('/', subscribeLimiter, async (req, res) => {

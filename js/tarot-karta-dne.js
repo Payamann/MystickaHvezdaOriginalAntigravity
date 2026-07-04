@@ -285,12 +285,31 @@
 
         try {
             const canvas = await drawDailyTarotResultCard(card);
-            const link = document.createElement('a');
-            link.download = `tarot-karta-dne-${slugify(card.name)}-${getLocalDateKey()}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-            saveButton.textContent = 'Obrázek uložen';
-            trackDailyCard('tarot_daily_card_image_saved', card.name, { format: 'png' });
+            const fileName = `tarot-karta-dne-${slugify(card.name)}-${getLocalDateKey()}.png`;
+
+            if (window.MH_SHARE_IMAGE?.shareOrDownload) {
+                const outcome = await window.MH_SHARE_IMAGE.shareOrDownload({
+                    canvas,
+                    fileName,
+                    shareTitle: `Tarot karta dne: ${card.name}`,
+                    shareText: `Moje tarot karta dne je ${card.name}. Vytáhni si tu svoji na mystickahvezda.cz`,
+                    eventBase: 'tarot_daily_card_image',
+                    metadata: {
+                        source: SOURCE,
+                        feature: FEATURE,
+                        card: card.name,
+                        date_key: getLocalDateKey()
+                    }
+                });
+                saveButton.textContent = outcome === 'shared' ? 'Sdíleno' : 'Obrázek uložen';
+            } else {
+                const link = document.createElement('a');
+                link.download = fileName;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                saveButton.textContent = 'Obrázek uložen';
+                trackDailyCard('tarot_daily_card_image_saved', card.name, { format: 'png' });
+            }
         } catch (error) {
             console.warn('[Tarot karta dne] Save image failed:', error.message);
             saveButton.textContent = 'Zkusit znovu';

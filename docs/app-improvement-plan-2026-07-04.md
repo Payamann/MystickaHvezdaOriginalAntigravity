@@ -13,10 +13,7 @@ Mandate (per `docs/operator-context.md`): paid conversion over new features. Thi
 
 ### 0.1 VIP plan checkout may dead-end (potential revenue bug)
 
-`vip-majestrat` (999 CZK/month) is listed in `PUBLIC_PLAN_ORDER` in `server/config/constants.js` and is the required plan for `tarot_celtic_cross` in `server/config/growth-loop.js`, but it has **no entry in `LIVE_STRIPE_PRICE_IDS`**. The Celtic Cross paywall may route users into a checkout that cannot create a Stripe session.
-
-- Action: attempt a live (or test-mode) checkout for `vip-majestrat`; either add the Stripe price ID or remove VIP from public plan order and remap `tarot_celtic_cross` to `osviceni` until VIP is sellable.
-- Value: removes a silent dead-end on the highest-priced plan.
+**RESOLVED 2026-07-04 — false alarm.** `vip-majestrat` has a live price ID in `LIVE_STRIPE_PRICE_IDS` (`server/config/constants.js:40`), an env override (`STRIPE_PRICE_VIP_MAJESTRAT_MONTHLY`), and `buildSubscriptionLineItem()` in `server/payment.js` falls back to inline `price_data` even without a configured price. VIP checkout is safe on all three layers.
 
 ### 0.2 Re-measure the auth-handoff leak post-Faze-1
 
@@ -56,9 +53,9 @@ State: `server/newsletter.js` stores emails into `newsletter_subscribers` and se
 
 ### 1.4 SEO hygiene: duplicate page + compatibility cluster overlap
 
-- `horoskop/` contains both `vodnar.html` and `vodnár.html` (diacritic duplicate). Remove the duplicate, keep the canonical slug, add a redirect if the diacritic URL has inbound links.
-- `kompatibilita/` (66 CZ-slug pair pages) and `partnerska-shoda/` (145 EN-slug pair pages) are two parallel compatibility clusters targeting the same intents. Decide one canonical cluster per intent and cross-canonicalize or consolidate to prevent ranking cannibalization.
-- Value: near-free protection of the largest programmatic SEO asset.
+**RESOLVED 2026-07-04 — both already handled by earlier work.**
+- `horoskop/vodnár.html` is a deliberate legacy page: `noindex, follow`, canonical to `vodnar.html`, excluded from the sitemap, and 301-redirected via `STATIC_PAGE_REDIRECTS` in `server/index.js`. Generated intentionally by `server/scripts/generate-zodiac-pages.js`.
+- `kompatibilita/*` pages canonicalize to their `partnerska-shoda/*` counterparts (see commit "Consolidate partner compatibility SEO cluster"), so there is no cannibalization.
 
 ### 1.5 PWA install prompt
 
@@ -110,6 +107,17 @@ State: the checkout-cancel recovery panel on `cenik.html?payment=cancel` ships a
 - Share loop: `*_image_shared` / share-cancel / download analytics events, per tool, matching the tarot ANO/NE pattern.
 - Email and push: `email_queue` outcomes, `last_sent_at` dedup fields, unsubscribe rates; push delivery vs 410-expired cleanup counts.
 - SEO: `npm run audit:site` and `npm run sitemap:check` stay green; Search Console impressions for new clusters after deploy.
+
+## Implementation status (2026-07-04)
+
+Tier 1 shipped in this branch:
+- **1.1** `server/jobs/daily-push.js` + cron in `server/index.js` (06:00 UTC + startup/hourly catch-up, gated by `ENABLE/DISABLE_DAILY_PUSH_NOTIFICATIONS`), Prague-day dedup via new `push_subscriptions.last_notified_at` (`migrations/20260704_push_daily_notifications.sql`), 404/410 subscription cleanup. `push-notifications.js` now loads on `index.html`, `horoskopy.html`, `profil.html`. Requires `VAPID_PUBLIC_KEY`/`VAPID_PRIVATE_KEY` in production env.
+- **1.2** Shared `js/share-image-canvas.js` (branded 1080x1350 canvas + share-first delivery with `*_image_shared|_share_cancelled|_saved` analytics). Wired into `partnerska-shoda.html` (score card, `partner_match_image_*`), `minuly-zivot.html` (past-life card, `past_life_image_*`), and `tarot-karta-dne.html` (existing canvas upgraded from download-only to native share, `tarot_daily_card_image_*`).
+- **1.3** `newsletter_welcome` template in `server/email-service.js`, sent non-blocking on subscribe in `server/newsletter.js`; stateless HMAC one-click unsubscribe (`GET /api/newsletter/unsubscribe`) with shared CSP-safe renderer extracted to `server/utils/unsubscribe-page.js`.
+- **1.4** Verified as already-handled (see above); no change needed.
+- **1.5** `js/pwa-install.js`: captures `beforeinstallprompt`, offers install on 2nd+ visit after cookie consent, never stacks with the push banner, 30-day dismiss cooldown, `pwa_install_*` analytics. Loaded on index, horoskopy, profil, tarot.
+
+Next up (not in this branch): Tier 0.2 funnel re-measurement against live data, then Tier 2 starting with the free-user lifecycle email sequence.
 
 ## Suggested sequence
 

@@ -313,6 +313,119 @@ function revealSynastryNextStep(scores, synastry, isPremium) {
     }
 }
 
+let lastSynastryShareData = null;
+
+function buildSynastryShareVerdict(totalScore) {
+    if (totalScore > 85) return 'Velmi silná shoda s výraznou vzájemnou podporou.';
+    if (totalScore > 70) return 'Velmi silný pár s harmonickými aspekty.';
+    if (totalScore > 55) return 'Slibné spojení, které stojí za hlubší pohled.';
+    return 'Spojení plné kontrastů — a příležitostí k růstu.';
+}
+
+function firstNameOf(person, fallback) {
+    const name = String(person?.name || '').trim();
+    return name ? name.split(/\s+/)[0] : fallback;
+}
+
+function drawSynastryResultCard({ person1, person2, scores }) {
+    const shareImage = window.MH_SHARE_IMAGE;
+    const canvas = shareImage.createCanvas();
+    const ctx = canvas.getContext('2d');
+    const centerX = canvas.width / 2;
+    const totalScore = Number(scores?.totalScore) || 0;
+    const nameA = firstNameOf(person1, 'Osoba A');
+    const nameB = firstNameOf(person2, 'Osoba B');
+
+    shareImage.drawBrandBackground(ctx, canvas, totalScore * 13 + nameA.length + nameB.length);
+
+    ctx.fillStyle = '#f1d06b';
+    ctx.font = '700 52px Cinzel, Georgia, serif';
+    ctx.fillText('PARTNERSKÁ SHODA', centerX, 250);
+
+    ctx.fillStyle = '#fff7d6';
+    ctx.font = '700 58px Cinzel, Georgia, serif';
+    shareImage.drawCenteredLines(ctx, shareImage.wrapText(ctx, `${nameA} & ${nameB}`, 860), centerX, 400, 68, 2);
+
+    ctx.fillStyle = totalScore > 70 ? '#b9f3c2' : (totalScore > 55 ? '#f1d06b' : '#ff9ea8');
+    ctx.font = '700 190px Cinzel, Georgia, serif';
+    ctx.fillText(`${totalScore}%`, centerX, 720);
+
+    ctx.fillStyle = '#f6f1ff';
+    ctx.font = '500 38px Inter, Arial, sans-serif';
+    let y = shareImage.drawCenteredLines(
+        ctx,
+        shareImage.wrapText(ctx, buildSynastryShareVerdict(totalScore), 840),
+        centerX,
+        830,
+        50,
+        3
+    );
+
+    ctx.fillStyle = 'rgba(212,175,55,0.86)';
+    ctx.fillRect(170, y + 24, 740, 3);
+
+    ctx.fillStyle = 'rgba(255,255,255,0.72)';
+    ctx.font = '500 30px Inter, Arial, sans-serif';
+    ctx.fillText('Vypočítáno z data narození podle astrologické synastrie.', centerX, y + 96);
+
+    shareImage.drawFooter(ctx, canvas, 'mystickahvezda.cz/partnerska-shoda.html',
+        'Spočítej shodu se svým protějškem.');
+
+    return canvas;
+}
+
+async function onSynastryImageShareClick(event) {
+    const button = event.currentTarget;
+    if (!lastSynastryShareData || !window.MH_SHARE_IMAGE?.shareOrDownload) return;
+
+    const originalText = button.textContent;
+    button.disabled = true;
+    button.textContent = 'Připravuji obrázek...';
+
+    try {
+        const canvas = drawSynastryResultCard(lastSynastryShareData);
+        const totalScore = Number(lastSynastryShareData.scores?.totalScore) || 0;
+        await window.MH_SHARE_IMAGE.shareOrDownload({
+            canvas,
+            fileName: 'partnerska-shoda.png',
+            shareTitle: 'Partnerská shoda',
+            shareText: `Naše partnerská shoda vyšla na ${totalScore} %. Spočítej si tu svoji na mystickahvezda.cz`,
+            eventBase: 'partner_match_image',
+            metadata: {
+                source: SYNASTRY_RESULT_SOURCE,
+                feature: SYNASTRY_FEATURE,
+                total_score: totalScore
+            }
+        });
+    } catch (error) {
+        console.warn('[Synastry] Image share failed:', error.message);
+    } finally {
+        button.disabled = false;
+        button.textContent = originalText;
+    }
+}
+
+function setupSynastryImageShare(person1, person2, scores) {
+    if (!window.MH_SHARE_IMAGE?.shareOrDownload) return;
+
+    lastSynastryShareData = { person1, person2, scores };
+
+    const verdict = document.getElementById('verdict-text');
+    const host = verdict?.parentElement;
+    if (!host) return;
+
+    let button = document.getElementById('synastry-share-image-btn');
+    if (!button) {
+        button = document.createElement('button');
+        button.id = 'synastry-share-image-btn';
+        button.type = 'button';
+        button.className = 'btn btn--ghost mt-md';
+        button.textContent = '✨ Uložit obrázek shody';
+        button.addEventListener('click', onSynastryImageShareClick);
+        host.appendChild(button);
+    }
+}
+
 function bindSynastryNextStepLinks() {
     document.querySelectorAll('[data-synastry-upgrade]').forEach((link) => {
         link.addEventListener('click', (event) => {
@@ -482,6 +595,7 @@ async function calculateCompatibility() {
     }
 
     revealSynastryNextStep(displayedScores, calculatedSynastry, isPremium);
+    setupSynastryImageShare(person1, person2, displayedScores);
 
     // Reset previous state
     const existingOverlay = detailCard.querySelector('.premium-lock-overlay');
@@ -568,6 +682,7 @@ async function calculateCompatibility() {
                 calculatedSynastry = data.synastry;
                 applySynastryScores(displayedScores, isPremium && !data.isTeaser);
                 renderSynastryEngineSummary(resultsDiv, calculatedSynastry);
+                setupSynastryImageShare(person1, person2, displayedScores);
             }
 
             // Update verdict
