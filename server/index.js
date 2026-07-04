@@ -708,6 +708,17 @@ app.get('/jmena/:name', (req, res, next) => {
         return next();
     }
 
+    // Prefer the generated static page when the slug exists
+    // (see scripts/generate-jmena-pages.mjs).
+    const slug = name
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .replace(/[^a-z0-9]/g, '');
+    if (slug && fs.existsSync(path.join(__dirname, '..', 'jmena', `${slug}.html`))) {
+        return res.redirect(301, `/jmena/${slug}.html`);
+    }
+
     // Capitalize first letter to match database
     const capitalized = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
     res.redirect(301, `/jmena/index.html?jmeno=${encodeURIComponent(capitalized)}`);

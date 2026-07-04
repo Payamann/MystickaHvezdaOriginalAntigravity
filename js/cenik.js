@@ -687,13 +687,41 @@ function renderCheckoutCancelRecovery(context, paymentState = 'cancel') {
         <p class="pricing-cancel-recovery__text">${planMeta.name}: ${planMeta.headline}</p>
         <p class="pricing-cancel-recovery__note">Karta z\u016fst\u00e1v\u00e1 ve Stripe Checkoutu; Mystick\u00e1 Hv\u011bzda ji na webu neukl\u00e1d\u00e1. Cena a vybran\u00fd pl\u00e1n se zobraz\u00ed znovu p\u0159ed potvrzen\u00edm platby.</p>
         <div class="pricing-cancel-recovery__actions">
-            <button type="button" class="pricing-cancel-recovery__primary" data-cancel-retry>${isFailure ? 'Zkusit platbu znovu' : 'Zobrazit vybran\u00fd pl\u00e1n a cenu'}</button>
+            ${!isFailure ? '<button type="button" class="pricing-cancel-recovery__primary" data-cancel-save-offer>\u2728 Dokon\u010dit se slevou 25 % na 3 m\u011bs\u00edce</button>' : ''}
+            <button type="button" class="${isFailure ? 'pricing-cancel-recovery__primary' : 'pricing-cancel-recovery__secondary'}" data-cancel-retry>${isFailure ? 'Zkusit platbu znovu' : 'Zobrazit vybran\u00fd pl\u00e1n a cenu'}</button>
             ${previewDestination ? `<a class="pricing-cancel-recovery__secondary" href="${previewDestination.href}" data-cancel-preview>${previewLabel}</a>` : ''}
             <a class="pricing-cancel-recovery__secondary" href="${downsellProduct.href}" data-cancel-downsell>${downsellProduct.label}</a>
         </div>
     `;
 
     heroSubtitle.insertAdjacentElement('afterend', panel);
+
+    const saveOfferButton = panel.querySelector('[data-cancel-save-offer]');
+    if (saveOfferButton) {
+        void trackPricingFunnelEvent('checkout_cancel_save_offer_viewed', context, {
+            recovery: true,
+            payment_state: paymentState,
+            plan_id: context.recommendedPlan || null
+        });
+
+        saveOfferButton.addEventListener('click', () => {
+            window.MH_ANALYTICS?.trackCTA?.('pricing_cancel_save_offer', {
+                source: context.source || 'pricing_cancel',
+                feature: context.feature || null,
+                plan_id: context.recommendedPlan
+            });
+            void trackPricingFunnelEvent('checkout_cancel_save_offer_clicked', context, {
+                recovery: true,
+                payment_state: paymentState,
+                plan_id: context.recommendedPlan || null
+            });
+            startRecommendedCheckout(context.recommendedPlan, {
+                ...context,
+                source: 'pricing_cancel_save_offer',
+                offer: 'cancel_save'
+            });
+        });
+    }
 
     panel.querySelector('[data-cancel-retry]')?.addEventListener('click', () => {
         window.MH_ANALYTICS?.trackCTA?.('pricing_cancel_retry_plan', {
@@ -916,7 +944,8 @@ function startRecommendedCheckout(planId, context) {
         }),
         billing_interval: resolvedBillingInterval,
         redirect: '/cenik.html',
-        authMode: 'register'
+        authMode: 'register',
+        ...(context.offer && { offer: context.offer })
     };
 
     if (window.Auth?.startPlanCheckout) {

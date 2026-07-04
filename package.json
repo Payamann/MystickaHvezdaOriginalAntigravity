@@ -58,6 +58,7 @@
     "sitemap:check": "node scripts/generate-sitemap-from-canonicals.mjs --check",
     "tarot:generate-meaning-hub": "node scripts/generate-tarot-meaning-hub.mjs",
     "jmena:generate": "node scripts/generate-jmena-pages.mjs",
+    "snar:generate": "node scripts/generate-snar-pages.mjs",
     "verify:production": "node server/scripts/verify-production.js",
     "verify:production:commit": "node scripts/verify-production-commit.mjs",
     "smoke:production:tool-runtime": "node scripts/production-tool-runtime-smoke.mjs --production",

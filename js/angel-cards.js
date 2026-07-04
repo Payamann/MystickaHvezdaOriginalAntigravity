@@ -700,11 +700,77 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
+function drawAngelCardImage(card) {
+    const shareImage = window.MH_SHARE_IMAGE;
+    const canvas = shareImage.createCanvas();
+    const ctx = canvas.getContext('2d');
+    const centerX = canvas.width / 2;
+    const seed = String(card.name || '').length * 29 + String(card.theme || '').length;
+
+    shareImage.drawBrandBackground(ctx, canvas, seed);
+
+    ctx.fillStyle = '#f1d06b';
+    ctx.font = '700 52px Cinzel, Georgia, serif';
+    ctx.fillText('ANDĚLSKÁ KARTA', centerX, 244);
+
+    ctx.font = '160px serif';
+    ctx.fillText('🕊️', centerX, 470);
+
+    ctx.fillStyle = '#fff7d6';
+    ctx.font = '700 58px Cinzel, Georgia, serif';
+    let y = shareImage.drawCenteredLines(ctx, shareImage.wrapText(ctx, card.name || '', 860), centerX, 590, 68, 2);
+
+    if (card.theme) {
+        ctx.fillStyle = 'rgba(255,255,255,0.75)';
+        ctx.font = '600 36px Inter, Arial, sans-serif';
+        ctx.fillText(card.theme, centerX, y + 26);
+        y += 74;
+    }
+
+    ctx.fillStyle = 'rgba(212,175,55,0.86)';
+    ctx.fillRect(170, y + 12, 740, 3);
+    y += 78;
+
+    const message = card.short_message || card.message || '';
+    if (message) {
+        ctx.fillStyle = '#f6f1ff';
+        ctx.font = '500 38px Inter, Arial, sans-serif';
+        shareImage.drawCenteredLines(ctx, shareImage.wrapText(ctx, message, 840), centerX, y, 50, 5);
+    }
+
+    shareImage.drawFooter(ctx, canvas, 'mystickahvezda.cz/andelske-karty.html',
+        'Vytáhni si svou andělskou kartu na dnešek.');
+
+    return canvas;
+}
+
 /**
- * Handles sharing the drawn card using the Web Share API if available.
+ * Shares the drawn card: branded PNG via the native share sheet where
+ * supported, otherwise falls back to the original text/URL share.
  */
-function shareCard() {
+async function shareCard() {
     if (!drawnCard) return;
+
+    if (window.MH_SHARE_IMAGE?.shareOrDownload) {
+        try {
+            const canvas = drawAngelCardImage(drawnCard);
+            await window.MH_SHARE_IMAGE.shareOrDownload({
+                canvas,
+                fileName: 'andelska-karta.png',
+                shareTitle: `Moje andělská karta: ${drawnCard.name}`,
+                shareText: `Dnes mě provází anděl ${drawnCard.name} (${drawnCard.theme}). Vytáhni si svou kartu na mystickahvezda.cz`,
+                eventBase: 'angel_card_image',
+                metadata: {
+                    source: 'angel_card_result',
+                    feature: 'daily_angel_card',
+                    card_name: String(drawnCard.name || '').slice(0, 80)
+                }
+            });
+            return;
+        } catch (error) {
+            console.warn('[Angel] Image share failed, falling back to text share:', error.message);
+        }
+    }
 
     const shareTitle = `Moje andělská karta: ${drawnCard.name} ✨`;
     const shareText = `Dnes mě provází anděl ${drawnCard.name} s tématem: ${drawnCard.theme}. Zjistěte, jaká karta čeká na vás na Mystické Hvězdě! 🕊️`;
