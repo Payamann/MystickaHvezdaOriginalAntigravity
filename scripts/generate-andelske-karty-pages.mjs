@@ -157,7 +157,7 @@ function renderPage(card, cards) {
                     <p>Každý den si můžeš zdarma vytáhnout jednu andělskou kartu — a nechat si její poselství projít celým dnem.</p>
                     <p>
                         <a href="../andelske-karty.html?source=angel_card_meaning&feature=daily_angel_card" class="btn btn--primary">Vytáhnout kartu dne zdarma</a>
-                        <a href="../tarot-ano-ne.html?source=angel_card_meaning&feature=tarot_ano_ne" class="btn btn--secondary">Rychlý tarot ANO / NE</a>
+                        <a href="../tarot-ano-ne.html?source=angel_card_meaning&feature=tarot_yes_no" class="btn btn--secondary">Rychlý tarot ANO / NE</a>
                     </p>
                 </div>
 
