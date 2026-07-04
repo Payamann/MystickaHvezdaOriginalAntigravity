@@ -808,7 +808,7 @@
         try {
             cardImage = await loadCanvasImage(result.image || FALLBACK_CARD_IMAGE);
         } catch (error) {
-            console.warn('[Tarot ANO/NE] Image export fallback:', error.message);
+            console.warn('[Tarot ANO/NE] Image render fallback:', error.message);
         }
 
         const cardBox = { x: 440, y: 165, width: 200, height: 292 };
@@ -865,6 +865,45 @@
         return canvas;
     }
 
+    // Capability probe so the button label matches what will actually happen:
+    // mobile with the Web Share API can open a native share sheet, desktop falls
+    // back to a file download. Tested with a dummy file because canShare depends
+    // on the payload type, not just API presence.
+    function deviceSupportsFileShare() {
+        try {
+            if (typeof navigator === 'undefined' || typeof navigator.share !== 'function' || !navigator.canShare) {
+                return false;
+            }
+            const probe = new File([new Blob([''], { type: 'image/png' })], 'probe.png', { type: 'image/png' });
+            return navigator.canShare({ files: [probe] });
+        } catch {
+            return false;
+        }
+    }
+
+    function canvasToPngFile(canvas, fileName) {
+        return new Promise((resolve, reject) => {
+            if (!canvas.toBlob) {
+                reject(new Error('canvas.toBlob unsupported'));
+                return;
+            }
+            canvas.toBlob((blob) => {
+                if (blob) {
+                    resolve(new File([blob], fileName, { type: 'image/png' }));
+                } else {
+                    reject(new Error('Canvas render produced no blob.'));
+                }
+            }, 'image/png');
+        });
+    }
+
+    function downloadCanvas(canvas, fileName) {
+        const link = document.createElement('a');
+        link.download = fileName;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    }
+
     async function saveTarotYesNoResultImage() {
         if (!lastResult) return;
 
@@ -875,25 +914,71 @@
             button.textContent = 'Připravuji obrázek...';
         }
 
+        const baseMetadata = getResultMetadata(lastResult.answerKey, lastResult, lastResult.question);
         trackTarotYesNoEvent('save_click', {
-            ...getResultMetadata(lastResult.answerKey, lastResult, lastResult.question),
+            ...baseMetadata,
             save_target: 'result_image'
         });
 
+        const fileName = `tarot-ano-ne-${lastResult.answerKey}.png`;
+
         try {
             const canvas = await drawTarotYesNoResultCard(lastResult);
-            const link = document.createElement('a');
-            link.download = `tarot-ano-ne-${lastResult.answerKey}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
 
-            window.MH_ANALYTICS?.trackAction?.('tarot_yes_no_result_image_saved', {
-                ...getResultMetadata(lastResult.answerKey, lastResult, lastResult.question),
-                source: TAROT_YES_NO_RESULT_SOURCE,
-                format: 'png'
-            });
+            let file = null;
+            try {
+                file = await canvasToPngFile(canvas, fileName);
+            } catch (blobError) {
+                console.warn('[Tarot ANO/NE] Blob render fallback:', blobError.message);
+            }
+
+            const canShareFile = Boolean(
+                file
+                && typeof navigator.share === 'function'
+                && navigator.canShare
+                && navigator.canShare({ files: [file] })
+            );
+
+            if (canShareFile) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Tarot ANO / NE',
+                        text: `Karty mi na moji otázku odpověděly ${lastResult.label}. Zeptej se taky na mystickahvezda.cz`
+                    });
+                    window.MH_ANALYTICS?.trackAction?.('tarot_yes_no_result_image_shared', {
+                        ...baseMetadata,
+                        source: TAROT_YES_NO_RESULT_SOURCE,
+                        share_target: 'web_share',
+                        format: 'png'
+                    });
+                } catch (shareError) {
+                    if (shareError && shareError.name === 'AbortError') {
+                        window.MH_ANALYTICS?.trackAction?.('tarot_yes_no_result_image_share_cancelled', {
+                            ...baseMetadata,
+                            source: TAROT_YES_NO_RESULT_SOURCE
+                        });
+                    } else {
+                        downloadCanvas(canvas, fileName);
+                        window.MH_ANALYTICS?.trackAction?.('tarot_yes_no_result_image_saved', {
+                            ...baseMetadata,
+                            source: TAROT_YES_NO_RESULT_SOURCE,
+                            share_target: 'download_fallback',
+                            format: 'png'
+                        });
+                    }
+                }
+            } else {
+                downloadCanvas(canvas, fileName);
+                window.MH_ANALYTICS?.trackAction?.('tarot_yes_no_result_image_saved', {
+                    ...baseMetadata,
+                    source: TAROT_YES_NO_RESULT_SOURCE,
+                    share_target: 'download',
+                    format: 'png'
+                });
+            }
         } catch (error) {
-            console.warn('[Tarot ANO/NE] Could not export result image:', error.message);
+            console.warn('[Tarot ANO/NE] Could not build result image:', error.message);
         } finally {
             if (button) {
                 button.disabled = false;
@@ -1170,6 +1255,9 @@
         }
 
         if (btnSaveResultImage) {
+            if (deviceSupportsFileShare()) {
+                btnSaveResultImage.textContent = '✨ Sdílet výsledek';
+            }
             btnSaveResultImage.addEventListener('click', saveTarotYesNoResultImage);
         }
 

@@ -69,6 +69,17 @@ nákupu (client event je závislý na consentu a návratu na profil).
 - [x] Homepage hero: primární CTA → tarot-ano-ne (value-first místo registrace), konzistentně v index.html + analytics.js + e2e
 - [x] Integrace: oprava CSP (inline styly SK stránky → třída), centrální build:js, celá verifikační suite zelená, jest 459/459, vizuální kontrola všech ploch na mobilu 390×844
 
+## Fáze 3 — růstová smyčka (2026-07-04)
+
+- [x] Sdílitelný obrázek výsledku: Web Share API (nativní share sheet s PNG na mobilu) + download fallback na desktopu; capability-based label ("Sdílet výsledek" vs "Uložit obrázek"); oddělené eventy share/cancel/download; CZ + SK. Canvas už měl watermark+teaser z Fáze 2. Cíl: vytěžit FB publikum 6,6K jako growth loop.
+- [x] Ověřeno v preview: desktop → download (tarot-ano-ne-nejasne.png), mobil (simulace) → navigator.share s image/png + teaser textem s URL
+- [x] Verifikace: lint, CSP 27/27, audit:site, tarot-assets 78/78, jest 459/459
+
+### Review Fáze 3
+Malá strukturální změna, velká páka (sdílení do největšího assetu). Near-miss:
+slovo "export" v řetězcích komentářů přepnulo build na ES modul → CSP test fail;
+opraveno přeformulováním (viz lessons.md). Deploy zbývá.
+
 ### Review Fáze 2
 Swarm 3× Sonnet paralelně (disjunktní soubory, bez commitů/buildů u agentů,
 integrace centrálně) — fungovalo; náklady ~380k subagent tokenů. Agent A

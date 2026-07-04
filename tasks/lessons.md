@@ -5,6 +5,7 @@
 | [near-miss] Změna marketingové copy ve statickém HTML se v prohlížeči neprojevila — cenik.js přepisuje texty karet přes textContent po načtení | Při změně copy v HTML vždy grepnout js/ na textContent/innerHTML přepisy téhož elementu a změnit obě místa | 2026-07-03 |
 | [env] Jest ve worktree nenajde testy — testMatch glob se rozbije na `\.claude` v cestě | Spouštět s explicitním `--testMatch "**/server/tests/**/*.test.js" --testMatch "**/tests/frontend/**/*.test.js"` | 2026-07-03 |
 | [env] Stránky načítají js/dist/* bundly, ne js/* zdrojáky | Po každé změně v js/ spustit `npm run build:js` a bumpnout `?v=` u dotčeného script tagu | 2026-07-03 |
+| [near-miss] Slovo `export`/`import` KDEKOLIV ve zdroji js/ (i v komentáři nebo řetězci jako "Blob export fallback") přepne build-js.mjs na ES modul a static-html-csp test pak vyžaduje type="module" | V classic (IIFE) JS souborech se vyhnout samostatným slovům export/import i v textech; použít render/build/conversion | 2026-07-04 |
 
 ## Golden Rules
 1. **Never use `var`**: Always use `const` or `let`.

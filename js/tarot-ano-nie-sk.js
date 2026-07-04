@@ -463,25 +463,110 @@
         return canvas;
     }
 
-    function saveTarotYesNoResultImage() {
+    function deviceSupportsFileShare() {
+        try {
+            if (typeof navigator === 'undefined' || typeof navigator.share !== 'function' || !navigator.canShare) {
+                return false;
+            }
+            const probe = new File([new Blob([''], { type: 'image/png' })], 'probe.png', { type: 'image/png' });
+            return navigator.canShare({ files: [probe] });
+        } catch {
+            return false;
+        }
+    }
+
+    function canvasToPngFile(canvas, fileName) {
+        return new Promise((resolve, reject) => {
+            if (!canvas.toBlob) {
+                reject(new Error('canvas.toBlob unsupported'));
+                return;
+            }
+            canvas.toBlob((blob) => {
+                if (blob) {
+                    resolve(new File([blob], fileName, { type: 'image/png' }));
+                } else {
+                    reject(new Error('Canvas render produced no blob.'));
+                }
+            }, 'image/png');
+        });
+    }
+
+    function downloadCanvas(canvas, fileName) {
+        const link = document.createElement('a');
+        link.download = fileName;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    }
+
+    async function saveTarotYesNoResultImage() {
         if (!lastResult) return;
 
+        const baseMetadata = getResultMetadata(lastResult.answerKey, lastResult, lastResult.question);
         trackTarotYesNoEvent('save_click', {
-            ...getResultMetadata(lastResult.answerKey, lastResult, lastResult.question),
+            ...baseMetadata,
             save_target: 'result_image'
         });
 
-        const canvas = drawTarotYesNoResultCard(lastResult);
-        const link = document.createElement('a');
-        link.download = `tarot-ano-nie-${lastResult.answerKey}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
+        const fileName = `tarot-ano-nie-${lastResult.answerKey}.png`;
 
-        window.MH_ANALYTICS?.trackAction?.('tarot_yes_no_result_image_saved', {
-            ...getResultMetadata(lastResult.answerKey, lastResult, lastResult.question),
-            source: TAROT_YES_NO_RESULT_SOURCE,
-            format: 'png'
-        });
+        try {
+            const canvas = drawTarotYesNoResultCard(lastResult);
+
+            let file = null;
+            try {
+                file = await canvasToPngFile(canvas, fileName);
+            } catch (blobError) {
+                console.warn('[Tarot ÁNO/NIE] Blob render fallback:', blobError.message);
+            }
+
+            const canShareFile = Boolean(
+                file
+                && typeof navigator.share === 'function'
+                && navigator.canShare
+                && navigator.canShare({ files: [file] })
+            );
+
+            if (canShareFile) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Tarot ÁNO / NIE',
+                        text: `Karty mi na moju otázku odpovedali ${lastResult.label}. Opýtaj sa aj ty na mystickahvezda.cz`
+                    });
+                    window.MH_ANALYTICS?.trackAction?.('tarot_yes_no_result_image_shared', {
+                        ...baseMetadata,
+                        source: TAROT_YES_NO_RESULT_SOURCE,
+                        share_target: 'web_share',
+                        format: 'png'
+                    });
+                } catch (shareError) {
+                    if (shareError && shareError.name === 'AbortError') {
+                        window.MH_ANALYTICS?.trackAction?.('tarot_yes_no_result_image_share_cancelled', {
+                            ...baseMetadata,
+                            source: TAROT_YES_NO_RESULT_SOURCE
+                        });
+                    } else {
+                        downloadCanvas(canvas, fileName);
+                        window.MH_ANALYTICS?.trackAction?.('tarot_yes_no_result_image_saved', {
+                            ...baseMetadata,
+                            source: TAROT_YES_NO_RESULT_SOURCE,
+                            share_target: 'download_fallback',
+                            format: 'png'
+                        });
+                    }
+                }
+            } else {
+                downloadCanvas(canvas, fileName);
+                window.MH_ANALYTICS?.trackAction?.('tarot_yes_no_result_image_saved', {
+                    ...baseMetadata,
+                    source: TAROT_YES_NO_RESULT_SOURCE,
+                    share_target: 'download',
+                    format: 'png'
+                });
+            }
+        } catch (error) {
+            console.warn('[Tarot ÁNO/NIE] Could not build result image:', error.message);
+        }
     }
 
     function revealTarotYesNoNextStep(answerKey, ans, question) {
@@ -666,6 +751,9 @@
         }
 
         if (btnSaveResultImage) {
+            if (deviceSupportsFileShare()) {
+                btnSaveResultImage.textContent = '✨ Zdieľať výsledok';
+            }
             btnSaveResultImage.addEventListener('click', saveTarotYesNoResultImage);
         }
 
