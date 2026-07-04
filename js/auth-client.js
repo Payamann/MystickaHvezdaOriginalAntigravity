@@ -1757,7 +1757,8 @@
                         source,
                         feature: context.feature || null,
                         metadata: checkoutMetadata,
-                        billingInterval: context.billing_interval || context.billingInterval || null
+                        billingInterval: context.billing_interval || context.billingInterval || null,
+                        ...(context.offer && { offer: context.offer })
                     })
                 });
                 const data = await res.json();

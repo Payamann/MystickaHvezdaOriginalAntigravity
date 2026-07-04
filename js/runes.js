@@ -218,8 +218,70 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-function shareRune() {
+function drawRuneImage(rune) {
+    const shareImage = window.MH_SHARE_IMAGE;
+    const canvas = shareImage.createCanvas();
+    const ctx = canvas.getContext('2d');
+    const centerX = canvas.width / 2;
+    const seed = String(rune.name || '').length * 41 + String(rune.meaning || '').length;
+
+    shareImage.drawBrandBackground(ctx, canvas, seed);
+
+    ctx.fillStyle = '#f1d06b';
+    ctx.font = '700 52px Cinzel, Georgia, serif';
+    ctx.fillText('RUNA DNE', centerX, 244);
+
+    ctx.fillStyle = 'rgba(212,175,55,0.12)';
+    ctx.fillRect(centerX - 170, 320, 340, 340);
+    ctx.strokeStyle = 'rgba(212,175,55,0.58)';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(centerX - 170, 320, 340, 340);
+
+    ctx.fillStyle = '#fff7d6';
+    ctx.font = '700 220px Georgia, serif';
+    ctx.fillText(rune.symbol || 'ᚠ', centerX, 570);
+
+    ctx.font = '700 62px Cinzel, Georgia, serif';
+    ctx.fillText(rune.name || '', centerX, 770);
+
+    ctx.fillStyle = 'rgba(212,175,55,0.86)';
+    ctx.fillRect(170, 810, 740, 3);
+
+    if (rune.meaning) {
+        ctx.fillStyle = '#f6f1ff';
+        ctx.font = '500 38px Inter, Arial, sans-serif';
+        shareImage.drawCenteredLines(ctx, shareImage.wrapText(ctx, rune.meaning, 840), centerX, 890, 50, 5);
+    }
+
+    shareImage.drawFooter(ctx, canvas, 'mystickahvezda.cz/runy.html',
+        'Vytáhni si runu, která tě dnes provází.');
+
+    return canvas;
+}
+
+async function shareRune() {
     if (!drawnRune) return;
+
+    if (window.MH_SHARE_IMAGE?.shareOrDownload) {
+        try {
+            const canvas = drawRuneImage(drawnRune);
+            await window.MH_SHARE_IMAGE.shareOrDownload({
+                canvas,
+                fileName: 'runa-dne.png',
+                shareTitle: `Moje runa dne: ${drawnRune.name}`,
+                shareText: `Dnes mě provází runa ${drawnRune.name} (${drawnRune.symbol}). Vytáhni si tu svoji na mystickahvezda.cz`,
+                eventBase: 'rune_image',
+                metadata: {
+                    source: 'rune_result',
+                    feature: 'runy_hluboky_vyklad',
+                    rune_name: String(drawnRune.name || '').slice(0, 80)
+                }
+            });
+            return;
+        } catch (error) {
+            console.warn('[Runy] Image share failed, falling back to text share:', error.message);
+        }
+    }
 
     const shareTitle = `Moje runa dne: ${drawnRune.name} 🪨`;
     const shareText = `Dnes mě provází runa ${drawnRune.name} (${drawnRune.symbol}) - ${drawnRune.meaning}. Zjistěte, jaký kámen čeká na vás na Mystické Hvězdě! ✨`;

@@ -67,6 +67,48 @@ export async function shouldSkipQueuedEmailForPremium(emailRecord, queuedData = 
     return hasActivePremiumSubscription(subscription);
 }
 
+/**
+ * Map marketing/lifecycle templates to their email_preferences category.
+ * Templates without a category are treated as transactional and always send.
+ */
+export function getTemplatePreferenceCategory(template = '') {
+    const name = String(template);
+    if (name.startsWith('upgrade_') || name.startsWith('trial_')) return 'upgrade_reminders';
+    if (name.startsWith('churn_') || name.includes('winback')) return 'churn_recovery';
+    if (name === 'feature_weekly' || name.startsWith('weekly_')) return 'weekly_features';
+    if (name.startsWith('activation_') || name.startsWith('onboarding_')) return 'promotional';
+    if (name.includes('_pruvodce_day') || name.includes('_reflection_day')) return 'promotional';
+    return null;
+}
+
+export async function shouldSkipQueuedEmailForPreferences(emailRecord) {
+    const userId = emailRecord?.user_id;
+    if (!userId) return { skip: false };
+
+    const { data: preferences, error } = await supabase
+        .from('email_preferences')
+        .select('upgrade_reminders, churn_recovery, weekly_features, promotional, unsubscribe_all')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+    if (error) {
+        console.warn(`[JOB] Could not check email preferences for queued email ${emailRecord.id}:`, error.message);
+        return { skip: false };
+    }
+
+    if (!preferences) return { skip: false };
+    if (preferences.unsubscribe_all === true) {
+        return { skip: true, reason: 'unsubscribe_all' };
+    }
+
+    const category = getTemplatePreferenceCategory(emailRecord.template);
+    if (category && preferences[category] === false) {
+        return { skip: true, reason: category };
+    }
+
+    return { skip: false };
+}
+
 export async function processEmailQueue() {
     // Prevent concurrent execution
     if (jobRunning) {
@@ -122,6 +164,23 @@ export async function processEmailQueue() {
 
                     skippedCount++;
                     console.log(`[JOB] ↷ Email skipped for premium user: ${template} to ${email_to}`);
+                    continue;
+                }
+
+                const preferenceCheck = await shouldSkipQueuedEmailForPreferences(emailRecord);
+                if (preferenceCheck.skip) {
+                    await supabase
+                        .from('email_queue')
+                        .update({
+                            status: 'skipped',
+                            sent_at: new Date().toISOString(),
+                            last_error: `Skipped by email preferences (${preferenceCheck.reason}).`,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', id);
+
+                    skippedCount++;
+                    console.log(`[JOB] ↷ Email skipped by preferences (${preferenceCheck.reason}): ${template} to ${email_to}`);
                     continue;
                 }
 

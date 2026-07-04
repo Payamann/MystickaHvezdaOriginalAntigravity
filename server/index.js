@@ -106,6 +106,14 @@ function shouldRunDailyHoroscopeEmails() {
             process.env.ENABLE_SCHEDULED_JOBS === 'true');
 }
 
+function shouldRunDailyPushNotifications() {
+    return process.env.DISABLE_DAILY_PUSH_NOTIFICATIONS !== 'true' &&
+        !isTestRuntime() &&
+        (isProductionRuntime() ||
+            process.env.ENABLE_DAILY_PUSH_NOTIFICATIONS === 'true' ||
+            process.env.ENABLE_SCHEDULED_JOBS === 'true');
+}
+
 function shouldRunSocialAgentScheduler() {
     return shouldRunScheduledJobs() &&
         process.env.ENABLE_SOCIAL_AGENT_SCHEDULER === 'true';
@@ -130,11 +138,28 @@ function isAfterDailyHoroscopeSendWindow(date = new Date()) {
     return date.getUTCHours() >= DAILY_HOROSCOPE_SEND_HOUR_UTC;
 }
 
+// 06:00 UTC = 8:00 CEST / 7:00 CET — matches the "ráno v 8:00" opt-in promise.
+const DAILY_PUSH_SEND_HOUR_UTC = 6;
+
+function isAfterDailyPushSendWindow(date = new Date()) {
+    return date.getUTCHours() >= DAILY_PUSH_SEND_HOUR_UTC;
+}
+
+async function runDailyPushJob(reason = 'scheduled') {
+    try {
+        const { run } = await import('./jobs/daily-push.js');
+        await run();
+    } catch (e) {
+        console.error(`[CRON] Daily push failed (${reason}):`, e.message);
+    }
+}
+
 function getBackgroundJobStatus() {
     return {
         general: shouldRunScheduledJobs() ? 'enabled' : 'disabled',
         socialAgent: getSocialAgentSchedulerStatus(),
-        dailyHoroscopeEmail: shouldRunDailyHoroscopeEmails() ? 'enabled' : 'disabled'
+        dailyHoroscopeEmail: shouldRunDailyHoroscopeEmails() ? 'enabled' : 'disabled',
+        dailyPushNotification: shouldRunDailyPushNotifications() ? 'enabled' : 'disabled'
     };
 }
 
@@ -683,6 +708,17 @@ app.get('/jmena/:name', (req, res, next) => {
         return next();
     }
 
+    // Prefer the generated static page when the slug exists
+    // (see scripts/generate-jmena-pages.mjs).
+    const slug = name
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .replace(/[^a-z0-9]/g, '');
+    if (slug && fs.existsSync(path.join(__dirname, '..', 'jmena', `${slug}.html`))) {
+        return res.redirect(301, `/jmena/${slug}.html`);
+    }
+
     // Capitalize first letter to match database
     const capitalized = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
     res.redirect(301, `/jmena/index.html?jmeno=${encodeURIComponent(capitalized)}`);
@@ -1100,6 +1136,32 @@ if (isMain || isProductionRuntime()) {
             console.warn('📅 Daily horoscope cron scheduled (07:00 UTC + startup/hourly catch-up).');
         } else {
             console.warn('[JOBS] Daily horoscope schedules skipped for this environment.');
+        }
+
+        if (shouldRunDailyPushNotifications()) {
+            // Daily horoscope push — every day at 06:00 UTC, with catch-up after restarts.
+            schedule.scheduleJob('0 6 * * *', () => {
+                runBackgroundTask('daily_push_scheduled_06_utc', () => runDailyPushJob('scheduled_06_utc'), {
+                    reason: 'scheduled_06_utc'
+                });
+            });
+            schedule.scheduleJob('40 * * * *', () => {
+                if (isAfterDailyPushSendWindow()) {
+                    runBackgroundTask('daily_push_hourly_catchup', () => runDailyPushJob('hourly_catchup'), {
+                        reason: 'hourly_catchup'
+                    });
+                }
+            });
+            setTimeout(() => {
+                if (isAfterDailyPushSendWindow()) {
+                    runBackgroundTask('daily_push_startup_catchup', () => runDailyPushJob('startup_catchup'), {
+                        reason: 'startup_catchup'
+                    });
+                }
+            }, 10000);
+            console.warn('📅 Daily push cron scheduled (06:00 UTC + startup/hourly catch-up).');
+        } else {
+            console.warn('[JOBS] Daily push schedules skipped for this environment.');
         }
     });
 }

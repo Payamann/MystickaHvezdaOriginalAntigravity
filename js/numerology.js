@@ -228,22 +228,39 @@ function drawNumerologyResultCard(result) {
     return canvas;
 }
 
-function saveNumerologyResultImage() {
+async function saveNumerologyResultImage() {
     if (!lastNumerologyShareResult) return;
 
     const canvas = drawNumerologyResultCard(lastNumerologyShareResult);
-    const link = document.createElement('a');
-    link.download = `numerologie-zivotni-cesta-${lastNumerologyShareResult.lifePath}.png`;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-
-    window.MH_ANALYTICS?.trackAction?.('numerology_result_image_saved', {
+    const fileName = `numerologie-zivotni-cesta-${lastNumerologyShareResult.lifePath}.png`;
+    const metadata = {
         source: NUMEROLOGY_RESULT_SOURCE,
-        format: 'png',
         life_path: lastNumerologyShareResult.lifePath,
         destiny: lastNumerologyShareResult.destiny,
         soul: lastNumerologyShareResult.soul,
         personality: lastNumerologyShareResult.personality
+    };
+
+    if (window.MH_SHARE_IMAGE?.shareOrDownload) {
+        await window.MH_SHARE_IMAGE.shareOrDownload({
+            canvas,
+            fileName,
+            shareTitle: 'Moje numerologie',
+            shareText: `Moje životní cesta je číslo ${lastNumerologyShareResult.lifePath}. Spočítej si tu svoji na mystickahvezda.cz`,
+            eventBase: 'numerology_result_image',
+            metadata
+        });
+        return;
+    }
+
+    const link = document.createElement('a');
+    link.download = fileName;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+
+    window.MH_ANALYTICS?.trackAction?.('numerology_result_image_saved', {
+        ...metadata,
+        format: 'png'
     });
 }
 

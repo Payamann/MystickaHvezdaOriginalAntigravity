@@ -365,6 +365,101 @@
         } else {
             setInlineFlexVisible(nativeBtn, false);
         }
+
+        setupImageShare(firstName, r);
+    }
+
+    function drawPastLifeResultCard(firstName, r) {
+        var shareImage = window.MH_SHARE_IMAGE;
+        var canvas = shareImage.createCanvas();
+        var ctx = canvas.getContext('2d');
+        var centerX = canvas.width / 2;
+        var seed = String(r.era || '').length * 17 + String(r.identity || '').length;
+
+        shareImage.drawBrandBackground(ctx, canvas, seed);
+
+        ctx.fillStyle = '#f1d06b';
+        ctx.font = '700 52px Cinzel, Georgia, serif';
+        ctx.fillText('MINUL\u00DD \u017DIVOT', centerX, 240);
+
+        ctx.fillStyle = 'rgba(255,255,255,0.72)';
+        ctx.font = '500 32px Inter, Arial, sans-serif';
+        ctx.fillText(firstName ? 'Symbolick\u00FD vhled pro ' + firstName : 'Symbolick\u00FD vhled', centerX, 300);
+
+        var y = 410;
+        if (r.era) {
+            ctx.fillStyle = '#fff7d6';
+            ctx.font = '700 46px Cinzel, Georgia, serif';
+            y = shareImage.drawCenteredLines(ctx, shareImage.wrapText(ctx, r.era, 840), centerX, y, 56, 2) + 30;
+        }
+
+        if (r.identity) {
+            ctx.fillStyle = '#f6f1ff';
+            ctx.font = '500 36px Inter, Arial, sans-serif';
+            y = shareImage.drawCenteredLines(ctx, shareImage.wrapText(ctx, r.identity, 840), centerX, y, 47, 5) + 26;
+        }
+
+        ctx.fillStyle = 'rgba(212,175,55,0.86)';
+        ctx.fillRect(170, y, 740, 3);
+        y += 60;
+
+        var closing = r.message || r.mission || r.karmic_lesson || '';
+        if (closing) {
+            ctx.fillStyle = 'rgba(255,255,255,0.82)';
+            ctx.font = '500 32px Inter, Arial, sans-serif';
+            shareImage.drawCenteredLines(ctx, shareImage.wrapText(ctx, closing, 840), centerX, y, 43, 5);
+        }
+
+        shareImage.drawFooter(ctx, canvas, 'mystickahvezda.cz/minuly-zivot.html',
+            'Zjisti, kdo jsi mohl b\u00FDt v minul\u00E9m \u017Eivot\u011B.');
+
+        return canvas;
+    }
+
+    function setupImageShare(firstName, r) {
+        if (!window.MH_SHARE_IMAGE || !window.MH_SHARE_IMAGE.shareOrDownload) return;
+
+        var buttonsBar = document.querySelector('#share-bar .share-bar__buttons');
+        if (!buttonsBar) return;
+
+        var imageBtn = document.getElementById('share-image');
+        if (!imageBtn) {
+            imageBtn = document.createElement('button');
+            imageBtn.id = 'share-image';
+            imageBtn.type = 'button';
+            imageBtn.className = 'share-btn share-btn--copy';
+            buttonsBar.appendChild(imageBtn);
+        }
+        imageBtn.textContent = '\u2728 Ulo\u017Eit obr\u00E1zek';
+
+        imageBtn.onclick = function () {
+            imageBtn.disabled = true;
+            imageBtn.textContent = 'P\u0159ipravuji obr\u00E1zek...';
+
+            Promise.resolve()
+                .then(function () {
+                    var canvas = drawPastLifeResultCard(firstName, r);
+                    return window.MH_SHARE_IMAGE.shareOrDownload({
+                        canvas: canvas,
+                        fileName: 'minuly-zivot.png',
+                        shareTitle: 'M\u016Fj minul\u00FD \u017Eivot',
+                        shareText: 'Podle Akashick\u00FDch z\u00E1znam\u016F m\u00E1m symbolick\u00FD vhled minul\u00E9ho \u017Eivota. Zkus to taky na mystickahvezda.cz',
+                        eventBase: 'past_life_image',
+                        metadata: {
+                            source: 'past_life_result',
+                            feature: 'minuly_zivot',
+                            era: r.era || null
+                        }
+                    });
+                })
+                .catch(function (error) {
+                    console.warn('[Minul\u00FD \u017Eivot] Image share failed:', error.message);
+                })
+                .then(function () {
+                    imageBtn.disabled = false;
+                    imageBtn.textContent = '\u2728 Ulo\u017Eit obr\u00E1zek';
+                });
+        };
     }
 
     function showCopied(btn, label) {

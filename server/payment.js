@@ -374,6 +374,8 @@ const PUBLIC_FUNNEL_EVENTS = new Set([
     'one_time_checkout_failed',
     'checkout_returned_cancel',
     'checkout_returned_failure',
+    'checkout_cancel_save_offer_viewed',
+    'checkout_cancel_save_offer_clicked',
     'upgrade_cta_viewed',
 ]);
 const OPERATIONAL_ALERT_FUNNEL_EVENTS = new Set([
@@ -993,7 +995,12 @@ router.post('/create-checkout-session', authenticateToken, async (req, res) => {
         const user = req.user;
         const source = cleanFunnelValue(req.body?.source, 'direct');
         const feature = cleanFunnelValue(req.body?.feature);
+        // Checkout-cancel save offer: 25% off for 3 months via the STAY25 coupon.
+        const saveOffer = req.body?.offer === 'cancel_save';
         checkoutContextMetadata = buildCheckoutContextMetadata(req.body?.metadata);
+        if (saveOffer) {
+            checkoutContextMetadata.checkout_offer = 'cancel_save';
+        }
 
         await recordFunnelEvent('checkout_session_requested', {
             userId: user.id,
@@ -1080,6 +1087,18 @@ router.post('/create-checkout-session', authenticateToken, async (req, res) => {
 
         const stripePriceId = getConfiguredStripePriceId(planId);
 
+        let saveOfferDiscounts = null;
+        if (saveOffer) {
+            try {
+                const coupon = await getOrCreateRetentionCoupon('STAY25');
+                if (coupon?.valid !== false) {
+                    saveOfferDiscounts = [{ coupon: coupon.id }];
+                }
+            } catch (couponError) {
+                console.warn('[STRIPE] Save-offer coupon unavailable, continuing without discount:', couponError.message);
+            }
+        }
+
         const session = await stripe.checkout.sessions.create({
             customer: customerId,
             payment_method_types: ['card'],
@@ -1087,6 +1106,7 @@ router.post('/create-checkout-session', authenticateToken, async (req, res) => {
             mode: 'subscription',
             payment_method_collection: 'always',
             locale: 'cs',
+            ...(saveOfferDiscounts && { discounts: saveOfferDiscounts }),
             success_url: buildProfileSuccessUrl({ planId, source, feature, metadata: checkoutContextMetadata }),
             cancel_url: buildPricingCancelUrl({ planId, source, feature, metadata: checkoutContextMetadata }),
             client_reference_id: user.id,

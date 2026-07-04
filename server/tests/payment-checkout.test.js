@@ -232,5 +232,21 @@ describe('💳 Payment Checkout Session', () => {
                 expect(res.status).not.toBe(403);
             });
         });
+
+        test('checkout-cancel save offer (offer=cancel_save) projde validací', async () => {
+            const csrf = await getCsrfToken();
+            const token = makeTestToken();
+            const res = await request(app)
+                .post('/api/payment/create-checkout-session')
+                .set('Authorization', `Bearer ${token}`)
+                .set('x-csrf-token', csrf)
+                .send({ planId: 'pruvodce', offer: 'cancel_save', source: 'pricing_cancel_save_offer' });
+
+            if (res.status === 400) {
+                expect(res.body.error).not.toMatch(/invalid plan/i);
+            }
+            expect(res.status).not.toBe(401);
+            expect(res.status).not.toBe(403);
+        });
     });
 });

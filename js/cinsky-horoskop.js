@@ -247,11 +247,112 @@ window.showAnimal = function (slugOverride, exactYear = null) {
     const resultSec = document.getElementById('result-section');
     resultSec.classList.add('show');
 
+    setupChineseImageShare({
+        emoji: data.emoji,
+        name: isSpecificYear && computedElement ? `${computedElement.suffix} ${data.name}` : data.name,
+        elementLabel: isSpecificYear && computedElement ? `Aktivní živel: ${computedElement.name}` : `Fixní živel: ${data.fixedElement}`,
+        yearsLabel: isSpecificYear ? `Ročník: ${exactYear}` : `Roky: ${data.years}`,
+        desc: data.desc,
+        slug: data.slug
+    });
+
     // Smart scroll k precteni horoskopu
     setTimeout(() => {
         resultSec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }, 100);
 };
+
+let lastChineseShareData = null;
+
+function drawChineseZodiacImage(result) {
+    const shareImage = window.MH_SHARE_IMAGE;
+    const canvas = shareImage.createCanvas();
+    const ctx = canvas.getContext('2d');
+    const centerX = canvas.width / 2;
+    const seed = String(result.name || '').length * 37 + String(result.yearsLabel || '').length;
+
+    shareImage.drawBrandBackground(ctx, canvas, seed);
+
+    ctx.fillStyle = '#f1d06b';
+    ctx.font = '700 52px Cinzel, Georgia, serif';
+    ctx.fillText('ČÍNSKÝ HOROSKOP', centerX, 244);
+
+    ctx.font = '190px serif';
+    ctx.fillText(result.emoji || '🐉', centerX, 500);
+
+    ctx.fillStyle = '#fff7d6';
+    ctx.font = '700 64px Cinzel, Georgia, serif';
+    ctx.fillText(result.name || '', centerX, 640);
+
+    ctx.fillStyle = 'rgba(255,255,255,0.75)';
+    ctx.font = '600 34px Inter, Arial, sans-serif';
+    ctx.fillText(result.elementLabel || '', centerX, 706);
+    ctx.fillText(result.yearsLabel || '', centerX, 756);
+
+    ctx.fillStyle = 'rgba(212,175,55,0.86)';
+    ctx.fillRect(170, 800, 740, 3);
+
+    if (result.desc) {
+        ctx.fillStyle = '#f6f1ff';
+        ctx.font = '500 37px Inter, Arial, sans-serif';
+        shareImage.drawCenteredLines(ctx, shareImage.wrapText(ctx, result.desc, 840), centerX, 880, 49, 6);
+    }
+
+    shareImage.drawFooter(ctx, canvas, 'mystickahvezda.cz/cinsky-horoskop.html',
+        'Zjisti svoje znamení podle roku narození.');
+
+    return canvas;
+}
+
+async function onChineseImageShareClick(event) {
+    const button = event.currentTarget;
+    if (!lastChineseShareData || !window.MH_SHARE_IMAGE?.shareOrDownload) return;
+
+    const originalText = button.textContent;
+    button.disabled = true;
+    button.textContent = 'Připravuji obrázek...';
+
+    try {
+        const canvas = drawChineseZodiacImage(lastChineseShareData);
+        await window.MH_SHARE_IMAGE.shareOrDownload({
+            canvas,
+            fileName: `cinsky-horoskop-${lastChineseShareData.slug || 'znameni'}.png`,
+            shareTitle: 'Můj čínský horoskop',
+            shareText: `Moje znamení v čínském horoskopu je ${lastChineseShareData.name}. Zjisti to svoje na mystickahvezda.cz`,
+            eventBase: 'chinese_zodiac_image',
+            metadata: {
+                source: 'chinese_zodiac_result',
+                feature: 'zodiac_signs',
+                animal: lastChineseShareData.slug || null
+            }
+        });
+    } catch (error) {
+        console.warn('[Čínský horoskop] Image share failed:', error.message);
+    } finally {
+        button.disabled = false;
+        button.textContent = originalText;
+    }
+}
+
+function setupChineseImageShare(result) {
+    if (!window.MH_SHARE_IMAGE?.shareOrDownload) return;
+
+    lastChineseShareData = result;
+
+    const host = document.getElementById('result-hero');
+    if (!host) return;
+
+    let button = document.getElementById('chinese-share-image-btn');
+    if (!button) {
+        button = document.createElement('button');
+        button.id = 'chinese-share-image-btn';
+        button.type = 'button';
+        button.className = 'btn btn--ghost mt-md';
+        button.textContent = '✨ Uložit obrázek znamení';
+        button.addEventListener('click', onChineseImageShareClick);
+        host.appendChild(button);
+    }
+}
 
 // Inicializace listeneru
 document.addEventListener('DOMContentLoaded', () => {

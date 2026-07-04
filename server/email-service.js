@@ -66,6 +66,9 @@ function buildListUnsubscribeUrl(template, data = {}, explicitUrl = '') {
   if ((template === 'daily_horoscope' || template === 'horoscope_subscription_confirm') && data.token) {
     return toAbsoluteUrl(`/api/subscribe/horoscope/unsubscribe?token=${encodeURIComponent(data.token)}`);
   }
+  if (template === 'newsletter_welcome' && data.unsubscribe_url) {
+    return toAbsoluteUrl(data.unsubscribe_url);
+  }
   return '';
 }
 
@@ -1415,6 +1418,50 @@ EMAIL_TEMPLATES.horoscope_subscription_confirm = {
       Pokud si nepřeješ dostávat denní horoskop, můžeš se <a href="${unsubscribeUrl}" style="color:#d4af37;">kdykoli odhlásit</a>.
     </p>
   `, 'Odběr denního horoskopu', `Potvrzení odběru denního horoskopu pro znamení ${data.sign}.`);
+  }
+};
+
+EMAIL_TEMPLATES.newsletter_welcome = {
+  subject: 'Vítej u Mystické Hvězdy ✨',
+  getHtml: (data) => {
+    const tarotUrl = toAbsoluteUrl('/tarot-ano-ne.html?source=newsletter_welcome&feature=tarot_ano_ne&utm_source=email&utm_campaign=newsletter_welcome');
+    const horoscopeUrl = toAbsoluteUrl('/horoskopy.html?source=newsletter_welcome&feature=horoskop_denni&utm_source=email&utm_campaign=newsletter_welcome');
+    const dailyCardUrl = toAbsoluteUrl('/tarot-karta-dne.html?source=newsletter_welcome&feature=tarot_karta_dne&utm_source=email&utm_campaign=newsletter_welcome');
+    const unsubscribeUrl = data.unsubscribe_url ? toAbsoluteUrl(data.unsubscribe_url) : toAbsoluteUrl('/');
+
+    return getBaseTemplate(`
+    <h1 class="h1">Vítej u Mystické Hvězdy</h1>
+    <p>Jsi přihlášený k odběru novinek. Občas ti pošleme, co je na obloze nového — a co z toho můžeš prakticky použít.</p>
+
+    <p>Nejlepší začátek je jeden malý výklad ještě dnes:</p>
+
+    <div class="feature-item">
+      <strong>🔮 Tarot ANO / NE</strong><br>
+      Polož konkrétní otázku a vytáhni jednu kartu s jasnou odpovědí.
+    </div>
+    <div class="feature-item">
+      <strong>⭐ Denní horoskop</strong><br>
+      Krátké vedení pro tvoje znamení na dnešek.
+    </div>
+    <div class="feature-item">
+      <strong>🃏 Tarot karta dne</strong><br>
+      Jeden symbol, který ti dnes stojí za pozornost.
+    </div>
+
+    <div class="cta-box">
+      <a href="${tarotUrl}" class="btn">Položit první otázku &rarr;</a>
+    </div>
+
+    <p style="font-size:14px;text-align:center;opacity:0.8;">
+      Nebo otevři <a href="${horoscopeUrl}" style="color:#d4af37;">dnešní horoskop</a> či
+      <a href="${dailyCardUrl}" style="color:#d4af37;">kartu dne</a>.
+    </p>
+
+    <p style="font-size:12px;opacity:0.5;text-align:center;margin-top:2rem;">
+      Dostáváš tento email, protože ses přihlásil k odběru novinek Mystické Hvězdy.<br>
+      <a href="${unsubscribeUrl}" style="color:#d4af37;">Odhlásit se z odběru</a>
+    </p>
+  `, 'Vítej u Mystické Hvězdy', 'Přihlášení k newsletteru proběhlo. Začni jedním malým výkladem ještě dnes.');
   }
 };
 
