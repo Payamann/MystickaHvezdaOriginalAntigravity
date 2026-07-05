@@ -66,7 +66,7 @@ function buildListUnsubscribeUrl(template, data = {}, explicitUrl = '') {
   if ((template === 'daily_horoscope' || template === 'horoscope_subscription_confirm') && data.token) {
     return toAbsoluteUrl(`/api/subscribe/horoscope/unsubscribe?token=${encodeURIComponent(data.token)}`);
   }
-  if (template === 'newsletter_welcome' && data.unsubscribe_url) {
+  if ((template === 'newsletter_welcome' || template === 'newsletter_weekly_digest') && data.unsubscribe_url) {
     return toAbsoluteUrl(data.unsubscribe_url);
   }
   return '';
@@ -1462,6 +1462,48 @@ EMAIL_TEMPLATES.newsletter_welcome = {
       <a href="${unsubscribeUrl}" style="color:#d4af37;">Odhlásit se z odběru</a>
     </p>
   `, 'Vítej u Mystické Hvězdy', 'Přihlášení k newsletteru proběhlo. Začni jedním malým výkladem ještě dnes.');
+  }
+};
+
+EMAIL_TEMPLATES.newsletter_weekly_digest = {
+  subject: (data) => `Hvězdný týden ✨ ${data.date_label || ''}`.trim(),
+  getHtml: (data) => {
+    const moonPhase = data.moon_phase ? escapeHtml(data.moon_phase) : '';
+    const blogUrl = data.blog_url ? toAbsoluteUrl(data.blog_url) : '';
+    const tipUrl = data.tip_url ? toAbsoluteUrl(data.tip_url) : toAbsoluteUrl('/');
+    const unsubscribeUrl = data.unsubscribe_url ? toAbsoluteUrl(data.unsubscribe_url) : toAbsoluteUrl('/');
+
+    return getBaseTemplate(`
+    <h1 class="h1">Hvězdný týden</h1>
+    <p style="text-align:center;opacity:0.7;margin-top:-10px;">${escapeHtml(data.date_label || '')}</p>
+
+    ${moonPhase ? `
+    <div class="feature-item">
+      <strong>🌙 Měsíc tento týden</strong><br>
+      ${moonPhase}
+    </div>` : ''}
+
+    ${data.blog_title && blogUrl ? `
+    <div class="feature-item">
+      <strong>📖 Nové na blogu</strong><br>
+      <a href="${blogUrl}" style="color:#d4af37;">${escapeHtml(data.blog_title)}</a><br>
+      ${data.blog_description ? `<span style="opacity:0.8;">${escapeHtml(data.blog_description)}</span>` : ''}
+    </div>` : ''}
+
+    <div class="feature-item">
+      <strong>✨ Tip týdne: ${escapeHtml(data.tip_title || '')}</strong><br>
+      ${escapeHtml(data.tip_text || '')}
+    </div>
+
+    <div class="cta-box">
+      <a href="${tipUrl}" class="btn">Vyzkoušet &rarr;</a>
+    </div>
+
+    <p style="font-size:12px;opacity:0.5;text-align:center;margin-top:2rem;">
+      Dostáváš tento email, protože ses přihlásil k odběru novinek Mystické Hvězdy.<br>
+      <a href="${unsubscribeUrl}" style="color:#d4af37;">Odhlásit se z odběru</a>
+    </p>
+  `, 'Hvězdný týden', `Lunární energie týdne, nový článek a jeden tip, který stojí za vyzkoušení.`);
   }
 };
 

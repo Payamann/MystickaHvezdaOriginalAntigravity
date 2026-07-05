@@ -93,22 +93,36 @@ export function setHtmlContentSecurityPolicy(res, html) {
 }
 
 export function setHtmlFileContentSecurityPolicy(res, filePath) {
-    const stats = fs.statSync(filePath);
-    const cached = htmlFileCspCache.get(filePath);
-    if (cached && cached.mtimeMs === stats.mtimeMs && cached.size === stats.size) {
-        res.setHeader('Content-Security-Policy', cached.policy);
-        return;
+    // Runs synchronously inside express.static's setHeaders callback. A throw
+    // here becomes a 500 for a page that could otherwise be served, so any
+    // transient FS error (e.g. the file being swapped mid-deploy) must
+    // degrade gracefully instead of failing the response.
+    try {
+        const stats = fs.statSync(filePath);
+        const cached = htmlFileCspCache.get(filePath);
+        if (cached && cached.mtimeMs === stats.mtimeMs && cached.size === stats.size) {
+            res.setHeader('Content-Security-Policy', cached.policy);
+            return;
+        }
+
+        const html = fs.readFileSync(filePath, 'utf8');
+        const policy = buildContentSecurityPolicy({
+            inlineScriptHashes: buildInlineScriptHashes(html),
+        });
+
+        htmlFileCspCache.set(filePath, {
+            mtimeMs: stats.mtimeMs,
+            size: stats.size,
+            policy,
+        });
+        res.setHeader('Content-Security-Policy', policy);
+    } catch (error) {
+        // Fall back to a stale cached policy if we have one, otherwise a
+        // hash-free base policy. The page still serves (200) — the only
+        // degradation is that this page's inline JSON-LD may be blocked
+        // until the next successful read.
+        const cached = htmlFileCspCache.get(filePath);
+        res.setHeader('Content-Security-Policy', cached ? cached.policy : buildContentSecurityPolicy());
+        console.warn(`[CSP] Falling back for ${filePath}: ${error.message}`);
     }
-
-    const html = fs.readFileSync(filePath, 'utf8');
-    const policy = buildContentSecurityPolicy({
-        inlineScriptHashes: buildInlineScriptHashes(html),
-    });
-
-    htmlFileCspCache.set(filePath, {
-        mtimeMs: stats.mtimeMs,
-        size: stats.size,
-        policy,
-    });
-    res.setHeader('Content-Security-Policy', policy);
 }
