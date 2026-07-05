@@ -30,7 +30,7 @@ import mentorRoutes from './mentor.js';
 import adminRoutes from './admin.js';
 import crypto from 'crypto';
 import { initializeEmailQueueJob } from './jobs/email-queue.js';
-import { isAfterDailyHoroscopeSendWindow, isAfterDailyPushSendWindow } from './utils/send-window.js';
+import { getPragueHour, isAfterDailyHoroscopeSendWindow, isAfterDailyPushSendWindow } from './utils/send-window.js';
 import { initializeDataRetentionJob } from './jobs/data-retention.js';
 import schedule from 'node-schedule';
 import { globalLimiter, staticLimiter, aiLimiter, sensitiveLimiter } from './middleware.js';
@@ -115,6 +115,14 @@ function shouldRunDailyPushNotifications() {
             process.env.ENABLE_SCHEDULED_JOBS === 'true');
 }
 
+function shouldRunWeeklyNewsletter() {
+    return process.env.DISABLE_WEEKLY_NEWSLETTER !== 'true' &&
+        !isTestRuntime() &&
+        (isProductionRuntime() ||
+            process.env.ENABLE_WEEKLY_NEWSLETTER === 'true' ||
+            process.env.ENABLE_SCHEDULED_JOBS === 'true');
+}
+
 function shouldRunSocialAgentScheduler() {
     return shouldRunScheduledJobs() &&
         process.env.ENABLE_SOCIAL_AGENT_SCHEDULER === 'true';
@@ -143,12 +151,22 @@ async function runDailyPushJob(reason = 'scheduled') {
     }
 }
 
+async function runWeeklyNewsletterJob(reason = 'scheduled') {
+    try {
+        const { run } = await import('./jobs/weekly-newsletter.js');
+        await run();
+    } catch (e) {
+        console.error(`[CRON] Weekly newsletter failed (${reason}):`, e.message);
+    }
+}
+
 function getBackgroundJobStatus() {
     return {
         general: shouldRunScheduledJobs() ? 'enabled' : 'disabled',
         socialAgent: getSocialAgentSchedulerStatus(),
         dailyHoroscopeEmail: shouldRunDailyHoroscopeEmails() ? 'enabled' : 'disabled',
-        dailyPushNotification: shouldRunDailyPushNotifications() ? 'enabled' : 'disabled'
+        dailyPushNotification: shouldRunDailyPushNotifications() ? 'enabled' : 'disabled',
+        weeklyNewsletter: shouldRunWeeklyNewsletter() ? 'enabled' : 'disabled'
     };
 }
 
@@ -1151,6 +1169,33 @@ if (isMain || isProductionRuntime()) {
             console.warn('📅 Daily push cron scheduled (06:00 UTC + startup/hourly catch-up).');
         } else {
             console.warn('[JOBS] Daily push schedules skipped for this environment.');
+        }
+
+        if (shouldRunWeeklyNewsletter()) {
+            // Weekly newsletter digest — Monday 06:30 UTC. The email queue
+            // dedupes per ISO week, so catch-up runs are always safe.
+            schedule.scheduleJob('30 6 * * 1', () => {
+                runBackgroundTask('weekly_newsletter_scheduled', () => runWeeklyNewsletterJob('scheduled_monday'), {
+                    reason: 'scheduled_monday'
+                });
+            });
+            schedule.scheduleJob('50 * * * 1,2', () => {
+                if (getPragueHour() >= 9) {
+                    runBackgroundTask('weekly_newsletter_hourly_catchup', () => runWeeklyNewsletterJob('hourly_catchup'), {
+                        reason: 'hourly_catchup'
+                    });
+                }
+            });
+            setTimeout(() => {
+                if (getPragueHour() >= 9) {
+                    runBackgroundTask('weekly_newsletter_startup_catchup', () => runWeeklyNewsletterJob('startup_catchup'), {
+                        reason: 'startup_catchup'
+                    });
+                }
+            }, 15000);
+            console.warn('📅 Weekly newsletter cron scheduled (Monday 06:30 UTC + catch-up).');
+        } else {
+            console.warn('[JOBS] Weekly newsletter schedules skipped for this environment.');
         }
     });
 }
