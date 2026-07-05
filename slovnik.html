@@ -34,12 +34,13 @@
 </head>
 
 <body>
+    <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
 
     <div class="stars" aria-hidden="true"></div>
 
     <div id="header-placeholder"></div>
 
-    <main>
+    <main id="main-content" tabindex="-1">
 
         <section class="hero mh-inline-0d345c27f9">
 
@@ -63,7 +64,7 @@
 
                 <div class="search-container">
 
-                    <input type="text" id="searchInput" class="search-input"
+                    <input type="text" id="searchInput" aria-label="Hledat pojem ve slovníku" class="search-input"
 
                         placeholder="Hledat pojem (např. Ascendent, Karma)..." autocomplete="off">
 
