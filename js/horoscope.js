@@ -428,7 +428,7 @@ function initHoroscope() {
                 const affFallback = { cs: 'Jsem v souladu s vesmirem.', sk: 'Som v sulade s vesmirom.', pl: 'Jestem w harmonii z wszechswiatem.' }[currentLang] || 'Jsem v souladu s vesmirem.';
                 const affirmationText = predictionData.affirmation || extractedAffirmation || affFallback;
                 const rawHtml = `<strong class="horoscope-affirmation-label">&#10024; ${affLabel}:</strong> ${affirmationText}`;
-                const sanitized = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(rawHtml) : rawHtml;
+                const sanitized = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(rawHtml) : rawHtml.replace(/<[^>]*>/g, '');
                 detailWork.innerHTML = sanitized;
             }
 

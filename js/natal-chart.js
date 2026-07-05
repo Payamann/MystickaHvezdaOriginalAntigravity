@@ -805,7 +805,7 @@ async function generateNatalChart(planetsGroup) {
                     return `<p>${para.replace(/\n/g, '<br>')}</p>`;
                 }).join('');
 
-            contentDiv.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(formattedContent) : formattedContent;
+            contentDiv.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(formattedContent) : formattedContent.replace(/<[^>]*>/g, '');
             
             // --- STRUCTURED DATA EXTRACTION ---
             // Prefer the server-parsed signs: the server now strips the "DATA: ..." block
@@ -841,7 +841,7 @@ async function generateNatalChart(planetsGroup) {
             // Should be a no-op now that the server strips it, but stays safe either way.
             if (/DATA:\s*Slunce=/i.test(contentDiv.innerHTML)) {
                 const cleaned = contentDiv.innerHTML.replace(/DATA:\s*Slunce=[^<]+/i, '').replace(/<p><\/p>/g, '');
-                contentDiv.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(cleaned) : cleaned;
+                contentDiv.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(cleaned) : cleaned.replace(/<[^>]*>/g, '');
             }
             
             // Handle Teaser for non-premium
@@ -936,7 +936,7 @@ function getSignFromAngle(angle) {
 
 async function typewriterEffect(element, htmlContent) {
     element.classList.add('content-fade-enter');
-    element.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(htmlContent) : htmlContent;
+    element.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(htmlContent) : htmlContent.replace(/<[^>]*>/g, '');
 
     // Small delay to ensure DOM update
     await new Promise(r => setTimeout(r, 100));
