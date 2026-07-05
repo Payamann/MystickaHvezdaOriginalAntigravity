@@ -101,6 +101,16 @@ function renderPage(name, entry, allEntries) {
         author: { '@type': 'Organization', name: 'Mystická Hvězda' }
     }, null, 2);
 
+    const breadcrumbLd = JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Domů', item: CANONICAL_ORIGIN },
+            { '@type': 'ListItem', position: 2, name: 'Databáze jmen', item: `${CANONICAL_ORIGIN}/jmena/` },
+            { '@type': 'ListItem', position: 3, name: `Jméno ${name}`, item: pageUrl }
+        ]
+    }, null, 2);
+
     return `<!DOCTYPE html>
 <html lang="cs">
 <head>
@@ -121,6 +131,7 @@ function renderPage(name, entry, allEntries) {
     <meta name="twitter:card" content="summary_large_image">
 
     <script type="application/ld+json">${jsonLd}</script>
+    <script type="application/ld+json">${breadcrumbLd}</script>
     <link rel="stylesheet" href="/fonts/local-fonts.css">
     <link rel="stylesheet" href="../css/style.v2.min.css?v=11">
     <link rel="stylesheet" href="../css/pages/jmena-index.css">

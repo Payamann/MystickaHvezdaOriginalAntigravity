@@ -82,6 +82,16 @@ function renderPage(dream, index, dreams) {
         author: { '@type': 'Organization', name: 'Mystická Hvězda' }
     }, null, 2);
 
+    const breadcrumbLd = JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Domů', item: CANONICAL_ORIGIN },
+            { '@type': 'ListItem', position: 2, name: 'Snář', item: `${CANONICAL_ORIGIN}/snar.html` },
+            { '@type': 'ListItem', position: 3, name: `Sen o: ${dream.keyword}`, item: pageUrl }
+        ]
+    }, null, 2);
+
     return `<!DOCTYPE html>
 <html lang="cs">
 <head>
@@ -102,6 +112,7 @@ function renderPage(dream, index, dreams) {
     <meta name="twitter:card" content="summary_large_image">
 
     <script type="application/ld+json">${jsonLd}</script>
+    <script type="application/ld+json">${breadcrumbLd}</script>
     <link rel="stylesheet" href="/fonts/local-fonts.css">
     <link rel="stylesheet" href="../css/style.v2.min.css?v=11">
 <script src="/js/dist/analytics-init.js" defer></script>
