@@ -51,8 +51,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Load header and footer in parallel for faster initial paint
     // Use high priority for header as it affects LCP/CLS
     await Promise.all([
-        loadComponent('header-placeholder', `${basePath}components/header.html?v=6`, basePath, true),
-        loadComponent('footer-placeholder', `${basePath}components/footer.html?v=20260619-support-email`, basePath, false)
+        loadComponent('header-placeholder', `${basePath}components/header.html?v=7`, basePath, true),
+        loadComponent('footer-placeholder', `${basePath}components/footer.html?v=20260705-cluster-links`, basePath, false)
     ]);
 
     // STANDALONE: Init hamburger menu + header scroll (no module dependency)
