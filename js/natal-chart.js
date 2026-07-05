@@ -808,34 +808,40 @@ async function generateNatalChart(planetsGroup) {
             contentDiv.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(formattedContent) : formattedContent;
             
             // --- STRUCTURED DATA EXTRACTION ---
-            // Look for "DATA: Slunce=..., Měsíc=..., Ascendent=..."
-            const dataMatch = responseText.match(/DATA:\s*Slunce=([^,]+),\s*Měsíc=([^,]+),\s*Ascendent=([^|\n\r]+)/i);
-            
-            if (dataMatch) {
-                // We have clean data from AI
-                const moonSignAI = dataMatch[2].trim();
-                const ascSignAI = dataMatch[3].trim();
-                
-                document.getElementById('res-moon').textContent = moonSignAI;
-                document.getElementById('res-asc').textContent = ascSignAI;
-                
-                // Remove the DATA block from visible content (sanitized)
+            // Prefer the server-parsed signs: the server now strips the "DATA: ..." block
+            // itself, so this is authoritative and doesn't depend on the AI's exact formatting.
+            if (data.aiSigns && data.aiSigns.moon && data.aiSigns.ascendant) {
+                document.getElementById('res-moon').textContent = data.aiSigns.moon;
+                document.getElementById('res-asc').textContent = data.aiSigns.ascendant;
+            } else {
+                // Fallback for older cached responses that still carry the raw DATA line.
+                const dataMatch = responseText.match(/DATA:\s*Slunce=([^,]+),\s*Měsíc=([^,]+),\s*Ascendent=([^|\n\r]+)/i);
+
+                if (dataMatch) {
+                    document.getElementById('res-moon').textContent = dataMatch[2].trim();
+                    document.getElementById('res-asc').textContent = dataMatch[3].trim();
+                } else {
+                    // Last resort: strict sign names search in the free text.
+                    const signNames = ZODIAC_SIGNS.map(s => s.name).join('|');
+                    const moonRegex = new RegExp(`(?:Měsíc|Luna)\\s+(?:ve|v)\\s+(?:znamení\\s+)?(${signNames})`, 'i');
+                    const moonMatch = textToSearch.match(moonRegex);
+                    if (moonMatch && moonMatch[1]) {
+                        document.getElementById('res-moon').textContent = moonMatch[1];
+                    }
+
+                    const ascRegex = new RegExp(`(?:Ascendent|Vycházející\\s+znamení)\\s+(?:je|v)\\s+(${signNames})`, 'i');
+                    const ascMatch = textToSearch.match(ascRegex);
+                    if (ascMatch && ascMatch[1]) {
+                        document.getElementById('res-asc').textContent = ascMatch[1];
+                    }
+                }
+            }
+
+            // Belt-and-suspenders: strip any leftover DATA block from visible content.
+            // Should be a no-op now that the server strips it, but stays safe either way.
+            if (/DATA:\s*Slunce=/i.test(contentDiv.innerHTML)) {
                 const cleaned = contentDiv.innerHTML.replace(/DATA:\s*Slunce=[^<]+/i, '').replace(/<p><\/p>/g, '');
                 contentDiv.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(cleaned) : cleaned;
-            } else {
-                // Fallback to strict sign names search in text if DATA block is missing
-                const signNames = ZODIAC_SIGNS.map(s => s.name).join('|');
-                const moonRegex = new RegExp(`(?:Měsíc|Luna)\\s+(?:ve|v)\\s+(?:znamení\\s+)?(${signNames})`, 'i');
-                const moonMatch = textToSearch.match(moonRegex);
-                if (moonMatch && moonMatch[1]) {
-                    document.getElementById('res-moon').textContent = moonMatch[1];
-                }
-
-                const ascRegex = new RegExp(`(?:Ascendent|Vycházející\\s+znamení)\\s+(?:je|v)\\s+(${signNames})`, 'i');
-                const ascMatch = textToSearch.match(ascRegex);
-                if (ascMatch && ascMatch[1]) {
-                    document.getElementById('res-asc').textContent = ascMatch[1];
-                }
             }
             
             // Handle Teaser for non-premium
