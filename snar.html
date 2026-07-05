@@ -100,12 +100,13 @@
 </head>
 
 <body>
+    <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
     <!-- App Container -->
     <div id="app" class="app-container">
         <!-- HTML structure requires header-placeholder and footer-placeholder for components.js -->
         <div id="header-placeholder"></div>
 
-        <main>
+        <main id="main-content" tabindex="-1">
             <!-- Hero / Search Section -->
             <section class="dream-hero">
                 <div class="container dream-container">
@@ -200,7 +201,7 @@
                     <div class="search-section mh-inline-ff70f9fca6" data-animate>
                         <div class="search-input-wrapper">
                             <span class="search-icon">🔍</span>
-                            <input type="text" id="dream-search" class="dream-search-input"
+                            <input type="text" id="dream-search" aria-label="Hledat symbol ve snáři" class="dream-search-input"
                                 placeholder="Hledat snový symbol (např. hadi, nemoc, letání)...">
                         </div>
 
