@@ -61,6 +61,7 @@
     "snar:generate": "node scripts/generate-snar-pages.mjs",
     "numerologie:generate": "node scripts/generate-numerologie-pages.mjs",
     "andelske-karty:generate": "node scripts/generate-andelske-karty-pages.mjs",
+    "blog:cluster-links": "node scripts/inject-blog-cluster-links.mjs",
     "verify:production": "node server/scripts/verify-production.js",
     "verify:production:commit": "node scripts/verify-production-commit.mjs",
     "smoke:production:tool-runtime": "node scripts/production-tool-runtime-smoke.mjs --production",
