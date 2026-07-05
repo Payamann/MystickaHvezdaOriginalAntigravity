@@ -419,6 +419,27 @@ router.get('/transits/current', (req, res) => {
     }
 });
 
+// The natalChart prompt asks the AI to append a "DATA: Slunce=X, Měsíc=Y, Ascendent=Z"
+// block it describes as hidden from the user. Strip it here (server-authoritative)
+// instead of relying solely on client-side regex, so a differently-formatted AI
+// response can never leak the raw block into what the user is shown.
+function extractAndStripNatalData(rawResponse) {
+    const dataRegex = /DATA:\s*Slunce=([^,]+),\s*M[eě]s[ií]c=([^,]+),\s*Ascendent=([^\n\r<]+)/i;
+    const match = typeof rawResponse === 'string' ? rawResponse.match(dataRegex) : null;
+
+    if (!match) {
+        return { cleanedResponse: rawResponse, aiSigns: null };
+    }
+
+    const aiSigns = {
+        moon: match[2].trim(),
+        ascendant: match[3].trim()
+    };
+    const cleanedResponse = rawResponse.replace(dataRegex, '').replace(/\n{3,}/g, '\n\n').trim();
+
+    return { cleanedResponse, aiSigns };
+}
+
 function buildFallbackNatalChartResponse({ safeName, chart }) {
     const summary = chart?.summary || {};
     const strongestAspect = summary.strongestAspects?.[0];
@@ -487,7 +508,9 @@ router.post('/natal-chart', oracleLimiter, optionalPremiumCheck, async (req, res
             response = buildFallbackNatalChartResponse({ safeName, chart });
         }
 
-        res.json({ success: true, response, isTeaser: false, chart, fallback });
+        const { cleanedResponse, aiSigns } = extractAndStripNatalData(response);
+
+        res.json({ success: true, response: cleanedResponse, isTeaser: false, chart, fallback, aiSigns });
     } catch (error) {
         console.error('Natal Chart Error:', error);
         res.status(500).json({ success: false, error: 'Hvězdy nejsou v tuto chvíli čitelné...' });

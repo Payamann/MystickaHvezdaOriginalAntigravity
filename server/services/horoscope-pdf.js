@@ -3,10 +3,19 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { chromium } from '@playwright/test';
 import { callClaude } from './claude.js';
+import { ROLE_PREAMBLE } from '../config/prompts.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '../.env') });
+
+function getChromiumLaunchOptions() {
+    const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH?.trim();
+    return {
+        args: ['--no-sandbox'],
+        ...(executablePath ? { executablePath } : {})
+    };
+}
 
 const SIGN_NAMES = {
     beran: 'Beran', byk: 'Býk', blizenci: 'Blíženci', rak: 'Rak',
@@ -34,13 +43,14 @@ const SECTIONS = [
  * Returns an object with section keys → text.
  */
 export async function generateHoroscopeContent({ name, birthDate, sign }) {
+    const safeInputName = String(name || 'Tazatel').substring(0, 100);
     const signName = SIGN_NAMES[sign] || sign;
     const year = new Date().getFullYear();
 
-    const systemPrompt = `Jsi Mystická Hvězda — prémiová česká astroložka. Píšeš personalizovaný roční horoskop pro konkrétního člověka. Tón: vřelý, přímý, poetický ale konkrétní. Nikdy obecný. Píšeš v češtině, tykáš. Žádné anglicismy.`;
+    const systemPrompt = `${ROLE_PREAMBLE}Jsi Mystická Hvězda — prémiová česká astroložka. Píšeš personalizovaný roční horoskop pro konkrétního člověka. Tón: vřelý, přímý, poetický ale konkrétní. Nikdy obecný. Píšeš v češtině, tykáš. Žádné anglicismy.`;
 
     const userPrompt = `Napiš mi personalizovaný Roční Horoskop na míru ${year} pro:
-Jméno: ${name}
+Jméno: ${safeInputName}
 Datum narození: ${birthDate}
 Znamení: ${signName}
 
@@ -52,7 +62,7 @@ Pravidla pro každou sekci:
 - kariera: 120–150 slov. Finanční a kariérní výhled. Kdy riskovat, kdy šetřit.
 - rust: 100–120 slov. Nejdůležitější lekce a transformace roku.
 - mesice: Vypiš 4–5 konkrétních měsíců roku ${year} s krátkým popisem energie (1–2 věty každý).
-- slovo: 80–100 slov. Závěrečné povzbuzení — osobní, poetické, silné. Nes ${name} jako jednotlivce.
+- slovo: 80–100 slov. Závěrečné povzbuzení — osobní, poetické, silné. Nes ${safeInputName} jako jednotlivce.
 
 Piš výhradně v češtině. Nepiš nadpisy sekcí, jen SEKCE:[klíč] a pak text.`;
 
@@ -83,8 +93,11 @@ export async function renderPdf({ name, sign, birthDate, sections }) {
 
     const html = buildHtml({ name, signName, glyph, year, birthFormatted, sections });
 
-    const browser = await chromium.launch({ args: ['--no-sandbox'] });
-    const page = await browser.newPage();
+    const browser = await chromium.launch(getChromiumLaunchOptions());
+    // This PDF is static content only — JS is disabled so a maliciously crafted
+    // name/AI section can never execute script inside the render context.
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
     await page.setContent(html, { waitUntil: 'networkidle' });
     const pdfBuffer = await page.pdf({
         format: 'A4',
@@ -95,9 +108,22 @@ export async function renderPdf({ name, sign, birthDate, sections }) {
     return pdfBuffer;
 }
 
-function buildHtml({ name, signName, glyph, year, birthFormatted, sections }) {
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+export function buildHtml({ name, signName, glyph, year, birthFormatted, sections }) {
+    const safeName = escapeHtml(name);
+    const safeSignName = escapeHtml(signName);
+    const safeBirthFormatted = escapeHtml(birthFormatted);
+
     const sectionHtml = SECTIONS.map(({ key, title, icon }) => {
-        const text = sections[key] || '';
+        const text = escapeHtml(sections[key] || '');
         const isMonths = key === 'mesice';
         const formattedText = isMonths
             ? formatMonths(text)
@@ -353,16 +379,16 @@ function buildHtml({ name, signName, glyph, year, birthFormatted, sections }) {
   <div class="cover-title">Roční Horoskop<br>na míru</div>
   <div class="cover-year">${year}</div>
   <div class="cover-divider"></div>
-  <div class="cover-name">${name}</div>
-  <div class="cover-sign">${signName}</div>
-  <div class="cover-birth">${birthFormatted}</div>
+  <div class="cover-name">${safeName}</div>
+  <div class="cover-sign">${safeSignName}</div>
+  <div class="cover-birth">${safeBirthFormatted}</div>
   <div class="cover-footer">Personalizovaný výklad · Mystická Hvězda</div>
 </div>
 
 <!-- CONTENT -->
 <div class="content">
   <div class="page-header">
-    <div class="page-header-name">${name} · ${signName}</div>
+    <div class="page-header-name">${safeName} · ${safeSignName}</div>
     <div class="page-header-glyph">${glyph}</div>
     <div class="page-header-name">Roční Horoskop ${year}</div>
   </div>
