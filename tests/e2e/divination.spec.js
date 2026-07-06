@@ -45,7 +45,7 @@ test.describe('Andělské karty', () => {
         expect(metaDescription).toContain('balíčku 44 karet');
         expect(metaDescription).toContain('hlubší výklad');
         await expect(page.locator('.hero__subtitle')).toContainText('hlubší andělský výklad');
-        await expect(page).toHaveTitle(/44 karet/);
+        await expect(page).toHaveTitle(/44 andělských karet/);
         await expect(main).not.toContainText('41 karet');
     });
 
