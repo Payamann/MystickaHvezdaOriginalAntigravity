@@ -93,3 +93,105 @@ Změněno: prihlaseni (pole -1, trial copy, autofocus), cenik (trial 4×), tarot
 na mobilu, 459 unit testů zelených. Nečekané: cenik.js přepisuje statické texty
 karet (near-miss zachycen verifikací) a jest má ve worktree rozbitý testMatch.
 E2E checkout sekci spustit v CI před deployem.
+
+## Fáze 4 — PDF fulfillment reconciliation (2026-07-06)
+
+Zjištění z reviewu placeného PDF produktu (Osobní mapa 299 Kč, Roční horoskop
+199 Kč): `handlePersonalMapPurchase`/`handleRocniHoroskopPurchase` v
+server/payment.js generují PDF (Claude + Playwright) a posílají e-mail (Resend)
+uvnitř `setImmediate` PO odpovědi na Stripe webhook. Když cokoliv uvnitř
+selže, chyba se jen zaloguje — žádný retry, žádný admin alert, žádné avízo
+zákazníkovi. Objednávka zůstane `one_time_order_inputs.status='checkout_created'`
+navždy. Žádný cron job to nekontroluje, admin panel nemá pohled na tyto
+objednávky.
+
+Cíl: automatická reconciliace + admin alert při finálním selhání, beze změny
+UX pro úspěšný běh (dnešní rychlá cesta zůstává nedotčená).
+
+- [x] Migrace `migrations/20260706_one_time_order_retry_tracking.sql`: přidat
+      `retry_count INT NOT NULL DEFAULT 0`, `last_error TEXT`,
+      `last_attempt_at TIMESTAMPTZ` do `one_time_order_inputs` (mirror
+      `email_queue` konvence z `20260309_create_email_queue.sql`)
+- [x] `server/routes/osobni-mapa.js` + `server/routes/rocni-horoskop.js`:
+      přidat `productYear: PRODUCT.year` do `payload` při vytváření objednávky,
+      aby reconciliace nezávisela na živém Stripe session lookupu
+- [x] Extrahovat fulfillment logiku (generate → render → send → mark fulfilled)
+      z `payment.js` do `server/services/one-time-fulfillment.js` —
+      `fulfillPersonalMapOrder()` a `fulfillRocniHoroskopOrder()`, sdílené mezi
+      webhookem (rychlá cesta) a novým jobem (retry cesta)
+- [x] `server/services/one-time-orders.js`: přidat `listStuckOneTimeOrderInputs()`
+      (status=checkout_created, created_at starší než grace okno, retry_count <
+      max), `recordOneTimeOrderInputAttemptFailure()` a `markOneTimeOrderInputFailed()`
+- [x] Nový `server/jobs/one-time-order-reconciliation.js` po vzoru
+      `email-queue.js` (jobRunning lock, `sendOperationalAlert` pro admin alert
+      při vyčerpání retry budgetu). Grace okno 20 min (shoduje se s copy na
+      osobni-mapa.html: "Pokud nedorazí do 20 minut..."), max 3 pokusy, běh
+      každých 10 min + jednou při startu. `fulfillFn` injectovatelný (mirror
+      `fetchImpl` vzoru z alerts.js) pro testovatelnost bez reálných volání.
+- [x] Zapojeno do `server/index.js` vedle ostatních `initialize*Job()` volání
+- [x] Testy: `server/tests/one-time-order-reconciliation.test.js` (stuck
+      detekce, úspěšný retry, vyčerpání retry budgetu → status=failed,
+      needotýká se čerstvých objednávek uvnitř grace okna) +
+      `server/tests/one-time-fulfillment.test.js` (neznámý product_type vyhodí
+      chybu, nemlčí)
+- [x] Ověřeno: jest 495/495 zelených (celá sada), lint čistý, žádná regrese
+      v personal-map-pdf.test.js / rocni-horoskop.test.js / payment*.test.js
+- [x] Migraci uživatel spustil ručně v Supabase SQL editoru
+- [x] Admin viditelnost bez závislosti na `OPERATIONAL_ALERT_WEBHOOK_URL`
+      (potvrzeno: na Railway zatím není nastaven, takže žádné operační alerty
+      včetně stávajících `social_agent_failed` tam dnes nechodí): nový
+      `GET /api/admin/one-time-orders?status=failed|checkout_created|fulfilled|all`
+      v `server/admin.js` (authenticateToken + requireAdmin, stejný vzor jako
+      `/admin/angel-messages`) + sekce "Jednorázové PDF objednávky" v
+      `admin.html`/`js/admin.js` (tabulka: čas, produkt, zákazník, stav,
+      pokusy, poslední chyba). `js/dist/admin.js?v=3` po `npm run build:js`.
+      Testy: `server/tests/admin-one-time-orders.test.js` (401 bez tokenu, 403
+      bez admin role, 200 + správná data s filtrem).
+- [x] Ověřeno: jest 499/499 (celá sada), lint čistý, `check:ai-cost-control`
+      OK, static-html-csp + script-guardrails testy OK po JS/HTML změně
+
+## Fáze 5 — Monetizace bez marketingového rozpočtu (2026-07-06)
+
+Cíl: využít organický provoz, co už na web chodí zdarma, beze změny v marketingovém
+rozpočtu (0 Kč). Dva kroky navazující na dřívější zjištění duplicitního obsahu.
+
+- [x] Newsletter popup (`js/newsletter-popup.js`, exit-intent + 45s timer, už
+      testovaný a nasazený na blogu/homepage) přidán na všechny 4 programmatické
+      clustery, které ho dosud neměly: `jmena` (281), `snar` (164),
+      `kompatibilita` (66), `partnerska-shoda` (145) = 656 souborů. Jen vložení
+      `<script src="../js/dist/newsletter-popup.js" defer></script>` před
+      `</body>` — CSS už bylo v globálním stylesheetu, žádný nový kód.
+      Ověřeno v preview (exit-intent trigger, žádné console chyby, dismiss/
+      session logika funguje) + static-html-csp/script-guardrails testy zelené.
+- [x] Kompatibilita cluster (66 párů): nahrazeno 9 sdílených textových bloků
+      (podle dvojice živlů) unikátním textem pro každý konkrétní pár znamení —
+      5 sekcí (láska, komunikace, výzvy, silné stránky, tip na rande) × 66 =
+      330 nových odstavců, psáno s ohledem na modality/vládnoucí planety/
+      klasické astrologické dynamiky konkrétních dvojic. Skóre/label (55%/78%
+      atd.) ZŮSTÁVÁ podle živlových bucketů — vědomě mimo scope, viz review.
+      Ověřeno: 0 duplicitních textových hashů (dřív 9 skupin), jest 71/71 na
+      static-html-csp/script-guardrails/seo-ctr-sprint, preview 2 stránky bez
+      console chyb.
+
+### Review Fáze 5
+Obě části beze změny designu/struktury — jen vložení skriptu (newsletter) a
+náhrada textového obsahu (kompatibilita), takže riziko regrese bylo nízké a
+potvrzeno testy i preview. Vedlejší nález: skóre/label u kompatibility jsou
+pořád jen z 9 živlových kombinací (55%/78%/62% atd.), ne unikátní na pár —
+zůstává jako možný další krok, pokud bude chtít ještě přesnější diferenciaci.
+Nedotčeno: `jmena/index.html` už má jiný mechanismus (`exit-intent.js`, přímý
+upsell na registraci) — ponechán beze změny, newsletter popup se mu sám vyhne
+(`shouldShow()` kontroluje přítomnost `#exit-intent-modal`).
+
+### Review Fáze 4
+Beze změny chování pro úspěšný webhook běh (jen extrahovaná stejná logika do
+sdíleného modulu) — riziko regrese nízké, potvrzeno 495/495 testů. Nečekané:
+`server/tests/setup.mjs` nastavuje fake, ale neprázdný `RESEND_API_KEY`, takže
+testy co dojdou až k `email-service.js` send funkci dělají skutečný pomalý
+síťový request na Resend (viz lessons.md near-miss) — vyřešeno injectovatelným
+`fulfillFn` v jobu místo mockování modulu. Zbývá: uživatel musí ručně spustit
+migraci v Supabase (schéma se v tomto repu nemigruje automaticky) a nasadit
+(git push). Vedlejší zjištění mimo scope: `sendPersonalMapPdf`/`sendHoroscopePdf`
+při chybějícím `RESEND_API_KEY` v produkci tiše "uspějí" (vrátí se bez chyby),
+takže by objednávka mohla být označena fulfilled bez reálně odeslaného e-mailu
+— existující chování, nedotčeno touto opravou, stojí za samostatný pohled.
