@@ -139,7 +139,8 @@ router.post('/checkout', async (req, res) => {
             customerName,
             payload: {
                 birthDate,
-                sign
+                sign,
+                productYear: PRODUCT.year
             }
         });
         const stripe = getStripeClient();

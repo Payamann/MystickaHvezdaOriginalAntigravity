@@ -134,3 +134,83 @@ export async function markOneTimeOrderInputFulfilled(orderId) {
 
     return true;
 }
+
+export async function markOneTimeOrderInputFailed(orderId) {
+    const cleanOrderId = cleanString(orderId, 80);
+    if (!cleanOrderId) return false;
+
+    const { error } = await supabase
+        .from('one_time_order_inputs')
+        .update({
+            status: 'failed',
+            updated_at: new Date().toISOString()
+        })
+        .eq('id', cleanOrderId);
+
+    if (error) {
+        console.warn('[ONE_TIME_ORDER] Could not mark order failed:', error.message);
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * Orders whose checkout succeeded but whose async fulfillment (PDF
+ * generation + email delivery) never confirmed — either because it crashed
+ * before marking the order fulfilled, or because the process restarted
+ * mid-flight. Excludes orders younger than the grace window, since normal
+ * fulfillment can legitimately still be in progress.
+ */
+export async function listStuckOneTimeOrderInputs({ olderThanMs, maxRetries, limit = 20 } = {}) {
+    const cutoffIso = new Date(Date.now() - olderThanMs).toISOString();
+
+    const { data, error } = await supabase
+        .from('one_time_order_inputs')
+        .select('id, product_type, product_id, customer_email, customer_name, payload, retry_count, created_at')
+        .eq('status', 'checkout_created')
+        .lt('created_at', cutoffIso)
+        .lt('retry_count', maxRetries)
+        .order('created_at', { ascending: true })
+        .limit(limit);
+
+    if (error) {
+        console.warn('[ONE_TIME_ORDER] Could not list stuck orders:', error.message);
+        return [];
+    }
+
+    return data || [];
+}
+
+export async function recordOneTimeOrderInputAttemptFailure(orderId, errorMessage) {
+    const cleanOrderId = cleanString(orderId, 80);
+    if (!cleanOrderId) return { retryCount: null };
+
+    const { data: current, error: fetchError } = await supabase
+        .from('one_time_order_inputs')
+        .select('retry_count')
+        .eq('id', cleanOrderId)
+        .maybeSingle();
+
+    if (fetchError) {
+        console.warn('[ONE_TIME_ORDER] Could not read retry_count before recording failure:', fetchError.message);
+    }
+
+    const nextRetryCount = (current?.retry_count || 0) + 1;
+
+    const { error } = await supabase
+        .from('one_time_order_inputs')
+        .update({
+            retry_count: nextRetryCount,
+            last_error: cleanString(String(errorMessage ?? ''), 2000),
+            last_attempt_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        })
+        .eq('id', cleanOrderId);
+
+    if (error) {
+        console.warn('[ONE_TIME_ORDER] Could not record attempt failure:', error.message);
+    }
+
+    return { retryCount: nextRetryCount };
+}

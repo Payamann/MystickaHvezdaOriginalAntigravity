@@ -165,7 +165,8 @@ router.post('/checkout', async (req, res) => {
                 birthPlace,
                 sign,
                 grammaticalGender,
-                focus
+                focus,
+                productYear: PRODUCT.year
             }
         });
         const stripe = getStripeClient();

@@ -32,6 +32,9 @@ document.addEventListener('click', (event) => {
     if (action === 'loadAngelMessages') {
         loadAngelMessages();
     }
+    if (action === 'loadOneTimeOrders') {
+        loadOneTimeOrders();
+    }
     if (action === 'loadSupportInbox') {
         loadSupportInbox();
     }
@@ -64,6 +67,9 @@ document.addEventListener('change', (event) => {
     }
     if (event.target && event.target.id === 'angel-message-status') {
         loadAngelMessages();
+    }
+    if (event.target && event.target.id === 'one-time-order-status') {
+        loadOneTimeOrders();
     }
 });
 
@@ -98,7 +104,8 @@ async function loadAdminData() {
         loadBusiness(),
         loadFunnel(),
         loadAnalytics(),
-        loadAngelMessages()
+        loadAngelMessages(),
+        loadOneTimeOrders()
     ]);
 }
 
@@ -613,6 +620,71 @@ function renderAngelMessages(messages) {
         actionCell.appendChild(createActionButton('Smazat', 'deleteAngelMessage', message.id, 'btn-demote'));
         tr.appendChild(actionCell);
 
+        tbody.appendChild(tr);
+    });
+}
+
+const ONE_TIME_PRODUCT_LABELS = {
+    personal_map: 'Osobní mapa',
+    rocni_horoskop: 'Roční horoskop'
+};
+
+const ONE_TIME_STATUS_LABELS = {
+    checkout_created: 'Zpracovává se',
+    fulfilled: 'Doručeno',
+    failed: 'Selhalo',
+    expired: 'Vypršelo'
+};
+
+async function loadOneTimeOrders() {
+    const statusSelect = document.getElementById('one-time-order-status');
+    const status = statusSelect ? statusSelect.value : 'failed';
+    const tbody = document.querySelector('#one-time-orders-table tbody');
+    const errorMsg = document.getElementById('error-msg');
+
+    if (!tbody) return;
+
+    tbody.replaceChildren(createTableMessageRow(6, 'Načítám objednávky...'));
+
+    try {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/admin/one-time-orders?status=${encodeURIComponent(status)}&limit=50`, {
+            credentials: 'include'
+        });
+
+        if (response.status === 403) {
+            tbody.replaceChildren(createTableMessageRow(6, 'Přístup odepřen.', 'admin-table-error'));
+            return;
+        }
+
+        const data = await response.json();
+        if (!data.success) throw new Error(data.error);
+
+        renderOneTimeOrders(data.orders || []);
+        errorMsg.textContent = '';
+    } catch (error) {
+        console.error(error);
+        tbody.replaceChildren(createTableMessageRow(6, 'Objednávky se nepodařilo načíst.', 'admin-table-error'));
+        errorMsg.textContent = 'Chyba při načítání objednávek: ' + error.message;
+    }
+}
+
+function renderOneTimeOrders(orders) {
+    const tbody = document.querySelector('#one-time-orders-table tbody');
+    tbody.replaceChildren();
+
+    if (!orders || orders.length === 0) {
+        tbody.appendChild(createTableMessageRow(6, 'Žádné objednávky pro zvolený stav.'));
+        return;
+    }
+
+    orders.forEach(order => {
+        const tr = document.createElement('tr');
+        appendCell(tr, formatDateTime(order.created_at));
+        appendCell(tr, ONE_TIME_PRODUCT_LABELS[order.product_type] || order.product_type);
+        appendCell(tr, order.customer_email || '-');
+        appendCell(tr, ONE_TIME_STATUS_LABELS[order.status] || order.status);
+        appendCell(tr, String(order.retry_count ?? 0));
+        appendCell(tr, order.last_error || '-', 'admin-message-cell');
         tbody.appendChild(tr);
     });
 }

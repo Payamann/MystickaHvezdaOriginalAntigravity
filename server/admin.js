@@ -2120,6 +2120,47 @@ router.get('/business', authenticateToken, requireAdmin, async (req, res) => {
     }
 });
 
+function normalizeOneTimeOrderStatus(value) {
+    if (['checkout_created', 'fulfilled', 'failed', 'expired', 'all'].includes(value)) return value;
+    return 'failed';
+}
+
+// One-time paid PDF orders (Osobní mapa, Roční horoskop) that need attention —
+// stuck in checkout_created past the reconciliation grace window, or moved to
+// failed after exhausting the retry budget. See jobs/one-time-order-reconciliation.js.
+router.get('/one-time-orders', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const status = normalizeOneTimeOrderStatus(req.query.status);
+        const limit = normalizeAdminListLimit(req.query.limit);
+        const offset = Math.max(0, Number.parseInt(req.query.offset, 10) || 0);
+
+        let query = supabase
+            .from('one_time_order_inputs')
+            .select('id, product_type, product_id, customer_email, customer_name, status, retry_count, last_error, last_attempt_at, created_at, fulfilled_at', { count: 'exact' })
+            .order('created_at', { ascending: false })
+            .range(offset, offset + limit - 1);
+
+        if (status !== 'all') query = query.eq('status', status);
+
+        const { data, error, count } = await query;
+        if (error) throw error;
+
+        res.json({
+            success: true,
+            status,
+            orders: data || [],
+            pagination: {
+                limit,
+                offset,
+                total: count ?? (data || []).length
+            }
+        });
+    } catch (error) {
+        console.error('Admin One-Time Orders Error:', error);
+        res.status(500).json({ success: false, error: 'Nepodařilo se načíst objednávky.' });
+    }
+});
+
 // Update user subscription manually
 router.post('/user/:userId/subscription', authenticateToken, requireAdmin, async (req, res) => {
     try {

@@ -32,6 +32,7 @@ import crypto from 'crypto';
 import { initializeEmailQueueJob } from './jobs/email-queue.js';
 import { getPragueHour, isAfterDailyHoroscopeSendWindow, isAfterDailyPushSendWindow } from './utils/send-window.js';
 import { initializeDataRetentionJob } from './jobs/data-retention.js';
+import { initializeOneTimeOrderReconciliationJob } from './jobs/one-time-order-reconciliation.js';
 import schedule from 'node-schedule';
 import { globalLimiter, staticLimiter, aiLimiter, sensitiveLimiter } from './middleware.js';
 import {
@@ -1031,6 +1032,12 @@ if (isMain || isProductionRuntime()) {
                 initializeDataRetentionJob(schedule);
             } catch (jobErr) {
                 console.error('[JOBS] Failed to init data retention:', jobErr.message);
+            }
+
+            try {
+                initializeOneTimeOrderReconciliationJob();
+            } catch (jobErr) {
+                console.error('[JOBS] Failed to init one-time order reconciliation:', jobErr.message);
             }
 
             // ============================================

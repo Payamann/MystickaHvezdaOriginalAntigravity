@@ -567,6 +567,82 @@
                 </section>
 
 
+                <section class="admin-panel mb-xl" aria-labelledby="one-time-orders-title">
+
+                    <div class="admin-panel__header">
+
+                        <div>
+
+                            <h2 id="one-time-orders-title">Jednorázové PDF objednávky</h2>
+
+                            <p class="admin-panel__subtext">Osobní mapa a Roční horoskop — objednávky, kde se doručení nepodařilo nebo uvízlo.</p>
+
+                        </div>
+
+                        <div class="admin-panel__controls">
+
+                            <label class="admin-select-label" for="one-time-order-status">Stav</label>
+
+                            <select id="one-time-order-status" class="admin-select">
+
+                                <option value="failed" selected>Selhané</option>
+
+                                <option value="checkout_created">Zpracovává se</option>
+
+                                <option value="fulfilled">Doručené</option>
+
+                                <option value="all">Vše</option>
+
+                            </select>
+
+                            <button class="btn btn--secondary" data-action="loadOneTimeOrders">Obnovit</button>
+
+                        </div>
+
+                    </div>
+
+                    <div class="admin-table-container admin-table-container--compact">
+
+                        <table id="one-time-orders-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Čas</th>
+
+                                    <th>Produkt</th>
+
+                                    <th>Zákazník</th>
+
+                                    <th>Stav</th>
+
+                                    <th>Pokusy</th>
+
+                                    <th>Poslední chyba</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                <tr>
+
+                                    <td colspan="6">Načítám objednávky...</td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+
+
                 <section class="admin-panel mb-xl" aria-labelledby="angel-moderation-title">
 
                     <div class="admin-panel__header">
@@ -698,7 +774,7 @@
     <script src="js/dist/components.js?v=20260522-premium-gate-cache" defer></script>
 
     <script type="module" src="js/dist/main.js?v=10"></script>
-    <script src="js/dist/admin.js?v=2" defer></script>
+    <script src="js/dist/admin.js?v=3" defer></script>
 
 </body>
 

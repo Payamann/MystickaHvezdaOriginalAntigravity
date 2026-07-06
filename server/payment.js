@@ -10,6 +10,7 @@ import { validateString, validateNumber, validateUserId } from './utils/validati
 import {
     getOneTimeOrderInput,
     markOneTimeOrderInputFulfilled,
+    recordOneTimeOrderInputAttemptFailure,
     sanitizeOneTimePurchaseMetadata
 } from './services/one-time-orders.js';
 import { isProductionRuntime } from './config/runtime.js';
@@ -1567,13 +1568,8 @@ async function handleRocniHoroskopPurchase(session, stripeEventId = null) {
     // Run async — don't block webhook response
     setImmediate(async () => {
         try {
-            const { generateHoroscopeContent, renderPdf } = await import('./services/horoscope-pdf.js');
-            const { sendHoroscopePdf } = await import('./email-service.js');
-
-            const sections = await generateHoroscopeContent({ name: customerName, birthDate, sign });
-            const pdfBuffer = await renderPdf({ name: customerName, sign, birthDate, sections });
-
-            await sendHoroscopePdf({ to: customerEmail, name: customerName, sign, pdfBuffer });
+            const { fulfillRocniHoroskopOrder } = await import('./services/one-time-fulfillment.js');
+            await fulfillRocniHoroskopOrder({ customerName, customerEmail, payload: { birthDate, sign } });
             await markOneTimeOrderInputFulfilled(orderInput?.id);
             await recordFunnelEvent('one_time_pdf_delivered', {
                 source,
@@ -1602,6 +1598,9 @@ async function handleRocniHoroskopPurchase(session, stripeEventId = null) {
             console.log(`[HOROSKOP] PDF sent for paid session ${session.id}`);
         } catch (err) {
             console.error(`[HOROSKOP] PDF generation/delivery failed for paid session ${session.id}:`, err.message);
+            // Persist the first failure so the reconciliation job inherits the
+            // real root-cause error and this attempt counts toward the retry budget.
+            await recordOneTimeOrderInputAttemptFailure(orderInput?.id, err.message);
         }
     });
 }
@@ -1669,30 +1668,12 @@ async function handlePersonalMapPurchase(session, stripeEventId = null) {
 
     setImmediate(async () => {
         try {
-            const { generatePersonalMapContent, renderPersonalMapPdf } = await import('./services/personal-map-pdf.js');
-            const { sendPersonalMapPdf } = await import('./email-service.js');
-
-            const sections = await generatePersonalMapContent({
-                name: customerName,
-                birthDate,
-                birthTime,
-                birthPlace,
-                sign,
-                focus,
-                grammaticalGender,
-                year
+            const { fulfillPersonalMapOrder } = await import('./services/one-time-fulfillment.js');
+            await fulfillPersonalMapOrder({
+                customerName,
+                customerEmail,
+                payload: { birthDate, birthTime, birthPlace, sign, grammaticalGender, focus, productYear: year }
             });
-            const pdfBuffer = await renderPersonalMapPdf({
-                name: customerName,
-                sign,
-                birthDate,
-                focus,
-                year,
-                productName: `Osobní mapa zbytku roku ${year}`,
-                sections
-            });
-
-            await sendPersonalMapPdf({ to: customerEmail, name: customerName, sign, pdfBuffer });
             await markOneTimeOrderInputFulfilled(orderInput?.id);
             await recordFunnelEvent('one_time_pdf_delivered', {
                 source,
@@ -1720,6 +1701,9 @@ async function handlePersonalMapPurchase(session, stripeEventId = null) {
             console.log(`[PERSONAL_MAP] PDF sent for paid session ${session.id}`);
         } catch (err) {
             console.error(`[PERSONAL_MAP] PDF generation/delivery failed for paid session ${session.id}:`, err.message);
+            // Persist the first failure so the reconciliation job inherits the
+            // real root-cause error and this attempt counts toward the retry budget.
+            await recordOneTimeOrderInputAttemptFailure(orderInput?.id, err.message);
         }
     });
 }
