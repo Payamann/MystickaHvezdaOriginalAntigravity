@@ -68,6 +68,95 @@
         messageElement.append(document.createElement('br'), link);
     }
 
+    async function fetchCsrfToken(base) {
+        const csrfRes = await fetch(`${base}/csrf-token`, { credentials: 'include' });
+        const csrfData = await csrfRes.json();
+        return csrfData.csrfToken || csrfData.token || '';
+    }
+
+    const ZODIAC_SIGNS = [
+        ['♈', 'Beran'], ['♉', 'Býk'], ['♊', 'Blíženci'], ['♋', 'Rak'],
+        ['♌', 'Lev'], ['♍', 'Panna'], ['♎', 'Váhy'], ['♏', 'Štír'],
+        ['♐', 'Střelec'], ['♑', 'Kozoroh'], ['♒', 'Vodnář'], ['♓', 'Ryby']
+    ];
+
+    // Second step after newsletter opt-in: the popup promises a DAILY
+    // horoscope, which is sent per zodiac sign (horoscope_subscriptions),
+    // so ask for the sign and activate the daily email right away.
+    function showSignStep(email) {
+        const form = document.querySelector('#mh-newsletter-popup .mh-popup-form');
+        const msg = document.getElementById('mh-popup-msg');
+        if (!form || !msg) return;
+
+        form.replaceChildren();
+
+        const select = document.createElement('select');
+        select.id = 'mh-popup-sign';
+        select.className = 'mh-popup-email';
+        select.setAttribute('aria-label', 'Vyberte své znamení');
+        select.appendChild(new Option('Vyberte své znamení…', ''));
+        for (const [emoji, name] of ZODIAC_SIGNS) {
+            select.appendChild(new Option(`${emoji} ${name}`, name));
+        }
+
+        const btn = document.createElement('button');
+        btn.id = 'mh-popup-sign-submit';
+        btn.className = 'mh-popup-submit';
+        btn.textContent = 'Aktivovat denní horoskop';
+
+        form.append(select, btn);
+
+        msg.textContent = '🌟 Odběr aktivní! Pro denní horoskop ještě vyberte své znamení.';
+        msg.className = 'mh-popup-msg mh-popup-msg--success';
+
+        btn.addEventListener('click', async () => {
+            const sign = select.value;
+            if (!sign) {
+                msg.textContent = 'Vyberte prosím své znamení.';
+                msg.className = 'mh-popup-msg mh-popup-msg--error';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Aktivuji...';
+
+            try {
+                const BASE = window.API_CONFIG?.BASE_URL || '/api';
+                const csrfToken = await fetchCsrfToken(BASE);
+                const res = await fetch(`${BASE}/subscribe/horoscope`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+                    body: JSON.stringify({ email, zodiac_sign: sign })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    // Same key horoscope-subscribe.js uses, so the horoskopy
+                    // page shows the subscribed state consistently.
+                    try { localStorage.setItem('mh_horoscope_subscribed', sign); } catch { /* private mode */ }
+                    msg.textContent = `🌙 Hotovo! Denní horoskop pro znamení ${sign} vám začne chodit každé ráno.`;
+                    msg.className = 'mh-popup-msg mh-popup-msg--success';
+                    showRegisterCta(msg, email);
+                    btn.textContent = 'Denní horoskop aktivní';
+                    window.MH_ANALYTICS?.trackEvent?.('newsletter_popup_daily_horoscope_subscribed', {
+                        source: 'web_popup'
+                    });
+                    setTimeout(dismiss, 12000);
+                } else {
+                    msg.textContent = data.error || 'Chyba. Zkuste to znovu.';
+                    msg.className = 'mh-popup-msg mh-popup-msg--error';
+                    btn.disabled = false;
+                    btn.textContent = 'Aktivovat denní horoskop';
+                }
+            } catch {
+                msg.textContent = 'Chyba připojení. Zkuste to znovu.';
+                msg.className = 'mh-popup-msg mh-popup-msg--error';
+                btn.disabled = false;
+                btn.textContent = 'Aktivovat denní horoskop';
+            }
+        });
+    }
+
     async function subscribe(email) {
         const btn = document.getElementById('mh-popup-submit');
         const msg = document.getElementById('mh-popup-msg');
@@ -76,11 +165,7 @@
 
         try {
             const BASE = window.API_CONFIG?.BASE_URL || '/api';
-
-            // Fetch CSRF token first (required for all POST requests)
-            const csrfRes = await fetch(`${BASE}/csrf-token`, { credentials: 'include' });
-            const csrfData = await csrfRes.json();
-            const csrfToken = csrfData.csrfToken || csrfData.token || '';
+            const csrfToken = await fetchCsrfToken(BASE);
 
             const res = await fetch(`${BASE}/newsletter/subscribe`, {
                 method: 'POST',
@@ -90,14 +175,10 @@
             });
             const data = await res.json();
             if (data.success) {
-                msg.textContent = '🌟 Skvělé! Brzy vám přijde první hvězdná zpráva.';
-                msg.className = 'mh-popup-msg mh-popup-msg--success';
-                showRegisterCta(msg, email);
-                btn.textContent = 'Odběr aktivní';
                 window.MH_ANALYTICS?.trackEvent?.('newsletter_popup_subscribed', {
                     source: 'web_popup'
                 });
-                setTimeout(dismiss, 10000);
+                showSignStep(email);
             } else {
                 msg.textContent = data.error || 'Chyba. Zkuste to znovu.';
                 msg.className = 'mh-popup-msg mh-popup-msg--error';
