@@ -132,13 +132,16 @@ describe('CTR sprint static SEO pages', () => {
     expect(html).not.toContain('href="kompatibilita/');
   });
 
-  it('keeps legacy Czech compatibility cluster deindexed in favor of partnerska-shoda pages', async () => {
-    const legacyHtml = await readPage('kompatibilita/lev-stir.html');
+  it('keeps the legacy Czech compatibility cluster removed in favor of partnerska-shoda pages', async () => {
+    // The physical cluster was deleted (2026-07-06): the files were unreachable
+    // behind the server-side 301 map in server/index.js, which stays and is
+    // covered by api.test.js ("legacy compatibility page redirects...").
+    const clusterDir = path.join(repoRoot, 'kompatibilita');
+    const clusterFiles = await fs.readdir(clusterDir).catch(() => []);
     const sitemap = await readPage('sitemap.xml');
 
-    expect(legacyHtml).toContain('<meta name="robots" content="noindex, follow">');
-    expect(legacyHtml).toContain('<link rel="canonical" href="https://www.mystickahvezda.cz/partnerska-shoda/leo-scorpio.html">');
-    expect(sitemap).not.toContain('https://www.mystickahvezda.cz/kompatibilita/lev-stir.html');
+    expect(clusterFiles.filter((file) => file.endsWith('.html'))).toHaveLength(0);
+    expect(sitemap).not.toContain('https://www.mystickahvezda.cz/kompatibilita/');
     expect(sitemap).toContain('https://www.mystickahvezda.cz/partnerska-shoda/leo-scorpio.html');
   });
 

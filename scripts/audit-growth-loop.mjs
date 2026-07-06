@@ -19,7 +19,6 @@ const scanRoots = [
     path.join(rootDir, 'components'),
     path.join(rootDir, 'horoskop'),
     path.join(rootDir, 'jmena'),
-    path.join(rootDir, 'kompatibilita'),
     path.join(rootDir, 'partnerska-shoda'),
     path.join(rootDir, 'ritualy'),
     path.join(rootDir, 'slovnik'),
