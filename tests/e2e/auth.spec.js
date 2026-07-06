@@ -52,7 +52,9 @@ async function mockSuccessfulRegister(page, email = 'activation@example.com') {
 }
 
 async function submitRegisterForm(page, email = 'activation@example.com') {
-    await expect(page.locator('#confirm-password-field-wrapper')).toBeVisible();
+    // Zjednodušená registrace nemá potvrzení hesla — režim registrace
+    // poznáme podle viditelného GDPR souhlasu (jen v register módu).
+    await expect(page.locator('#gdpr-consent-wrapper')).toBeVisible();
     await page.locator('#email').fill(email);
     await page.locator('#password').fill('TestPassword123!');
     await page.locator('#gdpr-consent').check();
@@ -162,7 +164,8 @@ test.describe('Login stránka', () => {
 
     test('registracni formular nepreteka mimo viewport', async ({ page }) => {
         await page.locator('#auth-mode-toggle').click();
-        await expect(page.locator('#confirm-password-field-wrapper')).toBeVisible();
+        // Register mód poznáme podle GDPR souhlasu; #register-fields
+        // (jméno/datum narození) zůstává na standalone stránce skryté.
         await expect(page.locator('#gdpr-consent-wrapper')).toBeVisible();
 
         await expectLocatorsWithinViewport(page, [
@@ -572,8 +575,7 @@ test.describe('Login stránka', () => {
             const banner = page.locator('#checkout-context-banner');
             await expect(banner).toBeVisible();
             await expect(banner).toContainText(item.expected);
-            await expect(banner).toContainText('Po registraci zachováme');
-            await expect(banner).toContainText('bezpečný checkout');
+            await expect(banner).toContainText('Po registraci rovnou otevřeme bezpečný checkout');
             await expect(banner).not.toContainText(item.feature);
         }
     });
@@ -2477,12 +2479,15 @@ test.describe('Login stránka', () => {
         expect(await forgotEmail.getAttribute('type')).toBe('email');
     });
 
-    // ── Confirm password pole (pro registraci) ────────────────────────────────
+    // ── Confirm password pole ─────────────────────────────────────────────────
 
-    test('#confirm-password-field-wrapper existuje v DOM', async ({ page }) => {
-        // Skryté pole pro registraci — musí být v DOM (může být vícekrát)
-        const wrapper = page.locator('#confirm-password-field-wrapper').first();
-        await expect(wrapper).toBeAttached();
+    test('registrace na prihlaseni.html nema potvrzeni hesla, reset ho ma', async ({ page }) => {
+        // Zjednodušený signup posílá jen email + heslo — potvrzovací pole
+        // bylo záměrně odstraněno (nižší tření). Wrapper zůstává jen
+        // v auth modalu (js/templates.js), na standalone stránce být nesmí.
+        await expect(page.locator('#confirm-password-field-wrapper')).toHaveCount(0);
+        // Formulář pro reset hesla své potvrzovací pole dál má.
+        await expect(page.locator('#reset-password-form #confirm-password')).toBeAttached();
     });
 });
 

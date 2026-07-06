@@ -837,6 +837,37 @@ html body .mh-inline-418361a818 { color:rgba(255,255,255,0.65);line-height:1.8; 
         width: clamp(56px, 15vw, 80px);
         height: clamp(92px, 25vw, 130px);
     }
+
+    /* Panel s výsledkem musí i s tlačítky deníku a sdílení skončit nad
+       cookie lištou — jinak je "Zeptat se znovu" na malých telefonech
+       částečně překryté a nejde na něj kliknout. */
+    .result-panel {
+        padding: 1.25rem 1rem;
+    }
+
+    html body .mh-inline-0ae869fa50 {
+        font-size: 2.4rem;
+        margin-bottom: 0.5rem;
+    }
+
+    html body .mh-inline-e18c901d36 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    html body .mh-inline-d3ee132133 {
+        margin-top: 1rem;
+        gap: 0.6rem;
+    }
+
+    .result-card-image {
+        width: 110px;
+        margin-bottom: 0.75rem;
+    }
+
+    .result-next-step-text:not(:empty) {
+        margin-bottom: 0.5rem;
+    }
 }
 
 .tarot-yes-no-seo-subheading { font-size: 1.05rem; }

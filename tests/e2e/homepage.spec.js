@@ -51,14 +51,16 @@ test.describe('Homepage', () => {
         await expect(hero).toBeVisible();
     });
 
-    test('hero registrace zachovává zdroj a aktivační feature', async ({ page }) => {
+    test('hero CTA vede na první hodnotu a zachovává zdroj i feature', async ({ page }) => {
+        // Value-first funnel: hero vede rovnou na tarot ano/ne zdarma
+        // (ne na registrační zeď) a nese atribuci pro funnel analytics.
         const heroCta = page.locator('#hero-cta-btn');
         await expect(heroCta).toBeVisible();
         await expect(heroCta).toHaveClass(/btn--primary/);
         const href = await heroCta.getAttribute('href');
-        expect(href).toContain('mode=register');
+        expect(href).toContain('tarot-ano-ne.html');
         expect(href).toContain('source=homepage_hero');
-        expect(href).toContain('feature=daily_guidance');
+        expect(href).toContain('feature=tarot_yes_no');
     });
 
     test('stary auth_user bez session cookie neprepina homepage do prihlaseneho stavu', async ({ page }) => {

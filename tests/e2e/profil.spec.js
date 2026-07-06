@@ -85,10 +85,17 @@ test.describe('Profil stránka', () => {
     test('guest preview posila profile_guest_preview_viewed event', async ({ page }) => {
         await page.addInitScript(() => {
             window.__guestEvents = [];
-            window.MH_ANALYTICS = {
-                trackEvent: (eventName, payload) => window.__guestEvents.push({ eventName, payload }),
-                trackCTA: () => {}
-            };
+            // js/analytics.js (classic script) přepisuje window.MH_ANALYTICS —
+            // non-writable property nechá jeho přiřazení tiše selhat,
+            // takže mock přežije celé načtení stránky.
+            Object.defineProperty(window, 'MH_ANALYTICS', {
+                value: {
+                    trackEvent: (eventName, payload) => window.__guestEvents.push({ eventName, payload }),
+                    trackCTA: () => {}
+                },
+                writable: false,
+                configurable: false
+            });
         });
 
         await page.goto('/profil.html');
@@ -736,7 +743,9 @@ test.describe('Profil aktivace', () => {
         await page.goto('/profil.html');
         await waitForPageReady(page);
 
-        await page.locator('[data-reading-action="view"][data-reading-id="reading-horoscope-1"]').click();
+        // "Vrátit se k poslednímu výkladu" sdílí stejnou view akci — cíl je
+        // tlačítko Zobrazit v seznamu výkladů.
+        await page.locator('[data-reading-action="view"][data-reading-id="reading-horoscope-1"][aria-label="Zobrazit detail"]').click();
         await expect(page.locator('#reading-modal')).toBeVisible();
         await expect(page.locator('.reading-feedback')).toBeVisible();
 
