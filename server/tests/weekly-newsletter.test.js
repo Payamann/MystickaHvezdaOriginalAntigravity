@@ -2,6 +2,7 @@ import {
     buildWeeklyDigestContent,
     getIsoWeekKey,
     getLatestBlogPost,
+    getWeeklyPremiumSpotlight,
     getWeeklyToolTip,
     run
 } from '../jobs/weekly-newsletter.js';
@@ -49,6 +50,22 @@ describe('weekly newsletter digest', () => {
         }
     });
 
+    test('premium spotlight alternates by week and carries attribution links', () => {
+        const spotA = getWeeklyPremiumSpotlight(new Date('2026-07-06T07:00:00Z'));
+        const spotSameWeek = getWeeklyPremiumSpotlight(new Date('2026-07-10T07:00:00Z'));
+        const spotNextWeek = getWeeklyPremiumSpotlight(new Date('2026-07-13T07:00:00Z'));
+
+        expect(spotA.title).toBe(spotSameWeek.title);
+        expect(spotA.title).not.toBe(spotNextWeek.title);
+        expect(spotA.url).toContain('source=newsletter_digest');
+        expect(spotA.url).toContain('utm_campaign=weekly_digest');
+        expect(spotA.price).toContain('Kč');
+
+        const content = buildWeeklyDigestContent(new Date('2026-07-06T07:00:00Z'));
+        expect(content.premium_title).toBe(spotA.title);
+        expect(content.premium_url).toBe(spotA.url);
+    });
+
     test('newsletter_weekly_digest template renders with unsubscribe link', () => {
         const template = EMAIL_TEMPLATES.newsletter_weekly_digest;
         expect(template).toBeDefined();
@@ -62,14 +79,34 @@ describe('weekly newsletter digest', () => {
             tip_title: 'Tarot ANO / NE',
             tip_text: 'Polož otázku.',
             tip_url: '/tarot-ano-ne.html?source=newsletter_digest',
+            premium_title: 'Osobní mapa zbytku roku 2026',
+            premium_text: '16 stran osobního výkladu.',
+            premium_price: '299 Kč · jednorázově · PDF do e-mailu',
+            premium_url: '/osobni-mapa.html?source=newsletter_digest',
             unsubscribe_url: '/api/newsletter/unsubscribe?email=a%40b.cz&token=abc'
         });
 
         expect(html).toContain('Hvězdný týden');
         expect(html).toContain('Úplněk');
         expect(html).toContain('Testovací článek');
+        expect(html).toContain('Prémiový výklad');
+        expect(html).toContain('Osobní mapa zbytku roku 2026');
+        expect(html).toContain('/osobni-mapa.html?source=newsletter_digest');
         expect(html).toContain('/api/newsletter/unsubscribe?email=a%40b.cz');
         expect(typeof template.subject({ date_label: '6. července' })).toBe('string');
+    });
+
+    test('digest renders without premium block when spotlight data is absent (older queued emails)', () => {
+        const html = EMAIL_TEMPLATES.newsletter_weekly_digest.getHtml({
+            date_label: '6. července',
+            tip_title: 'Tarot ANO / NE',
+            tip_text: 'Polož otázku.',
+            tip_url: '/tarot-ano-ne.html?source=newsletter_digest',
+            unsubscribe_url: '/api/newsletter/unsubscribe?email=a%40b.cz&token=abc'
+        });
+
+        expect(html).not.toContain('Prémiový výklad');
+        expect(html).toContain('Hvězdný týden');
     });
 
     test('run() enqueues once per subscriber per ISO week (dedupe on second run)', async () => {

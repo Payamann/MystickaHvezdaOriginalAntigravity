@@ -62,6 +62,24 @@ const WEEKLY_TOOL_TIPS = [
     }
 ];
 
+// Rotating premium spotlight — the digest otherwise only promotes free
+// tools, so paid one-time products get one soft-promo slot per week,
+// alternating deterministically by ISO week.
+const PREMIUM_SPOTLIGHTS = [
+    {
+        title: 'Osobní mapa zbytku roku 2026',
+        text: '16 stran osobního výkladu pro tvoje znamení, téma a aktuální období. Ne obecný horoskop — mapa, ke které se vracíš.',
+        price: '299 Kč · jednorázově · PDF do e-mailu',
+        url: '/osobni-mapa.html?source=newsletter_digest&feature=osobni_mapa_2026&utm_source=email&utm_campaign=weekly_digest'
+    },
+    {
+        title: 'Roční horoskop na míru 2026',
+        text: 'Personalizovaný roční výklad pro tvoje datum narození — láska, kariéra, klíčové měsíce a slovo pro tento rok.',
+        price: '199 Kč · jednorázově · PDF do e-mailu',
+        url: '/rocni-horoskop.html?source=newsletter_digest&feature=rocni_horoskop_2026&utm_source=email&utm_campaign=weekly_digest'
+    }
+];
+
 let weeklyNewsletterJobRunning = false;
 let cachedBlogIndex = null;
 
@@ -84,6 +102,11 @@ export function getIsoWeekKey(date = new Date()) {
 export function getWeeklyToolTip(date = new Date()) {
     const weekNumber = Number(getIsoWeekKey(date).split('-W')[1]) || 0;
     return WEEKLY_TOOL_TIPS[weekNumber % WEEKLY_TOOL_TIPS.length];
+}
+
+export function getWeeklyPremiumSpotlight(date = new Date()) {
+    const weekNumber = Number(getIsoWeekKey(date).split('-W')[1]) || 0;
+    return PREMIUM_SPOTLIGHTS[weekNumber % PREMIUM_SPOTLIGHTS.length];
 }
 
 function loadBlogIndex() {
@@ -127,6 +150,7 @@ export function buildWeeklyDigestContent(now = new Date()) {
 
     const blogPost = getLatestBlogPost(now);
     const toolTip = getWeeklyToolTip(now);
+    const premium = getWeeklyPremiumSpotlight(now);
 
     return {
         week_key: getIsoWeekKey(now),
@@ -137,7 +161,11 @@ export function buildWeeklyDigestContent(now = new Date()) {
         blog_url: blogPost ? `/blog/${blogPost.slug}.html?utm_source=email&utm_campaign=weekly_digest` : null,
         tip_title: toolTip.title,
         tip_text: toolTip.text,
-        tip_url: toolTip.url
+        tip_url: toolTip.url,
+        premium_title: premium.title,
+        premium_text: premium.text,
+        premium_price: premium.price,
+        premium_url: premium.url
     };
 }
 

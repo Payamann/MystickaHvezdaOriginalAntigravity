@@ -1471,6 +1471,7 @@ EMAIL_TEMPLATES.newsletter_weekly_digest = {
     const moonPhase = data.moon_phase ? escapeHtml(data.moon_phase) : '';
     const blogUrl = data.blog_url ? toAbsoluteUrl(data.blog_url) : '';
     const tipUrl = data.tip_url ? toAbsoluteUrl(data.tip_url) : toAbsoluteUrl('/');
+    const premiumUrl = data.premium_url ? toAbsoluteUrl(data.premium_url) : '';
     const unsubscribeUrl = data.unsubscribe_url ? toAbsoluteUrl(data.unsubscribe_url) : toAbsoluteUrl('/');
 
     return getBaseTemplate(`
@@ -1498,6 +1499,13 @@ EMAIL_TEMPLATES.newsletter_weekly_digest = {
     <div class="cta-box">
       <a href="${tipUrl}" class="btn">Vyzkoušet &rarr;</a>
     </div>
+
+    ${data.premium_title && premiumUrl ? `
+    <div style="background:rgba(212,175,55,0.07);border:1px solid rgba(212,175,55,0.25);border-radius:8px;padding:16px 20px;margin:25px 0;">
+      <strong>💫 Prémiový výklad: <a href="${premiumUrl}" style="color:#d4af37;">${escapeHtml(data.premium_title)}</a></strong><br>
+      <span style="opacity:0.85;">${escapeHtml(data.premium_text || '')}</span><br>
+      <span style="font-size:13px;opacity:0.6;">${escapeHtml(data.premium_price || '')}</span>
+    </div>` : ''}
 
     <p style="font-size:12px;opacity:0.5;text-align:center;margin-top:2rem;">
       Dostáváš tento email, protože ses přihlásil k odběru novinek Mystické Hvězdy.<br>
