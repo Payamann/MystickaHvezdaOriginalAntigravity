@@ -173,6 +173,29 @@ rozpočtu (0 Kč). Dva kroky navazující na dřívější zjištění duplicitn
       static-html-csp/script-guardrails/seo-ctr-sprint, preview 2 stránky bez
       console chyb.
 
+## Fáze 6 — E-mailový stroj a úklid (2026-07-06, deploy fd1fcb49)
+
+- [x] Etapa 1: Popup plní slib denního horoskopu — po newsletter opt-inu druhý
+      krok s výběrem znamení → POST /api/subscribe/horoscope (existující
+      endpoint + denní cron). Bez CSS změn (reuse .mh-popup-* tříd, CSP bez
+      inline stylů). Bump ?v=20260706-sign-step na 726 stránkách (js 1y
+      immutable cache). Ověřeno: mocknutý flow v preview + ASCII markery
+      v živém bundlu (esbuild eskapuje diakritiku — grep českých řetězců
+      v dist nefunguje, viz lessons).
+- [x] Etapa 2: Týdenní digest má rotující prémiový spotlight (Osobní mapa /
+      Roční horoskop, střídání po ISO týdnech, stejné utm konvence). Zpětně
+      kompatibilní se staršími zařazenými e-maily bez spotlight dat.
+- [x] Etapa 3: Pinterest — paměť byla zastaralá; skutečný stav: 60 promptů,
+      ~300 pinů, 106 obrázků na webu (200 OK), bulk CSV hotové, publikováno 0.
+      Jediný krok je ruční: Pavel nahraje pinterest_bulk_upload.csv přes
+      Pinterest Bulk create. Paměť aktualizována.
+- [x] Etapa 4: Smazán mrtvý kompatibilita cluster (134 souborů: 66 HTML +
+      66 orphan CSS + generátor + data). Server 301 mapa zůstává (api.test),
+      statický SEO test přepsán na "cluster zůstává pryč". Redirect ověřen
+      živě po deployi.
+- [x] Jest 501/501, lint, sitemap:check, audit:growth-loop — vše zelené;
+      deploy fd1fcb49 živý za 120 s.
+
 ### Review Fáze 5
 Obě části beze změny designu/struktury — jen vložení skriptu (newsletter) a
 náhrada textového obsahu (kompatibilita), takže riziko regrese bylo nízké a
