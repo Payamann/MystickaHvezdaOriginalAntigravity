@@ -22,12 +22,19 @@ import { sendOperationalAlert } from '../services/alerts.js';
  * the order 'failed' and sends an operational alert so a human can follow up.
  */
 
+function positiveIntFromEnv(envKey, fallback) {
+    const parsed = Number.parseInt(process.env[envKey], 10);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
 // 20 minutes matches the delivery-time expectation already set on
 // osobni-mapa.html ("Pokud nedorazí do 20 minut...") — long enough that a
 // normal in-flight webhook fulfillment has certainly finished by then.
-const GRACE_PERIOD_MS = 20 * 60 * 1000;
-const MAX_RETRIES = 3;
-const BATCH_LIMIT = 20;
+// Env overrides follow the data-retention.js convention so ops can tune
+// without a code change.
+const GRACE_PERIOD_MS = positiveIntFromEnv('ONE_TIME_RECONCILIATION_GRACE_MINUTES', 20) * 60 * 1000;
+const MAX_RETRIES = positiveIntFromEnv('ONE_TIME_RECONCILIATION_MAX_RETRIES', 3);
+const BATCH_LIMIT = positiveIntFromEnv('ONE_TIME_RECONCILIATION_BATCH_LIMIT', 20);
 
 let jobRunning = false;
 
