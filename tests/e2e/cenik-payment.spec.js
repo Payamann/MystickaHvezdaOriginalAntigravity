@@ -1523,11 +1523,14 @@ test.describe('Ceník — platební tlačítka', () => {
             page.locator('#auth-submit').click(),
         ]);
 
+        // Zjednodušená registrace u checkoutu posílá jen email + heslo —
+        // pole pro potvrzení hesla bylo záměrně odstraněno (nižší tření),
+        // server bere password_confirm jako volitelný.
         expect(authPayload).toEqual(expect.objectContaining({
             email: 'postauth@example.com',
-            password: 'TestPassword123!',
-            password_confirm: 'TestPassword123!'
+            password: 'TestPassword123!'
         }));
+        expect(authPayload.password_confirm).toBeUndefined();
         expect(checkoutPayload).toEqual(expect.objectContaining({
             planId: 'pruvodce',
             source: 'inline_paywall',

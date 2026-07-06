@@ -616,18 +616,9 @@
       document.title = 'Admin dashboard | Mystick\u00e1 Hv\u011bzda';
     },
 
-    'andelske-karty.html': () => {
-      document.title = 'And\u011blsk\u00e1 karta dne online | 44 karet | Mystick\u00e1 Hv\u011bzda';
-      setMetaByName(
-        'description',
-        'Vyt\u00e1hni si and\u011blskou kartu dne online z bal\u00ed\u010dku 44 karet. Rychl\u00e9 denn\u00ed poselstv\u00ed zdarma a jasn\u00e1 cesta k hlub\u0161\u00edmu and\u011blsk\u00e9mu v\u00fdkladu.'
-      );
-      setMetaByProperty('og:title', 'And\u011blsk\u00e1 karta dne online | 44 karet | Mystick\u00e1 Hv\u011bzda');
-      setMetaByProperty(
-        'og:description',
-        'And\u011blsk\u00e1 karta dne online: rychl\u00e9 poselstv\u00ed, symbol dne a mo\u017enost hlub\u0161\u00edho v\u00fdkladu ze 44 karet.'
-      );
-    },
+    // andelske-karty.html: title/meta se už za běhu nepřepisují — statické
+    // HTML nese novější SEO targeting ("Andělská karta dne zdarma") a runtime
+    // přepis ho pro Google vracel na starší verzi.
 
     'jak-to-funguje.html': () => {
       document.title = 'Jak fungují výklady | Data, AI a hranice | Mystická Hvězda';

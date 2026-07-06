@@ -491,10 +491,10 @@ test.describe('Tarot karta dne', () => {
         await page.goto('/tarot-karta-dne.html');
         await waitForPageReady(page);
 
-        await expect(page).toHaveTitle('Tarot karta dne zdarma online | Mystická Hvězda');
+        await expect(page).toHaveTitle('Tarot karta dne zdarma: dnešní výklad online | Mystická Hvězda');
         await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /tarot kartu dne zdarma/);
         await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /bez registrace/);
-        await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', 'Tarot karta dne zdarma online | Mystická Hvězda');
+        await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', 'Tarot karta dne zdarma: dnešní výklad online | Mystická Hvězda');
     });
 
     test('primární CTA vede do tarot nástroje s atribucí', async ({ page }) => {

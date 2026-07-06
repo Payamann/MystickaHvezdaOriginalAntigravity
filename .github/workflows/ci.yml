@@ -9,6 +9,12 @@ on:
     - cron: '0 5 * * *'  # Každý den 05:00 UTC = 07:00 CET
   workflow_dispatch:       # Manuální spuštění z GitHub UI
 
+# issues: write je nutné pro kroky "Create GitHub Issue on ... failure" —
+# bez něj noční selhání tiše zapadnou (API vrací 403 Resource not accessible).
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   lint:
     runs-on: ubuntu-latest

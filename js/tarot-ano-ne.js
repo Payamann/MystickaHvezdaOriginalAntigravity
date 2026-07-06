@@ -534,7 +534,11 @@
 
         const viewportHeight = window.visualViewport?.height || window.innerHeight;
         const rect = banner.getBoundingClientRect();
-        return Math.max(0, viewportHeight - rect.top + 16);
+        // Lišta najíždí translateY přechodem (0.5s) — rect.top je během
+        // animace ještě dole a rezerva by vyšla nulová. Výška se transformem
+        // nemění, takže rezervu počítej z konečné klidové polohy lišty.
+        const restingTop = viewportHeight - 16 - rect.height;
+        return Math.max(0, viewportHeight - Math.min(rect.top, restingTop) + 16);
     }
 
     function scrollTarotResultIntoView(panel, behavior = 'smooth') {
@@ -1160,6 +1164,16 @@
                 resultImage.src = drawnCard.image;
                 resultImage.alt = `Tarotová karta: ${drawnCard.name}`;
                 resultImage.hidden = false;
+                // Obrázek karty se donačítá až po prvním scrollu — bez
+                // přepočtu by tlačítka výsledku sjela pod cookie lištu.
+                if (!resultImage.complete) {
+                    resultImage.addEventListener('load', () => {
+                        const shownPanel = document.getElementById('result-panel');
+                        if (shownPanel?.classList.contains('show')) {
+                            scrollTarotResultIntoView(shownPanel, 'auto');
+                        }
+                    }, { once: true });
+                }
             }
             document.getElementById('result-emoji').textContent = ans.emoji;
             document.getElementById('result-card-name').textContent = drawnCard.name;

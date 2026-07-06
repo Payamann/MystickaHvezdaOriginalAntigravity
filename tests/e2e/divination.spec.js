@@ -37,13 +37,15 @@ test.describe('Andělské karty', () => {
 
     test('rozlišuje denní andělskou kartu od hlubšího výkladu', async ({ page }) => {
         const main = page.locator('main');
-        await expect(page).toHaveTitle('Andělská karta dne online | 44 karet | Mystická Hvězda');
-        await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', 'Andělská karta dne online | 44 karet | Mystická Hvězda');
+        // Statický title/meta je autoritativní — runtime přepis byl odstraněn,
+        // aby SEO targeting "Andělská karta dne zdarma" přežil i vykreslení JS.
+        await expect(page).toHaveTitle('Andělská karta dne zdarma | 44 andělských karet');
+        await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', 'Andělská karta dne zdarma | 44 andělských karet');
         const metaDescription = await page.getAttribute('meta[name="description"]', 'content');
         expect(metaDescription).toContain('balíčku 44 karet');
-        expect(metaDescription).toContain('hlubšímu andělskému výkladu');
+        expect(metaDescription).toContain('hlubší výklad');
         await expect(page.locator('.hero__subtitle')).toContainText('hlubší andělský výklad');
-        await expect(page).toHaveTitle(/44 karet/);
+        await expect(page).toHaveTitle(/44 andělských karet/);
         await expect(main).not.toContainText('41 karet');
     });
 
@@ -245,7 +247,7 @@ test.describe('Andělské karty', () => {
         await expect.poll(() => page.locator('.angel-card-inner').evaluate(element => getComputedStyle(element).transform))
             .not.toBe('matrix(1, 0, 0, 1, 0, 0)');
         await expect(page.locator('#angel-results')).toHaveClass(/mh-block-visible/);
-        await expect(page.locator('#angel-results h3')).toContainText('Poselství andělské karty');
+        await expect(page.locator('#angel-results h3.wow-title')).toContainText('Poselství andělské karty');
         await expect(page.locator('.angel-return-message')).toContainText('Tvoje andělská karta: Intuice');
         await expect(page.locator('.angel-name')).toHaveText('Intuice');
         await expect(page.locator('.angel-theme')).toHaveText('Vhled');
@@ -320,14 +322,17 @@ test.describe('Křišťálová koule', () => {
     });
 
     test('meta popis drží symbolický rámec bez AI věštby', async ({ page }) => {
-        await expect(page).toHaveTitle('Křišťálová koule online: osobní otázka | Mystická Hvězda');
-        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /křišťálové koule online/);
-        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /osobní otázku/);
-        await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', /bez slibu pevné budoucnosti/);
+        // Statický title/meta je autoritativní — runtime přepis byl odstraněn,
+        // aby SEO targeting "ano ne online zdarma" přežil i vykreslení JS.
+        await expect(page).toHaveTitle('Křišťálová koule ano ne online zdarma | Mystická Hvězda');
+        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /[Kk]řišťálová koule ano ne online/);
+        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /symbolickou odpověď/);
+        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /bez slibu pevné budoucnosti/);
 
-        const structuredData = await page.locator('script[type="application/ld+json"]').first().textContent();
-        expect(structuredData).toContain('Křišťálová koule online');
-        expect(structuredData).toContain('Symbolický vhled');
+        const ldBlocks = page.locator('script[type="application/ld+json"]');
+        const structuredData = (await ldBlocks.allTextContents()).join('\n');
+        expect(structuredData).toContain('Křišťálová koule ano ne online zdarma');
+        expect(structuredData).toContain('symbolick');
 
         const headText = await page.locator('head').textContent();
         expect(headText).not.toContain('AI věštba');

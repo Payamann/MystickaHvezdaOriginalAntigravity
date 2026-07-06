@@ -40,7 +40,7 @@ function callProfileAnalytics(methodName, ...args) {
 
     try {
         method.apply(window.MH_ANALYTICS, args);
-        return savedReadingId || true;
+        return true;
     } catch (error) {
         console.warn(`[Profile analytics] ${methodName} failed:`, error?.message || error);
         return false;

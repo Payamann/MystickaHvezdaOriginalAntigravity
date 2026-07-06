@@ -209,11 +209,12 @@ test.describe('Horoskopy', () => {
             page.locator('#auth-submit').click(),
         ]);
 
+        // Zjednodušená registrace posílá jen email + heslo (bez potvrzení).
         expect(authPayload).toEqual(expect.objectContaining({
             email: 'monthly-horoscope@example.com',
-            password: 'TestPassword123!',
-            password_confirm: 'TestPassword123!'
+            password: 'TestPassword123!'
         }));
+        expect(authPayload.password_confirm).toBeUndefined();
         expect(checkoutPayload).toEqual(expect.objectContaining({
             planId: 'pruvodce',
             source: 'horoscope_inline_upsell',

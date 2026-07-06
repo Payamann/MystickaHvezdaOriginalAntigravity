@@ -162,7 +162,11 @@
 
         const viewportHeight = window.visualViewport?.height || window.innerHeight;
         const rect = banner.getBoundingClientRect();
-        return Math.max(0, viewportHeight - rect.top + 16);
+        // Lišta najíždí translateY přechodem (0.5s) — rect.top je během
+        // animace ještě dole a rezerva by vyšla nulová. Výška se transformem
+        // nemění, takže rezervu počítej z konečné klidové polohy lišty.
+        const restingTop = viewportHeight - 16 - rect.height;
+        return Math.max(0, viewportHeight - Math.min(rect.top, restingTop) + 16);
     }
 
     function scrollTarotResultIntoView(panel, behavior = 'smooth') {

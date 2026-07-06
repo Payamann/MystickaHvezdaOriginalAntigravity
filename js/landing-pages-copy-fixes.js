@@ -35,10 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (path.endsWith('/andelske-karty.html') || path.endsWith('andelske-karty.html')) {
-        document.title = 'Andělská karta dne online | 44 karet | Mystická Hvězda';
-        setMeta('meta[name="description"]', 'Vytáhni si andělskou kartu dne online z balíčku 44 karet. Rychlé denní poselství zdarma a jasná cesta k hlubšímu andělskému výkladu.');
-        setMeta('meta[property="og:title"]', 'Andělská karta dne online | 44 karet | Mystická Hvězda');
-        setMeta('meta[property="og:description"]', 'Andělská karta dne online: rychlé poselství, symbol dne a možnost hlubšího výkladu ze 44 karet.');
+        // Title/meta se už neřeší za běhu — statické HTML nese novější SEO
+        // targeting ("Andělská karta dne zdarma | 44 andělských karet") a
+        // runtime přepis ho pro Google vracel na starší verzi.
         setHtml('.hero__title', 'Andělská <span class="text-gradient">karta dne</span>');
         setText('.hero__subtitle', 'Vytáhni si jednu andělskou kartu pro dnešní den. Krátké denní poselství je první krok; hlubší andělský výklad otevřeš až po kartě.');
     }
@@ -62,10 +61,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (path.endsWith('/kristalova-koule.html') || path.endsWith('kristalova-koule.html')) {
-        document.title = 'Křišťálová koule online: osobní otázka | Mystická Hvězda';
-        setMeta('meta[name="description"]', 'Zeptej se křišťálové koule online. Symbolický vhled pro osobní otázku, jasnější situaci a jeden další krok bez slibu pevné budoucnosti.');
-        setMeta('meta[property="og:title"]', 'Křišťálová koule online: osobní otázka | Mystická Hvězda');
-        setMeta('meta[property="og:description"]', 'Polož osobní otázku a získej symbolický vhled, jasnější situaci a další krok bez slibu pevné budoucnosti.');
+        // Title/meta se už neřeší za běhu — statické HTML nese novější SEO
+        // targeting ("Křišťálová koule ano ne online zdarma") a runtime
+        // přepis ho pro Google vracel na starší verzi.
         setHtml('.hero__title', 'Křišťálová koule a <span class="text-gradient">hlas intuice</span>');
         const existingSubtitle = document.querySelector('.hero__subtitle');
         if (existingSubtitle) {
