@@ -1,10 +1,19 @@
 providers = ["node"]
 
 [phases.setup]
-  nixPkgs = ["nodePackages.npm"]
+  # chromium: system browser (with its own runtime libs) for the PDF renderers.
+  # server/services/chromium-launch.js resolves it on PATH, so we don't depend
+  # on Playwright's bundled-browser download, which failed on Railway
+  # ("Executable doesn't exist at /root/.cache/...").
+  nixPkgs = ["nodePackages.npm", "chromium"]
 
 [phases.install]
   cmds = ["npm install"]
+
+[variables]
+  # We launch the nix-provided chromium above, so skip Playwright's own
+  # (unreliable) browser download during install.
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1"
 
 [phases.build]
   cmds = ["npm run build:js", "npm run build:css"]

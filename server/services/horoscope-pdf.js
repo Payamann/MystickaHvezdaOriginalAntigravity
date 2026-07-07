@@ -4,18 +4,11 @@ import { fileURLToPath } from 'url';
 import { chromium } from '@playwright/test';
 import { callClaude } from './claude.js';
 import { ROLE_PREAMBLE } from '../config/prompts.js';
+import { getChromiumLaunchOptions } from './chromium-launch.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '../.env') });
-
-function getChromiumLaunchOptions() {
-    const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH?.trim();
-    return {
-        args: ['--no-sandbox'],
-        ...(executablePath ? { executablePath } : {})
-    };
-}
 
 const SIGN_NAMES = {
     beran: 'Beran', byk: 'Býk', blizenci: 'Blíženci', rak: 'Rak',

@@ -156,6 +156,31 @@ export async function markOneTimeOrderInputFailed(orderId) {
 }
 
 /**
+ * Terminal state for orders whose checkout was never paid (abandoned cart,
+ * expired Stripe session). Distinct from 'failed' (paid but fulfillment
+ * broke) so a human can tell a lost sale apart from a delivery incident.
+ */
+export async function markOneTimeOrderInputExpired(orderId) {
+    const cleanOrderId = cleanString(orderId, 80);
+    if (!cleanOrderId) return false;
+
+    const { error } = await supabase
+        .from('one_time_order_inputs')
+        .update({
+            status: 'expired',
+            updated_at: new Date().toISOString()
+        })
+        .eq('id', cleanOrderId);
+
+    if (error) {
+        console.warn('[ONE_TIME_ORDER] Could not mark order expired:', error.message);
+        return false;
+    }
+
+    return true;
+}
+
+/**
  * Orders whose checkout succeeded but whose async fulfillment (PDF
  * generation + email delivery) never confirmed — either because it crashed
  * before marking the order fulfilled, or because the process restarted
@@ -167,7 +192,7 @@ export async function listStuckOneTimeOrderInputs({ olderThanMs, maxRetries, lim
 
     const { data, error } = await supabase
         .from('one_time_order_inputs')
-        .select('id, product_type, product_id, customer_email, customer_name, payload, retry_count, created_at')
+        .select('id, product_type, product_id, customer_email, customer_name, payload, retry_count, created_at, stripe_session_id')
         .eq('status', 'checkout_created')
         .lt('created_at', cutoffIso)
         .lt('retry_count', maxRetries)

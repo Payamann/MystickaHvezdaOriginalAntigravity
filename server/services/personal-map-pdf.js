@@ -3,18 +3,11 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { callClaude } from './claude.js';
+import { getChromiumLaunchOptions } from './chromium-launch.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '../../');
-
-function getChromiumLaunchOptions() {
-    const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH?.trim();
-    return {
-        args: ['--no-sandbox'],
-        ...(executablePath ? { executablePath } : {})
-    };
-}
 
 async function setPdfPageContent(page, html) {
     await page.setContent(html, { waitUntil: 'load', timeout: 30000 });
