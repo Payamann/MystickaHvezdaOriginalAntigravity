@@ -36,7 +36,7 @@ describe('🔒 Security Tests', () => {
             expect(() => validatePassword('short')).toThrow();
         });
 
-        test('Password validation: Password with low complexity rejected', () => {
+        test('Password validation: Common password rejected', () => {
             expect(() => validatePassword('password')).toThrow();
         });
 

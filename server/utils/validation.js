@@ -122,32 +122,36 @@ export function validateCity(city) {
   return sanitized;
 }
 
+// The 30 or so most common / trivially guessable passwords. We block these
+// instead of forcing composition rules — length + a blocklist gives real
+// security without the "must have 1 uppercase, 1 number, 1 symbol" friction.
+const COMMON_PASSWORDS = new Set([
+  'password', 'passw0rd', '12345678', '123456789', '1234567890',
+  'qwertyui', 'qwertyuiop', '11111111', '00000000', 'iloveyou',
+  'abc12345', 'password1', 'password123', 'admin123', 'welcome1',
+  'letmein1', 'heslo123', 'heslo1234', 'mojeheslo', 'password!',
+  'qwerty123', 'asdfghjk', 'aaaaaaaa', 'football', 'baseball',
+  'sunshine', 'princess', 'dragon12', 'monkey12', 'starwars'
+]);
+
 export function validatePassword(password) {
   if (!password || typeof password !== 'string') {
     throw new Error('Password is required');
   }
 
+  // Length is the only real security lever — no composition rules.
+  // Minimum 8 keeps short passwords out; passphrases are encouraged.
   if (password.length < 8) {
-    throw new Error('Password must be at least 8 characters');
+    throw new Error('Heslo musí mít alespoň 8 znaků.');
   }
 
   if (password.length > 128) {
-    throw new Error('Password too long (max 128 characters)');
+    throw new Error('Heslo je příliš dlouhé (maximálně 128 znaků).');
   }
 
-  // Check for complexity
-  const hasUppercase = /[A-Z]/.test(password);
-  const hasLowercase = /[a-z]/.test(password);
-  const hasNumber = /[0-9]/.test(password);
-  const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
-
-  const complexityScore = [hasUppercase, hasLowercase, hasNumber, hasSpecialChar]
-    .filter(Boolean).length;
-
-  if (complexityScore < 3 || !hasUppercase) {
-    throw new Error(
-      'Password must contain at least 3 of: lowercase, numbers, special characters, AND at least one uppercase letter'
-    );
+  // Reject the handful of most common passwords so length alone can't be gamed.
+  if (COMMON_PASSWORDS.has(password.toLowerCase())) {
+    throw new Error('Toto heslo je příliš časté. Zvol prosím jiné.');
   }
 
   return password;

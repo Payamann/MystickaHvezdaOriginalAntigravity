@@ -177,7 +177,7 @@ describe('🔐 Auth Endpoint Tests', () => {
             expect(res.status).toBe(400);
         });
 
-        test('Password without complexity returns 400', async () => {
+        test('Common password returns 400', async () => {
             const csrfToken = await getCsrfToken();
             const res = await request(app)
                 .post('/api/auth/register')

@@ -281,7 +281,15 @@ router.post('/register', authLimiter, async (req, res) => {
     try {
         // Validate input using centralized validators
         const validatedEmail = validateEmail(email);
-        const validatedPassword = validatePassword(password);
+
+        // Password errors carry a friendly Czech message — return them directly
+        // as 400 instead of relying on the generic keyword filter below.
+        let validatedPassword;
+        try {
+            validatedPassword = validatePassword(password);
+        } catch (passwordError) {
+            return res.status(400).json({ error: passwordError.message });
+        }
 
         // Server-side password confirmation check
         const passwordConfirmation = confirm_password ?? password_confirm;
@@ -405,7 +413,16 @@ router.post('/login', authLimiter, async (req, res) => {
     try {
         // Validate input
         const validatedEmail = validateEmail(email);
-        const validatedPassword = validatePassword(password);
+
+        // On login we don't enforce the registration password policy — a legacy
+        // account may predate current rules. Just guard basic shape and let
+        // Supabase decide; never leak which rule failed on a login attempt.
+        let validatedPassword;
+        try {
+            validatedPassword = validatePassword(password);
+        } catch {
+            return res.status(400).json({ error: 'Nesprávné přihlášení nebo neověřený email.' });
+        }
 
         // Check account lockout before attempting login
         const lockoutStatus = await checkAccountLockout(validatedEmail);
