@@ -333,6 +333,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkoutContextTitle = document.getElementById('checkout-context-title');
     const checkoutContextCopy = document.getElementById('checkout-context-copy');
     const urlParams = new URLSearchParams(window.location.search);
+
+    // Auth.startPlanCheckout() always appends `plan=` when it sends a user here to
+    // resume a paid checkout after login/register. If this page loads WITHOUT a
+    // `plan` param, the current visit has nothing to do with a plan (e.g. a plain
+    // header "Registrace" link) — so any pending_plan left in sessionStorage from
+    // an earlier, abandoned checkout attempt must be dropped. Otherwise a stale
+    // value silently hijacks an unrelated registration/login straight into Stripe
+    // checkout with no way back.
+    if (!urlParams.has('plan')) {
+        window.Auth?.clearPendingCheckout?.();
+    }
+
     const isResetMode = urlParams.get('reset') === 'true';
     const hash = window.location.hash;
     let isRegisterMode = urlParams.get('mode') === 'register' || urlParams.get('registrace') === '1';
