@@ -2,7 +2,7 @@
     const nonCriticalScripts = [
         'js/dist/nav-failsafe.js',
         'js/dist/exit-intent.js',
-        'js/newsletter-popup.js?v=5',
+        'js/newsletter-popup.js?v=6',
         'js/push-notifications.js?v=5',
         'js/retention.js?v=6'
     ];

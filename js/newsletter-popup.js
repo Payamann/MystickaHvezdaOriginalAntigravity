@@ -15,6 +15,8 @@
 
     function shouldShow() {
         if (SKIP_PATHS.some((path) => window.location.pathname.includes(path))) return false;
+        // Neotvírat druhý overlay přes cookie banner; exit-intent to zkusí znovu později
+        if (document.body && document.body.classList.contains('cookie-banner-active')) return false;
         if (sessionStorage.getItem(EXIT_INTENT_STORAGE_KEY)) return false;
         if (sessionStorage.getItem(SESSION_KEY)) return false;
         if (document.getElementById('exit-intent-modal')) return false;
@@ -93,8 +95,8 @@
         const select = document.createElement('select');
         select.id = 'mh-popup-sign';
         select.className = 'mh-popup-email';
-        select.setAttribute('aria-label', 'Vyberte své znamení');
-        select.appendChild(new Option('Vyberte své znamení…', ''));
+        select.setAttribute('aria-label', 'Vyber své znamení');
+        select.appendChild(new Option('Vyber své znamení…', ''));
         for (const [emoji, name] of ZODIAC_SIGNS) {
             select.appendChild(new Option(`${emoji} ${name}`, name));
         }
@@ -106,13 +108,13 @@
 
         form.append(select, btn);
 
-        msg.textContent = '🌟 Odběr aktivní! Pro denní horoskop ještě vyberte své znamení.';
+        msg.textContent = '🌟 Odběr aktivní! Pro denní horoskop ještě vyber své znamení.';
         msg.className = 'mh-popup-msg mh-popup-msg--success';
 
         btn.addEventListener('click', async () => {
             const sign = select.value;
             if (!sign) {
-                msg.textContent = 'Vyberte prosím své znamení.';
+                msg.textContent = 'Vyber prosím své znamení.';
                 msg.className = 'mh-popup-msg mh-popup-msg--error';
                 return;
             }
@@ -134,7 +136,7 @@
                     // Same key horoscope-subscribe.js uses, so the horoskopy
                     // page shows the subscribed state consistently.
                     try { localStorage.setItem('mh_horoscope_subscribed', sign); } catch { /* private mode */ }
-                    msg.textContent = `🌙 Hotovo! Denní horoskop pro znamení ${sign} vám začne chodit každé ráno.`;
+                    msg.textContent = `🌙 Hotovo! Denní horoskop pro znamení ${sign} ti začne chodit každé ráno.`;
                     msg.className = 'mh-popup-msg mh-popup-msg--success';
                     showRegisterCta(msg, email);
                     btn.textContent = 'Denní horoskop aktivní';
@@ -143,13 +145,13 @@
                     });
                     setTimeout(dismiss, 12000);
                 } else {
-                    msg.textContent = data.error || 'Chyba. Zkuste to znovu.';
+                    msg.textContent = data.error || 'Chyba. Zkus to znovu.';
                     msg.className = 'mh-popup-msg mh-popup-msg--error';
                     btn.disabled = false;
                     btn.textContent = 'Aktivovat denní horoskop';
                 }
             } catch {
-                msg.textContent = 'Chyba připojení. Zkuste to znovu.';
+                msg.textContent = 'Chyba připojení. Zkus to znovu.';
                 msg.className = 'mh-popup-msg mh-popup-msg--error';
                 btn.disabled = false;
                 btn.textContent = 'Aktivovat denní horoskop';
@@ -180,13 +182,13 @@
                 });
                 showSignStep(email);
             } else {
-                msg.textContent = data.error || 'Chyba. Zkuste to znovu.';
+                msg.textContent = data.error || 'Chyba. Zkus to znovu.';
                 msg.className = 'mh-popup-msg mh-popup-msg--error';
                 btn.disabled = false;
                 btn.textContent = 'Odebírat zdarma';
             }
         } catch {
-            msg.textContent = 'Chyba připojení. Zkuste to znovu.';
+            msg.textContent = 'Chyba připojení. Zkus to znovu.';
             msg.className = 'mh-popup-msg mh-popup-msg--error';
             btn.disabled = false;
             btn.textContent = 'Odebírat zdarma';
@@ -222,14 +224,14 @@
 
             <div class="mh-popup-icon">${signEmoji} 🌙</div>
             <h2 class="mh-popup-title">
-                Hvězdy vám píší každý den
+                Hvězdy ti píší každý den
             </h2>
             <p class="mh-popup-text">
-                Dostávejte denní horoskop, výklad Měsíce a esoterické tipy přímo do vašeho emailu. Zcela zdarma.
+                Dostávej denní horoskop, výklad Měsíce a esoterické tipy přímo do e-mailu. Zcela zdarma.
             </p>
 
             <div class="mh-popup-form">
-                <input id="mh-popup-email" type="email" placeholder="váš@email.cz"
+                <input id="mh-popup-email" type="email" placeholder="tvuj@email.cz"
                     class="mh-popup-email"
                 />
                 <button id="mh-popup-submit" class="mh-popup-submit">
@@ -238,7 +240,7 @@
             </div>
             <div id="mh-popup-msg" class="mh-popup-msg"></div>
             <p class="mh-popup-fineprint">
-                Žádný spam. Odhlásit se můžete kdykoli jedním kliknutím.
+                Žádný spam. Odhlásíš se kdykoli jedním kliknutím.
             </p>
         `;
 
@@ -258,7 +260,7 @@
         document.getElementById('mh-popup-submit').addEventListener('click', () => {
             const email = document.getElementById('mh-popup-email').value.trim();
             if (!email || !email.includes('@')) {
-                document.getElementById('mh-popup-msg').textContent = 'Zadejte prosím platný e-mail.';
+                document.getElementById('mh-popup-msg').textContent = 'Zadej prosím platný e-mail.';
                 document.getElementById('mh-popup-msg').className = 'mh-popup-msg mh-popup-msg--error';
                 return;
             }
