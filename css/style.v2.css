@@ -8299,11 +8299,22 @@ body.page-mentor .header {
 
 .carousel-track-container {
 
-  overflow: hidden;
+  /* overflow-x: clip blokuje programový scroll (šipky + smooth scroll by nefungovaly) */
+  overflow-x: auto;
 
-  overflow-x: clip;
+  overflow-y: hidden;
 
   width: 100%;
+
+  scrollbar-width: none;
+
+  -ms-overflow-style: none;
+
+}
+
+.carousel-track-container::-webkit-scrollbar {
+
+  display: none;
 
 }
 

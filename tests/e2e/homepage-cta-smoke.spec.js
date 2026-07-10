@@ -156,11 +156,13 @@ test.describe('Homepage CTA smoke', () => {
         await page.context().addCookies([{ name: 'logged_in', value: '1', url: baseURL }]);
         await prepareHomepage(page, DESKTOP_VIEWPORT);
 
-        await expect(page.locator('#hero-cta-container')).toBeVisible();
-        await expect(page.locator('#hero-cta-logged-in')).toBeHidden();
-        await expect(page.locator('#auth-register-btn')).toBeVisible();
+        // Flip na guest UI čeká na roundtrip /api/auth/profile → delší timeout
+        await expect(page.locator('#hero-cta-container')).toBeVisible({ timeout: 15000 });
+        await expect(page.locator('#hero-cta-logged-in')).toBeHidden({ timeout: 15000 });
+        await expect(page.locator('#auth-register-btn')).toBeVisible({ timeout: 15000 });
         await expect.poll(
-            () => page.evaluate(() => document.cookie.includes('logged_in=1'))
+            () => page.evaluate(() => document.cookie.includes('logged_in=1')),
+            { timeout: 15000 }
         ).toBe(false);
     });
 });

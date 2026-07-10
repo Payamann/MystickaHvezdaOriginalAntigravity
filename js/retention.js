@@ -92,8 +92,8 @@ const MH_RETENTION = {
                 <!-- Pause subscription offer (appears after selecting reason) -->
                 <div id="pause-offer" class="retention-offer" hidden>
                     <h3>⏸️ Pozastavit místo zrušení?</h3>
-                    <p>Vaše předplatné bude pozastaveno na <strong>1 měsíc zdarma</strong>.</p>
-                    <p>Vraťte se, až vám budeme chybět — bez ztráty dat.</p>
+                    <p>Tvoje předplatné bude pozastaveno na <strong>1 měsíc zdarma</strong>.</p>
+                    <p>Vrať se, až ti budeme chybět — bez ztráty dat.</p>
                     <button class="btn btn--primary" type="button" data-retention-action="pause">
                         Pozastavit na měsíc
                     </button>
@@ -102,7 +102,7 @@ const MH_RETENTION = {
                 <!-- Discount offer (appears for "too expensive") -->
                 <div id="discount-offer" class="retention-offer" hidden>
                     <h3>💝 Speciální nabídka</h3>
-                    <p>Máme pro vás <strong>25% slevu</strong> na příští 3 měsíce.</p>
+                    <p>Máme pro tebe <strong>25% slevu</strong> na příští 3 měsíce.</p>
                     <p class="retention-offer__code">Kód: <code>STAY25</code></p>
                     <button class="btn btn--primary" type="button" data-retention-action="discount">
                         Přijmout slevu
@@ -198,7 +198,7 @@ const MH_RETENTION = {
             const data = await response.json();
 
             if (response.ok) {
-                this.showToast('✓ Vaše předplatné je pozastaveno na 1 měsíc!', 'success');
+                this.showToast('✓ Tvoje předplatné je pozastaveno na 1 měsíc!', 'success');
                 trackEvent('pause_accepted');
                 this.closeCancellationModal();
 
