@@ -457,9 +457,21 @@
             const pendingPlan = this.getPendingCheckoutPlan();
             const standaloneContext = this.getStandaloneAuthContext();
             const standalonePlan = !pendingPlan && standaloneContext?.plan ? standaloneContext.plan : null;
-            const postVerificationCheckout = !pendingPlan && !standalonePlan
+            // Post-verification checkout recovery is a login-only path: it exists so
+            // a user who registered with a plan, left to verify their email, and came
+            // back to log in can resume the interrupted checkout. A fresh registration
+            // must never inherit a stale checkout intent that an earlier abandoned
+            // attempt left in localStorage — that would hijack an unrelated signup
+            // (e.g. via the plain header link) straight into Stripe.
+            const postVerificationCheckout = !pendingPlan && !standalonePlan && options.mode !== 'register'
                 ? this.getPostVerificationCheckout()
                 : null;
+            if (options.mode === 'register' && !pendingPlan && !standalonePlan) {
+                // A plan-less registration means this browser now belongs to a user
+                // with no checkout intent — drop any leftover entry entirely so it
+                // cannot hijack their next login either.
+                this.clearPostVerificationCheckout();
+            }
             const checkoutPlan = pendingPlan || standalonePlan || postVerificationCheckout?.planId;
             const checkoutContext = pendingPlan
                 ? this.getPendingCheckoutContext()

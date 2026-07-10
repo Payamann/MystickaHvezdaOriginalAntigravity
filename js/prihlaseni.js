@@ -944,9 +944,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('auth:changed', () => {
     if (window.Auth?.isLoggedIn()) {
+        // getPostVerificationCheckout guards the login recovery flow: right after a
+        // login, Auth.loginSuccess may be about to resume an interrupted checkout
+        // stored in localStorage. Redirecting to /profil.html here would race with
+        // (and usually kill) that checkout navigation — loginSuccess owns the
+        // redirect in that case and clears the entry itself.
         if (sessionStorage.getItem('pending_plan')
             || sessionStorage.getItem('post_auth_activation')
-            || sessionStorage.getItem('post_auth_redirect_pending')) {
+            || sessionStorage.getItem('post_auth_redirect_pending')
+            || window.Auth?.getPostVerificationCheckout?.()) {
             return;
         }
 
