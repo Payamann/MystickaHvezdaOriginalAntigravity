@@ -101,35 +101,35 @@ const CONTEXT_COPY_BY_INTEREST = {
     },
     tarot: {
         title: 'Navážeme tarotovým výkladem',
-        subtitle: 'Vyberte znamení a téma. Potom otevřeme tarot, aby registrace hned vedla k výkladu.'
+        subtitle: 'Vyber znamení a téma. Potom otevřeme tarot, aby registrace hned vedla k výkladu.'
     },
     'andelske-karty': {
         title: 'Navážeme Andělskými kartami',
-        subtitle: 'Vyberte znamení a téma. Potom otevřeme andělské karty bez ztráty kontextu.'
+        subtitle: 'Vyber znamení a téma. Potom otevřeme andělské karty bez ztráty kontextu.'
     },
     numerologie: {
-        title: 'Začněte numerologickým vhledem',
-        subtitle: 'Vyberte znamení a téma. Po dokončení otevřeme numerologii jako první osobní krok.'
+        title: 'Začni numerologickým vhledem',
+        subtitle: 'Vyber znamení a téma. Po dokončení otevřeme numerologii jako první osobní krok.'
     },
     vztahy: {
-        title: 'Začněte vztahovým vhledem',
-        subtitle: 'Vyberte znamení a téma. Potom otevřeme partnerskou shodu jako první výklad.'
+        title: 'Začni vztahovým vhledem',
+        subtitle: 'Vyber znamení a téma. Potom otevřeme partnerskou shodu jako první výklad.'
     },
     astrokartografie: {
-        title: 'Začněte astro mapou',
-        subtitle: 'Vyberte znamení a téma. Potom otevřeme astro mapu a místa, která s vámi ladí.'
+        title: 'Začni astro mapou',
+        subtitle: 'Vyber znamení a téma. Potom otevřeme astro mapu a místa, která s tebou ladí.'
     },
     'natalni-karta': {
-        title: 'Začněte natální kartou',
-        subtitle: 'Vyberte znamení a téma. Potom otevřeme natální kartu jako první hlubší osobní vhled.'
+        title: 'Začni natální kartou',
+        subtitle: 'Vyber znamení a téma. Potom otevřeme natální kartu jako první hlubší osobní vhled.'
     },
     spiritualita: {
-        title: 'Začněte Hvězdným průvodcem',
-        subtitle: 'Vyberte znamení a téma. Potom otevřeme průvodce, aby první otázka navázala na váš denní záměr.'
+        title: 'Začni Hvězdným průvodcem',
+        subtitle: 'Vyber znamení a téma. Potom otevřeme průvodce, aby první otázka navázala na tvůj denní záměr.'
     },
     runy: {
-        title: 'Začněte runovým výkladem',
-        subtitle: 'Vyberte znamení a téma. Potom otevřeme runy jako rychlý symbolický první krok.'
+        title: 'Začni runovým výkladem',
+        subtitle: 'Vyber znamení a téma. Potom otevřeme runy jako rychlý symbolický první krok.'
     },
     'shamanske-kolo': {
         title: 'Navážeme šamanským kolem',
@@ -140,8 +140,8 @@ const CONTEXT_COPY_BY_INTEREST = {
         subtitle: 'Vyber znamení a téma. Potom otevřeme minulý život jako archetypální rámec pro sebereflexi, ne tvrdý slib.'
     },
     'kristalova-koule': {
-        title: 'Začněte křišťálovou koulí',
-        subtitle: 'Vyberte znamení a téma. Potom otevřeme křišťálovou kouli pro první osobní otázku.'
+        title: 'Začni křišťálovou koulí',
+        subtitle: 'Vyber znamení a téma. Potom otevřeme křišťálovou kouli pro první osobní otázku.'
     }
 };
 
@@ -245,7 +245,7 @@ const INTEREST_DESTINATIONS = {
     },
     tarot: {
         label: () => 'Otevřít tarotový výklad',
-        copy: () => 'Po dokončení přejdete rovnou k první tarotové otázce.',
+        copy: () => 'Po dokončení přejdeš rovnou k první tarotové otázce.',
         href: (source) => withSource('/tarot.html', source)
     },
     numerologie: {
@@ -255,7 +255,7 @@ const INTEREST_DESTINATIONS = {
     },
     vztahy: {
         label: () => 'Otevřít partnerskou shodu',
-        copy: () => 'Po dokončení přejdete k partnerské shodě a vztahovému výkladu.',
+        copy: () => 'Po dokončení přejdeš k partnerské shodě a vztahovému výkladu.',
         href: (source) => withSource('/partnerska-shoda.html', source)
     },
     'natalni-karta': {
@@ -265,17 +265,17 @@ const INTEREST_DESTINATIONS = {
     },
     sny: {
         label: () => 'Otevřít snář',
-        copy: () => 'Po dokončení přejdete do snáře a můžete začít výkladem snu.',
+        copy: () => 'Po dokončení přejdeš do snáře a můžeš začít výkladem snu.',
         href: (source) => withSource('/snar.html', source)
     },
     spiritualita: {
         label: () => 'Otevřít Hvězdného průvodce',
-        copy: () => 'Po dokončení můžete položit první otázku Hvězdnému průvodci.',
+        copy: () => 'Po dokončení můžeš položit první otázku Hvězdnému průvodci.',
         href: (source) => withSource('/mentor.html', source)
     },
     vesteni: {
         label: () => 'Otevřít symbolický vhled',
-        copy: () => 'Po dokončení přejdete k tarotu jako rychlému prvnímu symbolickému kroku.',
+        copy: () => 'Po dokončení přejdeš k tarotu jako rychlému prvnímu symbolickému kroku.',
         href: (source) => withSource('/tarot.html', source)
     },
     kariera: {
@@ -285,17 +285,17 @@ const INTEREST_DESTINATIONS = {
     },
     astrokartografie: {
         label: () => 'Otevřít astro mapu',
-        copy: () => 'Po dokončení přejdete k astro mapě a tématu míst, která s vámi ladí.',
+        copy: () => 'Po dokončení přejdeš k astro mapě a tématu míst, která s tebou ladí.',
         href: (source) => withSource('/astro-mapa.html', source)
     },
     'andelske-karty': {
         label: () => 'Otevřít andělské karty',
-        copy: () => 'Po dokončení otevřeme andělské karty, aby první vhled navázal na váš záměr.',
+        copy: () => 'Po dokončení otevřeme andělské karty, aby první vhled navázal na tvůj záměr.',
         href: (source) => withSource('/andelske-karty.html', source)
     },
     runy: {
         label: () => 'Otevřít runový výklad',
-        copy: () => 'Po dokončení přejdete k runám jako rychlému symbolickému výkladu.',
+        copy: () => 'Po dokončení přejdeš k runám jako rychlému symbolickému výkladu.',
         href: (source) => withSource('/runy.html', source)
     },
     'shamanske-kolo': {
@@ -305,12 +305,12 @@ const INTEREST_DESTINATIONS = {
     },
     'minuly-zivot': {
         label: () => 'Otevřít symbolický minulý život',
-        copy: () => 'Po dokončení přejdete k symbolickému výkladu minulého života pro sebereflexi.',
+        copy: () => 'Po dokončení přejdeš k symbolickému výkladu minulého života pro sebereflexi.',
         href: (source) => withSource('/minuly-zivot.html', source)
     },
     'kristalova-koule': {
         label: () => 'Otevřít křišťálovou kouli',
-        copy: () => 'Po dokončení můžete položit první osobní otázku křišťálové kouli.',
+        copy: () => 'Po dokončení můžeš položit první osobní otázku křišťálové kouli.',
         href: (source) => withSource('/kristalova-koule.html', source)
     }
 };

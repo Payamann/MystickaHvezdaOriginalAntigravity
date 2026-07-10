@@ -331,15 +331,30 @@ body {
 
 
 
-        .zodiac-btn:hover,
+        /* Hover is a subtle hint; selected must read clearly stronger so the
+           two states are distinguishable at a glance. */
+
+        .zodiac-btn:hover {
+
+            border-color: rgba(212, 175, 55, 0.45);
+
+            background: rgba(212, 175, 55, 0.06);
+
+            color: white;
+
+        }
 
         .zodiac-btn.selected {
 
             border-color: var(--color-mystic-gold);
 
-            background: rgba(212, 175, 55, 0.12);
+            background: rgba(212, 175, 55, 0.18);
+
+            box-shadow: inset 0 0 0 1px var(--color-mystic-gold);
 
             color: white;
+
+            font-weight: 600;
 
         }
 
@@ -383,15 +398,27 @@ body {
 
 
 
-        .interest-chip:hover,
+        .interest-chip:hover {
+
+            border-color: rgba(155, 89, 182, 0.5);
+
+            background: rgba(155, 89, 182, 0.08);
+
+            color: white;
+
+        }
 
         .interest-chip.selected {
 
             border-color: #9b59b6;
 
-            background: rgba(155, 89, 182, 0.15);
+            background: rgba(155, 89, 182, 0.28);
+
+            box-shadow: inset 0 0 0 1px #9b59b6;
 
             color: white;
+
+            font-weight: 600;
 
         }
 
