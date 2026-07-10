@@ -1270,6 +1270,16 @@
             window.location.reload();
         },
 
+        // Indicator cookie přežila, ale server session je neplatná (401/403 z profilu).
+        // Lokální úklid bez volání serveru a bez reloadu — jinak by uživatel viděl
+        // přihlášené UI bez funkčního účtu a bez CTA na registraci/login.
+        clearStaleSession() {
+            document.cookie = 'logged_in=; Max-Age=0; path=/';
+            this.user = null;
+            localStorage.removeItem('auth_user');
+            this.updateUI();
+        },
+
         // Premium activation removed - redirects to pricing page
         async activatePremium() {
             window.location.href = 'cenik.html';
@@ -1731,6 +1741,10 @@
                     credentials: 'include', // Send auth_token cookie
                     headers: { 'Content-Type': 'application/json' }
                 });
+                if (res.status === 401 || res.status === 403) {
+                    this.clearStaleSession();
+                    return null;
+                }
                 const data = await res.json();
                 if (data.success) return data.user;
                 return null;

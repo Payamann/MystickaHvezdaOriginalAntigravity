@@ -150,4 +150,17 @@ test.describe('Homepage CTA smoke', () => {
             await expectNoHorizontalOverflow(page);
         });
     }
+
+    test('stale logged_in cookie without valid session falls back to guest UI', async ({ page, baseURL }) => {
+        // logged_in=1 bez auth_token cookie => /api/auth/profile vrací 401/403
+        await page.context().addCookies([{ name: 'logged_in', value: '1', url: baseURL }]);
+        await prepareHomepage(page, DESKTOP_VIEWPORT);
+
+        await expect(page.locator('#hero-cta-container')).toBeVisible();
+        await expect(page.locator('#hero-cta-logged-in')).toBeHidden();
+        await expect(page.locator('#auth-register-btn')).toBeVisible();
+        await expect.poll(
+            () => page.evaluate(() => document.cookie.includes('logged_in=1'))
+        ).toBe(false);
+    });
 });
