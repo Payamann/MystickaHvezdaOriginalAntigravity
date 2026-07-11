@@ -15,187 +15,187 @@ const DAILY_CARD_FALLBACKS = {
     'andele-ochranci': {
         name: 'Andělé Ochránci',
         keyword: 'Ochrana',
-        text: 'Dnes jste obklopeni neviditelnou ochranou. Důvěřujte svému vnitřnímu hlasu a nebojte se udělat první krok. Andělé vás provázejí.',
+        text: 'Dnes tě obklopuje neviditelná ochrana. Důvěřuj svému vnitřnímu hlasu a neboj se udělat první krok. Andělé tě provázejí.',
         archetype: 'guidance'
     },
     hojnost: {
         name: 'Hojnost',
         keyword: 'Prosperita',
-        text: 'Energie hojnosti proudí vaším životem. Otevřete se přijímání – ať už jde o lásku, příležitosti nebo uznání. Jste toho hodni.',
+        text: 'Energie hojnosti proudí tvým životem. Otevři se přijímání – ať už jde o lásku, příležitosti nebo uznání. Zasloužíš si to.',
         archetype: 'guidance'
     },
     'novy-zacatek': {
         name: 'Nový začátek',
         keyword: 'Obnova',
-        text: 'Jitřní energie nese poselství čerstvého startu. Co jste odkládali, nyní dostává zelenou. Důvěřujte procesu a jděte vpřed.',
+        text: 'Jitřní energie nese poselství čerstvého startu. To, co dlouho odkládáš, teď dostává zelenou. Důvěřuj procesu a jdi vpřed.',
         archetype: 'guidance'
     },
     'vnitrni-mir': {
         name: 'Vnitřní mír',
         keyword: 'Klid',
-        text: 'Dnešní den volá po ztišení. Věnujte chvíli sobě, svému dechu a vnitřnímu prostoru. Z klidu vychází ta nejlepší rozhodnutí.',
+        text: 'Dnešní den volá po ztišení. Věnuj chvíli sobě, svému dechu a vnitřnímu prostoru. Z klidu vychází ta nejlepší rozhodnutí.',
         archetype: 'guidance'
     },
     odvaha: {
         name: 'Odvaha',
         keyword: 'Síla',
-        text: 'Hvězdy vám dnes přidávají na odvaze. Je čas říct ano věcem, které jste se dosud báli. Vaše srdce zná správný směr.',
+        text: 'Hvězdy ti dnes přidávají na odvaze. Je čas říct ano věcem, kterých se dosud bojíš. Tvoje srdce zná správný směr.',
         archetype: 'guidance'
     },
     laska: {
         name: 'Láska',
         keyword: 'Spojení',
-        text: 'Energie dne je prodchnuta láskou. Ať jde o vztah, přátelství nebo vztah k sobě – otevřete své srdce a lásku přijměte i dejte.',
+        text: 'Energie dne je prodchnuta láskou. Ať jde o vztah, přátelství nebo vztah k sobě – otevři své srdce a lásku přijímej i dávej.',
         archetype: 'guidance'
     },
     intuice: {
         name: 'Intuice',
         keyword: 'Vhled',
-        text: 'Váš šestý smysl je dnes obzvláště aktivní. Věřte prvním pocitům a nalézejte odpovědi uvnitř sebe, ne jen ve vnějším světě.',
+        text: 'Tvůj šestý smysl je dnes obzvláště aktivní. Věř prvním pocitům a hledej odpovědi uvnitř sebe, ne jen ve vnějším světě.',
         archetype: 'guidance'
     },
     transformace: {
         name: 'Transformace',
         keyword: 'Změna',
-        text: 'Jako motýl procházíte proměnou. Nenechte se vystrašit tím, co se rozpadá – to, co přichází, je krásnější. Přijměte změnu s otevřenou náručí.',
+        text: 'Jako motýl procházíš proměnou. Nenech se vystrašit tím, co se rozpadá – to, co přichází, je krásnější. Přijmi změnu s otevřenou náručí.',
         archetype: 'guidance'
     },
     vdecnost: {
         name: 'Vděčnost',
         keyword: 'Hojnost',
-        text: 'Zastavte se a všimněte si všeho, za co můžete být vděční. Vděčnost otevírá dveře dalším darům. Dnešní den ocení i ty nejmenší věci.',
+        text: 'Zastav se a všimni si všeho, za co dnes cítíš vděčnost. Vděčnost otevírá dveře dalším darům. Dnes oceň i ty nejmenší věci.',
         archetype: 'guidance'
     },
     harmonie: {
         name: 'Harmonie',
         keyword: 'Rovnováha',
-        text: 'Hledejte rovnováhu ve všech oblastech svého života. Harmonie přichází z vyrovnání vnitřního a vnějšího světa. Nenásilí a klid jsou vaše síla.',
+        text: 'Hledej rovnováhu ve všech oblastech svého života. Harmonie přichází z vyrovnání vnitřního a vnějšího světa. Nenásilí a klid jsou tvoje síla.',
         archetype: 'guidance'
     },
     vudce: {
         name: 'Vůdce',
         keyword: 'Vedení',
-        text: 'Dnes vás ostatní přirozeně sledují. Vaše slova a činy mají větší váhu, než si myslíte. Buďte lídrem, jakým byste chtěli mít vzor.',
+        text: 'Dnes tě ostatní přirozeně sledují. Tvoje slova a činy mají větší váhu, než si myslíš. Buď lídrem, jakého si přeješ mít za vzor.',
         archetype: 'guidance'
     },
     propojeni: {
         name: 'Propojení',
         keyword: 'Síť',
-        text: 'Dnešní energie posiluje vaše vztahy a propojení s druhými. Nebojte se oslovit starého přítele nebo navázat nové kontakty – vesmír to podporuje.',
+        text: 'Dnešní energie posiluje tvoje vztahy a propojení s druhými. Neboj se ozvat starému příteli nebo navázat nové kontakty – vesmír to podporuje.',
         archetype: 'guidance'
     },
     hojeni: {
         name: 'Hojení',
         keyword: 'Uzdravení',
-        text: 'Zelená energie hojení prostupuje vaším tělem i duší. Je čas pustit staré rány a dovolit si plně se uzdravit. Jste na správné cestě.',
+        text: 'Zelená energie hojení prostupuje tvým tělem i duší. Je čas pustit staré rány a dovolit si plně se uzdravit. Jsi na správné cestě.',
         archetype: 'guidance'
     },
     moudrost: {
         name: 'Moudrost',
         keyword: 'Poznání',
-        text: 'Dnes vám jsou k dispozici hluboká moudrost a vhled. Naslouchejte starším, čtěte mezi řádky a hledejte smysl za povrchem věcí.',
+        text: 'Dnes máš k dispozici hlubokou moudrost a vhled. Naslouchej starším, čti mezi řádky a hledej smysl za povrchem věcí.',
         archetype: 'guidance'
     },
     radost: {
         name: 'Radost',
         keyword: 'Lehkost',
-        text: 'Dnes si dovolte být lehcí a radostní. Hrajte si, smějte se, užijte si okamžik. Radost je vaším přirozeným stavem a právem.',
+        text: 'Dnes si dovol lehkost a radost. Hraj si, směj se, užij si okamžik. Radost je tvůj přirozený stav i právo.',
         archetype: 'guidance'
     },
     prulom: {
         name: 'Průlom',
         keyword: 'Zjevení',
-        text: 'Dnes může přijít nečekané zjevení nebo průlom v situaci, která se zdála zablokovaná. Buďte otevření a pozorní – osvícení přichází náhle.',
+        text: 'Dnes může přijít nečekané zjevení nebo průlom v situaci, která se zdála zablokovaná. Měj oči i mysl otevřené – osvícení přichází náhle.',
         archetype: 'guidance'
     },
     duvera: {
         name: 'Důvěra',
         keyword: 'Víra',
-        text: 'Důvěřujte procesu, i když nevidíte celý obraz. Vesmír pracuje za kulisami ve váš prospěch. Pusťte kontrolu a uvěřte, že vše dopadne dobře.',
+        text: 'Důvěřuj procesu, i když nevidíš celý obraz. Vesmír pracuje za kulisami v tvůj prospěch. Pusť kontrolu a uvěř, že vše dopadne dobře.',
         archetype: 'guidance'
     },
     kreativita: {
         name: 'Kreativita',
         keyword: 'Tvorba',
-        text: 'Vaše kreativní energie je dnes na vrcholu. Vraťte se k projektu, který jste odkládali, nebo vyzkoušejte něco zcela nového. Tvořte!',
+        text: 'Tvoje kreativní energie je dnes na vrcholu. Vrať se k projektu, který odkládáš, nebo vyzkoušej něco zcela nového. Tvoř!',
         archetype: 'guidance'
     },
     uvolneni: {
         name: 'Uvolnění',
         keyword: 'Tok',
-        text: 'Přestaňte zadržovat dech a plavte s proudem. Uvolnění napětí a odporu vám otvírá cestu k snadnějšímu a radostnějšímu životu.',
+        text: 'Přestaň zadržovat dech a plav s proudem. Uvolnění napětí a odporu ti otvírá cestu k snadnějšímu a radostnějšímu životu.',
         archetype: 'guidance'
     },
     zamer: {
         name: 'Záměr',
         keyword: 'Fokus',
-        text: 'Jasně si definujte, co chcete. Dnešní energie podporuje záměry a manifesty. Napište si cíl nebo ho vyslovte nahlas – vesmír naslouchá.',
+        text: 'Jasně si definuj, co chceš. Dnešní energie podporuje záměry a manifestace. Napiš si cíl nebo ho vyslov nahlas – vesmír naslouchá.',
         archetype: 'guidance'
     },
     koreny: {
         name: 'Kořeny',
         keyword: 'Stabilita',
-        text: 'Ukotvěte se ve svých kořenech – rodině, hodnotách, tradici. Síla vyrůstá ze stability a hlubokého zakotvení. Dnes oceňte, odkud pocházíte.',
+        text: 'Ukotvi se ve svých kořenech – rodině, hodnotách, tradici. Síla vyrůstá ze stability a hlubokého zakotvení. Dnes oceň, odkud pocházíš.',
         archetype: 'guidance'
     },
     zrcadlo: {
         name: 'Zrcadlo',
         keyword: 'Reflexe',
-        text: 'Cokoliv vás dnes na druhých dráždí nebo nadchne, je zrcadlem vašeho vlastního nitra. Den pro sebereflexi a hluboké pochopení sebe sama.',
+        text: 'Cokoliv tě dnes na druhých dráždí nebo nadchne, je zrcadlem tvého vlastního nitra. Den pro sebereflexi a hluboké pochopení sebe sama.',
         archetype: 'guidance'
     },
     prijeti: {
         name: 'Přijetí',
         keyword: 'Soucit',
-        text: 'Přijměte sebe i druhé přesně takovými, jací jsou. Dnešní den volá po soucitu namísto souzení. Z přijetí roste skutečná láska.',
+        text: 'Přijmi sebe i druhé přesně takové, jací jsou. Dnešek volá po soucitu namísto souzení. Z přijetí roste skutečná láska.',
         archetype: 'guidance'
     },
     zazrak: {
         name: 'Zázrak',
         keyword: 'Požehnání',
-        text: 'Otevřete oči pro malé zázraky kolem sebe. Dnes je den, kdy se vesmír dává o sobě vědět skrze synchronicity a náhody. Žádné není.',
+        text: 'Otevři oči pro malé zázraky kolem sebe. Dnes se vesmír dává o sobě vědět skrze synchronicity a náhody – žádná z nich není náhodná.',
         archetype: 'guidance'
     },
     pratelstvi: {
         name: 'Přátelství',
         keyword: 'Komunita',
-        text: 'Vaši přátelé jsou vaší rodinou, kterou si sami volíte. Dnes se ozvěte těm, na které myslíte. Jedno upřímné slovo může změnit celý den.',
+        text: 'Přátelé jsou rodina, kterou si volíš. Dnes se ozvi těm, na které myslíš. Jedno upřímné slovo může změnit celý den.',
         archetype: 'guidance'
     },
     ohraniceni: {
         name: 'Ohraničení',
         keyword: 'Hranice',
-        text: 'Naučit se říkat ne je akt lásky k sobě samému. Dnes posilujte zdravé hranice – bez viny, bez omluv. Vaše energie je darem, ne povinností.',
+        text: 'Naučit se říkat ne je akt lásky k sobě. Dnes posiluj zdravé hranice – bez viny, bez omluv. Tvoje energie je dar, ne povinnost.',
         archetype: 'guidance'
     },
     vizionar: {
         name: 'Vizionář',
         keyword: 'Vize',
-        text: 'Povzneste pohled nad každodennost. Jaká je vaše velká vize? Dnešní den přeje snění, plánování a nastavování smělých cílů.',
+        text: 'Povznes pohled nad každodennost. Jaká je tvoje velká vize? Dnešek přeje snění, plánování a smělým cílům.',
         archetype: 'guidance'
     },
     hravost: {
         name: 'Hravost',
         keyword: 'Spontánnost',
-        text: 'Je čas přerušit rutinu a vnést do dne trochu překvapení. Buďte spontánní, hraví, nebojte se vypadat trochu bláznivě. Život je příliš krátký na vážnost.',
+        text: 'Je čas přerušit rutinu a vnést do dne trochu překvapení. Buď spontánní, dovol si hravost a neboj se vypadat trochu bláznivě. Život je příliš krátký na vážnost.',
         archetype: 'guidance'
     },
     'propojen-se-zemi': {
         name: 'Propojen se zemí',
         keyword: 'Zemění',
-        text: 'Vyjděte ven, dotkněte se přírody, zhluboka dýchejte. Zemský magnetismus vám dodá sílu a jasnost mysli. Příroda je vaším nejlepším lékem.',
+        text: 'Vyjdi ven, dotkni se přírody, zhluboka dýchej. Zemský magnetismus ti dodá sílu a jasnost mysli. Příroda je tvůj nejlepší lék.',
         archetype: 'guidance'
     },
     paradox: {
         name: 'Paradox',
         keyword: 'Tajemství',
-        text: 'Ne vše musí být ihned vysvětleno. Dnes se smiřte s nejistotou a mysteriem. Pravda má mnoho vrstev – ponořte se do hlubiny bez strachu.',
+        text: 'Ne vše musí být hned vysvětleno. Dnes se smiř s nejistotou a tajemstvím. Pravda má mnoho vrstev – ponoř se do hlubiny beze strachu.',
         archetype: 'guidance'
     },
     vitez: {
         name: 'Vítěz',
         keyword: 'Úspěch',
-        text: 'Vaše vytrvalost byla oceněna. Dnes celebrujte svůj pokrok – i ten nejmenší úspěch si zaslouží uznání. Jste na správné cestě k vítězství.',
+        text: 'Tvoje vytrvalost nese ovoce. Dnes oslav svůj pokrok – i ten nejmenší úspěch si zaslouží uznání. Jsi na správné cestě k vítězství.',
         archetype: 'guidance'
     }
 };
@@ -777,7 +777,7 @@ async function shareCard() {
     }
 
     const shareTitle = `Moje andělská karta: ${drawnCard.name} ✨`;
-    const shareText = `Dnes mě provází anděl ${drawnCard.name} s tématem: ${drawnCard.theme}. Zjistěte, jaká karta čeká na vás na Mystické Hvězdě! 🕊️`;
+    const shareText = `Dnes mě provází anděl ${drawnCard.name} s tématem: ${drawnCard.theme}. Zjisti, jaká karta čeká na tebe na Mystické Hvězdě! 🕊️`;
     const shareUrl = window.location.href;
 
     if (navigator.share) {

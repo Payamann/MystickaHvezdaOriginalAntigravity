@@ -130,8 +130,9 @@
             localStorage.removeItem(K);
         }
 
+        // GDPR: souhlas musí být aktivní úkon — bez uloženého souhlasu je default vypnuto
         return {
-            analytics: true,
+            analytics: false,
             marketing: false
         };
     }
