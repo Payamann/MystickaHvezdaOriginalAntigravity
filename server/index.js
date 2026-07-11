@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser'; // Security: HttpOnly cookie support
 import rateLimit from 'express-rate-limit'; // Security: Rate Limiting
 import helmet from 'helmet'; // Security: HTTP Headers
-import xss from 'xss-clean'; // Security: Input Sanitization
+import { sanitizeRequestInput } from './utils/sanitize-input.js'; // Security: Input Sanitization
 import compression from 'compression'; // Performance: Gzip compression
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -530,7 +530,7 @@ const csrfProtection = (req, res, next) => {
 };
 
 // XSS Protection - API routes only, after body parsing and before route handlers
-app.use('/api', xss());
+app.use('/api', sanitizeRequestInput);
 
 // API responses often contain tokens, account state, payment state or personal AI output.
 // Default to no-store; explicitly public endpoints can override this later.

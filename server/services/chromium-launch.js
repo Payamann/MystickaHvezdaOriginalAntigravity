@@ -19,7 +19,10 @@ const CANDIDATE_COMMANDS = ['chromium', 'chromium-browser', 'google-chrome-stabl
 const CANDIDATE_PATHS = [
     '/usr/bin/chromium',
     '/usr/bin/chromium-browser',
-    '/run/current-system/sw/bin/chromium'
+    '/run/current-system/sw/bin/chromium',
+    // Claude Code remote sandbox pre-installs Chromium here; the bundled
+    // Playwright browser revision is not downloadable in that environment.
+    '/opt/pw-browsers/chromium'
 ];
 
 function whichSync(command) {
