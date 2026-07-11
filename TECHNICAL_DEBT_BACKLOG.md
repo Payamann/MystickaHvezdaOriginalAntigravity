@@ -1,6 +1,6 @@
 # Technical Debt Backlog
 
-Aktualizace: 2026-04-27
+Aktualizace: 2026-07-11 (doplneny nalezy z komplexni analyzy, viz `docs/analyza-webu-2026-07-11.md`)
 
 ## P0/P1 - nejblizsi sprinty
 
@@ -141,3 +141,30 @@ Aktualizace: 2026-04-27
    - Stav navic: `npm run verify:production` nove kontroluje i zakladni astro vypocetni cesty a vraci konkretni HTTP status pri selhani, takze produkcni regresi lze rychleji dohledat.
    - Stav navic: produkcni smoke kontroluje i verejny `/api/config` kontrakt vcetne `features.pushNotifications`, VAPID klice a Sentry DSN typu.
    - Dalsi krok: pozdeji lze doplnit stejnou live HTTP status kontrolu proti stagingu, az bude stabilni staging URL.
+
+## Nalezy z komplexni analyzy 2026-07-11
+
+10. **Thin content na generovanych strankach (SEO riziko P1)**
+    - Stav: otevrene. ~520 z 896 indexovanych stranek ma po odecteni sablony ~140-190 slov unikatniho textu: `jmena/` (281 stranek, ~150 slov), `snar/` (164, ~166), `slovnik/` (30, ~181), `andelske-karty/` (44, ~144). Google helpful content system tohle hodnoti na urovni domeny.
+    - Moznosti: (a) rozsirit generatory o 300+ slov unikatni hodnoty na stranku (numerologicky vyklad do hloubky, FAQ, souvislosti mezi tematy), (b) docasny `noindex` nejslabsich sekci nez se obsah rozsiri, (c) konsolidace do vetsich hub stranek. Rozhodnuti je strategicke - ovlivnuje indexaci na mesice.
+    - Data zdroje uz existuji (`data/jmena.json`, `data/dreams.json`, `data/numerology-numbers.json`), ale polozky jsou kratke - rozsireni vyzaduje novy obsah, ne jen zmenu sablony.
+
+11. **Per-page JS bundling (vykon P2)**
+    - Stav: otevrene. Klicove stranky nacitaji 24-26 `<script>` tagu (`index.html` 26, `tarot.html` 25, `horoskopy.html` 24). Soubory jsou male, ale parse/execute retez je dlouhy.
+    - Dalsi krok: rozsirit `scripts/build-js.mjs` o per-page entrypointy (esbuild bundle), cilit na ~5 skriptu na stranku. Pozor na CSP hashe, SW precache seznam a `update-service-worker-cache.mjs` - vsechny tri se musi zmenit spolu.
+
+12. **Critical CSS pro obsahove stranky (vykon P2)**
+    - Stav: otevrene. Kazda stranka nacita 137-152 KB minifikovaneho CSS (`site.min.css`/`home.min.css`), i ciste obsahove stranky (blog, jmena, snar), ktere vyuzivaji zlomek pravidel.
+    - Dalsi krok: rozdelit build na critical inline CSS + async zbytek, nebo vytvorit tenci `content.min.css` bundle pro obsahove sablony.
+
+13. **Obnovit kadenci blogu (obsah P1)**
+    - Stav: otevrene. Publikace: brezen 2026 27 clanku -> duben 3 -> kveten-cervenec 0. Blog je nejsilnejsi SEO aktivum (prumer 1079 slov/clanek) a zdroj interniho linkovani (`blog:cluster-links`).
+    - Dalsi krok: 1-2 clanky tydne, prioritne sezonni temata H2 2026 (zatmeni, retrogrady, uplnky).
+
+14. **Refresh datovanych stranek na 2027 (obsah P3)**
+    - Stav: otevrene. `osobni-rok-2026.html`, cinsky horoskop 2026, retrogradni Venuse 2026 apod. budou koncem roku zastarale.
+    - Dalsi krok: v Q4 2026 naplanovat 2027 verze + redirecty/aktualizace canonicalu.
+
+15. **Overit kontrast a focus management (a11y P2)**
+    - Stav: otevrene. Zaklad je dobry (skip-linky, alt texty, aria-labels), ale kontrastni pomery na tmavem pozadi (#050510) a focus management v modalech nejsou overene automatizovane.
+    - Dalsi krok: axe-core sken 10 klicovych stranek (lze pridat do Playwright E2E), opravit nalezene kontrasty.
