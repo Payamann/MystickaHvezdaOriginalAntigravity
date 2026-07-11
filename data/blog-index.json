@@ -1,5 +1,50 @@
 [
   {
+    "title": "Saturnův návrat: Proč se ti kolem třicítky bortí život — a proč je to dobře",
+    "slug": "saturnuv-navrat-krize-tricitky",
+    "short_description": "Mezi 27. a 30. rokem se Saturn vrací na místo, kde stál při tvém narození — a začne bourat všechno, co nestojí na pravdě. Tři fáze návratu, jak ho poznat a jak jím projít se ctí.",
+    "category": "Astrologie",
+    "published_at": "2026-07-12T08:00:00.000Z",
+    "featured_image": "img/blog-astrology.webp",
+    "readTime": 8
+  },
+  {
+    "title": "Minulý život: 7 znamení, že si neseš vzpomínky duše",
+    "slug": "minuly-zivot-znameni-vzpominky",
+    "short_description": "Strach, který nemá původ v tomhle životě. Místa, která znáš, ačkoli jsi tam nikdy nebyl. Talent, který tě nikdo neučil. Sedm znamení, že si duše nese vzpomínky — a jak s nimi pracovat.",
+    "category": "Spiritualita",
+    "published_at": "2026-07-12T10:00:00.000Z",
+    "featured_image": "img/icon-ritual.webp",
+    "readTime": 8
+  },
+  {
+    "title": "Silové zvíře: Jak najít svého duchovního průvodce",
+    "slug": "silove-zvire-jak-najit",
+    "short_description": "Silové zvíře tě podle šamanské tradice provází celý život — v instinktech, snech i setkáních. Pět cest, jak svého průvodce rozpoznat, významy nejčastějších zvířat a práce s nimi v běžném dni.",
+    "category": "Šamanismus",
+    "published_at": "2026-07-12T12:00:00.000Z",
+    "featured_image": "img/icon-shamanic.webp",
+    "readTime": 8
+  },
+  {
+    "title": "Karta Blázen (0) v tarotu: Nejmoudřejší karta balíčku",
+    "slug": "karta-blazen-tarot-vyznam",
+    "short_description": "Blázen má číslo nula, kráčí k propasti a směje se — a přesto je nejmoudřejší kartou tarotu. Význam v lásce, práci, jako karta dne, obrácený Blázen a Bláznova cesta velkou arkánou.",
+    "category": "Tarot",
+    "published_at": "2026-07-12T14:00:00.000Z",
+    "featured_image": "img/icon-tarot.webp",
+    "readTime": 7
+  },
+  {
+    "title": "Andělské číslo 222: Co znamená, když ho vidíš všude",
+    "slug": "andelske-cislo-222-vyznam",
+    "short_description": "Vidíš 222 na hodinách, účtenkách i značkách? Andělské číslo 222 nese poselství rovnováhy, trpělivosti a důvěry v proces. Co znamená v lásce, práci i na duchovní cestě — a 5 věcí, které udělat.",
+    "category": "Spiritualita",
+    "published_at": "2026-07-12T16:00:00.000Z",
+    "featured_image": "img/icon-ritual.webp",
+    "readTime": 7
+  },
+  {
     "title": "Letní láska podle hvězd: Proč hoří rychle a jak poznat, že vydrží",
     "slug": "letni-laska-astrologie-znameni",
     "short_description": "Letní lásky hoří jasněji než kterékoli jiné — a v září často zhasnou. Zjisti, proč léto romantice astrologicky přeje, která znamení teď přitahují nejvíc a podle čeho poznáš, že tvoje letní láska přežije podzim.",
