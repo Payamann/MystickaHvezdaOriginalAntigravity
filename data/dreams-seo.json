@@ -598,5 +598,389 @@
     "spiritual": "Brány chrámů, brána nebes — duchovně je brána práh posvátného: přechod, který se nedělá mimochodem. Sen o bráně může značit iniciaci: život tě zve do další komnaty. Strážce brány je zkouška: otázka, na kterou musíš odpovědět sám.",
     "variants": "Otevřená brána je pozvání — projdi, dokud je otevřená: některé brány se otevírají jednou. Zavřená brána mluví o cíli, na který ještě nedozrál čas — nebo klíč. Zlatá brána věští významný přechod: svatba, poslání, poznání. Brána bez zdi je úsměvná a hluboká varianta: překážka byla jen v hlavě — obejít šlo vždycky.",
     "warning": "Zpozorni, pokud před branou ve snu stojíš opakovaně bez pokusu o kliku — psychika zrcadlí čekání na pozvání, které nikdo nepošle. Zeptej se: na čí povolení čekám? Dospělost je zjištění, že většina bran má kliku zevnitř tvé vlastní ruky."
+  },
+  "andele": {
+    "psychological": "Anděl ve snu je personifikovaná naděje — psychologie ho čte jako vnitřní zdroj útěchy, který se aktivuje v těžkých obdobích: psychika si posílá posla, když vědomí ztrácí síly. Setkání s andělem často přichází po ztrátě, v nemoci nebo před velkým rozhodnutím — a nese jediný vzkaz: nejsi v tom sám.",
+    "spiritual": "V duchovní tradici je sen o andělovi skutečná návštěva — poslové se zjevují ve spánku od biblických dob: Jákob, Josef, pastýři. Anděl ve snu přináší ochranu, zprávu nebo ujištění. Tradice radí: všímej si slov i pocitu — andělská přítomnost se pozná po pokoji, který zůstane i po probuzení.",
+    "variants": "Mlčící anděl je tichá ochrana: nemusí mluvit, stačí, že je. Anděl se zprávou stojí za zapsání — slova ze snu mívají platnost delší než den. Anděl v lidské podobě připomíná: poslové chodí i v civilu. Padlý anděl zrcadlí zklamání v někom, koho jsi měl za neomylného.",
+    "warning": "Zpozorni, pokud o anděly ve snu prosíš a nepřicházejí — psychika může zrcadlit pocit opuštěnosti, který si zaslouží lidskou pomoc, ne jen nebeskou. Zeptej se: komu z lidí jsem řekl, jak mi doopravdy je? Andělé často pracují rukama tvých blízkých."
+  },
+  "barva-bila": {
+    "psychological": "Bílá je ve snech čistý list — psychologie ji čte jako nový začátek, nevinnost a prostor bez obsahu: bílá místnost, bílé šaty, bílá krajina. Může značit očištění po náročném období — ale i prázdnotu: sterilní bílá bez jediné barvy zrcadlí život, ze kterého se vytratila šťáva.",
+    "spiritual": "Bílá je barva světla a svatosti — obsahuje všechny barvy spektra: úplnost, ne absence. Duchovně značí milost a nový křest: bílé roucho dostává ten, kdo prošel zkouškou. Bílé zvíře ve snu (jelen, kůň, holubice) je tradičně posel — vzácné znamení.",
+    "variants": "Bílé šaty značí nový začátek či slib. Bílá mlha je přechod: nevidíš, ale jsi veden. Vymalovat místnost na bílo znamená úklid minulosti — co bylo na zdech, je pod nátěrem, ne pryč. Oslnivě bílé světlo je duchovní dotyk: zapamatuj si, co následovalo.",
+    "warning": "Zbystři, pokud je snová bílá sterilní a studená — psychika může zrcadlit život vyčištěný až na dřeň: bez rizika, bez barev, bez chuti. Zeptej se: co jsem v rámci „pořádku“ vyklidil i ze života? Čistota je krásná — prázdnota jen bezpečná."
+  },
+  "barva-cerna": {
+    "psychological": "Černá je neznámo a hloubka — psychologie ji čte jako obsah, který zatím nemá tvar: smutek, tajemství, potlačené. Černá není zlá — je nepřečtená. Sen v černých tónech často doprovází období smutku nebo vnitřního stahování: psychika ztlumila barvy, aby šetřila energii.",
+    "spiritual": "Černá je barva mystérií — plodná tma, ze které se rodí světlo: noc před úsvitem, půda pod setbou. Duchovně značí fázi nigredo — alchymické zčernání, kterým začíná každá proměna. Černé zvíře je strážce stínu: nese sílu, kterou ses ještě nenaučil nosit.",
+    "variants": "Černé oblečení zrcadlí smutek nebo ochranu: co skrýváš pod černou? Černá místnost je nevědomí za dveřmi — vejdi se světlem. Černá voda je hluboká emoce bez dohledu na dno: plav opatrně. Postava v černém bývá stín: část tebe, která čeká na přijetí.",
+    "warning": "Zpozorni, pokud černá ve snech dlouhodobě převažuje — psychika může zrcadlit depresivní ladění, které si zaslouží pozornost a případně pomoc. Zeptej se: kdy z mých dní zmizely barvy? A řekni to nahlas někomu, komu věříš — tma se ředí sdílením."
+  },
+  "barva-cervena": {
+    "psychological": "Červená je energie v nejsyrovější podobě — vášeň, hněv, život. Psychologie čte červené sny jako zprávu o síle, která se hlásí: milostná touha, potlačený vztek, vitalita. Červená ve snu strhává pozornost stejně jako v bdění — psychika ji používá jako zvýrazňovač: tohle je důležité.",
+    "spiritual": "Červená je barva krve a ohně — život sám a jeho cena. Duchovně značí sílu kořenové čakry: uzemnění, přežití, chuť žít. Červený plod, květ či plamen ve snu bývá pozvání k plnějšímu životu: méně hlavy, víc krve v žilách.",
+    "variants": "Červené šaty značí přiznanou přitažlivost — smíš být vidět. Červené světlo je stopka: něco v životě žádá zastavení. Rudý západ slunce věští konec s krásou: kapitola se uzavírá důstojně. Krvavě červená míří na vášeň či hněv, který už nejde ředit.",
+    "warning": "Zbystři, pokud tě červená ve snu zaplavuje — psychika může hlásit přetlak: hněv nebo touhu drženou pod pokličkou. Zeptej se: která moje síla nemá povolený vstup do života? Červená se nedá vypnout — jen kultivovat."
+  },
+  "barva-modra": {
+    "psychological": "Modrá je klid a odstup — psychologie ji čte jako barvu mysli: jasné nebe, hluboká voda, chladná hlava. Modré sny přicházejí v obdobích, kdy se psychika uklidňuje — nebo kdy chladne: modrá umí být i barvou melancholie a citového odstupu, který se tváří jako rozum.",
+    "spiritual": "Modrá je barva nebe a pravdy — v tradicích plášť Marie, barva krční čakry: komunikace, upřímnost. Duchovně značí mír, který nepřichází z okolností, ale z hloubky. Modré světlo je tradičně ochranné — Michaelův plamen.",
+    "variants": "Světlá modř věští jasno a klid — dobrá zpráva po zataženém období. Temně modrá noc je hloubka a tajemství: bezpečná tma. Modrá voda značí čisté emoce — víš, co cítíš. Zamodralý chlad zrcadlí citovou odtažitost: čí ruce jsou studené?",
+    "warning": "Zpozorni, pokud modrá ve snech chladne do šedi — psychika může zrcadlit rozum, který zamrzl city: všechno zvládáš a nic necítíš. Zeptej se: kdy jsem naposledy nechal hlavu odpočívat a srdce mluvit? Klid bez citu není mír — je to pauza od života."
+  },
+  "bezpecny-pristav": {
+    "psychological": "Bezpečný přístav je místo, kde se smí spustit kotva — psychologie ho čte jako vztah, místo či rituál, kde nemusíš nic předstírat: domov v nejhlubším smyslu. Sen o přístavu přichází po bouřích — a ptá se: kde je tvůj? Kdo je tvůj? A necháváš loď v přístavu déle, než je zdrávo?",
+    "spiritual": "Přístav je v tradici obraz spočinutí duše — konec plavby, náruč po cestě. Duchovně značí důvěru: místo, kde tě přijmou i s poškozeným trupem a prázdnými sítěmi. Ale tradice dodává: lodě se v přístavu opravují — nebydlí tam.",
+    "variants": "Vplout do přístavu značí úlevu po náročné plavbě — dopřej si kotvení beze studu. Přístav v dohledu, ale nedosažitelný, zrcadlí blízkost, na kterou nedosáhneš: co brání zakotvit? Opustit přístav je zralost: odpočatý a opravený vyplouváš. Prázdný přístav mluví o samotě: kdo odplul?",
+    "warning": "Zbystři, pokud ve snu z přístavu nikdy nevyplouváš — psychika zrcadlí bezpečí, které se stalo hranicí: jistota bez růstu. Zeptej se: před kterou plavbou se schovávám v doku? Loď v přístavu je v bezpečí — ale od toho lodě nejsou."
+  },
+  "cesta": {
+    "psychological": "Cesta je život sám v pohybu — psychologie čte její podobu jako stav tvého směřování: rovná a přehledná, klikatá, rozbitá, zarostlá? Sen o cestě se ptá na tři věci: kam jdeš, jak se ti jde a kdo cestu vybral. Rozcestí je rozhodnutí, krajnice odpočinek, příkop varování.",
+    "spiritual": "Cesta je nejstarší duchovní metafora — tao znamená cestu, poutník je archetyp duše. Duchovně platí: cesta se dělá chůzí, ne mapou. Sen o cestě může připomínat, že cíl je směr, ne místo — a že i oklika patří k trase, jen to z ní zatím nevidíš.",
+    "variants": "Rovná cesta věští jasné období — využij ho k tempu. Klikatá cesta učí trpělivost: za zatáčkou může být to, kvůli čemu jdeš. Rozbitá cesta zrcadlí náročný úsek — zpomal, ale nezastavuj. Cesta zarostlá trávou je opuštěný směr: sen se ptá, jestli právem.",
+    "warning": "Zpozorni, pokud ve snu jdeš po cestě, kterou nevybral nikdo — ani ty — psychika zrcadlí život ze setrvačnosti. Zeptej se: kdyby dnešek byl rozcestí, kterým směrem bych vykročil? Nejdelší oklika je cizí cesta prošlá poctivě až do konce."
+  },
+  "chvatal": {
+    "psychological": "Chvátání a nestíhání je nejrozšířenější stresový sen moderní doby — psychologie ho čte doslova: žiješ rychleji, než stačíš žít. Vlak ujíždí, letadlo odlétá, zkouška začala — a ty pořád balíš. Sen nezpracovává rozvrh, ale pocit: nestíhám být tím, kým mám být, pro všechny, kteří čekají.",
+    "spiritual": "Duchovní tradice zná odpověď na spěch: přítomnost. Kdo chvátá, není tam, kde je — a tedy není nikde. Sen o nestíhání může být zvon: čas, který honíš, ti utíká právě proto, že ho honíš. Zpomal a čas se rozšíří — to není mystika, to je zkušenost.",
+    "variants": "Nestihnout odjezd zrcadlí strach z promeškané příležitosti — zeptej se, čí itinerář to vlastně je. Balit v panice a nic nenajít mluví o přetížení: příliš mnoho otevřených úkolů. Přijít pozdě na vlastní událost je silný obraz: nestíháš vlastní život. Zjistit, že spěch nebyl nutný, je dar: psychika ukazuje cestu ven.",
+    "warning": "Zbystři, pokud sny o nestíhání máš častěji než jednou týdně — tělo hlásí chronický stres dřív, než ho přiznáš. Zeptej se: co by se doopravdy stalo, kdybych dnes nestihl třetinu seznamu? Odpověď bývá: skoro nic. A právě to je klíč."
+  },
+  "hodiny": {
+    "psychological": "Hodiny jsou vědomí času — psychologie čte sen o hodinách jako vztah k termínům, věku a konečnosti: tikání připomíná, že čas běží i bez tvého souhlasu. Zastavené hodiny zrcadlí zamrzlý čas: období, kdy se nic nehýbe — nebo vzpomínku, ve které ses zastavil ty.",
+    "spiritual": "Kairos a chronos — tradice zná dva časy: měřený a zralý. Sen o hodinách se často ptá, kterým žiješ: podle ciferníku, nebo podle zrání? Půlnoc je práh proměny, poledne vrchol sil. Hodiny bez ručiček jsou pozvání: teď je jediný čas, který existuje.",
+    "variants": "Tikající hodiny zesilují termín: něco dozrává a psychika odpočítává. Zastavené hodiny mluví o zamrzlé situaci — kdo je natáhne? Hodiny jdoucí pozpátku jsou návrat: minulost žádá revizi. Rozbité hodiny značí konec jednoho počítání — starý rozvrh dosloužil.",
+    "warning": "Zpozorni, pokud tě snové hodiny budí úzkostí — psychika může zrcadlit strach z promeškání: věk, biologické hodiny, kariérní okna. Zeptej se: podle čích hodin se měřím? Život není nádraží s jízdním řádem — vlaky, které jezdí k tobě, jezdí celý život."
+  },
+  "konev-voda": {
+    "psychological": "Studna a pramen jsou zdroje — psychologie je čte jako přístup k vlastním silám: hluboko uložená voda, ke které vede okov a trpělivost. Vyschlá studna je vyčerpání: bral jsi, ale nedoplňoval. Pramen je obnova, která začíná nenápadně: první čůrek po suchu je událost.",
+    "spiritual": "U studní se v písmech odehrávají setkání — studna je místo pravdy: hluboko, chladno, čistá voda. Duchovně značí vnitřní zdroj, který nevysychá — jen k němu občas zapadne cesta. Pramen je milost: voda, která si tě našla sama.",
+    "variants": "Čerpat čistou vodu věští obnovu sil — zdroj funguje. Vyschlá studna mluví o vyčerpání: hlubší problém než únava — kde se doplňuješ? Spadnout do studny je ponor do hloubky nedobrovolně: emoce, na které jsi nebyl připraven. Najít pramen je jeden z nejlepších snů: nový zdroj radosti či síly.",
+    "warning": "Zbystři u snu o vyschlé studni — psychika hlásí, že zdroj potřebuje čas a déšť: doplňování není slabost, je to hydrologie. Zeptej se: co mě plnívalo — lidé, ticho, tvorba, pohyb? A kdy jsem naposledy u některého z těch pramenů seděl dost dlouho?"
+  },
+  "lucidni": {
+    "psychological": "Lucidní sen — vědomí, že sníš — je psychologicky vzácný stav: bdělost uprostřed spánku. Čte se jako rostoucí sebeuvědomění: začínáš být vzhůru i ve vlastních automatismech. Kdo si všimne, že sní, si častěji všimne i toho, že ve dne jede podle scénáře.",
+    "spiritual": "Tibetská jóga snů považuje lucidritu za cvičení na probuzení — kdo pozná iluzornost snu, blíž pozná iluzornost ulpívání. Duchovně je lucidní sen dar: vědomí si zkouší svobodu. Tradice radí: nevyužívej ji jen k létání — polož ve snu otázku.",
+    "variants": "Uvědomit si sen a létat je radost svobody — psychika slaví možnosti. Uvědomit si sen a změnit děj značí rostoucí vládu nad vlastními vzorci. Probudit se do dalšího snu (falešné probuzení) připomíná: vrstvy iluzí jsou hlubší, než se zdá. Ztratit lucidnost je normální — vědomí se cvičí postupně.",
+    "warning": "Zpozorni, pokud lucidní sny používáš k útěku od bdělého života — nejkrásnější noční svoboda nespraví den, kterému se vyhýbáš. Zeptej se: co bych ve svém životě změnil, kdybych si uvědomil, že i tady držím scénář v ruce? Protože držíš."
+  },
+  "ptak": {
+    "psychological": "Pták je myšlenka s křídly — psychologie ho čte jako touhu, plán nebo naději: co ve snu létá, to v tobě chce vzhůru. Pták v kleci je nejvýmluvnější varianta: talent či touha v zajetí rozvrhu, strachu, ohledů. Hejno je společenství — táhneš s ním, nebo proti?",
+    "spiritual": "Ptáci jsou poslové nebes — holubice nese ratolest, orel poselství, fénix vzkříšení. Duchovně značí duši a její svobodu: pták nezpívá, protože má odpověď, ale protože má píseň. Ptačí zpěv ve snu je dobré znamení — svítání blízko.",
+    "variants": "Letící pták věští svobodnou myšlenku — nech ji letět a sleduj kam. Pták v kleci se ptá: kdo zavřel dvířka — a nejsou náhodou otevřená? Zraněný pták je pošlapaná naděje: dá se vyléčit, ale potřebuje klid. Ptáče vypadlé z hnízda zrcadlí předčasný start — tvůj, nebo něčí, koho chráníš.",
+    "warning": "Zbystři, pokud ve snu ptáka chytáš a zavíráš — psychika varuje: co miluješ za let, zabiješ klecí. Zeptej se: kterou svobodnou věc (člověka, radost, nápad) se snažím vlastnit? Otevři dvířka — co je tvoje, se vrací samo."
+  },
+  "ruze": {
+    "psychological": "Růže je láska v úplnosti — květ i trny. Psychologie ji čte jako cit, který stojí za bolest: krása s podmínkami. Sen o růži zpracovává vztah v jeho dvojznačnosti — vůně a trní patří k sobě, kdo chce jedno bez druhého, dostane umělou květinu.",
+    "spiritual": "Růže je mystický květ — mariánský symbol, súfijská růže, rozeta katedrál. Duchovně značí rozvíjení duše: okvětní plátky se otevírají zevnitř a nejde to uspěchat. Zlatá růže je dokonalost, k níž se roste — trním.",
+    "variants": "Kvetoucí růže věští lásku v rozpuku — pečuj, nekontroluj. Zvadlá růže mluví o citu bez péče: voda ještě pomůže. Píchnout se o trn je malá bolest lásky: patří k ní, ale všímej si, kdo trny neodstranil, když mohl. Bílá růže je čistý cit, rudá vášeň, černá rozloučení.",
+    "warning": "Zpozorni, pokud ve snu dostáváš růže bez vůně — psychika může zrcadlit gesta bez citu: forma lásky s vyprázdněným obsahem. Zeptej se: dostávám květiny, nebo lásku? A dávám kytice, nebo přítomnost? Vůně se nedá koupit ve stánku."
+  },
+  "vzlety-padi": {
+    "psychological": "Výtah je kariéra a životní úroveň v kostce — jede nahoru, dolů, nebo se zasekl? Psychologie čte sen o výtahu jako pohyb mezi patry života: povýšení, pád, stagnace mezi patry. Zaseklý výtah je nejčastější varianta: uvíznutí v malém prostoru mezi tím, odkud jsi vyjel, a kam jsi mířil.",
+    "spiritual": "Výtah je moderní obraz starého tématu: vzestup bez schodů — rychlost výměnou za prožitek cesty. Duchovně se sen ptá: co jsi minul, když jsi projel patra bez zastavení? Někdy je zaseknutí milost — první ticho po letech.",
+    "variants": "Jízda nahoru věští vzestup — užij ho, ale pamatuj, kde je schodiště. Volný pád výtahu je strach ze ztráty postavení: rychlé nahoru umí rychlé dolů. Zaseklý výtah mluví o stagnaci: zmáčkni zvonek — říct si o pomoc je taky pohyb. Výtah jedoucí jinam, než jsi zmáčkl, zrcadlí život podle cizích tlačítek.",
+    "warning": "Zbystři, pokud se ve snu bojíš do výtahu nastoupit — psychika může zrcadlit strach z příležitosti: co kdyby to vyjelo? Zeptej se: která nabídka mi právě drží dveře? Schody jsou ctnostné — ale někdy je zdravé prostě nastoupit."
+  },
+  "zapomenute-dite": {
+    "psychological": "Zapomenuté dítě je jeden z nejsilnějších snů vůbec — a skoro nikdy není o dětech. Psychologie ho čte jako zanedbanou část tebe: talent, potřebu, radost, které jsi svěřil životu — a život je nechal v kočárku před obchodem. Panika ve snu je zdravá: něco živého čeká na návrat.",
+    "spiritual": "Vnitřní dítě je duchovní pojem s váhou — „nebudete-li jako děti…“. Sen o zapomenutém dítěti může značit volání duše po části, bez které dospělost vysychá: hravost, úžas, důvěra. Návrat k dítěti není regrese — je to záchranná výprava.",
+    "variants": "Vzpomenout si a běžet zpátky je dobrá zpráva: ještě není pozdě — nikdy není. Dítě, které mezitím vyrostlo, ukazuje, kolik času uplynulo — a že žije. Cizí zapomenuté dítě zrcadlí odpovědnost, kterou vidíš a nikdo ji nenese: proto ji vidíš ty. Klidné dítě, které čeká, je odpuštění: věří ti pořád.",
+    "warning": "Zpozorni, pokud se sen vrací — psychika trvá: něco podstatného v tobě čeká roky. Zeptej se: co mě v deseti letech dělalo šťastným — a kde to teď je? Vyzvedni si to. Dítě nezestárlo — jen ty ses naučil nechodit kolem té ulice."
+  },
+  "zlobratri": {
+    "psychological": "Rodina ve snu je vnitřní parlament — psychologie čte rodinné postavy jako hlasy v tobě: matka pečuje či kontroluje, otec chrání či soudí, sourozenec soupeří či doprovází. Sen o rodině často nezpracovává rodinu skutečnou, ale její otisk: vzorce, které si neseš dál.",
+    "spiritual": "Rodová linie je v tradicích řeka — neseš vodu předků: dary i dluhy. Sen o rodinných příslušnících může značit téma rodu: co se opakuje přes generace a čeká, kdo to uzdraví. Smíření s rodiči ve snu — i zemřelými — je hluboká vnitřní práce.",
+    "variants": "Hádka s rodičem zrcadlí konflikt s vnitřní autoritou: čí hlas ti říká „takhle ne“? Sourozenec ve snu bývá srovnávání: kdo dostal víc? Rodinná oslava mluví o sounáležitosti — nebo její touze. Rodina u stolu beze slov je nevyslovené: všichni vědí, nikdo neřekne.",
+    "warning": "Zbystři, pokud se ve snech k rodině vracíš do starého bytu a starých rolí — psychika ukazuje: v některé místnosti jsi pořád dítě. Zeptej se: který rodinný vzorec žiju dodnes, ačkoli mi nikdy nepatřil? Rodinu nevybíráš — ale dědictví se přijímá s výhradami."
+  },
+  "svitani": {
+    "psychological": "Svítání je konec noci — psychologie ho čte jako obrat: po těžkém období přichází světlo, a sen ho ohlašuje dřív, než ho vidíš v bdění. Šero před úsvitem je nejtmavší — pokud sen zachytil první paprsek, psychika už ví, že se láme. Věř jí.",
+    "spiritual": "Úsvit je v tradicích hodina milosti — mnišské chvály začínají za tmy, aby dozněly do světla. Duchovně značí naději se zárukou: slunce nevychází proto, že si to zasloužíš, ale proto, že vychází. To je nejhlubší útěcha, jaká existuje.",
+    "variants": "Pozorovat východ slunce věští nový začátek — vstávej s ním. Svítání po probdělé noci je odměna vytrvalosti: dočkal ses. Růžová obloha značí něhu přicházejícího období. Svítání, které nepřichází, zrcadlí netrpělivost: noc má svou délku — ale ne nekonečnou.",
+    "warning": "Zpozorni, pokud ve snu před svítáním zavíráš okenice — psychika může zrcadlit nedůvěru k dobrému: zvyk na tmu. Zeptej se: umím ještě přijmout, že se věci lepší? Po dlouhé noci oči bolí ze světla — ale to není důvod nevyjít ven."
+  },
+  "blesk": {
+    "psychological": "Blesk je náhlý vhled — psychologie ho čte jako myšlenku, která přišla celá najednou: prozření, šok, náhlé pochopení. Osvětlí krajinu na vteřinu — a ty pak skládáš, co jsi viděl. Sen o blesku často doprovází období, kdy se něco láme rychle: rozhodnutí, vztah, jistota.",
+    "spiritual": "Blesk je v tradicích boží podpis — Zeus, Perun, osvícení. Duchovně značí sílu shora, která nejde naplánovat: milost i soud v jednom. Tarotová Věž padá po úderu blesku — a její pád je osvobození: co stálo na lži, nemělo stát.",
+    "variants": "Blesk na obzoru věští blížící se změnu — počítej vteřiny, bouře má vzdálenost. Blesk, který udeří vedle, je varování s milostí: tentokrát se učíš z cizí rány. Zasažen bleskem znamená radikální prozření: v jednom okamžiku víš — a nejde odvědět. Kulový blesk je vzácný: nevypočitatelná energie v uzavřeném prostoru — rodina, tým.",
+    "warning": "Zbystři, pokud ve snech blesky bijí do stejného místa — psychika opakuje vhled, který odmítáš: pravda se hlásí opakovaně. Zeptej se: co jsem v záblesku už dvakrát zahlédl a potmě zase založil? Potřetí to může zapálit."
+  },
+  "krabice": {
+    "psychological": "Krabice je odložený obsah — psychologie ji čte jako zabalené téma: vzpomínka, emoce, plán, který jsi uložil „na potom“. Zavřená krabice v rohu snu je výmluvná: víš o ní. Otevřít krabici znamená konfrontaci s obsahem — a psychika ji nabízí, když je čas.",
+    "spiritual": "Pandořina skříňka i archa úmluvy — krabice v tradicích střeží obojí: co nemělo ven, i co je nejsvětější. Duchovně se sen ptá: co opatruješ, a co jen skladuješ? Naděje zůstala na dně skříňky — i to patří k příběhu.",
+    "variants": "Otevřít krabici a najít poklad značí odložený dar: talent či vzpomínka, na které jsi zapomněl. Prázdná krabice mluví o očekávání bez obsahu — kdo ti ji zabalil? Krabice, která se nedá otevřít, je téma, na které ještě nemáš nástroj: čas taky nástroj. Stěhovací krabice jsou život v přechodu: co si bereš, co necháš?",
+    "warning": "Zpozorni, pokud ve snu krabice hromadíš bez otevírání — psychika zrcadlí odkládání: sklad plný „potom“. Zeptej se: kterou jednu krabici otevřu tento týden? Stačí jedna — sklady se vyklízejí po kusech, ne najednou."
+  },
+  "buh": {
+    "psychological": "Setkání s Bohem či vyšší bytostí ve snu je psychologicky setkání s absolutnem v sobě — instancí smyslu, která přesahuje ego. Přichází v krizích a zlomech: psychika volá nejvyšší patro. Nezáleží na vyznání — sen o vyšší bytosti mívá váhu, kterou si pamatuješ léta.",
+    "spiritual": "Tradice berou takové sny vážně — Bůh mluví ve snech od Genesis po dnešek. Poselství bývá prosté: jsi viděn, jsi nesen, jdi. Světlo, hlas či přítomnost beze slov — forma je vedlejší, pokoj po probuzení je pečeť pravosti.",
+    "variants": "Hlas beze slov, kterému rozumíš, je nejčastější forma — zapiš, co řekl. Světlo, které nezraňuje, je přítomnost: nic nechce, jen je. Prosit a nedostat odpověď zrcadlí fázi ticha — i ta patří k cestě. Hněvivý bůh bývá projekce: čí přísnost nosíš jako boží?",
+    "warning": "Zbystři, pokud ti snová vyšší bytost přikazuje věci, které škodí tobě či druhým — to není hlas nebes, ale přestrojená úzkost či přísnost. Skutečné duchovní sny nesou pokoj, ne teror. Zeptej se: po probuzení zůstal klid, nebo strach? Podle ovoce poznáš."
+  },
+  "osud": {
+    "psychological": "Kolo štěstí a osud ve snu zpracovávají kontrolu — psychologie čte tento sen jako vyjednávání s náhodou: kolik z mého života řídím a kolik se mnou točí? Přichází při zvratech: výhra, ztráta, nečekaná změna. Zdravá odpověď není fatalismus ani iluze kontroly — ale tanec s tím, co přišlo.",
+    "spiritual": "Kolo osudu je tarotová karta cyklů — co je nahoře, bude dole, a naopak: nic netrvá, ani zima, ani sláva. Duchovně sen připomíná: nejsi kolo, jsi ten, kdo na něm jede — a střed se točí pomaleji než obvod. Blíž středu je klid.",
+    "variants": "Točící se kolo věští změnu fáze: připrav se, ale nepanikař — je to kolo, ne zeď. Být připoután ke kolu zrcadlí pocit vleku: život se děje tobě. Roztočit kolo vlastní rukou je odvaha risku: víš, že nevíš. Kolo, které se zastaví na tvém čísle, je synchronicita — všímej si, co následovalo.",
+    "warning": "Zpozorni, pokud ve snu na kolo jen zíráš a čekáš — psychika může zrcadlit pasivitu převlečenou za pokoru: „stejně to nějak dopadne“. Zeptej se: co z mého života jsem odevzdal náhodě, ačkoli to chtělo rozhodnutí? Osud rád spolupracuje — ale nerad supluje."
+  },
+  "kletba": {
+    "psychological": "Kletba je přesvědčení s cizím podpisem — psychologie ji čte jako zvnitřněnou negativní větu: „nikdy nic nedokážeš“, „u nás se nikdo nevdala šťastně“, „na tohle nemáme“. Sen o kletbě zpracovává moc, kterou taková věta má — a fakt, že ji kdysi vyslovil někdo konkrétní.",
+    "spiritual": "Tradice zná kletby i jejich rušení — a ruší se vždy stejně: pojmenováním, světlem, odmítnutím dědictví. Duchovně je kletba energie, která trvá jen z výživy strachem. Požehnání je silnější — ale musí se vyslovit nahlas.",
+    "variants": "Být proklet zrcadlí pocit predestinace k neúspěchu: kdo tu větu řekl první? Zlomit kletbu je silný sen: psychika našla cestu — zapamatuj si jak. Prokletý předmět je zděděné břemeno: dům, majetek, role. Proklínat někoho ve snu je vlastní hořkost: jed pitý po lžičkách.",
+    "warning": "Zbystři, pokud ve snu kletbě věříš — psychika ukazuje, že stará věta pořád platí ve tvém systému. Zeptej se: která věta o mně se tváří jako fakt, a přitom je to jen citát? Napiš ji. Podepiš autora. A přestaň ji vyplácet."
+  },
+  "pozehnani": {
+    "psychological": "Požehnání je přijetí vyslovené nahlas — psychologie ho čte jako hlubokou potřebu: být schválen, poslán, podržen. Sen o požehnání často přichází, když v bdělém životě chybí: rodič nikdy neřekl „jsem na tebe hrdý“, a duše si to došla vysnít. To není slabost — to je sebezáchova.",
+    "spiritual": "Požehnání je v tradicích přenos síly — ruka na hlavě, slovo na cestu. Duchovně platí: požehnání se nedá vzít, jen předat. Sen o přijatém požehnání je skutečná událost — něco v tobě dostalo povolení růst.",
+    "variants": "Dostat požehnání od rodiče — i zemřelého — je smíření napříč časem: přijmi ho, platí. Žehnat někomu ve snu značí tvou vlastní zralost: máš z čeho dávat. Požehnání od neznámého je milost bez adresy: taky se počítá. Odmítnuté požehnání zrcadlí pýchu nebo nedůvěru: proč nemůžeš přijmout dobré?",
+    "warning": "Zpozorni, pokud ve snu o požehnání prosíš a hledáš ho u lidí, kteří ho nikdy nedali — psychika ukazuje studnu, do které chodíš s vědrem marně léta. Zeptej se: kdo mi požehnat umí a chce — a proč stojím frontu jinde? Požehnej si sám. Smíš. Funguje to."
+  },
+  "hvezdny-prach": {
+    "psychological": "Třpyt a hvězdný prach jsou drobné zázraky — psychologie je čte jako obnovený smysl pro krásu: období, kdy si zase všímáš detailů. Ale třpyt umí i klamat: ne všechno, co se leskne, sytí. Sen se ptá: okouzlení, nebo pozlátko?",
+    "spiritual": "Jsme prach hvězd — doslova: prvky těla vznikly v supernovách. Duchovně sen připomíná původ: v obyčejném dni nosíš vesmírnou historii. Třpyt na cestě je stopa: něco posvátného tudy šlo — a ty sis všiml.",
+    "variants": "Třpytící se cesta věští období drobných radostí — sbírej je, sčítají se. Prach hvězd na rukou značí dotek inspirace: tvoř, dokud svítí. Pozlátko, které se loupe, varuje: co vypadalo vzácně, je natřené. Sníh třpytu padající z nebe je milost plošná — všimni si, na co dopadá.",
+    "warning": "Zbystři, pokud ve snu třpyt sbíráš do krabic — psychika varuje: okouzlení se nedá skladovat, jen prožívat. Zeptej se: nehromadím zážitky místo života? Fotka západu slunce není západ slunce."
+  },
+  "kometa": {
+    "psychological": "Kometa je vzácná příležitost s ohonem — psychologie ji čte jako šanci, která se neopakuje často: přichází zdaleka, zazáří, odletí. Sen o kometě zpracovává jedinečnost okamžiku: teď, nebo za sedmdesát let. Padající hvězda je totéž v malém: přání s krátkým oknem.",
+    "spiritual": "Komety ohlašovaly krále i převraty — nebeská interpunkce dějin. Duchovně značí znamení času: něco jedinečného prochází tvou oblohou. Přání při padající hvězdě je stará modlitba: vyslov ho celé — vesmír nečte zkratky.",
+    "variants": "Jasná kometa věští mimořádnou příležitost: rozpoznáš ji podle toho, že se jí bojíš. Kometa, kterou vidíš jen ty, mluví o vizi, kterou okolí nesdílí — ještě. Déšť meteorů je hojnost šancí: nechytej všechny, vyber tři. Kometa mířící k zemi je dramatická změna: dopad přeuspořádá krajinu.",
+    "warning": "Zpozorni, pokud ve snu kometu jen fotíš — psychika zrcadlí diváctví: příležitosti dokumentuješ, místo abys je žil. Zeptej se: která šance právě letí — a co uděláém dřív, než zmizí za obzor? Komety se nevracejí na zavolání."
+  },
+  "blesk-karta": {
+    "psychological": "Blesk z čistého nebe je šok bez předpovědi — psychologie ho čte jako událost, kterou nešlo vidět přicházet: výpověď, rozchod, zpráva. Sen zpracovává otřes a jeho lekci: ne všechno se dá řídit — a přesto se dá ustát. Čisté nebe před bleskem není lež, jen neúplná informace.",
+    "spiritual": "Tarotová Věž — blesk boří, co stálo na písku: duchovně je náhlý úder demolice iluze. Bolí to, ale staví se líp na pravdě než na omítce. Co blesk nezboří, to bylo pravé — inventura zadarmo, i když draze zaplacená.",
+    "variants": "Úder do vlastního domu značí otřes v základech: rodina, jistoty, identita — přežils, teď stavěj. Blesk, který osvětlí krajinu, je šok s darem: v záblesku jsi viděl pravdivou mapu. Blesk do stromu míří na rodovou linii: něco starého se láme. Přečkat bouři ve sklepě je moudrost: ne každý úder se má sledovat z okna.",
+    "warning": "Zbystři, pokud po snovém blesku odmítáš vyjít z domu — psychika zrcadlí trauma: jeden úder přepsal důvěru v nebe. Zeptej se: žiju pořád v pohotovosti? Blesky jsou vzácné — a deštníky proti nim neexistují. Žít se dá jen s tím rizikem."
+  },
+  "zrcadlo-cele": {
+    "psychological": "Rozbité zrcadlo je roztříštěný sebeobraz — psychologie ho čte jako identitu po nárazu: rozvod, ztráta role, selhání. Střepy ukazují tvář po kouskách — a právě to je úkol: neslepit starý obraz, ale poskládat pravdivější. Sedm let neštěstí je pověra; sedm týdnů skládání je realita.",
+    "spiritual": "Zrcadlo je nástroj pravdy — rozbité mluví o konci jedné verze: obraz, kterému jsi věřil, neunesl náraz. Duchovně je to milost v hrubém balení: iluze se rozbíjejí, pravda ne. Co vidíš ve střepu, je pořád ty — jen bez rámu.",
+    "variants": "Rozbít zrcadlo vlastní rukou značí vzpouru proti obrazu: už nechceš být, kým ses tvářil. Střep, který zraňuje, je ostrá pravda o sobě: zachází se s ní opatrně. Zrcadlo prasklé samo od sebe mluví o změně, která dozrála bez tvého zásahu. Nové zrcadlo je nový sebeobraz: kupuješ ho ty — pozor, ať ho nevybírá okolí.",
+    "warning": "Zpozorni, pokud se ve snu odmítáš podívat i do střepů — psychika zrcadlí vyhýbání: po nárazu ses přestal dívat úplně. Zeptej se: kdo jsem teď, po tom všem? Odpověď se skládá po kouskách — ale jen když se díváš."
+  },
+  "hodiny-piskove": {
+    "psychological": "Přesýpací hodiny jsou čas viditelný — psychologie je čte jako vědomí konečnosti: zrnka padají a jde to vidět. Sen o přesýpacích hodinách přichází při termínech a bilancování: kolik zbývá — v projektu, ve vztahu, v etapě? Obrátit hodiny je naděje: čas se dá začít znovu počítat.",
+    "spiritual": "Memento mori — přesýpací hodiny na starých obrazech připomínají smrtelnost ne pro strach, ale pro vzácnost: co je konečné, je cenné. Duchovně sen říká: přítomné zrnko je jediné, které padá — minulá jsou dole, budoucí nahoře, tvoje je to uprostřed.",
+    "variants": "Poslední zrnka věští finále: dokonči, co má být dokončeno — důstojně. Obrátit hodiny značí nový cyklus: smíš začít znovu — i po sedmdesáté. Zaseknutý písek mluví o zamrzlém čase: co se má sypat, stojí — protřep situaci. Rozbité přesýpací hodiny jsou konec odpočítávání: čas té věci vypršel — a to je taky odpověď.",
+    "warning": "Zbystři, pokud ve snu na hodiny jen zíráš — psychika zrcadlí paralýzu z termínu: sledování písku ho nezpomalí. Zeptej se: co udělám s dnešními zrnky? Čas se nedá šetřit — jen utratit. Rozdíl je v tom, za co."
+  },
+  "kotva": {
+    "psychological": "Kotva je stabilita z rozhodnutí — psychologie ji čte jako to, co tě drží na místě: hodnota, vztah, domov. Dobrá kotva drží v bouři; špatná brání vyplout. Sen o kotvě se ptá, kterou máš: spuštěnou z rozumu, nebo zarostlou do dna ze strachu?",
+    "spiritual": "Kotva je starokřesťanský symbol naděje — jistota zakotvená jinde než v okolnostech. Duchovně značí střed, který drží, když se hladina zmítá: praxe, víra, vztah. Kotva se spouští vědomě — to je rozdíl mezi zakotvením a uvíznutím.",
+    "variants": "Spustit kotvu značí rozhodnutí zůstat: tady, s tímhle člověkem, u téhle práce — vědomě. Zvednout kotvu je odvaha vyplout: přístav byl dobrý, cesta volá. Přetržený řetěz mluví o ztrátě jistoty: co tě drželo, povolilo — hledej novou kotvu, ne novou bouři. Kotva zarostlá do dna je jistota, která se stala pastí.",
+    "warning": "Zpozorni, pokud ve snu kotvu nemůžeš zvednout — psychika zrcadlí vazbu, která přerostla v uvíznutí: jistota silnější než život. Zeptej se: co by se stalo, kdybych vyplul? Když je odpověď „nevím, a to mě děsí“, řetěz už není kotva — je to okov."
+  },
+  "majak": {
+    "psychological": "Maják je orientace v bouři — psychologie ho čte jako pevný bod: hodnotu, člověka či cíl, podle kterého se řídíš, když moře zuří. Sen o majáku přichází v krizích a nese otázku: co je tvoje světlo? A druhou, tišší: nejsi pro někoho majákem ty?",
+    "spiritual": "Maják stojí na skále a svítí bez ptaní — duchovně je obraz služby: nesvítí pro sebe, a přesto ho bouře nezhasne. Světlo majáku nevede do přístavu — jen říká, kde jsou skály. Zbytek je tvoje plavba: i to je duchovní lekce.",
+    "variants": "Vidět maják v bouři věští záchranu orientace: drž kurz podle světla, ne podle vln. Zhasnutý maják mluví o ztrátě opory: kdo svítíval — a co ho zhaslo? Být strážcem majáku je role: svítíš pro druhé — kdo svítí tobě? Maják na dohled, ale skály mezi vámi: cesta k jistotě vede přes nebezpečí — pomalu a podle mapy.",
+    "warning": "Zbystři, pokud ve snu plaveš k majáku místo podle něj — psychika zrcadlí častý omyl: opora není cíl. Zeptej se: nechci po svém majáku (partnerovi, mentorovi, víře), aby byl přístavem? Maják ukazuje cestu — dojet musíš sám."
+  },
+  "zvon": {
+    "psychological": "Zvon je zvuk, který nejde přeslechnout — psychologie ho čte jako volání: něco ohlašuje čas. Svolává, varuje, oslavuje, loučí se — kontext snu určuje význam, ale společné je jedno: zvon zve k pozornosti. Co ve tvém životě právě zvoní — a jak dlouho už?",
+    "spiritual": "Zvony svolávají k modlitbě a vyhánějí temnotu — jejich hlas je v tradici posvěcený: zvuk, který čistí prostor. Duchovně značí probuzení: gong začíná meditaci, zvon ohlašuje proměnu. Komu zvoní hrana, tomu končí kapitola — a začíná jiná.",
+    "variants": "Slavnostní vyzvánění věští radostnou událost — něco se završuje. Umíráček mluví o konci: pieta je namístě, panika ne. Zvonek u dveří je návštěva: něco nového žádá vstup — otevřeš? Prasklý zvon zrcadlí ohlášení, kterému nikdo nevěří: kolikrát se dá volat marně?",
+    "warning": "Zpozorni, pokud ve snu zvon slyšíš a nejdeš — psychika počítá přeslechnutá volání: tělo, vztah, touha zvoní opakovaně. Zeptej se: na které zvonění jsem si udělal budík „odložit“? Zvony neumí zvonit tišeji — jen přestat."
+  },
+  "klic-zlaty": {
+    "psychological": "Zlatý klíč je přístup k nejcennějšímu — psychologie ho čte jako řešení vzácné kvality: ne další z klíčenky, ale ten pravý. Najít zlatý klíč znamená objevit přístup k tomu, co bylo léta zamčené: nadání, vzpomínka, vztah. Otázka snu: víš, kterému zámku patří?",
+    "spiritual": "Zlatý klíč otevírá komnaty, do kterých se nechodí denně — v pohádkách třináctou komnatu, v mystice bránu poznání. Duchovně značí zasvěcení: dostáváš přístup, protože jsi dozrál. S klíčem přichází odpovědnost: ne všechno otevřené se dá zavřít.",
+    "variants": "Dostat zlatý klíč značí důvěru či dar: někdo (život) ti otevírá dveře výš. Najít ho v hlíně mluví o pokladu pod nánosem všednosti: hledej doma, ne daleko. Klíč, který pasuje do všech zámků, je vzácný sen o univerzálním nástroji: tvoje podstata otevírá víc, než myslíš. Ztratit zlatý klíč — zpětně zjistíš, které dveře zůstaly dovřené.",
+    "warning": "Zbystři, pokud zlatý klíč ve snu schováváš — psychika zrcadlí přístup, který máš a nepoužíváš: dar pod matrací. Zeptej se: ke kterým dveřím mám klíč a nechodím tam? Zlato v šuplíku je plech."
+  },
+  "mec": {
+    "psychological": "Meč je vůle a rozlišení — psychologie ho čte jako schopnost oddělit: pravdu od lži, svoje od cizího, ano od ne. Meč v ruce znamená připravenost k rozhodnutí; meč nad hlavou tlak, který visí. Dvojsečnost je podstata: každé říznutí má dvě strany — i tebe.",
+    "spiritual": "Meč se vytahuje z kamene a předává v jezeře — v tradicích je symbol povolání a čistoty úmyslu: Excalibur nenosí kdokoli. Duchovně značí sílu slova a mysli: tarotová esa mečů jsou pravda, která seká. Meč se kove v ohni — tvoje ostří taky.",
+    "variants": "Tasit meč značí konflikt přijatý čelně: konečně. Zlomený meč mluví o vůli po porážce: kove se nová — z lepší oceli. Meč visící nad hlavou je Damoklův: moc s neustálou hrozbou — čí trůn to vlastně je? Předat meč znamená předat odpovědnost: komu a proč?",
+    "warning": "Zpozorni, pokud ve snu mečem seká někdo za tebe — psychika zrcadlí rozhodnutí delegovaná: tvoje bitvy bojují jiní — a vybírají si daň. Zeptej se: které „ne“ za mě říká někdo jiný? Meč se nepůjčuje. Ruka se cvičí."
+  },
+  "pohár": {
+    "psychological": "Pohár je kapacita přijímat — psychologie ho čte jako citovou nádobu: plný pohár hojnost, prázdný vyčerpání, přetékající zahlcení. Sen o poháru se ptá na stav tvé nádrže — a na to, kdo z ní pije. Rozbitý pohár je důvěra po nárazu: nádoba se lepí, ale pamatuje.",
+    "spiritual": "Grál je pohár pohárů — hledání celý život, nalezení v okamžiku čistoty: otázka „komu grál slouží?“ je klíč. Duchovně je pohár symbol přijímání milosti: kalich se drží oběma rukama. Přetékající pohár je požehnání: „kalich můj přetéká“.",
+    "variants": "Pít z plného poháru věští období sycení: přijímej beze studu. Prázdný pohár mluví o vyschlém zdroji: kdo tě má naplňovat — a ví o tom? Nabízený pohár je nabídka s obsahem: přivoň, než vypiješ. Rozlitý pohár je promarněná plnost: nalito bylo — kam se to vsáklo?",
+    "warning": "Zbystři, pokud ve snu naléváš z prázdného — psychika popisuje službu z vyčerpání: rozdáváš dno. Zeptej se: kdo naplňuje můj pohár? Pokud ticho, začni tam. Z prázdné nádoby se nenalije ani kapka lásky — fyzika platí i pro duši."
+  },
+  "hvezdarna": {
+    "psychological": "Hvězdárna a dalekohled jsou touha dohlédnout — psychologie je čte jako potřebu perspektivy a plánu: zaostřuješ na věci vzdálené v čase i prostoru. Sen o dalekohledu se ptá: na co se díváš — a co ti zatím uniká pod nohama, když hledíš do dálky?",
+    "spiritual": "Hvězdárna je chrám měření nebes — spojení vědy a úžasu: kdo pozoruje hvězdy, měří vlastní malost i velikost zároveň. Duchovně značí kontemplaci: pravidelné dívání se výš. Zaostřený obraz je vhled: mlhovina se rozpadla na hvězdy.",
+    "variants": "Dívat se dalekohledem na jasnou oblohu věští ujasnění plánů: vidíš dál než včera. Rozmazaný obraz mluví o cíli, který ještě nemá ohnisko: netlač, zaostřuj. Objevit novou hvězdu je silný sen: v tvém životě se objevila možnost, kterou nikdo nezmapoval. Zavřená kopule zrcadlí odloženou vizi: kdo zatáhl střechu?",
+    "warning": "Zpozorni, pokud ve snu žiješ u dalekohledu — psychika varuje před životem v budoucnosti: plány místo přítomnosti. Zeptej se: kolik času denně trávím „až jednou“? Hvězdy počkají — dnešek ne."
+  },
+  "labyrint": {
+    "psychological": "Labyrint s řešením — na rozdíl od bludiště má jedinou cestu: vede středem a ven. Psychologie ho čte jako proces, který se nedá zkrátit, jen projít: terapie, truchlení, zrání. Sen o labyrintu nese útěchu: nemůžeš se ztratit — jen to trvá déle, než chceš.",
+    "spiritual": "Labyrint v katedrále se prochází po kolenou — poutní cesta v miniatuře: duchovně značí důvěru v proces. Cesta se klikatí zdánlivě pryč od středu právě ve chvíli, kdy jsi mu nejblíž — to je nejdůležitější lekce labyrintu. Střed existuje. Jdi.",
+    "variants": "Jít labyrintem klidně značí důvěru: proces pracuje, i když to vypadá jako oklika. Střed labyrintu je setkání: s čím? Zapiš si to. Vracet se od středu ven je integrace: poznání se nese do života. Minotaurus uvnitř je strach ve středu procesu: krmí se odklady — a Ariadnina nit drží.",
+    "warning": "Zbystři, pokud v labyrintu ve snu hledáš zkratky přes zdi — psychika zrcadlí netrpělivost s procesem: truchlení, léčba a zrání nemají turbo. Zeptej se: kterému procesu nevěřím, že vede středem? Klikatá cesta není chyba systému. Je to systém."
+  },
+  "pyramida": {
+    "psychological": "Pyramida je dílo přesahující život — psychologie ji čte jako velké dílo: projekt, rodinu, odkaz, který stavíš po kamenech. Základna nese vrchol: sen se ptá na tvoje základy — šíře dole rozhoduje o výšce nahoře. Stavíš, nebo jen obdivuješ cizí?",
+    "spiritual": "Pyramida spojuje zemi se špičkou nebe — hrobka i brána hvězd: v tradicích místo zasvěcení a přechodu. Duchovně značí hierarchii vědomí: patra se prochází postupně, komora pokladů je uvnitř, ne nahoře. Zlatý vrcholek nese světlo za celou stavbu.",
+    "variants": "Stavět pyramidu značí trpělivé velké dílo: kámen denně stačí. Vejít dovnitř je sestup do vlastní hloubky: komory paměti, rodové chodby. Vrchol pyramidy věští završení dlouhé práce. Rozpadající se pyramida mluví o odkazu bez údržby: i věčné stavby potřebují péči.",
+    "warning": "Zpozorni, pokud ve snu stavíš pyramidu sám — psychika zrcadlí dílo nad síly jednotlivce: faraon měl dělníky. Zeptej se: pro které svoje „velké dílo“ odmítám pomoc? Odkaz se staví generacemi rukou — i proto přežívá."
+  },
+  "sfinga": {
+    "psychological": "Sfinga je hádanka, kterou musíš rozlousknout sám — psychologie ji čte jako životní otázku, na kterou nejde odpovědět cizí odpovědí: kdo jsem, co chci, kam jdu. Sfinga nepustí dál bez odpovědi — a to je smysl: některé brány mají hlídat, dokud nedozraješ.",
+    "spiritual": "Sfinga střeží prahy chrámů a zná odpověď předem — zkouší, ne trápí. Duchovně značí iniciační otázku: odpověď „člověk“ zněla u Théb — u tvé sfingy zní jinak a jen ty ji znáš. Mlčení sfingy je taky řeč: otázka ještě nedozněla.",
+    "variants": "Stát před sfingou značí životní otázku, kterou nejde obejít: neodpovíš — nepokračuješ. Odpovědět správně věští průchod: nová etapa se otevírá. Sfinga, která se usměje, je vzácnost: odpověď byla lepší než správná — byla tvoje. Utéct před hádankou znamená potkat ji dál v horším převleku.",
+    "warning": "Zbystři, pokud před snovou sfingou recituješ cizí odpovědi — psychika zrcadlí život podle šablon: správně vyplněné kolonky, nezodpovězená otázka. Zeptej se: na kterou otázku svého života odpovídám citáty? Sfinga pozná plagiát po čichu."
+  },
+  "vlk-samotar": {
+    "psychological": "Vlk samotář je nezávislost s cenou — psychologie ho čte dvojace: zralá autonomie, nebo racionalizovaná izolace? Vlk odchází od smečky z důvodu — hledá teritorium, nebo byl vyhnán. Sen se ptá poctivě: je tvoje samota volba, nebo obrana, která zapustila kořeny?",
+    "spiritual": "Poustevník je duchovní vlk samotář — cesta stranou má v tradici čestné místo: ticho, které se nedá najít ve smečce. Ale i poustevník má hosty. Duchovně sen říká: samota je klášter, ne bunkr — rozdíl je v otevřených dveřích.",
+    "variants": "Klidný vlk jdoucí vlastní stopou značí zralou nezávislost: víš, kam jdeš, a smečka není nutná. Vytí po smečce zrcadlí skrytý stesk: nezávislost bolí víc, než přiznáváš. Potkat jiného samotáře je naděje: dva vlci nejsou smečka — jsou začátek. Zraněný samotář je vážný obraz: bez smečky se rány líží déle.",
+    "warning": "Zpozorni, pokud si ve snu jako vlk zakazuješ přiblížit k ohni — psychika zrcadlí hrdost, která zaměnila soběstačnost za osamění. Zeptej se: kdy jsem naposledy přijal pozvání? Samotář z volby umí sedět u cizího ohně — jen tam nebydlí."
+  },
+  "jelen": {
+    "psychological": "Jelen je důstojná plachost — psychologie ho čte jako citlivost, která nese korunu: jemnost není slabost. Sen o jelenovi často míří na zranitelné a vznešené v tobě: to, co se ukazuje jen v bezpečném lese. Laň přidává něhu a mateřskou plachost: co chráníš útěkem?",
+    "spiritual": "Bílý jelen vede hrdiny hlouběji do lesa, než chtěli — v tradicích je posel jiného světa: zjeví se, komu má. Jelen s křížem mezi parožím obrátil lovce Huberta. Duchovně značí vedení, které se nedá ulovit — jen následovat.",
+    "variants": "Jelen na mýtině je vzácné setkání: zastav se — něco vznešeného se ukázalo. Prchající jelen zrcadlí plachost: tvou, nebo někoho, koho lovíš příliš hlučně. Jelen s mohutným parožím značí zralou sílu, která nemusí útočit. Ulovený jelen je těžký obraz: co jemného bylo obětováno výkonu?",
+    "warning": "Zbystři, pokud ve snu jelena pronásleduješ — psychika říká: plaché věci se nechytají během. Zeptej se: koho nebo co plaším svou intenzitou? Jelen přijde na mýtinu sám — k tomu, kdo umí sedět tiše."
+  },
+  "meduza": {
+    "psychological": "Medúza je krása, která umí spálit — psychologie ji čte jako průsvitné emoce s žahavými vlákny: city, které vypadají éterické, dokud se jich nedotkneš. Sen o medúze často míří na pasivní zraňování: nikdo nic neudělal — a přesto to pálí. Vlákna visí hlouběji, než je vidět.",
+    "spiritual": "Medúza pluje s proudem a přesto tvaruje moře — duchovně je obraz odevzdanosti s vlastní podstatou: nemá kosti, a přežila věky. Průsvitnost je její pravda: nic neskrývá — ani žahavost. To je lekce upřímnosti: celý, i s vlákny.",
+    "variants": "Plout mezi medúzami značí prostředí pasivní agrese: nikdo neútočí, všichni žahají. Spálení medúzou je bolest z nečekaného zdroje: éterický člověk, jedovatá stopa. Světélkující medúza je krása hlubin: i tma má své lampy. Vyplavená medúza mluví o citlivosti mimo své prostředí: kde jsi na suchu ty?",
+    "warning": "Zpozorni, pokud ve snu medúzy plují v hejnech — psychika popisuje atmosféru, ne jednotlivce: prostředí, kde bolest nikdo nezpůsobil a všichni ji cítí. Zeptej se: kde se pohybuji mezi žahavými vlákny? Někdy je řešení prosté — jiná zátoka."
+  },
+  "delphi": {
+    "psychological": "Delfín je inteligentní radost — psychologie ho čte jako hravost, která není infantilní: chytrá lehkost, sociální inteligence, radost jako dovednost. Sen o delfínovi často přichází jako lék: psychika předepisuje hru. Delfín provází lodě — kdo provází tebe?",
+    "spiritual": "Delfín zachraňoval tonoucí od antiky — posvátné zvíře Apollónovo: průvodce duší přes vody. Duchovně značí pomoc, která přichází s úsměvem: záchrana nemusí být vážná. Delfíni dýchají vědomě — i to je lekce: radost je nádech, který se nesmí zapomenout.",
+    "variants": "Plavat s delfíny je jeden z nejradostnějších snů: důvěra a hra v hlubině — vzácný dar. Delfín provázející loď věští dobrou plavbu: projekt má průvodce. Delfín volající na pomoc obrací role: radost tvého života potřebuje záchranu. Delfín ve vaně je úsměvný obraz velké duše v malém prostoru: pusť ho do moře.",
+    "warning": "Zbystři, pokud ve snu delfína pozoruješ jen z paluby — psychika zve do vody: radost se nedá sledovat, jen plavat. Zeptej se: kdy jsem si naposledy hrál bez účelu? Delfín je odpověď na otázku, kterou sis zapomněl položit."
+  },
+  "fénix": {
+    "psychological": "Fénix je obnova z totálního konce — psychologie ho čte jako resilienci nejvyššího stupně: shořelo všechno, a právě proto je možný celý nový začátek. Sen o fénixovi přichází po velkých koncích: rozvod, krach, ztráta. Nese tvrdou útěchu: popel je úrodný.",
+    "spiritual": "Fénix vstává z popela vlastní hranice — v tradicích symbol vzkříšení a nesmrtelné podstaty: co je pravé, neshoří. Duchovně značí zasvěcení ohněm: nejsi po požáru menší — jsi očištěný na kost, a kost je pevná.",
+    "variants": "Vidět fénixe vzlétat věští obnovu: začala — i když zatím jen v peří. Hořící fénix je fáze konce: neodvracej se, tohle patří k cyklu. Sbírat popel mluví o inventuře po ztrátě: co zůstalo, je základ. Fénixovo pero je dar naděje: důkaz, že vzkříšení existuje — schovej si ho.",
+    "warning": "Zpozorni, pokud ve snu bráníš ohni dohořet — psychika zrcadlí záchranu něčeho, co má shořet: konec, který prodlužuješ. Zeptej se: co držím v plamenech za cíp? Fénix nevstává z polospáleného — cyklus chce celý oheň i celé vzkříšení."
+  },
+  "jednorozec": {
+    "psychological": "Jednorožec je čistota, která se nedá chytit — psychologie ho čte jako ideál: vzácnou kvalitu, kterou hledáš ve světě i v sobě — nevinnost, ryzost, zázrak. Sen o jednorožci se ptá: věříš ještě na vzácné věci? A nechceš je náhodou vlastnit, místo potkávat?",
+    "spiritual": "Jednorožce spatří jen čisté srdce — středověká legenda je duchovní test: zjevuje se, komu se chce zjevit. Roh jednorožce čistí otrávenou vodu: vzácná ryzost uzdravuje prostředí, do kterého vstoupí. I jeden ryzí člověk pročistí studnu.",
+    "variants": "Spatřit jednorožce v lese je milost: něco vzácného se ti ukázalo — nech to divoké. Jednorožec, který ti položí hlavu do klína, je legenda o důvěře: ryzost si tě vybrala. Chytat jednorožce znamená chtít vlastnit ideál: uteče — správně. Falešný jednorožec (kůň s nasazeným rohem) varuje: někdo prodává ryzost z e-shopu.",
+    "warning": "Zbystři, pokud jednorožce ve snu nevidíš, ač stojí vedle — psychika říká: cynismus zaclonil výhled. Zeptej se: kdy jsem přestal věřit, že existují ryzí lidé a čisté úmysly? Jednorožci nevymřeli — jen se nezjevují unaveným očím."
+  },
+  "strom-zivota": {
+    "psychological": "Strom života je celek tvého systému — psychologie ho čte jako mapu: kořeny (původ), kmen (já), větve (vztahy a díla), plody (výsledky). Sen o stromu života bývá bilanční: v jakém stavu je celek? Která větev nese, která schne — a pijí kořeny?",
+    "spiritual": "Strom života roste v Edenu, v kabale i u Vikingů — světová osa spojující podsvětí, zemi a nebe. Duchovně značí propojení všeho: míza jede z kořenů do plodů jedním systémem. Tvoje duchovní praxe je zalévání — plody přijdou na větvích, ne na příkaz.",
+    "variants": "Košatý plodící strom věští období sklizně a smyslu: systém funguje. Strom s uschlou větví mluví o části života bez mízy: vztah, práce, talent — ještě jde zachránit zálivkou. Ptáci v koruně jsou požehnání: tvůj růst hostí druhé. Semínko stromu je vzácný dar: neseš celý budoucí strom v kapse.",
+    "warning": "Zpozorni, pokud snový strom plodí a kořeny vysychají — psychika popisuje výkon bez doplňování: úroda na dluh. Zeptej se: co pijí moje kořeny — a kdy jsem je naposledy zaléval doopravdy? Plody bez kořenů jsou poslední sklizeň."
+  },
+  "andel-strazny": {
+    "psychological": "Strážný anděl ve snu je zosobněná jistota, že nejsi sám — psychologie ho čte jako vnitřní bezpečnou vazbu: instanci, která hlídá, i když spíš. Sen o strážném andělovi přichází v ohrožení a osamění — a bývá fyzicky útěšný: teplo, klid, dotyk na rameni.",
+    "spiritual": "Tradice dává každému průvodce od narození — strážný anděl zná celý tvůj příběh a neodchází. Sen o něm je tradičně skutečné setkání: poděkuj, polož otázku, poslouchej. Odpověď mívá formu pocitu — pokoj je podpis.",
+    "variants": "Anděl, který tě chrání před pádem, potvrzuje: jsi držen — i tam, kde sis myslel, že jde o náhodu. Anděl mlčky přítomný je nejčastější forma: nic nechce, jen je — to stačí. Anděl, který odchází, neopouští: učí tě krok bez držení za ruku. Vidět cizího strážného anděla znamená: i ten člověk je hlídán — zacházej s ním podle toho.",
+    "warning": "Zbystři, pokud ve snu anděla prosíš, aby žil život za tebe — psychika zrcadlí přání delegovat odpovědnost: ochrana není řízení. Zeptej se: co je moje práce a co smím odevzdat? Anděl drží síť — na laně tančíš ty."
+  },
+  "svetlo-bile": {
+    "psychological": "Bílé světlo je vrcholný symbol jasnosti — psychologie ho čte jako moment pravdy: stav, kdy je vidět všechno a stíny nemají kam. Sen o bílém světle přichází v přelomech: prozření, úleva po dlouhé nejistotě, konec tunelu. Pamatuje se léta — právem.",
+    "spiritual": "Bílé světlo je v mystice přítomnost sama — obsahuje celé spektrum: nic nechybí. Zážitky blízké smrti o něm mluví shodně: světlo, které neoslňuje a miluje. Sen o bílém světle je tradičně dotek — po probuzení zůstává pokoj, který nemá vysvětlení.",
+    "variants": "Světlo na konci tunelu věští konec těžké fáze: směr je správný, jdi. Zalití světlem je milost: přijmi, nerozebírej. Světlo za dveřmi značí pravdu za jedním rozhodnutím: otevři. Slábnoucí světlo mluví o naději, která potřebuje kyslík: čím ji sytíš?",
+    "warning": "Zpozorni, pokud ve snu před světlem zavíráš oči — psychika zrcadlí strach z jasnosti: pravda by změnila příliš mnoho. Zeptej se: co bych musel udělat, kdybych viděl úplně jasně? Odpověď už znáš — světlo jen čeká na souhlas."
+  },
+  "vyhra": {
+    "psychological": "Výhra ve snu je touha po skoku — psychologie ji čte jako přání změnit život jedním tahem: loterie je fantazie o vysvobození bez cesty. Sen o výhře často zrcadlí únavu: poctivá cesta je dlouhá a psychika si maluje zkratku. Ale ptej se: co bys s výhrou dělal? Odpověď je mapa skutečných tužeb.",
+    "spiritual": "Tradice je k výhrám skeptická: co přijde bez zrání, bez zrání odejde. Duchovně je sen o výhře zpráva o čekání na vnější spásu — a jemné připomenutí: poklad je zakopaný na tvém poli, ne v cizím losu.",
+    "variants": "Vyhrát a cítit radost značí naději na obrat: dovol si ji — ale přelož ji do kroků. Vyhrát a cítit prázdnotu je moudrý sen: psychika ti ušetřila léta — štěstí nebylo v té výhře. Ztratit výherní los mluví o promarněné šanci: která reálná příležitost mi propadla? Rozdělit výhru je test hojnosti: kdo byl v tvém seznamu?",
+    "warning": "Zbystři, pokud sen o výhře přichází často — psychika hlásí únavu z cesty: doufáš v tah štěstěny, protože vlastní tah došel. Zeptej se: který malý krok by za rok udělal víc než výhra? Los se losuje — pole se orá. Úroda bývá na poli."
+  },
+  "hlad": {
+    "psychological": "Hlad a žízeň ve snu jsou nenasycené potřeby — a málokdy jde o jídlo. Psychologie je čte jako deficit: lásky, uznání, smyslu, odpočinku. Tělo půjčuje metaforu duši: něco ti chronicky chybí a už to nejde nazvat jinak. Co ve snu hledáš k snědku, to napovídá druh hladu.",
+    "spiritual": "Blahoslavení hladovějící — duchovní tradice zná hlad po smyslu jako počátek cesty: sytý se neptá. Žízeň po živé vodě je nejstarší duchovní metafora: studna, u které se sedí, ne bere s sebou. Sen o hladu může být probuzení: konečně cítíš, co chybělo vždycky.",
+    "variants": "Hledat jídlo a nenacházet zrcadlí prostředí, které nesytí: kde jsi u prostřeného stolu o hladu? Jíst a nenasytit se je konzum bez výživy: zábava místo radosti, kontakty místo vztahů. Nakrmit hladového je vlastní uzdravení: dáváš, co ti chybělo. Žízeň u pramene je paradox blízkosti: zdroj je na dosah — skloň se.",
+    "warning": "Zpozorni, pokud ve snu jíš bez chuti a bez konce — psychika popisuje sycení špatným zdrojem: plný talíř, prázdný člověk. Zeptej se: po čem mám doopravdy hlad? Jméno té potřeby je první sousto."
+  },
+  "poutnik": {
+    "psychological": "Poutník a cizinec ve snu je posel změny — psychologie ho čte jako neznámou část tebe, která přichází zdaleka: nová možnost, nový úhel, budoucí já. Jak se k cizinci ve snu chováš, tak se stavíš k novému v životě: hostíš, nebo zavíráš dveře?",
+    "spiritual": "Nezapomínejte na pohostinnost — někteří hostili anděly, aniž to věděli. V tradicích je poutník posvátný: přichází jako zkouška i dar. Duchovně značí i tvou vlastní duši: všichni jsme tu na průchodu — domov je směr, ne adresa.",
+    "variants": "Pohostit poutníka věští požehnání: nové, co jsi vpustil, se odvděčí. Odmítnout cizince zrcadlí strach z neznámého: co všechno jsi nechal za dveřmi s ním? Být poutníkem znamená etapu hledání: batoh lehký, směr vnitřní. Poutník, který ti nechá dar, je klasika snové řeči: zapamatuj si, co to bylo.",
+    "warning": "Zbystři, pokud ve snu poutníka vyslýcháš místo hostíš — psychika zrcadlí nedůvěru k novému: reference chceš i od zázraku. Zeptej se: kolik příležitostí jsem propustil u dveří kvůli chybějícím papírům? Někdy se hostí nejdřív — a rozumí potom."
+  },
+  "zlata-rybka": {
+    "psychological": "Zlatá rybka jsou tři přání — psychologie čte tento sen jako test tužeb: co bys řekl, kdyby se ptala doopravdy? Odpověď, která tě napadne první, je diagnóza. Sen o zlaté rybce často přichází, když si přeješ mnoho a nekonáš nic: přání se stala náhradou kroků.",
+    "spiritual": "Pohádka je moudřejší, než vypadá: rybka se chytá a pouští — kdo ji drží, přijde o vše. Duchovně značí milost, se kterou se nesmlouvá: třetí přání bývá zkouška pokory. Nejmoudřejší přání v pohádkách je vždycky poslední: „ať je vše jako dřív“ — vděčnost.",
+    "variants": "Chytit rybku a pustit je zralost: moc, které se vzdáš, se stává požehnáním. Vyslovit přání znamená pojmenovat touhu — nahlas a přesně: půl práce hotovo. Rybka, která neplní, obrací zrcadlo: přání bylo cizí — čí? Akvárium se zlatou rybkou je zajatá magie: přání ve skle, život venku.",
+    "warning": "Zpozorni, pokud ve snu přemýšlíš nad přáním příliš dlouho — psychika zrcadlí paralýzu tužeb: chceš tolik, že nechceš nic. Zeptej se: kdybych směl jedno jediné — co? Odpověď zapiš. A pak jí jdi naproti — rybky mají rády pohyb směrem k nim."
+  },
+  "kvet-zivota": {
+    "psychological": "Květ života a posvátná geometrie jsou řád pod chaosem — psychologie čte tento sen jako touhu po smyslu ve struktuře: vidět vzor tam, kde byl šum. Přichází v obdobích skládání: po krizi, při hledání systému. Vzor, který se skládá sám, je zpráva: věci do sebe zapadají.",
+    "spiritual": "Květ života je prastarý symbol — kruhy sdílející střed: vzor stvoření v chrámech od Egypta po dnešek. Duchovně značí jednotu: všechno živé sdílí geometrii. Vidět ho ve snu je dotek řádu: vesmír není hromada — je to tkanina.",
+    "variants": "Zářící geometrie věští období jasnosti: systém tvého života se ukazuje — zapiš, co jsi pochopil. Neúplný vzor mluví o chybějícím dílu: nedokresluj násilím, dorůstá. Kreslit květ života značí aktivní skládání řádu: kružítko je modlitba. Vzor v přírodě (slunečnice, plástve) připomíná: řád není konstrukt — je to pozorování.",
+    "warning": "Zbystři, pokud ve vzorech ve snu hledáš úzkostně skryté zprávy — psychika může zrcadlit potřebu kontroly převlečenou za mystiku: řád se pozoruje, nevynucuje. Zeptej se: unesu, že něco smysl teprve dostane? Květ roste ze středu — netahá se za okraje."
+  },
+  "jin-jang": {
+    "psychological": "Jin a jang je celek z protikladů — psychologie čte tento sen jako téma integrace: světlo a stín, výkon a odpočinek, dávání a braní. Tečka opačné barvy v každé polovině je klíč: v tvé síle je zrnko slabosti, ve slabosti zrnko síly. Sen přichází, když jedna polovina přerostla.",
+    "spiritual": "Tao se rodí z rovnováhy — jin a jang nejsou nepřátelé, ale tanec: den potřebuje noc, nádech výdech. Duchovně sen značí návrat k celku: přestat fandit jedné polovině sebe. Kruh se točí — kdo se drží jen světlé půlky, točí se s ní do tmy.",
+    "variants": "Vyvážený symbol věští období harmonie: vzácné — vychutnej. Převažující jedna barva mluví o přetížení pólu: samá akce, nebo samé rozjímání — dolij druhou. Točící se jin-jang je život v pohybu: fáze se střídají, nedrž kolo. Rozdělené poloviny jsou vážný obraz: co v tobě přestalo mluvit s protějškem?",
+    "warning": "Zpozorni, pokud ve snu jednu polovinu gumuješ — psychika zrcadlí válku se sebou: stín se nedá vymazat, jen integrovat. Zeptej se: kterou svou polovinu mám za nepřítele? Tečka v ní je dveře — celek se nedělá vítězstvím, ale objetím."
+  },
+  "runy": {
+    "psychological": "Runy a staré písmo jsou zpráva v jazyce, který se musíš učit — psychologie čte tento sen jako poselství z hlubin, které zatím neumíš přečíst: intuice mluví starším jazykem než rozum. Nečitelné písmo není odmítnutí — je to pozvání k učení.",
+    "spiritual": "Ódin visel devět nocí, aby runy získal — staré písmo se v tradicích nedává, ale vysluhuje: poznání za oběť. Runy jsou orákulum: neříkají budoucnost, ale otázku hodnou soustředění. Sen o runách může značit: tvoje odpověď je zapsaná — uč se číst.",
+    "variants": "Nalézt kámen s runami věští zprávu z hloubky: opiš si znaky, které si pamatuješ. Vyrývat runy značí aktivní zápis vůle: pojmenováváš, co má platit. Runy, které se skládají v slovo, jsou dozrávající vhled: nech je doskládat. Rozsypané runy mluví o zprávě v částech: sbírej trpělivě — smysl je v pořadí.",
+    "warning": "Zbystři, pokud ve snu runy čteš plynně a slibují ti moc — psychika může zrcadlit touhu po zkratce k moudrosti: staré písmo bez staré práce. Zeptej se: chci poznání, nebo jen jeho odznak? Runy se vysluhují — i dnes, jen jiným visením."
+  },
+  "tarot": {
+    "psychological": "Tarotová karta ve snu je zhuštěná zpráva — psychologie čte snový tarot jako autoportrét situace: psychika si vybrala kartu, protože obraz řekne víc než výklad. Klíčové je, která karta padla — a co jsi cítil: karta ve snu je zrcadlo, ne rozsudek.",
+    "spiritual": "Tarot je kniha obrazů duše — dvaadvacet velkých arkán je cesta Blázna: každý v ní najde svou zastávku. Sen o tarotu může značit: tvoje situace má jméno v starším jazyce — obraz, který lidstvo zná staletí. Nejsi v tom první — a to je útěcha.",
+    "variants": "Táhnout kartu značí otázku položenou hlubině: která padla, zapiš — i pocit. Věž boří iluze, Smrt uzavírá, Slunce slibuje, Blázen začíná: čti obraz, ne heslo. Karta rubem vzhůru je odpověď, na kterou nejsi zralý: bude čekat. Rozsypaný balíček mluví o příliš mnoha otázkách: polož jednu.",
+    "warning": "Zpozorni, pokud ve snu taháš kartu za kartou — psychika zrcadlí hlad po ujištění: odpověď nechceš slyšet, chceš ji přehlasovat. Zeptej se: kterou odpověď už mám a nelíbí se mi? Balíček není automat — první karta platí."
+  },
+  "kristalova-koule": {
+    "psychological": "Křišťálová koule je touha vidět dopředu — psychologie ji čte jako úzkost z nejistoty: kdybych věděl, jak to dopadne, rozhodl bych se. Jenže je to naopak: rozhodnutím se teprve tvoří, co koule ukáže. Mlha v kouli je poctivá odpověď — budoucnost je mlhovina možností.",
+    "spiritual": "Věštecká koule je nástroj soustředění, ne televize budoucnosti — jasnovidci v ní vidí obrazy vlastní hlubiny. Duchovně sen značí: odpověď se zjevuje v klidu — zírání do křišťálu je meditace s kulisou. Co vidíš, je zpráva nitra, ne osudu.",
+    "variants": "Jasný obraz v kouli je vhled: zapiš ho — ale pamatuj, že ukazuje směr, ne rozsudek. Mlha v kouli mluví o nedozrálé situaci: rozhodnutí ještě nemá data — a přesto se dá udělat. Prasklá koule je konec iluze o jistotě: rozhoduj s rizikem jako všichni. Koule ukazující minulost říká: odpověď na budoucnost hledej vzadu.",
+    "warning": "Zbystři, pokud se ve snu ke kouli vracíš pořád — psychika zrcadlí odklad života do doby „až budu vědět jistě“: ta doba nepřijde. Zeptej se: co bych udělal dnes, kdybych přestal čekat na záruku? Mlha se rozpouští chůzí — ne zíráním."
+  },
+  "kyvadlo": {
+    "psychological": "Kyvadlo je rozhodování přenesené ven — psychologie ho čte jako dialog s vlastním nevědomím: ruka se chvěje směrem, který duše už zná. Sen o kyvadle zpracovává nedůvěru k vlastnímu úsudku: potřebuješ, aby ano řeklo něco vně tebe. Ale kývá to tvoje ruka.",
+    "spiritual": "Kyvadlo je nástroj jemného vnímání — tradice ho užívá k dotazování hlubiny: tělo ví dřív než hlava. Duchovně sen připomíná: odpovědi procházejí tělem — nauč se číst svoje ano a ne: jedno rozšiřuje, druhé svírá.",
+    "variants": "Jasný kyv věští rozhodnutí, které v sobě už máš: kyvadlo jen ukázalo na hotové. Kroužící kyvadlo mluví o otázce položené špatně: přeformuluj. Zastavené kyvadlo je ticho hlubiny: teď se neptej — žij a odpověď dozraje. Kyvadlo v cizí ruce varuje: kdo se ptá za tebe, odpovídá za sebe.",
+    "warning": "Zpozorni, pokud ve snu kyvadlem přehlasováváš vlastní pocit — psychika zrcadlí válku intuice s přáním: kýváš, dokud nepadne správná odpověď. Zeptej se: co říká tělo bez rekvizit? Stažený žaludek je taky kyvadlo — a nefalšuje."
+  },
+  "kadidlo": {
+    "psychological": "Kadidlo a kouř jsou zviditelněná modlitba — psychologie čte vonný kouř jako potřebu rituálu: úkony, které oddělí posvátné od provozu. Sen o kadidle přichází, když život zplaněl do úkolů: duše žádá vůni, pomalost, význam. Kouř stoupá — a s ním pozornost.",
+    "spiritual": "Kadidlo hoří před oltáři všech tradic — vůně je oběť i očista: kouř nese prosby vzhůru a vykuřuje těžké. Duchovně značí posvěcení prostoru: tvůj domov i vnitřek potřebují občas vykouřit — starosti, cizí energie, hustý vzduch.",
+    "variants": "Vonný kouř stoupající vzhůru věští vyslyšení: co jsi poslal, letí. Kouř, který štípe, mluví o rituálu bez srdce: forma zůstala, obsah vyprchal. Vykuřovat místnost značí očistu prostoru — i vztahů v něm. Uhasnutá vonná tyčinka je přerušená praxe: kdy ses přestal zastavovat?",
+    "warning": "Zbystři, pokud ve snu kouř houstne k nedýchání — psychika varuje: rituálů tolik, že zakryly život, nebo mlha místo jasnosti. Zeptej se: pomáhá mi moje praxe vidět — nebo se za ní schovávám? Kadidlo má vonět, ne clonit."
+  },
+  "oltar": {
+    "psychological": "Oltář je místo nejvyšší hodnoty — psychologie ho čte doslova: co na oltáři leží, tomu obětuješ. Sen o oltáři je inventura priorit: komu sloužíš doopravdy — ne v řečech, ale v hodinách a silách? Kariéra, rodina, image, klid — něco na tom kameni je.",
+    "spiritual": "Oltář je střed chrámu — místo setkání a oběti: co se položí, to se posvětí, nebo spálí. Duchovně sen zve k vědomé oběti: něco cenného se dává, aby něco cennějšího žilo. Prázdný oltář není smutný — čeká na tvoje rozhodnutí.",
+    "variants": "Sloužit u oltáře značí vědomé kněžství vlastního života: víš, čemu sloužíš. Cizí věci na tvém oltáři jsou vetřelci priorit: kdo je tam položil? Rozbitý oltář mluví o zhroucení hodnot — staví se nový, z pravdivějšího kamene. Položit něco na oltář je akt: co jsi obětoval — a čemu?",
+    "warning": "Zpozorni, pokud na snovém oltáři ležíš ty — psychika zrcadlí sebeobětování, které překročilo míru: zápalná oběť vlastního života cizím účelům. Zeptej se: kdo mě na ten kámen položil — a proč tam ležím dobrovolně? Oběť má smysl jen z lásky, ne ze strachu."
+  },
+  "chram": {
+    "psychological": "Chrám je vnitřní prostor důstojnosti — psychologie ho čte jako část psychiky vyhrazenou posvátnému: místo v tobě, kam hluk nesmí. Sen o chrámu se ptá na jeho stav: navštěvovaný, opuštěný, zbořený? Kdy jsi naposledy vešel — do ticha, kde jsi jen ty a smysl?",
+    "spiritual": "Tělo je chrám a chrám je obraz duše — katedrály se stavěly generace: i tvůj vnitřní prostor se buduje léta. Duchovně značí sen o chrámu pozvání dovnitř: bohoslužba se koná — chybíš jen ty. Klenba nese ticho výš, než hlava dosáhne.",
+    "variants": "Vejít do chrámu značí návrat k vlastní hloubce: zuj si spěch. Opuštěný chrám mluví o zanedbaném nitru: pavučiny se dají smést — základy stojí. Stavět chrám je životní dílo: kámen po kameni, i když dokončení neuvidíš. Hudba v chrámu je milost: něco v tobě zpívá výš, než umíš mluvit.",
+    "warning": "Zbystři, pokud ve snu chrám hlídáš zvenku a nevcházíš — psychika zrcadlí úctu, která se stala výmluvou: posvátno odloženo pro nehodnost. Zeptej se: kdo mi řekl, že dovnitř se smí až po zásluze? Chrámy se staví pro vcházení — přesně takových, jako jsi teď."
+  },
+  "zricenina": {
+    "psychological": "Zřícenina je minulá sláva — psychologie ji čte jako část života, která bývala velká: vztah, kariéra, ideál. Sen o zřícenině není jen nostalgie — je to průzkum: co z těch zdí ještě nese? Základy bývají zdravé i tam, kde střecha dávno spadla.",
+    "spiritual": "Zříceniny jsou memento a učebnice — duchovně značí pokoru: i pevné padá, jen základy vydrží. Procházet zříceninou je rozhovor s časem: co stavěli, proč to padlo, co zbylo. Kámen ze zříceniny v nové zdi je moudrost: minulost jako materiál, ne bydliště.",
+    "variants": "Prozkoumávat zříceninu značí zdravou práci s minulostí: hledáš použitelné. Bydlet ve zřícenině mluví o životě v minulé kapitole: střecha chybí a ty tam spíš. Zřícenina zarostlá růžemi je smíření: příroda si bere zpět — krása na troskách. Najít ve zřícenině poklad věští: minulost ještě něco vydá — hledej v základech.",
+    "warning": "Zpozorni, pokud ve snu zříceninu opravuješ do původní podoby — psychika zrcadlí rekonstrukci minulosti: chceš vrátit, co má být materiálem. Zeptej se: stavím z minulosti, nebo minulost? Kameny ano — půdorys nový."
+  },
+  "zelva": {
+    "psychological": "Želva je pomalost, která doleze — psychologie ji čte jako trpělivost a vlastní tempo: závod s zajícem má vítěze. Sen o želvě přichází v tlaku na rychlost: psychika připomíná, že tvoje tempo je legitimní. Krunýř je hranice: umíš se schovat — a umíš i vylézt?",
+    "spiritual": "Želva nese svět — v mýtech drží na krunýři zemi: symbol stability a dlouhověkosti. Duchovně značí moudrost pomalosti: co roste pomalu, roste hluboko. Želva nosí domov s sebou: i to je lekce — zabydli se v sobě, adresy se mění.",
+    "variants": "Klidně putující želva věští vytrvalý postup: pomalu znamená jistě. Želva zatažená v krunýři mluví o obraně: oprávněné — nebo už trvalé? Želva na zádech je bezmoc: pomoz — jí i té části sebe. Stará moudrá želva je vnitřní stařec: zeptej se jí na to, co spěchá.",
+    "warning": "Zbystři, pokud ve snu želvu poháníš — psychika zrcadlí násilí na vlastním tempu: rychlost vypůjčená z podstaty. Zeptej se: kdo určil termíny, kterými se biju? Želva přežila dinosaury — něco na tom pomalém stylu bude."
+  },
+  "lek": {
+    "psychological": "Lék a elixír jsou naděje na uzdravení — psychologie je čte jako hledání toho, co spraví bolest: vztah, změnu, odpuštění, odpočinek. Sen o léku se ptá: co považuješ za svůj lék — a je jím doopravdy? Rychlé kapky proti hlubokým příčinám bývají jen odklad.",
+    "spiritual": "Elixír je cíl alchymie — všelék, který se vaří z proměněného sebe: zlato se nedělá ze zlata. Duchovně sen značí: uzdravení existuje, ale je to proces, ne lahvička. Hořký lék je klasika tradice: pravda léčí — a nechutná.",
+    "variants": "Dostat lék věští pomoc: od koho byl? Ten vztah léčí. Hořký lék je nepříjemná pravda s léčivým účinkem: spolkni. Elixír v krásné lahvičce bez účinku varuje: marketing uzdravení — sliby bez procesu. Namíchat lék sám značí: tvoje uzdravení má recept, který znáš — přestaň ho odkládat.",
+    "warning": "Zpozorni, pokud ve snu polykáš lék za lékem — psychika zrcadlí sbírání řešení bez užívání: kurzy, knihy, rady — a bolest trvá. Zeptej se: který jeden lék bych měl dobrat celý? Uzdravení nesnáší přeskakování dávek."
+  },
+  "pohadkova-bytost": {
+    "psychological": "Víla a elf jsou jemný svět — psychologie je čte jako kontakt s hravou, éterickou vrstvou psychiky: fantazie, lehkost, kouzlo. Sen o pohádkové bytosti často přichází v příliš dospělém období: duše posílá delegaci ze země, kterou jsi opustil s dětstvím — a která nikdy nezmizela.",
+    "spiritual": "Malý národ žije na prahu vnímání — tradice ho ctí a nechává mu misku mléka: jemné síly přírody a představivosti. Duchovně značí prostupnost světů: realita má víc pater, než ukazuje katastr. Dar od víly se nese opatrně — a neptá se na cenu.",
+    "variants": "Setkat se s vílou značí dotek jemného světa: nech si od něj vyprávět. Elf, který tě vede lesem, je průvodce intuice: stezka nebude na mapě — a bude správná. Zlobivý skřítek zrcadlí drobné sabotáže: kdo ti přehazuje klíče? Odcházející víla mluví o mizející lehkosti: čím jsi ji zaplašil?",
+    "warning": "Zbystři, pokud ve snu pohádkové bytosti dokazuješ, že neexistuje — psychika zrcadlí rozum, který přerostl v cenzora: fantazie před soudem. Zeptej se: kdy jsem si naposledy dovolil nesmysl pro radost? Víly nechodí k tabulkám — mléko se dává na práh."
   }
 }

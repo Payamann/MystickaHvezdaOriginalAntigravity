@@ -145,9 +145,9 @@ Aktualizace: 2026-07-11 (doplneny nalezy z komplexni analyzy, viz `docs/analyza-
 ## Nalezy z komplexni analyzy 2026-07-11
 
 10. **Thin content na generovanych strankach (SEO riziko P1)**
-    - Stav: otevrene. ~520 z 896 indexovanych stranek ma po odecteni sablony ~140-190 slov unikatniho textu: `jmena/` (281 stranek, ~150 slov), `snar/` (164, ~166), `slovnik/` (30, ~181), `andelske-karty/` (44, ~144). Google helpful content system tohle hodnoti na urovni domeny.
-    - Moznosti: (a) rozsirit generatory o 300+ slov unikatni hodnoty na stranku (numerologicky vyklad do hloubky, FAQ, souvislosti mezi tematy), (b) docasny `noindex` nejslabsich sekci nez se obsah rozsiri, (c) konsolidace do vetsich hub stranek. Rozhodnuti je strategicke - ovlivnuje indexaci na mesice.
-    - Data zdroje uz existuji (`data/jmena.json`, `data/dreams.json`, `data/numerology-numbers.json`), ale polozky jsou kratke - rozsireni vyzaduje novy obsah, ne jen zmenu sablony.
+    - Stav: z vetsi casti hotovo (2026-07-11). `jmena/` rozsireno z ~150 na ~525 slov (numerologie do hloubky z `data/numerology-numbers.json`, svatek -> znameni zverokruhu, skryta cisla ve jmenu, FAQ + FAQPage JSON-LD). `andelske-karty/` z ~144 na ~409 slov (autorsky obsah v `data/angel-cards-seo.json`). `snar/` z ~166 na ~474 slov (autorsky obsah pro vsech 164 symbolu v `data/dreams-seo.json`: psychologicky pohled, duchovni vyklad, podoby snu, kdy zpozornet + FAQ JSON-LD).
+    - Obsahove soubory (`*-seo.json`) jsou zamerne oddelene od runtime dat, aby nenafukovaly payload klientskych nastroju; generatory hlasi chybejici polozky a pouziji zakladni sablonu.
+    - Zbyva: `slovnik/` (30 stranek, ~212 slov) je na hrane, ale obsahove kvalitni - rozsirit pri nejblizsi revizi slovniku. Prubezne kontrolovat Search Console, jak Google rozsireni indexuje.
 
 11. **Per-page JS bundling (vykon P2)**
     - Stav: otevrene. Klicove stranky nacitaji 24-26 `<script>` tagu (`index.html` 26, `tarot.html` 25, `horoskopy.html` 24). Soubory jsou male, ale parse/execute retez je dlouhy.
