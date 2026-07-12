@@ -93,8 +93,7 @@
     "sharp": "^0.34.5",
     "stripe": "^20.3.0",
     "web-push": "^3.6.7",
-    "xss": "^1.0.15",
-    "xss-clean": "^0.1.4"
+    "xss": "^1.0.15"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",

@@ -14,10 +14,13 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 const DATA_PATH = path.join(ROOT, 'data', 'angel-cards.json');
+// Authored long-form content per card, kept out of angel-cards.json so the
+// runtime card-draw payload the browser fetches stays small.
+const SEO_CONTENT_PATH = path.join(ROOT, 'data', 'angel-cards-seo.json');
 const OUTPUT_DIR = path.join(ROOT, 'andelske-karty');
 const HUB_PATH = path.join(ROOT, 'andelske-karty.html');
 const CANONICAL_ORIGIN = 'https://www.mystickahvezda.cz';
-const LASTMOD = '2026-07-04';
+const LASTMOD = '2026-07-11';
 
 // Interpretive layer per archetype so each page carries more than the
 // card's one-line message without inventing per-card claims.
@@ -86,12 +89,65 @@ function pickRelated(card, cards) {
     return [...sameArchetype, ...others].slice(0, 6);
 }
 
-function renderPage(card, cards) {
+function renderPage(card, cards, seoContent) {
     const slug = slugify(card.id);
     const pageUrl = `${CANONICAL_ORIGIN}/andelske-karty/${slug}.html`;
     const description = escapeHtml(buildDescription(card));
     const archetype = ARCHETYPE_MEANINGS[card.archetype] || ARCHETYPE_MEANINGS.guidance;
     const related = pickRelated(card, cards);
+    const longContent = seoContent[card.id] || null;
+    const faqEntries = [
+        {
+            question: `Co znamená andělská karta ${card.name}?`,
+            answer: `${card.name} nese téma „${card.theme}“. ${card.short_message}`
+        },
+        ...(longContent ? [{
+            question: `Co karta ${card.name} znamená pro lásku a vztahy?`,
+            answer: longContent.love
+        }] : []),
+        {
+            question: `Jak s kartou ${card.name} pracovat?`,
+            answer: archetype.practice
+        }
+    ];
+
+    const faqLd = JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faqEntries.map(({ question, answer }) => ({
+            '@type': 'Question',
+            name: question,
+            acceptedAnswer: { '@type': 'Answer', text: answer }
+        }))
+    }, null, 2);
+
+    const longBlocks = longContent ? `
+                <div class="card">
+                    <h2>Hlubší výklad karty</h2>
+                    <p>${escapeHtml(longContent.message_long)}</p>
+                </div>
+
+                <div class="card">
+                    <h2>Co karta znamená pro tvůj život</h2>
+                    <h3>❤️ Láska a vztahy</h3>
+                    <p>${escapeHtml(longContent.love)}</p>
+                    <h3>💼 Práce a peníze</h3>
+                    <p>${escapeHtml(longContent.work)}</p>
+                    <h3>🕊️ Duše a praxe</h3>
+                    <p>${escapeHtml(longContent.spirit)}</p>
+                </div>
+
+                <div class="card">
+                    <h2>Jak poznáš, že k tobě karta mluví</h2>
+                    <p>${escapeHtml(longContent.signs)}</p>
+                </div>` : '';
+
+    const faqBlock = `
+                <div class="card">
+                    <h2>Časté otázky</h2>
+                    ${faqEntries.map(({ question, answer }) => `<h3>${escapeHtml(question)}</h3>
+                    <p>${escapeHtml(answer)}</p>`).join('\n                    ')}
+                </div>`;
 
     const jsonLd = JSON.stringify({
         '@context': 'https://schema.org',
@@ -135,6 +191,7 @@ function renderPage(card, cards) {
 
     <script type="application/ld+json">${jsonLd}</script>
     <script type="application/ld+json">${breadcrumbLd}</script>
+    <script type="application/ld+json">${faqLd}</script>
     <link rel="stylesheet" href="/fonts/local-fonts.css">
     <link rel="stylesheet" href="../css/style.v2.min.css?v=11">
 <script src="/js/dist/analytics-init.js" defer></script>
@@ -163,6 +220,9 @@ function renderPage(card, cards) {
                     <p>${escapeHtml(archetype.practice)}</p>
                 </div>
 
+${longBlocks}
+${faqBlock}
+
                 <div class="card">
                     <h2>Vytáhni si vlastní kartu</h2>
                     <p>Každý den si můžeš zdarma vytáhnout jednu andělskou kartu — a nechat si její poselství projít celým dnem.</p>
@@ -185,10 +245,7 @@ function renderPage(card, cards) {
 
     <div id="footer-placeholder"></div>
 
-    <script src="../js/dist/api-config.js?v=5" defer></script>
-    <script src="../js/dist/templates.js?v=14" defer></script>
-    <script src="../js/dist/auth-client.js?v=20260522-recovery-flush" defer></script>
-    <script src="../js/dist/components.js?v=20260522-premium-gate-cache" defer></script>
+    <script src="../js/dist/core.js?v=1" defer></script>
     <script type="module" src="../js/dist/main.js?v=10"></script>
 </body>
 </html>
@@ -229,6 +286,11 @@ function updateHubLinks(cards) {
 
 function main() {
     const cards = JSON.parse(fs.readFileSync(DATA_PATH, 'utf8'));
+    const seoContent = JSON.parse(fs.readFileSync(SEO_CONTENT_PATH, 'utf8'));
+    const missingContent = cards.filter((card) => !seoContent[card.id]).map((card) => card.id);
+    if (missingContent.length) {
+        console.warn(`[andelske-karty] Missing long-form content for: ${missingContent.join(', ')}`);
+    }
     if (!Array.isArray(cards)) throw new Error('data/angel-cards.json must be an array.');
 
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
@@ -243,7 +305,7 @@ function main() {
             continue;
         }
         seenSlugs.set(slug, card.id);
-        fs.writeFileSync(path.join(OUTPUT_DIR, `${slug}.html`), renderPage(card, cards), 'utf8');
+        fs.writeFileSync(path.join(OUTPUT_DIR, `${slug}.html`), renderPage(card, cards, seoContent), 'utf8');
         written++;
     }
 

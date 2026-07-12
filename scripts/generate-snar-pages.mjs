@@ -14,10 +14,14 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 const DATA_PATH = path.join(ROOT, 'data', 'dreams.json');
+// Authored long-form content per symbol (optional per entry — pages without
+// it keep the base template). Kept out of dreams.json so the runtime
+// dream-tool payload stays small.
+const SEO_CONTENT_PATH = path.join(ROOT, 'data', 'dreams-seo.json');
 const OUTPUT_DIR = path.join(ROOT, 'snar');
 const HUB_PATH = path.join(ROOT, 'snar.html');
 const CANONICAL_ORIGIN = 'https://www.mystickahvezda.cz';
-const LASTMOD = '2026-07-04';
+const LASTMOD = '2026-07-11';
 
 function slugify(value) {
     return String(value)
@@ -63,13 +67,69 @@ function pickRelated(index, dreams) {
     return related;
 }
 
-function renderPage(dream, index, dreams) {
+function renderPage(dream, index, dreams, seoContent) {
     const slug = slugify(dream.id);
     const pageUrl = `${CANONICAL_ORIGIN}/snar/${slug}.html`;
     const keyword = escapeHtml(dream.keyword);
     const description = escapeHtml(buildDescription(dream));
     const related = pickRelated(index, dreams);
     const questions = buildQuestions(dream);
+    const longContent = seoContent[dream.id] || null;
+
+    const faqEntries = [
+        {
+            question: `Co znamená sen o: ${lowerKeyword(dream.keyword)}?`,
+            answer: dream.description
+        },
+        ...(longContent ? [
+            {
+                question: `Jak symbol „${lowerKeyword(dream.keyword)}“ vykládá psychologie snů?`,
+                answer: longContent.psychological
+            },
+            {
+                question: `Kdy je sen o: ${lowerKeyword(dream.keyword)} varováním?`,
+                answer: longContent.warning
+            }
+        ] : [])
+    ];
+
+    const faqLd = JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faqEntries.map(({ question, answer }) => ({
+            '@type': 'Question',
+            name: question,
+            acceptedAnswer: { '@type': 'Answer', text: answer }
+        }))
+    }, null, 2);
+
+    const longBlocks = longContent ? `
+                <div class="card">
+                    <h2>Psychologický pohled</h2>
+                    <p>${escapeHtml(longContent.psychological)}</p>
+                </div>
+
+                <div class="card">
+                    <h2>Duchovní a mystický výklad</h2>
+                    <p>${escapeHtml(longContent.spiritual)}</p>
+                </div>
+
+                <div class="card">
+                    <h2>Nejčastější podoby snu</h2>
+                    <p>${escapeHtml(longContent.variants)}</p>
+                </div>
+
+                <div class="card">
+                    <h2>Kdy zpozornět</h2>
+                    <p>${escapeHtml(longContent.warning)}</p>
+                </div>` : '';
+
+    const faqBlock = longContent ? `
+                <div class="card">
+                    <h2>Časté otázky</h2>
+                    ${faqEntries.map(({ question, answer }) => `<h3>${escapeHtml(question)}</h3>
+                    <p>${escapeHtml(answer)}</p>`).join('\n                    ')}
+                </div>` : '';
 
     const jsonLd = JSON.stringify({
         '@context': 'https://schema.org',
@@ -113,6 +173,7 @@ function renderPage(dream, index, dreams) {
 
     <script type="application/ld+json">${jsonLd}</script>
     <script type="application/ld+json">${breadcrumbLd}</script>
+    <script type="application/ld+json">${faqLd}</script>
     <link rel="stylesheet" href="/fonts/local-fonts.css">
     <link rel="stylesheet" href="../css/style.v2.min.css?v=11">
 <script src="/js/dist/analytics-init.js" defer></script>
@@ -133,6 +194,8 @@ function renderPage(dream, index, dreams) {
                     <p>${escapeHtml(dream.description)}</p>
                 </div>
 
+${longBlocks}
+
                 <div class="card">
                     <h2>Otázky k zamyšlení</h2>
                     <p>Symbol má vždy osobní vrstvu. Než výklad přijmeš, polož si tři otázky:</p>
@@ -144,6 +207,8 @@ function renderPage(dream, index, dreams) {
                         Klíčová je emoce, se kterou ses probudil, ne jen samotný symbol.
                     </p>
                 </div>
+
+${faqBlock}
 
                 <div class="card">
                     <h2>Pokračuj ve výkladu</h2>
@@ -166,10 +231,7 @@ function renderPage(dream, index, dreams) {
 
     <div id="footer-placeholder"></div>
 
-    <script src="../js/dist/api-config.js?v=5" defer></script>
-    <script src="../js/dist/templates.js?v=14" defer></script>
-    <script src="../js/dist/auth-client.js?v=20260522-recovery-flush" defer></script>
-    <script src="../js/dist/components.js?v=20260522-premium-gate-cache" defer></script>
+    <script src="../js/dist/core.js?v=1" defer></script>
     <script type="module" src="../js/dist/main.js?v=10"></script>
 </body>
 </html>
@@ -210,6 +272,13 @@ function updateHubLinks(dreams) {
 
 function main() {
     const dreams = JSON.parse(fs.readFileSync(DATA_PATH, 'utf8'));
+    const seoContent = fs.existsSync(SEO_CONTENT_PATH)
+        ? JSON.parse(fs.readFileSync(SEO_CONTENT_PATH, 'utf8'))
+        : {};
+    const missingContent = dreams.filter((dream) => !seoContent[dream.id]).length;
+    if (missingContent) {
+        console.warn(`[snar] ${missingContent} symbol(s) still without long-form content (base template used).`);
+    }
     if (!Array.isArray(dreams)) throw new Error('data/dreams.json must be an array.');
 
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
@@ -229,7 +298,7 @@ function main() {
         }
         seenSlugs.set(slug, dream.id);
 
-        fs.writeFileSync(path.join(OUTPUT_DIR, `${slug}.html`), renderPage(dream, index, dreams), 'utf8');
+        fs.writeFileSync(path.join(OUTPUT_DIR, `${slug}.html`), renderPage(dream, index, dreams, seoContent), 'utf8');
         written++;
     });
 

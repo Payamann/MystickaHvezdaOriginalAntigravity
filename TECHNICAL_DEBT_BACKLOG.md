@@ -1,6 +1,6 @@
 # Technical Debt Backlog
 
-Aktualizace: 2026-04-27
+Aktualizace: 2026-07-11 (doplneny nalezy z komplexni analyzy, viz `docs/analyza-webu-2026-07-11.md`)
 
 ## P0/P1 - nejblizsi sprinty
 
@@ -141,3 +141,31 @@ Aktualizace: 2026-04-27
    - Stav navic: `npm run verify:production` nove kontroluje i zakladni astro vypocetni cesty a vraci konkretni HTTP status pri selhani, takze produkcni regresi lze rychleji dohledat.
    - Stav navic: produkcni smoke kontroluje i verejny `/api/config` kontrakt vcetne `features.pushNotifications`, VAPID klice a Sentry DSN typu.
    - Dalsi krok: pozdeji lze doplnit stejnou live HTTP status kontrolu proti stagingu, az bude stabilni staging URL.
+
+## Nalezy z komplexni analyzy 2026-07-11
+
+10. **Thin content na generovanych strankach (SEO riziko P1)**
+    - Stav: z vetsi casti hotovo (2026-07-11). `jmena/` rozsireno z ~150 na ~525 slov (numerologie do hloubky z `data/numerology-numbers.json`, svatek -> znameni zverokruhu, skryta cisla ve jmenu, FAQ + FAQPage JSON-LD). `andelske-karty/` z ~144 na ~409 slov (autorsky obsah v `data/angel-cards-seo.json`). `snar/` z ~166 na ~474 slov (autorsky obsah pro vsech 164 symbolu v `data/dreams-seo.json`: psychologicky pohled, duchovni vyklad, podoby snu, kdy zpozornet + FAQ JSON-LD).
+    - Obsahove soubory (`*-seo.json`) jsou zamerne oddelene od runtime dat, aby nenafukovaly payload klientskych nastroju; generatory hlasi chybejici polozky a pouziji zakladni sablonu.
+    - Zbyva: `slovnik/` (30 stranek, ~212 slov) je na hrane, ale obsahove kvalitni - rozsirit pri nejblizsi revizi slovniku. Prubezne kontrolovat Search Console, jak Google rozsireni indexuje.
+
+11. **Per-page JS bundling (vykon P2)**
+    - Stav: z vetsi casti hotovo (2026-07-12). `build:js` nove sklada `js/dist/core.js` (api-config + templates + auth-client + components, konkatenace minifikovanych dist vystupu v poradi zavislosti). 836 stranek prevedeno na core bundle striktnim pravidlem (kvartet souvisly, nebo jen whitelistovane nezavisle skripty mezi nimi): jmena 281, snar 164, partnerska-shoda 145, tarot-vyznam 78, blog 74, andelske-karty 44, slovnik 30 aj. Obsahove stranky klesly z 6 na 3 skripty, blog z 9 na 6. `js/components.js` basePath detekce rozsirena o core.js; generatory i server sablony emituji core. Overeno v Chromiu na 11 typech stranek (header/footer render, zadne JS chyby).
+    - Zbyva: ~40 nastrojovych stranek (index, horoskopy, tarot...) s 10+ page-specific skripty mezi auth-client a components - vyzaduji per-page entrypointy a overeni poradi; ponechano na samostatnou etapu.
+
+12. **Critical CSS pro obsahove stranky (vykon P2)**
+    - Stav: zmereno, zamerne neshipnuto (2026-07-12). Chrome CSS coverage pres 6 obsahovych sablon x 2 viewporty: `style.v2.min.css` 131 KB, pouzito ~35 KB (~26 %). Potencial ~96 KB na prvni navstevu.
+    - Proc neshipnuto: purge bez plne vizualni regrese riskuje rozbiti dynamickych stavu (mobilni menu open, popupy, cookie lista, premium gates) na 836 strankach; CSS je navic cross-page cachovane, takze ztrata se tyka jen prvniho pageview.
+    - Dalsi krok: pokud se v GSC/CrUX ukaze slaby LCP na obsahovych vstupech, udelat purge s interakcni simulaci (otevrene menu, popupy) + pixel-diff verifikaci sablon.
+
+13. **Obnovit kadenci blogu (obsah P1)**
+    - Stav: otevrene. Publikace: brezen 2026 27 clanku -> duben 3 -> kveten-cervenec 0. Blog je nejsilnejsi SEO aktivum (prumer 1079 slov/clanek) a zdroj interniho linkovani (`blog:cluster-links`).
+    - Dalsi krok: 1-2 clanky tydne, prioritne sezonni temata H2 2026 (zatmeni, retrogrady, uplnky).
+
+14. **Refresh datovanych stranek na 2027 (obsah P3)**
+    - Stav: otevrene. `osobni-rok-2026.html`, cinsky horoskop 2026, retrogradni Venuse 2026 apod. budou koncem roku zastarale.
+    - Dalsi krok: v Q4 2026 naplanovat 2027 verze + redirecty/aktualizace canonicalu.
+
+15. **Overit kontrast a focus management (a11y P2)**
+    - Stav: otevrene. Zaklad je dobry (skip-linky, alt texty, aria-labels), ale kontrastni pomery na tmavem pozadi (#050510) a focus management v modalech nejsou overene automatizovane.
+    - Dalsi krok: axe-core sken 10 klicovych stranek (lze pridat do Playwright E2E), opravit nalezene kontrasty.

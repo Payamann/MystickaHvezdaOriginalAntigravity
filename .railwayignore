@@ -1,0 +1,3 @@
+# Pinterest pin exports (~66 MB PNG) are posted manually from a local machine
+# and are not referenced by any HTML page — keep them out of the deploy image.
+img/pinterest/
