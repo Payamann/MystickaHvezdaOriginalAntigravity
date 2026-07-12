@@ -245,10 +245,7 @@ ${faqBlock}
 
     <div id="footer-placeholder"></div>
 
-    <script src="../js/dist/api-config.js?v=5" defer></script>
-    <script src="../js/dist/templates.js?v=14" defer></script>
-    <script src="../js/dist/auth-client.js?v=20260522-recovery-flush" defer></script>
-    <script src="../js/dist/components.js?v=20260522-premium-gate-cache" defer></script>
+    <script src="../js/dist/core.js?v=1" defer></script>
     <script type="module" src="../js/dist/main.js?v=10"></script>
 </body>
 </html>
