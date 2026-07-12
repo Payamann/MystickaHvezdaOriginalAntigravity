@@ -1695,8 +1695,9 @@ const SIGN_NAMES_EMAIL = {
 export async function sendHoroscopePdf({ to, name, sign, pdfBuffer }) {
   const client = getResend();
   if (!client) {
-    console.error('[EMAIL] Resend not configured — cannot send horoscope PDF');
-    return;
+    // Paid order: a silent return here would mark the order fulfilled
+    // without any email — callers rely on a throw to keep it retryable.
+    throw new Error('Resend not initialized - missing RESEND_API_KEY (horoscope PDF)');
   }
 
   const signName = SIGN_NAMES_EMAIL[sign] || sign;
@@ -1746,8 +1747,9 @@ export async function sendHoroscopePdf({ to, name, sign, pdfBuffer }) {
 export async function sendPersonalMapPdf({ to, name, sign, pdfBuffer }) {
   const client = getResend();
   if (!client) {
-    console.error('[EMAIL] Resend not configured — cannot send personal map PDF');
-    return;
+    // Paid order: a silent return here would mark the order fulfilled
+    // without any email — callers rely on a throw to keep it retryable.
+    throw new Error('Resend not initialized - missing RESEND_API_KEY (personal map PDF)');
   }
 
   const signName = SIGN_NAMES_EMAIL[sign] || sign;

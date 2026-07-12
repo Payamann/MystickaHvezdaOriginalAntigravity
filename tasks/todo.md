@@ -227,3 +227,47 @@ migraci v Supabase (schéma se v tomto repu nemigruje automaticky) a nasadit
 při chybějícím `RESEND_API_KEY` v produkci tiše "uspějí" (vrátí se bez chyby),
 takže by objednávka mohla být označena fulfilled bez reálně odeslaného e-mailu
 — existující chování, nedotčeno touto opravou, stojí za samostatný pohled.
+
+## Fáze 7 — Znalostní báze webu (2026-07-12)
+
+Cíl: docs/WEB-KNOWLEDGE.md — trvalá mapa webu pro budoucí analýzy (syntéza
+operator-context + improvement/SEO plánů + nové: vrstvy stránek, funnel
+diagram s cestami, taxonomie eventů, endpointy, SEO infra).
+
+- [x] Inventura stránek po vrstvách (vzorkování šablon, ne 908 souborů)
+- [x] Funnel z kódu + runtime ověření (server v e2e mock env z worktree,
+      joby vypnuté — plný funnel registrace→onboarding→funnel event OK)
+- [x] Taxonomie analytických eventů + GDPR gating + mezery
+- [x] Technický základ (server, DB, CSP, PWA, deploy, testy)
+- [x] SEO infrastruktura (sitemap, robots, llms.txt, hreflang, schema)
+- [x] Výstup: docs/WEB-KNOWLEDGE.md + příloha docs/web-knowledge/api-endpoints.md
+- [x] CLAUDE.md pointer + paměť + top-5 příležitostí
+
+## Fáze 8 — Práce z top-5 příležitostí (2026-07-12)
+
+- [x] #3 Retenční infra: produkce ověřena read-only — push MRTVÝ (VAPID null
+      v /api/config, job přitom enabled); e-mailová větev běží; sentryDsn null.
+      Fix = Pavel nastaví VAPID_* v Railway (`npx web-push generate-vapid-keys`).
+- [ ] #2 Auth-handoff měření: BLOKOVÁNO — čtení produkční Supabase vyžaduje
+      explicitní schválení uživatele (auto-mode classifier). Příkazy připravené
+      v operator-context §Standard Commands.
+- [x] #5 Share-loop wave 2: zjištěno HOTOVO už před 89fa8982 (runes, angel-cards,
+      numerology, cinsky-horoskop mají MH_SHARE_IMAGE vč. dist) → near-miss lekce.
+- [x] Oprava §8.4: sendHoroscopePdf/sendPersonalMapPdf nyní bez RESEND_API_KEY
+      throwují místo tichého úspěchu + guard test (27/27 testů zelených).
+- [x] WEB-KNOWLEDGE.md aktualizován (analyza-webu-2026-07-11 cross-ref, core.js
+      bundle post-scriptum, potvrzené nálezy).
+
+### Review Fáze 8
+Produkce = origin/main (e565256f); paralelní session na mainu průběžně
+odbavuje nálezy z analyza-webu-2026-07-11 (core.js bundle, blog, sanitize-input)
+— před další prací na webu vždy fetchnout a diffnout origin/main.
+
+### Review Fáze 7
+Jen dokumentační výstupy, žádná změna chování webu. Nejcennější runtime
+zjištění: bezpečný mock env z playwright.config.js funguje i pro ruční
+průchod funnelu z worktree (Node si node_modules vyřeší z nadřazeného repa);
+`POST /api/payment/funnel-event` vyžaduje `eventName` (ne eventType);
+kompatibilita redirect formát je `beran-byk`, ne `beran-a-byk`. Existující
+docs (operator-context, improvement/SEO plány) pokryly strategii — nový
+dokument je mapuje a doplňuje vrstvy stránek, endpointy a runtime recepty.

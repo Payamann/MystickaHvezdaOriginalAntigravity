@@ -99,3 +99,9 @@ cd "C:/Users/pavel/OneDrive/Desktop/MystickaHvezda/social-media-agent" && set PY
 ```
 
 Souhrnná tabulka na konci: Slot | Téma | Typ | Hook | CTA | Intent
+
+---
+
+## Web analýzy
+
+Před jakoukoli analýzou/auditem webu (konverze, SEO, výkon, UX) nejdřív přečti `docs/WEB-KNOWLEDGE.md` — mapa stránek, funnel, analytika, endpointy, známé slabiny. Neobjevuj kód znovu.
