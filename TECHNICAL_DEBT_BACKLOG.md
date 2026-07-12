@@ -150,12 +150,13 @@ Aktualizace: 2026-07-11 (doplneny nalezy z komplexni analyzy, viz `docs/analyza-
     - Zbyva: `slovnik/` (30 stranek, ~212 slov) je na hrane, ale obsahove kvalitni - rozsirit pri nejblizsi revizi slovniku. Prubezne kontrolovat Search Console, jak Google rozsireni indexuje.
 
 11. **Per-page JS bundling (vykon P2)**
-    - Stav: otevrene. Klicove stranky nacitaji 24-26 `<script>` tagu (`index.html` 26, `tarot.html` 25, `horoskopy.html` 24). Soubory jsou male, ale parse/execute retez je dlouhy.
-    - Dalsi krok: rozsirit `scripts/build-js.mjs` o per-page entrypointy (esbuild bundle), cilit na ~5 skriptu na stranku. Pozor na CSP hashe, SW precache seznam a `update-service-worker-cache.mjs` - vsechny tri se musi zmenit spolu.
+    - Stav: z vetsi casti hotovo (2026-07-12). `build:js` nove sklada `js/dist/core.js` (api-config + templates + auth-client + components, konkatenace minifikovanych dist vystupu v poradi zavislosti). 836 stranek prevedeno na core bundle striktnim pravidlem (kvartet souvisly, nebo jen whitelistovane nezavisle skripty mezi nimi): jmena 281, snar 164, partnerska-shoda 145, tarot-vyznam 78, blog 74, andelske-karty 44, slovnik 30 aj. Obsahove stranky klesly z 6 na 3 skripty, blog z 9 na 6. `js/components.js` basePath detekce rozsirena o core.js; generatory i server sablony emituji core. Overeno v Chromiu na 11 typech stranek (header/footer render, zadne JS chyby).
+    - Zbyva: ~40 nastrojovych stranek (index, horoskopy, tarot...) s 10+ page-specific skripty mezi auth-client a components - vyzaduji per-page entrypointy a overeni poradi; ponechano na samostatnou etapu.
 
 12. **Critical CSS pro obsahove stranky (vykon P2)**
-    - Stav: otevrene. Kazda stranka nacita 137-152 KB minifikovaneho CSS (`site.min.css`/`home.min.css`), i ciste obsahove stranky (blog, jmena, snar), ktere vyuzivaji zlomek pravidel.
-    - Dalsi krok: rozdelit build na critical inline CSS + async zbytek, nebo vytvorit tenci `content.min.css` bundle pro obsahove sablony.
+    - Stav: zmereno, zamerne neshipnuto (2026-07-12). Chrome CSS coverage pres 6 obsahovych sablon x 2 viewporty: `style.v2.min.css` 131 KB, pouzito ~35 KB (~26 %). Potencial ~96 KB na prvni navstevu.
+    - Proc neshipnuto: purge bez plne vizualni regrese riskuje rozbiti dynamickych stavu (mobilni menu open, popupy, cookie lista, premium gates) na 836 strankach; CSS je navic cross-page cachovane, takze ztrata se tyka jen prvniho pageview.
+    - Dalsi krok: pokud se v GSC/CrUX ukaze slaby LCP na obsahovych vstupech, udelat purge s interakcni simulaci (otevrene menu, popupy) + pixel-diff verifikaci sablon.
 
 13. **Obnovit kadenci blogu (obsah P1)**
     - Stav: otevrene. Publikace: brezen 2026 27 clanku -> duben 3 -> kveten-cervenec 0. Blog je nejsilnejsi SEO aktivum (prumer 1079 slov/clanek) a zdroj interniho linkovani (`blog:cluster-links`).

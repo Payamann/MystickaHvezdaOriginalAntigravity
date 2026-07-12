@@ -86,3 +86,20 @@ if (moduleEntries.length > 0) {
         logLevel: 'info'
     });
 }
+
+// Core bundle: the four shared classic scripts every content page loads
+// (api-config -> templates -> auth-client -> components, in dependency
+// order). Concatenating the already-minified dist outputs keeps behaviour
+// identical to four sequential deferred scripts while cutting three
+// requests per page. Pages reference /js/dist/core.js.
+const CORE_BUNDLE_FILES = ['api-config.js', 'templates.js', 'auth-client.js', 'components.js'];
+const { writeFile } = await import('node:fs/promises');
+
+const coreParts = [];
+for (const fileName of CORE_BUNDLE_FILES) {
+    const distPath = path.join(outDir, fileName);
+    const source = await readFile(distPath, 'utf8');
+    coreParts.push(`/* ${fileName} */\n${source.trimEnd()}`);
+}
+await writeFile(path.join(outDir, 'core.js'), `${coreParts.join('\n;\n')}\n`, 'utf8');
+console.log(`[build-js] core.js bundled from ${CORE_BUNDLE_FILES.join(' + ')}`);
