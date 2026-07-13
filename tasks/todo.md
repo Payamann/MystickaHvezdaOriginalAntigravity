@@ -258,6 +258,28 @@ diagram s cestami, taxonomie eventů, endpointy, SEO infra).
 - [x] WEB-KNOWLEDGE.md aktualizován (analyza-webu-2026-07-11 cross-ref, core.js
       bundle post-scriptum, potvrzené nálezy).
 
+## Fáze 10 — Exploratory testing + fix koule limitu (2026-07-13)
+
+Sweep: 38 stránek × 2 viewporty (0 JS chyb / broken img / overflow / 4xx),
+7 nástrojů edge cases (vše OK), API sondy (CSRF/auth/validace OK).
+
+Nález (střední): křišťálová koule vynucovala denní limit jen pro přihlášené
+free (`if (!req.isPremium && req.user?.id)`) — anonymní neomezení (jen 20/hod
+IP). Přihlášení paradoxně = víc omezení.
+
+- [x] server/routes/oracle.js: anonymní 1 dotaz zdarma (httpOnly cookie
+      `mh_cb_free_uses`, env `CRYSTAL_BALL_ANON_FREE_LIMIT`), pak 402
+      `REGISTRATION_REQUIRED`; cookie nastavena až po úspěšné odpovědi.
+- [x] js/crystal-ball.js: `REGISTRATION_REQUIRED` → redirect na registraci
+      zdarma s kontextem (ne premium checkout); redirect přes location.pathname
+      (funguje pro CZ/SK/PL).
+- [x] js/freemium-koule.js: banner pro anonymní ukazuje „1 zdarma, pak
+      registrace" místo „3 výkladů zdarma"; přerender na auth:changed.
+- [x] build:js + bump verzí (koule v2→v3, freemium ?v=2, SK/PL crystal ?v=3),
+      SW cache přepočítán; revert nesouvisejícího dist driftu (numerology/dashboard).
+- [x] Ověřeno: 74/74 testů (nový anon-gate + CSP/static/SW/oracle), eslint 0,
+      audit:site OK, browser flow (1 zdarma → 2. redirect na registraci) + screenshot.
+
 ## Fáze 9 — Tarot ano/ne bridge redesign (2026-07-13)
 
 Data: tarot_yes_no_result → tarot_multi_card = 288 paywall views / 0 pricing

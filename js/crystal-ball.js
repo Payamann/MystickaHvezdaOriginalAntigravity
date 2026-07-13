@@ -228,7 +228,16 @@ function initCrystalBall() {
                     }
                 }
             } else {
-                if (response.status === 402 || response.status === 403 || (data.error && data.error.toLowerCase().includes('limit'))) {
+                if (data.code === 'REGISTRATION_REQUIRED') {
+                    // Anonymní vyčerpal free otázku — pošli na registraci zdarma, ne do premium checkoutu.
+                    if (answerContainer) answerContainer.classList.remove('visible');
+                    window.Auth?.showToast?.('První otázka zdarma využita', 'Zaregistruj se zdarma a ptej se dál — účet zdarma dává 3 otázky denně.', 'info');
+                    window.MH_ANALYTICS?.trackCTA?.('crystal_ball_register_gate', { feature: 'kristalova_koule' });
+                    const backTo = encodeURIComponent(window.location.pathname);
+                    setTimeout(() => {
+                        window.location.href = `/prihlaseni.html?mode=register&source=crystal_ball_register_gate&feature=kristalova_koule&redirect=${backTo}`;
+                    }, 1600);
+                } else if (response.status === 402 || response.status === 403 || (data.error && data.error.toLowerCase().includes('limit'))) {
                     if (answerContainer) answerContainer.classList.remove('visible');
                     window.Auth?.showToast?.('Limit dosažen', 'Chceš neomezené odpovědi? Aktivuj si Hvězdného Průvodce.', 'info');
                     startCrystalCheckout('crystal_ball_limit_gate', 'register');

@@ -139,7 +139,8 @@ V tomto režimu funguje celý funnel (registrace, onboarding, funnel/analytics i
 5. Partnerská shoda: skóre jen z 9 živlových kombinací, není unikátní na pár (tasks/todo.md:202).
 6. **Push notifikace v produkci potvrzeně mrtvé (ověřeno 2026-07-12):** `/api/health` hlásí job `dailyPushNotification: enabled`, ale `/api/config` vrací `vapidPublicKey: null` a `pushNotifications: false` → chybí `VAPID_PUBLIC_KEY`/`VAPID_PRIVATE_KEY` v Railway env. Klient bez public key nesbírá subscriptions, job nemá komu posílat. Oprava: vygenerovat pár (`npx web-push generate-vapid-keys`) a nastavit v Railway. E-mailová větev (daily horoskop, weekly newsletter) běží. `sentryDsn` je v produkci také `null`.
 7. Ops hardening nedodělaný: alerting na webhook failures a 4xx/5xx spiky; Lighthouse/CWV pass na produkci (app-improvement-plan Tier 3).
-8. `TECHNICAL_DEBT_BACKLOG.md` (2026-04-27) je v podstatě celý hotový — číst jako historický záznam, aktuální stav v `docs/TECHNICAL_DEBT_STATUS.md`.
+8. ~~Křišťálová koule: denní limit vynucen jen pro přihlášené free (`oracle.js`), anonymní neomezení~~ — **opraveno 2026-07-13** (anonymní 1 dotaz zdarma přes httpOnly cookie `mh_cb_free_uses`, pak `REGISTRATION_REQUIRED` → registrace zdarma; env `CRYSTAL_BALL_ANON_FREE_LIMIT`; guard test `server/tests/crystal-ball-anon-gate.test.js`). Vzor pro audit ostatních freemium gate: grep `req.user?.id` u limit podmínek.
+9. `TECHNICAL_DEBT_BACKLOG.md` (2026-04-27) je v podstatě celý hotový — číst jako historický záznam, aktuální stav v `docs/TECHNICAL_DEBT_STATUS.md`.
 
 ## 9. Chybějící externí data (dodá Pavel — zpřesní každou analýzu)
 

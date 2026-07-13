@@ -20,8 +20,19 @@ import {
 import { supabase } from '../db-supabase.js';
 import { trackPaywallHit } from '../middleware.js';
 import { getPlanById, getRequiredPlanForFeature } from '../config/constants.js';
+import { isProductionRuntime } from '../config/runtime.js';
 
 export const router = express.Router();
+
+// Anonymous crystal-ball allowance: N free questions (default 1), then register.
+// Server-authoritative httpOnly counter — unlike the old client-side localStorage
+// limit it cannot be edited from page JS. Clearing the cookie resets it (same class
+// as clearing localStorage); the hourly IP rate limiter is the hard abuse backstop.
+const ANON_CRYSTAL_BALL_COOKIE = 'mh_cb_free_uses';
+const ANON_CRYSTAL_BALL_FREE_LIMIT = Math.max(
+    0,
+    Number.parseInt(process.env.CRYSTAL_BALL_ANON_FREE_LIMIT, 10) || 1
+);
 
 const DEFAULT_UPSELL_PLAN_ID = 'pruvodce';
 
@@ -111,42 +122,59 @@ router.post('/crystal-ball', oracleLimiter, optionalPremiumCheck, async (req, re
             return res.status(400).json({ success: false, error: errorMsgs[lang] || errorMsgs['cs'] });
         }
 
-        // PREMIUM GATE: Free logged-in users limited to 3 questions per day
-        if (!req.isPremium && req.user?.id) {
-            try {
-                const today = new Date().toISOString().split('T')[0];
-                const { count, error: countError } = await supabase
-                    .from('readings')
-                    .select('id', { count: 'exact', head: true })
-                    .eq('user_id', req.user.id)
-                    .eq('type', 'crystal-ball')
-                    .gte('created_at', `${today}T00:00:00`);
+        // GATE: enforce the free-tier crystal-ball allowance server-side.
+        let isAnonymousFreeCall = false;
+        if (!req.isPremium) {
+            if (req.user?.id) {
+                // Free logged-in users: 3 questions per day (counted from saved readings).
+                try {
+                    const today = new Date().toISOString().split('T')[0];
+                    const { count, error: countError } = await supabase
+                        .from('readings')
+                        .select('id', { count: 'exact', head: true })
+                        .eq('user_id', req.user.id)
+                        .eq('type', 'crystal-ball')
+                        .gte('created_at', `${today}T00:00:00`);
 
-                if (countError) throw countError;
+                    if (countError) throw countError;
 
-                if (count >= 3) {
-                    trackPaywallHit(req.user?.id, 'crystal_ball_unlimited').catch(() => {});
-                    // SOFT WALL: Show upgrade offer instead of hard block
+                    if (count >= 3) {
+                        trackPaywallHit(req.user?.id, 'crystal_ball_unlimited').catch(() => {});
+                        // SOFT WALL: Show upgrade offer instead of hard block
+                        return res.status(402).json({
+                            success: false,
+                            error: 'Denní limit 3 otázek byl vyčerpán.',
+                            code: 'LIMIT_REACHED',
+                            feature: 'crystal_ball_unlimited',
+                            upsell: buildSubscriptionUpsell({
+                                title: 'Chcete neomezený přístup ke Křišťálové kouli?',
+                                message: 'Zažijte bez omezení. Hvězdný Průvodce vám otevře neomezený přístup.',
+                                feature: 'crystal_ball_unlimited',
+                                source: 'crystal_ball_upsell',
+                                features: [
+                                    '✓ Neomezené otázky',
+                                    '✓ Hlubší vhledy',
+                                    '✓ Uložit historii'
+                                ]
+                            })
+                        });
+                    }
+                } catch (limitError) {
+                    console.warn('Crystal Ball limit check failed:', limitError);
+                }
+            } else {
+                // Anonymous visitors: N free questions (default 1), then register a free account.
+                const priorUses = Number.parseInt(req.cookies?.[ANON_CRYSTAL_BALL_COOKIE], 10) || 0;
+                if (priorUses >= ANON_CRYSTAL_BALL_FREE_LIMIT) {
+                    trackPaywallHit(null, 'crystal_ball_register_gate').catch(() => {});
                     return res.status(402).json({
                         success: false,
-                        error: 'Denní limit 3 otázek byl vyčerpán.',
-                        code: 'LIMIT_REACHED',
-                        feature: 'crystal_ball_unlimited',
-                        upsell: buildSubscriptionUpsell({
-                            title: 'Chcete neomezený přístup ke Křišťálové kouli?',
-                            message: 'Zažijte bez omezení. Hvězdný Průvodce vám otevře neomezený přístup.',
-                            feature: 'crystal_ball_unlimited',
-                            source: 'crystal_ball_upsell',
-                            features: [
-                                '✓ Neomezené otázky',
-                                '✓ Hlubší vhledy',
-                                '✓ Uložit historii'
-                            ]
-                        })
+                        error: 'První otázka je zdarma. Zaregistruj se zdarma a ptej se dál.',
+                        code: 'REGISTRATION_REQUIRED',
+                        feature: 'kristalova_koule'
                     });
                 }
-            } catch (limitError) {
-                console.warn('Crystal Ball limit check failed:', limitError);
+                isAnonymousFreeCall = true;
             }
         }
 
@@ -171,6 +199,18 @@ router.post('/crystal-ball', oracleLimiter, optionalPremiumCheck, async (req, re
             console.warn('Crystal Ball AI fallback used:', aiError.message);
             fallback = true;
             response = buildFallbackCrystalBallResponse({ question, moonPhase });
+        }
+
+        // Count this anonymous free question so the next one hits the register gate.
+        if (isAnonymousFreeCall) {
+            const priorUses = Number.parseInt(req.cookies?.[ANON_CRYSTAL_BALL_COOKIE], 10) || 0;
+            res.cookie(ANON_CRYSTAL_BALL_COOKIE, String(priorUses + 1), {
+                httpOnly: true,
+                secure: isProductionRuntime(),
+                sameSite: 'Lax',
+                maxAge: 24 * 60 * 60 * 1000,
+                path: '/'
+            });
         }
 
         res.json({ success: true, response, fallback });
