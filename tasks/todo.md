@@ -258,6 +258,23 @@ diagram s cestami, taxonomie eventů, endpointy, SEO infra).
 - [x] WEB-KNOWLEDGE.md aktualizován (analyza-webu-2026-07-11 cross-ref, core.js
       bundle post-scriptum, potvrzené nálezy).
 
+## Fáze 9 — Tarot ano/ne bridge redesign (2026-07-13)
+
+Data: tarot_yes_no_result → tarot_multi_card = 288 paywall views / 0 pricing
+intentů za 7 dní (největší mrtvá konverzní plocha webu, analyzer předepsal
+"one locked outcome, one primary CTA").
+
+- [x] #tarot-yes-no-next-step: ze 4 rovnocenných karet (3 free úniky) na jedno
+      hero CTA se 3 zamčenými přísliby (tři karty / skryté vlivy / historie)
+      + tichý free odkaz (one_card). Event vocabulary beze změny.
+- [x] Tykání: bridge, info sekce, FAQ (HTML i JSON-LD), aria-label.
+- [x] CSS: --hero/--single/locked/cta/alt styly, bump ?v=5.
+- [x] e2e tarot.spec.js aktualizován (1 karta + locked list + free link).
+- [x] Ověřeno: growth-loop audit ✓, paywall-trust ✓, 41/41 tarot e2e ✓,
+      screenshot desktop+mobil ✓.
+- [ ] Follow-up: zrcadlit redesign do sk/tarot-ano-nie.html (sdílené CSS už
+      styly má). Měření: za ~7 dní srovnat segment v analyze:funnel.
+
 ### Review Fáze 8
 Produkce = origin/main (e565256f); paralelní session na mainu průběžně
 odbavuje nálezy z analyza-webu-2026-07-11 (core.js bundle, blog, sanitize-input)

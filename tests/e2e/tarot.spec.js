@@ -565,14 +565,23 @@ test.describe('Tarot Ano/Ne', () => {
 
         await expect(page.locator('#result-panel')).toHaveClass(/show/, { timeout: 2500 });
         await expect(page.locator('#tarot-yes-no-next-step')).toBeVisible();
-        await expect(page.locator('.tarot-yes-no-next-card')).toHaveCount(4);
+
+        // Jedno primární CTA se zamčeným obsahem — žádná mřížka rovnocenných únikových cest.
+        await expect(page.locator('.tarot-yes-no-next-card')).toHaveCount(1);
+        await expect(page.locator('.tarot-yes-no-next-locked li')).toHaveCount(3);
 
         const upgradeLink = page.locator('[data-tarot-yes-no-upgrade]').first();
         await expect(upgradeLink).toBeVisible();
+        await expect(upgradeLink.locator('.tarot-yes-no-next-cta')).toContainText('7 dní zdarma');
         const href = await upgradeLink.getAttribute('href');
         expect(href).toContain('plan=pruvodce');
         expect(href).toContain('source=tarot_yes_no_result');
         expect(href).toContain('feature=tarot_multi_card');
+
+        // Tichá free cesta zůstává, ale jako podřízený textový odkaz.
+        const freeLink = page.locator('.tarot-yes-no-next-alt [data-tarot-yes-no-intent="one_card"]');
+        await expect(freeLink).toBeVisible();
+        expect(await freeLink.getAttribute('href')).toContain('source=tarot_yes_no_intent');
     });
 
     test('výsledek ukazuje skutečnou taženou kartu, otázku a další krok', async ({ page }) => {

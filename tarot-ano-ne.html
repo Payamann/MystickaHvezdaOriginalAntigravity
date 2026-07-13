@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" href="/fonts/local-fonts.css">
     <link rel="stylesheet" href="css/style.v2.min.css?v=11">
-    <link rel="stylesheet" href="css/pages/tarot-ano-ne.css?v=4">
+    <link rel="stylesheet" href="css/pages/tarot-ano-ne.css?v=5">
 
     <script type="application/ld+json">
 
@@ -38,7 +38,7 @@
 
     </script>
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Je tarot ANO/NE zdarma?","acceptedAnswer":{"@type":"Answer","text":"Ano. Rychlý tarot ANO/NE je zdarma a bez registrace. Po výsledku můžete pokračovat do hlubšího tarotu, pokud chcete víc kontextu."}},{"@type":"Question","name":"Na jaké otázky se hodí tarot ANO/NE?","acceptedAnswer":{"@type":"Answer","text":"Nejlépe funguje pro konkrétní rozhodnutí, kde chcete rychlý směr. Vyhněte se otázkám, které potřebují detailní rozbor okolností."}},{"@type":"Question","name":"Můžu použít karty ano ne jako věštbu?","acceptedAnswer":{"@type":"Answer","text":"Ano, ale berte ji jako krátký symbolický signál. Karty ano ne pomáhají pojmenovat směr, ne nahrazovat vlastní rozhodnutí."}},{"@type":"Question","name":"Co dělat, když vyjde nejasná odpověď?","acceptedAnswer":{"@type":"Answer","text":"Nejasná odpověď obvykle znamená, že situace ještě není pevná. Zkuste otázku zpřesnit nebo navázat vícekartovým výkladem."}},{"@type":"Question","name":"Kdy zvolit plný tarotový výklad?","acceptedAnswer":{"@type":"Answer","text":"Plný tarotový výklad se hodí ve chvíli, kdy nestačí jen ano nebo ne a potřebujete vidět motivy, rizika, další krok a širší souvislosti."}}]}
+    {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Je tarot ANO/NE zdarma?","acceptedAnswer":{"@type":"Answer","text":"Ano. Rychlý tarot ANO/NE je zdarma a bez registrace. Po výsledku můžeš pokračovat do hlubšího tarotu, pokud chceš víc kontextu."}},{"@type":"Question","name":"Na jaké otázky se hodí tarot ANO/NE?","acceptedAnswer":{"@type":"Answer","text":"Nejlépe funguje pro konkrétní rozhodnutí, kde chceš rychlý směr. Vyhni se otázkám, které potřebují detailní rozbor okolností."}},{"@type":"Question","name":"Můžu použít karty ano ne jako věštbu?","acceptedAnswer":{"@type":"Answer","text":"Ano, ale ber ji jako krátký symbolický signál. Karty ano ne pomáhají pojmenovat směr, ne nahrazovat vlastní rozhodnutí."}},{"@type":"Question","name":"Co dělat, když vyjde nejasná odpověď?","acceptedAnswer":{"@type":"Answer","text":"Nejasná odpověď obvykle znamená, že situace ještě není pevná. Zkus otázku zpřesnit nebo navázat vícekartovým výkladem."}},{"@type":"Question","name":"Kdy zvolit plný tarotový výklad?","acceptedAnswer":{"@type":"Answer","text":"Plný tarotový výklad se hodí ve chvíli, kdy nestačí jen ano nebo ne a potřebuješ vidět motivy, rizika, další krok a širší souvislosti."}}]}
     </script>
 <!-- DOMPurify for XSS protection (must load synchronously before other scripts use it) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" integrity="sha384-XQqX/4yiUGu+oyr87jvWzRuqBUK/adrY0DunhL+tID9m/9dwSpV8h9Fk/Sg6ifVQ" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -85,7 +85,7 @@
 
                 <!-- Karty -->
 
-                <div class="cards-area" id="cards-area" aria-label="Tarotové karty — vyberte jednu">
+                <div class="cards-area" id="cards-area" aria-label="Tarotové karty — vyber jednu">
 
                     <div class="tarot-card" data-index="0" role="button" aria-label="Karta 1">
 
@@ -219,27 +219,22 @@
                     <div class="tarot-yes-no-next-header">
                         <span class="section__badge">Další krok</span>
                         <h2 id="tarot-yes-no-next-title">Odpověď <span id="tarot-yes-no-next-answer">karty</span> je jen začátek.</h2>
-                        <p>Pokud chcete vědět proč, co vás brzdí a jaký krok dává smysl teď, navazuje na tuto kartu hlubší výklad.</p>
+                        <p>Jedna karta ti dala směr. Hlubší výklad ukáže, co za odpovědí stojí — a jak s ní naložit.</p>
                     </div>
 
-                    <div class="tarot-yes-no-next-grid">
-                        <a class="tarot-yes-no-next-card tarot-yes-no-next-card--primary" href="cenik.html?plan=pruvodce&source=tarot_yes_no_result&feature=tarot_multi_card" data-tarot-yes-no-upgrade="tarot_yes_no_result">
+                    <div class="tarot-yes-no-next-grid tarot-yes-no-next-grid--single">
+                        <a class="tarot-yes-no-next-card tarot-yes-no-next-card--primary tarot-yes-no-next-card--hero" href="cenik.html?plan=pruvodce&source=tarot_yes_no_result&feature=tarot_multi_card" data-tarot-yes-no-upgrade="tarot_yes_no_result">
                             <strong>Odemknout hlubší výklad</strong>
-                            <span>Vícekartový tarot, Hvězdný průvodce a osobní kontext v jednom plánu. Prvních 7 dní zdarma.</span>
-                        </a>
-                        <a class="tarot-yes-no-next-card" href="tarot.html?source=tarot_yes_no_intent&feature=tarot" data-tarot-yes-no-intent="one_card">
-                            <strong>Jedna karta</strong>
-                            <span>Rychlý symbol pro první krok, který dnes řešíte.</span>
-                        </a>
-                        <a class="tarot-yes-no-next-card" href="tarot.html?source=tarot_yes_no_intent&feature=tarot_multi_card" data-tarot-yes-no-intent="three_cards">
-                            <strong>Tři karty</strong>
-                            <span>Minulost, přítomnost a směr, který z odpovědi vyplývá.</span>
-                        </a>
-                        <a class="tarot-yes-no-next-card" href="andelske-karty.html?source=tarot_yes_no_intent&feature=angel_card_deep" data-tarot-yes-no-intent="angel_card_deep">
-                            <strong>Andělské karty</strong>
-                            <span>Jemnější vedení, když je odpověď citlivá nebo nejistá.</span>
+                            <ul class="tarot-yes-no-next-locked">
+                                <li>Výklad ze tří karet: minulost, přítomnost a směr tvé otázky</li>
+                                <li>Skryté vlivy, které jednokartová odpověď nevidí</li>
+                                <li>Uložená historie — vrať se k otázce, až se situace pohne</li>
+                            </ul>
+                            <span class="tarot-yes-no-next-cta">Vyzkoušet Průvodce — prvních 7 dní zdarma</span>
                         </a>
                     </div>
+
+                    <p class="tarot-yes-no-next-alt">Nebo si polož další otázku zdarma: <a href="tarot.html?source=tarot_yes_no_intent&feature=tarot" data-tarot-yes-no-intent="one_card">jedna karta v tarotu</a></p>
                 </section>
 
                 <!-- Info sekce -->
@@ -252,9 +247,9 @@
 
                     <p class="mh-inline-418361a818">Tarotové karty ANO nebo NE jsou
 
-                        nejjednodušší způsob jak požádat o vedení. Soustřeďte se na svou otázku, klidně zavřete oči, a
+                        nejjednodušší způsob jak požádat o vedení. Soustřeď se na svou otázku, klidně zavři oči, a
 
-                        poté vyberte kartu, která vás přitahuje. Odpověď vychází ze symboliky tarotu a vaší vlastní
+                        pak vyber kartu, která tě přitahuje. Odpověď vychází ze symboliky tarotu a tvé vlastní
 
                         intuice.</p>
 
@@ -285,7 +280,7 @@
                     <div class="tarot-yes-no-faq-grid">
                         <article class="tarot-yes-no-faq-item">
                             <h3>Je tarot ANO/NE zdarma?</h3>
-                            <p>Ano. Rychlá odpověď je bez registrace. Pokud chcete širší vstup, můžete začít přes <a href="tarot-zdarma.html?source=tarot_yes_no_faq">tarot zdarma online</a>. Pokračování do hlubšího výkladu je volitelné.</p>
+                            <p>Ano. Rychlá odpověď je bez registrace. Pokud chceš širší vstup, můžeš začít přes <a href="tarot-zdarma.html?source=tarot_yes_no_faq">tarot zdarma online</a>. Pokračování do hlubšího výkladu je volitelné.</p>
                         </article>
                         <article class="tarot-yes-no-faq-item">
                             <h3>Na jaké otázky se hodí?</h3>
@@ -301,7 +296,7 @@
                         </article>
                         <article class="tarot-yes-no-faq-item">
                             <h3>Kdy jít do plného výkladu?</h3>
-                            <p>Když potřebujete pochopit motivy, rizika a další krok, ne jen jednoslovný směr.</p>
+                            <p>Když potřebuješ pochopit motivy, rizika a další krok, ne jen jednoslovný směr.</p>
                         </article>
                     </div>
                 </section>
