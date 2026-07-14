@@ -170,6 +170,17 @@ function getSafeLocalRedirect(value) {
     }
 }
 
+// Cíl po dokončení/přeskočení onboardingu. Smysluplný redirect (např. návrat do
+// checkoutu) má přednost před destinací zájmu; výchozí redirect je prázdný profil,
+// který onboarding záměrně nahrazuje prvním výkladem ("první hodnota, ne prázdný profil").
+function resolveCompletionTarget(destinationHref) {
+    const { redirect } = getOnboardingContext();
+    if (redirect && !redirect.startsWith('/profil.html')) {
+        return redirect;
+    }
+    return destinationHref;
+}
+
 function getManifestInterest(featureId) {
     const feature = window.MH_GROWTH_LOOP?.getFeature?.(featureId);
     if (!feature) return '';
@@ -646,7 +657,7 @@ async function finishOnboarding(action) {
     });
 
     await notifyBackendOnboardingComplete({ destination: destinationHref, skipped: false });
-    window.location.href = destinationHref;
+    window.location.href = resolveCompletionTarget(destinationHref);
 }
 
 async function skipOnboarding(event, action) {
@@ -667,7 +678,7 @@ async function skipOnboarding(event, action) {
 
     const destination = getPrimaryDestination().href('onboarding_skip');
     await notifyBackendOnboardingComplete({ destination, skipped: true });
-    window.location.href = destination;
+    window.location.href = resolveCompletionTarget(destination);
 }
 
 document.addEventListener('click', (event) => {

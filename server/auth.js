@@ -291,7 +291,8 @@ router.post('/register', authLimiter, async (req, res) => {
             return res.status(400).json({ error: passwordError.message });
         }
 
-        // Server-side password confirmation check
+        // Server-side password confirmation check (auth modal still sends confirm_password;
+        // the standalone prihlaseni.html form omits it and this is skipped when undefined).
         const passwordConfirmation = confirm_password ?? password_confirm;
         if (passwordConfirmation !== undefined && password !== passwordConfirmation) {
             return res.status(400).json({ error: 'Hesla se neshodují.' });

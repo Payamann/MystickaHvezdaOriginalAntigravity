@@ -407,6 +407,16 @@ document.addEventListener('DOMContentLoaded', () => {
         [passwordInput, gdprConsent].forEach(clearFieldError);
     };
 
+    // Sdílená hláška: použije ji i nativní validace přes setCustomValidity, aby GDPR
+    // checkbox neukazoval generické "Vyplňte prosím toto pole", ale tuhle konkrétní.
+    const GDPR_CONSENT_MESSAGE = 'Pro vytvoření účtu potvrď souhlas se zpracováním údajů a obchodní podmínky.';
+
+    const syncGdprValidity = () => {
+        if (gdprConsent) {
+            gdprConsent.setCustomValidity(gdprConsent.checked ? '' : GDPR_CONSENT_MESSAGE);
+        }
+    };
+
     const validateRegisterFields = () => {
         if (!isRegisterMode) return true;
 
@@ -418,9 +428,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (gdprConsent && !gdprConsent.checked) {
-            const message = 'Pro vytvoření účtu potvrďte souhlas se zpracováním údajů a obchodními podmínkami.';
-            setFieldError(gdprConsent, message);
-            showAuthError(message, gdprConsent);
+            setFieldError(gdprConsent, GDPR_CONSENT_MESSAGE);
+            showAuthError(GDPR_CONSENT_MESSAGE, gdprConsent);
             return false;
         }
 
@@ -659,7 +668,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 passwordInput.autocomplete = 'new-password';
                 passwordInput.minLength = 8;
             }
-            if (gdprConsent) gdprConsent.required = true;
+            if (gdprConsent) {
+                gdprConsent.required = true;
+                syncGdprValidity();
+            }
             authSubmitBtn.textContent = requestedPlan ? 'Vytvořit účet a pokračovat' : 'Vytvořit účet zdarma';
             if (toggleBtn) toggleBtn.textContent = 'Máte účet? Přihlaste se';
         } else {
@@ -683,6 +695,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (gdprConsent) {
                 gdprConsent.required = false;
                 gdprConsent.checked = false;
+                gdprConsent.setCustomValidity('');
             }
             authSubmitBtn.textContent = requestedPlan ? 'Přihlásit se a pokračovat' : 'Přihlásit se';
             if (toggleBtn) toggleBtn.textContent = 'Nemáte účet? Zaregistrujte se zdarma →';
@@ -706,6 +719,7 @@ document.addEventListener('DOMContentLoaded', () => {
     gdprConsent?.addEventListener('change', () => {
         clearFieldError(gdprConsent);
         getFormUx().clearFormSummary?.(loginForm);
+        syncGdprValidity();
     });
 
     if (isResetMode && hash) {
