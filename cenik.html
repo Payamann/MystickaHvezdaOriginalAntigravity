@@ -39,8 +39,13 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
+    <!-- Preload above-the-fold fontů (Cinzel = nadpisy, Inter = text; český text = latin-ext).
+         Font se tak stihne načíst v block periodě font-display:optional a aplikuje se hned
+         při prvním vykreslení → titulek se pozdě nepřerenderuje (zbytkový CLS na cold loadu). -->
+    <link rel="preload" href="/fonts/cinzel-latin-ext.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/fonts/inter-latin-ext.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="css/site.min.css?v=1">
-    <link rel="stylesheet" href="css/pages/cenik.css?v=9">
+    <link rel="stylesheet" href="css/pages/cenik.css?v=10">
     <script defer src="https://js.stripe.com/v3/"></script>
     <script src="https://cdn.jsdelivr.net/npm/lucide@1.13.0/dist/umd/lucide.min.js" integrity="sha384-EHKCF1r0kkLgXLXtUe79iQzyUeZou+h3FZLoZWdcIAyctVNKMHqqy5wqYWQFUq6k" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 

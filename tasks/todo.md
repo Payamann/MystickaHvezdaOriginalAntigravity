@@ -258,6 +258,25 @@ diagram s cestami, taxonomie eventů, endpointy, SEO infra).
 - [x] WEB-KNOWLEDGE.md aktualizován (analyza-webu-2026-07-11 cross-ref, core.js
       bundle post-scriptum, potvrzené nálezy).
 
+## Fáze 11 — Mobilní audit + fix CLS ceníku (2026-07-14)
+
+Mobilní audit (17 stránek × 375px): viewport 100 %, zoom neblokovaný, 0 overflow,
+0 inputů <16px (iOS zoom), obrázky lazy s fixní výškou (blog CLS 0.01). Nález:
+ceník CLS 0.24 (POOR), homepage 0.23 (ale to byl artefakt programového scrollu —
+user-facing bez scrollu 0.029, OK).
+
+Root cause ceníku (po dlouhé diagnostice): `body.page-pricing.cookie-banner-active`
+v cenik.css zmenšovalo hero (titulek 41→31px, trust-badge display:none, decision
+margin-top 12.5rem) a aplikovalo se až po objevení cookie lišty (~1,8 s) → reflow.
+
+- [x] css/pages/cenik.css: odstraněn cookie-banner-active compact-mode reshaping
+      hero/toggle/decision (lišta je fixní dole, hero nepřekrývá → zbytečné).
+- [x] cenik.html: preload above-the-fold fontů (Cinzel + Inter latin-ext) proti
+      zbytkovému cold-load font reflow; bump cenik.css ?v=10.
+- [x] Výsledek: CLS 0.24-0.33 → konzistentně 0.0054 (4 běhy). audit:site OK,
+      static-html-csp 27/27, vizuál OK (hero plná velikost i s lištou, bez skoku).
+- Pozn.: spekulativní pokusy (banner pre-render, JS guardy) reverted — mířily vedle.
+
 ## Fáze 10 — Exploratory testing + fix koule limitu (2026-07-13)
 
 Sweep: 38 stránek × 2 viewporty (0 JS chyb / broken img / overflow / 4xx),
