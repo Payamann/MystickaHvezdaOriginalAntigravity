@@ -78,6 +78,9 @@ function buildEmailHeaders({ template, data = {}, headers = {}, unsubscribeUrl =
 
   if (listUnsubscribeUrl) {
     baseHeaders['List-Unsubscribe'] = `<${listUnsubscribeUrl}>`;
+    // RFC 8058 one-click: řekne Gmailu/Apple Mailu, že smí POSTnout na výše uvedenou
+    // URL a odhlásit bez otevření prohlížeče. Vyžadováno Gmail bulk-sender pravidly.
+    baseHeaders['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click';
   }
 
   return {

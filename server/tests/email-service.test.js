@@ -63,6 +63,8 @@ describe('Email service deliverability payload', () => {
 
         const payload = sendMock.mock.calls[0][0];
         expect(payload.headers['List-Unsubscribe']).toBe('<https://yourdomain.com/api/subscribe/horoscope/unsubscribe?token=token%20with%20spaces>');
+        // RFC 8058 one-click: bez této hlavičky Gmail nezobrazí tlačítko "Odhlásit odběr".
+        expect(payload.headers['List-Unsubscribe-Post']).toBe('List-Unsubscribe=One-Click');
     });
 
     test('builds daily horoscope with safer content, preheader and plain text', async () => {

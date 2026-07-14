@@ -1,7 +1,8 @@
 /**
  * Horoscope Email Subscription Routes
  * POST   /api/subscribe/horoscope  — subscribe
- * GET    /api/subscribe/horoscope/unsubscribe?token=xxx — one-click unsubscribe
+ * GET    /api/subscribe/horoscope/unsubscribe?token=xxx — odhlášení přes odkaz (HTML stránka)
+ * POST   /api/subscribe/horoscope/unsubscribe?token=xxx — one-click unsubscribe (RFC 8058, Gmail/Apple)
  */
 import express from 'express';
 import crypto from 'crypto';
@@ -61,7 +62,21 @@ router.post('/', subscribeLimiter, async (req, res) => {
     }
 });
 
-// GET /api/subscribe/horoscope/unsubscribe?token=xxx
+// Deaktivuje odběr podle unsubscribe tokenu. Vrací 'ok' | 'not_found' | vyhodí chybu.
+async function deactivateByToken(token) {
+    const { data, error } = await supabase
+        .from('horoscope_subscriptions')
+        .update({ active: false, unsubscribed_at: new Date().toISOString() })
+        .eq('unsubscribe_token', token)
+        .eq('active', true)
+        .select('id')
+        .maybeSingle();
+
+    if (error) throw error;
+    return data ? 'ok' : 'not_found';
+}
+
+// GET /api/subscribe/horoscope/unsubscribe?token=xxx — klik na odkaz v patičce (vrací HTML stránku)
 router.get('/unsubscribe', async (req, res) => {
     const { token } = req.query;
     if (!token) {
@@ -72,22 +87,13 @@ router.get('/unsubscribe', async (req, res) => {
     }
 
     try {
-        const { data, error } = await supabase
-            .from('horoscope_subscriptions')
-            .update({ active: false, unsubscribed_at: new Date().toISOString() })
-            .eq('unsubscribe_token', token)
-            .eq('active', true)
-            .select('id')
-            .maybeSingle();
-
-        if (error) throw error;
-        if (!data) {
+        const result = await deactivateByToken(token);
+        if (result === 'not_found') {
             return res.status(404).send(renderUnsubscribePage({
                 title: 'Odkaz neexistuje',
                 message: 'Odkaz pro odhlášení neexistuje nebo už byl použit.'
             }));
         }
-
         res.send(renderUnsubscribePage({
             title: 'Odhlášení úspěšné',
             message: 'Byl jsi odhlášen z denního horoskopu.'
@@ -98,6 +104,25 @@ router.get('/unsubscribe', async (req, res) => {
             title: 'Chyba serveru',
             message: 'Zkuste to prosím znovu.'
         }));
+    }
+});
+
+// POST /api/subscribe/horoscope/unsubscribe?token=xxx — one-click unsubscribe (RFC 8058).
+// Gmail/Apple Mail sem POSTují z tlačítka "Odhlásit odběr" (bez cookies/CSRF — endpoint je
+// vyňatý z CSRF v server/index.js). Vrací 200 na jakýkoli zpracovaný požadavek (idempotentní);
+// e-mailový klient chce jen 2xx a chyby uživateli nezobrazuje.
+router.post('/unsubscribe', async (req, res) => {
+    const token = req.query.token || req.body?.token;
+    if (!token) {
+        return res.status(400).json({ success: false, error: 'Chybí token.' });
+    }
+
+    try {
+        await deactivateByToken(token);
+        res.status(200).json({ success: true });
+    } catch (err) {
+        console.error('[HoroscopeSub] One-click unsubscribe error:', err);
+        res.status(500).json({ success: false });
     }
 });
 

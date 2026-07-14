@@ -507,6 +507,13 @@ const csrfProtection = (req, res, next) => {
         return next();
     }
 
+    // Skip CSRF for one-click unsubscribe (RFC 8058): e-mailoví klienti (Gmail,
+    // Apple Mail) sem POSTují bez cookies i CSRF tokenu. Odhlášení je veřejná
+    // opt-out akce chráněná vlastním unsubscribe tokenem, ne CSRF.
+    if (req.path.endsWith('/unsubscribe')) {
+        return next();
+    }
+
     // Get token from headers or body
     const token = req.headers['x-csrf-token'] || req.body?.csrfToken;
 
