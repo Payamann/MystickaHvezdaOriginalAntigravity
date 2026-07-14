@@ -5060,8 +5060,8 @@ body.page-mentor .header {
 }
 
 .footer-feedback button {
-  min-height: 34px;
-  padding: 0.35rem 0.85rem;
+  min-height: 44px;
+  padding: 0.5rem 1.1rem;
   border: 1px solid rgba(212, 175, 55, 0.32);
   border-radius: 999px;
   background: rgba(5, 5, 16, 0.38);
@@ -5132,6 +5132,10 @@ body.page-mentor .header {
 
 
 .footer__links a {
+
+  display: inline-block;
+
+  padding: 0.3rem 0;
 
   color: var(--color-silver-mist);
 
