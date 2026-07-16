@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
+import { countExcludedFunnelEvents, getExcludedFunnelUserIds } from '../server/config/funnel-exclusions.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -240,6 +241,11 @@ async function main() {
     ]);
 
     const { events, options } = await fetchFunnelEvents(supabase, args);
+    const excludedEventCount = countExcludedFunnelEvents(events);
+    if (excludedEventCount > 0) {
+        const excludedUsers = getExcludedFunnelUserIds();
+        console.log(`[export-live-funnel] excluded ${excludedEventCount} event(s) from ${excludedUsers.size} test/internal user id(s) (MH_FUNNEL_EXCLUDED_USER_IDS).`);
+    }
     const report = buildFunnelReport(events, options);
     const csv = buildFunnelSegmentsCsv(report);
 

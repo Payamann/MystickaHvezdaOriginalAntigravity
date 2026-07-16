@@ -556,7 +556,7 @@ test.describe('Tarot Ano/Ne', () => {
         await expect(h1).toBeAttached();
     });
 
-    test('po výběru karty ukáže další kroky a prémiový bridge', async ({ page }) => {
+    test('po výběru karty ukáže další kroky a nabídku uložení zdarma', async ({ page }) => {
         await page.goto('/tarot-ano-ne.html');
         await waitForPageReady(page);
 
@@ -566,17 +566,22 @@ test.describe('Tarot Ano/Ne', () => {
         await expect(page.locator('#result-panel')).toHaveClass(/show/, { timeout: 2500 });
         await expect(page.locator('#tarot-yes-no-next-step')).toBeVisible();
 
-        // Jedno primární CTA se zamčeným obsahem — žádná mřížka rovnocenných únikových cest.
+        // Jedno primární CTA — a je to sběr e-mailů zdarma, ne placení. Odpověď
+        // ano/ne je hotový zážitek, tady stavíme list, nepitchujeme premium.
         await expect(page.locator('.tarot-yes-no-next-card')).toHaveCount(1);
         await expect(page.locator('.tarot-yes-no-next-locked li')).toHaveCount(3);
 
-        const upgradeLink = page.locator('[data-tarot-yes-no-upgrade]').first();
-        await expect(upgradeLink).toBeVisible();
-        await expect(upgradeLink.locator('.tarot-yes-no-next-cta')).toContainText('7 dní zdarma');
-        const href = await upgradeLink.getAttribute('href');
-        expect(href).toContain('plan=pruvodce');
+        const saveLink = page.locator('#tarot-yes-no-next-step [data-tarot-yes-no-register]').first();
+        await expect(saveLink).toBeVisible();
+        await expect(saveLink.locator('.tarot-yes-no-next-cta')).toContainText('zdarma');
+        const href = await saveLink.getAttribute('href');
+        expect(href).toContain('mode=register');
         expect(href).toContain('source=tarot_yes_no_result');
-        expect(href).toContain('feature=tarot_multi_card');
+        expect(href).toContain('feature=tarot_yes_no');
+        expect(href).toContain('redirect=/profil.html');
+        // Nesmí to vést do placeného checkoutu.
+        expect(href).not.toContain('cenik.html');
+        expect(href).not.toContain('plan=pruvodce');
 
         // Tichá free cesta zůstává, ale jako podřízený textový odkaz.
         const freeLink = page.locator('.tarot-yes-no-next-alt [data-tarot-yes-no-intent="one_card"]');

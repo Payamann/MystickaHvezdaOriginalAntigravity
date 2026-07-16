@@ -1004,12 +1004,15 @@
         setBlockVisible(nextStep, true);
 
         const metadata = getResultMetadata(answerKey, ans, question);
+        // Free save/email-capture bridge — NOT a paywall. A yes/no answer is a
+        // complete experience, so this surface builds the list instead of
+        // pitching premium. first_value_completed already counts the moment;
+        // firing paywall_viewed here overstated paywall volume ~15x.
         window.MH_ANALYTICS?.trackAction?.('tarot_yes_no_result_bridge_viewed', {
             ...metadata,
             feature: TAROT_YES_NO_FEATURE,
             source: TAROT_YES_NO_RESULT_SOURCE
         });
-        void trackTarotYesNoFunnelEvent('paywall_viewed', TAROT_YES_NO_RESULT_SOURCE, metadata);
     }
 
     function bindTarotYesNoBridgeLinks() {
@@ -1038,12 +1041,20 @@
             if (link.dataset.tarotYesNoBound === 'true') return;
             link.dataset.tarotYesNoBound = 'true';
             link.addEventListener('click', () => {
+                const intent = link.dataset.tarotYesNoRegister;
+                const destination = link.getAttribute('href') || '';
                 window.MH_ANALYTICS?.trackCTA?.('tarot_yes_no_save_profile', {
-                    intent: link.dataset.tarotYesNoRegister,
-                    destination: link.getAttribute('href') || '',
+                    intent,
+                    destination,
                     source: TAROT_YES_NO_RESULT_SOURCE,
                     feature: TAROT_YES_NO_FEATURE
                 });
+                // Funnel-level capture metric: how many turn a free yes/no answer
+                // into a free registration (email captured + activation sequence).
+                void trackTarotYesNoFunnelEvent('reading_save_clicked', TAROT_YES_NO_RESULT_SOURCE, {
+                    intent,
+                    destination
+                }, TAROT_YES_NO_TOOL, null);
             });
         });
     }

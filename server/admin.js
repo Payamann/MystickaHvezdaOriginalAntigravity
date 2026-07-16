@@ -2,6 +2,7 @@ import express from 'express';
 import { supabase } from './db-supabase.js';
 import { authenticateToken, requireAdmin } from './middleware.js';
 import { PLAN_TYPES, SUBSCRIPTION_PLANS } from './config/constants.js';
+import { filterExcludedFunnelEvents } from './config/funnel-exclusions.js';
 import {
     createSupportDraftReply,
     getGmailSupportStatus,
@@ -937,11 +938,14 @@ export function buildBusinessReport({
 }
 
 export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, since = null, previousSince = null, periodEnd = null, limit = DEFAULT_FUNNEL_LIMIT } = {}) {
+    // Strip test/internal traffic (MH_FUNNEL_EXCLUDED_USER_IDS) before aggregation
+    // so conversion metrics reflect real users. No-op when the list is unset.
+    const scopedEvents = filterExcludedFunnelEvents(events);
     const {
         hasComparison,
         currentEvents,
         previousEvents
-    } = splitComparisonEvents(events, { since, previousSince, periodEnd });
+    } = splitComparisonEvents(scopedEvents, { since, previousSince, periodEnd });
     const byEvent = {};
     const bySource = {};
     const byFeature = {};
