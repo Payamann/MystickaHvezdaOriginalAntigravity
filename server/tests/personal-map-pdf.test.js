@@ -30,7 +30,7 @@ describe('personal map PDF service', () => {
         });
 
         expect(prompt.system).toContain('česká autorka');
-        expect(prompt.user).toContain('Osobní mapa zbytku roku 2026');
+        expect(prompt.user).toContain('Osobní mapa');
         expect(prompt.user).toContain('Jana');
         expect(prompt.user).toContain('Vrať pouze validní JSON bez markdownu');
         expect(prompt.user).toContain('"essence"');
@@ -45,11 +45,22 @@ describe('personal map PDF service', () => {
         });
 
         expect(html).toContain('<!DOCTYPE html>');
-        expect(html).toContain('Osobní mapa zbytku roku');
+        expect(html).toContain('Osobní mapa');
         expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;');
         expect(html).toContain('láska &lt;img src=x onerror=alert(1)&gt;');
         expect(html).not.toContain('<script>alert(1)</script>');
         expect(html).not.toContain('<img src=x onerror=alert(1)>');
+    });
+
+    test('buildPersonalMapHtml renders exactly 20 pages with the new sections', () => {
+        const html = buildPersonalMapHtml(samplePersonalMapData);
+        const pageCount = (html.match(/class="mh-pdf-page /g) || []).length;
+        expect(pageCount).toBe(20);
+        // New value-adding sections must actually render, not just pad the count.
+        expect(html).toContain('Co tě nese, i když je těžko');
+        expect(html).toContain('Kratší věta, jasnější ne');
+        expect(html).toContain('Kde ztrácíš sílu a co tě vrací');
+        expect(html).toContain('Místo pro tvoje poznámky');
     });
 
     test('buildPersonalMapFallbackSections returns complete personalized fallback content', () => {
@@ -121,7 +132,7 @@ describe('personal map PDF service', () => {
             birthDate: '1989-07-15',
             focus: 'ověření doručení PDF',
             year: 2026,
-            productName: 'Osobní mapa zbytku roku 2026',
+            productName: 'Osobní mapa',
             sections
         });
         const text = stripHtml(html);

@@ -67,8 +67,8 @@ const WEEKLY_TOOL_TIPS = [
 // alternating deterministically by ISO week.
 const PREMIUM_SPOTLIGHTS = [
     {
-        title: 'Osobní mapa zbytku roku 2026',
-        text: '16 stran osobního výkladu pro tvoje znamení, téma a aktuální období. Ne obecný horoskop — mapa, ke které se vracíš.',
+        title: 'Osobní mapa',
+        text: '20 stran osobního výkladu pro tvoje znamení, téma a aktuální období. Ne obecný horoskop — mapa, ke které se vracíš.',
         price: '299 Kč · jednorázově · PDF do e-mailu',
         url: '/osobni-mapa.html?source=newsletter_digest&feature=osobni_mapa_2026&utm_source=email&utm_campaign=weekly_digest'
     },

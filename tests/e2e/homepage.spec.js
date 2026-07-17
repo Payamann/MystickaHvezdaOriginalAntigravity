@@ -307,10 +307,10 @@ test.describe('Homepage', () => {
         await expect(page.locator('a[href*="homepage_pricing_full_compare"]')).toContainText('Otevřít celý ceník');
     });
 
-    test('homepage viditelne propaguje Osobni mapu zbytku roku', async ({ page }) => {
+    test('homepage viditelne propaguje Osobni mapu', async ({ page }) => {
         const spotlight = page.locator('.personal-map-spotlight');
         await expect(spotlight).toBeVisible();
-        await expect(spotlight).toContainText('Osobní mapa zbytku roku 2026');
+        await expect(spotlight).toContainText('Osobní mapa');
         await expect(spotlight).toContainText('299 Kč');
         await expect(spotlight).toContainText('Roční horoskop na míru za 199 Kč');
         await expect(spotlight.locator('img[alt*="Osobní mapa"]')).toBeVisible();

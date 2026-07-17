@@ -18,7 +18,7 @@ const defaultPersonalMapPriceId = stripeSecretKey.startsWith('sk_live_') ? LIVE_
 const PRODUCT = {
     id: 'osobni_mapa_2026',
     type: 'personal_map',
-    name: 'Osobní mapa zbytku roku 2026',
+    name: 'Osobní mapa',
     price: 29900,
     currency: 'czk',
     year: '2026',

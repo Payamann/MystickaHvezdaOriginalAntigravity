@@ -61,10 +61,13 @@ const DEFAULT_SECTIONS = {
         sentence: '',
         text: ''
     },
+    strengths: '',
     mainTheme: '',
     innerMirror: '',
     love: '',
+    communication: '',
     workMoney: '',
+    bodyEnergy: '',
     growth: '',
     shadowGift: '',
     months: [],
@@ -314,10 +317,13 @@ function normalizePersonalMapSections(value) {
             ...DEFAULT_SECTIONS.yearMantra,
             ...(source.yearMantra && typeof source.yearMantra === 'object' ? source.yearMantra : {})
         },
+        strengths: typeof source.strengths === 'string' ? source.strengths : '',
         mainTheme: typeof source.mainTheme === 'string' ? source.mainTheme : '',
         innerMirror: typeof source.innerMirror === 'string' ? source.innerMirror : '',
         love: typeof source.love === 'string' ? source.love : '',
+        communication: typeof source.communication === 'string' ? source.communication : '',
         workMoney: typeof source.workMoney === 'string' ? source.workMoney : '',
+        bodyEnergy: typeof source.bodyEnergy === 'string' ? source.bodyEnergy : '',
         growth: typeof source.growth === 'string' ? source.growth : '',
         shadowGift: typeof source.shadowGift === 'string' ? source.shadowGift : '',
         months: Array.isArray(source.months) ? source.months.slice(0, 6) : [],
@@ -343,7 +349,7 @@ function buildPersonalMapFallbackSections({
     return {
         starSignature: {
             title: `Tichý kompas ${signName}`,
-            text: `${displayName}, tahle osobní mapa pro rok ${year} stojí na tématu znamení ${signName}: návrat k vnitřnímu bezpečí, které nemusí nikomu nic dokazovat. ${focusText} V běžném dni se to ukáže hlavně tam, kde se snažíš držet klid za všechny kolem sebe a přitom ti uvnitř ubývá prostor. Tvoje síla není v tom, že všechno vydržíš. Je v citlivém rozpoznání, co je opravdu tvoje odpovědnost a co už jen starý zvyk reagovat dřív, než se nadechneš. Všímej si okamžiků, kdy se tělo uvolní po kratší větě, jasnějším ne nebo odloženém vysvětlování. Právě tam začíná zbytek roku působit méně jako tlak a víc jako návrat k sobě.`,
+            text: `${displayName}, tahle osobní mapa pro rok ${year} stojí na tématu znamení ${signName}: návrat k vnitřnímu bezpečí, které nemusí nikomu nic dokazovat. ${focusText} V běžném dni se to ukáže hlavně tam, kde se snažíš držet klid za všechny kolem sebe a přitom ti uvnitř ubývá prostor. Tvoje síla není v tom, že všechno vydržíš. Je v citlivém rozpoznání, co je opravdu tvoje odpovědnost a co už jen starý zvyk reagovat dřív, než se nadechneš. Všímej si okamžiků, kdy se tělo uvolní po kratší větě, jasnějším ne nebo odloženém vysvětlování. Právě tam začíná tvůj čas působit méně jako tlak a víc jako návrat k sobě.`,
             keywords: ['směr', 'hranice', 'klid'],
             guidingQuestion: 'Kde už znám odpověď, ale pořád čekám na dokonalé potvrzení?'
         },
@@ -369,10 +375,13 @@ function buildPersonalMapFallbackSections({
             sentence: 'Volím krok, který vrací klid, ne jen přijatelný obraz.',
             text: `Tahle věta je kotva pro rok ${year}. Vracej se k ní ve chvíli, kdy se objeví chuť udělat rozhodnutí jen proto, aby bylo po napětí. Klid není vždy nejrychlejší odpověď. Často je to ta nejpravdivější. Poznáš ho podle toho, že po něm zůstane víc prostoru v těle i v mysli.`
         },
+        strengths: 'Tvoje síla není v tom, kolik toho uneseš, ale v citu pro to, co je pravdivé. Umíš vnímat náladu prostoru, najít slovo, které druhému uleví, a udržet klid tam, kde ostatní ztrácí hlavu. To je vzácné. Poznáš to podle chvil, kdy se kolem tebe věci samy zjednoduší i bez zvýšeného hlasu. Druhá síla je vytrvalost: zůstáváš u toho, co má smysl, i když se rychlý výsledek nedostaví. Pozor jen na jedno — ať se o svoje dary nepřipravíš tím, že je použiješ hlavně pro klid ostatních. Tvoje schopnosti nabírají plnou hodnotu ve chvíli, kdy slouží i tobě. Praktický krok: pojmenuj jednu věc, kterou umíš dobře, a tento týden ji vědomě použij pro sebe, ne jen pro druhé.',
         mainTheme: `${displayName}, hlavní téma této mapy je návrat k jednoduššímu směru. ${focusText} V praxi to znamená méně dokazování a víc přesnosti. Není potřeba měnit celý život najednou. Stačí najít jedno místo, kde dlouho dáváš víc energie, než se ti vrací. Tam začíná skutečný posun. Poznáš ho podle drobných signálů: odkládaná odpověď, únava po rozhovoru, tlak v hrudi před slibem nebo zvláštní úleva, když zazní krátká věta s pravdou. Znamení ${signName} tu není nálepka, ale jazyk pro způsob, jak se vracíš k sobě. Praktický krok je vybrat jednu věc, kterou už nebudeš řídit za ostatní.`,
         innerMirror: 'Vnitřní zrcadlo ukazuje rozdíl mezi zodpovědností a převzetím cizí váhy. Pokud se v hlavě pořád skládá dokonalé vysvětlení, zastav se. Možná už nejde o pravdu, ale o bezpečnou formu, která nikoho nerozhodí. V běžném dni se to ukáže u zprávy, na kterou odpověď přichází moc rychle, nebo u nabídky, která dostane souhlas dřív, než se ozve tělo. Praktický krok je jednoduchý: před důležitým ano dej deset minut ticha a napiš si jednu větu, kterou nechceš zjemňovat.',
         love: 'Ve vztazích se nejvíc počítá pravdivost bez zbytečné tvrdosti. Pokud čekáš, až druhý člověk pochopí všechno sám od sebe, může z toho mizet hodně sil. Když potřeba zazní včas, vztah dostane šanci stát na realitě, ne na domněnce. Poznáš to podle toho, jestli se po kontaktu cítíš víc u sebe, nebo víc ve střehu. Praktický krok je říct jednu konkrétní potřebu bez dlouhé obhajoby.',
+        communication: 'Hodně tvojí energie odchází do vysvětlování. Chceš, aby druhý pochopil kontext, aby se nikdo necítil zraněný, aby bylo jasné, že to myslíš dobře — a než domluvíš, původní potřeba se ztratí pod vrstvou omluv. Přitom kratší věta bývá laskavější než dlouhá obhajoba. Jasné „teď ne" nebo „tohle potřebuju" dá druhému skutečnou informaci, ne mlhu. Poznáš to podle těla po tom, co domluvíš: úleva znamená, že věta zazněla pravdivě; nutkání se hned omlouvat znamená, že se rozpustila pod zjemňováním až za hranici tebe. Hranice není zeď proti druhým. Je to způsob, jak zůstat ve vztahu a přitom neztratit sebe. Praktický krok: v jedné situaci tento týden řekni jednu jasnou větu a odolej pokušení ji dovysvětlovat.',
         workMoney: 'V práci a penězích je hlavní téma hodnota. Ne všechno, co umíš, má automaticky dostat tvůj čas. Všímej si úkolů, které stojí nejvíc energie právě proto, že nemají jasné hranice. Rok přeje pojmenování ceny, rozsahu, termínu nebo odpovědnosti. Nejde o slib rychlého zisku. Jde o to, aby tvoje energie netekla do mlhy. Jeden jasnější rámec může uvolnit víc síly než další snaha.',
+        bodyEnergy: 'Tělo ví o napětí dřív než hlava. U tebe se stres často usadí tiše — v ramenou, v dechu, v tom, že večer nejde vypnout, i když je kolem klid. Právě proto se vyplatí brát tělo jako součást rozhodování, ne jako stroj, který má vydržet. Poznáš, kde ztrácíš sílu: po některých rozhovorech přijde únava, která neodpovídá jejich délce, a některé úkoly vyčerpají hlavně proto, že u nich držíš dech. Co tě naopak dobíjí, bývá jednodušší, než čekáš — pohyb bez cíle, ticho, voda, spánek, chvíle, kdy po tobě nikdo nic nechce. Nejde o velký plán péče o sebe. Jde o to všímat si signálů dřív, než se z nich stane vyčerpání. Praktický krok: jednou denně se na minutu zastav a zeptej se, kde v těle právě držíš napětí — a jestli ho jde o kousek pustit.',
         growth: 'Růst v tomto období není dramatický obrat. Je to opakovaný návrat k tomu, co už víš. Všímej si, kde se snažíš získat povolení pro rozhodnutí, které je uvnitř jasné. Praktický krok je zapisovat malé momenty úlevy. Často ukazují směr přesněji než velké argumenty.',
         shadowGift: 'Stín se může projevit jako přehnaná dostupnost. Dar tohoto stínu je přesnost: když hodnota přestane stát na tom, kolik toho uneseš, začne být jasnější, komu patří tvoje blízkost, čas a pozornost. Nejde o chlad. Jde o laskavost, která nezapomíná i na tebe.',
         months: [
@@ -448,7 +457,7 @@ function buildPersonalMapGenerationPrompt({
 
     const system = `Jsi Mystická Hvězda, česká autorka prémiových osobních výkladů. Píšeš intimně, konkrétně a lidsky. Tykáš. Nevěštíš deterministicky, nedáváš zdravotní, právní ani finanční jistoty. Nepíšeš obecné fráze typu "čeká tě mnoho změn" bez konkrétního vysvětlení. Každý odstavec musí odpovědět: co to pro člověka prakticky znamená a čeho si má všimnout.`;
 
-    const user = `Vytvoř hluboký osobní výklad pro placené PDF "Osobní mapa zbytku roku ${year}".
+    const user = `Vytvoř hluboký osobní výklad pro placené PDF "Osobní mapa". Výklad pokrývá aktuální období (rok ${year}), ale nepiš o něm jako o "zbytku roku".
 
 Profil:
 - Jméno: ${name || '[jméno]'}
@@ -477,10 +486,13 @@ Vrať pouze validní JSON bez markdownu. Struktura:
     "sentence": "jedna silná osobní věta na 10-18 slov",
     "text": "70-100 slov. Vysvětli, proč je tahle věta pro člověka důležitá a kdy se k ní vracet."
   },
+  "strengths": "180-220 slov. Konkrétní silné stránky a dary člověka a jak je používat vědomě i pro sebe, ne jen pro klid ostatních. Afirmativní, ale ne prázdně lichotivé.",
   "mainTheme": "220-280 slov. Osobní syntéza období, konkrétně propojená se znamením a zadaným zaměřením.",
   "innerMirror": "220-280 slov. Vnitřní emoční vzorec, způsob rozhodování, co člověk přehlušuje a co potřebuje slyšet.",
-  "love": "220-280 slov. Vztahy, blízkost, hranice, komunikace. Piš pro zadaný stav obecně, bez předpokladu partnera.",
+  "love": "220-280 slov. Vztahy, blízkost, hranice ve vztazích. Piš pro zadaný stav obecně, bez předpokladu partnera.",
+  "communication": "180-220 slov. Jak člověk komunikuje, kde se vysvětluje moc dlouho, síla kratší věty a jasného ne, hranice bez tvrdosti.",
   "workMoney": "220-280 slov. Práce, peníze, hodnota, energie, rozhodnutí. Žádné finanční sliby.",
+  "bodyEnergy": "180-220 slov. Jak člověk nosí napětí v těle, kde ztrácí energii a co ho reálně dobíjí. Konkrétní tělesné signály, žádné zdravotní sliby.",
   "growth": "180-230 slov. Vývojová lekce a konkrétní posun chování.",
   "shadowGift": "180-230 slov. Stínová stránka a její dar, bez odsuzování.",
   "months": [
@@ -537,7 +549,7 @@ export function buildPersonalMapHtml(input) {
     const signName = SIGN_NAMES[input.sign] || input.sign || '';
     const glyph = SIGN_GLYPHS[input.sign] || '✦';
     const year = input.year || new Date().getFullYear();
-    const productName = input.productName || `Osobní mapa zbytku roku ${year}`;
+    const productName = input.productName || 'Osobní mapa';
     const name = escapeHtml(input.name || 'Tvoje jméno');
     const birthDate = formatDateCz(input.birthDate);
     const question = escapeHtml(input.focus || 'vnitřní klid, vztahy a směr');
@@ -1265,6 +1277,37 @@ body {
   border-bottom: 1px solid rgba(244,234,214,.12);
 }
 
+.mh-pdf-page--notes {
+  padding: 27mm 19mm 23mm;
+}
+
+.notes-title {
+  margin: 4mm 0 5mm;
+  font-family: CinzelLocal, Georgia, serif;
+  color: #f1cf76;
+  font-size: 22pt;
+  line-height: 1.16;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+}
+
+.notes-subtitle {
+  max-width: 142mm;
+  margin: 0 0 9mm;
+  color: rgba(244,234,214,.74);
+}
+
+.notes-space {
+  display: flex;
+  flex-direction: column;
+  gap: 10mm;
+}
+
+.notes-line {
+  height: 0;
+  border-bottom: 1px solid rgba(244,234,214,.16);
+}
+
 .mh-pdf-page--closing {
   display: flex;
   flex-direction: column;
@@ -1363,6 +1406,13 @@ body {
   </section>
 
   ${sectionPage({
+      kicker: 'Tvoje síla',
+      title: 'Co tě nese, i když je těžko',
+      accent: '✧',
+      children: `${paragraphs(sections.strengths)}<div class="callout">Dary nejsou to, co musíš pořád dokazovat. Jsou to schopnosti, které fungují nejlíp ve chvíli, kdy slouží i tobě, ne jen okolí.</div>`
+  })}
+
+  ${sectionPage({
       kicker: 'Hlavní energie',
       title: 'Co se v tobě letos rovná',
       accent: glyph,
@@ -1384,10 +1434,30 @@ body {
   })}
 
   ${sectionPage({
+      kicker: 'Slova a hranice',
+      title: 'Kratší věta, jasnější ne',
+      accent: '❝',
+      variant: 'split',
+      sideTitle: 'Poznáš to podle',
+      sideText: 'Po pravdivé větě přijde úleva. Když se hned objeví nutkání omlouvat se a dovysvětlovat, věta se ztratila pod zjemňováním až za hranici tebe.',
+      children: paragraphs(sections.communication)
+  })}
+
+  ${sectionPage({
       kicker: 'Práce a peníze',
       title: 'Kde se má energie změnit v čin',
       accent: '◆',
       children: paragraphs(sections.workMoney)
+  })}
+
+  ${sectionPage({
+      kicker: 'Tělo a energie',
+      title: 'Kde ztrácíš sílu a co tě vrací',
+      accent: '☾',
+      variant: 'split',
+      sideTitle: 'Praktický signál',
+      sideText: 'Únava, která neodpovídá délce rozhovoru, a zadržený dech u některých úkolů jsou stopy, kde ti energie tiše uniká. Ber je vážně dřív, než se z nich stane vyčerpání.',
+      children: paragraphs(sections.bodyEnergy)
   })}
 
   ${sectionPage({
@@ -1437,6 +1507,15 @@ body {
     <h2 class="journal-title">Stránka, ke které se vrátíš později</h2>
     <p class="journal-subtitle">Neodpovídej hned dokonale. Tyto otázky mají otevřít prostor, ve kterém výklad přestane být jen textem a začne se potkávat s běžným dnem.</p>
     ${journalItems(sections.journalPrompts)}
+  </section>
+
+  <section class="mh-pdf-page mh-pdf-page--notes">
+    <div class="content-kicker">Tvůj prostor</div>
+    <h2 class="notes-title">Místo pro tvoje poznámky</h2>
+    <p class="notes-subtitle">Některé odpovědi nepřijdou hned při čtení. Sem si zapiš, co se v tobě ozvalo — jednu větu, pocit nebo krok, který chceš udělat.</p>
+    <div class="notes-space">
+      ${Array.from({ length: 11 }).map(() => '<div class="notes-line"></div>').join('')}
+    </div>
   </section>
 
   <section class="mh-pdf-page mh-pdf-page--closing">
@@ -1508,7 +1587,7 @@ export const samplePersonalMapData = {
     focus: 'vztahy, práce a vnitřní klid',
     grammaticalGender: 'feminine',
     year: 2026,
-    productName: 'Osobní mapa zbytku roku 2026',
+    productName: 'Osobní mapa',
     sections: {
         starSignature: {
             title: 'Strážkyně tiché rovnováhy',
@@ -1558,6 +1637,9 @@ Největší posun přijde, až si dovolíš nebýt okamžitě srozumitelná pro 
 Dar ukrytý v tomhle stínu je obrovský. Když přestaneš používat empatii proti sobě, stane se z ní přesnost. Najednou nebudeš jen chápat druhé, ale také poznáš, komu má tvoje blízkost patřit a kde už jen vyplňuješ prázdné místo. Tohle není cesta k chladu. Je to cesta k čistší lásce, práci i vlastnímu rozhodování.
 
 Poznáš to podle zvláštní úlevy, která přijde, když přestaneš opravovat dojem druhých lidí. Možná se ti nejdřív ozve vina, protože starý zvyk si bude chtít vzít prostor zpátky. Vydrž pár minut bez okamžité reakce. Právě tady se stín začíná měnit v dar. Tvůj praktický krok je jednoduchý: když začneš někoho omlouvat, polož si otázku, jestli bys stejnou laskavost nabídla i sobě.`,
+        strengths: `Tvoje síla je v tom, jak umíš vnímat, co se děje pod povrchem. Zachytíš změnu tónu, nevyřčené napětí i chvíli, kdy někdo potřebuje prostor — a často najdeš slovo, které uleví. K tomu máš vytrvalost: zůstaneš u toho, co má smysl, i bez rychlé odměny. Letos jde o to, abys stejnou pozornost obrátila i k sobě. Tvoje dary nabírají plnou hodnotu ve chvíli, kdy neslouží jen ke klidu okolí. Praktický krok: pojmenuj jednu věc, kterou umíš dobře, a tento týden ji vědomě použij pro sebe.`,
+        communication: `Hodně tvojí energie odchází do vysvětlování. Chceš, aby druhý pochopil kontext, aby se nikdo necítil zraněný — a než domluvíš, tvoje původní potřeba se ztratí pod vrstvou omluv. Přitom kratší věta bývá laskavější než dlouhá obhajoba. Jasné „teď ne" dá druhému skutečnou informaci, ne mlhu. Poznáš to podle těla: po pravdivé větě přijde úleva, po přejemněné zůstane napětí a chuť se hned omlouvat. Hranice tu není zeď. Je to způsob, jak zůstat ve vztahu a přitom neztratit sebe.`,
+        bodyEnergy: `Tvoje tělo ví o napětí dřív než hlava. Stres se u tebe usadí tiše — v ramenou, v mělkém dechu, ve večerech, kdy nejde vypnout, i když je kolem klid. Všímej si, po kterých rozhovorech přijde únava, která neodpovídá jejich délce. To jsou místa, kde ti energie tiše uniká. Co tě naopak vrací, bývá jednodušší, než čekáš: pohyb bez cíle, ticho, voda, spánek, chvíle bez nároků. Praktický krok: jednou denně se na minutu zastav a zeptej se, kde v těle právě držíš napětí — a jestli ho jde o kousek pustit.`,
         months: [
             { month: 'Květen', title: 'tiché vyjasnění', text: 'Vztahové téma se ozve přes maličkost, která ve skutečnosti ukáže větší vzorec. Může jít o zprávu, tón hlasu nebo pocit po setkání. Neřeš jen formu. Všímej si, jestli se po kontaktu cítíš víc sama sebou, nebo víc přizpůsobená. Tahle stopa bude důležitější než samotná událost.' },
             { month: 'Červenec', title: 'návrat viditelnosti', text: 'Přichází prostor pro tvořivost, prezentaci a osobní krok, který nemusí být dokonalý. Dobré období pro nabídku, nový projekt nebo otevřenější rozhovor o tom, co chceš. Nečekej na chvíli, kdy nebudeš mít strach. Sleduj, kde se strach míchá s radostí. Malý krok teď udělá víc než dlouhé plánování.' },

@@ -1606,7 +1606,7 @@ async function handleRocniHoroskopPurchase(session, stripeEventId = null) {
 }
 
 /**
- * Handle one-time purchase of Osobní mapa zbytku roku.
+ * Handle one-time purchase of Osobní mapa.
  * Generates PDF via Claude + Playwright, sends via Resend.
  */
 async function handlePersonalMapPurchase(session, stripeEventId = null) {

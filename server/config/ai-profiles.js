@@ -20,7 +20,7 @@ const PROFILES = Object.freeze({
     medicine_wheel: { modelTier: 'sonnet', maxTokens: 1500, timeoutMs: 30000, maxRetries: 2 },
     mentor: { modelTier: 'sonnet', maxTokens: 1400, timeoutMs: 30000, maxRetries: 2 },
     annual_horoscope_pdf: { modelTier: 'sonnet', maxTokens: 4096, timeoutMs: 90000, maxRetries: 1 },
-    personal_map_pdf: { modelTier: 'sonnet', maxTokens: 8192, timeoutMs: 120000, maxRetries: 1 }
+    personal_map_pdf: { modelTier: 'sonnet', maxTokens: 12288, timeoutMs: 120000, maxRetries: 1 }
 });
 
 export function getAIProfile(feature = 'default', overrides = {}) {

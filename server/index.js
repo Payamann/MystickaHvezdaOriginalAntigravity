@@ -947,7 +947,7 @@ app.use('/api/medicine-wheel', aiLimiter, medicineWheelRoutes);
 // Roční Horoskop na míru — one-time paid PDF product
 app.use('/api/rocni-horoskop', rocniHoroskopRoutes);
 
-// Osobní mapa zbytku roku — premium one-time paid PDF product
+// Osobní mapa — premium one-time paid PDF product
 app.use('/api/osobni-mapa', osobniMapaRoutes);
 
 // Health Check - registered above rate limiter (see top of file)

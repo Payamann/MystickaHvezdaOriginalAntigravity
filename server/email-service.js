@@ -290,7 +290,7 @@ const ACTIVATION_PRODUCT_OFFERS = {
     promise: 'Jeden pevný PDF výstup pro celý rok, když nechceš hned řešit předplatné.'
   },
   personal_map: {
-    label: 'Osobní mapa zbytku roku 2026',
+    label: 'Osobní mapa',
     path: '/osobni-mapa.html',
     feature: 'osobni_mapa_2026',
     price: '299 Kč',
@@ -1765,7 +1765,7 @@ export async function sendPersonalMapPdf({ to, name, sign, pdfBuffer }) {
       <p style="font-size:15px;color:rgba(255,255,255,0.8);margin:0;">Ahoj ${safeName},</p>
     </div>
     <div style="padding:20px 0;">
-      <p>Právě ti posílám tvou <strong style="color:#d4af37;">Osobní mapu zbytku roku ${year}</strong> — prémiový výklad vytvořený pro tvoje znamení ${signName} a téma, se kterým teď přicházíš.</p>
+      <p>Právě ti posílám tvou <strong style="color:#d4af37;">Osobní mapu</strong> — prémiový výklad vytvořený pro tvoje znamení ${signName} a téma, se kterým teď přicházíš.</p>
       <p style="margin-top:12px;">Najdeš ji v příloze jako PDF. Doporučuji ji otevřít v klidu a číst pomalu. Některé části možná nebudou působit důležitě hned, ale vrátí se ve chvíli, kdy se v běžném dni objeví přesně ten signál, o kterém mapa mluví.</p>
       <div style="background:rgba(212,175,55,0.07);border-left:3px solid #d4af37;padding:16px 20px;margin:24px 0;border-radius:0 6px 6px 0;">
         <p style="margin:0;font-size:14px;color:rgba(255,255,255,0.7);">Mapa obsahuje: hvězdný podpis, osobní mantru, hlavní téma období, vztahy, práci a peníze, klíčové měsíce, konkrétní kroky, rituál a otázky k zápisu.</p>
@@ -1773,13 +1773,13 @@ export async function sendPersonalMapPdf({ to, name, sign, pdfBuffer }) {
       <p>Pokud máš jakékoli otázky, odpověz na tento e-mail.</p>
       <p style="margin-top:16px;color:rgba(255,255,255,0.6);font-size:13px;">S láskou ze hvězd,<br><span style="color:#d4af37;font-family:'Cinzel',serif;">Mystická Hvězda</span></p>
     </div>
-  `, `Tvoje Osobní mapa ${year} je tady`);
+  `, `Tvoje Osobní mapa je tady`);
 
   const pdfBase64 = Buffer.from(pdfBuffer).toString('base64');
 
   const { data, error } = await client.emails.send(buildResendPayload({
     to,
-    subject: `✦ Tvoje Osobní mapa zbytku roku ${year} — ${signName}`,
+    subject: `✦ Tvoje Osobní mapa — ${signName}`,
     html,
     headers: {},
     attachments: [{

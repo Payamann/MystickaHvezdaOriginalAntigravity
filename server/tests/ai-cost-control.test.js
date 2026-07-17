@@ -31,7 +31,7 @@ describe('AI cost control', () => {
         });
         expect(getAIProfile('personal_map_pdf')).toMatchObject({
             modelTier: 'sonnet',
-            maxTokens: 8192
+            maxTokens: 12288
         });
         expect(listAIProfiles().mentor.maxTokens).toBeLessThan(2048);
     });

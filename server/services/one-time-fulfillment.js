@@ -41,7 +41,7 @@ export async function fulfillPersonalMapOrder({ customerName, customerEmail, pay
         birthDate,
         focus,
         year,
-        productName: `Osobní mapa zbytku roku ${year}`,
+        productName: 'Osobní mapa',
         sections
     });
 

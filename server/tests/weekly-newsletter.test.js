@@ -79,8 +79,8 @@ describe('weekly newsletter digest', () => {
             tip_title: 'Tarot ANO / NE',
             tip_text: 'Polož otázku.',
             tip_url: '/tarot-ano-ne.html?source=newsletter_digest',
-            premium_title: 'Osobní mapa zbytku roku 2026',
-            premium_text: '16 stran osobního výkladu.',
+            premium_title: 'Osobní mapa',
+            premium_text: '20 stran osobního výkladu.',
             premium_price: '299 Kč · jednorázově · PDF do e-mailu',
             premium_url: '/osobni-mapa.html?source=newsletter_digest',
             unsubscribe_url: '/api/newsletter/unsubscribe?email=a%40b.cz&token=abc'
@@ -90,7 +90,7 @@ describe('weekly newsletter digest', () => {
         expect(html).toContain('Úplněk');
         expect(html).toContain('Testovací článek');
         expect(html).toContain('Prémiový výklad');
-        expect(html).toContain('Osobní mapa zbytku roku 2026');
+        expect(html).toContain('Osobní mapa');
         expect(html).toContain('/osobni-mapa.html?source=newsletter_digest');
         expect(html).toContain('/api/newsletter/unsubscribe?email=a%40b.cz');
         expect(typeof template.subject({ date_label: '6. července' })).toBe('string');

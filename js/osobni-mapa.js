@@ -2,7 +2,7 @@
     const PRODUCT = {
         id: 'osobni_mapa_2026',
         type: 'personal_map',
-        name: 'Osobní mapa zbytku roku 2026',
+        name: 'Osobní mapa',
         price: 299,
         currency: 'CZK'
     };

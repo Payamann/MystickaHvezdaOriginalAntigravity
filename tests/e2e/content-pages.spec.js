@@ -1049,7 +1049,7 @@ test.describe('Osobní mapa', () => {
 
         const offer = page.locator('.pm-offer-bar');
         await expect(offer).toBeVisible();
-        await expect(offer).toContainText('16 stran PDF');
+        await expect(offer).toContainText('20 stran PDF');
         await expect(offer).toContainText('299 Kč');
 
         await Promise.all([
