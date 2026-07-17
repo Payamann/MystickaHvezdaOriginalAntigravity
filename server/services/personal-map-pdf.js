@@ -375,13 +375,13 @@ function buildPersonalMapFallbackSections({
             sentence: 'Volím krok, který vrací klid, ne jen přijatelný obraz.',
             text: `Tahle věta je kotva pro rok ${year}. Vracej se k ní ve chvíli, kdy se objeví chuť udělat rozhodnutí jen proto, aby bylo po napětí. Klid není vždy nejrychlejší odpověď. Často je to ta nejpravdivější. Poznáš ho podle toho, že po něm zůstane víc prostoru v těle i v mysli.`
         },
-        strengths: 'Tvoje síla není v tom, kolik toho uneseš, ale v citu pro to, co je pravdivé. Umíš vnímat náladu prostoru, najít slovo, které druhému uleví, a udržet klid tam, kde ostatní ztrácí hlavu. To je vzácné. Poznáš to podle chvil, kdy se kolem tebe věci samy zjednoduší i bez zvýšeného hlasu. Druhá síla je vytrvalost: zůstáváš u toho, co má smysl, i když se rychlý výsledek nedostaví. Pozor jen na jedno — ať se o svoje dary nepřipravíš tím, že je použiješ hlavně pro klid ostatních. Tvoje schopnosti nabírají plnou hodnotu ve chvíli, kdy slouží i tobě. Praktický krok: pojmenuj jednu věc, kterou umíš dobře, a tento týden ji vědomě použij pro sebe, ne jen pro druhé.',
+        strengths: 'Tvoje síla není v tom, kolik toho uneseš, ale v citu pro to, co je pravdivé. Umíš vnímat náladu prostoru, zachytit nevyřčené napětí a najít slovo, které druhému uleví. Tam, kde ostatní ztrácí hlavu, ty udržíš klid. To není samozřejmost — je to dar, který se dá vědomě používat, ne jen přetrpět.\n\nDruhá tvoje síla je vytrvalost. Zůstáváš u toho, co má smysl, i když se rychlý výsledek nedostaví. Poznáš ji podle chvil, kdy se kolem tebe věci samy zklidní — ne proto, že přituhneš, ale proto, že držíš jasný směr. Tahle tichá stálost bývá přehlížená, přitom drží pohromadě víc, než si připouštíš. Nemusíš zvyšovat hlas, aby ti okolí naslouchalo; často stačí, že u něčeho zůstáváš klidně a bez zmatku.\n\nLetos jde hlavně o jedno: obrátit stejnou pozornost, kterou dáváš okolí, i k sobě. Tvoje dary nabírají plnou hodnotu ve chvíli, kdy neslouží jen ke klidu ostatních. Praktický krok: pojmenuj jednu věc, kterou umíš opravdu dobře, a tento týden ji vědomě použij tak, aby posloužila i tobě, ne jen okolí.',
         mainTheme: `${displayName}, hlavní téma této mapy je návrat k jednoduššímu směru. ${focusText} V praxi to znamená méně dokazování a víc přesnosti. Není potřeba měnit celý život najednou. Stačí najít jedno místo, kde dlouho dáváš víc energie, než se ti vrací. Tam začíná skutečný posun. Poznáš ho podle drobných signálů: odkládaná odpověď, únava po rozhovoru, tlak v hrudi před slibem nebo zvláštní úleva, když zazní krátká věta s pravdou. Znamení ${signName} tu není nálepka, ale jazyk pro způsob, jak se vracíš k sobě. Praktický krok je vybrat jednu věc, kterou už nebudeš řídit za ostatní.`,
         innerMirror: 'Vnitřní zrcadlo ukazuje rozdíl mezi zodpovědností a převzetím cizí váhy. Pokud se v hlavě pořád skládá dokonalé vysvětlení, zastav se. Možná už nejde o pravdu, ale o bezpečnou formu, která nikoho nerozhodí. V běžném dni se to ukáže u zprávy, na kterou odpověď přichází moc rychle, nebo u nabídky, která dostane souhlas dřív, než se ozve tělo. Praktický krok je jednoduchý: před důležitým ano dej deset minut ticha a napiš si jednu větu, kterou nechceš zjemňovat.',
         love: 'Ve vztazích se nejvíc počítá pravdivost bez zbytečné tvrdosti. Pokud čekáš, až druhý člověk pochopí všechno sám od sebe, může z toho mizet hodně sil. Když potřeba zazní včas, vztah dostane šanci stát na realitě, ne na domněnce. Poznáš to podle toho, jestli se po kontaktu cítíš víc u sebe, nebo víc ve střehu. Praktický krok je říct jednu konkrétní potřebu bez dlouhé obhajoby.',
-        communication: 'Hodně tvojí energie odchází do vysvětlování. Chceš, aby druhý pochopil kontext, aby se nikdo necítil zraněný, aby bylo jasné, že to myslíš dobře — a než domluvíš, původní potřeba se ztratí pod vrstvou omluv. Přitom kratší věta bývá laskavější než dlouhá obhajoba. Jasné „teď ne" nebo „tohle potřebuju" dá druhému skutečnou informaci, ne mlhu. Poznáš to podle těla po tom, co domluvíš: úleva znamená, že věta zazněla pravdivě; nutkání se hned omlouvat znamená, že se rozpustila pod zjemňováním až za hranici tebe. Hranice není zeď proti druhým. Je to způsob, jak zůstat ve vztahu a přitom neztratit sebe. Praktický krok: v jedné situaci tento týden řekni jednu jasnou větu a odolej pokušení ji dovysvětlovat.',
+        communication: 'Hodně tvojí energie odchází do vysvětlování. Chceš, aby druhý pochopil kontext, aby se nikdo necítil zraněný, aby bylo jasné, že to myslíš dobře — a než domluvíš, tvoje původní potřeba se ztratí pod vrstvou omluv. Přitom kratší věta bývá laskavější než dlouhá obhajoba. Jasné „teď ne" nebo „tohle potřebuju" dá druhému skutečnou informaci, ne mlhu.\n\nPoznáš to podle těla po tom, co domluvíš: úleva znamená, že věta zazněla pravdivě; nutkání se hned omlouvat znamená, že se rozpustila pod zjemňováním až za hranici tebe. Sleduj taky, kolikrát v jednom rozhovoru vysvětlíš totéž jinými slovy. Opakování většinou není pro druhého — je to způsob, jak uklidnit sebe. Když ho zkrátíš, možná přijde chvilka nejistoty, ale hned za ní víc prostoru.\n\nHranice tu není zeď proti druhým. Je to způsob, jak zůstat ve vztahu a přitom neztratit sebe. Nemusí být tvrdá, jen jasná. Praktický krok: v jedné situaci tento týden řekni jednu jasnou větu a odolej pokušení ji dovysvětlovat. Všímej si, jestli druhý opravdu potřeboval víc slov, nebo jestli to víc slov potřebovala hlavně tvoje úzkost.',
         workMoney: 'V práci a penězích je hlavní téma hodnota. Ne všechno, co umíš, má automaticky dostat tvůj čas. Všímej si úkolů, které stojí nejvíc energie právě proto, že nemají jasné hranice. Rok přeje pojmenování ceny, rozsahu, termínu nebo odpovědnosti. Nejde o slib rychlého zisku. Jde o to, aby tvoje energie netekla do mlhy. Jeden jasnější rámec může uvolnit víc síly než další snaha.',
-        bodyEnergy: 'Tělo ví o napětí dřív než hlava. U tebe se stres často usadí tiše — v ramenou, v dechu, v tom, že večer nejde vypnout, i když je kolem klid. Právě proto se vyplatí brát tělo jako součást rozhodování, ne jako stroj, který má vydržet. Poznáš, kde ztrácíš sílu: po některých rozhovorech přijde únava, která neodpovídá jejich délce, a některé úkoly vyčerpají hlavně proto, že u nich držíš dech. Co tě naopak dobíjí, bývá jednodušší, než čekáš — pohyb bez cíle, ticho, voda, spánek, chvíle, kdy po tobě nikdo nic nechce. Nejde o velký plán péče o sebe. Jde o to všímat si signálů dřív, než se z nich stane vyčerpání. Praktický krok: jednou denně se na minutu zastav a zeptej se, kde v těle právě držíš napětí — a jestli ho jde o kousek pustit.',
+        bodyEnergy: 'Tělo ví o napětí dřív než hlava. U tebe se stres často usadí tiše — v ramenou, v mělkém dechu, v tom, že večer nejde vypnout, i když je kolem klid. Právě proto se vyplatí brát tělo jako součást rozhodování, ne jako stroj, který má vydržet. Signál z těla přichází dřív než argument a bývá přesnější.\n\nPoznáš, kde ztrácíš sílu: po některých rozhovorech přijde únava, která neodpovídá jejich délce, a některé úkoly vyčerpají hlavně proto, že u nich držíš dech. Všímej si i drobností — sevřená čelist, zrychlený tep před obyčejnou zprávou, tíha, která se objeví vždy u stejného tématu. Tělo takhle mluví o tom, co hlava ještě stihla přehlušit.\n\nCo tě naopak dobíjí, bývá jednodušší, než čekáš: pohyb bez cíle, ticho, voda, spánek, chvíle, kdy po tobě nikdo nic nechce. Nejde o velký plán péče o sebe, který zase přidá další povinnost. Jde o to všímat si signálů dřív, než se z nich stane vyčerpání. Praktický krok: jednou denně se na minutu zastav a zeptej se, kde v těle právě držíš napětí — a jestli ho jde o kousek pustit.',
         growth: 'Růst v tomto období není dramatický obrat. Je to opakovaný návrat k tomu, co už víš. Všímej si, kde se snažíš získat povolení pro rozhodnutí, které je uvnitř jasné. Praktický krok je zapisovat malé momenty úlevy. Často ukazují směr přesněji než velké argumenty.',
         shadowGift: 'Stín se může projevit jako přehnaná dostupnost. Dar tohoto stínu je přesnost: když hodnota přestane stát na tom, kolik toho uneseš, začne být jasnější, komu patří tvoje blízkost, čas a pozornost. Nejde o chlad. Jde o laskavost, která nezapomíná i na tebe.',
         months: [
@@ -486,13 +486,13 @@ Vrať pouze validní JSON bez markdownu. Struktura:
     "sentence": "jedna silná osobní věta na 10-18 slov",
     "text": "70-100 slov. Vysvětli, proč je tahle věta pro člověka důležitá a kdy se k ní vracet."
   },
-  "strengths": "180-220 slov. Konkrétní silné stránky a dary člověka a jak je používat vědomě i pro sebe, ne jen pro klid ostatních. Afirmativní, ale ne prázdně lichotivé.",
+  "strengths": "230-280 slov ve 2-3 odstavcích. Konkrétní silné stránky a dary člověka a jak je používat vědomě i pro sebe, ne jen pro klid ostatních. Afirmativní, ale ne prázdně lichotivé.",
   "mainTheme": "220-280 slov. Osobní syntéza období, konkrétně propojená se znamením a zadaným zaměřením.",
   "innerMirror": "220-280 slov. Vnitřní emoční vzorec, způsob rozhodování, co člověk přehlušuje a co potřebuje slyšet.",
   "love": "220-280 slov. Vztahy, blízkost, hranice ve vztazích. Piš pro zadaný stav obecně, bez předpokladu partnera.",
-  "communication": "180-220 slov. Jak člověk komunikuje, kde se vysvětluje moc dlouho, síla kratší věty a jasného ne, hranice bez tvrdosti.",
+  "communication": "230-280 slov ve 2-3 odstavcích. Jak člověk komunikuje, kde se vysvětluje moc dlouho, síla kratší věty a jasného ne, hranice bez tvrdosti.",
   "workMoney": "220-280 slov. Práce, peníze, hodnota, energie, rozhodnutí. Žádné finanční sliby.",
-  "bodyEnergy": "180-220 slov. Jak člověk nosí napětí v těle, kde ztrácí energii a co ho reálně dobíjí. Konkrétní tělesné signály, žádné zdravotní sliby.",
+  "bodyEnergy": "230-280 slov ve 2-3 odstavcích. Jak člověk nosí napětí v těle, kde ztrácí energii a co ho reálně dobíjí. Konkrétní tělesné signály, žádné zdravotní sliby.",
   "growth": "180-230 slov. Vývojová lekce a konkrétní posun chování.",
   "shadowGift": "180-230 slov. Stínová stránka a její dar, bez odsuzování.",
   "months": [
@@ -741,6 +741,7 @@ body {
 .mh-pdf-page--actions,
 .mh-pdf-page--ritual,
 .mh-pdf-page--journal,
+.mh-pdf-page--notes,
 .mh-pdf-page--closing {
   padding: 28mm 19mm 23mm;
   background-color: #050510;
@@ -1277,10 +1278,6 @@ body {
   border-bottom: 1px solid rgba(244,234,214,.12);
 }
 
-.mh-pdf-page--notes {
-  padding: 27mm 19mm 23mm;
-}
-
 .notes-title {
   margin: 4mm 0 5mm;
   font-family: CinzelLocal, Georgia, serif;
@@ -1300,7 +1297,7 @@ body {
 .notes-space {
   display: flex;
   flex-direction: column;
-  gap: 10mm;
+  gap: 12.5mm;
 }
 
 .notes-line {
@@ -1514,7 +1511,7 @@ body {
     <h2 class="notes-title">Místo pro tvoje poznámky</h2>
     <p class="notes-subtitle">Některé odpovědi nepřijdou hned při čtení. Sem si zapiš, co se v tobě ozvalo — jednu větu, pocit nebo krok, který chceš udělat.</p>
     <div class="notes-space">
-      ${Array.from({ length: 11 }).map(() => '<div class="notes-line"></div>').join('')}
+      ${Array.from({ length: 15 }).map(() => '<div class="notes-line"></div>').join('')}
     </div>
   </section>
 
@@ -1637,9 +1634,21 @@ Největší posun přijde, až si dovolíš nebýt okamžitě srozumitelná pro 
 Dar ukrytý v tomhle stínu je obrovský. Když přestaneš používat empatii proti sobě, stane se z ní přesnost. Najednou nebudeš jen chápat druhé, ale také poznáš, komu má tvoje blízkost patřit a kde už jen vyplňuješ prázdné místo. Tohle není cesta k chladu. Je to cesta k čistší lásce, práci i vlastnímu rozhodování.
 
 Poznáš to podle zvláštní úlevy, která přijde, když přestaneš opravovat dojem druhých lidí. Možná se ti nejdřív ozve vina, protože starý zvyk si bude chtít vzít prostor zpátky. Vydrž pár minut bez okamžité reakce. Právě tady se stín začíná měnit v dar. Tvůj praktický krok je jednoduchý: když začneš někoho omlouvat, polož si otázku, jestli bys stejnou laskavost nabídla i sobě.`,
-        strengths: `Tvoje síla je v tom, jak umíš vnímat, co se děje pod povrchem. Zachytíš změnu tónu, nevyřčené napětí i chvíli, kdy někdo potřebuje prostor — a často najdeš slovo, které uleví. K tomu máš vytrvalost: zůstaneš u toho, co má smysl, i bez rychlé odměny. Letos jde o to, abys stejnou pozornost obrátila i k sobě. Tvoje dary nabírají plnou hodnotu ve chvíli, kdy neslouží jen ke klidu okolí. Praktický krok: pojmenuj jednu věc, kterou umíš dobře, a tento týden ji vědomě použij pro sebe.`,
-        communication: `Hodně tvojí energie odchází do vysvětlování. Chceš, aby druhý pochopil kontext, aby se nikdo necítil zraněný — a než domluvíš, tvoje původní potřeba se ztratí pod vrstvou omluv. Přitom kratší věta bývá laskavější než dlouhá obhajoba. Jasné „teď ne" dá druhému skutečnou informaci, ne mlhu. Poznáš to podle těla: po pravdivé větě přijde úleva, po přejemněné zůstane napětí a chuť se hned omlouvat. Hranice tu není zeď. Je to způsob, jak zůstat ve vztahu a přitom neztratit sebe.`,
-        bodyEnergy: `Tvoje tělo ví o napětí dřív než hlava. Stres se u tebe usadí tiše — v ramenou, v mělkém dechu, ve večerech, kdy nejde vypnout, i když je kolem klid. Všímej si, po kterých rozhovorech přijde únava, která neodpovídá jejich délce. To jsou místa, kde ti energie tiše uniká. Co tě naopak vrací, bývá jednodušší, než čekáš: pohyb bez cíle, ticho, voda, spánek, chvíle bez nároků. Praktický krok: jednou denně se na minutu zastav a zeptej se, kde v těle právě držíš napětí — a jestli ho jde o kousek pustit.`,
+        strengths: `Tvoje síla je v tom, jak umíš vnímat, co se děje pod povrchem. Zachytíš změnu tónu, nevyřčené napětí i chvíli, kdy někdo potřebuje prostor — a často najdeš slovo, které uleví dřív, než druhý stihne říct, že mu není dobře. Jako Váhy to děláš skoro automaticky. Právě proto je dobré si to připomínat jako dar, ne jako samozřejmost.
+
+K tomu máš vytrvalost, která nedělá hluk. Zůstaneš u toho, co má smysl, i bez rychlé odměny, a umíš držet klid tam, kde jiní ztrácejí hlavu. Tahle tichá stálost bývá přehlížená, protože nekřičí. Přitom právě ona drží pohromadě víc věcí, než si přiznáváš — vztahy, projekty i chvíle, kdy by se to jinak rozpadlo.
+
+Letos jde hlavně o jedno: obrátit stejnou pozornost, kterou dáváš okolí, i k sobě. Tvoje dary nabírají plnou hodnotu ve chvíli, kdy neslouží jen ke klidu ostatních. Praktický krok: pojmenuj jednu věc, kterou umíš opravdu dobře, a tento týden ji vědomě použij pro sebe — ne aby z ní měl užitek někdo jiný, ale abys aspoň jednou zažila, jaké to je, když ta schopnost pracuje pro tebe.`,
+        communication: `Hodně tvojí energie odchází do vysvětlování. Chceš, aby druhý pochopil kontext, aby se nikdo necítil zraněný, aby bylo jasné, že to myslíš dobře — a než domluvíš, tvoje původní potřeba se ztratí pod vrstvou omluv. Přitom kratší věta bývá laskavější než dlouhá obhajoba. Jasné „teď ne" dá druhému skutečnou informaci, ne mlhu.
+
+Poznáš to podle těla: po pravdivé větě přijde úleva, po přejemněné zůstane napětí a chuť se hned omlouvat. Sleduj taky, kolikrát v jednom rozhovoru řekneš totéž jinými slovy. To opakování většinou není pro druhého — je to způsob, jak uklidnit sebe. Když ho zkrátíš, možná se na chvíli objeví nejistota, ale hned za ní víc prostoru a klidu.
+
+Hranice tu není zeď. Je to způsob, jak zůstat ve vztahu a přitom neztratit sebe. Nemusí být tvrdá, jen jasná. Praktický krok: v jedné situaci tento týden řekni jednu jasnou větu a nech ji stát bez dovysvětlování. Všímej si, jestli druhý opravdu potřeboval víc slov, nebo jestli je potřebovala hlavně tvoje úzkost, aby se cítila v bezpečí.`,
+        bodyEnergy: `Tvoje tělo ví o napětí dřív než hlava. Stres se u tebe usadí tiše — v ramenou, v mělkém dechu, ve večerech, kdy nejde vypnout, i když je kolem klid. Jako Váhy máš navíc tendenci nést i náladu druhých, takže se v těle sčítá víc, než co je opravdu tvoje.
+
+Všímej si, po kterých rozhovorech přijde únava, která neodpovídá jejich délce. To jsou místa, kde ti energie tiše uniká. Sleduj i drobnosti — sevřená čelist, zrychlený tep před obyčejnou zprávou, tíha, která se objeví vždy u stejného tématu. Tělo takhle mluví o tom, co hlava ještě stihla přehlušit, a stojí za to ho brát vážně dřív, než se ozve hlasitěji.
+
+Co tě naopak vrací, bývá jednodušší, než čekáš: pohyb bez cíle, ticho, voda, spánek, chvíle bez nároků. Nejde o velký plán péče o sebe, který zase přidá další povinnost. Praktický krok: jednou denně se na minutu zastav a zeptej se, kde v těle právě držíš napětí — a jestli ho jde o kousek pustit. Malá pauza opakovaná často udělá víc než jeden velký reset, na který stejně nebude čas.`,
         months: [
             { month: 'Květen', title: 'tiché vyjasnění', text: 'Vztahové téma se ozve přes maličkost, která ve skutečnosti ukáže větší vzorec. Může jít o zprávu, tón hlasu nebo pocit po setkání. Neřeš jen formu. Všímej si, jestli se po kontaktu cítíš víc sama sebou, nebo víc přizpůsobená. Tahle stopa bude důležitější než samotná událost.' },
             { month: 'Červenec', title: 'návrat viditelnosti', text: 'Přichází prostor pro tvořivost, prezentaci a osobní krok, který nemusí být dokonalý. Dobré období pro nabídku, nový projekt nebo otevřenější rozhovor o tom, co chceš. Nečekej na chvíli, kdy nebudeš mít strach. Sleduj, kde se strach míchá s radostí. Malý krok teď udělá víc než dlouhé plánování.' },
