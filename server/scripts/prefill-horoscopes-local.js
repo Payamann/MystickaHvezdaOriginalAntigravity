@@ -446,6 +446,69 @@ const SEASON_TEXTS = {
         'Slunce v Raku posiluje potřebu bezpečí, jemných hranic a pravdivého vnitřního prostoru',
         'energie Raka připomíná, že citlivost potřebuje oporu, ne další nápor',
         'račí Slunce otevírá téma blízkosti, péče a hranic, které dovolí klidně dýchat'
+    ],
+    lev: [
+        'Slunce ve Lvu otevírá sebevyjádření, tvořivost a odvahu ukázat se bez omluvy',
+        'lví sezóna přeje radosti, hřejivé sebejistotě a tvorbě, která vychází ze srdce',
+        'Slunce ve Lvu posiluje potřebu tvořit, zářit přirozeně a sdílet vřelost s okolím',
+        'energie Lva připomíná, že sebejistota nemusí být hlučná, aby byla skutečná',
+        'lví Slunce dodává teplo, velkorysost a chuť ukázat, co je autenticky tvoje'
+    ],
+    panna: [
+        'Slunce v Panně vrací pozornost k řádu, detailu a péči o to, co má skutečně sloužit',
+        'panenská sezóna přeje jednoduchosti, přehledu a poctivé práci na maličkostech',
+        'Slunce v Panně učí třídit podstatné od zbytečného a vracet věcem funkční řád',
+        'energie Panny podporuje soustředění, čistotu kroku a laskavou přesnost',
+        'panenské Slunce ztišuje chaos a připomíná krásu jednoduchých, dobře udělaných věcí'
+    ],
+    vahy: [
+        'Slunce ve Vahách otevírá téma vztahů, rovnováhy a rozhodnutí, která hledají férovost',
+        'vážská sezóna přeje harmonii, jemné diplomacii a smyslu pro krásu i mír',
+        'Slunce ve Vahách připomíná, že rovnováha vzniká z pravdivosti, ne z ustupování',
+        'energie Vah podporuje spravedlivá rozhodnutí, klidný dialog a péči o vztahy',
+        'vážské Slunce vede k souladu, který nezrazuje vlastní potřeby'
+    ],
+    stir: [
+        'Slunce ve Štíru otevírá hloubku, pravdu pod povrchem a téma proměny',
+        'štíří sezóna přeje poctivému pohledu dovnitř, uzdravení a puštění starého',
+        'Slunce ve Štíru posiluje schopnost jít k jádru a nebát se skutečné proměny',
+        'energie Štíra připomíná, že síla roste tam, kde se přestaneme bránit pravdě',
+        'štíří Slunce prohlubuje vnímání a přeje tomu, kdo se odváží pustit, co už neslouží'
+    ],
+    strelec: [
+        'Slunce ve Střelci rozšiřuje obzor, chuť poznávat a hledat větší smysl',
+        'střelecká sezóna přeje nadhledu, svobodě a odvaze vykročit za hranice známého',
+        'Slunce ve Střelci připomíná, že svoboda má nejvíc síly, když má jasný směr',
+        'energie Střelce podporuje optimismus, učení a rozhodnutí vedená vizí',
+        'střelecké Slunce otevírá prostor a přeje kroku, který rozšiřuje, ale neobchází pravdu'
+    ],
+    kozoroh: [
+        'Slunce v Kozorohu vrací pozornost k cíli, struktuře a trpělivé stavbě dlouhodobého',
+        'kozorožská sezóna přeje disciplíně, pevnému rytmu a krokům, které vydrží',
+        'Slunce v Kozorohu učí stavět pomalu, poctivě a s respektem k vlastní energii',
+        'energie Kozoroha připomíná, že vytrvalost je tichá síla, která nepotřebuje spěch',
+        'kozorožské Slunce podporuje odpovědnost, jasný záměr a stabilní základ'
+    ],
+    vodnar: [
+        'Slunce ve Vodnáři otevírá originalitu, vizi budoucnosti a svobodu myslet jinak',
+        'vodnářská sezóna přeje novým nápadům, komunitě a odvaze být svůj',
+        'Slunce ve Vodnáři připomíná, že jinakost má smysl, když zůstává spojená s lidmi',
+        'energie Vodnáře podporuje nezávislost, tvořivé řešení a pohled dopředu',
+        'vodnářské Slunce rozhýbává vize a přeje kroku, který mění zaběhnuté'
+    ],
+    ryby: [
+        'Slunce v Rybách zjemňuje tempo, otevírá intuici, soucit a vnitřní ztišení',
+        'rybí sezóna přeje snění, tvorbě a citlivému naladění na jemné proudy',
+        'Slunce v Rybách připomíná, že vnímavost je dar, když má pevné hranice',
+        'energie Ryb podporuje empatii, odpuštění a rozhodnutí vedené srdcem',
+        'rybí Slunce ztišuje hladinu a přeje tomu, kdo naslouchá tichému vnitřnímu hlasu'
+    ],
+    beran: [
+        'Slunce v Beranu probouzí odvahu, chuť začínat a přímou akci bez zbytečného odkládání',
+        'beraní sezóna přeje prvním krokům, jasnému rozhodnutí a energii, která nečeká na dovolení',
+        'Slunce v Beranu dodává tah vpřed a připomíná, že odvaha roste činem, ne přemýšlením',
+        'energie Berana rozhýbává nové začátky a učí volit směr dřív, než ho rozmělní pochybnost',
+        'beraní Slunce zvyšuje tah k akci a přeje tomu, kdo se odváží udělat první pohyb'
     ]
 };
 
@@ -612,16 +675,19 @@ function seasonText(key, seed) {
 
 function seasonFor(dateStr, seed = dateStr) {
     const monthDay = dateStr.slice(5);
-    if (monthDay >= '04-20' && monthDay <= '05-20') {
-        return seasonText('byk', seed);
-    }
-    if (monthDay >= '05-21' && monthDay <= '06-20') {
-        return seasonText('blizenci', seed);
-    }
-    if (monthDay >= '06-21' && monthDay <= '07-22') {
-        return seasonText('rak', seed);
-    }
-    return 'aktuální obloha žádá vědomější tempo a konkrétní volbu';
+    // Kozoroh přechází přes Nový rok (22.12–19.1)
+    if (monthDay >= '12-22' || monthDay <= '01-19') return seasonText('kozoroh', seed);
+    if (monthDay <= '02-18') return seasonText('vodnar', seed);
+    if (monthDay <= '03-20') return seasonText('ryby', seed);
+    if (monthDay <= '04-19') return seasonText('beran', seed);
+    if (monthDay <= '05-20') return seasonText('byk', seed);
+    if (monthDay <= '06-20') return seasonText('blizenci', seed);
+    if (monthDay <= '07-22') return seasonText('rak', seed);
+    if (monthDay <= '08-22') return seasonText('lev', seed);
+    if (monthDay <= '09-22') return seasonText('panna', seed);
+    if (monthDay <= '10-22') return seasonText('vahy', seed);
+    if (monthDay <= '11-21') return seasonText('stir', seed);
+    return seasonText('strelec', seed); // 22.11–21.12
 }
 
 function loadAstroEvents() {
