@@ -77,6 +77,43 @@
         });
     }
 
+    // Konverzní CTA, které mají zůstat POD tlačítkem sdílení (ne nad ním)
+    const TRAILING_CTA_SELECTORS = [
+        '.tarot-profile-cta',
+        '.tarot-yes-no-profile-cta',
+        '[class*="profile-cta"]',
+        '[class*="signup-cta"]',
+        '[class*="register-cta"]'
+    ];
+
+    function findTrailingCta(container) {
+        for (const sel of TRAILING_CTA_SELECTORS) {
+            const cta = container.querySelector(sel);
+            if (cta) return cta;
+        }
+        return null;
+    }
+
+    // Umístí (a případně přesune) generický wrapper: vycentrovaný, nad konverzní CTA.
+    // Vrací true, pokud provedl skutečný přesun (aby se nespouštěla nekonečná mutation smyčka).
+    function positionGenericWrapper(container, wrapper) {
+        const trailingCta = findTrailingCta(container);
+        if (trailingCta && trailingCta.parentElement) {
+            const alreadyBeforeCta = wrapper.parentElement === trailingCta.parentElement
+                && wrapper.nextElementSibling === trailingCta;
+            if (!alreadyBeforeCta) {
+                trailingCta.parentElement.insertBefore(wrapper, trailingCta);
+                return true;
+            }
+            return false;
+        }
+        if (container.lastElementChild !== wrapper) {
+            container.appendChild(wrapper);
+            return true;
+        }
+        return false;
+    }
+
     function addShareButton(container, title, text) {
         if (!container || container.querySelector('.share-result-btn')) return;
 
@@ -87,10 +124,13 @@
         const luckyNumbers = container.querySelector('#detail-numbers');
         if (luckyNumbers) {
             const luckyParagraph = luckyNumbers.closest('p') || luckyNumbers.parentElement;
-            wrapper.classList.add('share-result-wrapper--horoscope');
+            wrapper.classList.add('share-result-wrapper', 'share-result-wrapper--horoscope');
             luckyParagraph.insertAdjacentElement('afterend', wrapper);
         } else {
-            container.appendChild(wrapper);
+            // Vycentruj a umísti nad případné konverzní CTA (registrace apod.),
+            // ať tlačítko nevisí zarovnané doleva pod výzvou k akci
+            wrapper.classList.add('share-result-wrapper');
+            positionGenericWrapper(container, wrapper);
         }
 
         const btn = wrapper.querySelector('.share-result-btn');
@@ -166,8 +206,20 @@
     function checkAll() {
         selectors.forEach(sel => {
             const el = document.querySelector(sel);
-            if (!el || el.querySelector('.share-result-btn')) return;
+            if (!el) return;
             if (requireLoadedFlag.has(sel) && !el.dataset.loaded) return;
+
+            const existingBtn = el.querySelector('.share-result-btn');
+            if (existingBtn) {
+                // CTA (registrace) se často doplní až po vložení tlačítka —
+                // udrž tlačítko vycentrované a nad tímto CTA
+                const wrapper = existingBtn.closest('.share-result-wrapper');
+                if (wrapper && !wrapper.classList.contains('share-result-wrapper--horoscope')) {
+                    positionGenericWrapper(el, wrapper);
+                }
+                return;
+            }
+
             if (el.children.length > 0) {
                 const pageTitle = document.title.replace(' | Mystická Hvězda', '');
                 addShareButton(el, `Můj výsledek: ${pageTitle} | Mystická Hvězda`);

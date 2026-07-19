@@ -12728,6 +12728,11 @@ a.card.card--interactive-hover:hover {
   }
 }
 
+.share-result-wrapper {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
 .share-result-wrapper--horoscope {
   margin-top: 1.5rem;
   margin-bottom: 2.5rem;
