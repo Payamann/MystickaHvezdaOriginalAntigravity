@@ -57,10 +57,10 @@ function buildMetadata(slug) {
   }
 
   const pair = `${first} a ${second}`;
-  const title = `${pair}: láska, vztah a kompatibilita | Mystická Hvězda`;
+  const title = `${pair}: hodí se k sobě? Partnerská shoda zdarma`;
   const description = hasScorpio
-    ? `${pair} ve vztahu: láska, komunikace, chemie i výzvy. Štír bývá hledaný i jako Skorpion. Spočítejte přesnou shodu.`
-    : `${pair} ve vztahu: láska, komunikace, silné stránky i výzvy. Spočítejte přesnou partnerskou shodu podle dat narození.`;
+    ? `Hodí se k sobě ${pair}? Láska, komunikace, chemie i výzvy. Štír bývá hledaný i jako Skorpion. Spočítej si partnerskou shodu zdarma.`
+    : `Hodí se k sobě ${pair}? Zjisti shodu ve vztahu — láska, komunikace, silné stránky i výzvy. Partnerská shoda zdarma podle dat narození.`;
   const ctaHref = `../partnerska-shoda.html?source=seo_partner_pair&feature=compatibility&pair=${slug}#form`;
   const scorpioAlias = hasScorpio
     ? `${firstSlug === 'scorpio' ? 'Skorpion' : first} a ${secondSlug === 'scorpio' ? 'Skorpion' : second}`
