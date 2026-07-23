@@ -10,7 +10,7 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { BASE_URL, waitForPageReady } from './helpers.js';
+import { BASE_URL, waitForPageReady, mockLoggedInProfile } from './helpers.js';
 
 async function waitForPath(page, pathname, options = {}) {
     await page.waitForURL(
@@ -22,6 +22,10 @@ async function waitForPath(page, pathname, options = {}) {
 test.describe('Ceník — platební tlačítka', () => {
 
     test.beforeEach(async ({ page }) => {
+        // Přihlášené checkout testy fakují login cookie+localStorage; auth-client ale
+        // na initu ověří profil přes /auth/profile — bez mocku vrátí mock backend 401
+        // a session se zahodí. Route je inertní pro logged-out testy.
+        await mockLoggedInProfile(page);
         await page.goto('/cenik.html');
         await waitForPageReady(page);
     });

@@ -45,6 +45,28 @@ export async function waitForPageReady(page) {
 }
 
 /**
+ * Namockuje GET /api/auth/profile na validního (free) uživatele.
+ *
+ * PROČ: testy fakují přihlášení jen cookie `logged_in=1` + `auth_user` v localStorage,
+ * ale auth-client na initu volá refreshSession() → getProfile() → GET /auth/profile.
+ * Mock backend bez platného auth_token vrátí 401 → clearStaleSession() → logged-out,
+ * takže [data-plan] klik spadne do register větve místo checkoutu (deterministické
+ * selhání v CI). Route je inertní pro logged-out testy (refreshSession na nich neběží).
+ *
+ * Volej v beforeEach (nebo před navigací) u sekcí s přihlášenými testy.
+ */
+export async function mockLoggedInProfile(page, user = {}) {
+    const fullUser = { id: 'e2e-user', email: 'e2e@example.com', role: 'user', ...user };
+    await page.route('**/api/auth/profile', async (route) => {
+        await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ success: true, user: fullUser })
+        });
+    });
+}
+
+/**
  * Počká na dynamicky načítaný header (injektovaný přes #header-placeholder).
  * Pokud se do 5s nenačte, test pokračuje — některé stránky ho nenačítají ihned.
  */
