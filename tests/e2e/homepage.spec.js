@@ -643,16 +643,13 @@ test.describe('Homepage', () => {
             value: '1',
             url: BASE_URL
         }]);
-        await page.evaluate(() => {
+        await page.addInitScript(() => {
             localStorage.setItem('auth_user', JSON.stringify({
                 id: 'homepage-pricing-user',
                 email: 'pricing-user@example.com',
                 subscription_status: 'free'
             }));
-            sessionStorage.clear();
         });
-        await page.reload();
-        await waitForPageReady(page);
 
         await page.route('**/api/payment/create-checkout-session', async (route) => {
             checkoutPayload = route.request().postDataJSON();
@@ -665,6 +662,24 @@ test.describe('Homepage', () => {
                 })
             });
         });
+
+        // auth-client na initu volá GET /auth/profile; bez tohoto mocku vrátí mock backend
+        // 401 → clearStaleSession() → logged-out, takže [data-plan] klik spadne do register větve.
+        await page.route('**/api/auth/profile', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    success: true,
+                    user: { id: 'homepage-pricing-user', email: 'pricing-user@example.com', subscription_status: 'free' }
+                })
+            });
+        });
+
+        // Přihlášený stav (cookie + auth_user) musí být připraven PŘED během page skriptů,
+        // proto čerstvá navigace místo evaluate+reload.
+        await page.goto('/');
+        await waitForPageReady(page);
 
         await Promise.all([
             page.waitForURL(
