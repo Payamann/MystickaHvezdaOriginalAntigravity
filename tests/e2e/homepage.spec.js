@@ -518,8 +518,8 @@ test.describe('Homepage', () => {
         expect(bodyText).toContain('Nenahrazují lékařskou, psychologickou, právní ani finanční pomoc');
         expect(bodyText).toContain('Než se zaregistruješ, podívej se na ukázku');
         expect(bodyText).toContain('Jak lidé používají Mystickou Hvězdu');
-        expect(bodyText).toContain('Co dostaneš bez placení');
-        expect(bodyText).toContain('Kdy dává smysl platit');
+        expect(bodyText).toContain('Základní denní nástroje si vyzkoušíš bez platební karty');
+        expect(bodyText).toContain('Premium dává smysl');
         expect(bodyText).toContain('Jak zrušit předplatné');
         expect(bodyText).toContain('Správa předplatného');
         expect(bodyText).toContain('Platby, soukromí a pravidla služby:');
