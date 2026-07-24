@@ -39,13 +39,13 @@ test.describe('Andělské karty', () => {
         const main = page.locator('main');
         // Statický title/meta je autoritativní — runtime přepis byl odstraněn,
         // aby SEO targeting "Andělská karta dne zdarma" přežil i vykreslení JS.
-        await expect(page).toHaveTitle('Andělská karta dne zdarma | 44 andělských karet');
-        await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', 'Andělská karta dne zdarma | 44 andělských karet');
+        await expect(page).toHaveTitle('Andělská karta dne zdarma – poselství pro tvůj dnešek');
+        await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', 'Andělská karta dne zdarma – poselství pro tvůj dnešek');
         const metaDescription = await page.getAttribute('meta[name="description"]', 'content');
         expect(metaDescription).toContain('balíčku 44 karet');
         expect(metaDescription).toContain('hlubší výklad');
         await expect(page.locator('.hero__subtitle')).toContainText('hlubší andělský výklad');
-        await expect(page).toHaveTitle(/44 andělských karet/);
+        await expect(page).toHaveTitle(/Andělská karta dne zdarma/);
         await expect(main).not.toContainText('41 karet');
     });
 

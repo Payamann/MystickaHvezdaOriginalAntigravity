@@ -46,7 +46,7 @@ test.describe('CTR SEO sprint smoke', () => {
         test(`/partnerska-shoda/${slug}.html keeps measured pair CTA`, async ({ request }) => {
             const html = await fetchHtml(request, `/partnerska-shoda/${slug}.html`);
 
-            expect(titleOf(html)).toMatch(/láska, vztah a kompatibilita/);
+            expect(titleOf(html)).toMatch(/hodí se k sobě\? Partnerská shoda zdarma/);
             expect(html).toContain(`href="../partnerska-shoda.html?source=seo_partner_pair&feature=compatibility&pair=${slug}#form"`);
             expect(html).toContain('Vypočítat Synastrii Zdarma');
         });

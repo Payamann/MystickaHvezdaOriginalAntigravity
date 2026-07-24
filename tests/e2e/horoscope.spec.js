@@ -6,7 +6,7 @@
  */
 
 import { test, expect } from '@playwright/test';
-import { BASE_URL, waitForPageReady, assertBasicSEO, ZODIAC_SIGNS, MOBILE_VIEWPORT } from './helpers.js';
+import { BASE_URL, waitForPageReady, assertBasicSEO, ZODIAC_SIGNS, MOBILE_VIEWPORT, mockLoggedInProfile } from './helpers.js';
 
 async function waitForPath(page, pathname, options = {}) {
     await page.waitForURL(
@@ -18,6 +18,9 @@ async function waitForPath(page, pathname, options = {}) {
 test.describe('Horoskopy', () => {
 
     test.beforeEach(async ({ page }) => {
+        // Přihlášené testy (uložené znamení → osobní horoskop) fakují login cookie;
+        // bez mocku /auth/profile auth-client session zahodí (viz mockLoggedInProfile).
+        await mockLoggedInProfile(page);
         await page.goto('/horoskopy.html');
         await waitForPageReady(page);
     });
