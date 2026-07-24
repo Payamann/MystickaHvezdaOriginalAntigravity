@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" href="/fonts/local-fonts.css">
     <link rel="stylesheet" href="css/style.v2.min.css?v=11">
-    <link rel="stylesheet" href="css/pages/tarot-ano-ne.css?v=5">
+    <link rel="stylesheet" href="css/pages/tarot-ano-ne.css?v=6">
 
     <script type="application/ld+json">
 
@@ -169,6 +169,44 @@
                         <a href="prihlaseni.html?mode=register&source=tarot_yes_no_save_profile&feature=tarot_multi_card&entry_source=tarot_yes_no_result&entry_feature=tarot_multi_card"
                            class="btn btn--secondary"
                            data-tarot-yes-no-register="save_profile">Vytvořit profil zdarma</a>
+                    </div>
+
+                    <!-- Most na denní horoskop e-mailem — nízkoprahová alternativa k registraci.
+                         Navazuje na moment, kdy uživatel právě dostal odpověď na dnešek. -->
+                    <div class="tarot-yes-no-email-bridge" data-analytics-source="tarot_yes_no_result">
+                        <p class="tarot-yes-no-email-bridge__title">Chceš vedení i zítra ráno?</p>
+                        <p class="tarot-yes-no-email-bridge__text">
+                            Dnešní odpověď máš. Denní horoskop pro tvoje znamení ti může chodit každé ráno e-mailem — zdarma a bez zakládání účtu.
+                        </p>
+                        <div class="tarot-yes-no-email-bridge__form">
+                            <input id="horoscope-email-input" type="email" autocomplete="email"
+                                aria-label="E-mailová adresa pro odběr denního horoskopu" placeholder="tvuj@email.cz"
+                                class="tarot-yes-no-email-bridge__input">
+                            <select id="horoscope-sign-select" aria-label="Vyber své znamení"
+                                class="tarot-yes-no-email-bridge__select">
+                                <option value="">— Vyber své znamení —</option>
+                                <option value="Beran">♈ Beran (21.3–20.4)</option>
+                                <option value="Býk">♉ Býk (21.4–20.5)</option>
+                                <option value="Blíženci">♊ Blíženci (21.5–21.6)</option>
+                                <option value="Rak">♋ Rak (22.6–22.7)</option>
+                                <option value="Lev">♌ Lev (23.7–22.8)</option>
+                                <option value="Panna">♍ Panna (23.8–22.9)</option>
+                                <option value="Váhy">♎ Váhy (23.9–22.10)</option>
+                                <option value="Štír">♏ Štír (23.10–21.11)</option>
+                                <option value="Střelec">♐ Střelec (22.11–21.12)</option>
+                                <option value="Kozoroh">♑ Kozoroh (22.12–19.1)</option>
+                                <option value="Vodnář">♒ Vodnář (20.1–18.2)</option>
+                                <option value="Ryby">♓ Ryby (19.2–20.3)</option>
+                            </select>
+                            <button id="horoscope-subscribe-btn" type="button"
+                                class="btn btn--primary tarot-yes-no-email-bridge__btn">✨ Chci ranní horoskop</button>
+                        </div>
+                        <p id="horoscope-subscribed-msg" class="tarot-yes-no-email-bridge__done" hidden>
+                            ✅ Hotovo — zítra ráno ti přijde první horoskop.
+                        </p>
+                        <p class="tarot-yes-no-email-bridge__note">
+                            Každé ráno, zdarma. Odhlásit se můžeš kdykoliv jedním klikem.
+                        </p>
                     </div>
 
                 </div>
@@ -326,6 +364,7 @@
 
     <script src="js/dist/tarot-ano-ne.js?v=12" defer></script>
     <script src="js/dist/share-result.js" defer></script>
+    <script src="js/dist/horoscope-subscribe.js?v=2" defer></script>
 
 </body>
 

@@ -930,3 +930,95 @@ html body .mh-inline-418361a818 { color:rgba(255,255,255,0.65);line-height:1.8; 
 }
 
 .tarot-yes-no-seo-subheading { font-size: 1.05rem; }
+
+/* ── Most na denní horoskop e-mailem (po výsledku) ─────────────────────────
+   Nízkoprahová alternativa k registraci: záměrně jemnější než
+   .tarot-yes-no-profile-cta, aby profil zůstal vizuálně primární. */
+.tarot-yes-no-email-bridge {
+    margin-top: 1rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid rgba(212, 175, 55, 0.18);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.035);
+    text-align: left;
+}
+
+.tarot-yes-no-email-bridge__title {
+    margin: 0 0 0.35rem;
+    color: var(--color-mystic-gold, #d4af37);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.tarot-yes-no-email-bridge__text {
+    margin: 0 0 0.85rem;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    opacity: 0.85;
+}
+
+/* Panel výsledku je úzký — pole vedle sebe, tlačítko přes celou šířku pod nimi
+   (jinak dlouhý popisek tlačítka ukousne většinu místa poli na e-mail). */
+.tarot-yes-no-email-bridge__form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.6rem;
+    align-items: center;
+}
+
+.tarot-yes-no-email-bridge__input,
+.tarot-yes-no-email-bridge__select {
+    width: 100%;
+    min-height: 44px;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 10px;
+    background: rgba(10, 10, 26, 0.6);
+    color: #fff;
+    font-size: 0.92rem;
+}
+
+.tarot-yes-no-email-bridge__input::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.tarot-yes-no-email-bridge__input:focus-visible,
+.tarot-yes-no-email-bridge__select:focus-visible {
+    outline: 2px solid rgba(212, 175, 55, 0.75);
+    outline-offset: 1px;
+}
+
+.tarot-yes-no-email-bridge__btn {
+    grid-column: 1 / -1;
+    width: 100%;
+    justify-content: center;
+    white-space: normal;
+}
+
+.tarot-yes-no-email-bridge__done {
+    margin: 0.75rem 0 0;
+    color: #8ee6aa;
+    font-size: 0.92rem;
+    font-weight: 600;
+}
+
+.tarot-yes-no-email-bridge__done[hidden] {
+    display: none;
+}
+
+.tarot-yes-no-email-bridge__note {
+    margin: 0.6rem 0 0;
+    font-size: 0.78rem;
+    opacity: 0.6;
+}
+
+@media (max-width: 720px) {
+    .tarot-yes-no-email-bridge__form {
+        grid-template-columns: 1fr;
+    }
+
+    .tarot-yes-no-email-bridge__btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

@@ -640,6 +640,39 @@ test.describe('Tarot Ano/Ne', () => {
         await expect(actionButtons.nth(2)).toHaveClass(/btn--ghost/);
     });
 
+    test('vysledek nabizi odber denniho horoskopu e-mailem a posle spravny payload', async ({ page }) => {
+        let subscribePayload = null;
+        await page.route('**/api/subscribe/horoscope', async (route) => {
+            subscribePayload = JSON.parse(route.request().postData() || '{}');
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+
+        await page.goto('/tarot-ano-ne.html');
+        await waitForPageReady(page);
+
+        await page.fill('#question-input', 'Mám se ozvat?');
+        await page.locator('.tarot-card').first().click();
+        await expect(page.locator('#result-panel')).toHaveClass(/show/, { timeout: 2500 });
+
+        // Most na denní horoskop je součástí výsledku a stojí až za profilovým CTA
+        const bridge = page.locator('.tarot-yes-no-email-bridge');
+        await expect(bridge).toBeVisible();
+
+        await page.fill('#horoscope-email-input', 'e2e-bridge@example.com');
+        await page.selectOption('#horoscope-sign-select', 'Lev');
+        await page.locator('#horoscope-subscribe-btn').click();
+
+        await expect(page.locator('#horoscope-subscribed-msg')).toBeVisible();
+        expect(subscribePayload).toEqual({
+            email: 'e2e-bridge@example.com',
+            zodiac_sign: 'Lev'
+        });
+    });
+
     test('SEO landing a prvni odpoved se propisi do analytics a funnelu', async ({ page }) => {
         const funnelEvents = [];
         await page.route('**/api/payment/funnel-event', async (route) => {

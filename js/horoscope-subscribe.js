@@ -9,6 +9,24 @@
 
         if (!btn) return;
 
+        // Původní popisek tlačítka — jednotlivé stránky mají vlastní znění
+        // (např. most na tarot ano/ne), takže se nesmí resetovat natvrdo.
+        var originalLabel = btn.textContent.trim();
+
+        // Zdroj pro měření: která plocha odběr přinesla
+        var host = btn.closest('[data-analytics-source]');
+        var source = (host && host.getAttribute('data-analytics-source')) || 'horoscope_hub';
+
+        function track(event, extra) {
+            var payload = { source: source, page_path: window.location.pathname };
+            if (extra) {
+                for (var k in extra) { if (Object.prototype.hasOwnProperty.call(extra, k)) payload[k] = extra[k]; }
+            }
+            if (window.MH_ANALYTICS && window.MH_ANALYTICS.trackAction) {
+                window.MH_ANALYTICS.trackAction(event, payload);
+            }
+        }
+
         // If already subscribed, show success state
         if (localStorage.getItem(SUB_KEY)) {
             showSubscribed();
@@ -20,12 +38,16 @@
 
             if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
                 alert('Zadejte platnou emailovou adresu.');
+                track('horoscope_subscribe_invalid', { reason: 'email' });
                 return;
             }
             if (!sign) {
                 alert('Vyberte své znamení zvěrokruhu.');
+                track('horoscope_subscribe_invalid', { reason: 'sign' });
                 return;
             }
+
+            track('horoscope_subscribe_submitted', { zodiac_sign: sign });
 
             btn.disabled = true;
             btn.textContent = 'Přihlašuji...';
@@ -48,18 +70,21 @@
                 if (res.ok && data.success) {
                     localStorage.setItem(SUB_KEY, sign);
                     showSubscribed();
+                    track('horoscope_subscribe_completed', { zodiac_sign: sign });
                     if (window.Auth && window.Auth.showToast) {
                         window.Auth.showToast('Hotovo!', 'Potvrzení přijde na tvůj email.', 'success');
                     }
                 } else {
                     alert(data.error || 'Chyba při přihlašování. Zkuste to znovu.');
+                    track('horoscope_subscribe_failed', { reason: 'api' });
                     btn.disabled = false;
-                    btn.textContent = '✨ Přihlásit k odběru';
+                    btn.textContent = originalLabel;
                 }
             } catch (e) {
                 alert('Chyba připojení. Zkuste to prosím znovu.');
+                track('horoscope_subscribe_failed', { reason: 'network' });
                 btn.disabled = false;
-                btn.textContent = '✨ Přihlásit k odběru';
+                btn.textContent = originalLabel;
             }
         });
 
