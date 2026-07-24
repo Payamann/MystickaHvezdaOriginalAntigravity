@@ -361,7 +361,10 @@ test.describe('Křišťálová koule', () => {
 
         await expect(page.locator('#answer-container')).toHaveClass(/visible/, { timeout: 5000 });
         await expect(page.locator('#answer-text')).toContainText('Symbolická odpověď');
-        await expect(page.locator('#freemium-count')).toContainText('2 / 3');
+        // Anonymní návštěvník má 1 dotaz zdarma a pak registraci (CRYSTAL_BALL_ANON_FREE_LIMIT,
+        // js/freemium-koule.js). Počítadlo "x / 3" se plní jen přihlášeným, proto se kontroluje
+        // sdělení bannerem — hlídá, že se model "nejdřív hodnota, pak registrace" nerozbije.
+        await expect(page.locator('#freemium-banner-text')).toContainText('zdarma');
         expect(page.url()).toContain('/kristalova-koule.html');
         expect(page.url()).not.toContain('/prihlaseni.html');
         expect(page.url()).not.toContain('/cenik.html');
@@ -476,10 +479,12 @@ test.describe('Křišťálová koule', () => {
         await expect(page.locator('#cookie-banner .cookie-banner__preferences')).toBeVisible();
         await expect(page.locator('#cookie-save')).toHaveText('Uložit nastavení');
 
+        // GDPR opt-in (commit 89fa8982): analytika je ve výchozím stavu VYPNUTÁ a uložení
+        // bez zaškrtnutí ji zapnout nesmí. Regrese zpět na opt-out by byla GDPR problém.
         await page.locator('#cookie-save').click();
         await expect(banner).toBeHidden();
         const prefs = await page.evaluate(() => JSON.parse(localStorage.getItem('mh_cookie_prefs') || '{}'));
-        expect(prefs.analytics).toBe(true);
+        expect(prefs.analytics).toBe(false);
         expect(prefs.marketing).toBe(false);
     });
 });
