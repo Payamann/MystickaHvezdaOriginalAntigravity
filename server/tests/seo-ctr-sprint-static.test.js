@@ -45,7 +45,7 @@ describe('CTR sprint static SEO pages', () => {
     const html = await readPage('andelske-karty.html');
 
     expectCoreMetadata(html);
-    expect(html).toContain('Andělská karta dne zdarma | 44 andělských karet');
+    expect(html).toContain('Andělská karta dne zdarma – poselství pro tvůj dnešek');
     expect(html).toContain('Andělská <span class="text-gradient">karta dne</span>');
     expect(html).toContain('Jaký je rozdíl mezi kartou dne a andělským výkladem?');
     expect(html).toContain('Vytáhnout andělskou kartu');
@@ -57,8 +57,8 @@ describe('CTR sprint static SEO pages', () => {
     const js = await readPage('js/tarot-ano-ne.js');
 
     expectCoreMetadata(html);
-    expect(html).toContain('Tarot ano/ne zdarma | Karty ano ne online');
-    expect(html).toContain('Tarot ano/ne zdarma online');
+    expect(html).toContain('Tarot ano/ne zdarma – jasná odpověď z karet hned');
+    expect(html).toContain('tarot ano/ne zdarma a bez registrace');
     expect(html).toContain('id="btn-save-reading"');
     expect(html).toContain('Hledáš ano ne tarot, karty ano ne nebo odpověď ano ne?');
     expect(html).toContain('Nejlepší otázka je konkrétní a dnešní');
@@ -175,8 +175,8 @@ describe('CTR sprint static SEO pages', () => {
     const html = await readPage(relativePath);
 
     expectCoreMetadata(html);
-    expect(html).toContain(`${pair}: láska, vztah a kompatibilita | Mystická Hvězda`);
-    expect(html).toContain(`${pair} ve vztahu: láska, komunikace`);
+    expect(html).toContain(`${pair}: hodí se k sobě? Partnerská shoda zdarma`);
+    expect(html).toContain(`Hodí se k sobě ${pair}?`);
     expect(html).toContain(`../partnerska-shoda.html?source=seo_partner_pair&feature=compatibility&pair=${slug}#form`);
     expect(html).toContain('application/ld+json');
   });
