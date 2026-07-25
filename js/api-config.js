@@ -129,12 +129,22 @@ async function getCSRFToken() {
     _csrfFetchPromise = fetch(API_CONFIG.BASE_URL + '/csrf-token')
         .then(r => r.json())
         .then(data => {
-            _csrfToken = data.csrfToken;
+            // Bez tokenu se analytické i funnel eventy tiše zahodí
+            // (`if (!csrfToken) return` v analytics.js a premium-gates.js),
+            // takže selhání musí být vidět — ne mlčet.
+            if (!data || !data.csrfToken) {
+                console.warn('[CSRF] Odpověď serveru neobsahuje csrfToken — analytické a funnel eventy se nepošlou.', data);
+            }
+            _csrfToken = data && data.csrfToken;
             _csrfFetchPromise = null;
             setTimeout(() => { _csrfToken = null; }, 10 * 60 * 1000); // 10 min (server expiry is 15 min)
             return _csrfToken;
         })
-        .catch(() => { _csrfFetchPromise = null; return null; });
+        .catch((error) => {
+            console.warn('[CSRF] Nepodařilo se získat token — analytické a funnel eventy se nepošlou:', error && error.message);
+            _csrfFetchPromise = null;
+            return null;
+        });
     return _csrfFetchPromise;
 }
 
