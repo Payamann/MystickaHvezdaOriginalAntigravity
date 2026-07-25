@@ -29,8 +29,8 @@
     <meta property="og:image" content="https://www.mystickahvezda.cz/img/hero-3d.webp">
 
     <link rel="stylesheet" href="/fonts/local-fonts.css">
-    <link rel="stylesheet" href="css/style.v2.min.css?v=11">
-    <link rel="stylesheet" href="css/pages/tarot-ano-ne.css?v=6">
+    <link rel="stylesheet" href="css/style.v2.min.css?v=12">
+    <link rel="stylesheet" href="css/pages/tarot-ano-ne.css?v=7">
 
     <script type="application/ld+json">
 
@@ -173,17 +173,17 @@
 
                     <!-- Most na denní horoskop e-mailem — nízkoprahová alternativa k registraci.
                          Navazuje na moment, kdy uživatel právě dostal odpověď na dnešek. -->
-                    <div class="tarot-yes-no-email-bridge" data-analytics-source="tarot_yes_no_result">
-                        <p class="tarot-yes-no-email-bridge__title">Chceš vedení i zítra ráno?</p>
-                        <p class="tarot-yes-no-email-bridge__text">
+                    <div class="mh-email-bridge" data-analytics-source="tarot_yes_no_result">
+                        <p class="mh-email-bridge__title">Chceš vedení i zítra ráno?</p>
+                        <p class="mh-email-bridge__text">
                             Dnešní odpověď máš. Denní horoskop pro tvoje znamení ti může chodit každé ráno e-mailem — zdarma a bez zakládání účtu.
                         </p>
-                        <div class="tarot-yes-no-email-bridge__form">
+                        <div class="mh-email-bridge__form">
                             <input id="horoscope-email-input" type="email" autocomplete="email"
                                 aria-label="E-mailová adresa pro odběr denního horoskopu" placeholder="tvuj@email.cz"
-                                class="tarot-yes-no-email-bridge__input">
+                                class="mh-email-bridge__input">
                             <select id="horoscope-sign-select" aria-label="Vyber své znamení"
-                                class="tarot-yes-no-email-bridge__select">
+                                class="mh-email-bridge__select">
                                 <option value="">— Vyber své znamení —</option>
                                 <option value="Beran">♈ Beran (21.3–20.4)</option>
                                 <option value="Býk">♉ Býk (21.4–20.5)</option>
@@ -199,12 +199,12 @@
                                 <option value="Ryby">♓ Ryby (19.2–20.3)</option>
                             </select>
                             <button id="horoscope-subscribe-btn" type="button"
-                                class="btn btn--primary tarot-yes-no-email-bridge__btn">✨ Chci ranní horoskop</button>
+                                class="btn btn--primary mh-email-bridge__btn">✨ Chci ranní horoskop</button>
                         </div>
-                        <p id="horoscope-subscribed-msg" class="tarot-yes-no-email-bridge__done" hidden>
+                        <p id="horoscope-subscribed-msg" class="mh-email-bridge__done" hidden>
                             ✅ Hotovo — zítra ráno ti přijde první horoskop.
                         </p>
-                        <p class="tarot-yes-no-email-bridge__note">
+                        <p class="mh-email-bridge__note">
                             Každé ráno, zdarma. Odhlásit se můžeš kdykoliv jedním klikem.
                         </p>
                     </div>

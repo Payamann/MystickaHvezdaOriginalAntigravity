@@ -25,7 +25,7 @@
     <meta name="twitter:description" content="Jedna tarotová karta pro dnešní symbol, energii a další krok. Zdarma online, bez registrace.">
     <meta name="twitter:image" content="https://www.mystickahvezda.cz/img/tarot/tarot_hvezda.webp">
     <link rel="stylesheet" href="/fonts/local-fonts.css">
-    <link rel="stylesheet" href="css/style.v2.min.css?v=11">
+    <link rel="stylesheet" href="css/style.v2.min.css?v=12">
     <link rel="stylesheet" href="css/pages/tarot-karta-dne.css">
     <script type="application/ld+json">
     {"@context":"https://schema.org","@type":"WebPage","name":"Tarot karta dne zdarma online","description":"Denní výklad jedné tarotové karty zdarma online pro energii dne, rozhodnutí a další krok.","url":"https://www.mystickahvezda.cz/tarot-karta-dne.html","inLanguage":"cs-CZ","dateModified":"2026-05-02","image":"https://www.mystickahvezda.cz/img/tarot/tarot_hvezda.webp","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Domů","item":"https://www.mystickahvezda.cz/"},{"@type":"ListItem","position":2,"name":"Tarot karta dne","item":"https://www.mystickahvezda.cz/tarot-karta-dne.html"}]},"mainEntity":{"@type":"SoftwareApplication","name":"Tarot karta dne","url":"https://www.mystickahvezda.cz/tarot-karta-dne.html","applicationCategory":"EntertainmentApplication","operatingSystem":"Web","inLanguage":"cs-CZ","offers":{"@type":"Offer","price":"0","priceCurrency":"CZK"}}}
@@ -93,6 +93,44 @@
                                 <button id="tarot-daily-save-profile" class="btn btn--ghost" type="button" hidden>Uložit do profilu</button>
                                 <button id="tarot-daily-save-image" class="btn btn--ghost" type="button" hidden>Uložit obrázek</button>
                                 <button id="tarot-daily-share" class="btn btn--ghost" type="button" hidden>Sdílet kartu</button>
+                            </div>
+
+                            <!-- Most na denní horoskop e-mailem. Karta dne je návratový rituál,
+                                 takže "chci to i zítra ráno" je tu nejpřirozenější další krok. -->
+                            <div class="mh-email-bridge" data-analytics-source="tarot_daily_card_result">
+                                <p class="mh-email-bridge__title">Chceš vedení i zítra ráno?</p>
+                                <p class="mh-email-bridge__text">
+                                    Karta dne se mění každý den. Přidej k ní denní horoskop pro svoje znamení — přijde ti ráno e-mailem, zdarma a bez zakládání účtu.
+                                </p>
+                                <div class="mh-email-bridge__form">
+                                    <input id="horoscope-email-input" type="email" autocomplete="email"
+                                        aria-label="E-mailová adresa pro odběr denního horoskopu" placeholder="tvuj@email.cz"
+                                        class="mh-email-bridge__input">
+                                    <select id="horoscope-sign-select" aria-label="Vyber své znamení"
+                                        class="mh-email-bridge__select">
+                                        <option value="">— Vyber své znamení —</option>
+                                        <option value="Beran">♈ Beran (21.3–20.4)</option>
+                                        <option value="Býk">♉ Býk (21.4–20.5)</option>
+                                        <option value="Blíženci">♊ Blíženci (21.5–21.6)</option>
+                                        <option value="Rak">♋ Rak (22.6–22.7)</option>
+                                        <option value="Lev">♌ Lev (23.7–22.8)</option>
+                                        <option value="Panna">♍ Panna (23.8–22.9)</option>
+                                        <option value="Váhy">♎ Váhy (23.9–22.10)</option>
+                                        <option value="Štír">♏ Štír (23.10–21.11)</option>
+                                        <option value="Střelec">♐ Střelec (22.11–21.12)</option>
+                                        <option value="Kozoroh">♑ Kozoroh (22.12–19.1)</option>
+                                        <option value="Vodnář">♒ Vodnář (20.1–18.2)</option>
+                                        <option value="Ryby">♓ Ryby (19.2–20.3)</option>
+                                    </select>
+                                    <button id="horoscope-subscribe-btn" type="button"
+                                        class="btn btn--primary mh-email-bridge__btn">✨ Chci ranní horoskop</button>
+                                </div>
+                                <p id="horoscope-subscribed-msg" class="mh-email-bridge__done" hidden>
+                                    ✅ Hotovo — zítra ráno ti přijde první horoskop.
+                                </p>
+                                <p class="mh-email-bridge__note">
+                                    Každé ráno, zdarma. Odhlásit se můžeš kdykoliv jedním klikem.
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -225,6 +263,7 @@
     <script src="js/dist/components.js?v=20260522-premium-gate-cache" defer></script>
     <script src="js/dist/share-image-canvas.js" defer></script>
     <script src="js/dist/tarot-karta-dne.js" defer></script>
+    <script src="js/dist/horoscope-subscribe.js?v=2" defer></script>
     <script src="js/dist/exit-intent.js" defer></script>
     <script type="module" src="js/dist/main.js?v=10"></script>
 </body>

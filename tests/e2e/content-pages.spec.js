@@ -487,6 +487,36 @@ test.describe('Tarot karta dne', () => {
         await smokeTest(page, '/tarot-karta-dne.html', 'karta');
     });
 
+    test('nabizi odber denniho horoskopu e-mailem a posle spravny payload', async ({ page }) => {
+        let subscribePayload = null;
+        await page.route('**/api/subscribe/horoscope', async (route) => {
+            subscribePayload = JSON.parse(route.request().postData() || '{}');
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+
+        await page.goto('/tarot-karta-dne.html');
+        await waitForPageReady(page);
+
+        // Most na denní horoskop navazuje na kartu dne (návratový rituál)
+        const bridge = page.locator('.mh-email-bridge');
+        await expect(bridge).toBeVisible();
+        await expect(bridge).toHaveAttribute('data-analytics-source', 'tarot_daily_card_result');
+
+        await page.fill('#horoscope-email-input', 'e2e-daily@example.com');
+        await page.selectOption('#horoscope-sign-select', 'Panna');
+        await page.locator('#horoscope-subscribe-btn').click();
+
+        await expect(page.locator('#horoscope-subscribed-msg')).toBeVisible();
+        expect(subscribePayload).toEqual({
+            email: 'e2e-daily@example.com',
+            zodiac_sign: 'Panna'
+        });
+    });
+
     test('SEO snippet cílí na denní tarotovou kartu, ne obecný tarot', async ({ page }) => {
         await page.goto('/tarot-karta-dne.html');
         await waitForPageReady(page);

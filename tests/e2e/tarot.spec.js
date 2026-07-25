@@ -659,7 +659,7 @@ test.describe('Tarot Ano/Ne', () => {
         await expect(page.locator('#result-panel')).toHaveClass(/show/, { timeout: 2500 });
 
         // Most na denní horoskop je součástí výsledku a stojí až za profilovým CTA
-        const bridge = page.locator('.tarot-yes-no-email-bridge');
+        const bridge = page.locator('.mh-email-bridge');
         await expect(bridge).toBeVisible();
 
         await page.fill('#horoscope-email-input', 'e2e-bridge@example.com');
