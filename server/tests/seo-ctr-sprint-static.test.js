@@ -199,9 +199,11 @@ describe('CTR sprint static SEO pages', () => {
     const html = await readPage('tarot-vyznam/kralovna-poharu.html');
 
     expectCoreMetadata(html);
-    expect(html).toContain('Královna pohárů tarot: význam, láska a ano/ne');
+    // Titulek nese skutečný význam karty (CTR: cluster měl na pozici ~8 jen 1,07 %,
+    // protože sliboval seznam sekcí místo odpovědi) — viz generate-tarot-meaning-hub.mjs.
+    expect(html).toContain('Královna pohárů: empatie a intuice – význam v tarotu');
     expect(html).toContain('Královna pohárů jako odpověď ano/ne');
-    expect(html).toContain('Královna pohárů v tarotu znamená empatii, intuici a citovou hloubku');
+    expect(html).toContain('Královna pohárů je mistryní emocí a intuice');
     expect(html).toContain('/tarot.html?source=tarot_card_detail_next_step');
   });
 

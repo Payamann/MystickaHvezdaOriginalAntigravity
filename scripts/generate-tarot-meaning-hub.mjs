@@ -77,6 +77,31 @@ function getSentences(text, limit = 3) {
         .slice(0, limit);
 }
 
+/** Zmen\u0161\u00ed prvn\u00ed znak \u2014 `meaning` je v datech s velk\u00fdm p\u00edsmenem, ale za dvojte\u010dkou
+ *  v titulku \u010dte p\u0159irozen\u011bji mal\u00e9 ("Kr\u00e1l poh\u00e1r\u016f: emocion\u00e1ln\u00ed moudrost\u2026"). */
+function lowerFirst(value) {
+    const text = String(value || '').trim();
+    if (!text) return '';
+    return text.charAt(0).toLocaleLowerCase('cs-CZ') + text.slice(1);
+}
+
+/** Popisek detailu karty: unik\u00e1tn\u00ed per kartu (d\u0159\u00edv byl nap\u0159\u00ed\u010d 78 str\u00e1nkami
+ *  skoro identick\u00fd, co\u017e Googlu d\u00e1valo 78 t\u00e9m\u011b\u0159 duplicitn\u00edch snippet\u016f).
+ *  Skl\u00e1d\u00e1 se z v\u00fdznamu + prvn\u00ed v\u011bty interpretace + praktick\u00e9ho p\u0159\u00edslibu. */
+function buildDetailDescription(name, meaning, interpretation) {
+    const lead = meaning ? `${meaning}.` : `V\u00fdznam karty ${name} v tarotu.`;
+    const tail = 'V\u00fdznam v l\u00e1sce, pr\u00e1ci i jako odpov\u011b\u010f ano/ne.';
+    // N\u011bkter\u00e9 karty maj\u00ed velmi kr\u00e1tkou prvn\u00ed v\u011btu ("Triumf!"), co\u017e by dalo popisek
+    // pod ~80 znak\u016f. Proto se p\u0159ib\u00edraj\u00ed dal\u0161\u00ed v\u011bty, dokud snippet nem\u00e1 rozumnou d\u00e9lku.
+    const sentences = getSentences(interpretation, 3);
+    let hook = '';
+    for (const sentence of sentences) {
+        hook = hook ? `${hook} ${sentence}` : sentence;
+        if (`${lead} ${hook} ${tail}`.length >= 95) break;
+    }
+    return compactText([lead, hook, tail].filter(Boolean).join(' '), 165);
+}
+
 function slugify(value) {
     return String(value || '')
         .normalize('NFD')
@@ -232,8 +257,12 @@ function buildDetailPage(name, card, relatedCards = []) {
     const angles = getReadingAngles(group, name, meaning);
     const canonical = detailCanonical(name);
     const encodedName = encodeURIComponent(name);
-    const description = compactText(`Význam karty ${name} v tarotu: ${meaning}. Láska, práce, ano/ne odpověď a další krok pro online výklad.`);
-    const title = `${name} tarot význam: láska, práce, ano/ne | Mystická Hvězda`;
+    // CTR: cluster stál na pozici ~8 s CTR 1,07 % — rankování bylo v pořádku, ale
+    // snippet sliboval seznam sekcí ("láska, práce, ano/ne") místo odpovědi. Lidé
+    // navíc hledají jen jméno karty ("kralovna poharu"), ne slovo "význam".
+    // Proto teď titulek nese SKUTEČNÝ význam a popisek je unikátní per kartu.
+    const title = `${name}: ${lowerFirst(meaning)} – význam v tarotu`;
+    const description = buildDetailDescription(name, meaning, interpretation);
     const yesNoSignal = getYesNoSignal(group, name, meaning);
     const relatedLinks = buildRelatedCardLinks(relatedCards);
     const articleSchema = {
