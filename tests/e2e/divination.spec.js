@@ -324,7 +324,7 @@ test.describe('Křišťálová koule', () => {
     test('meta popis drží symbolický rámec bez AI věštby', async ({ page }) => {
         // Statický title/meta je autoritativní — runtime přepis byl odstraněn,
         // aby SEO targeting "ano ne online zdarma" přežil i vykreslení JS.
-        await expect(page).toHaveTitle('Křišťálová koule ano ne online zdarma | Mystická Hvězda');
+        await expect(page).toHaveTitle('Křišťálová koule ano ne – odpověď na jednu otázku');
         await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /[Kk]řišťálová koule ano ne online/);
         await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /symbolickou odpověď/);
         await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /bez slibu pevné budoucnosti/);

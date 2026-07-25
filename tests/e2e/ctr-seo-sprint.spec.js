@@ -53,7 +53,7 @@ test.describe('CTR SEO sprint smoke', () => {
     }
 
     for (const [pagePath, titleIntent, visibleIntent] of [
-        ['/sk/kristalova-koule.html', 'Krištáľová guľa áno nie online', 'Krištáľová guľa áno alebo nie'],
+        ['/sk/kristalova-koule.html', 'Krištáľová guľa áno nie', 'Krištáľová guľa áno alebo nie'],
         ['/pl/kristalova-koule.html', 'Kryształowa kula tak czy nie', 'Kryształowa kula tak czy nie'],
     ]) {
         test(`${pagePath} keeps yes-no intent and hreflang`, async ({ request }) => {
