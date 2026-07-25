@@ -595,7 +595,10 @@ export async function recordFunnelEvent(eventName, {
     });
 
     try {
-        await supabase.from('funnel_events').insert({
+        // POZOR: Supabase klient na chyby databáze NEVYHAZUJE výjimku — vrací je
+        // v `error`. Bez této kontroly se odmítnutý zápis (RLS, schéma, kvóta)
+        // tiše zahodil a endpoint dál vracel success => neviditelná ztráta dat.
+        const { error } = await supabase.from('funnel_events').insert({
             user_id: userId,
             event_name: eventName,
             source: cleanFunnelValue(source),
@@ -606,8 +609,18 @@ export async function recordFunnelEvent(eventName, {
             stripe_event_id: cleanFunnelValue(stripeEventId),
             metadata
         });
+
+        if (error) {
+            console.error(
+                '[FUNNEL] Insert REJECTED by database:', eventName,
+                '| message:', error.message,
+                '| code:', error.code,
+                '| details:', error.details,
+                '| hint:', error.hint
+            );
+        }
     } catch (error) {
-        console.warn('[FUNNEL] Could not record funnel event:', eventName, error.message);
+        console.error('[FUNNEL] Could not record funnel event:', eventName, error.message);
     }
 }
 
