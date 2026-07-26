@@ -134,6 +134,39 @@ async function getRuntimeDeps() {
     return runtimeDeps;
 }
 
+/**
+ * Cache drží horoskop jako JSON `{prediction, affirmation, luckyNumbers}` (tak ho
+ * ukládá web i prefill), ale e-mailová šablona čeká jeden textový blok. Bez tohoto
+ * rozbalení by odběratelům přišel syrový JSON.
+ * Starší záznamy jsou prostý text — ty se vrací beze změny.
+ */
+export function formatHoroscopeForEmail(raw) {
+    const text = typeof raw === 'string' ? raw.trim() : '';
+    if (!text) return '';
+    if (!text.startsWith('{')) return text;
+
+    let parsed;
+    try {
+        parsed = JSON.parse(text);
+    } catch {
+        return text;
+    }
+
+    if (!parsed || typeof parsed !== 'object' || !parsed.prediction) return text;
+
+    const parts = [String(parsed.prediction).trim()];
+
+    if (parsed.affirmation) {
+        parts.push(`✨ Afirmace: ${String(parsed.affirmation).trim()}`);
+    }
+
+    if (Array.isArray(parsed.luckyNumbers) && parsed.luckyNumbers.length) {
+        parts.push(`🔢 Čísla štěstí: ${parsed.luckyNumbers.join(', ')}`);
+    }
+
+    return parts.join('\n\n');
+}
+
 // Get or generate horoscope — uses the SAME cache table as the website
 async function getOrGenerateHoroscope(sign) {
     const {
@@ -144,11 +177,15 @@ async function getOrGenerateHoroscope(sign) {
         getCachedHoroscope,
         saveCachedHoroscope
     } = await getRuntimeDeps();
-    const cacheKey = getHoroscopeCacheKey(sign, 'daily');
+    // Musí to být PŘESNĚ stejný klíč jako na webu (server/routes/horoscope.js),
+    // jinak job cache mine a generuje přes placené AI znovu. Web skládá klíč jako
+    // `${getHoroscopeCacheKey(...)}-${lang}-${contextHash}`; e-mail je česky a bez
+    // kontextu z deníku, takže `-cs-nocontext`.
+    const cacheKey = `${getHoroscopeCacheKey(sign, 'daily')}-cs-nocontext`;
 
     // Try the same cache the website uses
     const cached = await getCachedHoroscope(cacheKey);
-    if (cached?.response) return cached.response;
+    if (cached?.response) return formatHoroscopeForEmail(cached.response);
 
     // Generate fresh via Claude and save to cache (website will reuse it)
     const systemPrompt = SYSTEM_PROMPTS?.horoscope || 'Jsi astrologický asistent.';

@@ -1,12 +1,41 @@
 import {
     buildFallbackDailyHoroscope,
     filterDueSubscriptions,
+    formatHoroscopeForEmail,
     getDailyHoroscopeDateKey,
     normalizeSignKey,
     resolveSupabaseUrl
 } from '../scripts/send-daily-horoscope.js';
 
 describe('daily horoscope email script', () => {
+    // Cache drží horoskop jako JSON; bez rozbalení by odběratelům přišel syrový JSON.
+    test('rozbali JSON z cache do citelneho textu vcetne afirmace a cisel', () => {
+        const raw = JSON.stringify({
+            prediction: 'Dnes se ti vyplatí zpomalit.',
+            affirmation: 'Volím klidný krok.',
+            luckyNumbers: [3, 7, 11, 22]
+        });
+
+        const out = formatHoroscopeForEmail(raw);
+        expect(out).toContain('Dnes se ti vyplatí zpomalit.');
+        expect(out).toContain('✨ Afirmace: Volím klidný krok.');
+        expect(out).toContain('🔢 Čísla štěstí: 3, 7, 11, 22');
+        expect(out).not.toContain('{');
+    });
+
+    test('starsi zaznamy v prostem textu nechá beze zmeny', () => {
+        expect(formatHoroscopeForEmail('Prostý text bez JSONu.')).toBe('Prostý text bez JSONu.');
+        expect(formatHoroscopeForEmail('')).toBe('');
+        expect(formatHoroscopeForEmail(null)).toBe('');
+    });
+
+    test('nevalidni nebo neuplny JSON neshodi formatovani', () => {
+        expect(formatHoroscopeForEmail('{neplatny json')).toBe('{neplatny json');
+        // objekt bez prediction se vrací tak, jak přišel (radši syrový než prázdný e-mail)
+        const bezPredikce = JSON.stringify({ affirmation: 'x' });
+        expect(formatHoroscopeForEmail(bezPredikce)).toBe(bezPredikce);
+    });
+
     test('normalizes Supabase project refs for standalone script usage', () => {
         expect(resolveSupabaseUrl('abcd1234')).toBe('https://abcd1234.supabase.co');
         expect(resolveSupabaseUrl('https://example.supabase.co')).toBe('https://example.supabase.co');
