@@ -1,5 +1,6 @@
 import {
     getTemplatePreferenceCategory,
+    isPermanentRecipientError,
     parseQueuedEmailData,
     processEmailQueue,
     shouldSkipQueuedEmailForPreferences,
@@ -8,6 +9,21 @@ import {
 import { supabase } from '../db-supabase.js';
 
 describe('email queue helpers', () => {
+    // Bez tohoto rozlišení se neplatná adresa zkouší při každé rozesílce znovu
+    // a selhání se hromadí donekonečna (120 za 6 dní na produkci).
+    test('rozpozna trvale neplatneho prijemce', () => {
+        expect(isPermanentRecipientError('Invalid `to` field. Please use our testing email address instead of domains like `example.com`.')).toBe(true);
+        expect(isPermanentRecipientError('Invalid `to` field. The email address needs to follow the `email@example.com` format.')).toBe(true);
+    });
+
+    test('docasne chyby se maji zkouset dal', () => {
+        expect(isPermanentRecipientError('fetch failed')).toBe(false);
+        expect(isPermanentRecipientError('Too many requests')).toBe(false);
+        expect(isPermanentRecipientError('Internal server error')).toBe(false);
+        expect(isPermanentRecipientError('')).toBe(false);
+        expect(isPermanentRecipientError(null)).toBe(false);
+    });
+
     test('parses both historical JSON strings and Supabase JSONB objects', () => {
         expect(parseQueuedEmailData('{"plan":"pruvodce"}')).toEqual({ plan: 'pruvodce' });
         expect(parseQueuedEmailData({ plan: 'vip' })).toEqual({ plan: 'vip' });

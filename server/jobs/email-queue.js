@@ -109,6 +109,38 @@ export async function shouldSkipQueuedEmailForPreferences(emailRecord) {
     return { skip: false };
 }
 
+/**
+ * Rozliší trvale neplatného příjemce od dočasného výpadku. Resend takovou adresu
+ * odmítne ještě před odesláním ("Invalid `to` field") — opakování nikdy nepomůže.
+ * Záměrně úzké: cokoli jiného (výpadek sítě, rate limit, 5xx) se má zkoušet dál.
+ */
+export function isPermanentRecipientError(message) {
+    return /invalid\s+`?to`?\s+field/i.test(String(message || ''));
+}
+
+/**
+ * Vyřadí adresu z odběrů, aby ji další rozesílka znovu nezařadila do fronty.
+ * Bez toho se stejné selhání opakuje každý týden donekonečna.
+ */
+async function deactivateInvalidRecipient(email, reason) {
+    if (!email) return;
+
+    for (const [table, activeColumn] of [['newsletter_subscribers', 'is_active'], ['horoscope_subscriptions', 'active']]) {
+        try {
+            const { error } = await supabase
+                .from(table)
+                .update({ [activeColumn]: false })
+                .eq('email', email)
+                .eq(activeColumn, true);
+            if (error) throw error;
+        } catch (err) {
+            console.warn(`[JOB] Nepodařilo se deaktivovat ${table} pro neplatnou adresu:`, err.message);
+        }
+    }
+
+    console.warn(`[JOB] Adresa vyřazena z odběrů — trvale neplatný příjemce (${reason})`);
+}
+
 export async function processEmailQueue() {
     // Prevent concurrent execution
     if (jobRunning) {
@@ -211,6 +243,7 @@ export async function processEmailQueue() {
                 failureCount++;
                 console.error(`[JOB] ✗ Failed to send email ${emailRecord.id}:`, emailErr.message);
 
+                const permanent = isPermanentRecipientError(emailErr.message);
                 const nextRetryCount = (emailRecord.retry_count || 0) + 1;
                 const maxRetries = Number.isFinite(Number(emailRecord.max_retries))
                     ? Number(emailRecord.max_retries)
@@ -226,8 +259,16 @@ export async function processEmailQueue() {
                     })
                     .eq('id', emailRecord.id);
 
-                // Mark as failed once the configured retry budget is exhausted
-                if (nextRetryCount >= maxRetries) {
+                // Trvale neplatnou adresu nemá smysl zkoušet znovu — a hlavně se musí
+                // vyřadit odběratel, jinak ho další rozesílka zařadí do fronty zas
+                // a selhání se hromadí donekonečna (viz 120 selhani za 6 dni).
+                if (permanent) {
+                    await supabase
+                        .from('email_queue')
+                        .update({ status: 'failed' })
+                        .eq('id', emailRecord.id);
+                    await deactivateInvalidRecipient(email_to, emailErr.message);
+                } else if (nextRetryCount >= maxRetries) {
                     await supabase
                         .from('email_queue')
                         .update({ status: 'failed' })
