@@ -10,6 +10,11 @@
  * Railway cron: 0 7 * * *  (7:00 UTC = 8:00 CET / 9:00 CEST)
  */
 import 'dotenv/config';
+// Formátování žije ve sdílené službě — potřebuje ho i potvrzovací e-mail
+// při přihlášení k odběru (server/routes/horoscope-subscribe.js).
+import { formatHoroscopeForEmail } from '../services/horoscope-response.js';
+
+export { formatHoroscopeForEmail };
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -132,39 +137,6 @@ async function getRuntimeDeps() {
     };
 
     return runtimeDeps;
-}
-
-/**
- * Cache drží horoskop jako JSON `{prediction, affirmation, luckyNumbers}` (tak ho
- * ukládá web i prefill), ale e-mailová šablona čeká jeden textový blok. Bez tohoto
- * rozbalení by odběratelům přišel syrový JSON.
- * Starší záznamy jsou prostý text — ty se vrací beze změny.
- */
-export function formatHoroscopeForEmail(raw) {
-    const text = typeof raw === 'string' ? raw.trim() : '';
-    if (!text) return '';
-    if (!text.startsWith('{')) return text;
-
-    let parsed;
-    try {
-        parsed = JSON.parse(text);
-    } catch {
-        return text;
-    }
-
-    if (!parsed || typeof parsed !== 'object' || !parsed.prediction) return text;
-
-    const parts = [String(parsed.prediction).trim()];
-
-    if (parsed.affirmation) {
-        parts.push(`✨ Afirmace: ${String(parsed.affirmation).trim()}`);
-    }
-
-    if (Array.isArray(parsed.luckyNumbers) && parsed.luckyNumbers.length) {
-        parts.push(`🔢 Čísla štěstí: ${parsed.luckyNumbers.join(', ')}`);
-    }
-
-    return parts.join('\n\n');
 }
 
 // Get or generate horoscope — uses the SAME cache table as the website

@@ -17,11 +17,41 @@ jest.unstable_mockModule('resend', () => ({
 const {
     sendEmail,
     htmlToPlainText,
+    EMAIL_TEMPLATES,
     sendPersonalMapLifecycleSequence,
     sendAnnualHoroscopeLifecycleSequence,
     sendActivationLifecycleSequence
 } = await import('../email-service.js');
 const { supabase } = await import('../db-supabase.js');
+
+describe('Potvrzeni odberu horoskopu', () => {
+    // Hodnota má dorazit hned, ne až další ráno — horoskop je předgenerovaný.
+    test('doruci dnesni horoskop rovnou v potvrzeni', () => {
+        const html = EMAIL_TEMPLATES.horoscope_subscription_confirm.getHtml({
+            sign: 'Beran',
+            token: 'tok123',
+            horoscope_text: 'Dnes zpomal.\n\n✨ Afirmace: Volím klid.'
+        });
+
+        expect(html).toContain('A tady je tvůj dnešní horoskop');
+        expect(html).toContain('Dnes zpomal.');
+        expect(html).toContain('Volím klid.');
+        // návrat na web musí být měřitelný
+        expect(html).toContain('utm_campaign=horoscope_confirm');
+        expect(html).toContain('source=horoscope_subscription_confirm');
+    });
+
+    test('pri prazdne cache blok vynecha a e-mail zustane platny', () => {
+        const html = EMAIL_TEMPLATES.horoscope_subscription_confirm.getHtml({
+            sign: 'Beran',
+            token: 'tok123'
+        });
+
+        expect(html).not.toContain('A tady je tvůj dnešní horoskop');
+        expect(html).toContain('Odběr je aktivní');
+        expect(html).toContain('tok123');
+    });
+});
 
 describe('Email service deliverability payload', () => {
     beforeEach(() => {

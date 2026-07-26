@@ -1405,15 +1405,26 @@ EMAIL_TEMPLATES.horoscope_subscription_confirm = {
   subject: 'Odběr denního horoskopu potvrzen',
   getHtml: (data) => {
     const sign = escapeHtml(data.sign);
-    const horoscopeUrl = toAbsoluteUrl('/horoskopy.html');
+    const horoscopeUrl = toAbsoluteUrl('/horoskopy.html?source=horoscope_subscription_confirm&utm_source=email&utm_medium=email&utm_campaign=horoscope_confirm');
     const unsubscribeUrl = data.token
       ? toAbsoluteUrl(`/api/subscribe/horoscope/unsubscribe?token=${encodeURIComponent(data.token)}`)
       : horoscopeUrl;
+
+    // Doručit hodnotu hned, ne až zítra ráno — horoskop je předgenerovaný,
+    // takže to nic nestojí. Když cache výjimečně nemá, blok se prostě vynechá.
+    const todaysHoroscope = data.horoscope_text
+      ? `
+    <p style="margin-top:1.5rem;"><strong>A tady je tvůj dnešní horoskop:</strong></p>
+    <div style="background:rgba(212,175,55,0.07);border-left:3px solid #d4af37;padding:20px 25px;border-radius:0 8px 8px 0;margin:15px 0;line-height:1.7;">
+      ${formatTextContent(data.horoscope_text)}
+    </div>`
+      : '';
 
     return getBaseTemplate(`
     <h1 class="h1">Odběr je aktivní</h1>
     <p>Tvůj denní horoskop pro znamení <span class="highlight">${sign}</span> je zapnutý.</p>
     <p>Každé ráno ti pošleme krátké vedení pro den: na co se soustředit, kde ubrat a co si pohlídat.</p>
+    ${todaysHoroscope}
     <div class="cta-box">
       <a href="${horoscopeUrl}" class="btn">Otevřít dnešní horoskop &rarr;</a>
     </div>

@@ -126,11 +126,36 @@ router.post('/unsubscribe', async (req, res) => {
     }
 });
 
+/**
+ * Dnešní horoskop z cache, aby potvrzovací e-mail rovnou doručil hodnotu,
+ * kvůli které se člověk přihlásil (jinak čeká do dalšího rána). Klíč musí být
+ * stejný jako na webu i v denním jobu, jinak by se zbytečně platilo AI —
+ * tady se ale nikdy negeneruje: když cache nemá, e-mail prostě odejde bez něj.
+ */
+async function getTodaysHoroscopeText(sign) {
+    try {
+        const [{ getHoroscopeCacheKey, getCachedHoroscope }, { formatHoroscopeForEmail }] = await Promise.all([
+            import('../services/astrology.js'),
+            import('../services/horoscope-response.js')
+        ]);
+        const cached = await getCachedHoroscope(`${getHoroscopeCacheKey(sign, 'daily')}-cs-nocontext`);
+        return cached?.response ? formatHoroscopeForEmail(cached.response) : '';
+    } catch (err) {
+        console.warn('[HoroscopeSub] Dnešní horoskop se nepodařilo načíst:', err.message);
+        return '';
+    }
+}
+
 async function sendConfirmationEmail(email, sign, token) {
     const { sendEmail, EMAIL_TEMPLATES } = await import('../email-service.js');
     // Only send if template exists, otherwise skip silently
     if (!EMAIL_TEMPLATES['horoscope_subscription_confirm']) return;
-    await sendEmail({ to: email, template: 'horoscope_subscription_confirm', data: { sign, token } });
+    const horoscopeText = await getTodaysHoroscopeText(sign);
+    await sendEmail({
+        to: email,
+        template: 'horoscope_subscription_confirm',
+        data: { sign, token, horoscope_text: horoscopeText }
+    });
 }
 
 export default router;

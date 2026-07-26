@@ -1,3 +1,36 @@
+/**
+ * Cache drží horoskop jako JSON `{prediction, affirmation, luckyNumbers}` (tak ho
+ * ukládá web i prefill), ale e-mailové šablony čekají jeden textový blok. Bez tohoto
+ * rozbalení by odběratelům přišel syrový JSON.
+ * Starší záznamy jsou prostý text — ty se vrací beze změny.
+ */
+export function formatHoroscopeForEmail(raw) {
+    const text = typeof raw === 'string' ? raw.trim() : '';
+    if (!text) return '';
+    if (!text.startsWith('{')) return text;
+
+    let parsed;
+    try {
+        parsed = JSON.parse(text);
+    } catch {
+        return text;
+    }
+
+    if (!parsed || typeof parsed !== 'object' || !parsed.prediction) return text;
+
+    const parts = [String(parsed.prediction).trim()];
+
+    if (parsed.affirmation) {
+        parts.push(`✨ Afirmace: ${String(parsed.affirmation).trim()}`);
+    }
+
+    if (Array.isArray(parsed.luckyNumbers) && parsed.luckyNumbers.length) {
+        parts.push(`🔢 Čísla štěstí: ${parsed.luckyNumbers.join(', ')}`);
+    }
+
+    return parts.join('\n\n');
+}
+
 export function normalizeHoroscopeAiResponse(rawResponse) {
     const cleanResponse = String(rawResponse || '')
         .replace(/^```(?:json)?\s*/i, '')
