@@ -8,6 +8,7 @@ import express from 'express';
 import crypto from 'crypto';
 import rateLimit from 'express-rate-limit';
 import { supabase } from '../db-supabase.js';
+import { validateEmail } from "../utils/validation.js";
 import { renderUnsubscribePage } from '../utils/unsubscribe-page.js';
 
 const router = express.Router();
@@ -24,9 +25,16 @@ const VALID_SIGNS = ['Beran', 'Býk', 'Blíženci', 'Rak', 'Lev', 'Panna', 'Váh
 router.post('/', subscribeLimiter, async (req, res) => {
     const { email, zodiac_sign } = req.body;
 
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    // Sdílený validator (utils/validation.js) místo vlastní kopie regexu —
+    // ta propouštěla adresy s tečkou na konci, které Resend odmítá a odesílání
+    // pak selhává donekonečna. Vrací i normalizovanou podobu.
+    let normalizedEmail;
+    try {
+        normalizedEmail = validateEmail(email);
+    } catch {
         return res.status(400).json({ success: false, error: 'Neplatná emailová adresa.' });
     }
+
     if (!zodiac_sign || !VALID_SIGNS.includes(zodiac_sign)) {
         return res.status(400).json({ success: false, error: 'Neplatné znamení. Vyberte ze seznamu.' });
     }
@@ -37,7 +45,7 @@ router.post('/', subscribeLimiter, async (req, res) => {
         const { error } = await supabase
             .from('horoscope_subscriptions')
             .upsert({
-                email: email.toLowerCase().trim(),
+                email: normalizedEmail,
                 zodiac_sign,
                 unsubscribe_token: token,
                 active: true,
@@ -51,7 +59,7 @@ router.post('/', subscribeLimiter, async (req, res) => {
         if (error) throw error;
 
         // Send confirmation email (non-blocking)
-        sendConfirmationEmail(email, zodiac_sign, token).catch(e =>
+        sendConfirmationEmail(normalizedEmail, zodiac_sign, token).catch(e =>
             console.error('[HoroscopeSub] Confirmation email failed:', e.message)
         );
 

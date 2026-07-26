@@ -32,6 +32,24 @@ describe('🔒 Security Tests', () => {
             expect(() => validateEmail('a'.repeat(300) + '@example.com')).toThrow();
         });
 
+        // Regrese: adresa s tečkou na konci prošla validací, ale Resend ji odmítá
+        // ("Invalid `to` field") a odesílání pak selhává při každém opakování.
+        test('Email validation: koncova tecka se normalizuje pryc', () => {
+            expect(validateEmail('user@gmail.com.')).toBe('user@gmail.com');
+            expect(validateEmail('  User@Gmail.Com..  ')).toBe('user@gmail.com');
+        });
+
+        test('Email validation: samotna tecka misto TLD je neplatna', () => {
+            expect(() => validateEmail('user@gmail.')).toThrow('Invalid email format');
+            expect(() => validateEmail('user@.')).toThrow('Invalid email format');
+        });
+
+        test('Email validation: bezne i punycode domeny stale prochazi', () => {
+            expect(validateEmail('a@b.cz')).toBe('a@b.cz');
+            expect(validateEmail('user@sub.domain.co.uk')).toBe('user@sub.domain.co.uk');
+            expect(validateEmail('user@xn--p1ai.xn--80asehdb')).toBe('user@xn--p1ai.xn--80asehdb');
+        });
+
         test('Password validation: Weak password rejected', () => {
             expect(() => validatePassword('short')).toThrow();
         });

@@ -56,14 +56,19 @@ export function validateEmail(email) {
     throw new Error('Email is required');
   }
 
-  // Trim and lowercase first
-  const cleaned = email.toLowerCase().trim();
+  // Trim, lowercase a odstranit tečku na konci domény.
+  // "user@gmail.com." je v DNS platný zápis (FQDN), ale Resend takovou adresu
+  // ODMÍTNE — a protože se odesílání zkouší opakovaně, jeden takový záznam
+  // generuje selhání donekonečna. Radši normalizovat než odběratele ztratit.
+  const cleaned = email.toLowerCase().trim().replace(/\.+$/, '');
 
   if (cleaned.length > 254) {
     throw new Error('Email too long');
   }
 
-  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // Poslední část (TLD) nesmí obsahovat tečku — to odchytí i prázdný zbytek
+  // po koncové tečce. Záměrně bez [a-z]{2,}, aby prošly i punycode domény.
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@.]+$/;
   if (!regex.test(cleaned)) {
     throw new Error('Invalid email format');
   }
