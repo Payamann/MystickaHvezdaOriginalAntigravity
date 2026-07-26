@@ -205,6 +205,10 @@ describe('CTR sprint static SEO pages', () => {
     expect(html).toContain('Královna pohárů jako odpověď ano/ne');
     expect(html).toContain('Královna pohárů je mistryní emocí a intuice');
     expect(html).toContain('/tarot.html?source=tarot_card_detail_next_step');
+    // Most na denní horoskop e-mailem — sběr kontaktu na 78 stránkách clusteru
+    expect(html).toContain('data-analytics-source="tarot_card_detail"');
+    expect(html).toContain('horoscope-subscribe-btn');
+    expect(html).toContain('/js/dist/horoscope-subscribe.js');
   });
 
   it.each([
