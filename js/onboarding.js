@@ -678,7 +678,12 @@ async function skipOnboarding(event, action) {
 
     const destination = getPrimaryDestination().href('onboarding_skip');
     await notifyBackendOnboardingComplete({ destination, skipped: true });
-    window.location.href = resolveCompletionTarget(destination);
+    // Přeskočení záměrně NEctí `redirect` (na rozdíl od dokončení, viz
+    // resolveCompletionTarget u finishOnboarding). Kdo klikne „přeskočit", říká
+    // „nech mě to zkusit" — poslat ho místo toho na ceník je opak první hodnoty.
+    // Odkaz sám navíc míří na nástroj, takže aplikace jen dodrží, co slibuje.
+    // Placený kontext se neztrácí, `plan` zůstává v URL cíle.
+    window.location.href = destination;
 }
 
 document.addEventListener('click', (event) => {
