@@ -3,6 +3,39 @@
 
     var SUB_KEY = 'mh_horoscope_subscribed';
 
+    /**
+     * Pošle `horoscope_bridge_viewed` jednou, až je most opravdu vidět.
+     * Sdílené pro všechny plochy, takže jejich konverze jdou porovnat mezi sebou
+     * (dřív mělo vlastní měření zobrazení jen tarot ano/ne).
+     */
+    function trackBridgeView(element, track) {
+        if (!element) return;
+
+        var fired = false;
+        function fire() {
+            if (fired) return;
+            fired = true;
+            track('horoscope_bridge_viewed');
+        }
+
+        if (typeof IntersectionObserver !== 'function') {
+            fire(); // starší prohlížeč — radši nadhodnotit než neměřit vůbec
+            return;
+        }
+
+        var observer = new IntersectionObserver(function (entries) {
+            for (var i = 0; i < entries.length; i += 1) {
+                if (entries[i].isIntersecting) {
+                    fire();
+                    observer.disconnect();
+                    return;
+                }
+            }
+        }, { threshold: 0.5 });
+
+        observer.observe(element);
+    }
+
     function init() {
         var btn = document.getElementById('horoscope-subscribe-btn');
         var subscribedMsg = document.getElementById('horoscope-subscribed-msg');
@@ -31,6 +64,12 @@
         if (localStorage.getItem(SUB_KEY)) {
             showSubscribed();
         }
+
+        // Bez tohohle nejde spočítat konverze plochy — `submitted` sám o sobě
+        // neřekne, z kolika zobrazení vzešel. Měří se skutečné spatření
+        // (IntersectionObserver), ne pouhá přítomnost v DOM: na tarot ano/ne je
+        // most schovaný ve výsledku, takže by jinak počítal i lidi, co ho nikdy neviděli.
+        trackBridgeView(host || btn, track);
 
         btn.addEventListener('click', async function () {
             var email = document.getElementById('horoscope-email-input').value.trim();
