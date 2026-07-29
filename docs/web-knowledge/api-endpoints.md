@@ -1,14 +1,23 @@
-# API endpointy — příloha WEB-KNOWLEDGE (2026-07-12, commit 89fa8982)
+# API endpointy — příloha WEB-KNOWLEDGE (2026-07-12, revize 2026-07-29 / `3d1d2518`)
 
 Plné schéma API: `server/openapi.yaml` (servírované na `/api/docs`, v produkci za `DOCS_TOKEN`).
 Tady jen mapa mountů + runtime-ověřené kontrakty.
 
-## Mapa mountů (server/index.js:872-944)
+## ⚠️ Endpointy MIMO `/api` (nejčastější zdroj omylu)
+
+| Cesta | Kde | Proč mimo `/api` |
+|---|---|---|
+| `POST /webhook/stripe` | `server/index.js:324` | Stripe ověřuje podpis proti **raw body**, takže cesta musí obejít JSON parser (`server/index.js:90`) |
+| `POST /webhook/resend` | `server/index.js` | totéž pro Resend události |
+
+**`/api/payment/webhook` neexistuje** — dokumentace ji chybně uváděla do 2026-07-29 a stálo to dvě kola špatné diagnózy plateb (viz `tasks/lessons.md`).
+
+## Mapa mountů (server/index.js:880-951)
 
 | Mount | Soubor | Účel |
 |---|---|---|
 | `/api/auth` | `server/auth.js` | registrace, login, profil, onboarding |
-| `/api/payment` | `server/payment.js` | Stripe checkout, webhook, funnel eventy, retention |
+| `/api/payment` | `server/payment.js` | Stripe checkout, funnel eventy, retention (⚠️ **webhook sem nepatří** — viz sekce výše) |
 | `/api/analytics` | `server/routes/analytics.js` | first-party event ingestion |
 | `/api/admin` | `server/admin.js` | funnel report, správa uživatelů (JWT admin) |
 | `/api/newsletter` | `server/newsletter.js` | subscribe + welcome e-mail + HMAC unsubscribe |

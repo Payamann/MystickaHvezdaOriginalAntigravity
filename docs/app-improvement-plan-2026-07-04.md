@@ -99,7 +99,7 @@ State: the checkout-cancel recovery panel on `cenik.html?payment=cancel` ships a
 - ~~Deepen SK/PL localization~~ — shipped for the 5 top tools in both languages (explainers + FAQ + FAQPage schema).
 - ~~Numerology-number and angel-card-meaning programmatic clusters~~ — shipped: `npm run numerologie:generate` (12 life-path pages from `data/numerology-numbers.json`, hub in `kalkulacka-cisla-osudu.html`) and `npm run andelske-karty:generate` (44 card-meaning pages with archetype interpretive layer, hub in `andelske-karty.html`). Sitemap: 896 URLs.
 - ~~Per-dream pages from `data/dreams.json`~~ — shipped (164 pages, `npm run snar:generate`). Remaining: `ritualy/` expansion (currently 2 pages).
-- Ops hardening from `docs/audit-hardening-2026-04-30.md`: alerting on Stripe webhook failures and 4xx/5xx spikes; a real Lighthouse/WebPageTest pass against production.
+- Ops hardening from `docs/audit-hardening-2026-04-30.md`: ~~alerting on Stripe webhook failures and 4xx/5xx spikes~~ — **code shipped, verified 2026-07-29**: `server/services/alerts.js` raises critical alerts for `stripe_webhook_failed` / `checkout_session_failed` (`server/payment.js:382`) plus 5xx spike detection. What remains is config, not code — `enabled = Boolean(webhookUrl)` (`alerts.js:104`), so without `OPERATIONAL_ALERT_WEBHOOK_URL` in Railway env every alert is silently dropped. Still open: a real Lighthouse/WebPageTest pass against production.
 
 ## Measurement
 
