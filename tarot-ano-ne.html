@@ -151,24 +151,15 @@
 
                     <div class="mh-inline-d3ee132133">
 
-                        <button id="btn-save-reading" class="btn btn--primary" type="button">Uložit odpověď do deníku</button>
+                        <!-- Pomocné akce k výsledku. Jediné primární CTA v panelu je
+                             e-mailový most níž — dřív si tu konkurovaly dvě `btn--primary`
+                             a registrace se nabízela hned třikrát za sebou. -->
+                        <button id="btn-save-reading" class="btn btn--secondary" type="button">Uložit odpověď do deníku</button>
 
                         <button id="btn-reset" class="btn btn--secondary">🔄 Zeptat se znovu</button>
 
                         <button id="btn-save-result-image" class="btn btn--ghost" type="button">✨ Uložit obrázek</button>
 
-                        <a href="tarot.html?source=tarot_yes_no_result&feature=tarot_multi_card" class="btn btn--ghost" data-tarot-yes-no-intent="full_tarot">🃏 Plný tarotový výklad</a>
-
-                    </div>
-
-                    <div class="tarot-yes-no-profile-cta" id="tarot-yes-no-profile-cta">
-                        <div>
-                            <strong>Chcete se k výkladům vracet?</strong>
-                            <span>Profil zdarma udrží otázky, odpovědi a návratové poznámky pohromadě. Bez platební karty.</span>
-                        </div>
-                        <a href="prihlaseni.html?mode=register&source=tarot_yes_no_save_profile&feature=tarot_multi_card&entry_source=tarot_yes_no_result&entry_feature=tarot_multi_card"
-                           class="btn btn--secondary"
-                           data-tarot-yes-no-register="save_profile">Vytvořit profil zdarma</a>
                     </div>
 
                     <!-- Most na denní horoskop e-mailem — nízkoprahová alternativa k registraci.
@@ -363,7 +354,7 @@
     <script type="module" src="js/dist/main.js?v=10"></script>
 
     <script src="js/dist/tarot-ano-ne.js?v=12" defer></script>
-    <script src="js/dist/share-result.js" defer></script>
+    <script src="js/dist/share-result.js?v=1" defer></script>
     <script src="js/dist/horoscope-subscribe.js?v=2" defer></script>
 
 </body>

@@ -622,7 +622,10 @@ test.describe('Tarot Ano/Ne', () => {
         await expect(flippedCard.locator('.card-front-name')).not.toBeEmpty();
     });
 
-    test('hierarchie CTA po výsledku: uložit do deníku je primární a první', async ({ page }) => {
+    // Výsledek ano/ne je hotový zážitek, takže smí mít JEDINOU hlavní výzvu —
+    // sběr e-mailu. Dřív si tu konkurovaly dvě `btn--primary` a registrace se
+    // nabízela třikrát za sebou (tlačítko do deníku, profilové CTA, sekce Další krok).
+    test('po výsledku je v panelu jediné primární CTA a je to odběr e-mailem', async ({ page }) => {
         await page.goto('/tarot-ano-ne.html');
         await waitForPageReady(page);
 
@@ -631,13 +634,22 @@ test.describe('Tarot Ano/Ne', () => {
 
         await expect(page.locator('#result-panel')).toHaveClass(/show/, { timeout: 2500 });
 
+        // Pomocné akce jsou degradované, ať nepřebíjejí most na odběr
         const actionButtons = page.locator('#result-panel .btn');
         await expect(actionButtons.nth(0)).toHaveAttribute('id', 'btn-save-reading');
-        await expect(actionButtons.nth(0)).toHaveClass(/btn--primary/);
+        await expect(actionButtons.nth(0)).toHaveClass(/btn--secondary/);
         await expect(actionButtons.nth(1)).toHaveAttribute('id', 'btn-reset');
         await expect(actionButtons.nth(1)).toHaveClass(/btn--secondary/);
         await expect(actionButtons.nth(2)).toHaveAttribute('id', 'btn-save-result-image');
         await expect(actionButtons.nth(2)).toHaveClass(/btn--ghost/);
+
+        // Jádro pravidla: v celém panelu smí být právě jedno primární tlačítko
+        const primaryButtons = page.locator('#result-panel .btn--primary');
+        await expect(primaryButtons).toHaveCount(1);
+        await expect(primaryButtons.first()).toHaveAttribute('id', 'horoscope-subscribe-btn');
+
+        // Duplicitní výzva k registraci ve výsledku už nesmí být
+        await expect(page.locator('#tarot-yes-no-profile-cta')).toHaveCount(0);
     });
 
     test('vysledek nabizi odber denniho horoskopu e-mailem a posle spravny payload', async ({ page }) => {
@@ -658,7 +670,7 @@ test.describe('Tarot Ano/Ne', () => {
         await page.locator('.tarot-card').first().click();
         await expect(page.locator('#result-panel')).toHaveClass(/show/, { timeout: 2500 });
 
-        // Most na denní horoskop je součástí výsledku a stojí až za profilovým CTA
+        // Most na denní horoskop je závěr výsledkového panelu
         const bridge = page.locator('.mh-email-bridge');
         await expect(bridge).toBeVisible();
 

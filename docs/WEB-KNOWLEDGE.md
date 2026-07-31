@@ -78,14 +78,16 @@ Runtime ověřeno (server v bezpečném e2e režimu, viz §7): stránky funnelu 
 - Předplatné se kromě webhooku aktivuje i success-page cestou; jednorázové PDF navíc jistí reconciliation job (ověřuje přes Stripe API před fulfillmentem).
 - Lokální `.env` = **TEST** klíč, produkce **LIVE** → Stripe dotazy z localu vidí jiná data. Postup pro TEST E2E má vlastní paměť.
 
-**Druhá konverzní cesta — e-mailový most (2026-07-25/26):** vedle placeného funnelu sbírá web odběr denního horoskopu. Sdílený widget `js/horoscope-subscribe.js` + CSS třída `.mh-email-bridge` (`css/style.v2.css`), backend `POST /api/subscribe/horoscope`. Nasazeno na **81 stránkách / 4 plochách**, každá se měří zvlášť přes `data-analytics-source` na obalu:
+**Druhá konverzní cesta — e-mailový most (2026-07-25/26):** vedle placeného funnelu sbírá web odběr denního horoskopu. Sdílené chování řídí `js/horoscope-subscribe.js` (váže se na `#horoscope-subscribe-btn`), backend `POST /api/subscribe/horoscope`. Nasazeno na **81 stránkách / 4 plochách**, každá se měří zvlášť přes `data-analytics-source` na obalu:
 
-| Plocha | Stránek | `source` |
-|---|---|---|
-| Rozcestník horoskopů | 1 (`horoskopy.html`) | `horoscope_hub` (výchozí, atribut chybí) |
-| Tarot ano/ne — výsledek | 1 (`tarot-ano-ne.html`) | `tarot_yes_no_result` |
-| Karta dne — výsledek | 1 (`tarot-karta-dne.html`) | `tarot_daily_card_result` |
-| Cluster významů karet | 78 (`tarot-vyznam/`) | `tarot_card_detail` |
+| Plocha | Stránek | Značka | `source` |
+|---|---|---|---|
+| Tarot ano/ne — výsledek | 1 (`tarot-ano-ne.html`) | `.mh-email-bridge` | `tarot_yes_no_result` |
+| Karta dne — výsledek | 1 (`tarot-karta-dne.html`) | `.mh-email-bridge` | `tarot_daily_card_result` |
+| Cluster významů karet | 78 (`tarot-vyznam/`) | `.mh-email-bridge` | `tarot_card_detail` |
+| Rozcestník horoskopů | 1 (`horoskopy.html`) | ⚠️ **stará `mh-inline-*`** | `horoscope_hub` (výchozí — atribut chybí) |
+
+⚠️ **Sjednocené je jen chování, ne značka.** Sdílenou CSS třídu `.mh-email-bridge` má 80 stránek; `horoskopy.html` zůstal na původní `mh-inline-*` variantě a nikdy se nemigroval. Vypadá jinak a nemá `data-analytics-source` (JS naštěstí padá zpět na `horoscope_hub`, takže měření funguje). Při srovnávání konverze ploch s tím počítej — rozdíl může být ve vzhledu, ne v umístění.
 
 Eventy: `horoscope_bridge_viewed` (přes IntersectionObserver při 50 % viditelnosti — **ne** pouhá přítomnost v DOM, protože na tarot ano/ne je most schovaný ve výsledku), dál `horoscope_subscribe_submitted` / `_completed` / `_failed` / `_invalid`. Bez `_viewed` nejde spočítat konverze plochy, takže **při přidání mostu na novou plochu vždy dát obalu `data-analytics-source`**, jinak se sleje s `horoscope_hub`.
 
@@ -116,6 +118,8 @@ Nástroje: `npm run analyze:funnel`, `export-live-funnel.mjs`, `revenue-truth-mo
 **DB (Supabase):** klient `server/db-supabase.js`. Migrace ve 3 složkách (`migrations/`, `server/migrations/`, `supabase/migrations/`) a **spouštějí se ručně v Supabase konzoli** — schéma se nemigruje automaticky. Klíčové tabulky: users + subscriptions, `funnel_events`, `analytics_events`, `payment_events`, `one_time_purchases`, `email_queue`, `email_preferences`, `newsletter_subscribers`, `push_subscriptions`, `login_attempts`.
 
 **Build pipeline:** `npm run build:js` (esbuild → `js/dist/` IIFE; ⚠️ slovo `export`/`import` kdekoli ve zdroji vč. komentářů přepne na ES modul — lessons.md) a `npm run build:css` (cleancss → `css/*.min.css`); oba bumpnou `CACHE_NAME` service workeru hashem obsahu. Stránky načítají **jen `js/dist/`** s `?v=` verzí — po změně JS build + bump.
+
+⚠️ **Past: `?v=` NENÍ dodržené plošně (zjištěno 2026-07-31).** Soubory v `js/dist/` se servírují s `Cache-Control: public, max-age=31536000, immutable`, takže bez query parametru se k vracejícímu návštěvníkovi nová verze **nikdy nedostane** — prohlížeč se ani nezeptá. A spousta odkazů parametr nemá: `analytics-init.js` je bez verze na **905 stránkách**, `blog-*.js` na 74, `main.js` na 60 (a zároveň s verzí na 849 — stejný soubor tedy existuje ve dvou nezávislých cache záznamech). Konkrétní škoda: oprava umístění tlačítka sdílení (`ed30f8af`, 2026-07-19) se dvanáct dní nedostala k nikomu, kdo měl `share-result.js` v cache; napraveno až přidáním `?v=1` na 17 stránek. **Před nasazením jakékoli změny JS ověř, že ji cílové stránky načítají s verzí** — `grep -rho 'js/dist/[a-z0-9./-]*\.js"' --include=*.html .` vypíše ty bez parametru.
 
 **E-maily (Resend):** šablony a sekvence v `server/email-service.js` (aktivační Day 0/1/3/6, churn recovery, trial reminder, upgrade, weekly digest, PDF doručení, newsletter welcome), fronta `server/jobs/email-queue.js` s preference gatingem. ⚠️ fake `RESEND_API_KEY` v testech není no-op — dělá reálný network call (lessons.md).
 
