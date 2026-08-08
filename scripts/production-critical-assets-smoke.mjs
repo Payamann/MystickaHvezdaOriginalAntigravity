@@ -1,6 +1,9 @@
 const PRODUCTION_BASE_URL = 'https://www.mystickahvezda.cz';
 const DEFAULT_LOCAL_BASE_URL = `http://localhost:${process.env.PLAYWRIGHT_PORT || '3001'}`;
-const REQUIRED_AUTH_CLIENT_VERSION = '20260522-recovery-flush';
+const REQUIRED_AUTH_ASSET_VERSIONS = new Map([
+    ['/js/dist/auth-client.js', '20260522-recovery-flush'],
+    ['/js/dist/core.js', '1']
+]);
 const REQUIRED_AUTH_CLIENT_MARKERS = [
     'getStandaloneAuthContext',
     'flushCheckoutPostVerificationEvent',
@@ -25,7 +28,7 @@ function usage() {
     return [
         'Usage: node scripts/production-critical-assets-smoke.mjs [--production] [--base-url <url>] [--path <path>] [--timeout-ms <ms>]',
         '',
-        'Checks representative HTML pages for the current critical auth-client cache version,',
+        'Checks representative HTML pages for the current critical auth-client or core bundle cache version,',
         'then fetches the referenced asset and verifies checkout handoff markers are present.'
     ].join('\n');
 }
@@ -97,15 +100,15 @@ async function fetchText(url, timeoutMs) {
     }
 }
 
-function extractAuthClientScripts(html) {
-    const scriptPattern = /<script\b[^>]*\bsrc\s*=\s*["']([^"']*auth-client\.js[^"']*)["'][^>]*>/gi;
+function extractAuthBundleScripts(html) {
+    const scriptPattern = /<script\b[^>]*\bsrc\s*=\s*["']([^"']*(?:auth-client|core)\.js[^"']*)["'][^>]*>/gi;
     return [...html.matchAll(scriptPattern)].map((match) => match[1]);
 }
 
 function validatePage(pagePath, pageUrl, html, errors) {
-    const scripts = extractAuthClientScripts(html);
+    const scripts = extractAuthBundleScripts(html);
     if (scripts.length === 0) {
-        errors.push(`${pagePath}: missing auth-client script`);
+        errors.push(`${pagePath}: missing auth-client or core bundle script`);
         return [];
     }
 
@@ -114,13 +117,14 @@ function validatePage(pagePath, pageUrl, html, errors) {
         const assetUrl = new URL(src, pageUrl);
         const assetPath = assetUrl.pathname;
         const version = assetUrl.searchParams.get('v');
+        const requiredVersion = REQUIRED_AUTH_ASSET_VERSIONS.get(assetPath);
 
-        if (assetPath !== '/js/dist/auth-client.js') {
-            errors.push(`${pagePath}: auth-client must use /js/dist/auth-client.js, got ${src}`);
+        if (!requiredVersion) {
+            errors.push(`${pagePath}: unsupported auth bundle ${src}`);
         }
-        if (version !== REQUIRED_AUTH_CLIENT_VERSION) {
+        if (requiredVersion && version !== requiredVersion) {
             errors.push(
-                `${pagePath}: auth-client version expected v=${REQUIRED_AUTH_CLIENT_VERSION}, got ${version || '<missing>'}`
+                `${pagePath}: ${assetPath} version expected v=${requiredVersion}, got ${version || '<missing>'}`
             );
         }
 
