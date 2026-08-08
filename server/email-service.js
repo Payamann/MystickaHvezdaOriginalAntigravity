@@ -282,14 +282,6 @@ ACTIVATION_FEATURES.minuly_zivot = {
 ACTIVATION_FEATURES.past_life = ACTIVATION_FEATURES.minuly_zivot;
 
 const ACTIVATION_PRODUCT_OFFERS = {
-  annual_horoscope: {
-    label: 'Mini Roční horoskop 2026 na míru',
-    path: '/rocni-horoskop.html',
-    feature: 'rocni_horoskop_2026',
-    price: '199 Kč',
-    cta: 'Získat roční výhled',
-    promise: 'Jeden pevný PDF výstup pro celý rok, když nechceš hned řešit předplatné.'
-  },
   personal_map: {
     label: 'Osobní mapa na 12 měsíců',
     path: '/osobni-mapa.html',
@@ -309,8 +301,8 @@ const ACTIVATION_PRODUCT_OFFERS = {
 };
 
 const ACTIVATION_FEATURE_OFFER_KEY = {
-  daily_guidance: 'annual_horoscope',
-  horoskopy: 'annual_horoscope',
+  daily_guidance: 'personal_map',
+  horoskopy: 'personal_map',
   numerologie_vyklad: 'personal_map',
   numerology: 'personal_map',
   natalni_interpretace: 'personal_map',

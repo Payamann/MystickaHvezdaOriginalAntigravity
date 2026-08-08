@@ -27,7 +27,7 @@
     {"@context":"https://schema.org","@type":"WebPage","name":"Měsíční horoskop","description":"Měsíční horoskop pro všech 12 znamení zvěrokruhu.","url":"https://www.mystickahvezda.cz/mesicni-horoskop.html","inLanguage":"cs-CZ","dateModified":"2026-05-11","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Domů","item":"https://www.mystickahvezda.cz/"},{"@type":"ListItem","position":2,"name":"Horoskopy","item":"https://www.mystickahvezda.cz/horoskopy.html"},{"@type":"ListItem","position":3,"name":"Měsíční horoskop","item":"https://www.mystickahvezda.cz/mesicni-horoskop.html"}]},"mainEntity":{"@type":"SoftwareApplication","name":"Měsíční horoskop","url":"https://www.mystickahvezda.cz/horoskopy.html?period=monthly&source=monthly_horoscope_landing&feature=monthly_horoscope","applicationCategory":"LifestyleApplication","operatingSystem":"Web","inLanguage":"cs-CZ","offers":{"@type":"Offer","price":"0","priceCurrency":"CZK"}}}
     </script>
     <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"K čemu je měsíční horoskop?","acceptedAnswer":{"@type":"Answer","text":"Měsíční horoskop pomáhá číst delší cyklus, opakující se motivy a rozhodnutí, která se nevyřeší během jednoho dne."}},{"@type":"Question","name":"Jak se liší měsíční a roční horoskop?","acceptedAnswer":{"@type":"Answer","text":"Měsíční horoskop řeší aktuální období. Roční horoskop skládá měsíce do větší mapy roku a hodí se pro dlouhodobější plánování."}},{"@type":"Question","name":"Je měsíční horoskop pro všechna znamení?","acceptedAnswer":{"@type":"Answer","text":"Ano. Základní výběr pracuje se slunečním znamením. Pro přesnější výklad použijte natální kartu s datem, časem a místem narození."}}]}
+    {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"K čemu je měsíční horoskop?","acceptedAnswer":{"@type":"Answer","text":"Měsíční horoskop pomáhá číst delší cyklus, opakující se motivy a rozhodnutí, která se nevyřeší během jednoho dne."}},{"@type":"Question","name":"Jak se liší měsíční horoskop a Osobní mapa?","acceptedAnswer":{"@type":"Answer","text":"Měsíční horoskop je obecný rámec aktuálního období. Osobní mapa pracuje s konkrétní otázkou a provede vás celými 12 měsíci od dne nákupu."}},{"@type":"Question","name":"Je měsíční horoskop pro všechna znamení?","acceptedAnswer":{"@type":"Answer","text":"Ano. Základní výběr pracuje se slunečním znamením. Pro přesnější výklad použijte natální kartu s datem, časem a místem narození."}}]}
     </script>
     <script src="/js/dist/analytics-init.js" defer></script>
 </head>
@@ -44,12 +44,12 @@
                     <p class="section__text">Když se stejné téma vrací několik dní po sobě, denní horoskop nestačí. Měsíční výhled dává rámec pro rozhodnutí, energii a vztahy v širším období.</p>
                     <div class="horoscope-cluster-actions">
                         <a href="horoskopy.html?period=monthly&amp;source=monthly_horoscope_landing&amp;feature=monthly_horoscope" class="btn btn--primary" data-analytics-cta="monthly_horoscope_primary" data-analytics-feature="monthly_horoscope">Otevřít měsíční horoskop</a>
-                        <a href="rocni-horoskop.html?source=monthly_horoscope_landing&amp;feature=rocni_horoskop_2026" class="btn btn--glass" data-analytics-cta="monthly_horoscope_yearly" data-analytics-feature="rocni_horoskop_2026">Chci výhled na rok</a>
+                        <a href="osobni-mapa.html?source=monthly_horoscope_landing&amp;feature=osobni_mapa_2026" class="btn btn--glass" data-analytics-cta="monthly_horoscope_personal_map" data-analytics-feature="osobni_mapa_2026" data-analytics-product="osobni_mapa_2026" data-analytics-intent="one_time_purchase">Chci vlastní mapu na 12 měsíců</a>
                     </div>
                     <div class="horoscope-cluster-trust" aria-label="Co měsíční horoskop pokrývá">
                         <span>Delší cyklus</span>
                         <span>Opakující se téma</span>
-                        <span>Roční návaznost</span>
+                        <span>Osobní návaznost</span>
                     </div>
                 </div>
                 <div class="horoscope-cluster-visual" data-animate>
@@ -94,7 +94,7 @@
                 </div>
                 <div class="horoscope-cluster-link-grid" data-animate>
                     <a class="horoscope-cluster-link-card" href="tydenni-horoskop.html?source=monthly_horoscope_related"><span>Týden</span><strong>Týdenní horoskop</strong><em>Kratší souvislost, když chcete pracovat s aktuálním týdnem.</em></a>
-                    <a class="horoscope-cluster-link-card" href="rocni-horoskop.html?source=monthly_horoscope_related&amp;feature=rocni_horoskop_2026"><span>Rok</span><strong>Roční horoskop 2026</strong><em>Jednorázový PDF výhled pro dlouhodobější rozhodnutí.</em></a>
+                    <a class="horoscope-cluster-link-card" href="osobni-mapa.html?source=monthly_horoscope_related&amp;feature=osobni_mapa_2026" data-analytics-product="osobni_mapa_2026" data-analytics-intent="one_time_purchase"><span>12 měsíců</span><strong>Osobní mapa</strong><em>Jednorázový hlubší PDF výklad pro jednu konkrétní otázku.</em></a>
                     <a class="horoscope-cluster-link-card" href="natalni-karta.html?source=monthly_horoscope_related&amp;feature=natalni_interpretace"><span>Přesnost</span><strong>Natální karta</strong><em>Datum, čas a místo narození ukážou osobnější astrologickou mapu.</em></a>
                 </div>
             </div>
@@ -109,7 +109,7 @@
                 <div class="horoscope-cluster-faq" data-animate>
                     <article><h3>Je měsíční horoskop obecný?</h3><p>Začíná u znamení, ale nejlépe funguje jako rámec pro konkrétní osobní otázku.</p></article>
                     <article><h3>Jak ho používat prakticky?</h3><p>Vyberte jedno téma měsíce a vracejte se k němu v profilu nebo denním horoskopu.</p></article>
-                    <article><h3>Co když chci přesnější výklad?</h3><p>Natální karta zapojí čas a místo narození. Roční horoskop spojí měsíc s dlouhodobým plánem.</p></article>
+                    <article><h3>Co když chci přesnější výklad?</h3><p>Natální karta zapojí čas a místo narození. Osobní mapa propojí jednu konkrétní otázku s následujícími 12 měsíci.</p></article>
                     <article><h3>Je to náhrada rozhodnutí?</h3><p>Ne. Je to mapa rytmu, která pomáhá rozhodnout vědoměji, ne místo vás.</p></article>
                 </div>
             </div>

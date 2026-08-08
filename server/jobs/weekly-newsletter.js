@@ -62,21 +62,14 @@ const WEEKLY_TOOL_TIPS = [
     }
 ];
 
-// Rotating premium spotlight — the digest otherwise only promotes free
-// tools, so paid one-time products get one soft-promo slot per week,
-// alternating deterministically by ISO week.
+// The digest otherwise promotes free tools, so the single evergreen
+// one-time product gets one soft-promo slot per week.
 const PREMIUM_SPOTLIGHTS = [
     {
         title: 'Osobní mapa',
         text: '20 stran osobního výkladu pro tvoje znamení a konkrétní téma na celých 12 měsíců od nákupu. Ne obecný horoskop — mapa, ke které se vracíš.',
         price: '299 Kč · jednorázově · PDF do e-mailu',
         url: '/osobni-mapa.html?source=newsletter_digest&feature=osobni_mapa_2026&utm_source=email&utm_campaign=weekly_digest'
-    },
-    {
-        title: 'Roční horoskop na míru 2026',
-        text: 'Personalizovaný roční výklad pro tvoje datum narození — láska, kariéra, klíčové měsíce a slovo pro tento rok.',
-        price: '199 Kč · jednorázově · PDF do e-mailu',
-        url: '/rocni-horoskop.html?source=newsletter_digest&feature=rocni_horoskop_2026&utm_source=email&utm_campaign=weekly_digest'
     }
 ];
 

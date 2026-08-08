@@ -316,14 +316,13 @@ test.describe('Homepage', () => {
         await expect(spotlight).toBeVisible();
         await expect(spotlight).toContainText('Osobní mapa');
         await expect(spotlight).toContainText('299 Kč');
-        await expect(spotlight).toContainText('Mini Roční horoskop 2026 za 199 Kč');
         await expect(spotlight.locator('img[alt*="Osobní mapa"]')).toBeVisible();
+        await expect(spotlight.locator('img[alt*="Osobní mapa"]')).toHaveAttribute('src', /personal-map-evergreen-v2\.webp/);
         await expect(spotlight.locator('a.btn--primary')).toHaveAttribute('href', /osobni-mapa\.html\?source=homepage_spotlight/);
         await expect(spotlight.locator('a.btn--primary')).toHaveAttribute('data-analytics-product', 'osobni_mapa_2026');
-        await expect(spotlight.locator('a[href*="rocni-horoskop.html"]')).toHaveAttribute('href', /rocni-horoskop\.html\?source=homepage_spotlight_secondary/);
-        await expect(spotlight.locator('a[href*="rocni-horoskop.html"]')).toHaveAttribute('data-analytics-product', 'rocni_horoskop_2026');
+        await expect(spotlight.locator('a[href*="rocni-horoskop.html"]')).toHaveCount(0);
         await expect(page.locator('.nav__dropdown-link[href*="osobni-mapa.html"]').first()).toContainText('Osobní mapa');
-        await expect(page.locator('.nav__dropdown-link[href*="rocni-horoskop.html"]').first()).toContainText('Roční horoskop');
+        await expect(page.locator('.nav__dropdown-link[href*="rocni-horoskop.html"]')).toHaveCount(0);
     });
 
     test('homepage premium produkty posilaji produktovy analyticky signal', async ({ page }) => {
@@ -335,7 +334,6 @@ test.describe('Homepage', () => {
         });
 
         await page.locator('.personal-map-spotlight a.btn--primary').click();
-        await page.locator('.personal-map-spotlight a[href*="rocni-horoskop.html"]').click();
 
         const events = await page.evaluate(() => window.MH_ANALYTICS_QUEUE.filter(
             (item) => item.name === 'cta_clicked' && item.intent === 'one_time_purchase'
@@ -347,14 +345,9 @@ test.describe('Homepage', () => {
                 product_id: 'osobni_mapa_2026',
                 feature: 'osobni_mapa_2026',
                 destination: 'osobni-mapa.html?source=homepage_spotlight'
-            }),
-            expect.objectContaining({
-                location: 'homepage_annual_horoscope_spotlight',
-                product_id: 'rocni_horoskop_2026',
-                feature: 'rocni_horoskop_2026',
-                destination: 'rocni-horoskop.html?source=homepage_spotlight_secondary'
             })
         ]));
+        expect(events).toHaveLength(1);
     });
 
     test('header registrace neotevira stary modal a vede na dedikovanou registraci', async ({ page, isMobile }) => {

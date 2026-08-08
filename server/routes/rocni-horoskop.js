@@ -1,203 +1,23 @@
 import express from 'express';
-import Stripe from 'stripe';
-import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { createOneTimeOrderInput, attachStripeSessionToOrderInput } from '../services/one-time-orders.js';
-import { recordFunnelEvent } from '../payment.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const router = express.Router();
-const APP_URL = process.env.APP_URL || 'http://localhost:3001';
-const LIVE_ANNUAL_HOROSCOPE_PRICE_ID = 'price_1TRBSUAo8bdbnsKa4aiQhQ7J';
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY || '';
-const defaultAnnualHoroscopePriceId = stripeSecretKey.startsWith('sk_live_') ? LIVE_ANNUAL_HOROSCOPE_PRICE_ID : '';
-const PRODUCT = {
-    id: 'rocni_horoskop_2026',
-    type: 'rocni_horoskop',
-    name: 'Mini Roční horoskop na míru 2026',
-    price: 19900,
-    currency: 'czk',
-    year: '2026',
-    stripePriceId: process.env.STRIPE_ANNUAL_HOROSCOPE_PRICE_ID || defaultAnnualHoroscopePriceId
-};
-const VALID_SIGNS = ['beran', 'byk', 'blizenci', 'rak', 'lev', 'panna', 'vahy', 'stir', 'strelec', 'kozoroh', 'vodnar', 'ryby'];
-const EMAIL_PATTERN = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+const REPLACEMENT = Object.freeze({
+    id: 'osobni_mapa_2026',
+    name: 'Osobní mapa na 12 měsíců',
+    path: '/osobni-mapa.html'
+});
 
-let stripeClient;
-
-function getStripeClient() {
-    if (stripeClient) return stripeClient;
-
-    const secretKey = process.env.STRIPE_SECRET_KEY;
-    if (!secretKey) {
-        throw new Error('Missing STRIPE_SECRET_KEY');
-    }
-
-    stripeClient = new Stripe(secretKey);
-    return stripeClient;
-}
-
-function cleanCheckoutSource(value) {
-    if (typeof value !== 'string') return 'annual_horoscope_page';
-    const trimmed = value.trim();
-    if (!trimmed) return 'annual_horoscope_page';
-    return trimmed.replace(/[^\w:-]/g, '_').slice(0, 80);
-}
-
-async function recordCheckoutValidationFailed(source, reason) {
-    await recordFunnelEvent('checkout_validation_failed', {
-        source,
-        feature: PRODUCT.id,
-        planId: PRODUCT.id,
-        planType: PRODUCT.type,
-        metadata: {
-            product_id: PRODUCT.id,
-            product_type: PRODUCT.type,
-            reason
-        }
+function retiredProductResponse(res) {
+    return res.status(410).json({
+        error: 'Mini Roční horoskop už nenabízíme. Pokračujte k Osobní mapě na celých 12 měsíců od nákupu.',
+        retired: true,
+        replacement: REPLACEMENT
     });
 }
 
-function isValidIsoDate(value) {
-    const date = new Date(`${value}T00:00:00Z`);
-    return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
-}
-
-function buildLineItem(customerName) {
-    if (PRODUCT.stripePriceId) {
-        return {
-            price: PRODUCT.stripePriceId,
-            quantity: 1
-        };
-    }
-
-    return {
-        price_data: {
-            currency: PRODUCT.currency,
-            product_data: {
-                name: PRODUCT.name,
-                description: `Personalizovaný horoskop pro ${customerName} - ${PRODUCT.year}`
-            },
-            unit_amount: PRODUCT.price
-        },
-        quantity: 1
-    };
-}
-
-router.get('/product', (_req, res) => {
-    res.json({
-        id: PRODUCT.id,
-        name: PRODUCT.name,
-        price: PRODUCT.price,
-        currency: PRODUCT.currency,
-        year: PRODUCT.year,
-        stripePriceId: PRODUCT.stripePriceId
-    });
-});
-
-router.post('/checkout', async (req, res) => {
-    const { birthDate, sign } = req.body;
-    const customerName = typeof req.body.name === 'string' ? req.body.name.trim() : '';
-    const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
-    const source = cleanCheckoutSource(req.body.source);
-
-    if (!customerName || !birthDate || !sign || !email) {
-        await recordCheckoutValidationFailed(source, 'missing_required_fields');
-        return res.status(400).json({ error: 'Vyplňte všechna pole.' });
-    }
-
-    if (!EMAIL_PATTERN.test(email)) {
-        await recordCheckoutValidationFailed(source, 'invalid_email');
-        return res.status(400).json({ error: 'Neplatná e-mailová adresa.' });
-    }
-
-    if (customerName.length > 100) {
-        await recordCheckoutValidationFailed(source, 'invalid_name');
-        return res.status(400).json({ error: 'Neplatné jméno.' });
-    }
-
-    if (!VALID_SIGNS.includes(sign)) {
-        await recordCheckoutValidationFailed(source, 'invalid_sign');
-        return res.status(400).json({ error: 'Neplatné znamení.' });
-    }
-
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate) || !isValidIsoDate(birthDate) || new Date(`${birthDate}T00:00:00Z`) >= new Date()) {
-        await recordCheckoutValidationFailed(source, 'invalid_birth_date');
-        return res.status(400).json({ error: 'Neplatné datum narození.' });
-    }
-
-    let order = null;
-    try {
-        order = await createOneTimeOrderInput({
-            productType: PRODUCT.type,
-            productId: PRODUCT.id,
-            customerEmail: email,
-            customerName,
-            payload: {
-                birthDate,
-                sign,
-                productYear: PRODUCT.year
-            }
-        });
-        const stripe = getStripeClient();
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            customer_email: email,
-            line_items: [buildLineItem(customerName)],
-            mode: 'payment',
-            locale: 'cs',
-            success_url: `${APP_URL}/rocni-horoskop.html?status=success&source=${encodeURIComponent(source)}&session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${APP_URL}/rocni-horoskop.html?status=cancel&source=${encodeURIComponent(source)}`,
-            metadata: {
-                productType: PRODUCT.type,
-                productId: PRODUCT.id,
-                productYear: PRODUCT.year,
-                orderId: order.id,
-                source,
-                price: String(PRODUCT.price),
-                currency: PRODUCT.currency
-            }
-        });
-
-        await attachStripeSessionToOrderInput(order.id, session.id);
-        await recordFunnelEvent('checkout_session_created', {
-            source,
-            feature: PRODUCT.id,
-            planId: PRODUCT.id,
-            planType: PRODUCT.type,
-            stripeSessionId: session.id,
-            metadata: {
-                product_id: PRODUCT.id,
-                product_type: PRODUCT.type,
-                product_name: PRODUCT.name,
-                amount: PRODUCT.price,
-                currency: PRODUCT.currency,
-                order_id: order.id
-            }
-        });
-
-        return res.json({ url: session.url });
-    } catch (err) {
-        console.error('[HOROSKOP] Checkout session error:', err.message);
-        await recordFunnelEvent('checkout_session_failed', {
-            source,
-            feature: PRODUCT.id,
-            planId: PRODUCT.id,
-            planType: PRODUCT.type,
-            metadata: {
-                product_id: PRODUCT.id,
-                product_type: PRODUCT.type,
-                order_id: order?.id || null,
-                error: err.message
-            }
-        });
-
-        return res.status(500).json({ error: 'Platba se nezdařila. Zkuste to prosím znovu.' });
-    }
-});
+// Historical fulfillment remains in the Stripe webhook and reconciliation
+// services. These endpoints only prevent creating any new fixed-year sale.
+router.get('/product', (_req, res) => retiredProductResponse(res));
+router.post('/checkout', (_req, res) => retiredProductResponse(res));
 
 export default router;

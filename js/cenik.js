@@ -119,11 +119,6 @@ const FEATURE_PREVIEW_DESTINATIONS = {
 };
 
 const CANCEL_DOWNSELL_PRODUCTS = {
-    rocni_horoskop_2026: {
-        path: '/rocni-horoskop.html',
-        label: 'Jednorázový Mini Roční horoskop 2026',
-        productId: 'rocni_horoskop_2026'
-    },
     osobni_mapa_2026: {
         path: '/osobni-mapa.html',
         label: 'Jednorázová Osobní mapa na 12 měsíců',
@@ -136,15 +131,15 @@ const CANCEL_DOWNSELL_FEATURE_PRODUCTS = {
     andelske_karty_hluboky_vhled: 'osobni_mapa_2026',
     astrocartography: 'osobni_mapa_2026',
     crystal_ball_unlimited: 'osobni_mapa_2026',
-    daily_guidance: 'rocni_horoskop_2026',
-    horoskopy: 'rocni_horoskop_2026',
+    daily_guidance: 'osobni_mapa_2026',
+    horoskopy: 'osobni_mapa_2026',
     hvezdny_mentor: 'osobni_mapa_2026',
     journal_insights: 'osobni_mapa_2026',
     kristalova_koule: 'osobni_mapa_2026',
     medicine_wheel: 'osobni_mapa_2026',
     mentor: 'osobni_mapa_2026',
     minuly_zivot: 'osobni_mapa_2026',
-    monthly_horoscope: 'rocni_horoskop_2026',
+    monthly_horoscope: 'osobni_mapa_2026',
     natal_chart: 'osobni_mapa_2026',
     natalni_interpretace: 'osobni_mapa_2026',
     numerologie_vyklad: 'osobni_mapa_2026',
@@ -152,7 +147,7 @@ const CANCEL_DOWNSELL_FEATURE_PRODUCTS = {
     partnerska_detail: 'osobni_mapa_2026',
     past_life: 'osobni_mapa_2026',
     ritual_memory: 'osobni_mapa_2026',
-    rituals: 'rocni_horoskop_2026',
+    rituals: 'osobni_mapa_2026',
     runes_deep_reading: 'osobni_mapa_2026',
     runy_hluboky_vyklad: 'osobni_mapa_2026',
     shamanske_kolo_plne_cteni: 'osobni_mapa_2026',
@@ -160,7 +155,7 @@ const CANCEL_DOWNSELL_FEATURE_PRODUCTS = {
     tarot: 'osobni_mapa_2026',
     tarot_celtic_cross: 'osobni_mapa_2026',
     tarot_multi_card: 'osobni_mapa_2026',
-    weekly_horoscope: 'rocni_horoskop_2026'
+    weekly_horoscope: 'osobni_mapa_2026'
 };
 
 const SOURCE_RECOMMENDATION_COPY = {
@@ -583,16 +578,8 @@ function getCancelDownsellDestination(context) {
 }
 
 function getCancelDownsellProduct(context) {
-    if (context.source?.includes('annual_horoscope')) {
-        return CANCEL_DOWNSELL_PRODUCTS.osobni_mapa_2026;
-    }
-
-    if (context.source?.includes('personal_map')) {
-        return CANCEL_DOWNSELL_PRODUCTS.rocni_horoskop_2026;
-    }
-
-    const productId = CANCEL_DOWNSELL_FEATURE_PRODUCTS[context.feature] || 'rocni_horoskop_2026';
-    return CANCEL_DOWNSELL_PRODUCTS[productId] || CANCEL_DOWNSELL_PRODUCTS.rocni_horoskop_2026;
+    const productId = CANCEL_DOWNSELL_FEATURE_PRODUCTS[context.feature] || 'osobni_mapa_2026';
+    return CANCEL_DOWNSELL_PRODUCTS[productId] || CANCEL_DOWNSELL_PRODUCTS.osobni_mapa_2026;
 }
 
 function getRecoveryPreviewLabel(label) {
@@ -922,7 +909,7 @@ function highlightOneTimeProducts() {
     const addon = document.querySelector('.pricing-addon');
     if (!addon) return false;
 
-    const entryProduct = addon.querySelector('[data-product="rocni_horoskop_2026"]')
+    const entryProduct = addon.querySelector('[data-product="osobni_mapa_2026"]')
         || addon.querySelector('.pricing-addon__product');
 
     addon.classList.add('pricing-addon--recommended');

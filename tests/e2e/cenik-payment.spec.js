@@ -135,12 +135,13 @@ test.describe('Ceník — platební tlačítka', () => {
         await expect(yearlyGuideCard).toHaveClass(/pricing-card--recommended/);
     });
 
-    test('rychla volba jednorazoveho PDF zvyrazni rocni horoskop', async ({ page }) => {
+    test('rychla volba jednorazoveho PDF zvyrazni Osobni mapu', async ({ page }) => {
         await page.locator('[data-pricing-choice="one_time"]').click();
 
         await expect(page.locator('[data-pricing-choice="one_time"]')).toHaveAttribute('aria-pressed', 'true');
         await expect(page.locator('.pricing-addon')).toHaveClass(/pricing-addon--recommended/);
-        await expect(page.locator('[data-product="rocni_horoskop_2026"]')).toHaveClass(/pricing-addon__product--recommended/);
+        await expect(page.locator('[data-product="osobni_mapa_2026"]')).toHaveClass(/pricing-addon__product--recommended/);
+        await expect(page.locator('[data-product="rocni_horoskop_2026"]')).toHaveCount(0);
     });
 
     test('mobilni cookie lista v ceniku zustava kompaktni', async ({ page }) => {
@@ -827,8 +828,8 @@ test.describe('Ceník — platební tlačítka', () => {
 
         await Promise.all([
             productIntent,
-            page.waitForURL(/rocni-horoskop\.html/),
-            page.locator('[data-product="rocni_horoskop_2026"]').click()
+            page.waitForURL(/osobni-mapa\.html/),
+            page.locator('[data-product="osobni_mapa_2026"]').click()
         ]);
 
         await expect.poll(async () => {
@@ -837,14 +838,14 @@ test.describe('Ceník — platební tlačítka', () => {
         }).toEqual(expect.objectContaining({
             eventName: 'pricing_product_cta_clicked',
             source: 'pricing_addon',
-            feature: 'rocni_horoskop_2026',
+            feature: 'osobni_mapa_2026',
             metadata: expect.objectContaining({
                 path: '/cenik.html',
-                product_id: 'rocni_horoskop_2026',
-                label: 'Mini Roční horoskop na míru 2026',
+                product_id: 'osobni_mapa_2026',
+                label: 'Osobní mapa na 12 měsíců',
                 entry_source: 'pricing_page',
                 entry_feature: 'premium_membership',
-                destination: 'rocni-horoskop.html?source=pricing_addon'
+                destination: 'osobni-mapa.html?source=pricing_addon'
             })
         }));
     });
@@ -871,16 +872,16 @@ test.describe('Ceník — platební tlačítka', () => {
         expect(page.url()).not.toContain('payment=cancel');
     });
 
-    test('zruseny checkout z horoskopu nabizi rocni horoskop jako nizsi zavazek', async ({ page }) => {
+    test('zruseny checkout z horoskopu nabizi Osobni mapu jako nizsi zavazek', async ({ page }) => {
         await page.goto('/cenik.html?payment=cancel&plan=pruvodce&source=inline_paywall&feature=daily_guidance');
         await waitForPageReady(page);
 
         const recovery = page.locator('#pricing-cancel-recovery');
         await expect(recovery).toBeVisible();
-        await expect(recovery.locator('[data-cancel-downsell]')).toContainText('Jednorázový roční horoskop');
+        await expect(recovery.locator('[data-cancel-downsell]')).toContainText('Jednorázová Osobní mapa');
 
         const downsellHref = await recovery.locator('[data-cancel-downsell]').getAttribute('href');
-        expect(downsellHref).toContain('/rocni-horoskop.html');
+        expect(downsellHref).toContain('/osobni-mapa.html');
         expect(downsellHref).toContain('entry_feature=daily_guidance');
     });
 

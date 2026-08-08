@@ -12,18 +12,20 @@ async function getCsrfToken() {
 }
 
 describe('Roční horoskop one-time product', () => {
-    test('GET /api/rocni-horoskop/product returns public product metadata', async () => {
+    test('GET /api/rocni-horoskop/product retires the fixed-year offer', async () => {
         const res = await request(app)
             .get('/api/rocni-horoskop/product')
-            .expect(200);
+            .expect(410);
 
         expect(res.body).toMatchObject({
-            id: 'rocni_horoskop_2026',
-            name: 'Mini Roční horoskop na míru 2026',
-            price: 19900,
-            currency: 'czk',
-            year: '2026'
+            retired: true,
+            replacement: {
+                id: 'osobni_mapa_2026',
+                name: 'Osobní mapa na 12 měsíců',
+                path: '/osobni-mapa.html'
+            }
         });
+        expect(res.body).not.toHaveProperty('price');
     });
 
     test('GET /api/osobni-mapa/product returns the evergreen 12-month product', async () => {
@@ -61,70 +63,27 @@ describe('Roční horoskop one-time product', () => {
         expect(res.status).toBe(403);
     });
 
-    test('POST /api/rocni-horoskop/checkout validates e-mail before Stripe', async () => {
+    test('POST /api/rocni-horoskop/checkout cannot create any new fixed-year sale', async () => {
         const csrfToken = await getCsrfToken();
-        const source = `annual_validation_${Date.now()}`;
         const res = await request(app)
             .post('/api/rocni-horoskop/checkout')
             .set('x-csrf-token', csrfToken)
             .send({
                 name: 'Test User',
-                email: 'not-an-email',
+                email: 'test@example.com',
                 birthDate: '1990-01-01',
                 sign: 'beran',
-                source
+                source: 'old_page'
             });
 
-        expect(res.status).toBe(400);
-        expect(res.body.error).toMatch(/e-mail/i);
-
-        const { data } = await supabase
-            .from('funnel_events')
-            .select('*')
-            .eq('source', source)
-            .eq('event_name', 'checkout_validation_failed');
-
-        expect(data).toContainEqual(expect.objectContaining({
-            feature: 'rocni_horoskop_2026',
-            plan_id: 'rocni_horoskop_2026',
-            plan_type: 'rocni_horoskop',
-            metadata: expect.objectContaining({
-                product_id: 'rocni_horoskop_2026',
-                reason: 'invalid_email'
-            })
-        }));
-    });
-
-    test('POST /api/rocni-horoskop/checkout validates zodiac sign before Stripe', async () => {
-        const csrfToken = await getCsrfToken();
-        const res = await request(app)
-            .post('/api/rocni-horoskop/checkout')
-            .set('x-csrf-token', csrfToken)
-            .send({
-                name: 'Test User',
-                email: 'test@example.com',
-                birthDate: '1990-01-01',
-                sign: 'invalid'
-            });
-
-        expect(res.status).toBe(400);
-        expect(res.body.error).toMatch(/znamen/i);
-    });
-
-    test('POST /api/rocni-horoskop/checkout rejects rollover birth date before Stripe', async () => {
-        const csrfToken = await getCsrfToken();
-        const res = await request(app)
-            .post('/api/rocni-horoskop/checkout')
-            .set('x-csrf-token', csrfToken)
-            .send({
-                name: 'Test User',
-                email: 'test@example.com',
-                birthDate: '1990-02-31',
-                sign: 'beran'
-            });
-
-        expect(res.status).toBe(400);
-        expect(res.body.error).toMatch(/datum/i);
+        expect(res.status).toBe(410);
+        expect(res.body).toMatchObject({
+            retired: true,
+            replacement: {
+                id: 'osobni_mapa_2026',
+                path: '/osobni-mapa.html'
+            }
+        });
     });
 
     test('POST /api/osobni-mapa/checkout rejects rollover birth date before Stripe', async () => {

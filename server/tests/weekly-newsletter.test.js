@@ -50,13 +50,16 @@ describe('weekly newsletter digest', () => {
         }
     });
 
-    test('premium spotlight alternates by week and carries attribution links', () => {
+    test('premium spotlight stays on the evergreen Personal Map and carries attribution links', () => {
         const spotA = getWeeklyPremiumSpotlight(new Date('2026-07-06T07:00:00Z'));
         const spotSameWeek = getWeeklyPremiumSpotlight(new Date('2026-07-10T07:00:00Z'));
         const spotNextWeek = getWeeklyPremiumSpotlight(new Date('2026-07-13T07:00:00Z'));
 
         expect(spotA.title).toBe(spotSameWeek.title);
-        expect(spotA.title).not.toBe(spotNextWeek.title);
+        expect(spotA.title).toBe(spotNextWeek.title);
+        expect(spotA.title).toBe('Osobní mapa');
+        expect(spotA.url).toContain('/osobni-mapa.html');
+        expect(spotA.url).not.toContain('rocni-horoskop');
         expect(spotA.url).toContain('source=newsletter_digest');
         expect(spotA.url).toContain('utm_campaign=weekly_digest');
         expect(spotA.price).toContain('Kč');

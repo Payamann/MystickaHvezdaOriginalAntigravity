@@ -1340,9 +1340,9 @@ test.describe('Kalkulačka čísla osudu', () => {
         await page.goto('/kalkulacka-cisla-osudu.html');
         await waitForPageReady(page);
 
-        await expect(page.locator('.life-number-intent-card')).toHaveCount(4);
+        await expect(page.locator('.life-number-intent-card')).toHaveCount(3);
         await expect(page.locator('a[href*="numerologie.html?source=life_number_intent"]')).toBeVisible();
-        await expect(page.locator('a[href*="rocni-horoskop.html?source=life_number_intent"]')).toBeVisible();
+        await expect(page.locator('a[href*="rocni-horoskop.html?source=life_number_intent"]')).toHaveCount(0);
         await expect(page.locator('a[href*="osobni-mapa.html?source=life_number_intent"]')).toBeVisible();
     });
 

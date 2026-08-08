@@ -265,7 +265,7 @@ describe('🔒 Security Tests', () => {
 
         test('CSP allows inline JSON-LD only through script hashes', async () => {
             const res = await request(app)
-                .get('/rocni-horoskop.html')
+                .get('/osobni-mapa.html')
                 .expect(200);
             const scriptSrc = getCspDirective(res.headers['content-security-policy'], 'script-src');
 
@@ -449,5 +449,24 @@ describe('📊 Performance & Security Metrics', () => {
 
         const responseSize = JSON.stringify(res.body).length;
         expect(responseSize).toBeLessThan(1000); // Less than 1KB
+    });
+});
+
+describe('Retired annual horoscope routing', () => {
+    test('new visitors are permanently redirected to the evergreen Personal Map', async () => {
+        const res = await request(app)
+            .get('/rocni-horoskop.html?source=old_bookmark')
+            .expect(301);
+
+        expect(res.headers.location).toBe('/osobni-mapa.html?source=annual_horoscope_retired');
+    });
+
+    test('already-paid Stripe confirmations keep their historical success page', async () => {
+        const res = await request(app)
+            .get('/rocni-horoskop.html?status=success&session_id=cs_test_existing_order')
+            .expect(200);
+
+        expect(res.text).toContain('id="bannerSuccess"');
+        expect(res.text).toContain('<meta name="robots" content="noindex, follow">');
     });
 });

@@ -749,6 +749,14 @@ const STATIC_PAGE_REDIRECTS = new Map([
     ['/blog/vidite-vsude-1111-poselstvi-andelu.html', '/blog/andelska-cisla-1111.html'],
 ]);
 
+// The fixed-year product is retired from new sales. Keep the success page
+// reachable for already-created Stripe sessions, but send every new visitor
+// to the evergreen 12-month Personal Map.
+app.get('/rocni-horoskop.html', (req, res, next) => {
+    if (req.query.status === 'success' && req.query.session_id) return next();
+    return res.redirect(301, '/osobni-mapa.html?source=annual_horoscope_retired');
+});
+
 const CZECH_COMPATIBILITY_SLUGS = new Map([
     ['beran', 'aries'],
     ['byk', 'taurus'],
