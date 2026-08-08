@@ -215,6 +215,19 @@ function buildGitLastModifiedMap() {
 
 const gitLastModifiedByFile = buildGitLastModifiedMap();
 
+function isShallowGitRepository() {
+    try {
+        return execFileSync('git', ['rev-parse', '--is-shallow-repository'], {
+            cwd: rootDir,
+            encoding: 'utf8'
+        }).trim() === 'true';
+    } catch {
+        return false;
+    }
+}
+
+const shallowGitRepository = isShallowGitRepository();
+
 function buildDirtyHtmlSet() {
     try {
         const output = execFileSync('git', [
@@ -249,13 +262,31 @@ const currentPragueDate = new Intl.DateTimeFormat('en-CA', {
     day: '2-digit'
 }).format(new Date());
 
-function dateFromContentHistory(file) {
+function dateFromContentHistory(file, existingLastmod = '') {
     const relativeFile = path.relative(rootDir, file).replace(/\\/g, '/');
     if (dirtyHtmlFiles.has(relativeFile)) return currentPragueDate;
-    return gitLastModifiedByFile.get(relativeFile) || dateFromMtime(file);
+
+    // A depth-1 checkout presents the tip commit as a root commit, so
+    // `git log --name-only` reports the whole tree as newly added. In that
+    // environment the checked-in sitemap is the reliable history source.
+    if (shallowGitRepository && /^\d{4}-\d{2}-\d{2}$/.test(existingLastmod)) {
+        return existingLastmod;
+    }
+
+    const gitLastModified = gitLastModifiedByFile.get(relativeFile);
+    if (gitLastModified) return gitLastModified;
+
+    // GitHub Actions checks out a shallow history by default. When an older
+    // page is absent from that truncated log, retain its already validated
+    // sitemap date instead of replacing it with the checkout file mtime.
+    if (/^\d{4}-\d{2}-\d{2}$/.test(existingLastmod)) return existingLastmod;
+
+    return dateFromMtime(file);
 }
 
 function inferMetadata(loc, file, existingMetadata) {
+    const lastmod = dateFromContentHistory(file, existingMetadata?.lastmod);
+
     if (
         existingMetadata
         && existingMetadata.lastmod
@@ -263,7 +294,7 @@ function inferMetadata(loc, file, existingMetadata) {
         && existingMetadata.priority
     ) {
         return {
-            lastmod: dateFromContentHistory(file),
+            lastmod,
             changefreq: existingMetadata.changefreq,
             priority: existingMetadata.priority
         };
@@ -287,30 +318,30 @@ function inferMetadata(loc, file, existingMetadata) {
     ].includes(pathname);
 
     if (isHome) {
-        return { lastmod: dateFromContentHistory(file), changefreq: 'daily', priority: '1.0' };
+        return { lastmod, changefreq: 'daily', priority: '1.0' };
     }
 
     if (isDailyHub) {
-        return { lastmod: dateFromContentHistory(file), changefreq: 'daily', priority: '0.9' };
+        return { lastmod, changefreq: 'daily', priority: '0.9' };
     }
 
     if (isWeeklyHub || pathname.startsWith('/horoskop/') || pathname.startsWith('/pl/') || pathname.startsWith('/sk/')) {
-        return { lastmod: dateFromContentHistory(file), changefreq: 'weekly', priority: '0.8' };
+        return { lastmod, changefreq: 'weekly', priority: '0.8' };
     }
 
     if (pathname.startsWith('/blog/')) {
-        return { lastmod: dateFromContentHistory(file), changefreq: 'monthly', priority: '0.8' };
+        return { lastmod, changefreq: 'monthly', priority: '0.8' };
     }
 
     if (pathname.startsWith('/kompatibilita/')) {
-        return { lastmod: dateFromContentHistory(file), changefreq: 'monthly', priority: '0.7' };
+        return { lastmod, changefreq: 'monthly', priority: '0.7' };
     }
 
     if (pathname.startsWith('/slovnik/') || pathname.startsWith('/testy/') || pathname.startsWith('/tarot-vyznam/')) {
-        return { lastmod: dateFromContentHistory(file), changefreq: 'monthly', priority: '0.6' };
+        return { lastmod, changefreq: 'monthly', priority: '0.6' };
     }
 
-    return { lastmod: dateFromContentHistory(file), changefreq: 'monthly', priority: '0.5' };
+    return { lastmod, changefreq: 'monthly', priority: '0.5' };
 }
 
 function comparePages(existingOrder) {
