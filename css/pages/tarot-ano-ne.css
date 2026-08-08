@@ -99,7 +99,7 @@
 
             transform: translateY(-6px);
 
-            transition: all 0.25s;
+            transition: color 0.25s, background-color 0.25s, border-color 0.25s, transform 0.25s, opacity 0.25s, box-shadow 0.25s;
 
         }
 
@@ -607,6 +607,82 @@ html body .mh-inline-418361a818 { color:rgba(255,255,255,0.65);line-height:1.8; 
     animation: fadeIn 0.5s ease;
 }
 
+.tarot-result-upgrade-bridge {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 0.72fr);
+    gap: 1rem;
+    align-items: center;
+    margin: 1.35rem 0;
+    padding: 1.1rem 1.2rem;
+    border: 1px solid rgba(212, 175, 55, 0.34);
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.11), rgba(109, 67, 188, 0.12));
+    text-align: left;
+}
+
+.tarot-result-upgrade-bridge__eyebrow {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: #e6c85f;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    line-height: 1.35;
+    text-transform: uppercase;
+}
+
+.tarot-result-upgrade-bridge strong {
+    display: block;
+    color: #fff7d6;
+    font-family: 'Cinzel', serif;
+    font-size: 1.05rem;
+    line-height: 1.35;
+}
+
+.tarot-result-upgrade-bridge p {
+    margin: 0.45rem 0 0;
+    color: rgba(255, 255, 255, 0.74);
+    font-size: 0.92rem;
+    line-height: 1.58;
+}
+
+.tarot-result-upgrade-bridge__action {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.55rem;
+}
+
+.tarot-result-upgrade-bridge__action a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    padding: 0.72rem 0.9rem;
+    border: 1px solid rgba(230, 200, 95, 0.58);
+    border-radius: 10px;
+    color: #f6df87;
+    font-weight: 800;
+    line-height: 1.35;
+    text-align: center;
+    text-decoration: none;
+    transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.tarot-result-upgrade-bridge__action a:hover,
+.tarot-result-upgrade-bridge__action a:focus-visible {
+    transform: translateY(-1px);
+    border-color: #f0d474;
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.tarot-result-upgrade-bridge__action small {
+    color: rgba(255, 255, 255, 0.56);
+    font-size: 0.75rem;
+    line-height: 1.45;
+    text-align: center;
+}
+
 .tarot-yes-no-next-header {
     margin-bottom: 1rem;
 }
@@ -757,7 +833,7 @@ html body .mh-inline-418361a818 { color:rgba(255,255,255,0.65);line-height:1.8; 
 
 .tarot-yes-no-related-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.9rem;
 }
 
@@ -780,6 +856,11 @@ html body .mh-inline-418361a818 { color:rgba(255,255,255,0.65);line-height:1.8; 
     transform: translateY(-2px);
     border-color: rgba(212, 175, 55, 0.42);
     background: rgba(255, 255, 255, 0.07);
+}
+
+.tarot-yes-no-related-card--paid {
+    border-color: rgba(212, 175, 55, 0.34);
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(114, 72, 170, 0.1));
 }
 
 .tarot-yes-no-related-card strong,
@@ -868,6 +949,11 @@ html body .mh-inline-418361a818 { color:rgba(255,255,255,0.65);line-height:1.8; 
 
     .tarot-yes-no-next-card {
         min-height: auto;
+    }
+
+    .tarot-result-upgrade-bridge {
+        grid-template-columns: 1fr;
+        padding: 1rem;
     }
 
     .tarot-yes-no-related-card {

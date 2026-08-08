@@ -1004,14 +1004,19 @@
         setBlockVisible(nextStep, true);
 
         const metadata = getResultMetadata(answerKey, ans, question);
-        // Free save/email-capture bridge — NOT a paywall. A yes/no answer is a
-        // complete experience, so this surface builds the list instead of
-        // pitching premium. first_value_completed already counts the moment;
-        // firing paywall_viewed here overstated paywall volume ~15x.
+        // The yes/no answer remains complete and free. The paid path is a small,
+        // optional bridge rather than a gate, so do not emit paywall_viewed here;
+        // that previously overstated actual paywall volume roughly 15x.
         window.MH_ANALYTICS?.trackAction?.('tarot_yes_no_result_bridge_viewed', {
             ...metadata,
             feature: TAROT_YES_NO_FEATURE,
             source: TAROT_YES_NO_RESULT_SOURCE
+        });
+        window.MH_ANALYTICS?.trackAction?.('tarot_yes_no_upgrade_bridge_viewed', {
+            ...metadata,
+            feature: TAROT_YES_NO_FEATURE,
+            source: TAROT_YES_NO_RESULT_SOURCE,
+            plan_id: TAROT_YES_NO_PLAN_ID
         });
     }
 

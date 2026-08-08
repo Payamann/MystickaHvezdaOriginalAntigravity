@@ -69,10 +69,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const heroTitle = document.querySelector('.hero__title');
     if (heroTitle) {
-        heroTitle.innerHTML = 'Získejte jasnější <span class="text-gradient text-glow">směr</span> pro vztahy, práci i sebe';
+        heroTitle.innerHTML = 'Astrologie a tarot <span class="text-gradient text-glow">pro každý den</span>';
     }
 
-    setText('.hero__subtitle', 'Denní horoskopy, tarot, natální karta a osobní vedení na jednom místě. Začněte zdarma a během pár minut zjistěte, co vám dnes dává největší smysl.');
+    setText('.hero__subtitle', 'Denní horoskopy, tarot, natální karta a osobní vedení na jednom místě. Začni zdarma a během pár minut zjisti, co ti dnes dává největší smysl.');
 
     const heroButton = document.getElementById('hero-cta-btn');
     if (heroButton) {
@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pricingSection.querySelector('.section__title').textContent = 'Začněte zdarma. Přechod na Premium dává smysl až ve chvíli, kdy chcete víc.';
         const pricingText = pricingSection.querySelector('.section__text');
         if (pricingText) {
-            pricingText.textContent = 'Většina lidí začíná plánem Hvězdný Průvodce, protože odemyká hlavní výklady a každodenní vedení bez zbytečně vysoké ceny.';
+            pricingText.textContent = 'Hvězdný Průvodce je doporučený začátek pro pravidelné používání, protože odemyká hlavní výklady a každodenní vedení.';
         }
     }
 

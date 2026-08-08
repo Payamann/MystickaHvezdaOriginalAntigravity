@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { MOBILE_VIEWPORT, waitForPageReady } from './helpers.js';
 
 const DESKTOP_VIEWPORT = { width: 1280, height: 720 };
-const MISLEADING_TRIAL_COPY = /7\s*dn[i\u00ed]\s*zdarma|trial|zku[s\u0161]ebn[i\u00ed]\s*obdob[i\u00ed]/i;
+const TRIAL_COPY = /7\s*dn[i\u00ed]\s*zdarma|trial|zku[s\u0161]ebn[i\u00ed]\s*obdob[i\u00ed]/i;
 
 const VIEWPORTS = [
     { name: 'desktop', viewport: DESKTOP_VIEWPORT },
@@ -70,11 +70,6 @@ function expectQuery(href, expected) {
         expect(url.searchParams.get(key)).toBe(value);
     }
     return url;
-}
-
-async function expectNoMisleadingTrialCopy(page) {
-    const text = await page.locator('body').innerText();
-    expect(text).not.toMatch(MISLEADING_TRIAL_COPY);
 }
 
 async function getCookieOverlapMetrics(page, selectors) {
@@ -171,7 +166,6 @@ test.describe('Pricing visual smoke', () => {
             expect(previewHref).toContain('entry_source=inline_paywall');
             expect(previewHref).toContain('entry_feature=numerologie_vyklad');
 
-            await expectNoMisleadingTrialCopy(page);
             await expectNoHorizontalOverflow(page);
         });
     }
@@ -201,6 +195,7 @@ test.describe('Pricing visual smoke', () => {
 
         const banner = page.locator('#cookie-banner');
         await expect(banner).toBeVisible({ timeout: 4_000 });
+        await page.locator('#toggle-monthly').scrollIntoViewIfNeeded();
 
         const toggleMetrics = await getCookieOverlapMetrics(page, [
             '#toggle-monthly',
@@ -248,5 +243,26 @@ test.describe('Pricing visual smoke', () => {
             expect(item.visible, `${item.selector} should be visible`).toBe(true);
             expect(item.overlap, `${item.selector} should not overlap cookie banner`).toBe(false);
         }
+    });
+
+    test('auth copy reflects trial days for the selected plan', async ({ page }) => {
+        await page.setViewportSize(DESKTOP_VIEWPORT);
+        await page.addInitScript(() => {
+            localStorage.setItem('mh_cookie_prefs', JSON.stringify({
+                analytics: false,
+                marketing: false,
+                ts: Date.now()
+            }));
+        });
+
+        await page.goto('/prihlaseni.html?mode=register&plan=pruvodce&feature=premium_membership&source=pricing_page&redirect=%2Fcenik.html');
+        await waitForPageReady(page);
+        await expect(page.locator('#checkout-context-copy')).toContainText(/7 dní zdarma/i);
+
+        await page.goto('/prihlaseni.html?mode=register&plan=vip-majestrat&feature=tarot_celtic_cross&source=tarot_celtic_cross_landing&redirect=%2Fcenik.html');
+        await waitForPageReady(page);
+        const vipCopy = await page.locator('main').innerText();
+        expect(vipCopy).not.toMatch(TRIAL_COPY);
+        expect(vipCopy).toMatch(/cenu a období.*stripe/i);
     });
 });

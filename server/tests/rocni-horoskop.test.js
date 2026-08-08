@@ -19,11 +19,33 @@ describe('Roční horoskop one-time product', () => {
 
         expect(res.body).toMatchObject({
             id: 'rocni_horoskop_2026',
-            name: 'Roční horoskop na míru 2026',
+            name: 'Mini Roční horoskop na míru 2026',
             price: 19900,
             currency: 'czk',
             year: '2026'
         });
+    });
+
+    test('GET /api/osobni-mapa/product returns the evergreen 12-month product', async () => {
+        const res = await request(app)
+            .get('/api/osobni-mapa/product')
+            .expect(200);
+
+        expect(res.body).toMatchObject({
+            id: 'osobni_mapa_2026',
+            name: 'Osobní mapa na 12 měsíců',
+            price: 29900,
+            currency: 'czk',
+            periodMonths: 12,
+            period: {
+                months: 12
+            }
+        });
+        expect(res.headers['cache-control']).toContain('no-store');
+        expect(res.body.period.start).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+        expect(res.body.period.end).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+        expect(res.body.period.label).toMatch(/\d{4}.+\d{4}/);
+        expect(res.body).not.toHaveProperty('year');
     });
 
     test('POST /api/rocni-horoskop/checkout requires CSRF token', async () => {
@@ -119,6 +141,7 @@ describe('Roční horoskop one-time product', () => {
                 birthPlace: 'Praha',
                 sign: 'beran',
                 grammaticalGender: 'neutral',
+                focusArea: 'change',
                 focus: 'Chci pochopit hlavni tema roku.',
                 source
             });

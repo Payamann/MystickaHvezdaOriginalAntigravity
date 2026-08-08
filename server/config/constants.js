@@ -87,7 +87,7 @@ export const SUBSCRIPTION_PLANS = Object.freeze({
         type: PLAN_TYPES.VIP,
         interval: 'month',
         trialDays: 0,
-        description: 'VIP přístup - Priority 24/7 podpora, personalizovaný daily horoscope, neomezené konzultace s Hvězdným Průvodcem'
+        description: 'VIP přístup - Keltský kříž, pokročilé výklady a přednostní přístup k novým funkcím'
     }
 });
 

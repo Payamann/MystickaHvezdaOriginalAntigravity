@@ -1,8 +1,8 @@
 # Mystická Hvězda (mystickahvezda.cz)
-A premium Czech platform for astrology, tarot, and AI-driven esoteric insights.
+A Czech platform for symbolic astrology, tarot, and AI-assisted reflection.
 
 ## Description
-Mystická Hvězda provides professional tools for self-discovery, spiritual growth, and future forecasting using a blend of ancient wisdom (astrology, runes, tarot) and modern AI interpretation.
+Mystická Hvězda provides tools for self-reflection using symbolic traditions such as astrology, runes and tarot together with modern AI-assisted interpretation. Outputs are reflective and do not promise certain predictions or replace professional advice.
 
 ## Key Services
 - **Tarot Online:** AI-augmented tarot readings. [tarot.html](https://www.mystickahvezda.cz/tarot.html)

@@ -53,14 +53,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (pricingCards[1]) {
-        setText('.card--pricing:nth-of-type(2) .vip-badge', 'Nejlepší start');
+        setText('.card--pricing:nth-of-type(2) .vip-badge', 'Doporučený start');
         setText('.card--pricing:nth-of-type(2) .card__title', 'Hvězdný Průvodce');
-        setText('.card--pricing:nth-of-type(2) .card__text', 'Nejlepší poměr ceny a skutečné hodnoty');
+        setText('.card--pricing:nth-of-type(2) .card__text', 'Pro pravidelné používání a více souvislostí');
         const features = pricingCards[1].querySelectorAll('.card__features li');
         if (features[0]) features[0].lastChild.textContent = ' Neomezené výklady a denní vedení';
         if (features[1]) features[1].lastChild.textContent = ' Natální karta a numerologický rozbor';
         if (features[2]) features[2].lastChild.textContent = ' Minulý život, rituály a plné horoskopy';
-        if (features[3]) features[3].lastChild.textContent = ' Plán, na kterém většina lidí opravdu zůstane';
+        if (features[3]) features[3].lastChild.textContent = ' Doporučený začátek pro pravidelné používání';
         setText('.card--pricing:nth-of-type(2) .plan-checkout-btn', 'Chci plný přístup');
     }
 
@@ -74,12 +74,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (pricingCards[3]) {
-        setText('.card--pricing:nth-of-type(4) .card__title', 'VIP Majestrát');
+        setText('.card--pricing:nth-of-type(4) .card__title', 'VIP Majestát');
         setText('.card--pricing:nth-of-type(4) .card__text', 'Pro nejnáročnější a největší hloubku');
         const features = pricingCards[3].querySelectorAll('.card__features li');
         if (features[0]) features[0].lastChild.textContent = ' Vše z Exclusive';
-        if (features[1]) features[1].lastChild.textContent = ' Roční mapa a VIP odpovědi';
-        if (features[2]) features[2].lastChild.textContent = ' Prioritní podpora a nejvyšší hloubka';
+        if (features[1]) features[1].lastChild.textContent = ' Keltský kříž a pokročilé výklady';
+        if (features[2]) features[2].lastChild.textContent = ' Přednostní přístup k novým funkcím';
         setText('.card--pricing:nth-of-type(4) .plan-checkout-btn', 'Vstoupit do VIP');
     }
 
@@ -88,19 +88,19 @@ document.addEventListener('DOMContentLoaded', () => {
     setText('.section--alt .section__text', 'Rychlé srovnání toho, co se odemkne po registraci a po přechodu na placený plán.');
 
     const comparisonHeaders = document.querySelectorAll('.comparison-table-wrap th');
-    const headerTexts = ['Funkce', 'Poutník', 'Průvodce', 'Exclusive', 'VIP Majestrát'];
+    const headerTexts = ['Funkce', 'Poutník', 'Průvodce', 'Exclusive', 'VIP Majestát'];
     comparisonHeaders.forEach((cell, index) => {
         if (headerTexts[index]) cell.textContent = headerTexts[index];
     });
 
     const comparisonMobileTitles = document.querySelectorAll('.comparison-mobile__title');
     const comparisonMobileSubtitles = document.querySelectorAll('.comparison-mobile__subtitle');
-    const mobileTitles = ['Poutník', 'Hvězdný Průvodce', 'Exclusive', 'VIP Majestrát'];
+    const mobileTitles = ['Poutník', 'Hvězdný Průvodce', 'Exclusive', 'VIP Majestát'];
     const mobileSubs = [
         'Bezplatný vstup do aplikace',
-        'Nejlepší volba pro většinu lidí',
+        'Doporučený začátek',
         'Více detailu a priorita',
-        'Nejvyšší hloubka a osobní péče'
+        'Nejvyšší rozsah funkcí'
     ];
     comparisonMobileTitles.forEach((el, index) => {
         if (mobileTitles[index]) el.textContent = mobileTitles[index];
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const q = [
             'Jak zruším předplatné? ',
             'Musím zadávat kartu při registraci zdarma? ',
-            'Který plán je nejlepší na začátek? '
+            'Kterým plánem začít? '
         ];
         if (q[index]) {
             const icon = question.querySelector('.faq-icon')?.outerHTML || '';
@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const answers = [
         'Kdykoliv ve svém profilu. Přístup vám zůstane do konce zaplaceného období.',
         'Ne. Bezplatný účet vytvoříte bez karty. Kartu zadáváte až při přechodu na placený plán.',
-        'Pro většinu lidí je nejlepší Hvězdný Průvodce. Odemkne klíčové funkce bez zbytečně vysoké ceny.'
+        'Hvězdný Průvodce je doporučený začátek pro pravidelné používání a odemyká klíčové funkce.'
     ];
     faqAnswers.forEach((answer, index) => {
         if (answers[index]) answer.textContent = answers[index];

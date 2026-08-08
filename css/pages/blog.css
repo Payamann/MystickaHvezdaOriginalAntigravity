@@ -23,7 +23,7 @@
 
             color: white;
 
-            transition: all 0.4s ease;
+            transition: color 0.4s ease, background-color 0.4s ease, border-color 0.4s ease, transform 0.4s ease, opacity 0.4s ease, box-shadow 0.4s ease;
 
             position: relative;
 
@@ -209,7 +209,7 @@
 
             text-decoration: none;
 
-            transition: all 0.3s;
+            transition: color 0.3s, background-color 0.3s, border-color 0.3s, transform 0.3s, opacity 0.3s, box-shadow 0.3s;
 
             width: max-content;
 
@@ -255,7 +255,7 @@
 
             color: white;
 
-            transition: all 0.3s ease;
+            transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
 
             display: flex;
 
@@ -490,11 +490,13 @@
 
             padding: 0.6rem 1.5rem;
 
+            min-height: 44px;
+
             border-radius: 50px;
 
             cursor: pointer;
 
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), background-color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
             font-size: 0.95rem;
 

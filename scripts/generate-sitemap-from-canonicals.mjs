@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -181,6 +182,79 @@ function dateFromMtime(file) {
     return fs.statSync(file).mtime.toISOString().slice(0, 10);
 }
 
+function buildGitLastModifiedMap() {
+    try {
+        const output = execFileSync('git', [
+            'log',
+            '--format=__MH_DATE__%cs',
+            '--name-only',
+            '--diff-filter=AM',
+            '--',
+            '*.html'
+        ], {
+            cwd: rootDir,
+            encoding: 'utf8',
+            maxBuffer: 20 * 1024 * 1024
+        });
+        const dates = new Map();
+        let currentDate = '';
+        for (const rawLine of output.split(/\r?\n/)) {
+            const line = rawLine.trim();
+            if (line.startsWith('__MH_DATE__')) {
+                currentDate = line.slice('__MH_DATE__'.length);
+            } else if (line && currentDate && !dates.has(line.replace(/\\/g, '/'))) {
+                dates.set(line.replace(/\\/g, '/'), currentDate);
+            }
+        }
+        return dates;
+    } catch (error) {
+        console.warn(`[sitemap] Could not read git history, using mtimes: ${error.message}`);
+        return new Map();
+    }
+}
+
+const gitLastModifiedByFile = buildGitLastModifiedMap();
+
+function buildDirtyHtmlSet() {
+    try {
+        const output = execFileSync('git', [
+            '-c',
+            'core.quotepath=false',
+            'status',
+            '--porcelain=v1',
+            '--untracked-files=all',
+            '--',
+            '*.html'
+        ], {
+            cwd: rootDir,
+            encoding: 'utf8',
+            maxBuffer: 10 * 1024 * 1024
+        });
+
+        return new Set(output
+            .split(/\r?\n/)
+            .filter(Boolean)
+            .map((line) => line.slice(3).split(' -> ').at(-1).replace(/\\/g, '/')));
+    } catch (error) {
+        console.warn(`[sitemap] Could not read dirty HTML state: ${error.message}`);
+        return new Set();
+    }
+}
+
+const dirtyHtmlFiles = buildDirtyHtmlSet();
+const currentPragueDate = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Prague',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+}).format(new Date());
+
+function dateFromContentHistory(file) {
+    const relativeFile = path.relative(rootDir, file).replace(/\\/g, '/');
+    if (dirtyHtmlFiles.has(relativeFile)) return currentPragueDate;
+    return gitLastModifiedByFile.get(relativeFile) || dateFromMtime(file);
+}
+
 function inferMetadata(loc, file, existingMetadata) {
     if (
         existingMetadata
@@ -189,7 +263,7 @@ function inferMetadata(loc, file, existingMetadata) {
         && existingMetadata.priority
     ) {
         return {
-            lastmod: existingMetadata.lastmod,
+            lastmod: dateFromContentHistory(file),
             changefreq: existingMetadata.changefreq,
             priority: existingMetadata.priority
         };
@@ -213,30 +287,30 @@ function inferMetadata(loc, file, existingMetadata) {
     ].includes(pathname);
 
     if (isHome) {
-        return { lastmod: dateFromMtime(file), changefreq: 'daily', priority: '1.0' };
+        return { lastmod: dateFromContentHistory(file), changefreq: 'daily', priority: '1.0' };
     }
 
     if (isDailyHub) {
-        return { lastmod: dateFromMtime(file), changefreq: 'daily', priority: '0.9' };
+        return { lastmod: dateFromContentHistory(file), changefreq: 'daily', priority: '0.9' };
     }
 
     if (isWeeklyHub || pathname.startsWith('/horoskop/') || pathname.startsWith('/pl/') || pathname.startsWith('/sk/')) {
-        return { lastmod: dateFromMtime(file), changefreq: 'weekly', priority: '0.8' };
+        return { lastmod: dateFromContentHistory(file), changefreq: 'weekly', priority: '0.8' };
     }
 
     if (pathname.startsWith('/blog/')) {
-        return { lastmod: dateFromMtime(file), changefreq: 'monthly', priority: '0.8' };
+        return { lastmod: dateFromContentHistory(file), changefreq: 'monthly', priority: '0.8' };
     }
 
     if (pathname.startsWith('/kompatibilita/')) {
-        return { lastmod: dateFromMtime(file), changefreq: 'monthly', priority: '0.7' };
+        return { lastmod: dateFromContentHistory(file), changefreq: 'monthly', priority: '0.7' };
     }
 
     if (pathname.startsWith('/slovnik/') || pathname.startsWith('/testy/') || pathname.startsWith('/tarot-vyznam/')) {
-        return { lastmod: dateFromMtime(file), changefreq: 'monthly', priority: '0.6' };
+        return { lastmod: dateFromContentHistory(file), changefreq: 'monthly', priority: '0.6' };
     }
 
-    return { lastmod: dateFromMtime(file), changefreq: 'monthly', priority: '0.5' };
+    return { lastmod: dateFromContentHistory(file), changefreq: 'monthly', priority: '0.5' };
 }
 
 function comparePages(existingOrder) {
@@ -283,12 +357,20 @@ ${entries.join('\n')}
 `;
 }
 
-function checkCurrentSitemap(currentLocs, generatedLocs) {
-    const missing = [...generatedLocs].filter((loc) => !currentLocs.has(loc)).sort();
-    const stale = [...currentLocs].filter((loc) => !generatedLocs.has(loc)).sort();
+function normalizeXml(xml) {
+    return xml.replace(/\r\n/g, '\n').trim();
+}
 
-    if (missing.length === 0 && stale.length === 0) {
-        console.log(`[sitemap] OK: sitemap.xml matches ${generatedLocs.size} indexable canonical URL(s).`);
+function checkCurrentSitemap(currentSitemap, generatedXml, generatedLocs) {
+    const missing = [...generatedLocs].filter((loc) => !currentSitemap.locs.has(loc)).sort();
+    const stale = [...currentSitemap.locs].filter((loc) => !generatedLocs.has(loc)).sort();
+
+    if (
+        missing.length === 0
+        && stale.length === 0
+        && normalizeXml(read(sitemapPath)) === normalizeXml(generatedXml)
+    ) {
+        console.log(`[sitemap] OK: sitemap.xml matches ${generatedLocs.size} indexable canonical URL(s), including metadata.`);
         return;
     }
 
@@ -302,15 +384,21 @@ function checkCurrentSitemap(currentLocs, generatedLocs) {
         for (const loc of stale) console.error(`- ${loc}`);
     }
 
+    if (missing.length === 0 && stale.length === 0) {
+        console.error('[sitemap] URL set is correct, but lastmod/changefreq/priority metadata or ordering is stale.');
+        console.error('[sitemap] Run: npm run sitemap:generate -- --write');
+    }
+
     process.exit(1);
 }
 
 const existingSitemap = parseExistingSitemap();
 const pages = collectCanonicalPages();
 const generatedLocs = new Set(pages.map((page) => page.loc));
+const generatedXml = buildSitemapXml(pages, existingSitemap);
 
 if (shouldCheck) {
-    checkCurrentSitemap(existingSitemap.locs, generatedLocs);
+    checkCurrentSitemap(existingSitemap, generatedXml, generatedLocs);
 }
 
 if (!shouldCheck) {
@@ -319,7 +407,7 @@ if (!shouldCheck) {
         : path.resolve(rootDir, getArgValue('--output') || defaultOutputPath);
 
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-    fs.writeFileSync(outputPath, buildSitemapXml(pages, existingSitemap), 'utf8');
+    fs.writeFileSync(outputPath, generatedXml, 'utf8');
     console.log(`[sitemap] Generated ${pages.length} URL(s) from canonical HTML pages: ${relative(outputPath)}`);
 
     if (!shouldWrite) {

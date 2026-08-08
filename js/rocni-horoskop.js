@@ -1,7 +1,7 @@
 const ANNUAL_HOROSCOPE_PRODUCT = {
     id: 'rocni_horoskop_2026',
     type: 'annual_horoscope',
-    name: 'Roční horoskop na míru 2026',
+    name: 'Mini Roční horoskop na míru 2026',
     price: 199,
     currency: 'CZK'
 };

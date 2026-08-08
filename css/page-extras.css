@@ -188,7 +188,7 @@
 
             transform: translateY(5px);
 
-            transition: all 0.2s ease;
+            transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
 
         }
 
@@ -312,7 +312,7 @@
 
             font-size: var(--text-base);
 
-            transition: all 0.3s ease;
+            transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
 
         }
 
@@ -542,7 +542,7 @@
 
             text-align: center;
 
-            transition: all 0.3s ease;
+            transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
 
             position: relative;
 
@@ -746,7 +746,7 @@
 
             font-size: var(--text-base);
 
-            transition: all 0.3s ease;
+            transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
 
         }
 

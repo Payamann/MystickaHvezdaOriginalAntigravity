@@ -1633,7 +1633,10 @@ async function handlePersonalMapPurchase(session, stripeEventId = null) {
     const birthPlace = payload.birthPlace || session.metadata?.birthPlace || '';
     const sign = payload.sign || session.metadata?.sign;
     const grammaticalGender = payload.grammaticalGender || session.metadata?.grammaticalGender || 'neutral';
+    const focusArea = payload.focusArea || session.metadata?.focusArea || 'other';
     const focus = payload.focus || session.metadata?.focus || '';
+    const productPeriodStart = payload.productPeriodStart || session.metadata?.productPeriodStart || '';
+    const productPeriodEnd = payload.productPeriodEnd || session.metadata?.productPeriodEnd || '';
     const customerEmail = orderInput?.customer_email || session.metadata?.email || session.customer_email || session.customer_details?.email;
     const year = Number(productYear) || new Date().getFullYear();
     const source = session.metadata?.source || 'personal_map_checkout';
@@ -1685,7 +1688,18 @@ async function handlePersonalMapPurchase(session, stripeEventId = null) {
             await fulfillPersonalMapOrder({
                 customerName,
                 customerEmail,
-                payload: { birthDate, birthTime, birthPlace, sign, grammaticalGender, focus, productYear: year }
+                payload: {
+                    birthDate,
+                    birthTime,
+                    birthPlace,
+                    sign,
+                    grammaticalGender,
+                    focusArea,
+                    focus,
+                    productYear: year,
+                    productPeriodStart,
+                    productPeriodEnd
+                }
             });
             await markOneTimeOrderInputFulfilled(orderInput?.id);
             await recordFunnelEvent('one_time_pdf_delivered', {
@@ -1974,12 +1988,9 @@ function getFeaturesByPlan(planType) {
         ],
         [PLAN_TYPES.VIP]: [
             'Everything in Exclusive, plus:',
-            'Priority 24/7 support (do 2h)',
-            'Personalizovaný Daily Horoscope',
-            'Neomezené konzultace s Průvodcem',
-            'Exkluzivní měsíční Tarot (3x)',
-            'Astrokartografické mapy (4x/rok)',
-            'VIP komunita & diskuse'
+            'Keltský kříž a pokročilé výklady',
+            'Rozšířený přístup k Hvězdnému průvodci',
+            'Přednostní přístup k novým funkcím'
         ],
         // 'vip' plan type byl odstraněn — v backendu neexistuje, platný typ je 'vip_majestrat'
     };

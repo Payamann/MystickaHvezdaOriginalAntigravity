@@ -6,7 +6,7 @@ test.describe('Roční horoskop — jednorázový checkout', () => {
         await page.goto('/rocni-horoskop.html?source=pricing_addon');
         await waitForPageReady(page);
 
-        await expect(page.locator('.hero-sub')).toContainText('oblasti pro pozornost');
+        await expect(page.locator('.hero-sub')).toContainText('měsíce pro pozornost');
         await expect(page.locator('.order-summary')).toBeVisible();
         await expect(page.locator('.order-summary')).toContainText('199 Kč jednorázově');
         await expect(page.locator('.order-summary')).toContainText('PDF do e-mailu');

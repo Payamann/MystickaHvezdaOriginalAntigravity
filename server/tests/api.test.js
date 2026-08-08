@@ -25,6 +25,23 @@ function createUserToken(overrides = {}) {
     }, process.env.JWT_SECRET, { expiresIn: '1h' });
 }
 
+function getPragueTodayStr() {
+    const parts = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Europe/Prague',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).formatToParts(new Date());
+    const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return `${values.year}-${values.month}-${values.day}`;
+}
+
+function shiftIsoDate(dateStr, days) {
+    const date = new Date(`${dateStr}T12:00:00Z`);
+    date.setUTCDate(date.getUTCDate() + days);
+    return date.toISOString().slice(0, 10);
+}
+
 async function withTemporaryEnv(overrides, callback) {
     const previous = new Map();
     Object.keys(overrides).forEach((key) => {
@@ -865,6 +882,18 @@ describe('API Endpoint Tests', () => {
         });
     });
 
+    describe('SEO control files', () => {
+        test.each(['/robots.txt', '/sitemap.xml', '/llms.txt', '/llms-full.txt'])(
+            '%s uses short revalidating cache headers',
+            async (pathname) => {
+                const res = await request(app).get(pathname).expect(200);
+
+                expect(res.headers['cache-control']).toBe('public, max-age=300, s-maxage=3600, must-revalidate');
+                expect(res.headers['cache-control']).not.toContain('immutable');
+            }
+        );
+    });
+
     describe('Programmatic Horoscope Sitemap', () => {
         test('GET /horoskop/sitemap-horoscopes.xml returns canonical sitemap URLs', async () => {
             const res = await request(app)
@@ -875,10 +904,16 @@ describe('API Endpoint Tests', () => {
             expect(res.text).toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
             expect(res.text).toContain('<loc>https://www.mystickahvezda.cz/horoskop/beran/');
             expect(res.text).not.toContain('<loc>https://mystickahvezda.cz/horoskop/');
+            expect((res.text.match(/<url>/g) || [])).toHaveLength(61 * 12);
+
+            const today = getPragueTodayStr();
+            const tomorrow = shiftIsoDate(today, 1);
+            expect(res.text).toContain(`/horoskop/beran/${today}</loc>`);
+            expect(res.text).not.toContain(`/horoskop/beran/${tomorrow}</loc>`);
         });
 
         test('GET /horoskop/:sign/:date serves CSP-safe HTML with built assets', async () => {
-            const today = new Date().toISOString().split('T')[0];
+            const today = getPragueTodayStr();
             const res = await request(app)
                 .get(`/horoskop/beran/${today}`)
                 .expect(200);
@@ -888,6 +923,26 @@ describe('API Endpoint Tests', () => {
             expect(res.text).toContain('/js/dist/main.js');
             expect(res.text).not.toMatch(/<style\b/i);
             expect(res.text).not.toMatch(/\sstyle\s*=/i);
+            expect(res.text).toContain(`<meta name="robots" content="index, follow">`);
+            expect(res.text).toContain(`"datePublished": "${today}"`);
+            expect(res.text).not.toContain(`${today}T00:00:00+01:00`);
+        });
+
+        test('future and stale archive pages are noindex and do not link beyond today', async () => {
+            const today = getPragueTodayStr();
+            const tomorrow = shiftIsoDate(today, 1);
+            const staleDate = shiftIsoDate(today, -61);
+
+            const future = await request(app)
+                .get(`/horoskop/beran/${tomorrow}`)
+                .expect(200);
+            const stale = await request(app)
+                .get(`/horoskop/beran/${staleDate}`)
+                .expect(200);
+
+            expect(future.text).toContain('<meta name="robots" content="noindex, follow">');
+            expect(future.text).not.toContain('rel="next"');
+            expect(stale.text).toContain('<meta name="robots" content="noindex, follow">');
         });
 
         test('GET /horoskop/:sign/:date uses deterministic content without paid AI', async () => {
@@ -895,7 +950,7 @@ describe('API Endpoint Tests', () => {
             process.env.MOCK_AI_FORCE_ERROR = 'true';
 
             try {
-                const today = new Date().toISOString().split('T')[0];
+                const today = getPragueTodayStr();
                 const first = await request(app)
                     .get(`/horoskop/rak/${today}`)
                     .expect(200);

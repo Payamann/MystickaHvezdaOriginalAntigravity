@@ -76,6 +76,17 @@ test.describe('Blog', () => {
         expect(count).toBeGreaterThanOrEqual(1);
     });
 
+    test('filtry kategorií mají pohodlnou dotykovou plochu', async ({ page }) => {
+        await page.goto('/blog.html');
+        await waitForPageReady(page);
+
+        const heights = await page.locator('.category-btn').evaluateAll((buttons) => buttons.map(
+            (button) => button.getBoundingClientRect().height
+        ));
+        expect(heights.length).toBeGreaterThan(0);
+        expect(heights.every((height) => height >= 44)).toBe(true);
+    });
+
     test('canonical link je nastaven', async ({ page }) => {
         await page.goto('/blog.html');
         const canonical = await page.getAttribute('link[rel="canonical"]', 'href');
@@ -1019,7 +1030,7 @@ test.describe('Osobní mapa', () => {
         await waitForPageReady(page);
 
         const heroCta = page.locator('.pm-hero__actions [data-scroll-target="order"]').first();
-        await expect(heroCta).toContainText('Chci mapu za 299 Kč');
+        await expect(heroCta).toContainText('Chci svou mapu na 12 měsíců');
         await expect(heroCta).toHaveAttribute('data-cta-location', 'hero');
 
         await Promise.all([
@@ -1074,6 +1085,23 @@ test.describe('Osobní mapa', () => {
             });
         });
 
+        await page.route('**/api/osobni-mapa/product', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    id: 'osobni_mapa_2026',
+                    periodMonths: 12,
+                    period: {
+                        start: '2026-12-28',
+                        end: '2027-12-27',
+                        label: '28. prosince 2026 - 27. prosince 2027',
+                        months: 12
+                    }
+                })
+            });
+        });
+
         await page.goto('/osobni-mapa.html?source=e2e_personal_map');
         await waitForPageReady(page);
 
@@ -1081,6 +1109,10 @@ test.describe('Osobní mapa', () => {
         await expect(offer).toBeVisible();
         await expect(offer).toContainText('20 stran PDF');
         await expect(offer).toContainText('299 Kč');
+        await expect(offer).toContainText('12 navazujících měsíců');
+        await expect(offer).toContainText('ne jen do konce kalendářního roku');
+        await expect(page.locator('#personalMapPeriodPreview')).toContainText('28. prosince 2026 až 27. prosince 2027');
+        await expect(page.locator('#personalMapPeriodPreview')).toContainText('ne pouze do konce roku');
 
         await Promise.all([
             productIntent,
@@ -1155,11 +1187,10 @@ test.describe('Osobní mapa', () => {
         await page.locator('#name').fill('Jana');
         await page.locator('#email').fill('jana@example.cz');
         await page.locator('#birthDate').fill('1990-01-01');
-        await page.locator('#birthTime').fill('12:30');
-        await page.locator('#birthPlace').fill('Praha');
         await page.locator('#sign').selectOption('beran');
+        await page.locator('#focusArea').selectOption('change');
         await page.locator('#grammaticalGender').selectOption('feminine');
-        await page.locator('#focus').fill('Chci pochopit hlavni tema zbytku roku.');
+        await page.locator('#focus').fill('Chci pochopit hlavní téma příštích 12 měsíců.');
 
         await Promise.all([
             page.waitForURL(/status=success/),
@@ -1170,11 +1201,10 @@ test.describe('Osobní mapa', () => {
             name: 'Jana',
             email: 'jana@example.cz',
             birthDate: '1990-01-01',
-            birthTime: '12:30',
-            birthPlace: 'Praha',
             sign: 'beran',
+            focusArea: 'change',
             grammaticalGender: 'feminine',
-            focus: 'Chci pochopit hlavni tema zbytku roku.',
+            focus: 'Chci pochopit hlavní téma příštích 12 měsíců.',
             source: 'pricing_addon'
         }));
     });
@@ -1236,11 +1266,10 @@ test.describe('Osobní mapa', () => {
         await page.locator('#name').fill('Jana');
         await page.locator('#email').fill('jana@example.cz');
         await page.locator('#birthDate').fill('1990-01-01');
-        await page.locator('#birthTime').fill('12:30');
-        await page.locator('#birthPlace').fill('Praha');
         await page.locator('#sign').selectOption('beran');
+        await page.locator('#focusArea').selectOption('change');
         await page.locator('#grammaticalGender').selectOption('feminine');
-        await page.locator('#focus').fill('Chci pochopit hlavni tema zbytku roku.');
+        await page.locator('#focus').fill('Chci pochopit hlavní téma příštích 12 měsíců.');
 
         await Promise.all([
             page.waitForURL(/status=success/),
@@ -1251,11 +1280,10 @@ test.describe('Osobní mapa', () => {
             name: 'Jana',
             email: 'jana@example.cz',
             birthDate: '1990-01-01',
-            birthTime: '12:30',
-            birthPlace: 'Praha',
             sign: 'beran',
+            focusArea: 'change',
             grammaticalGender: 'feminine',
-            focus: 'Chci pochopit hlavni tema zbytku roku.',
+            focus: 'Chci pochopit hlavní téma příštích 12 měsíců.',
             source: 'pricing_addon'
         }));
     });

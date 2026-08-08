@@ -284,14 +284,18 @@ test.describe('Homepage', () => {
         const metrics = await page.evaluate(() => {
             const bannerRect = document.getElementById('cookie-banner').getBoundingClientRect();
             const acceptRect = document.getElementById('cookie-accept').getBoundingClientRect();
+            const actionHeights = Array.from(document.querySelectorAll('.cookie-banner__actions .btn'))
+                .map((button) => button.getBoundingClientRect().height);
             return {
                 bannerHeight: bannerRect.height,
                 acceptBottom: acceptRect.bottom,
-                viewportHeight: window.innerHeight
+                viewportHeight: window.innerHeight,
+                actionHeights
             };
         });
         expect(metrics.bannerHeight).toBeLessThan(260);
         expect(metrics.acceptBottom).toBeLessThanOrEqual(metrics.viewportHeight);
+        expect(metrics.actionHeights.every((height) => height >= 44)).toBe(true);
     });
 
     test('header a pricing CTA maji funkcni fallback odkazy bez JavaScriptu', async ({ page }) => {
@@ -312,7 +316,7 @@ test.describe('Homepage', () => {
         await expect(spotlight).toBeVisible();
         await expect(spotlight).toContainText('Osobní mapa');
         await expect(spotlight).toContainText('299 Kč');
-        await expect(spotlight).toContainText('Roční horoskop na míru za 199 Kč');
+        await expect(spotlight).toContainText('Mini Roční horoskop 2026 za 199 Kč');
         await expect(spotlight.locator('img[alt*="Osobní mapa"]')).toBeVisible();
         await expect(spotlight.locator('a.btn--primary')).toHaveAttribute('href', /osobni-mapa\.html\?source=homepage_spotlight/);
         await expect(spotlight.locator('a.btn--primary')).toHaveAttribute('data-analytics-product', 'osobni_mapa_2026');
@@ -501,7 +505,7 @@ test.describe('Homepage', () => {
         expect(bodyText).toContain('Otevřít celý ceník');
     });
 
-    test('reference zachovavaji pribehy bez nedolozeneho ratingu', async ({ page }) => {
+    test('modelove situace nejsou vydavane za recenze ani rating', async ({ page }) => {
         await expect(page.locator('.reviews-trust-panel')).toHaveCount(0);
         await expect(page.locator('.testimonial')).toHaveCount(9);
         await expect(page.locator('.testimonial__source')).toHaveCount(9);
@@ -509,6 +513,8 @@ test.describe('Homepage', () => {
         await expect(page.locator('.review-verification')).toHaveCount(0);
         await expect(page.locator('[data-review-rating]')).toHaveCount(0);
         await expect(page.locator('[data-review-summary]')).toHaveCount(0);
+        await expect(page.locator('.testimonial__source')).toHaveText(Array(9).fill('Modelová situace'));
+        await expect(page.locator('.testimonial-disclosure')).toContainText('Nejsou uživatelskými recenzemi');
     });
 
     test('homepage odpovida na hlavni otazky duvery pred registraci a platbou', async ({ page }) => {
@@ -517,7 +523,7 @@ test.describe('Homepage', () => {
         expect(bodyText).toContain('Tvůj první výklad během pár minut');
         expect(bodyText).toContain('Nenahrazují lékařskou, psychologickou, právní ani finanční pomoc');
         expect(bodyText).toContain('Než se zaregistruješ, podívej se na ukázku');
-        expect(bodyText).toContain('Jak lidé používají Mystickou Hvězdu');
+        expect(bodyText).toContain('S čím ti může Mystická Hvězda pomoci');
         expect(bodyText).toContain('Základní denní nástroje si vyzkoušíš bez platební karty');
         expect(bodyText).toContain('Premium dává smysl');
         expect(bodyText).toContain('Jak zrušit předplatné');
@@ -587,6 +593,12 @@ test.describe('Homepage', () => {
 
         await expect(dots.nth(3)).toHaveAttribute('aria-current', 'true');
         await expect.poll(() => viewport.evaluate((node) => node.scrollLeft)).toBeGreaterThan(initialScroll);
+
+        const arrowSizes = await page.locator('.carousel-btn').evaluateAll((buttons) => buttons.map((button) => {
+            const rect = button.getBoundingClientRect();
+            return { width: rect.width, height: rect.height };
+        }));
+        expect(arrowSizes.every(({ width, height }) => width >= 44 && height >= 44)).toBe(true);
     });
 
     test('pricing preview free plan vede neprihlaseneho na aktivacni registraci', async ({ page }) => {

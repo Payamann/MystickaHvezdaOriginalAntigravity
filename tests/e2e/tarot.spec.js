@@ -589,6 +589,58 @@ test.describe('Tarot Ano/Ne', () => {
         expect(await freeLink.getAttribute('href')).toContain('source=tarot_yes_no_intent');
     });
 
+    test('po výsledku nabízí neblokující hlubší výklad a měří placený záměr', async ({ page }) => {
+        const funnelEvents = [];
+        await page.route('**/api/payment/funnel-event', async (route) => {
+            funnelEvents.push(JSON.parse(route.request().postData() || '{}'));
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+
+        await page.goto('/tarot-ano-ne.html');
+        await waitForPageReady(page);
+        await page.evaluate(() => {
+            window.getCSRFToken = async () => 'e2e-tarot-upgrade-token';
+            window.__tarotUpgradeFlow = null;
+            window.Auth = window.Auth || {};
+            window.Auth.isLoggedIn = () => false;
+            window.Auth.startPlanCheckout = (planId, options) => {
+                window.__tarotUpgradeFlow = { planId, options };
+            };
+        });
+
+        await page.fill('#question-input', 'Proč se v této situaci pořád vracím?');
+        await page.locator('.tarot-card').first().click();
+        await expect(page.locator('#result-panel')).toHaveClass(/show/, { timeout: 2500 });
+
+        const bridge = page.locator('.tarot-result-upgrade-bridge');
+        await expect(bridge).toBeVisible();
+        await expect(bridge).toContainText('Tři karty ukážou situaci');
+        await expect(bridge).toContainText('od 199 Kč/měsíc');
+
+        const upgrade = bridge.locator('[data-tarot-yes-no-upgrade]');
+        await expect(upgrade).toHaveAttribute('href', /plan=pruvodce/);
+        await upgrade.click();
+
+        await expect.poll(() => page.evaluate(() => window.__tarotUpgradeFlow)).toEqual(expect.objectContaining({
+            planId: 'pruvodce',
+            options: expect.objectContaining({
+                source: 'tarot_yes_no_result',
+                feature: 'tarot_multi_card',
+                redirect: '/cenik.html'
+            })
+        }));
+        await expect.poll(() => funnelEvents.some((event) =>
+            event.eventName === 'paywall_cta_clicked'
+            && event.source === 'tarot_yes_no_result'
+            && event.feature === 'tarot_multi_card'
+            && event.planId === 'pruvodce'
+        )).toBe(true);
+    });
+
     test('výsledek ukazuje skutečnou taženou kartu, otázku a další krok', async ({ page }) => {
         await page.goto('/tarot-ano-ne.html');
         await waitForPageReady(page);

@@ -16,8 +16,11 @@ export async function fulfillPersonalMapOrder({ customerName, customerEmail, pay
         birthPlace = '',
         sign,
         grammaticalGender = 'neutral',
+        focusArea = 'other',
         focus,
-        productYear
+        productYear,
+        productPeriodStart,
+        productPeriodEnd
     } = payload;
     const year = Number(productYear) || new Date().getFullYear();
 
@@ -30,22 +33,35 @@ export async function fulfillPersonalMapOrder({ customerName, customerEmail, pay
         birthTime,
         birthPlace,
         sign,
+        focusArea,
         focus,
         grammaticalGender,
-        year
+        year,
+        periodStart: productPeriodStart,
+        periodEnd: productPeriodEnd
     });
 
     const pdfBuffer = await renderPersonalMapPdf({
         name: customerName,
         sign,
         birthDate,
+        focusArea,
         focus,
         year,
-        productName: 'Osobní mapa',
+        periodStart: productPeriodStart,
+        periodEnd: productPeriodEnd,
+        productName: 'Osobní mapa na 12 měsíců',
         sections
     });
 
-    await sendPersonalMapPdf({ to: customerEmail, name: customerName, sign, pdfBuffer });
+    await sendPersonalMapPdf({
+        to: customerEmail,
+        name: customerName,
+        sign,
+        pdfBuffer,
+        periodStart: productPeriodStart,
+        periodEnd: productPeriodEnd
+    });
 }
 
 export async function fulfillRocniHoroskopOrder({ customerName, customerEmail, payload = {} }) {

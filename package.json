@@ -9,7 +9,9 @@
     "npm": ">=10"
   },
   "overrides": {
-    "svix": "1.92.2"
+    "svix": "1.92.2",
+    "body-parser": "1.20.6",
+    "ip-address": "10.4.0"
   },
   "scripts": {
     "start": "node server/index.js",
@@ -53,6 +55,12 @@
     "monitor:revenue-truth:production": "node scripts/revenue-truth-monitor.mjs --since-live-production",
     "monitor:revenue-truth:production:summary": "node scripts/revenue-truth-monitor.mjs --since-live-production --summary-only",
     "audit:site": "node scripts/audit-site-structure.mjs",
+    "generate:static-hubs": "node scripts/render-static-hubs.mjs",
+    "check:static-hubs": "node scripts/render-static-hubs.mjs --check",
+    "normalize:blog-authors": "node scripts/normalize-blog-authors.mjs",
+    "check:seo-semantics": "node scripts/audit-seo-semantics.mjs",
+    "normalize:css-transitions": "node scripts/normalize-css-transitions.mjs",
+    "check:css-transitions": "node scripts/normalize-css-transitions.mjs --check",
     "audit:tarot-assets": "node server/scripts/verify-tarot-paths.js",
     "sitemap:generate": "node scripts/generate-sitemap-from-canonicals.mjs",
     "sitemap:check": "node scripts/generate-sitemap-from-canonicals.mjs --check",
@@ -70,11 +78,12 @@
     "smoke:production:critical-assets": "node scripts/production-critical-assets-smoke.mjs --production",
     "deploy:guard": "node scripts/deploy-guard.mjs",
     "deploy:guard:local": "node scripts/deploy-guard.mjs --skip-remote --skip-railway --allow-dirty --base-url=http://localhost:3001",
-    "test:verify": "npm run lint && npm run check:encoding && npm run check:hooks && npm run check:auth-feature-contexts && npm run check:ai-cost-control && npm run audit:growth-loop && npm run check:paywall-trust && npm run test:unit:server && npm run test:unit:frontend && npm run audit:site && npm run audit:tarot-assets && npm run sitemap:check",
+    "test:verify": "npm run lint && npm run check:encoding && npm run check:hooks && npm run check:auth-feature-contexts && npm run check:ai-cost-control && npm run audit:growth-loop && npm run check:paywall-trust && npm run check:static-hubs && npm run check:seo-semantics && npm run check:css-transitions && npm run test:unit:server && npm run test:unit:frontend && npm run audit:site && npm run audit:tarot-assets && npm run sitemap:check",
     "test:all": "npm run test:verify && npm run test:e2e:sections && npm run test:e2e:sections:mobile",
     "build:css": "cleancss -o css/style.v2.min.css css/style.v2.css && cleancss -o css/home.min.css fonts/local-fonts.css css/style.v2.css css/pages/index.css && cleancss -o css/site.min.css fonts/local-fonts.css css/style.v2.css && node scripts/update-service-worker-cache.mjs",
     "build:js": "node scripts/build-js.mjs && node scripts/update-service-worker-cache.mjs",
     "build:pwa-icons": "node server/scripts/create-pwa-icons.js && node scripts/update-service-worker-cache.mjs",
+    "render:personal-map-assets": "node scripts/render-personal-map-marketing-assets.mjs && node scripts/update-service-worker-cache.mjs",
     "lint": "eslint server/ js/"
   },
   "dependencies": {
@@ -83,14 +92,14 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
-    "express": "^4.18.2",
-    "express-rate-limit": "^8.2.1",
+    "express": "^4.22.2",
+    "express-rate-limit": "^8.6.2",
     "googleapis": "^171.4.0",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
     "node-schedule": "^2.1.1",
     "resend": "^6.9.3",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.3",
     "stripe": "^20.3.0",
     "web-push": "^3.6.7",
     "xss": "^1.0.15"

@@ -56,7 +56,7 @@
         rocni_horoskop_2026: defineFeature('rocni_horoskop_2026', { label: 'Annual horoscope 2026', cluster: 'one_time', primaryPath: '/rocni-horoskop.html' }),
         annual_horoscope: defineFeature('annual_horoscope', { label: 'Annual horoscope', cluster: 'one_time', primaryPath: '/rocni-horoskop.html' }),
         rocni_horoskop: defineFeature('rocni_horoskop', { label: 'Annual horoscope alias', cluster: 'one_time', primaryPath: '/rocni-horoskop.html' }),
-        osobni_mapa_2026: defineFeature('osobni_mapa_2026', { label: 'Personal map 2026', cluster: 'one_time', primaryPath: '/osobni-mapa.html' }),
+        osobni_mapa_2026: defineFeature('osobni_mapa_2026', { label: 'Personal map for the next 12 months', cluster: 'one_time', primaryPath: '/osobni-mapa.html' }),
         personal_map: defineFeature('personal_map', { label: 'Personal map', cluster: 'one_time', primaryPath: '/osobni-mapa.html' }),
         zodiac_signs: defineFeature('zodiac_signs', { label: 'Zodiac signs', cluster: 'content', primaryPath: '/horoskop/' })
     });

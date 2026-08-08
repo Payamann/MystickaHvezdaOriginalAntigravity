@@ -13,7 +13,7 @@
             border-radius: 14px;
             padding: 0.9rem 0.5rem;
             cursor: pointer;
-            transition: all 0.25s;
+            transition: color 0.25s, background-color 0.25s, border-color 0.25s, transform 0.25s, opacity 0.25s, box-shadow 0.25s;
             text-align: center;
             color: rgba(255,255,255,0.75);
             font-size: 0.82rem;
@@ -119,7 +119,7 @@
             font-weight: 700;
             letter-spacing: 1px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+            transition: color 0.3s cubic-bezier(0.175,0.885,0.32,1.275), background-color 0.3s cubic-bezier(0.175,0.885,0.32,1.275), border-color 0.3s cubic-bezier(0.175,0.885,0.32,1.275), transform 0.3s cubic-bezier(0.175,0.885,0.32,1.275), opacity 0.3s cubic-bezier(0.175,0.885,0.32,1.275), box-shadow 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
             box-shadow: 0 8px 24px rgba(212,175,55,0.25);
             text-decoration: none;
             text-align: center;

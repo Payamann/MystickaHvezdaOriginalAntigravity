@@ -132,17 +132,17 @@ def load_env() -> None:
 
 
 def build_personal_map_copy() -> ReelCopy:
-    voiceover = """Jestli máš pocit, že se ti od začátku roku pořád vrací stejná lekce, možná nepotřebuješ další obecný horoskop.
+    voiceover = """Jestli máš pocit, že se ti pořád vrací stejná lekce, možná nepotřebuješ další obecný horoskop.
 Potřebuješ mapu.
 
-Zbytek roku 2026 ještě není hotový.
+Příštích dvanáct měsíců ještě není napsaných.
 Ale některá témata už klepou na dveře:
 kde ztrácíš energii,
 kde čekáš na cizí svolení,
 a kde už dávno víš, že další krok má přijít od tebe.
 
-Osobní mapa zbytku roku 2026 je šestnáctistránkový PDF výklad na míru.
-Dostaneš hlavní téma, klíčové měsíce, silné období a malé kroky, které zvládneš i v obyčejném dni.
+Osobní mapa na dvanáct měsíců je dvacetistránkový PDF výklad na míru.
+Začne dnem nákupu a provede tě celým osobním rokem. Dostaneš hlavní téma, orientační milníky napříč obdobím a malé kroky, které zvládneš i v obyčejném dni.
 
 Není to předplatné.
 Je to jednorázová mapa za dvě stě devadesát devět korun.
@@ -150,22 +150,22 @@ Je to jednorázová mapa za dvě stě devadesát devět korun.
 Otevři si Osobní mapu na Mystická Hvězda.
 Odkaz najdeš u videa."""
 
-    caption = """Jestli se ti od ledna opakuje stejný pocit, možná není potřeba tlačit víc. Možná je potřeba konečně pojmenovat, co se ti zbytek roku 2026 snaží ukázat.
+    caption = """Jestli se ti opakuje stejný pocit, možná není potřeba tlačit víc. Možná je potřeba konečně pojmenovat, co se ti příštích dvanáct měsíců snaží ukázat.
 
-Osobní mapa zbytku roku 2026 je 16stránkový PDF výklad na míru: hlavní téma, klíčové měsíce, silné období a konkrétní kroky pro běžné dny.
+Osobní mapa je 20stránkový PDF výklad na míru pro celých 12 navazujících měsíců od dne nákupu: hlavní téma, orientační milníky napříč obdobím a konkrétní kroky pro běžné dny.
 
 Jednorázově 299 Kč. Bez předplatného.
 
-https://www.mystickahvezda.cz/osobni-mapa.html?utm_source=facebook&utm_medium=reels&utm_campaign=personal_map_2026&utm_content=auto_reel
+https://www.mystickahvezda.cz/osobni-mapa.html?utm_source=facebook&utm_medium=reels&utm_campaign=personal_map_12_months&utm_content=auto_reel
 
-#mystickaHvezda #osobnimapa #rok2026 #astrologie #sebereflexe"""
+#mystickaHvezda #osobnimapa #osobnirok #astrologie #sebereflexe"""
 
     return ReelCopy(
-        title="Osobní mapa zbytku roku 2026",
+        title="Osobní mapa na 12 měsíců",
         voiceover=voiceover,
         caption=caption,
         cta_url="https://www.mystickahvezda.cz/osobni-mapa.html",
-        topic="Osobní mapa zbytku roku 2026",
+        topic="Osobní mapa na 12 měsíců",
         hook="pattern_interrupt",
         intent="direct_promo",
     )

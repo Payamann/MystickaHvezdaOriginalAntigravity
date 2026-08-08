@@ -841,7 +841,7 @@ test.describe('Ceník — platební tlačítka', () => {
             metadata: expect.objectContaining({
                 path: '/cenik.html',
                 product_id: 'rocni_horoskop_2026',
-                label: 'Roční horoskop na míru 2026',
+                label: 'Mini Roční horoskop na míru 2026',
                 entry_source: 'pricing_page',
                 entry_feature: 'premium_membership',
                 destination: 'rocni-horoskop.html?source=pricing_addon'

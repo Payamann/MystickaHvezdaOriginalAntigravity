@@ -81,7 +81,7 @@ async function expectFunnelEvent(funnelEvents, eventName, {
 }
 
 async function submitRegisterForm(page, email) {
-    await expect(page.locator('#confirm-password-field-wrapper')).toBeVisible();
+    await expect(page.locator('#confirm-password-field-wrapper')).toHaveCount(0);
     await page.locator('#email').fill(email);
     await page.locator('#password').fill('TestPassword123!');
     await page.locator('#gdpr-consent').check();
@@ -194,8 +194,7 @@ test.describe('Exit intent checkout handoff', () => {
 
         expect(authPayload).toEqual(expect.objectContaining({
             email: 'exit-intent-horoscope@example.com',
-            password: 'TestPassword123!',
-            password_confirm: 'TestPassword123!'
+            password: 'TestPassword123!'
         }));
         expect(checkoutPayload).toEqual(expect.objectContaining({
             planId: 'pruvodce',
@@ -319,8 +318,7 @@ test.describe('Exit intent checkout handoff', () => {
 
         expect(registerPayload).toEqual(expect.objectContaining({
             email: 'exit-intent-partner@example.com',
-            password: 'TestPassword123!',
-            password_confirm: 'TestPassword123!'
+            password: 'TestPassword123!'
         }));
         await expectFunnelEvent(funnelEvents, 'checkout_auth_required', {
             source: 'exit_intent_partnerska-shoda',

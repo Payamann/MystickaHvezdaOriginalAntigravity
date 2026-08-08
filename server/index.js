@@ -405,6 +405,10 @@ app.use(helmet({
     noSniff: true, // X-Content-Type-Options: nosniff
     xssFilter: true, // X-XSS-Protection
 }));
+app.use((req, res, next) => {
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), usb=()');
+    next();
+});
 app.use(setBaseContentSecurityPolicy);
 app.use(rejectDisallowedCorsOrigin);
 
@@ -805,6 +809,16 @@ app.get(/^\/kompatibilita\/([a-z-]+)\.html$/u, (req, res, next) => {
 console.warn(`📂 Serving static files from: ${rootDir}`);
 
 function setStaticHeaders(res, filePath) {
+    const filename = path.basename(filePath);
+    const isSeoControlFile = filename === 'robots.txt'
+        || filename === 'sitemap.xml'
+        || filename === 'llms.txt'
+        || filename === 'llms-full.txt';
+
+    if (isSeoControlFile) {
+        res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=3600, must-revalidate');
+    }
+
     // HTML pages and service worker must not be cached immutably
     // so deployments are reflected immediately
     if (filePath.endsWith('.html')) {

@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { callClaude } from './claude.js';
 import { getChromiumLaunchOptions } from './chromium-launch.js';
+import { buildPersonalMapPeriod } from './personal-map-period.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -83,6 +84,15 @@ const GENDER_LABELS = {
     neutral: 'neutrální formulace bez rodových shod'
 };
 
+const FOCUS_AREA_LABELS = {
+    relationships: 'vztahy a blízkost',
+    work_money: 'práce, hodnota a peníze',
+    change: 'změna a důležité rozhodnutí',
+    energy_boundaries: 'energie, odpočinek a hranice',
+    self_direction: 'vlastní směr a vnitřní růst',
+    other: 'jiné osobní téma'
+};
+
 const MASCULINE_BLOCKED_FEMININE_FORMS = [
     'vyrovnaná',
     'pravdivá',
@@ -104,6 +114,7 @@ const FORBIDDEN_SAMPLE_NAMES = ['Jana', 'Jano'];
 
 function escapeHtml(value) {
     return String(value ?? '')
+        .replace(/[\u2010-\u2015\u2212]/g, '-')
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
@@ -295,6 +306,19 @@ function assertPersonalMapSectionsMatchInput(sections, input = {}) {
         }
     }
 
+    const period = buildPersonalMapPeriod(input);
+    const allowedMonths = new Set(period.keyMonths.map((month) => normalizeForPersonalMapValidation(month)));
+    const generatedMonths = Array.isArray(sections.months) ? sections.months : [];
+    if (generatedMonths.length !== period.keyMonths.length) {
+        throw new Error(`Personal map must contain ${period.keyMonths.length} key months`);
+    }
+    for (const item of generatedMonths) {
+        const month = normalizeForPersonalMapValidation(item?.month || '');
+        if (!allowedMonths.has(month)) {
+            throw new Error(`Personal map month "${item?.month || ''}" is outside requested period ${period.label}`);
+        }
+    }
+
     if (input.grammaticalGender === 'masculine') {
         const feminineForm = MASCULINE_BLOCKED_FEMININE_FORMS.find((form) => containsCzechWord(text, form));
         if (feminineForm) {
@@ -338,18 +362,23 @@ function buildPersonalMapFallbackSections({
     name = '',
     sign = '',
     focus = '',
-    year = new Date().getFullYear()
+    focusArea = 'other',
+    year = new Date().getFullYear(),
+    periodStart = '',
+    periodEnd = ''
 } = {}) {
     const signName = SIGN_NAMES[sign] || sign || 'tvoje znamení';
     const displayName = name || 'Ty';
+    const period = buildPersonalMapPeriod({ periodStart, periodEnd, year });
+    const focusAreaLabel = FOCUS_AREA_LABELS[focusArea] || FOCUS_AREA_LABELS.other;
     const focusText = focus
-        ? `Hlavní záměr, se kterým přicházíš: ${focus}.`
-        : 'Hlavní záměr není zadaný, proto se mapa soustředí na směr, hranice a klid v běžném dni.';
+        ? `Hlavní záměr, se kterým přicházíš v oblasti ${focusAreaLabel}: ${focus}.`
+        : `Hlavní záměr je ${focusAreaLabel}, proto se mapa soustředí na směr, hranice a klid v běžném dni.`;
 
     return {
         starSignature: {
             title: `Tichý kompas ${signName}`,
-            text: `${displayName}, tahle osobní mapa pro rok ${year} stojí na tématu znamení ${signName}: návrat k vnitřnímu bezpečí, které nemusí nikomu nic dokazovat. ${focusText} V běžném dni se to ukáže hlavně tam, kde se snažíš držet klid za všechny kolem sebe a přitom ti uvnitř ubývá prostor. Tvoje síla není v tom, že všechno vydržíš. Je v citlivém rozpoznání, co je opravdu tvoje odpovědnost a co už jen starý zvyk reagovat dřív, než se nadechneš. Všímej si okamžiků, kdy se tělo uvolní po kratší větě, jasnějším ne nebo odloženém vysvětlování. Právě tam začíná tvůj čas působit méně jako tlak a víc jako návrat k sobě.`,
+            text: `${displayName}, tahle osobní mapa pro období ${period.label} stojí na tématu znamení ${signName}: návrat k vnitřnímu bezpečí, které nemusí nikomu nic dokazovat. ${focusText} V běžném dni se to ukáže hlavně tam, kde se snažíš držet klid za všechny kolem sebe a přitom ti uvnitř ubývá prostor. Tvoje síla není v tom, že všechno vydržíš. Je v citlivém rozpoznání, co je opravdu tvoje odpovědnost a co už jen starý zvyk reagovat dřív, než se nadechneš. Všímej si okamžiků, kdy se tělo uvolní po kratší větě, jasnějším ne nebo odloženém vysvětlování. Právě tam začíná tvůj čas působit méně jako tlak a víc jako návrat k sobě.`,
             keywords: ['směr', 'hranice', 'klid'],
             guidingQuestion: 'Kde už znám odpověď, ale pořád čekám na dokonalé potvrzení?'
         },
@@ -364,7 +393,7 @@ function buildPersonalMapFallbackSections({
             },
             {
                 title: 'Prahové téma',
-                text: `Rok ${year} vede k výběru jednoho konkrétního směru místo mnoha rozevřených možností. Nejde o tlak na výkon. Jde o vyčištění prostoru, ve kterém dlouho zůstávají věci jen proto, že jsou rozepsané, slíbené nebo pro někoho pohodlné.`
+                text: `Příštích 12 měsíců vede k výběru jednoho konkrétního směru místo mnoha rozevřených možností. Nejde o tlak na výkon. Jde o vyčištění prostoru, ve kterém dlouho zůstávají věci jen proto, že jsou rozepsané, slíbené nebo pro někoho pohodlné.`
             },
             {
                 title: 'Co se chce změnit',
@@ -373,23 +402,23 @@ function buildPersonalMapFallbackSections({
         ],
         yearMantra: {
             sentence: 'Volím krok, který vrací klid, ne jen přijatelný obraz.',
-            text: `Tahle věta je kotva pro rok ${year}. Vracej se k ní ve chvíli, kdy se objeví chuť udělat rozhodnutí jen proto, aby bylo po napětí. Klid není vždy nejrychlejší odpověď. Často je to ta nejpravdivější. Poznáš ho podle toho, že po něm zůstane víc prostoru v těle i v mysli.`
+            text: `Tahle věta je kotva pro následujících 12 měsíců. Vracej se k ní ve chvíli, kdy se objeví chuť udělat rozhodnutí jen proto, aby bylo po napětí. Klid není vždy nejrychlejší odpověď. Často je to ta nejpravdivější. Poznáš ho podle toho, že po něm zůstane víc prostoru v těle i v mysli.`
         },
-        strengths: 'Tvoje síla není v tom, kolik toho uneseš, ale v citu pro to, co je pravdivé. Umíš vnímat náladu prostoru, zachytit nevyřčené napětí a najít slovo, které druhému uleví. Tam, kde ostatní ztrácí hlavu, ty udržíš klid. To není samozřejmost — je to dar, který se dá vědomě používat, ne jen přetrpět.\n\nDruhá tvoje síla je vytrvalost. Zůstáváš u toho, co má smysl, i když se rychlý výsledek nedostaví. Poznáš ji podle chvil, kdy se kolem tebe věci samy zklidní — ne proto, že přituhneš, ale proto, že držíš jasný směr. Tahle tichá stálost bývá přehlížená, přitom drží pohromadě víc, než si připouštíš. Nemusíš zvyšovat hlas, aby ti okolí naslouchalo; často stačí, že u něčeho zůstáváš klidně a bez zmatku.\n\nLetos jde hlavně o jedno: obrátit stejnou pozornost, kterou dáváš okolí, i k sobě. Tvoje dary nabírají plnou hodnotu ve chvíli, kdy neslouží jen ke klidu ostatních. Praktický krok: pojmenuj jednu věc, kterou umíš opravdu dobře, a tento týden ji vědomě použij tak, aby posloužila i tobě, ne jen okolí.',
+        strengths: 'Tvoje síla není v tom, kolik toho uneseš, ale v citu pro to, co je pravdivé. Umíš vnímat náladu prostoru, zachytit nevyřčené napětí a najít slovo, které druhému uleví. Tam, kde ostatní ztrácí hlavu, ty udržíš klid. To není samozřejmost — je to dar, který se dá vědomě používat, ne jen přetrpět.\n\nDruhá tvoje síla je vytrvalost. Zůstáváš u toho, co má smysl, i když se rychlý výsledek nedostaví. Poznáš ji podle chvil, kdy se kolem tebe věci samy zklidní — ne proto, že přituhneš, ale proto, že držíš jasný směr. Tahle tichá stálost bývá přehlížená, přitom drží pohromadě víc, než si připouštíš. Nemusíš zvyšovat hlas, aby ti okolí naslouchalo; často stačí, že u něčeho zůstáváš klidně a bez zmatku.\n\nV tomto období jde hlavně o jedno: obrátit stejnou pozornost, kterou dáváš okolí, i k sobě. Tvoje dary nabírají plnou hodnotu ve chvíli, kdy neslouží jen ke klidu ostatních. Praktický krok: pojmenuj jednu věc, kterou umíš opravdu dobře, a tento týden ji vědomě použij tak, aby posloužila i tobě, ne jen okolí.',
         mainTheme: `${displayName}, hlavní téma této mapy je návrat k jednoduššímu směru. ${focusText} V praxi to znamená méně dokazování a víc přesnosti. Není potřeba měnit celý život najednou. Stačí najít jedno místo, kde dlouho dáváš víc energie, než se ti vrací. Tam začíná skutečný posun. Poznáš ho podle drobných signálů: odkládaná odpověď, únava po rozhovoru, tlak v hrudi před slibem nebo zvláštní úleva, když zazní krátká věta s pravdou. Znamení ${signName} tu není nálepka, ale jazyk pro způsob, jak se vracíš k sobě. Praktický krok je vybrat jednu věc, kterou už nebudeš řídit za ostatní.`,
         innerMirror: 'Vnitřní zrcadlo ukazuje rozdíl mezi zodpovědností a převzetím cizí váhy. Pokud se v hlavě pořád skládá dokonalé vysvětlení, zastav se. Možná už nejde o pravdu, ale o bezpečnou formu, která nikoho nerozhodí. V běžném dni se to ukáže u zprávy, na kterou odpověď přichází moc rychle, nebo u nabídky, která dostane souhlas dřív, než se ozve tělo. Praktický krok je jednoduchý: před důležitým ano dej deset minut ticha a napiš si jednu větu, kterou nechceš zjemňovat.',
         love: 'Ve vztazích se nejvíc počítá pravdivost bez zbytečné tvrdosti. Pokud čekáš, až druhý člověk pochopí všechno sám od sebe, může z toho mizet hodně sil. Když potřeba zazní včas, vztah dostane šanci stát na realitě, ne na domněnce. Poznáš to podle toho, jestli se po kontaktu cítíš víc u sebe, nebo víc ve střehu. Praktický krok je říct jednu konkrétní potřebu bez dlouhé obhajoby.',
         communication: 'Hodně tvojí energie odchází do vysvětlování. Chceš, aby druhý pochopil kontext, aby se nikdo necítil zraněný, aby bylo jasné, že to myslíš dobře — a než domluvíš, tvoje původní potřeba se ztratí pod vrstvou omluv. Přitom kratší věta bývá laskavější než dlouhá obhajoba. Jasné „teď ne" nebo „tohle potřebuju" dá druhému skutečnou informaci, ne mlhu.\n\nPoznáš to podle těla po tom, co domluvíš: úleva znamená, že věta zazněla pravdivě; nutkání se hned omlouvat znamená, že se rozpustila pod zjemňováním až za hranici tebe. Sleduj taky, kolikrát v jednom rozhovoru vysvětlíš totéž jinými slovy. Opakování většinou není pro druhého — je to způsob, jak uklidnit sebe. Když ho zkrátíš, možná přijde chvilka nejistoty, ale hned za ní víc prostoru.\n\nHranice tu není zeď proti druhým. Je to způsob, jak zůstat ve vztahu a přitom neztratit sebe. Nemusí být tvrdá, jen jasná. Praktický krok: v jedné situaci tento týden řekni jednu jasnou větu a odolej pokušení ji dovysvětlovat. Všímej si, jestli druhý opravdu potřeboval víc slov, nebo jestli to víc slov potřebovala hlavně tvoje úzkost.',
-        workMoney: 'V práci a penězích je hlavní téma hodnota. Ne všechno, co umíš, má automaticky dostat tvůj čas. Všímej si úkolů, které stojí nejvíc energie právě proto, že nemají jasné hranice. Rok přeje pojmenování ceny, rozsahu, termínu nebo odpovědnosti. Nejde o slib rychlého zisku. Jde o to, aby tvoje energie netekla do mlhy. Jeden jasnější rámec může uvolnit víc síly než další snaha.',
+        workMoney: 'V práci a penězích je hlavní téma hodnota. Ne všechno, co umíš, má automaticky dostat tvůj čas. Všímej si úkolů, které stojí nejvíc energie právě proto, že nemají jasné hranice. Toto období přeje pojmenování ceny, rozsahu, termínu nebo odpovědnosti. Nejde o slib rychlého zisku. Jde o to, aby tvoje energie netekla do mlhy. Jeden jasnější rámec může uvolnit víc síly než další snaha.',
         bodyEnergy: 'Tělo ví o napětí dřív než hlava. U tebe se stres často usadí tiše — v ramenou, v mělkém dechu, v tom, že večer nejde vypnout, i když je kolem klid. Právě proto se vyplatí brát tělo jako součást rozhodování, ne jako stroj, který má vydržet. Signál z těla přichází dřív než argument a bývá přesnější.\n\nPoznáš, kde ztrácíš sílu: po některých rozhovorech přijde únava, která neodpovídá jejich délce, a některé úkoly vyčerpají hlavně proto, že u nich držíš dech. Všímej si i drobností — sevřená čelist, zrychlený tep před obyčejnou zprávou, tíha, která se objeví vždy u stejného tématu. Tělo takhle mluví o tom, co hlava ještě stihla přehlušit.\n\nCo tě naopak dobíjí, bývá jednodušší, než čekáš: pohyb bez cíle, ticho, voda, spánek, chvíle, kdy po tobě nikdo nic nechce. Nejde o velký plán péče o sebe, který zase přidá další povinnost. Jde o to všímat si signálů dřív, než se z nich stane vyčerpání. Praktický krok: jednou denně se na minutu zastav a zeptej se, kde v těle právě držíš napětí — a jestli ho jde o kousek pustit.',
         growth: 'Růst v tomto období není dramatický obrat. Je to opakovaný návrat k tomu, co už víš. Všímej si, kde se snažíš získat povolení pro rozhodnutí, které je uvnitř jasné. Praktický krok je zapisovat malé momenty úlevy. Často ukazují směr přesněji než velké argumenty.',
         shadowGift: 'Stín se může projevit jako přehnaná dostupnost. Dar tohoto stínu je přesnost: když hodnota přestane stát na tom, kolik toho uneseš, začne být jasnější, komu patří tvoje blízkost, čas a pozornost. Nejde o chlad. Jde o laskavost, která nezapomíná i na tebe.',
         months: [
-            { month: 'Květen', title: 'vyjasnění rytmu', text: 'Všímej si, co bere klid opakovaně. Jeden malý signál se může vrátit několikrát, aby ukázal, kde je čas zjednodušit pravidla a přestat řešit všechno najednou.' },
-            { month: 'Červenec', title: 'viditelný krok', text: 'Dobré období pro jasnější rozhodnutí nebo veřejnější krok. Není potřeba dokonalost, ale směr a jedna konkrétní akce, která už nebude jen v hlavě.' },
-            { month: 'Září', title: 'hranice v praxi', text: 'Září prověří, jestli hranice zůstávají jen pocit, nebo dostanou i slova. Krátká věta s pravdou bude silnější než dlouhé vysvětlování.' },
-            { month: 'Listopad', title: 'hlubší pravda', text: 'Něco pod povrchem bude chtít dostat slova. Vyhni se dramatizaci, ale ani pravdu nezmenšuj jen proto, aby byla pro okolí pohodlnější.' },
-            { month: 'Prosinec', title: 'uzavření kruhu', text: 'Konec roku je vhodný pro odložení závazků, které už neodpovídají směru, kam míříš. Zapiš si, co nechceš přenášet dál.' }
+            { month: period.keyMonths[0], title: 'vyjasnění rytmu', text: 'Všímej si, co bere klid opakovaně. Jeden malý signál se může vrátit několikrát, aby ukázal, kde je čas zjednodušit pravidla a přestat řešit všechno najednou.' },
+            { month: period.keyMonths[1], title: 'viditelný krok', text: 'Dobré období pro jasnější rozhodnutí nebo veřejnější krok. Není potřeba dokonalost, ale směr a jedna konkrétní akce, která už nebude jen v hlavě.' },
+            { month: period.keyMonths[2], title: 'hranice v praxi', text: 'Toto období prověří, jestli hranice zůstávají jen pocit, nebo dostanou i slova. Krátká věta s pravdou bude silnější než dlouhé vysvětlování.' },
+            { month: period.keyMonths[3], title: 'hlubší pravda', text: 'Něco pod povrchem bude chtít dostat slova. Vyhni se dramatizaci, ale ani pravdu nezmenšuj jen proto, aby byla pro okolí pohodlnější.' },
+            { month: period.keyMonths[4], title: 'uzavření kruhu', text: 'Závěr tohoto období je vhodný pro odložení závazků, které už neodpovídají směru, kam míříš. Zapiš si, co nechceš přenášet dál.' }
         ],
         actionPlan: [
             { title: 'Vyber jednu zátěž', text: 'Napiš si jednu věc, kterou držíš hlavně proto, aby měl někdo jiný klid. Rozhodni, jestli dostane hranici, předání nebo uzavření.' },
@@ -407,7 +436,7 @@ function buildPersonalMapFallbackSections({
             'Jaký malý krok mi tento týden vrátí prostor?',
             'Co nechci přenášet do dalšího období?'
         ],
-        closing: `${displayName}, tahle mapa není rozsudek ani slib. Je to zrcadlo pro rok ${year}. Pokud si z ní vezmeš jen jednu věc, ať je to dovolení zjednodušit tam, kde už dlouho děláš všechno složitější, než musí být. Skutečný posun se často neohlásí velkým znamením. Přijde jako krátká věta, klidnější odpověď, jasnější hranice nebo večer, kdy poprvé nepřevezmeš cizí tlak. To je dost. Odtud může začít další krok.`
+        closing: `${displayName}, tahle mapa není rozsudek ani slib. Je to zrcadlo pro období ${period.label}. Pokud si z ní vezmeš jen jednu věc, ať je to dovolení zjednodušit tam, kde už dlouho děláš všechno složitější, než musí být. Skutečný posun se často neohlásí velkým znamením. Přijde jako krátká věta, klidnější odpověď, jasnější hranice nebo večer, kdy poprvé nepřevezmeš cizí tlak. To je dost. Odtud může začít další krok.`
     };
 }
 
@@ -449,15 +478,20 @@ function buildPersonalMapGenerationPrompt({
     birthTime = '',
     birthPlace = '',
     focus = '',
+    focusArea = 'other',
     grammaticalGender = 'neutral',
-    year = new Date().getFullYear()
+    year = new Date().getFullYear(),
+    periodStart = '',
+    periodEnd = ''
 } = {}) {
     const signName = SIGN_NAMES[sign] || sign || '';
     const genderLabel = GENDER_LABELS[grammaticalGender] || GENDER_LABELS.neutral;
+    const focusAreaLabel = FOCUS_AREA_LABELS[focusArea] || FOCUS_AREA_LABELS.other;
+    const period = buildPersonalMapPeriod({ periodStart, periodEnd, year });
 
     const system = `Jsi Mystická Hvězda, česká autorka prémiových osobních výkladů. Píšeš intimně, konkrétně a lidsky. Tykáš. Nevěštíš deterministicky, nedáváš zdravotní, právní ani finanční jistoty. Nepíšeš obecné fráze typu "čeká tě mnoho změn" bez konkrétního vysvětlení. Každý odstavec musí odpovědět: co to pro člověka prakticky znamená a čeho si má všimnout.`;
 
-    const user = `Vytvoř hluboký osobní výklad pro placené PDF "Osobní mapa". Výklad pokrývá aktuální období (rok ${year}), ale nepiš o něm jako o "zbytku roku".
+    const user = `Vytvoř hluboký osobní výklad pro placené PDF "Osobní mapa na 12 měsíců". Výklad pokrývá přesně období ${period.label}. Není svázaný s kalendářním rokem a nesmí obsahovat měsíc před ${period.start}.
 
 Profil:
 - Jméno: ${name || '[jméno]'}
@@ -465,6 +499,7 @@ Profil:
 - Čas narození: ${birthTime || '[nezadáno]'}
 - Místo narození: ${birthPlace || '[nezadáno]'}
 - Znamení: ${signName || '[znamení]'}
+- Hlavní oblast: ${focusAreaLabel}
 - Hlavní otázka / zaměření: ${focus || '[nezadáno]'}
 - Preferovaný gramatický rod adresace: ${genderLabel}
 
@@ -496,7 +531,7 @@ Vrať pouze validní JSON bez markdownu. Struktura:
   "growth": "180-230 slov. Vývojová lekce a konkrétní posun chování.",
   "shadowGift": "180-230 slov. Stínová stránka a její dar, bez odsuzování.",
   "months": [
-    {"month": "Měsíc", "title": "krátký název", "text": "45-65 slov"}
+    {"month": "měsíc a rok přesně ze seznamu níže", "title": "krátký název", "text": "45-65 slov"}
   ],
   "actionPlan": [
     {"title": "Konkrétní krok", "text": "45-60 slov"}
@@ -515,6 +550,9 @@ Pravidla kvality:
 - Nepoužívej stejný hlavní motiv pořád dokola. Střídej vztahové situace, tělesné signály, pracovní realitu, komunikaci, odpočinek a rozhodování.
 - Dodrž zadaný gramatický rod. Pokud je rod neutrální, vyhýbej se tvarům jako připravená/připravený, silná/silný, laskavá/laskavý.
 - StarSignature, YearMantra a JournalPrompts musí působit jako osobní bonusové stránky, ne jako výplň.
+- Vrať přesně 5 orientačních milníků rozložených napříč celým 12měsíčním obdobím a použij pouze tyto přesné názvy: ${period.keyMonths.join(', ')}.
+- Těchto pět milníků není délka mapy, zbytek kalendářního roku ani úplný seznam měsíců. Celý výklad platí pro celé období ${period.label}.
+- Čas a místo narození používej jen jako osobní kontext. Netvrď, že počítáš domy, ascendent nebo planetární aspekty.
 - Vyhni se prázdným slovům: energie, transformace, vesmír, pokud je hned nevysvětlíš konkrétně.
 - Nepiš diagnózy, jisté předpovědi ani manipulativní strach.
 - Jazyk: čeština, 2. osoba jednotného čísla.`;
@@ -548,8 +586,8 @@ export function buildPersonalMapHtml(input) {
     const sections = { ...DEFAULT_SECTIONS, ...(input.sections || {}) };
     const signName = SIGN_NAMES[input.sign] || input.sign || '';
     const glyph = SIGN_GLYPHS[input.sign] || '✦';
-    const year = input.year || new Date().getFullYear();
-    const productName = input.productName || 'Osobní mapa';
+    const period = buildPersonalMapPeriod(input);
+    const productName = input.productName || 'Osobní mapa na 12 měsíců';
     const name = escapeHtml(input.name || 'Tvoje jméno');
     const birthDate = formatDateCz(input.birthDate);
     const question = escapeHtml(input.focus || 'vnitřní klid, vztahy a směr');
@@ -576,7 +614,7 @@ export function buildPersonalMapHtml(input) {
                 <p>${item.text}</p>
               </div>
             </div>`).join('')
-        : '<p>Klíčové měsíce se doplní podle osobního výkladu.</p>';
+        : '<p>Orientační milníky se doplní podle osobního výkladu.</p>';
 
     const keywordHtml = starSignature.keywords.length
         ? starSignature.keywords.map(keyword => `<span>${escapeHtml(keyword)}</span>`).join('')
@@ -1337,10 +1375,10 @@ body {
 <body>
   <section class="mh-pdf-page mh-pdf-page--cover">
     <div class="cover-frame">
-      <div class="brand-mark">Mystická Hvězda · ${escapeHtml(year)}</div>
+      <div class="brand-mark">Mystická Hvězda · osobní výklad</div>
       <div class="cover-title-block">
         <h1 class="cover-title">${escapeHtml(productName)}</h1>
-        <p class="cover-subtitle">Personalizovaný výklad pro další období. Ne obecný horoskop, ale mapa energie, rozhodnutí a malých kroků, které tě povedou dál.</p>
+        <p class="cover-subtitle">Personalizovaný výklad od dneška na 12 měsíců. Ne obecný horoskop, ale mapa témat, rozhodnutí a malých kroků, které tě povedou dál.</p>
       </div>
       <div>
         <div class="cover-name">${name}</div>
@@ -1354,7 +1392,7 @@ body {
     <div class="intro-panel">
       <div class="content-kicker">Osobní vstup</div>
       <h2 class="intro-title">Tvoje mapa není předpověď, která tě sváže. Je to kompas.</h2>
-      <p class="intro-lede">Tenhle výklad bere jako základ tvoje znamení, datum narození a otázku, se kterou do dalšího období vstupuješ. Čti ho jako klidné zrcadlo: neříká ti, co musíš, ale pomáhá rozpoznat, kde máš přestat tlačit a kde je čas udělat vědomý krok.</p>
+      <p class="intro-lede">Tenhle výklad bere jako základ tvoje znamení, datum narození a otázku, se kterou do následujících 12 měsíců vstupuješ. Čti ho jako klidné zrcadlo: neříká ti, co musíš, ale pomáhá rozpoznat, kde máš přestat tlačit a kde je čas udělat vědomý krok.</p>
       <div class="signal-grid">
         <div class="signal">
           <div class="signal-label">Znamení</div>
@@ -1366,7 +1404,7 @@ body {
         </div>
         <div class="signal">
           <div class="signal-label">Období</div>
-          <div class="signal-value">${escapeHtml(year)}</div>
+          <div class="signal-value">${escapeHtml(period.label)}</div>
         </div>
       </div>
     </div>
@@ -1396,7 +1434,7 @@ body {
 
   <section class="mh-pdf-page mh-pdf-page--mantra">
     <div class="mantra-shell">
-      <div class="content-kicker">Tvoje věta roku</div>
+      <div class="content-kicker">Tvoje věta období</div>
       <div class="mantra-sentence">${escapeHtml(yearMantra.sentence)}</div>
       <div class="mantra-copy">${paragraphs(yearMantra.text)}</div>
     </div>
@@ -1411,7 +1449,7 @@ body {
 
   ${sectionPage({
       kicker: 'Hlavní energie',
-      title: 'Co se v tobě letos rovná',
+      title: 'Co se v tobě v tomto období rovná',
       accent: glyph,
       children: `${paragraphs(sections.mainTheme)}<div class="callout">Základní otázka tohoto období: kde už nemusíš dokazovat svou hodnotu a kde ji naopak potřebuješ ukázat jasněji?</div>`
   })}
@@ -1478,9 +1516,9 @@ body {
   })}
 
   <section class="mh-pdf-page mh-pdf-page--timeline">
-    <div class="content-kicker">Klíčové měsíce</div>
+    <div class="content-kicker">Milníky osobního roku</div>
     <h2 class="timeline-title">Kdy zpomalit, kdy vykročit</h2>
-    <p class="timeline-subtitle">Tyto měsíce nejsou pevný osud. Jsou to období, ve kterých se téma roku pravděpodobně ozve silněji a bude chtít tvoji pozornost.</p>
+    <p class="timeline-subtitle">Těchto pět bodů není délka mapy ani seznam všech měsíců. Jsou to orientační milníky uvnitř celého období ${escapeHtml(period.label)}; mapa platí pro všech 12 navazujících měsíců.</p>
     ${monthHtml}
   </section>
 
@@ -1509,7 +1547,7 @@ body {
   <section class="mh-pdf-page mh-pdf-page--notes">
     <div class="content-kicker">Tvůj prostor</div>
     <h2 class="notes-title">Místo pro tvoje poznámky</h2>
-    <p class="notes-subtitle">Některé odpovědi nepřijdou hned při čtení. Sem si zapiš, co se v tobě ozvalo — jednu větu, pocit nebo krok, který chceš udělat.</p>
+    <p class="notes-subtitle">Některé odpovědi nepřijdou hned při čtení. Sem si zapiš, co se v tobě ozvalo - jednu větu, pocit nebo krok, který chceš udělat.</p>
     <div class="notes-space">
       ${Array.from({ length: 15 }).map(() => '<div class="notes-line"></div>').join('')}
     </div>
@@ -1584,47 +1622,50 @@ export const samplePersonalMapData = {
     focus: 'vztahy, práce a vnitřní klid',
     grammaticalGender: 'feminine',
     year: 2026,
-    productName: 'Osobní mapa',
+    periodStart: '2026-08-08',
+    periodEnd: '2027-08-07',
+    focusArea: 'relationships',
+    productName: 'Osobní mapa na 12 měsíců',
     sections: {
         starSignature: {
             title: 'Strážkyně tiché rovnováhy',
             text: `Tvůj hvězdný podpis není o tom, že máš být pořád vyrovnaná. Je spíš o schopnosti rozpoznat, kdy se rovnováha změnila v tiché potlačení sebe. Působíš jako člověk, který umí dát věcem tvar, uklidnit prostor a najít slova tam, kde ostatní cítí jen napětí. Jenže právě tahle schopnost tě někdy svádí k tomu, abys zůstala klidná i ve chvíli, kdy by bylo zdravější být pravdivá.
 
-V tomto období se tvoje vnitřní síla bude ukazovat méně v tom, kolik zvládneš ustát, a víc v tom, co už odmítneš držet sama. Tvoje mapa neříká, že máš přestat být laskavá. Ukazuje, kde se laskavost konečně potřebuje obrátit i k tobě. Právě tam začne tvůj rok působit méně jako čekání a víc jako vědomý návrat.`,
+V tomto období se tvoje vnitřní síla bude ukazovat méně v tom, kolik zvládneš ustát, a víc v tom, co už odmítneš držet sama. Tvoje mapa neříká, že máš přestat být laskavá. Ukazuje, kde se laskavost konečně potřebuje obrátit i k tobě. Právě tam začne příštích 12 měsíců působit méně jako čekání a víc jako vědomý návrat.`,
             keywords: ['rovnováha', 'pravda', 'návrat'],
             guidingQuestion: 'Kde se snažíš udržet klid tak moc, až přestáváš slyšet sebe?'
         },
         essence: [
             { title: 'Hlavní dar', text: 'Tvůj dar je cit pro rovnováhu, ale ne tu povrchní, kdy se všichni usmívají a nikdo neřekne pravdu. Umíš vycítit, kde se místnost sevře, kde někdo mluví opatrněji a kde se pod slušností skrývá únava. Letos se tenhle dar učíš používat jinak: ne k tomu, abys všechno uhladila, ale abys poznala, kde už máš chránit i sebe.' },
-            { title: 'Opakující se vzorec', text: 'Když se bojíš zklamání, začneš být příliš rozumná. Vysvětlíš si cizí mlčení, přepíšeš vlastní reakci a čekáš, až se věci samy vyjasní. V běžném dni to poznáš podle chvíle, kdy už máš připravenou omluvu za někoho jiného. Tenhle rok tě vede k jedné jednodušší větě dřív, než se z ticha stane vnitřní tlak a zbytečně tě unaví.' },
-            { title: 'Prahové téma', text: 'Stojíš na prahu větší jednoduchosti. Ne všechno musíš zachránit, pochopit do posledního detailu nebo vysvětlit tak jemně, aby to nikoho nezatížilo. Zbytek roku tě povede k rozhodnutím, která budou méně zdvořilá k chaosu a laskavější k tobě. Nejvíc to ucítíš tam, kde se ti uleví hned po tom, co přestaneš vyjednávat sama se sebou a čekat na dokonalé pochopení.' },
-            { title: 'Co se chce změnit', text: 'Klid už nemá být odměna až po práci, po rozhovoru, po uklidnění druhých a po vyřešení všeho, co visí ve vzduchu. Má být základ, ze kterého se rozhoduješ. Pokud si letos dovolíš brát vlastní vnitřní prostor vážně, některé vztahy se pročistí a některé úkoly konečně ztratí neviditelnou moc nad tvým dnem, i když to nikdo zvenku nepotvrdí.' }
+            { title: 'Opakující se vzorec', text: 'Když se bojíš zklamání, začneš být příliš rozumná. Vysvětlíš si cizí mlčení, přepíšeš vlastní reakci a čekáš, až se věci samy vyjasní. V běžném dni to poznáš podle chvíle, kdy už máš připravenou omluvu za někoho jiného. Toto období tě vede k jedné jednodušší větě dřív, než se z ticha stane vnitřní tlak a zbytečně tě unaví.' },
+            { title: 'Prahové téma', text: 'Stojíš na prahu větší jednoduchosti. Ne všechno musíš zachránit, pochopit do posledního detailu nebo vysvětlit tak jemně, aby to nikoho nezatížilo. Příštích 12 měsíců tě povede k rozhodnutím, která budou méně zdvořilá k chaosu a laskavější k tobě. Nejvíc to ucítíš tam, kde se ti uleví hned po tom, co přestaneš vyjednávat sama se sebou a čekat na dokonalé pochopení.' },
+            { title: 'Co se chce změnit', text: 'Klid už nemá být odměna až po práci, po rozhovoru, po uklidnění druhých a po vyřešení všeho, co visí ve vzduchu. Má být základ, ze kterého se rozhoduješ. Pokud si v tomto období dovolíš brát vlastní vnitřní prostor vážně, některé vztahy se pročistí a některé úkoly konečně ztratí neviditelnou moc nad tvým dnem, i když to nikdo zvenku nepotvrdí.' }
         ],
         yearMantra: {
             sentence: 'Nemusím se zmenšit, aby kolem mě mohl být skutečný klid.',
             text: `Tahle věta je pro tebe kotva hlavně ve chvílích, kdy začneš automaticky uhlazovat atmosféru. Vrať se k ní, když budeš chtít odpovědět dřív, než si uvědomíš, co opravdu cítíš. Vrať se k ní, když budeš přemýšlet, jestli nejsi moc náročná. Nejde o vzdor. Jde o připomenutí, že skutečný klid nemůže stát na tom, že se v něm ty sama ztratíš. Pokud tě věta nejdřív znejistí, je to v pořádku. Pravda bývá nezvykle jednoduchá.`
         },
-        mainTheme: `V tomto období se v tobě probouzí potřeba jednoduššího života. Ne proto, že bys měla méně cítit, ale proto, že už nechceš dávat svou pozornost věcem, které tě pokaždé nechají prázdnou. Jako Váhy přirozeně vnímáš náladu druhých lidí a často ji začneš vyrovnávat dřív, než se vůbec zeptáš, jestli je to tvoje práce. Právě tady se letos láme starý způsob fungování: přestane stačit, že je kolem tebe klid, pokud uvnitř tebe zůstává nevyřčené napětí.
+        mainTheme: `V tomto období se v tobě probouzí potřeba jednoduššího života. Ne proto, že bys měla méně cítit, ale proto, že už nechceš dávat svou pozornost věcem, které tě pokaždé nechají prázdnou. Jako Váhy přirozeně vnímáš náladu druhých lidí a často ji začneš vyrovnávat dřív, než se vůbec zeptáš, jestli je to tvoje práce. Právě tady se v příštích 12 měsících láme starý způsob fungování: přestane stačit, že je kolem tebe klid, pokud uvnitř tebe zůstává nevyřčené napětí.
 
-Zbytek roku tě povede k jemné, ale pevné hranici. Ne k tvrdosti. Spíš k tichému rozhodnutí, že harmonie nemá vznikat tím, že se zmenšíš. Vztahy, práce i každodenní volby budou testovat, jestli umíš zůstat laskavá a zároveň konkrétní. Poznáš to podle drobných okamžiků: zpráva, na kterou se ti nechce odpovědět hned; schůzka, po které jsi unavená ještě dřív, než začne; nabídka, která vypadá hezky, ale v těle se stáhne jako příliš těsné šaty.
+Příštích 12 měsíců tě povede k jemné, ale pevné hranici. Ne k tvrdosti. Spíš k tichému rozhodnutí, že harmonie nemá vznikat tím, že se zmenšíš. Vztahy, práce i každodenní volby budou testovat, jestli umíš zůstat laskavá a zároveň konkrétní. Poznáš to podle drobných okamžiků: zpráva, na kterou se ti nechce odpovědět hned; schůzka, po které jsi unavená ještě dřív, než začne; nabídka, která vypadá hezky, ale v těle se stáhne jako příliš těsné šaty.
 
 Tohle období ti také ukazuje rozdíl mezi klidem a odkládáním. Klid je čistý. Po rozhodnutí cítíš víc prostoru. Odkládání je lepkavé. V hlavě se k němu vracíš pořád dokola, i když navenek působíš v pohodě. Tvůj praktický krok není všechno hned rozseknout. Je to přestat si lhát v první malé věci, kde už odpověď znáš. Když ten rozdíl začneš brát vážně, některé volby se zjednoduší samy, protože z nich odejde potřeba vypadat přijatelně.`,
-        innerMirror: `Uvnitř tebe je silný pozorovatel. Všímá si tónu hlasu, drobné změny v odpovědi, zpožděné zprávy i atmosféry v místnosti. Tahle citlivost ti mnohokrát pomohla. Díky ní umíš reagovat jemně, nepřidávat zbytečný tlak a najít větu, která druhému dovolí vydechnout. Jenže letos se ukazuje, že stejná schopnost tě může od sebe odvést, pokud zůstane pořád namířená ven.
+        innerMirror: `Uvnitř tebe je silný pozorovatel. Všímá si tónu hlasu, drobné změny v odpovědi, zpožděné zprávy i atmosféry v místnosti. Tahle citlivost ti mnohokrát pomohla. Díky ní umíš reagovat jemně, nepřidávat zbytečný tlak a najít větu, která druhému dovolí vydechnout. Jenže v tomto období se ukazuje, že stejná schopnost tě může od sebe odvést, pokud zůstane pořád namířená ven.
 
 V běžném dni se to ukáže ve chvíli, kdy víš přesně, co potřebuje druhý člověk, ale neumíš stejně rychle říct, co potřebuješ ty. Můžeš poznat, že máš plnou hlavu cizích nálad, domněnek a neodeslaných odpovědí, zatímco tvoje vlastní únava stojí někde v koutě a čeká, až si jí všimneš. Tohle není slabost. Je to signál, že tvůj vnitřní kompas potřebuje víc místa než další vysvětlování.
 
 Nejsilnější posun přijde přes jednoduché přiznání. Nemusíš hned vědět řešení. Stačí si dovolit pravdu dřív, než ji zabalíš do přijatelné formy. Zkus si všímat tří tělesných signálů: sevřeného břicha, rychlé potřeby odpovědět a únavy po rozhovoru, který navenek vypadal klidně. Neber je jako důkaz, že něco nezvládáš. Jsou to malé navigační body. Když je zachytíš včas, nemusíš čekat na výbuch, pláč nebo úplné vyčerpání, aby sis dovolila změnit směr. Díky tomu zůstane víc síly pro skutečnou volbu bez tlaku. Právě tam se často objevuje tvoje skutečná odpověď dřív, než ji hlava začne upravovat tak, aby byla pro všechny pohodlná.`,
-        love: `V lásce se otevírá téma pravdivosti. Můžeš si všimnout, že některé rozhovory už nejde dál uhlazovat úsměvem nebo změnou tématu. Neznamená to konflikt. Znamená to, že vztahy, které mají pokračovat, potřebují víc dospělosti a méně domýšlení. Tvoje citlivost umí zachytit, když se někdo vzdálí, když odpověď ztratí teplo nebo když se mezi slovy objeví něco nevyřčeného. Jenže letos bude důležité neudělat z každého signálu úkol, který musíš sama vyřešit.
+        love: `V lásce se otevírá téma pravdivosti. Můžeš si všimnout, že některé rozhovory už nejde dál uhlazovat úsměvem nebo změnou tématu. Neznamená to konflikt. Znamená to, že vztahy, které mají pokračovat, potřebují víc dospělosti a méně domýšlení. Tvoje citlivost umí zachytit, když se někdo vzdálí, když odpověď ztratí teplo nebo když se mezi slovy objeví něco nevyřčeného. Jenže v tomto období bude důležité neudělat z každého signálu úkol, který musíš sama vyřešit.
 
 Pokud jsi sama, nejsilnější posun nepřichází přes honbu za pozorností, ale přes návrat k vlastnímu rytmu. Přitáhneš člověka, který lépe uvidí, kdo opravdu jsi, když se přestaneš přizpůsobovat každému signálu zvenku. Nejde o to být nedostupná. Jde o to nepředávat svůj vnitřní střed prvnímu člověku, který v tobě probudí naději. Všímej si, jestli se vedle někoho cítíš klidnější, nebo jestli jen silněji toužíš být vybraná.
 
 Pokud ve vztahu jsi, bude důležité říkat potřeby dřív, než se změní v tichou výčitku. Největší změnu nepřinese jeden velký rozhovor, ale menší pravdy vyslovené včas: co ti chybí, co už nechceš nést sama, kde potřebuješ víc přítomnosti. Poznáš to podle okamžiku, kdy začneš větu zjemňovat ještě předtím, než ji vyslovíš. Nejvíc si všímej rozdílu mezi klidem a napjatým čekáním. Tvůj praktický krok je říct méně slov, ale přesněji. Vztah, který má sílu, takovou pravdu unese. Vztah, který stojí jen na tvém přizpůsobení, ji bude vnímat jako narušení.`,
-        workMoney: `V práci se ukazuje prostor pro větší přesnost. Ne všechno, co umíš, má stejnou cenu a ne každý požadavek si zaslouží okamžitou odpověď. Zbytek roku přeje rozhodnutím, která zjednoduší tvůj systém: jasnější nabídka, méně roztříštěných úkolů a odvážnější pojmenování hodnoty. Můžeš si všimnout, že nejvíc síly ti neberou těžké úkoly, ale úkoly nejasné. Takové, kde není domluvený konec, hranice, cena, odpovědnost nebo očekávání.
+        workMoney: `V práci se ukazuje prostor pro větší přesnost. Ne všechno, co umíš, má stejnou cenu a ne každý požadavek si zaslouží okamžitou odpověď. Toto období přeje rozhodnutím, která zjednoduší tvůj systém: jasnější nabídka, méně roztříštěných úkolů a odvážnější pojmenování hodnoty. Můžeš si všimnout, že nejvíc síly ti neberou těžké úkoly, ale úkoly nejasné. Takové, kde není domluvený konec, hranice, cena, odpovědnost nebo očekávání.
 
 Finance se mohou stabilizovat ve chvíli, kdy přestaneš zaměňovat klid za odkládání. Jedna věc, kterou dlouho posouváš před sebou, bude chtít uzavřít. Když ji vezmeš prakticky a bez dramat, uvolní se energie pro nový příjem nebo lepší pracovní směr. Neznamená to riskovat naslepo. Spíš si konečně přiznat, kde dáváš příliš mnoho za příliš málo, nebo kde se bojíš říct si o férovější podmínky.
 
-Tvůj pracovní růst letos nepůjde přes větší výkon, ale přes lepší výběr. Všímej si, které činnosti ti po dokončení vrací pocit síly a které tě nechávají vnitřně rozdrobenou. Tam je důležitá stopa. Pokud budeš dál přidávat další závazky bez vyčištění těch starých, budeš mít pocit, že se snažíš víc, ale neposouváš se. Prakticky to znamená vybrat jednu nabídku, jeden závazek nebo jednu cenu, kde potřebuješ jasnější pravidla. Nemusíš měnit všechno. Stačí přestat být dostupná tam, kde už tě dostupnost zlevňuje. Tahle přesnost není tvrdost. Je to úcta k tvému času a k práci, která má skutečnou hodnotu.`,
-        growth: `Tvůj růst letos nestojí na velkém zlomu, ale na každodenním návratu k sobě. Největší lekce zní: nemusíš být příjemná, aby sis zasloužila lásku. Nemusíš být neustále dostupná, aby lidé zůstali. A nemusíš všechno chápat hned, aby ses mohla rozhodnout správně. Tohle pro tebe může být nezvyklé, protože část tvé jistoty vznikala z toho, že jsi dokázala číst situace, předcházet napětí a být tou, která věci zvládne s grácií.
+Tvůj pracovní růst v příštích měsících nepůjde přes větší výkon, ale přes lepší výběr. Všímej si, které činnosti ti po dokončení vrací pocit síly a které tě nechávají vnitřně rozdrobenou. Tam je důležitá stopa. Pokud budeš dál přidávat další závazky bez vyčištění těch starých, budeš mít pocit, že se snažíš víc, ale neposouváš se. Prakticky to znamená vybrat jednu nabídku, jeden závazek nebo jednu cenu, kde potřebuješ jasnější pravidla. Nemusíš měnit všechno. Stačí přestat být dostupná tam, kde už tě dostupnost zlevňuje. Tahle přesnost není tvrdost. Je to úcta k tvému času a k práci, která má skutečnou hodnotu.`,
+        growth: `Tvůj růst v tomto období nestojí na velkém zlomu, ale na každodenním návratu k sobě. Největší lekce zní: nemusíš být příjemná, aby sis zasloužila lásku. Nemusíš být neustále dostupná, aby lidé zůstali. A nemusíš všechno chápat hned, aby ses mohla rozhodnout správně. Tohle pro tebe může být nezvyklé, protože část tvé jistoty vznikala z toho, že jsi dokázala číst situace, předcházet napětí a být tou, která věci zvládne s grácií.
 
 Vnitřně dozrává schopnost slyšet první jemný signál těla. Únavu. Sevření. Radost. Lehkost. Když jim dáš prostor dřív, než přerostou v tlak, začneš dělat méně rozhodnutí ze strachu a víc rozhodnutí z důvěry. Prakticky to znamená zpomalit hlavně ve chvílích, kdy chceš rychle odpovědět, rychle vyhovět nebo rychle uklidnit atmosféru.
 
@@ -1638,7 +1679,7 @@ Poznáš to podle zvláštní úlevy, která přijde, když přestaneš opravova
 
 K tomu máš vytrvalost, která nedělá hluk. Zůstaneš u toho, co má smysl, i bez rychlé odměny, a umíš držet klid tam, kde jiní ztrácejí hlavu. Tahle tichá stálost bývá přehlížená, protože nekřičí. Přitom právě ona drží pohromadě víc věcí, než si přiznáváš — vztahy, projekty i chvíle, kdy by se to jinak rozpadlo.
 
-Letos jde hlavně o jedno: obrátit stejnou pozornost, kterou dáváš okolí, i k sobě. Tvoje dary nabírají plnou hodnotu ve chvíli, kdy neslouží jen ke klidu ostatních. Praktický krok: pojmenuj jednu věc, kterou umíš opravdu dobře, a tento týden ji vědomě použij pro sebe — ne aby z ní měl užitek někdo jiný, ale abys aspoň jednou zažila, jaké to je, když ta schopnost pracuje pro tebe.`,
+V tomto období jde hlavně o jedno: obrátit stejnou pozornost, kterou dáváš okolí, i k sobě. Tvoje dary nabírají plnou hodnotu ve chvíli, kdy neslouží jen ke klidu ostatních. Praktický krok: pojmenuj jednu věc, kterou umíš opravdu dobře, a tento týden ji vědomě použij pro sebe — ne aby z ní měl užitek někdo jiný, ale abys aspoň jednou zažila, jaké to je, když ta schopnost pracuje pro tebe.`,
         communication: `Hodně tvojí energie odchází do vysvětlování. Chceš, aby druhý pochopil kontext, aby se nikdo necítil zraněný, aby bylo jasné, že to myslíš dobře — a než domluvíš, tvoje původní potřeba se ztratí pod vrstvou omluv. Přitom kratší věta bývá laskavější než dlouhá obhajoba. Jasné „teď ne" dá druhému skutečnou informaci, ne mlhu.
 
 Poznáš to podle těla: po pravdivé větě přijde úleva, po přejemněné zůstane napětí a chuť se hned omlouvat. Sleduj taky, kolikrát v jednom rozhovoru řekneš totéž jinými slovy. To opakování většinou není pro druhého — je to způsob, jak uklidnit sebe. Když ho zkrátíš, možná se na chvíli objeví nejistota, ale hned za ní víc prostoru a klidu.
@@ -1650,11 +1691,11 @@ Všímej si, po kterých rozhovorech přijde únava, která neodpovídá jejich 
 
 Co tě naopak vrací, bývá jednodušší, než čekáš: pohyb bez cíle, ticho, voda, spánek, chvíle bez nároků. Nejde o velký plán péče o sebe, který zase přidá další povinnost. Praktický krok: jednou denně se na minutu zastav a zeptej se, kde v těle právě držíš napětí — a jestli ho jde o kousek pustit. Malá pauza opakovaná často udělá víc než jeden velký reset, na který stejně nebude čas.`,
         months: [
-            { month: 'Květen', title: 'tiché vyjasnění', text: 'Vztahové téma se ozve přes maličkost, která ve skutečnosti ukáže větší vzorec. Může jít o zprávu, tón hlasu nebo pocit po setkání. Neřeš jen formu. Všímej si, jestli se po kontaktu cítíš víc sama sebou, nebo víc přizpůsobená. Tahle stopa bude důležitější než samotná událost.' },
-            { month: 'Červenec', title: 'návrat viditelnosti', text: 'Přichází prostor pro tvořivost, prezentaci a osobní krok, který nemusí být dokonalý. Dobré období pro nabídku, nový projekt nebo otevřenější rozhovor o tom, co chceš. Nečekej na chvíli, kdy nebudeš mít strach. Sleduj, kde se strach míchá s radostí. Malý krok teď udělá víc než dlouhé plánování.' },
-            { month: 'Září', title: 'hranice a směr', text: 'Září tě může postavit před jasnější ano a jasnější ne. Právě tím se otevře víc klidu než dalším přizpůsobením. Pokud budeš váhat, zeptej se jednoduše: co bych zvolila, kdybych nemusela nikomu dokazovat, že jsem hodná, rozumná nebo vděčná? Odpověď se objeví v těle dřív než v argumentech.' },
-            { month: 'Listopad', title: 'hlubší rozhovor', text: 'Něco, co bylo dlouho pod povrchem, může dostat slova. Nemusí to být dramatický rozhovor. Spíš okamžik, kdy přestaneš obcházet pravdu a pojmenuješ ji bez obalu. Dej si pozor na starý reflex všechno vysvětlit tak jemně, až se ztratí pointa. Pravda nemusí být ostrá, jen nesmí být rozmazaná.' },
-            { month: 'Prosinec', title: 'uzavření kruhu', text: 'Konec roku přinese pocit, že některé věci už nechceš tahat dál. Může jít o závazek, staré očekávání nebo vnitřní slib, který už neodpovídá tomu, kým jsi. Udělej místo pro začátek, který nebude působit velkolepě, ale bude pravdivější. Zapiš si, co už nechceš nést do dalšího roku.' }
+            { month: 'září 2026', title: 'tiché vyjasnění', text: 'Vztahové téma se ozve přes maličkost, která ve skutečnosti ukáže větší vzorec. Může jít o zprávu, tón hlasu nebo pocit po setkání. Neřeš jen formu. Všímej si, jestli se po kontaktu cítíš víc sama sebou, nebo víc přizpůsobená. Tahle stopa bude důležitější než samotná událost.' },
+            { month: 'listopad 2026', title: 'návrat viditelnosti', text: 'Přichází prostor pro tvořivost, prezentaci a osobní krok, který nemusí být dokonalý. Dobré období pro nabídku, nový projekt nebo otevřenější rozhovor o tom, co chceš. Nečekej na chvíli, kdy nebudeš mít strach. Sleduj, kde se strach míchá s radostí. Malý krok teď udělá víc než dlouhé plánování.' },
+            { month: 'leden 2027', title: 'hranice a směr', text: 'Tento měsíc tě může postavit před jasnější ano a jasnější ne. Právě tím se otevře víc klidu než dalším přizpůsobením. Pokud budeš váhat, zeptej se jednoduše: co bych zvolila, kdybych nemusela nikomu dokazovat, že jsem hodná, rozumná nebo vděčná? Odpověď se objeví v těle dřív než v argumentech.' },
+            { month: 'duben 2027', title: 'hlubší rozhovor', text: 'Něco, co bylo dlouho pod povrchem, může dostat slova. Nemusí to být dramatický rozhovor. Spíš okamžik, kdy přestaneš obcházet pravdu a pojmenuješ ji bez obalu. Dej si pozor na starý reflex všechno vysvětlit tak jemně, až se ztratí pointa. Pravda nemusí být ostrá, jen nesmí být rozmazaná.' },
+            { month: 'červenec 2027', title: 'uzavření kruhu', text: 'Závěr období přinese pocit, že některé věci už nechceš tahat dál. Může jít o závazek, staré očekávání nebo vnitřní slib, který už neodpovídá tomu, kým jsi. Udělej místo pro začátek, který nebude působit velkolepě, ale bude pravdivější. Zapiš si, co už nechceš nést dál.' }
         ],
         actionPlan: [
             { title: 'Pojmenuj jednu neviditelnou zátěž', text: 'Vyber jednu věc, kterou pravidelně držíš v hlavě za ostatní: náladu v práci, napětí ve vztahu, rodinný úkol nebo cizí očekávání. Napiš si, co by se stalo, kdybys ji tento týden neřídila ty. Neřeš hned výsledek. Jen uvidíš, kolik prostoru zabírala a co je tvoje zodpovědnost.' },
@@ -1676,7 +1717,7 @@ Papír si nech na místě, kam se běžně díváš. Ne jako úkol, ale jako kot
         ],
         closing: `Jano, tvůj další krok nemusí být hlasitý. Stačí, když bude pravdivý. Když přestaneš hledat dokonalou chvíli a začneš věřit jemnému vnitřnímu ano, uvidíš, že klid není odměna na konci cesty. Je to způsob, jak po ní můžeš jít už teď. Ne všechno se vyřeší jedním rozhodnutím, ale jedno rozhodnutí může změnit způsob, jakým se k sobě začneš vracet.
 
-Zbytek roku ti nebude brát citlivost. Spíš tě naučí, aby citlivost konečně patřila i tobě. Aby ses neptala jen na to, co druhý potřebuje, ale i na to, co se děje v tobě, když pořád dáváš. Aby ses nebála, že jasnější hranice zničí blízkost. Skutečná blízkost se nezničí pravdou. Jen se ukáže, jestli byla dost pevná na to, aby pravdu unesla.
+Příštích 12 měsíců ti nebude brát citlivost. Spíš tě naučí, aby citlivost konečně patřila i tobě. Aby ses neptala jen na to, co druhý potřebuje, ale i na to, co se děje v tobě, když pořád dáváš. Aby ses nebála, že jasnější hranice zničí blízkost. Skutečná blízkost se nezničí pravdou. Jen se ukáže, jestli byla dost pevná na to, aby pravdu unesla.
 
 Ať je tvoje další období méně o dokazování a víc o návratu. Méně o vysvětlování vlastní hodnoty a víc o životě, který ji začne tiše potvrzovat každý den. Všímej si jednoduchých znamení: lehčího dechu po upřímné větě, menší potřeby kontrolovat cizí reakci a pocitu, že některé dveře nemusíš držet otevřené jen proto, že jsi je kdysi sama otevřela. Tady se začíná tvoje další světlo. Ne v dokonalosti, ale v návratu k sobě.`
     }

@@ -1869,7 +1869,7 @@ body.page-mentor .header {
 
   transform: translateY(10px);
 
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(155, 89, 182, 0.1);
 
@@ -1967,7 +1967,7 @@ body.page-mentor .header {
 
   font-family: var(--font-body, 'Inter', sans-serif);
 
-  transition: all 0.2s ease;
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
 
   border-left: 2px solid transparent;
 
@@ -2727,7 +2727,7 @@ body.page-mentor .header {
 
 .card--pricing.featured::before {
 
-  content: 'NEJOBLÍBENĚJŠÍ';
+  content: 'DOPORUČENÝ START';
 
   position: absolute;
 
@@ -5241,7 +5241,7 @@ body.page-mentor .header {
 
   text-decoration: none;
 
-  transition: all var(--transition-base);
+  transition: color var(--transition-base), background-color var(--transition-base), border-color var(--transition-base), transform var(--transition-base), opacity var(--transition-base), box-shadow var(--transition-base);
 
 }
 
@@ -12781,7 +12781,7 @@ a.card.card--interactive-hover:hover {
 
 .card-hover {
 
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
 }
 
@@ -13065,7 +13065,7 @@ a.card.card--interactive-hover:hover {
 
   background: rgba(255, 255, 255, 0.1);
 
-  transition: all 0.4s ease;
+  transition: color 0.4s ease, background-color 0.4s ease, border-color 0.4s ease, transform 0.4s ease, opacity 0.4s ease, box-shadow 0.4s ease;
 
 }
 
@@ -15449,5 +15449,62 @@ body.page-pricing.cookie-banner-active {
 @media (max-width: 720px) {
     .mh-email-bridge__form {
         grid-template-columns: 1fr;
+    }
+}
+
+/* Accessibility hardening: comfortable targets and a consent layout that never squeezes copy. */
+.carousel-btn {
+    width: 44px;
+    height: 44px;
+    touch-action: manipulation;
+}
+
+.cookie-banner {
+    width: min(900px, calc(100vw - 32px));
+    max-width: 900px !important;
+}
+
+.cookie-banner__actions {
+    min-width: 0;
+    flex-wrap: wrap;
+}
+
+.cookie-banner__actions .btn,
+body.page-home .cookie-banner__actions .btn,
+body.page-login .cookie-banner__actions .btn,
+body.page-mentor .cookie-banner__actions .btn,
+body.page-pricing .cookie-banner__actions .btn,
+body.page-profile .cookie-banner__actions .btn {
+    min-height: 44px !important;
+    font-size: 0.75rem !important;
+    touch-action: manipulation;
+}
+
+@media (min-width: 769px) and (max-width: 960px) {
+    body .cookie-banner__content {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+
+    body .cookie-banner__actions {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .carousel-btn {
+        width: 44px;
+        height: 44px;
+    }
+
+    .cookie-banner__text {
+        font-size: 0.75rem;
+        line-height: 1.35;
+    }
+
+    body .cookie-banner:not(.cookie-banner--expanded) .cookie-banner__actions .btn {
+        min-height: 44px !important;
+        font-size: 0.68rem !important;
     }
 }

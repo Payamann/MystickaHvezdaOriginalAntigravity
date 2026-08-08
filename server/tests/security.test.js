@@ -90,6 +90,14 @@ describe('🔒 Security Tests', () => {
     // CSRF PROTECTION TESTS
     // ============================================
     describe('CSRF Protection', () => {
+        test('responses disable unused browser capabilities', async () => {
+            const res = await request(app)
+                .get('/api/health')
+                .expect(200);
+
+            expect(res.headers['permissions-policy']).toBe('camera=(), microphone=(), geolocation=(), usb=()');
+        });
+
         test('GET /api/csrf-token returns valid token', async () => {
             const res = await request(app)
                 .get('/api/csrf-token')

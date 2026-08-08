@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { isProductionRuntime } from './config/runtime.js';
+import { buildPersonalMapPeriod } from './services/personal-map-period.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '.env') });
@@ -282,7 +283,7 @@ ACTIVATION_FEATURES.past_life = ACTIVATION_FEATURES.minuly_zivot;
 
 const ACTIVATION_PRODUCT_OFFERS = {
   annual_horoscope: {
-    label: 'Roční horoskop 2026 na míru',
+    label: 'Mini Roční horoskop 2026 na míru',
     path: '/rocni-horoskop.html',
     feature: 'rocni_horoskop_2026',
     price: '199 Kč',
@@ -290,12 +291,12 @@ const ACTIVATION_PRODUCT_OFFERS = {
     promise: 'Jeden pevný PDF výstup pro celý rok, když nechceš hned řešit předplatné.'
   },
   personal_map: {
-    label: 'Osobní mapa',
+    label: 'Osobní mapa na 12 měsíců',
     path: '/osobni-mapa.html',
     feature: 'osobni_mapa_2026',
     price: '299 Kč',
     cta: 'Otevřít osobní mapu',
-    promise: 'Hlubší jednorázový výstup k datu narození, aktuálnímu tématu a dalším krokům.'
+    promise: 'Hlubší jednorázový výstup k jedné otázce a následujícím 12 měsícům.'
   },
   relationship_map: {
     label: 'Osobní mapa pro vztahové téma',
@@ -1758,7 +1759,7 @@ export async function sendHoroscopePdf({ to, name, sign, pdfBuffer }) {
 /**
  * Sends a personalized Osobní mapa PDF as an email attachment.
  */
-export async function sendPersonalMapPdf({ to, name, sign, pdfBuffer }) {
+export async function sendPersonalMapPdf({ to, name, sign, pdfBuffer, periodStart = '', periodEnd = '' }) {
   const client = getResend();
   if (!client) {
     // Paid order: a silent return here would mark the order fulfilled
@@ -1768,7 +1769,7 @@ export async function sendPersonalMapPdf({ to, name, sign, pdfBuffer }) {
 
   const signName = SIGN_NAMES_EMAIL[sign] || sign;
   const safeName = formatEmailName(name, 'Ahoj');
-  const year = new Date().getFullYear();
+  const period = buildPersonalMapPeriod({ periodStart, periodEnd });
 
   const html = getBaseTemplate(`
     <div style="text-align:center;padding:20px 0 10px;">
@@ -1776,25 +1777,26 @@ export async function sendPersonalMapPdf({ to, name, sign, pdfBuffer }) {
       <p style="font-size:15px;color:rgba(255,255,255,0.8);margin:0;">Ahoj ${safeName},</p>
     </div>
     <div style="padding:20px 0;">
-      <p>Právě ti posílám tvou <strong style="color:#d4af37;">Osobní mapu</strong> — prémiový výklad vytvořený pro tvoje znamení ${signName} a téma, se kterým teď přicházíš.</p>
+      <p>Právě ti posílám tvou <strong style="color:#d4af37;">Osobní mapu na 12 měsíců</strong> — prémiový výklad vytvořený pro tvoje znamení ${signName} a téma, se kterým teď přicházíš.</p>
+      <p style="margin-top:12px;color:rgba(255,255,255,0.72);">Období mapy: <strong>${period.label}</strong>.</p>
       <p style="margin-top:12px;">Najdeš ji v příloze jako PDF. Doporučuji ji otevřít v klidu a číst pomalu. Některé části možná nebudou působit důležitě hned, ale vrátí se ve chvíli, kdy se v běžném dni objeví přesně ten signál, o kterém mapa mluví.</p>
       <div style="background:rgba(212,175,55,0.07);border-left:3px solid #d4af37;padding:16px 20px;margin:24px 0;border-radius:0 6px 6px 0;">
-        <p style="margin:0;font-size:14px;color:rgba(255,255,255,0.7);">Mapa obsahuje: hvězdný podpis, osobní mantru, hlavní téma období, vztahy, práci a peníze, klíčové měsíce, konkrétní kroky, rituál a otázky k zápisu.</p>
+        <p style="margin:0;font-size:14px;color:rgba(255,255,255,0.7);">Mapa obsahuje: hvězdný podpis, osobní mantru, hlavní téma celých 12 měsíců, vztahy, práci a peníze, orientační milníky napříč obdobím, konkrétní kroky, rituál a otázky k zápisu.</p>
       </div>
       <p>Pokud máš jakékoli otázky, odpověz na tento e-mail.</p>
       <p style="margin-top:16px;color:rgba(255,255,255,0.6);font-size:13px;">S láskou ze hvězd,<br><span style="color:#d4af37;font-family:'Cinzel',serif;">Mystická Hvězda</span></p>
     </div>
-  `, `Tvoje Osobní mapa je tady`);
+  `, `Tvoje Osobní mapa na 12 měsíců je tady`);
 
   const pdfBase64 = Buffer.from(pdfBuffer).toString('base64');
 
   const { data, error } = await client.emails.send(buildResendPayload({
     to,
-    subject: `✦ Tvoje Osobní mapa — ${signName}`,
+    subject: `✦ Tvoje Osobní mapa na 12 měsíců — ${signName}`,
     html,
     headers: {},
     attachments: [{
-      filename: `osobni-mapa-${year}-${sign}.pdf`,
+      filename: `osobni-mapa-12-mesicu-${period.start}-${sign}.pdf`,
       content: pdfBase64,
       type: 'application/pdf',
     }],

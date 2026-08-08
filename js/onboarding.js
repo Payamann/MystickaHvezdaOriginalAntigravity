@@ -176,7 +176,9 @@ function getSafeLocalRedirect(value) {
 function resolveCompletionTarget(destinationHref) {
     const { redirect } = getOnboardingContext();
     if (redirect && !redirect.startsWith('/profil.html')) {
-        return redirect;
+        const redirectUrl = new URL(redirect, window.location.origin);
+        appendEntryContext(redirectUrl);
+        return formatAppUrl(redirectUrl);
     }
     return destinationHref;
 }
@@ -362,20 +364,30 @@ function updateFinishCta() {
     const finishBtn = document.getElementById('finish-onboarding-btn');
     const finishCopy = document.getElementById('finish-onboarding-copy');
     const destination = getPrimaryDestination();
+    const destinationHref = destination.href('onboarding_complete');
+    const completionTarget = resolveCompletionTarget(destinationHref);
+    const resumesCheckout = completionTarget !== destinationHref;
 
     if (finishBtn) {
-        finishBtn.textContent = `${destination.label()} ✨`;
+        finishBtn.textContent = resumesCheckout ? 'Pokračovat k vybranému plánu ✨' : `${destination.label()} ✨`;
     }
     if (finishCopy) {
-        finishCopy.textContent = destination.copy();
+        finishCopy.textContent = resumesCheckout
+            ? 'Nastavení je hotové. Teď se vrátíš k vybranému plánu a před potvrzením uvidíš cenu i období.'
+            : destination.copy();
     }
 }
 
 function getPendingDestinationText() {
+    const destination = getPrimaryDestination();
+    const destinationHref = destination.href('onboarding_complete');
+    if (resolveCompletionTarget(destinationHref) !== destinationHref) {
+        return 'Otevírám vybraný plán…';
+    }
     const label = getPrimaryDestination().label();
     return `${label
         .replace(/^Otevřít\s+/i, 'Otevírám ')
-        .replace(/^Zobrazit\s+/i, 'Otevírám ')}...`;
+        .replace(/^Zobrazit\s+/i, 'Otevírám ')}…`;
 }
 
 function setNextButtonEnabled(enabled) {

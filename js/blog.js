@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         featuredContainer.innerHTML = `
             <a href="blog/${post.slug}.html" class="featured-post">
                 <div class="featured-post__image-wrapper">
-                    <img src="${imageSrc}" alt="" role="presentation" class="featured-post__image" loading="lazy">
+                    <img src="${imageSrc}" alt="" role="presentation" class="featured-post__image" width="640" height="360" loading="eager" fetchpriority="high">
                 </div>
                 <div class="featured-post__content">
                     <div class="featured-post__meta">
@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             el.className = 'blog-card';
             el.innerHTML = `
                 <div class="blog-card-image-wrapper">
-                    <img src="${imageSrc}" alt="" role="presentation" class="blog-card-image" loading="lazy">
+                    <img src="${imageSrc}" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
                 </div>
                 <div class="blog-card-content">
                     <div class="blog-meta-small">

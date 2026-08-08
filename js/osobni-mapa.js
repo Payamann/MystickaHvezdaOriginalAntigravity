@@ -2,7 +2,7 @@
     const PRODUCT = {
         id: 'osobni_mapa_2026',
         type: 'personal_map',
-        name: 'Osobní mapa',
+        name: 'Osobní mapa na 12 měsíců',
         price: 299,
         currency: 'CZK'
     };
@@ -98,6 +98,27 @@
     function initIcons() {
         if (window.lucide?.createIcons) {
             window.lucide.createIcons();
+        }
+    }
+
+    async function hydrateProductPeriod() {
+        const preview = document.getElementById('personalMapPeriodPreview');
+        if (!preview) return;
+
+        try {
+            const response = await fetch('/api/osobni-mapa/product', {
+                credentials: 'same-origin',
+                cache: 'no-store'
+            });
+            if (!response.ok) return;
+
+            const product = await response.json();
+            if (product?.period?.months !== 12 || !product.period.label) return;
+
+            const readablePeriod = product.period.label.replace(' - ', ' až ');
+            preview.textContent = `Při dnešním nákupu: ${readablePeriod}. Přesně 12 navazujících měsíců, ne pouze do konce roku.`;
+        } catch {
+            // Static fallback copy remains visible when the product API is unavailable.
         }
     }
 
@@ -212,9 +233,8 @@
             name: String(formData.get('name') || '').trim(),
             email: String(formData.get('email') || '').trim(),
             birthDate: String(formData.get('birthDate') || ''),
-            birthTime: String(formData.get('birthTime') || ''),
-            birthPlace: String(formData.get('birthPlace') || '').trim(),
             sign: String(formData.get('sign') || ''),
+            focusArea: String(formData.get('focusArea') || ''),
             grammaticalGender: String(formData.get('grammaticalGender') || 'neutral'),
             focus: String(formData.get('focus') || '').trim(),
             source: attribution.source
@@ -224,7 +244,7 @@
     function setButtonLoading(button, isLoading) {
         button.disabled = isLoading;
         button.innerHTML = isLoading
-            ? '<span>Otevírám bezpečnou platbu...</span>'
+            ? '<span>Otevírám bezpečnou platbu…</span>'
             : '<i data-lucide="lock-keyhole" aria-hidden="true"></i><span>Pokračovat k platbě 299 Kč</span>';
         initIcons();
     }
@@ -321,6 +341,7 @@
 
     function init() {
         initIcons();
+        void hydrateProductPeriod();
         trackView();
         initStatusBanners();
         initScrollButtons();

@@ -15,6 +15,13 @@ const pastLifeHtml = await readFile(path.join(rootDir, 'minuly-zivot.html'), 'ut
 const runesSource = await readFile(path.join(rootDir, 'js', 'runes.js'), 'utf8');
 const mentorSource = await readFile(path.join(rootDir, 'js', 'mentor.js'), 'utf8');
 const natalSource = await readFile(path.join(rootDir, 'js', 'natal-chart.js'), 'utf8');
+const pricingCopySource = await readFile(path.join(rootDir, 'js', 'cenik-copy-fixes.js'), 'utf8');
+const loginSource = await readFile(path.join(rootDir, 'js', 'prihlaseni.js'), 'utf8');
+const profileDashboardSource = await readFile(path.join(rootDir, 'js', 'profile', 'dashboard.js'), 'utf8');
+const socialKnowledgeSource = await readFile(
+    path.join(rootDir, 'social-media-agent', 'brand_knowledge.py'),
+    'utf8'
+);
 
 const requiredSnippetGroups = [
     ['Cena se zobrazí ve Stripe před potvrzením', 'Cena se zobraz\\u00ed ve Stripe p\\u0159ed potvrzen\\u00edm'],
@@ -31,6 +38,59 @@ const forbiddenSnippets = [
 ];
 
 const errors = [];
+
+const appTrustSource = `${pricingCopySource}\n${loginSource}\n${profileDashboardSource}`;
+const appTrustRequired = [
+    'Keltský kříž a pokročilé výklady',
+    'Přednostní přístup k novým funkcím'
+];
+const appTrustForbidden = [
+    'Začít VIP konzultaci',
+    'Roční mapa a VIP odpovědi',
+    'Prioritní podpora a nejvyšší hloubka'
+];
+
+for (const snippet of appTrustRequired) {
+    if (!appTrustSource.includes(snippet)) {
+        errors.push(`Missing truthful VIP feature copy: ${snippet}`);
+    }
+}
+
+for (const snippet of appTrustForbidden) {
+    if (appTrustSource.includes(snippet)) {
+        errors.push(`Forbidden unsupported VIP promise found: ${snippet}`);
+    }
+}
+
+const socialPricingRequired = [
+    '1 990 Kč/rok (2 měsíce zdarma)',
+    '4 990 Kč/rok (2 měsíce zdarma)',
+    'VIP zkušební dobu nemá',
+    'Platba probíhá v zabezpečeném Stripe Checkout'
+];
+
+const socialTrustForbidden = [
+    '12 000+ spokojených uživatelů',
+    '12 000+ aktivních uživatelů',
+    '24/7 prioritní podpora',
+    'VIP odpověď do 2 hodin',
+    'Soukromé konzultace',
+    '1 910 Kč/rok',
+    '4 790 Kč/rok',
+    'nikdy je nesdílíme s třetími stranami'
+];
+
+for (const snippet of socialPricingRequired) {
+    if (!socialKnowledgeSource.includes(snippet)) {
+        errors.push(`Missing social pricing/trust source-of-truth snippet: ${snippet}`);
+    }
+}
+
+for (const snippet of socialTrustForbidden) {
+    if (socialKnowledgeSource.includes(snippet)) {
+        errors.push(`Forbidden unverified social claim found: ${snippet}`);
+    }
+}
 
 for (const snippets of requiredSnippetGroups) {
     if (!snippets.some((snippet) => premiumSource.includes(snippet))) {

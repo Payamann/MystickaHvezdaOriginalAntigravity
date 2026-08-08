@@ -719,7 +719,7 @@
             color: rgba(255,255,255,0.75);
             font-size: 0.85rem;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: color 0.2s, background-color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s, box-shadow 0.2s;
             text-decoration: none;
             font-family: var(--font-body);
         }
@@ -732,7 +732,7 @@
         .share-btn--copy.copied { border-color: rgba(80,200,120,0.5); color: #6ee7a0; background: rgba(80,200,120,0.08); }
 
 /* Migrated from shamansko-kolo.html static style attributes. */
-html body .mh-inline-c674023472 { transition: all 0.5s; }
+html body .mh-inline-c674023472 { transition: color 0.5s, background-color 0.5s, border-color 0.5s, transform 0.5s, opacity 0.5s, box-shadow 0.5s; }
 html body .mh-inline-b8d4284540 { display:none; }
 html body .mh-inline-e28e160e11 { max-width:320px; display:block; margin: 0 auto 0.75rem; }
 

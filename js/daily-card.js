@@ -29,7 +29,7 @@
         { name: 'Ohraničení', emoji: '🛡️', keyword: 'Hranice', text: 'Naučit se říkat ne je akt lásky k sobě. Dnes posiluj zdravé hranice – bez viny, bez omluv. Tvoje energie je dar, ne povinnost.', link: 'saturnosky-navrat.html' },
         { name: 'Vizionář', emoji: '🔭', keyword: 'Vize', text: 'Povznes pohled nad každodennost. Jaká je tvoje velká vize? Dnešek přeje snění, plánování a smělým cílům.', link: 'draci-uzly.html' },
         { name: 'Hravost', emoji: '🎭', keyword: 'Spontánnost', text: 'Je čas přerušit rutinu a vnést do dne trochu překvapení. Buď spontánní, dovol si hravost a neboj se vypadat trochu bláznivě. Život je příliš krátký na vážnost.', link: 'tarot-blazen.html' },
-        { name: 'Propojen se zemí', emoji: '🌍', keyword: 'Zemění', text: 'Vyjdi ven, dotkni se přírody, zhluboka dýchej. Zemský magnetismus ti dodá sílu a jasnost mysli. Příroda je tvůj nejlepší lék.', link: 'muladhara.html' },
+        { name: 'Propojen se zemí', emoji: '🌍', keyword: 'Zemění', text: 'Vyjdi ven, vnímej pevnou zem pod nohama a zhluboka dýchej. Pobyt v přírodě ti může vytvořit prostor pro zklidnění a jasnější myšlenky.', link: 'muladhara.html' },
         { name: 'Paradox', emoji: '🌙', keyword: 'Tajemství', text: 'Ne vše musí být hned vysvětleno. Dnes se smiř s nejistotou a tajemstvím. Pravda má mnoho vrstev – ponoř se do hlubiny beze strachu.', link: 'velka-arkana.html' },
         { name: 'Vítěz', emoji: '🏆', keyword: 'Úspěch', text: 'Tvoje vytrvalost nese ovoce. Dnes oslav svůj pokrok – i ten nejmenší úspěch si zaslouží uznání. Jsi na správné cestě k vítězství.', link: 'fehu.html' },
     ];

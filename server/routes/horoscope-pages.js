@@ -45,7 +45,14 @@ function shiftDate(dateStr, days) {
 }
 
 function getTodayStr() {
-    return new Date().toISOString().split('T')[0];
+    const parts = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Europe/Prague',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).formatToParts(new Date());
+    const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return `${values.year}-${values.month}-${values.day}`;
 }
 
 function parseIsoDateStrict(dateStr) {
@@ -117,12 +124,12 @@ function buildFallbackHoroscopePage(signData, dateStr) {
 
 // ============================================================
 // DYNAMIC SITEMAP — /horoskop/sitemap-horoscopes.xml
-// Covers last 60 days + next 7 days for all 12 signs
+// Covers today and the last 60 days for all 12 signs. Future pages are noindex.
 // ============================================================
 router.get('/sitemap-horoscopes.xml', (req, res) => {
     const today = getTodayStr();
     const dates = [];
-    for (let i = -60; i <= 7; i++) {
+    for (let i = -60; i <= 0; i++) {
         dates.push(shiftDate(today, i));
     }
 
@@ -130,7 +137,7 @@ router.get('/sitemap-horoscopes.xml', (req, res) => {
     for (const date of dates) {
         for (const slug of Object.keys(SIGN_MAP)) {
             const loc = `${SITE_ORIGIN}/horoskop/${slug}/${date}`;
-            const priority = date === today ? '1.0' : date > today ? '0.6' : '0.7';
+            const priority = date === today ? '1.0' : '0.7';
             urls.push(`  <url>
     <loc>${loc}</loc>
     <lastmod>${date}</lastmod>
@@ -203,15 +210,16 @@ router.get('/:sign/:date', async (req, res, next) => {
 
         const prevDate = shiftDate(date, -1);
         const nextDate = shiftDate(date, 1);
-        const hasNext = diffDays < 0;
+        const hasNext = date < todayStr;
         const isToday = date === todayStr;
+        const earliestIndexableDate = shiftDate(todayStr, -60);
+        const isIndexableDate = date >= earliestIndexableDate && date <= todayStr;
 
         const canonicalUrl = `${SITE_ORIGIN}/horoskop/${slug}/${date}`;
         const titleStr = `Horoskop ${signData.nameGen} — ${czechDate} | Mystická Hvězda`;
         const prediction = parsed.prediction || '';
         const descStr = `Denní horoskop pro ${signData.nameAcc} na ${czechDate}. ${prediction.substring(0, 130).replace(/"/g, '&quot;')}…`;
-        // Only index past+today, not future
-        const robotsContent = diffDays > 7 ? 'noindex, follow' : 'index, follow';
+        const robotsContent = isIndexableDate ? 'index, follow' : 'noindex, follow';
 
         const luckyNumbersHtml = Array.isArray(parsed.luckyNumbers) && parsed.luckyNumbers.length
             ? `<div class="horoscope-day-lucky">
@@ -264,8 +272,8 @@ router.get('/:sign/:date', async (req, res, next) => {
     "@type": "Article",
     "headline": "${titleStr.replace(/"/g, '\\"')}",
     "description": "${descStr.replace(/"/g, '\\"')}",
-    "datePublished": "${date}T00:00:00+01:00",
-    "dateModified": "${date}T00:00:00+01:00",
+    "datePublished": "${date}",
+    "dateModified": "${date}",
     "inLanguage": "cs",
     "publisher": {
       "@type": "Organization",

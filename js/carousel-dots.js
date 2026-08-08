@@ -41,7 +41,7 @@
             var dot = document.createElement('button');
             dot.className = 'carousel-dot' + (index === 0 ? ' active' : '');
             dot.type = 'button';
-            dot.setAttribute('aria-label', 'Přejít na referenci ' + (index + 1));
+            dot.setAttribute('aria-label', 'Přejít na modelovou situaci ' + (index + 1));
             dot.setAttribute('aria-current', index === 0 ? 'true' : 'false');
             dot.setAttribute('aria-pressed', index === 0 ? 'true' : 'false');
             dot.addEventListener('click', function () { update(index, true); });

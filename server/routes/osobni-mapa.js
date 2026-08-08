@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { createOneTimeOrderInput, attachStripeSessionToOrderInput } from '../services/one-time-orders.js';
 import { recordFunnelEvent } from '../payment.js';
+import { createPersonalMapPeriod } from '../services/personal-map-period.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,17 +17,20 @@ const LIVE_PERSONAL_MAP_PRICE_ID = 'price_1TRAzfAo8bdbnsKa82dgiM61';
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY || '';
 const defaultPersonalMapPriceId = stripeSecretKey.startsWith('sk_live_') ? LIVE_PERSONAL_MAP_PRICE_ID : '';
 const PRODUCT = {
+    // Keep the historical ID because Stripe, analytics and delivered orders use it.
+    // The customer-facing product is evergreen and no longer limited to 2026.
     id: 'osobni_mapa_2026',
     type: 'personal_map',
-    name: 'Osobní mapa',
+    name: 'Osobní mapa na 12 měsíců',
     price: 29900,
     currency: 'czk',
-    year: '2026',
+    periodMonths: 12,
     stripePriceId: process.env.STRIPE_PERSONAL_MAP_PRICE_ID || defaultPersonalMapPriceId
 };
 
 const VALID_SIGNS = ['beran', 'byk', 'blizenci', 'rak', 'lev', 'panna', 'vahy', 'stir', 'strelec', 'kozoroh', 'vodnar', 'ryby'];
 const VALID_GENDERS = ['feminine', 'masculine', 'neutral'];
+const VALID_FOCUS_AREAS = ['relationships', 'work_money', 'change', 'energy_boundaries', 'self_direction', 'other'];
 const EMAIL_PATTERN = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
 let stripeClient;
@@ -96,12 +100,20 @@ function buildLineItem(customerName) {
 }
 
 router.get('/product', (_req, res) => {
+    const period = createPersonalMapPeriod();
+    res.set('Cache-Control', 'no-store');
     res.json({
         id: PRODUCT.id,
         name: PRODUCT.name,
         price: PRODUCT.price,
         currency: PRODUCT.currency,
-        year: PRODUCT.year,
+        periodMonths: PRODUCT.periodMonths,
+        period: {
+            start: period.start,
+            end: period.end,
+            label: period.label,
+            months: period.months
+        },
         stripePriceId: PRODUCT.stripePriceId
     });
 });
@@ -114,8 +126,10 @@ router.post('/checkout', async (req, res) => {
     const birthPlace = cleanText(req.body.birthPlace, 120);
     const sign = typeof req.body.sign === 'string' ? req.body.sign.trim() : '';
     const grammaticalGender = typeof req.body.grammaticalGender === 'string' ? req.body.grammaticalGender.trim() : 'neutral';
+    const focusArea = typeof req.body.focusArea === 'string' ? req.body.focusArea.trim() : 'other';
     const focus = cleanText(req.body.focus, 500);
     const source = cleanCheckoutSource(req.body.source);
+    const period = createPersonalMapPeriod();
 
     if (!customerName || !birthDate || !sign || !email || !focus) {
         await recordCheckoutValidationFailed(source, 'missing_required_fields');
@@ -135,6 +149,11 @@ router.post('/checkout', async (req, res) => {
     if (!VALID_GENDERS.includes(grammaticalGender)) {
         await recordCheckoutValidationFailed(source, 'invalid_gender');
         return res.status(400).json({ error: 'Neplatný způsob oslovení.' });
+    }
+
+    if (!VALID_FOCUS_AREAS.includes(focusArea)) {
+        await recordCheckoutValidationFailed(source, 'invalid_focus_area');
+        return res.status(400).json({ error: 'Vyberte prosím hlavní oblast výkladu.' });
     }
 
     if (!/^\d{4}-\d{2}-\d{2}$/.test(birthDate) || !isValidIsoDate(birthDate) || new Date(`${birthDate}T00:00:00Z`) >= new Date()) {
@@ -165,8 +184,11 @@ router.post('/checkout', async (req, res) => {
                 birthPlace,
                 sign,
                 grammaticalGender,
+                focusArea,
                 focus,
-                productYear: PRODUCT.year
+                productPeriodStart: period.start,
+                productPeriodEnd: period.end,
+                productYear: period.start.slice(0, 4)
             }
         });
         const stripe = getStripeClient();
@@ -181,7 +203,9 @@ router.post('/checkout', async (req, res) => {
             metadata: {
                 productType: PRODUCT.type,
                 productId: PRODUCT.id,
-                productYear: PRODUCT.year,
+                productYear: period.start.slice(0, 4),
+                productPeriodStart: period.start,
+                productPeriodEnd: period.end,
                 orderId: order.id,
                 source,
                 price: String(PRODUCT.price),

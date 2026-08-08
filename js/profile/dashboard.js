@@ -225,13 +225,13 @@ const PREMIUM_ACTIONS = {
     vip_majestrat: [
         {
             href: '/mentor.html',
-            title: 'Začít VIP konzultaci',
-            description: 'Začněte jednou konkrétní otázkou, aby plán hned navázal na reálné téma.'
+            title: 'Položit otázku Průvodci',
+            description: 'Začněte jednou konkrétní otázkou, aby odpověď navázala na reálné téma.'
         },
         {
-            href: '/rocni-horoskop.html',
-            title: 'Otevřít roční mapu',
-            description: 'Využijte plán na dlouhodobý směr, ne jen jednorázový vhled.'
+            href: '/tarot-keltsky-kriz.html',
+            title: 'Otevřít Keltský kříž',
+            description: 'Vyzkoušejte pokročilý tarotový výklad, který je součástí VIP plánu.'
         },
         {
             href: '/profil.html#tab-settings',
@@ -653,7 +653,7 @@ function renderPremiumActivation(sub, user, paymentContext = null) {
     const titleMap = {
         premium_monthly: `Vítejte v Hvězdném Průvodci, ${displayName}`,
         exclusive_monthly: `Odemkli jste Osvícení, ${displayName}`,
-        vip_majestrat: `VIP Majestrát je aktivní, ${displayName}`
+        vip_majestrat: `VIP Majestát je aktivní, ${displayName}`
     };
     const copyMap = {
         premium_monthly: 'Největší šance na návrat je udělat teď první plný výklad. Začněte jedním z kroků níže.',

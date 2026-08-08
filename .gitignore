@@ -68,3 +68,6 @@ scripts/output/voiceover*.review.md
 playwright-report/
 test-results/
 tmp_email_previews/
+
+# Local generated deliverables and visual QA artifacts
+output/

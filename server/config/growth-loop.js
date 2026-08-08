@@ -89,7 +89,7 @@ export const PRODUCT_CATALOG = Object.freeze({
     }),
     rocni_horoskop_2026: Object.freeze({
         id: 'rocni_horoskop_2026',
-        label: 'Annual horoscope 2026',
+        label: 'Mini annual horoscope 2026',
         productType: 'one_time',
         primaryPlanId: null,
         primaryPath: '/rocni-horoskop.html',
@@ -98,7 +98,7 @@ export const PRODUCT_CATALOG = Object.freeze({
     }),
     osobni_mapa_2026: Object.freeze({
         id: 'osobni_mapa_2026',
-        label: 'Personal map 2026',
+        label: 'Personal map for the next 12 months',
         productType: 'one_time',
         primaryPlanId: null,
         primaryPath: '/osobni-mapa.html',
@@ -496,7 +496,7 @@ export const FEATURE_CATALOG = Object.freeze({
     }),
     rocni_horoskop_2026: feature({
         id: 'rocni_horoskop_2026',
-        label: 'Annual horoscope 2026',
+        label: 'Mini annual horoscope 2026',
         cluster: 'one_time',
         primaryPath: '/rocni-horoskop.html',
         freeValue: 'Preview the annual PDF.',
@@ -523,7 +523,7 @@ export const FEATURE_CATALOG = Object.freeze({
     }),
     osobni_mapa_2026: feature({
         id: 'osobni_mapa_2026',
-        label: 'Personal map 2026',
+        label: 'Personal map for the next 12 months',
         cluster: 'one_time',
         primaryPath: '/osobni-mapa.html',
         freeValue: 'Preview the personal map.',

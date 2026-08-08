@@ -2,9 +2,9 @@
 Brand Knowledge Base — kompletní znalostní báze Mystické Hvězdy.
 
 Agent musí perfektně znát:
-  1. Všechny funkce a nástroje platformy (15+ free, 25+ premium)
+  1. Všechny funkce a nástroje platformy (22 free, 13 premium)
   2. Ceník a předplatné (4 tarify)
-  3. Všechny blogové články (48+)
+  3. Všechny blogové články (70+)
   4. USP a konkurenční výhody
 
 Tato znalostní báze se injektuje do promptů pro:
@@ -31,7 +31,7 @@ PLATFORM_OVERVIEW = """
 MYSTICKÁ HVĚZDA — mystickahvezda.cz
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Webová platforma pro duchovní růst, sebepoznání a mystiku.
-12 000+ aktivních uživatelů. Česky, slovensky, polsky.
+Obsah a rozhraní v češtině, slovenštině a polštině.
 Freemium model: 22 nástrojů zdarma + 13 prémiových funkcí (35 celkem).
 """
 
@@ -229,20 +229,10 @@ TOOLS_AND_FEATURES = {
             "description": "Rituály na míru tvé natální kartě a aktuálním tranzitům.",
             "min_plan": "Osvícení",
         },
-        "rocni_vize": {
-            "name": "Roční vize osudu",
-            "description": "Komplexní předpověď na celý rok — měsíc po měsíci.",
-            "min_plan": "VIP Majestát",
-        },
-        "soukrome_konzultace": {
-            "name": "Soukromé konzultace",
-            "description": "Individuální konzultace s prioritní odpovědí do 2 hodin.",
-            "min_plan": "VIP Majestát",
-        },
         "duchov_pruvodce_premium": {
-            "name": "Neomezený duchovní průvodce",
+            "name": "Rozšířený duchovní průvodce",
             "url": "/mentor.html",
-            "description": "Neomezený chat s duchovním průvodcem bez denního limitu — otázky o vztazích, kariéře a duchovní cestě.",
+            "description": "Rozšířený přístup k AI průvodci pro inspiraci a sebereflexi.",
             "min_plan": "Hvězdný Průvodce",
         },
     },
@@ -278,7 +268,7 @@ PRICING_PLANS = {
         "name": "Hvězdný Průvodce",
         "name_en": "Star Guide",
         "price_monthly": "199 Kč/měsíc",
-        "price_yearly": "1 910 Kč/rok (úspora 20 %)",
+        "price_yearly": "1 990 Kč/rok (2 měsíce zdarma)",
         "trial": "7 dní zdarma",
         "tagline": "Doporučený — odemkni plný potenciál",
         "recommended": True,
@@ -298,7 +288,7 @@ PRICING_PLANS = {
         "name": "Osvícení",
         "name_en": "Enlightenment",
         "price_monthly": "499 Kč/měsíc",
-        "price_yearly": "4 790 Kč/rok (úspora 20 %)",
+        "price_yearly": "4 990 Kč/rok (2 měsíce zdarma)",
         "trial": "7 dní zdarma",
         "tagline": "Pro vášnivé hledače — exkluzivní obsah",
         "highlights": [
@@ -313,18 +303,13 @@ PRICING_PLANS = {
         "name": "VIP Majestát",
         "name_en": "VIP Majesty",
         "price_monthly": "999 Kč/měsíc",
-        "price_yearly": "9 590 Kč/rok (úspora 20 %)",
+        "price_yearly": None,
         "trial": None,
-        "tagline": "Ultimátní duchovní doprovod — neomezeno",
+        "tagline": "Pokročilé výklady a přednostní přístup k novinkám",
         "highlights": [
             "Vše z Osvícení +",
-            "Neomezená duchovní podpora",
-            "Roční vize osudu",
-            "VIP odpověď do 2 hodin",
-            "Soukromé konzultace",
-            "24/7 prioritní podpora",
-            "4× astrokartografická mapa/rok",
-            "VIP rituální sety",
+            "Keltský kříž a pokročilé výklady",
+            "Přednostní přístup k novým funkcím",
         ],
     },
 }
@@ -405,14 +390,12 @@ def get_blog_summary_for_prompt() -> str:
 USP = """
 PROČ MYSTICKÁ HVĚZDA (co říkat, když se někdo ptá):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-• 20+ nástrojů zdarma — nejštědřejší free tier na českém trhu
-• Personalizované výklady — žádné generické texty, vše šité na míru tobě
-• 12 000+ spokojených uživatelů
+• 20+ nástrojů zdarma na jednom místě
+• Výklady, které pracují s údaji, jež do aplikace zadáš
 • Kompletní ekosystém: tarot, astrologie, numerologie, runy, sny, čakry, šamanismus
-• Blog s 53+ odbornými články — vzdělávání zdarma
-• Český jazyk — žádné překlady z angličtiny
-• Bez reklam a clickbaitů — čistý, hodnotný obsah
-• 7denní trial zdarma na premium plány
+• Blog se 70+ průvodci a články dostupnými zdarma
+• Obsah a rozhraní v češtině
+• 7 dní zdarma u Hvězdného Průvodce a Osvícení; VIP bez zkušební doby
 • Žádné závazky — zruš kdykoliv
 """
 
@@ -424,7 +407,7 @@ PROČ MYSTICKÁ HVĚZDA (co říkat, když se někdo ptá):
 FAQ = {
     "kolik_to_stoji": {
         "q": "Kolik to stojí? / Je to zdarma?",
-        "a": "Máme 20+ nástrojů úplně zdarma (tarot, horoskopy, numerologie, runy...). Premium plány od 199 Kč/měsíc odemknou neomezený tarot, natální kartu a mnohem víc. Můžeš vyzkoušet 7 dní zdarma.",
+        "a": "Máme 20+ nástrojů zdarma (tarot, horoskopy, numerologie, runy...). Placené plány začínají na 199 Kč/měsíc; u Hvězdného Průvodce a Osvícení můžeš využít 7 dní zdarma. VIP zkušební dobu nemá.",
     },
     "jak_zacit": {
         "q": "Jak začít? / Kde se přihlásit?",
@@ -432,7 +415,7 @@ FAQ = {
     },
     "je_to_presne": {
         "q": "Je to přesné? / Funguje to?",
-        "a": "Naše výklady jsou hluboce personalizované na základě tvého data narození a aktuální pozice planet. Nejsou to náhodné texty — každý rozbor vychází z tisíců astrologických a tarotových zdrojů.",
+        "a": "Výklady pracují se zadanými údaji a symbolickými významy astrologie nebo tarotu. Ber je jako podnět k sebereflexi a zábavě, ne jako ověřenou předpověď nebo odbornou radu.",
     },
     "rozdil_free_premium": {
         "q": "Jaký je rozdíl mezi free a premium?",
@@ -440,7 +423,7 @@ FAQ = {
     },
     "natalni_karta": {
         "q": "Co je natální karta?",
-        "a": "Natální karta je astrologická mapa nebe v okamžiku tvého narození. Ukazuje pozice všech planet, tvůj ascendent a astrologické domy. Na mystickahvezda.cz/natalni-karta.html ti ji kompletně vyložíme.",
+        "a": "Natální karta je astrologická mapa oblohy pro zadaný okamžik a místo narození. Zobrazuje používané astrologické pozice, ascendent a domy; následný text je symbolická interpretace pro sebereflexi.",
     },
     "jak_zrusit": {
         "q": "Jak zrušit předplatné?",
@@ -448,19 +431,19 @@ FAQ = {
     },
     "bezpecnost_dat": {
         "q": "Jsou moje data v bezpečí?",
-        "a": "Ano. Tvé osobní údaje jsou šifrované a nikdy je nesdílíme s třetími stranami. Výklady jsou soukromé a přístupné jen tobě.",
+        "a": "Přenos dat chrání HTTPS a údaje zpracováváme podle zásad ochrany soukromí. Pro provoz používáme také uvedené zpracovatele, například Stripe pro platby; podrobnosti najdeš na stránce Ochrana soukromí.",
     },
     "platebni_metody": {
         "q": "Jak mohu platit? / Jaké platební metody přijímáte?",
-        "a": "Přijímáme karty Visa a Mastercard, Apple Pay a Google Pay. Platby jsou zabezpečené přes platební bránu Stripe.",
+        "a": "Platba probíhá v zabezpečeném Stripe Checkout. Konkrétní dostupné karty a peněženky uvidíš před potvrzením platby; mohou se lišit podle zařízení a země.",
     },
     "cas_narozeni": {
         "q": "Co když neznám svůj čas narození?",
-        "a": "Nevadí! Natální kartu i horoskop vytvoříme i bez přesného času. Nebudou obsahovat ascendent a rozložení domů, ale ostatní informace zůstanou plně přesné.",
+        "a": "Bez přesného času lze vytvořit jen omezenější výklad. Ascendent, domy a někdy i poloha Měsíce mohou být nejisté, proto aplikace označí, co zadané údaje dovolují vyložit.",
     },
     "duchov_pruvodce": {
         "q": "Co je Duchovní průvodce?",
-        "a": "Duchovní průvodce je náš AI chat, který ti odpovídá na otázky o vztazích, kariéře a duchovní cestě s ohledem na tvé znamení a aktuální planetární energie. Zdarma máš 5 zpráv denně, premium plán Hvězdný Průvodce odemkne neomezený přístup.",
+        "a": "Duchovní průvodce je AI chat pro inspiraci a sebereflexi, který pracuje s kontextem, jejž mu poskytneš. Aktuální limity aplikace uvidíš přímo u chatu; odpovědi nenahrazují odbornou radu.",
     },
 }
 

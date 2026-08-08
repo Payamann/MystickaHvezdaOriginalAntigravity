@@ -183,18 +183,18 @@ test.describe('Activation visual smoke', () => {
 
             const finish = page.locator('#finish-onboarding-btn');
             await expectWithinViewport(page, finish);
-            await expect(finish).toContainText(/tarot/i);
+            await expect(finish).toContainText(/vybranému plánu/i);
             await expect(page.locator('.interest-chip[data-interest="tarot"]')).toHaveAttribute('aria-pressed', 'true');
             await expectNoHorizontalOverflow(page);
 
             await Promise.all([
-                page.waitForURL(url => url.pathname === '/tarot.html', { timeout: 10_000, waitUntil: 'domcontentloaded' }),
+                page.waitForURL(url => url.pathname === '/cenik.html', { timeout: 10_000, waitUntil: 'domcontentloaded' }),
                 finish.click(),
             ]);
 
             const url = new URL(page.url());
-            expect(url.pathname).toBe('/tarot.html');
-            expect(url.searchParams.get('source')).toBe('onboarding_complete');
+            expect(url.pathname).toBe('/cenik.html');
+            expect(url.searchParams.get('source')).toBe('onboarding_return');
             expect(url.searchParams.get('entry_source')).toBe('tarot_inline_upsell');
             expect(url.searchParams.get('entry_feature')).toBe('tarot_multi_card');
             expect(url.searchParams.get('plan')).toBe('pruvodce');

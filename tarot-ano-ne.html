@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" href="/fonts/local-fonts.css">
     <link rel="stylesheet" href="css/style.v2.min.css?v=12">
-    <link rel="stylesheet" href="css/pages/tarot-ano-ne.css?v=7">
+    <link rel="stylesheet" href="css/pages/tarot-ano-ne.css?v=8">
 
     <script type="application/ld+json">
 
@@ -152,8 +152,7 @@
                     <div class="mh-inline-d3ee132133">
 
                         <!-- Pomocné akce k výsledku. Jediné primární CTA v panelu je
-                             e-mailový most níž — dřív si tu konkurovaly dvě `btn--primary`
-                             a registrace se nabízela hned třikrát za sebou. -->
+                             e-mailový most níž; placený most zůstává menší textovou volbou. -->
                         <button id="btn-save-reading" class="btn btn--secondary" type="button">Uložit odpověď do deníku</button>
 
                         <button id="btn-reset" class="btn btn--secondary">🔄 Zeptat se znovu</button>
@@ -161,6 +160,22 @@
                         <button id="btn-save-result-image" class="btn btn--ghost" type="button">✨ Uložit obrázek</button>
 
                     </div>
+
+                    <aside class="tarot-result-upgrade-bridge" aria-labelledby="tarot-result-upgrade-title">
+                        <div>
+                            <span class="tarot-result-upgrade-bridge__eyebrow">Když potřebuješ pochopit proč</span>
+                            <strong id="tarot-result-upgrade-title">Navazující tříkartový výklad</strong>
+                            <p>Jedna karta dala směr. Tři karty ukážou situaci, co ji ovlivňuje a jaký další krok dává smysl.</p>
+                        </div>
+                        <div class="tarot-result-upgrade-bridge__action">
+                            <a href="cenik.html?plan=pruvodce&amp;source=tarot_yes_no_result&amp;feature=tarot_multi_card&amp;entry_source=tarot_yes_no_result&amp;entry_feature=tarot_multi_card"
+                                data-tarot-yes-no-upgrade="tarot_yes_no_result"
+                                data-analytics-product="premium_membership">
+                                Odemknout tři karty
+                            </a>
+                            <small>Hvězdný Průvodce od 199 Kč/měsíc · cenu i podmínky uvidíš před platbou</small>
+                        </div>
+                    </aside>
 
                     <!-- Most na denní horoskop e-mailem — nízkoprahová alternativa k registraci.
                          Navazuje na moment, kdy uživatel právě dostal odpověď na dnešek. -->
@@ -300,6 +315,10 @@
                             <strong>Partnerská shoda</strong>
                             <span>Porovnej data narození, když chceš konkrétnější vztahový kontext.</span>
                         </a>
+                        <a href="osobni-mapa.html?source=tarot_yes_no_related&amp;feature=osobni_mapa_2026&amp;intent=personal_map_12_months" class="tarot-yes-no-related-card tarot-yes-no-related-card--paid" data-analytics-cta="tarot_yes_no_related_personal_map" data-analytics-feature="osobni_mapa_2026" data-analytics-product="osobni_mapa_2026" data-analytics-intent="one_time_purchase">
+                            <strong>Osobní mapa na 12 měsíců · 299 Kč</strong>
+                            <span>Jedna karta řeší dnešek. Mapa rozvine tvoji otázku přes celých 12 měsíců od nákupu a vyznačí orientační milníky napříč obdobím.</span>
+                        </a>
                     </div>
                 </section>
 
@@ -353,7 +372,7 @@
 
     <script type="module" src="js/dist/main.js?v=10"></script>
 
-    <script src="js/dist/tarot-ano-ne.js?v=12" defer></script>
+    <script src="js/dist/tarot-ano-ne.js?v=13" defer></script>
     <script src="js/dist/share-result.js?v=1" defer></script>
     <script src="js/dist/horoscope-subscribe.js?v=2" defer></script>
 

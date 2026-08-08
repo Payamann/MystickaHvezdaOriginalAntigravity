@@ -95,9 +95,9 @@ body.page-home {
     }
 
     body.page-home .cookie-banner__actions .btn {
-        min-height: 32px;
+        min-height: 44px;
         padding: 0.36rem 0.44rem;
-        font-size: 0.58rem;
+        font-size: 0.68rem;
         line-height: 1.1;
     }
 

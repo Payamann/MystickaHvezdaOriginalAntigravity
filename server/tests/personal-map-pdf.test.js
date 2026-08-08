@@ -6,6 +6,7 @@ import {
     renderPersonalMapPdf,
     samplePersonalMapData
 } from '../services/personal-map-pdf.js';
+import { buildPersonalMapPeriod } from '../services/personal-map-period.js';
 
 function flattenSections(sections) {
     return JSON.stringify(sections);
@@ -20,13 +21,76 @@ function stripHtml(html) {
 }
 
 describe('personal map PDF service', () => {
+    test('buildPersonalMapPeriod creates an exact rolling 12-month window with future key months', () => {
+        const period = buildPersonalMapPeriod({
+            periodStart: '2026-08-08',
+            periodEnd: '2027-08-07'
+        });
+
+        expect(period).toMatchObject({
+            start: '2026-08-08',
+            end: '2027-08-07',
+            months: 12,
+            keyMonths: ['září 2026', 'listopad 2026', 'leden 2027', 'duben 2027', 'červenec 2027']
+        });
+        expect(period.label).toContain('8. srpna 2026');
+        expect(period.label).toContain('7. srpna 2027');
+    });
+
+    test('late-year purchase crosses into the following year without truncating at 31 December', () => {
+        const period = buildPersonalMapPeriod({
+            now: new Date('2026-12-28T20:00:00Z')
+        });
+
+        expect(period).toMatchObject({
+            start: '2026-12-28',
+            end: '2027-12-27',
+            months: 12,
+            keyMonths: ['leden 2027', 'březen 2027', 'květen 2027', 'srpen 2027', 'listopad 2027']
+        });
+        expect(period.label).not.toContain('31. prosince 2026');
+    });
+
+    test('purchase date follows Europe/Prague around New Year and remains evergreen', () => {
+        const period = buildPersonalMapPeriod({
+            now: new Date('2026-12-31T23:30:00Z')
+        });
+
+        expect(period).toMatchObject({
+            start: '2027-01-01',
+            end: '2027-12-31',
+            months: 12
+        });
+    });
+
+    test('future-year and leap-day purchases still receive a complete rolling period', () => {
+        const futurePeriod = buildPersonalMapPeriod({
+            now: new Date('2028-10-31T12:00:00Z')
+        });
+        const leapPeriod = buildPersonalMapPeriod({ periodStart: '2028-02-29' });
+
+        expect(futurePeriod).toMatchObject({
+            start: '2028-10-31',
+            end: '2029-10-30',
+            months: 12
+        });
+        expect(leapPeriod).toMatchObject({
+            start: '2028-02-29',
+            end: '2029-02-28',
+            months: 12
+        });
+    });
+
     test('buildPersonalMapGenerationPrompt creates a strict Czech JSON prompt', () => {
         const prompt = buildPersonalMapGenerationPrompt({
             name: 'Jana',
             birthDate: '1994-10-08',
             sign: 'vahy',
             focus: 'vztahy a práce',
-            year: 2026
+            year: 2026,
+            periodStart: '2026-08-08',
+            periodEnd: '2027-08-07',
+            focusArea: 'relationships'
         });
 
         expect(prompt.system).toContain('česká autorka');
@@ -35,6 +99,10 @@ describe('personal map PDF service', () => {
         expect(prompt.user).toContain('Vrať pouze validní JSON bez markdownu');
         expect(prompt.user).toContain('"essence"');
         expect(prompt.user).toContain('"actionPlan"');
+        expect(prompt.user).toContain('8. srpna 2026');
+        expect(prompt.user).toContain('červenec 2027');
+        expect(prompt.user).toContain('Vrať přesně 5 orientačních milníků');
+        expect(prompt.user).toContain('Celý výklad platí pro celé období');
     });
 
     test('buildPersonalMapHtml renders premium PDF HTML and escapes user input', () => {
@@ -48,8 +116,12 @@ describe('personal map PDF service', () => {
         expect(html).toContain('Osobní mapa');
         expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;');
         expect(html).toContain('láska &lt;img src=x onerror=alert(1)&gt;');
+        expect(html).toContain('8. srpna 2026 - 7. srpna 2027');
+        expect(html).toContain('Milníky osobního roku');
+        expect(html).toContain('mapa platí pro všech 12 navazujících měsíců');
         expect(html).not.toContain('<script>alert(1)</script>');
         expect(html).not.toContain('<img src=x onerror=alert(1)>');
+        expect(html).not.toContain('zbytku roku');
     });
 
     test('buildPersonalMapHtml renders exactly 20 pages with the new sections', () => {

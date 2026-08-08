@@ -121,8 +121,7 @@ async function expectCheckoutState(state, {
 }) {
     expect(state.authPayload).toEqual(expect.objectContaining({
         email,
-        password: 'TestPassword123!',
-        password_confirm: 'TestPassword123!'
+        password: 'TestPassword123!'
     }));
     expect(state.checkoutPayload).toEqual(expect.objectContaining({
         planId: 'pruvodce',

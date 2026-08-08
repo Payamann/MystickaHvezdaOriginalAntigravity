@@ -183,7 +183,7 @@ const DAILY_CARD_FALLBACKS = {
     'propojen-se-zemi': {
         name: 'Propojen se zemí',
         keyword: 'Zemění',
-        text: 'Vyjdi ven, dotkni se přírody, zhluboka dýchej. Zemský magnetismus ti dodá sílu a jasnost mysli. Příroda je tvůj nejlepší lék.',
+        text: 'Vyjdi ven, vnímej pevnou zem pod nohama a zhluboka dýchej. Pobyt v přírodě ti může vytvořit prostor pro zklidnění a jasnější myšlenky.',
         archetype: 'guidance'
     },
     paradox: {

@@ -18,7 +18,7 @@ const defaultAnnualHoroscopePriceId = stripeSecretKey.startsWith('sk_live_') ? L
 const PRODUCT = {
     id: 'rocni_horoskop_2026',
     type: 'rocni_horoskop',
-    name: 'Roční horoskop na míru 2026',
+    name: 'Mini Roční horoskop na míru 2026',
     price: 19900,
     currency: 'czk',
     year: '2026',

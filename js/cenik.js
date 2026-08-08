@@ -16,7 +16,7 @@ const PLAN_META = {
     pruvodce: {
         name: 'Hvězdný Průvodce',
         headline: 'Plné výklady, historie a pravidelný návrat k jednomu tématu.',
-        recommendedFor: 'Většina lidí začíná tady.'
+        recommendedFor: 'Doporučený začátek pro pravidelné používání.'
     },
     'pruvodce-rocne': {
         name: 'Hvězdný Průvodce ročně',
@@ -31,12 +31,12 @@ const PLAN_META = {
     'osviceni-rocne': {
         name: 'Osvícení ročně',
         headline: 'Roční hlubší plán pro pokročilé analýzy, astrokartografii a dlouhodobý směr.',
-        recommendedFor: 'Nejlepší volba pro dlouhodobou práci s výklady.'
+        recommendedFor: 'Doporučený plán pro pravidelnou práci s výklady.'
     },
     'vip-majestrat': {
-        name: 'VIP Majestrát',
-        headline: 'Nejvyšší hloubka, priorita a osobní péče.',
-        recommendedFor: 'Pro nejnáročnější uživatele.'
+        name: 'VIP Majestát',
+        headline: 'Keltský kříž a nejhlubší výklady.',
+        recommendedFor: 'Pokročilá volba bez zkušebního období.'
     }
 };
 
@@ -121,12 +121,12 @@ const FEATURE_PREVIEW_DESTINATIONS = {
 const CANCEL_DOWNSELL_PRODUCTS = {
     rocni_horoskop_2026: {
         path: '/rocni-horoskop.html',
-        label: 'Jednorázový roční horoskop',
+        label: 'Jednorázový Mini Roční horoskop 2026',
         productId: 'rocni_horoskop_2026'
     },
     osobni_mapa_2026: {
         path: '/osobni-mapa.html',
-        label: 'Jednorázová Osobní mapa',
+        label: 'Jednorázová Osobní mapa na 12 měsíců',
         productId: 'osobni_mapa_2026'
     }
 };
@@ -212,7 +212,7 @@ const FEATURE_RECOMMENDATION_COPY = {
     tarot_celtic_cross: {
         eyebrow: 'Navazuje na Keltsk\u00fd k\u0159\u00ed\u017e',
         title: 'Velk\u00e1 ot\u00e1zka pot\u0159ebuje v\u00edc ne\u017e rychlou kartu.',
-        text: 'VIP Majestr\u00e1t odemkne Keltsk\u00fd k\u0159\u00ed\u017e s deseti pozicemi, hlub\u0161\u00edm kontextem a osobn\u00edm veden\u00edm pro situace, kde rozhoduje nuance.',
+        text: 'VIP Majestr\u00e1t odemkne Keltsk\u00fd k\u0159\u00ed\u017e s deseti pozicemi a hlub\u0161\u00edm kontextem pro situace, kde rozhoduje nuance. Cena se zobraz\u00ed ve Stripe p\u0159ed potvrzen\u00edm.',
         actionLabel: 'Odemknout Keltsk\u00fd k\u0159\u00ed\u017e'
     }
 };
@@ -311,15 +311,15 @@ function updatePricingCopy() {
     const premiumReasonsTitle = premiumReasonsBadge?.closest('.section__header')?.querySelector('.section__title');
 
     if (heroTitle) {
-        heroTitle.innerHTML = 'Začněte zdarma. <span class="text-gradient">Plaťte až za hlubší osobní vedení.</span>';
+        heroTitle.innerHTML = 'Začni zdarma. <span class="text-gradient">Plať až za hlubší osobní vedení.</span>';
     }
 
     if (heroSubtitle) {
-        heroSubtitle.textContent = 'Bezplatný účet vytvoří denní návyk. Hvězdný Průvodce odemkne plné výklady, historii, osobní profil a týdenní i měsíční vedení pro chvíle, kdy se chcete vracet pravidelně.';
+        heroSubtitle.textContent = 'Bezplatný účet ti ukáže první hodnotu. Hvězdný Průvodce odemkne plné výklady, historii, osobní profil a týdenní i měsíční vedení pro pravidelný návrat.';
     }
 
     if (heroTrustBadge) {
-        heroTrustBadge.innerHTML = '<span>Účet zdarma bez karty</span><span>|</span><span>7 dní premium zdarma</span><span>|</span><span>Zrušíte kdykoliv</span>';
+        heroTrustBadge.innerHTML = '<span>Účet zdarma bez karty</span><span>|</span><span>7 dní Průvodce zdarma</span><span>|</span><span>Zrušíš kdykoliv</span>';
     }
 
     const freeCard = pricingCards[0];
@@ -331,7 +331,7 @@ function updatePricingCopy() {
         const freeCta = freeCard.querySelector('.btn');
 
         if (freeDescription) freeDescription.textContent = 'Pro první seznámení bez závazku';
-        setFeatureText(freeFeatures[2], 'Vyzkoušejte si, co vám sedne nejvíc');
+        setFeatureText(freeFeatures[2], 'Vyzkoušej si, co ti sedne nejvíc');
         if (freeCta) {
             freeCta.textContent = 'Začít zdarma';
             freeCta.href = 'prihlaseni.html?mode=register&redirect=/horoskopy.html&source=pricing_free_cta&feature=daily_guidance';
@@ -344,7 +344,7 @@ function updatePricingCopy() {
         const guideFeatures = guideCard.querySelectorAll('.card__features li');
         const guideCta = guideCard.querySelector('.plan-checkout-btn');
 
-        if (guideDescription) guideDescription.textContent = 'Pro většinu lidí, kteří chtějí z webu udělat každodenní oporu';
+        if (guideDescription) guideDescription.textContent = 'Pro pravidelné používání, historii a hlubší osobní kontext';
         setFeatureText(guideFeatures[0], 'Neomezené výklady a každodenní vedení bez čekání');
         setFeatureText(guideFeatures[1], 'Plný rozbor natální karty, numerologie a vztahů');
         setFeatureText(guideFeatures[2], 'Historie výkladů a osobní profil pro pravidelný návrat');

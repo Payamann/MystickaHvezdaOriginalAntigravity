@@ -2,15 +2,44 @@ document.addEventListener('DOMContentLoaded', () => {
     const PLAN_COPY = {
         pruvodce: {
             title: 'Hvězdný Průvodce',
-            copy: 'Odemknete plné výklady, natální kartu, numerologii a každodenní vedení bez limitu.'
+            copy: 'Odemkneš plné výklady, natální kartu, numerologii a každodenní vedení bez limitu.',
+            trialDays: 7
         },
         osviceni: {
             title: 'Osvícení',
-            copy: 'Pokračujete k pokročilým nástrojům, jako je astrokartografie a hlubší osobní analýzy.'
+            copy: 'Pokračuješ k pokročilým nástrojům, jako je astrokartografie a hlubší osobní analýzy.',
+            trialDays: 7
         },
         'vip-majestrat': {
-            title: 'VIP Majestrát',
-            copy: 'Pokračujete k nejvyšší hloubce, prioritě a osobní péči.'
+            title: 'VIP Majestát',
+            copy: 'Pokračuješ ke Keltskému kříži a nejhlubším výkladům.',
+            trialDays: 0
+        }
+    };
+    const planManifestById = new Map();
+
+    const getPlanTrialDays = (planId) => {
+        const manifestTrialDays = Number(planManifestById.get(planId)?.trialDays);
+        if (Number.isFinite(manifestTrialDays)) return Math.max(0, manifestTrialDays);
+        return Math.max(0, Number(PLAN_COPY[planId]?.trialDays || 0));
+    };
+
+    const getCheckoutPromiseCopy = (planId) => {
+        const trialDays = getPlanTrialDays(planId);
+        return trialDays > 0
+            ? `Po registraci rovnou otevřeme bezpečný checkout — prvních ${trialDays} dní zdarma.`
+            : 'Po registraci rovnou otevřeme bezpečný checkout. Cenu a období uvidíš ve Stripe před potvrzením.';
+    };
+
+    const loadPlanManifest = async () => {
+        try {
+            const response = await fetch('/api/plans', { credentials: 'same-origin' });
+            if (!response.ok) return;
+            const manifest = await response.json();
+            if (!manifest?.success || !Array.isArray(manifest.plans)) return;
+            manifest.plans.forEach((plan) => planManifestById.set(plan.id, plan));
+        } catch (error) {
+            console.warn('[Auth] Using conservative fallback plan copy:', error.message);
         }
     };
 
@@ -44,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
         annual_horoscope: 'Roční horoskop na míru',
         rocni_horoskop_2026: 'Roční horoskop 2026',
         personal_map: 'Osobní mapa',
-        osobni_mapa_2026: 'Osobní mapa 2026',
+        osobni_mapa_2026: 'Osobní mapa na 12 měsíců',
         natalni_interpretace: 'Interpretace natální karty',
         runy_hluboky_vyklad: 'Hloubkový výklad run',
         shamanske_kolo_plne_cteni: 'Plné čtení šamanského kola',
@@ -84,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         vip_membership: {
             title: 'VIP členství bez ztráty kontextu',
-            copy: 'Po registraci budete pokračovat k VIP plánu a nejvyšší úrovni osobního vedení.',
+            copy: 'Po registraci budete pokračovat k VIP plánu s Keltským křížem a pokročilými výklady.',
             stepTitle: 'Vrátíme vás k VIP plánu',
             stepCopy: 'Neztratíte cestu z homepage ani plán, který jste otevřeli.'
         },
@@ -573,9 +602,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (plan) {
             if (checkoutContextTitle) checkoutContextTitle.textContent = plan.title;
             if (checkoutContextCopy) {
+                const checkoutPromise = getCheckoutPromiseCopy(requestedPlan);
                 checkoutContextCopy.textContent = featureLabel
-                    ? `Navazujete na funkci: ${featureLabel}. ${plan.copy} Po registraci rovnou otevřeme bezpečný checkout — prvních 7 dní zdarma.`
-                    : `${plan.copy} Po registraci rovnou otevřeme bezpečný checkout — prvních 7 dní zdarma.`;
+                    ? `Navazuješ na funkci: ${featureLabel}. ${plan.copy} ${checkoutPromise}`
+                    : `${plan.copy} ${checkoutPromise}`;
             }
             if (checkoutContextLabel) {
                 checkoutContextLabel.textContent = requestedSource ? 'Pokračujete k odemčení' : 'Pokračujete k plánu';
@@ -647,15 +677,23 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isRegisterMode) {
             renderSignupValuePanel();
             if (requestedPlan) {
-                if (loginHeader) loginHeader.textContent = 'Vytvořte účet a pokračujte k odemčení';
-                if (loginSubtitle) loginSubtitle.textContent = 'Účet slouží jen ke správě předplatného a zabere ~30 vteřin. Prvních 7 dní je zdarma — kartu zadáte až ve Stripe checkoutu a zrušit jde jedním kliknutím v profilu.';
+                const trialDays = getPlanTrialDays(requestedPlan);
+                if (loginHeader) loginHeader.textContent = 'Vytvoř si účet a pokračuj k odemčení';
+                if (loginSubtitle) {
+                    loginSubtitle.textContent = trialDays > 0
+                        ? `Účet slouží ke správě předplatného a zabere přibližně 30 vteřin. Prvních ${trialDays} dní je zdarma — kartu zadáš až ve Stripe checkoutu a předplatné zrušíš v profilu.`
+                        : 'Účet slouží ke správě předplatného a zabere přibližně 30 vteřin. Kartu zadáš až ve Stripe checkoutu, kde před potvrzením uvidíš cenu i období.';
+                }
             } else {
-                if (loginHeader) loginHeader.textContent = 'Vytvořte si účet zdarma';
-                if (loginSubtitle) loginSubtitle.textContent = 'Stačí e-mail a heslo. Platební kartu nevyžadujeme a osobní údaje doplníte až u výkladu, který je opravdu potřebuje.';
+                if (loginHeader) loginHeader.textContent = 'Vytvoř si účet zdarma';
+                if (loginSubtitle) loginSubtitle.textContent = 'Stačí e-mail a heslo. Platební kartu nevyžadujeme a osobní údaje doplníš až u výkladu, který je opravdu potřebuje.';
             }
             if (signupSafetyNote) {
+                const trialDays = requestedPlan ? getPlanTrialDays(requestedPlan) : 0;
                 signupSafetyNote.textContent = requestedPlan
-                    ? 'Po registraci rovnou otevřeme bezpečný Stripe checkout se 7 dny zdarma. Výklady slouží jako osobní inspirace a nenahrazují odbornou péči.'
+                    ? trialDays > 0
+                        ? `Po registraci otevřeme bezpečný Stripe checkout s ${trialDays} dny zdarma. Výklady slouží jako osobní inspirace a nenahrazují odbornou péči.`
+                        : 'Po registraci otevřeme bezpečný Stripe checkout. Cenu a období uvidíš před potvrzením. Výklady slouží jako osobní inspirace a nenahrazují odbornou péči.'
                     : 'Registrace je zdarma a bez platební karty. Výklady slouží jako osobní inspirace a nenahrazují odbornou péči.';
             }
             setBlockVisible(socialProofEl, true);
@@ -732,6 +770,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (loginSubtitle) loginSubtitle.textContent = 'Zadejte nové heslo a vraťte se zpět do svého účtu.';
     } else {
         applyMode();
+        void loadPlanManifest().then(applyMode);
         trackAuthView();
 
         const emailField = document.getElementById('email');
