@@ -3,7 +3,7 @@
  * Provides offline caching with stale-while-revalidate strategy
  */
 
-const CACHE_NAME = 'mysticka-hvezda-1206cc898121';
+const CACHE_NAME = 'mysticka-hvezda-c8b1a97c5fb9';
 const MAX_RUNTIME_CACHE_SIZE = 150;
 const STATIC_ASSETS = [
     '/fonts/local-fonts.css',
@@ -46,7 +46,7 @@ const STATIC_ASSETS = [
     '/img/bg-cosmic-mobile.webp',
     '/img/icon-192.webp',
     '/img/icon-192.png',
-    '/img/personal-map/personal-map-evergreen-v2.webp',
+    '/img/personal-map/personal-map-soft-v3.webp',
     '/img/personal-map/preview-cover.webp',
     '/img/personal-map/preview-signature.webp',
     '/img/personal-map/preview-mantra.webp',

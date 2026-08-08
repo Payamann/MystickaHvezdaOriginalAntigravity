@@ -32,7 +32,7 @@ describe('Focused public catalog', () => {
 
     test('pricing and homepage expose the evergreen Personal Map', () => {
         expect(read('cenik.html')).toContain('data-product="osobni_mapa_2026"');
-        expect(read('index.html')).toContain('img/personal-map/personal-map-evergreen-v2.webp');
+        expect(read('index.html')).toContain('img/personal-map/personal-map-soft-v3.webp');
         expect(read('osobni-mapa.html')).toContain('12 měsíců od objednávky');
     });
 

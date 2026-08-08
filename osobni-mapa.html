@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="Osobní mapa na příštích 12 měsíců: 20stránkový PDF výklad podle data narození, znamení a otázky, kterou právě řešíš. Jednorázově za 299 Kč.">
     <meta name="keywords" content="osobní mapa na 12 měsíců, osobní horoskop, výklad na míru, astrologie, PDF výklad, Mystická Hvězda">
-    <meta name="theme-color" content="#0a0a1a">
+    <meta name="theme-color" content="#050510">
     <meta name="robots" content="index, follow">
 
     <meta property="og:type" content="product">
     <meta property="og:title" content="Osobní mapa na 12 měsíců | Mystická Hvězda">
     <meta property="og:description" content="20stránkový osobní PDF výklad na 12 navazujících měsíců od dne nákupu: hlavní téma, orientační milníky a praktické další kroky.">
-    <meta property="og:image" content="https://www.mystickahvezda.cz/img/personal-map/personal-map-evergreen-v2.webp">
+    <meta property="og:image" content="https://www.mystickahvezda.cz/img/personal-map/personal-map-soft-v3.webp">
     <meta property="og:locale" content="cs_CZ">
     <meta name="twitter:card" content="summary_large_image">
 
@@ -22,7 +22,7 @@
     <link rel="apple-touch-icon" href="img/icon-192.webp">
 
     <link rel="stylesheet" href="css/site.min.css?v=1">
-    <link rel="stylesheet" href="css/pages/osobni-mapa.css?v=8">
+    <link rel="stylesheet" href="css/pages/osobni-mapa.css?v=9">
     <script defer src="https://js.stripe.com/v3/"></script>
     <script src="https://cdn.jsdelivr.net/npm/lucide@1.13.0/dist/umd/lucide.min.js" integrity="sha384-EHKCF1r0kkLgXLXtUe79iQzyUeZou+h3FZLoZWdcIAyctVNKMHqqy5wqYWQFUq6k" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="/js/dist/analytics-init.js" defer></script>
@@ -35,7 +35,7 @@
                 "@type": "Product",
                 "name": "Osobní mapa na 12 měsíců",
                 "description": "20stránkový osobní PDF výklad na 12 navazujících měsíců od dne nákupu, nikoli jen do konce kalendářního roku. Pracuje s datem narození, znamením a konkrétní otázkou. Obsahuje osobní podpis, čtyři klíčové vhledy, vztahy, práci, peníze, růst, stínový dar, orientační milníky napříč celým obdobím, konkrétní kroky, rituál a otázky k zápisu.",
-                "image": "https://www.mystickahvezda.cz/img/personal-map/personal-map-evergreen-v2.webp",
+                "image": "https://www.mystickahvezda.cz/img/personal-map/personal-map-soft-v3.webp",
                 "brand": { "@type": "Brand", "name": "Mystická Hvězda" },
                 "offers": {
                     "@type": "Offer",
@@ -50,16 +50,6 @@
                 "mainEntity": [
                     {
                         "@type": "Question",
-                        "name": "Co je Osobní mapa na 12 měsíců?",
-                        "acceptedAnswer": { "@type": "Answer", "text": "Je to 20stránkový PDF výklad na míru podle jména, data narození, znamení a tématu, které právě řešíte. Období začíná dnem nákupu a trvá celých 12 navazujících měsíců, i při nákupu na konci kalendářního roku. Nejde o jistou předpověď budoucnosti, ale o reflexivní mapu témat a dalších kroků." }
-                    },
-                    {
-                        "@type": "Question",
-                        "name": "Co mi Osobní mapa může dát?",
-                        "acceptedAnswer": { "@type": "Answer", "text": "Pomůže pojmenovat opakující se vzorce, zorientovat se ve vztazích, práci nebo osobním tématu, vyznačit orientační milníky napříč celým obdobím a převést výklad do menších kroků pro běžný život." }
-                    },
-                    {
-                        "@type": "Question",
                         "name": "Co když nevím, co přesně napsat do otázky?",
                         "acceptedAnswer": { "@type": "Answer", "text": "Stačí jedna obyčejná věta o tom, co se vrací nebo co vás teď nejvíc unavuje. Čím konkrétnější zadání napíšete, tím přesněji se výklad zaměří." }
                     },
@@ -67,6 +57,11 @@
                         "@type": "Question",
                         "name": "Co je součástí 20 stran?",
                         "acceptedAnswer": { "@type": "Answer", "text": "PDF obsahuje obálku, úvodní zrcadlo, osobní hvězdný podpis, tvoje silné stránky, hlavní téma, vztahy, komunikaci a hranice, práci a peníze, tělo a energii, vnitřní růst, stín a dar, orientační milníky osobního roku, konkrétní kroky, rituál, otázky k zápisu, prostor na poznámky a závěrečné poselství." }
+                    },
+                    {
+                        "@type": "Question",
+                        "name": "Co když mapu koupím na konci roku?",
+                        "acceptedAnswer": { "@type": "Answer", "text": "O nic nepřijdete. Mapa vždy začíná dnem nákupu a pokrývá celých 12 navazujících měsíců, nikoli pouze období do 31. prosince." }
                     },
                     {
                         "@type": "Question",
@@ -136,36 +131,30 @@
             <div class="pm-hero__content">
                 <span class="pm-eyebrow">Tvůj směr od dneška na 12 měsíců</span>
                 <h1 id="pm-title">Osobní mapa <span>na 12 měsíců</span></h1>
-                <p class="pm-hero__lead">Když se jedna otázka vrací, nestačí další obecný horoskop. Potřebuješ vidět souvislosti, důležité milníky a první krok, který můžeš udělat teď.</p>
-                <p class="pm-hero__sublead">Dostaneš 20stránkový PDF výklad podle data narození, znamení a konkrétní situace, kterou řešíš. Mapa začíná dnem objednávky a provede tě celými následujícími 12 měsíci — i když nakoupíš na konci roku.</p>
+                <p class="pm-hero__lead">Když se jedna otázka vrací, další obecný horoskop nestačí. Osobní mapa ti ukáže souvislosti, důležité milníky a konkrétní další kroky.</p>
+                <p class="pm-hero__sublead">20stránkové PDF vytvoříme podle tvého data narození, znamení a situace, kterou právě řešíš. Období vždy začíná dnem objednávky a trvá celých 12 měsíců.</p>
 
                 <div class="pm-hero__actions">
                     <button class="pm-button pm-button--primary" type="button" data-scroll-target="order" data-cta-location="hero">
                         <i data-lucide="wand-sparkles" aria-hidden="true"></i>
-                        Chci svou mapu na 12 měsíců
+                        Chci svou mapu za 299 Kč
                     </button>
                     <button class="pm-button pm-button--ghost" type="button" data-scroll-target="preview">
                         <i data-lucide="eye" aria-hidden="true"></i>
-                        Ukázat náhled
+                        Prohlédnout ukázku
                     </button>
                 </div>
 
                 <div class="pm-hero__meta" aria-label="Informace o produktu">
                     <span>20 stran PDF</span>
                     <span>12 měsíců od objednávky</span>
-                    <span>jedna konkrétní otázka</span>
-                    <span>do e-mailu</span>
                     <span>jednorázově 299 Kč</span>
                 </div>
-
-                <p class="pm-hero__truth">Nejde o vypočítanou natální kartu ani jistou předpověď. Je to osobní reflexivní výklad, který propojí tvoje znamení, datum narození a vlastní otázku s praktickými kroky pro příštích 12 měsíců.</p>
             </div>
 
             <div class="pm-hero__visual" aria-label="Náhled Osobní mapy">
                 <div class="pm-preview-stack">
-                    <img class="pm-preview-stack__page pm-preview-stack__page--back" src="img/personal-map/preview-signature.webp" alt="Náhled stránky s osobním hvězdným podpisem" width="760" height="1075" loading="eager">
-                    <img class="pm-preview-stack__page pm-preview-stack__page--middle" src="img/personal-map/preview-mantra.webp" alt="Náhled stránky s osobní větou období" width="760" height="1075" loading="eager">
-                    <img class="pm-preview-stack__page pm-preview-stack__page--front" src="img/personal-map/personal-map-evergreen-v2.webp" alt="Osobní mapa na 12 měsíců – zlatý hvězdný kompas" width="960" height="1200" loading="eager" fetchpriority="high">
+                    <img class="pm-preview-stack__page pm-preview-stack__page--front" src="img/personal-map/personal-map-soft-v3.webp" alt="Osobní mapa na 12 měsíců se zvěrokruhem a hvězdným kompasem" width="960" height="1200" loading="eager" fetchpriority="high">
                 </div>
             </div>
         </section>
@@ -195,69 +184,15 @@
         <section class="pm-proof-strip" aria-label="Rychlé shrnutí">
             <div>
                 <strong>Pojmenuješ hlavní téma</strong>
-                <span>Ne jen „něco je divně“. Mapa ti pomůže dát slovům to, co se opakuje ve vztazích, práci nebo uvnitř tebe.</span>
+                <span>Uvidíš, co se ve vztazích, práci nebo uvnitř tebe opakuje.</span>
             </div>
             <div>
                 <strong>Získáš odstup</strong>
-                <span>Když jsi v tématu moc dlouho, všechno se slije. Výklad ti dá jiný úhel pohledu, bez tlaku na jedno správné rozhodnutí.</span>
+                <span>Výklad nabídne jiný úhel pohledu bez tlaku na jediné správné rozhodnutí.</span>
             </div>
             <div>
                 <strong>Odneseš si další kroky</strong>
-                <span>Ne velký restart života. Spíš malé věci, které můžeš zkusit: rozhovor, hranici, pauzu, zápis nebo jasnější rozhodnutí.</span>
-            </div>
-        </section>
-
-        <section class="pm-section pm-benefits">
-            <div class="pm-section__header">
-                <span class="pm-eyebrow">Co tím získáš</span>
-                <h2>Po přečtení by nemělo zůstat jen „to bylo hezké“.</h2>
-                <p>Smysl Osobní mapy není ohromit tě mystickými větami. Má ti pomoct lépe rozumět vlastní situaci a udělat jeden rozumný krok, který nebude proti tobě.</p>
-            </div>
-
-            <div class="pm-benefits__grid">
-                <article>
-                    <i data-lucide="message-circle" aria-hidden="true"></i>
-                    <h3>Slova pro to, co cítíš</h3>
-                    <p>Když něco dlouho nosíš v sobě, často tomu chybí název. Mapa ti může dát větu, u které si řekneš: ano, přesně tohle se děje.</p>
-                </article>
-                <article>
-                    <i data-lucide="scale" aria-hidden="true"></i>
-                    <h3>Větší klid v rozhodování</h3>
-                    <p>Neřekne ti, co musíš udělat. Pomůže ti ale rozlišit, kde mluví strach, kde únava a kde už v sobě delší dobu znáš odpověď.</p>
-                </article>
-                <article>
-                    <i data-lucide="route" aria-hidden="true"></i>
-                    <h3>Směr, kam dál</h3>
-                    <p>Uvidíš, kam dát pozornost ve vztazích, práci, energii a vnitřním růstu. Ne všechno najednou. To hlavní, co má teď váhu.</p>
-                </article>
-                <article>
-                    <i data-lucide="notebook-pen" aria-hidden="true"></i>
-                    <h3>Otázky, ke kterým se vrátíš</h3>
-                    <p>Některé odpovědi nevzniknou hned při čtení. Proto v mapě najdeš i otázky k zápisu, aby text pokračoval v běžném životě.</p>
-                </article>
-            </div>
-        </section>
-
-        <section class="pm-section pm-human-fit" aria-labelledby="pm-choice-title">
-            <div class="pm-section__header">
-                <span class="pm-eyebrow">Ať nekupuješ špatný produkt</span>
-                <h2 id="pm-choice-title">Vyber si podle hloubky, kterou právě potřebuješ.</h2>
-                <p>Vyber si mezi jedním hlubokým výstupem a průběžným členstvím. Každé řeší jiný způsob práce s výkladem.</p>
-            </div>
-
-            <div class="pm-human-fit__list">
-                <article class="pm-choice-card--selected">
-                    <small>Hluboký jednorázový výklad · 299 Kč</small>
-                    <strong>Osobní mapa na 12 měsíců</strong>
-                    <span>20 stran k tvé otázce, výklad pro všech 12 měsíců a orientační milníky rozložené napříč celým obdobím. Bez předplatného.</span>
-                    <button class="pm-choice__link" type="button" data-scroll-target="order" data-cta-location="comparison">Vybrat Osobní mapu</button>
-                </article>
-                <article>
-                    <small>Průběžné vedení · od 199 Kč/měsíc</small>
-                    <strong>Hvězdný Průvodce</strong>
-                    <span>Pro opakované výklady, historii a návrat k novým otázkám během roku.</span>
-                    <a class="pm-choice__link" href="cenik.html?source=personal_map_comparison&amp;feature=premium_membership&amp;plan=pruvodce" data-analytics-cta="personal_map_comparison_membership" data-analytics-feature="premium_membership" data-analytics-product="premium_membership">Porovnat členství</a>
-                </article>
+                <span>Konkrétní otázky a malé kroky, které můžeš zkusit v běžném životě.</span>
             </div>
         </section>
 
@@ -310,104 +245,49 @@
         <section class="pm-section pm-breakdown">
             <div class="pm-section__header">
                 <span class="pm-eyebrow">Co přesně dostaneš</span>
-                <h2>20 stran není číslo do reklamy. Každá část má svůj účel.</h2>
-                <p>Mapa je postavená tak, aby tě nejdřív navedla k hlavnímu tématu, potom ho ukázala ve vztazích, práci a energii, a nakonec ho převedla do kroků.</p>
+                <h2>Přesně víš, za co platíš.</h2>
+                <p>20 stran tě provede od hlavního tématu přes vztahy, práci a energii až ke konkrétním krokům.</p>
             </div>
 
             <div class="pm-breakdown__grid">
                 <article>
                     <span>1</span>
                     <h3>Obálka a osobní zadání</h3>
-                    <p>Jméno, znamení a téma, se kterým do mapy vstupuješ.</p>
+                    <p>Jméno, znamení a téma, které právě řešíš.</p>
                 </article>
                 <article>
                     <span>2-3</span>
                     <h3>Úvodní zrcadlo a hvězdný podpis</h3>
-                    <p>První pojmenování energie, kterou teď neseš, a otázka pro celé období.</p>
+                    <p>Pojmenování energie, kterou teď neseš, a otázka pro celé období.</p>
                 </article>
                 <article>
                     <span>4-6</span>
                     <h3>Čtyři vhledy, mantra a tvoje síla</h3>
-                    <p>Destilace hlavních témat, věta období a silné stránky, o které se můžeš opřít.</p>
+                    <p>Hlavní témata, věta období a silné stránky, o které se můžeš opřít.</p>
                 </article>
                 <article>
                     <span>7-14</span>
                     <h3>Hlavní téma ve všech rovinách</h3>
-                    <p>Vnitřní vzorec, vztahy, komunikace, práce, tělo a energie, růst i stín a dar — jak se téma ukazuje v běžném životě.</p>
+                    <p>Vztahy, komunikace, práce, energie, růst i stín a dar v běžném životě.</p>
                 </article>
                 <article>
                     <span>15</span>
                     <h3>Milníky osobního roku</h3>
-                    <p>Pět orientačních bodů uvnitř celých 12 měsíců: kdy zpozornět, nezrychlovat nebo udělat jasnější krok.</p>
+                    <p>Pět orientačních bodů: kdy zpozornět, nezrychlovat nebo udělat jasnější krok.</p>
                 </article>
                 <article>
                     <span>16-20</span>
                     <h3>Kroky, rituál, otázky, poznámky a závěr</h3>
-                    <p>Praktické kroky, bezpečný rituál, otázky k návratu, prostor na tvoje poznámky a závěrečné poselství.</p>
-                </article>
-            </div>
-        </section>
-
-        <section class="pm-section pm-section--included">
-            <div class="pm-section__header">
-                <span class="pm-eyebrow">Co dostaneš</span>
-                <h2>Co je uvnitř a proč to tam je.</h2>
-            </div>
-
-            <div class="pm-included-grid">
-                <article>
-                    <i data-lucide="fingerprint" aria-hidden="true"></i>
-                    <h3>Tvůj hvězdný podpis</h3>
-                    <p>Úvodní část pojmenuje, jakou energii teď neseš, co tě drží nad vodou a kde už možná jedeš víc ze zvyku než z pravdy.</p>
-                </article>
-                <article>
-                    <i data-lucide="heart" aria-hidden="true"></i>
-                    <h3>Vztahy a blízkost</h3>
-                    <p>Ne slib, kdo přijde. Spíš pohled na to, kde ustupuješ, co říkáš mezi řádky a jak poznáš klid, který není jen dobře schované napětí.</p>
-                </article>
-                <article>
-                    <i data-lucide="briefcase-business" aria-hidden="true"></i>
-                    <h3>Práce, hodnota a peníze</h3>
-                    <p>Prakticky a bez velkých slibů: kde dáváš moc za málo, kde potřebuješ jasnější pravidla a co už nestojí za další odkládání.</p>
-                </article>
-                <article>
-                    <i data-lucide="calendar-days" aria-hidden="true"></i>
-                    <h3>Milníky osobního roku</h3>
-                    <p>Pět orientačních bodů rozložených napříč celým osobním rokem. Nejde o jediných pět měsíců, pro které mapa platí.</p>
-                </article>
-                <article>
-                    <i data-lucide="list-checks" aria-hidden="true"></i>
-                    <h3>Akční plán</h3>
-                    <p>Žádný velký restart života. Spíš malé kroky, které unesou i obyčejné dny: jeden rozhovor, jedna hranice, jedno rozhodnutí.</p>
-                </article>
-                <article>
-                    <i data-lucide="book-open-text" aria-hidden="true"></i>
-                    <h3>Rituál a otázky k zápisu</h3>
-                    <p>Krátký rituál bez velkého divadla a otázky k zápisu. Aby z mapy nebyl jen hezký text, ale něco, k čemu se vrátíš.</p>
+                    <p>Praktické kroky, krátký rituál, otázky k návratu a závěrečné poselství.</p>
                 </article>
             </div>
         </section>
 
         <section class="pm-section pm-credibility">
             <div class="pm-section__header">
-                <span class="pm-eyebrow">Jak s tím pracujeme</span>
+                <span class="pm-eyebrow">Férově před nákupem</span>
                 <h2>Duchovno má být opora, ne bič.</h2>
-                <p>Proto neslibujeme jistoty, zázračné obraty ani jedno správné rozhodnutí. Osobní mapa není diagnóza, terapie ani finanční rada. Je to výklad pro sebereflexi: má pojmenovat vzorce, otázky a praktické kroky, které si potom ověříš ve vlastním životě.</p>
-            </div>
-
-            <div class="pm-credibility__grid">
-                <article>
-                    <h3>Údaje nejsou jen políčka</h3>
-                    <p>Jméno, znamení, datum narození a tvoje otázka určují tón i zaměření výkladu. Jinak se čte vztah, který bolí, jinak práce, která bere sílu, a jinak únava, kterou už nejde přepsat výkonem.</p>
-                </article>
-                <article>
-                    <h3>Mapa má pointu</h3>
-                    <p>Není to sbírka náhodných odstavců. Vede tě od hlavního tématu přes vztahy, práci a milníky napříč celým osobním rokem až ke krokům, které si můžeš vzít do běžného dne.</p>
-                </article>
-                <article>
-                    <h3>Tvůj úsudek zůstává první</h3>
-                    <p>Dobrá mapa nemá rozhodovat za tebe. Má ti dát věty, u kterých se zastavíš, a otázky, které si vezmeš do běžného dne.</p>
-                </article>
+                <p>Osobní mapa neslibuje jistou budoucnost a nerozhoduje za tebe. Je to reflexivní výklad, který pojmenuje vzorce, otázky a praktické kroky. Není to diagnóza, terapie ani finanční rada.</p>
             </div>
         </section>
 
@@ -415,7 +295,7 @@
             <div class="pm-sample__copy">
                 <span class="pm-eyebrow">Ukázka tónu</span>
                 <h2>Podle tónu hned poznáš, jestli je to pro tebe.</h2>
-                <p>„Poznáš to ve chvíli, kdy už potřetí vysvětluješ něco, co druhý člověk mohl pochopit i bez dalšího vysvětlování. Příštích 12 měsíců tě vede k tomu, aby bylo jasnější, kde končí trpělivost a začíná opouštění sebe.“</p>
+                <p>„Poznáš to ve chvíli, kdy už potřetí vysvětluješ něco, co druhý mohl pochopit bez dalšího vysvětlování. Příštích 12 měsíců tě vede k tomu, aby bylo jasnější, kde končí trpělivost a začíná opouštění sebe.“</p>
             </div>
             <div class="pm-sample__image">
                 <img src="img/personal-map/preview-contact-sheet.webp" alt="Přehled více stránek prémiového PDF" width="832" height="1216" loading="lazy">
@@ -431,17 +311,17 @@
                 <div>
                     <span>01</span>
                     <h3>Napíšeš, co teď řešíš</h3>
-                    <p>Nemusíš psát román. Stačí jedna pravdivá věta: „nevím, jestli zůstat“, „práce mě vysává“, „bojím se změny“, nebo prostě to, co se pořád vrací.</p>
+                    <p>Stačí jedna pravdivá věta o tom, co se ti vrací.</p>
                 </div>
                 <div>
                     <span>02</span>
-                    <h3>Přečteš si mapu, ne návod na život</h3>
-                    <p>Dostaneš přehledné PDF členěné na kapitoly. Můžeš ho přečíst najednou, nebo se vracet jen k části, která právě sedí.</p>
+                    <h3>Zaplatíš bezpečně přes Stripe</h3>
+                    <p>Jednorázově 299 Kč. Bez předplatného a ukládání karty na webu.</p>
                 </div>
                 <div>
                     <span>03</span>
                     <h3>PDF přijde do e-mailu</h3>
-                    <p>Obvykle během 10 až 20 minut po platbě. Pokud nedorazí, napiš nám a dohledáme ho.</p>
+                    <p>Obvykle během 10 až 20 minut. Kdyby nedorazilo, objednávku dohledáme.</p>
                 </div>
             </div>
         </section>
@@ -468,17 +348,15 @@
                     <small>jednorázově, bez předplatného</small>
                 </div>
                 <ul>
-                    <li><i data-lucide="check" aria-hidden="true"></i> 20 stran osobního PDF</li>
-                    <li><i data-lucide="check" aria-hidden="true"></i> přesné období od dne nákupu na celých 12 navazujících měsíců</li>
-                    <li><i data-lucide="check" aria-hidden="true"></i> výklad podle znamení, data narození a toho, co teď řešíš</li>
-                    <li><i data-lucide="check" aria-hidden="true"></i> pojmenování hlavního tématu a konkrétní další kroky</li>
-                    <li><i data-lucide="check" aria-hidden="true"></i> doručení e-mailem po zaplacení</li>
-                    <li><i data-lucide="check" aria-hidden="true"></i> žádné opakované strhávání</li>
+                    <li><i data-lucide="check" aria-hidden="true"></i> 20 stran osobního PDF na celých 12 měsíců</li>
+                    <li><i data-lucide="check" aria-hidden="true"></i> podle data narození, znamení a tvé konkrétní otázky</li>
+                    <li><i data-lucide="check" aria-hidden="true"></i> hlavní téma, orientační milníky a praktické kroky</li>
+                    <li><i data-lucide="check" aria-hidden="true"></i> e-mailem obvykle do 20 minut, bez předplatného</li>
                 </ul>
             </div>
 
             <form class="pm-form" id="personalMapForm">
-                <div class="pm-form__error" id="formError" role="alert" hidden></div>
+                <div class="pm-form__error" id="formError" role="alert" tabindex="-1" hidden></div>
 
                 <div class="pm-form__grid">
                     <label>
@@ -487,11 +365,11 @@
                     </label>
                     <label>
                         <span>E-mail</span>
-                        <input type="email" id="email" name="email" autocomplete="email" placeholder="jana@example.cz" maxlength="160" required>
+                        <input type="email" id="email" name="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="jana@example.cz" maxlength="160" required>
                     </label>
                     <label>
                         <span>Datum narození</span>
-                        <input type="date" id="birthDate" name="birthDate" required>
+                        <input type="date" id="birthDate" name="birthDate" autocomplete="bday" required>
                     </label>
                     <label>
                         <span>Znamení</span>
@@ -537,8 +415,8 @@
 
                 <label>
                     <span>Jakou konkrétní situaci nebo otázku řešíš?</span>
-                    <textarea id="focus" name="focus" rows="4" maxlength="500" autocomplete="off" placeholder="Například: vracím se k jednomu vztahu a nevím, jestli v něm zůstávám z lásky, nebo ze strachu…" required></textarea>
-                    <small class="pm-form__hint">Jedna konkrétní věta stačí. Čím přesnější situaci popíšeš, tím lépe na ni mohou navázat kapitoly a praktické kroky.</small>
+                    <textarea id="focus" name="focus" rows="4" maxlength="500" autocomplete="off" aria-describedby="focusHint" placeholder="Například: vracím se k jednomu vztahu a nevím, jestli v něm zůstávám z lásky, nebo ze strachu…" required></textarea>
+                    <small class="pm-form__hint" id="focusHint">Jedna konkrétní věta stačí. Čím přesnější situaci popíšeš, tím lépe na ni mohou navázat kapitoly a praktické kroky.</small>
                 </label>
 
                 <button class="pm-button pm-button--primary pm-form__submit" id="submitBtn" type="submit">
@@ -572,16 +450,12 @@
             </div>
             <div class="pm-faq__items">
                 <details>
-                    <summary>Co tím získám, když si mapu koupím?</summary>
-                    <p>Získáš osobní výklad, který ti pomůže pojmenovat hlavní téma, podívat se na něj s odstupem a převést ho do menších kroků. Cílem není říct ti, co musíš udělat. Cílem je, aby se v tom dalo lépe dýchat a rozhodovat.</p>
-                </details>
-                <details>
                     <summary>Co když nevím, co napsat do otázky?</summary>
-                    <p>Nevadí. Nemusíš mít dokonalou otázku. Stačí napsat, co se vrací, co tě unavuje nebo kde cítíš největší tlak. Čím konkrétnější větu napíšeš, tím přesněji se mapa zaměří.</p>
+                    <p>Nemusíš mít dokonalou otázku. Stačí napsat, co se vrací, co tě unavuje nebo kde cítíš největší tlak.</p>
                 </details>
                 <details>
                     <summary>Co přesně je na těch 20 stranách?</summary>
-                    <p>Obálka, úvodní zrcadlo, hvězdný podpis, tvoje silné stránky, hlavní téma, vztahy, komunikace a hranice, práce a peníze, tělo a energie, vnitřní růst, stín a dar, orientační milníky osobního roku, konkrétní kroky, malý rituál, otázky k zápisu, prostor na poznámky a závěrečné poselství.</p>
+                    <p>Osobní zadání, úvodní zrcadlo, hvězdný podpis, hlavní téma, vztahy, práce, energie, růst, orientační milníky, konkrétní kroky, rituál, otázky k zápisu a závěr.</p>
                 </details>
                 <details>
                     <summary>Co když mapu koupím na konci roku?</summary>
@@ -596,14 +470,6 @@
                     <p>Ne. Osobní mapa je jednorázový PDF výklad. Zaplatíš jednou a dostaneš ho do e-mailu.</p>
                 </details>
                 <details>
-                    <summary>Je výklad opravdu osobní?</summary>
-                    <p>Ano v tom smyslu, že pracuje s konkrétní kombinací jména, data narození, znamení, zvoleného oslovení a tématu, které napíšeš. Když zadáš jen „láska“, bude výklad širší. Když napíšeš, že nevíš, jestli zůstat ve vztahu, kde je klid, ale chybí blízkost, dostane přesnější směr.</p>
-                </details>
-                <details>
-                    <summary>Jak se liší od denního horoskopu?</summary>
-                    <p>Denní horoskop je krátký impuls. Osobní mapa je delší výklad pro celé období: pracuje s tvou otázkou, vrací se k hlavním vzorcům a dává ti konkrétní kapitoly, ke kterým se můžeš později vracet.</p>
-                </details>
-                <details>
                     <summary>Je to vypočítaná natální karta?</summary>
                     <p>Ne. Osobní mapa nepočítá domy, ascendent ani planetární aspekty. Je to reflexivní výklad podle data narození, znamení, zvolené oblasti a konkrétní otázky. Pro výpočet skutečné astrologické mapy použij <a href="natalni-karta.html?source=personal_map_faq">Natální kartu</a>.</p>
                 </details>
@@ -614,10 +480,6 @@
                 <details>
                     <summary>Co když mi výklad nesedne?</summary>
                     <p>Ber ho jako zrcadlo, ne jako rozsudek. U některých vět možná hned víš, o čem jsou. Jiné si sednou až později, až se něco v životě zopakuje. Pokud by byl problém technický nebo by PDF nedorazilo, napiš nám.</p>
-                </details>
-                <details>
-                    <summary>Můžu mapu koupit jako dárek?</summary>
-                    <p>Ano. Vyplň údaje člověka, pro kterého se mapa tvoří, a e-mail, kam má PDF dorazit.</p>
                 </details>
             </div>
         </section>

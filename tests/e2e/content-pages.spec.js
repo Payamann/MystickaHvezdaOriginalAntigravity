@@ -1030,7 +1030,7 @@ test.describe('Osobní mapa', () => {
         await waitForPageReady(page);
 
         const heroCta = page.locator('.pm-hero__actions [data-scroll-target="order"]').first();
-        await expect(heroCta).toContainText('Chci svou mapu na 12 měsíců');
+        await expect(heroCta).toContainText('Chci svou mapu za 299 Kč');
         await expect(heroCta).toHaveAttribute('data-cta-location', 'hero');
 
         await Promise.all([

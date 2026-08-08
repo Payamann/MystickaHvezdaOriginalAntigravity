@@ -252,6 +252,7 @@
     function showError(errorBox, message) {
         errorBox.textContent = message;
         errorBox.hidden = false;
+        errorBox.focus();
     }
 
     function hideError(errorBox) {

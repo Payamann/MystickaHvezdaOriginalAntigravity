@@ -317,7 +317,7 @@ test.describe('Homepage', () => {
         await expect(spotlight).toContainText('Osobní mapa');
         await expect(spotlight).toContainText('299 Kč');
         await expect(spotlight.locator('img[alt*="Osobní mapa"]')).toBeVisible();
-        await expect(spotlight.locator('img[alt*="Osobní mapa"]')).toHaveAttribute('src', /personal-map-evergreen-v2\.webp/);
+        await expect(spotlight.locator('img[alt*="Osobní mapa"]')).toHaveAttribute('src', /personal-map-soft-v3\.webp/);
         await expect(spotlight.locator('a.btn--primary')).toHaveAttribute('href', /osobni-mapa\.html\?source=homepage_spotlight/);
         await expect(spotlight.locator('a.btn--primary')).toHaveAttribute('data-analytics-product', 'osobni_mapa_2026');
         await expect(spotlight.locator('a[href*="rocni-horoskop.html"]')).toHaveCount(0);
