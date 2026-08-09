@@ -211,12 +211,56 @@
         }
 
         @media (max-width: 560px) {
+            .tarot-hero {
+                padding: 4.85rem 1rem 1.55rem;
+            }
+
+            .tarot-hero .section__title {
+                font-size: clamp(2rem, 10vw, 2.45rem);
+                line-height: 1.08;
+                letter-spacing: 0;
+            }
+
+            .tarot-hero .section__text {
+                margin-bottom: 1.1rem;
+                font-size: 0.98rem;
+                line-height: 1.45;
+            }
+
+            .tarot-hero .btn {
+                width: min(100%, 21rem);
+                min-height: 44px;
+                padding: 0.78rem 1rem;
+                font-size: 0.84rem;
+                line-height: 1.18;
+                white-space: normal;
+            }
+
+            .tarot-demo {
+                margin-top: 1.35rem;
+            }
+
+            .card-row {
+                gap: 0.75rem;
+                margin: 1rem 0 0.6rem;
+            }
+
+            .demo-card {
+                width: clamp(76px, 24vw, 92px);
+                height: clamp(124px, 39vw, 150px);
+                font-size: 1.85rem;
+            }
+
             .tarot-intent-grid {
                 grid-template-columns: 1fr;
             }
 
             .tarot-intent-card {
                 min-height: 0;
+            }
+
+            body.page-tarot-free.cookie-banner-active .tarot-hero {
+                padding-bottom: calc(1.55rem + 82px);
             }
         }
 

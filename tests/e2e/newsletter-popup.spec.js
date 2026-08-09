@@ -2,6 +2,15 @@ import { test, expect } from '@playwright/test';
 import { waitForPageReady } from './helpers.js';
 
 test.describe('Newsletter popup', () => {
+    test('neprekryje prvni vysledek po rychlem onboardingu', async ({ page }) => {
+        await page.goto('/horoskopy.html?source=onboarding_complete&sign=lev#lev');
+        await waitForPageReady(page);
+
+        await page.dispatchEvent('body', 'mouseleave', { clientY: 0 });
+        await expect(page.locator('#mh-newsletter-popup')).toHaveCount(0);
+        await expect(page.locator('#mh-popup-overlay')).toHaveCount(0);
+    });
+
     test('po odberu nabidne registraci s predvyplnenym e-mailem a aktivacnim kontextem', async ({ page }) => {
         let subscribePayload = null;
         let horoscopePayload = null;

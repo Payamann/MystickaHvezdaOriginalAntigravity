@@ -3,15 +3,15 @@
 /* Stats Cards Enhancements */
 .profile-return-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+    grid-template-columns: minmax(0, 1.22fr) minmax(300px, 0.78fr);
+    gap: 1.1rem;
+    margin-bottom: 1.35rem;
 }
 
 .daily-guidance-card,
 .activation-checklist-card,
 .ritual-memory-card {
-    padding: 1.5rem !important;
+    padding: 1.25rem !important;
 }
 
 .daily-guidance-card__header,
@@ -30,7 +30,7 @@
     color: var(--color-mystic-gold);
     font-size: 0.72rem;
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0;
     text-transform: uppercase;
 }
 
@@ -76,10 +76,12 @@
     transition: border-color var(--transition-fast), background var(--transition-fast), transform var(--transition-fast);
 }
 
-.daily-guidance-action:hover {
+.daily-guidance-action:hover,
+.daily-guidance-action:focus-visible {
     transform: translateY(-2px);
     border-color: rgba(212, 175, 55, 0.35);
     background: rgba(212, 175, 55, 0.08);
+    outline: none;
 }
 
 .daily-guidance-action--primary {
@@ -1000,6 +1002,16 @@ body.page-profile .profile-guest-card__lead,
 body.page-profile .profile-guest-card__text {
     margin-top: 0.7rem;
     line-height: 1.58;
+}
+
+body.page-profile.cookie-banner-active #profile-dashboard {
+    padding-bottom: 96px;
+}
+
+body.page-profile.cookie-banner-active .profile-return-grid,
+body.page-profile.cookie-banner-active .stats-grid,
+body.page-profile.cookie-banner-active .profile-grid {
+    margin-bottom: 1rem;
 }
 
 @media (max-width: 680px) {

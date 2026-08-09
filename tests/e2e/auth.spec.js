@@ -2316,7 +2316,10 @@ test.describe('Login stránka', () => {
         ]);
         await waitForPageReady(page);
 
-        expect(new URL(page.url()).pathname).toBe('/onboarding.html');
+        const onboardingUrl = new URL(page.url());
+        expect(onboardingUrl.pathname).toBe('/onboarding.html');
+        await expect(page.locator('#step-2')).toHaveClass(/active/);
+        await expect(page.locator('#quick-finish-onboarding-btn')).toBeVisible();
     });
 
     test('nova registrace bez potvrzovaciho emailu projde cely onboarding', async ({ page }) => {
@@ -2358,19 +2361,13 @@ test.describe('Login stránka', () => {
         const onboardingUrl = new URL(page.url());
         expect(onboardingUrl.searchParams.get('source')).toBe('header_register');
         expect(onboardingUrl.searchParams.get('feature')).toBe('account');
-        await expect(page.locator('#step-1 .step-title')).toContainText(/ritu/i);
-
-        await page.locator('#step-1 [data-action="goStep"][data-step="2"]').click();
         await expect(page.locator('#step-2')).toHaveClass(/active/);
+        await expect(page.locator('#step-1')).not.toHaveClass(/active/);
+        await expect(page.locator('#quick-finish-onboarding-btn')).toBeVisible();
+        await expect(page.locator('#quick-finish-onboarding-btn')).toBeDisabled();
         await page.locator('.zodiac-btn[data-sign="lev"]').click();
-        await expect(page.locator('#btn-step2')).toBeEnabled();
-        await page.locator('#btn-step2').click();
-        await expect(page.locator('#step-3')).toHaveClass(/active/);
-
-        const tarotInterest = page.locator('.interest-chip[data-interest="tarot"]');
-        await tarotInterest.click();
-        await expect(tarotInterest).toHaveAttribute('aria-pressed', 'true');
-        await expect(page.locator('#finish-onboarding-btn')).toContainText(/tarot/i);
+        await expect(page.locator('#quick-finish-onboarding-btn')).toBeEnabled();
+        await expect(page.locator('#quick-finish-onboarding-btn')).toContainText('Lva');
 
         const completionResponsePromise = page.waitForResponse((response) => (
             response.url().includes('/api/auth/onboarding/complete') && response.request().method() === 'POST'
@@ -2379,21 +2376,21 @@ test.describe('Login stránka', () => {
         }));
 
         await Promise.all([
-            page.waitForURL(url => url.pathname === '/tarot.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
-            page.locator('#finish-onboarding-btn').click(),
+            page.waitForURL(url => url.pathname === '/horoskopy.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
+            page.locator('#quick-finish-onboarding-btn').click(),
         ]);
 
         const completionResponse = await completionResponsePromise;
         expect(completionResponse.status).toBe(200);
 
         const finalUrl = new URL(page.url());
-        expect(finalUrl.pathname).toBe('/tarot.html');
+        expect(finalUrl.pathname).toBe('/horoskopy.html');
         expect(finalUrl.searchParams.get('source')).toBe('onboarding_complete');
+        expect(finalUrl.searchParams.get('sign')).toBe('lev');
         expect(finalUrl.searchParams.get('entry_source')).toBe('header_register');
         expect(finalUrl.searchParams.get('entry_feature')).toBe('account');
         expect(await page.evaluate(() => localStorage.getItem('mh_onboarded'))).toBe('1');
         expect(await page.evaluate(() => localStorage.getItem('mh_zodiac'))).toBe('lev');
-        expect(await page.evaluate(() => JSON.parse(localStorage.getItem('mh_interests') || '[]'))).toContain('tarot');
     });
 
     test('registrace z headeru zachova kontext v onboardingu', async ({ page }) => {
@@ -2412,7 +2409,8 @@ test.describe('Login stránka', () => {
         expect(url.pathname).toBe('/onboarding.html');
         expect(url.searchParams.get('source')).toBe('header_register');
         expect(url.searchParams.get('feature')).toBe('account');
-        await expect(page.locator('#step-1 .step-title')).toContainText('jedním rituálem');
+        await expect(page.locator('#step-2')).toHaveClass(/active/);
+        await expect(page.locator('#step-2 .step-title')).toContainText('znamení');
     });
 
     // ── Klientská validace ────────────────────────────────────────────────────

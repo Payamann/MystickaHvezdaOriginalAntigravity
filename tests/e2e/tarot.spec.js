@@ -358,6 +358,54 @@ test.describe('Tarot', () => {
         expect(metrics.overlappedVisibleCtas).toEqual([]);
         expect(metrics.ctaBottom).toBeLessThanOrEqual(metrics.cookieTop);
     });
+
+    test('tarot ano/ne na mobilu ukaze otazku a karty nad foldem', async ({ page }) => {
+        await page.setViewportSize(MOBILE_VIEWPORT);
+        await page.goto('/tarot-ano-ne.html?source=e2e_mobile_layout');
+        await waitForPageReady(page);
+
+        await expect(page.locator('#question-input')).toBeVisible();
+        await expect(page.locator('#cards-area .tarot-card').first()).toBeVisible();
+
+        const metrics = await page.evaluate(() => {
+            const input = document.getElementById('question-input')?.getBoundingClientRect();
+            const cards = document.getElementById('cards-area')?.getBoundingClientRect();
+            const firstCard = document.querySelector('#cards-area .tarot-card')?.getBoundingClientRect();
+            return {
+                cardsTop: Math.round(cards?.top || 9999),
+                firstCardWidth: Math.round(firstCard?.width || 0),
+                inputBottom: Math.round(input?.bottom || 9999),
+                overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+                viewportHeight: window.innerHeight
+            };
+        });
+
+        expect(metrics.overflow).toBe(false);
+        expect(metrics.firstCardWidth).toBeGreaterThanOrEqual(60);
+        expect(metrics.inputBottom).toBeLessThan(metrics.viewportHeight);
+        expect(metrics.cardsTop).toBeLessThan(metrics.viewportHeight);
+    });
+
+    test('tarot zdarma na mobilu drzi primarni CTA v prvnim viewportu', async ({ page }) => {
+        await page.setViewportSize(MOBILE_VIEWPORT);
+        await page.goto('/tarot-zdarma.html?source=e2e_mobile_layout');
+        await waitForPageReady(page);
+
+        const primaryCta = page.locator('.tarot-hero .btn--primary').first();
+        await expect(primaryCta).toBeVisible();
+
+        const metrics = await page.evaluate(() => {
+            const cta = document.querySelector('.tarot-hero .btn--primary')?.getBoundingClientRect();
+            return {
+                ctaBottom: Math.round(cta?.bottom || 9999),
+                overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+                viewportHeight: window.innerHeight
+            };
+        });
+
+        expect(metrics.overflow).toBe(false);
+        expect(metrics.ctaBottom).toBeLessThan(metrics.viewportHeight);
+    });
 });
 
 // ── Význam tarotových karet ─────────────────────────────────────────────────

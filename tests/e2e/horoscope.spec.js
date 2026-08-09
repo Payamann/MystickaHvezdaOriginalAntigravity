@@ -408,6 +408,72 @@ test.describe('Horoskopy', () => {
         await expect(page.locator('#detail-name')).toContainText('Beran');
     });
 
+    test('rychly onboarding dovede uzivatele rovnou k potvrzenemu prvnimu horoskopu', async ({ page }) => {
+        await page.addInitScript(() => {
+            const originalFetch = window.fetch.bind(window);
+            window.fetch = async (input, init) => {
+                const url = typeof input === 'string' ? input : input.url;
+                if (url.endsWith('/api/csrf-token')) {
+                    return new Response(JSON.stringify({ csrfToken: 'horoscope-activation-test' }), {
+                        status: 200,
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                }
+                if (url.endsWith('/api/horoscope')) {
+                    return new Response(JSON.stringify({
+                        success: true,
+                        response: {
+                            prediction: 'Dnes se drž jednoho konkrétního kroku.',
+                            affirmation: 'Důvěřuji svému směru.',
+                            luckyNumbers: [3, 7, 12]
+                        }
+                    }), {
+                        status: 200,
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                }
+                return originalFetch(input, init);
+            };
+        });
+
+        await page.goto('/horoskopy.html?source=onboarding_complete&sign=lev&entry_source=header_register&entry_feature=account#lev');
+        await waitForPageReady(page);
+
+        const activation = page.locator('#horoscope-activation-welcome');
+        await expect(activation).toBeVisible();
+        await expect(activation).toHaveAttribute('data-state', 'complete');
+        await expect(page.locator('#horoscope-activation-title')).toContainText('Lev');
+        await expect(page.locator('#horoscope-activation-copy')).toContainText('Zítra');
+        await expect(page.locator('.zodiac-card.active')).toContainText('Lev');
+        await expect(page.locator('#horoscope-detail-section')).toHaveAttribute('data-loaded', 'true');
+        await expect(activation).toBeInViewport();
+
+        const offer = page.locator('#horoscope-activation-offer');
+        await expect(offer).toBeVisible();
+        await expect(offer).toContainText('Jeden horoskop ukáže dnešek');
+        await expect(page.locator('#horoscope-activation-offer-cta')).toContainText('7 dní za 0 Kč');
+        await expect(offer).toContainText('karta');
+        await expect(offer).toContainText('199 Kč měsíčně');
+        await expect(page.locator('#horoscope-natal-cta')).toBeHidden();
+
+        await page.locator('#horoscope-activation-offer-dismiss').click();
+        await expect(offer).toBeHidden();
+        await expect(page.locator('#horoscope-natal-cta')).toBeVisible();
+    });
+
+    test('bezny SEO vstup aktivacni potvrzeni nezobrazi', async ({ page }) => {
+        await expect(page.locator('#horoscope-activation-welcome')).toBeHidden();
+        await expect(page.locator('#horoscope-activation-offer')).toBeHidden();
+        await expect(page.locator('#horoscope-natal-cta')).toBeVisible();
+    });
+
+    test('rocni rozcestnik vede na univerzalni osobni mapu roku', async ({ page }) => {
+        const personalMap = page.locator('[data-analytics-cta="horoscope_hub_personal_map"]');
+        await expect(personalMap).toContainText('Osobní mapa roku');
+        await expect(personalMap).toHaveAttribute('href', /osobni-mapa\.html/);
+        await expect(page.locator('a[href*="rocni-horoskop"]')).toHaveCount(0);
+    });
+
     test('URL parametr znak ze sdílení automaticky otevře konkrétní znamení', async ({ page }) => {
         await page.goto('/horoskopy.html?znak=ryby');
         await waitForPageReady(page);

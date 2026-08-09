@@ -104,7 +104,7 @@
 
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="stylesheet" href="css/site.min.css?v=1">
-    <link rel="stylesheet" href="css/pages/horoskopy.css?v=2">
+    <link rel="stylesheet" href="css/pages/horoskopy.css?v=20260809-activation-offer">
     <link rel="stylesheet" href="css/pages/horoscope-cluster.css">
 
     <link rel="canonical" href="https://www.mystickahvezda.cz/horoskopy.html">
@@ -394,8 +394,8 @@
                     </a>
                     <a href="osobni-mapa.html?source=horoscope_hub&amp;feature=osobni_mapa_2026" class="horoscope-cluster-link-card" data-analytics-cta="horoscope_hub_personal_map" data-analytics-feature="osobni_mapa_2026" data-analytics-product="osobni_mapa_2026" data-analytics-intent="one_time_purchase">
                         <span>12 měsíců</span>
-                        <strong>Osobní mapa</strong>
-                        <em>Jednorázový hluboký PDF výklad jedné otázky od dne nákupu.</em>
+                        <strong>Osobní mapa roku</strong>
+                        <em>Jednorázový osobní PDF výklad na 12 měsíců od data nákupu.</em>
                     </a>
                 </div>
                 <div class="horoscope-cluster-link-grid" data-animate>
@@ -464,6 +464,17 @@
 
                     <div class="horoscope-wrapper">
 
+                        <div class="horoscope-activation-welcome" id="horoscope-activation-welcome"
+                            role="status" aria-live="polite" hidden>
+                            <span class="horoscope-activation-welcome__kicker">Účet je připravený</span>
+                            <strong class="horoscope-activation-welcome__title" id="horoscope-activation-title">
+                                Připravuji první osobní horoskop
+                            </strong>
+                            <p class="horoscope-activation-welcome__copy" id="horoscope-activation-copy">
+                                Nic dalšího nemusíte nastavovat. Výsledek se zobrazí rovnou tady.
+                            </p>
+                        </div>
+
                         <span class="section__badge">Denní horoskop</span>
 
                         <h2 class="section__title mh-inline-f85d85243e">
@@ -521,7 +532,38 @@
 
                             </p>
 
-                            <a href="natalni-karta.html" class="btn btn--primary">Získat kompletní natální kartu</a>
+                            <aside class="horoscope-activation-offer" id="horoscope-activation-offer"
+                                aria-labelledby="horoscope-activation-offer-title" hidden>
+                                <span class="horoscope-activation-offer__kicker">Navázat na dnešní vhled</span>
+                                <h3 class="horoscope-activation-offer__title" id="horoscope-activation-offer-title">
+                                    Jeden horoskop ukáže dnešek. Průvodce drží souvislosti.
+                                </h3>
+                                <p class="horoscope-activation-offer__copy">
+                                    Získejte plné výklady a osobní vedení, ke kterému se můžete každý den vracet.
+                                </p>
+                                <ul class="horoscope-activation-offer__benefits">
+                                    <li>Plné výklady a denní vedení bez čekání</li>
+                                    <li>Historie výkladů a osobní profil na jednom místě</li>
+                                </ul>
+                                <div class="horoscope-activation-offer__actions">
+                                    <a class="btn btn--primary" id="horoscope-activation-offer-cta"
+                                        href="/cenik.html?plan=pruvodce&amp;source=post_activation_horoscope&amp;feature=daily_guidance&amp;entry_source=post_activation_horoscope&amp;entry_feature=daily_guidance"
+                                        data-analytics-source="post_activation_horoscope"
+                                        data-analytics-feature="daily_guidance">
+                                        Vyzkoušet 7 dní za 0 Kč
+                                    </a>
+                                    <button class="horoscope-activation-offer__dismiss" type="button"
+                                        id="horoscope-activation-offer-dismiss">
+                                        Teď ne, pokračovat zdarma
+                                    </button>
+                                </div>
+                                <p class="horoscope-activation-offer__terms">
+                                    K aktivaci je potřeba karta. Dnes 0 Kč; po 7 dnech 199 Kč měsíčně,
+                                    pokud členství před koncem zkušební doby nezrušíte.
+                                </p>
+                            </aside>
+
+                            <a href="natalni-karta.html" class="btn btn--primary" id="horoscope-natal-cta">Získat kompletní natální kartu</a>
 
                         </div>
 
@@ -686,7 +728,7 @@
     <script src="js/dist/landing-pages-copy-fixes.js?v=6" defer></script>
     <script type="module" src="js/dist/moon-phase.js"></script>
     <script src="js/dist/favorites-helper.js" defer></script>
-    <script src="js/dist/horoscope.js?v=2" defer></script>
+    <script src="js/dist/horoscope.js?v=20260809-activation-offer" defer></script>
     <script src="js/dist/horoscope-share.js" defer></script>
 
     <script src="/js/dist/close-banner.js" defer></script>
@@ -703,7 +745,7 @@
 
     <script type="module" src="js/dist/main.js?v=10"></script>
 
-    <script src="js/dist/newsletter-popup.js?v=20260706-sign-step" defer></script>
+    <script src="js/dist/newsletter-popup.js?v=20260809-activation-guard" defer></script>
 
     <script src="js/dist/retention.js?v=6" defer></script>
 

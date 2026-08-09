@@ -288,6 +288,33 @@ test.describe('Profil aktivace', () => {
         await expect(page.locator('[data-activation-step="first_reading"]')).toContainText('horoskopem pro Lev');
     });
 
+    test('mobilni prihlaseny profil ma cookie-safe dashboard bez horizontalniho scrollu', async ({ page }) => {
+        await page.setViewportSize(MOBILE_VIEWPORT);
+        await mockLoggedInProfile(page);
+        await page.addInitScript(() => {
+            localStorage.removeItem('mh_cookie_prefs');
+            localStorage.removeItem('cookieConsent');
+        });
+
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+
+        await expect(page.locator('#profile-dashboard')).toBeVisible();
+        await expect(page.locator('#cookie-banner')).toBeVisible();
+        await page.waitForFunction(() => document.body.classList.contains('cookie-banner-active'));
+
+        const metrics = await page.evaluate(() => {
+            const dashboard = document.getElementById('profile-dashboard');
+            return {
+                overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+                paddingBottom: dashboard ? parseFloat(getComputedStyle(dashboard).paddingBottom || '0') : 0
+            };
+        });
+
+        expect(metrics.overflow).toBe(false);
+        expect(metrics.paddingBottom).toBeGreaterThanOrEqual(90);
+    });
+
     test('prazdny profil navazuje prvni krok na puvodni registracni zamer', async ({ page }) => {
         await mockLoggedInProfile(page);
         await page.addInitScript(() => {

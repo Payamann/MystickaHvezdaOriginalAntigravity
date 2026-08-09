@@ -47,6 +47,9 @@ test.describe('Ceník — platební tlačítka', () => {
     test('existuji 2 hlavni checkout tlacitka s tridou plan-checkout-btn', async ({ page }) => {
         const btns = page.locator('.plan-checkout-btn');
         await expect(btns).toHaveCount(2);
+        await expect(btns.first()).toContainText('Začít 7 dní za 0 Kč');
+        await expect(btns.last()).toContainText('Začít 7 dní za 0 Kč');
+        await expect(page.locator('.pricing-trial-note').first()).toContainText('K aktivaci je potřeba karta');
     });
 
     test('tlačítko Průvodce má data-plan="pruvodce"', async ({ page }) => {
@@ -1284,6 +1287,10 @@ test.describe('Ceník — platební tlačítka', () => {
         await page.locator('#toggle-yearly').click();
         const pruvodcePrice = await page.locator('[data-price-plan="pruvodce"] .price-amount').textContent();
         expect(pruvodcePrice).toContain('1 990');
+        await expect(page.locator('[data-price-plan="pruvodce"]')
+            .locator('xpath=ancestor::*[contains(@class, "card--pricing")]')
+            .locator('.pricing-trial-note'))
+            .toContainText('po 7 dnech 1 990 Kč/rok');
     });
 
     test('přepnutí zpět na měsíční obnoví původní ceny', async ({ page }) => {

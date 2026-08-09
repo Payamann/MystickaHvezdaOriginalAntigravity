@@ -162,7 +162,7 @@ html body .mh-inline-de7ffff2a8 { opacity: 0.8; }
     color: var(--color-mystic-gold);
     font-size: 0.78rem;
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0;
     text-transform: uppercase;
 }
 
@@ -218,7 +218,7 @@ html body .mh-inline-de7ffff2a8 { opacity: 0.8; }
     color: var(--color-mystic-gold);
     font-size: 0.74rem;
     font-weight: 800;
-    letter-spacing: 0.08em;
+    letter-spacing: 0;
     text-transform: uppercase;
 }
 
@@ -490,6 +490,83 @@ html body .mh-inline-de7ffff2a8 { opacity: 0.8; }
 }
 
 @media (max-width: 640px) {
+    body.page-compatibility .hero--compact {
+        padding-top: 5rem;
+        padding-bottom: 1.2rem;
+    }
+
+    body.page-compatibility .hero--compact .section__title {
+        font-size: clamp(2rem, 10vw, 2.55rem);
+        line-height: 1.08;
+        letter-spacing: 0;
+    }
+
+    body.page-compatibility .hero--compact .section__text {
+        font-size: 0.98rem;
+        line-height: 1.46;
+    }
+
+    .synastry-calculator-section {
+        padding-top: 1rem;
+    }
+
+    .synastry-calculator-section > .container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #synastry-form-card {
+        order: 2;
+        margin-bottom: 1.2rem;
+        padding: 1rem;
+    }
+
+    .synastry-trust-strip {
+        order: 1;
+        gap: 0.55rem;
+        margin: 0 0 0.85rem;
+    }
+
+    .synastry-intent-section {
+        order: 3;
+    }
+
+    .person-card {
+        padding: 0.9rem;
+    }
+
+    html body .mh-inline-ae5c51ad88 {
+        gap: 0.85rem;
+    }
+
+    #synastry-form .form-group {
+        margin-bottom: 0.72rem;
+    }
+
+    #synastry-form .email-form__input {
+        min-height: 44px;
+        padding: 0.72rem 0.82rem;
+    }
+
+    .synastry-optional-grid {
+        gap: 0.65rem;
+        margin-top: 0.65rem;
+    }
+
+    .synastry-trust-item {
+        padding: 0.72rem 0.8rem;
+    }
+
+    .synastry-trust-item strong {
+        margin-bottom: 0.2rem;
+        font-size: 0.74rem;
+    }
+
+    .synastry-trust-item span {
+        font-size: 0.86rem;
+        line-height: 1.38;
+    }
+
     .synastry-trust-strip,
     .synastry-intent-grid,
     .synastry-next-grid,
@@ -571,6 +648,10 @@ html body .mh-inline-de7ffff2a8 { opacity: 0.8; }
 
     body.page-compatibility #cookie-accept {
         grid-column: 1 / -1;
+    }
+
+    body.page-compatibility.cookie-banner-active .synastry-calculator-section {
+        padding-bottom: 92px;
     }
 }
 

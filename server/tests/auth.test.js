@@ -321,6 +321,7 @@ describe('🔐 Auth Endpoint Tests', () => {
                     plan: 'pruvodce',
                     redirect: '/cenik.html?source=onboarding_return',
                     destination: '/numerologie.html?source=signup_activation&feature=numerologie_vyklad',
+                    flow: 'quick',
                     skipped: false
                 });
 
@@ -377,6 +378,7 @@ describe('🔐 Auth Endpoint Tests', () => {
                 destination: '/numerologie.html?source=signup_activation&feature=numerologie_vyklad',
                 plan: 'pruvodce',
                 redirect: '/cenik.html?source=onboarding_return',
+                onboarding_flow: 'quick',
                 onboarding_state: 'completed'
             });
         });

@@ -816,6 +816,7 @@ router.post('/onboarding/complete', authenticateToken, async (req, res) => {
             plan = '',
             redirect = '',
             destination = '',
+            flow = '',
             skipped = false
         } = req.body || {};
 
@@ -828,6 +829,7 @@ router.post('/onboarding/complete', authenticateToken, async (req, res) => {
             ? redirect.slice(0, 240)
             : '';
         const safeDestination = typeof destination === 'string' ? destination.slice(0, 240) : '';
+        const safeFlow = flow === 'quick' ? 'quick' : 'guided';
 
         const { data, error } = await supabase
             .from('users')
@@ -870,6 +872,7 @@ router.post('/onboarding/complete', authenticateToken, async (req, res) => {
                 destination: safeDestination || null,
                 plan: safePlan || null,
                 redirect: safeRedirect || null,
+                onboarding_flow: safeFlow,
                 onboarding_state: skipped ? 'skipped' : 'completed'
             }
         });

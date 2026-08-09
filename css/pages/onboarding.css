@@ -475,6 +475,55 @@ html body .onboarding-pending {
     opacity: 0.78;
 }
 
+body.onboarding-quick-flow .progress-bar {
+    display: none;
+}
+
+body.onboarding-quick-flow #step-2 .step-back {
+    display: none;
+}
+
+body.onboarding-quick-flow .onboarding__card {
+    padding-top: 2.25rem;
+}
+
+.onboarding-quick-primary {
+    margin-top: 1rem;
+}
+
+.onboarding-quick-primary:disabled {
+    cursor: not-allowed;
+    filter: saturate(0.55);
+    opacity: 0.42;
+}
+
+.onboarding-topic-option {
+    min-height: 44px;
+    margin-top: 0.45rem;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    color: rgba(255, 255, 255, 0.66);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: none;
+}
+
+.onboarding-topic-option:hover,
+.onboarding-topic-option:focus-visible {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-mystic-gold);
+}
+
+.onboarding-quick-note {
+    max-width: 430px;
+    margin: 0.75rem auto 0;
+    color: rgba(255, 255, 255, 0.58);
+    font-size: 0.78rem;
+    line-height: 1.45;
+    text-align: center;
+}
+
 /* Migrated from onboarding.html remaining static style attributes. */
 html body .mh-inline-7aedee2011 { text-align:center;margin-top:1.5rem;font-size:0.78rem; }
 html body .mh-inline-9611bb8a90 { text-align:center;margin-top:1rem;font-size:0.82rem;color:rgba(212,175,55,0.6); }

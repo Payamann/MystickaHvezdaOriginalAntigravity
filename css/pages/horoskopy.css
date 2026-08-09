@@ -165,3 +165,161 @@ html body .mh-inline-78489344ad { font-size: 12rem; opacity: 0.1; }
         justify-content: center;
     }
 }
+/* Post-signup activation handoff. Hidden for regular SEO visits. */
+.horoscope-activation-welcome {
+    margin-bottom: 1.25rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid rgba(212, 175, 55, 0.34);
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.12), rgba(111, 66, 193, 0.1));
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.18);
+}
+
+.horoscope-activation-welcome[hidden] {
+    display: none;
+}
+
+.horoscope-activation-welcome[data-state="complete"] {
+    border-color: rgba(111, 207, 151, 0.46);
+    background: linear-gradient(135deg, rgba(111, 207, 151, 0.12), rgba(212, 175, 55, 0.08));
+}
+
+.horoscope-activation-welcome__kicker {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: var(--color-mystic-gold);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.horoscope-activation-welcome__title {
+    display: block;
+    color: #fff;
+    font-family: var(--font-heading);
+    font-size: clamp(1rem, 3vw, 1.18rem);
+    line-height: 1.35;
+}
+
+.horoscope-activation-welcome__copy {
+    margin: 0.45rem 0 0;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.86rem;
+    line-height: 1.5;
+}
+
+/* Contextual membership bridge shown only after the first activation result. */
+.horoscope-activation-offer {
+    margin: 1.5rem 0 1.25rem;
+    padding: clamp(1.1rem, 4vw, 1.45rem);
+    border: 1px solid rgba(212, 175, 55, 0.34);
+    border-radius: 16px;
+    background:
+        radial-gradient(circle at 92% 8%, rgba(212, 175, 55, 0.13), transparent 36%),
+        linear-gradient(145deg, rgba(37, 27, 72, 0.92), rgba(15, 13, 35, 0.96));
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22);
+}
+
+.horoscope-activation-offer[hidden],
+#horoscope-natal-cta[hidden] {
+    display: none;
+}
+
+.horoscope-activation-offer__kicker {
+    display: block;
+    margin-bottom: 0.45rem;
+    color: var(--color-mystic-gold);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.horoscope-activation-offer__title {
+    margin: 0;
+    color: #fff;
+    font-family: var(--font-heading);
+    font-size: clamp(1.08rem, 3.6vw, 1.35rem);
+    line-height: 1.35;
+}
+
+.horoscope-activation-offer__copy {
+    margin: 0.65rem 0 0;
+    color: rgba(255, 255, 255, 0.76);
+    font-size: 0.92rem;
+    line-height: 1.55;
+}
+
+.horoscope-activation-offer__benefits {
+    display: grid;
+    gap: 0.55rem;
+    margin: 0.9rem 0 0;
+    padding: 0;
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 0.88rem;
+    line-height: 1.45;
+    list-style: none;
+}
+
+.horoscope-activation-offer__benefits li {
+    position: relative;
+    padding-left: 1.35rem;
+}
+
+.horoscope-activation-offer__benefits li::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: var(--color-mystic-gold);
+    content: '✓';
+    font-weight: 800;
+}
+
+.horoscope-activation-offer__actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.65rem 1rem;
+    margin-top: 1.1rem;
+}
+
+.horoscope-activation-offer__dismiss {
+    min-height: 44px;
+    padding: 0.55rem 0.2rem;
+    border: 0;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.76);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.86rem;
+    text-decoration: underline;
+    text-decoration-color: rgba(255, 255, 255, 0.3);
+    text-underline-offset: 0.2em;
+}
+
+.horoscope-activation-offer__dismiss:hover,
+.horoscope-activation-offer__dismiss:focus-visible {
+    color: #fff;
+    text-decoration-color: var(--color-mystic-gold);
+}
+
+.horoscope-activation-offer__terms {
+    margin: 0.8rem 0 0;
+    color: rgba(255, 255, 255, 0.56);
+    font-size: 0.74rem;
+    line-height: 1.5;
+}
+
+@media (max-width: 560px) {
+    .horoscope-activation-offer__actions,
+    .horoscope-activation-offer__actions .btn {
+        width: 100%;
+    }
+
+    .horoscope-activation-offer__actions .btn,
+    .horoscope-activation-offer__dismiss {
+        justify-content: center;
+        text-align: center;
+    }
+}

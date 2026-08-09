@@ -367,8 +367,8 @@ html body .mh-inline-f0e77c93f3 { display:flex;flex-wrap:wrap;gap:0.5rem;margin:
 /* UI audit refinements for the first mobile viewport. */
 @media (max-width: 768px) {
     body.page-home .section--hero {
-        padding-top: 5.9rem;
-        padding-bottom: 2.25rem;
+        padding-top: 5.65rem;
+        padding-bottom: 1.9rem;
     }
 
     body.page-home .hero__grid {
@@ -440,6 +440,6 @@ html body .mh-inline-f0e77c93f3 { display:flex;flex-wrap:wrap;gap:0.5rem;margin:
 
     body.page-home #hero-cta-btn {
         font-size: 0.74rem;
-        letter-spacing: 0.04em;
+        letter-spacing: 0;
     }
 }

@@ -46,6 +46,35 @@ function startHoroscopeUpgradeFlow(period, reason) {
     window.location.href = buildHoroscopeUpgradeUrl(period);
 }
 
+async function trackHoroscopeFunnelEvent(eventName, source, feature, metadata = {}) {
+    try {
+        const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+        if (!csrfToken) return;
+
+        await fetch(`${window.API_CONFIG?.BASE_URL || '/api'}/payment/funnel-event`, {
+            method: 'POST',
+            credentials: 'include',
+            keepalive: true,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify({
+                eventName,
+                source,
+                feature,
+                planId: 'pruvodce',
+                metadata: {
+                    path: window.location.pathname,
+                    ...metadata
+                }
+            })
+        });
+    } catch (error) {
+        console.warn('[Horoscope funnel] Could not record event:', error.message);
+    }
+}
+
 function getSavedZodiacSign() {
     const hasLoginCookie = document.cookie.split(';').some((cookie) => cookie.trim() === 'logged_in=1');
     if (!hasLoginCookie || !window.Auth?.isLoggedIn?.()) return null;
@@ -187,8 +216,123 @@ function initHoroscope() {
     const zodiacCards = document.querySelectorAll('.zodiac-card');
     const detailSection = document.getElementById('horoscope-detail-section');
     const tabs = document.querySelectorAll('.tab');
+    const pageParams = new URLSearchParams(window.location.search);
+    const entrySource = pageParams.get('source') || '';
+    const requestedActivationSign = window.location.hash.substring(1)
+        || pageParams.get('sign')
+        || pageParams.get('znak')
+        || '';
+    const isSignupActivation = ['onboarding_complete', 'signup_activation'].includes(entrySource);
+    const activationPanel = document.getElementById('horoscope-activation-welcome');
+    const activationTitle = document.getElementById('horoscope-activation-title');
+    const activationCopy = document.getElementById('horoscope-activation-copy');
+    const activationOffer = document.getElementById('horoscope-activation-offer');
+    const activationOfferCta = document.getElementById('horoscope-activation-offer-cta');
+    const activationOfferDismiss = document.getElementById('horoscope-activation-offer-dismiss');
+    const natalCta = document.getElementById('horoscope-natal-cta');
 
     let currentPeriod = 'daily';
+    let activationResultTracked = false;
+    let activationOfferTracked = false;
+    let activationSignName = '';
+
+    const activationOfferDismissedKey = 'mh_horoscope_activation_offer_dismissed_until';
+    const activationOfferCooldownMs = 7 * 24 * 60 * 60 * 1000;
+
+    const isActivationOfferDismissed = () => {
+        try {
+            const dismissedUntil = Number(localStorage.getItem(activationOfferDismissedKey) || 0);
+            return dismissedUntil > Date.now();
+        } catch {
+            return false;
+        }
+    };
+
+    const setActivationOfferDismissed = () => {
+        try {
+            localStorage.setItem(
+                activationOfferDismissedKey,
+                String(Date.now() + activationOfferCooldownMs)
+            );
+        } catch {
+            // The free path still works when storage is unavailable.
+        }
+    };
+
+    const showActivationOffer = (signName) => {
+        if (!activationOffer || isActivationOfferDismissed()) return;
+
+        activationSignName = signName;
+        activationOffer.hidden = false;
+        if (natalCta) natalCta.hidden = true;
+
+        if (!activationOfferTracked) {
+            activationOfferTracked = true;
+            const viewMetadata = {
+                source: 'post_activation_horoscope',
+                feature: 'daily_guidance',
+                plan_id: 'pruvodce',
+                sign: signName,
+                period: currentPeriod,
+                bridge_variant: 'first_value_context'
+            };
+            window.MH_ANALYTICS?.trackEvent?.('paywall_viewed', viewMetadata);
+            trackHoroscopeFunnelEvent(
+                'paywall_viewed',
+                'post_activation_horoscope',
+                'daily_guidance',
+                viewMetadata
+            );
+        }
+    };
+
+    const dismissActivationOffer = () => {
+        setActivationOfferDismissed();
+        if (activationOffer) activationOffer.hidden = true;
+        if (natalCta) natalCta.hidden = false;
+        window.MH_ANALYTICS?.trackEvent?.('paywall_dismissed', {
+            source: 'post_activation_horoscope',
+            feature: 'daily_guidance',
+            plan_id: 'pruvodce',
+            sign: activationSignName || null,
+            bridge_variant: 'first_value_context'
+        });
+    };
+
+    const startActivationOfferCheckout = (event) => {
+        if (!window.Auth?.startPlanCheckout) return;
+
+        event.preventDefault();
+        const metadata = {
+            entry_source: 'post_activation_horoscope',
+            entry_feature: 'daily_guidance',
+            activation_source: entrySource,
+            sign: activationSignName || null,
+            bridge_variant: 'first_value_context'
+        };
+
+        window.MH_ANALYTICS?.trackCTA?.('post_activation_horoscope', {
+            plan_id: 'pruvodce',
+            feature: 'daily_guidance',
+            ...metadata
+        });
+        trackHoroscopeFunnelEvent(
+            'paywall_cta_clicked',
+            'post_activation_horoscope',
+            'daily_guidance',
+            metadata
+        );
+        window.Auth.startPlanCheckout('pruvodce', {
+            source: 'post_activation_horoscope',
+            feature: 'daily_guidance',
+            metadata,
+            redirect: '/cenik.html',
+            authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
+        });
+    };
+
+    activationOfferCta?.addEventListener('click', startActivationOfferCheckout);
+    activationOfferDismiss?.addEventListener('click', dismissActivationOffer);
 
     const detailSymbol = document.getElementById('detail-symbol');
     const detailName = document.getElementById('detail-name');
@@ -230,6 +374,46 @@ function initHoroscope() {
     if (contentContainer) {
         contentContainer.parentNode.insertBefore(loadingState, contentContainer);
     }
+
+    const isActivationCard = (card) => {
+        if (!isSignupActivation) return false;
+        const sign = card?.getAttribute('href')?.replace(/^#/, '') || '';
+        return !requestedActivationSign || sign === requestedActivationSign;
+    };
+
+    const showActivationProgress = (signName) => {
+        if (!activationPanel) return;
+        activationPanel.hidden = false;
+        activationPanel.dataset.state = 'loading';
+        if (activationTitle) activationTitle.textContent = `Připravuji první osobní horoskop — ${signName}`;
+        if (activationCopy) {
+            activationCopy.textContent = 'Účet je hotový. Nic dalšího nenastavujete — výsledek se zobrazí rovnou tady.';
+        }
+    };
+
+    const completeActivationResult = (signName) => {
+        if (!activationPanel) return;
+        activationPanel.hidden = false;
+        activationPanel.dataset.state = 'complete';
+        if (activationTitle) activationTitle.textContent = `Dnešní horoskop je připravený — ${signName}`;
+        if (activationCopy) {
+            activationCopy.textContent = 'Přečtěte si ho níže. Zítra se vaše znamení otevře automaticky, takže ho nemusíte vybírat znovu.';
+        }
+
+        showActivationOffer(signName);
+
+        if (!activationResultTracked) {
+            activationResultTracked = true;
+            window.MH_ANALYTICS?.trackEvent?.('signup_activation_result_viewed', {
+                source: entrySource,
+                feature: 'daily_guidance',
+                sign: signName,
+                period: currentPeriod,
+                entry_source: pageParams.get('entry_source') || null,
+                entry_feature: pageParams.get('entry_feature') || null
+            });
+        }
+    };
 
     const renderInlineUpsell = (period, reason = 'premium') => {
         if (!detailText) return;
@@ -294,6 +478,9 @@ function initHoroscope() {
 
         const signName = card.querySelector('.zodiac-card__name').innerText;
         const signSymbol = card.querySelector('.zodiac-card__symbol').innerText;
+        const activationSelection = isActivationCard(card);
+
+        if (activationSelection) showActivationProgress(signName);
 
         if (detailName) detailName.innerText = signName;
         if (detailSymbol) detailSymbol.innerText = signSymbol;
@@ -443,6 +630,7 @@ function initHoroscope() {
             }
 
             if (detailSection) detailSection.dataset.loaded = 'true';
+            if (activationSelection) completeActivationResult(signName);
 
             const saveKey = `horoscope_saved_${signName}_${currentPeriod}_${new Date().toISOString().split('T')[0]}`;
             if (window.Auth && window.Auth.saveReading && !sessionStorage.getItem(saveKey)) {
@@ -507,9 +695,7 @@ function initHoroscope() {
     });
 
     const autoSelectSign = () => {
-        const hash = window.location.hash.substring(1);
-        const params = new URLSearchParams(window.location.search);
-        const requestedSign = hash || params.get('sign') || params.get('znak');
+        const requestedSign = requestedActivationSign;
 
         if (requestedSign) {
             const card = Array.from(zodiacCards).find((item) => {

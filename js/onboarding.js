@@ -148,13 +148,24 @@ const CONTEXT_COPY_BY_INTEREST = {
 function getOnboardingContext() {
     const params = new URLSearchParams(window.location.search);
     const redirect = getSafeLocalRedirect(params.get('redirect') || '');
+    const feature = params.get('feature') || '';
+    const plan = params.get('plan') || '';
+    const requestedFlow = params.get('flow') || '';
+    const quickByDefault = !plan && (!feature || ['account', 'daily_guidance', 'horoskopy'].includes(feature));
 
     return {
         source: params.get('source') || '',
-        feature: params.get('feature') || '',
-        plan: params.get('plan') || '',
-        redirect
+        feature,
+        plan,
+        redirect,
+        flow: requestedFlow === 'quick' || (requestedFlow !== 'guided' && quickByDefault)
+            ? 'quick'
+            : 'guided'
     };
+}
+
+function isQuickOnboardingFlow() {
+    return getOnboardingContext().flow === 'quick';
 }
 
 function getSafeLocalRedirect(value) {
@@ -362,6 +373,7 @@ function getPrimaryDestination() {
 
 function updateFinishCta() {
     const finishBtn = document.getElementById('finish-onboarding-btn');
+    const quickFinishBtn = document.getElementById('quick-finish-onboarding-btn');
     const finishCopy = document.getElementById('finish-onboarding-copy');
     const destination = getPrimaryDestination();
     const destinationHref = destination.href('onboarding_complete');
@@ -370,6 +382,12 @@ function updateFinishCta() {
 
     if (finishBtn) {
         finishBtn.textContent = resumesCheckout ? 'Pokračovat k vybranému plánu ✨' : `${destination.label()} ✨`;
+    }
+    if (quickFinishBtn) {
+        const quickLabel = selectedSign && getPrimaryInterestKey() === 'horoskopy'
+            ? `Horoskop pro ${SIGN_LABELS[selectedSign]}`
+            : destination.label();
+        quickFinishBtn.textContent = `${quickLabel} ✨`;
     }
     if (finishCopy) {
         finishCopy.textContent = resumesCheckout
@@ -392,10 +410,53 @@ function getPendingDestinationText() {
 
 function setNextButtonEnabled(enabled) {
     const nextBtn = document.getElementById('btn-step2');
-    if (!nextBtn) return;
+    const quickFinishBtn = document.getElementById('quick-finish-onboarding-btn');
+    const quickFlow = isQuickOnboardingFlow();
 
-    nextBtn.disabled = !enabled;
-    nextBtn.classList.toggle('onboarding-next-enabled', enabled);
+    if (nextBtn) {
+        const nextEnabled = quickFlow || enabled;
+        nextBtn.disabled = !nextEnabled;
+        nextBtn.classList.toggle('onboarding-next-enabled', nextEnabled);
+    }
+
+    if (quickFinishBtn) {
+        quickFinishBtn.disabled = !enabled;
+        quickFinishBtn.classList.toggle('onboarding-next-enabled', enabled);
+    }
+}
+
+function activateQuickOnboardingFlow() {
+    if (!isQuickOnboardingFlow()) return;
+
+    const quickFinishBtn = document.getElementById('quick-finish-onboarding-btn');
+    const quickNote = document.getElementById('quick-onboarding-note');
+    const topicButton = document.getElementById('btn-step2');
+    const title = document.querySelector('#step-2 .step-title');
+    const subtitle = document.querySelector('#step-2 .step-subtitle');
+    const stepIcon = document.querySelector('#step-2 .step-icon');
+    const privacyNote = document.querySelector('#step-2 .onboarding-privacy-note');
+
+    document.body.classList.add('onboarding-quick-flow');
+    if (title) title.textContent = 'Vyber své znamení';
+    if (subtitle) subtitle.textContent = 'Jeden výběr a otevřeme dnešní osobní horoskop. Bez dalšího dotazníku.';
+    if (stepIcon) stepIcon.textContent = '✦';
+    if (privacyNote) privacyNote.textContent = 'Znamení uložíme jen pro osobní nastavení. Platební údaje tu nezadáváš.';
+    if (quickFinishBtn) quickFinishBtn.hidden = false;
+    if (quickNote) quickNote.hidden = false;
+    if (topicButton) {
+        topicButton.textContent = 'Nevím znamení nebo chci jiné téma →';
+        topicButton.classList.remove('btn--primary');
+        topicButton.classList.add('onboarding-topic-option');
+    }
+
+    setNextButtonEnabled(Boolean(selectedSign));
+    goStep(2);
+
+    window.MH_ANALYTICS?.trackEvent?.('onboarding_quick_flow_viewed', {
+        entry_source: getOnboardingContext().source || null,
+        entry_feature: getOnboardingContext().feature || null,
+        has_saved_sign: Boolean(selectedSign)
+    });
 }
 
 function applySelectedSign(sign, { persist = false } = {}) {
@@ -616,6 +677,7 @@ async function notifyBackendOnboardingComplete(context = {}) {
                 feature: entryContext.feature || null,
                 plan: entryContext.plan || null,
                 redirect: entryContext.redirect || null,
+                flow: entryContext.flow,
                 destination: context.destination || null,
                 skipped: context.skipped === true
             })
@@ -665,7 +727,8 @@ async function finishOnboarding(action) {
         entry_source: getOnboardingContext().source || null,
         entry_feature: getOnboardingContext().feature || null,
         plan: getOnboardingContext().plan || null,
-        redirect: getOnboardingContext().redirect || null
+        redirect: getOnboardingContext().redirect || null,
+        flow: getOnboardingContext().flow
     });
 
     await notifyBackendOnboardingComplete({ destination: destinationHref, skipped: false });
@@ -685,7 +748,8 @@ async function skipOnboarding(event, action) {
         entry_source: getOnboardingContext().source || null,
         entry_feature: getOnboardingContext().feature || null,
         plan: getOnboardingContext().plan || null,
-        redirect: getOnboardingContext().redirect || null
+        redirect: getOnboardingContext().redirect || null,
+        flow: getOnboardingContext().flow
     });
 
     const destination = getPrimaryDestination().href('onboarding_skip');
@@ -721,4 +785,5 @@ document.addEventListener('DOMContentLoaded', () => {
     restoreSavedSelections();
     renderContextContent();
     updateFinishCta();
+    activateQuickOnboardingFlow();
 });

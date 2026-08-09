@@ -18,7 +18,7 @@
 
     <meta name="theme-color" content="#0a0a1a">
     <link rel="stylesheet" href="css/site.min.css?v=1">
-    <link rel="stylesheet" href="css/pages/onboarding.css?v=4">
+    <link rel="stylesheet" href="css/pages/onboarding.css?v=20260809-quick-activation">
     <script src="js/dist/api-config.js?v=5" defer></script>
     <script src="js/dist/growth-loop-client.js?v=1" defer></script>
     <script src="/js/dist/analytics-init.js" defer></script>
@@ -135,9 +135,18 @@
 
                 </div>
 
+                <button class="btn btn--primary btn-full onboarding-quick-primary" id="quick-finish-onboarding-btn"
+                    data-action="finishOnboarding" aria-describedby="quick-onboarding-note" disabled hidden>
+                    Zobrazit dnešní horoskop ✨
+                </button>
+
                 <button class="btn btn--primary btn-full mh-inline-8fa84d4622" id="btn-step2" data-action="goStep" data-step="3" disabled
 
                    >Pokračovat k výkladu →</button>
+
+                <p class="onboarding-quick-note" id="quick-onboarding-note" hidden>
+                    Po výběru znamení otevřeme dnešní osobní horoskop. Další nastavení můžeš doplnit kdykoliv později.
+                </p>
 
             </div>
 
@@ -209,7 +218,7 @@
 
 
     <script src="js/dist/analytics.js?v=6" defer></script>
-    <script src="js/dist/onboarding.js?v=5" defer></script>
+    <script src="js/dist/onboarding.js?v=20260809-quick-activation-3" defer></script>
 
 </body>
 

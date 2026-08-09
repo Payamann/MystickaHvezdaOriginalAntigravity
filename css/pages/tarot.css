@@ -306,7 +306,7 @@ html body .mh-inline-4665ff48a5 { font-size: 4rem; }
     }
 
     body.page-tarot.cookie-banner-active .t-spread-card + .t-spread-card {
-        margin-top: 12.5rem;
+        margin-top: 0;
     }
 
     body.page-tarot .t-spread-icon {
@@ -427,7 +427,7 @@ body.page-tarot .tarot-intent-card {
     }
 
     body.page-tarot.cookie-banner-active .t-spread-card + .t-spread-card {
-        margin-top: 20rem;
+        margin-top: 0;
     }
 
     body.page-tarot .spread-trigger {
@@ -449,5 +449,38 @@ body.page-tarot .tarot-intent-card {
         bottom: 8px;
         width: auto;
         max-width: none !important;
+    }
+}
+
+@media (max-width: 560px) {
+    body.page-tarot .mh-inline-92c056aeba {
+        padding-top: 5.1rem;
+        padding-bottom: 1.35rem;
+    }
+
+    body.page-tarot .t-spread-grid {
+        gap: 0.7rem;
+        margin-top: 0.7rem !important;
+    }
+
+    body.page-tarot .t-spread-card {
+        padding: 0.82rem 0.75rem 0.9rem;
+    }
+
+    body.page-tarot .t-spread-title,
+    body.page-tarot .t-spread-price {
+        letter-spacing: 0;
+    }
+
+    body.page-tarot .t-spread-desc {
+        margin-bottom: 0.5rem;
+    }
+
+    body.page-tarot.cookie-banner-active .mh-inline-92c056aeba {
+        padding-bottom: calc(1.35rem + 78px);
+    }
+
+    body.page-tarot.cookie-banner-active .t-spread-card + .t-spread-card {
+        margin-top: 5.25rem;
     }
 }

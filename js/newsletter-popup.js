@@ -11,12 +11,15 @@
     const EXIT_INTENT_STORAGE_KEY = 'mh_exit_shown';
     const DISMISS_DAYS = 7;
     const SKIP_PATHS = ['/prihlaseni', '/onboarding', '/profil'];
+    const SKIP_SOURCES = new Set(['onboarding_complete', 'signup_activation']);
     let triggered = false;
 
     function shouldShow() {
         if (SKIP_PATHS.some((path) => window.location.pathname.includes(path))) return false;
         // Neotvírat druhý overlay přes cookie banner; exit-intent to zkusí znovu později
         if (document.body && document.body.classList.contains('cookie-banner-active')) return false;
+        const entrySource = new URLSearchParams(window.location.search).get('source');
+        if (SKIP_SOURCES.has(entrySource)) return false;
         if (sessionStorage.getItem(EXIT_INTENT_STORAGE_KEY)) return false;
         if (sessionStorage.getItem(SESSION_KEY)) return false;
         if (document.getElementById('exit-intent-modal')) return false;

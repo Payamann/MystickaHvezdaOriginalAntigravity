@@ -314,7 +314,7 @@ function updatePricingCopy() {
     }
 
     if (heroTrustBadge) {
-        heroTrustBadge.innerHTML = '<span>Účet zdarma bez karty</span><span>|</span><span>7 dní Průvodce zdarma</span><span>|</span><span>Zrušíš kdykoliv</span>';
+        heroTrustBadge.innerHTML = '<span>Účet zdarma bez karty</span><span>|</span><span>7denní trial s kartou</span><span>|</span><span>Zrušíš kdykoliv</span>';
     }
 
     const freeCard = pricingCards[0];
@@ -344,7 +344,7 @@ function updatePricingCopy() {
         setFeatureText(guideFeatures[1], 'Plný rozbor natální karty, numerologie a vztahů');
         setFeatureText(guideFeatures[2], 'Historie výkladů a osobní profil pro pravidelný návrat');
         setFeatureText(guideFeatures[3], 'Hodnota roste hlavně při opakovaném návratu a uložené historii');
-        if (guideCta) guideCta.textContent = 'Vyzkoušet 7 dní zdarma';
+        if (guideCta) guideCta.textContent = 'Začít 7 dní za 0 Kč';
     }
 
     if (premiumReasonsTitle) {
@@ -384,8 +384,14 @@ function setPrices(billing = currentBilling) {
 
         const card = element.closest('.card--pricing');
         const checkoutButton = card?.querySelector('.plan-checkout-btn');
+        const trialNote = card?.querySelector('.pricing-trial-note');
         if (checkoutButton) {
             checkoutButton.dataset.plan = planConfig.planId;
+            checkoutButton.textContent = 'Začít 7 dní za 0 Kč';
+        }
+        if (trialNote) {
+            const renewalPeriod = billing === 'yearly' ? 'rok' : 'měsíc';
+            trialNote.textContent = `K aktivaci je potřeba karta. Dnes 0 Kč; po 7 dnech ${planConfig.amount}/${renewalPeriod}, pokud předtím nezrušíte.`;
         }
     });
 
