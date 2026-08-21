@@ -113,14 +113,14 @@ describe('weekly newsletter digest', () => {
     });
 
     test('run() enqueues once per subscriber per ISO week (dedupe on second run)', async () => {
-        const email = `weekly-digest-${Date.now()}@example.com`;
+        const email = `weekly-digest-${Date.now()}@mystickahvezda.cz`;
         await supabase.from('newsletter_subscribers').insert({
             email,
             is_active: true,
             created_at: new Date().toISOString()
         });
         await supabase.from('newsletter_subscribers').insert({
-            email: `inactive-${Date.now()}@example.com`,
+            email: `inactive-${Date.now()}@mystickahvezda.cz`,
             is_active: false,
             created_at: new Date().toISOString()
         });

@@ -30,13 +30,22 @@ const MONTHLY_REVENUE_BY_PLAN_TYPE = Object.freeze({
     [PLAN_TYPES.VIP]: 999
 });
 
-const FUNNEL_FAILURE_EVENTS = new Set([
+const FUNNEL_CHECKOUT_FAILURE_EVENTS = new Set([
     'checkout_validation_failed',
     'checkout_session_failed',
     'one_time_form_validation_failed',
     'one_time_checkout_failed',
     'stripe_webhook_failed',
+]);
+
+const FUNNEL_BILLING_FAILURE_EVENTS = new Set([
     'subscription_payment_failed',
+    'subscription_payment_action_required',
+]);
+
+const FUNNEL_FAILURE_EVENTS = new Set([
+    ...FUNNEL_CHECKOUT_FAILURE_EVENTS,
+    ...FUNNEL_BILLING_FAILURE_EVENTS,
 ]);
 
 const FUNNEL_REFUND_EVENTS = new Set([
@@ -153,6 +162,8 @@ function createDailyBucket(date) {
         oneTimeCompleted: 0,
         oneTimePdfDelivered: 0,
         oneTimeLifecycleScheduled: 0,
+        checkoutFailures: 0,
+        billingFailures: 0,
         failures: 0,
         refunds: 0
     };
@@ -270,6 +281,8 @@ function createSourceFeatureSegment(source, feature) {
         purchaseCompleted: 0,
         oneTimePdfDelivered: 0,
         oneTimeLifecycleScheduled: 0,
+        checkoutFailures: 0,
+        billingFailures: 0,
         failures: 0,
         readingSaveRate: 0,
         paywallToPricingIntentRate: 0,
@@ -310,6 +323,8 @@ function addFunnelConversionCounts(segment, eventName) {
     if (eventName === 'subscription_checkout_completed' || eventName === 'one_time_purchase_completed') segment.purchaseCompleted += 1;
     if (eventName === 'one_time_pdf_delivered') segment.oneTimePdfDelivered += 1;
     if (eventName === 'one_time_lifecycle_sequence_scheduled') segment.oneTimeLifecycleScheduled += 1;
+    if (FUNNEL_CHECKOUT_FAILURE_EVENTS.has(eventName)) segment.checkoutFailures += 1;
+    if (FUNNEL_BILLING_FAILURE_EVENTS.has(eventName)) segment.billingFailures += 1;
     if (FUNNEL_FAILURE_EVENTS.has(eventName)) segment.failures += 1;
 }
 
@@ -638,6 +653,8 @@ function businessPeriodSummary(analyticsReport = {}, funnelReport = {}) {
         oneTimeCompleted,
         oneTimePdfDelivered,
         oneTimeLifecycleScheduled,
+        checkoutFailures: metrics.checkoutFailures ?? metrics.failures ?? 0,
+        billingFailures: metrics.billingFailures || 0,
         failures: metrics.failures || 0,
         refunds: metrics.refunds || 0,
         cancelRequests: metrics.cancelRequests || 0,
@@ -667,7 +684,7 @@ function estimateMrrCzk(activeSubscriptions = []) {
 function buildBusinessSignals(summary, userStats, analyticsReport = {}) {
     const errorCount = (analyticsReport.summary?.clientErrors || 0) + (analyticsReport.summary?.serverErrors || 0);
     const errorRate = rate(errorCount, analyticsReport.total || 0);
-    const failureRate = rate(summary.failures, summary.checkoutStarted);
+    const failureRate = rate(summary.checkoutFailures, summary.checkoutStarted);
 
     const signals = [
         createBusinessSignal(
@@ -702,8 +719,8 @@ function buildBusinessSignals(summary, userStats, analyticsReport = {}) {
             'Spolehlivost',
             statusFromThreshold(Math.max(errorRate, failureRate), { ok: 1, warning: 5, lowerIsBetter: true }),
             `${Math.max(errorRate, failureRate)} % rizikových eventů`,
-            'Kombinuje client/server chyby a selhání checkoutu. V růstu musí být nízko.',
-            Math.max(errorRate, failureRate) > 5 ? 'Nejdřív odstranit chyby a platební selhání.' : 'Technicky není vidět blokující obchodní riziko.'
+            'Kombinuje client/server chyby a selhání checkoutu. Recurring billing chyby sleduje odděleně.',
+            Math.max(errorRate, failureRate) > 5 ? 'Nejdřív odstranit chyby a selhání checkoutu.' : 'Technicky není vidět blokující obchodní riziko.'
         ),
         createBusinessSignal(
             'Předplatné',
@@ -860,7 +877,7 @@ function calculateBusinessScore(summary, userStats, analyticsReport = {}) {
     let score = 100;
     const errorCount = (analyticsReport.summary?.clientErrors || 0) + (analyticsReport.summary?.serverErrors || 0);
     const errorRate = rate(errorCount, analyticsReport.total || 0);
-    const failureRate = rate(summary.failures, summary.checkoutStarted);
+    const failureRate = rate(summary.checkoutFailures, summary.checkoutStarted);
 
     if (summary.visitors < 100) score -= 18;
     else if (summary.visitors < 500) score -= 8;
@@ -986,6 +1003,8 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
             if (eventName === 'one_time_purchase_completed') byDay[date].oneTimeCompleted += 1;
             if (eventName === 'one_time_pdf_delivered') byDay[date].oneTimePdfDelivered += 1;
             if (eventName === 'one_time_lifecycle_sequence_scheduled') byDay[date].oneTimeLifecycleScheduled += 1;
+            if (FUNNEL_CHECKOUT_FAILURE_EVENTS.has(eventName)) byDay[date].checkoutFailures += 1;
+            if (FUNNEL_BILLING_FAILURE_EVENTS.has(eventName)) byDay[date].billingFailures += 1;
             if (FUNNEL_FAILURE_EVENTS.has(eventName)) byDay[date].failures += 1;
             if (FUNNEL_REFUND_EVENTS.has(eventName)) byDay[date].refunds += 1;
         }
@@ -1011,6 +1030,8 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
     const oneTimePdfDelivered = byEvent.one_time_pdf_delivered || 0;
     const oneTimeLifecycleScheduled = byEvent.one_time_lifecycle_sequence_scheduled || 0;
     const invoicePaid = byEvent.subscription_invoice_paid || 0;
+    const checkoutFailures = [...FUNNEL_CHECKOUT_FAILURE_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
+    const billingFailures = [...FUNNEL_BILLING_FAILURE_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
     const failures = [...FUNNEL_FAILURE_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
     const refunds = [...FUNNEL_REFUND_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
     const cancelRequests = byEvent.subscription_cancel_requested || 0;
@@ -1089,6 +1110,8 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
             oneTimePdfDelivered,
             oneTimeLifecycleScheduled,
             invoicePaid,
+            checkoutFailures,
+            billingFailures,
             failures,
             refunds,
             cancelRequests,
@@ -1415,7 +1438,44 @@ function getAnalyticsAttributionKey(source, campaign, medium, entryFeature) {
     return `${source}\u0000${campaign}\u0000${medium}\u0000${entryFeature}`;
 }
 
-function addAnalyticsAttributionEvent(segments, event) {
+function analyticsPurchaseKey(event, metadata) {
+    const transactionId = normalizeDimension(metadata.transaction_id || metadata.transactionId);
+    if (transactionId) return `transaction:${transactionId}`;
+
+    const visitorId = analyticsVisitorFromEvent(event) || 'anonymous';
+    const productId = normalizeDimension(metadata.product_id || metadata.productId) || 'unknown';
+    const currency = normalizeDimension(metadata.currency) || 'unknown';
+    const value = Number.isFinite(Number(metadata.value)) ? Number(metadata.value) : 'unknown';
+    const createdAt = Date.parse(event?.created_at || '');
+
+    if (Number.isFinite(createdAt)) {
+        const minuteBucket = Math.floor(createdAt / 60000);
+        return `legacy:${visitorId}:${productId}:${currency}:${value}:${minuteBucket}`;
+    }
+
+    return `event:${normalizeDimension(event?.id) || `${visitorId}:${productId}:${currency}:${value}`}`;
+}
+
+function shouldCountAnalyticsPurchase(event, metadata, purchaseStates) {
+    const eventType = normalizeDimension(event.event_type) || 'purchase';
+    const purchaseKey = analyticsPurchaseKey(event, metadata);
+    const state = purchaseStates.get(purchaseKey) || {
+        purchase: 0,
+        purchase_completed: 0,
+        counted: 0
+    };
+
+    state[eventType] += 1;
+    const desiredCount = purchaseKey.startsWith('transaction:')
+        ? 1
+        : Math.max(state.purchase, state.purchase_completed);
+    const shouldCount = desiredCount > state.counted;
+    state.counted = desiredCount;
+    purchaseStates.set(purchaseKey, state);
+    return shouldCount;
+}
+
+function addAnalyticsAttributionEvent(segments, event, purchaseStates) {
     const eventType = normalizeDimension(event.event_type) || 'unknown';
     const metadata = analyticsMetadataFromEvent(event);
     const source = analyticsAttributionValue(metadata, ['first_source', 'last_source', 'referrer_host'], '(direct)');
@@ -1438,15 +1498,20 @@ function addAnalyticsAttributionEvent(segments, event) {
     if (eventType === 'cta_clicked') segment.ctaClicks += 1;
     if (eventType === 'signup_completed') segment.signups += 1;
     if (eventType === 'begin_checkout') segment.checkouts += 1;
-    if (eventType === 'purchase' || eventType === 'purchase_completed') segment.purchases += 1;
+    if (eventType === 'purchase' || eventType === 'purchase_completed') {
+        if (shouldCountAnalyticsPurchase(event, metadata, purchaseStates)) {
+            segment.purchases += 1;
+        }
+    }
     if (eventType === 'client_error' || eventType === 'server_error' || eventType === 'error') segment.errors += 1;
 }
 
 function buildAnalyticsAttributionSegments(events, limit = 12) {
     const segments = new Map();
+    const purchaseStates = new Map();
 
     for (const event of events) {
-        addAnalyticsAttributionEvent(segments, event);
+        addAnalyticsAttributionEvent(segments, event, purchaseStates);
     }
 
     return [...segments.values()]

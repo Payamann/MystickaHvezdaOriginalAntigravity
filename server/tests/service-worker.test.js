@@ -96,8 +96,11 @@ describe('Service worker cache manifest', () => {
             '/fonts/inter-latin.woff2',
             '/js/dist/cenik.js',
             '/js/dist/rocni-horoskop.js',
+            '/js/dist/analytics-init.js',
             '/js/dist/analytics.js',
-            '/js/dist/retention.js'
+            '/js/dist/retention.js',
+            '/js/dist/prihlaseni.js',
+            '/js/dist/profile/dashboard.js'
         ]));
         expect(assets).not.toEqual(expect.arrayContaining([
             '/cenik.html',
@@ -111,5 +114,14 @@ describe('Service worker cache manifest', () => {
         const assets = readStaticAssets();
 
         expect(readCacheName()).toBe(buildExpectedCacheName(assets));
+    });
+
+    test('deployment refresh bypasses immutable HTTP cache and accepts legacy query versions', () => {
+        const swSource = fs.readFileSync(path.join(ROOT_DIR, 'service-worker.js'), 'utf8');
+
+        expect(swSource).toContain("new Request(new URL(asset, self.location.origin), { cache: 'reload' })");
+        expect(swSource).toContain("{ cache: 'no-cache' }");
+        expect(swSource).toContain('getPrecachedAssetKey(request)');
+        expect(swSource).toContain('matchCachedRequest(event.request)');
     });
 });

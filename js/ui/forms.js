@@ -237,10 +237,16 @@ export function initFormUX() {
             field.addEventListener('input', () => {
                 field.setCustomValidity('');
                 clearFieldError(field);
-                if (form.checkValidity()) clearFormSummary(form);
+                // Reading `validity`/`:valid` is side-effect free. Calling
+                // checkValidity() here dispatches `invalid` for every other
+                // incomplete field while the user is still typing. Besides
+                // showing errors too early, the injected messages can move a
+                // checkbox between pointerdown and pointerup on mobile and make
+                // the tap miss its target.
+                if (form.matches(':valid')) clearFormSummary(form);
             });
             field.addEventListener('change', () => {
-                if (field.checkValidity()) clearFieldError(field);
+                if (field.validity.valid) clearFieldError(field);
             });
         });
     });

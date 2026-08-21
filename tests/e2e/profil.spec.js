@@ -472,6 +472,89 @@ test.describe('Profil aktivace', () => {
         ]);
     });
 
+    test('selhana platba nabidne primarni aktualizaci karty ve Stripe portalu', async ({ page }) => {
+        await mockLoggedInProfile(page, {
+            user: { subscription_status: 'premium_monthly' },
+            subscription: {
+                planType: 'premium_monthly',
+                status: 'past_due',
+                canCancel: false,
+                canResume: false,
+                needsPaymentUpdate: true
+            }
+        });
+
+        let portalPayload = null;
+        await page.route('**/api/payment/portal', async (route) => {
+            portalPayload = route.request().postDataJSON();
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    url: `${BASE_URL}/profil.html?portal=payment_method_update`,
+                    flow: 'payment_method_update'
+                })
+            });
+        });
+
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+        await page.locator('#tab-btn-settings').click();
+
+        const subscription = page.locator('#subscription-details');
+        await expect(subscription).toContainText('Členství čeká na opravu platby');
+        await expect(page.locator('#sub-payment-update-btn')).toBeVisible();
+        await expect(page.locator('#sub-cancel-btn')).toHaveCount(0);
+
+        await Promise.all([
+            page.waitForURL(url => url.searchParams.get('portal') === 'payment_method_update'),
+            page.locator('#sub-payment-update-btn').click()
+        ]);
+
+        expect(portalPayload).toEqual({ flow: 'payment_method_update' });
+    });
+
+    test('pozastavene predplatne lze obnovit primo z profilu', async ({ page }) => {
+        await mockLoggedInProfile(page, {
+            user: { subscription_status: 'premium_monthly' },
+            subscription: {
+                planType: 'premium_monthly',
+                status: 'paused',
+                pauseUntil: '2026-09-13T10:00:00.000Z',
+                canCancel: false,
+                canResume: true,
+                needsPaymentUpdate: false
+            }
+        });
+
+        await page.route('**/api/payment/subscription/resume', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true, status: 'active' })
+            });
+        });
+
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+        await page.locator('#tab-btn-settings').click();
+
+        const subscription = page.locator('#subscription-details');
+        await expect(subscription).toContainText('Předplatné je pozastavené');
+        await expect(subscription).toContainText('13. září 2026');
+        await expect(page.locator('#sub-resume-btn')).toBeVisible();
+        await expect(page.locator('#sub-cancel-btn')).toHaveCount(0);
+
+        const [resumeRequest] = await Promise.all([
+            page.waitForRequest(request =>
+                request.url().includes('/api/payment/subscription/resume') && request.method() === 'POST'
+            ),
+            page.locator('#sub-resume-btn').click()
+        ]);
+
+        expect(resumeRequest.postDataJSON()).toEqual({});
+    });
+
     test('prazdny profil drzi symbolicky zamer minuleho zivota', async ({ page }) => {
         await mockLoggedInProfile(page);
         await page.addInitScript(() => {

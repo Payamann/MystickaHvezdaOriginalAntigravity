@@ -33,7 +33,7 @@ function createMockSupabaseClient() {
         ).toString(16).padStart(8, '0');
     }
 
-    function makeUser(email, metadata = {}) {
+    function makeUser(email, metadata = {}, password = null) {
         const normalizedEmail = String(email).toLowerCase();
         const emailPrefix = Buffer.from(normalizedEmail).toString('hex').slice(0, 24);
         const id = `test-user-${emailPrefix}-${stableEmailHash(normalizedEmail)}`;
@@ -43,6 +43,11 @@ function createMockSupabaseClient() {
             user_metadata: metadata,
             created_at: now()
         };
+        Object.defineProperty(user, '__mockPassword', {
+            value: password,
+            writable: true,
+            enumerable: false,
+        });
         users.set(id, user);
         return user;
     }
@@ -266,15 +271,22 @@ function createMockSupabaseClient() {
             return Promise.resolve({ data: null, error: null });
         },
         auth: {
-            async signUp({ email, options = {} }) {
-                const user = makeUser(email, options.data || {});
+            async signUp({ email, password, options = {} }) {
+                const existing = [...users.values()].find(user => user.email.toLowerCase() === String(email).toLowerCase());
+                if (existing) {
+                    return { data: { user: null, session: null }, error: { message: 'User already registered', code: 'email_exists', status: 422 } };
+                }
+                const user = makeUser(email, options.data || {}, password);
                 return { data: { user, session: null }, error: null };
             },
             async signInWithPassword({ email, password }) {
                 if (!email || !password || password === 'wrong-password') {
                     return { data: null, error: { message: 'Invalid login credentials', status: 400 } };
                 }
-                const user = [...users.values()].find(existing => existing.email === email) || makeUser(email);
+                const user = [...users.values()].find(existing => existing.email.toLowerCase() === String(email).toLowerCase()) || makeUser(email, {}, password);
+                if (user.__mockPassword && user.__mockPassword !== password) {
+                    return { data: null, error: { message: 'Invalid login credentials', status: 400 } };
+                }
                 return { data: { user, session: { access_token: 'mock-access-token' } }, error: null };
             },
             async resetPasswordForEmail() {
@@ -284,8 +296,12 @@ function createMockSupabaseClient() {
                 return { data: { user: { id: 'test-user', ...payload } }, error: null };
             },
             admin: {
-                async createUser({ email, user_metadata = {}, email_confirm = false }) {
-                    const user = makeUser(email, user_metadata);
+                async createUser({ email, password, user_metadata = {}, email_confirm = false }) {
+                    const existing = [...users.values()].find(user => user.email.toLowerCase() === String(email).toLowerCase());
+                    if (existing) {
+                        return { data: { user: null }, error: { message: 'User already registered', code: 'email_exists', status: 422 } };
+                    }
+                    const user = makeUser(email, user_metadata, password);
                     if (email_confirm) {
                         const confirmedAt = now();
                         user.email_confirmed_at = confirmedAt;

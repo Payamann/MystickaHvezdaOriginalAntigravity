@@ -20,7 +20,8 @@ const {
     EMAIL_TEMPLATES,
     sendPersonalMapLifecycleSequence,
     sendAnnualHoroscopeLifecycleSequence,
-    sendActivationLifecycleSequence
+    sendActivationLifecycleSequence,
+    sendPaymentRecoverySequence
 } = await import('../email-service.js');
 const { supabase } = await import('../db-supabase.js');
 
@@ -77,6 +78,25 @@ describe('Email service deliverability payload', () => {
         expect(payload.html).toContain('Test funkce');
         expect(payload.text).toContain('Test funkce');
         expect(payload.text).not.toMatch(/<[^>]+>/);
+    });
+
+    test('passes idempotencyKey as the second Resend SDK argument', async () => {
+        await sendEmail({
+            to: 'recipient@example.com',
+            template: 'feature_weekly',
+            data: {
+                feature_title: 'Idempotentní odeslání',
+                feature_description: 'Stejný queue řádek se nesmí doručit dvakrát.',
+                benefits: []
+            }
+        }, {
+            idempotencyKey: 'mhq_dedupe_123456'
+        });
+
+        expect(sendMock).toHaveBeenCalledTimes(1);
+        expect(sendMock.mock.calls[0][1]).toEqual({
+            idempotencyKey: 'mhq_dedupe_123456'
+        });
     });
 
     test('keeps real unsubscribe header for daily horoscope emails', async () => {
@@ -514,5 +534,38 @@ describe('Email service deliverability payload', () => {
     test('converts html links into readable plain text', () => {
         expect(htmlToPlainText('<p>Ahoj <strong>světe</strong></p><a href="https://example.com">Otevřít &rarr;</a>'))
             .toBe('Ahoj světe\nOtevřít → (https://example.com)');
+    });
+});
+
+describe('payment recovery scheduling', () => {
+    test('deduplicates all four invoice recovery stages', async () => {
+        const userId = `payment-recovery-${Date.now()}`;
+        const email = `${userId}@example.com`;
+        await supabase.from('users').insert({ id: userId, email, is_premium: false });
+        await supabase.from('subscriptions').upsert({
+            user_id: userId,
+            plan_type: 'premium_monthly',
+            status: 'past_due'
+        }, { onConflict: 'user_id' });
+
+        const input = {
+            userId,
+            email,
+            invoiceId: `in_${Date.now()}`,
+            delays: { day0: 3600, day3: 7200, day7: 10800, day10: 14400 }
+        };
+        await expect(sendPaymentRecoverySequence(input)).resolves.toMatchObject({ scheduled: 4, skipped: 0 });
+        await expect(sendPaymentRecoverySequence(input)).resolves.toMatchObject({ scheduled: 0, skipped: 4 });
+
+        const { data: queued } = await supabase
+            .from('email_queue')
+            .select('template, data')
+            .eq('email_to', email)
+            .eq('template', 'payment_recovery');
+
+        expect(queued).toHaveLength(4);
+        expect(queued.every(record => (
+            record.data.requiredSubscriptionStatuses.join(',') === 'past_due,unpaid,incomplete'
+        ))).toBe(true);
     });
 });

@@ -2,6 +2,7 @@ import express from 'express';
 import { callClaude } from '../services/claude.js';
 import { generalAICache } from '../services/cache.js';
 import { SYSTEM_PROMPTS } from '../config/prompts.js';
+import { aiLimiter, optionalPremiumCheck } from '../middleware.js';
 
 const router = express.Router();
 
@@ -19,7 +20,7 @@ function buildFallbackBriefing({ zodiacSign, name, tarotCard }) {
  * POST /api/briefing
  * Synthesizes Zodiac, Numerology, and Tarot data into a personal daily guidance.
  */
-router.post('/briefing', async (req, res) => {
+router.post('/briefing', optionalPremiumCheck, aiLimiter, async (req, res) => {
     try {
         const { zodiacSign, name, tarotCard, birthDate } = req.body;
 

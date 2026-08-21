@@ -183,6 +183,13 @@
                 </div>
             </div>
 
+            <div id="gdpr-consent-wrapper" class="auth-modal__field" hidden>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="gdpr-consent" name="gdpr_consent">
+                    <span>Souhlas\xEDm se <a href="/ochrana-soukromi.html" target="_blank" rel="noopener">zpracov\xE1n\xEDm osobn\xEDch \xFAdaj\u016F</a> a <a href="/podminky.html" target="_blank" rel="noopener">obchodn\xEDmi podm\xEDnkami</a>.</span>
+                </label>
+            </div>
+
             <button type="submit" id="auth-submit" class="btn btn--primary auth-modal__submit">P\u0159ihl\xE1sit se</button>
             <p class="auth-modal__toggle-wrap">
                 <a href="#" id="auth-mode-toggle" class="auth-modal__mode-toggle">Nem\xE1te \xFA\u010Det? Zaregistrujte se</a>

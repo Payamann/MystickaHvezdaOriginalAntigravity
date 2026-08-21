@@ -361,6 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkoutContextLabel = document.getElementById('checkout-context-label');
     const checkoutContextTitle = document.getElementById('checkout-context-title');
     const checkoutContextCopy = document.getElementById('checkout-context-copy');
+    const checkoutExistingAccount = document.getElementById('checkout-existing-account');
     const urlParams = new URLSearchParams(window.location.search);
 
     // Auth.startPlanCheckout() always appends `plan=` when it sends a user here to
@@ -697,7 +698,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     : 'Registrace je zdarma a bez platební karty. Výklady slouží jako osobní inspirace a nenahrazují odbornou péči.';
             }
             setBlockVisible(socialProofEl, true);
-            setBlockVisible(signupValuePanel, true);
+            setBlockVisible(signupValuePanel, !requestedPlan);
             setBlockVisible(passwordHelp, true);
             setBlockVisible(signupSafetyNote, true);
             setBlockVisible(registerFields, false);
@@ -738,6 +739,8 @@ document.addEventListener('DOMContentLoaded', () => {
             authSubmitBtn.textContent = requestedPlan ? 'Přihlásit se a pokračovat' : 'Přihlásit se';
             if (toggleBtn) toggleBtn.textContent = 'Nemáte účet? Zaregistrujte se zdarma →';
         }
+
+        setBlockVisible(checkoutExistingAccount, Boolean(requestedPlan && isRegisterMode));
 
         const emailInput = document.getElementById('email');
         if (emailInput && requestedEmail && !emailInput.value) {
@@ -814,7 +817,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error('Heslo musí mít alespoň 8 znaků.');
                 }
 
-                const result = await window.Auth.register(email, password);
+                const result = await window.Auth.register(email, password, {
+                    gdpr_consent: gdprConsent?.checked === true,
+                    terms_consent: gdprConsent?.checked === true
+                });
 
                 if (!result.success) {
                     throw new Error(result.error || 'Registrace se nepodařila.');
@@ -973,10 +979,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    const syncAuthModeInUrl = () => {
+        const nextUrl = new URL(window.location.href);
+        nextUrl.searchParams.set('mode', isRegisterMode ? 'register' : 'login');
+        window.history.replaceState(window.history.state, '', `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);
+    };
+
     toggleBtn?.addEventListener('click', () => {
         isRegisterMode = !isRegisterMode;
+        syncAuthModeInUrl();
         applyMode();
         trackAuthView('toggle');
+    });
+
+    checkoutExistingAccount?.addEventListener('click', () => {
+        isRegisterMode = false;
+        syncAuthModeInUrl();
+        applyMode();
+        trackAuthView('checkout_existing_account');
+        document.getElementById('email')?.focus();
     });
 
     setTimeout(() => {

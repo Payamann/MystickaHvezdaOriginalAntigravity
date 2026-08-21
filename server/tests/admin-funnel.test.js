@@ -134,6 +134,8 @@ describe('Admin funnel report helpers', () => {
         expect(report.metrics.pricingIntentToCheckoutRate).toBe(0);
         expect(report.metrics.subscriptionCompleted).toBe(1);
         expect(report.metrics.oneTimeCompleted).toBe(1);
+        expect(report.metrics.checkoutFailures).toBe(1);
+        expect(report.metrics.billingFailures).toBe(1);
         expect(report.metrics.failures).toBe(2);
         expect(report.metrics.refunds).toBe(1);
         expect(report.metrics.cancelRequests).toBe(1);
@@ -838,6 +840,62 @@ describe('Admin first-party analytics helpers', () => {
         expect(buildAnalyticsAttributionCsv(report)).toContain('seo_landing_views,first_value_completed');
         expect(buildAnalyticsAttributionCsv(report)).toContain('"pinterest","tarot_meanings","organic","tarot"');
     });
+
+    test('deduplicates canonical and legacy purchase aliases in attribution totals', () => {
+        const attribution = {
+            path: '/profil.html',
+            clientId: 'client-paid',
+            visitId: 'visit-paid',
+            first_source: 'google',
+            first_medium: 'organic',
+            first_campaign: 'membership'
+        };
+        const report = buildAnalyticsReport([
+            {
+                id: 'purchase-1',
+                event_type: 'purchase',
+                metadata: { ...attribution, transaction_id: 'checkout-1', product_id: 'pruvodce', currency: 'CZK', value: 199 },
+                created_at: '2026-04-28T09:00:00.000Z'
+            },
+            {
+                id: 'purchase-alias-1',
+                event_type: 'purchase_completed',
+                metadata: { ...attribution, transaction_id: 'checkout-1', product_id: 'pruvodce', currency: 'CZK', value: 199 },
+                created_at: '2026-04-28T09:00:01.000Z'
+            },
+            {
+                id: 'legacy-purchase-1',
+                event_type: 'purchase',
+                metadata: { ...attribution, product_id: 'pruvodce', currency: 'CZK', value: 199 },
+                created_at: '2026-04-28T09:05:00.000Z'
+            },
+            {
+                id: 'legacy-purchase-alias-1',
+                event_type: 'purchase_completed',
+                metadata: { ...attribution, product_id: 'pruvodce', currency: 'CZK', value: 199 },
+                created_at: '2026-04-28T09:05:02.000Z'
+            },
+            {
+                id: 'legacy-purchase-2',
+                event_type: 'purchase',
+                metadata: { ...attribution, product_id: 'pruvodce', currency: 'CZK', value: 199 },
+                created_at: '2026-04-28T09:05:20.000Z'
+            },
+            {
+                id: 'purchase-2',
+                event_type: 'purchase',
+                metadata: { ...attribution, transaction_id: 'checkout-2', product_id: 'pruvodce', currency: 'CZK', value: 199 },
+                created_at: '2026-04-28T09:10:00.000Z'
+            }
+        ], { days: 7 });
+
+        expect(report.attributionSegments[0]).toMatchObject({
+            source: 'google',
+            campaign: 'membership',
+            medium: 'organic',
+            purchases: 4
+        });
+    });
 });
 
 describe('Admin business cockpit helpers', () => {
@@ -976,6 +1034,64 @@ describe('Admin business cockpit helpers', () => {
         });
     });
 
+    test('keeps recurring billing failures out of checkout reliability', () => {
+        const checkoutEvents = Array.from({ length: 3 }, (_, index) => ({
+            id: `checkout-${index}`,
+            event_name: 'checkout_session_created',
+            source: 'pricing',
+            feature: 'premium_membership',
+            created_at: `2026-04-28T08:0${index}:00.000Z`
+        }));
+        const billingEvents = [
+            ...Array.from({ length: 6 }, (_, index) => ({
+                id: `dunning-${index}`,
+                event_name: 'subscription_payment_failed',
+                source: 'stripe_webhook',
+                feature: 'billing',
+                created_at: `2026-04-28T09:0${index}:00.000Z`
+            })),
+            {
+                id: 'dunning-action-required',
+                event_name: 'subscription_payment_action_required',
+                source: 'stripe_webhook',
+                feature: 'billing',
+                created_at: '2026-04-28T09:10:00.000Z'
+            }
+        ];
+        const analyticsReport = buildAnalyticsReport([], { days: 30 });
+        const funnelReport = buildFunnelReport([...checkoutEvents, ...billingEvents], { days: 30 });
+        const baselineReport = buildBusinessReport({
+            analyticsReport,
+            funnelReport: buildFunnelReport(checkoutEvents, { days: 30 }),
+            userStats: {},
+            days: 30
+        });
+        const report = buildBusinessReport({
+            analyticsReport,
+            funnelReport,
+            userStats: {},
+            days: 30
+        });
+
+        expect(funnelReport.metrics).toMatchObject({
+            checkoutStarted: 3,
+            checkoutFailures: 0,
+            billingFailures: 7,
+            failures: 7
+        });
+        expect(report.summary).toMatchObject({
+            checkoutFailures: 0,
+            billingFailures: 7,
+            failures: 7
+        });
+        expect(report.signals).toContainEqual(expect.objectContaining({
+            label: 'Spolehlivost',
+            status: 'ok',
+            value: '0 % rizikových eventů'
+        }));
+        expect(report.score).toBe(baselineReport.score);
+    });
+
     test('promotes profile ritual memory as a business signal when engagement is weak', () => {
         const memoryViews = Array.from({ length: 20 }, (_, index) => ({
             id: `memory-view-${index}`,
@@ -1028,6 +1144,17 @@ describe('Admin business cockpit helpers', () => {
 });
 
 describe('Admin funnel API access control', () => {
+    beforeAll(async () => {
+        await supabase.from('users').insert([
+            { id: 'admin-1', email: 'admin@example.com', role: 'admin' },
+            { id: 'user-1', email: 'user@example.com', role: 'user' }
+        ]);
+    });
+
+    afterAll(async () => {
+        await supabase.from('users').delete().in('id', ['admin-1', 'user-1']);
+    });
+
     test('requires authentication', async () => {
         const res = await request(app).get('/api/admin/funnel');
 

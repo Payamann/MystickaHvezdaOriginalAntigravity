@@ -279,6 +279,7 @@
 
         isPremium() {
             if (!this.user || !this.user.subscription_status) return false;
+            if (typeof this.user.isPremium === 'boolean') return this.user.isPremium;
             const s = this.user.subscription_status.toLowerCase();
             if (!s.includes('premium') && !s.includes('exclusive') && !s.includes('vip')) return false;
             // Check expiration if available
@@ -1426,16 +1427,28 @@
                     if (isRegister) {
                         const confirmPassword = form.confirm_password?.value;
                         const birthDate = form.birth_date?.value;
+                        const legalConsent = form.gdpr_consent?.checked === true;
 
                         if (password !== confirmPassword) {
                             this.showToast('Chyba', 'Hesla se neshodují.', 'error');
+                            return;
+                        }
+                        if (!legalConsent) {
+                            this.showToast(
+                                'Souhlas je potřeba',
+                                'Pro vytvoření účtu potvrďte zpracování osobních údajů a obchodní podmínky.',
+                                'error'
+                            );
+                            form.gdpr_consent?.focus();
                             return;
                         }
                         const res = await this.register(email, password, {
                             first_name: form.first_name?.value || undefined,
                             birth_date: birthDate,
                             birth_place: form.birth_place?.value || undefined,
-                            password_confirm: confirmPassword
+                            password_confirm: confirmPassword,
+                            gdpr_consent: legalConsent,
+                            terms_consent: legalConsent
                         });
                         if (!res.success) this.showToast('Chyba registrace', res.error, 'error');
                     } else {
@@ -1754,6 +1767,37 @@
             }
         },
 
+        getSafeBillingPortalUrl(portalUrl) {
+            if (typeof portalUrl !== 'string' || !portalUrl.trim()) return null;
+
+            try {
+                const url = new URL(portalUrl, window.location.origin);
+                const isSameOrigin = url.origin === window.location.origin;
+                const isStripeBillingPortal = url.protocol === 'https:' && url.hostname === 'billing.stripe.com';
+                return isSameOrigin || isStripeBillingPortal ? url.href : null;
+            } catch {
+                return null;
+            }
+        },
+
+        getCheckoutConflictRedirect(data = {}) {
+            if (data.code === 'SUBSCRIPTION_PAUSED') {
+                return '/profil.html?source=subscription_paused#subscription-card';
+            }
+
+            if (data.code === 'PAYMENT_METHOD_UPDATE_REQUIRED') {
+                return this.getSafeBillingPortalUrl(data.portalUrl)
+                    || '/profil.html?source=payment_recovery#subscription-card';
+            }
+
+            if (data.code === 'SUBSCRIPTION_ALREADY_ACTIVE') {
+                return this.getSafeBillingPortalUrl(data.portalUrl)
+                    || '/profil.html?source=subscription_management#subscription-card';
+            }
+
+            return null;
+        },
+
         async _startCheckout(planId, context = {}) {
             try {
                 const source = context.source || this.getPendingCheckoutContext().source || 'auth_pending_plan';
@@ -1793,6 +1837,15 @@
                     this.clearPostVerificationCheckout();
                     window.location.href = data.url;
                 } else {
+                    const conflictRedirect = res.status === 409
+                        ? this.getCheckoutConflictRedirect(data)
+                        : null;
+                    if (conflictRedirect) {
+                        this.clearPendingCheckout();
+                        this.clearPostVerificationCheckout();
+                        window.location.href = conflictRedirect;
+                        return;
+                    }
                     console.warn('Checkout session failed:', data);
                     this.clearPostVerificationCheckout();
                     window.location.href = this.buildCheckoutRecoveryUrl(planId, context, 'session_failed');

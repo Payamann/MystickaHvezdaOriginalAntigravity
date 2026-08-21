@@ -4,7 +4,14 @@ import rateLimit from 'express-rate-limit';
 import { supabase } from './db-supabase.js';
 import { JWT_SECRET, JWT_EXPIRY, COOKIE_OPTIONS, INDICATOR_COOKIE_OPTIONS, CLEAR_COOKIE_OPTIONS, CLEAR_INDICATOR_COOKIE_OPTIONS } from './config/jwt.js';
 import { authenticateToken } from './middleware.js';
-import { validateEmail, validatePassword, validateName, validateBirthDate } from './utils/validation.js';
+import {
+    validateEmail,
+    validatePassword,
+    validateName,
+    validateBirthDate,
+    validateBirthTime,
+    validateCity,
+} from './utils/validation.js';
 import { isPremiumPlanType, normalizePlanType } from './config/constants.js';
 import { blacklistToken } from './utils/token-blacklist.js';
 import { recordFailedAttempt, checkAccountLockout, recordSuccessfulLogin } from './utils/account-lockout.js';
@@ -15,11 +22,14 @@ import { recordFunnelEvent } from './payment.js';
 const router = express.Router();
 const LOCKOUT_DURATION_MINUTES = 15;
 const ACTIVE_PREMIUM_STATUSES = new Set(['active', 'trialing', 'cancel_pending']);
+const REGISTRATION_TERMS_VERSION = '2026-08-21';
+const REGISTRATION_PRIVACY_VERSION = '2026-08-21';
 
 export function getAuthSubscriptionState(subscription = {}) {
     const status = normalizePlanType(subscription?.plan_type, subscription?.plan_type || 'free');
     const periodEnd = subscription?.current_period_end || null;
-    const periodIsCurrent = periodEnd ? new Date(periodEnd) > new Date() : false;
+    // Lifetime/non-Stripe VIP grants intentionally have no billing period end.
+    const periodIsCurrent = !periodEnd || new Date(periodEnd) > new Date();
     const isPremium = isPremiumPlanType(status)
         && ACTIVE_PREMIUM_STATUSES.has(subscription?.status)
         && periodIsCurrent;
@@ -144,6 +154,17 @@ async function recordServerSignupCompleted(userId, req) {
     if (!userId) return false;
 
     try {
+        const { data: existingEvents, error: lookupError } = await supabase
+            .from('analytics_events')
+            .select('id')
+            .eq('user_id', userId)
+            .eq('event_type', 'signup_completed')
+            .limit(1);
+
+        if (!lookupError && Array.isArray(existingEvents) && existingEvents.length > 0) {
+            return true;
+        }
+
         const { feature, metadata } = getRegisterReferrerContext(req);
         const { error } = await supabase.from('analytics_events').insert({
             user_id: userId,
@@ -210,6 +231,75 @@ async function ensureUserRecordFromAuth(authUser) {
     return user;
 }
 
+async function completeRegistrationSession(authUser, req, res, {
+    clientIp,
+    userAgent,
+    recoveredRegistration = false,
+} = {}) {
+    const user = await ensureUserRecordFromAuth(authUser);
+    const token = await generateToken(user.id);
+    const subscriptionState = getAuthSubscriptionState(user.subscriptions);
+    await recordServerSignupCompleted(user.id, req);
+
+    res.cookie('auth_token', token, COOKIE_OPTIONS);
+    res.cookie('logged_in', '1', INDICATOR_COOKIE_OPTIONS);
+    await recordSuccessfulLogin(user.email, clientIp, userAgent);
+
+    return res.json({
+        success: true,
+        recoveredRegistration,
+        devAutoLogin: DEV_AUTO_LOGIN_AFTER_REGISTER && REQUIRE_EMAIL_VERIFICATION,
+        emailVerificationSkipped: !REQUIRE_EMAIL_VERIFICATION,
+        message: recoveredRegistration
+            ? 'Registrace byla bezpečně dokončena. Byli jste přihlášeni.'
+            : (REQUIRE_EMAIL_VERIFICATION
+                ? 'Registrace uspela. V lokalnim vyvoji jste byli rovnou prihlaseni.'
+                : 'Registrace úspěšná. Byli jste přihlášeni.'),
+        user: {
+            id: user.id,
+            email: user.email,
+            subscription_status: subscriptionState.status,
+            first_name: user.first_name,
+            birth_date: user.birth_date,
+            birth_time: user.birth_time,
+            birth_place: user.birth_place,
+            avatar: user.avatar || null,
+        },
+    });
+}
+
+async function recoverExistingRegistration(email, password, req, res, context) {
+    const lockoutStatus = await checkAccountLockout(email);
+    if (lockoutStatus.isLocked) {
+        return res.status(429).json({
+            error: `Účet je dočasně uzamčen. Zkuste to prosím za ${lockoutStatus.minutesRemaining} minut.`,
+            retryAfter: lockoutStatus.minutesRemaining * 60,
+        });
+    }
+
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({ email, password });
+    if (authError || !authData?.user?.id) {
+        const failedAttempt = await recordFailedAttempt(
+            email,
+            context.clientIp,
+            context.userAgent,
+            'registration_recovery_invalid_password'
+        );
+        if (failedAttempt.isLocked) {
+            return res.status(429).json({
+                error: `Příliš mnoho neúspěšných pokusů. Účet je uzamčen na ${LOCKOUT_DURATION_MINUTES} minut.`,
+                remainingAttempts: 0,
+            });
+        }
+        return null;
+    }
+
+    return completeRegistrationSession(authData.user, req, res, {
+        ...context,
+        recoveredRegistration: true,
+    });
+}
+
 export async function ensureDefaultSubscriptionForUser(userId) {
     const { data: existingSubscription, error: subError } = await supabase
         .from('subscriptions')
@@ -273,12 +363,21 @@ router.post('/register', authLimiter, async (req, res) => {
         first_name,
         birth_date,
         birth_time,
-        birth_place
+        birth_place,
+        gdpr_consent,
+        terms_consent,
     } = req.body;
     const clientIp = req.ip || req.connection.remoteAddress;
     const userAgent = req.headers['user-agent'] || 'unknown';
 
     try {
+        if (gdpr_consent !== true || terms_consent !== true) {
+            return res.status(400).json({
+                error: 'Pro vytvoření účtu je nutný souhlas se zpracováním osobních údajů a obchodními podmínkami.',
+                code: 'LEGAL_CONSENT_REQUIRED',
+            });
+        }
+
         // Validate input using centralized validators
         const validatedEmail = validateEmail(email);
 
@@ -302,11 +401,19 @@ router.post('/register', authLimiter, async (req, res) => {
 
         // Birth date is optional during signup to reduce registration friction.
         const validatedBirthDate = birth_date ? validateBirthDate(birth_date) : null;
+        const acceptedAt = new Date().toISOString();
         const userMetadata = {
             first_name: validatedFirstName,
             birth_date: validatedBirthDate,
-            birth_time: birth_time ? birth_time.substring(0, 5) : null,
-            birth_place: birth_place ? birth_place.substring(0, 100) : null
+            birth_time: birth_time ? validateBirthTime(birth_time) : null,
+            birth_place: birth_place ? validateCity(birth_place) : null,
+            legal_consent: {
+                gdpr: true,
+                terms: true,
+                accepted_at: acceptedAt,
+                privacy_version: REGISTRATION_PRIVACY_VERSION,
+                terms_version: REGISTRATION_TERMS_VERSION,
+            },
         };
 
         let data;
@@ -341,7 +448,16 @@ router.post('/register', authLimiter, async (req, res) => {
                 || error.message.includes('User already registered')
                 || error.code === 'email_exists'
             ) {
-                return res.status(400).json({ error: 'Registrace se nezdařila. Zkontrolujte email a heslo.' });
+                const recovered = await recoverExistingRegistration(validatedEmail, validatedPassword, req, res, {
+                    clientIp,
+                    userAgent,
+                });
+                if (recovered) return recovered;
+
+                return res.status(400).json({
+                    error: 'Registrace se nezdařila. Pokud už účet máte, přihlaste se nebo obnovte heslo.',
+                    code: 'REGISTRATION_RECOVERY_REQUIRED',
+                });
             }
             if (error.code === 'weak_password') {
                 return res.status(400).json({ error: 'Heslo musí mít alespoň 8 znaků.' });
@@ -357,33 +473,9 @@ router.post('/register', authLimiter, async (req, res) => {
         }
 
         if ((!REQUIRE_EMAIL_VERIFICATION || DEV_AUTO_LOGIN_AFTER_REGISTER) && data?.user?.id) {
-            const user = await ensureUserRecordFromAuth(data.user);
-            const token = await generateToken(user.id);
-            const subscriptionState = getAuthSubscriptionState(user.subscriptions);
-            await recordServerSignupCompleted(user.id, req);
-
-            res.cookie('auth_token', token, COOKIE_OPTIONS);
-            res.cookie('logged_in', '1', INDICATOR_COOKIE_OPTIONS);
-
-            await recordSuccessfulLogin(user.email, clientIp, userAgent);
-
-            return res.json({
-                success: true,
-                devAutoLogin: DEV_AUTO_LOGIN_AFTER_REGISTER && REQUIRE_EMAIL_VERIFICATION,
-                emailVerificationSkipped: !REQUIRE_EMAIL_VERIFICATION,
-                message: REQUIRE_EMAIL_VERIFICATION
-                    ? 'Registrace uspela. V lokalnim vyvoji jste byli rovnou prihlaseni.'
-                    : 'Registrace \u00fasp\u011b\u0161n\u00e1. Byli jste p\u0159ihl\u00e1\u0161eni.',
-                user: {
-                    id: user.id,
-                    email: user.email,
-                    subscription_status: subscriptionState.status,
-                    first_name: user.first_name,
-                    birth_date: user.birth_date,
-                    birth_time: user.birth_time,
-                    birth_place: user.birth_place,
-                    avatar: user.avatar || null
-                }
+            return completeRegistrationSession(data.user, req, res, {
+                clientIp,
+                userAgent,
             });
         }
 
@@ -735,7 +827,10 @@ router.get('/profile', authenticateToken, async (req, res) => {
         const userProfile = {
             ...data,
             subscription_status: subscriptionState.status,
-            current_period_end: subscriptionState.premiumExpires
+            billing_status: sub.status || 'inactive',
+            current_period_end: subscriptionState.premiumExpires,
+            premiumExpires: subscriptionState.premiumExpires,
+            isPremium: subscriptionState.isPremium
         };
 
         res.json({ success: true, user: userProfile });

@@ -4,8 +4,16 @@
 
 import { apiUrl, authHeaders, loadPlanManifest, normalizePlanType, formatPlanLabel } from './shared.js';
 
+function trackAnalytics(method, ...args) {
+    try {
+        window.MH_ANALYTICS?.[method]?.(...args);
+    } catch (error) {
+        console.warn(`[PROFILE] Analytics ${method} failed:`, error.message);
+    }
+}
+
 function startProfileUpgradeCheckout(source = 'profile_subscription_card') {
-    window.MH_ANALYTICS?.trackCTA?.(source, {
+    trackAnalytics('trackCTA', source, {
         plan_id: 'pruvodce',
         feature: 'subscription_management'
     });
@@ -269,6 +277,9 @@ function renderSubscriptionCard(sub) {
         trialing: { text: 'Zkušební období', class: 'badge--info' },
         cancel_pending: { text: 'Zrušeno na konci období', class: 'badge--warning' },
         past_due: { text: 'Platba selhala', class: 'badge--danger' },
+        unpaid: { text: 'Platba není uhrazena', class: 'badge--danger' },
+        incomplete: { text: 'Platbu je potřeba dokončit', class: 'badge--danger' },
+        paused: { text: 'Pozastaveno', class: 'badge--warning' },
         cancelled: { text: 'Zrušeno', class: 'badge--danger' }
     };
 
@@ -279,6 +290,12 @@ function renderSubscriptionCard(sub) {
     const periodEndStr = periodEnd ? periodEnd.toLocaleDateString('cs-CZ', {
         day: 'numeric', month: 'long', year: 'numeric'
     }) : null;
+    const pauseUntil = sub.pauseUntil ? new Date(sub.pauseUntil) : null;
+    const pauseUntilStr = pauseUntil && !Number.isNaN(pauseUntil.getTime())
+        ? pauseUntil.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })
+        : null;
+    const needsPaymentUpdate = sub.needsPaymentUpdate === true || ['past_due', 'unpaid', 'incomplete'].includes(sub.status);
+    const isPaused = sub.status === 'paused';
 
     let html = '<div class="subscription-info">';
     html += `
@@ -297,7 +314,14 @@ function renderSubscriptionCard(sub) {
         </div>`;
     }
 
-    if (isPremium && periodEndStr) {
+    if (needsPaymentUpdate) {
+        html += `<p class="subscription-period"><strong>Členství čeká na opravu platby.</strong> Aktualizuj platební metodu a Stripe se pokusí platbu bezpečně dokončit.</p>`;
+    } else if (isPaused) {
+        const pauseCopy = pauseUntilStr
+            ? `Do ${pauseUntilStr} se nic neúčtuje a prémiový přístup je pozastavený. Obnovit ho můžeš kdykoliv.`
+            : 'Během pauzy se nic neúčtuje a prémiový přístup je pozastavený. Obnovit ho můžeš kdykoliv.';
+        html += `<p class="subscription-period"><strong>Předplatné je pozastavené.</strong> ${pauseCopy}</p>`;
+    } else if (isPremium && periodEndStr) {
         const label = sub.status === 'cancel_pending'
             ? 'Přístup končí'
             : sub.status === 'trialing'
@@ -311,7 +335,11 @@ function renderSubscriptionCard(sub) {
     if (!isPremium) {
         html += '<button id="sub-upgrade-btn" type="button" class="btn btn--gold btn--sm">Upgradovat na Premium</button>';
     } else {
-        if (sub.canCancel && sub.status !== 'cancel_pending') {
+        if (needsPaymentUpdate) {
+            html += '<button id="sub-payment-update-btn" type="button" class="btn btn--primary btn--sm">Aktualizovat kartu</button>';
+        } else if (isPaused && sub.canResume !== false) {
+            html += '<button id="sub-resume-btn" type="button" class="btn btn--primary btn--sm">Obnovit předplatné</button>';
+        } else if (sub.canCancel && sub.status !== 'cancel_pending') {
             html += '<button id="sub-cancel-btn" class="btn btn--sm btn--glass">Zrušit předplatné</button>';
         }
         if (sub.status === 'cancel_pending') {
@@ -328,12 +356,16 @@ function renderSubscriptionCard(sub) {
     });
     document.getElementById('sub-cancel-btn')?.addEventListener('click', cancelSubscription);
     document.getElementById('sub-reactivate-btn')?.addEventListener('click', reactivateSubscription);
-    document.getElementById('sub-portal-btn')?.addEventListener('click', openStripePortal);
+    document.getElementById('sub-resume-btn')?.addEventListener('click', resumePausedSubscription);
+    document.getElementById('sub-payment-update-btn')?.addEventListener('click', () => {
+        openStripePortal('payment_method_update', 'sub-payment-update-btn');
+    });
+    document.getElementById('sub-portal-btn')?.addEventListener('click', () => openStripePortal());
 }
 
 async function cancelSubscription({ skipRetention = false } = {}) {
     if (!skipRetention && window.MH_RETENTION?.showCancellationModal) {
-        window.MH_ANALYTICS?.trackSubscriptionAction?.('cancel_flow_opened', {
+        trackAnalytics('trackSubscriptionAction', 'cancel_flow_opened', {
             source: 'profile_settings'
         });
         window.MH_RETENTION.showCancellationModal(() => cancelSubscription({ skipRetention: true }));
@@ -366,7 +398,7 @@ async function cancelSubscription({ skipRetention = false } = {}) {
 
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Cancel failed');
-        window.MH_ANALYTICS?.trackSubscriptionAction?.('cancel_requested', { source: 'profile_settings', plan_type: 'premium' });
+        trackAnalytics('trackSubscriptionAction', 'cancel_requested', { source: 'profile_settings', plan_type: 'premium' });
 
         window.Auth?.showToast?.('Zrušeno', data.message || 'Předplatné bude ukončeno na konci období.', 'success');
         await loadSubscriptionStatus();
@@ -400,7 +432,7 @@ async function reactivateSubscription() {
 
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Reactivate failed');
-        window.MH_ANALYTICS?.trackSubscriptionAction?.('reactivated', { source: 'profile_settings' });
+        trackAnalytics('trackSubscriptionAction', 'reactivated', { source: 'profile_settings' });
 
         window.Auth?.showToast?.('Obnoveno', data.message || 'Předplatné bylo obnoveno.', 'success');
         await loadSubscriptionStatus();
@@ -414,8 +446,43 @@ async function reactivateSubscription() {
     }
 }
 
-async function openStripePortal() {
-    const btn = document.getElementById('sub-portal-btn');
+async function resumePausedSubscription() {
+    const btn = document.getElementById('sub-resume-btn');
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Obnovuji...';
+    }
+
+    try {
+        const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+        const res = await fetch(`${apiUrl()}/payment/subscription/resume`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                ...authHeaders(true),
+                ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+            },
+            body: JSON.stringify({})
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Resume failed');
+        trackAnalytics('trackSubscriptionAction', 'pause_resumed', { source: 'profile_settings' });
+        window.Auth?.showToast?.('Obnoveno', 'Předplatné je znovu aktivní.', 'success');
+        await loadSubscriptionStatus();
+    } catch (e) {
+        console.error('Resume paused subscription error:', e);
+        window.Auth?.showToast?.('Chyba', e.message || 'Nepodařilo se obnovit předplatné.', 'error');
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = 'Obnovit předplatné';
+        }
+    }
+}
+
+async function openStripePortal(flow = null, buttonId = 'sub-portal-btn') {
+    const btn = document.getElementById(buttonId);
+    const originalLabel = btn?.textContent || (flow === 'payment_method_update' ? 'Aktualizovat kartu' : 'Správa plateb');
     if (btn) {
         btn.disabled = true;
         btn.textContent = 'Otevírám...';
@@ -429,22 +496,29 @@ async function openStripePortal() {
             headers: {
                 ...authHeaders(true),
                 ...(csrfToken && { 'X-CSRF-Token': csrfToken })
-            }
+            },
+            body: JSON.stringify(flow ? { flow } : {})
         });
 
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Portal failed');
 
         if (data.url) {
-            window.MH_ANALYTICS?.trackBillingPortalOpened?.({ source: 'profile_settings' });
+            trackAnalytics('trackBillingPortalOpened', {
+                source: 'profile_settings',
+                flow: flow || 'portal_home'
+            });
             window.location.href = data.url;
+            return;
         }
+
+        throw new Error('Platební portál nevrátil cílovou adresu.');
     } catch (e) {
         console.error('Portal error:', e);
         window.Auth?.showToast?.('Chyba', e.message || 'Nepodařilo se otevřít správu plateb.', 'error');
         if (btn) {
             btn.disabled = false;
-            btn.textContent = 'Správa plateb';
+            btn.textContent = originalLabel;
         }
     }
 }

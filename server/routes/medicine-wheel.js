@@ -5,7 +5,7 @@
  */
 import express from 'express';
 import crypto from 'crypto';
-import { authenticateToken, requireFeature } from '../middleware.js';
+import { aiLimiter, authenticateToken, requireFeature } from '../middleware.js';
 import { callClaude } from '../services/claude.js';
 import { supabase } from '../db-supabase.js';
 
@@ -79,7 +79,7 @@ function buildFallbackMedicineWheelReading({ name, birthDate, totem }) {
     };
 }
 
-router.post('/', authenticateToken, requireFeature('medicine_wheel'), async (req, res) => {
+router.post('/', authenticateToken, requireFeature('medicine_wheel'), aiLimiter, async (req, res) => {
     try {
         const { name, birthDate, totem } = req.body;
 

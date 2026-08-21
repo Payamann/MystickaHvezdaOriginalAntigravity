@@ -248,6 +248,13 @@ class Templates {
                 </div>
             </div>
 
+            <div id="gdpr-consent-wrapper" class="auth-modal__field" hidden>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="gdpr-consent" name="gdpr_consent">
+                    <span>Souhlasím se <a href="/ochrana-soukromi.html" target="_blank" rel="noopener">zpracováním osobních údajů</a> a <a href="/podminky.html" target="_blank" rel="noopener">obchodními podmínkami</a>.</span>
+                </label>
+            </div>
+
             <button type="submit" id="auth-submit" class="btn btn--primary auth-modal__submit">Přihlásit se</button>
             <p class="auth-modal__toggle-wrap">
                 <a href="#" id="auth-mode-toggle" class="auth-modal__mode-toggle">Nemáte účet? Zaregistrujte se</a>

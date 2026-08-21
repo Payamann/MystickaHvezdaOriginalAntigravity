@@ -41,12 +41,23 @@ async function seedAngelMessage(overrides = {}) {
 }
 
 describe('Admin angel message moderation', () => {
+    beforeAll(async () => {
+        await supabase.from('users').insert([
+            { id: 'admin-angel-test', email: 'admin@example.com', role: 'admin' },
+            { id: 'user-angel-test', email: 'user@example.com', role: 'user' }
+        ]);
+    });
+
+    afterAll(async () => {
+        await supabase.from('users').delete().in('id', ['admin-angel-test', 'user-angel-test']);
+    });
+
     test('requires admin access', async () => {
         await request(app)
             .get('/api/admin/angel-messages')
             .expect(401);
 
-        const userToken = createToken({ role: 'user', email: 'user@example.com' });
+        const userToken = createToken({ id: 'user-angel-test', role: 'user', email: 'user@example.com' });
         await request(app)
             .get('/api/admin/angel-messages')
             .set('Authorization', `Bearer ${userToken}`)

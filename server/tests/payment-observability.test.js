@@ -22,6 +22,11 @@ function getBillingPortalSessionsPrototype() {
     return Object.getPrototypeOf(stripeClient.billingPortal.sessions);
 }
 
+function getSubscriptionsPrototype() {
+    const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY || 'test-stripe-key');
+    return Object.getPrototypeOf(stripeClient.subscriptions);
+}
+
 async function getEvents(userId, eventName) {
     const { data } = await supabase
         .from('funnel_events')
@@ -33,6 +38,67 @@ async function getEvents(userId, eventName) {
 }
 
 describe('Checkout observability', () => {
+    test('expired local collection pause is reconciled from Stripe before status is returned', async () => {
+        const userId = `expired-pause-${Date.now()}`;
+        const customerId = `cus_expired_pause_${Date.now()}`;
+        const subscriptionId = `sub_expired_pause_${Date.now()}`;
+        const token = makeToken(userId);
+
+        await supabase.from('users').insert({
+            id: userId,
+            email: `${userId}@example.com`,
+            stripe_customer_id: customerId,
+            is_premium: false
+        });
+        await supabase.from('subscriptions').insert({
+            user_id: userId,
+            plan_type: 'premium_monthly',
+            status: 'paused',
+            stripe_subscription_id: subscriptionId,
+            pause_until: new Date(Date.now() - 60_000).toISOString(),
+            current_period_end: new Date(Date.now() + 7 * 86400_000).toISOString()
+        });
+
+        const subscriptionsPrototype = getSubscriptionsPrototype();
+        const list = subscriptionsPrototype.list;
+        const listCalls = [];
+        subscriptionsPrototype.list = async (params) => {
+            listCalls.push(params);
+            return {
+                data: [{
+                    id: subscriptionId,
+                    customer: customerId,
+                    status: 'active',
+                    cancel_at_period_end: false,
+                    current_period_end: Math.floor(Date.now() / 1000) + 7 * 86400,
+                    metadata: { planId: 'pruvodce', planType: 'premium_monthly' },
+                    items: { data: [] },
+                    pause_collection: null,
+                    created: Math.floor(Date.now() / 1000) - 86400
+                }]
+            };
+        };
+
+        let res;
+        try {
+            res = await request(app)
+                .get('/api/payment/subscription/status')
+                .set('Authorization', `Bearer ${token}`);
+        } finally {
+            subscriptionsPrototype.list = list;
+        }
+
+        expect(listCalls).toEqual([{ customer: customerId, status: 'all', limit: 10 }]);
+        expect(res.status).toBe(200);
+        expect(res.body).toMatchObject({
+            planType: 'premium_monthly',
+            status: 'active',
+            pauseUntil: null,
+            canResume: false,
+            needsPaymentUpdate: false
+        });
+    });
+
     test('invalid checkout plan records a validation funnel event with safe context', async () => {
         const csrfToken = await getCsrfToken();
         const userId = `checkout-invalid-${Date.now()}`;
@@ -212,6 +278,75 @@ describe('Checkout observability', () => {
         expect(events).toHaveLength(1);
         expect(events[0].metadata).toMatchObject({
             reason: 'existing_subscription_checkout_blocked'
+        });
+    });
+
+    test('past_due checkout block opens the payment-method-update portal flow', async () => {
+        const csrfToken = await getCsrfToken();
+        const userId = `checkout-past-due-${Date.now()}`;
+        const token = makeToken(userId);
+        const customerId = `cus_past_due_${Date.now()}`;
+
+        await supabase.from('users').insert({
+            id: userId,
+            email: `${userId}@example.com`,
+            stripe_customer_id: customerId
+        });
+        await supabase.from('subscriptions').insert({
+            user_id: userId,
+            plan_type: 'pruvodce',
+            status: 'past_due',
+            stripe_subscription_id: `sub_past_due_${Date.now()}`,
+            current_period_end: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+        });
+
+        const portalSessionsPrototype = getBillingPortalSessionsPrototype();
+        const portalCreate = portalSessionsPrototype.create;
+        const portalParams = [];
+        portalSessionsPrototype.create = async (params) => {
+            portalParams.push(params);
+            return { url: 'https://billing.example.test/payment-update' };
+        };
+
+        let res;
+        try {
+            res = await request(app)
+                .post('/api/payment/create-checkout-session')
+                .set('x-csrf-token', csrfToken)
+                .set('Authorization', `Bearer ${token}`)
+                .send({ planId: 'pruvodce', source: 'pricing_recovery', feature: 'premium_membership' });
+        } finally {
+            portalSessionsPrototype.create = portalCreate;
+        }
+
+        expect(res.status).toBe(409);
+        expect(res.body.portalUrl).toBe('https://billing.example.test/payment-update');
+        expect(res.body.code).toBe('PAYMENT_METHOD_UPDATE_REQUIRED');
+        expect(res.body.error).toBe('Platbu předplatného je potřeba dokončit. Aktualizuj platební metodu v zákaznickém portálu.');
+        expect(portalParams[0]).toMatchObject({
+            customer: customerId,
+            return_url: expect.stringMatching(/\/profil\.html\?source=payment_recovery$/),
+            flow_data: { type: 'payment_method_update' }
+        });
+        expect(portalParams[0].return_url).not.toContain('payment=cancel');
+    });
+
+    test('legacy client pause-email request is acknowledged without sending a duplicate', async () => {
+        const csrfToken = await getCsrfToken();
+        const userId = `pause-email-dedupe-${Date.now()}`;
+        const token = makeToken(userId);
+
+        const res = await request(app)
+            .post('/api/payment/email/send')
+            .set('x-csrf-token', csrfToken)
+            .set('Authorization', `Bearer ${token}`)
+            .send({ template: 'subscription_paused', data: { daysUntilResume: 30 } });
+
+        expect(res.status).toBe(200);
+        expect(res.body).toMatchObject({
+            success: true,
+            skipped: true,
+            managedBy: 'subscription/pause'
         });
     });
 });

@@ -202,9 +202,6 @@ const MH_RETENTION = {
                 trackEvent('pause_accepted');
                 this.closeCancellationModal();
 
-                // Send pause notification email
-                this.sendPauseEmail();
-
                 // Redirect to account page
                 setTimeout(() => {
                     window.location.href = '/profil.html';
@@ -289,20 +286,6 @@ const MH_RETENTION = {
             toast.classList.add('retention-toast--closing');
             setTimeout(() => toast.remove(), 300);
         }, 3000);
-    },
-
-    /**
-     * Send pause email notification
-     */
-    async sendPauseEmail() {
-        try {
-            await postRetentionJson('/api/payment/email/send', {
-                template: 'subscription_paused',
-                data: { daysUntilResume: 30 }
-            });
-        } catch (e) {
-            console.warn('Failed to send pause email:', e);
-        }
     },
 
     /**

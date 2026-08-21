@@ -1,6 +1,16 @@
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import app from '../index.js';
+import { supabase } from '../db-supabase.js';
+
+async function seedPremium(userId) {
+    await supabase.from('subscriptions').insert({
+        user_id: userId,
+        plan_type: 'premium_monthly',
+        status: 'active',
+        current_period_end: '2099-12-31T23:59:59.000Z'
+    });
+}
 
 function createPremiumToken(overrides = {}) {
     return jwt.sign({
@@ -19,6 +29,11 @@ async function getCsrfToken() {
 }
 
 describe('Medicine wheel route', () => {
+    beforeAll(async () => {
+        await seedPremium('medicine-wheel-test-user');
+        await seedPremium('medicine-wheel-ai-error-user');
+    });
+
     test('returns symbolic fallback when mocked AI response is not JSON', async () => {
         const csrfToken = await getCsrfToken();
         const token = createPremiumToken();

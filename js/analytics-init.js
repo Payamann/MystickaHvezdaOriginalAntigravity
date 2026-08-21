@@ -54,7 +54,10 @@
     });
 
     gtag('js', new Date());
-    gtag('config', GA_ID, { anonymize_ip: true });
+    gtag('config', GA_ID, {
+        anonymize_ip: true,
+        send_page_view: false
+    });
 
     try {
         const prefs = JSON.parse(localStorage.getItem('mh_cookie_prefs') || '{}');

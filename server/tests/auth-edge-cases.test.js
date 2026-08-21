@@ -1,5 +1,6 @@
 import request from 'supertest';
 import app from '../index.js';
+import { supabase } from '../db-supabase.js';
 
 async function getCsrfToken() {
     const res = await request(app).get('/api/csrf-token').expect(200);
@@ -24,7 +25,9 @@ describe('Auth edge cases', () => {
                 email,
                 password: 'TestPassword123!',
                 confirm_password: 'TestPassword123!',
-                first_name: 'Jana'
+                first_name: 'Jana',
+                gdpr_consent: true,
+                terms_consent: true
             });
 
         expect(res.status).toBe(200);
@@ -38,6 +41,16 @@ describe('Auth edge cases', () => {
         });
         expect(res.headers['set-cookie']?.join(';')).toContain('auth_token=');
         expect(res.body.error).toBeUndefined();
+
+        const { data: authRecord, error: authError } = await supabase.auth.admin.getUserById(res.body.user.id);
+        expect(authError).toBeNull();
+        expect(authRecord.user.user_metadata.legal_consent).toEqual(expect.objectContaining({
+            gdpr: true,
+            terms: true,
+            privacy_version: '2026-08-21',
+            terms_version: '2026-08-21',
+            accepted_at: expect.any(String)
+        }));
     });
 
     test('registration validates password_confirm from standalone auth form', async () => {
@@ -51,11 +64,121 @@ describe('Auth edge cases', () => {
                 email: `password-confirm-${Date.now()}@example.com`,
                 password: 'TestPassword123!',
                 password_confirm: 'DifferentPassword123!',
-                first_name: 'Jana'
+                first_name: 'Jana',
+                gdpr_consent: true,
+                terms_consent: true
             });
 
         expect(res.status).toBe(400);
         expect(res.body.error).toBeDefined();
+    });
+
+    test('registration rejects missing legal consent with a stable code', async () => {
+        const csrfToken = await getCsrfToken();
+        const res = await request(app)
+            .post('/api/auth/register')
+            .set('x-csrf-token', csrfToken)
+            .set('X-Forwarded-For', authIp('register-missing-consent'))
+            .send({
+                email: `missing-consent-${Date.now()}@example.com`,
+                password: 'TestPassword123!'
+            });
+
+        expect(res.status).toBe(400);
+        expect(res.body.code).toBe('LEGAL_CONSENT_REQUIRED');
+    });
+
+    test('registration rejects impossible birth time before creating an account', async () => {
+        const csrfToken = await getCsrfToken();
+        const res = await request(app)
+            .post('/api/auth/register')
+            .set('x-csrf-token', csrfToken)
+            .set('X-Forwarded-For', authIp('register-invalid-birth-time'))
+            .send({
+                email: `invalid-time-${Date.now()}@example.com`,
+                password: 'TestPassword123!',
+                birth_time: '99:99',
+                gdpr_consent: true,
+                terms_consent: true
+            });
+
+        expect(res.status).toBe(400);
+        expect(res.body.error).toMatch(/time/i);
+    });
+
+    test('registration safely repairs an Auth user left without an application profile', async () => {
+        const email = `partial-register-${Date.now()}@example.com`;
+        const password = 'TestPassword123!';
+        const { data: partialAuth, error: createError } = await supabase.auth.admin.createUser({
+            email,
+            password,
+            email_confirm: true,
+            user_metadata: { first_name: 'Jana' }
+        });
+        expect(createError).toBeNull();
+
+        const csrfToken = await getCsrfToken();
+        const res = await request(app)
+            .post('/api/auth/register')
+            .set('x-csrf-token', csrfToken)
+            .set('X-Forwarded-For', authIp('register-partial-recovery'))
+            .send({
+                email,
+                password,
+                gdpr_consent: true,
+                terms_consent: true
+            });
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual(expect.objectContaining({
+            success: true,
+            recoveredRegistration: true,
+            user: expect.objectContaining({
+                id: partialAuth.user.id,
+                email,
+                subscription_status: 'free'
+            })
+        }));
+        expect(res.headers['set-cookie']?.join(';')).toContain('auth_token=');
+
+        const { data: repairedUser } = await supabase
+            .from('users')
+            .select('id, email')
+            .eq('id', partialAuth.user.id)
+            .single();
+        expect(repairedUser).toMatchObject({ id: partialAuth.user.id, email });
+
+        const { data: signupEvents } = await supabase
+            .from('analytics_events')
+            .select('id')
+            .eq('user_id', partialAuth.user.id)
+            .eq('event_type', 'signup_completed');
+        expect(signupEvents).toHaveLength(1);
+    });
+
+    test('registration recovery never grants access with a different password', async () => {
+        const email = `partial-register-wrong-password-${Date.now()}@example.com`;
+        await supabase.auth.admin.createUser({
+            email,
+            password: 'OriginalPassword123!',
+            email_confirm: true
+        });
+
+        const csrfToken = await getCsrfToken();
+        const res = await request(app)
+            .post('/api/auth/register')
+            .set('x-csrf-token', csrfToken)
+            .set('X-Forwarded-For', authIp('register-partial-wrong-password'))
+            .send({
+                email,
+                password: 'DifferentPassword123!',
+                gdpr_consent: true,
+                terms_consent: true
+            });
+
+        expect(res.status).toBe(400);
+        expect(res.body.code).toBe('REGISTRATION_RECOVERY_REQUIRED');
+        expect(res.headers['set-cookie']).toBeUndefined();
     });
 
     test('forgot password keeps invalid emails non-enumerable', async () => {

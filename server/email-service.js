@@ -766,6 +766,26 @@ export const EMAIL_TEMPLATES = {
     `, 'Pozastavení předplatného')
   },
 
+  payment_recovery: {
+    subject: (data) => data.stage >= 4
+      ? 'Poslední upozornění: aktualizuj platební metodu'
+      : 'Platbu předplatného se nepodařilo dokončit',
+    getHtml: (data) => {
+      const updateUrl = toAbsoluteUrl(data.updatePaymentUrl || '/profil.html?source=payment_recovery');
+      const stageCopy = data.stage >= 4
+        ? 'Toto je poslední plánované upozornění. Bez aktualizace platebních údajů zůstane prémiový přístup vypnutý.'
+        : 'Stripe platbu odmítl. Předplatné jsme zachovali pro obnovu, ale prémiový přístup je do vyřešení platby vypnutý.';
+      return getBaseTemplate(`
+        <h1 class="h1">Platba potřebuje tvoji pozornost</h1>
+        <p>${stageCopy}</p>
+        <p>Otevři správu plateb a aktualizuj kartu. Po úspěšné platbě se přístup automaticky obnoví.</p>
+        <div class="cta-box">
+          <a href="${escapeHtml(updateUrl)}" class="btn">Aktualizovat platební metodu →</a>
+        </div>
+      `, 'Aktualizace platební metody');
+    }
+  },
+
   discount_applied: {
     subject: 'Sleva je připravená',
     getHtml: (data) => getBaseTemplate(`
@@ -960,9 +980,16 @@ export const EMAIL_TEMPLATES = {
 /**
  * Send email via Resend
  */
-export async function sendEmail(emailConfig) {
+export async function sendEmail(emailConfig, options = {}) {
   try {
     const { to, template, data = {}, headers = {}, replyTo, text, unsubscribeUrl } = emailConfig;
+    const idempotencyKey = typeof options?.idempotencyKey === 'string'
+      ? options.idempotencyKey.trim()
+      : '';
+
+    if (idempotencyKey.length > 256) {
+      throw new Error('Email idempotencyKey must not exceed 256 characters.');
+    }
 
     if (!template || !EMAIL_TEMPLATES[template]) {
       throw new Error(`Unknown email template: ${template}`);
@@ -978,14 +1005,17 @@ export async function sendEmail(emailConfig) {
       throw new Error('Resend not initialized - missing RESEND_API_KEY');
     }
 
-    const response = await resendClient.emails.send(buildResendPayload({
+    const resendPayload = buildResendPayload({
       to,
       subject: typeof templateConfig.subject === 'function' ? templateConfig.subject(data) : templateConfig.subject,
       html,
       text,
       replyTo,
       headers: buildEmailHeaders({ template, data, headers, unsubscribeUrl })
-    }));
+    });
+    const response = idempotencyKey
+      ? await resendClient.emails.send(resendPayload, { idempotencyKey })
+      : await resendClient.emails.send(resendPayload);
 
     if (response.error) {
       throw response.error;
@@ -1144,6 +1174,57 @@ export async function sendPauseEmail(email, daysUntilResume = 30) {
     console.error('[EMAIL] Failed to send pause email:', error);
     throw error;
   }
+}
+
+export async function sendPaymentRecoverySequence({
+  userId,
+  email,
+  invoiceId,
+  amountDue = null,
+  currency = null,
+  attemptCount = null,
+  delays = {}
+} = {}) {
+  if (!userId || !email || !invoiceId) {
+    throw new Error('Missing payment recovery sequence identity.');
+  }
+
+  const { scheduleEmailLater } = await import('./jobs/email-queue.js');
+  const stages = [
+    { stage: 1, delaySeconds: delays.day0 ?? 0 },
+    { stage: 2, delaySeconds: delays.day3 ?? 3 * 86400 },
+    { stage: 3, delaySeconds: delays.day7 ?? 7 * 86400 },
+    { stage: 4, delaySeconds: delays.day10 ?? 10 * 86400 }
+  ];
+  const requiredSubscriptionStatuses = ['past_due', 'unpaid', 'incomplete'];
+  const updatePaymentUrl = toAbsoluteUrl('/profil.html?source=payment_recovery');
+  const results = [];
+
+  for (const stage of stages) {
+    const dedupeKey = `payment_recovery:${invoiceId}:stage${stage.stage}`;
+    results.push(await scheduleEmailLater({
+      userId,
+      email,
+      template: 'payment_recovery',
+      data: {
+        stage: stage.stage,
+        amountDue,
+        currency,
+        attemptCount,
+        updatePaymentUrl,
+        requiredSubscriptionStatuses,
+        dedupeKey
+      },
+      delaySeconds: stage.delaySeconds,
+      dedupeKey
+    }));
+  }
+
+  return {
+    success: true,
+    scheduled: results.filter(result => !result.skipped).length,
+    skipped: results.filter(result => result.skipped).length
+  };
 }
 
 /**
@@ -1806,6 +1887,7 @@ export default {
   sendOnboardingSequence,
   sendActivationLifecycleSequence,
   sendPauseEmail,
+  sendPaymentRecoverySequence,
   sendDiscountEmail,
   sendUpgradeReminders,
   sendChurnRecoveryEmail,

@@ -82,6 +82,26 @@ test.describe('Ceník — platební tlačítka', () => {
         expect(url.searchParams.get('source')).toBe('pricing_page');
     });
 
+    test('vypadek CTA analytiky neblokuje placeny auth handoff', async ({ page }) => {
+        await page.evaluate(() => {
+            const analytics = window.MH_ANALYTICS || (window.MH_ANALYTICS = {});
+            analytics.trackCTA = () => {
+                throw new Error('temporary pricing CTA analytics outage');
+            };
+        });
+
+        await Promise.all([
+            waitForPath(page, '/prihlaseni.html'),
+            page.locator('[data-plan="pruvodce"]').click(),
+        ]);
+
+        const url = new URL(page.url());
+        expect(url.searchParams.get('plan')).toBe('pruvodce');
+        expect(url.searchParams.get('source')).toBe('pricing_page');
+        expect(url.searchParams.get('feature')).toBe('premium_membership');
+        expect(url.searchParams.get('redirect')).toBe('/cenik.html');
+    });
+
     test('bezny cenik nezobrazuje VIP jako hlavni checkout CTA', async ({ page }) => {
         const btn = page.locator('[data-plan="vip-majestrat"]');
         await expect(btn).toHaveCount(0);
@@ -420,6 +440,75 @@ test.describe('Ceník — platební tlačítka', () => {
                 entry_feature: 'tarot_celtic_cross'
             })
         }));
+    });
+
+    test('past_due checkout pouzije bezpecny serverovy billing portal', async ({ page }) => {
+        await page.route('**/api/payment/create-checkout-session', route => route.fulfill({
+            status: 409,
+            contentType: 'application/json',
+            body: JSON.stringify({
+                code: 'PAYMENT_METHOD_UPDATE_REQUIRED',
+                portalUrl: '/profil.html?source=payment_recovery&portal=1'
+            })
+        }));
+
+        await Promise.all([
+            page.waitForURL(url => url.pathname === '/profil.html' && url.searchParams.get('portal') === '1'),
+            page.evaluate(() => window.Auth._startCheckout('pruvodce')),
+        ]);
+
+        expect(new URL(page.url()).searchParams.get('source')).toBe('payment_recovery');
+    });
+
+    test('checkout odmitne neduveryhodny portalUrl a skonci v recovery profilu', async ({ page }) => {
+        await page.route('**/api/payment/create-checkout-session', route => route.fulfill({
+            status: 409,
+            contentType: 'application/json',
+            body: JSON.stringify({
+                code: 'PAYMENT_METHOD_UPDATE_REQUIRED',
+                portalUrl: 'javascript:window.__unsafePortalRedirect=true'
+            })
+        }));
+
+        await Promise.all([
+            page.waitForURL(url => url.pathname === '/profil.html' && url.searchParams.get('source') === 'payment_recovery'),
+            page.evaluate(() => window.Auth._startCheckout('pruvodce')),
+        ]);
+
+        await expect.poll(() => page.evaluate(() => window.__unsafePortalRedirect || false)).toBe(false);
+    });
+
+    test('paused checkout smeruje na profil k obnoveni misto nove platby', async ({ page }) => {
+        await page.route('**/api/payment/create-checkout-session', route => route.fulfill({
+            status: 409,
+            contentType: 'application/json',
+            body: JSON.stringify({ code: 'SUBSCRIPTION_PAUSED' })
+        }));
+
+        await Promise.all([
+            page.waitForURL(url => url.pathname === '/profil.html' && url.searchParams.get('source') === 'subscription_paused'),
+            page.evaluate(() => window.Auth._startCheckout('pruvodce')),
+        ]);
+
+        expect(new URL(page.url()).hash).toBe('#subscription-card');
+    });
+
+    test('aktivni duplicate checkout otevre spravu existujiciho predplatneho', async ({ page }) => {
+        await page.route('**/api/payment/create-checkout-session', route => route.fulfill({
+            status: 409,
+            contentType: 'application/json',
+            body: JSON.stringify({
+                code: 'SUBSCRIPTION_ALREADY_ACTIVE',
+                portalUrl: '/profil.html?source=subscription_management&portal=1'
+            })
+        }));
+
+        await Promise.all([
+            page.waitForURL(url => url.pathname === '/profil.html' && url.searchParams.get('portal') === '1'),
+            page.evaluate(() => window.Auth._startCheckout('pruvodce')),
+        ]);
+
+        expect(new URL(page.url()).searchParams.get('source')).toBe('subscription_management');
     });
 
     test('tarot laska pricing kontext mluvi vztahove a vraci na trikartovy rozklad', async ({ page }) => {

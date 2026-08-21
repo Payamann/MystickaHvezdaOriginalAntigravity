@@ -4,9 +4,14 @@ import { JWT_SECRET } from './config/jwt.js';
 import { isDevelopmentRuntime, isProductionRuntime, isTestRuntime } from './config/runtime.js';
 import {
     getRequiredPlanForFeature,
+    isPremiumPlanType,
+    normalizePlanType,
     planTypeMeetsRequirement,
 } from './config/constants.js';
+import { supabase } from './db-supabase.js';
 import { isTokenBlacklisted } from './utils/token-blacklist.js';
+
+const ACTIVE_PREMIUM_STATUSES = new Set(['active', 'trialing', 'cancel_pending']);
 
 // Common rate limiter options
 const createLimiter = (max, windowMin = 15, message = 'Příliš mnoho požadavků. Zkuste to prosím později.') => {
@@ -65,9 +70,61 @@ export const authenticateToken = async (req, res, next) => {
 // ============================================
 // AUTHORIZATION MIDDLEWARE
 // ============================================
-export const requirePremium = (req, res, next) => {
+async function refreshBillingEntitlement(req) {
+    if (req.billingEntitlementLoaded) return req.user;
+
+    if (!req.user?.id) {
+        req.user = { ...req.user, isPremium: false };
+        req.isPremium = false;
+        req.billingEntitlementLoaded = true;
+        return req.user;
+    }
+
+    const { data: subscription, error } = await supabase
+        .from('subscriptions')
+        .select('plan_type, status, current_period_end')
+        .eq('user_id', req.user?.id)
+        .maybeSingle();
+
+    if (error) throw error;
+
+    const planType = normalizePlanType(subscription?.plan_type);
+    const periodEnd = subscription?.current_period_end || null;
+    const periodIsCurrent = !periodEnd || new Date(periodEnd) > new Date();
+    const isPremium = isPremiumPlanType(planType)
+        && ACTIVE_PREMIUM_STATUSES.has(subscription?.status)
+        && periodIsCurrent;
+
+    req.user = {
+        ...req.user,
+        subscription_status: planType,
+        billing_status: subscription?.status || 'inactive',
+        premiumExpires: periodEnd,
+        isPremium,
+    };
+    req.isPremium = isPremium;
+    req.billingEntitlementLoaded = true;
+    return req.user;
+}
+
+function entitlementUnavailable(res) {
+    return res.status(503).json({
+        error: 'Stav předplatného se nyní nepodařilo ověřit. Zkuste to prosím znovu.',
+        code: 'BILLING_ENTITLEMENT_UNAVAILABLE',
+        retryable: true,
+    });
+}
+
+export const requirePremium = async (req, res, next) => {
     if (isDevelopmentRuntime()) {
         return next();
+    }
+
+    try {
+        await refreshBillingEntitlement(req);
+    } catch (error) {
+        console.error('[MIDDLEWARE] Premium entitlement lookup failed:', error.message);
+        return entitlementUnavailable(res);
     }
 
     if (!req.user || !req.user.isPremium) {
@@ -79,15 +136,28 @@ export const requirePremium = (req, res, next) => {
     next();
 };
 
-export const requirePremiumSoft = (req, res, next) => {
+export const requirePremiumSoft = async (req, res, next) => {
     // Allows access but tags the request
-    req.isPremium = !!(req.user && req.user.isPremium);
+    try {
+        await refreshBillingEntitlement(req);
+    } catch (error) {
+        console.error('[MIDDLEWARE] Soft premium entitlement lookup failed:', error.message);
+        req.user = { ...req.user, isPremium: false };
+        req.isPremium = false;
+    }
     next();
 };
 
-export const requireExclusive = (req, res, next) => {
+export const requireExclusive = async (req, res, next) => {
     if (isDevelopmentRuntime()) {
         return next();
+    }
+
+    try {
+        await refreshBillingEntitlement(req);
+    } catch (error) {
+        console.error('[MIDDLEWARE] Exclusive entitlement lookup failed:', error.message);
+        return entitlementUnavailable(res);
     }
 
     const isExclusive = planTypeMeetsRequirement(req.user?.subscription_status, 'osviceni');
@@ -102,9 +172,16 @@ export const requireExclusive = (req, res, next) => {
     next();
 };
 
-export const requireFeature = (featureName) => (req, res, next) => {
+export const requireFeature = (featureName) => async (req, res, next) => {
     if (isDevelopmentRuntime()) {
         return next();
+    }
+
+    try {
+        await refreshBillingEntitlement(req);
+    } catch (error) {
+        console.error(`[MIDDLEWARE] ${featureName} entitlement lookup failed:`, error.message);
+        return entitlementUnavailable(res);
     }
 
     const requiredPlan = getRequiredPlanForFeature(featureName);
@@ -135,27 +212,53 @@ export const optionalPremiumCheck = async (req, res, next) => {
             if (!blacklisted) {
                 const user = await verifyToken(token);
                 req.user = user;
-                req.isPremium = !!user.isPremium;
+                req.isPremium = false;
+                try {
+                    await refreshBillingEntitlement(req);
+                } catch (error) {
+                    // Keep valid identity context, but never grant premium from a stale claim.
+                    console.error('[MIDDLEWARE] Optional entitlement lookup failed:', error.message);
+                    req.user = { ...req.user, isPremium: false };
+                }
             }
         } catch (err) {
-            // Token invalid — silently continue without user context
+            // Invalid token — silently continue as a free visitor.
+            req.user = undefined;
+            req.isPremium = false;
         }
     }
     next();
 };
 
-export const requireAdmin = (req, res, next) => {
-    if (!req.user || req.user.role !== 'admin') {
-        const adminEmails = (process.env.ADMIN_EMAILS || '')
-            .split(',')
-            .map(e => e.trim())
-            .filter(Boolean);
-        if (req.user && adminEmails.includes(req.user.email)) {
-            return next();
-        }
+export const requireAdmin = async (req, res, next) => {
+    if (!req.user?.id) {
         return res.status(403).json({ error: 'Přístup odepřen. Vyžadováno oprávnění administrátora.' });
     }
-    next();
+
+    // Admin oprávnění je bezpečnostní stav uložený v DB. Nikdy ho neodvozujeme
+    // z e-mailu ani ze starého JWT claimu, aby registrace cizí adresy nebo pozdější
+    // odebrání role nemohly ponechat přístup do administrace.
+    const { data: currentUser, error } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', req.user.id)
+        .maybeSingle();
+
+    if (error) {
+        console.error('[MIDDLEWARE] Admin authorization lookup failed:', error.message);
+        return res.status(503).json({
+            error: 'Oprávnění administrátora se nyní nepodařilo ověřit.',
+            code: 'ADMIN_AUTHORIZATION_UNAVAILABLE',
+            retryable: true,
+        });
+    }
+
+    if (currentUser?.role !== 'admin') {
+        return res.status(403).json({ error: 'Přístup odepřen. Vyžadováno oprávnění administrátora.' });
+    }
+
+    req.user = { ...req.user, role: 'admin' };
+    return next();
 };
 
 // ============================================
@@ -207,11 +310,15 @@ export const staticLimiter = rateLimit({
     validate: { xForwardedForHeader: false }
 });
 
+export function getAiRequestLimit(req) {
+    return req.user?.isPremium ? 100 : 10;
+}
+
 export const aiLimiter = rateLimit({
     windowMs: 24 * 60 * 60 * 1000,
     max: (req) => {
         if (isDevelopmentRuntime() || isTestRuntime()) return 10000;
-        return req.user?.isPremium ? 100 : 10;
+        return getAiRequestLimit(req);
     },
     message: { error: 'Překročen denní limit pro generování výkladů. Upgradujte na premium pro neomezený přístup.' },
     standardHeaders: true,

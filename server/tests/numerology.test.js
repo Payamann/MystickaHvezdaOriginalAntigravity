@@ -1,6 +1,7 @@
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import app from '../index.js';
+import { supabase } from '../db-supabase.js';
 
 function createPremiumToken(overrides = {}) {
     return jwt.sign({
@@ -19,6 +20,15 @@ async function getCsrfToken() {
 }
 
 describe('Numerology route', () => {
+    beforeAll(async () => {
+        await supabase.from('subscriptions').insert({
+            user_id: 'numerology-test-user',
+            plan_type: 'premium_monthly',
+            status: 'active',
+            current_period_end: '2099-12-31T23:59:59.000Z'
+        });
+    });
+
     test('returns calculated fallback when AI service fails', async () => {
         const originalForceError = process.env.MOCK_AI_FORCE_ERROR;
         process.env.MOCK_AI_FORCE_ERROR = 'true';

@@ -116,6 +116,13 @@ describe('Mentor free limit and premium gate behavior', () => {
         const userId = `mentor-premium-${Date.now()}`;
         const token = makeToken({ userId, isPremium: true });
 
+        await supabase.from('subscriptions').insert({
+            user_id: userId,
+            plan_type: 'premium_monthly',
+            status: 'active',
+            current_period_end: '2099-12-31T23:59:59.000Z'
+        });
+
         await supabase.from('mentor_messages').insert([
             { user_id: userId, role: 'user', content: 'Prvni zprava', created_at: todayAt(8) },
             { user_id: userId, role: 'user', content: 'Druha zprava', created_at: todayAt(9) },

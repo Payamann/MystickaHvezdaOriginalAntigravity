@@ -3,7 +3,7 @@
  * Provides offline caching with stale-while-revalidate strategy
  */
 
-const CACHE_NAME = 'mysticka-hvezda-ee33fc10ec41';
+const CACHE_NAME = 'mysticka-hvezda-b8b8ef9f4142';
 const MAX_RUNTIME_CACHE_SIZE = 150;
 const STATIC_ASSETS = [
     '/fonts/local-fonts.css',
@@ -19,6 +19,7 @@ const STATIC_ASSETS = [
     '/css/pages/cenik.css',
     '/css/pages/rocni-horoskop.css',
     '/css/pages/osobni-mapa.css',
+    '/js/dist/analytics-init.js',
     '/js/dist/analytics.js',
     '/js/dist/core.js',
     '/js/dist/main.js',
@@ -36,6 +37,8 @@ const STATIC_ASSETS = [
     '/js/dist/page-extras.js',
     '/js/dist/premium-gates.js',
     '/js/dist/retention.js',
+    '/js/dist/prihlaseni.js',
+    '/js/dist/profile/dashboard.js',
     '/js/dist/rocni-horoskop.js',
     '/js/dist/osobni-mapa.js',
     '/img/logo-3d.webp',
@@ -76,6 +79,32 @@ function isCacheableResponse(response) {
     return !/\b(?:no-store|private)\b/i.test(cacheControl);
 }
 
+function getPrecachedAssetKey(request) {
+    const pathname = new URL(request.url).pathname;
+    return STATIC_ASSETS.includes(pathname) ? pathname : null;
+}
+
+async function matchCachedRequest(request) {
+    const exactMatch = await caches.match(request);
+    if (exactMatch) return exactMatch;
+
+    // HTML používá historicky různé ?v= cache-bustery. Nový worker proto může
+    // bezpečně obsloužit jejich URL čerstvě precachovaným souborem podle cesty.
+    const precachedKey = getPrecachedAssetKey(request);
+    return precachedKey ? caches.match(precachedKey) : null;
+}
+
+async function precacheFreshAssets(cache) {
+    await Promise.all(STATIC_ASSETS.map(async (asset) => {
+        const request = new Request(new URL(asset, self.location.origin), { cache: 'reload' });
+        const response = await fetch(request);
+        if (!isCacheableResponse(response)) {
+            throw new Error(`Precache failed for ${asset}: ${response.status}`);
+        }
+        await cache.put(asset, response);
+    }));
+}
+
 // Install - cache static assets
 self.addEventListener('install', (event) => {
     console.log('[SW] Installing Service Worker...');
@@ -83,7 +112,7 @@ self.addEventListener('install', (event) => {
         caches.open(CACHE_NAME)
             .then((cache) => {
                 console.log('[SW] Caching static assets');
-                return cache.addAll(STATIC_ASSETS);
+                return precacheFreshAssets(cache);
             })
             .then(() => self.skipWaiting())
     );
@@ -138,10 +167,12 @@ self.addEventListener('fetch', (event) => {
     }
 
     event.respondWith(
-        caches.match(event.request)
+        matchCachedRequest(event.request)
             .then((cachedResponse) => {
                 // Start network fetch regardless (for revalidation)
-                const networkFetch = fetch(event.request)
+                const pathname = new URL(event.request.url).pathname;
+                const shouldRevalidateStaticCode = /\.(?:css|js)$/i.test(pathname);
+                const networkFetch = fetch(event.request, shouldRevalidateStaticCode ? { cache: 'no-cache' } : undefined)
                     .then((response) => {
                         // Don't cache non-successful, non-basic or explicitly private responses
                         if (!isCacheableResponse(response)) {

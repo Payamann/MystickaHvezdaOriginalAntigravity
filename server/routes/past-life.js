@@ -5,7 +5,7 @@
  */
 import express from 'express';
 import crypto from 'crypto';
-import { authenticateToken, requireFeature } from '../middleware.js';
+import { aiLimiter, authenticateToken, requireFeature } from '../middleware.js';
 import { callClaude } from '../services/claude.js';
 import { supabase } from '../db-supabase.js';
 
@@ -103,7 +103,7 @@ function buildFallbackPastLifeReading({ name, birthDate, gender, place }) {
     };
 }
 
-router.post('/', authenticateToken, requireFeature('past_life'), async (req, res) => {
+router.post('/', authenticateToken, requireFeature('past_life'), aiLimiter, async (req, res) => {
     try {
         const { name, birthDate, gender, place } = req.body;
 

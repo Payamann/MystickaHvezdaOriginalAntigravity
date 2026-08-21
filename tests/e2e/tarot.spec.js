@@ -689,6 +689,70 @@ test.describe('Tarot Ano/Ne', () => {
         )).toBe(true);
     });
 
+    test('slovenský výsledek má jednu jasnou placenou cestu a nehlásí falešný paywall', async ({ page }) => {
+        const funnelEvents = [];
+        await page.route('**/api/payment/funnel-event', async (route) => {
+            funnelEvents.push(JSON.parse(route.request().postData() || '{}'));
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+
+        await page.goto('/sk/tarot-ano-nie.html');
+        await waitForPageReady(page);
+        await page.evaluate(() => {
+            window.getCSRFToken = async () => 'e2e-tarot-sk-token';
+            window.__tarotSkUpgradeFlow = null;
+            window.Auth = window.Auth || {};
+            window.Auth.isLoggedIn = () => false;
+            window.Auth.startPlanCheckout = (planId, options) => {
+                window.__tarotSkUpgradeFlow = { planId, options };
+            };
+        });
+
+        await page.fill('#question-input', 'Mám dnes urobiť prvý krok?');
+        await page.locator('.tarot-card').first().click();
+        await expect(page.locator('#result-panel')).toHaveClass(/show/, { timeout: 2500 });
+
+        const nextStep = page.locator('#tarot-yes-no-next-step');
+        await expect(nextStep).toBeVisible();
+        await expect(nextStep.locator('.tarot-yes-no-next-card')).toHaveCount(1);
+        await expect(nextStep).toContainText('Dnes 0 Kč, potom 199 Kč mesačne');
+        await expect(nextStep.locator('.tarot-yes-no-next-cta')).toContainText('7 dní za 0 Kč');
+        await expect(nextStep.locator('.tarot-yes-no-next-alt a')).toHaveCount(2);
+        expect(funnelEvents.some((event) => event.eventName === 'paywall_viewed')).toBe(false);
+
+        const desktopHasHorizontalScroll = await page.evaluate(() =>
+            document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
+        );
+        expect(desktopHasHorizontalScroll).toBe(false);
+
+        await page.setViewportSize({ width: 393, height: 851 });
+        await expect(nextStep).toBeVisible();
+        const mobileHasHorizontalScroll = await page.evaluate(() =>
+            document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
+        );
+        expect(mobileHasHorizontalScroll).toBe(false);
+
+        await nextStep.locator('[data-tarot-yes-no-upgrade]').click();
+        await expect.poll(() => page.evaluate(() => window.__tarotSkUpgradeFlow)).toEqual(expect.objectContaining({
+            planId: 'pruvodce',
+            options: expect.objectContaining({
+                source: 'tarot_yes_no_result_sk',
+                feature: 'tarot_multi_card',
+                redirect: '/cenik.html'
+            })
+        }));
+        await expect.poll(() => funnelEvents.some((event) =>
+            event.eventName === 'paywall_cta_clicked'
+            && event.source === 'tarot_yes_no_result_sk'
+            && event.feature === 'tarot_multi_card'
+            && event.planId === 'pruvodce'
+        )).toBe(true);
+    });
+
     test('výsledek ukazuje skutečnou taženou kartu, otázku a další krok', async ({ page }) => {
         await page.goto('/tarot-ano-ne.html');
         await waitForPageReady(page);

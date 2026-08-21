@@ -1,6 +1,7 @@
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import app from '../index.js';
+import { supabase } from '../db-supabase.js';
 
 describe('Oracle AI fallbacks', () => {
     const originalForceError = process.env.MOCK_AI_FORCE_ERROR;
@@ -11,8 +12,9 @@ describe('Oracle AI fallbacks', () => {
     }
 
     function createPremiumToken(overrides = {}) {
+        const isPremium = overrides.isPremium !== false;
         return jwt.sign({
-            id: 'oracle-fallback-user',
+            id: isPremium ? 'oracle-fallback-user' : 'oracle-fallback-free-user',
             email: 'oracle-fallback@example.com',
             role: 'user',
             isPremium: true,
@@ -23,6 +25,21 @@ describe('Oracle AI fallbacks', () => {
 
     beforeEach(() => {
         process.env.MOCK_AI_FORCE_ERROR = 'true';
+    });
+
+    beforeAll(async () => {
+        await supabase.from('subscriptions').insert({
+            user_id: 'oracle-fallback-user',
+            plan_type: 'premium_monthly',
+            status: 'active',
+            current_period_end: '2099-12-31T23:59:59.000Z'
+        });
+        await supabase.from('subscriptions').insert({
+            user_id: 'oracle-fallback-free-user',
+            plan_type: 'free',
+            status: 'active',
+            current_period_end: null
+        });
     });
 
     afterEach(() => {

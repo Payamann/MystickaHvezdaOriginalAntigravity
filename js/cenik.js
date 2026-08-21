@@ -636,6 +636,14 @@ function waitForFunnelEventBeforeNavigation(funnelEventPromise) {
     ]);
 }
 
+function trackPricingCtaSafely(eventName, payload = {}) {
+    try {
+        window.MH_ANALYTICS?.trackCTA?.(eventName, payload);
+    } catch (error) {
+        console.warn('[Pricing] CTA analytics failed:', eventName, error.message);
+    }
+}
+
 function shouldControlTrackedNavigation(event) {
     return event.button === 0
         && !event.metaKey
@@ -698,7 +706,7 @@ function renderCheckoutCancelRecovery(context, paymentState = 'cancel') {
         });
 
         saveOfferButton.addEventListener('click', () => {
-            window.MH_ANALYTICS?.trackCTA?.('pricing_cancel_save_offer', {
+            trackPricingCtaSafely('pricing_cancel_save_offer', {
                 source: context.source || 'pricing_cancel',
                 feature: context.feature || null,
                 plan_id: context.recommendedPlan
@@ -717,7 +725,7 @@ function renderCheckoutCancelRecovery(context, paymentState = 'cancel') {
     }
 
     panel.querySelector('[data-cancel-retry]')?.addEventListener('click', () => {
-        window.MH_ANALYTICS?.trackCTA?.('pricing_cancel_retry_plan', {
+        trackPricingCtaSafely('pricing_cancel_retry_plan', {
             source: context.source || 'pricing_cancel',
             feature: context.feature || null,
             plan_id: context.recommendedPlan
@@ -737,7 +745,7 @@ function renderCheckoutCancelRecovery(context, paymentState = 'cancel') {
 
     panel.querySelector('[data-cancel-preview]')?.addEventListener('click', (event) => {
         const link = event.currentTarget;
-        window.MH_ANALYTICS?.trackCTA?.('pricing_cancel_preview', {
+        trackPricingCtaSafely('pricing_cancel_preview', {
             source: context.source || 'pricing_cancel',
             feature: context.feature || null,
             plan_id: context.recommendedPlan,
@@ -753,7 +761,7 @@ function renderCheckoutCancelRecovery(context, paymentState = 'cancel') {
 
     panel.querySelector('[data-cancel-downsell]')?.addEventListener('click', (event) => {
         const link = event.currentTarget;
-        window.MH_ANALYTICS?.trackCTA?.('pricing_cancel_downsell', {
+        trackPricingCtaSafely('pricing_cancel_downsell', {
             source: context.source || 'pricing_cancel',
             feature: context.feature || null,
             plan_id: context.recommendedPlan,
@@ -843,7 +851,7 @@ function renderRecommendationBanner(context) {
     heroSubtitle.insertAdjacentElement('afterend', banner);
 
     banner.querySelector('.pricing-plan-recommendation__action')?.addEventListener('click', () => {
-        window.MH_ANALYTICS?.trackCTA?.('pricing_recommendation_cta', {
+        trackPricingCtaSafely('pricing_recommendation_cta', {
             source: context.source || 'pricing_page',
             feature: context.feature || null,
             plan_id: context.recommendedPlan
@@ -858,7 +866,7 @@ function renderRecommendationBanner(context) {
 
     banner.querySelector('[data-preview-destination]')?.addEventListener('click', (event) => {
         const link = event.currentTarget;
-        window.MH_ANALYTICS?.trackCTA?.('pricing_recommendation_preview', {
+        trackPricingCtaSafely('pricing_recommendation_preview', {
             source: context.source || 'pricing_page',
             feature: context.feature || null,
             plan_id: context.recommendedPlan,
@@ -1024,7 +1032,7 @@ function bindCheckoutButtons(context) {
                 authMode: 'register'
             };
 
-            window.MH_ANALYTICS?.trackCTA?.('pricing_plan_cta', {
+            trackPricingCtaSafely('pricing_plan_cta', {
                 label: button.textContent?.trim() || 'checkout',
                 plan_id: planId,
                 requires_auth: !isLoggedIn,
@@ -1075,7 +1083,7 @@ function bindProductLinks(context) {
             const href = link.getAttribute('href') || null;
             const productId = link.dataset.product || null;
             const label = getPricingLinkLabel(link, 'one_time_product');
-            window.MH_ANALYTICS?.trackCTA?.('pricing_one_time_product', {
+            trackPricingCtaSafely('pricing_one_time_product', {
                 product_id: productId,
                 label,
                 destination: href
@@ -1107,7 +1115,7 @@ function bindFreePlanCta(context) {
     document.querySelector('[data-pricing-free-cta]')?.addEventListener('click', (event) => {
         const link = event.currentTarget;
         const href = link.getAttribute('href') || '/prihlaseni.html';
-        window.MH_ANALYTICS?.trackCTA?.('pricing_free_cta', {
+        trackPricingCtaSafely('pricing_free_cta', {
             destination: href,
             auth_mode: 'register',
             source: 'pricing_free_cta',
@@ -1148,7 +1156,7 @@ function bindPricingDecisionGuide(context) {
                 item.setAttribute('aria-pressed', item === button ? 'true' : 'false');
             });
 
-            window.MH_ANALYTICS?.trackCTA?.('pricing_decision_choice', {
+            trackPricingCtaSafely('pricing_decision_choice', {
                 choice,
                 source: context.source || 'pricing_page',
                 feature: context.feature || null,

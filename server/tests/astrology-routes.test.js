@@ -1,8 +1,18 @@
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import app from '../index.js';
+import { supabase } from '../db-supabase.js';
 
 describe('Astro calculation routes', () => {
+    beforeAll(async () => {
+        await supabase.from('subscriptions').insert({
+            user_id: 'astro-test-user',
+            plan_type: 'exclusive_monthly',
+            status: 'active',
+            current_period_end: '2099-12-31T23:59:59.000Z'
+        });
+    });
+
     async function getCsrfToken() {
         const res = await request(app).get('/api/csrf-token').expect(200);
         return res.body.csrfToken;

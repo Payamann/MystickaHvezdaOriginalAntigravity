@@ -33,7 +33,7 @@ async function expectLocatorsWithinViewport(page, locators) {
     }
 }
 
-async function mockSuccessfulRegister(page, email = 'activation@example.com') {
+async function mockSuccessfulRegister(page, email = 'activation@example.com', responseOverrides = {}) {
     await page.route('**/api/auth/register', async (route) => {
         await route.fulfill({
             status: 200,
@@ -45,7 +45,8 @@ async function mockSuccessfulRegister(page, email = 'activation@example.com') {
                     email,
                     role: 'user',
                     subscription_status: 'free'
-                }
+                },
+                ...responseOverrides
             })
         });
     });
@@ -369,6 +370,36 @@ test.describe('Login stránka', () => {
         ]);
     });
 
+    test('placeny registracni landing nema onboarding sliby a nabizi login pred formularem', async ({ page }) => {
+        await page.setViewportSize(MOBILE_VIEWPORT);
+        await page.goto('/prihlaseni.html?mode=register&redirect=/cenik.html&plan=pruvodce&source=inline_paywall&feature=numerologie_vyklad&entry_source=inline_paywall&entry_feature=numerologie_vyklad');
+        await waitForPageReady(page);
+
+        await expect(page.locator('#checkout-context-banner')).toBeVisible();
+        await expect(page.locator('#signup-value-panel')).toBeHidden();
+        await expect(page.locator('#checkout-existing-account')).toBeVisible();
+        await expect(page.locator('#checkout-existing-account')).toContainText('přihlásit se');
+
+        const loginShortcutBox = await page.locator('#checkout-existing-account').boundingBox();
+        const formBox = await page.locator('#login-form').boundingBox();
+        expect(loginShortcutBox).toBeTruthy();
+        expect(formBox).toBeTruthy();
+        expect(loginShortcutBox.y + loginShortcutBox.height).toBeLessThanOrEqual(formBox.y + 2);
+
+        await page.locator('#checkout-existing-account').click();
+
+        await expect(page.locator('body')).not.toHaveClass(/auth-register-mode/);
+        await expect(page.locator('#auth-submit')).toContainText('Přihlásit se a pokračovat');
+        await expect(page.locator('#checkout-existing-account')).toBeHidden();
+        const url = new URL(page.url());
+        expect(url.searchParams.get('mode')).toBe('login');
+        expect(url.searchParams.get('plan')).toBe('pruvodce');
+        expect(url.searchParams.get('source')).toBe('inline_paywall');
+        expect(url.searchParams.get('feature')).toBe('numerologie_vyklad');
+        expect(url.searchParams.get('entry_source')).toBe('inline_paywall');
+        expect(url.searchParams.get('entry_feature')).toBe('numerologie_vyklad');
+    });
+
     test('login s pending checkout kontextem ukazuje placene navazani', async ({ page }) => {
         await page.goto('/prihlaseni.html?mode=login&redirect=/cenik.html&plan=pruvodce&source=trial_paywall&feature=numerologie_vyklad&entry_source=trial_paywall&entry_feature=numerologie_vyklad');
         await waitForPageReady(page);
@@ -580,9 +611,9 @@ test.describe('Login stránka', () => {
         }
     });
 
-    test('registrace z primeho checkout odkazu dokonci Stripe checkout', async ({ page }) => {
+    test('obnovena registrace z primeho odkazu zachova a dokonci Stripe checkout', async ({ page }) => {
         let checkoutPayload = null;
-        await mockSuccessfulRegister(page, 'direct-checkout@example.com');
+        await mockSuccessfulRegister(page, 'direct-checkout@example.com', { recoveredRegistration: true });
 
         await page.route('**/api/payment/create-checkout-session', async (route) => {
             checkoutPayload = route.request().postDataJSON();
@@ -2512,19 +2543,24 @@ test.describe('Auth modal', () => {
         const modal = page.locator('#auth-modal');
         await expect(modal).toBeVisible();
         await expect(page.locator('#register-fields')).toBeVisible();
+        await expect(page.locator('#gdpr-consent-wrapper')).toBeVisible();
         await expect(page.locator('#birth-date-privacy-note')).toContainText('Nepovinné');
         await expect(page.locator('#birth-date-privacy-note')).toContainText('jen pro osobní výklady');
         await expect(page.locator('input[name="birth_date"]')).not.toHaveAttribute('required', '');
+        await expectNoHorizontalOverflow(page);
 
         await page.locator('#auth-modal input[name="email"]').fill('modal-register@example.com');
         await page.locator('#auth-modal input[name="password"]').fill('TestPassword123!');
         await page.locator('#auth-modal input[name="confirm_password"]').fill('TestPassword123!');
+        await page.locator('#auth-modal #gdpr-consent').check();
         await page.locator('#auth-modal #auth-submit').click();
 
         await expect.poll(() => registerPayload).toEqual(expect.objectContaining({
             email: 'modal-register@example.com',
             password: 'TestPassword123!',
-            password_confirm: 'TestPassword123!'
+            password_confirm: 'TestPassword123!',
+            gdpr_consent: true,
+            terms_consent: true
         }));
         expect(registerPayload.birth_date).toBe('');
     });

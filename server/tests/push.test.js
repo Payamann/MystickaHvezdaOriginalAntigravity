@@ -10,6 +10,18 @@ async function getCsrfToken() {
 }
 
 describe('Push notification API', () => {
+    beforeAll(async () => {
+        await supabase.from('users').insert({
+            id: 'push-admin-test',
+            email: 'admin@example.com',
+            role: 'admin'
+        });
+    });
+
+    afterAll(async () => {
+        await supabase.from('users').delete().eq('id', 'push-admin-test');
+    });
+
     function createAdminToken() {
         return jwt.sign({
             id: 'push-admin-test',

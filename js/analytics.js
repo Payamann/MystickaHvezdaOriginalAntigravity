@@ -3,8 +3,9 @@
  * Supports multiple analytics providers (Google Analytics, Mixpanel, Segment)
  */
 
-const MH_ANALYTICS_ENDPOINT = '/api/analytics/event';
+const MH_ANALYTICS_BATCH_ENDPOINT = '/api/analytics/batch';
 const MH_ANALYTICS_MAX_QUEUE = 30;
+const MH_ANALYTICS_BATCH_SIZE = 10;
 const MH_ANALYTICS_SESSION_KEY = 'mh_analytics_session_id';
 const MH_ANALYTICS_CLIENT_KEY = 'mh_analytics_client_id';
 const MH_ATTRIBUTION_FIRST_KEY = 'mh_attribution_first_touch';
@@ -78,9 +79,12 @@ const MH_SEO_LANDING_PATTERNS = [
 window.MH_ANALYTICS_QUEUE = window.MH_ANALYTICS_QUEUE || [];
 
 let mhAnalyticsCsrfPromise = null;
+let mhAnalyticsFlushPromise = null;
 let mhAnalyticsPageViewTracked = false;
 let mhSeoLandingViewTracked = false;
 let mhAnalyticsAttributionContext = null;
+const mhAnalyticsProviderEvents = new WeakSet();
+const mhTrackedPurchaseKeys = new Set();
 
 function getAnalyticsPreference() {
     try {
@@ -331,6 +335,10 @@ function buildCtaTrackingContext(target, href, defaults = {}) {
 
 function captureAttributionContext() {
     const current = getCurrentAttributionTouch();
+    if (!getAnalyticsPreference()) {
+        return { first: null, last: null, current };
+    }
+
     const local = getBrowserStorage('localStorage');
     const session = getBrowserStorage('sessionStorage');
     let first = readAttributionStorage(MH_ATTRIBUTION_FIRST_KEY, local);
@@ -347,6 +355,15 @@ function captureAttributionContext() {
     }
 
     return { first, last, current };
+}
+
+function clearAnalyticsStorage() {
+    try {
+        localStorage.removeItem(MH_ANALYTICS_CLIENT_KEY);
+        localStorage.removeItem(MH_ATTRIBUTION_FIRST_KEY);
+        sessionStorage.removeItem(MH_ANALYTICS_SESSION_KEY);
+        sessionStorage.removeItem(MH_ATTRIBUTION_LAST_KEY);
+    } catch {}
 }
 
 function sanitizeClientMetadata(event) {
@@ -372,7 +389,7 @@ function getAnalyticsCsrfToken() {
     if (window.getCSRFToken) return window.getCSRFToken();
     if (mhAnalyticsCsrfPromise) return mhAnalyticsCsrfPromise;
 
-    mhAnalyticsCsrfPromise = fetch('/api/csrf-token', { credentials: 'include' })
+    mhAnalyticsCsrfPromise = window.fetch('/api/csrf-token', { credentials: 'include' })
         .then((response) => response.json())
         .then((data) => data.csrfToken || null)
         .catch(() => null)
@@ -383,30 +400,72 @@ function getAnalyticsCsrfToken() {
     return mhAnalyticsCsrfPromise;
 }
 
-function queueBackendEvent(event) {
-    window.MH_ANALYTICS_QUEUE.push(event);
-    if (window.MH_ANALYTICS_QUEUE.length > MH_ANALYTICS_MAX_QUEUE) {
-        window.MH_ANALYTICS_QUEUE.splice(0, window.MH_ANALYTICS_QUEUE.length - MH_ANALYTICS_MAX_QUEUE);
-    }
+function eventWithCurrentAttribution(event) {
+    return {
+        ...compactAttributionMetadata(),
+        ...event
+    };
+}
 
-    if (!getAnalyticsPreference()) return;
-    if (!window.fetch) return;
-
-    const payload = {
-        eventName: event.name,
-        feature: event.feature || event.feature_name || null,
+function buildBackendPayload(event) {
+    const enrichedEvent = eventWithCurrentAttribution(event);
+    return {
+        eventName: enrichedEvent.name,
+        feature: enrichedEvent.feature || enrichedEvent.feature_name || null,
         page: document.title || null,
         path: window.location.pathname,
         referrer: document.referrer || null,
         clientId: getOrCreateStorageId(MH_ANALYTICS_CLIENT_KEY, 'mhc'),
         sessionId: getOrCreateStorageId(MH_ANALYTICS_SESSION_KEY, 'mhs'),
-        metadata: sanitizeClientMetadata(event)
+        metadata: sanitizeClientMetadata(enrichedEvent)
     };
+}
 
-    getAnalyticsCsrfToken()
-        .then((csrfToken) => {
-            if (!csrfToken) return null;
-            return fetch(MH_ANALYTICS_ENDPOINT, {
+function providerPayloadFromEvent(event) {
+    const payload = eventWithCurrentAttribution(event);
+    delete payload.name;
+    delete payload.timestamp;
+    delete payload.userAgent;
+    return payload;
+}
+
+function dispatchAnalyticsProviders(event) {
+    if (!getAnalyticsPreference() || mhAnalyticsProviderEvents.has(event)) return;
+
+    const payload = providerPayloadFromEvent(event);
+
+    if (window.gtag) {
+        window.gtag('event', event.name, payload);
+    }
+
+    if (window.mixpanel) {
+        window.mixpanel.track(event.name, payload);
+    }
+
+    if (window.analytics) {
+        window.analytics.track(event.name, payload);
+    }
+
+    mhAnalyticsProviderEvents.add(event);
+}
+
+function flushAnalyticsQueue() {
+    if (mhAnalyticsFlushPromise) return mhAnalyticsFlushPromise;
+    if (!getAnalyticsPreference() || !window.fetch || window.MH_ANALYTICS_QUEUE.length === 0) {
+        return Promise.resolve(false);
+    }
+
+    mhAnalyticsFlushPromise = (async () => {
+        let sentAny = false;
+
+        while (getAnalyticsPreference() && window.MH_ANALYTICS_QUEUE.length > 0) {
+            const batch = window.MH_ANALYTICS_QUEUE.slice(0, MH_ANALYTICS_BATCH_SIZE);
+            batch.forEach(dispatchAnalyticsProviders);
+
+            const csrfToken = await getAnalyticsCsrfToken();
+            if (!csrfToken) break;
+
+            const response = await window.fetch(MH_ANALYTICS_BATCH_ENDPOINT, {
                 method: 'POST',
                 credentials: 'include',
                 keepalive: true,
@@ -414,10 +473,41 @@ function queueBackendEvent(event) {
                     'Content-Type': 'application/json',
                     'X-CSRF-Token': csrfToken
                 },
-                body: JSON.stringify(payload)
+                body: JSON.stringify({
+                    events: batch.map(buildBackendPayload)
+                })
             });
-        })
-        .catch(() => {});
+
+            if (!response?.ok) break;
+
+            const result = await response.json().catch(() => null);
+            if (!result?.success || Number(result.accepted) !== batch.length) break;
+
+            for (const event of batch) {
+                const queueIndex = window.MH_ANALYTICS_QUEUE.indexOf(event);
+                if (queueIndex !== -1) window.MH_ANALYTICS_QUEUE.splice(queueIndex, 1);
+            }
+            sentAny = true;
+        }
+
+        return sentAny;
+    })()
+        .catch(() => false)
+        .finally(() => {
+            mhAnalyticsFlushPromise = null;
+        });
+
+    return mhAnalyticsFlushPromise;
+}
+
+function queueBackendEvent(event) {
+    window.MH_ANALYTICS_QUEUE.push(event);
+    if (window.MH_ANALYTICS_QUEUE.length > MH_ANALYTICS_MAX_QUEUE) {
+        window.MH_ANALYTICS_QUEUE.splice(0, window.MH_ANALYTICS_QUEUE.length - MH_ANALYTICS_MAX_QUEUE);
+    }
+
+    if (!getAnalyticsPreference()) return;
+    void flushAnalyticsQueue();
 }
 
 const MH_ANALYTICS = {
@@ -437,28 +527,13 @@ const MH_ANALYTICS = {
             ...data
         };
 
-        // 1. Google Analytics (if available)
-        if (window.gtag) {
-            gtag('event', eventName, data);
-        }
-
-        // 2. Optional debug logging for local diagnostics
+        // 1. Optional debug logging for local diagnostics
         if (window.MH_DEBUG_ANALYTICS) {
             console.debug(`[Analytics] ${eventName}`, event);
         }
 
-        // 3. Queue and persist to first-party analytics endpoint
+        // 2. Queue for consent-gated providers and first-party persistence.
         queueBackendEvent(event);
-
-        // 4. Mixpanel (if integrated)
-        if (window.mixpanel) {
-            mixpanel.track(eventName, data);
-        }
-
-        // 5. Segment (if integrated)
-        if (window.analytics) {
-            window.analytics.track(eventName, data);
-        }
     },
 
     /**
@@ -541,8 +616,17 @@ const MH_ANALYTICS = {
 
     trackPurchaseCompleted(productId = 'unknown', value = null, currency = 'CZK', context = {}) {
         const productType = context.product_type || 'subscription';
+        const transactionId = context.transaction_id || context.session_id || null;
+        const purchaseKey = transactionId ? `transaction:${transactionId}` : null;
+
+        if (purchaseKey && mhTrackedPurchaseKeys.has(purchaseKey)) {
+            return false;
+        }
+
+        if (purchaseKey) mhTrackedPurchaseKeys.add(purchaseKey);
+
         const payload = {
-            transaction_id: context.transaction_id || context.session_id || undefined,
+            transaction_id: transactionId || undefined,
             currency,
             value,
             product_id: productId,
@@ -558,7 +642,7 @@ const MH_ANALYTICS = {
         };
 
         this.trackEvent('purchase', payload);
-        this.trackEvent('purchase_completed', payload);
+        return true;
     },
 
     trackBillingPortalOpened(context = {}) {
@@ -584,6 +668,10 @@ const MH_ANALYTICS = {
             stack: normalizedError.stack,
             ...context
         });
+    },
+
+    flushQueuedEvents() {
+        return flushAnalyticsQueue();
     }
 };
 
@@ -618,6 +706,21 @@ if (document.readyState === 'loading') {
 } else {
     trackInitialPageView();
 }
+
+window.addEventListener('mh_cookie_consent', (event) => {
+    if (event.detail?.analytics === true) {
+        mhAnalyticsAttributionContext = captureAttributionContext();
+        void flushAnalyticsQueue();
+        return;
+    }
+
+    if (event.detail?.analytics === false) {
+        window.MH_ANALYTICS_QUEUE.splice(0, window.MH_ANALYTICS_QUEUE.length);
+        mhTrackedPurchaseKeys.clear();
+        mhAnalyticsAttributionContext = null;
+        clearAnalyticsStorage();
+    }
+});
 
 document.addEventListener('click', (event) => {
     const target = event.target.closest(

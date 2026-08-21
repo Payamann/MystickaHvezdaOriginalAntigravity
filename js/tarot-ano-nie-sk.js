@@ -591,7 +591,15 @@
             feature: TAROT_YES_NO_FEATURE,
             source: TAROT_YES_NO_RESULT_SOURCE
         });
-        void trackTarotYesNoFunnelEvent('paywall_viewed', TAROT_YES_NO_RESULT_SOURCE, metadata);
+        // Toto je voliteľná ponuka po hotovom bezplatnom výsledku, nie paywall.
+        // Paywall metriku nechávame až skutočným zamknutým obrazovkám; inak sa
+        // každý výsledok tváril ako návšteva paywallu a skresľoval konverziu.
+        window.MH_ANALYTICS?.trackAction?.('tarot_yes_no_upgrade_bridge_viewed', {
+            ...metadata,
+            feature: TAROT_YES_NO_FEATURE,
+            source: TAROT_YES_NO_RESULT_SOURCE,
+            plan_id: TAROT_YES_NO_PLAN_ID
+        });
     }
 
     function bindTarotYesNoBridgeLinks() {

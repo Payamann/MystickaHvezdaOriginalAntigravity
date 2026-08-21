@@ -34,7 +34,7 @@ import { getPragueHour, isAfterDailyHoroscopeSendWindow, isAfterDailyPushSendWin
 import { initializeDataRetentionJob } from './jobs/data-retention.js';
 import { initializeOneTimeOrderReconciliationJob } from './jobs/one-time-order-reconciliation.js';
 import schedule from 'node-schedule';
-import { globalLimiter, staticLimiter, aiLimiter, sensitiveLimiter } from './middleware.js';
+import { globalLimiter, staticLimiter, sensitiveLimiter } from './middleware.js';
 import {
     setBaseContentSecurityPolicy,
     setHtmlContentSecurityPolicy,
@@ -939,14 +939,14 @@ app.get('/api/growth-loop', (req, res) => {
 });
 
 // AI Oracle routes (crystal-ball, tarot, natal-chart, synastry, astrocartography)
-app.use('/api', aiLimiter, oracleRoutes);
+app.use('/api', oracleRoutes);
 
 // Horoscope with DB caching (AI rate limit applied only on cache miss inside the route)
 app.use('/api/horoscope', horoscopeRoutes);
-app.use('/api', aiLimiter, briefingRoutes);
+app.use('/api', briefingRoutes);
 
 // Numerology with DB caching (Premium only)
-app.use('/api/numerology', aiLimiter, numerologyRoutes);
+app.use('/api/numerology', numerologyRoutes);
 
 // User readings CRUD + password change
 app.use('/api/user', userRoutes);
@@ -961,10 +961,10 @@ app.use('/api/subscribe/horoscope', horoscopeSubscribeRoutes);
 app.use('/api/push', pushRoutes);
 
 // Past Life — premium feature
-app.use('/api/past-life', aiLimiter, pastLifeRoutes);
+app.use('/api/past-life', pastLifeRoutes);
 
 // Medicine Wheel — premium feature
-app.use('/api/medicine-wheel', aiLimiter, medicineWheelRoutes);
+app.use('/api/medicine-wheel', medicineWheelRoutes);
 
 // Roční Horoskop na míru — one-time paid PDF product
 app.use('/api/rocni-horoskop', rocniHoroskopRoutes);

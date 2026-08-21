@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import fs from 'node:fs';
 import { jest } from '@jest/globals';
 
 const TEST_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || 'test-webhook-secret';
@@ -45,16 +46,14 @@ function createPaymentEventsQuery() {
         update: (payload) => {
             if (payload?.status === 'processing') {
                 reservationRuntime.calls.reclaimUpdate += 1;
-                return {
-                    eq: () => ({
-                        neq: () => ({
-                            select: async () => ({
-                                data: reservationRuntime.scenario.reclaimRows ?? [],
-                                error: reservationRuntime.scenario.reclaimError ?? null,
-                            }),
-                        }),
+                const reclaimQuery = {
+                    eq: () => reclaimQuery,
+                    select: async () => ({
+                        data: reservationRuntime.scenario.reclaimRows ?? [],
+                        error: reservationRuntime.scenario.reclaimError ?? null,
                     }),
                 };
+                return reclaimQuery;
             }
 
             if (payload?.status === 'success') {
@@ -119,6 +118,17 @@ function buildUnknownWebhookPayload(eventId) {
 }
 
 describe('Stripe webhook reservation duplicate decisioning', () => {
+    test('database migration permits the failed state used by webhook retries', () => {
+        const migration = fs.readFileSync(
+            new URL('../../migrations/20260815_allow_payment_events_failed_status.sql', import.meta.url),
+            'utf8'
+        );
+
+        expect(migration).toContain("CHECK (status IN ('processing', 'success', 'failed'))");
+        expect(migration).toContain('cardinality(constraint_row.conkey) = 1');
+        expect(migration).toContain('VALIDATE CONSTRAINT payment_events_status_check');
+    });
+
     beforeEach(() => {
         resetRuntime();
         supabaseMock.from.mockClear();

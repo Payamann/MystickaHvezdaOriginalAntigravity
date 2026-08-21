@@ -40,6 +40,17 @@ async function insertOrder(overrides = {}) {
 }
 
 describe('Admin one-time orders API', () => {
+    beforeAll(async () => {
+        await supabase.from('users').insert([
+            { id: 'admin-1', email: 'admin@example.com', role: 'admin' },
+            { id: 'user-1', email: 'user@example.com', role: 'user' }
+        ]);
+    });
+
+    afterAll(async () => {
+        await supabase.from('users').delete().in('id', ['admin-1', 'user-1']);
+    });
+
     test('requires authentication', async () => {
         const res = await request(app).get('/api/admin/one-time-orders');
         expect(res.status).toBe(401);

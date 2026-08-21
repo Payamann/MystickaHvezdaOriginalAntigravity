@@ -4,26 +4,57 @@
  * ALSO includes standalone hamburger menu handler (no module dependencies).
  */
 
-// Load GA4 + cookie handler on every page (lazy, non-blocking)
+// Load consent-aware analytics on every page (lazy, non-blocking).
 (function () {
     const scriptTag = document.querySelector('script[src*="components.js"], script[src*="core.js"]');
     const scriptSrc = scriptTag ? scriptTag.getAttribute('src') : '';
     const basePath = scriptSrc.split(/js\/(?:dist\/)?(?:components|core)\.js/)[0] || '';
 
-    // Analytics — always first (sets up dataLayer + consent stubs before banner loads)
-    if (!window.gtag && !document.querySelector('script[src*="analytics-init.js"]')) {
-        const s = document.createElement('script');
-        s.src = basePath + 'js/analytics-init.js';
-        s.defer = true;
-        document.head.appendChild(s);
+    function appendOrderedScript(src) {
+        const script = document.createElement('script');
+        script.src = src;
+        script.async = false;
+        script.defer = true;
+        document.head.appendChild(script);
+        return script;
     }
 
-    // Cookie handler — loads after analytics so consent update event is always caught
-    if (!window.MH_COOKIE_HANDLER_INIT && !document.querySelector('script[src*="cookie-handler.js"]')) {
-        const ch = document.createElement('script');
-        ch.src = basePath + 'js/dist/cookie-handler.js?v=20260703-consent-event';
-        ch.defer = true;
-        document.head.appendChild(ch);
+    function loadConsentUi() {
+        if (!window.MH_COOKIE_HANDLER_INIT && !document.querySelector('script[src*="cookie-handler.js"]')) {
+            appendOrderedScript(basePath + 'js/dist/cookie-handler.js?v=20260703-consent-event');
+        }
+    }
+
+    function loadAnalyticsAndConsentUi() {
+        if (window.MH_ANALYTICS) {
+            loadConsentUi();
+            return;
+        }
+
+        let analyticsScript = document.querySelector('script[src*="/analytics.js"]');
+        if (!analyticsScript) {
+            analyticsScript = appendOrderedScript(basePath + 'js/dist/analytics.js?v=9');
+        }
+
+        // The banner must not dispatch consent before first-party analytics
+        // has registered its mh_cookie_consent listener.
+        analyticsScript.addEventListener('load', loadConsentUi, { once: true });
+        analyticsScript.addEventListener('error', loadConsentUi, { once: true });
+    }
+
+    // Consent Mode must exist before first-party analytics emits to GA4.
+    if (window.gtag) {
+        loadAnalyticsAndConsentUi();
+    } else {
+        const existingInit = document.querySelector('script[src*="analytics-init.js"]');
+        if (existingInit) {
+            existingInit.addEventListener('load', loadAnalyticsAndConsentUi, { once: true });
+            existingInit.addEventListener('error', loadAnalyticsAndConsentUi, { once: true });
+        } else {
+            const analyticsInit = appendOrderedScript(basePath + 'js/dist/analytics-init.js');
+            analyticsInit.addEventListener('load', loadAnalyticsAndConsentUi, { once: true });
+            analyticsInit.addEventListener('error', loadAnalyticsAndConsentUi, { once: true });
+        }
     }
 
     if (!window.MH_FEEDBACK_WIDGET_INIT && !document.querySelector('script[src*="feedback-widget.js"]')) {

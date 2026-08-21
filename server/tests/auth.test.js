@@ -25,6 +25,14 @@ async function getFunnelEvents(userId, eventName) {
     return data || [];
 }
 
+function registrationPayload(payload) {
+    return {
+        gdpr_consent: true,
+        terms_consent: true,
+        ...payload,
+    };
+}
+
 describe('🔐 Auth Endpoint Tests', () => {
 
     describe('Subscription auth state', () => {
@@ -39,6 +47,20 @@ describe('🔐 Auth Endpoint Tests', () => {
                 status: 'vip_majestrat',
                 isPremium: true,
                 premiumExpires: '2099-12-31T23:59:59+00:00'
+            });
+        });
+
+        test('keeps active non-Stripe VIP premium without a period end', () => {
+            const state = getAuthSubscriptionState({
+                plan_type: 'vip',
+                status: 'active',
+                current_period_end: null
+            });
+
+            expect(state).toEqual({
+                status: 'vip_majestrat',
+                isPremium: true,
+                premiumExpires: null
             });
         });
 
@@ -138,7 +160,7 @@ describe('🔐 Auth Endpoint Tests', () => {
             const res = await request(app)
                 .post('/api/auth/register')
                 .set('x-csrf-token', csrfToken)
-                .send({ password: 'TestPassword123!', birth_date: '1990-01-01' });
+                .send(registrationPayload({ password: 'TestPassword123!', birth_date: '1990-01-01' }));
 
             expect(res.status).toBe(400);
         });
@@ -148,7 +170,7 @@ describe('🔐 Auth Endpoint Tests', () => {
             const res = await request(app)
                 .post('/api/auth/register')
                 .set('x-csrf-token', csrfToken)
-                .send({ email: 'not-an-email', password: 'TestPassword123!', birth_date: '1990-01-01' });
+                .send(registrationPayload({ email: 'not-an-email', password: 'TestPassword123!', birth_date: '1990-01-01' }));
 
             expect(res.status).toBe(400);
         });
@@ -158,11 +180,11 @@ describe('🔐 Auth Endpoint Tests', () => {
             const res = await request(app)
                 .post('/api/auth/register')
                 .set('x-csrf-token', csrfToken)
-                .send({
+                .send(registrationPayload({
                     email: 'a'.repeat(300) + '@example.com',
                     password: 'TestPassword123!',
                     birth_date: '1990-01-01'
-                });
+                }));
 
             expect(res.status).toBe(400);
         });
@@ -172,7 +194,7 @@ describe('🔐 Auth Endpoint Tests', () => {
             const res = await request(app)
                 .post('/api/auth/register')
                 .set('x-csrf-token', csrfToken)
-                .send({ email: 'test@example.com', password: 'short', birth_date: '1990-01-01' });
+                .send(registrationPayload({ email: 'test@example.com', password: 'short', birth_date: '1990-01-01' }));
 
             expect(res.status).toBe(400);
         });
@@ -182,7 +204,7 @@ describe('🔐 Auth Endpoint Tests', () => {
             const res = await request(app)
                 .post('/api/auth/register')
                 .set('x-csrf-token', csrfToken)
-                .send({ email: 'test@example.com', password: 'password', birth_date: '1990-01-01' });
+                .send(registrationPayload({ email: 'test@example.com', password: 'password', birth_date: '1990-01-01' }));
 
             expect(res.status).toBe(400);
         });
@@ -195,11 +217,11 @@ describe('🔐 Auth Endpoint Tests', () => {
             const res = await request(app)
                 .post('/api/auth/register')
                 .set('x-csrf-token', csrfToken)
-                .send({
+                .send(registrationPayload({
                     email: 'test@example.com',
                     password: 'TestPassword123!',
                     birth_date: futureDate.toISOString().split('T')[0]
-                });
+                }));
 
             expect(res.status).toBe(400);
         });
@@ -209,12 +231,12 @@ describe('🔐 Auth Endpoint Tests', () => {
             const res = await request(app)
                 .post('/api/auth/register')
                 .set('x-csrf-token', csrfToken)
-                .send({
+                .send(registrationPayload({
                     email: 'test@example.com',
                     password: 'TestPassword123!',
                     confirm_password: 'DifferentPassword456!',
                     birth_date: '1990-01-01'
-                });
+                }));
 
             expect(res.status).toBe(400);
         });
@@ -273,6 +295,31 @@ describe('🔐 Auth Endpoint Tests', () => {
                 .set('Cookie', 'auth_token=invalid.jwt.token');
 
             expect(res.status).toBe(403);
+        });
+
+        test('GET /api/auth/profile returns explicit current billing fields', async () => {
+            const userId = `profile-billing-${Date.now()}`;
+            const email = `${userId}@example.com`;
+            const token = jwt.sign({
+                id: userId,
+                email,
+                subscription_status: 'premium_monthly',
+                isPremium: true
+            }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+            await supabase.from('users').insert({ id: userId, email, role: 'user' });
+
+            const res = await request(app)
+                .get('/api/auth/profile')
+                .set('Cookie', `auth_token=${token}`)
+                .expect(200);
+
+            expect(res.body.user).toEqual(expect.objectContaining({
+                subscription_status: 'free',
+                billing_status: 'inactive',
+                isPremium: false,
+                premiumExpires: null
+            }));
         });
 
         test('POST /api/auth/logout without auth returns 401', async () => {

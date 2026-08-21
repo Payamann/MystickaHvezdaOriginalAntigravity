@@ -3,8 +3,7 @@
  * Groups smaller AI-powered features that don't warrant individual files
  */
 import express from 'express';
-import rateLimit from 'express-rate-limit';
-import { authenticateToken, requireFeature, requirePremiumSoft, optionalPremiumCheck } from '../middleware.js';
+import { aiLimiter, authenticateToken, requireFeature, requirePremiumSoft, optionalPremiumCheck } from '../middleware.js';
 import { callClaude } from '../services/claude.js';
 import { SYSTEM_PROMPTS } from '../config/prompts.js';
 import {
@@ -88,13 +87,6 @@ function buildBirthCalculationInput(source = {}, overrides = {}) {
     };
 }
 
-// Rate limiter for AI-powered oracle endpoints
-const oracleLimiter = rateLimit({
-    windowMs: 60 * 60 * 1000, // 1 hour
-    max: 20,
-    message: { error: 'Příliš mnoho požadavků. Zkuste to znovu za hodinu.' }
-});
-
 // ─── Crystal Ball ──────────────────────────────────────────────────────────────
 
 function buildFallbackCrystalBallResponse({ question, moonPhase }) {
@@ -105,7 +97,7 @@ function buildFallbackCrystalBallResponse({ question, moonPhase }) {
     ].join('\n\n');
 }
 
-router.post('/crystal-ball', oracleLimiter, optionalPremiumCheck, async (req, res) => {
+router.post('/crystal-ball', optionalPremiumCheck, aiLimiter, async (req, res) => {
     try {
         const { question, history = [], lang = 'cs' } = req.body;
 
@@ -230,7 +222,7 @@ function buildFallbackDreamResponse({ safeDream }) {
     ].join('\n\n');
 }
 
-router.post('/dream', oracleLimiter, authenticateToken, requirePremiumSoft, async (req, res) => {
+router.post('/dream', authenticateToken, requirePremiumSoft, aiLimiter, async (req, res) => {
     try {
         const { dream } = req.body;
 
@@ -288,7 +280,7 @@ function buildFallbackTarotResponse({ safeSpreadType, safeQuestion, safeCards })
     ].join('\n\n');
 }
 
-router.post('/tarot', oracleLimiter, authenticateToken, requirePremiumSoft, async (req, res) => {
+router.post('/tarot', authenticateToken, requirePremiumSoft, aiLimiter, async (req, res) => {
     try {
         const { question, cards, spreadType = 'tříkartový' } = req.body;
 
@@ -367,7 +359,7 @@ function buildFallbackTarotSummaryResponse({ safeSpreadType, safeCards }) {
     ].join('\n\n');
 }
 
-router.post('/tarot-summary', oracleLimiter, authenticateToken, requirePremiumSoft, async (req, res) => {
+router.post('/tarot-summary', authenticateToken, requirePremiumSoft, aiLimiter, async (req, res) => {
     try {
         const { cards, spreadType } = req.body;
 
@@ -495,7 +487,7 @@ function buildFallbackNatalChartResponse({ safeName, chart }) {
     ].join('\n\n');
 }
 
-router.post('/natal-chart', oracleLimiter, optionalPremiumCheck, async (req, res) => {
+router.post('/natal-chart', optionalPremiumCheck, aiLimiter, async (req, res) => {
     try {
         const { birthDate, birthTime, birthPlace, name } = req.body;
 
@@ -599,7 +591,7 @@ function buildFallbackSynastryResponse({ safeName1, safeName2, synastry }) {
     ].join('\n\n');
 }
 
-router.post('/synastry', oracleLimiter, authenticateToken, requirePremiumSoft, async (req, res) => {
+router.post('/synastry', authenticateToken, requirePremiumSoft, aiLimiter, async (req, res) => {
     try {
         const { person1, person2 } = req.body;
 
@@ -688,7 +680,7 @@ function buildFallbackAstrocartographyResponse({ safeName, safeIntention, astroc
     ].join('\n\n');
 }
 
-router.post('/astrocartography', oracleLimiter, authenticateToken, requireFeature('astrocartography'), async (req, res) => {
+router.post('/astrocartography', authenticateToken, requireFeature('astrocartography'), aiLimiter, async (req, res) => {
     try {
         const { birthDate, birthTime, birthPlace, name, intention = 'obecný' } = req.body;
 
@@ -756,7 +748,7 @@ function buildFallbackAngelCardResponse({ safeCardName, safeCardTheme, safeInten
     ].join('\n\n');
 }
 
-router.post('/angel-card', oracleLimiter, authenticateToken, requirePremiumSoft, async (req, res) => {
+router.post('/angel-card', authenticateToken, requirePremiumSoft, aiLimiter, async (req, res) => {
     try {
         const { card, intention = 'obecný vhled do dnešního dne' } = req.body;
 
@@ -828,7 +820,7 @@ function buildFallbackRunesResponse({ safeRuneName, safeRuneMeaning, safeIntenti
     ].join('\n\n');
 }
 
-router.post('/runes', oracleLimiter, authenticateToken, requirePremiumSoft, async (req, res) => {
+router.post('/runes', authenticateToken, requirePremiumSoft, aiLimiter, async (req, res) => {
     try {
         const { rune, intention = 'obecný duchovní vhled', history = [] } = req.body;
 
@@ -899,7 +891,7 @@ function buildFallbackDailyWisdomResponse({ safeSign, safeMoonPhase }) {
     ].join('\n\n');
 }
 
-router.post('/daily-wisdom', oracleLimiter, authenticateToken, requirePremiumSoft, async (req, res) => {
+router.post('/daily-wisdom', authenticateToken, requirePremiumSoft, aiLimiter, async (req, res) => {
     try {
         const { sign, moonPhase, lang = 'cs' } = req.body;
 

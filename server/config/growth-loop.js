@@ -69,6 +69,8 @@ export const CORE_FUNNEL_EVENTS = Object.freeze([
 export const REVENUE_HEALTH_EVENTS = Object.freeze([
     'subscription_invoice_paid',
     'subscription_payment_failed',
+    'subscription_payment_action_required',
+    'subscription_payment_recovered',
     'checkout_post_verification_pending',
     'checkout_post_verification_recovered',
     'checkout_session_failed',
