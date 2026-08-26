@@ -245,6 +245,33 @@ describe('Admin funnel report helpers', () => {
         }));
     });
 
+    test('reports paid auth conversion by unique identified flow without duplicate inflation', () => {
+        const flow = authFlowId => ({ metadata: { auth_flow_id: authFlowId }, created_at: '2026-04-20T10:00:00.000Z' });
+        const report = buildFunnelReport([
+            { event_name: 'checkout_auth_page_viewed', ...flow('flow-a') },
+            { event_name: 'checkout_auth_page_viewed', ...flow('flow-a') },
+            { event_name: 'checkout_auth_form_started', ...flow('flow-a') },
+            { event_name: 'checkout_auth_validation_failed', ...flow('flow-a') },
+            { event_name: 'checkout_auth_validation_failed', ...flow('flow-a') },
+            { event_name: 'checkout_auth_form_submitted', ...flow('flow-a') },
+            { event_name: 'checkout_auth_page_viewed', ...flow('flow-b') },
+            { event_name: 'checkout_auth_request_failed', ...flow('flow-b') },
+            { event_name: 'checkout_auth_form_started', created_at: '2026-04-20T10:00:00.000Z' },
+        ]);
+
+        expect(report.metrics).toEqual(expect.objectContaining({
+            checkoutAuthUniqueFlows: 2,
+            checkoutAuthPageViewedUnique: 2,
+            checkoutAuthFormStartedUnique: 1,
+            checkoutAuthFormSubmittedUnique: 1,
+            checkoutAuthValidationFailedUnique: 1,
+            checkoutAuthRequestFailedUnique: 1,
+            checkoutAuthFlowIdCoverageRate: 88.9,
+            authPageToFormStartUniqueRate: 50,
+            authFormStartToSubmitUniqueRate: 100,
+        }));
+    });
+
     test('counts direct paywall CTA clicks as paid intent', () => {
         const report = buildFunnelReport([
             { event_name: 'paywall_viewed', source: 'partner_match_result', feature: 'partnerska_detail', created_at: '2026-04-20T10:00:00.000Z' },

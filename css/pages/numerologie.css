@@ -122,6 +122,42 @@ html body .mh-inline-bc2787405c { color: var(--color-silver-mist); opacity: 0.8;
     opacity: 0.7;
 }
 
+.numerology-personal-map {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1.25rem;
+    align-items: center;
+    margin-top: 1.25rem;
+    padding: 1.25rem 1.4rem;
+    border: 1px solid rgba(212, 175, 55, 0.24);
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(22, 16, 42, 0.78), rgba(17, 29, 54, 0.72));
+}
+
+.numerology-personal-map strong,
+.numerology-personal-map p {
+    display: block;
+}
+
+.numerology-personal-map p {
+    margin: 0.35rem 0 0;
+    color: var(--color-silver-mist);
+}
+
+.numerology-personal-map__eyebrow {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--color-gold);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.numerology-personal-map .btn {
+    white-space: nowrap;
+}
+
 .interpretation-loading {
     padding: 2rem;
     text-align: center;
@@ -145,6 +181,16 @@ html body .mh-inline-bc2787405c { color: var(--color-silver-mist); opacity: 0.8;
 }
 
 @media (max-width: 480px) {
+    .numerology-personal-map {
+        grid-template-columns: 1fr;
+        padding: 1.1rem;
+    }
+
+    .numerology-personal-map .btn {
+        width: 100%;
+        white-space: normal;
+    }
+
     body.page-numerology .section--hero {
         padding-top: 5.25rem;
         padding-bottom: 0.45rem;

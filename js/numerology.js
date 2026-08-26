@@ -8,6 +8,53 @@ import {
 
 const NUMEROLOGY_RESULT_SOURCE = 'numerology_result';
 let lastNumerologyShareResult = null;
+let personalMapOfferViewed = false;
+
+function buildPersonalMapOfferMarkup() {
+    return `
+        <aside class="numerology-personal-map" aria-label="Jednorázová Osobní mapa na 12 měsíců">
+            <div>
+                <span class="numerology-personal-map__eyebrow">Raději jednorázový výklad?</span>
+                <strong>Proměň svá čísla v mapu příštích 12 měsíců.</strong>
+                <p>Osobní PDF začne dnem objednávky a rozpracuje jednu tvoji otázku měsíc po měsíci. Bez členství.</p>
+            </div>
+            <a class="btn btn--ghost" href="/osobni-mapa.html?source=numerology_result&amp;feature=osobni_mapa_2026" data-numerology-personal-map>Ukázka Osobní mapy · 299 Kč</a>
+        </aside>
+    `;
+}
+
+function wirePersonalMapOffer(container) {
+    const cta = container?.querySelector?.('[data-numerology-personal-map]');
+    if (!cta) return;
+
+    const context = {
+        source: 'numerology_result',
+        feature: 'osobni_mapa_2026',
+        planId: 'osobni_mapa_2026',
+        planType: 'personal_map',
+        metadata: {
+            product_id: 'osobni_mapa_2026',
+            product_type: 'personal_map',
+            placement: 'numerology_result',
+            path: window.location.pathname
+        }
+    };
+
+    if (!personalMapOfferViewed) {
+        personalMapOfferViewed = true;
+        void window.Auth?.sendServerFunnelEvent?.({
+            eventName: 'one_time_product_viewed',
+            ...context
+        });
+    }
+
+    cta.addEventListener('click', () => {
+        void window.Auth?.sendServerFunnelEvent?.({
+            eventName: 'pricing_product_cta_clicked',
+            ...context
+        });
+    });
+}
 
 function buildNumerologyUpgradeUrl(source = 'numerology_inline_gate') {
     const authUrl = new URL('/prihlaseni.html', window.location.origin);
@@ -509,8 +556,11 @@ async function displayInterpretation(name, birthDate, birthTime, lifePath, desti
                         <button class="btn btn--gold unlock-btn numerology-upgrade-btn">Odemknout plný rozbor</button>
                     </div>
                 </div>
+                ${buildPersonalMapOfferMarkup()}
             </div>
         `;
+
+        wirePersonalMapOffer(interpretationContainer);
 
         // The preview button opens the trial paywall; keep attribution on one segment.
         if (window.Premium?.trackPaywallHit) window.Premium.trackPaywallHit('numerologie_vyklad', 'trial_paywall');
@@ -572,8 +622,10 @@ async function displayInterpretation(name, birthDate, birthTime, lifePath, desti
                 <div class="interpretation-content">
                     ${data.response.replace(/```html/g, '').replace(/```/g, '')}
                 </div>
+                ${buildPersonalMapOfferMarkup()}
             </div>
         `;
+        wirePersonalMapOffer(interpretationContainer);
 
         // Save reading to history (with birth time)
         if (window.Auth && window.Auth.saveReading) {

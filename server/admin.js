@@ -477,6 +477,66 @@ function funnelMetadataFromEvent(event) {
     return event?.metadata && typeof event.metadata === 'object' ? event.metadata : {};
 }
 
+function buildCheckoutAuthFlowMetrics(events = []) {
+    const relevantEventNames = new Set([
+        ...FUNNEL_CHECKOUT_AUTH_PAGE_VIEW_EVENTS,
+        ...FUNNEL_CHECKOUT_AUTH_FORM_START_EVENTS,
+        ...FUNNEL_CHECKOUT_AUTH_FORM_SUBMIT_EVENTS,
+        ...FUNNEL_CHECKOUT_AUTH_VALIDATION_FAILURE_EVENTS,
+        ...FUNNEL_CHECKOUT_AUTH_REQUEST_FAILURE_EVENTS,
+    ]);
+    const flowsByStep = {
+        pageViewed: new Set(),
+        formStarted: new Set(),
+        formSubmitted: new Set(),
+        validationFailed: new Set(),
+        requestFailed: new Set(),
+    };
+    const allFlows = new Set();
+    let relevantEvents = 0;
+    let identifiedEvents = 0;
+
+    for (const event of events) {
+        const eventName = normalizeDimension(event?.event_name);
+        if (!relevantEventNames.has(eventName)) continue;
+
+        relevantEvents += 1;
+        const authFlowId = normalizeDimension(funnelMetadataFromEvent(event).auth_flow_id);
+        if (!authFlowId) continue;
+
+        identifiedEvents += 1;
+        allFlows.add(authFlowId);
+        if (FUNNEL_CHECKOUT_AUTH_PAGE_VIEW_EVENTS.has(eventName)) flowsByStep.pageViewed.add(authFlowId);
+        if (FUNNEL_CHECKOUT_AUTH_FORM_START_EVENTS.has(eventName)) flowsByStep.formStarted.add(authFlowId);
+        if (FUNNEL_CHECKOUT_AUTH_FORM_SUBMIT_EVENTS.has(eventName)) flowsByStep.formSubmitted.add(authFlowId);
+        if (FUNNEL_CHECKOUT_AUTH_VALIDATION_FAILURE_EVENTS.has(eventName)) flowsByStep.validationFailed.add(authFlowId);
+        if (FUNNEL_CHECKOUT_AUTH_REQUEST_FAILURE_EVENTS.has(eventName)) flowsByStep.requestFailed.add(authFlowId);
+    }
+
+    const intersectionSize = (left, right) => [...left].filter(value => right.has(value)).length;
+    const rate = (numerator, denominator) => denominator > 0
+        ? Math.round((numerator / denominator) * 1000) / 10
+        : 0;
+
+    return {
+        checkoutAuthUniqueFlows: allFlows.size,
+        checkoutAuthPageViewedUnique: flowsByStep.pageViewed.size,
+        checkoutAuthFormStartedUnique: flowsByStep.formStarted.size,
+        checkoutAuthFormSubmittedUnique: flowsByStep.formSubmitted.size,
+        checkoutAuthValidationFailedUnique: flowsByStep.validationFailed.size,
+        checkoutAuthRequestFailedUnique: flowsByStep.requestFailed.size,
+        checkoutAuthFlowIdCoverageRate: rate(identifiedEvents, relevantEvents),
+        authPageToFormStartUniqueRate: rate(
+            intersectionSize(flowsByStep.pageViewed, flowsByStep.formStarted),
+            flowsByStep.pageViewed.size
+        ),
+        authFormStartToSubmitUniqueRate: rate(
+            intersectionSize(flowsByStep.formStarted, flowsByStep.formSubmitted),
+            flowsByStep.formStarted.size
+        ),
+    };
+}
+
 function funnelMetadataValue(metadata, keys, fallback) {
     for (const key of keys) {
         const value = normalizeDimension(metadata[key]);
@@ -1101,6 +1161,7 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
     const authFormStartToSubmitRate = checkoutAuthFormStarted > 0
         ? Math.round((checkoutAuthFormSubmitted / checkoutAuthFormStarted) * 1000) / 10
         : 0;
+    const checkoutAuthFlowMetrics = buildCheckoutAuthFlowMetrics(currentEvents);
 
     return {
         generatedAt: new Date().toISOString(),
@@ -1125,6 +1186,7 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
             checkoutAuthFormSubmitted,
             checkoutAuthValidationFailed,
             checkoutAuthRequestFailed,
+            ...checkoutAuthFlowMetrics,
             checkoutPostVerificationPending,
             checkoutPostVerificationRecovered,
             checkoutRequested,

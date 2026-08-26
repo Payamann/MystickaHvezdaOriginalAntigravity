@@ -155,6 +155,38 @@ test.describe('Numerologie', () => {
         expect(page.url()).not.toContain('/cenik.html');
     });
 
+    test('vysledek nabidne jednorazovou Osobni mapu a zmeri zobrazeni i klik', async ({ page }) => {
+        await page.goto('/numerologie.html?source=e2e_personal_map');
+        await waitForPageReady(page);
+        await page.evaluate(() => {
+            window.__personalMapFunnelEvents = [];
+            window.Auth = {
+                isLoggedIn: () => false,
+                isPremium: () => false,
+                sendServerFunnelEvent: async payload => window.__personalMapFunnelEvents.push(payload)
+            };
+        });
+
+        await page.locator('#num-name').fill('Jana Novakova');
+        await page.locator('#num-date').fill('1990-06-15');
+        await page.locator('#num-time').fill('14:30');
+        await page.locator('#numerology-form button[type="submit"]').click();
+
+        const offer = page.locator('.numerology-personal-map');
+        const cta = offer.locator('[data-numerology-personal-map]');
+        await expect(offer).toContainText('příštích 12 měsíců');
+        await expect(offer).toContainText('Bez členství');
+        await expect(cta).toHaveAttribute('href', /osobni-mapa\.html\?source=numerology_result/);
+        await cta.evaluate(element => element.addEventListener('click', event => event.preventDefault()));
+        await cta.click();
+
+        const events = await page.evaluate(() => window.__personalMapFunnelEvents);
+        expect(events).toEqual(expect.arrayContaining([
+            expect.objectContaining({ eventName: 'one_time_product_viewed', source: 'numerology_result' }),
+            expect.objectContaining({ eventName: 'pricing_product_cta_clicked', source: 'numerology_result' })
+        ]));
+    });
+
     // ── Canonical a SEO ──────────────────────────────────────────────────────
 
     test('canonical link obsahuje "numerologi"', async ({ page }) => {
