@@ -182,8 +182,9 @@ describe('Admin funnel report helpers', () => {
             { event_name: 'pricing_plan_cta_clicked', source: 'inline_paywall', feature: 'tarot', plan_id: 'pruvodce', created_at: '2026-04-20T10:03:30.000Z' },
             { event_name: 'pricing_plan_cta_clicked', source: 'inline_login_gate', feature: 'mentor', plan_id: 'pruvodce', created_at: '2026-04-20T10:03:45.000Z' },
             { event_name: 'pricing_product_cta_clicked', source: 'pricing_addon', feature: 'osobni_mapa_2026', created_at: '2026-04-20T10:03:50.000Z' },
-            { event_name: 'one_time_form_started', source: 'homepage_spotlight', feature: 'osobni_mapa_2026', created_at: '2026-04-20T10:03:55.000Z' },
-            { event_name: 'one_time_form_validation_failed', source: 'homepage_spotlight', feature: 'osobni_mapa_2026', created_at: '2026-04-20T10:03:56.000Z' },
+            { event_name: 'one_time_form_started', source: 'homepage_spotlight', feature: 'osobni_mapa_2026', created_at: '2026-04-20T10:03:55.000Z', metadata: { order_flow_id: 'pm-flow-1' } },
+            { event_name: 'one_time_form_submitted', source: 'homepage_spotlight', feature: 'osobni_mapa_2026', created_at: '2026-04-20T10:03:55.500Z', metadata: { order_flow_id: 'pm-flow-1' } },
+            { event_name: 'one_time_form_validation_failed', source: 'homepage_spotlight', feature: 'osobni_mapa_2026', created_at: '2026-04-20T10:03:56.000Z', metadata: { order_flow_id: 'pm-flow-1' } },
             { event_name: 'checkout_session_created', source: 'inline_paywall', feature: 'tarot', created_at: '2026-04-20T10:04:00.000Z' },
             { event_name: 'checkout_session_created', source: 'inline_login_gate', feature: 'mentor', created_at: '2026-04-20T10:05:00.000Z' },
             { event_name: 'checkout_session_created', source: 'pricing_addon', feature: 'osobni_mapa_2026', created_at: '2026-04-20T10:06:00.000Z' },
@@ -192,6 +193,15 @@ describe('Admin funnel report helpers', () => {
         expect(report.metrics.paywallViewed).toBe(4);
         expect(report.metrics.pricingIntent).toBe(4);
         expect(report.metrics.checkoutStarted).toBe(3);
+        expect(report.metrics.oneTimeFormStarted).toBe(1);
+        expect(report.metrics.oneTimeFormSubmitted).toBe(1);
+        expect(report.metrics.oneTimeFormValidationFailed).toBe(1);
+        expect(report.metrics.oneTimeFormCompletionRate).toBe(100);
+        expect(report.metrics.oneTimeFormStartedUnique).toBe(1);
+        expect(report.metrics.oneTimeFormSubmittedUnique).toBe(1);
+        expect(report.metrics.oneTimeFormValidationFailedUnique).toBe(1);
+        expect(report.metrics.oneTimeFormFlowIdCoverageRate).toBe(100);
+        expect(report.metrics.oneTimeFormCompletionUniqueRate).toBe(100);
         expect(report.metrics.failures).toBe(1);
         expect(report.metrics.paywallToPricingIntentRate).toBe(100);
         expect(report.metrics.pricingIntentToCheckoutRate).toBe(75);
@@ -200,6 +210,9 @@ describe('Admin funnel report helpers', () => {
             date: '2026-04-20',
             paywallViewed: 4,
             pricingIntent: 4,
+            oneTimeFormStarted: 1,
+            oneTimeFormSubmitted: 1,
+            oneTimeFormValidationFailed: 1,
             checkoutStarted: 3,
             failures: 1
         }));
@@ -561,9 +574,9 @@ describe('Admin funnel report helpers', () => {
         ]);
 
         expect(buildFunnelDailyCsv(report)).toBe([
-            '"date","first_value_completed","activation_completed","reading_save_clicked","reading_saved","daily_ritual_completed","reading_feedback_submitted","paywall_viewed","pricing_intent","checkout_auth_required","checkout_auth_page_viewed","checkout_auth_form_submitted","checkout_post_verification_pending","checkout_post_verification_recovered","checkout_requested","checkout_started","subscription_completed","one_time_completed","one_time_pdf_delivered","one_time_lifecycle_scheduled","failures","refunds"',
-            '"2026-04-20","1","1","1","1","0","1","1","1","1","0","0","0","0","0","1","0","0","0","0","0","0"',
-            '"2026-04-21","0","0","0","0","1","0","0","0","0","0","0","0","0","0","0","1","0","0","0","0","0"'
+            '"date","first_value_completed","activation_completed","reading_save_clicked","reading_saved","daily_ritual_completed","reading_feedback_submitted","paywall_viewed","pricing_intent","checkout_auth_required","checkout_auth_page_viewed","checkout_auth_form_submitted","checkout_post_verification_pending","checkout_post_verification_recovered","checkout_requested","checkout_started","subscription_completed","one_time_completed","one_time_form_started","one_time_form_submitted","one_time_form_validation_failed","one_time_pdf_delivered","one_time_lifecycle_scheduled","failures","refunds"',
+            '"2026-04-20","1","1","1","1","0","1","1","1","1","0","0","0","0","0","1","0","0","0","0","0","0","0","0","0"',
+            '"2026-04-21","0","0","0","0","1","0","0","0","0","0","0","0","0","0","0","1","0","0","0","0","0","0","0","0"'
         ].join('\n'));
     });
 

@@ -5,6 +5,7 @@
 import request from 'supertest';
 import app from '../index.js';
 import { supabase } from '../db-supabase.js';
+import { calculatePersonalMapZodiacSign } from '../routes/osobni-mapa.js';
 
 async function getCsrfToken() {
     const res = await request(app).get('/api/csrf-token').expect(200);
@@ -12,6 +13,23 @@ async function getCsrfToken() {
 }
 
 describe('Roční horoskop one-time product', () => {
+    test.each([
+        ['1990-01-19', 'kozoroh'], ['1990-01-20', 'vodnar'],
+        ['1990-02-18', 'vodnar'], ['1990-02-19', 'ryby'],
+        ['1990-03-20', 'ryby'], ['1990-03-21', 'beran'],
+        ['1990-04-19', 'beran'], ['1990-04-20', 'byk'],
+        ['1990-05-20', 'byk'], ['1990-05-21', 'blizenci'],
+        ['1990-06-20', 'blizenci'], ['1990-06-21', 'rak'],
+        ['1990-07-22', 'rak'], ['1990-07-23', 'lev'],
+        ['1990-08-22', 'lev'], ['1990-08-23', 'panna'],
+        ['1990-09-22', 'panna'], ['1990-09-23', 'vahy'],
+        ['1990-10-22', 'vahy'], ['1990-10-23', 'stir'],
+        ['1990-11-21', 'stir'], ['1990-11-22', 'strelec'],
+        ['1990-12-21', 'strelec'], ['1990-12-22', 'kozoroh'],
+    ])('derives zodiac sign at boundary %s as %s', (birthDate, expectedSign) => {
+        expect(calculatePersonalMapZodiacSign(birthDate)).toBe(expectedSign);
+    });
+
     test('GET /api/rocni-horoskop/product retires the fixed-year offer', async () => {
         const res = await request(app)
             .get('/api/rocni-horoskop/product')

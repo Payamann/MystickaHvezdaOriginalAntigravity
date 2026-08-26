@@ -445,6 +445,7 @@ const PUBLIC_FUNNEL_EVENTS = new Set([
     'one_time_product_viewed',
     'one_time_product_cta_clicked',
     'one_time_form_started',
+    'one_time_form_submitted',
     'one_time_form_validation_failed',
     'one_time_checkout_failed',
     'checkout_returned_cancel',

@@ -22,7 +22,7 @@
     <link rel="apple-touch-icon" href="img/icon-192.webp">
 
     <link rel="stylesheet" href="css/site.min.css?v=1">
-    <link rel="stylesheet" href="css/pages/osobni-mapa.css?v=9">
+    <link rel="stylesheet" href="css/pages/osobni-mapa.css?v=10">
     <script defer src="https://js.stripe.com/v3/"></script>
     <script src="https://cdn.jsdelivr.net/npm/lucide@1.13.0/dist/umd/lucide.min.js" integrity="sha384-EHKCF1r0kkLgXLXtUe79iQzyUeZou+h3FZLoZWdcIAyctVNKMHqqy5wqYWQFUq6k" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="/js/dist/analytics-init.js" defer></script>
@@ -367,27 +367,11 @@
                         <span>E-mail</span>
                         <input type="email" id="email" name="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="jana@example.cz" maxlength="160" required>
                     </label>
-                    <label>
+                    <label class="pm-form__field--wide">
                         <span>Datum narození</span>
-                        <input type="date" id="birthDate" name="birthDate" autocomplete="bday" required>
-                    </label>
-                    <label>
-                        <span>Znamení</span>
-                        <select id="sign" name="sign" required>
-                            <option value="" disabled selected>Vyber znamení</option>
-                            <option value="beran">Beran</option>
-                            <option value="byk">Býk</option>
-                            <option value="blizenci">Blíženci</option>
-                            <option value="rak">Rak</option>
-                            <option value="lev">Lev</option>
-                            <option value="panna">Panna</option>
-                            <option value="vahy">Váhy</option>
-                            <option value="stir">Štír</option>
-                            <option value="strelec">Střelec</option>
-                            <option value="kozoroh">Kozoroh</option>
-                            <option value="vodnar">Vodnář</option>
-                            <option value="ryby">Ryby</option>
-                        </select>
+                        <input type="date" id="birthDate" name="birthDate" autocomplete="bday" aria-describedby="signPreview" required>
+                        <input type="hidden" id="sign" name="sign">
+                        <small class="pm-form__hint pm-form__sign-preview" id="signPreview" aria-live="polite">Znamení doplníme automaticky podle data.</small>
                     </label>
                 </div>
 
@@ -405,19 +389,21 @@
                 </label>
 
                 <label>
-                    <span>Jak chceš, aby tě výklad oslovoval?</span>
-                    <select id="grammaticalGender" name="grammaticalGender" required>
+                    <span>Jak chceš, aby tě výklad oslovoval? <small>(volitelné)</small></span>
+                    <select id="grammaticalGender" name="grammaticalGender">
+                        <option value="neutral">neutrálně, bez rodových shod</option>
                         <option value="feminine">ženský rod</option>
                         <option value="masculine">mužský rod</option>
-                        <option value="neutral">neutrálně, bez rodových shod</option>
                     </select>
                 </label>
 
                 <label>
                     <span>Jakou konkrétní situaci nebo otázku řešíš?</span>
-                    <textarea id="focus" name="focus" rows="4" maxlength="500" autocomplete="off" aria-describedby="focusHint" placeholder="Například: vracím se k jednomu vztahu a nevím, jestli v něm zůstávám z lásky, nebo ze strachu…" required></textarea>
+                    <textarea id="focus" name="focus" rows="4" minlength="8" maxlength="500" autocomplete="off" aria-describedby="focusHint" placeholder="Například: vracím se k jednomu vztahu a nevím, jestli v něm zůstávám z lásky, nebo ze strachu…" required></textarea>
                     <small class="pm-form__hint" id="focusHint">Jedna konkrétní věta stačí. Čím přesnější situaci popíšeš, tím lépe na ni mohou navázat kapitoly a praktické kroky.</small>
                 </label>
+
+                <p class="pm-form__restored" id="formRestored" role="status" hidden>Rozepsané údaje jsme obnovili jen v tomto okně. Před platbou je můžeš upravit.</p>
 
                 <button class="pm-button pm-button--primary pm-form__submit" id="submitBtn" type="submit">
                     <i data-lucide="lock-keyhole" aria-hidden="true"></i>
@@ -493,6 +479,6 @@
     <script src="js/dist/templates.js?v=14" defer></script>
     <script src="js/dist/components.js?v=20260522-premium-gate-cache" defer></script>
     <script type="module" src="js/dist/main.js?v=12"></script>
-    <script src="js/dist/osobni-mapa.js?v=3" defer></script>
+    <script src="js/dist/osobni-mapa.js?v=4" defer></script>
 </body>
 </html>

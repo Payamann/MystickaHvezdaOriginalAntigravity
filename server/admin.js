@@ -172,6 +172,9 @@ function createDailyBucket(date) {
         checkoutStarted: 0,
         subscriptionCompleted: 0,
         oneTimeCompleted: 0,
+        oneTimeFormStarted: 0,
+        oneTimeFormSubmitted: 0,
+        oneTimeFormValidationFailed: 0,
         oneTimePdfDelivered: 0,
         oneTimeLifecycleScheduled: 0,
         checkoutFailures: 0,
@@ -534,6 +537,46 @@ function buildCheckoutAuthFlowMetrics(events = []) {
             intersectionSize(flowsByStep.formStarted, flowsByStep.formSubmitted),
             flowsByStep.formStarted.size
         ),
+    };
+}
+
+function buildOneTimeFormFlowMetrics(events = []) {
+    const steps = {
+        started: new Set(),
+        submitted: new Set(),
+        validationFailed: new Set(),
+    };
+    const relevantNames = new Set([
+        'one_time_form_started',
+        'one_time_form_submitted',
+        'one_time_form_validation_failed',
+    ]);
+    let relevantEvents = 0;
+    let identifiedEvents = 0;
+
+    for (const event of events) {
+        const eventName = normalizeDimension(event?.event_name);
+        if (!relevantNames.has(eventName)) continue;
+        relevantEvents += 1;
+        const flowId = normalizeDimension(funnelMetadataFromEvent(event).order_flow_id);
+        if (!flowId) continue;
+        identifiedEvents += 1;
+        if (eventName === 'one_time_form_started') steps.started.add(flowId);
+        if (eventName === 'one_time_form_submitted') steps.submitted.add(flowId);
+        if (eventName === 'one_time_form_validation_failed') steps.validationFailed.add(flowId);
+    }
+
+    const percentage = (numerator, denominator) => denominator > 0
+        ? Math.round((numerator / denominator) * 1000) / 10
+        : 0;
+    const completedStartedFlows = [...steps.started].filter(flowId => steps.submitted.has(flowId)).length;
+
+    return {
+        oneTimeFormStartedUnique: steps.started.size,
+        oneTimeFormSubmittedUnique: steps.submitted.size,
+        oneTimeFormValidationFailedUnique: steps.validationFailed.size,
+        oneTimeFormFlowIdCoverageRate: percentage(identifiedEvents, relevantEvents),
+        oneTimeFormCompletionUniqueRate: percentage(completedStartedFlows, steps.started.size),
     };
 }
 
@@ -1073,6 +1116,9 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
             if (eventName === 'checkout_session_created') byDay[date].checkoutStarted += 1;
             if (eventName === 'subscription_checkout_completed') byDay[date].subscriptionCompleted += 1;
             if (eventName === 'one_time_purchase_completed') byDay[date].oneTimeCompleted += 1;
+            if (eventName === 'one_time_form_started') byDay[date].oneTimeFormStarted += 1;
+            if (eventName === 'one_time_form_submitted') byDay[date].oneTimeFormSubmitted += 1;
+            if (eventName === 'one_time_form_validation_failed') byDay[date].oneTimeFormValidationFailed += 1;
             if (eventName === 'one_time_pdf_delivered') byDay[date].oneTimePdfDelivered += 1;
             if (eventName === 'one_time_lifecycle_sequence_scheduled') byDay[date].oneTimeLifecycleScheduled += 1;
             if (FUNNEL_CHECKOUT_FAILURE_EVENTS.has(eventName)) byDay[date].checkoutFailures += 1;
@@ -1102,6 +1148,9 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
     const checkoutStarted = byEvent.checkout_session_created || 0;
     const subscriptionCompleted = byEvent.subscription_checkout_completed || 0;
     const oneTimeCompleted = byEvent.one_time_purchase_completed || 0;
+    const oneTimeFormStarted = byEvent.one_time_form_started || 0;
+    const oneTimeFormSubmitted = byEvent.one_time_form_submitted || 0;
+    const oneTimeFormValidationFailed = byEvent.one_time_form_validation_failed || 0;
     const oneTimePdfDelivered = byEvent.one_time_pdf_delivered || 0;
     const oneTimeLifecycleScheduled = byEvent.one_time_lifecycle_sequence_scheduled || 0;
     const invoicePaid = byEvent.subscription_invoice_paid || 0;
@@ -1152,6 +1201,9 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
     const oneTimeDeliveryRate = oneTimeCompleted > 0
         ? Math.round((oneTimePdfDelivered / oneTimeCompleted) * 1000) / 10
         : 0;
+    const oneTimeFormCompletionRate = oneTimeFormStarted > 0
+        ? Math.round((oneTimeFormSubmitted / oneTimeFormStarted) * 1000) / 10
+        : 0;
     const oneTimeLifecycleScheduleRate = oneTimePdfDelivered > 0
         ? Math.round((oneTimeLifecycleScheduled / oneTimePdfDelivered) * 1000) / 10
         : 0;
@@ -1162,6 +1214,7 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
         ? Math.round((checkoutAuthFormSubmitted / checkoutAuthFormStarted) * 1000) / 10
         : 0;
     const checkoutAuthFlowMetrics = buildCheckoutAuthFlowMetrics(currentEvents);
+    const oneTimeFormFlowMetrics = buildOneTimeFormFlowMetrics(currentEvents);
 
     return {
         generatedAt: new Date().toISOString(),
@@ -1193,6 +1246,10 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
             checkoutStarted,
             subscriptionCompleted,
             oneTimeCompleted,
+            oneTimeFormStarted,
+            oneTimeFormSubmitted,
+            oneTimeFormValidationFailed,
+            ...oneTimeFormFlowMetrics,
             oneTimePdfDelivered,
             oneTimeLifecycleScheduled,
             invoicePaid,
@@ -1215,6 +1272,7 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
             activationToCheckoutRate,
             readingSaveRate,
             oneTimeDeliveryRate,
+            oneTimeFormCompletionRate,
             oneTimeLifecycleScheduleRate,
             authPageToFormStartRate,
             authFormStartToSubmitRate,
@@ -1267,6 +1325,9 @@ export function buildFunnelDailyCsv(report) {
         'checkout_started',
         'subscription_completed',
         'one_time_completed',
+        'one_time_form_started',
+        'one_time_form_submitted',
+        'one_time_form_validation_failed',
         'one_time_pdf_delivered',
         'one_time_lifecycle_scheduled',
         'failures',
@@ -1292,6 +1353,9 @@ export function buildFunnelDailyCsv(report) {
         row.checkoutStarted,
         row.subscriptionCompleted,
         row.oneTimeCompleted,
+        row.oneTimeFormStarted,
+        row.oneTimeFormSubmitted,
+        row.oneTimeFormValidationFailed,
         row.oneTimePdfDelivered,
         row.oneTimeLifecycleScheduled,
         row.failures,

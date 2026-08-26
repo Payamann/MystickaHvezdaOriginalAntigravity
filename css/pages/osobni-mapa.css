@@ -702,6 +702,10 @@ body.page-personal-map::before {
     gap: 16px;
 }
 
+.pm-form__field--wide {
+    grid-column: 1 / -1;
+}
+
 .pm-form label {
     display: grid;
     gap: 8px;
@@ -731,6 +735,11 @@ body.page-personal-map::before {
     letter-spacing: 0;
     line-height: 1.5;
     text-transform: none;
+}
+
+.pm-form label .pm-form__sign-preview[data-ready="true"] {
+    color: var(--pm-teal);
+    font-weight: 700;
 }
 
 .pm-form input,
@@ -794,6 +803,23 @@ body.page-personal-map::before {
     font-size: 0.84rem;
     line-height: 1.5;
     text-align: center;
+}
+
+.pm-form__restored {
+    margin: -2px 0 0;
+    padding: 11px 13px;
+    border: 1px solid rgba(98, 213, 199, 0.22);
+    border-radius: 12px;
+    background: rgba(98, 213, 199, 0.07);
+    color: rgba(229, 251, 247, 0.86);
+    font-size: 0.86rem;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.pm-form [aria-invalid="true"] {
+    border-color: rgba(255, 143, 143, 0.72);
+    box-shadow: 0 0 0 3px rgba(255, 143, 143, 0.1);
 }
 
 .pm-form__trust {

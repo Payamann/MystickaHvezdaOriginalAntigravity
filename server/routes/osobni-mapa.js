@@ -28,7 +28,6 @@ const PRODUCT = {
     stripePriceId: process.env.STRIPE_PERSONAL_MAP_PRICE_ID || defaultPersonalMapPriceId
 };
 
-const VALID_SIGNS = ['beran', 'byk', 'blizenci', 'rak', 'lev', 'panna', 'vahy', 'stir', 'strelec', 'kozoroh', 'vodnar', 'ryby'];
 const VALID_GENDERS = ['feminine', 'masculine', 'neutral'];
 const VALID_FOCUS_AREAS = ['relationships', 'work_money', 'change', 'energy_boundaries', 'self_direction', 'other'];
 const EMAIL_PATTERN = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
@@ -78,6 +77,24 @@ function isValidIsoDate(value) {
     return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
+export function calculatePersonalMapZodiacSign(value) {
+    const [, monthValue, dayValue] = value.split('-').map(Number);
+    const boundary = monthValue * 100 + dayValue;
+
+    if (boundary >= 321 && boundary <= 419) return 'beran';
+    if (boundary >= 420 && boundary <= 520) return 'byk';
+    if (boundary >= 521 && boundary <= 620) return 'blizenci';
+    if (boundary >= 621 && boundary <= 722) return 'rak';
+    if (boundary >= 723 && boundary <= 822) return 'lev';
+    if (boundary >= 823 && boundary <= 922) return 'panna';
+    if (boundary >= 923 && boundary <= 1022) return 'vahy';
+    if (boundary >= 1023 && boundary <= 1121) return 'stir';
+    if (boundary >= 1122 && boundary <= 1221) return 'strelec';
+    if (boundary >= 1222 || boundary <= 119) return 'kozoroh';
+    if (boundary <= 218) return 'vodnar';
+    return 'ryby';
+}
+
 function buildLineItem(customerName) {
     if (PRODUCT.stripePriceId) {
         return {
@@ -124,14 +141,13 @@ router.post('/checkout', async (req, res) => {
     const birthDate = typeof req.body.birthDate === 'string' ? req.body.birthDate.trim() : '';
     const birthTime = cleanText(req.body.birthTime, 20);
     const birthPlace = cleanText(req.body.birthPlace, 120);
-    const sign = typeof req.body.sign === 'string' ? req.body.sign.trim() : '';
     const grammaticalGender = typeof req.body.grammaticalGender === 'string' ? req.body.grammaticalGender.trim() : 'neutral';
     const focusArea = typeof req.body.focusArea === 'string' ? req.body.focusArea.trim() : 'other';
     const focus = cleanText(req.body.focus, 500);
     const source = cleanCheckoutSource(req.body.source);
     const period = createPersonalMapPeriod();
 
-    if (!customerName || !birthDate || !sign || !email || !focus) {
+    if (!customerName || !birthDate || !email || !focus) {
         await recordCheckoutValidationFailed(source, 'missing_required_fields');
         return res.status(400).json({ error: 'Vyplňte prosím všechna povinná pole.' });
     }
@@ -139,11 +155,6 @@ router.post('/checkout', async (req, res) => {
     if (!EMAIL_PATTERN.test(email)) {
         await recordCheckoutValidationFailed(source, 'invalid_email');
         return res.status(400).json({ error: 'Neplatná e-mailová adresa.' });
-    }
-
-    if (!VALID_SIGNS.includes(sign)) {
-        await recordCheckoutValidationFailed(source, 'invalid_sign');
-        return res.status(400).json({ error: 'Neplatné znamení.' });
     }
 
     if (!VALID_GENDERS.includes(grammaticalGender)) {
@@ -160,6 +171,7 @@ router.post('/checkout', async (req, res) => {
         await recordCheckoutValidationFailed(source, 'invalid_birth_date');
         return res.status(400).json({ error: 'Neplatné datum narození.' });
     }
+    const sign = calculatePersonalMapZodiacSign(birthDate);
 
     if (birthTime && !/^([01]\d|2[0-3]):[0-5]\d$/.test(birthTime)) {
         await recordCheckoutValidationFailed(source, 'invalid_birth_time');

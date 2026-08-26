@@ -271,6 +271,25 @@ describe('Public funnel event endpoint', () => {
         expect(formStartedRes.status).toBe(200);
         expect(formStartedRes.body.success).toBe(true);
 
+        const formSubmittedRes = await request(app)
+            .post('/api/payment/funnel-event')
+            .set('x-csrf-token', csrfToken)
+            .send({
+                eventName: 'one_time_form_submitted',
+                source: 'homepage_spotlight',
+                feature: 'osobni_mapa_2026',
+                planId: 'osobni_mapa_2026',
+                planType: 'personal_map',
+                metadata: {
+                    path: '/osobni-mapa.html',
+                    focus_area: 'change',
+                    product_id: 'osobni_mapa_2026'
+                }
+            });
+
+        expect(formSubmittedRes.status).toBe(200);
+        expect(formSubmittedRes.body.success).toBe(true);
+
         const failedRes = await request(app)
             .post('/api/payment/funnel-event')
             .set('x-csrf-token', csrfToken)

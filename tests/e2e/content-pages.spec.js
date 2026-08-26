@@ -1187,7 +1187,8 @@ test.describe('Osobní mapa', () => {
         await page.locator('#name').fill('Jana');
         await page.locator('#email').fill('jana@example.cz');
         await page.locator('#birthDate').fill('1990-01-01');
-        await page.locator('#sign').selectOption('beran');
+        await expect(page.locator('#sign')).toHaveValue('kozoroh');
+        await expect(page.locator('#signPreview')).toContainText('Kozoroh');
         await page.locator('#focusArea').selectOption('change');
         await page.locator('#grammaticalGender').selectOption('feminine');
         await page.locator('#focus').fill('Chci pochopit hlavní téma příštích 12 měsíců.');
@@ -1201,12 +1202,115 @@ test.describe('Osobní mapa', () => {
             name: 'Jana',
             email: 'jana@example.cz',
             birthDate: '1990-01-01',
-            sign: 'beran',
+            sign: 'kozoroh',
             focusArea: 'change',
             grammaticalGender: 'feminine',
             focus: 'Chci pochopit hlavní téma příštích 12 měsíců.',
             source: 'pricing_addon'
         }));
+    });
+
+    test('znameni se dopocte i na hranicich vsech znameni', async ({ page }) => {
+        await page.goto('/osobni-mapa.html?source=e2e_zodiac_boundaries');
+        await waitForPageReady(page);
+        const boundaries = [
+            ['1990-01-19', 'kozoroh'], ['1990-01-20', 'vodnar'],
+            ['1990-02-19', 'ryby'], ['1990-03-21', 'beran'],
+            ['1990-04-20', 'byk'], ['1990-05-21', 'blizenci'],
+            ['1990-06-21', 'rak'], ['1990-07-23', 'lev'],
+            ['1990-08-23', 'panna'], ['1990-09-23', 'vahy'],
+            ['1990-10-23', 'stir'], ['1990-11-22', 'strelec'],
+            ['1990-12-22', 'kozoroh']
+        ];
+
+        for (const [birthDate, expectedSign] of boundaries) {
+            await page.locator('#birthDate').fill(birthDate);
+            await expect(page.locator('#sign')).toHaveValue(expectedSign);
+        }
+    });
+
+    test('neplatny formular zmeri prvni problematicke pole', async ({ page }) => {
+        const funnelEvents = [];
+        await page.route('**/api/csrf-token', route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ csrfToken: 'e2e-personal-map-validation-token' })
+        }));
+        await page.route('**/api/payment/funnel-event', async (route) => {
+            funnelEvents.push(route.request().postDataJSON());
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+
+        await page.goto('/osobni-mapa.html?source=e2e_validation');
+        await waitForPageReady(page);
+        await page.locator('#submitBtn').click();
+
+        await expect.poll(() => funnelEvents.find(event => event.eventName === 'one_time_form_validation_failed') || null)
+            .toEqual(expect.objectContaining({
+                source: 'e2e_validation',
+                metadata: expect.objectContaining({
+                    field: 'name',
+                    reason: 'value_missing'
+                })
+            }));
+        await expect(page.locator('#name')).toHaveAttribute('aria-invalid', 'true');
+    });
+
+    test('navrat ze Stripe obnovi rozepsany formular pouze v aktualnim okne', async ({ page }) => {
+        await page.addInitScript(() => {
+            localStorage.setItem('mh_personal_map_last_order', JSON.stringify({ focus: 'legacy sensitive text' }));
+            sessionStorage.setItem('mh_personal_map_order_draft', JSON.stringify({
+                createdAt: Date.now(),
+                payload: {
+                    name: 'Jana',
+                    email: 'jana@example.cz',
+                    birthDate: '1990-01-01',
+                    sign: 'kozoroh',
+                    focusArea: 'change',
+                    grammaticalGender: 'feminine',
+                    focus: 'Rozhoduji se o důležité změně.'
+                }
+            }));
+        });
+
+        await page.goto('/osobni-mapa.html?status=cancel&source=e2e_restore');
+        await waitForPageReady(page);
+
+        await expect(page.locator('#formRestored')).toBeVisible();
+        await expect(page.locator('#name')).toHaveValue('Jana');
+        await expect(page.locator('#email')).toHaveValue('jana@example.cz');
+        await expect(page.locator('#birthDate')).toHaveValue('1990-01-01');
+        await expect(page.locator('#sign')).toHaveValue('kozoroh');
+        await expect(page.locator('#focusArea')).toHaveValue('change');
+        await expect(page.locator('#grammaticalGender')).toHaveValue('feminine');
+        await expect(page.locator('#focus')).toHaveValue('Rozhoduji se o důležité změně.');
+        await expect.poll(() => page.evaluate(() => localStorage.getItem('mh_personal_map_last_order'))).toBeNull();
+    });
+
+    test('checkout odmitne neduveryhodnou cilovou URL a zachova vyplneny formular', async ({ page }) => {
+        await page.route('**/api/osobni-mapa/checkout', route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ url: 'https://evil.example/checkout' })
+        }));
+
+        await page.goto('/osobni-mapa.html?source=e2e_unsafe_checkout');
+        await waitForPageReady(page);
+        await page.locator('#name').fill('Jana');
+        await page.locator('#email').fill('jana@example.cz');
+        await page.locator('#birthDate').fill('1990-01-01');
+        await page.locator('#focusArea').selectOption('change');
+        await page.locator('#focus').fill('Rozhoduji se o důležité změně.');
+        await page.locator('#submitBtn').click();
+
+        await expect(page.locator('#formError')).toContainText('platební stránku se nepodařilo ověřit');
+        await expect(page.locator('#submitBtn')).toBeEnabled();
+        await expect(page.locator('#name')).toHaveValue('Jana');
+        expect(new URL(page.url()).hostname).toBe('localhost');
     });
 
     test('analytics outage neblokuje personal map checkout', async ({ page }) => {
@@ -1266,7 +1370,7 @@ test.describe('Osobní mapa', () => {
         await page.locator('#name').fill('Jana');
         await page.locator('#email').fill('jana@example.cz');
         await page.locator('#birthDate').fill('1990-01-01');
-        await page.locator('#sign').selectOption('beran');
+        await expect(page.locator('#sign')).toHaveValue('kozoroh');
         await page.locator('#focusArea').selectOption('change');
         await page.locator('#grammaticalGender').selectOption('feminine');
         await page.locator('#focus').fill('Chci pochopit hlavní téma příštích 12 měsíců.');
@@ -1280,7 +1384,7 @@ test.describe('Osobní mapa', () => {
             name: 'Jana',
             email: 'jana@example.cz',
             birthDate: '1990-01-01',
-            sign: 'beran',
+            sign: 'kozoroh',
             focusArea: 'change',
             grammaticalGender: 'feminine',
             focus: 'Chci pochopit hlavní téma příštích 12 měsíců.',

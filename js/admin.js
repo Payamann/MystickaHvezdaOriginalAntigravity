@@ -893,6 +893,8 @@ function renderFunnel(report) {
         ['Checkouty', formatInteger(metrics.checkoutStarted), 'Zahájené Stripe checkout sessions'],
         ['Premium konverze', formatInteger(metrics.subscriptionCompleted), `${formatPercent(metrics.conversionRate)} z checkoutů`],
         ['Jednorázové nákupy', formatInteger(metrics.oneTimeCompleted), 'Roční horoskop a další produkty'],
+        ['Formulář Osobní mapy', `${formatInteger(metrics.oneTimeFormSubmittedUnique)} / ${formatInteger(metrics.oneTimeFormStartedUnique)}`, `${formatPercent(metrics.oneTimeFormCompletionUniqueRate)} unikátních zahájených cest pokračuje k platbě`],
+        ['Chyby formuláře mapy', formatInteger(metrics.oneTimeFormValidationFailed), 'Neúspěšné validační pokusy; detail pole je v eventech'],
         ['PDF doručena', formatInteger(metrics.oneTimePdfDelivered), `${formatPercent(metrics.oneTimeDeliveryRate)} z jednorázových nákupů`],
         ['Lifecycle sekvence', formatInteger(metrics.oneTimeLifecycleScheduled), `${formatPercent(metrics.oneTimeLifecycleScheduleRate)} po doručení PDF`],
         ['Selhání', formatInteger(metrics.failures), 'Validace, Stripe nebo platba'],
