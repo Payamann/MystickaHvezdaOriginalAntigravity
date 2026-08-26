@@ -315,7 +315,14 @@
                     body: JSON.stringify({ email, password, ...additionalData })
                 });
                 const data = await res.json();
-                if (!res.ok) throw new Error(data.error);
+                if (!res.ok) {
+                    return {
+                        success: false,
+                        error: data.error || 'Registrace se nepodařila.',
+                        code: data.code || 'REGISTRATION_FAILED',
+                        retryAfter: Number.parseInt(res.headers.get('retry-after') || '', 10) || null
+                    };
+                }
 
                 if (data.requireEmailVerification) {
                     const standaloneContext = this.getStandaloneAuthContext();
@@ -366,7 +373,7 @@
                 this.showToast('Vítejte!', 'Registrace proběhla úspěšně. 🌟', 'success');
                 return { success: true, analyticsTracked: true };
             } catch (e) {
-                return { success: false, error: e.message };
+                return { success: false, error: e.message, code: 'REGISTRATION_NETWORK_ERROR', retryAfter: null };
             }
         },
 
@@ -423,12 +430,19 @@
                     body: JSON.stringify({ email, password })
                 });
                 const data = await res.json();
-                if (!res.ok) throw new Error(data.error);
+                if (!res.ok) {
+                    return {
+                        success: false,
+                        error: data.error || 'Přihlášení se nepodařilo.',
+                        code: data.code || 'LOGIN_FAILED',
+                        retryAfter: Number.parseInt(res.headers.get('retry-after') || '', 10) || null
+                    };
+                }
 
                 this.loginSuccess(data, { mode: 'login' });
                 return { success: true, analyticsTracked: true };
             } catch (e) {
-                return { success: false, error: e.message };
+                return { success: false, error: e.message, code: 'LOGIN_NETWORK_ERROR', retryAfter: null };
             }
         },
 

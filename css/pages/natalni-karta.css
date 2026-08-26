@@ -508,6 +508,44 @@ html body .mh-inline-e8965e1cb8 { margin: 0; color: var(--color-mystic-gold); }
     white-space: pre-wrap;
 }
 
+.natal-personal-map-next {
+    margin-top: var(--space-xl);
+    padding: 1.15rem;
+    border: 1px solid rgba(212, 175, 55, 0.28);
+    border-radius: var(--radius-lg);
+    background: rgba(5, 5, 16, 0.55);
+    white-space: normal;
+}
+
+.natal-personal-map-next__eyebrow {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: var(--color-mystic-gold);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.natal-personal-map-next strong {
+    display: block;
+    color: var(--color-starlight);
+    line-height: 1.4;
+}
+
+.natal-personal-map-next p {
+    margin: 0.55rem 0 0.9rem;
+    color: rgba(255, 255, 255, 0.74);
+    font-size: 0.9rem;
+    line-height: 1.55;
+}
+
+.natal-personal-map-next .btn {
+    width: 100%;
+    min-height: 44px;
+    white-space: normal;
+}
+
 .natal-teaser-reassurance {
     margin: 0.85rem 0 0;
     color: rgba(255, 255, 255, 0.68);

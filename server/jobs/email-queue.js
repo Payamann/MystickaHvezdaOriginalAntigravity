@@ -575,11 +575,34 @@ export async function scheduleEmailLater(emailConfig, client = supabase) {
                 if (legacyExisting) {
                     return existingScheduleResult(legacyExisting, 'legacy_dedupe_precheck');
                 }
-                throw new EmailQueuePersistenceError(
-                    'schedule_deduplicated_email',
-                    'email_queue',
-                    'dedupe_key migration is missing; refusing a race-prone fallback insert'
-                );
+
+                // Keep transactional/recovery mail available while an older production
+                // schema is being migrated. The logical key remains in JSONB and is
+                // also used as the provider idempotency key when the row is processed,
+                // so concurrent legacy rows still resolve to one external delivery.
+                const legacyInsertPayload = { ...insertPayload };
+                delete legacyInsertPayload.dedupe_key;
+                const { data: legacyInsertedEmail, error: legacyInsertError } = await client
+                    .from('email_queue')
+                    .insert(legacyInsertPayload)
+                    .select('id, scheduled_for')
+                    .maybeSingle();
+                if (legacyInsertError) {
+                    throw new EmailQueuePersistenceError(
+                        'schedule_legacy_deduplicated_email',
+                        'email_queue',
+                        legacyInsertError.message || 'legacy email queue insert failed'
+                    );
+                }
+
+                console.warn('[JOB][OPERATIONAL] email_queue.dedupe_key migration is missing; provider idempotency fallback used.');
+                return {
+                    success: true,
+                    scheduledFor,
+                    skipped: false,
+                    existingId: legacyInsertedEmail?.id || null,
+                    reason: 'legacy_schema_provider_idempotency'
+                };
             }
 
             throw error;

@@ -395,6 +395,26 @@ document.addEventListener('DOMContentLoaded', () => {
         || pendingContext.billingInterval
         || null;
     const requestedEmail = urlParams.get('email') || '';
+    const authFlowStorageKey = 'mh_checkout_auth_flow';
+    const authFlowContext = [requestedPlan, requestedSource, requestedFeature, requestedBillingInterval]
+        .filter(Boolean)
+        .join('|');
+    const createAuthFlowId = () => {
+        if (!requestedPlan) return null;
+        try {
+            const stored = JSON.parse(sessionStorage.getItem(authFlowStorageKey) || 'null');
+            if (stored?.context === authFlowContext && typeof stored.id === 'string') return stored.id;
+        } catch {}
+
+        const id = typeof globalThis.crypto?.randomUUID === 'function'
+            ? globalThis.crypto.randomUUID()
+            : `mh_auth_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
+        try {
+            sessionStorage.setItem(authFlowStorageKey, JSON.stringify({ context: authFlowContext, id }));
+        } catch {}
+        return id;
+    };
+    const authFlowId = createAuthFlowId();
 
     const hasPendingAuthRedirect = () => Boolean(
         sessionStorage.getItem('pending_plan')
@@ -473,7 +493,7 @@ document.addEventListener('DOMContentLoaded', () => {
             : '/profil.html'
     );
 
-    const buildCheckoutAuthStepPayload = (eventName, step) => {
+    const buildCheckoutAuthStepPayload = (eventName, step, extraMetadata = {}) => {
         if (!requestedPlan) return null;
 
         const pendingMetadata = pendingContext.metadata && typeof pendingContext.metadata === 'object' && !Array.isArray(pendingContext.metadata)
@@ -484,9 +504,11 @@ document.addEventListener('DOMContentLoaded', () => {
             path: window.location.pathname,
             redirect: getSafeRedirectTarget(),
             auth_mode: isRegisterMode ? 'register' : 'login',
-            step
+            step,
+            ...extraMetadata
         };
 
+        if (authFlowId) metadata.auth_flow_id = authFlowId;
         if (requestedBillingInterval) metadata.billing_interval = requestedBillingInterval;
         if (!metadata.entry_source && requestedSource) metadata.entry_source = requestedSource;
         if (!metadata.entry_feature && requestedFeature) metadata.entry_feature = requestedFeature;
@@ -500,8 +522,8 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     };
 
-    const trackCheckoutAuthStep = (eventName, step) => {
-        const payload = buildCheckoutAuthStepPayload(eventName, step);
+    const trackCheckoutAuthStep = (eventName, step, extraMetadata = {}) => {
+        const payload = buildCheckoutAuthStepPayload(eventName, step, extraMetadata);
         if (!payload) return;
 
         const queueRetry = () => {
@@ -763,6 +785,33 @@ document.addEventListener('DOMContentLoaded', () => {
         syncGdprValidity();
     });
 
+    let authFormStartedTracked = false;
+    loginForm?.addEventListener('focusin', event => {
+        if (authFormStartedTracked || !requestedPlan) return;
+        if (!event.target?.matches?.('input')) return;
+        authFormStartedTracked = true;
+        trackCheckoutAuthStep('checkout_auth_form_started', 'auth_form_started');
+    });
+
+    let validationFailureTracked = false;
+    loginForm?.addEventListener('invalid', event => {
+        if (validationFailureTracked || !requestedPlan) return;
+        validationFailureTracked = true;
+        queueMicrotask(() => {
+            validationFailureTracked = false;
+        });
+
+        const invalidField = event.target;
+        trackCheckoutAuthStep('checkout_auth_validation_failed', 'native_validation_failed');
+        trackAuthAnalytics('trackEvent', 'auth_validation_failed', {
+            auth_mode: isRegisterMode ? 'register' : 'login',
+            field: invalidField?.name || invalidField?.id || 'unknown',
+            source: requestedSource,
+            feature: requestedFeature,
+            plan_id: requestedPlan
+        });
+    }, true);
+
     if (isResetMode && hash) {
         setBlockVisible(loginForm, false);
         setBlockVisible(forgotPasswordForm, false);
@@ -799,6 +848,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (!validateRegisterFields()) {
+            trackCheckoutAuthStep('checkout_auth_validation_failed', 'register_validation_failed');
             return;
         }
 
@@ -823,6 +873,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (!result.success) {
+                    trackCheckoutAuthStep('checkout_auth_request_failed', 'register_request_failed', {
+                        reason_code: result.code || 'REGISTRATION_FAILED',
+                        retryable: Boolean(result.retryAfter)
+                    });
                     throw new Error(result.error || 'Registrace se nepodařila.');
                 }
 
@@ -836,6 +890,10 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 const result = await window.Auth.login(email, password);
                 if (!result.success) {
+                    trackCheckoutAuthStep('checkout_auth_request_failed', 'login_request_failed', {
+                        reason_code: result.code || 'LOGIN_FAILED',
+                        retryable: Boolean(result.retryAfter)
+                    });
                     throw new Error(result.error || 'Přihlášení se nepodařilo.');
                 }
 

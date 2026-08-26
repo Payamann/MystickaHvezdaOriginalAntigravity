@@ -165,4 +165,31 @@ test.describe('Homepage CTA smoke', () => {
             { timeout: 15000 }
         ).toBe(false);
     });
+
+    test('personal map spotlight records a visible impression and click without analytics consent', async ({ page }) => {
+        const funnelEvents = [];
+        await page.route('**/api/payment/funnel-event', async route => {
+            funnelEvents.push(route.request().postDataJSON());
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+
+        await prepareHomepage(page, DESKTOP_VIEWPORT);
+        const spotlight = page.locator('#osobni-mapa-preview');
+        await spotlight.scrollIntoViewIfNeeded();
+        await expect.poll(() => funnelEvents.find(event => event.eventName === 'one_time_product_viewed') || null).toEqual(expect.objectContaining({
+            source: 'homepage_spotlight_view',
+            feature: 'osobni_mapa_2026',
+            planId: 'osobni_mapa_2026'
+        }));
+
+        await Promise.all([
+            page.waitForRequest(request => request.url().includes('/api/payment/funnel-event')
+                && request.postDataJSON()?.eventName === 'pricing_product_cta_clicked'),
+            spotlight.locator('a[href*="source=homepage_spotlight"]').first().click()
+        ]);
+    });
 });

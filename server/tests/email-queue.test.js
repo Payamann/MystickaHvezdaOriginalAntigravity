@@ -178,7 +178,7 @@ describe('email queue helpers', () => {
         });
     });
 
-    test('missing dedupe column fails closed instead of using a race-prone insert', async () => {
+    test('missing dedupe column preserves recovery mail with provider idempotency', async () => {
         const client = createSequencedDbClient([
             { data: [], error: null },
             {
@@ -188,7 +188,11 @@ describe('email queue helpers', () => {
                     message: "Could not find the 'dedupe_key' column of 'email_queue' in the schema cache"
                 }
             },
-            { data: [], error: null }
+            { data: [], error: null },
+            {
+                data: { id: 'legacy-provider-idempotent-row', scheduled_for: '2026-08-15T10:00:00.000Z' },
+                error: null
+            }
         ]);
 
         await expect(scheduleEmailLater({
@@ -196,11 +200,13 @@ describe('email queue helpers', () => {
             template: 'payment_recovery',
             data: { dedupeKey: 'payment_recovery:in_missing:stage1' },
             dedupeKey: 'payment_recovery:in_missing:stage1'
-        }, client)).rejects.toMatchObject({
-            name: 'EmailQueuePersistenceError',
-            operation: 'schedule_deduplicated_email'
+        }, client)).resolves.toMatchObject({
+            success: true,
+            skipped: false,
+            existingId: 'legacy-provider-idempotent-row',
+            reason: 'legacy_schema_provider_idempotency'
         });
-        expect(client.from).toHaveBeenCalledTimes(3);
+        expect(client.from).toHaveBeenCalledTimes(4);
     });
 
     test('dedupe treats a permanently failed email as already scheduled', async () => {

@@ -133,32 +133,37 @@ async function fetchFunnelEvents(supabase, { days, limit, since: explicitSince, 
     const reportDays = explicitSince ? Math.max(1, Math.ceil(windowMs / DAY_MS)) : days;
     const queryLimit = Math.min(5000, limit * 2);
 
-    const query = supabase
-        .from('funnel_events')
-        .select(`
-            id,
-            user_id,
-            event_name,
-            source,
-            feature,
-            plan_id,
-            plan_type,
-            stripe_session_id,
-            stripe_event_id,
-            metadata,
-            created_at
-        `)
-        .gte('created_at', previousSince)
-        .lt('created_at', periodEnd)
-        .order('created_at', { ascending: false })
-        .limit(queryLimit);
+    const data = [];
+    const pageSize = Math.min(1000, queryLimit);
+    for (let from = 0; from < queryLimit; from += pageSize) {
+        const to = Math.min(from + pageSize - 1, queryLimit - 1);
+        const { data: page, error } = await supabase
+            .from('funnel_events')
+            .select(`
+                id,
+                user_id,
+                event_name,
+                source,
+                feature,
+                plan_id,
+                plan_type,
+                stripe_session_id,
+                stripe_event_id,
+                metadata,
+                created_at
+            `)
+            .gte('created_at', previousSince)
+            .lt('created_at', periodEnd)
+            .order('created_at', { ascending: false })
+            .range(from, to);
 
-    const { data, error } = await query;
-
-    if (error) throw error;
+        if (error) throw error;
+        data.push(...(page || []));
+        if (!page || page.length < pageSize) break;
+    }
 
     return {
-        events: data || [],
+        events: data,
         options: { days: reportDays, since, previousSince, periodEnd, limit },
     };
 }
@@ -220,6 +225,21 @@ async function buildEntitlementAudit(supabase, { isPremiumPlanType, normalizePla
     };
 }
 
+async function buildOperationalSchemaAudit(supabase) {
+    const { error } = await supabase
+        .from('email_queue')
+        .select('dedupe_key')
+        .limit(1);
+
+    return {
+        emailQueueAtomicDedupe: !error,
+        emailQueueAtomicDedupeErrorCode: error?.code || null,
+        requiredMigration: error?.code === '42703'
+            ? 'migrations/20260815_email_queue_atomic_dedupe.sql'
+            : null,
+    };
+}
+
 async function main() {
     const args = parseArgs(process.argv.slice(2));
     const supabaseUrl = resolveSupabaseUrl(process.env.SUPABASE_URL);
@@ -253,8 +273,15 @@ async function main() {
     await fs.writeFile(args.output, `${csv}\n`, 'utf8');
 
     let entitlementAudit = null;
+    let operationalSchemaAudit = null;
     if (!args.skipEntitlementAudit) {
-        entitlementAudit = await buildEntitlementAudit(supabase, { isPremiumPlanType, normalizePlanType });
+        [entitlementAudit, operationalSchemaAudit] = await Promise.all([
+            buildEntitlementAudit(supabase, { isPremiumPlanType, normalizePlanType }),
+            buildOperationalSchemaAudit(supabase),
+        ]);
+        if (!operationalSchemaAudit.emailQueueAtomicDedupe) {
+            console.warn(`[export-live-funnel] production schema is missing atomic email dedupe; apply ${operationalSchemaAudit.requiredMigration || 'the pending email queue migration'}.`);
+        }
     }
 
     const summary = {
@@ -269,6 +296,7 @@ async function main() {
         segments: report.sourceFeatureSegments?.length || 0,
         metrics: report.metrics,
         entitlementAudit,
+        operationalSchemaAudit,
     };
 
     if (args.summaryJson) {

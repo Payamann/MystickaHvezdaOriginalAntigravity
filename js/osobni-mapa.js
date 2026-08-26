@@ -52,6 +52,7 @@
 
     async function trackFunnelEvent(eventName, payload = {}) {
         if (![
+            'one_time_product_viewed',
             'one_time_product_cta_clicked',
             'one_time_form_started',
             'one_time_form_validation_failed',

@@ -81,6 +81,18 @@ const FUNNEL_CHECKOUT_AUTH_FORM_SUBMIT_EVENTS = new Set([
     'checkout_auth_form_submitted',
 ]);
 
+const FUNNEL_CHECKOUT_AUTH_FORM_START_EVENTS = new Set([
+    'checkout_auth_form_started',
+]);
+
+const FUNNEL_CHECKOUT_AUTH_VALIDATION_FAILURE_EVENTS = new Set([
+    'checkout_auth_validation_failed',
+]);
+
+const FUNNEL_CHECKOUT_AUTH_REQUEST_FAILURE_EVENTS = new Set([
+    'checkout_auth_request_failed',
+]);
+
 const FUNNEL_CHECKOUT_POST_VERIFICATION_PENDING_EVENTS = new Set([
     'checkout_post_verification_pending',
 ]);
@@ -1014,7 +1026,10 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
     const pricingIntent = [...FUNNEL_PRICING_INTENT_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
     const checkoutAuthRequired = [...FUNNEL_CHECKOUT_AUTH_REQUIRED_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
     const checkoutAuthPageViewed = [...FUNNEL_CHECKOUT_AUTH_PAGE_VIEW_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
+    const checkoutAuthFormStarted = [...FUNNEL_CHECKOUT_AUTH_FORM_START_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
     const checkoutAuthFormSubmitted = [...FUNNEL_CHECKOUT_AUTH_FORM_SUBMIT_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
+    const checkoutAuthValidationFailed = [...FUNNEL_CHECKOUT_AUTH_VALIDATION_FAILURE_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
+    const checkoutAuthRequestFailed = [...FUNNEL_CHECKOUT_AUTH_REQUEST_FAILURE_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
     const checkoutPostVerificationPending = [...FUNNEL_CHECKOUT_POST_VERIFICATION_PENDING_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
     const checkoutPostVerificationRecovered = [...FUNNEL_CHECKOUT_POST_VERIFICATION_RECOVERED_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
     const checkoutRequested = [...FUNNEL_CHECKOUT_REQUEST_EVENTS].reduce((sum, eventName) => sum + (byEvent[eventName] || 0), 0);
@@ -1080,6 +1095,12 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
     const oneTimeLifecycleScheduleRate = oneTimePdfDelivered > 0
         ? Math.round((oneTimeLifecycleScheduled / oneTimePdfDelivered) * 1000) / 10
         : 0;
+    const authPageToFormStartRate = checkoutAuthPageViewed > 0
+        ? Math.round((checkoutAuthFormStarted / checkoutAuthPageViewed) * 1000) / 10
+        : 0;
+    const authFormStartToSubmitRate = checkoutAuthFormStarted > 0
+        ? Math.round((checkoutAuthFormSubmitted / checkoutAuthFormStarted) * 1000) / 10
+        : 0;
 
     return {
         generatedAt: new Date().toISOString(),
@@ -1100,7 +1121,10 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
             pricingIntent,
             checkoutAuthRequired,
             checkoutAuthPageViewed,
+            checkoutAuthFormStarted,
             checkoutAuthFormSubmitted,
+            checkoutAuthValidationFailed,
+            checkoutAuthRequestFailed,
             checkoutPostVerificationPending,
             checkoutPostVerificationRecovered,
             checkoutRequested,
@@ -1130,6 +1154,8 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
             readingSaveRate,
             oneTimeDeliveryRate,
             oneTimeLifecycleScheduleRate,
+            authPageToFormStartRate,
+            authFormStartToSubmitRate,
             estimatedValueCzk: Math.round(estimatedMinorValue / 100)
         },
         byEvent,

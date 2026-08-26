@@ -400,6 +400,43 @@ test.describe('Login stránka', () => {
         expect(url.searchParams.get('entry_feature')).toBe('numerologie_vyklad');
     });
 
+    test('placeny auth funnel rozlisi zacatek formulare a validacni prekazku', async ({ page }) => {
+        const funnelEvents = [];
+        await page.route('**/api/payment/funnel-event', async (route) => {
+            funnelEvents.push(route.request().postDataJSON());
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+
+        await page.goto('/prihlaseni.html?mode=register&redirect=/cenik.html&plan=pruvodce&source=inline_paywall&feature=tarot_multi_card');
+        await waitForPageReady(page);
+        await page.locator('#email').fill('mereni@example.com');
+        await page.locator('#auth-submit').click();
+
+        await expect.poll(() => funnelEvents.find(event => event.eventName === 'checkout_auth_form_started') || null).toEqual(expect.objectContaining({
+            source: 'inline_paywall',
+            feature: 'tarot_multi_card',
+            planId: 'pruvodce',
+            metadata: expect.objectContaining({
+                auth_flow_id: expect.any(String),
+                step: 'auth_form_started'
+            })
+        }));
+        await expect.poll(() => funnelEvents.find(event => event.eventName === 'checkout_auth_validation_failed') || null).toEqual(expect.objectContaining({
+            metadata: expect.objectContaining({
+                auth_flow_id: expect.any(String),
+                step: 'native_validation_failed'
+            })
+        }));
+
+        const start = funnelEvents.find(event => event.eventName === 'checkout_auth_form_started');
+        const failure = funnelEvents.find(event => event.eventName === 'checkout_auth_validation_failed');
+        expect(failure.metadata.auth_flow_id).toBe(start.metadata.auth_flow_id);
+    });
+
     test('login s pending checkout kontextem ukazuje placene navazani', async ({ page }) => {
         await page.goto('/prihlaseni.html?mode=login&redirect=/cenik.html&plan=pruvodce&source=trial_paywall&feature=numerologie_vyklad&entry_source=trial_paywall&entry_feature=numerologie_vyklad');
         await waitForPageReady(page);

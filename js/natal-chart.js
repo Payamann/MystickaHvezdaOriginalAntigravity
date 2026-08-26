@@ -920,11 +920,40 @@ function createAIResultsContainer() {
             ✨ Váš osobní hvězdný příběh
         </h4>
         <div class="ai-content natal-ai__content"></div>
+        <aside class="natal-personal-map-next" aria-label="Navazující výklad na 12 měsíců">
+            <span class="natal-personal-map-next__eyebrow">Chceš z mapy udělat konkrétní plán?</span>
+            <strong>Osobní mapa rozpracuje jednu otázku do 12 navazujících měsíců.</strong>
+            <p>Jednorázový PDF výklad propojí vztahy, práci, energii a praktické kroky. Začíná dnem objednávky, ne koncem kalendářního roku.</p>
+            <a class="btn btn--primary" href="/osobni-mapa.html?source=natal_chart_result&amp;feature=osobni_mapa_2026" data-personal-map-next data-analytics-cta="natal_result_personal_map" data-analytics-feature="osobni_mapa_2026" data-analytics-product="osobni_mapa_2026" data-analytics-intent="one_time_purchase">Prohlédnout ukázku · 299 Kč</a>
+        </aside>
     `;
 
     // Insert after chart-results
     const chartResults = document.getElementById('chart-results');
     chartResults.parentNode.insertBefore(container, chartResults.nextSibling);
+
+    const context = {
+        source: 'natal_chart_result',
+        feature: 'osobni_mapa_2026',
+        planId: 'osobni_mapa_2026',
+        planType: 'personal_map',
+        metadata: {
+            product_id: 'osobni_mapa_2026',
+            product_type: 'personal_map',
+            placement: 'natal_chart_result',
+            path: window.location.pathname
+        }
+    };
+    void window.Auth?.sendServerFunnelEvent?.({
+        eventName: 'one_time_product_viewed',
+        ...context
+    });
+    container.querySelector('[data-personal-map-next]')?.addEventListener('click', () => {
+        void window.Auth?.sendServerFunnelEvent?.({
+            eventName: 'pricing_product_cta_clicked',
+            ...context
+        });
+    });
 
     return container;
 }

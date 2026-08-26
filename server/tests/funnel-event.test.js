@@ -57,6 +57,31 @@ describe('Public funnel event endpoint', () => {
         expect(res.body.success).toBe(true);
     });
 
+    test.each([
+        'one_time_product_viewed',
+        'checkout_auth_form_started',
+        'checkout_auth_validation_failed',
+        'checkout_auth_request_failed'
+    ])('accepts operational funnel event %s', async (eventName) => {
+        const csrfToken = await getCsrfToken();
+        const res = await request(app)
+            .post('/api/payment/funnel-event')
+            .set('x-csrf-token', csrfToken)
+            .send({
+                eventName,
+                source: 'inline_paywall',
+                feature: 'tarot_multi_card',
+                planId: 'pruvodce',
+                metadata: {
+                    auth_flow_id: '6d7d17ec-a4ea-47ce-8f4f-5ad6f4615957',
+                    step: eventName
+                }
+            });
+
+        expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
+    });
+
     test('accepts pricing recovery events with original funnel context', async () => {
         const csrfToken = await getCsrfToken();
         const returnRes = await request(app)

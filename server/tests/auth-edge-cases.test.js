@@ -196,6 +196,47 @@ describe('Auth edge cases', () => {
         expect(res.body.error).toBeUndefined();
     });
 
+    test('failed login budget does not block a new registration from the same network', async () => {
+        const csrfToken = await getCsrfToken();
+        const forwardedIp = authIp('separate-login-and-register-limiters');
+
+        for (let attempt = 0; attempt < 10; attempt += 1) {
+            await request(app)
+                .post('/api/auth/login')
+                .set('x-csrf-token', csrfToken)
+                .set('X-Forwarded-For', forwardedIp)
+                .send({
+                    email: `missing-login-${attempt}@example.com`,
+                    password: 'x'
+                });
+        }
+
+        const limitedLogin = await request(app)
+            .post('/api/auth/login')
+            .set('x-csrf-token', csrfToken)
+            .set('X-Forwarded-For', forwardedIp)
+            .send({
+                email: 'missing-login-final@example.com',
+                password: 'x'
+            });
+        expect(limitedLogin.status).toBe(429);
+        expect(limitedLogin.body.code).toBe('LOGIN_RATE_LIMITED');
+
+        const registration = await request(app)
+            .post('/api/auth/register')
+            .set('x-csrf-token', csrfToken)
+            .set('X-Forwarded-For', forwardedIp)
+            .send({
+                email: `separate-limit-${Date.now()}@example.com`,
+                password: 'TestPassword123!',
+                gdpr_consent: true,
+                terms_consent: true
+            });
+
+        expect(registration.status).toBe(200);
+        expect(registration.body.success).toBe(true);
+    });
+
     test('reset password with CSRF but without bearer token returns auth error', async () => {
         const csrfToken = await getCsrfToken();
 

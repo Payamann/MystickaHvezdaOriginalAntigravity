@@ -127,6 +127,9 @@ test.describe('Natální karta', () => {
         await expect(page.locator('#planets-layer animateTransform')).toHaveCount(0);
         await expect(page.locator('#transits-now')).toBeVisible();
         await expect(page.locator('#transit-message')).not.toContainText('Načítám');
+        await expect(page.locator('.natal-personal-map-next')).toBeVisible();
+        await expect(page.locator('.natal-personal-map-next')).toContainText('12 navazujících měsíců');
+        await expect(page.locator('[data-personal-map-next]')).toHaveAttribute('href', /source=natal_chart_result/);
     });
 
     test('premium teaser slibuje konkrétní výklad, ne úplný osud', async ({ page }) => {

@@ -220,6 +220,31 @@ describe('Admin funnel report helpers', () => {
         }));
     });
 
+    test('reports paid auth form engagement and friction separately', () => {
+        const report = buildFunnelReport([
+            { event_name: 'checkout_auth_page_viewed', created_at: '2026-04-20T10:00:00.000Z' },
+            { event_name: 'checkout_auth_page_viewed', created_at: '2026-04-20T10:01:00.000Z' },
+            { event_name: 'checkout_auth_form_started', created_at: '2026-04-20T10:02:00.000Z' },
+            { event_name: 'checkout_auth_form_submitted', created_at: '2026-04-20T10:03:00.000Z' },
+            { event_name: 'checkout_auth_validation_failed', created_at: '2026-04-20T10:04:00.000Z' },
+            { event_name: 'checkout_auth_request_failed', created_at: '2026-04-20T10:05:00.000Z' }
+        ], {
+            days: 30,
+            since: '2026-03-26T00:00:00.000Z',
+            limit: 1000
+        });
+
+        expect(report.metrics).toEqual(expect.objectContaining({
+            checkoutAuthPageViewed: 2,
+            checkoutAuthFormStarted: 1,
+            checkoutAuthFormSubmitted: 1,
+            checkoutAuthValidationFailed: 1,
+            checkoutAuthRequestFailed: 1,
+            authPageToFormStartRate: 50,
+            authFormStartToSubmitRate: 100
+        }));
+    });
+
     test('counts direct paywall CTA clicks as paid intent', () => {
         const report = buildFunnelReport([
             { event_name: 'paywall_viewed', source: 'partner_match_result', feature: 'partnerska_detail', created_at: '2026-04-20T10:00:00.000Z' },

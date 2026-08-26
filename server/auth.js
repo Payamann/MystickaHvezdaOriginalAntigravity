@@ -78,13 +78,36 @@ export async function generateToken(userId) {
     }
 }
 
-// Strict rate limiting on auth endpoints to prevent brute force / credential stuffing
-const authLimiter = rateLimit({
-    windowMs: 60 * 60 * 1000, // 1 hour
-    max: 10, // 10 attempts per hour (strict brute-force protection)
-    message: { error: 'Příliš mnoho pokusů. Zkuste to za hodinu.' },
-    standardHeaders: true,
-    legacyHeaders: false,
+function createAuthLimiter({ max, error, code, skipSuccessfulRequests = false }) {
+    return rateLimit({
+        windowMs: 60 * 60 * 1000,
+        max,
+        message: { error, code, retryable: true },
+        standardHeaders: true,
+        legacyHeaders: false,
+        skipSuccessfulRequests,
+    });
+}
+
+// Keep independent stores so a successful login or password reset cannot consume
+// the registration budget of everyone behind the same household/mobile NAT.
+const registerLimiter = createAuthLimiter({
+    max: 10,
+    error: 'Příliš mnoho registrací z tohoto připojení. Zkuste to za hodinu.',
+    code: 'REGISTRATION_RATE_LIMITED',
+});
+
+const loginLimiter = createAuthLimiter({
+    max: 10,
+    error: 'Příliš mnoho neúspěšných přihlášení. Zkuste to za hodinu.',
+    code: 'LOGIN_RATE_LIMITED',
+    skipSuccessfulRequests: true,
+});
+
+const passwordResetLimiter = createAuthLimiter({
+    max: 10,
+    error: 'Příliš mnoho žádostí o obnovu hesla. Zkuste to za hodinu.',
+    code: 'PASSWORD_RESET_RATE_LIMITED',
 });
 
 // Rate limiting for token refresh to prevent abuse
@@ -354,7 +377,7 @@ router.post('/activate-premium', (req, res) => {
 });
 
 // Register (Supabase Auth)
-router.post('/register', authLimiter, async (req, res) => {
+router.post('/register', registerLimiter, async (req, res) => {
     const {
         email,
         password,
@@ -498,7 +521,7 @@ router.post('/register', authLimiter, async (req, res) => {
 });
 
 // Login (Supabase Auth)
-router.post('/login', authLimiter, async (req, res) => {
+router.post('/login', loginLimiter, async (req, res) => {
     const { email, password } = req.body;
     const clientIp = req.ip || req.connection.remoteAddress;
     const userAgent = req.headers['user-agent'] || 'unknown';
@@ -736,7 +759,7 @@ router.post('/logout', authenticateToken, async (req, res) => {
 });
 
 // Forgot Password - sends reset email via Supabase
-router.post('/forgot-password', authLimiter, async (req, res) => {
+router.post('/forgot-password', passwordResetLimiter, async (req, res) => {
     const { email } = req.body;
 
     try {
