@@ -280,6 +280,65 @@ test.describe('Partnerská shoda', () => {
         expect(premiumBridgeUrl.searchParams.get('entry_feature')).toBe('partnerska_detail');
     });
 
+    test('vysledek nabidne jednorazovou vztahovou mapu a zmeri zobrazeni i klik', async ({ page }) => {
+        const funnelEvents = [];
+        await page.route('**/api/csrf-token', route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ csrfToken: 'e2e-synastry-personal-map-token' })
+        }));
+        await page.route('**/api/payment/funnel-event', async (route) => {
+            funnelEvents.push(route.request().postDataJSON());
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+        await page.reload();
+        await waitForPageReady(page);
+
+        await page.fill('#p1-name', 'Anna');
+        await page.fill('#p1-date', '1990-01-01');
+        await page.fill('#p2-name', 'Pavel');
+        await page.fill('#p2-date', '1992-07-15');
+        await page.locator('#synastry-form button[type="submit"]').click();
+
+        const personalMapOffer = page.locator('[data-personal-map-offer]');
+        await expect(personalMapOffer).toBeVisible();
+        await expect(personalMapOffer).toContainText('Jednorázově · 299 Kč');
+        await expect(personalMapOffer).toContainText('bez předplatného');
+
+        const offerUrl = new URL(await personalMapOffer.getAttribute('href'), 'https://www.mystickahvezda.cz/');
+        expect(offerUrl.pathname).toBe('/osobni-mapa.html');
+        expect(offerUrl.searchParams.get('source')).toBe('partner_match_result');
+        expect(offerUrl.searchParams.get('feature')).toBe('osobni_mapa_2026');
+        expect(offerUrl.searchParams.get('focus_area')).toBe('relationships');
+        expect(offerUrl.hash).toBe('#order');
+
+        await expect.poll(() => funnelEvents.find(event => event.eventName === 'one_time_product_viewed') || null)
+            .toEqual(expect.objectContaining({
+                source: 'partner_match_result',
+                feature: 'osobni_mapa_2026',
+                planId: 'osobni_mapa_2026',
+                planType: 'personal_map',
+                metadata: expect.objectContaining({
+                    entry_feature: 'partnerska_detail',
+                    placement: 'synastry_result_next_step',
+                    suggested_focus_area: 'relationships'
+                })
+            }));
+
+        await personalMapOffer.click();
+        await page.waitForURL(/osobni-mapa\.html/);
+        expect(new URL(page.url()).searchParams.get('focus_area')).toBe('relationships');
+        await expect.poll(() => funnelEvents.find(event => event.eventName === 'one_time_product_cta_clicked') || null)
+            .toEqual(expect.objectContaining({
+                source: 'partner_match_result',
+                feature: 'osobni_mapa_2026'
+            }));
+    });
+
     test('mobilni partner bridge drzi primarni upgrade CTA klikatelne', async ({ page }) => {
         await page.setViewportSize(MOBILE_VIEWPORT);
         await page.fill('#p1-name', 'Anna');

@@ -13,6 +13,9 @@ const SYNASTRY_FEATURE = 'partnerska_detail';
 const SYNASTRY_PLAN_ID = 'pruvodce';
 const SYNASTRY_RESULT_SOURCE = 'partner_match_result';
 const SYNASTRY_PAYMENT_REASSURANCE = 'Cena se zobraz\u00ed ve Stripe p\u0159ed potvrzen\u00edm. Zru\u0161en\u00ed najdete v profilu.';
+const PERSONAL_MAP_PRODUCT_ID = 'osobni_mapa_2026';
+const PERSONAL_MAP_PRODUCT_TYPE = 'personal_map';
+let personalMapOfferViewed = false;
 
 function buildSynastryUpgradeUrl(source = 'synastry_teaser_overlay') {
     const authUrl = new URL('/prihlaseni.html', window.location.origin);
@@ -61,6 +64,57 @@ async function trackSynastryFunnelEvent(eventName, source, metadata = {}) {
     } catch (error) {
         console.warn('[Synastry funnel] Could not record event:', error.message);
     }
+}
+
+async function trackPersonalMapOfferEvent(eventName, metadata = {}) {
+    try {
+        const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+        if (!csrfToken) return;
+
+        await fetch(`${window.API_CONFIG?.BASE_URL || '/api'}/payment/funnel-event`, {
+            method: 'POST',
+            credentials: 'include',
+            keepalive: true,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify({
+                eventName,
+                source: SYNASTRY_RESULT_SOURCE,
+                feature: PERSONAL_MAP_PRODUCT_ID,
+                planId: PERSONAL_MAP_PRODUCT_ID,
+                planType: PERSONAL_MAP_PRODUCT_TYPE,
+                metadata: {
+                    product_id: PERSONAL_MAP_PRODUCT_ID,
+                    product_type: PERSONAL_MAP_PRODUCT_TYPE,
+                    entry_feature: SYNASTRY_FEATURE,
+                    placement: 'synastry_result_next_step',
+                    suggested_focus_area: 'relationships',
+                    path: window.location.pathname,
+                    ...metadata
+                }
+            })
+        });
+    } catch (error) {
+        console.warn('[Synastry personal map funnel] Could not record event:', error.message);
+    }
+}
+
+function trackPersonalMapOfferView(scores) {
+    if (personalMapOfferViewed || !document.querySelector('[data-personal-map-offer]')) return;
+    personalMapOfferViewed = true;
+
+    window.MH_ANALYTICS?.trackEvent?.('personal_map_offer_viewed', {
+        source: SYNASTRY_RESULT_SOURCE,
+        feature: PERSONAL_MAP_PRODUCT_ID,
+        placement: 'synastry_result_next_step',
+        suggested_focus_area: 'relationships',
+        total_score: scores?.totalScore ?? null
+    });
+    void trackPersonalMapOfferEvent('one_time_product_viewed', {
+        total_score: scores?.totalScore ?? null
+    });
 }
 
 function startSynastryUpgradeFlow(source) {
@@ -296,6 +350,7 @@ function revealSynastryNextStep(scores, synastry, isPremium) {
     if (scoreElement) scoreElement.textContent = score;
 
     setBlockVisible(section, true);
+    trackPersonalMapOfferView(scores);
 
     window.MH_ANALYTICS?.trackEvent?.('synastry_result_bridge_viewed', {
         source: SYNASTRY_RESULT_SOURCE,
@@ -441,6 +496,20 @@ function bindSynastryNextStepLinks() {
                 feature: link.dataset.synastryIntent || null,
                 destination: link.getAttribute('href') || null
             });
+        });
+    });
+
+    document.querySelectorAll('[data-personal-map-offer]').forEach((link) => {
+        link.addEventListener('click', () => {
+            const destination = link.getAttribute('href') || null;
+            window.MH_ANALYTICS?.trackCTA?.('partner_match_personal_map', {
+                source: SYNASTRY_RESULT_SOURCE,
+                feature: PERSONAL_MAP_PRODUCT_ID,
+                product_id: PERSONAL_MAP_PRODUCT_ID,
+                product_type: PERSONAL_MAP_PRODUCT_TYPE,
+                destination
+            });
+            void trackPersonalMapOfferEvent('one_time_product_cta_clicked', { destination });
         });
     });
 }

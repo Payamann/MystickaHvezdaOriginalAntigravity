@@ -1210,6 +1210,31 @@ test.describe('Osobní mapa', () => {
         }));
     });
 
+    test('kontextovy vstup predvybere podporovanou oblast, ale neprepise rozepsany navrat', async ({ page }) => {
+        await page.goto('/osobni-mapa.html?source=partner_match_result&focus_area=relationships#order');
+        await waitForPageReady(page);
+        await expect(page.locator('#focusArea')).toHaveValue('relationships');
+
+        await page.addInitScript(() => {
+            sessionStorage.setItem('mh_personal_map_order_draft', JSON.stringify({
+                createdAt: Date.now(),
+                payload: {
+                    name: 'Jana',
+                    email: 'jana@example.cz',
+                    birthDate: '1990-01-01',
+                    focusArea: 'change',
+                    grammaticalGender: 'neutral',
+                    focus: 'Rozhoduji se o důležité změně.'
+                }
+            }));
+        });
+
+        await page.goto('/osobni-mapa.html?status=cancel&source=partner_match_result&focus_area=relationships#order');
+        await waitForPageReady(page);
+        await expect(page.locator('#focusArea')).toHaveValue('change');
+        await expect(page.locator('#formRestored')).toBeVisible();
+    });
+
     test('znameni se dopocte i na hranicich vsech znameni', async ({ page }) => {
         await page.goto('/osobni-mapa.html?source=e2e_zodiac_boundaries');
         await waitForPageReady(page);

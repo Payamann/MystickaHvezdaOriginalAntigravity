@@ -357,6 +357,20 @@
         }
     }
 
+    function applySuggestedFocusArea(form) {
+        const focusArea = form.elements.namedItem('focusArea');
+        if (!(focusArea instanceof HTMLSelectElement) || focusArea.value) return false;
+
+        const suggestedValue = new URLSearchParams(window.location.search).get('focus_area');
+        const isSupported = Array.from(focusArea.options).some((option) =>
+            option.value === suggestedValue && !option.disabled
+        );
+        if (!isSupported) return false;
+
+        focusArea.value = suggestedValue;
+        return true;
+    }
+
     function getSafeCheckoutUrl(value) {
         if (typeof value !== 'string' || !value.trim()) return null;
         try {
@@ -450,7 +464,8 @@
 
         initFormStartedTracking(form);
         initValidationTracking(form);
-        restoreOrderDraft(form, birthDate, sign, signPreview);
+        const restoredDraft = restoreOrderDraft(form, birthDate, sign, signPreview);
+        if (!restoredDraft) applySuggestedFocusArea(form);
 
         form.addEventListener('submit', async (event) => {
             event.preventDefault();
