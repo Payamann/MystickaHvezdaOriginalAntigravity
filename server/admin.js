@@ -9,6 +9,7 @@ import {
     getSupportThread,
     listRecentSupportThreads
 } from './services/gmail-support.js';
+import { getCachedStripeWebhookAudit } from './services/stripe-webhook-audit.js';
 
 const router = express.Router();
 
@@ -28,6 +29,22 @@ const MONTHLY_REVENUE_BY_PLAN_TYPE = Object.freeze({
     [PLAN_TYPES.PREMIUM]: 199,
     [PLAN_TYPES.EXCLUSIVE]: 499,
     [PLAN_TYPES.VIP]: 999
+});
+
+router.get('/stripe-webhook-health', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const audit = await getCachedStripeWebhookAudit({
+            force: req.query.refresh === '1',
+        });
+        res.json({ success: true, audit });
+    } catch (error) {
+        console.error('[ADMIN] Stripe webhook audit failed:', error.message);
+        res.status(503).json({
+            success: false,
+            code: 'STRIPE_WEBHOOK_AUDIT_UNAVAILABLE',
+            error: 'Kontrolu Stripe webhooků se nepodařilo dokončit.',
+        });
+    }
 });
 
 const FUNNEL_CHECKOUT_FAILURE_EVENTS = new Set([

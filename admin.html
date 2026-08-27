@@ -19,7 +19,7 @@
 
     <link rel="stylesheet" href="css/style.v2.css?v=10">
 <script src="/js/dist/analytics-init.js" defer></script>
-    <link rel="stylesheet" href="css/pages/admin.css">
+    <link rel="stylesheet" href="css/pages/admin.css?v=2">
 </head>
 
 
@@ -288,6 +288,20 @@
                             <button class="btn btn--secondary" data-action="exportFunnelSegmentsCsv">Export segmentu</button>
 
                         </div>
+
+                    </div>
+
+                    <div id="stripe-webhook-health" class="admin-stripe-health" aria-live="polite">
+
+                        <div>
+
+                            <strong>Stripe webhooky</strong>
+
+                            <p data-stripe-health-detail>Načítám stav kritických platebních událostí...</p>
+
+                        </div>
+
+                        <button class="btn btn--secondary" data-action="loadStripeWebhookHealth" data-force-refresh="true">Ověřit Stripe</button>
 
                     </div>
 
@@ -774,7 +788,7 @@
     <script src="js/dist/components.js?v=20260522-premium-gate-cache" defer></script>
 
     <script type="module" src="js/dist/main.js?v=10"></script>
-    <script src="js/dist/admin.js?v=3" defer></script>
+    <script src="js/dist/admin.js?v=4" defer></script>
 
 </body>
 

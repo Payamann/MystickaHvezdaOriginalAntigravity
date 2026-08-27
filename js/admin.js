@@ -8,6 +8,9 @@ document.addEventListener('click', (event) => {
     if (action === 'loadFunnel') {
         loadFunnel();
     }
+    if (action === 'loadStripeWebhookHealth') {
+        loadStripeWebhookHealth(actionTarget.dataset.forceRefresh === 'true');
+    }
     if (action === 'loadBusiness') {
         loadBusiness();
     }
@@ -103,10 +106,58 @@ async function loadAdminData() {
         loadSupportInbox(),
         loadBusiness(),
         loadFunnel(),
+        loadStripeWebhookHealth(),
         loadAnalytics(),
         loadAngelMessages(),
         loadOneTimeOrders()
     ]);
+}
+
+async function loadStripeWebhookHealth(force = false) {
+    const container = document.getElementById('stripe-webhook-health');
+    const detail = container?.querySelector('[data-stripe-health-detail]');
+    if (!container || !detail) return;
+
+    container.classList.remove(
+        'admin-stripe-health--healthy',
+        'admin-stripe-health--warning',
+        'admin-stripe-health--error'
+    );
+    detail.textContent = 'Ověřuji kritické Stripe události...';
+
+    try {
+        const query = force ? '?refresh=1' : '';
+        const response = await fetch(`${API_CONFIG.BASE_URL}/admin/stripe-webhook-health${query}`, {
+            credentials: 'include'
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || `Kontrola selhala (${response.status})`);
+        }
+
+        const audit = data.audit || {};
+        const covered = Math.max(0, (audit.requiredEvents?.length || 0) - (audit.missingEvents?.length || 0));
+        const total = audit.requiredEvents?.length || 0;
+        const checkedAt = audit.checkedAt
+            ? new Intl.DateTimeFormat('cs-CZ', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(audit.checkedAt))
+            : 'neznámý čas';
+
+        if (audit.healthy) {
+            container.classList.add('admin-stripe-health--healthy');
+            detail.textContent = `V pořádku · ${covered}/${total} událostí · ověřeno ${checkedAt}${audit.cached ? ' (cache)' : ''}.`;
+            return;
+        }
+
+        container.classList.add('admin-stripe-health--warning');
+        const missing = Array.isArray(audit.missingEvents) && audit.missingEvents.length
+            ? ` Chybí: ${audit.missingEvents.join(', ')}.`
+            : ' Produkční endpoint není aktivní nebo nepoužívá live Stripe.';
+        detail.textContent = `Vyžaduje zásah · ${covered}/${total} událostí.${missing}`;
+    } catch (error) {
+        console.error(error);
+        container.classList.add('admin-stripe-health--error');
+        detail.textContent = `Kontrola není dostupná: ${error.message}`;
+    }
 }
 
 async function loadUsers() {

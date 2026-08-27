@@ -1226,6 +1226,11 @@ describe('Admin funnel API access control', () => {
         expect(res.status).toBe(401);
     });
 
+    test('Stripe webhook health also requires authentication', async () => {
+        const res = await request(app).get('/api/admin/stripe-webhook-health');
+        expect(res.status).toBe(401);
+    });
+
     test('requires admin privileges', async () => {
         const token = jwt.sign(
             { id: 'user-1', email: 'user@example.com', role: 'user' },
@@ -1235,6 +1240,20 @@ describe('Admin funnel API access control', () => {
 
         const res = await request(app)
             .get('/api/admin/funnel')
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(res.status).toBe(403);
+    });
+
+    test('Stripe webhook health rejects a non-admin account before calling Stripe', async () => {
+        const token = jwt.sign(
+            { id: 'user-1', email: 'user@example.com', role: 'user' },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        const res = await request(app)
+            .get('/api/admin/stripe-webhook-health')
             .set('Authorization', `Bearer ${token}`);
 
         expect(res.status).toBe(403);
