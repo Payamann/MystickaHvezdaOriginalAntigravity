@@ -25,6 +25,7 @@ import {
 } from './services/one-time-orders.js';
 import { isProductionRuntime } from './config/runtime.js';
 import { sendOperationalAlert } from './services/alerts.js';
+import { REQUIRED_STRIPE_WEBHOOK_EVENTS } from './config/stripe-webhooks.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -1608,6 +1609,9 @@ export async function handleStripeWebhook(rawBody, sig) {
                 await handleRefundEvent(event.data.object, event.id, event.type);
                 break;
             default:
+                if (REQUIRED_STRIPE_WEBHOOK_EVENTS.includes(event.type)) {
+                    throw new Error(`Required Stripe webhook event has no handler: ${event.type}`);
+                }
                 console.log(`[STRIPE] Unhandled event type: ${event.type}`);
         }
 

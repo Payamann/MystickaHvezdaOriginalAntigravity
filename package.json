@@ -54,6 +54,7 @@
     "monitor:revenue-truth": "node scripts/revenue-truth-monitor.mjs",
     "monitor:revenue-truth:production": "node scripts/revenue-truth-monitor.mjs --since-live-production",
     "monitor:revenue-truth:production:summary": "node scripts/revenue-truth-monitor.mjs --since-live-production --summary-only",
+    "audit:stripe-webhooks": "node scripts/audit-stripe-webhooks.mjs",
     "audit:site": "node scripts/audit-site-structure.mjs",
     "generate:static-hubs": "node scripts/render-static-hubs.mjs",
     "check:static-hubs": "node scripts/render-static-hubs.mjs --check",

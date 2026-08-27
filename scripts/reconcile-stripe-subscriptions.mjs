@@ -12,6 +12,7 @@ import {
     getPlanTypeForPlanId,
     normalizePlanType,
 } from '../server/config/constants.js';
+import { evaluateStripeWebhookEndpoints } from '../server/config/stripe-webhooks.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -227,17 +228,18 @@ function summarizeStripeSubscription(subscription, planInference) {
 async function fetchWebhookEndpointHealth(stripe) {
     const response = await stripe.webhookEndpoints.list({ limit: 100 });
     const endpoints = response.data || [];
-    const matching = endpoints.filter((endpoint) => /\/webhook\/stripe\/?$/.test(endpoint.url || ''));
+    const audit = evaluateStripeWebhookEndpoints(endpoints, {
+        baseUrl: process.env.APP_URL || 'https://www.mystickahvezda.cz',
+    });
     return {
         total: endpoints.length,
-        matching: matching.map((endpoint) => ({
-            id: endpoint.id,
-            maskedId: maskId(endpoint.id),
-            url: endpoint.url,
-            status: endpoint.status,
-            enabledEvents: endpoint.enabled_events || [],
+        matching: audit.matching.map((endpoint) => ({
+            ...endpoint,
+            maskedId: endpoint.id,
+            status: endpoint.enabled ? 'enabled' : 'disabled',
         })),
-        hasEnabledStripeWebhook: matching.some((endpoint) => endpoint.status === 'enabled'),
+        missingEvents: audit.missingEvents,
+        hasEnabledStripeWebhook: audit.healthy,
     };
 }
 
@@ -540,6 +542,7 @@ async function main() {
                 status: endpoint.status,
                 enabledEvents: endpoint.enabledEvents,
             })),
+            missingEvents: webhookHealth.missingEvents,
         },
         customersChecked: customers.length,
         subscriptionsChecked: subscriptions.length,
@@ -555,6 +558,9 @@ async function main() {
 
     console.log(`Stripe subscription reconciliation ${result.mode} (${result.stripeMode})`);
     console.log(`Webhook endpoint /webhook/stripe enabled: ${result.webhookHealth.hasEnabledStripeWebhook ? 'yes' : 'NO'}`);
+    if (result.webhookHealth.missingEvents.length > 0) {
+        console.log(`Missing webhook events: ${result.webhookHealth.missingEvents.join(', ')}`);
+    }
     console.log(`Customers checked: ${result.customersChecked}; subscriptions checked: ${result.subscriptionsChecked}`);
     console.log(`Planned changes: ${result.plannedChanges.length}; skipped: ${result.skipped.length}; applied: ${result.applied.length}`);
     for (const change of result.plannedChanges) {

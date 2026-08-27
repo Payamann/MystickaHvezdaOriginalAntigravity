@@ -10,6 +10,7 @@ This directory contains active project helper scripts.
 - `analyze-funnel-segments.mjs` - offline analysis for admin funnel segment CSV exports.
 - `audit-growth-loop.mjs` - static audit for paid CTA source/feature coverage and the shared growth-loop manifest. Use `--write` to export `tmp/growth-loop-cta-inventory.json`.
 - `reconcile-stripe-subscriptions.mjs` - live Stripe -> Supabase entitlement repair. Dry-run by default; use when Stripe shows a paid subscription but `users.is_premium` or `subscriptions.stripe_subscription_id` is not synced.
+- `audit-stripe-webhooks.mjs` - read-only live Stripe audit. Fails unless the production `/webhook/stripe` endpoint is enabled and receives every checkout, invoice, subscription, refund and recovery event required by the server.
 - `generate-sitemap-from-canonicals.mjs` - safe sitemap helper that derives URLs from indexable canonical HTML pages, preserves existing metadata, writes a review file by default, and only overwrites `sitemap.xml` with `--write`.
 - `generate-ga-snippet.js` - manual GA4 snippet/config helper.
 - `update-service-worker-cache.mjs` - validates precache assets and updates the service worker cache version.
@@ -35,6 +36,16 @@ The report groups leaks by funnel step and prints concrete next actions for the
 worst source + feature combinations.
 
 ### Stripe Subscription Reconciliation
+
+Audit the live webhook destination before relying on checkout or billing automation:
+
+```powershell
+npm run audit:stripe-webhooks
+```
+
+The command is read-only and exits non-zero when the production endpoint is disabled,
+points to the wrong host/path, or omits any required Stripe event. It refuses test keys
+unless `--allow-test` is passed explicitly.
 
 Use this after confirming a live Stripe subscription exists but Supabase has not
 activated the user. It refuses non-live Stripe keys unless you explicitly pass
