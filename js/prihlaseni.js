@@ -786,11 +786,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     let authFormStartedTracked = false;
-    loginForm?.addEventListener('focusin', event => {
+    const ensureAuthFormStarted = (trigger = 'input') => {
         if (authFormStartedTracked || !requestedPlan) return;
-        if (!event.target?.matches?.('input')) return;
         authFormStartedTracked = true;
-        trackCheckoutAuthStep('checkout_auth_form_started', 'auth_form_started');
+        trackCheckoutAuthStep('checkout_auth_form_started', 'auth_form_started', { trigger });
+    };
+
+    // Programové zaostření e-mailu při načtení není skutečný začátek formuláře.
+    // První zápis uživatele (nebo explicitní submit pokus pro password manager)
+    // dává page_view → form_started metriku, kterou lze opravdu interpretovat.
+    loginForm?.addEventListener('input', event => {
+        if (!event.target?.matches?.('input')) return;
+        ensureAuthFormStarted('field_input');
     });
 
     let validationFailureTracked = false;
@@ -833,6 +840,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loginForm?.addEventListener('submit', async (event) => {
         event.preventDefault();
+        ensureAuthFormStarted('submit_attempt');
 
         const email = document.getElementById('email')?.value?.trim();
         const password = document.getElementById('password')?.value || '';
@@ -859,6 +867,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         authSubmitBtn.disabled = true;
         const originalText = authSubmitBtn.textContent;
+        const submittedMode = isRegisterMode ? 'register' : 'login';
         authSubmitBtn.textContent = isRegisterMode ? 'Registruji...' : 'Přihlašuji...';
 
         try {
@@ -877,6 +886,24 @@ document.addEventListener('DOMContentLoaded', () => {
                         reason_code: result.code || 'REGISTRATION_FAILED',
                         retryable: Boolean(result.retryAfter)
                     });
+
+                    if (result.code === 'REGISTRATION_RECOVERY_REQUIRED') {
+                        isRegisterMode = false;
+                        syncAuthModeInUrl();
+                        applyMode();
+                        const emailInput = document.getElementById('email');
+                        if (emailInput) emailInput.value = email;
+                        if (passwordInput) passwordInput.value = '';
+                        getFormUx().setFormSummary?.(
+                            loginForm,
+                            'Tento e-mail může být spojený s existujícím účtem. Přepnuli jsme tě na přihlášení — zadej heslo, nebo použij obnovu hesla.'
+                        );
+                        passwordInput?.focus({ preventScroll: true });
+                        passwordInput?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        trackAuthView('registration_recovery');
+                        return;
+                    }
+
                     throw new Error(result.error || 'Registrace se nepodařila.');
                 }
 
@@ -912,7 +939,11 @@ document.addEventListener('DOMContentLoaded', () => {
             window.Auth.showToast?.('Chyba', error.message, 'error');
         } finally {
             authSubmitBtn.disabled = false;
-            authSubmitBtn.textContent = originalText;
+            if ((isRegisterMode ? 'register' : 'login') === submittedMode) {
+                authSubmitBtn.textContent = originalText;
+            } else {
+                applyMode();
+            }
         }
     });
 
@@ -1037,11 +1068,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    const syncAuthModeInUrl = () => {
+    function syncAuthModeInUrl() {
         const nextUrl = new URL(window.location.href);
         nextUrl.searchParams.set('mode', isRegisterMode ? 'register' : 'login');
         window.history.replaceState(window.history.state, '', `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);
-    };
+    }
 
     toggleBtn?.addEventListener('click', () => {
         isRegisterMode = !isRegisterMode;

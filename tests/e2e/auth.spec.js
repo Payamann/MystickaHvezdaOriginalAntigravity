@@ -413,6 +413,8 @@ test.describe('Login stránka', () => {
 
         await page.goto('/prihlaseni.html?mode=register&redirect=/cenik.html&plan=pruvodce&source=inline_paywall&feature=tarot_multi_card');
         await waitForPageReady(page);
+        await expect.poll(() => funnelEvents.some(event => event.eventName === 'checkout_auth_form_started'))
+            .toBe(false);
         await page.locator('#email').fill('mereni@example.com');
         await page.locator('#auth-submit').click();
 
@@ -435,6 +437,62 @@ test.describe('Login stránka', () => {
         const start = funnelEvents.find(event => event.eventName === 'checkout_auth_form_started');
         const failure = funnelEvents.find(event => event.eventName === 'checkout_auth_validation_failed');
         expect(failure.metadata.auth_flow_id).toBe(start.metadata.auth_flow_id);
+        expect(start.metadata.trigger).toBe('field_input');
+    });
+
+    test('existujici email prepne registraci na login bez ztraty checkout kontextu', async ({ page }) => {
+        const email = 'existing-checkout@example.com';
+        const funnelEvents = [];
+
+        await page.route('**/api/payment/funnel-event', async (route) => {
+            funnelEvents.push(route.request().postDataJSON());
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+        await page.route('**/api/auth/register', async (route) => {
+            await route.fulfill({
+                status: 400,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    error: 'Registrace se nezdařila. Pokud už účet máte, přihlaste se nebo obnovte heslo.',
+                    code: 'REGISTRATION_RECOVERY_REQUIRED'
+                })
+            });
+        });
+
+        await page.goto('/prihlaseni.html?mode=register&redirect=/cenik.html&plan=pruvodce&source=synastry_teaser_overlay&feature=partnerska_detail&entry_source=synastry_teaser_overlay&entry_feature=partnerska_detail');
+        await waitForPageReady(page);
+        await submitRegisterForm(page, email);
+
+        await expect(page.locator('body')).not.toHaveClass(/auth-register-mode/);
+        await expect(page.locator('#auth-submit')).toContainText('Přihlásit se a pokračovat');
+        await expect(page.locator('#forgot-password-link')).toBeVisible();
+        await expect(page.locator('#email')).toHaveValue(email);
+        await expect(page.locator('#password')).toHaveValue('');
+        await expect(page.locator('.form-error-summary')).toContainText('existujícím účtem');
+
+        const url = new URL(page.url());
+        expect(url.searchParams.get('mode')).toBe('login');
+        expect(url.searchParams.get('plan')).toBe('pruvodce');
+        expect(url.searchParams.get('source')).toBe('synastry_teaser_overlay');
+        expect(url.searchParams.get('feature')).toBe('partnerska_detail');
+        expect(url.searchParams.get('entry_source')).toBe('synastry_teaser_overlay');
+        expect(url.searchParams.get('entry_feature')).toBe('partnerska_detail');
+
+        await expect.poll(() => funnelEvents.find(event => event.eventName === 'checkout_auth_request_failed') || null)
+            .toEqual(expect.objectContaining({
+                source: 'synastry_teaser_overlay',
+                feature: 'partnerska_detail',
+                planId: 'pruvodce',
+                metadata: expect.objectContaining({
+                    auth_flow_id: expect.any(String),
+                    reason_code: 'REGISTRATION_RECOVERY_REQUIRED',
+                    step: 'register_request_failed'
+                })
+            }));
     });
 
     test('login s pending checkout kontextem ukazuje placene navazani', async ({ page }) => {
