@@ -8,6 +8,7 @@ import {
     sendEmail,
     sendOnboardingSequence,
     sendPauseEmail,
+    sendCheckoutRecoveryEmail,
     sendPaymentRecoverySequence,
     sendTrialReminderEmails,
     sendUpgradeReminders
@@ -350,6 +351,18 @@ export function buildPricingCancelUrl({ planId = null, source = null, feature = 
     });
 
     return url.toString();
+}
+
+export function buildCheckoutRecoveryConfig() {
+    return {
+        consent_collection: { promotions: 'auto' },
+        after_expiration: {
+            recovery: {
+                enabled: true,
+                allow_promotion_codes: false
+            }
+        }
+    };
 }
 
 export function buildProfileSuccessUrl({
@@ -1277,6 +1290,7 @@ router.post('/create-checkout-session', authenticateToken, async (req, res) => {
             mode: 'subscription',
             payment_method_collection: 'always',
             locale: 'cs',
+            ...buildCheckoutRecoveryConfig(),
             ...(saveOfferDiscounts && { discounts: saveOfferDiscounts }),
             success_url: buildProfileSuccessUrl({ planId, source, feature, metadata: checkoutContextMetadata }),
             cancel_url: buildPricingCancelUrl({ planId, source, feature, metadata: checkoutContextMetadata }),
@@ -1563,6 +1577,9 @@ export async function handleStripeWebhook(rawBody, sig) {
             case 'checkout.session.completed':
                 await handleCheckoutCompleted(event.data.object, event.id);
                 break;
+            case 'checkout.session.expired':
+                await handleCheckoutExpired(event.data.object, event.id);
+                break;
             case 'invoice.paid':
                 await handleInvoicePaid(event.data.object, event.id);
                 break;
@@ -1632,6 +1649,90 @@ async function handleCheckoutCompleted(session, stripeEventId = null) {
         return handlePersonalMapPurchase(session, stripeEventId);
     }
     return handleSubscriptionCheckoutCompleted(session, stripeEventId);
+}
+
+function getSafeStripeCheckoutRecoveryUrl(value) {
+    if (typeof value !== 'string' || !value.trim()) return null;
+    try {
+        const url = new URL(value);
+        return url.protocol === 'https:' && url.hostname === 'buy.stripe.com'
+            ? url.toString()
+            : null;
+    } catch {
+        return null;
+    }
+}
+
+function getCheckoutRecoveryDedupeBucket(session) {
+    const createdAt = Number.isFinite(Number(session?.created))
+        ? new Date(Number(session.created) * 1000)
+        : new Date();
+    return Number.isNaN(createdAt.getTime())
+        ? new Date().toISOString().slice(0, 7)
+        : createdAt.toISOString().slice(0, 7);
+}
+
+async function handleCheckoutExpired(session, stripeEventId = null) {
+    if (session?.mode !== 'subscription') return;
+
+    const userId = session.client_reference_id || session.metadata?.userId || null;
+    const source = session.metadata?.source || 'direct';
+    const feature = session.metadata?.feature || null;
+    const planId = session.metadata?.planId || null;
+    const planType = session.metadata?.planType || null;
+    const recoveryUrl = getSafeStripeCheckoutRecoveryUrl(session.after_expiration?.recovery?.url);
+    const hasPromotionConsent = session.consent?.promotions === 'opt_in';
+
+    await recordFunnelEvent('checkout_session_expired', {
+        userId,
+        source,
+        feature,
+        planId,
+        planType,
+        stripeSessionId: session.id,
+        stripeEventId,
+        metadata: {
+            recoveryAvailable: Boolean(recoveryUrl),
+            recoveryConsent: hasPromotionConsent ? 'opt_in' : 'not_granted'
+        }
+    });
+
+    if (!userId || !recoveryUrl || !hasPromotionConsent) return;
+
+    const { data: user, error: userError } = await supabase
+        .from('users')
+        .select('email')
+        .eq('id', userId)
+        .maybeSingle();
+    if (userError) {
+        throw new Error(`Checkout recovery user lookup failed: ${userError.message}`);
+    }
+    const email = String(user?.email || '').trim();
+    if (!email) return;
+
+    const planName = PLANS[planId]?.name || 'Hvězdný Průvodce';
+    const scheduleResult = await sendCheckoutRecoveryEmail({
+        userId,
+        email,
+        stripeSessionId: session.id,
+        recoveryUrl,
+        planName,
+        dedupeBucket: getCheckoutRecoveryDedupeBucket(session)
+    });
+
+    await recordFunnelEvent('checkout_recovery_email_scheduled', {
+        userId,
+        source,
+        feature,
+        planId,
+        planType,
+        stripeSessionId: session.id,
+        stripeEventId,
+        metadata: {
+            skipped: Boolean(scheduleResult?.skipped),
+            reason: scheduleResult?.reason || null
+        }
+    });
 }
 
 async function recordOneTimeLifecycleScheduled({

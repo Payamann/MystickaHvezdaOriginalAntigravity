@@ -786,6 +786,25 @@ export const EMAIL_TEMPLATES = {
     }
   },
 
+  checkout_recovery: {
+    subject: 'Chceš dokončit aktivaci Hvězdného Průvodce?',
+    getHtml: (data) => {
+      const recoveryUrl = toAbsoluteUrl(data.recoveryUrl || '/cenik.html?payment=cancel&source=checkout_recovery_email');
+      const planName = escapeHtml(data.planName || 'Hvězdný Průvodce');
+      return getBaseTemplate(`
+        <h1 class="h1">Platba zůstala nedokončená</h1>
+        <p>Vypadá to, že ses nedostal k potvrzení plánu <span class="highlight">${planName}</span>.</p>
+        <p>Pokud chceš pokračovat, Stripe znovu zobrazí vybraný plán, cenu i případné zkušební období ještě před potvrzením. Kartu Mystická Hvězda na webu neukládá.</p>
+        <div class="cta-box">
+          <a href="${escapeHtml(recoveryUrl)}" class="btn">Pokračovat v bezpečné platbě →</a>
+        </div>
+        <p style="font-size: 13px; text-align: center; opacity: 0.74;">
+          Pokud už o členství nemáš zájem, nemusíš nic dělat. Tento odkaz je časově omezený.
+        </p>
+      `, 'Bezpečné dokončení aktivace');
+    }
+  },
+
   discount_applied: {
     subject: 'Sleva je připravená',
     getHtml: (data) => getBaseTemplate(`
@@ -1225,6 +1244,35 @@ export async function sendPaymentRecoverySequence({
     scheduled: results.filter(result => !result.skipped).length,
     skipped: results.filter(result => result.skipped).length
   };
+}
+
+export async function sendCheckoutRecoveryEmail({
+  userId,
+  email,
+  stripeSessionId,
+  recoveryUrl,
+  planName = 'Hvězdný Průvodce',
+  dedupeBucket
+} = {}) {
+  if (!userId || !email || !stripeSessionId || !recoveryUrl || !dedupeBucket) {
+    throw new Error('Missing checkout recovery email identity.');
+  }
+
+  const { scheduleEmailLater } = await import('./jobs/email-queue.js');
+  const dedupeKey = `checkout_recovery:${userId}:${dedupeBucket}`;
+  return scheduleEmailLater({
+    userId,
+    email,
+    template: 'checkout_recovery',
+    data: {
+      recoveryUrl,
+      planName,
+      stripeSessionId,
+      skipIfPremium: true,
+      dedupeKey
+    },
+    dedupeKey
+  });
 }
 
 /**

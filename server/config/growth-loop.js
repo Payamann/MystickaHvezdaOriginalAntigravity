@@ -69,6 +69,8 @@ export const CORE_FUNNEL_EVENTS = Object.freeze([
     'checkout_post_verification_recovered',
     'checkout_session_requested',
     'checkout_session_created',
+    'checkout_session_expired',
+    'checkout_recovery_email_scheduled',
     'subscription_checkout_completed',
     'one_time_purchase_completed'
 ]);
@@ -81,6 +83,8 @@ export const REVENUE_HEALTH_EVENTS = Object.freeze([
     'checkout_post_verification_pending',
     'checkout_post_verification_recovered',
     'checkout_session_failed',
+    'checkout_session_expired',
+    'checkout_recovery_email_scheduled',
     'one_time_checkout_failed',
     'payment_refunded',
     'subscription_cancel_requested'

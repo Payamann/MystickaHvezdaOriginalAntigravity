@@ -158,7 +158,7 @@ export async function shouldSkipQueuedEmailForPremium(emailRecord, queuedData = 
  */
 export function getTemplatePreferenceCategory(template = '') {
     const name = String(template);
-    if (name.startsWith('upgrade_') || name.startsWith('trial_')) return 'upgrade_reminders';
+    if (name.startsWith('upgrade_') || name.startsWith('trial_') || name === 'checkout_recovery') return 'upgrade_reminders';
     if (name.startsWith('churn_') || name.includes('winback')) return 'churn_recovery';
     if (name === 'feature_weekly' || name.startsWith('weekly_')) return 'weekly_features';
     if (name.startsWith('activation_') || name.startsWith('onboarding_')) return 'promotional';

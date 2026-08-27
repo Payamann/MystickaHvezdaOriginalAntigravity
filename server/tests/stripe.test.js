@@ -193,6 +193,109 @@ describe('💳 Stripe Webhook Tests', () => {
             expect(res.status).not.toBe(500);
         });
 
+        test('expired subscription checkout queues one consented Stripe recovery link', async () => {
+            const userId = `expired-checkout-${Date.now()}`;
+            const email = `${userId}@example.com`;
+            const sessionId = `cs_test_expired_${Date.now()}`;
+            await supabase.from('users').insert({ id: userId, email, is_premium: false });
+
+            const payload = JSON.stringify({
+                id: `evt_expired_${Date.now()}`,
+                type: 'checkout.session.expired',
+                data: {
+                    object: {
+                        id: sessionId,
+                        mode: 'subscription',
+                        created: 1787860800,
+                        client_reference_id: userId,
+                        consent: { promotions: 'opt_in' },
+                        after_expiration: {
+                            recovery: { url: 'https://buy.stripe.com/r/test_recovery_123' }
+                        },
+                        metadata: {
+                            userId,
+                            planId: 'pruvodce',
+                            planType: 'premium_monthly',
+                            source: 'inline_paywall',
+                            feature: 'tarot_multi_card'
+                        }
+                    }
+                },
+                livemode: false
+            });
+
+            await request(app)
+                .post(WEBHOOK_URL)
+                .set('Content-Type', 'application/json')
+                .set('stripe-signature', computeStripeSignature(payload, TEST_WEBHOOK_SECRET))
+                .send(payload)
+                .expect(200);
+
+            const { data: queued } = await supabase
+                .from('email_queue')
+                .select('*')
+                .eq('email_to', email)
+                .eq('template', 'checkout_recovery');
+            expect(queued).toHaveLength(1);
+            expect(queued[0].data).toMatchObject({
+                recoveryUrl: 'https://buy.stripe.com/r/test_recovery_123',
+                skipIfPremium: true,
+                dedupeKey: `checkout_recovery:${userId}:2026-08`
+            });
+
+            const { data: events } = await supabase
+                .from('funnel_events')
+                .select('*')
+                .eq('stripe_session_id', sessionId);
+            expect(events).toEqual(expect.arrayContaining([
+                expect.objectContaining({ event_name: 'checkout_session_expired' }),
+                expect.objectContaining({ event_name: 'checkout_recovery_email_scheduled' })
+            ]));
+        });
+
+        test('expired checkout never emails without consent or through an untrusted URL', async () => {
+            const cases = [
+                { consent: {}, url: 'https://buy.stripe.com/r/no_consent' },
+                { consent: { promotions: 'opt_in' }, url: 'https://evil.example/recovery' }
+            ];
+
+            for (const [index, testCase] of cases.entries()) {
+                const userId = `expired-safe-${index}-${Date.now()}`;
+                const email = `${userId}@example.com`;
+                const sessionId = `cs_test_expired_safe_${index}_${Date.now()}`;
+                await supabase.from('users').insert({ id: userId, email, is_premium: false });
+                const payload = JSON.stringify({
+                    id: `evt_expired_safe_${index}_${Date.now()}`,
+                    type: 'checkout.session.expired',
+                    data: {
+                        object: {
+                            id: sessionId,
+                            mode: 'subscription',
+                            client_reference_id: userId,
+                            consent: testCase.consent,
+                            after_expiration: { recovery: { url: testCase.url } },
+                            metadata: { userId, planId: 'pruvodce' }
+                        }
+                    },
+                    livemode: false
+                });
+
+                await request(app)
+                    .post(WEBHOOK_URL)
+                    .set('Content-Type', 'application/json')
+                    .set('stripe-signature', computeStripeSignature(payload, TEST_WEBHOOK_SECRET))
+                    .send(payload)
+                    .expect(200);
+
+                const { data: queued } = await supabase
+                    .from('email_queue')
+                    .select('*')
+                    .eq('email_to', email)
+                    .eq('template', 'checkout_recovery');
+                expect(queued).toHaveLength(0);
+            }
+        });
+
         test('fulfilled annual horoscope duplicate still ensures lifecycle emails', async () => {
             const email = `annual-webhook-retry-${Date.now()}@example.com`;
             const order = await createOneTimeOrderInput({

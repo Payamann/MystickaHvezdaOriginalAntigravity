@@ -160,6 +160,7 @@ jest.unstable_mockModule('../services/alerts.js', () => ({
 jest.unstable_mockModule('../email-service.js', () => ({
     sendEmail: jest.fn().mockResolvedValue(undefined),
     sendPauseEmail: jest.fn().mockResolvedValue(undefined),
+    sendCheckoutRecoveryEmail: jest.fn().mockResolvedValue(undefined),
     sendPaymentRecoverySequence: jest.fn().mockResolvedValue(undefined),
     sendDiscountEmail: jest.fn().mockResolvedValue(undefined),
     sendOnboardingSequence: jest.fn().mockResolvedValue(undefined),

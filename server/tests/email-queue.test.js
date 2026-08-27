@@ -393,6 +393,7 @@ describe('email queue helpers', () => {
     test('maps marketing templates to preference categories and leaves transactional unmapped', () => {
         expect(getTemplatePreferenceCategory('upgrade_reminder_day3')).toBe('upgrade_reminders');
         expect(getTemplatePreferenceCategory('trial_ending_reminder')).toBe('upgrade_reminders');
+        expect(getTemplatePreferenceCategory('checkout_recovery')).toBe('upgrade_reminders');
         expect(getTemplatePreferenceCategory('churn_recovery')).toBe('churn_recovery');
         expect(getTemplatePreferenceCategory('feature_weekly')).toBe('weekly_features');
         expect(getTemplatePreferenceCategory('activation_one_time_offer_day6')).toBe('promotional');

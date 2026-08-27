@@ -21,7 +21,8 @@ const {
     sendPersonalMapLifecycleSequence,
     sendAnnualHoroscopeLifecycleSequence,
     sendActivationLifecycleSequence,
-    sendPaymentRecoverySequence
+    sendPaymentRecoverySequence,
+    sendCheckoutRecoveryEmail
 } = await import('../email-service.js');
 const { supabase } = await import('../db-supabase.js');
 
@@ -567,5 +568,52 @@ describe('payment recovery scheduling', () => {
         expect(queued.every(record => (
             record.data.requiredSubscriptionStatuses.join(',') === 'past_due,unpaid,incomplete'
         ))).toBe(true);
+    });
+});
+
+describe('abandoned checkout recovery', () => {
+    test('renders a transparent Stripe recovery message', () => {
+        const html = EMAIL_TEMPLATES.checkout_recovery.getHtml({
+            planName: 'Hvězdný Průvodce <script>',
+            recoveryUrl: 'https://buy.stripe.com/r/test_recovery'
+        });
+
+        expect(html).toContain('Platba zůstala nedokončená');
+        expect(html).toContain('https://buy.stripe.com/r/test_recovery');
+        expect(html).toContain('cenu i případné zkušební období ještě před potvrzením');
+        expect(html).not.toContain('Hvězdný Průvodce <script>');
+        expect(html).not.toMatch(/sleva|zdarma/i);
+    });
+
+    test('allows at most one queued recovery per user and month', async () => {
+        const userId = `checkout-recovery-${Date.now()}`;
+        const email = `${userId}@example.com`;
+        const input = {
+            userId,
+            email,
+            stripeSessionId: `cs_test_${Date.now()}`,
+            recoveryUrl: 'https://buy.stripe.com/r/test_recovery',
+            planName: 'Hvězdný Průvodce (Měsíční)',
+            dedupeBucket: '2026-08'
+        };
+
+        await expect(sendCheckoutRecoveryEmail(input)).resolves.toMatchObject({ skipped: false });
+        await expect(sendCheckoutRecoveryEmail({
+            ...input,
+            stripeSessionId: `${input.stripeSessionId}_another`
+        })).resolves.toMatchObject({ skipped: true });
+
+        const { data: queued } = await supabase
+            .from('email_queue')
+            .select('template, data, dedupe_key')
+            .eq('email_to', email)
+            .eq('template', 'checkout_recovery');
+
+        expect(queued).toHaveLength(1);
+        expect(queued[0].data).toMatchObject({
+            recoveryUrl: input.recoveryUrl,
+            skipIfPremium: true,
+            dedupeKey: `checkout_recovery:${userId}:2026-08`
+        });
     });
 });

@@ -14,7 +14,7 @@ import request from 'supertest';
 import app from '../index.js';
 import jwt from 'jsonwebtoken';
 import { SUBSCRIPTION_PLANS } from '../config/constants.js';
-import { buildPricingCancelUrl, buildProfileSuccessUrl } from '../payment.js';
+import { buildCheckoutRecoveryConfig, buildPricingCancelUrl, buildProfileSuccessUrl } from '../payment.js';
 import { supabase } from '../db-supabase.js';
 
 async function getCsrfToken() {
@@ -77,6 +77,18 @@ describe('💳 Payment Checkout Session', () => {
         expect(successUrl.searchParams.get('utm_campaign')).toBe('personal_map_day3');
         expect(successUrl.searchParams.has('email')).toBe(false);
         expect(successUrl.searchParams.has('path')).toBe(false);
+    });
+
+    test('Stripe checkout enables consented abandoned-session recovery without implicit discounts', () => {
+        expect(buildCheckoutRecoveryConfig()).toEqual({
+            consent_collection: { promotions: 'auto' },
+            after_expiration: {
+                recovery: {
+                    enabled: true,
+                    allow_promotion_codes: false
+                }
+            }
+        });
     });
 
     // ── Autentizace ──────────────────────────────────────────────────────────
