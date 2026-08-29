@@ -22,7 +22,9 @@ export default {
         '<rootDir>/server/tests/**/*.test.js'
     ],
     modulePathIgnorePatterns: [
-        '<rootDir>/.claude/worktrees/'
+        '<rootDir>/.claude/worktrees/',
+        '<rootDir>/.codex-tmp/',
+        '<rootDir>/.codex-worktrees/'
     ],
     setupFilesAfterEnv: ['./server/tests/setup.mjs'],
     transform: {}

@@ -58,6 +58,8 @@ describe('Medicine wheel route', () => {
             message: expect.any(String)
         }));
         expect(res.body.result.message).toContain('Vlk');
+        expect(JSON.stringify(res.body.result)).not.toMatch(/\b(?:vás|vám|váš|vaše|jste|držte|můžete)\b/iu);
+        expect(res.body.result.message).toMatch(/\b(?:drž se|Dnes si zvol)\b/iu);
     });
 
     test('returns symbolic fallback when AI call fails', async () => {
@@ -87,6 +89,7 @@ describe('Medicine wheel route', () => {
                 message: expect.any(String)
             }));
             expect(res.body.result.message).toContain('Sova');
+            expect(res.body.result.message).toContain('Dnes si zvol');
         } finally {
             if (originalForceError === undefined) {
                 delete process.env.MOCK_AI_FORCE_ERROR;

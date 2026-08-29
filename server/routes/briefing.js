@@ -3,6 +3,7 @@ import { callClaude } from '../services/claude.js';
 import { generalAICache } from '../services/cache.js';
 import { SYSTEM_PROMPTS } from '../config/prompts.js';
 import { aiLimiter, optionalPremiumCheck } from '../middleware.js';
+import { assertCzechReadingVoice } from '../services/reading-quality.js';
 
 const router = express.Router();
 
@@ -57,9 +58,10 @@ Pokyny pro text:
 1. Formátuj text jako "Hvězdný denní briefing".
 2. Propoj symboliku znamení ${safeZodiacSign} s významem karty ${safeTarotCard}.
 3. Pokud je známo jméno, oslovuj uživatele.
-4. Text musí být v češtině, poetický, ale srozumitelný (cca 3-4 odstavce).
-5. Zakonči vzkaz jednou "Afirmací dne".
-6. Nepoužívej markdown formátování (hvězdičky atd.), jen čistý text s odstavci.`;
+4. Text musí být v češtině, poetický, ale srozumitelný a musí mít přesně 3 krátké odstavce.
+5. Druhý odstavec musí obsahovat jeden konkrétní krok pro dnešek.
+6. Třetí odstavec musí být jedna "Afirmace dne".
+7. Nepoužívej markdown formátování (hvězdičky atd.), jen čistý text s odstavci.`;
 
         let text;
         let fallback = false;
@@ -69,6 +71,7 @@ Pokyny pro text:
                 feature: 'briefing',
                 cacheTtlSeconds: 26 * 60 * 60
             });
+            assertCzechReadingVoice(text);
         } catch (aiError) {
             console.warn('[BRIEFING] AI fallback:', aiError.message);
             fallback = true;

@@ -28,6 +28,9 @@ describe('Briefing route', () => {
             expect(res.body.text).toEqual(expect.stringContaining('Anna'));
             expect(res.body.text).toEqual(expect.stringContaining('Beran'));
             expect(res.body.text).toEqual(expect.stringContaining('The Star'));
+            expect(res.body.text.split(/\n\s*\n/u)).toHaveLength(3);
+            expect(res.body.text).not.toMatch(/\b(?:vás|vám|váš|vaše|jste|můžete)\b/iu);
+            expect(res.body.text).toMatch(/\b(?:můžeš|vrať se|Volím)\b/iu);
         } finally {
             if (originalForceError === undefined) {
                 delete process.env.MOCK_AI_FORCE_ERROR;

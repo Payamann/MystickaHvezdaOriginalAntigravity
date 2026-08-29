@@ -91,7 +91,6 @@ FEATURE_BY_PATH = [
     ("/shamansko-kolo.html", "shamanske_kolo_plne_cteni", "shamanic_wheel"),
     ("/minuly-zivot.html", "past_life", "past_life"),
     ("/osobni-mapa.html", "osobni_mapa_2026", "personal_map"),
-    ("/rocni-horoskop.html", "rocni_horoskop_2026", "yearly_horoscope"),
 ]
 
 

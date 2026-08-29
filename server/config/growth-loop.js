@@ -102,12 +102,14 @@ export const PRODUCT_CATALOG = Object.freeze({
     }),
     rocni_horoskop_2026: Object.freeze({
         id: 'rocni_horoskop_2026',
-        label: 'Mini annual horoscope 2026',
+        label: 'Annual horoscope 2026 (retired)',
         productType: 'one_time',
         primaryPlanId: null,
-        primaryPath: '/rocni-horoskop.html',
-        freeValue: 'Preview what the annual reading contains.',
-        paidValue: 'Receive a personalized one-time PDF for the year.'
+        primaryPath: '/osobni-mapa.html',
+        available: false,
+        replacementProductId: 'osobni_mapa_2026',
+        freeValue: 'Legacy attribution only; new visits continue to Personal Map.',
+        paidValue: 'Replaced by the personalized one-time Personal Map PDF.'
     }),
     osobni_mapa_2026: Object.freeze({
         id: 'osobni_mapa_2026',
@@ -509,30 +511,30 @@ export const FEATURE_CATALOG = Object.freeze({
     }),
     rocni_horoskop_2026: feature({
         id: 'rocni_horoskop_2026',
-        label: 'Mini annual horoscope 2026',
+        label: 'Annual horoscope 2026 (retired)',
         cluster: 'one_time',
-        primaryPath: '/rocni-horoskop.html',
-        freeValue: 'Preview the annual PDF.',
-        premiumValue: 'Buy the annual PDF or bridge into Premium.',
-        productId: 'rocni_horoskop_2026'
+        primaryPath: '/osobni-mapa.html',
+        freeValue: 'Legacy attribution redirects to Personal Map.',
+        premiumValue: 'Continue with Personal Map or Premium.',
+        productId: 'osobni_mapa_2026'
     }),
     annual_horoscope: feature({
         id: 'annual_horoscope',
-        label: 'Annual horoscope',
+        label: 'Annual horoscope (retired)',
         cluster: 'one_time',
-        primaryPath: '/rocni-horoskop.html',
-        freeValue: 'Preview the annual PDF.',
-        premiumValue: 'Buy the annual PDF or bridge into Premium.',
-        productId: 'rocni_horoskop_2026'
+        primaryPath: '/osobni-mapa.html',
+        freeValue: 'Legacy attribution redirects to Personal Map.',
+        premiumValue: 'Continue with Personal Map or Premium.',
+        productId: 'osobni_mapa_2026'
     }),
     rocni_horoskop: feature({
         id: 'rocni_horoskop',
-        label: 'Annual horoscope alias',
+        label: 'Annual horoscope alias (retired)',
         cluster: 'one_time',
-        primaryPath: '/rocni-horoskop.html',
-        freeValue: 'Preview the annual PDF.',
-        premiumValue: 'Buy the annual PDF or bridge into Premium.',
-        productId: 'rocni_horoskop_2026'
+        primaryPath: '/osobni-mapa.html',
+        freeValue: 'Legacy attribution redirects to Personal Map.',
+        premiumValue: 'Continue with Personal Map or Premium.',
+        productId: 'osobni_mapa_2026'
     }),
     osobni_mapa_2026: feature({
         id: 'osobni_mapa_2026',

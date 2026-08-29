@@ -18,12 +18,11 @@ import { recordFailedAttempt, checkAccountLockout, recordSuccessfulLogin } from 
 import { isProductionRuntime } from './config/runtime.js';
 import { sendActivationLifecycleSequence } from './email-service.js';
 import { recordFunnelEvent } from './payment.js';
+import { CURRENT_PRIVACY_VERSION, CURRENT_TERMS_VERSION } from './config/legal.js';
 
 const router = express.Router();
 const LOCKOUT_DURATION_MINUTES = 15;
 const ACTIVE_PREMIUM_STATUSES = new Set(['active', 'trialing', 'cancel_pending']);
-const REGISTRATION_TERMS_VERSION = '2026-08-21';
-const REGISTRATION_PRIVACY_VERSION = '2026-08-21';
 
 export function getAuthSubscriptionState(subscription = {}) {
     const status = normalizePlanType(subscription?.plan_type, subscription?.plan_type || 'free');
@@ -434,8 +433,8 @@ router.post('/register', registerLimiter, async (req, res) => {
                 gdpr: true,
                 terms: true,
                 accepted_at: acceptedAt,
-                privacy_version: REGISTRATION_PRIVACY_VERSION,
-                terms_version: REGISTRATION_TERMS_VERSION,
+                privacy_version: CURRENT_PRIVACY_VERSION,
+                terms_version: CURRENT_TERMS_VERSION,
             },
         };
 
@@ -493,6 +492,26 @@ router.post('/register', registerLimiter, async (req, res) => {
 
         if (!REQUIRE_EMAIL_VERIFICATION && !data?.user?.id) {
             throw new Error('Registration did not return a user.');
+        }
+
+        if (data?.user?.id) {
+            const { error: consentRecordError } = await supabase
+                .from('user_consents')
+                .insert({
+                    user_id: data.user.id,
+                    terms_version: CURRENT_TERMS_VERSION,
+                    terms_accepted_at: acceptedAt,
+                    privacy_version: CURRENT_PRIVACY_VERSION,
+                    privacy_acknowledged_at: acceptedAt,
+                    source: 'registration'
+                });
+
+            if (consentRecordError) {
+                console.error('Registration consent persistence warning:', {
+                    userId: data.user.id,
+                    consentRecordError
+                });
+            }
         }
 
         if ((!REQUIRE_EMAIL_VERIFICATION || DEV_AUTO_LOGIN_AFTER_REGISTER) && data?.user?.id) {

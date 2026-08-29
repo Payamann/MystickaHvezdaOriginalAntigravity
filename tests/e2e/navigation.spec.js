@@ -53,7 +53,6 @@ const KEY_PAGES = [
     { name: 'Kontakt',               path: '/kontakt.html'               },
     { name: 'FAQ',                   path: '/faq.html'                   },
     { name: 'Podmínky',              path: '/podminky.html'              },
-    { name: 'Ochrana soukromí',      path: '/ochrana-soukromi.html'      },
     { name: 'Soukromí',              path: '/soukromi.html'              },
 ];
 

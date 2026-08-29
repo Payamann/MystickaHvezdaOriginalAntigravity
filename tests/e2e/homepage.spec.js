@@ -212,8 +212,9 @@ test.describe('Homepage', () => {
             }));
         });
 
-        await page.route('**/api/analytics/event', async (route) => {
-            analyticsPayloads.push(JSON.parse(route.request().postData() || '{}'));
+        await page.route('**/api/analytics/batch', async (route) => {
+            const body = JSON.parse(route.request().postData() || '{}');
+            analyticsPayloads.push(...(body.events || []));
             await route.fulfill({
                 status: 200,
                 contentType: 'application/json',
@@ -233,11 +234,26 @@ test.describe('Homepage', () => {
     });
 
     test('first-party analytics pripoji kampanovou atribuci ke vsem eventum', async ({ page }) => {
+        const analyticsPayloads = [];
         await page.addInitScript(() => {
             localStorage.removeItem('mh_attribution_first_touch');
             sessionStorage.removeItem('mh_attribution_last_touch');
-            localStorage.removeItem('mh_cookie_prefs');
+            localStorage.setItem('mh_cookie_prefs', JSON.stringify({
+                analytics: true,
+                marketing: false,
+                ts: Date.now()
+            }));
             localStorage.removeItem('cookieConsent');
+        });
+
+        await page.route('**/api/analytics/batch', async (route) => {
+            const body = JSON.parse(route.request().postData() || '{}');
+            analyticsPayloads.push(...(body.events || []));
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true, accepted: (body.events || []).length })
+            });
         });
 
         await page.goto('/?utm_source=pinterest&utm_medium=organic&utm_campaign=tarot_meanings&utm_content=pin_v1&entry_feature=tarot');
@@ -246,11 +262,14 @@ test.describe('Homepage', () => {
             window.MH_ANALYTICS?.trackCTA('attribution_regression', { label: 'Test CTA' });
         });
 
-        const events = await page.evaluate(() => ({
-            pageView: window.MH_ANALYTICS_QUEUE.find((item) => item.name === 'page_view'),
-            cta: window.MH_ANALYTICS_QUEUE.find((item) => item.name === 'cta_clicked' && item.location === 'attribution_regression'),
-            context: window.MH_ANALYTICS?.getAttributionContext?.().metadata
-        }));
+        await expect.poll(() => analyticsPayloads.some((item) => item.eventName === 'page_view')).toBe(true);
+        await expect.poll(() => analyticsPayloads.some((item) => item.eventName === 'cta_clicked')).toBe(true);
+
+        const events = {
+            pageView: analyticsPayloads.find((item) => item.eventName === 'page_view')?.metadata,
+            cta: analyticsPayloads.find((item) => item.eventName === 'cta_clicked')?.metadata,
+            context: await page.evaluate(() => window.MH_ANALYTICS?.getAttributionContext?.().metadata)
+        };
 
         for (const event of [events.pageView, events.cta, events.context]) {
             expect(event).toEqual(expect.objectContaining({

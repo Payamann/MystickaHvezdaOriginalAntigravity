@@ -70,6 +70,13 @@ function normalizeMessages(messageOrHistory) {
     }));
 }
 
+function validateResponse(text, options) {
+    if (typeof options.validateResponse === 'function') {
+        options.validateResponse(text);
+    }
+    return text;
+}
+
 /**
  * Calls Claude through the shared budget, model routing and telemetry layer.
  * Existing three-argument calls remain supported; feature options are the fourth argument.
@@ -79,7 +86,7 @@ export async function callClaude(systemPrompt, messageOrHistory, contextData = n
         if (process.env.MOCK_AI_FORCE_ERROR === 'true') {
             throw new Error('Forced mock AI error.');
         }
-        return buildMockClaudeResponse(systemPrompt);
+        return validateResponse(buildMockClaudeResponse(systemPrompt), options);
     }
 
     const profile = getAIProfile(options.feature || 'default', options);
@@ -95,7 +102,7 @@ export async function callClaude(systemPrompt, messageOrHistory, contextData = n
 
     if (cacheInput) {
         const cached = await getCachedAIResponse(cacheNamespace, cacheInput);
-        if (cached) return cached.value;
+        if (cached) return validateResponse(cached.value, options);
     }
 
     if (!API_KEY) {
@@ -154,6 +161,7 @@ export async function callClaude(systemPrompt, messageOrHistory, contextData = n
             const data = await response.json();
             const text = data.content?.[0]?.text;
             if (!text) throw new Error('No content returned from Claude.');
+            validateResponse(text, options);
 
             recordAIRequestOutcome({
                 dateKey: reservationDate,
@@ -217,13 +225,27 @@ function buildMockClaudeResponse(systemPrompt = '') {
         return 'Testovaci AI odpoved pro invalidni JSON fallback.';
     }
 
+    if (process.env.MOCK_AI_FORCE_FORMAL_CZECH === 'true') {
+        return 'Vaše symboly ukazují důležitý směr. Udělejte dnes první krok.';
+    }
+
     if (systemPrompt.includes('"prediction"') && systemPrompt.includes('"affirmation"')) {
+        const requestedSentenceCount = Number(systemPrompt.match(/přesně\s+(\d+)\s+vět/iu)?.[1] || 3);
+        const predictionSentences = [
+            'Dnešní energie ti pomáhá rozpoznat, co je opravdu důležité.',
+            'Všimni si, kde můžeš jednat klidněji a s větší jistotou.',
+            'Vyber jeden konkrétní krok a udělej ho ještě dnes.',
+            'Ve vztazích pojmenuj svou potřebu otevřeně a laskavě.',
+            'V práci dokonči prioritu, která přinese viditelný posun.',
+            'Pro svou energii střídej soustředění s krátkým odpočinkem.',
+            'Na závěr si zapiš, co chceš přenést do dalšího období.'
+        ];
         return JSON.stringify({
-            prediction: 'Testovaci horoskop prinasi klidnou energii, jasne priority a jeden prakticky krok pro dnesni den.',
-            affirmation: 'Dnes postupuji klidne, jasne a duveruji vlastnimu vnitrnimu vedeni.',
+            prediction: predictionSentences.slice(0, requestedSentenceCount).join(' '),
+            affirmation: 'Dnes postupuji klidně, jasně a důvěřuji vlastnímu vnitřnímu vedení.',
             luckyNumbers: [3, 7, 12, 21]
         });
     }
 
-    return 'Testovaci AI odpoved pro izolovane automatizovane testy.';
+    return 'Testovací výklad ti ukazuje aktuální téma. Vyber dnes jeden bezpečný konkrétní krok.';
 }

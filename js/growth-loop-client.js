@@ -53,9 +53,9 @@
         premium_membership: defineFeature('premium_membership', { label: 'Premium membership', cluster: 'pricing', primaryPath: '/cenik.html' }),
         subscription_management: defineFeature('subscription_management', { label: 'Subscription management', cluster: 'pricing', primaryPath: '/profil.html#tab-settings' }),
         billing: defineFeature('billing', { label: 'Billing', cluster: 'pricing', primaryPath: '/profil.html#tab-settings' }),
-        rocni_horoskop_2026: defineFeature('rocni_horoskop_2026', { label: 'Annual horoscope 2026', cluster: 'one_time', primaryPath: '/rocni-horoskop.html' }),
-        annual_horoscope: defineFeature('annual_horoscope', { label: 'Annual horoscope', cluster: 'one_time', primaryPath: '/rocni-horoskop.html' }),
-        rocni_horoskop: defineFeature('rocni_horoskop', { label: 'Annual horoscope alias', cluster: 'one_time', primaryPath: '/rocni-horoskop.html' }),
+        rocni_horoskop_2026: defineFeature('rocni_horoskop_2026', { label: 'Personal map replacement', cluster: 'one_time', primaryPath: '/osobni-mapa.html' }),
+        annual_horoscope: defineFeature('annual_horoscope', { label: 'Personal map replacement', cluster: 'one_time', primaryPath: '/osobni-mapa.html' }),
+        rocni_horoskop: defineFeature('rocni_horoskop', { label: 'Personal map replacement', cluster: 'one_time', primaryPath: '/osobni-mapa.html' }),
         osobni_mapa_2026: defineFeature('osobni_mapa_2026', { label: 'Personal map for the next 12 months', cluster: 'one_time', primaryPath: '/osobni-mapa.html' }),
         personal_map: defineFeature('personal_map', { label: 'Personal map', cluster: 'one_time', primaryPath: '/osobni-mapa.html' }),
         zodiac_signs: defineFeature('zodiac_signs', { label: 'Zodiac signs', cluster: 'content', primaryPath: '/horoskop/' })
@@ -74,8 +74,8 @@
         numerology: 'numerologie_vyklad',
         osobni_mapa_2026: 'personal_map',
         past_life: 'minuly_zivot',
-        rocni_horoskop_2026: 'annual_horoscope',
-        rocni_horoskop: 'annual_horoscope',
+        rocni_horoskop_2026: 'personal_map',
+        rocni_horoskop: 'personal_map',
         runes_deep_reading: 'runy_hluboky_vyklad',
         synastry: 'partnerska_detail',
         tarot_celtic_cross: 'tarot_multi_card'
@@ -99,7 +99,7 @@
         '/partnerska-shoda.html': 'partnerska_detail',
         '/natalni-karta.html': 'natalni_interpretace',
         '/numerologie.html': 'numerologie_vyklad',
-        '/rocni-horoskop.html': 'annual_horoscope',
+        '/rocni-horoskop.html': 'personal_map',
         '/osobni-mapa.html': 'personal_map',
         '/mentor.html': 'mentor'
     });

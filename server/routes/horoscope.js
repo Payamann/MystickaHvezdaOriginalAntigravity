@@ -7,9 +7,10 @@ import express from 'express';
 import crypto from 'node:crypto';
 import { optionalPremiumCheck, aiLimiter, trackPaywallHit } from '../middleware.js';
 import { callClaude } from '../services/claude.js';
-import { ROLE_PREAMBLE } from '../config/prompts.js';
+import { HOROSCOPE_VOICE_CONTRACTS, ROLE_PREAMBLE } from '../config/prompts.js';
 import { getHoroscopeCacheKey, getCachedHoroscope, saveCachedHoroscope } from '../services/astrology.js';
 import { normalizeHoroscopeAiResponse } from '../services/horoscope-response.js';
+import { buildHoroscopeFallback } from '../services/horoscope-content.js';
 import { isDevelopmentRuntime } from '../config/runtime.js';
 
 export const router = express.Router();
@@ -216,6 +217,7 @@ router.post('/', optionalPremiumCheck, async (req, res) => {
         const dateStr = today.toLocaleDateString(dateLocales[targetLang]);
 
         const genderInstruction = `\nTEXT VŽDY FORMULUJ PŘÍSNĚ GENDEROVĚ NEUTRÁLNĚ (vyhni se minulému času a slovům, která určují pohlaví čtenáře, např. místo "jsi připraven" nebo "udělal jsi" piš "je čas se připravit" nebo "došlo k pokroku"). Text piš i nadále poutavě a plynule.`;
+        const voiceContract = HOROSCOPE_VOICE_CONTRACTS[targetLang] || HOROSCOPE_VOICE_CONTRACTS.cs;
 
         if (period === 'weekly') {
             periodPrompt = `${ROLE_PREAMBLE}Jsi inspirativní astrologický průvodce. Generuješ týdenní horoskop pro ${signAcc} na týden začínající ${dateStr}.${signEnergy}\nOdpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).\nStruktura:\n{\n  "prediction": "Text horoskopu (přesně 5 vět) specifický pro ${signAcc}. Zaměř se na hlavní energii, lásku, kariéru a jednu výzvu charakteristickou pro toto znamení.",\n  "affirmation": "Osobní týdenní mantra — silná, poetická, specifická pro ${signAcc}, jeho element a vládnoucí planetu. 15–25 slov, první osoba, přítomný čas. Nesmí být generická ani klišovitá. Příklad tónu: 'Má odvaha tvoří mosty tam, kde ostatní vidí propasti.'",\n  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]\n}\nText piš ${langName}, poeticky a povzbudivě.${genderInstruction}${contextInstruction}`;
@@ -225,13 +227,18 @@ router.post('/', optionalPremiumCheck, async (req, res) => {
             periodPrompt = `${ROLE_PREAMBLE}Jsi laskavý astrologický průvodce. Generuješ denní horoskop pro ${signAcc} na den ${dateStr}.${signEnergy}\nOdpověď MUSÍ být validní JSON objekt bez markdown formátování (žádné \`\`\`json).\nStruktura:\n{\n  "prediction": "Text horoskopu (přesně 3 věty) specifický pro ${signAcc}. Hlavní energie dne a jedna konkrétní rada vycházející z vlastností tohoto znamení.",\n  "affirmation": "Osobní denní mantra — silná, poetická, specifická pro ${signAcc} a jeho element. 15–25 slov, první osoba, přítomný čas. Nesmí být generická ani klišovitá. Příklad tónu: 'Má intuice je dnes mým nejostřejším nástrojem — naslouchám jí a jednám.'",\n  "luckyNumbers": [číslo1, číslo2, číslo3, číslo4]\n}\nText piš ${langName}, poeticky a povzbudivě.${genderInstruction}${contextInstruction}`;
         }
 
+        periodPrompt = `${voiceContract}\n\n${periodPrompt.slice(ROLE_PREAMBLE.length)}`;
+
         const message = `Vygeneruj horoskop pro znamení ${sign} na ${dateStr}.`;
 
         const response = await callClaude(periodPrompt, message, null, {
             feature: `horoscope_${period}`
         });
 
-        const { serialized: cleanResponse } = normalizeHoroscopeAiResponse(response);
+        const expectedSentenceCounts = { daily: 3, weekly: 5, monthly: 7 };
+        const { serialized: cleanResponse } = normalizeHoroscopeAiResponse(response, {
+            expectedSentenceCount: expectedSentenceCounts[period]
+        });
 
         // Save to DB cache (non-blocking — don't let DB errors kill the response)
         saveCachedHoroscope(cacheKey, sign, period, cleanResponse, periodLabel)
@@ -321,26 +328,23 @@ router.post('/', optionalPremiumCheck, async (req, res) => {
         };
         const signKey = SIGN_NORMALIZATION_FALLBACK[signName] || signName;
         const signData = SIGN_FALLBACKS[signKey] || SIGN_FALLBACKS['Beran'];
-        const fb = signData[fallbackTargetLang] || signData['cs'];
-
-        const luckyNumbers = Array.from({ length: 4 }, () => Math.floor(Math.random() * 49) + 1);
-        const labels = {
-            'cs': { 'daily': 'Denní inspirace', 'weekly': 'Týdenní horoskop', 'monthly': 'Měsíční horoskop' },
-            'sk': { 'daily': 'Denná inšpirácia', 'weekly': 'Týždenný horoskop', 'monthly': 'Mesačný horoskop' },
-            'pl': { 'daily': 'Dzienna inspiracja', 'weekly': 'Horoskop tygodniowy', 'monthly': 'Horoskop miesięczny' }
-        };
-        const fallbackPeriodLabel = labels[fallbackTargetLang]?.[fallbackPeriod] || labels.cs.daily;
+        const legacyLocalizedAffirmation = signData[fallbackTargetLang]?.affirmation;
+        const fb = buildHoroscopeFallback({
+            sign: signKey,
+            period: fallbackPeriod,
+            lang: fallbackTargetLang
+        });
 
         const fallbackResponse = JSON.stringify({
             prediction: fb.prediction,
-            affirmation: fb.affirmation,
-            luckyNumbers: luckyNumbers
+            affirmation: legacyLocalizedAffirmation || fb.affirmation,
+            luckyNumbers: fb.luckyNumbers
         });
 
         res.json({
             success: true,
             response: fallbackResponse,
-            period: fallbackPeriodLabel,
+            period: fb.periodLabel,
             fallback: true
         });
     }

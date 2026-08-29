@@ -31,7 +31,11 @@ export function formatHoroscopeForEmail(raw) {
     return parts.join('\n\n');
 }
 
-export function normalizeHoroscopeAiResponse(rawResponse) {
+function countSentences(value) {
+    return (String(value).match(/[.!?](?=\s|$)/g) || []).length;
+}
+
+export function normalizeHoroscopeAiResponse(rawResponse, { expectedSentenceCount = null } = {}) {
     const cleanResponse = String(rawResponse || '')
         .replace(/^```(?:json)?\s*/i, '')
         .replace(/\s*```\s*$/i, '')
@@ -57,8 +61,14 @@ export function normalizeHoroscopeAiResponse(rawResponse) {
         throw new Error('Claude returned incomplete horoscope JSON.');
     }
 
+    if (Number.isInteger(expectedSentenceCount) && countSentences(prediction) !== expectedSentenceCount) {
+        throw new Error(`Claude returned horoscope with invalid sentence count; expected ${expectedSentenceCount}.`);
+    }
+
     return {
         parsed: { prediction, affirmation, luckyNumbers },
         serialized: JSON.stringify({ prediction, affirmation, luckyNumbers })
     };
 }
+
+export { countSentences };

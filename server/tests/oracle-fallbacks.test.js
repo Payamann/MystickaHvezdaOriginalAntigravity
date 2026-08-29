@@ -5,6 +5,7 @@ import { supabase } from '../db-supabase.js';
 
 describe('Oracle AI fallbacks', () => {
     const originalForceError = process.env.MOCK_AI_FORCE_ERROR;
+    const originalForceFormalCzech = process.env.MOCK_AI_FORCE_FORMAL_CZECH;
 
     async function getCsrfToken() {
         const res = await request(app).get('/api/csrf-token').expect(200);
@@ -48,6 +49,28 @@ describe('Oracle AI fallbacks', () => {
         } else {
             process.env.MOCK_AI_FORCE_ERROR = originalForceError;
         }
+
+        if (originalForceFormalCzech === undefined) {
+            delete process.env.MOCK_AI_FORCE_FORMAL_CZECH;
+        } else {
+            process.env.MOCK_AI_FORCE_FORMAL_CZECH = originalForceFormalCzech;
+        }
+    });
+
+    test('POST /api/crystal-ball rejects formal Czech AI output and uses the safe fallback', async () => {
+        delete process.env.MOCK_AI_FORCE_ERROR;
+        process.env.MOCK_AI_FORCE_FORMAL_CZECH = 'true';
+        const csrfToken = await getCsrfToken();
+        const res = await request(app)
+            .post('/api/crystal-ball')
+            .set('x-csrf-token', csrfToken)
+            .send({ question: 'Kam teď zaměřit energii?', lang: 'cs' })
+            .expect(200);
+
+        expect(res.body.success).toBe(true);
+        expect(res.body.fallback).toBe(true);
+        expect(res.body.response).not.toMatch(/vaše|udělejte/iu);
+        expect(res.body.response).toMatch(/hledej|ti|udělej/iu);
     });
 
     test('POST /api/angel-card returns fallback when AI fails', async () => {

@@ -917,7 +917,9 @@ test.describe('Profil aktivace', () => {
 test.describe('Onboarding', () => {
 
     test.beforeEach(async ({ page }) => {
-        await page.goto('/onboarding.html');
+        // The product defaults anonymous onboarding to the shortened sign-first flow.
+        // This describe exercises the full three-step wizard explicitly.
+        await page.goto('/onboarding.html?flow=guided');
         await waitForPageReady(page);
     });
 
@@ -971,7 +973,7 @@ test.describe('Onboarding', () => {
 
     test('žádný horizontální scroll na mobilu', async ({ page }) => {
         await page.setViewportSize(MOBILE_VIEWPORT);
-        await page.goto('/onboarding.html');
+        await page.goto('/onboarding.html?flow=guided');
         await waitForPageReady(page);
         const overflow = await page.evaluate(() =>
             document.documentElement.scrollWidth > document.documentElement.clientWidth
@@ -1047,7 +1049,7 @@ test.describe('Onboarding', () => {
             });
         });
 
-        await page.goto('/onboarding.html');
+        await page.goto('/onboarding.html?flow=guided');
         await waitForPageReady(page);
 
         await page.locator('#step-1 [data-action="goStep"][data-step="2"]').click();
@@ -1082,7 +1084,7 @@ test.describe('Onboarding', () => {
             });
         });
 
-        await page.goto('/onboarding.html');
+        await page.goto('/onboarding.html?flow=guided');
         await waitForPageReady(page);
 
         await page.locator('#step-1 [data-action="goStep"][data-step="2"]').click();

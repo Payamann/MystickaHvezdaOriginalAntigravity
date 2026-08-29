@@ -70,8 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
         compatibility: 'Partnerská shoda',
         numerologie_vyklad: 'Numerologický výklad',
         numerology: 'Numerologický výklad',
-        annual_horoscope: 'Roční horoskop na míru',
-        rocni_horoskop_2026: 'Roční horoskop 2026',
+        annual_horoscope: 'Osobní mapa',
+        rocni_horoskop_2026: 'Osobní mapa',
         personal_map: 'Osobní mapa',
         osobni_mapa_2026: 'Osobní mapa na 12 měsíců',
         natalni_interpretace: 'Interpretace natální karty',
@@ -232,10 +232,10 @@ document.addEventListener('DOMContentLoaded', () => {
             stepCopy: 'První vhled dostanete z konkrétního nástroje, ne z prázdného profilu.'
         },
         annual_horoscope: {
-            title: 'Roční horoskop po registraci',
-            copy: 'Po vytvoření účtu budete pokračovat k ročnímu horoskopu a výhledu, který naváže na vaše osobní datum.',
-            stepTitle: 'Otevřeme roční horoskop',
-            stepCopy: 'Navážete na výpočet, který jste si vybrali, místo obecného profilu.'
+            title: 'Osobní mapa po registraci',
+            copy: 'Roční horoskop už nenabízíme. Po vytvoření účtu budete pokračovat k hlubší Osobní mapě.',
+            stepTitle: 'Otevřeme Osobní mapu',
+            stepCopy: 'Navážete na jednorázový hlubší PDF výklad místo obecného profilu.'
         },
         personal_map: {
             title: 'Osobní mapa po registraci',
@@ -286,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
         natal_chart: SIGNUP_CONTEXT_BY_FEATURE.natalni_interpretace,
         numerology: SIGNUP_CONTEXT_BY_FEATURE.numerologie_vyklad,
         osobni_mapa_2026: SIGNUP_CONTEXT_BY_FEATURE.personal_map,
-        rocni_horoskop_2026: SIGNUP_CONTEXT_BY_FEATURE.annual_horoscope,
+        rocni_horoskop_2026: SIGNUP_CONTEXT_BY_FEATURE.personal_map,
         past_life: SIGNUP_CONTEXT_BY_FEATURE.minuly_zivot,
         runes_deep_reading: SIGNUP_CONTEXT_BY_FEATURE.runy_hluboky_vyklad,
         synastry: SIGNUP_CONTEXT_BY_FEATURE.partnerska_detail,
@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
         '/partnerska-shoda.html': SIGNUP_CONTEXT_BY_FEATURE.partnerska_detail,
         '/natalni-karta.html': SIGNUP_CONTEXT_BY_FEATURE.natalni_interpretace,
         '/numerologie.html': SIGNUP_CONTEXT_BY_FEATURE.numerologie_vyklad,
-        '/rocni-horoskop.html': SIGNUP_CONTEXT_BY_FEATURE.annual_horoscope,
+        '/rocni-horoskop.html': SIGNUP_CONTEXT_BY_FEATURE.personal_map,
         '/osobni-mapa.html': SIGNUP_CONTEXT_BY_FEATURE.personal_map,
         '/mentor.html': SIGNUP_CONTEXT_BY_FEATURE.mentor
     };

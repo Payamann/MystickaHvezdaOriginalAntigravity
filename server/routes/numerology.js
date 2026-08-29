@@ -8,6 +8,7 @@ import crypto from 'crypto';
 import { aiLimiter, authenticateToken, requireFeature } from '../middleware.js';
 import { callClaude } from '../services/claude.js';
 import { SYSTEM_PROMPTS } from '../config/prompts.js';
+import { assertCzechReadingVoice } from '../services/reading-quality.js';
 import { supabase } from '../db-supabase.js';
 
 export const router = express.Router();
@@ -183,6 +184,7 @@ router.post('/', authenticateToken, requireFeature('numerologie_vyklad'), aiLimi
             response = await callClaude(SYSTEM_PROMPTS.numerology, message, null, {
                 feature: 'numerology'
             });
+            assertCzechReadingVoice(response);
 
             await saveCachedNumerology(cacheKey, {
                 name: cleanName,

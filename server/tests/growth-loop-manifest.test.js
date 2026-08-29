@@ -70,6 +70,11 @@ describe('Growth loop manifest', () => {
         expect(FEATURE_PLAN_MAP.astrocartography).toBe('osviceni');
         expect(FEATURE_PLAN_MAP.tarot_celtic_cross).toBe('vip-majestrat');
         expect(PRODUCT_CATALOG.rocni_horoskop_2026.productType).toBe('one_time');
+        expect(PRODUCT_CATALOG.rocni_horoskop_2026).toEqual(expect.objectContaining({
+            available: false,
+            replacementProductId: 'osobni_mapa_2026',
+            primaryPath: '/osobni-mapa.html'
+        }));
         expect(PRODUCT_CATALOG.premium_membership.primaryPlanId).toBe('pruvodce');
     });
 

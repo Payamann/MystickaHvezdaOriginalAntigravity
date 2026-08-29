@@ -94,6 +94,15 @@ describe('API Endpoint Tests', () => {
             expect(res.headers.location).toBe('/shamansko-kolo.html?source=social_post');
         });
 
+        test('legacy privacy URL redirects to the current policy and preserves query params', async () => {
+            const res = await request(app)
+                .get('/ochrana-soukromi.html?source=registration')
+                .redirects(0)
+                .expect(301);
+
+            expect(res.headers.location).toBe('/soukromi.html?source=registration');
+        });
+
         test('legacy compatibility page redirects to canonical partner pair page with query params', async () => {
             const res = await request(app)
                 .get('/kompatibilita/lev-stir.html?utm_source=gsc')

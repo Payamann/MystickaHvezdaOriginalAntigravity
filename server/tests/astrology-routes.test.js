@@ -266,7 +266,7 @@ describe('Astro calculation routes', () => {
             .expect(200);
 
         expect(res.body.success).toBe(true);
-        expect(res.body.response).toBe('Testovaci AI odpoved pro izolovane automatizovane testy.');
+        expect(res.body.response).toBe('Testovací výklad ti ukazuje aktuální téma. Vyber dnes jeden bezpečný konkrétní krok.');
         expect(res.body.chart.summary.sunSign).toBe('Kozoroh');
         expect(res.body.astrocartography.engine.method).toBe('symbolic_destination_resonance');
         expect(res.body.astrocartography.intention.key).toBe('kariera');

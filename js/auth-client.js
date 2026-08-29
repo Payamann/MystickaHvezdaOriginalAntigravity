@@ -9,6 +9,7 @@
     const POST_AUTH_ACTIVATION_KEY = 'post_auth_activation';
     const POST_AUTH_REDIRECT_PENDING_KEY = 'post_auth_redirect_pending';
     const SIGNUP_INTENT_KEY = 'mh_signup_intent';
+    const PASSWORD_MIN_LENGTH = 8;
     const CHECKOUT_METADATA_PARAM_KEYS = [
         'entry_source',
         'entry_feature',
@@ -604,9 +605,9 @@
                     message: 'V numerologii nejrychleji uvidíte, jak osobní umí být vaše první vedení.'
                 },
                 annual_horoscope: {
-                    path: '/rocni-horoskop.html',
+                    path: '/osobni-mapa.html',
                     title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Pokračujte k ročnímu horoskopu a výhledu, který naváže na vaše datum narození.'
+                    message: 'Roční horoskop už nenabízíme. Pokračujte k hlubší Osobní mapě.'
                 },
                 personal_map: {
                     path: '/osobni-mapa.html',
@@ -750,7 +751,7 @@
                 natal_chart: featureMap.natalni_interpretace,
                 numerology: featureMap.numerologie_vyklad,
                 osobni_mapa_2026: featureMap.personal_map,
-                rocni_horoskop_2026: featureMap.annual_horoscope,
+                rocni_horoskop_2026: featureMap.personal_map,
                 past_life: featureMap.minuly_zivot,
                 rituals: {
                     path: '/ritualy/',
@@ -1443,6 +1444,10 @@
                         const birthDate = form.birth_date?.value;
                         const legalConsent = form.gdpr_consent?.checked === true;
 
+                        if (password.length < PASSWORD_MIN_LENGTH) {
+                            this.showToast('Chyba', `Heslo musí mít alespoň ${PASSWORD_MIN_LENGTH} znaků.`, 'error');
+                            return;
+                        }
                         if (password !== confirmPassword) {
                             this.showToast('Chyba', 'Hesla se neshodují.', 'error');
                             return;
@@ -1450,7 +1455,7 @@
                         if (!legalConsent) {
                             this.showToast(
                                 'Souhlas je potřeba',
-                                'Pro vytvoření účtu potvrďte zpracování osobních údajů a obchodní podmínky.',
+                                'Pro vytvoření účtu přijměte obchodní podmínky a potvrďte seznámení se zásadami soukromí.',
                                 'error'
                             );
                             form.gdpr_consent?.focus();

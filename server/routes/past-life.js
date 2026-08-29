@@ -8,6 +8,8 @@ import crypto from 'crypto';
 import { aiLimiter, authenticateToken, requireFeature } from '../middleware.js';
 import { callClaude } from '../services/claude.js';
 import { supabase } from '../db-supabase.js';
+import { CZECH_READING_VOICE_CONTRACT } from '../config/prompts.js';
+import { assertCzechReadingVoice } from '../services/reading-quality.js';
 
 export const router = express.Router();
 
@@ -16,7 +18,9 @@ function isValidIsoDate(value) {
     return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
-const SYSTEM_PROMPT = `Jsi symbolický akashický průvodce pro sebereflexi.
+const SYSTEM_PROMPT = `${CZECH_READING_VOICE_CONTRACT}
+
+Jsi symbolický akashický průvodce pro sebereflexi.
 Tvým úkolem je na základě jména, data narození, místa narození a zvolené formy výkladu vytvořit archetypální příběh minulého života, který pomáhá čtenáři přemýšlet o současných vzorcích.
 Místo narození použij pouze jako symbolický kontext — nevydávej ho za důkaz faktické minulosti.
 
@@ -27,8 +31,8 @@ Odpověz POUZE ve formátu JSON (bez markdown, bez backticks), přesně takto:
   "karmic_lesson": "Jaká lekce se v příběhu zrcadlí pro tento život (2-3 věty)",
   "gifts": "Jaké dary a schopnosti může čtenář v tomto archetypu rozpoznat (2-3 věty)",
   "patterns": "Jaké opakující se vzorce nebo strachy může příběh symbolicky pojmenovat (2-3 věty)",
-  "mission": "Jaké téma může být užitečné vědomě dokončit nebo zpracovat (2-3 věty)",
-  "message": "Poselství archetypální minulé duše dnešnímu čtenáři — inspirativní závěr (1-2 věty)"
+  "mission": "Jaké téma může být užitečné vědomě dokončit nebo zpracovat a jeden konkrétní krok pro dnešek (2-3 věty, přímé tykání)",
+  "message": "Poselství archetypální minulé duše dnešnímu čtenáři — inspirativní závěr v přímém tykání (1-2 věty)"
 }
 
 Buď konkrétní, mystický a povznášející. Odpovídej vždy česky.
@@ -98,8 +102,8 @@ function buildFallbackPastLifeReading({ name, birthDate, gender, place }) {
         karmic_lesson: `Hlavní lekce tohoto symbolického příběhu je rozpoznat, kdy služba druhým přestává být zdravá. ${energyLabel} potřebuje hranice, aby se z daru nestalo vyčerpání.${placeContext}`,
         gifts: 'Z tohoto archetypu si duše nese cit pro skryté souvislosti, schopnost vnímat atmosféru lidí a talent spojovat praktické kroky s intuicí. Dar se probouzí hlavně ve chvílích, kdy je potřeba uklidnit chaos a najít jednoduchý další krok.',
         patterns: 'Opakující se vzorec může být strach z odmítnutí, pokud zazní vlastní pravda. Příběh ukazuje tendenci nést víc odpovědnosti, než je skutečně nutné, a čekat na svolení tam, kde už je možné jednat.',
-        mission: `Současné téma pro ${name} je proměnit starou loajalitu ve vědomou volbu. Nejde o dokazování minulosti, ale o sebereflexi: kde dnes zbytečně mlčíte a kde už může zaznít jasnější ano nebo ne.`,
-        message: 'Minulý obraz šeptá: nemusíte nést celý příběh sami. To, co bylo kdysi břemenem, se dnes může stát moudrostí, pokud tomu dáte tvar a hranici.'
+        mission: `Tvé současné téma, ${name}, je proměnit starou loajalitu ve vědomou volbu. Nejde o dokazování minulosti, ale o sebereflexi: všimni si, kde dnes zbytečně mlčíš, a vyslov jedno jasnější ano nebo ne.`,
+        message: 'Minulý obraz šeptá: nemusíš nést celý příběh bez opory. To, co bylo kdysi břemenem, se dnes může stát moudrostí, když tomu dáš tvar a hranici.'
     };
 }
 
@@ -147,6 +151,7 @@ Vytvoř symbolický výklad minulého života této duše.`;
             });
             const jsonMatch = raw.match(/\{[\s\S]*\}/);
             result = JSON.parse(jsonMatch ? jsonMatch[0] : raw);
+            assertCzechReadingVoice(result);
         } catch (e) {
             console.error('[PastLife] AI/JSON fallback:', e.message);
             result = buildFallbackPastLifeReading({

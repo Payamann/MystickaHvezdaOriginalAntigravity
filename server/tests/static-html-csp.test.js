@@ -15,8 +15,13 @@ const JS_INLINE_STYLE_VENDOR_EXCEPTIONS = new Set([
 ]);
 const NON_PRODUCT_DIRS = new Set([
     '.git',
+    '.agents',
     '.claude',
+    '.claire',
+    '.codex-tmp',
+    '.codex-worktrees',
     '.pytest_cache',
+    '.pytest-tmp',
     'coverage',
     'docs',
     'node_modules',

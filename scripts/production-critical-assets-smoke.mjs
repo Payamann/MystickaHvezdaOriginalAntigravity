@@ -1,7 +1,7 @@
 const PRODUCTION_BASE_URL = 'https://www.mystickahvezda.cz';
 const DEFAULT_LOCAL_BASE_URL = `http://localhost:${process.env.PLAYWRIGHT_PORT || '3001'}`;
 const REQUIRED_AUTH_ASSET_VERSIONS = new Map([
-    ['/js/dist/auth-client.js', '20260522-recovery-flush'],
+    ['/js/dist/auth-client.js', '20260828-product-simplification'],
     ['/js/dist/core.js', '1']
 ]);
 const REQUIRED_AUTH_CLIENT_MARKERS = [

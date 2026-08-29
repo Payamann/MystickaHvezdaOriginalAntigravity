@@ -5,7 +5,8 @@
 import express from 'express';
 import { aiLimiter, authenticateToken, requireFeature, requirePremiumSoft, optionalPremiumCheck } from '../middleware.js';
 import { callClaude } from '../services/claude.js';
-import { SYSTEM_PROMPTS } from '../config/prompts.js';
+import { CZECH_READING_VOICE_CONTRACT, SYSTEM_PROMPTS } from '../config/prompts.js';
+import { assertCzechReadingVoice } from '../services/reading-quality.js';
 import {
     calculateMoonPhase,
     calculateAstrocartographyInsights,
@@ -34,6 +35,25 @@ const ANON_CRYSTAL_BALL_FREE_LIMIT = Math.max(
 );
 
 const DEFAULT_UPSELL_PLAN_ID = 'pruvodce';
+const ORACLE_LANGUAGES = Object.freeze({
+    cs: 'češtině (CZ)',
+    sk: 'slovenčine (SK)',
+    pl: 'poľštine (PL)'
+});
+
+export function buildOracleSystemPrompt(basePrompt, requestedLang = 'cs') {
+    const lang = Object.hasOwn(ORACLE_LANGUAGES, requestedLang) ? requestedLang : 'cs';
+    const voiceContract = lang === 'cs' ? `\n\n${CZECH_READING_VOICE_CONTRACT}` : '';
+
+    return {
+        lang,
+        systemPrompt: `${basePrompt}${voiceContract}\n\nRespond in ${ORACLE_LANGUAGES[lang]}.`
+    };
+}
+
+function assertOracleReadingVoice(response, lang) {
+    if (lang === 'cs') assertCzechReadingVoice(response);
+}
 
 function getPlanPriceCzk(planId) {
     const plan = getPlanById(planId);
@@ -100,9 +120,6 @@ function buildFallbackCrystalBallResponse({ question, moonPhase }) {
 router.post('/crystal-ball', optionalPremiumCheck, aiLimiter, async (req, res) => {
     try {
         const { question, history = [], lang = 'cs' } = req.body;
-
-        const langMap = { 'cs': 'češtině (CZ)', 'sk': 'slovenčine (SK)', 'pl': 'poľštine (PL)' };
-        const targetLangName = langMap[lang] || langMap['cs'];
 
         const errorMsgs = {
             'cs': 'Otázka je povinná (max 1000 znaků).',
@@ -177,7 +194,10 @@ router.post('/crystal-ball', optionalPremiumCheck, aiLimiter, async (req, res) =
         }
 
         const moonPhase = calculateMoonPhase();
-        const systemPrompt = SYSTEM_PROMPTS.crystalBall.replace('{MOON_PHASE}', moonPhase) + `\n\nRespond in ${targetLangName}.`;
+        const { lang: responseLang, systemPrompt } = buildOracleSystemPrompt(
+            SYSTEM_PROMPTS.crystalBall.replace('{MOON_PHASE}', moonPhase),
+            lang
+        );
 
         let fallback = false;
         let response;
@@ -185,7 +205,8 @@ router.post('/crystal-ball', optionalPremiumCheck, aiLimiter, async (req, res) =
         try {
             response = await callClaude(systemPrompt, contextMessage, null, {
                 feature: 'crystal_ball',
-                cacheTtlSeconds: 7 * 24 * 60 * 60
+                cacheTtlSeconds: 7 * 24 * 60 * 60,
+                validateResponse: value => assertOracleReadingVoice(value, responseLang)
             });
         } catch (aiError) {
             console.warn('Crystal Ball AI fallback used:', aiError.message);
@@ -240,19 +261,17 @@ router.post('/dream', authenticateToken, requirePremiumSoft, aiLimiter, async (r
         }
 
         const lang = req.body.lang || 'cs';
-        const langMap = { 'cs': 'češtině (CZ)', 'sk': 'slovenčine (SK)', 'pl': 'poľštine (PL)' };
-        const targetLangName = langMap[lang] || langMap['cs'];
-
         const safeDream = String(dream).substring(0, 3000);
         const message = `Sen: "${safeDream}"\nProsím o hlubokou analýzu tohoto snu.`;
-        const systemPrompt = SYSTEM_PROMPTS.dreamAnalysis + `\n\nRespond in ${targetLangName}.`;
+        const { lang: responseLang, systemPrompt } = buildOracleSystemPrompt(SYSTEM_PROMPTS.dreamAnalysis, lang);
         let fallback = false;
         let response;
 
         try {
             response = await callClaude(systemPrompt, message, null, {
                 feature: 'dream_analysis',
-                cacheTtlSeconds: 30 * 24 * 60 * 60
+                cacheTtlSeconds: 30 * 24 * 60 * 60,
+                validateResponse: value => assertOracleReadingVoice(value, responseLang)
             });
         } catch (aiError) {
             console.warn('Dream Analysis AI fallback used:', aiError.message);
@@ -320,21 +339,19 @@ router.post('/tarot', authenticateToken, requirePremiumSoft, aiLimiter, async (r
         }
 
         const lang = req.body.lang || 'cs';
-        const langMap = { 'cs': 'češtině (CZ)', 'sk': 'slovenčine (SK)', 'pl': 'poľštine (PL)' };
-        const targetLangName = langMap[lang] || langMap['cs'];
-
         const safeSpreadType = String(spreadType).substring(0, 100);
         const safeQuestion = question ? String(question).substring(0, 500) : '';
         const safeCards = cards.map((card) => String(card).substring(0, 100));
         const message = `Typ výkladu: ${safeSpreadType}\nOtázka: "${safeQuestion}"\nVytažené karty: ${safeCards.join(', ')}`;
-        const systemPrompt = SYSTEM_PROMPTS.tarot + `\n\nRespond in ${targetLangName}.`;
+        const { lang: responseLang, systemPrompt } = buildOracleSystemPrompt(SYSTEM_PROMPTS.tarot, lang);
         let fallback = false;
         let response;
 
         try {
             response = await callClaude(systemPrompt, message, null, {
                 feature: cards.length === 1 ? 'tarot_single' : 'tarot_multi',
-                cacheTtlSeconds: 30 * 24 * 60 * 60
+                cacheTtlSeconds: 30 * 24 * 60 * 60,
+                validateResponse: value => assertOracleReadingVoice(value, responseLang)
             });
         } catch (aiError) {
             console.warn('Tarot AI fallback used:', aiError.message);
@@ -388,19 +405,17 @@ router.post('/tarot-summary', authenticateToken, requirePremiumSoft, aiLimiter, 
         });
         const cardContext = safeCards.map(c => `${c.position}: ${c.name} (${c.meaning})`).join(', ');
         const lang = req.body.lang || 'cs';
-        const langMap = { 'cs': 'češtině (CZ)', 'sk': 'slovenčine (SK)', 'pl': 'poľštine (PL)' };
-        const targetLangName = langMap[lang] || langMap['cs'];
-
         const message = `Typ výkladu: ${safeSpreadType}\n\nKarty v kontextu pozic:\n${cardContext}\n\nVytvoř krásný, hluboký souhrn tohoto výkladu.`;
 
-        const systemPrompt = SYSTEM_PROMPTS.tarotSummary + `\n\nRespond in ${targetLangName}.`;
+        const { lang: responseLang, systemPrompt } = buildOracleSystemPrompt(SYSTEM_PROMPTS.tarotSummary, lang);
         let fallback = false;
         let response;
 
         try {
             response = await callClaude(systemPrompt, message, null, {
                 feature: 'tarot_summary',
-                cacheTtlSeconds: 30 * 24 * 60 * 60
+                cacheTtlSeconds: 30 * 24 * 60 * 60,
+                validateResponse: value => assertOracleReadingVoice(value, responseLang)
             });
         } catch (aiError) {
             console.warn('Tarot Summary AI fallback used:', aiError.message);
@@ -510,9 +525,6 @@ router.post('/natal-chart', optionalPremiumCheck, aiLimiter, async (req, res) =>
         }
 
         const lang = req.body.lang || 'cs';
-        const langMap = { 'cs': 'češtině (CZ)', 'sk': 'slovenčine (SK)', 'pl': 'poľštine (PL)' };
-        const targetLangName = langMap[lang] || langMap['cs'];
-
         const safeName = String(name || 'Tazatel').substring(0, 100);
         const message = [
             `Jméno: ${safeName}`,
@@ -525,14 +537,15 @@ router.post('/natal-chart', optionalPremiumCheck, aiLimiter, async (req, res) =>
             'Vytvoř osobní interpretaci natální karty nad vypočtenými planetami, znameními a aspekty.'
         ].join('\n');
 
-        const systemPrompt = SYSTEM_PROMPTS.natalChart + `\n\nRespond in ${targetLangName}.`;
+        const { lang: responseLang, systemPrompt } = buildOracleSystemPrompt(SYSTEM_PROMPTS.natalChart, lang);
         let fallback = false;
         let response;
 
         try {
             response = await callClaude(systemPrompt, message, null, {
                 feature: 'natal_chart',
-                cacheTtlSeconds: 90 * 24 * 60 * 60
+                cacheTtlSeconds: 90 * 24 * 60 * 60,
+                validateResponse: value => assertOracleReadingVoice(value, responseLang)
             });
         } catch (aiError) {
             console.warn('Natal Chart AI fallback used:', aiError.message);
@@ -615,9 +628,6 @@ router.post('/synastry', authenticateToken, requirePremiumSoft, aiLimiter, async
         }
 
         const lang = req.body.lang || 'cs';
-        const langMap = { 'cs': 'češtině (CZ)', 'sk': 'slovenčine (SK)', 'pl': 'poľštine (PL)' };
-        const targetLangName = langMap[lang] || langMap['cs'];
-
         const message = [
             `Osoba A: ${safeName1}, narozena ${safeDate1}`,
             `Osoba B: ${safeName2}, narozena ${safeDate2}`,
@@ -626,14 +636,15 @@ router.post('/synastry', authenticateToken, requirePremiumSoft, aiLimiter, async
             '',
             'Vytvoř vztahovou interpretaci nad vypočtenými znameními, skóre a křížovými aspekty.'
         ].join('\n');
-        const systemPrompt = SYSTEM_PROMPTS.synastry + `\n\nRespond in ${targetLangName}.`;
+        const { lang: responseLang, systemPrompt } = buildOracleSystemPrompt(SYSTEM_PROMPTS.synastry, lang);
         let fallback = false;
         let response;
 
         try {
             response = await callClaude(systemPrompt, message, null, {
                 feature: 'synastry',
-                cacheTtlSeconds: 90 * 24 * 60 * 60
+                cacheTtlSeconds: 90 * 24 * 60 * 60,
+                validateResponse: value => assertOracleReadingVoice(value, responseLang)
             });
         } catch (aiError) {
             console.warn('Synastry AI fallback used:', aiError.message);
@@ -697,8 +708,6 @@ router.post('/astrocartography', authenticateToken, requireFeature('astrocartogr
         );
 
         const lang = req.body.lang || 'cs';
-        const langMap = { 'cs': 'češtině (CZ)', 'sk': 'slovenčine (SK)', 'pl': 'poľštine (PL)' };
-        const targetLangName = langMap[lang] || langMap['cs'];
         const safeName = String(name || 'Tazatel').substring(0, 100);
         const safeIntention = String(intention).substring(0, 200);
 
@@ -716,14 +725,15 @@ router.post('/astrocartography', authenticateToken, requireFeature('astrocartogr
             'Vytvoř personalizovanou astrokartografickou interpretaci nad vypočtenou mapou a doporučenými místy. Buď transparentní, že jde o symbolickou relokační vrstvu, ne přesné planetární linie.'
         ].join('\n');
 
-        const systemPrompt = SYSTEM_PROMPTS.astrocartography + `\n\nRespond in ${targetLangName}.`;
+        const { lang: responseLang, systemPrompt } = buildOracleSystemPrompt(SYSTEM_PROMPTS.astrocartography, lang);
         let fallback = false;
         let response;
 
         try {
             response = await callClaude(systemPrompt, message, null, {
                 feature: 'astrocartography',
-                cacheTtlSeconds: 30 * 24 * 60 * 60
+                cacheTtlSeconds: 30 * 24 * 60 * 60,
+                validateResponse: value => assertOracleReadingVoice(value, responseLang)
             });
         } catch (aiError) {
             console.warn('Astrocartography AI fallback used:', aiError.message);
@@ -780,19 +790,17 @@ router.post('/angel-card', authenticateToken, requirePremiumSoft, aiLimiter, asy
         const safeIntention = String(intention).substring(0, 200);
 
         const lang = req.body.lang || 'cs';
-        const langMap = { 'cs': 'češtině (CZ)', 'sk': 'slovenčine (SK)', 'pl': 'poľštine (PL)' };
-        const targetLangName = langMap[lang] || langMap['cs'];
-
         const message = `Vytažená karta: ${safeCardName}\nTéma karty: ${safeCardTheme}\nZáměr / Otázka uživatele: ${safeIntention}\n\nVytvoř laskavé spojení, vysvětli poselství této karty pro tuto situaci a poraď praktický laskavý krok.`;
 
-        const systemPrompt = SYSTEM_PROMPTS.angelCard + `\n\nRespond in ${targetLangName}.`;
+        const { lang: responseLang, systemPrompt } = buildOracleSystemPrompt(SYSTEM_PROMPTS.angelCard, lang);
         let fallback = false;
         let response;
 
         try {
             response = await callClaude(systemPrompt, message, null, {
                 feature: 'angel_card',
-                cacheTtlSeconds: 30 * 24 * 60 * 60
+                cacheTtlSeconds: 30 * 24 * 60 * 60,
+                validateResponse: value => assertOracleReadingVoice(value, responseLang)
             });
         } catch (aiError) {
             console.warn('Angel Card AI fallback used:', aiError.message);
@@ -848,22 +856,20 @@ router.post('/runes', authenticateToken, requirePremiumSoft, aiLimiter, async (r
             : [];
 
         const lang = req.body.lang || 'cs';
-        const langMap = { 'cs': 'češtině (CZ)', 'sk': 'slovenčine (SK)', 'pl': 'poľštine (PL)' };
-        const targetLangName = langMap[lang] || langMap['cs'];
-
         const historyText = safeHistory.length > 0
             ? `\nPředchozí runové kontexty: ${safeHistory.join('; ')}`
             : '';
         let contextMessage = `Vytažená runa: ${safeRuneName}\nTradiční význam: ${safeRuneMeaning}\nZáměr / Otázka uživatele: ${safeIntention}${historyText}\n\nVytvoř šamanský výklad a propojení energie této runy s životem tazatele.`;
 
-        const systemPrompt = SYSTEM_PROMPTS.runes + `\n\nRespond in ${targetLangName}.`;
+        const { lang: responseLang, systemPrompt } = buildOracleSystemPrompt(SYSTEM_PROMPTS.runes, lang);
         let fallback = false;
         let response;
 
         try {
             response = await callClaude(systemPrompt, contextMessage, null, {
                 feature: 'runes',
-                cacheTtlSeconds: 30 * 24 * 60 * 60
+                cacheTtlSeconds: 30 * 24 * 60 * 60,
+                validateResponse: value => assertOracleReadingVoice(value, responseLang)
             });
         } catch (aiError) {
             console.warn('Runes AI fallback used:', aiError.message);
@@ -907,16 +913,13 @@ router.post('/daily-wisdom', authenticateToken, requirePremiumSoft, aiLimiter, a
             });
         }
         
-        const langMap = { 'cs': 'češtině (CZ)', 'sk': 'slovenčine (SK)', 'pl': 'poľštine (PL)' };
-        const targetLangName = langMap[lang] || langMap['cs'];
-
         const safeSign = sign ? String(sign).substring(0, 50) : '';
         const safeMoonPhase = moonPhase ? String(moonPhase).substring(0, 80) : '';
         const signText = safeSign ? `pro znamení ${safeSign}` : 'pro všechny hledající';
         const moonText = safeMoonPhase ? `při fázi měsíce: ${safeMoonPhase}` : '';
         const message = `Generuj hluboké moudro ${signText} ${moonText} v jazyce: ${lang || 'cs'}.`;
         
-        const systemPrompt = SYSTEM_PROMPTS.dailyWisdom + `\n\nRespond in ${targetLangName}.`;
+        const { lang: responseLang, systemPrompt } = buildOracleSystemPrompt(SYSTEM_PROMPTS.dailyWisdom, lang);
         
         let fallback = false;
         let response;
@@ -930,7 +933,8 @@ router.post('/daily-wisdom', authenticateToken, requirePremiumSoft, aiLimiter, a
                     sign: safeSign,
                     moonPhase: safeMoonPhase,
                     lang
-                }
+                },
+                validateResponse: value => assertOracleReadingVoice(value, responseLang)
             });
         } catch (aiError) {
             console.warn('Daily Wisdom AI fallback used:', aiError.message);

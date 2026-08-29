@@ -1,6 +1,7 @@
 import request from 'supertest';
 import app from '../index.js';
 import { supabase } from '../db-supabase.js';
+import { CURRENT_PRIVACY_VERSION, CURRENT_TERMS_VERSION } from '../config/legal.js';
 
 async function getCsrfToken() {
     const res = await request(app).get('/api/csrf-token').expect(200);
@@ -47,8 +48,8 @@ describe('Auth edge cases', () => {
         expect(authRecord.user.user_metadata.legal_consent).toEqual(expect.objectContaining({
             gdpr: true,
             terms: true,
-            privacy_version: '2026-08-21',
-            terms_version: '2026-08-21',
+            privacy_version: CURRENT_PRIVACY_VERSION,
+            terms_version: CURRENT_TERMS_VERSION,
             accepted_at: expect.any(String)
         }));
     });

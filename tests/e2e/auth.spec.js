@@ -2692,6 +2692,7 @@ test.describe('Auth modal', () => {
         await page.locator('#auth-modal input[name="email"]').fill('modal-verify-analytics@example.com');
         await page.locator('#auth-modal input[name="password"]').fill('TestPassword123!');
         await page.locator('#auth-modal input[name="confirm_password"]').fill('TestPassword123!');
+        await page.locator('#auth-modal #gdpr-consent').check();
         await page.locator('#auth-modal #auth-submit').click();
 
         await expect.poll(async () => page.evaluate(() => (

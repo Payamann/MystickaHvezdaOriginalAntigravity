@@ -51,6 +51,8 @@ describe('Numerology route', () => {
             expect(res.body.success).toBe(true);
             expect(res.body.fallback).toBe(true);
             expect(res.body.response).toContain('Životní cesta');
+            expect(res.body.response).not.toMatch(/\b(?:vás|vám|váš|vaše|jste|můžete)\b/iu);
+            expect(res.body.response).toMatch(/\b(?:vracíš|potřebuješ|vyber)\b/iu);
             expect(res.body.numbers).toEqual(expect.objectContaining({
                 lifePath: expect.any(Number),
                 destiny: expect.any(Number),

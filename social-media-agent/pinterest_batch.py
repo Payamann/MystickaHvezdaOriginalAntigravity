@@ -88,7 +88,6 @@ FEATURE_BY_PATH = [
     ("/shamansko-kolo.html", "shamanske_kolo_plne_cteni"),
     ("/minuly-zivot.html", "past_life"),
     ("/osobni-mapa.html", "osobni_mapa_2026"),
-    ("/rocni-horoskop.html", "rocni_horoskop_2026"),
 ]
 
 for d in (INBOX_DIR, IMAGES_DIR):

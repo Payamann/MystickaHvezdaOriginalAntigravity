@@ -163,7 +163,7 @@
             </div>
             <div id="confirm-password-field-wrapper" class="auth-modal__field" hidden>
                 <label class="auth-modal__label">Potvr\u010Fte heslo</label>
-                <input class="auth-modal__input" type="password" name="confirm_password" autocomplete="new-password">
+                <input class="auth-modal__input" type="password" name="confirm_password" minlength="8" autocomplete="new-password">
             </div>
             <div id="forgot-password-link" class="auth-modal__forgot">
                 <a href="#" id="auth-forgot-password" class="auth-modal__muted-link">Zapomn\u011Bli jste heslo?</a>
@@ -186,7 +186,7 @@
             <div id="gdpr-consent-wrapper" class="auth-modal__field" hidden>
                 <label class="checkbox-label">
                     <input type="checkbox" id="gdpr-consent" name="gdpr_consent">
-                    <span>Souhlas\xEDm se <a href="/ochrana-soukromi.html" target="_blank" rel="noopener">zpracov\xE1n\xEDm osobn\xEDch \xFAdaj\u016F</a> a <a href="/podminky.html" target="_blank" rel="noopener">obchodn\xEDmi podm\xEDnkami</a>.</span>
+                    <span>Souhlas\xEDm s <a href="/podminky.html" target="_blank" rel="noopener">obchodn\xEDmi podm\xEDnkami</a> a potvrzuji sezn\xE1men\xED se <a href="/soukromi.html" target="_blank" rel="noopener">z\xE1sadami soukrom\xED</a>.</span>
                 </label>
             </div>
 

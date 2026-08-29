@@ -228,7 +228,7 @@ class Templates {
             </div>
             <div id="confirm-password-field-wrapper" class="auth-modal__field" hidden>
                 <label class="auth-modal__label">Potvrďte heslo</label>
-                <input class="auth-modal__input" type="password" name="confirm_password" autocomplete="new-password">
+                <input class="auth-modal__input" type="password" name="confirm_password" minlength="8" autocomplete="new-password">
             </div>
             <div id="forgot-password-link" class="auth-modal__forgot">
                 <a href="#" id="auth-forgot-password" class="auth-modal__muted-link">Zapomněli jste heslo?</a>
@@ -251,7 +251,7 @@ class Templates {
             <div id="gdpr-consent-wrapper" class="auth-modal__field" hidden>
                 <label class="checkbox-label">
                     <input type="checkbox" id="gdpr-consent" name="gdpr_consent">
-                    <span>Souhlasím se <a href="/ochrana-soukromi.html" target="_blank" rel="noopener">zpracováním osobních údajů</a> a <a href="/podminky.html" target="_blank" rel="noopener">obchodními podmínkami</a>.</span>
+                    <span>Souhlasím s <a href="/podminky.html" target="_blank" rel="noopener">obchodními podmínkami</a> a potvrzuji seznámení se <a href="/soukromi.html" target="_blank" rel="noopener">zásadami soukromí</a>.</span>
                 </label>
             </div>
 

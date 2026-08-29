@@ -744,6 +744,8 @@ app.get('/jmena/:name', (req, res, next) => {
 });
 
 const STATIC_PAGE_REDIRECTS = new Map([
+    ['/ochrana-soukromi', '/soukromi.html'],
+    ['/ochrana-soukromi.html', '/soukromi.html'],
     ['/shamanske-kolo.html', '/shamansko-kolo.html'],
     ['/horoskop/vodnár.html', '/horoskop/vodnar.html'],
     ['/blog/vidite-vsude-1111-poselstvi-andelu.html', '/blog/andelska-cisla-1111.html'],

@@ -8,6 +8,8 @@ import crypto from 'crypto';
 import { aiLimiter, authenticateToken, requireFeature } from '../middleware.js';
 import { callClaude } from '../services/claude.js';
 import { supabase } from '../db-supabase.js';
+import { CZECH_READING_VOICE_CONTRACT } from '../config/prompts.js';
+import { assertCzechReadingVoice } from '../services/reading-quality.js';
 
 export const router = express.Router();
 
@@ -16,7 +18,9 @@ function isValidIsoDate(value) {
     return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
-const SYSTEM_PROMPT = `Jsi moudrý průvodce archetypálním Šamanským kolem.
+const SYSTEM_PROMPT = `${CZECH_READING_VOICE_CONTRACT}
+
+Jsi moudrý průvodce archetypálním Šamanským kolem.
 Pracuješ s univerzální symbolikou směrů, živlů a totemového zvířete pro sebereflexi. Nepředstírej příslušnost ke konkrétní domorodé tradici a neprezentuj výstup jako etnograficky přesný rituál.
 Na základě jména, data narození a totemového zvířete vytvoř duchovní reflexi dané osoby.
 
@@ -24,7 +28,7 @@ Odpověz POUZE ve formátu JSON (bez markdown, bez backticks), přesně takto:
 {
   "strengths": "Duchovní silné stránky tohoto totemu — co přináší osobě v životě, jaké má přirozené dary a schopnosti (2-3 věty)",
   "challenges": "Výzvy a lekcí na životní cestě, které tento totem přináší — co musí osoba překonat nebo přijmout (2-3 věty)",
-  "message": "Osobní poselství od totemu — inspirativní, hluboké duchovní sdělení přímo pro tuto osobu (2 věty)"
+  "message": "Osobní poselství od totemu — co symbolika znamená právě teď a jeden konkrétní krok (přesně 2 věty, přímé tykání)"
 }
 
 Buď konkrétní, mystický a povznášející. Odpovídej vždy česky.
@@ -73,9 +77,9 @@ function buildFallbackMedicineWheelReading({ name, birthDate, totem }) {
     const cleanTotem = totem || 'totemové zvíře';
 
     return {
-        strengths: `V symbolice směru ${current.direction} přináší ${cleanTotem} pro ${name} dar bdělosti a schopnost vycítit, kdy je čas postupovat pomalu a kdy vykročit. Silnou stránkou je vnímání jemných signálů, které ostatní snadno přehlédnou.`,
-        challenges: `Výzvou je téma ${current.theme}. ${cleanTotem} připomíná, že vnitřní síla se neztrácí tím, že člověk nastaví hranici, odpočine si nebo odmítne nést odpovědnost za vše kolem sebe.`,
-        message: `Poselství kola zní: držte se jednoho konkrétního kroku, ne celé mapy najednou. Když se pozornost ztiší, ${cleanTotem} ukáže, kde se energie vrací zpět do rovnováhy.`
+        strengths: `${name}, v symbolice směru ${current.direction} ti ${cleanTotem} přináší dar bdělosti a cit pro chvíli, kdy je čas zpomalit nebo vykročit. Tvou silnou stránkou je vnímání jemných signálů, které ostatní snadno přehlédnou.`,
+        challenges: `Výzvou je téma ${current.theme}. ${cleanTotem} připomíná, že o svou sílu nepřicházíš, když nastavíš hranici, odpočineš si nebo odmítneš nést odpovědnost za vše kolem sebe.`,
+        message: `Poselství kola zní: drž se jednoho konkrétního kroku, ne celé mapy najednou. Dnes si zvol jednu hranici nebo krátký rituál, kterým vrátíš energii do rovnováhy se symbolem ${cleanTotem}.`
     };
 }
 
@@ -120,6 +124,7 @@ Přečti duchovní cestu tohoto člověka na Medicínském Kolečku.`;
             });
             const jsonMatch = raw.match(/\{[\s\S]*\}/);
             result = JSON.parse(jsonMatch ? jsonMatch[0] : raw);
+            assertCzechReadingVoice(result);
         } catch (e) {
             console.error('[MedicineWheel] AI/JSON fallback:', e.message);
             result = buildFallbackMedicineWheelReading({
