@@ -56,10 +56,12 @@ test.describe('Homepage CTA smoke', () => {
             const heroCta = page.locator('#hero-cta-btn');
             await expectWithinViewport(page, heroCta);
             const heroUrl = expectQuery(await heroCta.getAttribute('href'), {
+                mode: 'register',
+                redirect: '/horoskopy.html',
                 source: 'homepage_hero',
-                feature: 'tarot_yes_no'
+                feature: 'daily_guidance'
             });
-            expect(heroUrl.pathname).toBe('/tarot-ano-ne.html');
+            expect(heroUrl.pathname).toBe('/prihlaseni.html');
 
             if (mobile) {
                 const navToggle = page.locator('.nav__toggle');

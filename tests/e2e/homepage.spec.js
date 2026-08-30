@@ -51,16 +51,16 @@ test.describe('Homepage', () => {
         await expect(hero).toBeVisible();
     });
 
-    test('hero CTA vede na první hodnotu a zachovává zdroj i feature', async ({ page }) => {
-        // Value-first funnel: hero vede rovnou na tarot ano/ne zdarma
-        // (ne na registrační zeď) a nese atribuci pro funnel analytics.
+    test('hero CTA vede do bezplatné registrace a zachovává zdroj i feature', async ({ page }) => {
         const heroCta = page.locator('#hero-cta-btn');
         await expect(heroCta).toBeVisible();
         await expect(heroCta).toHaveClass(/btn--primary/);
         const href = await heroCta.getAttribute('href');
-        expect(href).toContain('tarot-ano-ne.html');
+        expect(href).toContain('prihlaseni.html');
+        expect(href).toContain('mode=register');
+        expect(href).toContain('redirect=/horoskopy.html');
         expect(href).toContain('source=homepage_hero');
-        expect(href).toContain('feature=tarot_yes_no');
+        expect(href).toContain('feature=daily_guidance');
     });
 
     test('stary auth_user bez session cookie neprepina homepage do prihlaseneho stavu', async ({ page }) => {
@@ -325,7 +325,7 @@ test.describe('Homepage', () => {
 
         await expect(page.locator('[data-plan="poutnik"]')).toHaveAttribute('href', /homepage_pricing_free_cta/);
         await expect(page.locator('[data-plan="pruvodce"]')).toHaveAttribute('href', /plan=pruvodce/);
-        await expect(page.locator('[data-plan="pruvodce"]')).toHaveText(/Odemknout Průvodce/);
+        await expect(page.locator('[data-plan="pruvodce"]')).toHaveText(/Odemknout Premium/);
         await expect(page.locator('a[href*="homepage_pricing_full_compare"]')).toHaveAttribute('href', /cenik\.html\?source=homepage_pricing_full_compare/);
         await expect(page.locator('a[href*="homepage_pricing_full_compare"]')).toContainText('Otevřít celý ceník');
     });
@@ -411,11 +411,7 @@ test.describe('Homepage', () => {
         expect(heroHref).toBe('#sluzby');
         expect(heroHref).not.toContain('tarot');
 
-        const previewDailyCard = page.locator('.hero__daily-preview a').filter({ hasText: 'Karta dne' });
-        await expect(previewDailyCard).toBeVisible();
-        const previewHref = await previewDailyCard.getAttribute('href');
-        expect(previewHref).toBe('#sluzby');
-        expect(previewHref).not.toContain('tarot');
+        await expect(page.locator('.hero__daily-preview')).toHaveCount(0);
     });
 
     test('h1 tag existuje a obsahuje text', async ({ page }) => {
@@ -487,73 +483,53 @@ test.describe('Homepage', () => {
         expect(href).toContain('feature=daily_guidance');
     });
 
-    test('spodni newsletter vede na registraci s dennim kontextem a e-mailem', async ({ page }) => {
-        await expect(page.locator('.newsletter-trust-note')).toContainText('Bez spamu');
+    test('homepage nerusi registraci newsletterem ani marketingovym popupem', async ({ page }) => {
+        await expect(page.locator('#newsletter-form')).toHaveCount(0);
+        await expect(page.locator('#mh-newsletter-popup')).toHaveCount(0);
+        await expect(page.locator('#exit-intent-modal')).toHaveCount(0);
 
-        await page.locator('#email-subscribe').fill('newsletter@example.com');
-        await Promise.all([
-            page.waitForURL(url => url.pathname === '/prihlaseni.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
-            page.locator('#newsletter-form button[type="submit"]').click(),
-        ]);
+        await page.mouse.move(200, 200);
+        await page.evaluate(() => window.scrollTo(0, 500));
+        await page.waitForTimeout(700);
 
-        const url = new URL(page.url());
-        expect(url.searchParams.get('mode')).toBe('register');
-        expect(url.searchParams.get('source')).toBe('newsletter_form');
-        expect(url.searchParams.get('feature')).toBe('daily_guidance');
-        expect(url.searchParams.get('email')).toBe('newsletter@example.com');
+        const loadedScripts = await page.locator('script[src]').evaluateAll((scripts) => scripts.map((script) => script.src));
+        expect(loadedScripts.some((src) => src.includes('newsletter-popup'))).toBe(false);
+        expect(loadedScripts.some((src) => src.includes('exit-intent'))).toBe(false);
+        expect(loadedScripts.some((src) => src.includes('push-notifications'))).toBe(false);
     });
 
     test('homepage copy nepouziva nedolozene NASA tvrzeni a nema duplicitni pricing nadpis', async ({ page }) => {
         const bodyText = await page.locator('body').innerText();
-        const normalizedBodyText = bodyText.toLowerCase();
         expect(bodyText).not.toContain('efemeridami NASA');
-        expect(bodyText).not.toContain('Začněte zdarma. Přechod na Premium udělejte až ve chvíli, kdy chcete víc.');
-        expect(bodyText).toContain('Ne další ezoterická stránka');
-        expect(bodyText).toContain('Denní rituál, ne náhodné klikání');
-        expect(bodyText).toContain('Paměť výkladů, ne jednorázový obsah');
-        expect(normalizedBodyText).toContain('ceník bez překvapení');
-        expect(bodyText).toContain('Začni zdarma. Plať až ve chvíli, kdy chceš víc.');
-        expect(bodyText).toContain('Chceš porovnat všechny tarify');
+        expect(bodyText).toContain('Každé ráno víš');
+        expect(bodyText).toContain('Rychlý nadhled dnes. Souvislosti v čase.');
+        expect(bodyText).toContain('Začni zdarma. Premium až když chceš víc.');
         expect(bodyText).toContain('Otevřít celý ceník');
+        expect(bodyText).not.toContain('Ne další ezoterická stránka');
+        expect(bodyText).not.toContain('S čím ti může Mystická Hvězda pomoci');
     });
 
-    test('priklady pouziti nejsou vydavane za recenze ani rating', async ({ page }) => {
+    test('modelove priklady a carousel nejsou soucasti viditelne homepage', async ({ page }) => {
         const bodyText = await page.locator('body').innerText();
-
-        await expect(page.locator('.reviews-trust-panel')).toHaveCount(0);
-        await expect(page.locator('.testimonial')).toHaveCount(9);
-        await expect(page.locator('.testimonial__source')).toHaveCount(0);
-        await expect(page.locator('.testimonial-summary')).toHaveCount(0);
-        await expect(page.locator('.review-verification')).toHaveCount(0);
-        await expect(page.locator('[data-review-rating]')).toHaveCount(0);
-        await expect(page.locator('[data-review-summary]')).toHaveCount(0);
-        await expect(page.locator('.testimonial-disclosure')).toHaveCount(0);
+        await expect(page.locator('#reference')).toBeHidden();
+        await expect(page.locator('.carousel-dot')).toHaveCount(0);
+        expect(bodyText).not.toContain('Nadhled po rozchodu');
+        expect(bodyText).not.toContain('Změna kariéry');
         expect(bodyText).not.toContain('Modelová situace');
     });
 
     test('homepage odpovida na hlavni otazky duvery pred registraci a platbou', async ({ page }) => {
         const bodyText = await page.locator('body').innerText();
 
-        expect(bodyText).toContain('Tvůj první výklad během pár minut');
-        expect(bodyText).toContain('Nenahrazují lékařskou, psychologickou, právní ani finanční pomoc');
-        expect(bodyText).toContain('Než se zaregistruješ, podívej se na ukázku');
-        expect(bodyText).toContain('S čím ti může Mystická Hvězda pomoci');
-        expect(bodyText).toContain('Základní denní nástroje si vyzkoušíš bez platební karty');
-        expect(bodyText).toContain('Premium dává smysl');
-        expect(bodyText).toContain('Jak zrušit předplatné');
-        expect(bodyText).toContain('Správa předplatného');
-        expect(bodyText).toContain('Platby, soukromí a pravidla služby:');
-        expect(bodyText).toContain('Než si vytvoříš účet');
+        expect(bodyText).toContain('Bez platební karty');
+        expect(bodyText).toContain('Jak chráníte moje údaje?');
+        expect(bodyText).toContain('Můžu Premium kdykoliv zrušit?');
+        expect(bodyText).toContain('nenahrazují odbornou pomoc');
         expect(bodyText).toContain('Provozovatel služby Mystická Hvězda');
 
-        await expect(page.locator('.sample-output-card')).toHaveCount(3);
-        await expect(page.locator('.cancel-flow-card')).toBeVisible();
-
-        const trustLinks = page.locator('.pricing-trust-links');
-        await expect(trustLinks.locator('a[href="podminky.html"]')).toBeVisible();
-        await expect(trustLinks.locator('a[href="soukromi.html"]')).toBeVisible();
-        await expect(trustLinks.locator('a[href="#cookie-banner"]')).toBeVisible();
-        await expect(trustLinks.locator('a[href="kontakt.html"]')).toBeVisible();
+        await expect(page.locator('.home-example')).toBeVisible();
+        await expect(page.locator('.homepage-faq-card')).toHaveCount(3);
+        await expect(page.locator('.cancel-flow-card')).toBeHidden();
     });
 
     test('footer feedback na homepage odesle signal bez registrace', async ({ page }) => {
@@ -569,50 +545,20 @@ test.describe('Homepage', () => {
         await expect(widget.locator('[data-feedback-value="yes"]')).toBeDisabled();
     });
 
-    test('odkaz sprava cookies z ceniku znovu otevre cookie banner', async ({ page }) => {
-        await page.evaluate(() => {
-            localStorage.setItem('mh_cookie_prefs', JSON.stringify({
-                analytics: false,
-                marketing: true,
-                ts: Date.now()
-            }));
-        });
-
-        await page.reload();
-        await waitForPageReady(page);
-
-        const banner = page.locator('#cookie-banner');
-        await expect(banner).toBeHidden();
-
-        const manageCookies = page.locator('.pricing-trust-links a[href="#cookie-banner"]');
-        await manageCookies.scrollIntoViewIfNeeded();
-        await manageCookies.click();
-
-        await expect(banner).toBeVisible();
-        await expect(page.locator('#cookie-analytics')).not.toBeChecked();
-        await expect(page.locator('#cookie-marketing')).toBeChecked();
+    test('kompaktni cenik zachovava odkaz na detail tarifu', async ({ page }) => {
+        const pricing = page.locator('#cenik');
+        await expect(pricing).toBeVisible();
+        await expect(pricing.locator('[data-plan="poutnik"]')).toBeVisible();
+        await expect(pricing.locator('[data-plan="pruvodce"]')).toBeVisible();
+        await expect(pricing.locator('a[href*="homepage_pricing_full_compare"]')).toBeVisible();
     });
 
-    test('tecky carouselu referenci jsou funkcni a posouvaji obsah', async ({ page }) => {
-        const carousel = page.locator('.carousel-container');
-        await carousel.scrollIntoViewIfNeeded();
-
-        const dots = page.locator('.carousel-dot');
-        await expect(dots).toHaveCount(9);
-
-        const viewport = page.locator('.carousel-track-container');
-        const initialScroll = await viewport.evaluate((node) => node.scrollLeft);
-
-        await dots.nth(3).click();
-
-        await expect(dots.nth(3)).toHaveAttribute('aria-current', 'true');
-        await expect.poll(() => viewport.evaluate((node) => node.scrollLeft)).toBeGreaterThan(initialScroll);
-
-        const arrowSizes = await page.locator('.carousel-btn').evaluateAll((buttons) => buttons.map((button) => {
-            const rect = button.getBoundingClientRect();
-            return { width: rect.width, height: rect.height };
+    test('zkracena homepage drzi cenik pred jednorazovym PDF', async ({ page }) => {
+        const positions = await page.evaluate(() => ({
+            pricing: document.getElementById('cenik').getBoundingClientRect().top + window.scrollY,
+            personalMap: document.getElementById('osobni-mapa-preview').getBoundingClientRect().top + window.scrollY
         }));
-        expect(arrowSizes.every(({ width, height }) => width >= 44 && height >= 44)).toBe(true);
+        expect(positions.pricing).toBeLessThan(positions.personalMap);
     });
 
     test('pricing preview free plan vede neprihlaseneho na aktivacni registraci', async ({ page }) => {

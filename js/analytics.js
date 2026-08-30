@@ -745,10 +745,10 @@ document.addEventListener('click', (event) => {
     if (target.matches('#hero-cta-btn')) {
         MH_ANALYTICS.trackCTA('homepage_hero', {
             label,
-            destination: href || '/tarot-ano-ne.html',
+            destination: href || '/prihlaseni.html?mode=register&redirect=/horoskopy.html',
             ...buildCtaTrackingContext(target, href, {
                 source: 'homepage_hero',
-                feature: 'tarot_yes_no'
+                feature: 'daily_guidance'
             })
         });
         return;
@@ -769,7 +769,7 @@ document.addEventListener('click', (event) => {
     if (target.matches('#cta-banner-btn')) {
         MH_ANALYTICS.trackCTA('homepage_cta_banner', {
             label,
-            destination: href || '/cenik.html',
+            destination: href || '/prihlaseni.html?mode=register&redirect=/horoskopy.html',
             ...buildCtaTrackingContext(target, href, {
                 source: 'homepage_cta_banner',
                 feature: 'daily_guidance'

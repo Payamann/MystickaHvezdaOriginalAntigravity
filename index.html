@@ -72,9 +72,9 @@
   <link rel="dns-prefetch" href="https://www.googletagmanager.com">
 
   <!-- Homepage CSS bundle: local fonts + global CSS + homepage-only rules -->
-  <link rel="preload" href="/css/home.min.css?v=6" as="style">
+  <link rel="preload" href="/css/home.min.css?v=7" as="style">
   <link rel="preload" href="/img/hero-3d-mobile.webp" as="image" type="image/webp" imagesrcset="/img/hero-3d-mobile.webp 400w, /img/hero-3d-mobile-640.webp 640w, /img/hero-3d-mobile-720.webp 720w, /img/hero-3d.webp 800w" imagesizes="(max-width: 500px) 50vw, (max-width: 768px) 55vw, 50vw" fetchpriority="high">
-  <link rel="stylesheet" href="/css/home.min.css?v=6">
+  <link rel="stylesheet" href="/css/home.min.css?v=7">
 
   <!-- SEO Schema -->
 
@@ -312,11 +312,13 @@
 
 
 
+            <span class="hero__eyebrow">Tvůj každodenní průvodce</span>
+
             <h1 class="hero__title">
 
-              Astrologie a tarot
+              Každé ráno víš,
 
-              <span class="text-gradient text-glow">pro každý den</span>
+              <span class="text-gradient text-glow">na co se zaměřit</span>
 
             </h1>
 
@@ -324,7 +326,7 @@
 
             <p class="hero__subtitle">
 
-              Každé ráno jeden osobní rituál: horoskop, karta dne a konkrétní další krok, který se uloží do tvého profilu.
+              Osobní horoskop, karta dne a jeden konkrétní krok. Vše se ukládá do tvého soukromého profilu.
 
             </p>
 
@@ -338,19 +340,19 @@
 
             <div class="hero__cta" id="hero-cta-container">
 
-              <a href="tarot-ano-ne.html?source=homepage_hero&feature=tarot_yes_no" class="btn btn--primary btn--lg" id="hero-cta-btn">
+              <a href="prihlaseni.html?mode=register&amp;redirect=/horoskopy.html&amp;source=homepage_hero&amp;feature=daily_guidance" class="btn btn--primary btn--lg" id="hero-cta-btn">
 
-                Polož otázku kartám zdarma →
+                Začít zdarma →
 
               </a>
 
               <a href="#sluzby" class="btn btn--secondary btn--lg mh-inline-2838413c62" id="hero-daily-card-link">
 
-                Odhalit kartu dne
+                Ukázat kartu dne
 
               </a>
 
-              <p id="hero-cta-trust" class="mh-inline-5934739565">Zdarma a bez závazků — hotovo za dvě minuty.</p>
+              <p id="hero-cta-trust" class="mh-inline-5934739565">Bez platební karty · hotovo za 2 minuty</p>
 
             </div>
 
@@ -372,20 +374,7 @@
 
 
 
-            <!-- Social Proof Badge -->
-
-            <div class="hero__social-proof mh-inline-a1c87fa9fa" data-animate>
-
-              <div class="social-proof__text">
-
-                Cílem není říct ti budoucnost, ale pomoct poznat opakující se téma dne.
-
-              </div>
-
-            </div>
-
             <div class="hero__trust-strip" aria-label="Důvěryhodnost služby">
-              <span>Bez platební karty</span>
               <span>Soukromý profil</span>
               <span>Český projekt</span>
               <span>Zrušení kdykoliv</span>
@@ -397,37 +386,15 @@
 
           <!-- 3D Visual -->
 
-          <div class="hero__visual">
+          <div class="hero__visual" aria-hidden="true">
 
             <div class="hero__glow-effect"></div>
 
-            <img src="img/hero-3d.webp" alt="Mystické astroláby a nebeské symboly" class="hero__image floating-anim" srcset="img/hero-3d-mobile.webp 400w, img/hero-3d-mobile-640.webp 640w, img/hero-3d-mobile-720.webp 720w, img/hero-3d.webp 800w" sizes="(max-width: 500px) 50vw, (max-width: 768px) 55vw, 50vw" width="800" height="751" loading="eager" decoding="async" fetchpriority="high">
+            <img src="img/hero-3d.webp" alt="" class="hero__image floating-anim" srcset="img/hero-3d-mobile.webp 400w, img/hero-3d-mobile-640.webp 640w, img/hero-3d-mobile-720.webp 720w, img/hero-3d.webp 800w" sizes="(max-width: 500px) 48vw, (max-width: 768px) 46vw, 38vw" width="800" height="751" loading="eager" decoding="async" fetchpriority="high">
 
           </div>
 
         </div>
-
-
-
-        <div class="hero__daily-preview mh-inline-a45663e82a" data-animate>
-          <a href="horoskopy.html" class="mh-inline-31187612be">
-            <div class="mh-inline-3c03bb1a23">Ráno</div>
-            <strong class="mh-inline-ff47ea0974">Dnešní energie</strong>
-            <span class="mh-inline-f1a3560611">Krátký směr pro vztahy, práci a vnitřní klid.</span>
-          </a>
-          <a href="#sluzby" class="mh-inline-b63ba5369d">
-            <div class="mh-inline-3c03bb1a23">Teď</div>
-            <strong class="mh-inline-ff47ea0974">Karta dne</strong>
-            <span class="mh-inline-f1a3560611">Jeden symbol, který pomůže pojmenovat, co řešíš.</span>
-          </a>
-          <a href="profil.html" class="mh-inline-31187612be">
-            <div class="mh-inline-3c03bb1a23">Návrat</div>
-            <strong class="mh-inline-ff47ea0974">Osobní historie</strong>
-            <span class="mh-inline-f1a3560611">Uložené výklady ukážou témata, která se opakují.</span>
-          </a>
-        </div>
-
-        <!-- Scroll indicator -->
 
 
 
@@ -593,13 +560,13 @@
 
         <div class="section__header" data-animate>
 
-          <span class="section__badge">Jak to funguje</span>
+          <span class="section__badge">Co získáš</span>
 
-          <h2 class="section__title">Tvůj první výklad během pár minut</h2>
+          <h2 class="section__title">Rychlý nadhled dnes. Souvislosti v čase.</h2>
 
           <p class="section__text">
 
-            Vybereš téma, zadáš jen to, co je potřeba, a dostaneš srozumitelný další krok.
+            Bez složitého hledání. Začneš jednou otázkou a dostaneš jasný směr pro dnešek.
 
           </p>
 
@@ -615,11 +582,11 @@
 
             <div class="step__number">1</div>
 
-            <h3 class="step__title">Vybereš, co řešíš</h3>
+            <h3 class="step__title">Začneš otázkou</h3>
 
             <p class="step__text">
 
-              Můžeš začít jednoduše: horoskopem, kartou dne, tarotem nebo osobním profilem.
+              Vybereš horoskop, kartu nebo výklad podle toho, co právě potřebuješ.
 
             </p>
 
@@ -631,11 +598,11 @@
 
             <div class="step__number">2</div>
 
-            <h3 class="step__title">Doplníš jen potřebná data</h3>
+            <h3 class="step__title">Dostaneš jasný směr</h3>
 
             <p class="step__text">
 
-              U osobních výkladů používáme datum, čas a místo narození. U rychlých nástrojů stačí méně.
+              Jedno hlavní téma, otázka k zamyšlení a konkrétní krok pro dnešní den.
 
             </p>
 
@@ -647,17 +614,29 @@
 
             <div class="step__number">3</div>
 
-            <h3 class="step__title">Dostaneš jasný směr</h3>
+            <h3 class="step__title">Navážeš příště</h3>
 
             <p class="step__text">
 
-              Výklad překládáme do normální řeči: co sledovat, čemu dát pozornost a co dnes udělat jinak.
+              Výklady se uloží do profilu, takže postupně uvidíš, která témata se vracejí.
 
             </p>
 
           </div>
 
         </div>
+
+        <article class="home-example" data-animate aria-label="Ukázka osobního vedení">
+          <div>
+            <span class="home-example__label">Ukázka dnešního vedení</span>
+            <h3>Dnes nemusíš tlačit na okamžitou odpověď</h3>
+          </div>
+          <p>Vyber jednu věc, kterou dokončíš. Zbytek nech chvíli dozrát — největší posun dnes přinese klidnější tempo.</p>
+          <div class="home-example__meta">
+            <span><strong>Zaměření:</strong> klid a pracovní rytmus</span>
+            <span><strong>Další krok:</strong> dokončit jednu prioritu</span>
+          </div>
+        </article>
 
       </div>
 
@@ -671,7 +650,7 @@
 
          ============================================ -->
 
-    <section class="section section--alt">
+    <section class="section section--alt" hidden aria-hidden="true">
 
       <div class="container">
 
@@ -731,7 +710,7 @@
 
          ============================================ -->
 
-    <section class="section section--alt">
+    <section class="section section--alt" hidden aria-hidden="true">
 
       <div class="container">
 
@@ -875,6 +854,47 @@
 
 
 
+    <section class="section section--alt section--compact" id="cenik">
+      <div class="container">
+        <div class="section__header" data-animate>
+          <span class="section__badge">Jednoduché ceny</span>
+          <h2 class="section__title">Začni zdarma. Premium až když chceš víc.</h2>
+          <p class="section__text">Základní denní vedení si vyzkoušíš bez platební karty. Premium odemkne hlubší výklady a historii.</p>
+        </div>
+
+        <div class="grid grid-2 home-pricing-grid" data-animate>
+          <article class="card card--pricing">
+            <span class="home-plan-label">Zdarma</span>
+            <h3 class="card__title">Poutník</h3>
+            <div class="card__price">0 Kč<span>/měsíc</span></div>
+            <ul class="card__features">
+              <li>Denní horoskop a karta dne</li>
+              <li>Vybrané tarotové a intuitivní nástroje</li>
+              <li>Soukromý osobní profil</li>
+            </ul>
+            <a href="prihlaseni.html?mode=register&amp;redirect=/horoskopy.html&amp;source=homepage_pricing_free_cta&amp;feature=daily_guidance" class="btn btn--secondary u-w-full" data-plan="poutnik">Začít zdarma</a>
+          </article>
+
+          <article class="card card--pricing featured">
+            <span class="home-plan-label home-plan-label--featured">Nejoblíbenější</span>
+            <h3 class="card__title">Hvězdný Průvodce</h3>
+            <div class="card__price">199 Kč<span>/měsíc</span></div>
+            <ul class="card__features">
+              <li>Neomezené tarotové výklady</li>
+              <li>Týdenní a měsíční horoskopy</li>
+              <li>Osobní interpretace a historie výkladů</li>
+            </ul>
+            <a href="prihlaseni.html?mode=register&amp;redirect=/cenik.html&amp;plan=pruvodce&amp;source=homepage_pricing_preview&amp;feature=premium_membership" class="btn btn--primary u-w-full" data-plan="pruvodce">Odemknout Premium</a>
+          </article>
+        </div>
+
+        <p class="home-pricing-note" data-animate>
+          Bez závazku · zrušení kdykoliv ·
+          <a href="cenik.html?source=homepage_pricing_full_compare">Otevřít celý ceník</a>
+        </p>
+      </div>
+    </section>
+
     <!-- ============================================
 
          PERSONAL MAP SPOTLIGHT
@@ -889,18 +909,17 @@
 
           <div class="personal-map-spotlight__copy">
 
-            <span class="section__badge">Nový prémiový PDF výklad</span>
+            <span class="section__badge">Jednorázový PDF výklad</span>
 
             <h2 class="section__title">Osobní mapa na 12 měsíců</h2>
 
             <p class="personal-map-spotlight__lead">
-              Hluboký jednorázový výklad pro jednu konkrétní otázku. Začne dnem objednávky, pokryje celých 12 navazujících měsíců a ukáže souvislosti, orientační milníky i praktické kroky.
+              20 stran osobního výkladu pro jednu konkrétní otázku a následujících 12 měsíců.
             </p>
 
             <ul class="personal-map-spotlight__benefits" aria-label="Co získáš v Osobní mapě">
-              <li>20 stran osobního výkladu pro tvoje znamení, otázku a následujících 12 měsíců.</li>
-              <li>Jasnější pohled na vztahy, práci, energii a opakující se vnitřní vzorce.</li>
-              <li>Konkrétní otázky, malé kroky a rituál, ke kterým se můžeš během roku vracet.</li>
+              <li>Souvislosti pro vztahy, práci, energii a opakující se vzorce.</li>
+              <li>Orientační milníky a praktické kroky, ke kterým se můžeš vracet.</li>
             </ul>
 
             <div class="personal-map-spotlight__actions">
@@ -931,7 +950,7 @@
 
          ============================================ -->
 
-    <section class="section" id="reference">
+    <section class="section" id="reference" hidden aria-hidden="true">
 
       <div class="container">
 
@@ -1333,7 +1352,7 @@
 
          ============================================ -->
 
-    <section class="section section--alt" id="cenik">
+    <section class="section section--alt" id="cenik-legacy" hidden aria-hidden="true">
 
       <div class="container">
 
@@ -1385,7 +1404,7 @@
 
             </ul>
 
-            <a href="prihlaseni.html?mode=register&redirect=/horoskopy.html&source=homepage_pricing_free_cta&feature=daily_guidance" class="btn btn--secondary u-w-full" data-plan="poutnik">Vytvořit účet</a>
+            <a href="prihlaseni.html?mode=register&redirect=/horoskopy.html&source=homepage_pricing_legacy&feature=daily_guidance" class="btn btn--secondary u-w-full">Vytvořit účet</a>
 
           </div>
 
@@ -1427,7 +1446,7 @@
 
             </ul>
 
-            <a href="prihlaseni.html?mode=register&redirect=/cenik.html&plan=pruvodce&source=homepage_pricing_preview&feature=premium_membership" class="btn btn--primary u-w-full" data-plan="pruvodce">Odemknout Průvodce</a>
+            <a href="prihlaseni.html?mode=register&redirect=/cenik.html&plan=pruvodce&source=homepage_pricing_legacy&feature=premium_membership" class="btn btn--primary u-w-full">Odemknout Průvodce</a>
 
           </div>
 
@@ -1437,7 +1456,7 @@
 
         <p class="pricing-trust-links" data-animate>
           Chceš porovnat všechny tarify včetně vyšších plánů?
-          <a href="cenik.html?source=homepage_pricing_full_compare">Otevřít celý ceník</a>
+          <a href="cenik.html?source=homepage_pricing_legacy">Otevřít celý ceník</a>
         </p>
 
         <div class="pricing-trust-links" data-animate aria-label="Důležité informace k cenám a soukromí">
@@ -1485,40 +1504,30 @@
 
         <div class="section__header" data-animate>
 
-          <span class="section__badge">Časté obavy</span>
+          <span class="section__badge">Bez překvapení</span>
 
-          <h2 class="section__title">Než si vytvoříš účet</h2>
+          <h2 class="section__title">Než začneš</h2>
 
-          <p class="section__text">Krátké odpovědi na věci, které chceš vědět před registrací: cena, data, platba a bezpečné používání výkladů.</p>
+          <p class="section__text">To nejdůležitější o registraci, soukromí a předplatném.</p>
 
         </div>
 
         <div class="homepage-faq-grid" data-animate>
 
-          <article class="homepage-faq-card">
-            <h3>Je registrace zdarma?</h3>
-            <p>Ano. Účet si vytvoříš bez platební karty a základní denní nástroje můžeš používat zdarma.</p>
-          </article>
+          <details class="homepage-faq-card">
+            <summary>Je registrace opravdu zdarma?</summary>
+            <p>Ano. Účet vytvoříš bez platební karty a základní denní nástroje můžeš používat zdarma.</p>
+          </details>
 
-          <article class="homepage-faq-card">
-            <h3>Musím zadat platební kartu?</h3>
-            <p>Ne při registraci zdarma. Platební údaje zadáváš až ve chvíli, kdy si vědomě vybereš placený plán.</p>
-          </article>
+          <details class="homepage-faq-card">
+            <summary>Jak chráníte moje údaje?</summary>
+            <p>Datum, čas a místo narození používáme jen pro výpočet osobních výkladů. Podrobnosti najdeš v <a href="soukromi.html">zásadách soukromí</a>.</p>
+          </details>
 
-          <article class="homepage-faq-card">
-            <h3>Jak pracujete s daty narození?</h3>
-            <p>Datum, čas a místo narození používáme pro výpočet astrologických prvků a osobní profil. Podrobnosti najdeš v zásadách soukromí.</p>
-          </article>
-
-          <article class="homepage-faq-card">
-            <h3>Můžu předplatné zrušit?</h3>
-            <p>Ano. Předplatné má být nástroj, ke kterému se vracíš dobrovolně. S dotazy ke zrušení pomůže podpora.</p>
-          </article>
-
-          <article class="homepage-faq-card">
-            <h3>Je výklad odborná rada?</h3>
-            <p>Ne. Výklady slouží pro sebepoznání, inspiraci a osobní reflexi. Nenahrazují lékařskou, psychologickou, právní ani finanční pomoc.</p>
-          </article>
+          <details class="homepage-faq-card">
+            <summary>Můžu Premium kdykoliv zrušit?</summary>
+            <p>Ano. Předplatné zrušíš ve svém profilu a přístup zůstane aktivní do konce zaplaceného období.</p>
+          </details>
 
         </div>
 
@@ -1542,35 +1551,17 @@
 
           <div class="cta-banner__content">
 
-            <h2 class="cta-banner__title">Začni dnešním výkladem zdarma</h2>
+            <h2 class="cta-banner__title">Začni dnešním vedením zdarma</h2>
 
             <p class="cta-banner__text">
 
-              Nejrychlejší cesta je osobní profil zdarma. Pak se rozhodneš, jestli ti stačí denní nástroje, nebo chceš hlubší výklady v Premium.
+              Vytvoření profilu trvá přibližně 2 minuty. Platební kartu potřebovat nebudeš.
 
             </p>
 
-            <a href="prihlaseni.html?mode=register&source=homepage_bottom_cta&feature=daily_guidance" class="btn btn--primary btn--lg mh-inline-87211a4416" id="cta-banner-btn">Vytvořit účet zdarma →</a>
+            <a href="prihlaseni.html?mode=register&amp;redirect=/horoskopy.html&amp;source=homepage_bottom_cta&amp;feature=daily_guidance" class="btn btn--primary btn--lg mh-inline-87211a4416" id="cta-banner-btn">Začít zdarma →</a>
 
-            <p class="newsletter-kicker">Nebo se přihlas k odběru novinek</p>
-
-            <form class="email-form" novalidate id="newsletter-form">
-
-              <label for="email-subscribe" class="sr-only">E-mailová adresa</label>
-
-              <input type="email" id="email-subscribe" class="email-form__input" placeholder="Tvůj e-mail..." required
-
-                autocomplete="email" aria-describedby="email-hint">
-
-              <span id="email-hint" class="sr-only">Zadejte platnou e-mailovou adresu pro odběr novinek</span>
-
-              <button type="submit" class="btn btn--primary">Přihlásit se k newsletteru</button>
-
-            </form>
-
-            <p class="newsletter-trust-note">Bez spamu. E-mail použijeme pro novinky a předvyplnění registrace, odhlášení je kdykoliv.</p>
-
-            <script src="js/dist/newsletter-form.js" defer></script>
+            <p class="home-final-note">Výklady slouží k inspiraci a sebereflexi, nenahrazují odbornou pomoc.</p>
 
           </div>
 
@@ -1848,11 +1839,6 @@
   <script src="js/dist/error-boundary.js" defer></script>
   <script src="js/dist/mobile-nav.js?v=5" defer></script>
 
-  <!-- Carousel Pagination Dots -->
-  <script src="js/dist/carousel-dots.js" defer></script>
-
-
-
   <!-- GDPR Cookie Save Handler — loaded via components.js for all pages, kept here for index.html (hardcoded footer) -->
   <script src="js/dist/cookie-handler.js?v=20260711-optin-default" defer></script>
 
@@ -1862,9 +1848,8 @@
 
   <script type="module" src="js/dist/analytics-page-init.js" async></script>
 
-  <script src="js/dist/index-lazy-load.js?v=3" defer></script>
+  <script src="js/dist/index-lazy-load.js?v=4" defer></script>
 
-  <script src="js/dist/push-notifications.js" defer></script>
   <script src="js/dist/pwa-install.js" defer></script>
 
   <!-- Hamburger menu failsafe (in case module chain fails) -->
