@@ -517,16 +517,18 @@ test.describe('Homepage', () => {
         expect(bodyText).toContain('Otevřít celý ceník');
     });
 
-    test('modelove situace nejsou vydavane za recenze ani rating', async ({ page }) => {
+    test('priklady pouziti nejsou vydavane za recenze ani rating', async ({ page }) => {
+        const bodyText = await page.locator('body').innerText();
+
         await expect(page.locator('.reviews-trust-panel')).toHaveCount(0);
         await expect(page.locator('.testimonial')).toHaveCount(9);
-        await expect(page.locator('.testimonial__source')).toHaveCount(9);
+        await expect(page.locator('.testimonial__source')).toHaveCount(0);
         await expect(page.locator('.testimonial-summary')).toHaveCount(0);
         await expect(page.locator('.review-verification')).toHaveCount(0);
         await expect(page.locator('[data-review-rating]')).toHaveCount(0);
         await expect(page.locator('[data-review-summary]')).toHaveCount(0);
-        await expect(page.locator('.testimonial__source')).toHaveText(Array(9).fill('Modelová situace'));
-        await expect(page.locator('.testimonial-disclosure')).toContainText('Nejsou uživatelskými recenzemi');
+        await expect(page.locator('.testimonial-disclosure')).toHaveCount(0);
+        expect(bodyText).not.toContain('Modelová situace');
     });
 
     test('homepage odpovida na hlavni otazky duvery pred registraci a platbou', async ({ page }) => {
