@@ -724,7 +724,7 @@ window.addEventListener('mh_cookie_consent', (event) => {
 
 document.addEventListener('click', (event) => {
     const target = event.target.closest(
-        '[data-analytics-cta], #hero-cta-btn, #hero-daily-card-link, #cta-banner-btn, #auth-register-btn, #mobile-auth-register-btn, #auth-btn, #mobile-auth-btn, a[data-plan]'
+        '[data-analytics-cta], #hero-cta-btn, #cta-banner-btn, #auth-register-btn, #mobile-auth-register-btn, #auth-btn, #mobile-auth-btn, a[data-plan]'
     );
     if (!target) return;
 
@@ -745,22 +745,10 @@ document.addEventListener('click', (event) => {
     if (target.matches('#hero-cta-btn')) {
         MH_ANALYTICS.trackCTA('homepage_hero', {
             label,
-            destination: href || '/prihlaseni.html?mode=register&redirect=/horoskopy.html',
+            destination: href || '/tarot-ano-ne.html',
             ...buildCtaTrackingContext(target, href, {
                 source: 'homepage_hero',
-                feature: 'daily_guidance'
-            })
-        });
-        return;
-    }
-
-    if (target.matches('#hero-daily-card-link')) {
-        MH_ANALYTICS.trackCTA('homepage_daily_card_hero', {
-            label,
-            destination: href || '#sluzby',
-            ...buildCtaTrackingContext(target, href, {
-                source: 'homepage_daily_card_hero',
-                feature: 'daily_angel_card'
+                feature: 'tarot_yes_no'
             })
         });
         return;
@@ -769,10 +757,10 @@ document.addEventListener('click', (event) => {
     if (target.matches('#cta-banner-btn')) {
         MH_ANALYTICS.trackCTA('homepage_cta_banner', {
             label,
-            destination: href || '/prihlaseni.html?mode=register&redirect=/horoskopy.html',
+            destination: href || '/tarot-ano-ne.html',
             ...buildCtaTrackingContext(target, href, {
                 source: 'homepage_cta_banner',
-                feature: 'daily_guidance'
+                feature: 'tarot_yes_no'
             })
         });
         return;

@@ -531,6 +531,132 @@ body.page-home .hero__image {
     width: min(100%, 420px);
 }
 
+@media (min-width: 961px) {
+    body.page-home .cookie-banner {
+        width: min(680px, calc(100vw - 32px));
+        max-width: 680px !important;
+    }
+}
+
+body.page-home .home-start-section {
+    overflow: hidden;
+    border-top: 1px solid rgba(212, 175, 55, 0.12);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.12);
+    background:
+        radial-gradient(circle at 18% 18%, rgba(157, 78, 221, 0.16), transparent 34%),
+        linear-gradient(180deg, rgba(7, 5, 20, 0.34), rgba(12, 6, 26, 0.62));
+}
+
+.home-intent-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    max-width: 1050px;
+    margin: 0 auto 2.6rem;
+    scroll-margin-top: 110px;
+}
+
+.home-intent-card {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+    gap: 0.85rem;
+    align-items: center;
+    min-width: 0;
+    min-height: 118px;
+    padding: 1.15rem 1.2rem;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 18px;
+    background: linear-gradient(145deg, rgba(24, 13, 43, 0.9), rgba(7, 5, 20, 0.78));
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22);
+    color: var(--color-starlight);
+    text-align: left;
+    transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.home-intent-card:hover,
+.home-intent-card:focus-visible {
+    border-color: rgba(255, 215, 0, 0.7);
+    color: var(--color-starlight);
+    transform: translateY(-3px);
+    box-shadow: 0 22px 50px rgba(0, 0, 0, 0.3), 0 0 24px rgba(212, 175, 55, 0.08);
+}
+
+.home-intent-card__icon {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border: 1px solid rgba(212, 175, 55, 0.42);
+    border-radius: 50%;
+    background: rgba(212, 175, 55, 0.06);
+    color: var(--color-mystic-gold);
+    font-size: 1.15rem;
+}
+
+.home-intent-card__copy {
+    display: grid;
+    min-width: 0;
+    gap: 0.08rem;
+}
+
+.home-intent-card__copy > span {
+    color: rgba(255, 255, 255, 0.58);
+    font-size: 0.68rem;
+    font-weight: 750;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.home-intent-card__copy strong {
+    color: var(--color-starlight);
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    line-height: 1.3;
+    text-wrap: balance;
+}
+
+.home-intent-card__copy small {
+    overflow-wrap: anywhere;
+    color: rgba(255, 255, 255, 0.66);
+    font-size: 0.78rem;
+    line-height: 1.35;
+}
+
+.home-intent-card__arrow {
+    color: var(--color-mystic-gold);
+    font-size: 1.2rem;
+    transition: transform 180ms ease;
+}
+
+.home-intent-card:hover .home-intent-card__arrow,
+.home-intent-card:focus-visible .home-intent-card__arrow {
+    transform: translateX(3px);
+}
+
+.home-daily-card-heading {
+    max-width: 620px;
+    margin: 0 auto 1.65rem;
+    padding-top: 2.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.09);
+    text-align: center;
+}
+
+.home-daily-card-heading .section__badge {
+    margin-bottom: 0.55rem;
+}
+
+.home-daily-card-heading h3 {
+    margin-bottom: 0.55rem;
+    font-size: clamp(1.55rem, 2.6vw, 2rem);
+    text-wrap: balance;
+}
+
+.home-daily-card-heading p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.55;
+}
+
 body.page-home .steps {
     gap: 1.5rem;
 }
@@ -621,6 +747,11 @@ body.page-home .home-pricing-grid .card--pricing {
 
 body.page-home .home-pricing-grid .card--pricing.featured {
     transform: none;
+    border-color: rgba(255, 215, 0, 0.62);
+    background:
+        radial-gradient(circle at 85% 8%, rgba(212, 175, 55, 0.15), transparent 30%),
+        linear-gradient(145deg, rgba(30, 17, 49, 0.96), rgba(10, 6, 24, 0.94));
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28), 0 0 28px rgba(212, 175, 55, 0.08);
 }
 
 body.page-home .home-pricing-grid .card--pricing.featured::before {
@@ -832,6 +963,48 @@ body.page-home .cta-banner__text {
 
     body.page-home .hero__image {
         width: min(48vw, 190px);
+    }
+
+    .home-intent-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+        scroll-margin-top: 86px;
+    }
+
+    .home-intent-card {
+        grid-template-columns: 34px minmax(0, 1fr) auto;
+        gap: 0.65rem;
+        min-height: 88px;
+        padding: 0.9rem;
+        border-radius: 15px;
+    }
+
+    .home-intent-card__icon {
+        width: 34px;
+        height: 34px;
+        font-size: 0.95rem;
+    }
+
+    .home-intent-card__copy strong {
+        font-size: 0.9rem;
+    }
+
+    .home-intent-card__copy small {
+        font-size: 0.7rem;
+    }
+
+    .home-intent-card__arrow {
+        font-size: 1rem;
+    }
+
+    .home-daily-card-heading {
+        margin-bottom: 1.3rem;
+        padding-top: 1.8rem;
+    }
+
+    .home-daily-card-heading p {
+        font-size: 0.9rem;
     }
 
     body.page-home .steps {

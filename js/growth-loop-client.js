@@ -22,6 +22,8 @@
         another_reading: defineFeature('another_reading', { label: 'Follow-up reading', cluster: 'profile', primaryPath: '/profil.html' }),
         tarot: defineFeature('tarot', { label: 'Tarot', cluster: 'tarot', primaryPath: '/tarot.html' }),
         tarot_yes_no: defineFeature('tarot_yes_no', { label: 'Tarot yes/no', cluster: 'tarot', primaryPath: '/tarot-ano-ne.html' }),
+        tarot_love: defineFeature('tarot_love', { label: 'Love tarot', cluster: 'tarot', primaryPath: '/tarot-laska.html' }),
+        dream_dictionary: defineFeature('dream_dictionary', { label: 'Dream dictionary', cluster: 'dreams', primaryPath: '/snar.html' }),
         tarot_daily_card_profile_save: defineFeature('tarot_daily_card_profile_save', { label: 'Daily tarot card save', cluster: 'tarot', primaryPath: '/tarot-karta-dne.html' }),
         tarot_multi_card: defineFeature('tarot_multi_card', { label: 'Multi-card tarot', cluster: 'tarot', primaryPath: '/tarot.html' }),
         tarot_celtic_cross: defineFeature('tarot_celtic_cross', { label: 'Celtic cross tarot', cluster: 'tarot', primaryPath: '/tarot-keltsky-kriz.html' }),
@@ -82,7 +84,7 @@
     });
 
     const SOURCE_DEFAULT_FEATURES = Object.freeze({
-        homepage_hero: 'daily_guidance',
+        homepage_hero: 'tarot_yes_no',
         pricing_free_cta: 'daily_guidance',
         homepage_pricing_free_cta: 'daily_guidance',
         newsletter_form: 'daily_guidance',

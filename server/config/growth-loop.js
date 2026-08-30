@@ -6,7 +6,7 @@
  * profile and paywall work do not drift into separate naming systems.
  */
 
-export const GROWTH_LOOP_VERSION = '2026-05-18';
+export const GROWTH_LOOP_VERSION = '2026-08-30';
 
 export const TRACKING_PAYLOAD_KEYS = Object.freeze([
     'source',
@@ -254,6 +254,22 @@ export const FEATURE_CATALOG = Object.freeze({
         primaryPath: '/tarot-ano-ne.html',
         freeValue: 'Ask one focused yes/no question and receive an immediate answer.',
         premiumValue: 'Save the answer, connect it to history and continue into deeper tarot context.'
+    }),
+    tarot_love: feature({
+        id: 'tarot_love',
+        label: 'Love tarot',
+        cluster: 'tarot',
+        primaryPath: '/tarot-laska.html',
+        freeValue: 'Open a focused relationship reading.',
+        premiumValue: 'Continue into a deeper relationship interpretation and saved context.'
+    }),
+    dream_dictionary: feature({
+        id: 'dream_dictionary',
+        label: 'Dream dictionary',
+        cluster: 'dreams',
+        primaryPath: '/snar.html',
+        freeValue: 'Look up a dream symbol and understand its common meaning.',
+        premiumValue: 'Continue from the symbol into a more personal interpretation.'
     }),
     tarot_daily_card_profile_save: feature({
         id: 'tarot_daily_card_profile_save',

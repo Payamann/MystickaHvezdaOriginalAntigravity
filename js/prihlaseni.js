@@ -60,8 +60,10 @@ document.addEventListener('DOMContentLoaded', () => {
         another_reading: 'Navazující výklad',
         tarot: 'Tarot',
         tarot_yes_no: 'Tarot ano/ne',
+        tarot_love: 'Tarot na lásku',
         tarot_daily_card_profile_save: 'Tarot karta dne',
         tarot_multi_card: 'Vícekartový tarot',
+        dream_dictionary: 'Snář a výklad snů',
         daily_angel_card: 'Karta dne',
         andelske_karty_hluboky_vhled: 'Andělské karty',
         angel_numbers: 'Andělská čísla',
@@ -189,6 +191,18 @@ document.addEventListener('DOMContentLoaded', () => {
             stepTitle: 'Otevřeme Deník výkladů',
             stepCopy: 'Otázka, karta i odpověď zůstanou pohromadě, takže se k nim můžete vrátit.'
         },
+        tarot_love: {
+            title: 'Tarot na lásku po registraci',
+            copy: 'Po vytvoření účtu se vrátíte k tématu vztahu a můžete pokračovat v hlubším výkladu.',
+            stepTitle: 'Otevřeme tarot na lásku',
+            stepCopy: 'Registrace zachová vztahový záměr, se kterým jste přišli.'
+        },
+        dream_dictionary: {
+            title: 'Výklad snu po registraci',
+            copy: 'Po vytvoření účtu navážete na symbol, který jste hledali, a můžete pokračovat k osobnímu výkladu.',
+            stepTitle: 'Vrátíme vás k výkladu snu',
+            stepCopy: 'Hlavní motiv snu zůstane součástí dalšího osobního kroku.'
+        },
         tarot_daily_card_profile_save: {
             title: 'Uložte kartu dne do profilu',
             copy: 'Vytvořte si účet zdarma a vraťte se ke stejné kartě dne, aby nezmizela jen jako jednorázový náhodný vhled.',
@@ -300,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const SIGNUP_CONTEXT_BY_SOURCE = {
-        homepage_hero: SIGNUP_CONTEXT_BY_FEATURE.daily_guidance,
+        homepage_hero: SIGNUP_CONTEXT_BY_FEATURE.tarot_yes_no,
         pricing_free_cta: {
             title: 'Začínáte zdarma',
             copy: 'Vytvoříte si účet bez platební karty a potom vás pošleme na první denní horoskop.',

@@ -624,6 +624,16 @@
                     title: 'Vítejte v Mystické Hvězdě',
                     message: 'Začněte jednou konkrétní otázkou ano/ne a uložte odpověď do Deníku výkladů.'
                 },
+                tarot_love: {
+                    path: '/tarot-laska.html',
+                    title: 'Vítejte v Mystické Hvězdě',
+                    message: 'Vraťte se k tématu vztahu a pokračujte prvním výkladem tarotu na lásku.'
+                },
+                dream_dictionary: {
+                    path: '/snar.html',
+                    title: 'Vítejte v Mystické Hvězdě',
+                    message: 'Vraťte se k symbolu ze svého snu a pokračujte jeho osobním významem.'
+                },
                 tarot_multi_card: {
                     path: '/tarot.html',
                     title: 'Vítejte v Mystické Hvězdě',
@@ -765,9 +775,9 @@
 
             const sourceMap = {
                 homepage_hero: {
-                    path: '/horoskopy.html',
+                    path: '/tarot-ano-ne.html',
                     title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Začněte dnešním horoskopem a uvidíte první osobní hodnotu hned.'
+                    message: 'Začněte jednou konkrétní otázkou ano/ne a získejte první odpověď hned.'
                 },
                 pricing_free_cta: {
                     path: '/horoskopy.html',

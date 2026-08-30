@@ -50,18 +50,17 @@ function expectQuery(href, expected) {
 
 test.describe('Homepage CTA smoke', () => {
     for (const { name, viewport, mobile } of VIEWPORTS) {
-        test(`entry CTAs keep measurable signup context on ${name}`, async ({ page }) => {
+        test(`entry CTAs keep measurable free-value context on ${name}`, async ({ page }) => {
             await prepareHomepage(page, viewport);
 
             const heroCta = page.locator('#hero-cta-btn');
             await expectWithinViewport(page, heroCta);
             const heroUrl = expectQuery(await heroCta.getAttribute('href'), {
-                mode: 'register',
-                redirect: '/horoskopy.html',
                 source: 'homepage_hero',
-                feature: 'daily_guidance'
+                feature: 'tarot_yes_no',
+                variant: 'audience_intent_v1'
             });
-            expect(heroUrl.pathname).toBe('/prihlaseni.html');
+            expect(heroUrl.pathname).toBe('/tarot-ano-ne.html');
 
             if (mobile) {
                 const navToggle = page.locator('.nav__toggle');
@@ -104,9 +103,29 @@ test.describe('Homepage CTA smoke', () => {
         test(`daily card and pricing CTAs keep funnel destinations on ${name}`, async ({ page }) => {
             await prepareHomepage(page, viewport);
 
-            const dailyCardJump = page.locator('#hero-daily-card-link');
-            await expectWithinViewport(page, dailyCardJump);
-            await expect(dailyCardJump).toHaveAttribute('href', '#sluzby');
+            const exploreJump = page.locator('#hero-explore-link');
+            await expectWithinViewport(page, exploreJump);
+            await expect(exploreJump).toHaveAttribute('href', '#rychly-start');
+
+            const quickDecision = page.locator('[data-analytics-cta="homepage_quick_decision"]');
+            const quickLove = page.locator('[data-analytics-cta="homepage_quick_love"]');
+            const quickDream = page.locator('[data-analytics-cta="homepage_quick_dream"]');
+
+            expectQuery(await quickDecision.getAttribute('href'), {
+                source: 'homepage_quick_decision',
+                feature: 'tarot_yes_no',
+                variant: 'audience_intent_v1'
+            });
+            expectQuery(await quickLove.getAttribute('href'), {
+                source: 'homepage_quick_love',
+                feature: 'tarot_love',
+                variant: 'audience_intent_v1'
+            });
+            expectQuery(await quickDream.getAttribute('href'), {
+                source: 'homepage_quick_dream',
+                feature: 'dream_dictionary',
+                variant: 'audience_intent_v1'
+            });
 
             await page.locator('#karta-dne-widget').scrollIntoViewIfNeeded();
             const dailyDetail = page.locator('#kdd-lexicon-link');
@@ -143,11 +162,12 @@ test.describe('Homepage CTA smoke', () => {
             });
 
             await expect(fullPricing).toHaveAttribute('href', /cenik\.html\?source=homepage_pricing_full_compare/);
-            expectQuery(await bottomCta.getAttribute('href'), {
-                mode: 'register',
+            const bottomUrl = expectQuery(await bottomCta.getAttribute('href'), {
                 source: 'homepage_bottom_cta',
-                feature: 'daily_guidance'
+                feature: 'tarot_yes_no',
+                variant: 'audience_intent_v1'
             });
+            expect(bottomUrl.pathname).toBe('/tarot-ano-ne.html');
 
             await expectNoHorizontalOverflow(page);
         });

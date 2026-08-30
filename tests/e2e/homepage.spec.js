@@ -51,16 +51,15 @@ test.describe('Homepage', () => {
         await expect(hero).toBeVisible();
     });
 
-    test('hero CTA vede do bezplatné registrace a zachovává zdroj i feature', async ({ page }) => {
+    test('hero CTA vede k první odpovědi bez registrace a zachovává měřicí kontext', async ({ page }) => {
         const heroCta = page.locator('#hero-cta-btn');
         await expect(heroCta).toBeVisible();
         await expect(heroCta).toHaveClass(/btn--primary/);
         const href = await heroCta.getAttribute('href');
-        expect(href).toContain('prihlaseni.html');
-        expect(href).toContain('mode=register');
-        expect(href).toContain('redirect=/horoskopy.html');
+        expect(href).toContain('tarot-ano-ne.html');
         expect(href).toContain('source=homepage_hero');
-        expect(href).toContain('feature=daily_guidance');
+        expect(href).toContain('feature=tarot_yes_no');
+        expect(href).toContain('variant=audience_intent_v1');
     });
 
     test('stary auth_user bez session cookie neprepina homepage do prihlaseneho stavu', async ({ page }) => {
@@ -131,19 +130,20 @@ test.describe('Homepage', () => {
         await expect(loggedInCta.locator('a', { hasText: 'Otevřít dnešní rituál' })).toHaveAttribute('href', 'profil.html#daily-guidance-card');
     });
 
-    test('hero karta dne ma vlastni analyticky signal', async ({ page }) => {
+    test('hero rozcestnik ma vlastni analyticky signal', async ({ page }) => {
         await page.evaluate(() => {
             window.MH_ANALYTICS_QUEUE = [];
         });
 
-        await page.locator('#hero-daily-card-link').click();
+        await page.locator('#hero-explore-link').click();
 
         const event = await page.evaluate(() => window.MH_ANALYTICS_QUEUE.find(
-            (item) => item.name === 'cta_clicked' && item.location === 'homepage_daily_card_hero'
+            (item) => item.name === 'cta_clicked' && item.location === 'homepage_explore'
         ));
 
         expect(event).toEqual(expect.objectContaining({
-            destination: '#sluzby'
+            destination: '#rychly-start',
+            variant: 'audience_intent_v1'
         }));
     });
 
@@ -325,7 +325,7 @@ test.describe('Homepage', () => {
 
         await expect(page.locator('[data-plan="poutnik"]')).toHaveAttribute('href', /homepage_pricing_free_cta/);
         await expect(page.locator('[data-plan="pruvodce"]')).toHaveAttribute('href', /plan=pruvodce/);
-        await expect(page.locator('[data-plan="pruvodce"]')).toHaveText(/Odemknout Premium/);
+        await expect(page.locator('[data-plan="pruvodce"]')).toHaveText(/Chci hlubší výklady/);
         await expect(page.locator('a[href*="homepage_pricing_full_compare"]')).toHaveAttribute('href', /cenik\.html\?source=homepage_pricing_full_compare/);
         await expect(page.locator('a[href*="homepage_pricing_full_compare"]')).toContainText('Otevřít celý ceník');
     });
@@ -404,12 +404,11 @@ test.describe('Homepage', () => {
         await expect(page.locator('#checkout-context-title')).toContainText('Účet zdarma');
     });
 
-    test('homepage vstupy na kartu dne vedou na andelskou kartu na strance, ne na tarot', async ({ page }) => {
-        const heroDailyCard = page.locator('#hero-daily-card-link');
-        await expect(heroDailyCard).toBeVisible();
-        const heroHref = await heroDailyCard.getAttribute('href');
-        expect(heroHref).toBe('#sluzby');
-        expect(heroHref).not.toContain('tarot');
+    test('homepage nabízí rychlé vstupy podle hlavních návštěvnických záměrů', async ({ page }) => {
+        await expect(page.locator('#hero-explore-link')).toHaveAttribute('href', '#rychly-start');
+        await expect(page.locator('[data-analytics-cta="homepage_quick_decision"]')).toHaveAttribute('href', /tarot-ano-ne\.html/);
+        await expect(page.locator('[data-analytics-cta="homepage_quick_love"]')).toHaveAttribute('href', /tarot-laska\.html/);
+        await expect(page.locator('[data-analytics-cta="homepage_quick_dream"]')).toHaveAttribute('href', /snar\.html/);
 
         await expect(page.locator('.hero__daily-preview')).toHaveCount(0);
     });
@@ -476,11 +475,12 @@ test.describe('Homepage', () => {
         await expect(link).toContainText('Tarot karta dne');
     });
 
-    test('spodní CTA vede na registraci zdarma s denním tracking kontextem', async ({ page }) => {
+    test('spodní CTA vrací návštěvníka k odpovědi zdarma s měřicím kontextem', async ({ page }) => {
         const href = await page.locator('#cta-banner-btn').getAttribute('href');
-        expect(href).toContain('mode=register');
+        expect(href).toContain('tarot-ano-ne.html');
         expect(href).toContain('source=homepage_bottom_cta');
-        expect(href).toContain('feature=daily_guidance');
+        expect(href).toContain('feature=tarot_yes_no');
+        expect(href).toContain('variant=audience_intent_v1');
     });
 
     test('homepage nerusi registraci newsletterem ani marketingovym popupem', async ({ page }) => {
@@ -501,9 +501,9 @@ test.describe('Homepage', () => {
     test('homepage copy nepouziva nedolozene NASA tvrzeni a nema duplicitni pricing nadpis', async ({ page }) => {
         const bodyText = await page.locator('body').innerText();
         expect(bodyText).not.toContain('efemeridami NASA');
-        expect(bodyText).toContain('Každé ráno víš');
-        expect(bodyText).toContain('Rychlý nadhled dnes. Souvislosti v čase.');
-        expect(bodyText).toContain('Začni zdarma. Premium až když chceš víc.');
+        expect(bodyText).toContain('Tvoje otázka.');
+        expect(bodyText).toContain('Nejdřív odpověď. Profil až když chceš navázat.');
+        expect(bodyText).toContain('Jedna odpověď zdarma. Premium, když chceš jít do hloubky.');
         expect(bodyText).toContain('Otevřít celý ceník');
         expect(bodyText).not.toContain('Ne další ezoterická stránka');
         expect(bodyText).not.toContain('S čím ti může Mystická Hvězda pomoci');
@@ -527,7 +527,8 @@ test.describe('Homepage', () => {
         expect(bodyText).toContain('nenahrazují odbornou pomoc');
         expect(bodyText).toContain('Provozovatel služby Mystická Hvězda');
 
-        await expect(page.locator('.home-example')).toBeVisible();
+        await expect(page.locator('.home-intent-grid')).toBeVisible();
+        await expect(page.locator('.home-intent-card')).toHaveCount(3);
         await expect(page.locator('.homepage-faq-card')).toHaveCount(3);
         await expect(page.locator('.cancel-flow-card')).toBeHidden();
     });
