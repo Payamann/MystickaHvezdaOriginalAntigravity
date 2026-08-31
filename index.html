@@ -72,9 +72,8 @@
   <link rel="dns-prefetch" href="https://www.googletagmanager.com">
 
   <!-- Homepage CSS bundle: local fonts + global CSS + homepage-only rules -->
-  <link rel="preload" href="/css/home.min.css?v=8" as="style">
-  <link rel="preload" href="/img/hero-3d-mobile.webp" as="image" type="image/webp" imagesrcset="/img/hero-3d-mobile.webp 400w, /img/hero-3d-mobile-640.webp 640w, /img/hero-3d-mobile-720.webp 720w, /img/hero-3d.webp 800w" imagesizes="(max-width: 500px) 50vw, (max-width: 768px) 55vw, 50vw" fetchpriority="high">
-  <link rel="stylesheet" href="/css/home.min.css?v=8">
+  <link rel="preload" href="/css/home.min.css?v=11" as="style">
+  <link rel="stylesheet" href="/css/home.min.css?v=11">
 
   <!-- SEO Schema -->
 
@@ -302,9 +301,9 @@
 
             <h1 class="hero__title">
 
-              Tvoje otázka.
+              Máš otázku?
 
-              <span class="text-gradient text-glow">Jasnější další krok.</span>
+              <span class="text-gradient text-glow">Tarot ti nabídne nový pohled.</span>
 
             </h1>
 
@@ -312,7 +311,7 @@
 
             <p class="hero__subtitle">
 
-              Polož konkrétní otázku kartám nebo si vyber denní vedení. První odpověď získáš zdarma a bez registrace.
+              Polož konkrétní otázku a první krátký výklad získáš přibližně za 1 minutu.
 
             </p>
 
@@ -328,17 +327,17 @@
 
               <a href="tarot-ano-ne.html?source=homepage_hero&amp;feature=tarot_yes_no&amp;variant=audience_intent_v1" class="btn btn--primary btn--lg" id="hero-cta-btn" data-analytics-variant="audience_intent_v1">
 
-                Získat odpověď zdarma →
+                Vyložit tarot zdarma →
 
               </a>
 
               <a href="#rychly-start" class="btn btn--secondary btn--lg mh-inline-2838413c62" id="hero-explore-link" data-analytics-cta="homepage_explore" data-analytics-variant="audience_intent_v1">
 
-                Vybrat jiné téma
+                Vybrat téma výkladu
 
               </a>
 
-              <p id="hero-cta-trust" class="mh-inline-5934739565">První výsledek přibližně za 1 minutu</p>
+              <p id="hero-cta-trust" class="mh-inline-5934739565">První výklad zdarma <span aria-hidden="true">•</span> rozhodnutí zůstává na tobě</p>
 
             </div>
 
@@ -369,16 +368,6 @@
           </div>
 
 
-
-          <!-- 3D Visual -->
-
-          <div class="hero__visual" aria-hidden="true">
-
-            <div class="hero__glow-effect"></div>
-
-            <img src="img/hero-3d.webp" alt="" class="hero__image floating-anim" srcset="img/hero-3d-mobile.webp 400w, img/hero-3d-mobile-640.webp 640w, img/hero-3d-mobile-720.webp 720w, img/hero-3d.webp 800w" sizes="(max-width: 500px) 48vw, (max-width: 768px) 46vw, 38vw" width="800" height="751" loading="eager" decoding="async" fetchpriority="high">
-
-          </div>
 
         </div>
 
@@ -441,13 +430,15 @@
           </a>
         </div>
 
-        <div class="home-daily-card-heading" data-animate>
-          <span class="section__badge">Nebo začni dneškem</span>
-          <h3>Dnešní symbol</h3>
-          <p>Odhal krátké poselství pro dnešek. Ber ho jako otázku k zamyšlení, ne jako příkaz.</p>
-        </div>
+        <div class="home-daily-feature">
+          <div class="home-daily-card-heading" data-animate>
+            <span class="section__badge">Nebo začni dneškem</span>
+            <h3>Jeden symbol. Jedna myšlenka pro dnešek.</h3>
+            <p>Otoč kartu a vezmi si krátký podnět k zamyšlení. Zdarma, bez registrace a za pár sekund.</p>
+            <span class="home-daily-card-heading__meta">1 karta <span aria-hidden="true">•</span> 30 sekund <span aria-hidden="true">•</span> bez registrace</span>
+          </div>
 
-        <div id="karta-dne-widget" class="mh-inline-368ab910a1" data-animate>
+          <div id="karta-dne-widget" class="mh-inline-368ab910a1" data-animate>
 
 
 
@@ -546,7 +537,7 @@
               <a id="kdd-lexicon-link" href="andelske-karty.html?source=homepage_daily_card_detail&feature=daily_angel_card"
                 class="btn btn--secondary mh-inline-9ab0bdd18e"
 
-               >Otevřít v Andělských kartách</a>
+               >Andělské karty →</a>
 
               <a id="kdd-full-reading-link"
                 href="andelske-karty.html?source=homepage_daily_card_full_reading&feature=andelske_karty_hluboky_vhled"
@@ -558,6 +549,7 @@
 
           </div>
 
+          </div>
         </div>
 
       </div>
@@ -1635,7 +1627,7 @@
           </div>
         </div>
 
-        <div>
+        <div class="footer__group">
           <div class="footer__title">Astrologie</div>
           <ul class="footer__links">
             <li><a href="horoskopy.html">Horoskopy</a></li>
@@ -1648,7 +1640,7 @@
           </ul>
         </div>
 
-        <div>
+        <div class="footer__group">
           <div class="footer__title">Věštění & energie</div>
           <ul class="footer__links">
             <li><a href="tarot.html">Tarot & výklady</a></li>
@@ -1668,7 +1660,7 @@
           </ul>
         </div>
 
-        <div>
+        <div class="footer__group">
           <div class="footer__title">Poznání</div>
           <ul class="footer__links">
             <li><a href="testy/index.html" class="mh-inline-c33f766568">Mystické testy</a></li>
@@ -1681,18 +1673,27 @@
           </ul>
         </div>
 
-        <div>
+        <div class="footer__group">
           <div class="footer__title">Podpora</div>
           <ul class="footer__links">
             <li><a href="o-nas.html">O nás</a></li>
             <li><a href="cenik.html">Ceník</a></li>
             <li><a href="kontakt.html">Kontakt</a></li>
-            <li class="footer__support-email"><a href="mailto:support@mystickahvezda.cz">support@mystickahvezda.cz</a></li>
+            <li class="footer__support-email"><a href="mailto:support@mystickahvezda.cz">Napsat podpoře</a></li>
             <li><a href="faq.html">FAQ (časté dotazy)</a></li>
             <li><a href="jak-to-funguje.html">Jak to funguje</a></li>
           </ul>
         </div>
       </div>
+
+      <nav class="footer__mobile-shortcuts" aria-label="Rychlé odkazy v patičce">
+        <a href="tarot.html">Tarot</a>
+        <a href="horoskopy.html">Horoskopy</a>
+        <a href="snar.html">Snář</a>
+        <a href="cenik.html">Ceník</a>
+        <a href="o-nas.html">O nás</a>
+        <a href="kontakt.html">Kontakt</a>
+      </nav>
 
       <div class="footer__bottom">
         <p>© 2026 Mystická Hvězda. Všechna práva vyhrazena.</p>
