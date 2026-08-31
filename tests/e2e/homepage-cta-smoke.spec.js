@@ -100,7 +100,7 @@ test.describe('Homepage CTA smoke', () => {
             await expectNoHorizontalOverflow(page);
         });
 
-        test(`daily card and pricing CTAs keep funnel destinations on ${name}`, async ({ page }) => {
+        test(`discovery, daily card and pricing CTAs keep funnel destinations on ${name}`, async ({ page }) => {
             await prepareHomepage(page, viewport);
 
             const exploreJump = page.locator('#hero-explore-link');
@@ -108,7 +108,7 @@ test.describe('Homepage CTA smoke', () => {
             await expect(exploreJump).toHaveAttribute('href', '#rychly-start');
 
             const quickDecision = page.locator('[data-analytics-cta="homepage_quick_decision"]');
-            const quickLove = page.locator('[data-analytics-cta="homepage_quick_love"]');
+            const quickDaily = page.locator('[data-analytics-cta="homepage_quick_daily"]');
             const quickDream = page.locator('[data-analytics-cta="homepage_quick_dream"]');
 
             expectQuery(await quickDecision.getAttribute('href'), {
@@ -116,9 +116,9 @@ test.describe('Homepage CTA smoke', () => {
                 feature: 'tarot_yes_no',
                 variant: 'audience_intent_v1'
             });
-            expectQuery(await quickLove.getAttribute('href'), {
-                source: 'homepage_quick_love',
-                feature: 'tarot_love',
+            expectQuery(await quickDaily.getAttribute('href'), {
+                source: 'homepage_quick_daily',
+                feature: 'horoskopy',
                 variant: 'audience_intent_v1'
             });
             expectQuery(await quickDream.getAttribute('href'), {
@@ -126,6 +126,22 @@ test.describe('Homepage CTA smoke', () => {
                 feature: 'dream_dictionary',
                 variant: 'audience_intent_v1'
             });
+
+            const morePaths = page.locator('[data-analytics-cta="homepage_more_paths"]');
+            await expect(morePaths).toHaveCount(6);
+            await expect(morePaths).toHaveText([
+                'Natální karta',
+                'Partnerská shoda',
+                'Numerologie',
+                'Andělské karty',
+                'Runy',
+                'Osobní mapa'
+            ]);
+            for (const link of await morePaths.all()) {
+                expectQuery(await link.getAttribute('href'), {
+                    source: 'homepage_more_paths'
+                });
+            }
 
             await page.locator('#karta-dne-widget').scrollIntoViewIfNeeded();
             const dailyDetail = page.locator('#kdd-lexicon-link');
