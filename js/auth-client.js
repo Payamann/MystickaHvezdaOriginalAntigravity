@@ -549,10 +549,66 @@
             }
 
             if (postAuthRedirect) {
+                if (options.mode === 'register' && standaloneContext) {
+                    void this.completeDirectSignupActivation(standaloneContext, postAuthRedirect);
+                }
+
                 setTimeout(() => {
                     sessionStorage.removeItem(POST_AUTH_REDIRECT_PENDING_KEY);
                     window.location.href = postAuthRedirect;
                 }, 500);
+            }
+        },
+
+        async completeDirectSignupActivation(context = {}, destination = '') {
+            let safeDestination;
+
+            try {
+                const parsedDestination = new URL(destination, window.location.origin);
+                if (parsedDestination.origin !== window.location.origin) return false;
+                if (parsedDestination.pathname === '/onboarding.html') return false;
+                safeDestination = `${parsedDestination.pathname}${parsedDestination.search}${parsedDestination.hash}`;
+            } catch {
+                return false;
+            }
+
+            const safeRedirect = typeof context.redirect === 'string'
+                && context.redirect.startsWith('/')
+                && !context.redirect.startsWith('//')
+                ? context.redirect
+                : null;
+
+            try {
+                const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+                const response = await fetch(`${API_URL}/auth/onboarding/complete`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    keepalive: true,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+                    },
+                    body: JSON.stringify({
+                        source: context.source || null,
+                        feature: context.feature || null,
+                        plan: context.plan || null,
+                        redirect: safeRedirect,
+                        flow: 'quick',
+                        destination: safeDestination,
+                        skipped: true
+                    })
+                });
+
+                if (!response.ok) {
+                    console.warn('Failed to complete direct signup activation:', response.status);
+                    return false;
+                }
+
+                localStorage.setItem('mh_onboarded', '1');
+                return true;
+            } catch (error) {
+                console.warn('Error completing direct signup activation:', error.message);
+                return false;
             }
         },
 

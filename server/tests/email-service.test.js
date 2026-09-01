@@ -242,6 +242,26 @@ describe('Email service deliverability payload', () => {
         expect(payload.text).toContain('symbolický výklad minulého života');
     });
 
+    test('renders Tarot ano/ne activation email with its own return path and copy', async () => {
+        await sendEmail({
+            to: 'recipient@example.com',
+            template: 'activation_first_step_day0',
+            data: {
+                name: 'Jana',
+                source: 'tarot_yes_no_save_journal',
+                feature: 'tarot_yes_no',
+                destination: '/tarot-ano-ne.html?source=signup_activation&feature=tarot_yes_no'
+            }
+        });
+
+        const payload = sendMock.mock.calls[0][0];
+        expect(payload.html).toContain('https://yourdomain.com/tarot-ano-ne.html');
+        expect(payload.html).toContain('Tarot ano/ne');
+        expect(payload.html).toContain('ulož odpověď do Deníku výkladů');
+        expect(payload.html).not.toContain('denní horoskop');
+        expect(payload.text).toContain('Tarot ano/ne');
+    });
+
     test('renders shaman wheel activation email with tool-specific copy', async () => {
         await sendEmail({
             to: 'recipient@example.com',

@@ -708,7 +708,17 @@ test.describe('Login stránka', () => {
 
     test('obnovena registrace z primeho odkazu zachova a dokonci Stripe checkout', async ({ page }) => {
         let checkoutPayload = null;
+        let onboardingCompletionRequests = 0;
         await mockSuccessfulRegister(page, 'direct-checkout@example.com', { recoveredRegistration: true });
+
+        await page.route('**/api/auth/onboarding/complete', async (route) => {
+            onboardingCompletionRequests += 1;
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
 
         await page.route('**/api/payment/create-checkout-session', async (route) => {
             checkoutPayload = route.request().postDataJSON();
@@ -738,6 +748,7 @@ test.describe('Login stránka', () => {
             source: 'pricing_email',
             feature: 'premium_membership'
         }));
+        expect(onboardingCompletionRequests).toBe(0);
     });
 
     test('rychla navigace na auth flushne checkout auth handoff event', async ({ page }) => {
@@ -2098,6 +2109,19 @@ test.describe('Login stránka', () => {
     });
 
     test('registrace s feature kontextem presmeruje na aktivacni stranku', async ({ page }) => {
+        let onboardingPayload = null;
+        await page.route('**/api/auth/onboarding/complete', async (route) => {
+            onboardingPayload = route.request().postDataJSON();
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    success: true,
+                    activationLifecycleQueued: true,
+                    onboardingSkipped: true
+                })
+            });
+        });
         await mockSuccessfulRegister(page);
 
         await page.goto('/prihlaseni.html?mode=register&redirect=/profil.html&source=inline_paywall&feature=tarot');
@@ -2115,6 +2139,16 @@ test.describe('Login stránka', () => {
         expect(url.searchParams.get('feature')).toBe('tarot');
         expect(url.searchParams.get('entry_source')).toBe('inline_paywall');
         expect(url.searchParams.get('entry_feature')).toBe('tarot');
+        await expect.poll(() => onboardingPayload).toEqual(expect.objectContaining({
+            source: 'inline_paywall',
+            feature: 'tarot',
+            redirect: '/profil.html',
+            flow: 'quick',
+            destination: expect.stringContaining('/tarot.html?'),
+            skipped: true
+        }));
+        expect(onboardingPayload.destination).toContain('source=signup_activation');
+        expect(onboardingPayload.destination).toContain('entry_feature=tarot');
         const activationFlag = await page.evaluate(() => sessionStorage.getItem('post_auth_activation'));
         expect(activationFlag).toBeNull();
     });
@@ -2430,6 +2464,15 @@ test.describe('Login stránka', () => {
     });
 
     test('registrace bez aktivacniho kontextu presmeruje do onboardingu', async ({ page }) => {
+        let directCompletionRequests = 0;
+        await page.route('**/api/auth/onboarding/complete', async (route) => {
+            directCompletionRequests += 1;
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
         await mockSuccessfulRegister(page, 'onboarding@example.com');
 
         await page.goto('/prihlaseni.html?mode=register&redirect=/profil.html');
@@ -2446,6 +2489,7 @@ test.describe('Login stránka', () => {
         expect(onboardingUrl.pathname).toBe('/onboarding.html');
         await expect(page.locator('#step-2')).toHaveClass(/active/);
         await expect(page.locator('#quick-finish-onboarding-btn')).toBeVisible();
+        expect(directCompletionRequests).toBe(0);
     });
 
     test('nova registrace bez potvrzovaciho emailu projde cely onboarding', async ({ page }) => {

@@ -193,6 +193,13 @@ const ACTIVATION_FEATURES = {
     day1: 'Navazující karta pomůže rozlišit, co je pocit a co další krok.',
     day3: 'Pokud se téma vrací, ulož výklad a sleduj vzorec v profilu.'
   },
+  tarot_yes_no: {
+    label: 'Tarot ano/ne',
+    path: '/tarot-ano-ne.html',
+    day0: 'Vrať se ke své konkrétní otázce ano/ne a ulož odpověď do Deníku výkladů.',
+    day1: 'Polož jednu novou otázku, na kterou opravdu potřebuješ jasný první směr.',
+    day3: 'Porovnej uložené odpovědi a všimni si, které téma se v otázkách vrací.'
+  },
   tarot_multi_card: {
     label: 'vícekartový tarot',
     path: '/tarot.html',
@@ -308,6 +315,7 @@ const ACTIVATION_FEATURE_OFFER_KEY = {
   natalni_interpretace: 'personal_map',
   natal_chart: 'personal_map',
   tarot: 'personal_map',
+  tarot_yes_no: 'personal_map',
   tarot_multi_card: 'personal_map',
   tarot_celtic_cross: 'personal_map',
   daily_angel_card: 'personal_map',
