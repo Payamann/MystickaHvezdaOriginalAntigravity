@@ -122,8 +122,6 @@ const sensitiveLimiter = rateLimit({
 
 const IS_PRODUCTION = isProductionRuntime();
 const APP_URL = process.env.APP_URL || 'http://localhost:3001';
-const DEV_AUTO_LOGIN_AFTER_REGISTER = !IS_PRODUCTION && process.env.DEV_AUTO_LOGIN_AFTER_REGISTER !== 'false';
-const REQUIRE_EMAIL_VERIFICATION = process.env.AUTH_REQUIRE_EMAIL_VERIFICATION === 'true';
 
 const logDebug = (msg) => {
     if (IS_PRODUCTION) return; // Skip debug logging in production
@@ -270,13 +268,10 @@ async function completeRegistrationSession(authUser, req, res, {
     return res.json({
         success: true,
         recoveredRegistration,
-        devAutoLogin: DEV_AUTO_LOGIN_AFTER_REGISTER && REQUIRE_EMAIL_VERIFICATION,
-        emailVerificationSkipped: !REQUIRE_EMAIL_VERIFICATION,
+        emailVerificationSkipped: true,
         message: recoveredRegistration
             ? 'Registrace byla bezpečně dokončena. Byli jste přihlášeni.'
-            : (REQUIRE_EMAIL_VERIFICATION
-                ? 'Registrace uspela. V lokalnim vyvoji jste byli rovnou prihlaseni.'
-                : 'Registrace úspěšná. Byli jste přihlášeni.'),
+            : 'Registrace úspěšná. Byli jste přihlášeni.',
         user: {
             id: user.id,
             email: user.email,
@@ -438,28 +433,15 @@ router.post('/register', registerLimiter, async (req, res) => {
             },
         };
 
-        let data;
-        let error;
-
-        if (REQUIRE_EMAIL_VERIFICATION) {
-            // Supabase signUp sends the confirmation email when verification is enabled.
-            ({ data, error } = await supabase.auth.signUp({
-                email: validatedEmail,
-                password: validatedPassword,
-                options: {
-                    emailRedirectTo: APP_URL,
-                    data: userMetadata
-                }
-            }));
-        } else {
-            // Admin-created users are confirmed immediately and do not trigger signup email.
-            ({ data, error } = await supabase.auth.admin.createUser({
-                email: validatedEmail,
-                password: validatedPassword,
-                email_confirm: true,
-                user_metadata: userMetadata
-            }));
-        }
+        // Product contract: registration is immediate. The server creates an
+        // already-confirmed Supabase user, issues our session cookies below and
+        // never asks the customer to leave the conversion flow for an email link.
+        const { data, error } = await supabase.auth.admin.createUser({
+            email: validatedEmail,
+            password: validatedPassword,
+            email_confirm: true,
+            user_metadata: userMetadata
+        });
 
         if (error) {
             console.error('Supabase Auth Error:', error);
@@ -490,43 +472,31 @@ router.post('/register', registerLimiter, async (req, res) => {
             throw error;
         }
 
-        if (!REQUIRE_EMAIL_VERIFICATION && !data?.user?.id) {
+        if (!data?.user?.id) {
             throw new Error('Registration did not return a user.');
         }
 
-        if (data?.user?.id) {
-            const { error: consentRecordError } = await supabase
-                .from('user_consents')
-                .insert({
-                    user_id: data.user.id,
-                    terms_version: CURRENT_TERMS_VERSION,
-                    terms_accepted_at: acceptedAt,
-                    privacy_version: CURRENT_PRIVACY_VERSION,
-                    privacy_acknowledged_at: acceptedAt,
-                    source: 'registration'
-                });
+        const { error: consentRecordError } = await supabase
+            .from('user_consents')
+            .insert({
+                user_id: data.user.id,
+                terms_version: CURRENT_TERMS_VERSION,
+                terms_accepted_at: acceptedAt,
+                privacy_version: CURRENT_PRIVACY_VERSION,
+                privacy_acknowledged_at: acceptedAt,
+                source: 'registration'
+            });
 
-            if (consentRecordError) {
-                console.error('Registration consent persistence warning:', {
-                    userId: data.user.id,
-                    consentRecordError
-                });
-            }
-        }
-
-        if ((!REQUIRE_EMAIL_VERIFICATION || DEV_AUTO_LOGIN_AFTER_REGISTER) && data?.user?.id) {
-            return completeRegistrationSession(data.user, req, res, {
-                clientIp,
-                userAgent,
+        if (consentRecordError) {
+            console.error('Registration consent persistence warning:', {
+                userId: data.user.id,
+                consentRecordError
             });
         }
 
-        // 2. Success - Tell user to check email
-        // We DO NOT return a token here anymore. Login is blocked until verification.
-        res.json({
-            success: true,
-            message: 'Registrace \u00fasp\u011b\u0161n\u00e1. Zkontrolujte pros\u00edm sv\u016fj email pro potvrzen\u00ed \u00fa\u010dtu.',
-            requireEmailVerification: true
+        return completeRegistrationSession(data.user, req, res, {
+            clientIp,
+            userAgent,
         });
 
     } catch (e) {

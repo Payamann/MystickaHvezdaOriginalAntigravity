@@ -29,7 +29,7 @@ import { handleResendWebhook } from './resend-webhook.js';
 import mentorRoutes from './mentor.js';
 import adminRoutes from './admin.js';
 import crypto from 'crypto';
-import { initializeEmailQueueJob } from './jobs/email-queue.js';
+import { getEmailQueueRuntimeStatus, initializeEmailQueueJob } from './jobs/email-queue.js';
 import { getPragueHour, isAfterDailyHoroscopeSendWindow, isAfterDailyPushSendWindow } from './utils/send-window.js';
 import { initializeDataRetentionJob } from './jobs/data-retention.js';
 import { initializeOneTimeOrderReconciliationJob } from './jobs/one-time-order-reconciliation.js';
@@ -162,8 +162,12 @@ async function runWeeklyNewsletterJob(reason = 'scheduled') {
 }
 
 function getBackgroundJobStatus() {
+    const scheduledJobsEnabled = shouldRunScheduledJobs();
     return {
-        general: shouldRunScheduledJobs() ? 'enabled' : 'disabled',
+        general: scheduledJobsEnabled ? 'enabled' : 'disabled',
+        emailQueue: scheduledJobsEnabled
+            ? getEmailQueueRuntimeStatus()
+            : { status: 'disabled' },
         socialAgent: getSocialAgentSchedulerStatus(),
         dailyHoroscopeEmail: shouldRunDailyHoroscopeEmails() ? 'enabled' : 'disabled',
         dailyPushNotification: shouldRunDailyPushNotifications() ? 'enabled' : 'disabled',

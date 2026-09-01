@@ -12,6 +12,63 @@ import { isPremiumPlanType } from '../config/constants.js';
 let jobRunning = false;
 const ACTIVE_SUBSCRIPTION_STATUSES = new Set(['active', 'trialing', 'cancel_pending']);
 const TERMINAL_EMAIL_STATUSES = new Set(['sent', 'skipped', 'failed']);
+const DEFAULT_EMAIL_SEND_TIMEOUT_MS = 20_000;
+const emailQueueRuntime = {
+    running: false,
+    lastStartedAt: null,
+    lastFinishedAt: null,
+    lastBatchSize: 0,
+    lastSent: 0,
+    lastSkipped: 0,
+    lastFailed: 0,
+    lastErrorCode: null
+};
+
+export function getEmailQueueRuntimeStatus() {
+    return {
+        status: emailQueueRuntime.running
+            ? 'running'
+            : emailQueueRuntime.lastStartedAt
+                ? 'idle'
+                : 'waiting',
+        lastStartedAt: emailQueueRuntime.lastStartedAt,
+        lastFinishedAt: emailQueueRuntime.lastFinishedAt,
+        lastBatchSize: emailQueueRuntime.lastBatchSize,
+        lastSent: emailQueueRuntime.lastSent,
+        lastSkipped: emailQueueRuntime.lastSkipped,
+        lastFailed: emailQueueRuntime.lastFailed,
+        lastErrorCode: emailQueueRuntime.lastErrorCode
+    };
+}
+
+function getEmailSendTimeoutMs(value) {
+    const configured = Number.parseInt(value ?? process.env.EMAIL_SEND_TIMEOUT_MS ?? '', 10);
+    return Number.isFinite(configured) && configured > 0
+        ? configured
+        : DEFAULT_EMAIL_SEND_TIMEOUT_MS;
+}
+
+export async function sendQueuedEmailWithTimeout(sendQueuedEmail, emailConfig, options = {}, timeoutMs) {
+    const resolvedTimeoutMs = getEmailSendTimeoutMs(timeoutMs);
+    let timeoutId;
+    const timeoutPromise = new Promise((_, reject) => {
+        timeoutId = setTimeout(() => {
+            const error = new Error(`Email provider timed out after ${resolvedTimeoutMs}ms`);
+            error.code = 'EMAIL_SEND_TIMEOUT';
+            reject(error);
+        }, resolvedTimeoutMs);
+        timeoutId.unref?.();
+    });
+
+    try {
+        return await Promise.race([
+            Promise.resolve().then(() => sendQueuedEmail(emailConfig, options)),
+            timeoutPromise
+        ]);
+    } finally {
+        clearTimeout(timeoutId);
+    }
+}
 
 export class EmailQueuePersistenceError extends Error {
     constructor(operation, recordId, detail) {
@@ -300,6 +357,14 @@ export async function processEmailQueue(options = {}) {
     }
 
     jobRunning = true;
+    emailQueueRuntime.running = true;
+    emailQueueRuntime.lastStartedAt = new Date().toISOString();
+    emailQueueRuntime.lastFinishedAt = null;
+    emailQueueRuntime.lastBatchSize = 0;
+    emailQueueRuntime.lastSent = 0;
+    emailQueueRuntime.lastSkipped = 0;
+    emailQueueRuntime.lastFailed = 0;
+    emailQueueRuntime.lastErrorCode = null;
 
     try {
         // Get all pending emails that are due to be sent
@@ -312,13 +377,15 @@ export async function processEmailQueue(options = {}) {
             .limit(50); // Process max 50 per run to avoid overload
 
         if (error) {
+            emailQueueRuntime.lastErrorCode = 'queue_fetch_failed';
             console.error('[JOB] Error fetching email queue:', error.message);
             return;
         }
 
+        emailQueueRuntime.lastBatchSize = emails?.length || 0;
+
         if (!emails || emails.length === 0) {
             console.log('[JOB] No emails to process');
-            jobRunning = false;
             return;
         }
 
@@ -341,6 +408,7 @@ export async function processEmailQueue(options = {}) {
                     });
 
                     skippedCount++;
+                    emailQueueRuntime.lastSkipped = skippedCount;
                     console.log(`[JOB] ↷ Email skipped for premium user: ${template} to ${email_to}`);
                     continue;
                 }
@@ -353,6 +421,7 @@ export async function processEmailQueue(options = {}) {
                     });
 
                     skippedCount++;
+                    emailQueueRuntime.lastSkipped = skippedCount;
                     console.log(`[JOB] ↷ Email skipped by preferences (${preferenceCheck.reason}): ${template} to ${email_to}`);
                     continue;
                 }
@@ -364,11 +433,16 @@ export async function processEmailQueue(options = {}) {
                 const idempotencyKey = buildQueuedEmailIdempotencyKey(emailRecord, queuedData);
 
                 // Send email via Resend
-                const result = await sendQueuedEmail({
-                    to: email_to,
-                    template,
-                    data: queuedData
-                }, { idempotencyKey });
+                const result = await sendQueuedEmailWithTimeout(
+                    sendQueuedEmail,
+                    {
+                        to: email_to,
+                        template,
+                        data: queuedData
+                    },
+                    { idempotencyKey },
+                    options.sendTimeoutMs
+                );
 
                 // Mark as sent in database
                 await updateEmailQueueStatus(id, 'sent', {
@@ -377,10 +451,15 @@ export async function processEmailQueue(options = {}) {
                 });
 
                 successCount++;
+                emailQueueRuntime.lastSent = successCount;
                 console.log(`[JOB] ✓ Email sent: ${template} to ${email_to}`);
 
             } catch (emailErr) {
                 failureCount++;
+                emailQueueRuntime.lastFailed = failureCount;
+                if (emailErr?.code === 'EMAIL_SEND_TIMEOUT') {
+                    emailQueueRuntime.lastErrorCode = 'email_send_timeout';
+                }
 
                 if (emailErr instanceof EmailQueuePersistenceError) {
                     console.error('[JOB][OPERATIONAL] Email queue state persistence failed:', emailErr.message);
@@ -439,9 +518,12 @@ export async function processEmailQueue(options = {}) {
         console.log(`[JOB] Email queue processed: ${successCount} sent, ${skippedCount} skipped, ${failureCount} failed`);
 
     } catch (error) {
+        emailQueueRuntime.lastErrorCode = 'queue_run_failed';
         console.error('[JOB] Unexpected error in email queue processor:', error);
     } finally {
         jobRunning = false;
+        emailQueueRuntime.running = false;
+        emailQueueRuntime.lastFinishedAt = new Date().toISOString();
     }
 }
 

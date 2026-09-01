@@ -407,7 +407,7 @@ test.describe('Homepage', () => {
     test('homepage nabízí rychlé vstupy podle hlavních návštěvnických záměrů', async ({ page }) => {
         await expect(page.locator('#hero-explore-link')).toHaveAttribute('href', '#rychly-start');
         await expect(page.locator('[data-analytics-cta="homepage_quick_decision"]')).toHaveAttribute('href', /tarot-ano-ne\.html/);
-        await expect(page.locator('[data-analytics-cta="homepage_quick_love"]')).toHaveAttribute('href', /tarot-laska\.html/);
+        await expect(page.locator('[data-analytics-cta="homepage_quick_daily"]')).toHaveAttribute('href', /horoskopy\.html/);
         await expect(page.locator('[data-analytics-cta="homepage_quick_dream"]')).toHaveAttribute('href', /snar\.html/);
 
         await expect(page.locator('.hero__daily-preview')).toHaveCount(0);
@@ -501,7 +501,8 @@ test.describe('Homepage', () => {
     test('homepage copy nepouziva nedolozene NASA tvrzeni a nema duplicitni pricing nadpis', async ({ page }) => {
         const bodyText = await page.locator('body').innerText();
         expect(bodyText).not.toContain('efemeridami NASA');
-        expect(bodyText).toContain('Tvoje otázka.');
+        expect(bodyText).toContain('Najdi nový pohled na to, co právě řešíš.');
+        expect(bodyText).toContain('Tarot, horoskopy, numerologie, sny i osobní výklady');
         expect(bodyText).toContain('Nejdřív odpověď. Profil až když chceš navázat.');
         expect(bodyText).toContain('Jedna odpověď zdarma. Premium, když chceš jít do hloubky.');
         expect(bodyText).toContain('Otevřít celý ceník');
@@ -701,7 +702,7 @@ test.describe('Homepage', () => {
         await expect(page.locator('#kdd-name')).toHaveText('Hravost');
 
         const detailHref = await page.locator('#kdd-lexicon-link').getAttribute('href');
-        await expect(page.locator('#kdd-lexicon-link')).toHaveText(/Otevřít v Andělských kartách/);
+        await expect(page.locator('#kdd-lexicon-link')).toHaveText(/Andělské karty/);
         await expect(card).toHaveAttribute('aria-label', /Otevřít denní symbol Hravost v Andělských kartách/);
         expect(detailHref).toContain('andelske-karty.html');
         expect(detailHref).toContain('source=homepage_daily_card_detail');

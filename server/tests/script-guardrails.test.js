@@ -19,6 +19,17 @@ function extractStringMap(source, declarationName) {
 }
 
 describe('manual script guardrails', () => {
+    test('registration stays immediate and cannot be switched back to email verification by environment', () => {
+        const source = readScript('server/auth.js');
+
+        expect(source).toContain('supabase.auth.admin.createUser');
+        expect(source).toContain('email_confirm: true');
+        expect(source).toContain('emailVerificationSkipped: true');
+        expect(source).not.toContain('AUTH_REQUIRE_EMAIL_VERIFICATION');
+        expect(source).not.toContain('supabase.auth.signUp');
+        expect(source).not.toContain('requireEmailVerification: true');
+    });
+
     test('dry-run guarded scripts lazy-load live services', () => {
         const guardedScripts = [
             'server/scripts/send-newsletter.js',

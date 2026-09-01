@@ -178,6 +178,10 @@ describe('API Endpoint Tests', () => {
             expect(res.body.checks).toHaveProperty('db');
             expect(res.body.checks).toHaveProperty('ai');
             expect(res.body.features).toHaveProperty('pushNotifications');
+            expect(res.body.features.scheduledJobs).toHaveProperty('emailQueue');
+            expect(['disabled', 'waiting', 'idle', 'running']).toContain(
+                res.body.features.scheduledJobs.emailQueue.status
+            );
             expect(res.body.deployment).toHaveProperty('commit');
         });
 

@@ -10,6 +10,7 @@ import {
     parseQueuedEmailData,
     processEmailQueue,
     scheduleEmailLater,
+    sendQueuedEmailWithTimeout,
     shouldSkipQueuedEmailForPreferences,
     shouldSkipQueuedEmailForPremium,
     updateEmailQueueStatus
@@ -108,6 +109,19 @@ describe('email queue helpers', () => {
         expect(first.length).toBeLessThanOrEqual(256);
         expect(fallback).toBe(buildQueuedEmailIdempotencyKey({ id: 'queue-row-1', data: {} }));
         expect(fallback).not.toBe(buildQueuedEmailIdempotencyKey({ id: 'queue-row-2', data: {} }));
+    });
+
+    test('provider timeout releases a stuck queue item for retry', async () => {
+        const neverFinishes = jest.fn(() => new Promise(() => {}));
+
+        await expect(sendQueuedEmailWithTimeout(
+            neverFinishes,
+            { to: 'customer@example.cz', template: 'feature_weekly', data: {} },
+            { idempotencyKey: 'mhq_timeout_test' },
+            10
+        )).rejects.toMatchObject({
+            code: 'EMAIL_SEND_TIMEOUT'
+        });
     });
 
     test('queue forwards its deterministic idempotency key to sendEmail', async () => {

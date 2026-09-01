@@ -45,6 +45,7 @@ describe('Auth edge cases', () => {
 
         const { data: authRecord, error: authError } = await supabase.auth.admin.getUserById(res.body.user.id);
         expect(authError).toBeNull();
+        expect(authRecord.user.email_confirmed_at).toEqual(expect.any(String));
         expect(authRecord.user.user_metadata.legal_consent).toEqual(expect.objectContaining({
             gdpr: true,
             terms: true,
