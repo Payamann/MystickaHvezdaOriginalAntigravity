@@ -79,6 +79,7 @@
     const TAROT_YES_NO_RESULT_SOURCE = 'tarot_yes_no_result_sk';
     const TAROT_YES_NO_TOOL = 'tarot_yes_no_sk';
     const PENDING_READING_STORAGE_KEY = 'mh_pending_reading';
+    const TAROT_YES_NO_UPGRADE_CONTEXT_KEY = 'mh_tarot_yes_no_upgrade_context';
 
     function buildTarotYesNoUpgradeUrl(source = TAROT_YES_NO_RESULT_SOURCE) {
         const pricingUrl = new URL('/cenik.html', window.location.origin);
@@ -88,6 +89,16 @@
         pricingUrl.searchParams.set('entry_source', source);
         pricingUrl.searchParams.set('entry_feature', TAROT_YES_NO_FEATURE);
         return `${pricingUrl.pathname}${pricingUrl.search}`;
+    }
+
+    function buildTarotYesNoResumeUrl(source = TAROT_YES_NO_RESULT_SOURCE) {
+        const tarotUrl = new URL('/tarot.html', window.location.origin);
+        tarotUrl.searchParams.set('source', 'tarot_yes_no_premium_resume');
+        tarotUrl.searchParams.set('feature', TAROT_YES_NO_FEATURE);
+        tarotUrl.searchParams.set('entry_source', source);
+        tarotUrl.searchParams.set('entry_feature', TAROT_YES_NO_FEATURE);
+        tarotUrl.searchParams.set('resume', 'tarot_yes_no');
+        return `${tarotUrl.pathname}${tarotUrl.search}`;
     }
 
     async function trackTarotYesNoFunnelEvent(eventName, source, metadata = {}, feature = TAROT_YES_NO_FEATURE, planId = TAROT_YES_NO_PLAN_ID) {
@@ -123,24 +134,62 @@
         }
     }
 
+    function storeTarotYesNoUpgradeContext(result = lastResult, source = TAROT_YES_NO_RESULT_SOURCE) {
+        if (!result) return false;
+
+        try {
+            localStorage.setItem(TAROT_YES_NO_UPGRADE_CONTEXT_KEY, JSON.stringify({
+                question: result.question,
+                answerLabel: result.label,
+                answerKey: result.answerKey,
+                resultText: result.text,
+                cardId: null,
+                cardName: null,
+                locale: 'sk',
+                source,
+                createdAt: Date.now()
+            }));
+            return true;
+        } catch (error) {
+            console.warn('[Tarot ANO/NIE SK] Could not store upgrade context:', error.message);
+            return false;
+        }
+    }
+
     function startTarotYesNoUpgradeFlow(source = TAROT_YES_NO_RESULT_SOURCE) {
-        window.MH_ANALYTICS?.trackCTA?.(source, {
-            plan_id: TAROT_YES_NO_PLAN_ID,
+        const checkoutMetadata = {
+            entry_source: source,
+            entry_feature: TAROT_YES_NO_FEATURE
+        };
+
+        storeTarotYesNoUpgradeContext(lastResult, source);
+        storePendingTarotYesNoReading(lastResult, {
+            source,
             feature: TAROT_YES_NO_FEATURE
         });
 
-        void trackTarotYesNoFunnelEvent('paywall_cta_clicked', source, {
-            destination: '/cenik.html'
+        window.MH_ANALYTICS?.trackCTA?.(source, {
+            plan_id: TAROT_YES_NO_PLAN_ID,
+            feature: TAROT_YES_NO_FEATURE,
+            has_preserved_question: Boolean(lastResult?.question),
+            ...checkoutMetadata
         });
+
+        void trackTarotYesNoFunnelEvent('paywall_cta_clicked', source, {
+            destination: window.Auth?.isPremium?.() ? '/tarot.html' : '/cenik.html',
+            has_preserved_question: Boolean(lastResult?.question)
+        });
+
+        if (window.Auth?.isLoggedIn?.() && window.Auth?.isPremium?.()) {
+            window.location.href = buildTarotYesNoResumeUrl(source);
+            return;
+        }
 
         if (window.Auth?.startPlanCheckout) {
             window.Auth.startPlanCheckout(TAROT_YES_NO_PLAN_ID, {
                 source,
                 feature: TAROT_YES_NO_FEATURE,
-                metadata: {
-                    entry_source: source,
-                    entry_feature: TAROT_YES_NO_FEATURE
-                },
+                metadata: checkoutMetadata,
                 redirect: '/cenik.html',
                 authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
             });
@@ -230,7 +279,7 @@
         };
     }
 
-    function storePendingTarotYesNoReading(result = lastResult) {
+    function storePendingTarotYesNoReading(result = lastResult, options = {}) {
         const readingData = buildTarotYesNoReadingData(result);
         if (!readingData) return false;
 
@@ -238,8 +287,8 @@
             localStorage.setItem(PENDING_READING_STORAGE_KEY, JSON.stringify({
                 type: 'tarot',
                 data: readingData,
-                source: 'tarot_yes_no_save_journal_sk',
-                feature: TAROT_YES_NO_TOOL,
+                source: options.source || 'tarot_yes_no_save_journal_sk',
+                feature: options.feature || TAROT_YES_NO_TOOL,
                 createdAt: Date.now()
             }));
             return true;
@@ -576,10 +625,14 @@
     function revealTarotYesNoNextStep(answerKey, ans, question) {
         const nextStep = document.getElementById('tarot-yes-no-next-step');
         const answerBadge = document.getElementById('tarot-yes-no-next-answer');
+        const upgradeAnswer = document.getElementById('tarot-result-upgrade-answer');
         if (!nextStep) return;
 
         if (answerBadge) {
             answerBadge.textContent = ans.label.toLowerCase();
+        }
+        if (upgradeAnswer) {
+            upgradeAnswer.textContent = ans.label;
         }
 
         nextStep.dataset.answerKey = answerKey;
@@ -628,11 +681,22 @@
             if (link.dataset.tarotYesNoBound === 'true') return;
             link.dataset.tarotYesNoBound = 'true';
             link.addEventListener('click', () => {
+                const intent = link.dataset.tarotYesNoRegister;
+                const destination = link.getAttribute('href') || '';
+                const destinationUrl = new URL(destination, window.location.origin);
+                const destinationSource = destinationUrl.searchParams.get('source') || TAROT_YES_NO_RESULT_SOURCE;
+                const destinationFeature = destinationUrl.searchParams.get('feature') || TAROT_YES_NO_TOOL;
+                if (lastResult && (intent === 'save_reading' || intent === 'save_profile')) {
+                    storePendingTarotYesNoReading(lastResult, {
+                        source: destinationSource,
+                        feature: destinationFeature
+                    });
+                }
                 window.MH_ANALYTICS?.trackCTA?.('tarot_yes_no_save_profile_sk', {
-                    intent: link.dataset.tarotYesNoRegister,
-                    destination: link.getAttribute('href') || '',
+                    intent,
+                    destination,
                     source: TAROT_YES_NO_RESULT_SOURCE,
-                    feature: TAROT_YES_NO_FEATURE
+                    feature: destinationFeature
                 });
             });
         });

@@ -8,6 +8,8 @@ let TAROT_CARDS = {};
 // Convert to array for backward compatibility
 let TAROT_CARDS_ARRAY = [];
 const TAROT_PAYMENT_REASSURANCE = 'Cena se zobraz\u00ed ve Stripe p\u0159ed potvrzen\u00edm. Zru\u0161en\u00ed najdete v profilu.';
+const TAROT_YES_NO_UPGRADE_CONTEXT_KEY = 'mh_tarot_yes_no_upgrade_context';
+const TAROT_YES_NO_UPGRADE_CONTEXT_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
 function getTarotPlanForSpread(spreadType) {
     return spreadType === 'Celtic Cross' ? 'vip-majestrat' : 'pruvodce';
@@ -234,6 +236,76 @@ function getRequestedSpreadType() {
     return null;
 }
 
+function readTarotYesNoUpgradeContext() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('resume') !== 'tarot_yes_no') return null;
+
+    try {
+        const raw = localStorage.getItem(TAROT_YES_NO_UPGRADE_CONTEXT_KEY);
+        if (!raw) return null;
+
+        const context = JSON.parse(raw);
+        const createdAt = Number(context?.createdAt || 0);
+        const question = String(context?.question || '').trim().slice(0, 500);
+        const answerLabel = String(context?.answerLabel || '').trim().slice(0, 80);
+        if (!question || !answerLabel || !createdAt
+            || Date.now() - createdAt > TAROT_YES_NO_UPGRADE_CONTEXT_MAX_AGE_MS) {
+            localStorage.removeItem(TAROT_YES_NO_UPGRADE_CONTEXT_KEY);
+            return null;
+        }
+
+        return {
+            ...context,
+            question,
+            answerLabel,
+            resultText: String(context.resultText || '').trim().slice(0, 800),
+            cardName: String(context.cardName || '').trim().slice(0, 120),
+            locale: context.locale === 'sk' ? 'sk' : 'cs'
+        };
+    } catch (error) {
+        console.warn('[Tarot] Could not read ANO/NE continuation context:', error?.message || error);
+        try {
+            localStorage.removeItem(TAROT_YES_NO_UPGRADE_CONTEXT_KEY);
+        } catch {}
+        return null;
+    }
+}
+
+function renderTarotYesNoResumeContext(context) {
+    if (!context || document.getElementById('tarot-yes-no-resume-context')) return;
+
+    const spreadGrid = document.querySelector('.t-spread-grid');
+    if (!spreadGrid?.parentElement) return;
+
+    const isSlovak = context.locale === 'sk';
+    document.body.classList.add('tarot-yes-no-resume-active');
+    const banner = document.createElement('aside');
+    banner.id = 'tarot-yes-no-resume-context';
+    banner.className = 'tarot-yes-no-resume-context';
+    banner.setAttribute('aria-labelledby', 'tarot-yes-no-resume-title');
+
+    const eyebrow = document.createElement('span');
+    eyebrow.className = 'tarot-yes-no-resume-context__eyebrow';
+    eyebrow.textContent = isSlovak ? 'Tvoja otázka zostáva s tebou' : 'Tvoje otázka zůstává s tebou';
+
+    const title = document.createElement('h2');
+    title.id = 'tarot-yes-no-resume-title';
+    title.textContent = isSlovak ? 'Teraz doplň súvislosti troma kartami' : 'Teď doplň souvislosti třemi kartami';
+
+    const question = document.createElement('p');
+    question.className = 'tarot-yes-no-resume-context__question';
+    question.textContent = `„${context.question}“`;
+
+    const answer = document.createElement('p');
+    answer.className = 'tarot-yes-no-resume-context__answer';
+    answer.textContent = isSlovak
+        ? `Rýchla odpoveď: ${context.answerLabel}. Výklad je nastavený na tri karty.`
+        : `Rychlá odpověď: ${context.answerLabel}. Výklad je nastavený na tři karty.`;
+
+    banner.append(eyebrow, title, question, answer);
+    spreadGrid.parentElement.insertBefore(banner, spreadGrid);
+}
+
 function renderRequestedCardContext(cardName) {
     if (!cardName || document.getElementById('tarot-card-context')) return;
 
@@ -283,6 +355,8 @@ function initTarot() {
 
     const requestedCardName = getRequestedTarotCardName();
     renderRequestedCardContext(requestedCardName);
+    const tarotYesNoContext = readTarotYesNoUpgradeContext();
+    renderTarotYesNoResumeContext(tarotYesNoContext);
 
     // Create Results Container if not exists
     let resultsContainer = document.getElementById('tarot-results');
@@ -334,6 +408,15 @@ function initTarot() {
     });
 
     selectSpreadType(getRequestedSpreadType());
+    if (tarotYesNoContext) {
+        const threeCardButton = [...spreadButtons]
+            .find(button => button.dataset.spreadType === 'Tři karty');
+        if (threeCardButton) {
+            threeCardButton.textContent = tarotYesNoContext.locale === 'sk'
+                ? 'Nadviazať troma kartami'
+                : 'Navázat třemi kartami';
+        }
+    }
 
     spreadButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -439,6 +522,9 @@ function getTarotProfileSignupHtml(spreadType) {
 async function startReading(spreadType, isSoftGated = false) {
     const deckContainer = document.querySelector('.tarot-deck');
     if (!deckContainer) return;
+    const tarotYesNoContext = spreadType === 'Tři karty'
+        ? readTarotYesNoUpgradeContext()
+        : null;
 
     // First scroll to deck so user can see the shuffle animation
     deckContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -494,11 +580,19 @@ async function startReading(spreadType, isSoftGated = false) {
     // For Celtic Cross (10 cards), we might want a different grid or just standard grid-5 wrap
     const gridClass = numCards === 1 ? 'grid-1' : (numCards <= 3 ? `grid-${numCards}` : 'grid-5');
     const upgradeCopy = getTarotUpgradeCopy(spreadType);
+    const resumeContextHtml = tarotYesNoContext ? `
+        <div class="tarot-results-resume-context">
+            <span>${tarotYesNoContext.locale === 'sk' ? 'Výklad k tvojej otázke' : 'Výklad k tvé otázce'}</span>
+            <strong>„${escapeHtml(tarotYesNoContext.question)}“</strong>
+            <p>${tarotYesNoContext.locale === 'sk' ? 'Rýchla odpoveď' : 'Rychlá odpověď'}: ${escapeHtml(tarotYesNoContext.answerLabel)}</p>
+        </div>
+    ` : '';
 
     // Build initial layout (cards face down)
     resultsContainer.innerHTML = `
         <div class="text-center">
             <h3 class="mb-lg tarot-results__title">✨ Vaše vylosované karty ✨</h3>
+            ${resumeContextHtml}
             <div class="tarot-spread grid ${gridClass} tarot-results__spread">
                 ${drawnCards.map((card, index) => {
         const isLocked = isSoftGated && index > 0;
@@ -629,9 +723,22 @@ async function startReading(spreadType, isSoftGated = false) {
     interpretationsContainer.innerHTML = interpretationsHtml;
     interpretationsContainer.insertAdjacentHTML('afterend', getTarotProfileSignupHtml(spreadType));
 
+    if (tarotYesNoContext && !isSoftGated) {
+        try {
+            localStorage.removeItem(TAROT_YES_NO_UPGRADE_CONTEXT_KEY);
+        } catch {}
+        window.MH_ANALYTICS?.trackAction?.('tarot_yes_no_continuation_completed', {
+            source: 'tarot_yes_no_resume',
+            feature: 'tarot_multi_card',
+            spread_type: spreadType,
+            answer_label: tarotYesNoContext.answerLabel,
+            locale: tarotYesNoContext.locale
+        });
+    }
+
     // Trigger spiritual summary after DOM is updated
     if (numCards > 1 && !isSoftGated) {
-        setTimeout(() => generateEtherealSummary(drawnCards, spreadType), 500);
+        setTimeout(() => generateEtherealSummary(drawnCards, spreadType, tarotYesNoContext), 500);
     } else {
         // For single-card readings OR gated readings (Card 1 only), save
         // Actually, for gated reading we might not want to save to DB as a "reading" or maybe yes but with incomplete data?
@@ -677,7 +784,7 @@ async function startReading(spreadType, isSoftGated = false) {
  * @param {Array} cards - Array of drawn card objects
  * @param {String} spreadType - Type of spread used
  */
-async function generateEtherealSummary(cards, spreadType) {
+async function generateEtherealSummary(cards, spreadType, continuationContext = null) {
     const summaryContainer = document.getElementById('ethereal-tarot-summary');
     if (!summaryContainer) return;
 
@@ -718,7 +825,9 @@ async function generateEtherealSummary(cards, spreadType) {
             body: JSON.stringify({
                 spreadType,
                 cards: cardsData,
-                lang: currentLang
+                lang: continuationContext?.locale || currentLang,
+                question: continuationContext?.question || null,
+                previousAnswer: continuationContext?.answerLabel || null
             })
         });
 
@@ -735,7 +844,12 @@ async function generateEtherealSummary(cards, spreadType) {
                 const saveResult = await window.Auth.saveReading('tarot', {
                     spreadType,
                     cards: cardsData,
-                    response: data.response
+                    response: data.response,
+                    ...(continuationContext ? {
+                        question: continuationContext.question,
+                        previousAnswer: continuationContext.answerLabel,
+                        continuedFrom: 'tarot_yes_no'
+                    } : {})
                 });
 
                 // Store reading ID globally for favorite button

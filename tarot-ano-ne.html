@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" href="/fonts/local-fonts.css">
     <link rel="stylesheet" href="css/style.v2.min.css?v=12">
-    <link rel="stylesheet" href="css/pages/tarot-ano-ne.css?v=8">
+    <link rel="stylesheet" href="css/pages/tarot-ano-ne.css?v=9">
 
     <script type="application/ld+json">
 
@@ -149,70 +149,39 @@
 
                     <p id="result-next-step-text" class="result-next-step-text"></p>
 
+                    <aside class="tarot-result-upgrade-bridge" aria-labelledby="tarot-result-upgrade-title">
+                        <div class="tarot-result-upgrade-bridge__content">
+                            <span class="tarot-result-upgrade-bridge__eyebrow">Pokračuj se stejnou otázkou</span>
+                            <strong id="tarot-result-upgrade-title">Co stojí za odpovědí <span id="tarot-result-upgrade-answer">karty</span>?</strong>
+                            <p>Jedna karta dala směr. Tři karty doplní souvislosti, abys věděl, co s odpovědí udělat.</p>
+                            <ul class="tarot-result-upgrade-bridge__benefits">
+                                <li>co je skutečně za odpovědí</li>
+                                <li>co situaci právě ovlivňuje</li>
+                                <li>jaký další krok dává smysl</li>
+                            </ul>
+                        </div>
+                        <div class="tarot-result-upgrade-bridge__action">
+                            <a href="cenik.html?plan=pruvodce&amp;source=tarot_yes_no_result&amp;feature=tarot_multi_card&amp;entry_source=tarot_yes_no_result&amp;entry_feature=tarot_multi_card"
+                                class="btn btn--primary tarot-result-upgrade-bridge__button"
+                                data-tarot-yes-no-upgrade="tarot_yes_no_result"
+                                data-analytics-product="premium_membership">
+                                Navázat tříkartovým výkladem
+                            </a>
+                            <small>7 dní za 0 Kč, potom 199 Kč/měsíc. K aktivaci je potřeba karta. Zrušíš kdykoli v profilu.</small>
+                            <span class="tarot-result-upgrade-bridge__membership">V členství máš také neomezený tarot, týdenní a měsíční horoskopy a výklad natální karty.</span>
+                        </div>
+                    </aside>
+
                     <div class="mh-inline-d3ee132133">
 
-                        <!-- Pomocné akce k výsledku. Jediné primární CTA v panelu je
-                             e-mailový most níž; placený most zůstává menší textovou volbou. -->
+                        <!-- Bezplatný výsledek i jeho pomocné akce zůstávají kompletní.
+                             Jediná primární volba výš navazuje stejnou otázkou do tří karet. -->
                         <button id="btn-save-reading" class="btn btn--secondary" type="button">Uložit odpověď do deníku</button>
 
                         <button id="btn-reset" class="btn btn--secondary">🔄 Zeptat se znovu</button>
 
                         <button id="btn-save-result-image" class="btn btn--ghost" type="button">✨ Uložit obrázek</button>
 
-                    </div>
-
-                    <aside class="tarot-result-upgrade-bridge" aria-labelledby="tarot-result-upgrade-title">
-                        <div>
-                            <span class="tarot-result-upgrade-bridge__eyebrow">Když potřebuješ pochopit proč</span>
-                            <strong id="tarot-result-upgrade-title">Navazující tříkartový výklad</strong>
-                            <p>Jedna karta dala směr. Tři karty ukážou situaci, co ji ovlivňuje a jaký další krok dává smysl.</p>
-                        </div>
-                        <div class="tarot-result-upgrade-bridge__action">
-                            <a href="cenik.html?plan=pruvodce&amp;source=tarot_yes_no_result&amp;feature=tarot_multi_card&amp;entry_source=tarot_yes_no_result&amp;entry_feature=tarot_multi_card"
-                                data-tarot-yes-no-upgrade="tarot_yes_no_result"
-                                data-analytics-product="premium_membership">
-                                Odemknout tři karty
-                            </a>
-                            <small>Hvězdný Průvodce od 199 Kč/měsíc · cenu i podmínky uvidíš před platbou</small>
-                        </div>
-                    </aside>
-
-                    <!-- Most na denní horoskop e-mailem — nízkoprahová alternativa k registraci.
-                         Navazuje na moment, kdy uživatel právě dostal odpověď na dnešek. -->
-                    <div class="mh-email-bridge" data-analytics-source="tarot_yes_no_result">
-                        <p class="mh-email-bridge__title">Chceš vedení i zítra ráno?</p>
-                        <p class="mh-email-bridge__text">
-                            Dnešní odpověď máš. Denní horoskop pro tvoje znamení ti může chodit každé ráno e-mailem — zdarma a bez zakládání účtu.
-                        </p>
-                        <div class="mh-email-bridge__form">
-                            <input id="horoscope-email-input" type="email" autocomplete="email"
-                                aria-label="E-mailová adresa pro odběr denního horoskopu" placeholder="tvuj@email.cz"
-                                class="mh-email-bridge__input">
-                            <select id="horoscope-sign-select" aria-label="Vyber své znamení"
-                                class="mh-email-bridge__select">
-                                <option value="">— Vyber své znamení —</option>
-                                <option value="Beran">♈ Beran (21.3–20.4)</option>
-                                <option value="Býk">♉ Býk (21.4–20.5)</option>
-                                <option value="Blíženci">♊ Blíženci (21.5–21.6)</option>
-                                <option value="Rak">♋ Rak (22.6–22.7)</option>
-                                <option value="Lev">♌ Lev (23.7–22.8)</option>
-                                <option value="Panna">♍ Panna (23.8–22.9)</option>
-                                <option value="Váhy">♎ Váhy (23.9–22.10)</option>
-                                <option value="Štír">♏ Štír (23.10–21.11)</option>
-                                <option value="Střelec">♐ Střelec (22.11–21.12)</option>
-                                <option value="Kozoroh">♑ Kozoroh (22.12–19.1)</option>
-                                <option value="Vodnář">♒ Vodnář (20.1–18.2)</option>
-                                <option value="Ryby">♓ Ryby (19.2–20.3)</option>
-                            </select>
-                            <button id="horoscope-subscribe-btn" type="button"
-                                class="btn btn--primary mh-email-bridge__btn">✨ Chci ranní horoskop</button>
-                        </div>
-                        <p id="horoscope-subscribed-msg" class="mh-email-bridge__done" hidden>
-                            ✅ Hotovo — zítra ráno ti přijde první horoskop.
-                        </p>
-                        <p class="mh-email-bridge__note">
-                            Každé ráno, zdarma. Odhlásit se můžeš kdykoliv jedním klikem.
-                        </p>
                     </div>
 
                 </div>
@@ -263,7 +232,7 @@
                     <div class="tarot-yes-no-next-header">
                         <span class="section__badge">Další krok</span>
                         <h2 id="tarot-yes-no-next-title">Odpověď <span id="tarot-yes-no-next-answer">karty</span> si ulož, ať se k ní vrátíš.</h2>
-                        <p>Jedna karta ti dala směr. Ulož si výklad do profilu zdarma — vrátíš se k němu, až se situace pohne, a pár tipů e-mailem ti pomůže s odpovědí pracovat.</p>
+                        <p>Jedna karta ti dala směr. Ulož si výklad do profilu zdarma a vrať se k otázce, až se situace pohne.</p>
                     </div>
 
                     <div class="tarot-yes-no-next-grid tarot-yes-no-next-grid--single">
@@ -272,7 +241,7 @@
                             <ul class="tarot-yes-no-next-locked">
                                 <li>Otázka i karta zůstanou uložené v tvém profilu</li>
                                 <li>Vrať se k výkladu, až se situace pohne</li>
-                                <li>Uvítací tipy e-mailem — bez platební karty</li>
+                                <li>Profil je zdarma a bez platební karty</li>
                             </ul>
                             <span class="tarot-yes-no-next-cta">Založit účet zdarma</span>
                         </a>
@@ -372,9 +341,7 @@
 
     <script type="module" src="js/dist/main.js?v=10"></script>
 
-    <script src="js/dist/tarot-ano-ne.js?v=13" defer></script>
-    <script src="js/dist/share-result.js?v=1" defer></script>
-    <script src="js/dist/horoscope-subscribe.js?v=2" defer></script>
+    <script src="js/dist/tarot-ano-ne.js?v=14" defer></script>
 
 </body>
 

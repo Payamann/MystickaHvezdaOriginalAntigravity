@@ -366,11 +366,14 @@ router.post('/tarot', authenticateToken, requirePremiumSoft, aiLimiter, async (r
     }
 });
 
-function buildFallbackTarotSummaryResponse({ safeSpreadType, safeCards }) {
+function buildFallbackTarotSummaryResponse({ safeSpreadType, safeCards, safeQuestion, safePreviousAnswer }) {
     const cardNames = safeCards.map((card) => `${card.position}: ${card.name}`).join(', ');
+    const continuation = safeQuestion
+        ? ` Výklad navazuje na otázku „${safeQuestion}“${safePreviousAnswer ? ` a předchozí rychlou odpověď ${safePreviousAnswer}` : ''}.`
+        : '';
 
     return [
-        `Souhrn výkladu ${safeSpreadType}: ${cardNames}.`,
+        `Souhrn výkladu ${safeSpreadType}: ${cardNames}.${continuation}`,
         'Celek ukazuje cestu od prvního napětí k rozhodnutí, které potřebuje jednoduchost. Teď to pro tebe znamená hlavně zpomalit, pojmenovat skutečný problém a oddělit vlastní vliv od věcí, které už nemáš tlačit silou.',
         'Praktický krok na příštích 24 hodin: vrať se k pozici, která působí nejnepříjemněji, a napiš jednu větu, co po tobě chce změnit dnes. Tam výklad pravděpodobně ukazuje místo, kde máš největší vliv.'
     ].join('\n\n');
@@ -397,6 +400,8 @@ router.post('/tarot-summary', authenticateToken, requirePremiumSoft, aiLimiter, 
         }
 
         const safeSpreadType = String(spreadType || 'obecný').substring(0, 100);
+        const safeQuestion = String(req.body.question || '').trim().substring(0, 500);
+        const safePreviousAnswer = String(req.body.previousAnswer || '').trim().substring(0, 80);
         const safeCards = cards.map(c => {
             const pos = String(c?.position || '').substring(0, 100);
             const name = String(c?.name || '').substring(0, 100);
@@ -405,7 +410,10 @@ router.post('/tarot-summary', authenticateToken, requirePremiumSoft, aiLimiter, 
         });
         const cardContext = safeCards.map(c => `${c.position}: ${c.name} (${c.meaning})`).join(', ');
         const lang = req.body.lang || 'cs';
-        const message = `Typ výkladu: ${safeSpreadType}\n\nKarty v kontextu pozic:\n${cardContext}\n\nVytvoř krásný, hluboký souhrn tohoto výkladu.`;
+        const continuationContext = safeQuestion
+            ? `\n\nPůvodní otázka uživatele: ${safeQuestion}${safePreviousAnswer ? `\nPředchozí rychlá odpověď jedné karty: ${safePreviousAnswer}` : ''}`
+            : '';
+        const message = `Typ výkladu: ${safeSpreadType}\n\nKarty v kontextu pozic:\n${cardContext}${continuationContext}\n\nVytvoř krásný, hluboký souhrn tohoto výkladu. Pokud je uvedena původní otázka, odpověz přímo v jejím kontextu.`;
 
         const { lang: responseLang, systemPrompt } = buildOracleSystemPrompt(SYSTEM_PROMPTS.tarotSummary, lang);
         let fallback = false;
@@ -420,7 +428,12 @@ router.post('/tarot-summary', authenticateToken, requirePremiumSoft, aiLimiter, 
         } catch (aiError) {
             console.warn('Tarot Summary AI fallback used:', aiError.message);
             fallback = true;
-            response = buildFallbackTarotSummaryResponse({ safeSpreadType, safeCards });
+            response = buildFallbackTarotSummaryResponse({
+                safeSpreadType,
+                safeCards,
+                safeQuestion,
+                safePreviousAnswer
+            });
         }
 
         res.json({ success: true, response, fallback });

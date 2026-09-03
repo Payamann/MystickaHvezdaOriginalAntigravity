@@ -26,7 +26,7 @@
     <link rel="manifest" href="../manifest.json">
     <link rel="stylesheet" href="/fonts/local-fonts.css">
     <link rel="stylesheet" href="../css/style.v2.min.css?v=9">
-    <link rel="stylesheet" href="../css/pages/tarot-ano-ne.css?v=3">
+    <link rel="stylesheet" href="../css/pages/tarot-ano-ne.css?v=4">
 
     <script type="application/ld+json">
     {"@context":"https://schema.org","@type":"WebApplication","name":"Tarot áno nie zadarmo","description":"Online karty áno nie pre jednu konkrétnu otázku, okamžitú odpoveď a uloženie výkladu bez registrácie","applicationCategory":"EntertainmentApplication","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Domov","item":"https://www.mystickahvezda.cz/sk/index.html"},{"@type":"ListItem","position":2,"name":"Tarot áno nie","item":"https://www.mystickahvezda.cz/sk/tarot-ano-nie.html"}]}}
@@ -133,38 +133,53 @@
                     <h2 id="result-title" class="mh-inline-e18c901d36"></h2>
                     <p id="result-text" class="mh-inline-0e03fbe474"></p>
 
+                    <aside class="tarot-result-upgrade-bridge" aria-labelledby="tarot-result-upgrade-title">
+                        <div class="tarot-result-upgrade-bridge__content">
+                            <span class="tarot-result-upgrade-bridge__eyebrow">Pokračuj s rovnakou otázkou</span>
+                            <strong id="tarot-result-upgrade-title">Čo stojí za odpoveďou <span id="tarot-result-upgrade-answer">karty</span>?</strong>
+                            <p>Jedna karta dala smer. Tri karty doplnia súvislosti, aby si vedel, čo s odpoveďou urobiť.</p>
+                            <ul class="tarot-result-upgrade-bridge__benefits">
+                                <li>čo je skutočne za odpoveďou</li>
+                                <li>čo situáciu práve ovplyvňuje</li>
+                                <li>aký ďalší krok dáva zmysel</li>
+                            </ul>
+                        </div>
+                        <div class="tarot-result-upgrade-bridge__action">
+                            <a href="/cenik.html?plan=pruvodce&amp;source=tarot_yes_no_result_sk&amp;feature=tarot_multi_card&amp;entry_source=tarot_yes_no_result_sk&amp;entry_feature=tarot_multi_card"
+                               class="btn btn--primary tarot-result-upgrade-bridge__button"
+                               data-tarot-yes-no-upgrade="tarot_yes_no_result_sk"
+                               data-analytics-product="premium_membership">Nadviazať trojkartovým výkladom</a>
+                            <small>7 dní za 0 Kč, potom 199 Kč mesačne. Na aktiváciu je potrebná karta. Zrušíš kedykoľvek v profile.</small>
+                            <span class="tarot-result-upgrade-bridge__membership">V členstve máš aj neobmedzený tarot, týždenné a mesačné horoskopy a výklad natálnej karty.</span>
+                        </div>
+                    </aside>
+
                     <div class="mh-inline-d3ee132133">
                         <button id="btn-reset" class="btn btn--secondary">🔄 Opýtať sa znova</button>
                         <button id="btn-save-reading" class="btn btn--secondary" type="button">Uložiť do denníka</button>
                         <button id="btn-save-result-image" class="btn btn--ghost" type="button">✨ Uložiť obrázok</button>
-                    </div>
-
-                    <div class="tarot-yes-no-profile-cta" id="tarot-yes-no-profile-cta">
-                        <div>
-                            <strong>Chceš sa k výkladom vracať?</strong>
-                            <span>Profil zadarmo udrží otázky, odpovede a poznámky pohromade. Bez platobnej karty.</span>
-                        </div>
-                        <a href="/prihlaseni.html?mode=register&source=tarot_yes_no_save_journal_sk&feature=tarot_yes_no&entry_source=tarot_yes_no_save_journal_sk&entry_feature=tarot_yes_no"
-                           class="btn btn--secondary"
-                           data-tarot-yes-no-register="save_profile">Vytvoriť profil zadarmo</a>
                     </div>
                 </div>
 
                 <section id="tarot-yes-no-next-step" class="tarot-yes-no-next-step" aria-labelledby="tarot-yes-no-next-title" hidden>
                     <div class="tarot-yes-no-next-header">
                         <span class="section__badge">Ďalší krok</span>
-                        <h2 id="tarot-yes-no-next-title">Odpoveď <span id="tarot-yes-no-next-answer">karty</span> je hotová. Chceš vidieť aj súvislosti?</h2>
-                        <p>Rýchly výsledok zostáva zadarmo. Ak potrebuješ pochopiť prečo, čo situáciu ovplyvňuje a aký krok dáva zmysel, môžeš pokračovať troma kartami.</p>
+                        <h2 id="tarot-yes-no-next-title">Odpoveď <span id="tarot-yes-no-next-answer">karty</span> si ulož, aby si sa k nej mohol vrátiť.</h2>
+                        <p>Jedna karta ti dala smer. Ulož si výklad do profilu zadarmo a vráť sa k otázke, keď sa situácia pohne.</p>
                     </div>
 
                     <div class="tarot-yes-no-next-grid tarot-yes-no-next-grid--single">
-                        <a class="tarot-yes-no-next-card tarot-yes-no-next-card--primary tarot-yes-no-next-card--hero" href="/cenik.html?plan=pruvodce&amp;source=tarot_yes_no_result_sk&amp;feature=tarot_multi_card&amp;entry_source=tarot_yes_no_result_sk&amp;entry_feature=tarot_multi_card" data-tarot-yes-no-upgrade="tarot_yes_no_result_sk">
-                            <strong>Pozrieť sa za odpoveď troma kartami</strong>
-                            <span>Situácia, čo ju ovplyvňuje a praktický ďalší krok. Dnes 0 Kč, potom 199 Kč mesačne; zrušíš kedykoľvek.</span>
-                            <span class="tarot-yes-no-next-cta">Začať 7 dní za 0 Kč</span>
+                        <a class="tarot-yes-no-next-card tarot-yes-no-next-card--primary tarot-yes-no-next-card--hero" href="/prihlaseni.html?mode=register&amp;source=tarot_yes_no_save_journal_sk&amp;feature=tarot_yes_no&amp;redirect=/profil.html&amp;entry_source=tarot_yes_no_save_journal_sk&amp;entry_feature=tarot_yes_no" data-tarot-yes-no-register="save_reading">
+                            <strong>Ulož si výklad — účet zadarmo</strong>
+                            <ul class="tarot-yes-no-next-locked">
+                                <li>Otázka aj odpoveď zostanú v tvojom profile</li>
+                                <li>Vráť sa k výkladu, keď sa situácia pohne</li>
+                                <li>Profil je zadarmo a bez platobnej karty</li>
+                            </ul>
+                            <span class="tarot-yes-no-next-cta">Vytvoriť účet zadarmo</span>
                         </a>
                     </div>
-                    <p class="tarot-yes-no-next-alt">Alebo pokračuj zadarmo: <a href="tarot.html?source=tarot_yes_no_intent_sk&amp;feature=tarot" data-tarot-yes-no-intent="one_card">jedna karta</a> · <a href="andelske-karty.html?source=tarot_yes_no_intent_sk&amp;feature=angel_card_deep" data-tarot-yes-no-intent="angel_card_deep">anjelské karty</a></p>
+                    <p class="tarot-yes-no-next-alt">Alebo si polož ďalšiu otázku zadarmo: <a href="tarot.html?source=tarot_yes_no_intent_sk&amp;feature=tarot" data-tarot-yes-no-intent="one_card">jedna karta</a> · <a href="andelske-karty.html?source=tarot_yes_no_intent_sk&amp;feature=angel_card_deep" data-tarot-yes-no-intent="angel_card_deep">anjelské karty</a></p>
                 </section>
 
                 <!-- Info sekcia -->
@@ -257,7 +272,6 @@
     
     <script src="../js/dist/analytics.js" defer></script>
     <script type="module" src="../js/dist/main.js"></script>
-    <script src="../js/dist/tarot-ano-nie-sk.js?v=2" defer></script>
-    <script src="../js/dist/share-result.js?v=1" defer></script>
+    <script src="../js/dist/tarot-ano-nie-sk.js?v=3" defer></script>
 </body>
 </html>

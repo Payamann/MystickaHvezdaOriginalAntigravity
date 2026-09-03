@@ -263,7 +263,7 @@
 
         .result-panel {
 
-            max-width: 600px;
+            max-width: 700px;
 
             margin: 0 auto;
 
@@ -608,15 +608,20 @@ html body .mh-inline-418361a818 { color:rgba(255,255,255,0.65);line-height:1.8; 
 }
 
 .tarot-result-upgrade-bridge {
+    position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(220px, 0.72fr);
-    gap: 1rem;
+    grid-template-columns: minmax(0, 1fr) minmax(250px, 0.68fr);
+    gap: 1.5rem;
     align-items: center;
-    margin: 1.35rem 0;
-    padding: 1.1rem 1.2rem;
-    border: 1px solid rgba(212, 175, 55, 0.34);
-    border-radius: 14px;
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.11), rgba(109, 67, 188, 0.12));
+    overflow: hidden;
+    margin: 1.5rem 0 0;
+    padding: 1.4rem;
+    border: 1px solid rgba(235, 205, 104, 0.44);
+    border-radius: 18px;
+    background:
+        radial-gradient(circle at 92% 10%, rgba(212, 175, 55, 0.16), transparent 34%),
+        linear-gradient(135deg, rgba(49, 29, 80, 0.9), rgba(16, 14, 38, 0.94));
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.05);
     text-align: left;
 }
 
@@ -635,8 +640,8 @@ html body .mh-inline-418361a818 { color:rgba(255,255,255,0.65);line-height:1.8; 
     display: block;
     color: #fff7d6;
     font-family: 'Cinzel', serif;
-    font-size: 1.05rem;
-    line-height: 1.35;
+    font-size: clamp(1.08rem, 2vw, 1.32rem);
+    line-height: 1.3;
 }
 
 .tarot-result-upgrade-bridge p {
@@ -646,39 +651,72 @@ html body .mh-inline-418361a818 { color:rgba(255,255,255,0.65);line-height:1.8; 
     line-height: 1.58;
 }
 
+.tarot-result-upgrade-bridge__benefits {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0.85rem 0 0;
+    padding: 0;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.86rem;
+    line-height: 1.45;
+    list-style: none;
+}
+
+.tarot-result-upgrade-bridge__benefits li {
+    position: relative;
+    padding-left: 1.35rem;
+}
+
+.tarot-result-upgrade-bridge__benefits li::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #eed271;
+    content: '✓';
+    font-weight: 800;
+}
+
 .tarot-result-upgrade-bridge__action {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 0.55rem;
+    gap: 0.6rem;
 }
 
-.tarot-result-upgrade-bridge__action a {
+.tarot-result-upgrade-bridge__button {
     display: inline-flex;
-    min-height: 44px;
+    width: 100%;
+    min-height: 50px;
     align-items: center;
     justify-content: center;
-    padding: 0.72rem 0.9rem;
-    border: 1px solid rgba(230, 200, 95, 0.58);
-    border-radius: 10px;
-    color: #f6df87;
+    padding: 0.82rem 1rem;
+    font-size: 0.9rem;
     font-weight: 800;
+    letter-spacing: 0.01em;
     line-height: 1.35;
     text-align: center;
+    text-transform: none;
     text-decoration: none;
-    transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+    box-shadow: 0 10px 24px rgba(212, 175, 55, 0.18);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
-.tarot-result-upgrade-bridge__action a:hover,
-.tarot-result-upgrade-bridge__action a:focus-visible {
+.tarot-result-upgrade-bridge__button:hover,
+.tarot-result-upgrade-bridge__button:focus-visible {
     transform: translateY(-1px);
-    border-color: #f0d474;
-    background: rgba(212, 175, 55, 0.1);
+    box-shadow: 0 14px 30px rgba(212, 175, 55, 0.25);
 }
 
 .tarot-result-upgrade-bridge__action small {
     color: rgba(255, 255, 255, 0.56);
     font-size: 0.75rem;
+    line-height: 1.45;
+    text-align: center;
+}
+
+.tarot-result-upgrade-bridge__membership {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.78rem;
     line-height: 1.45;
     text-align: center;
 }
@@ -1152,7 +1190,13 @@ html body .mh-inline-0fe834f6fb {
 
     .tarot-result-upgrade-bridge {
         grid-template-columns: 1fr;
-        padding: 1rem;
+        gap: 1.1rem;
+        padding: 1.1rem;
+    }
+
+    .tarot-result-upgrade-bridge__action small,
+    .tarot-result-upgrade-bridge__membership {
+        text-align: left;
     }
 
     .tarot-yes-no-related-card {
@@ -1178,7 +1222,7 @@ html body .mh-inline-0fe834f6fb {
     }
 
     .tarot-card {
-        width: clamp(56px, 15vw, 80px);
+        width: clamp(60px, 15vw, 80px);
         height: clamp(92px, 25vw, 130px);
     }
 

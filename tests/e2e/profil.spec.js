@@ -50,7 +50,7 @@ test.describe('Profil stránka', () => {
         await expect(page.locator('#profile-greeting')).toContainText('výklady na jednom místě');
         await expect(gate).toContainText('Takhle vypadá tvůj deník výkladů');
         await expect(gate).toContainText('Bez přihlášení nic neukládáme do osobního profilu');
-        await expect(page.locator('script[src*="/js/dist/profile/dashboard.js"]').first()).toHaveAttribute('src', /dashboard\.js\?v=21/);
+        await expect(page.locator('script[src*="/js/dist/profile/dashboard.js"]').first()).toHaveAttribute('src', /dashboard\.js\?v=22/);
 
         const previewItems = gate.locator('.profile-guest-preview__item');
         await expect(previewItems).toHaveCount(2);
@@ -419,6 +419,39 @@ test.describe('Profil aktivace', () => {
             expect(new URL(page.url()).searchParams.has('payment')).toBe(false);
         });
     }
+
+    test('platba z tarotu ano ne nabídne návrat ke stejné otázce', async ({ page }) => {
+        await mockLoggedInProfile(page, {
+            user: { subscription_status: 'premium_monthly' },
+            subscription: { planType: 'premium_monthly', status: 'active', canCancel: true }
+        });
+        await page.addInitScript(() => {
+            localStorage.setItem('mh_tarot_yes_no_upgrade_context', JSON.stringify({
+                question: 'Mám se dnes ozvat?',
+                answerLabel: 'ANO',
+                answerKey: 'ano',
+                resultText: 'Směr je otevřený.',
+                cardName: 'Hvězda',
+                locale: 'cs',
+                source: 'tarot_yes_no_result',
+                createdAt: Date.now()
+            }));
+        });
+
+        await page.goto('/profil.html?payment=success&plan=pruvodce&session_id=cs_test_tarot_resume&source=tarot_yes_no_result&feature=tarot_multi_card&entry_source=tarot_yes_no_result&entry_feature=tarot_multi_card');
+        await waitForPageReady(page);
+
+        const firstAction = page.locator('#premium-activation-card [data-activation-target]').first();
+        await expect(firstAction).toContainText('Navázat na svou otázku třemi kartami');
+        await expect(firstAction).toContainText('původní otázka i odpověď zůstaly uložené');
+
+        const href = new URL(await firstAction.getAttribute('href'), BASE_URL);
+        expect(href.pathname).toBe('/tarot.html');
+        expect(href.searchParams.get('feature')).toBe('tarot_multi_card');
+        expect(href.searchParams.get('resume')).toBe('tarot_yes_no');
+        expect(href.searchParams.get('card')).toBe('Hvězda');
+        expect(href.searchParams.get('entry_source')).toBe('tarot_yes_no_result');
+    });
 
     test('analytics outage neblokuje premium aktivaci po uspesne platbe', async ({ page }) => {
         await mockLoggedInProfile(page, {

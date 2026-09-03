@@ -26,6 +26,8 @@ const SIGNUP_INTENT_MAX_AGE_MS = 14 * 24 * 60 * 60 * 1000;
 const PENDING_READING_KEY = 'mh_pending_reading';
 const PENDING_READING_FOCUS_KEY = 'mh_pending_reading_focus';
 const PENDING_READING_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+const TAROT_YES_NO_UPGRADE_CONTEXT_KEY = 'mh_tarot_yes_no_upgrade_context';
+const TAROT_YES_NO_UPGRADE_CONTEXT_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 let ritualMemoryViewTracked = false;
 let dailyGuidanceViewTracked = false;
 let activationChecklistViewTracked = false;
@@ -114,6 +116,32 @@ function readPendingProfileReading() {
         console.warn('[Profile] Could not read pending reading:', error?.message || error);
         try {
             localStorage.removeItem(PENDING_READING_KEY);
+        } catch {}
+        return null;
+    }
+}
+
+function readTarotYesNoUpgradeContext() {
+    try {
+        const raw = localStorage.getItem(TAROT_YES_NO_UPGRADE_CONTEXT_KEY);
+        if (!raw) return null;
+
+        const context = JSON.parse(raw);
+        const createdAt = Number(context?.createdAt || 0);
+        if (!context || typeof context !== 'object'
+            || !String(context.question || '').trim()
+            || !String(context.answerLabel || '').trim()
+            || !createdAt
+            || Date.now() - createdAt > TAROT_YES_NO_UPGRADE_CONTEXT_MAX_AGE_MS) {
+            localStorage.removeItem(TAROT_YES_NO_UPGRADE_CONTEXT_KEY);
+            return null;
+        }
+
+        return context;
+    } catch (error) {
+        console.warn('[Profile] Could not read Tarot ANO/NE upgrade context:', error?.message || error);
+        try {
+            localStorage.removeItem(TAROT_YES_NO_UPGRADE_CONTEXT_KEY);
         } catch {}
         return null;
     }
@@ -953,16 +981,26 @@ function getPaymentReturnDestination(sign, paymentContext) {
     const config = feature ? getGrowthSignupIntentConfig(feature) : null;
     if (!config) return null;
 
+    const tarotYesNoContext = feature === 'tarot_multi_card'
+        ? readTarotYesNoUpgradeContext()
+        : null;
+
     return {
         href: buildAttributedRelativeHref(getManifestSignupHref(config, sign), {
             source: 'profile_payment_return',
             feature: config.feature,
             entry_source: paymentContext.source || paymentContext.entrySource,
             entry_feature: feature,
-            plan: paymentContext.planId
+            plan: paymentContext.planId,
+            resume: tarotYesNoContext ? 'tarot_yes_no' : null,
+            card: paymentContext.card || tarotYesNoContext?.cardName || null
         }),
-        title: 'Pokračovat tam, kde platba začala',
-        description: config.description(sign),
+        title: tarotYesNoContext
+            ? 'Navázat na svou otázku třemi kartami'
+            : 'Pokračovat tam, kde platba začala',
+        description: tarotYesNoContext
+            ? 'Tvoje původní otázka i odpověď zůstaly uložené. Teď k nim doplň souvislosti a další krok.'
+            : config.description(sign),
         feature: config.feature
     };
 }

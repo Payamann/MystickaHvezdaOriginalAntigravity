@@ -179,6 +179,8 @@ describe('Oracle AI fallbacks', () => {
             .set('Cookie', `auth_token=${token}`)
             .send({
                 spreadType: 'three-card',
+                question: 'Mám se dnes ozvat?',
+                previousAnswer: 'ANO',
                 cards: [
                     { position: 'past', name: 'The Sun', meaning: 'clarity' },
                     { position: 'present', name: 'The Moon', meaning: 'uncertainty' },
@@ -190,6 +192,8 @@ describe('Oracle AI fallbacks', () => {
         expect(res.body.success).toBe(true);
         expect(res.body.fallback).toBe(true);
         expect(res.body.response).toEqual(expect.stringContaining('The Moon'));
+        expect(res.body.response).toEqual(expect.stringContaining('Mám se dnes ozvat?'));
+        expect(res.body.response).toEqual(expect.stringContaining('ANO'));
         expect(res.body.response).toEqual(expect.stringContaining('Teď to pro tebe znamená'));
         expect(res.body.response).toEqual(expect.stringContaining('Praktický krok na příštích 24 hodin'));
     });

@@ -78,16 +78,14 @@
     }
 
     // Konverzní CTA, které mají zůstat POD tlačítkem sdílení (ne nad ním).
-    // `.mh-email-bridge` je tu proto, že je to na výsledkových stránkách hlavní
-    // konverzní plocha — bez něj by tlačítko sdílení spadlo na konec kontejneru,
-    // tedy POD sběr e-mailů (tarot ano/ne žádné jiné trailing CTA nemá).
+    // U tarotu ano/ne je to kontextové pokračování stejné otázky třemi kartami.
     const TRAILING_CTA_SELECTORS = [
+        '.tarot-result-upgrade-bridge',
         '.tarot-profile-cta',
         '.tarot-yes-no-profile-cta',
         '[class*="profile-cta"]',
         '[class*="signup-cta"]',
-        '[class*="register-cta"]',
-        '.mh-email-bridge'
+        '[class*="register-cta"]'
     ];
 
     function findTrailingCta(container) {
