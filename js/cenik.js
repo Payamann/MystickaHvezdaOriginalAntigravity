@@ -300,38 +300,19 @@ function updatePricingCopy() {
     const heroTitle = document.querySelector('.section--hero .hero__title');
     const heroSubtitle = document.querySelector('.section--hero .hero__subtitle');
     const heroTrustBadge = document.querySelector('.hero__trust-badge');
-    const pricingCards = document.querySelectorAll('.card--pricing');
-    const premiumReasonsBadge = Array.from(document.querySelectorAll('.section__badge'))
-        .find((badge) => badge.textContent?.includes('Proč lidé'));
-    const premiumReasonsTitle = premiumReasonsBadge?.closest('.section__header')?.querySelector('.section__title');
+    const guideCard = document.querySelector('[data-price-plan="pruvodce"]')?.closest('.card--pricing');
+    const advancedCard = document.querySelector('[data-price-plan="osviceni"]')?.closest('.card--pricing');
 
     if (heroTitle) {
-        heroTitle.innerHTML = 'Začni zdarma. <span class="text-gradient">Plať až za hlubší osobní vedení.</span>';
+        heroTitle.innerHTML = 'Hlubší výklady. <span class="text-gradient">Všechny na jednom místě.</span>';
     }
 
     if (heroSubtitle) {
-        heroSubtitle.textContent = 'Bezplatný účet ti ukáže první hodnotu. Hvězdný Průvodce odemkne plné výklady, historii, osobní profil a týdenní i měsíční vedení pro pravidelný návrat.';
+        heroSubtitle.textContent = 'Tarot, horoskopy, natální karta, numerologie i historie tvých výkladů. Začni 7 dní za 0 Kč a pokračuj jen tehdy, když ti členství dává smysl.';
     }
 
     if (heroTrustBadge) {
-        heroTrustBadge.innerHTML = '<span>Účet zdarma bez karty</span><span>|</span><span>7denní trial s kartou</span><span>|</span><span>Zrušíš kdykoliv</span>';
-    }
-
-    const freeCard = pricingCards[0];
-    const guideCard = pricingCards[1];
-
-    if (freeCard) {
-        const freeDescription = freeCard.querySelector('.card__text');
-        const freeFeatures = freeCard.querySelectorAll('.card__features li');
-        const freeCta = freeCard.querySelector('.btn');
-
-        if (freeDescription) freeDescription.textContent = 'Pro první seznámení bez závazku';
-        setFeatureText(freeFeatures[2], 'Vyzkoušej si, co ti sedne nejvíc');
-        if (freeCta) {
-            freeCta.textContent = 'Začít zdarma';
-            freeCta.href = 'prihlaseni.html?mode=register&redirect=/horoskopy.html&source=pricing_free_cta&feature=daily_guidance';
-            freeCta.dataset.pricingFreeCta = 'true';
-        }
+        heroTrustBadge.innerHTML = '<span>Dnes 0 Kč</span><span aria-hidden="true">•</span><span>potom od 199 Kč/měsíc</span><span aria-hidden="true">•</span><span>zrušíš kdykoliv v profilu</span>';
     }
 
     if (guideCard) {
@@ -339,16 +320,22 @@ function updatePricingCopy() {
         const guideFeatures = guideCard.querySelectorAll('.card__features li');
         const guideCta = guideCard.querySelector('.plan-checkout-btn');
 
-        if (guideDescription) guideDescription.textContent = 'Pro pravidelné používání, historii a hlubší osobní kontext';
-        setFeatureText(guideFeatures[0], 'Neomezené výklady a každodenní vedení bez čekání');
-        setFeatureText(guideFeatures[1], 'Plný rozbor natální karty, numerologie a vztahů');
-        setFeatureText(guideFeatures[2], 'Historie výkladů a osobní profil pro pravidelný návrat');
-        setFeatureText(guideFeatures[3], 'Hodnota roste hlavně při opakovaném návratu a uložené historii');
+        if (guideDescription) guideDescription.textContent = 'Vše podstatné pro osobní vedení a návrat k tomu, co právě řešíš.';
+        setFeatureText(guideFeatures[0], 'Neomezený tarot a další hlubší výklady');
+        setFeatureText(guideFeatures[1], 'Týdenní a měsíční horoskopy');
+        setFeatureText(guideFeatures[2], 'Výklad natální karty a numerologie');
+        setFeatureText(guideFeatures[3], 'Historie, souvislosti a osobní návratový rituál');
         if (guideCta) guideCta.textContent = 'Začít 7 dní za 0 Kč';
     }
 
-    if (premiumReasonsTitle) {
-        premiumReasonsTitle.textContent = 'Neplatíte za další ikonky. Platíte za historii, souvislosti a pravidelný návrat k tomu, co řešíte.';
+    if (advancedCard) {
+        const advancedDescription = advancedCard.querySelector('.card__text');
+        const advancedFeatures = advancedCard.querySelectorAll('.card__features li');
+
+        if (advancedDescription) advancedDescription.textContent = 'Pro chvíli, kdy už využiješ i astrokartografii a další pokročilé vrstvy.';
+        setFeatureText(advancedFeatures[0], 'Vše z Hvězdného Průvodce');
+        setFeatureText(advancedFeatures[1], 'Astrokartografie a pokročilé analýzy');
+        setFeatureText(advancedFeatures[2], 'Přednostní přístup k novým funkcím');
     }
 }
 
@@ -391,7 +378,7 @@ function setPrices(billing = currentBilling) {
         }
         if (trialNote) {
             const renewalPeriod = billing === 'yearly' ? 'rok' : 'měsíc';
-            trialNote.textContent = `K aktivaci je potřeba karta. Dnes 0 Kč; po 7 dnech ${planConfig.amount}/${renewalPeriod}, pokud předtím nezrušíte.`;
+            trialNote.textContent = `Dnes 0 Kč. Po 7 dnech ${planConfig.amount}/${renewalPeriod}, pokud předtím nezrušíš.`;
         }
     });
 
@@ -825,11 +812,16 @@ function renderRecommendationBanner(context) {
     const heroSubtitle = document.querySelector('.section--hero .hero__subtitle');
     if (!heroSubtitle) return;
 
-    const planMeta = PLAN_META[context.recommendedPlan];
-    if (!planMeta) return;
-
     const existing = document.getElementById('pricing-plan-recommendation');
     if (existing) existing.remove();
+
+    // The generic pricing page already recommends Hvezdny Pruvodce in the
+    // plan grid. Repeat the banner only when it can preserve context from a
+    // feature, campaign or interrupted checkout.
+    if (!shouldShowPreviewDestination(context)) return;
+
+    const planMeta = PLAN_META[context.recommendedPlan];
+    if (!planMeta) return;
 
     const banner = document.createElement('div');
     const hasVisiblePlanCard = !!document.querySelector(`.plan-checkout-btn[data-plan="${context.recommendedPlan}"]`);

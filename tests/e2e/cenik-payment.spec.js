@@ -49,7 +49,7 @@ test.describe('Ceník — platební tlačítka', () => {
         await expect(btns).toHaveCount(2);
         await expect(btns.first()).toContainText('Začít 7 dní za 0 Kč');
         await expect(btns.last()).toContainText('Začít 7 dní za 0 Kč');
-        await expect(page.locator('.pricing-trial-note').first()).toContainText('K aktivaci je potřeba karta');
+        await expect(page.locator('.pricing-card-note').first()).toContainText('K aktivaci je potřeba karta');
     });
 
     test('tlačítko Průvodce má data-plan="pruvodce"', async ({ page }) => {
@@ -108,7 +108,7 @@ test.describe('Ceník — platební tlačítka', () => {
     });
 
     test('runtime copy update zachova check ikony ve vsech cenikovych benefitech', async ({ page }) => {
-        await expect(page.locator('.card--pricing .card__features li .feature-icon')).toHaveCount(10);
+        await expect(page.locator('.card--pricing .card__features li .feature-icon')).toHaveCount(7);
     });
 
     test('free CTA nese aktivacni kontext pro rychlou prvni hodnotu', async ({ page }) => {
@@ -119,10 +119,13 @@ test.describe('Ceník — platební tlačítka', () => {
         expect(href).toContain('feature=daily_guidance');
     });
 
-    test('rychla volba v ceniku nabizi 4 jasne dalsi kroky', async ({ page }) => {
-        const guide = page.locator('.pricing-decision');
-        await expect(guide).toBeVisible();
-        await expect(guide.locator('[data-pricing-choice]')).toHaveCount(4);
+    test('cenik vede primo ke dvema placenym planum bez duplicitniho rozhodovaciho mezikroku', async ({ page }) => {
+        await expect(page.locator('.pricing-decision')).toHaveCount(0);
+        await expect(page.locator('#pricing-plan-recommendation')).toHaveCount(0);
+        await expect(page.locator('.pricing-grid .card--pricing')).toHaveCount(2);
+        await expect(page.locator('.pricing-grid .btn--primary')).toHaveCount(1);
+        await expect(page.locator('.pricing-grid .card--pricing').first()).toContainText('Hvězdný Průvodce');
+        await expect(page.locator('.pricing-grid .card--pricing').nth(1)).toContainText('Osvícení');
     });
 
     test('cenik ukazuje duverove odkazy pred platbou', async ({ page }) => {
@@ -134,37 +137,50 @@ test.describe('Ceník — platební tlačítka', () => {
         await expect(trustLinks.locator('a[href="kontakt.html"]')).toBeVisible();
     });
 
-    test('cenik konkretizuje prvni tyden hodnoty po upgradu', async ({ page }) => {
-        const firstWeek = page.locator('.pricing-first-week');
-        await expect(firstWeek).toBeVisible();
-        await expect(firstWeek.locator('.pricing-first-week__step')).toHaveCount(4);
-        await expect(firstWeek.locator('[data-analytics-cta="pricing_first_week_natal"]')).toHaveAttribute('href', /natalni-karta\.html/);
-        await expect(firstWeek.locator('[data-analytics-cta="pricing_first_week_profile"]')).toHaveAttribute('href', /profil\.html/);
+    test('cenik zkracuje cestu na tri obsahove sekce a schovava detailni srovnani', async ({ page }) => {
+        await expect(page.locator('#main-content > section')).toHaveCount(3);
+        await expect(page.locator('.pricing-first-week')).toHaveCount(0);
+        const comparison = page.locator('.pricing-comparison');
+        await expect(comparison).toBeVisible();
+        await expect(comparison).not.toHaveAttribute('open', '');
+        await expect(comparison.locator('summary')).toContainText('Zobrazit srovnání plánů');
     });
 
-    test('rychla volba zdarma zvyrazni bezplatny tarif', async ({ page }) => {
-        await page.locator('[data-pricing-choice="free"]').click();
-
-        const freeCard = page.locator('.card--pricing', { has: page.locator('[data-pricing-free-cta]') });
-        await expect(freeCard).toHaveClass(/pricing-card--recommended/);
-        await expect(page.locator('[data-pricing-choice="free"]')).toHaveAttribute('aria-pressed', 'true');
+    test('bezplatny ucet zustava tichou alternativou mimo placene karty', async ({ page }) => {
+        const freePath = page.locator('.pricing-free-path');
+        await expect(freePath).toBeVisible();
+        await expect(freePath.locator('[data-pricing-free-cta]')).toContainText('Vytvořit účet zdarma');
+        await expect(page.locator('.pricing-grid [data-pricing-free-cta]')).toHaveCount(0);
     });
 
-    test('rychla volba pruvodce respektuje aktualni rocni billing', async ({ page }) => {
+    test('placene karty respektuji aktualni rocni billing', async ({ page }) => {
         await page.locator('#toggle-yearly').click();
-        await page.locator('[data-pricing-choice="pruvodce"]').click();
-
-        const yearlyGuideCard = page.locator('.card--pricing', { has: page.locator('[data-plan="pruvodce-rocne"]') });
-        await expect(yearlyGuideCard).toHaveClass(/pricing-card--recommended/);
+        await expect(page.locator('.plan-checkout-btn[data-plan="pruvodce-rocne"]')).toBeVisible();
+        await expect(page.locator('.plan-checkout-btn[data-plan="osviceni-rocne"]')).toBeVisible();
     });
 
-    test('rychla volba jednorazoveho PDF zvyrazni Osobni mapu', async ({ page }) => {
-        await page.locator('[data-pricing-choice="one_time"]').click();
-
-        await expect(page.locator('[data-pricing-choice="one_time"]')).toHaveAttribute('aria-pressed', 'true');
-        await expect(page.locator('.pricing-addon')).toHaveClass(/pricing-addon--recommended/);
-        await expect(page.locator('[data-product="osobni_mapa_2026"]')).toHaveClass(/pricing-addon__product--recommended/);
+    test('jednorazovou alternativou je pouze Osobni mapa PDF', async ({ page }) => {
+        await expect(page.locator('.pricing-addon')).toBeVisible();
+        await expect(page.locator('[data-product="osobni_mapa_2026"]')).toBeVisible();
+        await expect(page.locator('[data-product="osobni_mapa_2026"]')).toContainText('299 Kč');
         await expect(page.locator('[data-product="rocni_horoskop_2026"]')).toHaveCount(0);
+    });
+
+    test('mobilni cenik zkracuje katalogovy footer na podstatne odkazy', async ({ page }) => {
+        await page.setViewportSize({ width: 390, height: 844 });
+        await page.reload({ waitUntil: 'domcontentloaded' });
+        await waitForPageReady(page);
+
+        const footerMetrics = await page.locator('.footer').evaluate((footer) => ({
+            height: footer.getBoundingClientRect().height,
+            hiddenCatalogGroups: Array.from(footer.querySelectorAll('.footer__grid > div:not(.footer__brand)'))
+                .every((group) => getComputedStyle(group).display === 'none')
+        }));
+
+        expect(footerMetrics.hiddenCatalogGroups).toBe(true);
+        expect(footerMetrics.height).toBeLessThan(800);
+        await expect(page.locator('.footer__legal')).toBeVisible();
+        await expect(page.locator('.footer__support-line')).toBeVisible();
     });
 
     test('mobilni cookie lista v ceniku zustava kompaktni', async ({ page }) => {
@@ -934,7 +950,7 @@ test.describe('Ceník — platební tlačítka', () => {
             metadata: expect.objectContaining({
                 path: '/cenik.html',
                 product_id: 'osobni_mapa_2026',
-                label: 'Osobní mapa na 12 měsíců',
+                label: 'Osobní mapa PDF',
                 entry_source: 'pricing_page',
                 entry_feature: 'premium_membership',
                 destination: 'osobni-mapa.html?source=pricing_addon'
@@ -1379,7 +1395,7 @@ test.describe('Ceník — platební tlačítka', () => {
         await expect(page.locator('[data-price-plan="pruvodce"]')
             .locator('xpath=ancestor::*[contains(@class, "card--pricing")]')
             .locator('.pricing-trial-note'))
-            .toContainText('po 7 dnech 1 990 Kč/rok');
+            .toContainText('Po 7 dnech 1 990 Kč/rok');
     });
 
     test('přepnutí zpět na měsíční obnoví původní ceny', async ({ page }) => {
