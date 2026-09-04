@@ -606,6 +606,23 @@ test.describe('Tarot význam karet', () => {
         expect(hasHorizontalScroll).toBe(false);
     });
 
+    test('prioritní karta má unikátní praktický výklad a shodné FAQ schema', async ({ page }) => {
+        await page.goto('/tarot-vyznam/kralovna-poharu.html');
+        await waitForPageReady(page);
+
+        await expect(page.locator('.tarot-card-detail-content')).toContainText('emoční inteligence');
+        await expect(page.locator('.tarot-card-detail-content')).toContainText('Královna pohárů obráceně');
+        await expect(page.locator('.tarot-card-detail-content')).toContainText('Příklad výkladu karty Královna pohárů');
+        await expect(page.locator('.tarot-card-detail-panel')).toContainText('empatii s pevnou hranicí');
+        await expect(page.locator('.faq-item', { hasText: 'Co znamená Královna pohárů obráceně?' })).toBeVisible();
+
+        const structuredData = await page.locator('script[type="application/ld+json"]').evaluate((script) =>
+            JSON.parse(script.textContent || '[]')
+        );
+        const faq = structuredData.find((entry) => entry['@type'] === 'FAQPage');
+        expect(faq.mainEntity.some((item) => item.name === 'Co znamená Královna pohárů obráceně?')).toBe(true);
+    });
+
 });
 
 // ── Tarot Ano/Ne stránka ─────────────────────────────────────────────────────
@@ -1012,7 +1029,12 @@ test.describe('Tarot Ano/Ne', () => {
         await page.goto('/tarot-ano-ne.html');
         await waitForPageReady(page);
 
+        await expect(page).toHaveTitle('Tarot ano ne zdarma | Karty ano ne online');
+        await expect(page.locator('main .section__text').first()).toContainText('rychlý výklad z jedné karty');
         await expect(page.locator('.tarot-yes-no-trust-item')).toHaveCount(3);
+        await expect(page.locator('.tarot-yes-no-answer-card')).toHaveCount(3);
+        await expect(page.locator('.tarot-yes-no-answer-guide')).toContainText('Co znamená ano, ne a ještě ne');
+        await expect(page.locator('.tarot-yes-no-answer-guide__note')).toContainText('nenahrazuje odbornou zdravotní, právní ani finanční radu');
         await expect(page.locator('.tarot-yes-no-faq-item')).toHaveCount(5);
         await expect(page.locator('.tarot-yes-no-intent-guide')).toContainText('Nejlepší otázka je konkrétní');
         await expect(page.locator('a[href*="tarot_yes_no_related"]')).toHaveCount(4);

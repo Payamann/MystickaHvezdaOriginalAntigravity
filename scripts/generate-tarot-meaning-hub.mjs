@@ -6,9 +6,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 const cardsPath = path.join(rootDir, 'data', 'tarot-cards.json');
+const seoOverridesPath = path.join(rootDir, 'data', 'tarot-card-seo-overrides.json');
 const pagePath = path.join(rootDir, 'tarot-vyznam-karet.html');
 const detailDir = path.join(rootDir, 'tarot-vyznam');
 const siteOrigin = 'https://www.mystickahvezda.cz';
+const seoOverrides = fs.existsSync(seoOverridesPath)
+    ? JSON.parse(fs.readFileSync(seoOverridesPath, 'utf8'))
+    : {};
 
 const majorArcana = new Set([
     'Blázen',
@@ -252,9 +256,15 @@ function buildDetailPage(name, card, relatedCards = []) {
     const groupLabel = groupLabels[group] || 'Tarot';
     const image = card.image || 'img/tarot/tarot_placeholder.webp';
     const meaning = card.meaning || '';
-    const interpretation = card.interpretation || getFirstSentence(meaning);
+    const seo = seoOverrides[name] || {};
+    const interpretation = seo.summary || card.interpretation || getFirstSentence(meaning);
     const sentences = getSentences(interpretation, 4);
-    const angles = getReadingAngles(group, name, meaning);
+    const defaultAngles = getReadingAngles(group, name, meaning);
+    const angles = {
+        love: seo.love || defaultAngles.love,
+        work: seo.work || defaultAngles.work,
+        action: seo.action || defaultAngles.action
+    };
     const canonical = detailCanonical(name);
     const encodedName = encodeURIComponent(name);
     // CTR: cluster stál na pozici ~8 s CTR 1,07 % — rankování bylo v pořádku, ale
@@ -263,8 +273,23 @@ function buildDetailPage(name, card, relatedCards = []) {
     // Proto teď titulek nese SKUTEČNÝ význam a popisek je unikátní per kartu.
     const title = `${name}: ${lowerFirst(meaning)} – význam v tarotu`;
     const description = buildDetailDescription(name, meaning, interpretation);
-    const yesNoSignal = getYesNoSignal(group, name, meaning);
+    const yesNoSignal = seo.yesNo || getYesNoSignal(group, name, meaning);
     const relatedLinks = buildRelatedCardLinks(relatedCards);
+    const reversedSection = seo.reversed
+        ? `<h2>${escapeHtml(name)} obráceně</h2>
+                    <p>${escapeHtml(seo.reversed)}</p>`
+        : '';
+    const exampleSection = seo.example
+        ? `<h2>Příklad výkladu karty ${escapeHtml(name)}</h2>
+                    <p>${escapeHtml(seo.example)}</p>`
+        : '';
+    const extraInsightSections = [reversedSection, exampleSection].filter(Boolean).join('\n\n                    ');
+    const reversedFaq = seo.reversed
+        ? `\n                <details class="faq-item">
+                    <summary>Co znamená ${escapeHtml(name)} obráceně?</summary>
+                    <p>${escapeHtml(seo.reversed)}</p>
+                </details>`
+        : '';
     const articleSchema = {
         '@context': 'https://schema.org',
         '@type': 'Article',
@@ -316,6 +341,16 @@ function buildDetailPage(name, card, relatedCards = []) {
             }
         ]
     };
+    if (seo.reversed) {
+        faqSchema.mainEntity.push({
+            '@type': 'Question',
+            name: `Co znamená ${name} obráceně?`,
+            acceptedAnswer: {
+                '@type': 'Answer',
+                text: seo.reversed
+            }
+        });
+    }
 
     return `<!DOCTYPE html>
 <html lang="cs">
@@ -392,7 +427,7 @@ ${jsonLd([articleSchema, breadcrumbSchema, faqSchema])}
                     <p>${escapeHtml(angles.work)}</p>
 
                     <h2>${escapeHtml(name)} jako odpověď ano/ne</h2>
-                    <p>${escapeHtml(yesNoSignal)}</p>
+                    <p>${escapeHtml(yesNoSignal)}</p>${extraInsightSections ? `\n\n                    ${extraInsightSections}` : ''}
 
                     <h2>Co si z karty odnést dnes</h2>
                     <p>${escapeHtml(angles.action)}</p>
@@ -414,7 +449,7 @@ ${jsonLd([articleSchema, breadcrumbSchema, faqSchema])}
                     <dl>
                         <div><dt>Arkánum</dt><dd>${escapeHtml(groupLabel)}</dd></div>
                         <div><dt>Hlavní téma</dt><dd>${escapeHtml(meaning)}</dd></div>
-                        <div><dt>Otázka pro tebe</dt><dd>Kde se toto téma ukazuje právě teď?</dd></div>
+                        <div><dt>Otázka pro tebe</dt><dd>${escapeHtml(seo.question || 'Kde se toto téma ukazuje právě teď?')}</dd></div>
                     </dl>
                     <a href="/tarot.html?source=tarot_card_detail_panel&amp;card=${encodedName}" class="btn btn--primary">Použít ve výkladu</a>
                 </aside>
@@ -426,7 +461,7 @@ ${jsonLd([articleSchema, breadcrumbSchema, faqSchema])}
                 <div class="section__header">
                     <span class="section__badge">Související karty</span>
                     <h2 class="section__title">Kam pokračovat dál</h2>
-                    <p class="section__text">Propoj význam karty ${escapeHtml(name)} s dalšími kartami ze stejného tarotovému toku.</p>
+                    <p class="section__text">Propoj význam karty ${escapeHtml(name)} s dalšími kartami ze stejného tarotového okruhu.</p>
                 </div>
                 <div class="tarot-related-card-grid">
                     ${relatedLinks}
@@ -451,7 +486,7 @@ ${jsonLd([articleSchema, breadcrumbSchema, faqSchema])}
                 <details class="faq-item">
                     <summary>Jak kartu ${escapeHtml(name)} použít v online výkladu?</summary>
                     <p>Začni jasnou otázkou a nech kartu zasadit do kontextu. Online výklad ti pomůže propojit symbol s konkrétní situací.</p>
-                </details>
+                </details>${reversedFaq}
                 <div class="tarot-meaning-hero__actions">
                     <a href="/tarot.html?source=tarot_card_detail_bottom&amp;card=${encodedName}" class="btn btn--primary">Vyložit tarot s touto kartou</a>
                     <a href="/tarot-vyznam-karet.html" class="btn btn--ghost">Prohlédnout všechny karty</a>
