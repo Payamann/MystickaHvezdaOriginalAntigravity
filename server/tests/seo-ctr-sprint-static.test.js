@@ -57,14 +57,15 @@ describe('CTR sprint static SEO pages', () => {
     const js = await readPage('js/tarot-ano-ne.js');
 
     expectCoreMetadata(html);
-    expect(html).toContain('Tarot ano/ne zdarma – jasná odpověď z karet hned');
-    expect(html).toContain('tarot ano/ne zdarma a bez registrace');
+    expect(html).toContain('Tarot ano ne zdarma | Karty ano ne online');
+    expect(html).toContain('Tarot ano ne zdarma a bez registrace');
     expect(html).toContain('id="btn-save-reading"');
-    expect(html).toContain('Hledáš ano ne tarot, karty ano ne nebo odpověď ano ne?');
+    expect(html).toContain('Tarot ano ne, karty ano ne i věštba ano ne označují stejný rychlý výklad.');
     expect(html).toContain('Nejlepší otázka je konkrétní a dnešní');
     expect(html).toContain('Věštba ano ne funguje nejlépe');
+    expect(html).toContain('Co znamená ano, ne a ještě ne');
     expect(html).toContain('Kam pokračovat');
-    expect(html).toContain('Můžu použít karty ano ne jako věštbu?');
+    expect(html).toContain('Co znamená odpověď ještě ne?');
     expect(html).toContain('Je to stejné jako karty ano ne?');
     ['reading_start', 'reading_complete', 'save_click', 'reading_save_clicked', 'reading_saved', 'login_click', 'mh_pending_reading'].forEach((needle) => {
       expect(js).toContain(needle);
@@ -203,7 +204,9 @@ describe('CTR sprint static SEO pages', () => {
     // protože sliboval seznam sekcí místo odpovědi) — viz generate-tarot-meaning-hub.mjs.
     expect(html).toContain('Královna pohárů: empatie a intuice – význam v tarotu');
     expect(html).toContain('Královna pohárů jako odpověď ano/ne');
-    expect(html).toContain('Královna pohárů je mistryní emocí a intuice');
+    expect(html).toContain('Královna pohárů spojuje empatii, citlivost a vyzrálou intuici');
+    expect(html).toContain('Královna pohárů obráceně');
+    expect(html).toContain('Příklad výkladu karty Královna pohárů');
     expect(html).toContain('/tarot.html?source=tarot_card_detail_next_step');
     // Most na denní horoskop e-mailem — sběr kontaktu na 78 stránkách clusteru
     expect(html).toContain('data-analytics-source="tarot_card_detail"');
