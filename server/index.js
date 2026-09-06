@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser'; // Security: HttpOnly cookie support
 import rateLimit from 'express-rate-limit'; // Security: Rate Limiting
 import helmet from 'helmet'; // Security: HTTP Headers
 import { sanitizeRequestInput } from './utils/sanitize-input.js'; // Security: Input Sanitization
+import { createAssetVersioning } from './utils/asset-versioning.js';
 import compression from 'compression'; // Performance: Gzip compression
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -29,7 +30,7 @@ import { handleResendWebhook } from './resend-webhook.js';
 import mentorRoutes from './mentor.js';
 import adminRoutes from './admin.js';
 import crypto from 'crypto';
-import { getEmailQueueRuntimeStatus, initializeEmailQueueJob } from './jobs/email-queue.js';
+import { getEmailQueueRuntimeStatus, getEmailQueueHealth, initializeEmailQueueJob } from './jobs/email-queue.js';
 import { getPragueHour, isAfterDailyHoroscopeSendWindow, isAfterDailyPushSendWindow } from './utils/send-window.js';
 import { initializeDataRetentionJob } from './jobs/data-retention.js';
 import { initializeOneTimeOrderReconciliationJob } from './jobs/one-time-order-reconciliation.js';
@@ -73,6 +74,7 @@ import { createServer5xxAlertMonitor, sendOperationalAlert } from './services/al
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '../');
+const assetVersioning = createAssetVersioning(rootDir);
 dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
@@ -621,18 +623,21 @@ function getRuntimeHealth() {
     const aiOk = process.env.MOCK_AI === 'true' ||
         hasEnvValue('ANTHROPIC_API_KEY') ||
         hasEnvValue('GEMINI_API_KEY');
-    const status = dbOk && aiOk ? 'ok' : 'degraded';
+    const scheduledJobs = getBackgroundJobStatus();
+    const emailQueueHealth = getEmailQueueHealth(scheduledJobs.emailQueue);
+    const status = dbOk && aiOk && emailQueueHealth !== 'degraded' ? 'ok' : 'degraded';
 
     return {
         status,
         timestamp: new Date().toISOString(),
         checks: {
             db: dbOk ? 'ok' : 'unavailable',
-            ai: aiOk ? 'ok' : 'unavailable'
+            ai: aiOk ? 'ok' : 'unavailable',
+            emailQueue: emailQueueHealth
         },
         features: {
             pushNotifications: getPushNotificationStatus(),
-            scheduledJobs: getBackgroundJobStatus()
+            scheduledJobs
         },
         deployment: getDeploymentMetadata()
     };
@@ -721,7 +726,7 @@ app.get('/horoskopy.html', (req, res, next) => {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', getPublicHtmlCacheControl());
     setHtmlContentSecurityPolicy(res, replaced);
-    res.send(replaced);
+    res.send(assetVersioning.html(replaced, req.path));
 });
 
 // Support for /jmena/:name (redirects to /jmena/?jmeno=Name)
@@ -846,6 +851,8 @@ function setStaticHeaders(res, filePath) {
         res.setHeader('Cache-Control', HTML_PRIVATE_CACHE_CONTROL);
     } else if (filePath.endsWith('manifest.json')) {
         res.setHeader('Cache-Control', 'public, max-age=86400');
+    } else if (/\.(?:js|css)$/i.test(filePath)) {
+        res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
     }
     // Tell caches that responses vary by encoding (gzip/br)
     res.setHeader('Vary', 'Accept-Encoding');
@@ -871,6 +878,17 @@ const staticOptions = {
     setHeaders: setStaticHeaders,
 };
 
+app.use(assetVersioning.asset);
+app.use((req, res, next) => {
+    if (!['GET', 'HEAD'].includes(req.method)) return next();
+    const pathname = getDecodedRequestPath(req);
+    const htmlPath = pathname.endsWith('/') ? `${pathname}index.html` : pathname;
+    if (!htmlPath.endsWith('.html')) return next();
+    const file = assetVersioning.localFile(htmlPath);
+    if (!file || !fs.existsSync(file) || !fs.statSync(file).isFile()) return next();
+    setStaticHeaders(res, file);
+    res.type('html').send(assetVersioning.html(fs.readFileSync(file, 'utf8'), htmlPath));
+});
 app.use(express.static(rootDir, staticOptions));
 
 // Explicitly serve JS files with correct MIME type and caching

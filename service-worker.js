@@ -85,13 +85,14 @@ function getPrecachedAssetKey(request) {
 }
 
 async function matchCachedRequest(request) {
-    const exactMatch = await caches.match(request);
+    const cache = await caches.open(CACHE_NAME);
+    const exactMatch = await cache.match(request);
     if (exactMatch) return exactMatch;
 
-    // HTML používá historicky různé ?v= cache-bustery. Nový worker proto může
-    // bezpečně obsloužit jejich URL čerstvě precachovaným souborem podle cesty.
-    const precachedKey = getPrecachedAssetKey(request);
-    return precachedKey ? caches.match(precachedKey) : null;
+    // Match only this release; never borrow entries from an older cache.
+    // A query version is not interchangeable with an unversioned precache entry.
+    const precachedKey = new URL(request.url).search ? null : getPrecachedAssetKey(request);
+    return precachedKey ? cache.match(precachedKey) : null;
 }
 
 async function precacheFreshAssets(cache) {
@@ -126,7 +127,7 @@ self.addEventListener('activate', (event) => {
             .then((cacheNames) => {
                 return Promise.all(
                     cacheNames
-                        .filter((name) => name !== CACHE_NAME)
+                        .filter((name) => name.startsWith('mysticka-hvezda-') && name !== CACHE_NAME)
                         .map((name) => {
                             console.log('[SW] Deleting old cache:', name);
                             return caches.delete(name);
@@ -154,7 +155,7 @@ self.addEventListener('fetch', (event) => {
     if (
         event.request.method !== 'GET' ||
         event.request.url.includes('/api/') ||
-        !event.request.url.startsWith(self.location.origin)
+        new URL(event.request.url).origin !== self.location.origin
     ) {
         return;
     }
@@ -202,7 +203,7 @@ self.addEventListener('fetch', (event) => {
 
                 // Return cached version immediately if available (stale-while-revalidate)
                 // Otherwise wait for network
-                return cachedResponse || networkFetch;
+                return shouldRevalidateStaticCode ? networkFetch : (cachedResponse || networkFetch);
             })
     );
 });

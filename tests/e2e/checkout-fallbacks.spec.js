@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { waitForPageReady } from './helpers.js';
 
 async function disableAuthClient(page) {
-    await page.route('**/js/dist/auth-client.js*', route => route.fulfill({
+    await page.route('**/js/dist/auth-client*.js*', route => route.fulfill({
         status: 200,
         contentType: 'application/javascript',
         body: 'window.__AUTH_CLIENT_DISABLED_FOR_TEST__ = true;'

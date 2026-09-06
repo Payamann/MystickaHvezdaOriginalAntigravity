@@ -1,8 +1,11 @@
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { assetHash } from '../server/utils/asset-versioning.js';
 const PRODUCTION_BASE_URL = 'https://www.mystickahvezda.cz';
 const DEFAULT_LOCAL_BASE_URL = `http://localhost:${process.env.PLAYWRIGHT_PORT || '3001'}`;
 const REQUIRED_AUTH_ASSET_VERSIONS = new Map([
-    ['/js/dist/auth-client.js', '20260828-product-simplification'],
-    ['/js/dist/core.js', '1']
+    ...['/js/dist/auth-client.js', '/js/dist/core.js'].map(asset => [asset,
+        assetHash(fs.readFileSync(fileURLToPath(new URL(`..${asset}`, import.meta.url))))])
 ]);
 const REQUIRED_AUTH_CLIENT_MARKERS = [
     'getStandaloneAuthContext',
@@ -101,7 +104,7 @@ async function fetchText(url, timeoutMs) {
 }
 
 function extractAuthBundleScripts(html) {
-    const scriptPattern = /<script\b[^>]*\bsrc\s*=\s*["']([^"']*(?:auth-client|core)\.js[^"']*)["'][^>]*>/gi;
+    const scriptPattern = /<script\b[^>]*\bsrc\s*=\s*["']([^"']*(?:auth-client|core)(?:\.mh-[a-f0-9]{16})?\.js[^"']*)["'][^>]*>/gi;
     return [...html.matchAll(scriptPattern)].map((match) => match[1]);
 }
 
@@ -115,8 +118,8 @@ function validatePage(pagePath, pageUrl, html, errors) {
     const assetUrls = [];
     for (const src of scripts) {
         const assetUrl = new URL(src, pageUrl);
-        const assetPath = assetUrl.pathname;
-        const version = assetUrl.searchParams.get('v');
+        const assetPath = assetUrl.pathname.replace(/\.mh-[a-f0-9]{16}(?=\.js$)/, '');
+        const version = assetUrl.pathname.match(/\.mh-([a-f0-9]{16})\.js$/)?.[1];
         const requiredVersion = REQUIRED_AUTH_ASSET_VERSIONS.get(assetPath);
 
         if (!requiredVersion) {
@@ -124,7 +127,7 @@ function validatePage(pagePath, pageUrl, html, errors) {
         }
         if (requiredVersion && version !== requiredVersion) {
             errors.push(
-                `${pagePath}: ${assetPath} version expected v=${requiredVersion}, got ${version || '<missing>'}`
+                `${pagePath}: ${assetPath} content hash expected ${requiredVersion}, got ${version || '<missing>'}`
             );
         }
 
@@ -140,6 +143,8 @@ function validateAsset(assetUrl, response, errors) {
         return;
     }
 
+    const expectedHash = new URL(assetUrl).pathname.match(/\.mh-([a-f0-9]{16})\.js$/)?.[1];
+    if (assetHash(Buffer.from(response.text)) !== expectedHash) errors.push(`${assetUrl}: response content hash mismatch`);
     for (const marker of REQUIRED_AUTH_CLIENT_MARKERS) {
         if (!response.text.includes(marker)) {
             errors.push(`${assetUrl}: missing required marker "${marker}"`);

@@ -63,7 +63,7 @@ test.describe('Ceník — platební tlačítka', () => {
     });
 
     test('placene CTA maji prihlasovaci fallback i bez cenik.js', async ({ page }) => {
-        await page.route('**/js/dist/cenik.js*', route => route.abort());
+        await page.route('**/js/dist/cenik*.js*', route => route.abort());
         await page.goto('/cenik.html', { waitUntil: 'domcontentloaded' });
 
         const guideCta = page.locator('.plan-checkout-btn[data-plan="pruvodce"]');
@@ -1376,7 +1376,7 @@ test.describe('Ceník — platební tlačítka', () => {
     test('cenik.js je načten (defer script)', async ({ page }) => {
         const hasCenikScript = await page.evaluate(() => {
             return Array.from(document.querySelectorAll('script[src]'))
-                .some(s => s.src.includes('cenik.js'));
+                .some(s => /\/cenik\.mh-[a-f0-9]{16}\.js$/.test(s.src) && s.defer);
         });
         expect(hasCenikScript).toBe(true);
     });

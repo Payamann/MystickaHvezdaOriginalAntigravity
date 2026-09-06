@@ -13,6 +13,7 @@ let jobRunning = false;
 const ACTIVE_SUBSCRIPTION_STATUSES = new Set(['active', 'trialing', 'cancel_pending']);
 const TERMINAL_EMAIL_STATUSES = new Set(['sent', 'skipped', 'failed']);
 const DEFAULT_EMAIL_SEND_TIMEOUT_MS = 20_000;
+const WEEKLY_DIGEST_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 const emailQueueRuntime = {
     running: false,
     lastStartedAt: null,
@@ -39,6 +40,21 @@ export function getEmailQueueRuntimeStatus() {
         lastFailed: emailQueueRuntime.lastFailed,
         lastErrorCode: emailQueueRuntime.lastErrorCode
     };
+}
+
+export function getEmailQueueHealth(runtime) {
+    if (runtime?.status === 'disabled') return 'disabled';
+    if (runtime?.lastErrorCode || runtime?.lastFailed > 0) return 'degraded';
+    return 'ok';
+}
+
+export function getQueuedEmailExpiryReason(emailRecord, now = Date.now()) {
+    // A weekly digest is obsolete by the next weekly edition. Never apply
+    // this age limit to receipts, recovery messages or purchased PDF delivery.
+    if (emailRecord?.template !== 'newsletter_weekly_digest') return null;
+    const scheduledAt = Date.parse(emailRecord.scheduled_for);
+    if (!Number.isFinite(scheduledAt)) return 'invalid_newsletter_schedule';
+    return now - scheduledAt >= WEEKLY_DIGEST_MAX_AGE_MS ? 'expired_weekly_digest' : null;
 }
 
 function getEmailSendTimeoutMs(value) {
@@ -401,6 +417,16 @@ export async function processEmailQueue(options = {}) {
                 const { id, email_to, template, data } = emailRecord;
                 const queuedData = parseQueuedEmailData(data);
 
+                const expiryReason = getQueuedEmailExpiryReason(emailRecord);
+                if (expiryReason) {
+                    await updateEmailQueueStatus(id, 'skipped', {
+                        last_error: `Skipped without sending (${expiryReason}).`
+                    });
+                    skippedCount++;
+                    emailQueueRuntime.lastSkipped = skippedCount;
+                    continue;
+                }
+
                 if (await shouldSkipQueuedEmailForPremium(emailRecord, queuedData)) {
                     await updateEmailQueueStatus(id, 'skipped', {
                         sent_at: new Date().toISOString(),
@@ -457,18 +483,19 @@ export async function processEmailQueue(options = {}) {
             } catch (emailErr) {
                 failureCount++;
                 emailQueueRuntime.lastFailed = failureCount;
-                if (emailErr?.code === 'EMAIL_SEND_TIMEOUT') {
-                    emailQueueRuntime.lastErrorCode = 'email_send_timeout';
-                }
+                emailQueueRuntime.lastErrorCode = emailErr?.code === 'EMAIL_SEND_TIMEOUT'
+                    ? 'email_send_timeout'
+                    : 'email_send_failed';
 
                 if (emailErr instanceof EmailQueuePersistenceError) {
+                    emailQueueRuntime.lastErrorCode = 'queue_persistence_failed';
                     console.error('[JOB][OPERATIONAL] Email queue state persistence failed:', emailErr.message);
                     continue;
                 }
 
                 console.error(`[JOB] ✗ Failed to send email ${emailRecord.id}:`, emailErr.message);
 
-                const permanent = isPermanentDeliveryFailure(emailErr.message, email_to);
+                const permanent = isPermanentDeliveryFailure(emailErr.message, emailRecord.email_to);
                 const nextRetryCount = (emailRecord.retry_count || 0) + 1;
                 const maxRetries = Number.isFinite(Number(emailRecord.max_retries))
                     ? Number(emailRecord.max_retries)
@@ -484,12 +511,14 @@ export async function processEmailQueue(options = {}) {
                             last_error: emailErr.message
                         });
                     } catch (persistenceError) {
+                        emailQueueRuntime.lastErrorCode = 'queue_persistence_failed';
                         console.error('[JOB][OPERATIONAL] Could not persist permanent email failure:', persistenceError.message);
                     }
 
                     try {
-                        await deactivateInvalidRecipient(email_to, emailErr.message);
+                        await deactivateInvalidRecipient(emailRecord.email_to, emailErr.message);
                     } catch (deactivationError) {
+                        emailQueueRuntime.lastErrorCode = 'recipient_deactivation_failed';
                         console.error('[JOB][OPERATIONAL] Invalid recipient still requires manual cleanup:', deactivationError.message);
                     }
                 } else if (nextRetryCount >= maxRetries) {
@@ -500,6 +529,7 @@ export async function processEmailQueue(options = {}) {
                         });
                         console.warn(`[JOB] ✗ Email ${emailRecord.id} marked as failed after ${maxRetries} retries`);
                     } catch (persistenceError) {
+                        emailQueueRuntime.lastErrorCode = 'queue_persistence_failed';
                         console.error('[JOB][OPERATIONAL] Could not persist exhausted email retries:', persistenceError.message);
                     }
                 } else {
@@ -509,6 +539,7 @@ export async function processEmailQueue(options = {}) {
                             last_error: emailErr.message
                         }, 'increment_retry');
                     } catch (persistenceError) {
+                        emailQueueRuntime.lastErrorCode = 'queue_persistence_failed';
                         console.error('[JOB][OPERATIONAL] Could not persist email retry:', persistenceError.message);
                     }
                 }

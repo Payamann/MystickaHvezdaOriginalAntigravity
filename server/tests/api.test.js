@@ -7,6 +7,7 @@ import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import app from '../index.js';
 import { supabase } from '../db-supabase.js';
+import { processEmailQueue } from '../jobs/email-queue.js';
 import { isDocAllowed } from '../routes/docs.js';
 
 async function getCsrfToken() {
@@ -218,7 +219,8 @@ describe('API Endpoint Tests', () => {
                 expect(res.body.status).toBe('ok');
                 expect(res.body.checks).toEqual({
                     db: 'ok',
-                    ai: 'ok'
+                    ai: 'ok',
+                    emailQueue: 'disabled'
                 });
             });
         });
@@ -238,9 +240,38 @@ describe('API Endpoint Tests', () => {
                 expect(res.body.status).toBe('degraded');
                 expect(res.body.checks).toEqual({
                     db: 'unavailable',
-                    ai: 'unavailable'
+                    ai: 'unavailable',
+                    emailQueue: 'disabled'
                 });
             });
+        });
+
+        test('Health exposes a queue failure and recovers after a successful retry', async () => {
+            const id = 'api-health-queue-failure';
+            await supabase.from('email_queue').insert({
+                id, email_to: 'health@example.invalid', template: 'payment_recovery',
+                data: {}, status: 'pending', retry_count: 0, max_retries: 3,
+                scheduled_for: '2020-01-01T00:00:00Z'
+            });
+            try {
+                await processEmailQueue({ sendEmail: async () => { throw new Error('Provider unavailable'); } });
+                // The app was imported with test mode and no schedulers. This
+                // only enables the health projection; it starts no real jobs.
+                await withTemporaryEnv({ NODE_ENV: 'development', DISABLE_SCHEDULED_JOBS: 'false',
+                    ENABLE_SCHEDULED_JOBS: 'true' }, async () => {
+                    const failed = await request(app).get('/api/health').expect(200);
+                    expect(failed.body.status).toBe('degraded');
+                    expect(failed.body.checks.emailQueue).toBe('degraded');
+                    expect(failed.body.features.scheduledJobs.emailQueue.lastErrorCode).toBe('email_send_failed');
+
+                    await processEmailQueue({ sendEmail: async () => ({ emailId: 'health-test-provider' }) });
+                    const recovered = await request(app).get('/api/health').expect(200);
+                    expect(recovered.body.status).toBe('ok');
+                    expect(recovered.body.checks.emailQueue).toBe('ok');
+                });
+            } finally {
+                await supabase.from('email_queue').delete().eq('id', id);
+            }
         });
 
         test('Health check status is ok or degraded', async () => {

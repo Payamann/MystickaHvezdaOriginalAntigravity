@@ -51,5 +51,17 @@ export default [
       'prefer-const': 'off',
       'no-var': 'off'
     }
+  },
+  {
+    files: ['server/jobs/email-queue.js'],
+    languageOptions: {
+      globals: {
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly'
+      }
+    },
+    rules: {
+      'no-undef': 'error'
+    }
   }
 ];

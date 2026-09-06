@@ -345,7 +345,8 @@ describe('manual script guardrails', () => {
         expect(source).toContain("process.env.DISABLE_DAILY_HOROSCOPE_EMAILS !== 'true'");
         expect(source).toContain('socialAgent: getSocialAgentSchedulerStatus()');
         expect(source).toContain('dailyHoroscopeEmail: shouldRunDailyHoroscopeEmails()');
-        expect(source).toContain('scheduledJobs: getBackgroundJobStatus()');
+        expect(source).toContain('const scheduledJobs = getBackgroundJobStatus()');
+        expect(source).toContain('getEmailQueueHealth(scheduledJobs.emailQueue)');
         expect(source).toContain('startup_catchup');
         expect(source).toContain('hourly_catchup');
         expect(envExample).toContain('ENABLE_SCHEDULED_JOBS=false');

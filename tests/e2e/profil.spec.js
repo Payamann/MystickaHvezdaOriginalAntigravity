@@ -50,7 +50,7 @@ test.describe('Profil stránka', () => {
         await expect(page.locator('#profile-greeting')).toContainText('výklady na jednom místě');
         await expect(gate).toContainText('Takhle vypadá tvůj deník výkladů');
         await expect(gate).toContainText('Bez přihlášení nic neukládáme do osobního profilu');
-        await expect(page.locator('script[src*="/js/dist/profile/dashboard.js"]').first()).toHaveAttribute('src', /dashboard\.js\?v=22/);
+        await expect(page.locator('script[src*="/js/dist/profile/dashboard.mh-"]').first()).toHaveAttribute('src', /dashboard\.mh-[a-f0-9]{16}\.js$/);
 
         const previewItems = gate.locator('.profile-guest-preview__item');
         await expect(previewItems).toHaveCount(2);
@@ -996,8 +996,9 @@ test.describe('Onboarding', () => {
 
     test('onboarding netaha externi fonty ani nepouzity sanitizer z CDN', async ({ page }) => {
         const html = await page.content();
-        expect(html).toContain('css/site.min.css');
-        const siteCss = await page.request.get('/css/site.min.css?v=1');
+        const cssUrl = await page.locator('link[href*="/css/site.min.mh-"]').getAttribute('href');
+        expect(cssUrl).toMatch(/site\.min\.mh-[a-f0-9]{16}\.css$/);
+        const siteCss = await page.request.get(cssUrl);
         expect(siteCss.ok()).toBe(true);
         expect(await siteCss.text()).toContain('@font-face');
         expect(html).not.toContain('fonts.googleapis.com');

@@ -81,7 +81,7 @@
     "deploy:guard:local": "node scripts/deploy-guard.mjs --skip-remote --skip-railway --allow-dirty --base-url=http://localhost:3001",
     "test:verify": "npm run lint && npm run check:encoding && npm run check:hooks && npm run check:auth-feature-contexts && npm run check:ai-cost-control && npm run audit:growth-loop && npm run check:paywall-trust && npm run check:static-hubs && npm run check:seo-semantics && npm run check:css-transitions && npm run test:unit:server && npm run test:unit:frontend && npm run audit:site && npm run audit:tarot-assets && npm run sitemap:check",
     "test:all": "npm run test:verify && npm run test:e2e:sections && npm run test:e2e:sections:mobile",
-    "build:css": "cleancss -o css/style.v2.min.css css/style.v2.css && cleancss -o css/home.min.css fonts/local-fonts.css css/style.v2.css css/pages/index.css && cleancss -o css/site.min.css fonts/local-fonts.css css/style.v2.css && node scripts/update-service-worker-cache.mjs",
+    "build:css": "cleancss -o css/style.v2.min.css css/style.v2.css && cleancss -o css/home.min.css fonts/local-fonts.css css/style.v2.css css/pages/index.css && cleancss -o css/site.min.css fonts/local-fonts.css css/style.v2.css && node scripts/update-service-worker-cache.mjs && node scripts/snapshot-assets.mjs",
     "build:js": "node scripts/build-js.mjs && node scripts/update-service-worker-cache.mjs",
     "build:pwa-icons": "node server/scripts/create-pwa-icons.js && node scripts/update-service-worker-cache.mjs",
     "render:personal-map-assets": "node scripts/render-personal-map-marketing-assets.mjs && node scripts/update-service-worker-cache.mjs",

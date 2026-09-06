@@ -79,9 +79,8 @@ describe('💳 Payment Checkout Session', () => {
         expect(successUrl.searchParams.has('path')).toBe(false);
     });
 
-    test('Stripe checkout enables consented abandoned-session recovery without implicit discounts', () => {
+    test('Stripe checkout enables recovery without country-restricted marketing consent collection', () => {
         expect(buildCheckoutRecoveryConfig()).toEqual({
-            consent_collection: { promotions: 'auto' },
             after_expiration: {
                 recovery: {
                     enabled: true,

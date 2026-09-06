@@ -356,7 +356,8 @@ export function buildPricingCancelUrl({ planId = null, source = null, feature = 
 
 export function buildCheckoutRecoveryConfig() {
     return {
-        consent_collection: { promotions: 'auto' },
+        // Promotional consent collection is unavailable for this merchant country.
+        // Keep checkout usable; expired-session emails still require explicit opt-in.
         after_expiration: {
             recovery: {
                 enabled: true,
