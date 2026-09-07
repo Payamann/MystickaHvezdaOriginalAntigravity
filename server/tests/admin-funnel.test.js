@@ -19,6 +19,17 @@ import jwt from 'jsonwebtoken';
 import { supabase } from '../db-supabase.js';
 
 describe('Admin funnel report helpers', () => {
+    test('reports deduplicated CZK receipts rather than checkout catalog prices', () => {
+        const invoice = {
+            event_name: 'subscription_invoice_paid', created_at: '2026-04-20T10:00:00.000Z',
+            metadata: { invoiceId: 'in_report', amountPaid: 19950, currency: 'czk', billingReason: 'subscription_create' }
+        };
+        const report = buildFunnelReport([invoice, invoice, {
+            event_name: 'subscription_checkout_completed', plan_id: 'pruvodce', created_at: invoice.created_at
+        }], { days: 30, since: '2026-04-01T00:00:00.000Z', limit: 1000 });
+        expect(report.metrics.estimatedValueCzk).toBe(199.5);
+        expect(report.metrics.revenue.breakdown.initialInvoice.count).toBe(1);
+    });
     test('normalizes report query bounds', () => {
         expect(normalizeFunnelDays(undefined)).toBe(30);
         expect(normalizeFunnelDays('0')).toBe(1);
@@ -140,7 +151,7 @@ describe('Admin funnel report helpers', () => {
         expect(report.metrics.refunds).toBe(1);
         expect(report.metrics.cancelRequests).toBe(1);
         expect(report.metrics.conversionRate).toBe(50);
-        expect(report.metrics.estimatedValueCzk).toBe(498);
+        expect(report.metrics.estimatedValueCzk).toBe(0);
         expect(report.metrics.oneTimePdfDelivered).toBe(1);
         expect(report.metrics.oneTimeLifecycleScheduled).toBe(1);
         expect(report.metrics.oneTimeDeliveryRate).toBe(100);
@@ -1077,7 +1088,7 @@ describe('Admin business cockpit helpers', () => {
             checkoutToPurchaseRate: 100,
             oneTimeDeliveryRate: 0,
             oneTimeLifecycleScheduleRate: 0,
-            estimatedValueCzk: 498
+            estimatedValueCzk: 0
         });
         expect(report.userStats).toMatchObject({
             totalUsers: 10,

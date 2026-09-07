@@ -822,7 +822,7 @@ function renderBusiness(report) {
         ['Paměť profilu', formatInteger(summary.profileRitualMemoryViewed), `${formatPercent(summary.profileRitualMemoryClickRate)} klik do dalšího kroku`],
         ['Checkouty', formatInteger(summary.checkoutStarted), `${formatPercent(summary.signupToCheckoutRate)} signup -> checkout`],
         ['Nákupy', formatInteger(summary.purchases), `${formatPercent(summary.checkoutToPurchaseRate)} checkout -> purchase`],
-        ['Odhad příjmu', formatCurrency(summary.estimatedValueCzk), formatDeltaHint(deltas.estimatedValueCzk, 'proti předchozímu období')],
+        ['Zaznamenané platby CZK', formatCurrency(summary.estimatedValueCzk), 'Výřez událostí, před refundy; nejde o účetní bilanci Stripe'],
         ['Aktivní předplatné', formatInteger(userStats.activeSubscribers), `${formatCurrency(userStats.estimatedMrrCzk)} odhad MRR`],
         ['Noví uživatelé', formatInteger(userStats.newUsers), `${formatInteger(userStats.totalUsers)} celkem`]
     ];
@@ -950,7 +950,13 @@ function renderFunnel(report) {
         ['Lifecycle sekvence', formatInteger(metrics.oneTimeLifecycleScheduled), `${formatPercent(metrics.oneTimeLifecycleScheduleRate)} po doručení PDF`],
         ['Selhání', formatInteger(metrics.failures), 'Validace, Stripe nebo platba'],
         ['Refundy', formatInteger(metrics.refunds), 'Vrácené platby'],
-        ['Odhad hodnoty', formatCurrency(metrics.estimatedValueCzk), `Za posledních ${report.days} dní`],
+        ['Zaznamenané platby CZK', formatCurrency(metrics.estimatedValueCzk), `Výřez událostí za ${report.days} dní, před refundy. PDF částky mohou být historické odhady. Vynecháno: ${formatInteger(metrics.revenue?.excludedEvents)} neúplných událostí a ${formatInteger(metrics.revenue?.conflictingReceipts)} rozporných plateb.`],
+        ['Úvodní placené faktury', formatInteger(metrics.revenue?.breakdown?.initialInvoice?.count), 'Platba při založení předplatného; nikoli všechny první platby po trialu'],
+        ['Cyklické placené faktury', formatInteger(metrics.revenue?.breakdown?.cycleUnclassified?.count), 'Obnovení nebo první platba po trialu — bez úplné historie nerozlišeno'],
+        ['Nulové faktury', formatInteger(metrics.revenue?.breakdown?.zeroInvoice?.count), 'Nejsou tržbou ani samy o sobě důkazem trialu'],
+        ['Jednorázové částky CZK', formatCurrency((metrics.revenue?.breakdown?.oneTime?.byCurrency?.CZK || 0) / 100), 'PDF i historické produkty; pouze zaznamenané částky'],
+        ['Selhavší faktury s platbou', formatInteger(metrics.revenue?.failures?.recoveredInvoices), 'Stejná faktura má ve výřezu selhání i kladnou úhradu'],
+        ['Selhavší faktury bez doložené platby', formatInteger(metrics.revenue?.failures?.withoutObservedPayment), 'Ve výřezu chybí úhrada; nejde o potvrzený aktuální dluh'],
     ];
 
     summary.replaceChildren(...metricCards.map(([label, value, hint]) => createMetric(label, value, hint)));

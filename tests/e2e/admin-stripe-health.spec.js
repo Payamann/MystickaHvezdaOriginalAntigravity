@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-async function openAdminWithStripeAudit(page, audit) {
+async function openAdminWithStripeAudit(page, audit, funnelReport = null) {
     await page.context().addCookies([{
         name: 'logged_in',
         value: '1',
@@ -15,6 +15,9 @@ async function openAdminWithStripeAudit(page, audit) {
         }),
     }));
     await page.route('**/api/admin/**', route => {
+        if (funnelReport && route.request().url().includes('/funnel?')) {
+            return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true, report: funnelReport }) });
+        }
         if (route.request().url().includes('/stripe-webhook-health')) {
             return route.fulfill({
                 status: 200,
@@ -32,6 +35,21 @@ async function openAdminWithStripeAudit(page, audit) {
 }
 
 test.describe('Admin Stripe webhook health', () => {
+    test('renders observed revenue caveats and categories on mobile', async ({ page }) => {
+        await page.setViewportSize({ width: 390, height: 844 });
+        await openAdminWithStripeAudit(page, { healthy: true, requiredEvents: [], missingEvents: [] }, {
+            days: 30, totalEvents: 2, metrics: { estimatedValueCzk: 199.5, revenue: {
+                excludedEvents: 1, conflictingReceipts: 0,
+                breakdown: { cycleUnclassified: { count: 1 } },
+                failures: { recoveredInvoices: 1, withoutObservedPayment: 0 }
+            } }, topSources: [], topFeatures: [], topPlans: [], daily: [], recentEvents: []
+        });
+        const summary = page.locator('#funnel-summary');
+        await expect(summary).toContainText('Zaznamenané platby CZK');
+        await expect(summary).toContainText('bez úplné historie nerozlišeno');
+        await expect(summary).toContainText('nejde o potvrzený aktuální dluh');
+        expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
+    });
     test('shows complete event coverage without horizontal mobile overflow', async ({ page }) => {
         await page.setViewportSize({ width: 390, height: 844 });
         await openAdminWithStripeAudit(page, {

@@ -1,7 +1,8 @@
 import express from 'express';
 import { supabase } from './db-supabase.js';
 import { authenticateToken, requireAdmin } from './middleware.js';
-import { PLAN_TYPES, SUBSCRIPTION_PLANS } from './config/constants.js';
+import { PLAN_TYPES } from './config/constants.js';
+import { summarizeRevenue } from './services/revenue-summary.js';
 import { filterExcludedFunnelEvents } from './config/funnel-exclusions.js';
 import {
     createSupportDraftReply,
@@ -139,34 +140,6 @@ function normalizeDimension(value) {
     if (typeof value !== 'string') return null;
     const trimmed = value.trim();
     return trimmed || null;
-}
-
-function getMinorAmount(value) {
-    if (typeof value === 'number' && Number.isFinite(value)) return value;
-    if (typeof value === 'string' && value.trim() !== '') {
-        const parsed = Number(value);
-        if (Number.isFinite(parsed)) return parsed;
-    }
-    return 0;
-}
-
-function estimateEventMinorValue(event) {
-    const eventName = event?.event_name;
-    const metadata = event?.metadata && typeof event.metadata === 'object' ? event.metadata : {};
-
-    if (eventName === 'subscription_checkout_completed') {
-        return SUBSCRIPTION_PLANS[event.plan_id]?.price || 0;
-    }
-
-    if (eventName === 'one_time_purchase_completed') {
-        return getMinorAmount(metadata.amount || metadata.amount_total || metadata.price);
-    }
-
-    if (eventName === 'subscription_invoice_paid') {
-        return getMinorAmount(metadata.amountPaid || metadata.amount_paid);
-    }
-
-    return 0;
 }
 
 function createDailyBucket(date) {
@@ -1100,7 +1073,7 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
     const byFeature = {};
     const byPlan = {};
     const byDay = {};
-    let estimatedMinorValue = 0;
+    const revenue = summarizeRevenue(currentEvents);
 
     for (const event of currentEvents) {
         const eventName = normalizeDimension(event.event_name) || 'unknown';
@@ -1110,7 +1083,6 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
         incrementCounter(byFeature, normalizeDimension(event.feature) || '(nezadano)');
         incrementCounter(byPlan, normalizeDimension(event.plan_id) || normalizeDimension(event.plan_type) || '(nezadano)');
 
-        estimatedMinorValue += estimateEventMinorValue(event);
 
         const date = getEventDate(event.created_at);
         if (date) {
@@ -1293,7 +1265,8 @@ export function buildFunnelReport(events = [], { days = DEFAULT_FUNNEL_DAYS, sin
             oneTimeLifecycleScheduleRate,
             authPageToFormStartRate,
             authFormStartToSubmitRate,
-            estimatedValueCzk: Math.round(estimatedMinorValue / 100)
+            estimatedValueCzk: (revenue.byCurrency.CZK || 0) / 100,
+            revenue
         },
         byEvent,
         topSources: topCounter(bySource),
