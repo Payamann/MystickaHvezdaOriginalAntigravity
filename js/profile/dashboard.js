@@ -139,7 +139,7 @@ function readTarotYesNoUpgradeContext() {
         if (!context || typeof context !== 'object'
             || !String(context.question || '').trim()
             || !String(context.answerLabel || '').trim()
-            || !createdAt
+            || !Number.isFinite(createdAt) || createdAt <= 0 || createdAt > Date.now()
             || Date.now() - createdAt > TAROT_YES_NO_UPGRADE_CONTEXT_MAX_AGE_MS) {
             localStorage.removeItem(TAROT_YES_NO_UPGRADE_CONTEXT_KEY);
             return null;

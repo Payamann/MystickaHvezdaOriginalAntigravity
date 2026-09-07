@@ -1,3 +1,13 @@
+function hasStoredAuthRedirect() {
+    try {
+        return Boolean(sessionStorage.getItem('pending_plan')
+            || sessionStorage.getItem('post_auth_activation')
+            || sessionStorage.getItem('post_auth_redirect_pending'));
+    } catch {
+        return false;
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const PLAN_COPY = {
         pruvodce: {
@@ -430,11 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const authFlowId = createAuthFlowId();
 
-    const hasPendingAuthRedirect = () => Boolean(
-        sessionStorage.getItem('pending_plan')
-        || sessionStorage.getItem('post_auth_activation')
-        || sessionStorage.getItem('post_auth_redirect_pending')
-    );
+    const hasPendingAuthRedirect = hasStoredAuthRedirect;
 
     const setBlockVisible = (element, visible) => {
         if (!element) return;
@@ -1126,9 +1132,7 @@ document.addEventListener('auth:changed', () => {
         // stored in localStorage. Redirecting to /profil.html here would race with
         // (and usually kill) that checkout navigation — loginSuccess owns the
         // redirect in that case and clears the entry itself.
-        if (sessionStorage.getItem('pending_plan')
-            || sessionStorage.getItem('post_auth_activation')
-            || sessionStorage.getItem('post_auth_redirect_pending')
+        if (hasStoredAuthRedirect()
             || window.Auth?.getPostVerificationCheckout?.()) {
             return;
         }

@@ -539,22 +539,26 @@
             ...(requestedCard ? { requested_card: requestedCard } : {})
         };
 
-        storeTarotYesNoUpgradeContext(lastResult, source);
+        const contextStored = storeTarotYesNoUpgradeContext(lastResult, source);
         storePendingTarotYesNoReading(lastResult, {
             source,
             feature: TAROT_YES_NO_FEATURE
         });
 
-        window.MH_ANALYTICS?.trackCTA?.(source, {
-            plan_id: TAROT_YES_NO_PLAN_ID,
-            feature: TAROT_YES_NO_FEATURE,
-            has_preserved_question: Boolean(lastResult?.question),
-            ...checkoutMetadata
-        });
+        try {
+            window.MH_ANALYTICS?.trackCTA?.(source, {
+                plan_id: TAROT_YES_NO_PLAN_ID,
+                feature: TAROT_YES_NO_FEATURE,
+                has_preserved_question: contextStored,
+                ...checkoutMetadata
+            });
+        } catch (error) {
+            console.warn('[Tarot ANO/NE] Upgrade analytics unavailable:', error.message);
+        }
 
         void trackTarotYesNoFunnelEvent('paywall_cta_clicked', source, {
             destination: window.Auth?.isPremium?.() ? '/tarot.html' : '/cenik.html',
-            has_preserved_question: Boolean(lastResult?.question),
+            has_preserved_question: contextStored,
             ...(requestedCard ? { requested_card: requestedCard } : {})
         });
 

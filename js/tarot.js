@@ -29,8 +29,8 @@ function cleanTarotContextValue(value, maxLength = 120) {
 function getTarotEntryContext() {
     const params = new URLSearchParams(window.location.search);
     const context = {};
-    const entrySource = cleanTarotContextValue(params.get('source'));
-    const entryFeature = cleanTarotContextValue(params.get('feature'));
+    const entrySource = cleanTarotContextValue(params.get('entry_source')) || cleanTarotContextValue(params.get('source'));
+    const entryFeature = cleanTarotContextValue(params.get('entry_feature')) || cleanTarotContextValue(params.get('feature'));
     const requestedCard = cleanTarotContextValue(getRequestedTarotCardName());
     const rawCard = cleanTarotContextValue(params.get('card'));
 
@@ -135,12 +135,16 @@ function startTarotUpgradeFlow(spreadType, source = 'tarot_inline_upsell') {
         entry_feature: entryContext.entry_feature || feature,
         ...entryContext
     };
-    window.MH_ANALYTICS?.trackCTA?.(source, {
-        plan_id: planId,
-        spread_type: spreadType,
-        feature,
-        ...checkoutMetadata
-    });
+    try {
+        window.MH_ANALYTICS?.trackCTA?.(source, {
+            plan_id: planId,
+            spread_type: spreadType,
+            feature,
+            ...checkoutMetadata
+        });
+    } catch (error) {
+        console.warn('[Tarot] Upgrade analytics unavailable:', error?.message);
+    }
 
     void trackTarotFunnelEvent('paywall_cta_clicked', source, spreadType, {
         destination: '/cenik.html'
@@ -248,7 +252,7 @@ function readTarotYesNoUpgradeContext() {
         const createdAt = Number(context?.createdAt || 0);
         const question = String(context?.question || '').trim().slice(0, 500);
         const answerLabel = String(context?.answerLabel || '').trim().slice(0, 80);
-        if (!question || !answerLabel || !createdAt
+        if (!question || !answerLabel || !Number.isFinite(createdAt) || createdAt <= 0 || createdAt > Date.now()
             || Date.now() - createdAt > TAROT_YES_NO_UPGRADE_CONTEXT_MAX_AGE_MS) {
             localStorage.removeItem(TAROT_YES_NO_UPGRADE_CONTEXT_KEY);
             return null;

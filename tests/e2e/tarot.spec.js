@@ -703,6 +703,35 @@ test.describe('Tarot Ano/Ne', () => {
         }));
     });
 
+    test('pokračování přežije výpadek analytiky i úložiště otázky', async ({ page }) => {
+        const events = [];
+        await page.route('**/api/payment/funnel-event', async route => {
+            events.push(JSON.parse(route.request().postData() || '{}'));
+            await route.fulfill({ json: { success: true } });
+        });
+        await page.goto('/tarot-ano-ne.html');
+        await waitForPageReady(page);
+        await page.fill('#question-input', 'Mám dnes udělat první krok?');
+        await page.locator('.tarot-card').first().click();
+        await expect(page.locator('#result-panel')).toHaveClass(/show/);
+        await page.evaluate(() => {
+            window.getCSRFToken = async () => 'test-token';
+            window.MH_ANALYTICS.trackCTA = () => { throw new Error('analytics offline'); };
+            const original = Storage.prototype.setItem;
+            Storage.prototype.setItem = function (key, value) {
+                if (key === 'mh_tarot_yes_no_upgrade_context') throw new Error('storage unavailable');
+                return original.call(this, key, value);
+            };
+            window.Auth.isLoggedIn = () => false;
+            window.Auth.isPremium = () => false;
+            window.Auth.startPlanCheckout = plan => { window.__continuedPlan = plan; };
+        });
+        await page.locator('.tarot-result-upgrade-bridge [data-tarot-yes-no-upgrade]').click();
+        await expect.poll(() => page.evaluate(() => window.__continuedPlan)).toBe('pruvodce');
+        await expect.poll(() => events.find(event => event.eventName === 'paywall_cta_clicked')?.metadata?.has_preserved_question).toBe(false);
+        expect(JSON.stringify(events)).not.toContain('Mám dnes udělat první krok?');
+    });
+
     test('po výsledku nabízí neblokující hlubší výklad a měří placený záměr', async ({ page }) => {
         const funnelEvents = [];
         await page.route('**/api/payment/funnel-event', async (route) => {
@@ -908,7 +937,7 @@ test.describe('Tarot Ano/Ne', () => {
         const primaryButtons = page.locator('#result-panel .btn--primary');
         await expect(primaryButtons).toHaveCount(1);
         await expect(primaryButtons.first()).toHaveAttribute('data-tarot-yes-no-upgrade', 'tarot_yes_no_result');
-        await expect(primaryButtons.first()).toContainText('Navázat tříkartovým výkladem');
+        await expect(primaryButtons.first()).toContainText('Pokračovat v členství');
 
         // Duplicitní registrace ani e-mailový formulář ve výsledku nejsou.
         await expect(page.locator('#tarot-yes-no-profile-cta')).toHaveCount(0);
