@@ -155,13 +155,44 @@
         }
     }
 
-    function initStatusBanners() {
+    let verifyingPayment = false;
+    let verifiedPayment = false;
+    async function initStatusBanners() {
         const params = new URLSearchParams(window.location.search);
         const status = params.get('status');
         const sessionId = params.get('session_id') || null;
         const attribution = getAttribution();
 
         if (status === 'success') {
+            if (verifyingPayment || verifiedPayment) return;
+            verifyingPayment = true;
+            const notice = document.getElementById('bannerVerification');
+            const retry = document.getElementById('pdf-verification-retry');
+            notice?.classList.add('visible');
+            document.getElementById('order')?.setAttribute('hidden', 'true');
+            if (retry) { retry.hidden = true; retry.onclick = initStatusBanners; }
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 6000);
+            let result = null;
+            try {
+                if (sessionId && /^cs_[A-Za-z0-9_]{3,200}$/.test(sessionId)) {
+                    const response = await fetch(`/api/osobni-mapa/checkout-result?session_id=${encodeURIComponent(sessionId)}`, {
+                        credentials: 'include', cache: 'no-store', signal: controller.signal
+                    });
+                    const body = response.ok ? await response.json() : null;
+                    if (body?.success) result = body.result;
+                }
+            } catch { /* Never infer payment success from a failed lookup. */ }
+            finally { clearTimeout(timer); verifyingPayment = false; }
+            if (result?.status !== 'paid' || result.product_id !== PRODUCT.id || !result.transaction_id
+                || !Number.isFinite(result.value) || result.value <= 0 || result.currency !== 'CZK') {
+                const message = document.getElementById('pdf-verification-message');
+                if (message) message.textContent = 'Platbu zatím nemůžeme potvrdit. Neplať znovu: ověř stav později nebo napiš na support@mystickahvezda.cz. PDF se po potvrzené platbě doručuje e-mailem i bez této stránky.';
+                if (retry) retry.hidden = false;
+                return;
+            }
+            verifiedPayment = true;
+            notice?.classList.remove('visible');
             clearOrderDraft();
             document.getElementById('bannerSuccess')?.classList.add('visible');
             document.getElementById('order')?.setAttribute('hidden', 'true');
@@ -172,10 +203,11 @@
                 source: attribution.source,
                 feature: attribution.feature
             });
-            trackAnalytics('trackPurchaseCompleted', PRODUCT.id, PRODUCT.price, PRODUCT.currency, {
+            trackAnalytics('trackPurchaseCompleted', PRODUCT.id, result.value, result.currency, {
+                verified: true,
                 product_type: PRODUCT.type,
                 product_name: PRODUCT.name,
-                transaction_id: sessionId || undefined,
+                transaction_id: result.transaction_id,
                 source: attribution.source,
                 feature: attribution.feature
             });

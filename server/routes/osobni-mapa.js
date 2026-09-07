@@ -1,4 +1,6 @@
 import express from 'express';
+import { randomBytes } from 'node:crypto';
+import { createPdfCheckoutResultRouter, pdfProofHash, pdfProofCookie } from './pdf-checkout-result.js';
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -12,6 +14,7 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const router = express.Router();
+router.use(createPdfCheckoutResultRouter(getStripeClient));
 const APP_URL = process.env.APP_URL || 'http://localhost:3001';
 const LIVE_PERSONAL_MAP_PRICE_ID = 'price_1TRAzfAo8bdbnsKa82dgiM61';
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY || '';
@@ -204,8 +207,8 @@ router.post('/checkout', async (req, res) => {
             }
         });
         const stripe = getStripeClient();
+        const returnProof = randomBytes(32).toString('hex');
         const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
             customer_email: email,
             line_items: [buildLineItem(customerName)],
             mode: 'payment',
@@ -214,6 +217,7 @@ router.post('/checkout', async (req, res) => {
             cancel_url: `${APP_URL}/osobni-mapa.html?status=cancel&source=${encodeURIComponent(source)}`,
             metadata: {
                 productType: PRODUCT.type,
+                returnProofHash: pdfProofHash(returnProof),
                 productId: PRODUCT.id,
                 productYear: period.start.slice(0, 4),
                 productPeriodStart: period.start,
@@ -242,6 +246,10 @@ router.post('/checkout', async (req, res) => {
             }
         });
 
+        res.cookie(pdfProofCookie(session.id), returnProof, {
+            httpOnly: true, secure: APP_URL.startsWith('https://'), sameSite: 'lax',
+            path: '/api/osobni-mapa', maxAge: 2 * 60 * 60 * 1000
+        });
         return res.json({ url: session.url });
     } catch (err) {
         console.error('[PERSONAL_MAP] Checkout session error:', err.message);

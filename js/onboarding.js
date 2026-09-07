@@ -357,9 +357,31 @@ function getPrimaryInterestKey() {
     return hasInteractedWithInterests ? 'horoskopy' : getContextDefaultInterest() || 'horoskopy';
 }
 
+// Personalization and telemetry are optional; neither may block the first result.
+function readOnboardingStorage(key) {
+    try { return localStorage.getItem(key); } catch { return null; }
+}
+
+function writeOnboardingStorage(key, value) {
+    try { localStorage.setItem(key, value); } catch { /* Continue with in-memory selections. */ }
+}
+
+function trackOnboardingEvent(name, payload) {
+    try {
+        Promise.resolve(window.MH_ANALYTICS?.trackEvent?.(name, payload)).catch(() => {});
+    } catch { /* Analytics must never interrupt navigation. */ }
+}
+
+function readOnboardingPreferences() {
+    try {
+        const value = JSON.parse(readOnboardingStorage('mh_user_prefs') || '{}');
+        return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+    } catch { return {}; }
+}
+
 function readStoredJsonArray(key) {
     try {
-        const parsed = JSON.parse(localStorage.getItem(key) || '[]');
+        const parsed = JSON.parse(readOnboardingStorage(key) || '[]');
         return Array.isArray(parsed) ? parsed : [];
     } catch {
         return [];
@@ -452,7 +474,7 @@ function activateQuickOnboardingFlow() {
     setNextButtonEnabled(Boolean(selectedSign));
     goStep(2);
 
-    window.MH_ANALYTICS?.trackEvent?.('onboarding_quick_flow_viewed', {
+    trackOnboardingEvent('onboarding_quick_flow_viewed', {
         entry_source: getOnboardingContext().source || null,
         entry_feature: getOnboardingContext().feature || null,
         has_saved_sign: Boolean(selectedSign)
@@ -471,7 +493,7 @@ function applySelectedSign(sign, { persist = false } = {}) {
     selectedSign = sign;
     setNextButtonEnabled(true);
     if (persist) {
-        localStorage.setItem('mh_zodiac', selectedSign);
+        writeOnboardingStorage('mh_zodiac', selectedSign);
         savePersonalizationSign(selectedSign);
     }
     updateFinishCta();
@@ -491,16 +513,10 @@ function applySelectedInterests(interests = []) {
 
 function restoreSavedSelections() {
     const params = new URLSearchParams(window.location.search);
-    const storedPrefs = (() => {
-        try {
-            return JSON.parse(localStorage.getItem('mh_user_prefs') || '{}');
-        } catch {
-            return {};
-        }
-    })();
+    const storedPrefs = readOnboardingPreferences();
     const initialSign = params.get('sign')
         || params.get('znak')
-        || localStorage.getItem('mh_zodiac')
+        || readOnboardingStorage('mh_zodiac')
         || storedPrefs.sign;
     const urlInterest = params.get('interest') || params.get('tema');
     const storedInterests = readStoredJsonArray('mh_interests');
@@ -537,27 +553,19 @@ function renderContextContent() {
 function savePersonalizationSign(sign) {
     if (!sign) return;
 
-    try {
-        const current = JSON.parse(localStorage.getItem('mh_user_prefs') || '{}');
-        localStorage.setItem('mh_user_prefs', JSON.stringify({
+    const current = readOnboardingPreferences();
+    writeOnboardingStorage('mh_user_prefs', JSON.stringify({
             ...current,
             sign,
             signSetAt: Date.now(),
             version: current.version || '1.0'
-        }));
-    } catch {
-        localStorage.setItem('mh_user_prefs', JSON.stringify({
-            sign,
-            signSetAt: Date.now(),
-            version: '1.0'
-        }));
-    }
+    }));
 }
 
 function markOnboardingComplete() {
-    localStorage.setItem('mh_onboarded', '1');
+    writeOnboardingStorage('mh_onboarded', '1');
     if (selectedSign) {
-        localStorage.setItem('mh_zodiac', selectedSign);
+        writeOnboardingStorage('mh_zodiac', selectedSign);
         savePersonalizationSign(selectedSign);
     }
 }
@@ -588,7 +596,7 @@ function goStep(n) {
     if (n === 3) updateFinishCta();
     scrollOnboardingStepIntoView(n);
 
-    window.MH_ANALYTICS?.trackEvent?.('onboarding_step_viewed', {
+    trackOnboardingEvent('onboarding_step_viewed', {
         step_number: n,
         entry_source: getOnboardingContext().source || null,
         entry_feature: getOnboardingContext().feature || null
@@ -598,7 +606,7 @@ function goStep(n) {
 function selectSign(btn) {
     applySelectedSign(btn.dataset.sign, { persist: true });
 
-    window.MH_ANALYTICS?.trackEvent?.('onboarding_sign_selected', {
+    trackOnboardingEvent('onboarding_sign_selected', {
         sign: selectedSign
     });
 }
@@ -616,7 +624,7 @@ function toggleInterest(btn) {
 
     updateFinishCta();
 
-    window.MH_ANALYTICS?.trackEvent?.('onboarding_interest_toggled', {
+    trackOnboardingEvent('onboarding_interest_toggled', {
         interest: btn.dataset.interest || btn.textContent.trim(),
         selected: btn.classList.contains('selected')
     });
@@ -716,14 +724,15 @@ async function finishOnboarding(action) {
     const destinationHref = destination.href('onboarding_complete');
 
     if (interests.length) {
-        localStorage.setItem('mh_interests', JSON.stringify(interests));
+        writeOnboardingStorage('mh_interests', JSON.stringify(interests));
     }
     markOnboardingComplete();
+    const completionTarget = resolveCompletionTarget(destinationHref);
 
-    window.MH_ANALYTICS?.trackEvent?.('onboarding_completed', {
+    trackOnboardingEvent('onboarding_completed', {
         sign: selectedSign,
         interests_count: interests.length,
-        destination: destinationHref,
+        destination: completionTarget,
         entry_source: getOnboardingContext().source || null,
         entry_feature: getOnboardingContext().feature || null,
         plan: getOnboardingContext().plan || null,
@@ -731,8 +740,8 @@ async function finishOnboarding(action) {
         flow: getOnboardingContext().flow
     });
 
-    await notifyBackendOnboardingComplete({ destination: destinationHref, skipped: false });
-    window.location.href = resolveCompletionTarget(destinationHref);
+    await notifyBackendOnboardingComplete({ destination: completionTarget, skipped: false });
+    window.location.href = completionTarget;
 }
 
 async function skipOnboarding(event, action) {
@@ -743,7 +752,7 @@ async function skipOnboarding(event, action) {
 
     markOnboardingComplete();
 
-    window.MH_ANALYTICS?.trackEvent?.('onboarding_skipped', {
+    trackOnboardingEvent('onboarding_skipped', {
         destination: getPrimaryDestination().href('onboarding_skip'),
         entry_source: getOnboardingContext().source || null,
         entry_feature: getOnboardingContext().feature || null,

@@ -26,6 +26,7 @@ import {
 import { isProductionRuntime } from './config/runtime.js';
 import { sendOperationalAlert } from './services/alerts.js';
 import { REQUIRED_STRIPE_WEBHOOK_EVENTS } from './config/stripe-webhooks.js';
+import { createCheckoutResultRouter } from './routes/checkout-result.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -50,6 +51,7 @@ if (isProductionRuntime()) {
 const stripe = new Stripe(stripeSecretKey);
 const APP_URL = process.env.APP_URL || 'http://localhost:3001';
 const router = express.Router();
+router.use(createCheckoutResultRouter({ stripeClient: stripe }));
 
 import {
     DEFAULT_PREMIUM_PLAN_TYPE,

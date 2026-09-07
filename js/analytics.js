@@ -615,6 +615,9 @@ const MH_ANALYTICS = {
     },
 
     trackPurchaseCompleted(productId = 'unknown', value = null, currency = 'CZK', context = {}) {
+        // Legacy success URLs and catalog prices are not proof of revenue.
+        if (context.verified !== true || !context.transaction_id
+            || !Number.isFinite(value) || value <= 0 || !/^[A-Z]{3}$/.test(currency)) return false;
         const productType = context.product_type || 'subscription';
         const transactionId = context.transaction_id || context.session_id || null;
         const purchaseKey = transactionId ? `transaction:${transactionId}` : null;

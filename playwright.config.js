@@ -84,7 +84,9 @@ export default defineConfig({
         url: `${E2E_BASE_URL}/api/health`,
         // Lokálně reuse (rychlejší), v CI vždy čerstvý start
         reuseExistingServer: !process.env.CI,
-        timeout: 30_000,
+        // Cold starts on Windows/OneDrive can exceed 30s while loading modules.
+        // This only extends server startup, not individual test timeouts.
+        timeout: 120_000,
         env: {
             NODE_ENV: 'test',
             PORT: String(E2E_PORT),

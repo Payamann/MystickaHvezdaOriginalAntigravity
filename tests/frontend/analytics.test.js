@@ -166,10 +166,12 @@ describe('consent-gated analytics queue', () => {
         harness.gtag.mockClear();
 
         expect(harness.window.MH_ANALYTICS.trackPurchaseCompleted('pruvodce', 199, 'CZK', {
+            verified: true,
             transaction_id: 'checkout-session-1',
             product_name: 'Hvezdny pruvodce'
         })).toBe(true);
         expect(harness.window.MH_ANALYTICS.trackPurchaseCompleted('pruvodce', 199, 'CZK', {
+            verified: true,
             transaction_id: 'checkout-session-1',
             product_name: 'Hvezdny pruvodce'
         })).toBe(false);
@@ -187,6 +189,15 @@ describe('consent-gated analytics queue', () => {
         expect(request.body).not.toContain('purchase_completed');
         expect(harness.gtag).toHaveBeenCalledTimes(1);
         expect(harness.gtag).toHaveBeenCalledWith('event', 'purchase', expect.any(Object));
+    });
+
+    test('does not manufacture purchases from URL context, zero amounts or missing IDs', async () => {
+        const harness = loadAnalytics();
+        for (const context of [{ transaction_id: 'fake' }, { verified: true }, {}]) {
+            expect(harness.window.MH_ANALYTICS.trackPurchaseCompleted('pruvodce', 199, 'CZK', context)).toBe(false);
+        }
+        expect(harness.window.MH_ANALYTICS.trackPurchaseCompleted('pruvodce', 0, 'CZK', { verified: true, transaction_id: 'trial' })).toBe(false);
+        expect(harness.window.MH_ANALYTICS_QUEUE.filter(event => event.name === 'purchase')).toHaveLength(0);
     });
 
     test('retains the full batch when the server only accepts part of it', async () => {

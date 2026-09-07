@@ -375,6 +375,18 @@ function setPrices(billing = currentBilling) {
         if (checkoutButton) {
             checkoutButton.dataset.plan = planConfig.planId;
             checkoutButton.textContent = 'Začít 7 dní za 0 Kč';
+
+            // Keep the real link in sync with the JS checkout path. This is
+            // important for logged-out fallbacks and for opening a CTA in a
+            // new tab, where the click handler cannot rewrite the destination.
+            const checkoutUrl = new URL(checkoutButton.getAttribute('href') || '/prihlaseni.html', window.location.origin);
+            checkoutUrl.searchParams.set('plan', planConfig.planId);
+            checkoutUrl.searchParams.set('billing_interval', billing);
+            const pageParams = new URLSearchParams(window.location.search);
+            ['source', 'feature', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content'].forEach((key) => {
+                if (pageParams.has(key)) checkoutUrl.searchParams.set(key, pageParams.get(key));
+            });
+            checkoutButton.setAttribute('href', `${checkoutUrl.pathname}${checkoutUrl.search}${checkoutUrl.hash}`);
         }
         if (trialNote) {
             const renewalPeriod = billing === 'yearly' ? 'rok' : 'měsíc';
@@ -1002,6 +1014,7 @@ function bindCheckoutButtons(context) {
         button.dataset.checkoutBound = '1';
 
         button.addEventListener('click', async (event) => {
+            if (!shouldControlTrackedNavigation(event)) return;
             event.preventDefault();
             const planId = button.dataset.plan;
             if (!planId) return;

@@ -91,6 +91,13 @@
     <div id="header-placeholder"></div>
 
     <main id="main-content" tabindex="-1">
+        <section class="pm-status" id="bannerVerification" aria-live="polite">
+            <div class="pm-status__inner">
+                <h2>Ověřujeme platbu za PDF</h2>
+                <p id="pdf-verification-message">Chvíli prosím počkej. Samotný návrat z platební stránky ještě nepotvrzuje zaplacení.</p>
+                <button id="pdf-verification-retry" type="button" class="pm-button pm-button--ghost" hidden>Ověřit znovu</button>
+            </div>
+        </section>
         <section class="pm-status" id="bannerSuccess" aria-live="polite">
             <div class="pm-status__inner pm-status__inner--success">
                 <i data-lucide="sparkles" aria-hidden="true"></i>

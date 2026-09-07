@@ -160,6 +160,12 @@ test.describe('Profil stránka', () => {
 
 test.describe('Profil aktivace', () => {
     async function mockLoggedInProfile(page, options = {}) {
+        await page.route('**/api/payment/checkout-result?*', route => route.fulfill({
+            status: 200, contentType: 'application/json',
+            body: JSON.stringify({ success: true, result: options.checkoutResult || {
+                status: 'paid', product_id: 'pruvodce', value: 149, currency: 'CZK', transaction_id: 'in_verified'
+            } })
+        }));
         const user = {
             id: 'profile-user-1',
             email: 'profil-activation@example.com',
@@ -383,6 +389,39 @@ test.describe('Profil aktivace', () => {
         expect(firstReadingHref).toContain('entry_feature=tarot_multi_card');
         expect(firstReadingHref).toContain('plan=pruvodce');
     });
+
+    for (const state of ['paid', 'trial', 'pending', 'unavailable']) {
+        test(`payment revenue truth: ${state} never trusts the return URL price`, async ({ page }) => {
+            await mockLoggedInProfile(page, { checkoutResult: {
+                status: state, product_id: 'pruvodce', transaction_id: 'in_verified', value: state === 'paid' ? 149 : 0, currency: 'CZK'
+            } });
+            if (state === 'unavailable') {
+                await page.route('**/api/payment/checkout-result?*', route => route.fulfill({ status: 502, body: '{}' }));
+            }
+            await page.addInitScript(() => {
+                window.__paymentEvents = [];
+                Object.defineProperty(window, 'MH_ANALYTICS', { writable: false, value: {
+                    trackEvent: (name, data) => window.__paymentEvents.push({ name, data }),
+                    trackPaymentResult: (status, data) => window.__paymentEvents.push({ name: 'return', status, data }),
+                    trackPurchaseCompleted: (product, value, currency, data) => window.__paymentEvents.push({ name: 'purchase', product, value, currency, data })
+                } });
+            });
+            const response = page.waitForResponse(res => res.url().includes('/payment/checkout-result?'));
+            await page.goto('/profil.html?payment=success&plan=vip-majestrat&session_id=cs_test_return');
+            await response;
+            await expect(page.locator('#profile-dashboard')).toBeVisible();
+            if (state === 'paid') {
+                await expect.poll(() => page.evaluate(() => window.__paymentEvents.filter(e => e.name === 'purchase'))).toHaveLength(1);
+                const purchase = await page.evaluate(() => window.__paymentEvents.find(e => e.name === 'purchase'));
+                expect(purchase).toMatchObject({ product: 'pruvodce', value: 149, currency: 'CZK', data: { verified: true, transaction_id: 'in_verified' } });
+            } else {
+                if (state === 'trial') await expect.poll(() => page.evaluate(() => window.__paymentEvents.some(e => e.name === 'subscription_trial_confirmed'))).toBe(true);
+                expect(await page.evaluate(() => window.__paymentEvents.filter(e => e.name === 'purchase'))).toHaveLength(0);
+            }
+            // Even a confirmed payment must not grant premium before the account API does.
+            await expect(page.locator('#premium-activation-card')).toBeHidden();
+        });
+    }
 
     const paymentReturnCases = [
         ['tarot_multi_card', 'tarot.html'],

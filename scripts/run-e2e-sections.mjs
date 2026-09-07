@@ -32,6 +32,7 @@ const sections = [
             'tests/e2e/auth.spec.js',
             'tests/e2e/newsletter-popup.spec.js',
             'tests/e2e/profil.spec.js',
+            'tests/e2e/onboarding-resilience.spec.js',
         ],
     },
     {
@@ -62,6 +63,7 @@ const sections = [
         defaultWorkers: 1,
         files: [
             'tests/e2e/annual-horoscope.spec.js',
+            'tests/e2e/pdf-revenue.spec.js',
             'tests/e2e/cenik-payment.spec.js',
             'tests/e2e/checkout-fallbacks.spec.js',
         ],

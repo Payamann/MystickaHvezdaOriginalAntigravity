@@ -106,6 +106,34 @@ async function getCookieOverlapMetrics(page, selectors) {
 }
 
 test.describe('Pricing visual smoke', () => {
+    test('annual link preserves new-tab context and does not intercept modified clicks', async ({ page }) => {
+        await preparePricingPage(page, DESKTOP_VIEWPORT, '?source=seo_tarot&feature=tarot&utm_source=google&utm_medium=organic');
+        await page.locator('#toggle-yearly').click();
+        const cta = page.locator('.plan-checkout-btn[data-plan="pruvodce-rocne"]');
+        const href = await cta.getAttribute('href');
+        for (const modifier of ['ctrlKey', 'metaKey', 'shiftKey']) {
+            const intercepted = await cta.evaluate((link, key) => {
+                let wasPrevented;
+                document.addEventListener('click', event => {
+                    wasPrevented = event.defaultPrevented;
+                    // Suppress native tab creation in this assertion only.
+                    event.preventDefault();
+                }, { once: true });
+                link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, [key]: true }));
+                return wasPrevented;
+            }, modifier);
+            expect(intercepted).toBe(false);
+        }
+        const popup = await page.context().newPage();
+        await popup.goto(new URL(href, page.url()).href);
+        expectQuery(popup.url(), {
+            plan: 'pruvodce-rocne', billing_interval: 'yearly', source: 'seo_tarot',
+            feature: 'tarot', utm_source: 'google', utm_medium: 'organic'
+        });
+        expect(new URL(page.url()).pathname).toBe('/cenik.html');
+        await popup.close();
+    });
+
     for (const { name, viewport } of VIEWPORTS) {
         test(`pricing CTAs keep billing and signup context on ${name}`, async ({ page }) => {
             await mockFunnelTracking(page);
@@ -138,11 +166,25 @@ test.describe('Pricing visual smoke', () => {
 
             await yearlyToggle.click();
             await expect(yearlyToggle).toHaveAttribute('aria-pressed', 'true');
-            await expect(page.locator('.plan-checkout-btn[data-plan="pruvodce-rocne"]')).toBeVisible();
+            const yearlyGuideCta = page.locator('.plan-checkout-btn[data-plan="pruvodce-rocne"]');
+            await expect(yearlyGuideCta).toBeVisible();
+            expectQuery(await yearlyGuideCta.getAttribute('href'), {
+                mode: 'register',
+                redirect: '/cenik.html',
+                plan: 'pruvodce-rocne',
+                billing_interval: 'yearly',
+                source: 'pricing_page',
+                feature: 'premium_membership'
+            });
 
             await monthlyToggle.click();
             await expect(monthlyToggle).toHaveAttribute('aria-pressed', 'true');
-            await expect(page.locator('.plan-checkout-btn[data-plan="pruvodce"]')).toBeVisible();
+            const monthlyGuideCta = page.locator('.plan-checkout-btn[data-plan="pruvodce"]');
+            await expect(monthlyGuideCta).toBeVisible();
+            expectQuery(await monthlyGuideCta.getAttribute('href'), {
+                plan: 'pruvodce',
+                billing_interval: 'monthly'
+            });
 
             await Promise.all([
                 page.waitForURL(url => url.pathname === '/prihlaseni.html', { timeout: 10_000, waitUntil: 'domcontentloaded' }),
@@ -185,7 +227,7 @@ test.describe('Pricing visual smoke', () => {
         expect(metrics.cookieHeight).toBeLessThanOrEqual(72);
         expect(metrics.overflow).toBeLessThanOrEqual(2);
         for (const item of metrics.overlaps) {
-            expect(item.visible, `${item.selector} should be visible`).toBe(true);
+            expect(item.visible, `${item.selector} should be visible: ${JSON.stringify(item)}`).toBe(true);
             expect(item.overlap, `${item.selector} should not overlap cookie banner`).toBe(false);
         }
     });
@@ -231,6 +273,10 @@ test.describe('Pricing visual smoke', () => {
         await expect(recommendation).toBeVisible();
         await expect(recommendation).toContainText(/Osv/i);
         await expect(recommendationAction).toBeVisible();
+
+        // Visibility in the DOM does not imply intersection with a small mobile
+        // viewport. Test cookie occlusion after bringing the CTA into view.
+        await recommendationAction.scrollIntoViewIfNeeded();
 
         const metrics = await getCookieOverlapMetrics(page, [
             '#pricing-plan-recommendation',

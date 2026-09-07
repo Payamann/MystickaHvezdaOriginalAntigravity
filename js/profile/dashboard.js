@@ -12,13 +12,13 @@ import {
     getReadingTitle,
     loadPlanManifest,
     normalizePlanType,
-    formatPlanLabel,
-    getPlanPriceCzk
+    formatPlanLabel
 } from './shared.js';
 import { loadReadings, showMoreReadings, handleFilterChange } from './readings.js';
 import { loadFavorites } from './favorites.js';
 import { toggleAvatarPicker, selectAvatar, loadSubscriptionStatus, initSettingsForm, saveSettings } from './settings.js';
 import { viewReading, closeReadingModal, toggleFavoriteModal, toggleFavorite, deleteReading } from './modal.js';
+import { verifyCheckoutResult } from './checkout-result.js';
 
 const PREMIUM_ACTIVATION_KEY = 'mh_premium_activation_seen';
 const SIGNUP_INTENT_KEY = 'mh_signup_intent';
@@ -41,7 +41,7 @@ function callProfileAnalytics(methodName, ...args) {
     }
 
     try {
-        method.apply(window.MH_ANALYTICS, args);
+        Promise.resolve(method.apply(window.MH_ANALYTICS, args)).catch(() => {});
         return true;
     } catch (error) {
         console.warn(`[Profile analytics] ${methodName} failed:`, error?.message || error);
@@ -61,6 +61,14 @@ function trackProfileEvent(eventName, payload = {}, attemptsLeft = 12) {
 
 function trackProfileCta(source, payload = {}) {
     callProfileAnalytics('trackCTA', source, payload);
+}
+
+function trackConfirmedPurchase(product, value, currency, context, attemptsLeft = 12) {
+    if (typeof window.MH_ANALYTICS?.trackPurchaseCompleted !== 'function') {
+        if (attemptsLeft > 0) window.setTimeout(() => trackConfirmedPurchase(product, value, currency, context, attemptsLeft - 1), 250);
+        return;
+    }
+    callProfileAnalytics('trackPurchaseCompleted', product, value, currency, context);
 }
 
 async function trackProfileFunnelEvent(eventName, { source = 'profile', feature = 'profile_history', planId = null, metadata = {} } = {}) {
@@ -568,7 +576,7 @@ function sanitizeProfileUrl(url) {
     return `${parsed.pathname}${parsed.search}${parsed.hash}`;
 }
 
-function handlePaymentReturnState() {
+function handlePaymentReturnState(subscription, user) {
     const params = new URLSearchParams(window.location.search);
     const paymentState = params.get('payment');
 
@@ -577,7 +585,7 @@ function handlePaymentReturnState() {
     }
 
     const paymentContext = {
-        state: paymentState,
+        state: paymentState === 'success' ? 'pending' : paymentState,
         planId: params.get('plan') || null,
         sessionId: params.get('session_id') || null,
         source: params.get('source') || null,
@@ -596,7 +604,7 @@ function handlePaymentReturnState() {
         const sessionId = paymentContext.sessionId;
         const source = paymentContext.source || 'profile_return';
         const feature = paymentContext.feature || paymentContext.entryFeature || null;
-        callProfileAnalytics('trackPaymentResult', 'success', {
+        callProfileAnalytics('trackPaymentResult', 'returned', {
             source,
             feature,
             plan_id: planId,
@@ -609,27 +617,43 @@ function handlePaymentReturnState() {
             utm_content: paymentContext.utmContent,
             card: paymentContext.card
         });
-        callProfileAnalytics('trackPurchaseCompleted', planId || 'subscription', getPlanPriceCzk(planId) || null, 'CZK', {
-            product_type: 'subscription',
-            transaction_id: sessionId,
-            source,
-            feature,
-            entry_source: paymentContext.entrySource,
-            entry_feature: paymentContext.entryFeature,
-            utm_source: paymentContext.utmSource,
-            utm_medium: paymentContext.utmMedium,
-            utm_campaign: paymentContext.utmCampaign,
-            utm_content: paymentContext.utmContent,
-            card: paymentContext.card
-        });
+        // Do not block dashboard rendering while Stripe verifies the return.
+        void verifyCheckoutResult(sessionId, { baseUrl: apiUrl(), headers: authHeaders() }).then(result => {
+            if (!result || result.status === 'pending') return;
+            paymentContext.state = 'success';
+            paymentContext.planId = result.product_id || paymentContext.planId;
+            if (result.status === 'paid') {
+                trackConfirmedPurchase(result.product_id, result.value, result.currency, {
+                    verified: true,
+                    product_type: 'subscription',
+                    transaction_id: result.transaction_id,
+                    source,
+                    feature,
+                    entry_source: paymentContext.entrySource,
+                    entry_feature: paymentContext.entryFeature,
+                    utm_source: paymentContext.utmSource,
+                    utm_medium: paymentContext.utmMedium,
+                    utm_campaign: paymentContext.utmCampaign,
+                    utm_content: paymentContext.utmContent
+                });
+            } else {
+                trackProfileEvent('subscription_trial_confirmed', { plan_id: result.product_id, source, feature });
+            }
+            renderPremiumActivation(subscription, user, paymentContext);
+            window.Auth?.showToast?.(
+                result.status === 'paid' ? 'Platba potvrzena' : 'Zkušební období potvrzeno',
+                'Aktuální stav členství najdeš v nastavení účtu. Aktivace se může projevit s krátkým zpožděním.',
+                'success'
+            );
+        }).catch(() => { /* Verification is optional to viewing the account, never to claiming revenue. */ });
         openProfileTab('settings');
         setTimeout(() => {
             document.getElementById('subscription-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 150);
         window.Auth?.showToast?.(
-            'Platba proběhla úspěšně',
-            'Předplatné je aktivní. Správu svého plánu najdete níže v nastavení účtu.',
-            'success'
+            'Ověřujeme výsledek objednávky',
+            'Návrat z platební stránky ještě nepotvrzuje platbu. Aktuální stav členství najdeš níže v nastavení.',
+            'info'
         );
     }
 
@@ -1766,7 +1790,7 @@ async function initProfile() {
         loadSubscriptionStatus()
     ]);
 
-    const paymentReturnContext = handlePaymentReturnState() || activePaymentReturnContext;
+    const paymentReturnContext = handlePaymentReturnState(subscription, user) || activePaymentReturnContext;
     renderPremiumActivation(subscription, user, paymentReturnContext);
     renderDailyGuidance(user, readings, subscription);
     renderActivationChecklist(user, readings, subscription);
