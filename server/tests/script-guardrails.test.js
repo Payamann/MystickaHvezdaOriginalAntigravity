@@ -238,7 +238,7 @@ describe('manual script guardrails', () => {
         expect(authHandoff).toMatch(/name: 'register-partner-match-result-bridge'[\s\S]*?expectedPaymentEvents: \['paywall_viewed', 'paywall_cta_clicked'\]/);
         expect(authHandoff).toContain('enterSynastryResultBridge');
         expect(authHandoff).toContain("name: 'register-partner-exit-intent-bridge'");
-        expect(authHandoff).toMatch(/name: 'register-partner-exit-intent-bridge'[\s\S]*?source: 'exit_intent_partnerska-shoda'[\s\S]*?feature: 'partnerska_detail'[\s\S]*?type: 'exit-intent-bridge'[\s\S]*?mockCheckoutSubmit: true/);
+        expect(authHandoff).toMatch(/name: 'register-partner-exit-intent-bridge'[\s\S]*?source: 'exit_intent_partnerska-shoda'[\s\S]*?feature: 'partnerska_detail'[\s\S]*?mockCheckoutSubmit: true/);
         expect(authHandoff).toContain('enterExitIntentBridge');
         expect(authHandoff).toContain("name: 'register-paid-runes'");
         expect(authHandoff).toMatch(/name: 'register-paid-runes'[\s\S]*?source: 'runes_auth_gate'[\s\S]*?feature: 'runy_hluboky_vyklad'[\s\S]*?mockCheckoutSubmit: true/);
@@ -395,14 +395,10 @@ describe('manual script guardrails', () => {
         expect(dataRetentionSource).toContain('[DATA_RETENTION] Scheduled cache pruning failed:');
     });
 
-    test('exit intent feature map uses existing pages and covered auth features', () => {
-        const source = readScript('js/exit-intent.js');
-        const authContextSource = readScript('js/prihlaseni.js');
-        const featureMap = extractStringMap(source, 'FEATURE_MAP');
-
-        for (const [pageSlug, feature] of Object.entries(featureMap)) {
-            expect(fs.existsSync(path.join(ROOT_DIR, `${pageSlug}.html`))).toBe(true);
-            expect(authContextSource).toMatch(new RegExp(`['"]?${feature}['"]?\\s*:`));
+    test('retired automatic promotions register no browsing triggers', () => {
+        for (const file of ['js/exit-intent.js', 'js/newsletter-popup.js']) {
+            const source = readScript(file);
+            expect(source).not.toMatch(/addEventListener|setTimeout|createElement/);
         }
     });
 });

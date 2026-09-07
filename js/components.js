@@ -6,9 +6,9 @@
 
 // Load consent-aware analytics on every page (lazy, non-blocking).
 (function () {
-    const scriptTag = document.querySelector('script[src*="components.js"], script[src*="core.js"]');
+    const scriptTag = document.querySelector('script[src*="components.js"], script[src*="core.js"], script[src*="components.mh-"], script[src*="core.mh-"]');
     const scriptSrc = scriptTag ? scriptTag.getAttribute('src') : '';
-    const basePath = scriptSrc.split(/js\/(?:dist\/)?(?:components|core)\.js/)[0] || '';
+    const basePath = scriptSrc.split(/js\/(?:dist\/)?(?:components|core)(?:\.mh-[a-f0-9]+)?\.js/)[0] || '';
 
     function appendOrderedScript(src) {
         const script = document.createElement('script');
@@ -75,9 +75,9 @@
 document.addEventListener('DOMContentLoaded', async () => {
     // Determine the base path based on where this script is loaded from
     // This allows the component loader to work correctly from subdirectories (like /blog/ or /sk/)
-    const scriptTag = document.querySelector('script[src*="components.js"], script[src*="core.js"]');
+    const scriptTag = document.querySelector('script[src*="components.js"], script[src*="core.js"], script[src*="components.mh-"], script[src*="core.mh-"]');
     const scriptSrc = scriptTag ? scriptTag.getAttribute('src') : '';
-    const basePath = scriptSrc.split(/js\/(?:dist\/)?(?:components|core)\.js/)[0] || '';
+    const basePath = scriptSrc.split(/js\/(?:dist\/)?(?:components|core)(?:\.mh-[a-f0-9]+)?\.js/)[0] || '';
 
     // Load header and footer in parallel for faster initial paint
     // Use high priority for header as it affects LCP/CLS

@@ -205,11 +205,6 @@ const SCENARIOS = [
             entry_feature: 'partnerska_detail'
         },
         expectedMode: 'register',
-        entryFlow: {
-            type: 'exit-intent-bridge',
-            path: '/partnerska-shoda.html',
-            triggerSelector: '#exit-cta'
-        },
         mockCheckoutSubmit: true
     },
     {
