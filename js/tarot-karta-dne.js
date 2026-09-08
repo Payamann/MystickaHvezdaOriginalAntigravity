@@ -62,13 +62,48 @@
     }
 
     function trackDailyCard(eventName, cardName, extra = {}) {
-        window.MH_ANALYTICS?.trackAction?.(eventName, {
+        try {
+            window.MH_ANALYTICS?.trackAction?.(eventName, {
+                source: SOURCE,
+                feature: FEATURE,
+                card: cardName,
+                date_key: getLocalDateKey(),
+                ...extra
+            });
+        } catch {
+            // Optional telemetry must never interrupt the card or its actions.
+        }
+    }
+
+    async function trackFirstDailyValue() {
+        const metadata = {
             source: SOURCE,
             feature: FEATURE,
-            card: cardName,
-            date_key: getLocalDateKey(),
-            ...extra
-        });
+            first_value_type: 'tarot_daily_card_result',
+            seo_cluster: 'tarot',
+            seo_page_type: 'free_tool',
+            path: window.location.pathname
+        };
+        try {
+            if (window.MH_ANALYTICS?.trackFirstValueCompleted) {
+                window.MH_ANALYTICS.trackFirstValueCompleted(FEATURE, metadata);
+            } else {
+                window.MH_ANALYTICS?.trackEvent?.('first_value_completed', metadata);
+            }
+        } catch {
+            // Keep the existing first-party funnel independent of GA availability.
+        }
+        try {
+            const csrfToken = await window.getCSRFToken?.();
+            if (!csrfToken) return;
+            await fetch(`${window.API_CONFIG?.BASE_URL || '/api'}/payment/funnel-event`, {
+                method: 'POST', credentials: 'include', keepalive: true,
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+                body: JSON.stringify({ eventName: 'first_value_completed', source: SOURCE, feature: FEATURE, metadata })
+            });
+        } catch {
+            // Best-effort measurement; never retry by blocking a visitor's action.
+        }
     }
 
     function readPendingProfileSave() {
@@ -504,9 +539,14 @@
             elements.button.textContent = 'Otočit kartu dne';
             let revealed = false;
             const revealOnce = (reason = 'manual', revealOptions = {}) => {
-                if (revealed && reason !== 'manual') return;
+                if (revealed) {
+                    if (reason === 'manual') elements.result.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return;
+                }
                 revealed = true;
                 revealCard(card, elements, { reason, ...revealOptions });
+                // A restored result after signup is not a new completed reading.
+                if (reason === 'manual') void trackFirstDailyValue();
             };
             elements.button.addEventListener('click', () => revealOnce('manual'));
             if (isProfileSaveReturn()) {

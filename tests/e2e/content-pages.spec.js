@@ -563,6 +563,42 @@ test.describe('Tarot karta dne', () => {
         }));
     });
 
+    test('karta dne měří první výsledek jednou i při chybě analytiky', async ({ page }) => {
+        const events = [];
+        await page.route('**/api/payment/funnel-event', async route => {
+            events.push(route.request().postDataJSON());
+            await route.fulfill({ json: { success: true } });
+        });
+        await page.goto('/tarot-karta-dne.html');
+        await waitForPageReady(page);
+        await page.evaluate(() => {
+            window.__dailyFirstValues = [];
+            window.getCSRFToken = async () => 'test-csrf';
+            window.MH_ANALYTICS = {
+                trackAction() { throw new Error('Analytics unavailable'); },
+                trackFirstValueCompleted(feature, metadata) {
+                    window.__dailyFirstValues.push({ feature, ...metadata });
+                    throw new Error('Analytics unavailable');
+                }
+            };
+        });
+        await page.locator('#tarot-daily-reveal').click();
+        await expect(page.locator('#tarot-daily-card-result')).toHaveAttribute('data-state', 'revealed');
+        await expect.poll(() => events.filter(e => e.eventName === 'first_value_completed').length).toBe(1);
+        await page.locator('#tarot-daily-reveal').click();
+        expect(await page.evaluate(() => window.__dailyFirstValues)).toEqual([
+            expect.objectContaining({ first_value_type: 'tarot_daily_card_result', source: 'tarot_daily_card_widget' })
+        ]);
+        expect(events.filter(e => e.eventName === 'first_value_completed')).toHaveLength(1);
+
+        events.length = 0;
+        await page.goto('/tarot-karta-dne.html?source=tarot_daily_card_profile_save_return');
+        await waitForPageReady(page);
+        await expect(page.locator('#tarot-daily-card-result')).toHaveAttribute('data-state', 'revealed');
+        await page.locator('#tarot-daily-reveal').click();
+        expect(events.filter(e => e.eventName === 'first_value_completed')).toHaveLength(0);
+    });
+
     test('interaktivní karta dne ukáže kartu a předá ji do výkladu', async ({ page }) => {
         await page.goto('/tarot-karta-dne.html');
         await waitForPageReady(page);
