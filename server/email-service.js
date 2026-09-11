@@ -6,7 +6,11 @@ import { isProductionRuntime } from './config/runtime.js';
 import { buildPersonalMapPeriod } from './services/personal-map-period.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-dotenv.config({ path: path.join(__dirname, '.env') });
+// Tests deliberately exercise the missing-key behavior. Loading a developer's
+// local .env there would turn that safety check into a real network request.
+if (process.env.NODE_ENV !== 'test') {
+  dotenv.config({ path: path.join(__dirname, '.env') });
+}
 
 let resend = null;
 const DEFAULT_FROM_EMAIL = 'noreply@mystickahvezda.cz';
@@ -975,12 +979,12 @@ export const EMAIL_TEMPLATES = {
   },
 
   trial_ended: {
-    subject: 'Děkujeme za vyzkoušení Mystické Hvězdy ✨',
+    subject: 'Tvé členství je aktivní ✨',
     getHtml: (data) => getBaseTemplate(`
-      <h1 class="h1">Zkušební období skončilo</h1>
-      <p>Vaše 7denní zkušební období právě skončilo a vaše předplatné <span class="highlight">Hvězdný Průvodce</span> je nyní plně aktivní.</p>
+      <h1 class="h1">Vítej v aktivním členství</h1>
+      <p>Členství <span class="highlight">Hvězdný Průvodce</span> je nyní aktivní. Vyber si jednu věc, kterou chceš dnes pro sebe otevřít.</p>
 
-      <p>Od dnešního dne vám bude pravidelně účtována měsíční platba. Veškeré prémiové funkce zůstávají k dispozici.</p>
+      <p>Prémiové funkce máš dál k dispozici; další měsíční platba proběhne podle údajů v předplatném.</p>
 
       <div class="feature-item">
         <strong>Co máte k dispozici:</strong>
@@ -993,13 +997,13 @@ export const EMAIL_TEMPLATES = {
       </div>
 
       <div class="cta-box">
-        <a href="${process.env.APP_URL}/profil.html" class="btn">Otevřít svůj profil →</a>
+        <a href="${process.env.APP_URL}/mentor.html" class="btn">Položit první otázku Průvodci →</a>
       </div>
 
       <p style="font-size: 13px; opacity: 0.7; text-align: center;">
         Předplatné můžete kdykoli spravovat ve svém profilu.
       </p>
-    `, 'Vítejte v plném předplatném')
+    `, 'Aktivní členství')
   }
 
 };
@@ -1312,8 +1316,9 @@ export async function sendUpgradeReminders(userId, email) {
       userId,
       email,
       template: 'upgrade_reminder_day7',
-      data: {},
-      delaySeconds: 604800 // 7 days
+      data: { skipIfPremium: true },
+      delaySeconds: 604800,
+      dedupeKey: `upgrade_reminder:${userId}:day7`
     });
 
     // Email 2: Day 14 - limited retention discount
@@ -1321,8 +1326,9 @@ export async function sendUpgradeReminders(userId, email) {
       userId,
       email,
       template: 'upgrade_reminder_day14',
-      data: {},
-      delaySeconds: 1209600 // 14 days
+      data: { skipIfPremium: true },
+      delaySeconds: 1209600,
+      dedupeKey: `upgrade_reminder:${userId}:day14`
     });
 
     console.log(`[EMAIL] Upgrade reminders scheduled for user ${userId}`);
@@ -1344,8 +1350,9 @@ export async function sendChurnRecoveryEmail(userId, email) {
       userId,
       email,
       template: 'churn_recovery_day25',
-      data: {},
-      delaySeconds: 2160000 // 25 days
+      data: { skipIfPremium: true },
+      delaySeconds: 2160000,
+      dedupeKey: `churn_recovery:${userId}:day25`
     });
 
     console.log(`[EMAIL] Churn recovery email scheduled for user ${userId}`);
@@ -1389,23 +1396,28 @@ export async function sendTrialReminderEmails(userId, email, trialEndDate) {
     const day5Delay = Math.max(0, Math.floor((trialEnd - now - 2 * 86400000) / 1000));
     if (day5Delay > 60) { // at least 1 minute in the future
       await scheduleEmailLater({
-        userId,
-        email,
-        template: 'trial_ending_reminder',
-        data: { daysRemaining: 2 },
-        delaySeconds: day5Delay
+          userId,
+          email,
+          template: 'trial_ending_reminder',
+          data: {
+            daysRemaining: 2,
+            requiredSubscriptionStatuses: ['trialing']
+          },
+          delaySeconds: day5Delay,
+          dedupeKey: `trial:${userId}:${trialEnd.toISOString()}:ending`
       });
     }
 
     // Day 7: "Trial ended, subscription active"
-    const day7Delay = Math.max(0, Math.floor((trialEnd - now) / 1000));
+    const day7Delay = Math.max(0, Math.floor((trialEnd - now + 5 * 60 * 1000) / 1000));
     if (day7Delay > 60) {
       await scheduleEmailLater({
-        userId,
-        email,
-        template: 'trial_ended',
-        data: {},
-        delaySeconds: day7Delay
+          userId,
+          email,
+          template: 'trial_ended',
+          data: { requiredSubscriptionStatuses: ['active'] },
+          delaySeconds: day7Delay,
+          dedupeKey: `trial:${userId}:${trialEnd.toISOString()}:ended`
       });
     }
 
@@ -1763,7 +1775,6 @@ EMAIL_TEMPLATES.annual_horoscope_reflection_day1 = {
     const name = formatEmailName(data.name);
     const year = escapeHtml(data.year || new Date().getFullYear());
     const horoscopeUrl = toAbsoluteUrl('/horoskopy.html?source=annual_horoscope_email_day1&feature=daily_guidance&utm_source=email&utm_campaign=annual_horoscope_day1');
-    const productUrl = toAbsoluteUrl('/rocni-horoskop.html?source=annual_horoscope_email_day1&feature=rocni_horoskop_2026&utm_source=email&utm_campaign=annual_horoscope_day1');
 
     return getBaseTemplate(`
     <h1 class="h1">Nečti celý rok najednou</h1>
@@ -1786,8 +1797,7 @@ EMAIL_TEMPLATES.annual_horoscope_reflection_day1 = {
     </div>
 
     <p style="font-size:13px;opacity:0.62;text-align:center;margin-top:2rem;">
-      Tohle je navazující e-mail k nákupu Ročního horoskopu. K produktu se můžeš vrátit také tady:
-      <a href="${productUrl}" style="color:#d4af37;">Roční horoskop</a>.
+      Tohle je navazující e-mail k dřívějšímu nákupu Ročního horoskopu. PDF najdeš v doručovacím e-mailu; pokud chybí, napiš na support@mystickahvezda.cz.
     </p>
   `, 'První krok s Ročním horoskopem', 'Vyber jednu větu z ročního horoskopu a převeď ji do konkrétního kroku pro tento týden.');
   }

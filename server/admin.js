@@ -950,7 +950,7 @@ function buildBusinessActions(summary, previousSummary, userStats, analyticsRepo
             'Dotáhnout post-purchase sekvence',
             'Doručené PDF bez navazujícího rituálu nechává peníze i návrat uživatele na stole.',
             'Lifecycle',
-            'Ověřit, že každý doručený roční horoskop plánuje den 1 reflexi a den 3 nabídku Průvodce.'
+            'Ověřit doručení každé nové Osobní mapy a navazující lifecycle komunikaci.'
         ));
     }
 

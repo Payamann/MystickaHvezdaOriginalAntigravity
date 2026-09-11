@@ -1,5 +1,5 @@
 /**
- * One-time annual horoscope product tests
+ * Retired annual horoscope product tests
  */
 
 import request from 'supertest';

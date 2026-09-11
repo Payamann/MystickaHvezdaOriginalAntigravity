@@ -10,6 +10,13 @@ import jwt from 'jsonwebtoken';
 import { supabase } from '../db-supabase.js';
 import { ensureDefaultSubscriptionForUser, getAuthSubscriptionState } from '../auth.js';
 
+const REQUIRED_LEGAL_ACCEPTANCE = {
+    terms_accepted: true,
+    privacy_acknowledged: true,
+    terms_version: '2026-08-28',
+    privacy_version: '2026-08-28'
+};
+
 async function getCsrfToken() {
     const res = await request(app).get('/api/csrf-token').expect(200);
     return res.body.csrfToken;

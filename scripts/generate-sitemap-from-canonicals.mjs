@@ -24,6 +24,7 @@ const skippedDirs = new Set([
     'docs',
     'node_modules',
     'playwright-report',
+    'production-release-v2',
     'social-media-agent',
     'templates',
     'test-results',

@@ -802,7 +802,7 @@ export async function isPremiumUser(userId) {
 
         if (!subscription) return false;
 
-        const isActive = subscription.status === 'active' || subscription.status === 'trialing' || subscription.status === 'cancel_pending';
+        const isActive = isEntitlingStripeSubscriptionStatus(subscription.status);
         const notExpired = new Date(subscription.current_period_end) > new Date();
         const isPremium = isPremiumPlanType(subscription.plan_type);
 
@@ -867,7 +867,52 @@ async function reconcileSubscriptionFromStripeCustomer(userId, stripeCustomerId,
             return rightEnd - leftEnd || (right.subscription.created || 0) - (left.subscription.created || 0);
         })[0];
 
-    if (!activeSubscription) return localSubscription;
+    // A cancellation made directly in Stripe may arrive after a webhook outage.
+    // Do not keep granting premium access merely because the local row is stale:
+    // Stripe's complete `status=all` list is the source of truth here.
+    if (!activeSubscription) {
+        if (!localSubscription?.stripe_subscription_id) return localSubscription;
+
+        const { error: userDowngradeError } = await supabase
+            .from('users')
+            .update({ is_premium: false })
+            .eq('id', userId);
+        if (userDowngradeError) throw userDowngradeError;
+
+        const { error: subscriptionDowngradeError } = await supabase
+            .from('subscriptions')
+            .update({
+                plan_type: PLAN_TYPES.FREE,
+                status: 'cancelled',
+                stripe_subscription_id: null,
+                pause_until: null
+            })
+            .eq('user_id', userId)
+            .eq('stripe_subscription_id', localSubscription.stripe_subscription_id);
+        if (subscriptionDowngradeError) throw subscriptionDowngradeError;
+
+        await recordFunnelEvent('subscription_entitlement_reconciled', {
+            userId,
+            source: 'subscription_status_fallback',
+            feature: 'premium_membership',
+            planType: PLAN_TYPES.FREE,
+            metadata: {
+                stripeCustomerId,
+                previousPlanType: localSubscription.plan_type || null,
+                previousStatus: localSubscription.status || null,
+                previousStripeSubscriptionId: localSubscription.stripe_subscription_id,
+                status: 'cancelled'
+            }
+        });
+
+        return {
+            ...localSubscription,
+            plan_type: PLAN_TYPES.FREE,
+            status: 'cancelled',
+            stripe_subscription_id: null,
+            pause_until: null
+        };
+    }
 
     const { subscription, status, periodEnd } = activeSubscription;
     const planType = inferSubscriptionPlanTypeFromStripe(subscription);
@@ -1080,16 +1125,11 @@ router.get('/subscription/status', authenticateToken, async (req, res) => {
             .maybeSingle();
 
         let subscription = localSubscription;
-        const localPauseIsCurrent = subscription?.status !== 'paused' || (
-            subscription.pause_until && new Date(subscription.pause_until) > new Date()
-        );
-        const localHasSyncedPremium = subscription?.stripe_subscription_id &&
-            isPremiumPlanType(subscription.plan_type) &&
-            isManagedStripeSubscriptionStatus(subscription.status) &&
-            localPauseIsCurrent &&
-            (!subscription.current_period_end || new Date(subscription.current_period_end) > new Date());
 
-        if (!localHasSyncedPremium && userData?.stripe_customer_id) {
+        // Stripe remains the entitlement source of truth. This additionally
+        // repairs a missed dashboard cancellation the next time the member
+        // opens their account, instead of waiting for a later webhook retry.
+        if (userData?.stripe_customer_id) {
             try {
                 subscription = await reconcileSubscriptionFromStripeCustomer(
                     req.user.id,
@@ -1409,9 +1449,16 @@ router.post('/cancel', authenticateToken, async (req, res) => {
             }
         });
 
+        try {
+            await sendCancellationScheduledEmail(req.user.email, currentPeriodEnd);
+        } catch (emailError) {
+            console.warn('[RETENTION] Could not send cancellation confirmation:', emailError.message);
+        }
+
         res.json({
             success: true,
-            message: 'Předplatné bude zrušeno na konci aktuálního období.'
+            message: 'Předplatné bude zrušeno na konci aktuálního období.',
+            currentPeriodEnd
         });
     } catch (error) {
         console.error('Cancel Subscription Error:', error);
@@ -1987,9 +2034,8 @@ async function handlePersonalMapPurchase(session, stripeEventId = null) {
         return;
     }
 
-    if (!customerName || !birthDate || !sign || !customerEmail || !focus) {
-        console.error('[PERSONAL_MAP] Missing metadata in checkout session:', session.id);
-        return;
+    if (!orderInput?.id || !customerName || !birthDate || !sign || !customerEmail || !focus) {
+        throw new Error(`[PERSONAL_MAP] Paid session ${session.id} is missing durable order input or required delivery data`);
     }
 
     console.log(`[PERSONAL_MAP] Generating PDF for paid session ${session.id} (${sign})`);
@@ -2861,6 +2907,73 @@ router.post('/subscription/resume', authenticateToken, async (req, res) => {
 });
 
 /**
+ * POST /subscription/resume
+ * Resume payment collection for a voluntarily paused subscription.
+ */
+router.post('/subscription/resume', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { data: sub, error: subError } = await supabase
+            .from('subscriptions')
+            .select('stripe_subscription_id, status')
+            .eq('user_id', userId)
+            .single();
+
+        if (subError || !sub?.stripe_subscription_id) {
+            return res.status(404).json({ error: 'Stripe subscription not found' });
+        }
+
+        if (sub.status === 'active' || sub.status === 'trialing') {
+            return res.json({
+                success: true,
+                idempotent: true,
+                message: 'Subscription is already active',
+                status: sub.status
+            });
+        }
+
+        if (sub.status !== 'paused') {
+            return res.status(400).json({ error: 'Can only resume paused subscriptions' });
+        }
+
+        const stripeSubscription = await stripe.subscriptions.update(sub.stripe_subscription_id, {
+            pause_collection: ''
+        });
+        const status = normalizeStripeSubscriptionStatus(stripeSubscription);
+
+        const { error: localUpdateError } = await supabase
+            .from('subscriptions')
+            .update({ status, pause_until: null })
+            .eq('user_id', userId);
+        if (localUpdateError) throw localUpdateError;
+
+        const { error: premiumUpdateError } = await supabase
+            .from('users')
+            .update({ is_premium: isEntitlingStripeSubscriptionStatus(status) })
+            .eq('id', userId);
+        if (premiumUpdateError) throw premiumUpdateError;
+
+        await recordFunnelEvent('subscription_resumed', {
+            userId,
+            metadata: {
+                stripeSubscriptionId: sub.stripe_subscription_id,
+                previousStatus: sub.status,
+                status
+            }
+        });
+
+        res.json({
+            success: true,
+            message: 'Subscription resumed',
+            status
+        });
+    } catch (err) {
+        console.error('[RETENTION] Error in resume endpoint:', err);
+        res.status(500).json({ error: 'Failed to resume subscription' });
+    }
+});
+
+/**
  * POST /subscription/apply-discount
  * Apply discount coupon to active subscription
  */
@@ -2902,7 +3015,7 @@ router.post('/subscription/apply-discount', authenticateToken, async (req, res) 
         // Get user's subscription
         const { data: sub, error: subError } = await supabase
             .from('subscriptions')
-            .select('*')
+            .select('stripe_subscription_id, status, pause_until')
             .eq('user_id', userId)
             .single();
 

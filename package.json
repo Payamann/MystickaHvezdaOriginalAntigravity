@@ -50,6 +50,8 @@
     "check:paywall-trust": "node scripts/check-paywall-trust-copy.mjs",
     "analyze:funnel": "node scripts/analyze-funnel-segments.mjs",
     "analyze:gsc": "node scripts/analyze-gsc-search-performance.mjs",
+    "analytics:loaders": "node scripts/ensure-analytics-loaders.mjs --write",
+    "analytics:loaders:check": "node scripts/ensure-analytics-loaders.mjs",
     "reconcile:stripe-subscriptions": "node scripts/reconcile-stripe-subscriptions.mjs",
     "monitor:revenue-truth": "node scripts/revenue-truth-monitor.mjs",
     "monitor:revenue-truth:production": "node scripts/revenue-truth-monitor.mjs --since-live-production",

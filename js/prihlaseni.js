@@ -9,6 +9,8 @@ function hasStoredAuthRedirect() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const TERMS_VERSION = '2026-08-28';
+    const PRIVACY_VERSION = '2026-08-28';
     const PLAN_COPY = {
         pruvodce: {
             title: 'Hvězdný Průvodce',

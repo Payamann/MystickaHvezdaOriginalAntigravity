@@ -114,6 +114,26 @@ export async function getOneTimeOrderInput(orderId) {
     return data || null;
 }
 
+export async function markOneTimeOrderInputPaid(orderId) {
+    const cleanOrderId = cleanString(orderId, 80);
+    if (!cleanOrderId) return false;
+
+    const { error } = await supabase
+        .from('one_time_order_inputs')
+        .update({
+            status: 'paid',
+            updated_at: new Date().toISOString()
+        })
+        .eq('id', cleanOrderId);
+
+    if (error) {
+        console.warn('[ONE_TIME_ORDER] Could not mark order paid:', error.message);
+        return false;
+    }
+
+    return true;
+}
+
 export async function markOneTimeOrderInputFulfilled(orderId) {
     const cleanOrderId = cleanString(orderId, 80);
     if (!cleanOrderId) return false;

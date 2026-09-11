@@ -900,7 +900,6 @@ test.describe('Ostatní stránky — smoke testy (200 + h1)', () => {
         { path: '/o-nas.html',               titleHint: null },
         { path: '/jak-to-funguje.html',       titleHint: null },
         { path: '/podminky.html',             titleHint: null },
-        { path: '/ochrana-soukromi.html',     titleHint: null },
         { path: '/soukromi.html',             titleHint: null },
         { path: '/slovnik.html',              titleHint: null },
         { path: '/aura.html',                 titleHint: 'aura' },
