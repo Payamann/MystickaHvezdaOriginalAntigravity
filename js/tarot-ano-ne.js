@@ -1075,7 +1075,7 @@
             feature: TAROT_YES_NO_FEATURE,
             source: TAROT_YES_NO_RESULT_SOURCE
         });
-        window.MH_ANALYTICS?.trackAction?.('tarot_yes_no_upgrade_bridge_viewed', {
+        if (!document.querySelector('[data-relationship-legacy]')?.hidden) window.MH_ANALYTICS?.trackAction?.('tarot_yes_no_upgrade_bridge_viewed', {
             ...metadata,
             feature: TAROT_YES_NO_FEATURE,
             source: TAROT_YES_NO_RESULT_SOURCE,

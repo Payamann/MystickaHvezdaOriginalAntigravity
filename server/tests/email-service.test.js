@@ -61,6 +61,29 @@ describe('Email service deliverability payload', () => {
         sendMock.mockResolvedValue({ data: { id: 'email_test_123' }, error: null });
     });
 
+    test('relationship reading embeds the three catalog images with matching CID attachments', async () => {
+        const { drawRelationshipCards } = await import('../services/relationship-tarot.js');
+        const cards = drawRelationshipCards().map(card => ({ ...card, image: 'https://untrusted.invalid/tracker' }));
+        const paragraph = 'Karty nabízejí prostor pro zamyšlení nad tvou otázkou. Zkus pojmenovat jednu konkrétní potřebu a větu, kterou můžeš rozhovor začít.';
+        await sendEmail({ to: 'recipient@example.com', template: 'relationship_tarot', data: {
+            question: 'Jak začít klidný rozhovor o našem společném čase?', cards,
+            reading: { introduction: paragraph, cards: [paragraph, paragraph, paragraph], connection: paragraph, nextStep: paragraph,
+                questions: ['Co právě potřebuješ?', 'Co můžeš říct konkrétně?', 'Jak poznáš malou změnu?'] }
+        } }, { idempotencyKey: 'relationship-image-test' });
+        const payload = sendMock.mock.calls[0][0];
+        const embeddedIds = [...payload.html.matchAll(/src="cid:([^"]+)"/g)].map(match => match[1]);
+        expect(embeddedIds).toHaveLength(3);
+        expect(payload.attachments.map(attachment => attachment.contentId)).toEqual(embeddedIds);
+        expect(payload.html).not.toContain('untrusted.invalid');
+        expect(payload.html).not.toContain('data:image');
+        for (const attachment of payload.attachments) {
+            expect(attachment.content.subarray(0, 3).toString('hex')).toBe('ffd8ff');
+            expect(attachment.content.length).toBeLessThan(100000);
+        }
+        expect(payload.text).toContain('Jak začít klidný rozhovor');
+        expect(sendMock.mock.calls[0][1].idempotencyKey).toBe('relationship-image-test');
+    });
+
     test('adds plain-text alternative and friendly from name', async () => {
         await sendEmail({
             to: 'recipient@example.com',

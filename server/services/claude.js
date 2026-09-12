@@ -95,7 +95,8 @@ export async function callClaude(systemPrompt, messageOrHistory, contextData = n
             systemPrompt,
             messageOrHistory,
             contextData,
-            model: profile.model
+            model: profile.model,
+            outputSchema: options.outputSchema || null
         })
         : null;
     const cacheNamespace = options.cacheNamespace || profile.feature;
@@ -115,6 +116,9 @@ export async function callClaude(systemPrompt, messageOrHistory, contextData = n
         system: appendContext(systemPrompt, contextData),
         messages: normalizeMessages(messageOrHistory)
     };
+    if (options.outputSchema) {
+        requestBody.output_config = { format: { type: 'json_schema', schema: options.outputSchema } };
+    }
 
     let lastError;
     for (let attempt = 0; attempt <= profile.maxRetries; attempt += 1) {

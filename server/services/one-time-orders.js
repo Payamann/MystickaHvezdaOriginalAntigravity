@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { supabase } from '../db-supabase.js';
 
-const VALID_PRODUCT_TYPES = new Set(['rocni_horoskop', 'personal_map']);
+const VALID_PRODUCT_TYPES = new Set(['rocni_horoskop', 'personal_map', 'relationship_tarot']);
 const SAFE_METADATA_KEYS = new Set([
     'productType',
     'productId',
@@ -102,7 +102,7 @@ export async function getOneTimeOrderInput(orderId) {
 
     const { data, error } = await supabase
         .from('one_time_order_inputs')
-        .select('id, product_type, product_id, customer_email, customer_name, payload, status, stripe_session_id, fulfilled_at')
+        .select('id, product_type, product_id, customer_email, customer_name, payload, status, stripe_session_id, fulfilled_at, updated_at')
         .eq('id', cleanOrderId)
         .maybeSingle();
 

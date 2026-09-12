@@ -62,6 +62,7 @@ import pastLifeRoutes from './routes/past-life.js';
 import medicineWheelRoutes from './routes/medicine-wheel.js';
 import rocniHoroskopRoutes from './routes/rocni-horoskop.js';
 import osobniMapaRoutes from './routes/osobni-mapa.js';
+import relationshipTarotRoutes from './routes/vztahovy-vyklad.js';
 import pushRoutes from './routes/push.js';
 import analyticsRoutes from './routes/analytics.js';
 import { spawn } from 'child_process';
@@ -995,6 +996,7 @@ app.use('/api/rocni-horoskop', rocniHoroskopRoutes);
 
 // Osobní mapa — premium one-time paid PDF product
 app.use('/api/osobni-mapa', osobniMapaRoutes);
+app.use('/api/vztahovy-vyklad', relationshipTarotRoutes);
 
 // Health Check - registered above rate limiter (see top of file)
 // Admin comment: duplicate route registrations removed

@@ -9,6 +9,7 @@ import {
 } from '../services/one-time-orders.js';
 import { fulfillOneTimeOrder } from '../services/one-time-fulfillment.js';
 import { sendOperationalAlert } from '../services/alerts.js';
+import { isPaidRelationshipSession } from '../services/relationship-tarot.js';
 
 /**
  * ONE-TIME ORDER RECONCILIATION JOB
@@ -69,6 +70,10 @@ export async function verifyOneTimeOrderPayment(order, stripe = getStripeClient(
     if (!sessionId || !stripe) return 'unknown';
 
     const session = await stripe.checkout.sessions.retrieve(sessionId);
+    if (order.product_type === 'relationship_tarot') {
+        if (isPaidRelationshipSession(session, order.id)) return 'paid';
+        return session.status === 'expired' ? 'expired' : 'unpaid';
+    }
     if (session?.payment_status === 'paid' || session?.payment_status === 'no_payment_required') {
         return 'paid';
     }
@@ -151,6 +156,7 @@ export async function reconcileStuckOneTimeOrders({
             // 2) Verified paid → (re)try fulfillment.
             try {
                 await fulfillFn({
+                    orderId: order.id,
                     productType: order.product_type,
                     customerName: order.customer_name,
                     customerEmail: order.customer_email,

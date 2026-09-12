@@ -5,6 +5,7 @@ const PROFILES = Object.freeze({
     tarot_single: { modelTier: 'haiku', maxTokens: 850, timeoutMs: 20000, maxRetries: 1 },
     tarot_multi: { modelTier: 'sonnet', maxTokens: 1400, timeoutMs: 30000, maxRetries: 2 },
     tarot_summary: { modelTier: 'sonnet', maxTokens: 1400, timeoutMs: 30000, maxRetries: 2 },
+    relationship_tarot: { modelTier: 'sonnet', maxTokens: 4200, timeoutMs: 90000, maxRetries: 1 },
     angel_card: { modelTier: 'haiku', maxTokens: 700, timeoutMs: 20000, maxRetries: 1 },
     runes: { modelTier: 'haiku', maxTokens: 900, timeoutMs: 20000, maxRetries: 1 },
     daily_wisdom: { modelTier: 'haiku', maxTokens: 550, timeoutMs: 20000, maxRetries: 1 },

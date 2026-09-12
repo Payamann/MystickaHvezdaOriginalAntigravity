@@ -33,6 +33,7 @@ npm-debug.log*
 # Temporary
 temp_*/
 tmp/
+supabase/.temp/
 
 # IDE
 .vscode/

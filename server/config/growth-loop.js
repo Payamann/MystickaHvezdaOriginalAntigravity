@@ -6,7 +6,7 @@
  * profile and paywall work do not drift into separate naming systems.
  */
 
-export const GROWTH_LOOP_VERSION = '2026-08-30';
+export const GROWTH_LOOP_VERSION = '2026-09-12';
 
 export const TRACKING_PAYLOAD_KEYS = Object.freeze([
     'source',
@@ -59,6 +59,10 @@ export const CORE_FUNNEL_EVENTS = Object.freeze([
     'pricing_product_cta_clicked',
     'one_time_product_viewed',
     'one_time_product_cta_clicked',
+    'one_time_offer_viewed',
+    'one_time_form_started',
+    'one_time_form_submitted',
+    'one_time_reading_delivered',
     'checkout_auth_required',
     'checkout_auth_page_viewed',
     'checkout_auth_form_started',
@@ -91,6 +95,15 @@ export const REVENUE_HEALTH_EVENTS = Object.freeze([
 ]);
 
 export const PRODUCT_CATALOG = Object.freeze({
+    relationship_tarot: Object.freeze({
+        id: 'relationship_tarot',
+        label: 'Personal relationship tarot reading',
+        productType: 'one_time',
+        primaryPlanId: null,
+        primaryPath: '/vztahovy-vyklad.html',
+        freeValue: 'Read a clearly marked sample before buying.',
+        paidValue: 'Receive a three-card reading for one relationship question by email for 149 CZK.'
+    }),
     premium_membership: Object.freeze({
         id: 'premium_membership',
         label: 'Premium membership',
@@ -156,6 +169,17 @@ function feature({
 }
 
 export const FEATURE_CATALOG = Object.freeze({
+    relationship_tarot: feature({
+        id: 'relationship_tarot',
+        label: 'Personal relationship tarot reading',
+        cluster: 'one_time',
+        primaryPath: '/vztahovy-vyklad.html',
+        freeValue: 'Read the sample without registering.',
+        premiumValue: 'Buy one reading by email without a subscription or account.',
+        recommendedPlanId: null,
+        productId: 'relationship_tarot',
+        activationStep: null
+    }),
     account: feature({
         id: 'account',
         label: 'Account',

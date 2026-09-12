@@ -383,9 +383,11 @@ const activationFeatures = unionSets(
 );
 const activationSources = extractObjectKeys(activationSourceBlock);
 const activationOptionalFeatures = new Set(['account']);
+// This guest checkout uses `feature` only for telemetry and has no signup step.
+const guestCheckoutFeatures = new Set(['relationship_tarot']);
 
-const missingLabels = [...usedFeatures].filter((feature) => !featureLabels.has(feature)).sort();
-const missingContexts = [...usedFeatures].filter((feature) => !signupContexts.has(feature)).sort();
+const missingLabels = [...usedFeatures].filter((feature) => !guestCheckoutFeatures.has(feature) && !featureLabels.has(feature)).sort();
+const missingContexts = [...usedFeatures].filter((feature) => !guestCheckoutFeatures.has(feature) && !signupContexts.has(feature)).sort();
 const missingActivationFeatures = [...signupContexts]
     .filter((feature) => !activationOptionalFeatures.has(feature))
     .filter((feature) => !activationFeatures.has(feature))

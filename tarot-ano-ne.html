@@ -149,7 +149,14 @@
 
                     <p id="result-next-step-text" class="result-next-step-text"></p>
 
-                    <aside class="tarot-result-upgrade-bridge" aria-labelledby="tarot-result-upgrade-title">
+                    <aside class="relationship-offer" data-relationship-offer="tarot_yes_no_result" hidden aria-labelledby="relationship-offer-title">
+                        <p class="relationship-eyebrow">ŘEŠÍŠ VZTAHOVOU OTÁZKU?</p>
+                        <h2 id="relationship-offer-title">Dopřej svojí otázce víc prostoru.</h2>
+                        <p>Popiš svou situaci a nech si připravit osobní výklad tří karet: tvoje potřeby, co si zaslouží pozornost a jeden další krok.</p>
+                        <a href="/vztahovy-vyklad.html?source=tarot_yes_no_result">Prohlédnout osobní výklad · 149 Kč</a>
+                        <small>Jednorázově, bez členství. Ukázku uvidíš před nákupem.</small>
+                    </aside>
+                    <aside class="tarot-result-upgrade-bridge" data-relationship-legacy aria-labelledby="tarot-result-upgrade-title">
                         <div class="tarot-result-upgrade-bridge__content">
                             <span class="tarot-result-upgrade-bridge__eyebrow">Pokračuj se stejnou otázkou</span>
                             <strong id="tarot-result-upgrade-title">Co stojí za odpovědí <span id="tarot-result-upgrade-answer">karty</span>?</strong>
@@ -346,7 +353,9 @@
 
     <script type="module" src="js/dist/main.js?v=10"></script>
 
-    <script src="js/dist/tarot-ano-ne.js?v=14" defer></script>
+    <script src="js/dist/tarot-ano-ne.js?v=15" defer></script>
+    <script src="/js/dist/relationship-tarot-bridge.js" defer></script>
+    <link rel="stylesheet" href="/css/pages/relationship-tarot-bridge.css">
 
 </body>
 

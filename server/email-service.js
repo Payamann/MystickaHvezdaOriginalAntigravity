@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { buildRelationshipReadingHtml, buildRelationshipReadingAttachments } from './services/relationship-tarot.js';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -609,6 +610,11 @@ function getBaseTemplate(content, title = 'Mystická Hvězda', previewText = '')
  * EMAIL TEMPLATES
  */
 export const EMAIL_TEMPLATES = {
+  relationship_tarot: {
+    subject: 'Tvůj osobní vztahový výklad · Mystická Hvězda',
+    getHtml: data => buildRelationshipReadingHtml(data, { inlineImages: true }),
+    getAttachments: buildRelationshipReadingAttachments
+  },
   onboarding_welcome: {
     subject: 'Prémiový plán je aktivní',
     getHtml: (data) => getBaseTemplate(`
@@ -1042,6 +1048,7 @@ export async function sendEmail(emailConfig, options = {}) {
       html,
       text,
       replyTo,
+      attachments: templateConfig.getAttachments ? await templateConfig.getAttachments(data) : undefined,
       headers: buildEmailHeaders({ template, data, headers, unsubscribeUrl })
     });
     const response = idempotencyKey

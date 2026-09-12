@@ -76,7 +76,11 @@ export async function fulfillRocniHoroskopOrder({ customerName, customerEmail, p
     await sendHoroscopePdf({ to: customerEmail, name: customerName, sign, pdfBuffer });
 }
 
-export async function fulfillOneTimeOrder({ productType, customerName, customerEmail, payload }) {
+export async function fulfillOneTimeOrder({ productType, customerName, customerEmail, payload, orderId }) {
+    if (productType === 'relationship_tarot') {
+        const { fulfillRelationshipTarotOrder } = await import('./relationship-tarot-fulfillment.js');
+        return fulfillRelationshipTarotOrder({ orderId });
+    }
     if (productType === 'personal_map') {
         return fulfillPersonalMapOrder({ customerName, customerEmail, payload });
     }

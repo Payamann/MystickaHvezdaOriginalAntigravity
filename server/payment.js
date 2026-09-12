@@ -27,6 +27,7 @@ import { isProductionRuntime } from './config/runtime.js';
 import { sendOperationalAlert } from './services/alerts.js';
 import { REQUIRED_STRIPE_WEBHOOK_EVENTS } from './config/stripe-webhooks.js';
 import { createCheckoutResultRouter } from './routes/checkout-result.js';
+import { isPaidRelationshipSession } from './services/relationship-tarot.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -460,6 +461,7 @@ const PUBLIC_FUNNEL_EVENTS = new Set([
     'activation_completed',
     'return_ritual_completed',
     'one_time_product_viewed',
+    'one_time_offer_viewed',
     'one_time_product_cta_clicked',
     'one_time_form_started',
     'one_time_form_submitted',
@@ -1628,6 +1630,11 @@ export async function handleStripeWebhook(rawBody, sig) {
             case 'checkout.session.completed':
                 await handleCheckoutCompleted(event.data.object, event.id);
                 break;
+            case 'checkout.session.async_payment_succeeded':
+                if (event.data.object.metadata?.productType === 'relationship_tarot') {
+                    await handleRelationshipTarotPurchase(event.data.object, event.id);
+                }
+                break;
             case 'checkout.session.expired':
                 await handleCheckoutExpired(event.data.object, event.id);
                 break;
@@ -1696,6 +1703,9 @@ export async function handleStripeWebhook(rawBody, sig) {
  * Handle checkout.session.completed - dispatches to one-time or subscription handler
  */
 async function handleCheckoutCompleted(session, stripeEventId = null) {
+    if (session.mode === 'payment' && session.metadata?.productType === 'relationship_tarot') {
+        return handleRelationshipTarotPurchase(session, stripeEventId);
+    }
     if (session.mode === 'payment' && session.metadata?.productType === 'rocni_horoskop') {
         return handleRocniHoroskopPurchase(session, stripeEventId);
     }
@@ -2108,6 +2118,31 @@ async function handlePersonalMapPurchase(session, stripeEventId = null) {
             // Persist the first failure so the reconciliation job inherits the
             // real root-cause error and this attempt counts toward the retry budget.
             await recordOneTimeOrderInputAttemptFailure(orderInput?.id, err.message);
+        }
+    });
+}
+
+async function handleRelationshipTarotPurchase(session, stripeEventId) {
+    const order = await getOneTimeOrderInput(session.metadata?.orderId);
+    if (!order || order.product_type !== 'relationship_tarot' || order.product_id !== 'relationship_tarot'
+        || session.metadata?.productId !== 'relationship_tarot' || order.stripe_session_id !== session.id
+        || (session.payment_status === 'paid' && !isPaidRelationshipSession(session, order.id))) {
+        throw new Error('Invalid paid relationship tarot order');
+    }
+    // Delayed payment methods finish in a later event or in reconciliation.
+    if (session.payment_status !== 'paid') return;
+    if (order.status === 'fulfilled') return;
+    await recordOneTimePurchase(session, { productType: 'relationship_tarot', productId: 'relationship_tarot', email: order.customer_email });
+    await recordFunnelEvent('one_time_purchase_completed', { source: session.metadata.source, feature: 'relationship_tarot', stripeSessionId: session.id, stripeEventId,
+        metadata: { productId: 'relationship_tarot', productType: 'relationship_tarot', amount: 14900, currency: 'czk' } });
+    setImmediate(async () => {
+        try {
+            const { fulfillRelationshipTarotOrder } = await import('./services/relationship-tarot-fulfillment.js');
+            await fulfillRelationshipTarotOrder({ orderId: order.id });
+            if (!await markOneTimeOrderInputFulfilled(order.id)) throw new Error('Could not confirm relationship delivery');
+            await recordFunnelEvent('one_time_reading_delivered', { source: session.metadata.source, feature: 'relationship_tarot', stripeSessionId: session.id, stripeEventId });
+        } catch (error) {
+            await recordOneTimeOrderInputAttemptFailure(order.id, error.message);
         }
     });
 }
