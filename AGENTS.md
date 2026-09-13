@@ -11,6 +11,10 @@ Produktový směr, doložená data, značka a aktuální omezení jsou v [.agent
 - U drobné úpravy ověř jen zasažené chování. Celé sady testů, opakované audity ani nové testy pro samotné barvy/texty nejsou výchozí postup. Povinné CI kontroly a ověření změn plateb či přístupových práv zůstávají zachované.
 - Pro předání stručně uveď výsledek, rozsah ověření a zda jde o lokální nebo produkční stav. Samotná úspěšná technická zkouška nedokazuje obchodní úspěch.
 
+## Smyčka pro delší úkoly
+
+U práce přes více kol postupuj podle [projektové smyčky](docs/codex-harness.md): nejprve obnov cíl a poslední ověřený stav, vyber jeden ohraničený krok, proveď jej, potom výsledek ověř nezávisle v souborech, prohlížeči nebo testu a ulož checkpoint. Do ověřeného stavu patří jen fakta potvrzená prostředím. Selhání zapisuj jako důkaz s přesným místem a další krok; neoznačuj úkol za hotový podle vlastního předpokladu.
+
 # Mystická Hvězda — Codex Social Media Agent
 
 Následující postup platí pouze při tvorbě příspěvků pro sociální sítě. Při úpravách webu, opravách, analýze produktu nebo údržbě skills nespouštěj sociální brief ani logování příspěvků.
