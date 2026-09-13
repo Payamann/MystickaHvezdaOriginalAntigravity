@@ -606,7 +606,8 @@
         const viewportHeight = window.visualViewport?.height || window.innerHeight;
         const reservedBottom = getVisibleCookieBannerOffset();
         const availableHeight = Math.max(320, viewportHeight - reservedBottom);
-        const rect = panel.getBoundingClientRect();
+        // Align the free answer, not the much taller optional offer below it.
+        const rect = (panel.querySelector('.yes-no-reading') || panel).getBoundingClientRect();
         let targetTop = window.scrollY + rect.top - Math.max(86, (availableHeight - rect.height) / 2);
         const resetButton = document.getElementById('btn-reset');
 
@@ -615,14 +616,14 @@
             const resetRect = resetButton.getBoundingClientRect();
             const predictedResetBottom = resetRect.bottom - (targetTop - window.scrollY);
             const overlap = predictedResetBottom - (bannerTop - 8);
-            if (overlap > 0) {
+            if (overlap > 0 && resetRect.bottom - rect.top < availableHeight - 100) {
                 targetTop += overlap;
             }
         }
 
         window.scrollTo({
             top: Math.max(0, targetTop),
-            behavior
+            behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : behavior
         });
     }
 
@@ -1165,6 +1166,9 @@
             // Zobrazíme UX upozornění - uživatel musí vyplnit otázku
             inputEl.focus();
             inputEl.classList.add('input--invalid');
+            inputEl.setAttribute('aria-invalid', 'true');
+            const error = document.getElementById('question-error');
+            if (error) error.hidden = false;
 
             // Přidat "shake" animaci k elementu
             inputEl.classList.remove('shake');
@@ -1179,6 +1183,9 @@
         // Obnovíme původní barvu ohraničení InputBoxu
         inputEl.classList.remove('input--invalid');
         inputEl.classList.remove('shake');
+        inputEl.removeAttribute('aria-invalid');
+        const questionError = document.getElementById('question-error');
+        if (questionError) questionError.hidden = true;
 
         used = true;
         savedReadingId = null;
@@ -1191,7 +1198,10 @@
         });
 
         // Uzamčeme ostatní karty
-        document.querySelectorAll('.tarot-card').forEach(c => c.classList.add('tarot-card--locked'));
+        document.querySelectorAll('.tarot-card').forEach(c => {
+            c.classList.add('tarot-card--locked');
+            c.setAttribute('aria-disabled', 'true');
+        });
 
         await loadCardPool();
 
@@ -1280,6 +1290,7 @@
             }
             const panel = document.getElementById('result-panel');
             panel.classList.add('show');
+            document.getElementById('result-title').focus({ preventScroll: true });
             trackTarotYesNoEvent('reading_complete', {
                 ...getResultMetadata(key, ans, q),
                 selected_card_index: index
@@ -1303,6 +1314,9 @@
             saveReadingButton.textContent = 'Uložit odpověď do deníku';
         }
         document.getElementById('question-input').classList.remove('input--invalid');
+        document.getElementById('question-input').removeAttribute('aria-invalid');
+        const questionError = document.getElementById('question-error');
+        if (questionError) questionError.hidden = true;
         document.getElementById('result-panel').classList.remove('show');
         const resultImage = document.getElementById('result-card-image');
         if (resultImage) {
@@ -1317,6 +1331,7 @@
 
         document.querySelectorAll('.tarot-card').forEach(c => {
             c.classList.remove('flipped', 'tarot-card--locked');
+            c.removeAttribute('aria-disabled');
             const front = c.querySelector('.card-front');
             front.className = 'card-front card-face';
             front.innerHTML = '';
@@ -1324,7 +1339,8 @@
 
         // Smooth srcoll opět lehce zpátky k inputu po tichém doznění
         setTimeout(() => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('question-input').focus({ preventScroll: true });
+            window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
         }, 150);
     }
 
@@ -1358,7 +1374,7 @@
 
         if (btnSaveResultImage) {
             if (deviceSupportsFileShare()) {
-                btnSaveResultImage.textContent = '✨ Sdílet výsledek';
+                btnSaveResultImage.textContent = 'Sdílet výsledek';
             }
             btnSaveResultImage.addEventListener('click', saveTarotYesNoResultImage);
         }

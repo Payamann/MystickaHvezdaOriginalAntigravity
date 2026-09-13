@@ -726,6 +726,13 @@ async function startReading(spreadType, isSoftGated = false) {
     // IMPORTANT: Set innerHTML FIRST, then trigger async AI summary
     interpretationsContainer.innerHTML = interpretationsHtml;
     interpretationsContainer.insertAdjacentHTML('afterend', getTarotProfileSignupHtml(spreadType));
+    if (numCards === 1 && !isSoftGated) {
+        const offerTemplate = document.getElementById('tarot-relationship-offer');
+        if (offerTemplate) {
+            interpretationsContainer.after(offerTemplate.content.cloneNode(true));
+            document.dispatchEvent(new Event('mh:relationship-offers-ready'));
+        }
+    }
 
     if (tarotYesNoContext && !isSoftGated) {
         try {

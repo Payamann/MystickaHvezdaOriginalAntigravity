@@ -1,6 +1,22 @@
 .love-tarot-hero {
-    padding-top: 5rem;
+    padding-top: 7rem;
+    padding-bottom: 2rem;
 }
+
+.page-tarot-love .stars { background-image: linear-gradient(#050510b8, #050510e8), url('/img/bg-cosmic-hd.webp'); }
+.love-tarot-hero .section__title { font-size: clamp(32px, 3.6vw, 46px); line-height: 1.3; margin-bottom: 20px; }
+.love-tarot-hero .section__text { font-size: 14px; line-height: 1.8; color: #c3b8d0; }
+.love-tarot-hero .section__badge { color: #e9c572; font-size: 10px; letter-spacing: 2px; }
+.love-tarot-hero__actions { margin-bottom: 16px; }
+.love-tarot-hero__actions .btn { font-size: 12px; letter-spacing: .2px; text-transform: none; min-height: 44px; }
+.love-tarot-hero__actions .btn--primary { background: linear-gradient(110deg, #edce87, #d7ad54); color: #201725; box-shadow: none; border-radius: 8px; }
+.love-tarot-hero__actions .btn--ghost { background: transparent; box-shadow: none; color: #d0bde2; padding-left: 0; }
+
+.love-tarot-personal .relationship-offer { max-width: none; }
+.love-tarot-alternatives { padding: 1.5rem 0; }
+.love-tarot-other > summary { padding: 1rem 0; cursor: pointer; color: #d9c297; font-size: 14px; }
+.love-tarot-other > summary:focus-visible { outline: 2px solid #e9c572; outline-offset: 4px; }
+.love-tarot-other .love-tarot-intent-grid { margin-top: 1rem; }
 
 .love-tarot-hero__grid {
     display: grid;

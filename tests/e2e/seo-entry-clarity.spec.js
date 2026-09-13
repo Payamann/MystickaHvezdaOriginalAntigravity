@@ -9,6 +9,7 @@ test('love landing offers a genuinely free first step on mobile', async ({ page 
     expect(destination.pathname).toBe('/tarot-ano-ne.html');
     expect(destination.searchParams.get('feature')).toBe('tarot');
     await expect(page.locator('.love-tarot-hero__copy')).toContainText('bez registrace a platební karty');
+    await page.locator('.love-tarot-other > summary').click();
     await expect(page.locator('[data-analytics-cta="tarot_love_intent_three_cards"]')).toContainText('v členství');
     expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
 });

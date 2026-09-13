@@ -35,6 +35,20 @@ Po 4 týdnech zhodnotit relevantní zobrazení nabídky, unikátní nákupy, ná
 
 ## Postup aktivace
 
+### Navazující redesign — vydání schválené 13. 9. 2026
+
+Pavel 13. 9. 2026 výslovně schválil nasazení pokynem „pojďme nasadit na produkci“. Tím pro toto vydání odvolal předchozí zákaz nasazení. Dokončení je nutné potvrdit úspěšným `deploy:guard` pro nasazovaný commit a kontrolou upravených veřejných vstupů.
+
+- Tarot ano/ne: kratší úvod, skutečné rubové obrázky karet, ovládání klávesnicí, samostatně čitelný výsledek a doplňující text v rozbalovacích otázkách. Uložení do profilu zůstává malým textovým odkazem.
+- Tarot na lásku: osobní nabídka je hned za úvodem, ostatní typy výkladů jsou v rozbalovací části.
+- Tarot zdarma: přímá nabídka osobního vztahového výkladu za 149 Kč.
+- Obecný tarot: osobní nabídka se přidá až pod dokončený výklad jedné karty. Nabídka respektuje dostupnost produktu i při dynamickém vykreslení.
+- Nové zdroje pro vyhodnocení tohoto vydání: `tarot_free_landing`, `tarot_single_card_result`. Dosavadní `tarot_yes_no_result` a `tarot_love_landing` zůstávají.
+
+Před vydáním prošlo 18 cílených vztahových E2E kontrol na desktopu a mobilu. Ze 42 navazujících tarotových kontrol prošlo 39; po opravě tří nálezů prošly všechny čtyři cíleně opakované kontroly. Prošly také lint, kódování, CSS transitions, SEO sémantika, struktura webu a kontrola 78 obrázků karet. Sitemap byla přegenerována se zachováním 906 URL. Změny skills mají vlastní kontrolu formátu a odkazů; nevyžadují opakování testů aplikace.
+
+### Původní postup spuštění produktu
+
 1. Ověřit aplikovanou migraci a zachování RLS (hotovo, viz audit).
 2. Ověřit testovací Stripe platbu a doručení do vlastní testovací schránky (hotovo, viz audit).
 3. Spustit `npm run test:verify`, nasadit kód podle `railway-deploy-guard` a vyžadovat `DEPLOY OK` pro nasazovaný commit.

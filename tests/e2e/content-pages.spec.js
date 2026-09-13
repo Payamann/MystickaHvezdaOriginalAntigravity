@@ -832,7 +832,7 @@ test.describe('Tarot na lásku', () => {
         await page.goto('/tarot-laska.html');
         await waitForPageReady(page);
 
-        await expect(page.locator('main a[href*="tarot.html?source=tarot_love_landing"][href*="intent=love_tarot"][href*="spread=three_cards"]').first()).toBeVisible();
+        await expect(page.locator('main a[href*="tarot-ano-ne.html?source=tarot_love_landing"][href*="intent=love_yes_no"]').first()).toBeVisible();
         await expect(page.locator('main a[href*="partnerska-shoda.html?source=tarot_love_landing"][href*="feature=partnerska_detail"]').first()).toBeVisible();
     });
 
@@ -841,6 +841,7 @@ test.describe('Tarot na lásku', () => {
         await waitForPageReady(page);
 
         await expect(page.locator('.love-tarot-intent-card')).toHaveCount(5);
+        await page.locator('.love-tarot-other > summary').click();
         await expect(page.locator('a[href*="tarot.html?source=tarot_love_intent"][href*="spread=three_cards"]')).toBeVisible();
         await expect(page.locator('a[href*="cenik.html?plan=pruvodce"][href*="source=tarot_love_landing"]')).toBeVisible();
         await expect(page.locator('a[href*="tarot-zdarma.html?source=tarot_love_faq"]')).toBeVisible();

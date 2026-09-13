@@ -1,6 +1,7 @@
 (() => {
-    const offers = document.querySelectorAll('[data-relationship-offer]');
-    if (!offers.length) return;
+    if (!document.querySelector('[data-relationship-offer], #tarot-relationship-offer')) return;
+    const initialized = new WeakSet();
+    let productAvailable = false;
     let csrfPromise;
     function csrf() {
         if (!csrfPromise) csrfPromise = fetch('/api/csrf-token', { credentials: 'same-origin' }).then(async response => {
@@ -16,18 +17,19 @@
                 body: JSON.stringify({ eventName, source, feature: 'relationship_tarot', metadata: { product_id: 'relationship_tarot', placement: source } }) });
         } catch { /* No effect on free tools or navigation. */ }
     }
-    fetch('/api/vztahovy-vyklad/product', { cache: 'no-store' }).then(async response => {
-        if (!response.ok) return;
-        const product = await response.json();
-        if (!product.enabled || product.amount !== 14900 || product.currency !== 'czk') return;
-        void csrf().catch(() => {});
+    function revealOffers() {
+        if (!productAvailable) return;
         document.querySelectorAll('[data-relationship-legacy]').forEach(el => { el.hidden = true; });
-        offers.forEach(offer => {
+        document.querySelectorAll('[data-relationship-offer]').forEach(offer => {
+            if (initialized.has(offer)) return;
+            initialized.add(offer);
             offer.hidden = false;
             offer.querySelector('a').addEventListener('click', () => {
                 const question = document.getElementById('question-input')?.value?.trim();
                 if (question) {
                     try { sessionStorage.setItem('mh_relationship_question', JSON.stringify({ question: question.slice(0, 1000), at: Date.now() })); } catch { /* Optional handoff. */ }
+                } else {
+                    try { sessionStorage.removeItem('mh_relationship_question'); } catch { /* Optional handoff. */ }
                 }
                 void track('one_time_product_cta_clicked', offer.dataset.relationshipOffer);
             });
@@ -41,5 +43,14 @@
                 observer.observe(offer);
             }
         });
+    }
+    document.addEventListener('mh:relationship-offers-ready', revealOffers);
+    fetch('/api/vztahovy-vyklad/product', { cache: 'no-store' }).then(async response => {
+        if (!response.ok) return;
+        const product = await response.json();
+        if (!product.enabled || product.amount !== 14900 || product.currency !== 'czk') return;
+        productAvailable = true;
+        void csrf().catch(() => {});
+        revealOffers();
     }).catch(() => {});
 })();

@@ -185,6 +185,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" integrity="sha384-XQqX/4yiUGu+oyr87jvWzRuqBUK/adrY0DunhL+tID9m/9dwSpV8h9Fk/Sg6ifVQ" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="/js/dist/analytics-init.js" defer></script>
     <script src="/js/dist/analytics.js?v=8" defer></script>
+    <link rel="stylesheet" href="/css/pages/relationship-tarot-bridge.css?v=2">
 </head>
 
 <body class="page-tarot">
@@ -610,6 +611,20 @@
 
     <script src="js/dist/pwa-install.js" defer></script>
 
+<template id="tarot-relationship-offer"><aside class="relationship-offer relationship-offer--illustrated" data-relationship-offer="tarot_single_card_result" hidden aria-labelledby="relationship-single-offer-title">
+    <div class="relationship-offer__art" aria-hidden="true">
+        <img src="/img/tarot/tarot_milenci.webp" width="600" height="1046" alt="" loading="lazy">
+        <img src="/img/tarot/tarot_mirnost.webp" width="600" height="1046" alt="" loading="lazy">
+    </div>
+    <div class="relationship-offer__copy">
+        <p class="relationship-eyebrow">OSOBNÍ VZTAHOVÝ VÝKLAD</p>
+        <h2 id="relationship-single-offer-title">Chceš se zastavit u své vztahové otázky?</h2>
+        <p>Jedna karta otevřela téma. Osobní výklad tří karet naváže přímo na situaci, kterou popíšeš.</p>
+        <a href="/vztahovy-vyklad.html?source=tarot_single_card_result">Přečíst ukázku · 149 Kč <span aria-hidden="true">↗</span></a>
+        <small>Tři karty k tvé otázce do e-mailu. Jednorázově, bez členství.</small>
+    </div>
+</aside></template>
+    <script src="/js/dist/relationship-tarot-bridge.js?v=2" defer></script>
 </body>
 
 </html>

@@ -628,6 +628,12 @@ test.describe('Tarot význam karet', () => {
 // ── Tarot Ano/Ne stránka ─────────────────────────────────────────────────────
 
 test.describe('Tarot Ano/Ne', () => {
+    test.beforeEach(async ({ page }) => {
+        // This suite exercises the membership fallback; the personal offer has its own suite.
+        await page.route('**/api/vztahovy-vyklad/product', route => route.fulfill({
+            json: { enabled: false, amount: 14900, currency: 'czk' }
+        }));
+    });
 
     test('tarot-ano-ne.html vrátí 200', async ({ page }) => {
         const res = await page.request.get('/tarot-ano-ne.html');
@@ -668,7 +674,7 @@ test.describe('Tarot Ano/Ne', () => {
 
         // Bezplatný profil zůstává pod hlavní návazností jako podřízený krok.
         await expect(page.locator('.tarot-yes-no-next-card')).toHaveCount(1);
-        await expect(page.locator('.tarot-yes-no-next-locked li')).toHaveCount(3);
+        await expect(page.locator('.tarot-yes-no-next-locked')).toHaveCount(0);
 
         const saveLink = page.locator('#tarot-yes-no-next-step [data-tarot-yes-no-register]').first();
         await expect(saveLink).toBeVisible();
@@ -682,10 +688,8 @@ test.describe('Tarot Ano/Ne', () => {
         expect(href).not.toContain('cenik.html');
         expect(href).not.toContain('plan=pruvodce');
 
-        // Tichá free cesta zůstává, ale jako podřízený textový odkaz.
-        const freeLink = page.locator('.tarot-yes-no-next-alt [data-tarot-yes-no-intent="one_card"]');
-        await expect(freeLink).toBeVisible();
-        expect(await freeLink.getAttribute('href')).toContain('source=tarot_yes_no_intent');
+        // Další bezplatná otázka je dostupná přímo, bez odbočení na jinou stránku.
+        await expect(page.locator('#btn-reset')).toBeVisible();
 
         await Promise.all([
             page.waitForURL(url => url.pathname === '/prihlaseni.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
@@ -765,7 +769,7 @@ test.describe('Tarot Ano/Ne', () => {
         await expect(bridge).toContainText('7 dní za 0 Kč, potom 199 Kč/měsíc');
         await expect(bridge).toContainText('K aktivaci je potřeba karta');
         await expect(bridge).toContainText('Zrušíš kdykoli v profilu');
-        await expect(bridge.locator('.tarot-result-upgrade-bridge__benefits li')).toHaveCount(3);
+        await expect(bridge).toContainText('Tři karty doplní souvislosti');
         await expect(page.locator('#tarot-result-upgrade-answer')).not.toContainText('karty');
 
         const upgrade = bridge.locator('[data-tarot-yes-no-upgrade]');
@@ -1066,7 +1070,9 @@ test.describe('Tarot Ano/Ne', () => {
         await expect(page.locator('.tarot-yes-no-answer-guide__note')).toContainText('nenahrazuje odbornou zdravotní, právní ani finanční radu');
         await expect(page.locator('.tarot-yes-no-faq-item')).toHaveCount(5);
         await expect(page.locator('.tarot-yes-no-intent-guide')).toContainText('Nejlepší otázka je konkrétní');
-        await expect(page.locator('a[href*="tarot_yes_no_related"]')).toHaveCount(4);
+        await expect(page.locator('a[href*="tarot_yes_no_related"]')).toHaveCount(3);
+        await expect(page.locator('.tarot-yes-no-faq-item').first()).not.toHaveAttribute('open');
+        await page.locator('.tarot-yes-no-faq-item').first().locator('summary').click();
         await expect(page.locator('a[href*="tarot-zdarma.html?source=tarot_yes_no_faq"]')).toBeVisible();
 
         const ldTypes = await page.locator('script[type="application/ld+json"]').evaluateAll((scripts) => scripts.map((script) => {
@@ -1111,6 +1117,9 @@ test.describe('Tarot Ano/Ne', () => {
         await expect(page.locator('#result-panel')).toHaveClass(/show/, { timeout: 2500 });
         await expect(page.locator('#cookie-banner')).toBeVisible({ timeout: 4500 });
         await expect(page.locator('#cookie-banner')).toHaveClass(/visible/, { timeout: 5000 });
+        // Reading starts at the answer. Secondary actions remain reachable by scrolling.
+        await expect(page.locator('#result-title')).toBeInViewport();
+        await page.locator('#btn-reset').scrollIntoViewIfNeeded();
         await page.waitForTimeout(700);
 
         const metrics = await page.evaluate(() => {

@@ -87,3 +87,55 @@ test('yes/no free result leads to the new question, without counting the hidden 
     await expect(page).toHaveURL(/vztahovy-vyklad.html\?source=tarot_yes_no_result$/);
     await expect(page.locator('#question')).toHaveValue(question);
 });
+
+test('yes/no works with the keyboard, explains missing input and resets cleanly', async ({ page }) => {
+    await prepare(page);
+    await page.goto('/tarot-ano-ne.html');
+    const card = page.getByRole('button', { name: 'Karta 1', exact: true });
+    await card.press('Enter');
+    await expect(page.locator('#question-error')).toBeVisible();
+    await expect(page.locator('#question-input')).toBeFocused();
+    await page.locator('#question-input').fill('Mám dnes otevřít rozhovor o společném čase?');
+    await card.press('Space');
+    await expect(page.locator('#result-title')).toBeFocused();
+    await expect(page.locator('#question-error')).toBeHidden();
+    await expect(page.locator('#result-next-step-text')).not.toBeEmpty();
+    await expect(page.locator('[data-relationship-offer]')).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.locator('#btn-reset').click();
+    await expect(page.locator('#result-panel')).toBeHidden();
+    await expect(page.locator('#question-input')).toBeFocused();
+    await expect(page.locator('#question-input')).toHaveValue('');
+    await expect(card).not.toHaveAttribute('aria-disabled');
+});
+
+for (const available of [true, false]) {
+    test(`single-card reading stays free and its personal offer respects availability=${available}`, async ({ page }) => {
+        await prepare(page, available);
+        await page.goto('/tarot.html');
+        await expect(page.locator('[data-relationship-offer]')).toHaveCount(0);
+        await page.locator('[data-spread-type="Jedna karta"]').click();
+        await expect(page.locator('#interpretations-container')).not.toBeEmpty({ timeout: 15000 });
+        const offer = page.locator('#tarot-results [data-relationship-offer]');
+        await expect(offer).toHaveCount(1);
+        if (available) {
+            await expect(offer).toBeVisible();
+            await offer.locator('a').click();
+            await expect(page).toHaveURL(/vztahovy-vyklad.html\?source=tarot_single_card_result$/);
+            await expect(page.locator('#checkout-button')).toBeEnabled();
+        } else {
+            await expect(offer).toBeHidden();
+            await expect(page.locator('#tarot-results')).toBeVisible();
+        }
+    });
+}
+
+test('free landing offers a direct paid path with the price shown before navigation', async ({ page }) => {
+    await prepare(page);
+    await page.goto('/tarot-zdarma.html');
+    const offer = page.locator('[data-relationship-offer]');
+    await expect(offer).toContainText('149 Kč');
+    await expect(offer).toContainText('Jednorázově');
+    await offer.locator('a').click();
+    await expect(page).toHaveURL(/vztahovy-vyklad.html\?source=tarot_free_landing$/);
+});
