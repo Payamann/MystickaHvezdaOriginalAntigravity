@@ -2134,13 +2134,14 @@ async function handleRelationshipTarotPurchase(session, stripeEventId) {
     if (order.status === 'fulfilled') return;
     await recordOneTimePurchase(session, { productType: 'relationship_tarot', productId: 'relationship_tarot', email: order.customer_email });
     await recordFunnelEvent('one_time_purchase_completed', { source: session.metadata.source, feature: 'relationship_tarot', stripeSessionId: session.id, stripeEventId,
-        metadata: { productId: 'relationship_tarot', productType: 'relationship_tarot', amount: 14900, currency: 'czk' } });
+        metadata: { productId: 'relationship_tarot', productType: 'relationship_tarot', amount: 14900, currency: 'czk', ...(session.metadata?.flowId ? { flow_id: session.metadata.flowId } : {}) } });
     setImmediate(async () => {
         try {
             const { fulfillRelationshipTarotOrder } = await import('./services/relationship-tarot-fulfillment.js');
             await fulfillRelationshipTarotOrder({ orderId: order.id });
             if (!await markOneTimeOrderInputFulfilled(order.id)) throw new Error('Could not confirm relationship delivery');
-            await recordFunnelEvent('one_time_reading_delivered', { source: session.metadata.source, feature: 'relationship_tarot', stripeSessionId: session.id, stripeEventId });
+            await recordFunnelEvent('one_time_reading_delivered', { source: session.metadata.source, feature: 'relationship_tarot', stripeSessionId: session.id, stripeEventId,
+                metadata: session.metadata?.flowId ? { flow_id: session.metadata.flowId } : {} });
         } catch (error) {
             await recordOneTimeOrderInputAttemptFailure(order.id, error.message);
         }

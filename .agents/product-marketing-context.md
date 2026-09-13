@@ -2,6 +2,12 @@
 
 Aktualizováno 13. 9. 2026 z rozhodnutí Pavla v tomto projektu a z [dokumentace pilotu](../docs/relationship-tarot-pilot.md). Jde o pracovní kontext; novější rozhodnutí a ověřená data jej mohou změnit.
 
+## Aktuální priorita po rešerši 13. 9. 2026
+
+Nejbližší obchodní priorita je jeden souvislý funnel **Tarot ano/ne → placené pokračování stejné vztahové otázky za 149 Kč**. Nezakládat další produkt ani nerozšiřovat členství, dokud tento směr nezíská rozhodnutelný vzorek. Detailní podklady, tržní srovnání, 30denní plán a rozhodovací hranice jsou v [strategické rešerši](../docs/deep-research-priorita-2026-09-13.md).
+
+Vydání 13. 9. 2026 zpřesňuje měření a přidává administrativní report. `one_time_product_cta_clicked` rozlišuje přechod z bezplatného tarotu na produkt od interního posunu z produktové stránky k formuláři. Jednu cestu propojuje krátkodobé anonymní `flow_id` bez e-mailu a otázky. Nejbližší validační milník je 10 unikátních zaplacených a doručených výkladů se skutečnou zpětnou vazbou; nejde ještě o důkaz rentability.
+
 ## Co má podnikání přinášet
 
 Srozumitelnou službu, za kterou lidé rádi zaplatí a dostanou užitečný výsledek. Příjem má vznikat prodejem služby, bez reklam. SEO je distribuční výhoda. Další funkce, registrace a návštěvnost samy o sobě nejsou obchodním výsledkem.

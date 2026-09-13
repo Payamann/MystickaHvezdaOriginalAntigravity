@@ -465,6 +465,7 @@ async function loadBusiness() {
 }
 
 async function loadFunnel() {
+    void loadRelationshipTarotReport();
     const daysSelect = document.getElementById('funnel-range-days');
     const days = daysSelect ? daysSelect.value : '30';
     const summary = document.getElementById('funnel-summary');
@@ -927,6 +928,68 @@ function renderBusinessAcquisition(rows) {
         appendCell(tr, formatPercent(row.visitorToSignupRate));
         tbody.appendChild(tr);
     });
+}
+
+let relationshipReportRequest = 0;
+async function loadRelationshipTarotReport() {
+    const summary = document.getElementById('relationship-report-summary');
+    const tbody = document.querySelector('#relationship-report-sources tbody');
+    const status = document.getElementById('relationship-report-status');
+    if (!summary || !tbody || !status) return;
+    const requestId = ++relationshipReportRequest;
+    const days = document.getElementById('funnel-range-days')?.value || '30';
+    summary.replaceChildren(createLoadingBlock('Načítám vztahový výklad…'));
+    tbody.replaceChildren(createTableMessageRow(10, 'Načítám zdroje…'));
+    status.textContent = '';
+    try {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/admin/relationship-tarot-report?days=${encodeURIComponent(days)}`, { credentials: 'include' });
+        if (!response.ok) throw new Error('report');
+        const data = await response.json();
+        if (!data.success || !data.report) throw new Error('report');
+        if (requestId !== relationshipReportRequest) return;
+        const report = data.report;
+        const m = report.metrics;
+        const unique = report.uniqueFlows || {};
+        const flowCount = (key, raw) => `${formatInteger(unique[key] || 0)} cest / ${formatInteger(raw)} událostí`;
+        const cards = [
+            ['Nabídka zobrazena', flowCount('offerViewed', m.offerViewed), 'Unikátní anonymní cesty / všechny události'],
+            ['Vstup z nabídky', flowCount('entryCtaClicked', m.entryCtaClicked), 'Klik z bezplatného tarotu na produkt'],
+            ['Prodejní stránka', flowCount('productViewed', m.productViewed), 'Načtení stránky vztahového výkladu'],
+            ['Posun k formuláři', flowCount('orderCtaClicked', m.orderCtaClicked), 'Klik na hlavní akci uvnitř produktu'],
+            ['Začali vyplňovat', flowCount('formStarted', m.formStarted), 'První vstup do objednávkového formuláře'],
+            ['Odeslaný formulář', flowCount('formSubmitted', m.formSubmitted), 'Pokusy pokračovat k platbě'],
+            ['Vytvořený checkout', flowCount('checkoutCreated', m.checkoutCreated), 'Vytvořená Stripe platební stránka'],
+            ['Chyba checkoutu', m.checkoutFailed, 'Zaznamenaná selhání zahájení platby'],
+            ['Zaplacené objednávky', m.paidOrders, 'Unikátní produkční platební relace v evidenci'],
+            ['Výklad odeslán', m.deliveredOrders, 'Objednávky označené jako vyřízené; není potvrzení přečtení'],
+            ['Čeká na odeslání', m.pendingDeliveryOrders, 'Zaplacené objednávky bez potvrzeného vyřízení']
+        ];
+        summary.replaceChildren(...cards.map(([label, value, hint]) => createMetric(label, typeof value === 'string' ? value : formatInteger(value), hint)),
+            createMetric('Hrubé platby CZK', formatCurrency(m.grossCzk), 'Evidované částky před vratkami a náklady; nejde o zisk'));
+        if (m.unclassifiedCtaClicked > 0) summary.appendChild(createMetric('Starší nerozlišená CTA', formatInteger(m.unclassifiedCtaClicked), 'Události před tímto vydáním nebo bez označení kroku. Nezapočítávají se do Vstupu ani Posunu k formuláři.'));
+        if (m.unmatchedPaidOrders > 0) summary.appendChild(createMetric('Platby bez objednávky', formatInteger(m.unmatchedPaidOrders), 'Platba je započtená, stav odeslání nelze určit. Vyžaduje kontrolu.'));
+        if (m.fulfilledWithoutReceipt > 0) summary.appendChild(createMetric('Odesláno bez dokladu platby', formatInteger(m.fulfilledWithoutReceipt), 'Není zahrnuto do zaplacených objednávek ani částek. Ověř se Stripe.'));
+        const date = value => new Date(value).toLocaleString('cs-CZ', { timeZone: 'Europe/Prague' });
+        status.textContent = `${date(report.since)} – ${date(report.until)} (Praha). ${report.partial ? 'POZOR: limit záznamů byl dosažen, přehled je neúplný. Zvol kratší období.' : 'Unikátní cesty jsou dostupné až pro události s novým flow ID; starší provoz zůstává jen v součtech událostí.'} Platby patří do období podle data evidence platby, odeslání ukazuje jejich aktuální stav.`;
+        tbody.replaceChildren();
+        for (const row of report.sources || []) {
+            const tr = document.createElement('tr');
+            appendCell(tr, row.source || '(nezjištěno)');
+            const sourceUnique = row.uniqueFlows || {};
+            for (const key of ['offerViewed', 'entryCtaClicked', 'productViewed', 'orderCtaClicked', 'formStarted', 'formSubmitted', 'checkoutCreated']) {
+                appendCell(tr, `${formatInteger(sourceUnique[key] || 0)} / ${formatInteger(row[key])}`);
+            }
+            appendCell(tr, formatInteger(row.paidOrders));
+            appendCell(tr, formatInteger(row.deliveredOrders));
+            tbody.appendChild(tr);
+        }
+        if (!tbody.children.length) tbody.appendChild(createTableMessageRow(10, 'V tomto období nejsou zaznamenané události ani platby.'));
+    } catch {
+        if (requestId !== relationshipReportRequest) return;
+        summary.replaceChildren();
+        tbody.replaceChildren(createTableMessageRow(10, 'Data nejsou dostupná.', 'admin-table-error'));
+        status.textContent = 'Přehled se nepodařilo načíst. Ověř přihlášení správce a použij Obnovit funnel. Nejde o nulové prodeje.';
+    }
 }
 
 function renderFunnel(report) {

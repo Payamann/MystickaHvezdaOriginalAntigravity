@@ -27,6 +27,8 @@ Search Console, 9. 6.–8. 9. 2026: 3 187 prokliků celkem, 1 293 na český tar
 
 ## Co se měří
 
+Kontrola 13. 9. 2026: read-only agregace produkční databáze od `2026-09-12T00:00:00Z` do okamžiku kontroly ukázala 7 událostí zobrazení nabídky (6 ano/ne, 1 tarot na lásku), 1 kliknutí z ano/ne a 3 události zobrazení produktu (2 defaultní zdroj, 1 ano/ne). Dotaz pro tento produkt a období nevrátil žádné objednávky ani nákupy. Počty nejsou unikátní návštěvníci, mohou zahrnovat interní návštěvy a nedokazují konverzi ani poptávku. Stripe nebyl samostatně dotazován. Nejbližší doporučená práce: doplnit přehled produktu do administrace, jejíž souhrny aktuálně počítají `one_time_pdf_delivered`, zatímco vztahový produkt posílá `one_time_reading_delivered`. Tato kontrola report neupravovala.
+
 Události v existujícím `funnel_events`: `one_time_offer_viewed` (skutečně viditelná nabídka na vstupní stránce), `one_time_product_cta_clicked`, `one_time_product_viewed`, `one_time_form_started`, `one_time_form_submitted`, `checkout_session_created`, `one_time_purchase_completed`, `one_time_reading_delivered`. Filtrovat `feature=relationship_tarot`, zdroje `tarot_yes_no_result`, `tarot_love_landing`, `relationship_tarot_page`.
 
 K počtu skutečných nákupů používat unikátní `stripe_session_id` v `one_time_purchases` a kontrolu Stripe; události jsou počty událostí, ne návštěvníci, a mohou se opakovat. Při výpadku webhooku reconciliation potvrzuje a doručuje objednávku, ale společný stávající job nezapisuje stejné nákupní události; pro úplnost porovnat také doručené `one_time_order_inputs` a Stripe. Zpětná vazba přichází odpovědí na doručovací e-mail, není předstíranou anonymní automatickou metrikou.
@@ -34,6 +36,18 @@ K počtu skutečných nákupů používat unikátní `stripe_session_id` v `one_
 Po 4 týdnech zhodnotit relevantní zobrazení nabídky, unikátní nákupy, náklady a skutečné odpovědi zákazníků. Deset nákupů je milník pro učení, nikoliv důkaz rentability. Při malém vzorku nerozhodovat podle samotného uplynutí času. Nezvyšovat propagaci, pokud zákazníci popisují výsledek jako obecný nebo neodpovídající zadání.
 
 ## Postup aktivace
+
+### Přehled pilotu v administraci — vydání 13. 9. 2026
+
+V `admin.html` je v sekci **Funnel a platby** samostatný blok **Vztahový výklad · 149 Kč**. Používá společný výběr období a tlačítko **Obnovit funnel**. Data načítá chráněný endpoint `/api/admin/relationship-tarot-report?days=30`; přístup mají pouze správci.
+
+Nové události ukazují zobrazení nabídky, vstup z bezplatného tarotu, prodejní stránku, posun k formuláři, začátky a odeslání formuláře i vytvoření checkoutu. Krátkodobé anonymní `flow_id` dovoluje u těchto kroků zobrazit počet propojených cest vedle všech událostí; neobsahuje e-mail ani text otázky. Starší provoz bez `flow_id` zůstává správně jen v součtech událostí. Rozbalovací tabulka rozlišuje zdroje. Skutečné evidované produkční platby se počítají podle unikátní platební relace; doručení podle aktuálního stavu související objednávky, nikoli jen podle události webhooku. Odeslání není potvrzení přečtení e-mailu. Hrubé částky CZK jsou před vratkami a náklady; Stripe zůstává místem pro finanční kontrolu nesrovnalostí.
+
+Při chybě se zobrazí nedostupnost, nikoli nuly. Při dosažení limitu dat je přehled označený jako neúplný. Pro vyhodnocení pilotu začni absolutními počty a místem, kde ubývá zájem; při malém vzorku nedělej závěry o úspěchu nabídky podle procent.
+
+Diagnostika samostatně ukazuje zaplacené relace bez navázané objednávky a produkční objednávky vyřízené v období bez dohledaného platného dokladu platby. U druhé skupiny hledá i starší doklady mimo vybrané období; bez dokladu nevymýšlí tržbu. Dotazy jsou omezené na 1000 událostí a 100 záznamů v každém objednávkovém dotazu, dosažení limitu označí přehled jako neúplný. Report nevrací e-mail, otázku ani text výkladu.
+
+Při implementaci byl backend delegován modelu `gpt-5.6-sol`; po dosažení jeho usage limitu převzal dokončení hlavní agent. Hotové změny byly zachovány. Ověření před nasazením: cílené serverové testy agregace, oprávnění a absence osobních údajů; lokální náhled desktop/mobil a chybový stav s modelovými daty; lint a build JS. Reálná platba se kvůli této změně neopakovala; skutečné doručení předchozího ověřovacího e-mailu potvrdil Pavel.
 
 ### Navazující redesign — vydání schválené 13. 9. 2026
 

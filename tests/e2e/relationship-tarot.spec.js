@@ -1,8 +1,11 @@
 import { test, expect } from '@playwright/test';
 
-async function prepare(page, enabled = true) {
+async function prepare(page, enabled = true, funnelEvents = null) {
     await page.route('**/api/vztahovy-vyklad/product', route => route.fulfill({ json: { enabled, amount: 14900, currency: 'czk' } }));
-    await page.route('**/api/payment/funnel-event', route => route.fulfill({ json: { success: true } }));
+    await page.route('**/api/payment/funnel-event', route => {
+        if (funnelEvents) funnelEvents.push(route.request().postDataJSON());
+        return route.fulfill({ json: { success: true } });
+    });
 }
 
 test('sample, images, legal links and mobile layout are usable before purchase', async ({ page, request }, testInfo) => {
@@ -32,7 +35,8 @@ test('checkout sends only required fields and preserves input after a failure', 
     await page.locator('#checkout-button').click();
     await expect(page.locator('#form-error')).toHaveText('Dočasná chyba platby.');
     await expect(page.locator('#question')).toHaveValue(body.question);
-    expect(Object.keys(body).sort()).toEqual(['consent', 'email', 'question', 'source']);
+    expect(Object.keys(body).sort()).toEqual(['consent', 'email', 'flowId', 'question', 'source']);
+    expect(body.flowId).toMatch(/^[a-z0-9_-]{16,80}$/i);
     await page.reload();
     await expect(page.locator('#question')).toHaveValue(body.question);
     await expect(page.locator('#consent')).not.toBeChecked();
@@ -65,7 +69,8 @@ test('tarot entry is gated by availability and carries only source in the URL', 
 });
 
 test('yes/no free result leads to the new question, without counting the hidden membership offer', async ({ page }) => {
-    await prepare(page);
+    const funnelEvents = [];
+    await prepare(page, true, funnelEvents);
     await page.addInitScript(() => {
         sessionStorage.setItem('mh_relationship_draft', JSON.stringify({ question: 'Staré zadání, které již nechci řešit.', at: Date.now() }));
     });
@@ -82,10 +87,19 @@ test('yes/no free result leads to the new question, without counting the hidden 
     await expect(offer).toBeVisible({ timeout: 15000 });
     await expect(page.locator('[data-relationship-legacy]')).toBeHidden();
     await expect(page.locator('#result-text')).not.toBeEmpty();
+    const cardName = await page.locator('#result-card-name').textContent();
+    const answerLabel = await page.locator('#result-title').textContent();
     expect(await page.evaluate(() => window.relationshipQAEvents)).not.toContain('tarot_yes_no_upgrade_bridge_viewed');
     await offer.locator('a').click();
     await expect(page).toHaveURL(/vztahovy-vyklad.html\?source=tarot_yes_no_result$/);
     await expect(page.locator('#question')).toHaveValue(question);
+    await expect(page.locator('#continuation-context')).toBeVisible();
+    await expect(page.locator('#continuation-question')).toContainText(question);
+    await expect(page.locator('#continuation-result')).toContainText(cardName);
+    await expect(page.locator('#continuation-result')).toContainText(answerLabel);
+    await expect(page.locator('[data-reading-cta-label]')).toHaveText('Rozvinout mou otázku');
+    await expect.poll(() => funnelEvents.some(event => event.eventName === 'one_time_product_cta_clicked' && event.metadata?.funnel_step === 'entry_offer')).toBe(true);
+    expect(JSON.stringify(funnelEvents)).not.toContain(question);
 });
 
 test('yes/no works with the keyboard, explains missing input and resets cleanly', async ({ page }) => {

@@ -13,6 +13,8 @@ Produktový směr, doložená data, značka a aktuální omezení jsou v [.agent
 
 ## Smyčka pro delší úkoly
 
+Pavel schválil adaptivní volbu modelů a delegování na pomocné agenty pro úsporu při zachování kvality. Při vhodné samostatné části práce použij levnějšího pomocného agenta podle pravidel v `docs/codex-harness.md`, pokud současně pokračuje užitečná práce hlavního agenta. Krátké odpovědi nedeleguj jen kvůli změně modelu. Při skutečném selhání uvažování eskaluj; nepředstírej přepnutí modelu hlavní konverzace.
+
 U práce přes více kol postupuj podle [projektové smyčky](docs/codex-harness.md): nejprve obnov cíl a poslední ověřený stav, vyber jeden ohraničený krok, proveď jej, potom výsledek ověř nezávisle v souborech, prohlížeči nebo testu a ulož checkpoint. Do ověřeného stavu patří jen fakta potvrzená prostředím. Selhání zapisuj jako důkaz s přesným místem a další krok; neoznačuj úkol za hotový podle vlastního předpokladu.
 
 # Mystická Hvězda — Codex Social Media Agent

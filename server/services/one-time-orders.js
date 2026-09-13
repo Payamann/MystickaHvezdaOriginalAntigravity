@@ -9,7 +9,8 @@ const SAFE_METADATA_KEYS = new Set([
     'source',
     'price',
     'currency',
-    'orderId'
+    'orderId',
+    'flowId'
 ]);
 
 function cleanString(value, maxLength) {

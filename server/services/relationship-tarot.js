@@ -172,6 +172,10 @@ export function buildRelationshipReadingHtml({ question, cards, reading }, { inl
         <p style="${labelStyle}margin-top:30px;">CHVÍLE K ZAMYŠLENÍ</p>
         <h2 style="${headingStyle}margin-bottom:5px;">Co si chceš odnést dál?</h2>
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">${questions}</table>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:28px;"><tr><td bgcolor="#f1ecdf" style="padding:20px 21px;background-color:#f1ecdf;border-left:3px solid #8f6cb1;">
+            <p style="${labelStyle}color:#73538f;">POMŮŽEŠ NÁM VÝKLAD ZLEPŠIT?</p>
+            <p style="${paragraphStyle}margin-top:10px;font-size:14px;line-height:23px;">Stačí odpovědět na tento e-mail: co bylo nejkonkrétnější, co působilo obecně nebo mimo otázku a zda by pro tebe podobný výklad dával smysl znovu.</p>
+        </td></tr></table>
         <p style="margin:29px 0 12px;font-family:Georgia,Times,serif;font-size:21px;line-height:30px;font-style:italic;text-align:center;color:#6e5a36;">Nemusíš mít všechny odpovědi dnes.</p>
         <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:22px;text-align:center;color:#766c7e;">K výkladu se můžeš vrátit, až budeš chtít.<br>Pokud nám chceš něco napsat, stačí odpovědět na tento e-mail.</p>
     </td></tr>

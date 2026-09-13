@@ -11,10 +11,10 @@
   <link rel="canonical" href="https://www.mystickahvezda.cz/vztahovy-vyklad.html">
   <link rel="icon" href="/img/icon-192.webp">
   <link rel="stylesheet" href="/fonts/local-fonts.css">
-  <link rel="stylesheet" href="/css/pages/vztahovy-vyklad.css">
+  <link rel="stylesheet" href="/css/pages/vztahovy-vyklad.css?v=2">
   <script src="/js/dist/analytics-init.js" defer></script>
   <script src="/js/dist/analytics.js?v=6" defer></script>
-  <script src="/js/dist/vztahovy-vyklad.js" defer></script>
+  <script src="/js/dist/vztahovy-vyklad.js?v=2" defer></script>
 </head>
 <body>
   <a class="skip" href="#obsah">Přeskočit na obsah</a>
@@ -24,8 +24,16 @@
       <div class="hero-copy">
         <p class="eyebrow">OSOBNÍ VZTAHOVÝ VÝKLAD</p>
         <h1>Některé otázky<br>potřebují <em>víc prostoru.</em></h1>
+        <div id="continuation-context" class="continuation-context" hidden>
+          <img id="continuation-card-image" alt="" width="54" height="91" hidden>
+          <div>
+            <p class="continuation-label">NAVAZUJEME NA TVŮJ VÝKLAD</p>
+            <p id="continuation-question" class="continuation-question"></p>
+            <p id="continuation-result" class="continuation-result"></p>
+          </div>
+        </div>
         <p class="lead">Když se ti vztahová otázka vrací, dopřej si chvíli pro vlastní pohled. Tři tarotové karty a tvoje zadání se propojí do jednoho osobního výkladu.</p>
-        <a class="button" href="#objednavka" data-reading-cta="hero">Chci svůj výklad <span>149 Kč <span aria-hidden="true">↗</span></span></a>
+        <a class="button" href="#objednavka" data-reading-cta="hero"><span data-reading-cta-label>Chci svůj výklad</span> <span>149 Kč <span aria-hidden="true">↗</span></span></a>
         <p class="micro">Jednorázově · bez členství · bez registrace</p>
         <p class="disclosure">Tarotová tradice propojená s moderní technologií.<br>Prostor pro otázku, která je jen tvoje.</p>
       </div>

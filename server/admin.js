@@ -11,6 +11,7 @@ import {
     listRecentSupportThreads
 } from './services/gmail-support.js';
 import { getCachedStripeWebhookAudit } from './services/stripe-webhook-audit.js';
+import { buildRelationshipTarotReport } from './services/relationship-tarot-report.js';
 
 const router = express.Router();
 
@@ -25,6 +26,8 @@ const MAX_ANALYTICS_LIMIT = 5000;
 const DEFAULT_BUSINESS_DAYS = 30;
 const MAX_BUSINESS_DAYS = 365;
 const DEFAULT_BUSINESS_LIMIT = 5000;
+const RELATIONSHIP_TAROT_EVENT_LIMIT = 1000;
+const RELATIONSHIP_TAROT_ORDER_LIMIT = 100;
 
 const MONTHLY_REVENUE_BY_PLAN_TYPE = Object.freeze({
     [PLAN_TYPES.PREMIUM]: 199,
@@ -2203,6 +2206,101 @@ router.get('/funnel', authenticateToken, requireAdmin, async (req, res) => {
     } catch (error) {
         console.error('Admin Funnel Error:', error);
         res.status(500).json({ success: false, error: 'Nepodařilo se načíst funnel report.' });
+    }
+});
+
+router.get('/relationship-tarot-report', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const days = normalizeFunnelDays(req.query.days);
+        const untilDate = new Date();
+        const sinceDate = new Date(untilDate.getTime() - days * 24 * 60 * 60 * 1000);
+        const since = sinceDate.toISOString();
+        const until = untilDate.toISOString();
+
+        const [eventsResult, purchasesResult] = await Promise.all([
+            supabase
+                .from('funnel_events')
+                .select('user_id, event_name, source, feature, metadata, created_at')
+                .eq('feature', 'relationship_tarot')
+                .gte('created_at', since)
+                .lte('created_at', until)
+                .order('created_at', { ascending: false })
+                .limit(RELATIONSHIP_TAROT_EVENT_LIMIT),
+            supabase
+                .from('one_time_purchases')
+                .select('stripe_session_id, product_type, product_id, amount_total, currency, status, source:metadata->>source, flow_id:metadata->>flowId, created_at')
+                .eq('product_type', 'relationship_tarot')
+                .eq('product_id', 'relationship_tarot')
+                .gte('created_at', since)
+                .lte('created_at', until)
+                .limit(RELATIONSHIP_TAROT_ORDER_LIMIT)
+        ]);
+
+        if (eventsResult.error) throw eventsResult.error;
+        if (purchasesResult.error) throw purchasesResult.error;
+
+        const events = eventsResult.data || [];
+        const purchases = purchasesResult.data || [];
+        const purchaseSessions = purchases
+            .slice(0, RELATIONSHIP_TAROT_ORDER_LIMIT)
+            .map(row => row.stripe_session_id)
+            .filter(Boolean);
+        const [linkedOrdersResult, fulfilledOrdersResult] = await Promise.all([
+            purchaseSessions.length
+            ? supabase
+                .from('one_time_order_inputs')
+                .select('id, stripe_session_id, product_type, product_id, status, source:payload->>source')
+                .eq('product_type', 'relationship_tarot')
+                .eq('product_id', 'relationship_tarot')
+                .in('stripe_session_id', purchaseSessions)
+                .limit(RELATIONSHIP_TAROT_ORDER_LIMIT)
+            : { data: [], error: null },
+            supabase
+                .from('one_time_order_inputs')
+                .select('id, stripe_session_id, product_type, product_id, status, source:payload->>source')
+                .eq('product_type', 'relationship_tarot')
+                .eq('product_id', 'relationship_tarot')
+                .eq('status', 'fulfilled')
+                .gte('fulfilled_at', since)
+                .lte('fulfilled_at', until)
+                .limit(RELATIONSHIP_TAROT_ORDER_LIMIT)
+        ]);
+        if (linkedOrdersResult.error) throw linkedOrdersResult.error;
+        if (fulfilledOrdersResult.error) throw fulfilledOrdersResult.error;
+        const linkedOrders = linkedOrdersResult.data || [];
+        const fulfilledOrders = fulfilledOrdersResult.data || [];
+        const fulfilledSessions = fulfilledOrders.map(row => row.stripe_session_id).filter(Boolean);
+        const reconciliationPurchasesResult = fulfilledSessions.length
+            ? await supabase
+                .from('one_time_purchases')
+                .select('stripe_session_id, product_type, product_id, amount_total, currency, status, source:metadata->>source, flow_id:metadata->>flowId')
+                .eq('product_type', 'relationship_tarot')
+                .eq('product_id', 'relationship_tarot')
+                .in('stripe_session_id', fulfilledSessions)
+                .limit(RELATIONSHIP_TAROT_ORDER_LIMIT)
+            : { data: [], error: null };
+        if (reconciliationPurchasesResult.error) throw reconciliationPurchasesResult.error;
+        const reconciliationPurchases = reconciliationPurchasesResult.data || [];
+        const ordersById = new Map([...linkedOrders, ...fulfilledOrders].map(order => [order.id, order]));
+        const orders = [...ordersById.values()];
+        const partial = events.length >= RELATIONSHIP_TAROT_EVENT_LIMIT
+            || purchases.length >= RELATIONSHIP_TAROT_ORDER_LIMIT
+            || linkedOrders.length >= RELATIONSHIP_TAROT_ORDER_LIMIT
+            || fulfilledOrders.length >= RELATIONSHIP_TAROT_ORDER_LIMIT
+            || reconciliationPurchases.length >= RELATIONSHIP_TAROT_ORDER_LIMIT;
+
+        res.json({
+            success: true,
+            report: buildRelationshipTarotReport({
+                events: filterExcludedFunnelEvents(events),
+                purchases,
+                orders,
+                reconciliationPurchases
+            }, { since, until, days, partial })
+        });
+    } catch (error) {
+        console.error('Admin Relationship Tarot Report Error:', error);
+        res.status(500).json({ success: false, error: 'Nepodařilo se načíst report vztahového výkladu.' });
     }
 });
 

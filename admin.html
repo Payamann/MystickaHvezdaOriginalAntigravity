@@ -305,6 +305,24 @@
 
                     </div>
 
+                    <section class="admin-box" aria-labelledby="relationship-report-title">
+                        <h3 id="relationship-report-title">Vztahový výklad · 149 Kč</h3>
+                        <p>Přehled používá období vybrané nahoře. U nových cest ukazuje anonymně propojené návštěvy i celkové události; platby jsou unikátní objednávky.</p>
+                        <p id="relationship-report-status" role="status"></p>
+                        <div id="relationship-report-summary" class="admin-metrics" aria-live="polite"></div>
+                        <details>
+                            <summary>Rozpad podle zdroje</summary>
+                            <div class="admin-table-container admin-table-container--compact">
+                                <table id="relationship-report-sources">
+                                    <caption>Kroky návštěvy a evidované platby podle zdroje</caption>
+                                    <thead><tr><th scope="col">Zdroj</th><th scope="col">Nabídka</th><th scope="col">Vstup</th><th scope="col">Stránka</th><th scope="col">K formuláři</th><th scope="col">Začali</th><th scope="col">Odeslali</th><th scope="col">Checkout</th><th scope="col">Zaplaceno</th><th scope="col">Odesláno</th></tr></thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </details>
+                        <p>Platby vycházejí z evidence objednávek, nikoli z návratové URL. Při nesrovnalosti je potřeba porovnání se Stripe. Užitečnost výkladu hodnotíme také podle skutečných odpovědí zákazníků.</p>
+                    </section>
+
                     <div id="funnel-summary" class="admin-metrics" aria-live="polite">
 
                         <div class="admin-loading">Načítám funnel...</div>
@@ -788,7 +806,7 @@
     <script src="js/dist/components.js?v=20260522-premium-gate-cache" defer></script>
 
     <script type="module" src="js/dist/main.js?v=10"></script>
-    <script src="js/dist/admin.js?v=4" defer></script>
+    <script src="js/dist/admin.js?v=6" defer></script>
 
 </body>
 

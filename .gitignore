@@ -29,6 +29,7 @@ debug.log
 npm-debug.log*
 *.sqlite
 *.db
+.lh-harness/runs/
 
 # Temporary
 temp_*/

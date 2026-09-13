@@ -11,7 +11,7 @@ import { verifyOneTimeOrderPayment } from '../jobs/one-time-order-reconciliation
 
 const paragraph = 'Výklad je symbolickou reflexí tvé situace. Vrať se k tomu, co popisuješ, a zkus pojmenovat jednu vlastní potřebu, o které můžeš v klidu mluvit.';
 const reading = { introduction: paragraph, cards: [paragraph, paragraph, paragraph], connection: paragraph, nextStep: paragraph, questions: ['Co pro tebe znamená blízkost?', 'Co potřebuješ pojmenovat?', 'Jakou dohodu můžeš navrhnout?'] };
-const orderInput = { email: 'buyer@example.com', question: 'Po hádce se usmíříme, ale nemluvíme o tom. Co mohu udělat?', consent: true, source: 'tarot_yes_no_result' };
+const orderInput = { email: 'buyer@example.com', question: 'Po hádce se usmíříme, ale nemluvíme o tom. Co mohu udělat?', consent: true, source: 'tarot_yes_no_result', flowId: 'flow_1234567890123456' };
 const proof = 'a'.repeat(64);
 const paidSession = { id: 'cs_test_relationship', mode: 'payment', status: 'complete', payment_status: 'paid', currency: 'czk', amount_total: 14900,
     metadata: { productId: 'relationship_tarot', productType: 'relationship_tarot', orderId: 'order-1', returnProofHash: pdfProofHash(proof) } };
@@ -44,10 +44,13 @@ describe('Relationship tarot checkout', () => {
         expect(payload.mode).toBe('payment');
         expect(payload.line_items[0].price_data.unit_amount).toBe(14900);
         expect(payload.metadata.productId).toBe('relationship_tarot');
+        expect(payload.metadata.flowId).toBe(orderInput.flowId);
         expect(JSON.stringify(payload)).not.toContain(orderInput.question);
         expect(JSON.stringify(track.mock.calls)).not.toContain(orderInput.email);
         expect(JSON.stringify(track.mock.calls)).not.toContain(orderInput.question);
         expect(createOrder.mock.calls[0][0].payload.question).toBe(orderInput.question);
+        expect(createOrder.mock.calls[0][0].payload.flowId).toBe(orderInput.flowId);
+        expect(track.mock.calls.find(([eventName]) => eventName === 'checkout_session_created')[1].metadata.flow_id).toBe(orderInput.flowId);
         expect(options.idempotencyKey).toBe('relationship-checkout-order-1');
         expect(response.headers['set-cookie'][0]).toContain('HttpOnly');
         expect(response.headers['set-cookie'][0]).toContain('Path=/api/vztahovy-vyklad');
