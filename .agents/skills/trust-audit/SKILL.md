@@ -1,51 +1,31 @@
 ---
 name: trust-audit
-description: Use when improving Mysticka Hvezda trust, credibility, reviews, testimonials, guarantees, privacy claims, pricing honesty, checkout confidence, or homepage believability. This skill prevents fake-looking proof and raises conversion quality without paid tools.
-version: 1.0.0
+description: Use to review or change Mysticka Hvezda product claims, sample readings, testimonials, price and subscription
+  expectations, data-use explanations or checkout trust. Scope to affected claims and their customer journey.
 metadata:
   author: internal-team
   license: Internal
   tags:
-    - trust
-    - credibility
-    - cro
-    - homepage
+  - trust
+  - credibility
+  - cro
+  - homepage
+  version: 1.1.0
 ---
 
 # Trust Audit
 
-Goal: make the product feel credible without inventing proof or adding paid tooling.
+Prověř tvrzení, která se mění, a místo, kde na ně zákazník spoléhá. Není nutné auditovat celý web při úpravě jediné nabídky. Produkt, jazyk a cíle jsou ve [společném kontextu](../../product-marketing-context.md).
 
-## Principles
+## Důvěra založená na skutečnosti
 
-- Never invent user numbers, ratings, testimonials, guarantees, or certifications.
-- If proof is small, label it honestly as anonymized stories, early feedback, or internal sample.
-- Explain how data is handled before asking for sensitive birth information.
-- Put pricing and cancellation expectations before checkout.
-- Prefer concrete process proof over vague spiritual claims.
+- Nevymýšlej počty zákazníků, hodnocení, certifikace, doporučení ani garance. Redakční či smyšlený příklad označ „modelová ukázka“; nesmí být přejmenován na anonymizovaný příběh zákazníka nebo zpětnou vazbu.
+- Skutečnou referenci použij se svolením a věrně jejímu smyslu. Zkouška doručení provozovateli není zákaznická recenze ani placená objednávka.
+- Ukaž konkrétní obsah, rozsah, způsob doručení a cenu. Jednorázový výklad nezaměňuj s členstvím. Slibované termíny, vratky a rušení musí odpovídat implementaci a platným podmínkám; nové garance nevytvářej jako kosmetickou úpravu textu.
+- „Propojení tradice s moderní technologií“ odpovídá tónu značky. Zákazník však musí před nákupem mít dostupné pravdivé vysvětlení automatického vzniku výkladu. Nenaznačuj ruční lidskou konzultaci, pokud ji produkt neposkytuje.
+- Tarot rámuj jako podnět k zamyšlení. Nepoužívej tvrzení o jisté budoucnosti, skrytých citech druhého člověka nebo léčbě. Neprodávej přes vyvolávání strachu, žárlivosti či závislosti na dalším výkladu.
+- Soukromí popisuj podle skutečného toku dat. Otázka jde do generování a e-mail k doručení; nepiš „nikomu data nepředáváme“ nebo „zcela anonymní“, když to neodpovídá službě. Do analytiky a URL nepřidávej otázku či e-mail.
 
-## Review Checklist
+Přednost má srozumitelná informace na místě rozhodnutí a dostupné detaily. Nepřidávej opakované výstrahy a dlouhé bloky právního textu do každého kroku. Pokud je nutné posoudit konkrétní právní otázku, ověř aktuální primární zdroj; marketingový audit sám není právní posouzení.
 
-Check every trust-sensitive page for:
-
-- Clear operator/contact/legal links.
-- Privacy reassurance near birth data forms.
-- Honest review methodology and no fake "verified" badges.
-- Specific examples of what the user receives.
-- No medical, financial, or deterministic promises.
-- Refund/cancellation language near paid CTAs.
-- Consistent tone: mystical, but grounded and transparent.
-
-## Implementation Targets
-
-High-impact areas:
-
-- Homepage first viewport and pricing section.
-- `cenik.html` plan comparison and checkout context.
-- `onboarding.html` sensitive data explanation.
-- One-time PDF product pages.
-- Premium gates and upgrade modals.
-
-## Output
-
-Lead with concrete trust risks and suggested fixes. When implementing, keep copy precise and avoid overclaiming.
+Při požadavku na úpravy rovnou oprav doložený problém. Při auditu uveď tvrzení, oporu nebo chybějící důkaz a nejmenší vhodnou změnu; nevyplňuj seznam hypotetických rizik.

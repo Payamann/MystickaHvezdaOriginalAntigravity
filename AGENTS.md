@@ -1,4 +1,19 @@
+# Mystická Hvězda — práce na projektu
+
+Produktový směr, doložená data, značka a aktuální omezení jsou v [.agents/product-marketing-context.md](.agents/product-marketing-context.md). Při práci na produktu nebo marketingu si kontext načti jednou; znovu jej nevyžaduj od Pavla. Cílem je užitečná placená služba a fungující cesta k jejímu doručení.
+
+## Volba postupu
+
+- Načti skill podle skutečné úlohy, další jen pokud řeší konkrétní závislost. Katalog a návody celé knihovny nejsou povinná četba.
+- Nabídka a cesta z návštěvy k nákupu: `page-cro`. Vzhled a přístupnost: `web-design-guidelines`. Ověření změněné cesty: `conversion-qa`.
+- Výpočty, losování a generované výklady: `astro-engine-regression`. Tvrzení, reference a očekávání zákazníka: `trust-audit`. Měření: `analytics-tracking`.
+- Produkční stav nebo nasazení: `railway-deploy-guard`; rozlišuj kontrolu a požadavek na změnu produkce. Kontext zachovává aktuální rozhodnutí o nasazování.
+- U drobné úpravy ověř jen zasažené chování. Celé sady testů, opakované audity ani nové testy pro samotné barvy/texty nejsou výchozí postup. Povinné CI kontroly a ověření změn plateb či přístupových práv zůstávají zachované.
+- Pro předání stručně uveď výsledek, rozsah ověření a zda jde o lokální nebo produkční stav. Samotná úspěšná technická zkouška nedokazuje obchodní úspěch.
+
 # Mystická Hvězda — Codex Social Media Agent
+
+Následující postup platí pouze při tvorbě příspěvků pro sociální sítě. Při úpravách webu, opravách, analýze produktu nebo údržbě skills nespouštěj sociální brief ani logování příspěvků.
 
 ## KROK 1 — Přečti paměť (povinné před generováním)
 

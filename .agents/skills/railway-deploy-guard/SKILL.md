@@ -1,59 +1,44 @@
 ---
 name: railway-deploy-guard
-description: Use when deploying Mysticka Hvezda, pushing to Railway, checking whether production deployed, debugging skipped Railway deployments, verifying GitHub checks, or confirming that origin/main reached www.mystickahvezda.cz. This skill enforces the full no-cost deploy verification workflow.
-version: 1.0.0
+description: Use for Mysticka Hvezda Railway deployment, failed releases or read-only production status checks.
+  Distinguishes checking what is live from authorization to push, deploy, change flags or migrate production.
 metadata:
   author: internal-team
   license: Internal
   tags:
-    - deploy
-    - railway
-    - github-actions
-    - production
+  - deploy
+  - railway
+  - github-actions
+  - production
+  version: 1.1.0
 ---
 
 # Railway Deploy Guard
 
-Goal: never report a deploy as done until the deploy branch, GitHub checks, Railway status, and production smoke checks are all verified.
+## Nejdříve rozliš úkol
 
-## Workflow
+- **Kontrola stavu:** „Je to v produkci?“ znamená zjistit verzi a dostupnost. Sama neopravňuje k pushi, redeployi, migraci ani zapnutí produktu.
+- **Lokální práce:** dokonči návrh a potřebné ověření. Existující zákaz nasazení z [kontextu](../../product-marketing-context.md) platí, dokud jej uživatel výslovně nezmění; „pokračuj“ jej neruší.
+- **Autorizované nasazení:** existující souhlas respektuj, neptej se znovu bez konkrétního důvodu. Nasaď pouze zamýšlené změny, zachovej cizí a rozpracovanou práci.
 
-1. Confirm the deploy branch:
-   - Railway watches `Payamann/MystickaHvezdaOriginalAntigravity` on `origin/main`.
-   - Do not treat `production/main` or `origin/codex/*` as sufficient for Railway.
-2. Commit and push:
-   - Push deploy commits with `git push origin HEAD:main`.
-   - Keep the working branch synced with `git push origin HEAD:<current-branch>`.
-   - Mirror to `production/main` only as a secondary backup.
-3. Run the guard:
-   - `npm run deploy:guard`
-4. Only call the deploy successful when the guard reports `DEPLOY OK`.
+## Kontrola produkčního stavu
 
-## What The Guard Checks
+Railway je podle konfigurace projektu navázaný na `Payamann/MystickaHvezdaOriginalAntigravity`, větev `origin/main`. Před závěrem ověř aktuální nastavení; `production/main` a `origin/codex/*` samy nedokazují nasazení.
 
-- Local `HEAD` equals `origin/main`.
-- Working tree is clean, so local uncommitted changes are not mistaken for deployed code.
-- GitHub check runs for the commit are completed and not failing. Intentionally skipped scheduled-only jobs (`E2E (...)`, `Production Smoke Test`) are allowed on normal pushes; any unexpected skipped check is still a failure.
-- Railway commit status reaches success.
-- `https://www.mystickahvezda.cz/api/health` returns `status: ok`.
-- Homepage returns expected HTML.
+Zjisti požadovaný commit, aktuální vzdálenou větev, GitHub checks a Railway deployment. Ověř `/api/health` a relevantní veřejnou stránku. Rozpracovaná pracovní kopie může být novější než produkce; necommituj ji jen kvůli kontrole a nevydávej její nečistotu za výpadek webu.
 
-If GitHub API access needs authentication, set `GITHUB_TOKEN` before running the guard.
+`npm run deploy:guard` porovnává lokální HEAD s `origin/main` a standardně vyžaduje čistou pracovní kopii. Pro pouhý stav s odlišnou lokální verzí ověř konkrétní vzdálený SHA a runtime samostatně. Dostupný je `npm run verify:production:commit -- --sha <skutečný-commit> --skip-astro`; před spuštěním zkontroluj rozsah skriptu. Výsledky vždy popiš jako kontrolu dané verze, ne jako nově provedený deploy.
 
-## If It Fails
+## Autorizované nasazení
 
-- If GitHub checks fail, fix the check first and push a new commit to `origin/main`.
-- If an unexpected check is skipped, treat the deploy as not completed and inspect the skipped check/run conditions.
-- If Railway is pending, keep polling until final status.
-- If Railway fails, inspect the Railway target URL from the commit status.
-- If smoke fails, run `npm run verify:production` for deeper endpoint diagnostics.
+1. Prohlédni diff a stav větve. Ověř relevantní změny podle rizika a splň aktuálně vyžadované release/CI kontroly. Neopakuj dříve úspěšnou lokální sadu bez změny jejích vstupů; povinné kontroly neoslabuj.
+2. Připrav commit jen s určeným rozsahem. Před pushem ověř, že `origin/main` nepokročil, a případný konflikt vyřeš bez force push.
+3. Pro tuto konfiguraci se nasazuje přes `git push origin HEAD:main`. Záložní remote ani další větve nemusíš synchronizovat, pokud to úkol nevyžaduje.
+4. Spusť `npm run deploy:guard`. Úspěšné dokončení hlásí až `[deploy-guard] DEPLOY OK`: správný commit, GitHub checks, Railway success a runtime smoke.
+5. Zkontroluj konkrétní nasazovaný veřejný vstup nebo dostupnost produktu; homepage sama nepotvrzuje novou funkci. Neprováděj skutečný nákup jako automatickou součást ověření.
 
-## Local Preview
+Záměrně přeskočené plánované E2E a Production Smoke Test mohou být podle aktuální CI konfigurace přípustné; neočekávané přeskočení či selhání vyšetři. Při pending stavu použij čekání s postupným odstupem, ne časté stejné dotazy. Opravu pokračující v již schváleném rozsahu dokonči; chybějící externí přístup či nové zásadní rozhodnutí popiš konkrétně. Nikdy neoznač neověřený deploy za hotový.
 
-Use this before a push when checking the local server:
+## Lokální náhled
 
-```bash
-npm run deploy:guard:local
-```
-
-The local smoke allows a dirty working tree intentionally; the production guard does not.
+Nejprve zjisti existující server a port. `deploy:guard:local` má nyní napevno port 3001; pro jiný port použij skutečnou adresu přes `node scripts/deploy-guard.mjs --skip-remote --skip-railway --allow-dirty --base-url=http://localhost:PORT`. Jde o širší lokální smoke, nikoli povinný krok pro barvu nebo text. Lokální náhled nepotvrzuje produkční stav.
