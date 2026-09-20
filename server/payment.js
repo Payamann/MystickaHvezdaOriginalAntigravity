@@ -875,12 +875,6 @@ async function reconcileSubscriptionFromStripeCustomer(userId, stripeCustomerId,
     if (!activeSubscription) {
         if (!localSubscription?.stripe_subscription_id) return localSubscription;
 
-        const { error: userDowngradeError } = await supabase
-            .from('users')
-            .update({ is_premium: false })
-            .eq('id', userId);
-        if (userDowngradeError) throw userDowngradeError;
-
         const { error: subscriptionDowngradeError } = await supabase
             .from('subscriptions')
             .update({
@@ -892,6 +886,12 @@ async function reconcileSubscriptionFromStripeCustomer(userId, stripeCustomerId,
             .eq('user_id', userId)
             .eq('stripe_subscription_id', localSubscription.stripe_subscription_id);
         if (subscriptionDowngradeError) throw subscriptionDowngradeError;
+
+        const { error: userDowngradeError } = await supabase
+            .from('users')
+            .update({ is_premium: false })
+            .eq('id', userId);
+        if (userDowngradeError) throw userDowngradeError;
 
         await recordFunnelEvent('subscription_entitlement_reconciled', {
             userId,
@@ -932,6 +932,11 @@ async function reconcileSubscriptionFromStripeCustomer(userId, stripeCustomerId,
             : null
     };
 
+    const { error: subscriptionUpsertError } = await supabase
+        .from('subscriptions')
+        .upsert(subscriptionData, { onConflict: 'user_id' });
+    if (subscriptionUpsertError) throw subscriptionUpsertError;
+
     const { error: userUpdateError } = await supabase
         .from('users')
         .update({
@@ -939,12 +944,20 @@ async function reconcileSubscriptionFromStripeCustomer(userId, stripeCustomerId,
             is_premium: isEntitlingStripeSubscriptionStatus(status)
         })
         .eq('id', userId);
-    if (userUpdateError) throw userUpdateError;
-
-    const { error: subscriptionUpsertError } = await supabase
-        .from('subscriptions')
-        .upsert(subscriptionData, { onConflict: 'user_id' });
-    if (subscriptionUpsertError) throw subscriptionUpsertError;
+    if (userUpdateError) {
+        await sendOperationalAlert('stripe_webhook_failed', {
+            severity: 'critical',
+            summary: 'Subscription reconciliation could not refresh the user entitlement cache',
+            dedupeKey: `subscription_reconciliation:user_cache:${userId}`,
+            metadata: {
+                stage: 'user_entitlement_cache',
+                userId,
+                stripeSubscriptionId: subscription.id,
+                error: userUpdateError.message || String(userUpdateError)
+            }
+        });
+        console.warn('[STRIPE] Subscription row reconciled but user entitlement cache update failed:', userUpdateError.message);
+    }
 
     await recordFunnelEvent('subscription_entitlement_reconciled', {
         userId,
@@ -1045,22 +1058,6 @@ async function syncLocalSubscriptionFromStripeSubscription(subscription, {
     const isPremium = isPremiumPlanType(planType) && isEntitlingStripeSubscriptionStatus(status);
     const planId = inferSubscriptionPlanIdFromStripe(subscription);
 
-    const userUpdate = {
-        ...(stripeCustomerId ? { stripe_customer_id: stripeCustomerId } : {}),
-        is_premium: isPremium
-    };
-    const { error: userUpdateError } = await supabase
-        .from('users')
-        .update(userUpdate)
-        .eq('id', resolvedUser.userId);
-    await throwOnEntitlementWriteError(userUpdateError, {
-        handler,
-        operation: 'users.update_subscription_entitlement',
-        stripeEventId,
-        stripeSubscriptionId,
-        userId: resolvedUser.userId
-    });
-
     const subscriptionData = {
         user_id: resolvedUser.userId,
         plan_type: planType,
@@ -1077,6 +1074,25 @@ async function syncLocalSubscriptionFromStripeSubscription(subscription, {
     await throwOnEntitlementWriteError(subscriptionUpsertError, {
         handler,
         operation: 'subscriptions.upsert_from_stripe_subscription',
+        stripeEventId,
+        stripeSubscriptionId,
+        userId: resolvedUser.userId
+    });
+
+    // The subscription row drives access and self-service billing. Persist it
+    // before the denormalized users.is_premium cache so a partial failure never
+    // leaves a paid customer without a manageable local subscription.
+    const userUpdate = {
+        ...(stripeCustomerId ? { stripe_customer_id: stripeCustomerId } : {}),
+        is_premium: isPremium
+    };
+    const { error: userUpdateError } = await supabase
+        .from('users')
+        .update(userUpdate)
+        .eq('id', resolvedUser.userId);
+    await throwOnEntitlementWriteError(userUpdateError, {
+        handler,
+        operation: 'users.update_subscription_entitlement',
         stripeEventId,
         stripeSubscriptionId,
         userId: resolvedUser.userId
@@ -2244,22 +2260,6 @@ async function handleSubscriptionCheckoutCompleted(session, stripeEventId = null
         currentPeriodEnd = expiry.toISOString();
     }
 
-    // Save Stripe customer ID on the user
-    if (stripeCustomerId) {
-        const { error: userUpdateError } = await supabase
-            .from('users')
-            .update({ stripe_customer_id: stripeCustomerId, is_premium: true })
-            .eq('id', userId);
-        await throwOnEntitlementWriteError(userUpdateError, {
-            handler: 'handleSubscriptionCheckoutCompleted',
-            operation: 'users.update_stripe_customer_id_and_premium',
-            stripeEventId,
-            stripeSubscriptionId,
-            stripeSessionId: session.id,
-            userId
-        });
-    }
-
     const { data: existingSubscription, error: existingSubscriptionError } = await supabase
         .from('subscriptions')
         .select('stripe_subscription_id, status')
@@ -2292,6 +2292,23 @@ async function handleSubscriptionCheckoutCompleted(session, stripeEventId = null
         stripeSessionId: session.id,
         userId
     });
+
+    // Keep the cache write second. If the canonical subscription write fails,
+    // the user must not be marked premium without a cancellable subscription.
+    if (stripeCustomerId) {
+        const { error: userUpdateError } = await supabase
+            .from('users')
+            .update({ stripe_customer_id: stripeCustomerId, is_premium: true })
+            .eq('id', userId);
+        await throwOnEntitlementWriteError(userUpdateError, {
+            handler: 'handleSubscriptionCheckoutCompleted',
+            operation: 'users.update_stripe_customer_id_and_premium',
+            stripeEventId,
+            stripeSubscriptionId,
+            stripeSessionId: session.id,
+            userId
+        });
+    }
 
     console.log(`[STRIPE] User ${userId} upgraded to ${planType}.`);
 

@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { readFileSync } from 'node:fs';
 import { jest } from '@jest/globals';
 
 const TEST_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || 'test-webhook-secret';
@@ -11,6 +12,7 @@ const entitlementRuntime = {
         subscriptionUpserts: [],
         userUpdates: [],
         funnelEvents: [],
+        writeOrder: [],
     },
 };
 
@@ -22,6 +24,7 @@ function resetRuntime() {
         subscriptionUpserts: [],
         userUpdates: [],
         funnelEvents: [],
+        writeOrder: [],
     };
 }
 
@@ -90,6 +93,7 @@ function subscriptionsQuery() {
             }),
         }),
         upsert: async (payload) => {
+            entitlementRuntime.calls.writeOrder.push('subscriptions.upsert');
             entitlementRuntime.calls.subscriptionUpserts.push(payload);
             return {
                 error: entitlementRuntime.scenario.subscriptionUpsertError ?? null,
@@ -118,6 +122,7 @@ function usersQuery() {
             }),
         }),
         update: (payload) => {
+            entitlementRuntime.calls.writeOrder.push('users.update');
             entitlementRuntime.calls.userUpdates.push(payload);
             return {
                 eq: async () => ({
@@ -217,6 +222,9 @@ describe('Stripe webhook entitlement write failures', () => {
 
         expect(entitlementRuntime.calls.paymentEventMarkSuccess).toBe(0);
         expect(entitlementRuntime.calls.paymentEventMarkFailed).toBe(1);
+        expect(entitlementRuntime.calls.subscriptionUpserts).toHaveLength(0);
+        expect(entitlementRuntime.calls.userUpdates).toHaveLength(0);
+        expect(entitlementRuntime.calls.writeOrder).toEqual([]);
     });
 
     test('checkout.session.completed fails when subscription upsert fails', async () => {
@@ -252,6 +260,9 @@ describe('Stripe webhook entitlement write failures', () => {
 
         expect(entitlementRuntime.calls.paymentEventMarkSuccess).toBe(0);
         expect(entitlementRuntime.calls.paymentEventMarkFailed).toBe(1);
+        expect(entitlementRuntime.calls.subscriptionUpserts).toHaveLength(1);
+        expect(entitlementRuntime.calls.userUpdates).toHaveLength(0);
+        expect(entitlementRuntime.calls.writeOrder).toEqual(['subscriptions.upsert']);
     });
 
     test('customer.subscription.updated fails when user premium write fails', async () => {
@@ -279,6 +290,11 @@ describe('Stripe webhook entitlement write failures', () => {
 
         expect(entitlementRuntime.calls.paymentEventMarkSuccess).toBe(0);
         expect(entitlementRuntime.calls.paymentEventMarkFailed).toBe(1);
+        expect(entitlementRuntime.calls.subscriptionUpserts).toHaveLength(1);
+        expect(entitlementRuntime.calls.writeOrder).toEqual([
+            'subscriptions.upsert',
+            'users.update',
+        ]);
     });
 
     test('customer.subscription.created syncs entitlement by stripe customer id when local subscription id is missing', async () => {
@@ -298,14 +314,14 @@ describe('Stripe webhook entitlement write failures', () => {
                     status: 'active',
                     cancel_at_period_end: false,
                     metadata: {
-                        planId: 'pruvodce',
-                        planType: 'premium_monthly',
+                        planId: 'osviceni',
+                        planType: 'exclusive_monthly',
                     },
                     items: {
                         data: [{
                             current_period_end: periodEnd,
                             price: {
-                                id: 'price_1TRBKpAo8bdbnsKapn6BM0Wj',
+                                id: 'price_1TCjhkAo8bdbnsKaBes5yjmW',
                             },
                         }],
                     },
@@ -326,14 +342,26 @@ describe('Stripe webhook entitlement write failures', () => {
         });
         expect(entitlementRuntime.calls.subscriptionUpserts).toContainEqual(expect.objectContaining({
             user_id: 'user_customer_1',
-            plan_type: 'premium_monthly',
+            plan_type: 'exclusive_monthly',
             status: 'active',
             stripe_subscription_id: 'sub_customer_match_123',
         }));
         expect(entitlementRuntime.calls.funnelEvents).toContainEqual(expect.objectContaining({
             event_name: 'subscription_created',
             user_id: 'user_customer_1',
-            plan_type: 'premium_monthly',
+            plan_type: 'exclusive_monthly',
         }));
+    });
+
+    test('subscription plan migration accepts every canonical paid plan', () => {
+        const migration = readFileSync(
+            new URL('../../migrations/20260920_allow_canonical_subscription_plan_types.sql', import.meta.url),
+            'utf8'
+        );
+
+        expect(migration).toContain("'premium_monthly'");
+        expect(migration).toContain("'exclusive_monthly'");
+        expect(migration).toContain("'vip_majestrat'");
+        expect(migration).toContain('VALIDATE CONSTRAINT subscriptions_plan_type_check');
     });
 });

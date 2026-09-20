@@ -204,13 +204,18 @@ export function inferPlanFromStripeSubscription(subscription, { priceIdPlanMap =
 function summarizeStripeSubscription(subscription, planInference) {
     const item = getSubscriptionItems(subscription)[0] || {};
     const price = item.price || {};
+    const itemPeriodEnds = getSubscriptionItems(subscription)
+        .map((subscriptionItem) => Number(subscriptionItem?.current_period_end))
+        .filter((value) => Number.isFinite(value) && value > 0);
+    const currentPeriodEnd = subscription.current_period_end
+        || (itemPeriodEnds.length > 0 ? Math.max(...itemPeriodEnds) : null);
     return {
         id: subscription.id,
         maskedId: maskId(subscription.id),
         customerId: typeof subscription.customer === 'string' ? subscription.customer : subscription.customer?.id || null,
         maskedCustomerId: maskId(typeof subscription.customer === 'string' ? subscription.customer : subscription.customer?.id),
         status: normalizeStripeStatus(subscription.status),
-        currentPeriodEnd: unixToIso(subscription.current_period_end),
+        currentPeriodEnd: unixToIso(currentPeriodEnd),
         cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end),
         created: unixToIso(subscription.created),
         planId: planInference.planId,
@@ -412,16 +417,16 @@ function redactChange(change) {
 }
 
 async function applyChange(supabase, change, { recordFunnel }) {
+    const { error: subscriptionError } = await supabase
+        .from('subscriptions')
+        .upsert(change.subscriptionUpsert, { onConflict: 'user_id' });
+    if (subscriptionError) throw subscriptionError;
+
     const { error: userError } = await supabase
         .from('users')
         .update(change.userUpdate)
         .eq('id', change.user.id);
     if (userError) throw userError;
-
-    const { error: subscriptionError } = await supabase
-        .from('subscriptions')
-        .upsert(change.subscriptionUpsert, { onConflict: 'user_id' });
-    if (subscriptionError) throw subscriptionError;
 
     if (recordFunnel) {
         const { error: funnelError } = await supabase

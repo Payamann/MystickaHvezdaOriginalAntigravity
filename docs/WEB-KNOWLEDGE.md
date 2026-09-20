@@ -74,7 +74,8 @@ Runtime ověřeno (server v bezpečném e2e režimu, viz §7): stránky funnelu 
 
 - **URL webhooku je `POST /webhook/stripe`, mimo `/api`** (`server/index.js:324`; vedle něj `POST /webhook/resend`). Obě cesty jsou v `server/index.js:90` vyjmuté z JSON parseru, protože Stripe potřebuje raw body na ověření podpisu. **Nehádej `/api/payment/webhook` — ta cesta neexistuje** a tenhle dokument ji do 2026-07-29 chybně uváděl (stálo to jedno kolo špatné diagnózy).
 - Endpoint na Stripe Dashboardu je nastavený správně na `/webhook/stripe` (potvrzeno Pavlem 2026-07-29). Starší tvrzení „webhooky nikdy nedorazily" (lessons 2026-07-07) tedy **neplatí jako popis konfigurace**.
-- **Aktuální obsah `payment_events` v produkci není v tomto dokumentu ověřený** — nepiš sem odhad. Ověřit umí jen dotaz do produkční DB nebo Stripe Dashboard (delivery log u endpointu).
+- **Produkční audit 2026-09-20:** `payment_events` obsahovala 33 událostí; poslední úspěšná byla 2026-09-16. Konkrétní `customer.subscription.created` pro první pozorovaný nákup Osvícení 17. 9. selhal při prvním doručení i všech Stripe retry s HTTP 400 `Webhook processing failed` a v `payment_events` po něm nezůstal řádek. Lokální stav zákaznice byl rozdělený: `users.is_premium=true`, ale `subscriptions` zůstala `free` bez Stripe subscription ID, takže profil neuměl nabídnout zrušení.
+- Produkční `subscriptions` při auditu obsahovala `free`, `premium_monthly` a legacy `vip`, ale žádný `exclusive_monthly`. Připravená oprava `migrations/20260920_allow_canonical_subscription_plan_types.sql` sjednocuje DB constraint s `server/config/constants.js`; webhooky a reconciliation zároveň ukládají kanonický subscription řádek před pomocným `users.is_premium`. Dokud migrace a kód nejsou výslovně nasazené a ověřené novým doručením, nejde o produkčně dokončenou opravu.
 - Předplatné se kromě webhooku aktivuje i success-page cestou; jednorázové PDF navíc jistí reconciliation job (ověřuje přes Stripe API před fulfillmentem).
 - Lokální `.env` = **TEST** klíč, produkce **LIVE** → Stripe dotazy z localu vidí jiná data. Postup pro TEST E2E má vlastní paměť.
 
@@ -157,7 +158,7 @@ V tomto režimu funguje celý funnel (registrace, onboarding, funnel/analytics i
 
 ## 8. Známé slabiny a dluhy
 
-1. ~~**Stripe webhooky nedoručené** — root cause = konfigurace Stripe Dashboardu~~ — **hypotéza vyvrácena 2026-07-29.** Endpoint na Dashboardu je nastavený správně na `/webhook/stripe` (potvrzeno screenshotem od Pavla). Původní diagnóza vycházela ze špatné URL uvedené v tomhle dokumentu. Co zbývá ověřit: aktuální obsah `payment_events` a delivery log endpointu — **do té doby netvrdit ani „nechodí", ani „chodí"**.
+1. **Stripe subscription webhook pro Osvícení selhal** — produkční důkaz z 2026-09-20 je v §3. URL endpointu je správná; problém vznikl při zpracování konkrétního `exclusive_monthly` předplatného a zanechal rozdělený lokální stav. Oprava je připravená lokálně, ale tento bod uzavři až po aplikaci DB migrace, nasazení kódu a úspěšném webhook smoke bez skutečného nákupu.
 2. ~~Auth handoff leak (91% ztráta)~~ — **opraveno, ověřeno živými daty 2026-07-12** (auth page 21 → form submit 18 = 94 %; checkout_requested 27 → checkout_started 27 = 100 %).
 
    **Strukturální poznatek 2026-07-25 (drž se ho, čísla stárnou):** konverze paywallu se **nesmí měřit průměrem přes všechny plochy** — plochy se liší o dva řády podle toho, v jakém stavu uživatele zastihnou.
@@ -178,7 +179,7 @@ V tomto režimu funguje celý funnel (registrace, onboarding, funnel/analytics i
 
 ## 9. Chybějící externí data (dodá Pavel — zpřesní každou analýzu)
 
-1. ~~**Stripe Dashboard:** existuje webhook endpoint? Jaká URL?~~ — **zodpovězeno 2026-07-29:** endpoint existuje a míří správně na `/webhook/stripe`. Zbývá jen **delivery log** endpointu (kolik doručení / kolik selhání) a stav `payment_events`.
+1. ~~**Stripe Dashboard:** existuje webhook endpoint a doručuje?~~ — **zodpovězeno 2026-09-20:** endpoint míří správně na `/webhook/stripe`; starší události byly úspěšné, ale konkrétní Osvícení webhook selhal opakovaně při zpracování. Otevřený krok je produkční ověření opravy popsané v §3.
 2. **GSC:** stav indexace clusterů `jmena/`, `snar/`, `numerologie/`, `andelske-karty/` (Discovered vs Indexed) + impressions/týden per cluster — Day-30/60 checkpointy ze seo-growth-plan.
 3. **GA4 / first-party:** top 10 organických landing pages a jejich konverze do tool session.
 4. **Railway env:** re-ověřeno 2026-07-29 přes `/api/config` + `/api/health` — **VAPID klíče doplněny** (bod 8.6 vyřešen), `sentryDsn` **stále null**. Resend doručuje: denní horoskopový e-mail ověřen na reálných produkčních datech 2026-07-29 (renderuje predikci + afirmaci + čísla štěstí, ne surové JSON, s odhlašovacím odkazem).
