@@ -2,6 +2,7 @@ import {
     buildWeeklyDigestContent,
     getIsoWeekKey,
     getLatestBlogPost,
+    getWeeklyBlogPost,
     getWeeklyPremiumSpotlight,
     getWeeklyToolTip,
     run
@@ -39,6 +40,21 @@ describe('weekly newsletter digest', () => {
         expect(post.slug).toBe('new');
     });
 
+    test('rotates recent blog posts instead of repeating the newest article every week', () => {
+        const posts = [
+            { title: 'Letní téma 2026', slug: 'letni-tema-2026', published_at: '2026-07-01' },
+            { title: 'First', slug: 'first', published_at: '2026-06-30' },
+            { title: 'Second', slug: 'second', published_at: '2026-06-29' },
+            { title: 'Third', slug: 'third', published_at: '2026-06-28' }
+        ];
+        const thisWeek = getWeeklyBlogPost(new Date('2026-07-06T07:00:00Z'), posts);
+        const nextWeek = getWeeklyBlogPost(new Date('2026-07-13T07:00:00Z'), posts);
+
+        expect(thisWeek.slug).not.toBe(nextWeek.slug);
+        expect(thisWeek.slug).not.toBe('letni-tema-2026');
+        expect(nextWeek.slug).not.toBe('letni-tema-2026');
+    });
+
     test('digest content carries week key, moon phase and attribution links', () => {
         const content = buildWeeklyDigestContent(new Date('2026-07-06T07:00:00Z'));
 
@@ -50,14 +66,14 @@ describe('weekly newsletter digest', () => {
         }
     });
 
-    test('premium spotlight stays on the evergreen Personal Map and carries attribution links', () => {
+    test('premium spotlight appears only once every four weeks', () => {
         const spotA = getWeeklyPremiumSpotlight(new Date('2026-07-06T07:00:00Z'));
         const spotSameWeek = getWeeklyPremiumSpotlight(new Date('2026-07-10T07:00:00Z'));
         const spotNextWeek = getWeeklyPremiumSpotlight(new Date('2026-07-13T07:00:00Z'));
 
         expect(spotA.title).toBe(spotSameWeek.title);
-        expect(spotA.title).toBe(spotNextWeek.title);
         expect(spotA.title).toBe('Osobní mapa');
+        expect(spotNextWeek).toBeNull();
         expect(spotA.url).toContain('/osobni-mapa.html');
         expect(spotA.url).not.toContain('rocni-horoskop');
         expect(spotA.url).toContain('source=newsletter_digest');
@@ -76,6 +92,9 @@ describe('weekly newsletter digest', () => {
         const html = template.getHtml({
             date_label: '6. července',
             moon_phase: 'Úplněk (Vyvrcholení, odhalení pravdy)',
+            practice_title: 'Rozhodnutí bez mlhy',
+            practice_steps: ['Napiš si rozhodnutí.', 'Odděl fakta od obav.', 'Vyber jeden krok.'],
+            reflection_question: 'Co můžeš udělat během 24 hodin?',
             blog_title: 'Testovací článek',
             blog_description: 'Popis.',
             blog_url: '/blog/test.html?utm_source=email&utm_campaign=weekly_digest',
@@ -91,7 +110,10 @@ describe('weekly newsletter digest', () => {
 
         expect(html).toContain('Hvězdný týden');
         expect(html).toContain('Úplněk');
+        expect(html).toContain('Malá praxe na tento týden');
+        expect(html).toContain('Co můžeš udělat během 24 hodin?');
         expect(html).toContain('Testovací článek');
+        expect(html).toContain('Vybráno z blogu');
         expect(html).toContain('Prémiový výklad');
         expect(html).toContain('Osobní mapa');
         expect(html).toContain('/osobni-mapa.html?source=newsletter_digest');

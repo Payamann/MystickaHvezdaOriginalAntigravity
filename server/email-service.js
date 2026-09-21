@@ -1649,13 +1649,16 @@ EMAIL_TEMPLATES.newsletter_welcome = {
 };
 
 EMAIL_TEMPLATES.newsletter_weekly_digest = {
-  subject: (data) => `Hvězdný týden ✨ ${data.date_label || ''}`.trim(),
+  subject: (data) => `${data.practice_title || 'Hvězdný týden'} ✨ ${data.date_label || ''}`.trim(),
   getHtml: (data) => {
     const moonPhase = data.moon_phase ? escapeHtml(data.moon_phase) : '';
     const blogUrl = data.blog_url ? toAbsoluteUrl(data.blog_url) : '';
     const tipUrl = data.tip_url ? toAbsoluteUrl(data.tip_url) : toAbsoluteUrl('/');
     const premiumUrl = data.premium_url ? toAbsoluteUrl(data.premium_url) : '';
     const unsubscribeUrl = data.unsubscribe_url ? toAbsoluteUrl(data.unsubscribe_url) : toAbsoluteUrl('/');
+    const practiceSteps = Array.isArray(data.practice_steps)
+      ? data.practice_steps.filter((step) => typeof step === 'string' && step.trim()).slice(0, 3)
+      : [];
 
     return getBaseTemplate(`
     <h1 class="h1">Hvězdný týden</h1>
@@ -1667,9 +1670,16 @@ EMAIL_TEMPLATES.newsletter_weekly_digest = {
       ${moonPhase}
     </div>` : ''}
 
+    ${data.practice_title ? `
+    <div style="background:rgba(212,175,55,0.08);border-left:3px solid #d4af37;padding:20px 24px;border-radius:0 8px 8px 0;margin:25px 0;">
+      <strong>Malá praxe na tento týden: ${escapeHtml(data.practice_title)}</strong>
+      ${practiceSteps.length ? `<ol style="margin:12px 0 0;padding-left:22px;line-height:1.75;">${practiceSteps.map((step) => `<li>${escapeHtml(step)}</li>`).join('')}</ol>` : ''}
+      ${data.reflection_question ? `<p style="margin:14px 0 0;"><strong>Otázka pro tebe:</strong> ${escapeHtml(data.reflection_question)}</p>` : ''}
+    </div>` : ''}
+
     ${data.blog_title && blogUrl ? `
     <div class="feature-item">
-      <strong>📖 Nové na blogu</strong><br>
+      <strong>📖 Vybráno z blogu</strong><br>
       <a href="${blogUrl}" style="color:#d4af37;">${escapeHtml(data.blog_title)}</a><br>
       ${data.blog_description ? `<span style="opacity:0.8;">${escapeHtml(data.blog_description)}</span>` : ''}
     </div>` : ''}
@@ -1694,7 +1704,7 @@ EMAIL_TEMPLATES.newsletter_weekly_digest = {
       Dostáváš tento email, protože ses přihlásil k odběru novinek Mystické Hvězdy.<br>
       <a href="${unsubscribeUrl}" style="color:#d4af37;">Odhlásit se z odběru</a>
     </p>
-  `, 'Hvězdný týden', `Lunární energie týdne, nový článek a jeden tip, který stojí za vyzkoušení.`);
+  `, data.practice_title || 'Hvězdný týden', data.reflection_question || `Jedna praktická myšlenka a jeden nástroj pro tento týden.`);
   }
 };
 
