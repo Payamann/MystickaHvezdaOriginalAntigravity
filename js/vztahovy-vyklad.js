@@ -118,7 +118,27 @@
             const response = await fetch(`/api/vztahovy-vyklad/checkout-result?session_id=${encodeURIComponent(params.get('session_id') || '')}`, { credentials: 'same-origin', cache: 'no-store' });
             if (!response.ok) throw new Error('verify');
             const result = await response.json();
-            if (result.status === 'paid') { try { sessionStorage.removeItem(draftKey); sessionStorage.removeItem(flowKey); } catch { /* optional */ } }
+            if (result.status === 'paid') {
+                const transactionId = params.get('session_id') || '';
+                try {
+                    window.MH_ANALYTICS?.trackPaymentResult?.('paid', {
+                        verified: true,
+                        transaction_id: transactionId,
+                        product_id: 'relationship_tarot',
+                        product_type: 'relationship_tarot',
+                        source,
+                        feature: 'relationship_tarot'
+                    });
+                    window.MH_ANALYTICS?.trackPurchaseCompleted?.('relationship_tarot', 149, 'CZK', {
+                        verified: true,
+                        transaction_id: transactionId,
+                        product_type: 'relationship_tarot',
+                        source,
+                        feature: 'relationship_tarot'
+                    });
+                } catch { /* Analytics must not affect delivery status. */ }
+                try { sessionStorage.removeItem(draftKey); sessionStorage.removeItem(flowKey); } catch { /* optional */ }
+            }
             message.textContent = result.status === 'paid' ? 'Platba je potvrzená. Výklad se připravuje a dorazí do e-mailu. Pokud do 20 minut nedorazí, zkontroluj spam a napiš podpoře.' : 'Platba zatím není potvrzená. Ověř stav znovu za chvíli; další objednávku nevytvářej.';
             retry.hidden = result.status === 'paid';
         } catch { message.textContent = 'Platbu teď nemůžeme ověřit. To neznamená, že neproběhla. Zkus ověření znovu nebo kontaktuj podporu; zatím neplať podruhé.'; }

@@ -40,10 +40,24 @@
         return csrfPromise;
     }
     async function track(eventName, source, funnelStep) {
+        const analyticsMetadata = {
+            source,
+            feature: 'relationship_tarot',
+            product_id: 'relationship_tarot',
+            product_type: 'relationship_tarot',
+            price: 149,
+            currency: 'CZK',
+            placement: source,
+            funnel_step: funnelStep,
+            flow_id: flowId()
+        };
+        try {
+            window.MH_ANALYTICS?.trackEvent?.(eventName, analyticsMetadata);
+        } catch { /* Analytics must not affect the free reading. */ }
         try {
             const csrfToken = await csrf();
             await fetch('/api/payment/funnel-event', { method: 'POST', keepalive: true, credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
-                body: JSON.stringify({ eventName, source, feature: 'relationship_tarot', metadata: { product_id: 'relationship_tarot', placement: source, funnel_step: funnelStep, flow_id: flowId() } }) });
+                body: JSON.stringify({ eventName, source, feature: 'relationship_tarot', metadata: analyticsMetadata }) });
         } catch { /* No effect on free tools or navigation. */ }
     }
     function safeCardImage(value) {

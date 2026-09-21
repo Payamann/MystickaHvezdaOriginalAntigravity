@@ -45,6 +45,14 @@ test('checkout sends only required fields and preserves input after a failure', 
 test('only a verified payment shows success; errors offer retry without another payment', async ({ page }) => {
     await prepare(page);
     let paid = false;
+    await page.addInitScript(() => {
+        window.verifiedPurchases = [];
+        document.addEventListener('DOMContentLoaded', () => {
+            const analytics = window.MH_ANALYTICS;
+            if (!analytics) return;
+            analytics.trackPurchaseCompleted = (...args) => window.verifiedPurchases.push(args);
+        });
+    });
     await page.route('**/api/vztahovy-vyklad/checkout-result?*', route => paid ? route.fulfill({ json: { status: 'paid' } }) : route.fulfill({ status: 502 }));
     await page.goto('/vztahovy-vyklad.html?status=success&session_id=cs_test_example');
     await expect(page.locator('#payment-message')).toContainText('nemůžeme ověřit');
@@ -53,6 +61,12 @@ test('only a verified payment shows success; errors offer retry without another 
     await page.locator('#retry-payment').click();
     await expect(page.locator('#payment-message')).toContainText('Platba je potvrzená');
     await expect(page.locator('#retry-payment')).toBeHidden();
+    await expect.poll(() => page.evaluate(() => window.verifiedPurchases)).toContainEqual([
+        'relationship_tarot',
+        149,
+        'CZK',
+        expect.objectContaining({ verified: true, transaction_id: 'cs_test_example' })
+    ]);
 });
 
 test('tarot entry is gated by availability and carries only source in the URL', async ({ page }) => {
@@ -79,6 +93,7 @@ test('yes/no free result leads to the new question, without counting the hidden 
     await page.evaluate(() => {
         window.relationshipQAEvents = [];
         window.MH_ANALYTICS.trackAction = name => window.relationshipQAEvents.push(name);
+        window.MH_ANALYTICS.trackEvent = (name, metadata) => window.relationshipQAEvents.push({ name, metadata });
     });
     const question = 'Jak mám otevřít rozhovor o tom, co mi ve vztahu chybí?';
     await page.locator('#question-input').fill(question);
@@ -92,6 +107,9 @@ test('yes/no free result leads to the new question, without counting the hidden 
     const cardName = await page.locator('#result-card-name').textContent();
     const answerLabel = await page.locator('#result-title').textContent();
     expect(await page.evaluate(() => window.relationshipQAEvents)).not.toContain('tarot_yes_no_upgrade_bridge_viewed');
+    await expect.poll(() => page.evaluate(() => window.relationshipQAEvents.some(event => event.name === 'one_time_offer_viewed'
+        && event.metadata?.feature === 'relationship_tarot'
+        && event.metadata?.funnel_step === 'entry_offer'))).toBe(true);
     await offer.locator('a').click();
     await expect(page).toHaveURL(/vztahovy-vyklad.html\?source=tarot_yes_no_result$/);
     await expect(page.locator('#question')).toHaveValue(question);

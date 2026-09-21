@@ -156,6 +156,73 @@
     max-width: 980px;
 }
 
+.love-tarot-questions .section__header {
+    max-width: 780px;
+}
+
+.love-tarot-question-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.love-tarot-question-grid article {
+    padding: clamp(1.25rem, 2.5vw, 1.8rem);
+    border: 1px solid rgba(255, 255, 255, .1);
+    border-radius: 16px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, .055), rgba(111, 66, 142, .07));
+}
+
+.love-tarot-question-grid article > span {
+    display: block;
+    margin-bottom: .65rem;
+    color: #f6a7be;
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.love-tarot-question-grid h3 {
+    margin: 0 0 .9rem;
+    color: #f3d98b;
+    font-size: 1.25rem;
+}
+
+.love-tarot-question-grid p {
+    color: rgba(255, 255, 255, .7);
+    font-size: .94rem;
+    line-height: 1.72;
+}
+
+.love-tarot-question-grid strong {
+    color: #eee2c8;
+}
+
+.love-tarot-question-grid a {
+    display: inline-flex;
+    gap: .4rem;
+    margin-top: .45rem;
+    color: #f0cf79;
+    font-weight: 750;
+    text-decoration: none;
+}
+
+.love-tarot-question-grid a:hover,
+.love-tarot-question-grid a:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.love-tarot-questions__note {
+    max-width: 780px;
+    margin: 1.3rem auto 0;
+    color: rgba(255, 255, 255, .58);
+    font-size: .86rem;
+    line-height: 1.6;
+    text-align: center;
+}
+
 .love-tarot-faq__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -197,6 +264,7 @@
 
     .love-tarot-intent-grid,
     .love-tarot-guides,
+    .love-tarot-question-grid,
     .love-tarot-faq__grid {
         grid-template-columns: 1fr;
     }
