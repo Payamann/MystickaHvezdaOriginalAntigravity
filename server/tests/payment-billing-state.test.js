@@ -1,9 +1,12 @@
 import { jest } from '@jest/globals';
 import {
     buildBillingPortalSessionParams,
+    cancelFailedSubscriptionImmediately,
     isStaleStripeSubscriptionEvent,
     pauseSubscriptionCollection,
-    resumeSubscriptionCollection
+    reactivatePendingCancellation,
+    resumeSubscriptionCollection,
+    scheduleSubscriptionCancellation
 } from '../payment.js';
 
 function createDb({ subscriptionError = null, userError = null, events = [] } = {}) {
@@ -24,6 +27,118 @@ function createDb({ subscriptionError = null, userError = null, events = [] } = 
 }
 
 describe('billing state transitions', () => {
+    test('schedules cancellation in Stripe before marking the local subscription cancel_pending', async () => {
+        const events = [];
+        const periodEnd = Math.floor(Date.parse('2026-10-20T00:00:00.000Z') / 1000);
+        const stripeClient = {
+            subscriptions: {
+                update: jest.fn(async (_id, payload) => {
+                    events.push({ type: 'stripe', payload });
+                    return { cancel_at_period_end: true, current_period_end: periodEnd };
+                })
+            }
+        };
+
+        await expect(scheduleSubscriptionCancellation({
+            db: createDb({ events }),
+            stripeClient,
+            userId: 'user_cancel',
+            subscription: {
+                stripe_subscription_id: 'sub_cancel',
+                current_period_end: null
+            }
+        })).resolves.toEqual({ currentPeriodEnd: '2026-10-20T00:00:00.000Z' });
+
+        expect(stripeClient.subscriptions.update).toHaveBeenCalledWith('sub_cancel', {
+            cancel_at_period_end: true
+        });
+        expect(events.map(event => event.type)).toEqual(['stripe', 'db:subscriptions']);
+        expect(events[1].payload).toEqual({
+            status: 'cancel_pending',
+            current_period_end: '2026-10-20T00:00:00.000Z'
+        });
+    });
+
+    test('does not mark cancellation locally when Stripe rejects it', async () => {
+        const events = [];
+        const stripeClient = {
+            subscriptions: {
+                update: jest.fn(async () => {
+                    events.push({ type: 'stripe' });
+                    return { cancel_at_period_end: false };
+                })
+            }
+        };
+
+        await expect(scheduleSubscriptionCancellation({
+            db: createDb({ events }),
+            stripeClient,
+            userId: 'user_cancel_rejected',
+            subscription: { stripe_subscription_id: 'sub_cancel_rejected' }
+        })).rejects.toThrow('Stripe cancellation was not scheduled');
+        expect(events.map(event => event.type)).toEqual(['stripe']);
+    });
+
+    test('cancels a failed-payment subscription immediately before clearing local entitlement', async () => {
+        const events = [];
+        const stripeClient = {
+            subscriptions: {
+                cancel: jest.fn(async (_id, payload) => {
+                    events.push({ type: 'stripe', payload });
+                    return { status: 'canceled' };
+                })
+            }
+        };
+
+        await expect(cancelFailedSubscriptionImmediately({
+            db: createDb({ events }),
+            stripeClient,
+            userId: 'user_past_due',
+            subscription: { stripe_subscription_id: 'sub_past_due' }
+        })).resolves.toEqual({ immediate: true, currentPeriodEnd: null });
+
+        expect(stripeClient.subscriptions.cancel).toHaveBeenCalledWith('sub_past_due', {
+            invoice_now: false,
+            prorate: false
+        });
+        expect(events.map(event => event.type)).toEqual(['stripe', 'db:subscriptions', 'db:users']);
+        expect(events[1].payload).toEqual(expect.objectContaining({
+            plan_type: 'free',
+            status: 'cancelled'
+        }));
+        expect(events[2].payload).toEqual({ is_premium: false });
+    });
+
+    test('reactivates in Stripe and restores local entitlement in order', async () => {
+        const events = [];
+        const stripeClient = {
+            subscriptions: {
+                update: jest.fn(async (_id, payload) => {
+                    events.push({ type: 'stripe', payload });
+                    return { status: 'active', cancel_at_period_end: false };
+                })
+            }
+        };
+
+        await expect(reactivatePendingCancellation({
+            db: createDb({ events }),
+            stripeClient,
+            userId: 'user_reactivate',
+            subscription: { stripe_subscription_id: 'sub_reactivate' }
+        })).resolves.toEqual({ status: 'active' });
+
+        expect(stripeClient.subscriptions.update).toHaveBeenCalledWith('sub_reactivate', {
+            cancel_at_period_end: false
+        });
+        expect(events.map(event => event.type)).toEqual([
+            'stripe',
+            'db:subscriptions',
+            'db:users'
+        ]);
+        expect(events[1].payload).toEqual({ status: 'active' });
+        expect(events[2].payload).toEqual({ is_premium: true });
+    });
+
     test('does not create a local pause when Stripe rejects the pause', async () => {
         const events = [];
         const stripeClient = {

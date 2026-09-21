@@ -139,7 +139,7 @@ function readTarotYesNoUpgradeContext() {
         if (!context || typeof context !== 'object'
             || !String(context.question || '').trim()
             || !String(context.answerLabel || '').trim()
-            || !Number.isFinite(createdAt) || createdAt <= 0 || createdAt > Date.now()
+            || !Number.isFinite(createdAt) || createdAt <= 0 || createdAt > Date.now() + 5 * 60 * 1000
             || Date.now() - createdAt > TAROT_YES_NO_UPGRADE_CONTEXT_MAX_AGE_MS) {
             localStorage.removeItem(TAROT_YES_NO_UPGRADE_CONTEXT_KEY);
             return null;
@@ -686,10 +686,12 @@ function renderPremiumActivation(sub, user, paymentContext = null) {
         return;
     }
 
+    paymentContext = paymentContext || activePaymentReturnContext;
     const planType = normalizePlanType(sub.planType);
     const isPremium = planType !== 'free';
     const paymentState = paymentContext?.state || new URLSearchParams(window.location.search).get('payment');
-    const shouldForceShow = paymentState === 'success';
+    const shouldForceShow = paymentState === 'success'
+        || (paymentState === 'pending' && isPremium && Boolean(paymentContext?.sessionId));
 
     if (!isPremium) {
         setProfileBlockVisible(card, false);
@@ -1002,12 +1004,29 @@ function getProfileCtaContextFromHref(href) {
 
 function getPaymentReturnDestination(sign, paymentContext) {
     const feature = paymentContext?.feature || paymentContext?.entryFeature || null;
-    const config = feature ? getGrowthSignupIntentConfig(feature) : null;
-    if (!config) return null;
-
     const tarotYesNoContext = feature === 'tarot_multi_card'
         ? readTarotYesNoUpgradeContext()
         : null;
+
+    if (tarotYesNoContext) {
+        return {
+            href: buildAttributedRelativeHref('tarot.html', {
+                source: 'profile_payment_return',
+                feature: 'tarot_multi_card',
+                entry_source: paymentContext.source || paymentContext.entrySource,
+                entry_feature: feature,
+                plan: paymentContext.planId,
+                resume: 'tarot_yes_no',
+                card: paymentContext.card || tarotYesNoContext.cardName || null
+            }),
+            title: 'Navázat na svou otázku třemi kartami',
+            description: 'Tvoje původní otázka i odpověď zůstaly uložené. Teď k nim doplň souvislosti a další krok.',
+            feature: 'tarot_multi_card'
+        };
+    }
+
+    const config = feature ? getGrowthSignupIntentConfig(feature) : null;
+    if (!config) return null;
 
     return {
         href: buildAttributedRelativeHref(getManifestSignupHref(config, sign), {
@@ -1016,15 +1035,10 @@ function getPaymentReturnDestination(sign, paymentContext) {
             entry_source: paymentContext.source || paymentContext.entrySource,
             entry_feature: feature,
             plan: paymentContext.planId,
-            resume: tarotYesNoContext ? 'tarot_yes_no' : null,
-            card: paymentContext.card || tarotYesNoContext?.cardName || null
+            card: paymentContext.card || null
         }),
-        title: tarotYesNoContext
-            ? 'Navázat na svou otázku třemi kartami'
-            : 'Pokračovat tam, kde platba začala',
-        description: tarotYesNoContext
-            ? 'Tvoje původní otázka i odpověď zůstaly uložené. Teď k nim doplň souvislosti a další krok.'
-            : config.description(sign),
+        title: 'Pokračovat tam, kde platba začala',
+        description: config.description(sign),
         feature: config.feature
     };
 }

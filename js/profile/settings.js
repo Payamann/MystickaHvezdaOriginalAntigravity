@@ -337,6 +337,9 @@ function renderSubscriptionCard(sub) {
     } else {
         if (needsPaymentUpdate) {
             html += '<button id="sub-payment-update-btn" type="button" class="btn btn--primary btn--sm">Aktualizovat kartu</button>';
+            if (sub.canCancel) {
+                html += '<button id="sub-cancel-btn" data-cancel-immediate="true" class="btn btn--sm btn--glass">Zrušit a zastavit další pokusy</button>';
+            }
         } else if (isPaused && sub.canResume !== false) {
             html += '<button id="sub-resume-btn" type="button" class="btn btn--primary btn--sm">Obnovit předplatné</button>';
         } else if (sub.canCancel && sub.status !== 'cancel_pending') {
@@ -364,7 +367,8 @@ function renderSubscriptionCard(sub) {
 }
 
 async function cancelSubscription({ skipRetention = false } = {}) {
-    if (!skipRetention && window.MH_RETENTION?.showCancellationModal) {
+    const immediate = document.getElementById('sub-cancel-btn')?.dataset.cancelImmediate === 'true';
+    if (!immediate && !skipRetention && window.MH_RETENTION?.showCancellationModal) {
         trackAnalytics('trackSubscriptionAction', 'cancel_flow_opened', {
             source: 'profile_settings'
         });
@@ -373,7 +377,9 @@ async function cancelSubscription({ skipRetention = false } = {}) {
     }
 
     if (!skipRetention) {
-        const confirmed = confirm('Opravdu chcete zrušit předplatné? Přístup vám zůstane do konce aktuálního období.');
+        const confirmed = confirm(immediate
+            ? 'Opravdu chcete členství ihned zrušit a zastavit další pokusy o platbu?'
+            : 'Opravdu chcete zrušit předplatné? Přístup vám zůstane do konce aktuálního období.');
         if (!confirmed) {
             return;
         }

@@ -550,7 +550,7 @@ test.describe('Profil aktivace', () => {
             subscription: {
                 planType: 'premium_monthly',
                 status: 'past_due',
-                canCancel: false,
+                canCancel: true,
                 canResume: false,
                 needsPaymentUpdate: true
             }
@@ -576,7 +576,7 @@ test.describe('Profil aktivace', () => {
         const subscription = page.locator('#subscription-details');
         await expect(subscription).toContainText('Členství čeká na opravu platby');
         await expect(page.locator('#sub-payment-update-btn')).toBeVisible();
-        await expect(page.locator('#sub-cancel-btn')).toHaveCount(0);
+        await expect(page.locator('#sub-cancel-btn')).toContainText('Zrušit a zastavit další pokusy');
 
         await Promise.all([
             page.waitForURL(url => url.searchParams.get('portal') === 'payment_method_update'),

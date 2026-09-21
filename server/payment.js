@@ -1173,7 +1173,7 @@ router.get('/subscription/status', authenticateToken, async (req, res) => {
         }
 
         const canCancel = !!subscription.stripe_subscription_id &&
-            (subscription.status === 'active' || subscription.status === 'trialing');
+            ['active', 'trialing', 'past_due', 'unpaid', 'incomplete'].includes(subscription.status);
 
         res.json({
             planType: normalizePlanType(subscription.plan_type, subscription.plan_type || PLAN_TYPES.FREE),
@@ -1413,6 +1413,64 @@ router.post('/create-checkout-session', authenticateToken, async (req, res) => {
 // ============================================
 // POST /cancel - Cancel active subscription
 // ============================================
+export async function scheduleSubscriptionCancellation({
+    db = supabase,
+    stripeClient = stripe,
+    userId,
+    subscription
+} = {}) {
+    const stripeSubscription = await stripeClient.subscriptions.update(subscription.stripe_subscription_id, {
+        cancel_at_period_end: true
+    });
+
+    if (stripeSubscription?.cancel_at_period_end === false) {
+        throw new Error('Stripe cancellation was not scheduled');
+    }
+
+    const currentPeriodEnd = getStripeSubscriptionPeriodEnd(stripeSubscription)
+        || subscription.current_period_end;
+    const { error: localUpdateError } = await db
+        .from('subscriptions')
+        .update({
+            status: 'cancel_pending',
+            ...(currentPeriodEnd ? { current_period_end: currentPeriodEnd } : {})
+        })
+        .eq('user_id', userId);
+    if (localUpdateError) throw new Error(localUpdateError.message || 'Failed to persist scheduled cancellation');
+
+    return { currentPeriodEnd };
+}
+
+export async function cancelFailedSubscriptionImmediately({
+    db = supabase,
+    stripeClient = stripe,
+    userId,
+    subscription
+} = {}) {
+    await stripeClient.subscriptions.cancel(subscription.stripe_subscription_id, {
+        invoice_now: false,
+        prorate: false
+    });
+
+    const { error: subscriptionUpdateError } = await db
+        .from('subscriptions')
+        .update({
+            plan_type: PLAN_TYPES.FREE,
+            status: 'cancelled',
+            current_period_end: new Date().toISOString()
+        })
+        .eq('user_id', userId);
+    if (subscriptionUpdateError) throw new Error(subscriptionUpdateError.message || 'Failed to persist cancelled subscription');
+
+    const { error: userUpdateError } = await db
+        .from('users')
+        .update({ is_premium: false })
+        .eq('id', userId);
+    if (userUpdateError) throw new Error(userUpdateError.message || 'Failed to revoke cancelled entitlement');
+
+    return { immediate: true, currentPeriodEnd: null };
+}
+
 router.post('/cancel', authenticateToken, async (req, res) => {
     try {
         const { data: subscription, error: subscriptionError } = await supabase
@@ -1435,29 +1493,19 @@ router.post('/cancel', authenticateToken, async (req, res) => {
             });
         }
 
-        if (subscription.status !== 'active' && subscription.status !== 'trialing') {
+        const failedCollectionStatuses = new Set(['past_due', 'unpaid', 'incomplete']);
+        if (subscription.status !== 'active' && subscription.status !== 'trialing'
+            && !failedCollectionStatuses.has(subscription.status)) {
             return res.status(400).json({ error: 'Předplatné již bylo zrušeno.' });
         }
 
-        // Cancel at period end (user keeps access until current period expires)
-        const stripeSubscription = await stripe.subscriptions.update(subscription.stripe_subscription_id, {
-            cancel_at_period_end: true
-        });
-
-        if (stripeSubscription?.cancel_at_period_end === false) {
-            throw new Error('Stripe cancellation was not scheduled');
-        }
-
-        // Update local status to reflect pending cancellation
-        const currentPeriodEnd = getStripeSubscriptionPeriodEnd(stripeSubscription) || subscription.current_period_end;
-        const { error: localUpdateError } = await supabase
-            .from('subscriptions')
-            .update({
-                status: 'cancel_pending',
-                ...(currentPeriodEnd ? { current_period_end: currentPeriodEnd } : {})
-            })
-            .eq('user_id', req.user.id);
-        if (localUpdateError) throw localUpdateError;
+        // Failed collection must stop immediately so Stripe does not keep retrying
+        // after the member has asked to leave. Paid/trial access keeps the usual
+        // end-of-period cancellation semantics.
+        const cancellation = failedCollectionStatuses.has(subscription.status)
+            ? await cancelFailedSubscriptionImmediately({ userId: req.user.id, subscription })
+            : await scheduleSubscriptionCancellation({ userId: req.user.id, subscription });
+        const { currentPeriodEnd, immediate = false } = cancellation;
 
         await recordFunnelEvent('subscription_cancel_requested', {
             userId: req.user.id,
@@ -1468,15 +1516,22 @@ router.post('/cancel', authenticateToken, async (req, res) => {
         });
 
         try {
-            await sendCancellationScheduledEmail(req.user.email, currentPeriodEnd);
+            await sendEmail({
+                to: req.user.email,
+                template: 'subscription_cancelled',
+                data: { currentPeriodEnd, immediate }
+            });
         } catch (emailError) {
             console.warn('[RETENTION] Could not send cancellation confirmation:', emailError.message);
         }
 
         res.json({
             success: true,
-            message: 'Předplatné bude zrušeno na konci aktuálního období.',
-            currentPeriodEnd
+            message: immediate
+                ? 'Předplatné bylo zrušeno a další pokusy o platbu byly zastaveny.'
+                : 'Předplatné bude zrušeno na konci aktuálního období.',
+            currentPeriodEnd,
+            immediate
         });
     } catch (error) {
         console.error('Cancel Subscription Error:', error);
@@ -1487,6 +1542,32 @@ router.post('/cancel', authenticateToken, async (req, res) => {
 // ============================================
 // POST /reactivate - Reactivate a cancelled subscription before period end
 // ============================================
+export async function reactivatePendingCancellation({
+    db = supabase,
+    stripeClient = stripe,
+    userId,
+    subscription
+} = {}) {
+    const stripeSubscription = await stripeClient.subscriptions.update(subscription.stripe_subscription_id, {
+        cancel_at_period_end: false
+    });
+    const status = normalizeStripeSubscriptionStatus(stripeSubscription);
+
+    const { error: subscriptionUpdateError } = await db
+        .from('subscriptions')
+        .update({ status })
+        .eq('user_id', userId);
+    if (subscriptionUpdateError) throw new Error(subscriptionUpdateError.message || 'Failed to persist reactivated subscription');
+
+    const { error: userUpdateError } = await db
+        .from('users')
+        .update({ is_premium: isEntitlingStripeSubscriptionStatus(status) })
+        .eq('id', userId);
+    if (userUpdateError) throw new Error(userUpdateError.message || 'Failed to persist reactivated entitlement');
+
+    return { status };
+}
+
 router.post('/reactivate', authenticateToken, async (req, res) => {
     try {
         const { data: subscription, error: subscriptionError } = await supabase
@@ -1513,23 +1594,10 @@ router.post('/reactivate', authenticateToken, async (req, res) => {
             return res.status(400).json({ error: 'Předplatné není ve stavu čekajícího zrušení.' });
         }
 
-        // Remove cancellation
-        const stripeSubscription = await stripe.subscriptions.update(subscription.stripe_subscription_id, {
-            cancel_at_period_end: false
+        await reactivatePendingCancellation({
+            userId: req.user.id,
+            subscription
         });
-        const status = normalizeStripeSubscriptionStatus(stripeSubscription);
-
-        const { error: subscriptionUpdateError } = await supabase
-            .from('subscriptions')
-            .update({ status })
-            .eq('user_id', req.user.id);
-        if (subscriptionUpdateError) throw subscriptionUpdateError;
-
-        const { error: userUpdateError } = await supabase
-            .from('users')
-            .update({ is_premium: isEntitlingStripeSubscriptionStatus(status) })
-            .eq('id', req.user.id);
-        if (userUpdateError) throw userUpdateError;
 
         await recordFunnelEvent('subscription_reactivated', {
             userId: req.user.id,
@@ -2952,60 +3020,6 @@ router.post('/subscription/resume', authenticateToken, async (req, res) => {
         }
 
         const { status } = await resumeSubscriptionCollection({ userId, subscription: sub });
-        res.json({ success: true, status });
-    } catch (err) {
-        console.error('[RETENTION] Error in resume endpoint:', err);
-        res.status(500).json({ error: 'Failed to resume subscription' });
-    }
-});
-
-/**
- * POST /subscription/resume
- * Resume payment collection for a voluntarily paused subscription.
- */
-router.post('/subscription/resume', authenticateToken, async (req, res) => {
-    try {
-        const userId = req.user.id;
-        const { data: sub, error: subError } = await supabase
-            .from('subscriptions')
-            .select('stripe_subscription_id, status')
-            .eq('user_id', userId)
-            .single();
-
-        if (subError || !sub?.stripe_subscription_id) {
-            return res.status(404).json({ error: 'Stripe subscription not found' });
-        }
-
-        if (sub.status === 'active' || sub.status === 'trialing') {
-            return res.json({
-                success: true,
-                idempotent: true,
-                message: 'Subscription is already active',
-                status: sub.status
-            });
-        }
-
-        if (sub.status !== 'paused') {
-            return res.status(400).json({ error: 'Can only resume paused subscriptions' });
-        }
-
-        const stripeSubscription = await stripe.subscriptions.update(sub.stripe_subscription_id, {
-            pause_collection: ''
-        });
-        const status = normalizeStripeSubscriptionStatus(stripeSubscription);
-
-        const { error: localUpdateError } = await supabase
-            .from('subscriptions')
-            .update({ status, pause_until: null })
-            .eq('user_id', userId);
-        if (localUpdateError) throw localUpdateError;
-
-        const { error: premiumUpdateError } = await supabase
-            .from('users')
-            .update({ is_premium: isEntitlingStripeSubscriptionStatus(status) })
-            .eq('id', userId);
-        if (premiumUpdateError) throw premiumUpdateError;
-
         await recordFunnelEvent('subscription_resumed', {
             userId,
             metadata: {
@@ -3014,12 +3028,7 @@ router.post('/subscription/resume', authenticateToken, async (req, res) => {
                 status
             }
         });
-
-        res.json({
-            success: true,
-            message: 'Subscription resumed',
-            status
-        });
+        res.json({ success: true, status });
     } catch (err) {
         console.error('[RETENTION] Error in resume endpoint:', err);
         res.status(500).json({ error: 'Failed to resume subscription' });

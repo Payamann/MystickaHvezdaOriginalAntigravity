@@ -1010,6 +1010,26 @@ export const EMAIL_TEMPLATES = {
         Předplatné můžete kdykoli spravovat ve svém profilu.
       </p>
     `, 'Aktivní členství')
+  },
+
+  subscription_cancelled: {
+    subject: 'Potvrzení zrušení členství',
+    getHtml: (data) => {
+      const immediate = data.immediate === true;
+      const endDate = data.currentPeriodEnd
+        ? new Date(data.currentPeriodEnd).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' })
+        : null;
+      return getBaseTemplate(`
+        <h1 class="h1">Členství je zrušené</h1>
+        <p>${immediate
+          ? 'Předplatné jsme ukončili okamžitě. Další automatické pokusy o platbu za toto členství už neproběhnou.'
+          : `Další obnovení jsme zastavili${endDate ? `. Přístup zůstává aktivní do ${endDate}` : ''}.`}</p>
+        <p>Za zrušení nic neúčtujeme. Pokud se někdy budeš chtít vrátit, nové členství můžeš založit z ceníku.</p>
+        <div class="cta-box">
+          <a href="${process.env.APP_URL}/profil.html#tab-settings" class="btn">Zkontrolovat stav v profilu →</a>
+        </div>
+      `, 'Zrušení členství');
+    }
   }
 
 };
