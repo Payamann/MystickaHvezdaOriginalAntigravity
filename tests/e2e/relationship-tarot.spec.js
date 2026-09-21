@@ -87,6 +87,8 @@ test('yes/no free result leads to the new question, without counting the hidden 
     await expect(offer).toBeVisible({ timeout: 15000 });
     await expect(page.locator('[data-relationship-legacy]')).toBeHidden();
     await expect(page.locator('#result-text')).not.toBeEmpty();
+    await expect(offer.locator('[data-relationship-question]')).toContainText(question);
+    await expect(offer).toContainText('Jednorázová platba, bez členství');
     const cardName = await page.locator('#result-card-name').textContent();
     const answerLabel = await page.locator('#result-title').textContent();
     expect(await page.evaluate(() => window.relationshipQAEvents)).not.toContain('tarot_yes_no_upgrade_bridge_viewed');

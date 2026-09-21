@@ -71,10 +71,25 @@
             else sessionStorage.removeItem('mh_relationship_question');
         } catch { /* Optional handoff. */ }
     }
+    function updateOfferContext(offer) {
+        const context = offer.querySelector('[data-relationship-question]');
+        const quote = context?.querySelector('q');
+        if (!context || !quote) return;
+        const result = window.__lastTarotYesNoShareResult;
+        const question = String(result?.question || document.getElementById('question-input')?.value || '').trim();
+        if (!question) {
+            context.hidden = true;
+            quote.textContent = '';
+            return;
+        }
+        quote.textContent = question.length > 120 ? `${question.slice(0, 117).trimEnd()}…` : question;
+        context.hidden = false;
+    }
     function revealOffers() {
         if (!productAvailable) return;
         document.querySelectorAll('[data-relationship-legacy]').forEach(el => { el.hidden = true; });
         document.querySelectorAll('[data-relationship-offer]').forEach(offer => {
+            updateOfferContext(offer);
             if (initialized.has(offer)) return;
             initialized.add(offer);
             offer.hidden = false;
@@ -94,6 +109,7 @@
         });
     }
     document.addEventListener('mh:relationship-offers-ready', revealOffers);
+    document.addEventListener('mh:tarot-yes-no-context-changed', revealOffers);
     fetch('/api/vztahovy-vyklad/product', { cache: 'no-store' }).then(async response => {
         if (!response.ok) return;
         const product = await response.json();

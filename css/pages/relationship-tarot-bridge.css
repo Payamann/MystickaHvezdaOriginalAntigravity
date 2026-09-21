@@ -39,6 +39,47 @@
   color: #e9c572;
   margin-bottom: 10px
 }
+.relationship-offer .relationship-offer__context {
+  padding: 10px 13px;
+  margin: 0 0 16px;
+  border-left: 2px solid #dcb968;
+  border-radius: 0 7px 7px 0;
+  background: #ffffff0a;
+  color: #e8deed;
+  line-height: 1.55
+}
+.relationship-offer__context span {
+  display: block;
+  margin-bottom: 2px;
+  color: #ab9bb9;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase
+}
+.relationship-offer__context q {
+  quotes: "„" "“"
+}
+.relationship-offer__benefits {
+  display: grid;
+  gap: 7px;
+  padding: 0;
+  margin: 0 0 19px;
+  list-style: none;
+  color: #d9cede;
+  font: 13px/1.55 'Inter',Arial,sans-serif
+}
+.relationship-offer__benefits li {
+  position: relative;
+  padding-left: 22px
+}
+.relationship-offer__benefits li::before {
+  content: "✦";
+  position: absolute;
+  left: 1px;
+  color: #e9c572;
+  font-size: 10px
+}
 .relationship-offer small {
   display: block;
   margin-top: 12px;
@@ -120,6 +161,9 @@
     justify-content: space-between;
     gap: 10px;
     padding: 13px 15px
+  }
+  .relationship-offer__benefits {
+    font-size: 12px
   }
 }
 @media(prefers-reduced-motion:reduce) {

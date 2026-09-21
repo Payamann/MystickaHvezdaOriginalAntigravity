@@ -1229,6 +1229,7 @@
             krok: drawnCard.krok
         };
         window.__lastTarotYesNoShareResult = lastResult;
+        document.dispatchEvent(new CustomEvent('mh:tarot-yes-no-context-changed'));
 
         // Vložení resultu na Front (Přední líc karty) - skutečná karta místo jen emoji
         const front = card.querySelector('.card-front');
@@ -1307,6 +1308,7 @@
         lastResult = null;
         savedReadingId = null;
         window.__lastTarotYesNoShareResult = null;
+        document.dispatchEvent(new CustomEvent('mh:tarot-yes-no-context-changed'));
         document.getElementById('question-input').value = '';
         const saveReadingButton = document.getElementById('btn-save-reading');
         if (saveReadingButton) {
