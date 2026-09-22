@@ -1,6 +1,14 @@
 import { test, expect } from '@playwright/test';
 
 async function prepare(page, enabled = true, funnelEvents = null) {
+    await page.addInitScript(() => {
+        localStorage.setItem('mh_cookie_prefs', JSON.stringify({
+            analytics: false,
+            marketing: false,
+            ts: Date.now()
+        }));
+        localStorage.removeItem('cookieConsent');
+    });
     await page.route('**/api/vztahovy-vyklad/product', route => route.fulfill({ json: { enabled, amount: 14900, currency: 'czk' } }));
     await page.route('**/api/payment/funnel-event', route => {
         if (funnelEvents) funnelEvents.push(route.request().postDataJSON());
@@ -103,13 +111,17 @@ test('yes/no free result leads to the new question, without counting the hidden 
     await expect(page.locator('[data-relationship-legacy]')).toBeHidden();
     await expect(page.locator('#result-text')).not.toBeEmpty();
     await expect(offer.locator('[data-relationship-question]')).toContainText(question);
+    await expect(offer.locator('.relationship-offer__preview')).toContainText('UKÁZKA PODOBY VÝKLADU');
+    await expect(offer.locator('.relationship-offer__preview-list')).toContainText('Blízkost, ve které může zaznít i nesouhlas.');
+    await expect(offer.locator('.relationship-offer__preview-note')).toContainText('Modelový příklad pro otázku o opakovaných hádkách.');
     await expect(offer).toContainText('Nejdřív si prohlédneš ukázku výkladu');
     const cardName = await page.locator('#result-card-name').textContent();
     const answerLabel = await page.locator('#result-title').textContent();
     expect(await page.evaluate(() => window.relationshipQAEvents)).not.toContain('tarot_yes_no_upgrade_bridge_viewed');
-    await expect.poll(() => page.evaluate(() => window.relationshipQAEvents.some(event => event.name === 'one_time_offer_viewed'
+    await offer.scrollIntoViewIfNeeded();
+    await expect.poll(() => funnelEvents.filter(event => event.eventName === 'one_time_offer_viewed'
         && event.metadata?.feature === 'relationship_tarot'
-        && event.metadata?.funnel_step === 'entry_offer'))).toBe(true);
+        && event.metadata?.funnel_step === 'entry_offer').length).toBe(1);
     await offer.locator('a').click();
     await expect(page).toHaveURL(/vztahovy-vyklad.html\?source=tarot_yes_no_result$/);
     await expect(page.locator('#question')).toHaveValue(question);
