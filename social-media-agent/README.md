@@ -3,9 +3,11 @@
 Automatický agent pro správu sociálních sítí. Generuje posty, obrázky a odpovídá na komentáře.
 
 ## Technologie
-- **Gemini Flash** — generování textů (captions, hashtags, odpovědi)
-- **Imagen 3** — generování obrázků (přes Gemini API)
-- **Meta Graph API** — publikace na Facebook & Instagram (připraveno, aktivuje se po vytvoření FB stránky)
+- **GPT-6 Luna přes OpenAI Responses API** — generování textů, captions, odpovědí a AI kontroly kvality (`TEXT_MODEL*` a `TEXT_REASONING_EFFORT` v `config.py`)
+- **Imagen 3 přes Gemini API** — generování obrázků
+- **Meta Graph API** — publikování a správa komentářů na připojené Facebook stránce
+
+Veškeré textové AI volání v lokálním skriptu používá API model `gpt-6-luna` s výchozím reasoning effort `medium`. Přístup produkčního API klíče k tomuto modelu se ověřuje samostatně přes `python setup.py`.
 
 ## Rychlý Start
 
@@ -14,7 +16,7 @@ Automatický agent pro správu sociálních sítí. Generuje posty, obrázky a o
 cd social-media-agent
 python setup.py
 ```
-Setup se tě zeptá na Gemini API klíč a vše nastaví automaticky.
+Setup nakonfiguruje lokální závislosti a potřebné API klíče; textový generátor potřebuje `OPENAI_API_KEY`, obrázkový `GEMINI_API_KEY`.
 
 ### 2. Použití
 
@@ -38,6 +40,30 @@ python agent.py list
 python agent.py reply "Jak si zjistím číslo osudu?"
 ```
 
+### Comment Bot: bezpečný review režim
+
+```bash
+# Výchozí interaktivní review: Enter odešle, s přeskočí, e upraví.
+# Timeout návrh neodešle a ponechá jej čekající.
+python comment_bot.py
+
+# Pouze výslovná volba automatického odesílání z CLI
+python comment_bot.py --auto
+
+# Railway runner je ve výchozím stavu review/non-interactive:
+# návrhy uloží jako čekající a nic neodešle.
+python railway_runner.py
+```
+
+Pro vědomé zapnutí automatického odesílání v Railway nastav obě hodnoty:
+
+```env
+COMMENT_BOT_MODE=auto
+COMMENT_BOT_AUTO_CONFIRM=SEND_REPLIES_WITHOUT_REVIEW
+```
+
+Samotné `COMMENT_BOT_MODE=auto` nestačí. V review režimu se odpověď nikdy neodešle bez explicitního potvrzení v interaktivním terminálu a komentáře se automaticky neskrývají. Návrh, který neprojde kontrolou kvality, se nenabídne k odeslání. Přímé dotazy na AI nebo automatizaci dostanou pravdivou odpověď; agent nesmí tvrdit, že návrh napsal člověk nebo lidský tým.
+
 ## Adresářová Struktura
 
 ```
@@ -46,10 +72,10 @@ social-media-agent/
 ├── config.py             # Konfigurace a nastavení
 ├── blog_reader.py        # Čte blog-index.json
 ├── post_saver.py         # Ukládá posty + HTML náhledy
-├── meta_publisher.py     # Facebook/Instagram publikace (fáze 2)
+├── meta_publisher.py     # Facebook/Instagram publikace přes Meta Graph API
 ├── setup.py              # Instalační skript
 ├── generators/
-│   ├── text_generator.py # Gemini Flash - texty
+│   ├── text_generator.py # GPT-6 Luna přes OpenAI Responses API - texty
 │   └── image_generator.py # Imagen 3 - obrázky
 ├── output/
 │   ├── posts/            # Uložené posty (JSON + HTML náhled)
@@ -95,106 +121,66 @@ Decision rule:
 - scale campaigns with checkout starts or purchases first
 - fix stale Pinterest schedules before generating more pins
 - add `source` + `feature` params when a campaign only has UTMs
-- rebalance the next social batch when recent memory misses engagement, promotion, or inspiration
+- use recorded engagement as a human-reviewed observation; a small sample never sets an automatic content mix
 - if the report says the funnel export is empty or legacy, fix measurement before increasing content volume
 
-### Codex Daily Workflow
+### Social Content Workflow
 
-Use this when Codex is generating the daily 3-post Instagram set from `AGENTS.md`.
-It turns the repeated manual process into: brief -> draft -> QA -> memory log.
+Use this flow for the format Pavel actually requests. A brief or draft does not imply three daily posts, Instagram-only output, a promo, or a publishing action.
 
 ```bash
 cd social-media-agent
 
-# 1) Read memory and create a Codex-ready daily brief + draft template
+# Read memory and create a flexible one-post draft starter
 python codex_social_workflow.py daily
 
-# 2) After Codex writes the posts to a markdown file, validate the draft
+# Review one or more finished posts
 python codex_social_workflow.py qa --file output/codex/daily_posts_YYYY-MM-DD.md
 
-# 3) Recommended daily operator: QA + traffic/publish packs + preview + control room
-python codex_social_workflow.py daily-operator --file output/codex/daily_posts_YYYY-MM-DD.md --image output/images/IMAGE.png
-
-# 4) Generate the low-effort traffic layer manually: UTM links, IG Story CTA, Facebook post
-python codex_social_workflow.py traffic-pack --file output/codex/daily_posts_YYYY-MM-DD.md --write
-
-# 5) Create the exact copy/paste publishing pack for the one traffic post
-python codex_social_workflow.py publish-pack --file output/codex/daily_posts_YYYY-MM-DD.md --write
-
-# 6) Optional: publish the Facebook traffic post through Meta API
-# Dry-run first. It publishes nothing and shows the exact message/comment/link.
-python codex_social_workflow.py facebook-publish --file output/codex/daily_posts_YYYY-MM-DD.md --image output/images/IMAGE.png
-
-# Execute only after review. Default mode is a photo post plus first comment link.
-python codex_social_workflow.py facebook-publish --file output/codex/daily_posts_YYYY-MM-DD.md --image output/images/IMAGE.png --execute
-
-# 7) Optional: prepare the visual prompt for the traffic post
-python codex_social_workflow.py visual-pack --file output/codex/daily_posts_YYYY-MM-DD.md --write
-
-# Best manual-quality option: create the exact prompt for Codex image generation
-python codex_social_workflow.py codex-image-brief --file output/codex/daily_posts_YYYY-MM-DD.md --write
-
-# Optional: actually generate a PNG into output/images
-python codex_social_workflow.py visual-pack --file output/codex/daily_posts_YYYY-MM-DD.md --generate --write
-
-# 8) Create an internal review preview, not a publishable post
+# Optional private preview
 python codex_social_workflow.py preview --file output/codex/daily_posts_YYYY-MM-DD.md
 
-# 9) When QA passes, log all 3 posts to output/content_memory.json
-python codex_social_workflow.py log-draft --file output/codex/daily_posts_YYYY-MM-DD.md --score 8.0
+# Optional: prepare a promo pack only when the post is meant to drive traffic
+python codex_social_workflow.py traffic-pack --file output/codex/daily_posts_YYYY-MM-DD.md --write
 
-# Weekly strategy review for the next batch
+# Optional: create a post-specific visual direction or generate the image
+python codex_social_workflow.py codex-image-brief --file output/codex/daily_posts_YYYY-MM-DD.md --write
+python codex_social_workflow.py visual-pack --file output/codex/daily_posts_YYYY-MM-DD.md --generate --write
+
+# Facebook stays a dry-run unless publication is explicitly requested
+python codex_social_workflow.py facebook-publish --file output/codex/daily_posts_YYYY-MM-DD.md --image output/images/IMAGE.png
+# Add --execute only after reviewing the exact caption, image, destination, and comment
+
+# Log only an approved final draft
+python codex_social_workflow.py log-draft --file output/codex/daily_posts_YYYY-MM-DD.md
 python codex_social_workflow.py weekly --days 14 --write
 
-# Growth operator: content memory + funnel export + Pinterest inventory
-python codex_social_workflow.py growth-operator --live-funnel --live-google --days 14 --write
-
-# Repair active premium users after reviewing the dry-run output
-python codex_social_workflow.py entitlement-sync --execute
-
-# Check the allowed soft-promo URLs and local files
-python codex_social_workflow.py urls
+# After publishing, create a tracker for real posts; fill aggregate Insights values
+python codex_social_workflow.py engagement-template --days 90 --output output/codex/facebook-metrics.csv
+python codex_social_workflow.py engagement-import --file output/codex/facebook-metrics.csv --dry-run
+python codex_social_workflow.py engagement-import --file output/codex/facebook-metrics.csv
 ```
 
 Notes:
-- `qa` enforces slot types, intent mix, CTA rotation, hashtag count, image prompt requirements, and allowed soft-promo URLs.
-- `daily-operator` is the default review workflow once a draft exists. It writes the traffic pack, publish pack, internal preview, and `daily_control_room_YYYY-MM-DD.html`.
-- `traffic-pack` keeps Reels focused on reach, then creates one extra Story/link/Facebook layer that points to the matching web tool with UTM tracking plus backend `source` + `feature` params.
-- `publish-pack` is the copy/paste output for publishing. It clearly separates the actual traffic post from internal preview screens.
-- `facebook-publish` is safe by default: without `--execute` it only prints the payload. In `photo` mode it keeps the generated 4:5 visual in the post and puts the long tracked URL into the first comment.
-- `visual-pack` defaults to one graphic for the traffic target. Use `--mode all` only for campaign days, because generating 3 images daily adds review work.
-- `codex-image-brief` is the best-quality path when Codex should generate the image directly: it writes one curated prompt and a target workspace filename.
-- `preview` is only an internal review dashboard for checking captions, CTA and visual direction. Do not publish it as a social post.
-- `pull-funnel` refreshes `output/revenue/funnel-segments-90d.csv` from Supabase and flags active premium subscriptions whose `users.is_premium` flag is not synced.
-- `pull-google` refreshes `output/google/google-growth-latest.json` from Search Console and GA4. It needs `GOOGLE_APPLICATION_CREDENTIALS`, `GA4_PROPERTY_ID`, and `GSC_SITE_URL`.
-- `entitlement-sync` is dry-run by default. It repairs only active premium subscriptions whose user flag is out of sync when you add `--execute`.
-- `growth-operator --live-funnel --live-google` is the weekly business layer. It refreshes funnel and Google data first, then turns social memory, funnel exports, Search Console, GA4 and Pinterest inventory into one ranked action report.
-- `log-draft` is duplicate-aware and skips posts whose caption preview already exists unless `--force` is used.
-- The allowed `Šamanské kolo` URL is `/shamansko-kolo.html`, matching the actual site file and sitemap.
+- QA checks Czech voice, slash-form mistakes, optional product links, placeholders, and time-sensitive astrology claims. It does not require a fixed number of posts, promo ratio, hashtag count, CTA, hook mix, or image prompt.
+- Facebook publication keeps the written caption. It only places a real Mystická Hvězda link where the draft includes one and the requested placement needs it.
+- Visual prompts start from the post itself. Brand colors are available as accents; the same starfield, crystal, centered 3D object, and frame are not added automatically.
+- If image services fail, generation stops with an error. A fake template image is not returned as if it were finished creative.
+- Traffic and publishing packs are opt-in. The Facebook command remains a dry-run unless --execute is supplied.
+- log-draft records only the approved version and remains duplicate-aware.
+- Confirmed Facebook publications are linked to Meta post IDs. The metrics CSV stores aggregate reach, impressions, views, reactions, comments, shares, saves, and link clicks with a measurement date and window; rows are deduplicated by post ID, window, and measurement date.
+- Metrics are entered from Facebook Insights/export; this workflow does not fetch Insights automatically. Do not add names, profile links, or raw commenter text. Comparable measured results only enter generation prompts after at least three posts in each of two groups with the same platform, placement, and measurement window.
+- `weekly` reports medians and sample sizes. Its numbers are descriptive; small or mixed samples do not establish causation or a winning format.
+- Use pull-funnel, pull-google, entitlement-sync, and growth-operator only for their separate reporting or data tasks.
 
-### Fáze 1 (nyní): Content Generation
-- Generuj posty lokálně
-- Prohlíž HTML náhledy v prohlížeči
-- Manuálně zkopíruj a zveřejni
 
-### Fáze 2 (po vytvoření FB stránky): Auto-Publishing
-1. Vytvoř [Facebook Business Stránku](https://www.facebook.com/pages/create)
-2. Vytvoř [Instagram Professional účet](https://www.instagram.com/) a propoj s FB
-3. Vytvoř [Meta Developer App](https://developers.facebook.com/)
-4. Získej Page Access Token
-5. Vlož do `.env`: `META_ACCESS_TOKEN` a `META_PAGE_ID`
-6. Spusť `python meta_publisher.py` pro test
+### Facebook publikace
 
-## Typy Postů
+Meta API cesta je v kódu připravená. Před prvním ostrým použitím ověř přístup k Facebook stránce přes `python meta_publisher.py`, pak připrav draft, zkontroluj přesný text a spusť `facebook-publish --execute` jen pro schválený obsah. Stav Railway ani platnost přihlašovacích údajů tento lokální workflow nepotvrzuje.
 
-| Typ | Popis | Nejlepší čas |
-|-----|-------|-------------|
-| `educational` | Vzdělávací obsah o mystice | 12:00-13:00 |
-| `quote` | Inspirativní citát | 7:00-9:00 |
-| `question` | Otázka pro komunitu | 19:00-21:00 |
-| `tip` | Praktický ritual/tip | 18:00-20:00 |
-| `daily_energy` | Denní energie/předpověď | 7:00-8:00 |
-| `blog_promo` | Propagace blog článku | 14:00-16:00 |
+## Draft Metadata
+
+Markdown drafts accept a simple heading such as `### Facebook` or optional metadata such as `### Facebook — educational | pure_value`. Hook and CTA labels, summary tables, and estimated QA scores are not required to review or log one post.
 
 ## Témata
 
@@ -203,10 +189,15 @@ tarot • numerologie • astrologie • duchovní rozvoj • meditace • energ
 ## .env Konfigurace
 
 ```env
-# Povinné
+# Texty — GPT-6 Luna s reasoningem medium
+OPENAI_API_KEY=your_key_here
+TEXT_REASONING_EFFORT=medium
+TEXT_MAX_OUTPUT_TOKENS=8192
+
+# Obrázky
 GEMINI_API_KEY=your_key_here
 
-# Fáze 2 (Facebook/Instagram)
+# Meta / Facebook / Instagram
 META_ACCESS_TOKEN=
 META_PAGE_ID=
 INSTAGRAM_ACCOUNT_ID=

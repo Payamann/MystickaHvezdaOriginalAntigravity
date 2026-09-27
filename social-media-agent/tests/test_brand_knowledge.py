@@ -3,7 +3,7 @@ Testy pro brand_knowledge.py
 - Hledání nástrojů
 - Hledání blogových článků
 - Knowledge prompt builder
-- Anti-AI kontrola (žádné zmínky o AI v popiscích)
+- Pravdivý popis automatického průvodce
 """
 import sys
 from pathlib import Path
@@ -35,18 +35,9 @@ class TestToolsAndFeatures:
                 assert "name" in tool, f"Tool {key} nemá 'name'"
                 assert "description" in tool, f"Tool {key} nemá 'description'"
 
-    def test_no_ai_mentions_in_descriptions(self):
-        """KRITICKÉ: Žádné zmínky o AI v popiscích nástrojů"""
-        ai_terms = ["ai ", "umělá inteligence", "artificial intelligence",
-                     "machine learning", "strojové učení", "neural",
-                     "ai-powered", "ai výklad", "ai analýza"]
-        for tier in TOOLS_AND_FEATURES.values():
-            for key, tool in tier.items():
-                desc_lower = tool["description"].lower()
-                for term in ai_terms:
-                    assert term not in desc_lower, (
-                        f"Tool '{key}' obsahuje AI zmínku '{term}' v popisu: {tool['description'][:80]}"
-                    )
+    def test_ai_guide_is_described_truthfully(self):
+        description = TOOLS_AND_FEATURES["premium"]["duchov_pruvodce_premium"]["description"]
+        assert "AI průvodci" in description
 
 
 class TestPricingPlans:

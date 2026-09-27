@@ -141,7 +141,7 @@ function getSocialAgentSchedulerStatus() {
         return 'disabled';
     }
 
-    return hasEnvValue('ANTHROPIC_API_KEY') ? 'enabled' : 'missing_api_key';
+    return hasEnvValue('OPENAI_API_KEY') ? 'enabled' : 'missing_api_key';
 }
 
 let dailyHoroscopeJobRunning = false;
@@ -1154,7 +1154,7 @@ if (isMain || isProductionRuntime()) {
             };
 
             // 1. Generate new content daily (08:00 UTC)
-            if (shouldRunSocialAgentScheduler() && process.env.ANTHROPIC_API_KEY) {
+            if (shouldRunSocialAgentScheduler() && process.env.OPENAI_API_KEY) {
                 schedule.scheduleJob('0 8 * * *', () => {
                     runBackgroundTask('social_agent_auto', () => runSocialAgent('auto'), { action: 'auto' });
                 });
@@ -1166,7 +1166,7 @@ if (isMain || isProductionRuntime()) {
 
                 console.warn('📅 Social Media Agent schedules initialized.');
             } else if (shouldRunSocialAgentScheduler()) {
-                console.warn('⚠️ Social Media Agent skipped (missing ANTHROPIC_API_KEY).');
+                console.warn('⚠️ Social Media Agent skipped (missing OPENAI_API_KEY).');
             } else {
                 console.warn('📵 Social Media Agent scheduler disabled (set ENABLE_SOCIAL_AGENT_SCHEDULER=true to enable).');
             }

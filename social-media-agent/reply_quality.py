@@ -27,13 +27,31 @@ class QualityResult:
         return asdict(self)
 
 
+FALSE_HUMAN_AUTHORSHIP_PATTERNS = (
+    r"\bza\s+mystick(?:ou|á)\s+hvězd(?:ou|a)\s+stojí\s+(?:náš\s+)?tým\s+lidí\b",
+    r"\bjsme\s+(?:skuteční\s+)?lidé\b",
+    r"\bjsme\s+(?:(?:skutečný|opravdový|lidský)\s+)?tým\b",
+    r"\b(?:tuto|tu|moji|mou)\s+odpověď\s+(?:jsem|jsme)\s+napsal[aiy]?\b",
+    r"\bodpověď\s+(?:napsal|vytvořil)\s+člověk\b",
+    r"\b(?:odpovídá|píše)\s+(?:(?:ti|vám)\s+)?(?:skutečný\s+)?člověk\b",
+    r"\bnejsem\s+(?:ai|bot|chatbot|robot|automat\w*)\b",
+)
+
 AI_DISCLOSURE_PATTERNS = (
-    r"\bjako\s+ai\b",
+    r"\bai\b",
     r"\buměl[áa]\s+inteligence\b",
-    r"\bchatbot\b",
+    r"\bumela\s+inteligence\b",
+    r"\bchat\s?bot\b",
     r"\bbot\b",
-    r"\bjazykov[ýy]\s+model\b",
-    r"\bgenerov[aá]no\s+ai\b",
+    r"\brobot\b",
+    r"\bautomat\w*\b",
+)
+
+AI_TOPIC_PATTERNS = AI_DISCLOSURE_PATTERNS + (
+    r"\bčlověk\b",
+    r"\bclovek\b",
+    r"\blidsk[ýy]\s+tým\b",
+    r"\blidsky\s+tym\b",
 )
 
 PROMO_PATTERNS = (
@@ -159,10 +177,32 @@ def evaluate_reply_quality(
         score -= 60
 
     lower = cleaned.lower()
-    for pattern in AI_DISCLOSURE_PATTERNS:
+    comment_text = str(comment.get("message", ""))
+    comment_mentions_ai_topic = any(
+        re.search(pattern, comment_text, re.IGNORECASE)
+        for pattern in AI_TOPIC_PATTERNS
+    )
+    comment_is_question = "?" in comment_text or bool(
+        re.search(
+            r"\b(jsi|jste|jsme|je|jsou|používáš|používáte|používá|pouzivas|pouzivate|"
+            r"odpovídá|odpovida|generuje|kdo|co|proč|proc|jak)\b",
+            comment_text,
+            re.IGNORECASE,
+        )
+    )
+    directly_asked_about_ai = comment_mentions_ai_topic and comment_is_question
+    if not directly_asked_about_ai and any(
+        re.search(pattern, cleaned, re.IGNORECASE)
+        for pattern in AI_DISCLOSURE_PATTERNS
+    ):
+        issues.append("ai_disclosure")
+        blocking.append("ai_disclosure")
+        score -= 80
+
+    for pattern in FALSE_HUMAN_AUTHORSHIP_PATTERNS:
         if re.search(pattern, lower):
-            issues.append("ai_disclosure")
-            blocking.append("ai_disclosure")
+            issues.append("false_human_authorship")
+            blocking.append("false_human_authorship")
             score -= 80
             break
 
@@ -239,6 +279,8 @@ def build_quality_feedback(result: QualityResult) -> str:
         "male_default_phrase": "Nepoužívej mužský default typu 'Rád vidím'.",
         "unapproved_url": "Nepoužívej žádnou URL, pokud není explicitně povolená.",
         "url_in_sensitive_context": "U citlivého komentáře nepřidávej odkaz.",
+        "false_human_authorship": "Netvrď, že odpověď napsal člověk nebo lidský tým. Při přímém dotazu přiznej AI a automatizaci věcně.",
+        "ai_disclosure": "Nezaváděj AI nebo automatizaci, pokud se na ně komentář přímo neptá. Při přímém dotazu odpověz pravdivě.",
     }
     selected = [hints[i] for i in result.issues if i in hints]
     return " ".join(selected[:3])

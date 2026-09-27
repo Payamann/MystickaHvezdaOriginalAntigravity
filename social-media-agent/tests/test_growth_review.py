@@ -161,9 +161,7 @@ def test_content_memory_summary_flags_missing_recent_pillars(tmp_path):
     assert summary.pillar_counts["education"] == 1
     assert summary.pillar_counts["promotion"] == 1
     assert "engagement" in summary.missing_pillars
-    assert summary.top_hooks[0]["hook"] == "question"
-    assert summary.top_hooks[0]["avg_score"] == 8.5
-    assert summary.top_hooks[0]["count"] == 2
+    assert summary.top_hooks == []  # QG estimates are not engagement evidence.
 
 
 def test_growth_review_prioritizes_measured_loop_and_flags_ambiguous_pins(tmp_path):

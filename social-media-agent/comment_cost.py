@@ -24,14 +24,31 @@ def usage_to_dict(usage: Any) -> dict:
     if usage is None:
         return {}
     if isinstance(usage, dict):
-        return dict(usage)
+        result = dict(usage)
+        input_details = result.get("input_tokens_details") or {}
+        output_details = result.get("output_tokens_details") or {}
+        if isinstance(input_details, dict) and input_details.get("cached_tokens") is not None:
+            result["cached_input_tokens"] = input_details["cached_tokens"]
+        if isinstance(output_details, dict) and output_details.get("reasoning_tokens") is not None:
+            result["reasoning_tokens"] = output_details["reasoning_tokens"]
+        return result
     fields = (
         "input_tokens",
         "output_tokens",
+        "total_tokens",
         "cache_creation_input_tokens",
         "cache_read_input_tokens",
     )
-    return {field: getattr(usage, field) for field in fields if getattr(usage, field, None) is not None}
+    result = {field: getattr(usage, field) for field in fields if getattr(usage, field, None) is not None}
+    input_details = getattr(usage, "input_tokens_details", None)
+    output_details = getattr(usage, "output_tokens_details", None)
+    cached_tokens = getattr(input_details, "cached_tokens", None)
+    reasoning_tokens = getattr(output_details, "reasoning_tokens", None)
+    if cached_tokens is not None:
+        result["cached_input_tokens"] = cached_tokens
+    if reasoning_tokens is not None:
+        result["reasoning_tokens"] = reasoning_tokens
+    return result
 
 
 def merge_usage(usages: list[dict]) -> dict:

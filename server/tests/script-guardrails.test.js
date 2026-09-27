@@ -359,7 +359,7 @@ describe('manual script guardrails', () => {
         const source = readScript('server/index.js');
 
         expect(source).toContain('function shouldRunSocialAgentScheduler()');
-        expect(source).toContain("if (shouldRunSocialAgentScheduler() && process.env.ANTHROPIC_API_KEY)");
+        expect(source).toContain("if (shouldRunSocialAgentScheduler() && process.env.OPENAI_API_KEY)");
         expect(source).toContain('set ENABLE_SOCIAL_AGENT_SCHEDULER=true to enable');
     });
 

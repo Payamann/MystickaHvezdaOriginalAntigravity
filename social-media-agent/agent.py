@@ -5,10 +5,10 @@
 Použití:
   python agent.py generate              Interaktivní generování (výběr tématu, typů, variací)
   python agent.py generate --auto       Automaticky vygeneruje post (vhodné pro denní rutinu)
-  python agent.py batch                 Content calendar — 3 posty/den na 7 dní (21 postů)
-  python agent.py batch --days 3        Kratší plán (3 dny = 9 postů)
+  python agent.py batch                 Jeden volitelný návrh denně na 3 dny
+  python agent.py batch --days 3 --posts-per-day 2   Více návrhů denně, pokud je chceš
   python agent.py blog [--all]          Blog promo post (--all ukáže výběr z posledních 10 článků)
-  python agent.py plan                  Týdenní plán s lunárním kontextem
+  python agent.py plan                  Výběr různorodých námětů na týden
   python agent.py story TÉMA            Série Instagram Stories (5-7 slidů)
   python agent.py carousel TÉMA         Karusel post obsah (7 slidů)
   python agent.py list                  Přehled uložených postů
@@ -47,8 +47,8 @@ from generators.text_generator import (
 from generators.image_generator import generate_image
 from generators.lunar_context import get_full_astrological_context
 from generators.content_memory import (
-    get_variety_context, record_post, pick_content_intent, record_approved_post,
-    record_qg_issues, record_hook_score, record_golden_template,
+    get_variety_context, record_post, record_approved_post,
+    record_qg_issues,
 )
 from blog_reader import get_article_for_promo, format_article_for_post, load_blog_articles
 from post_saver import save_post, load_all_posts, mark_post_approved
@@ -82,22 +82,21 @@ def print_banner():
 
 def _offer_buffer_publish(post_data: dict, image_path, auto: bool):
     """Nabídne publikování přes Buffer pokud je token nastaven."""
+    if auto:
+        # Automatické generování končí uložením návrhu; publikování vyžaduje vědomou volbu.
+        return
     if not config.BUFFER_ACCESS_TOKEN:
         return  # Buffer není nakonfigurován — tiše přeskočíme
 
     caption = post_data.get("caption", "")
     hashtags = post_data.get("hashtags", [])
 
-    if auto:
-        # V auto módu přidej do fronty bez ptaní
-        action = "queue"
-    else:
-        console.print("\n[bold blue]📤 Buffer Publishing[/bold blue]")
-        console.print("  [dim]1.[/dim] Přidat do fronty [dim](Buffer vybere optimální čas)[/dim]")
-        console.print("  [dim]2.[/dim] Publikovat hned")
-        console.print("  [dim]3.[/dim] Přeskočit")
-        choice = Prompt.ask("Vyber možnost", choices=["1", "2", "3"], default="1")
-        action = {"1": "queue", "2": "now", "3": "skip"}.get(choice, "skip")
+    console.print("\n[bold blue]📤 Buffer Publishing[/bold blue]")
+    console.print("  [dim]1.[/dim] Přidat do fronty [dim](Buffer vybere optimální čas)[/dim]")
+    console.print("  [dim]2.[/dim] Publikovat hned")
+    console.print("  [dim]3.[/dim] Přeskočit")
+    choice = Prompt.ask("Vyber možnost", choices=["1", "2", "3"], default="3")
+    action = {"1": "queue", "2": "now", "3": "skip"}.get(choice, "skip")
 
     if action == "skip":
         return
@@ -205,9 +204,9 @@ def _print_posting_checklist():
     console.print(Panel(
         "  [bold]1.[/bold] Vygeneruj obrázek z promptu výše [dim](Midjourney / Canva AI / DALL-E)[/dim]\n"
         "  [bold]2.[/bold] Nahraj obrázek do Meta Business Suite\n"
-        "  [bold]3.[/bold] Vlož caption [bold]i s hashtagy[/bold] (hashtagy jsou součástí textu)\n"
+        "  [bold]3.[/bold] Vlož schválený caption; hashtagy přidej jen pokud jsou součástí návrhu\n"
         "  [bold]4.[/bold] Naplánuj nebo zveřejni\n"
-        "  [dim]⏰ Nejlepší čas: Ráno 8:00  ·  Poledne 12:00  ·  Večer 19:00–21:00[/dim]",
+        "  [dim]Před zveřejněním zkontroluj text, grafiku a zvolené umístění příspěvku.[/dim]",
         title="📋 Jak postovat (Meta Business Suite)",
         border_style="dim",
         padding=(0, 1),
@@ -234,10 +233,10 @@ def _save_calendar_markdown(calendar: list, platform: str) -> "Path":
     path = calendar_dir / filename
 
     lines = [
-        f"# 📅 Content Calendar — {start_str} – {end_str}",
+        f"# 📅 Obsahové návrhy — {start_str} – {end_str}",
         "",
         f"> Vygenerováno: {datetime.now().strftime('%d.%m.%Y %H:%M')}  |  Platforma: {platform}",
-        "> **Jak postovat:** Zkopíruj caption (hashtagy jsou součástí textu) → Meta Business Suite → Naplánuj",
+        "> **Před publikací:** Zkontroluj caption, případnou grafiku a náhled ve zvoleném umístění.",
         "",
         "---",
         "",
@@ -253,19 +252,24 @@ def _save_calendar_markdown(calendar: list, platform: str) -> "Path":
 
         for post in day["posts"]:
             slot = post["slot"]
-            score = post.get("qg_score", 0)
-            score_emoji = "✅" if score >= 7.5 else "⚠️" if score >= 6.0 else "🔴"
             intent = post["post_data"].get("content_intent", "pure_value")
-            intent_cs = {"pure_value": "pure_value", "soft_promo": "soft_promo", "direct_promo": "direct_promo"}.get(intent, intent)
-            hook = post["post_data"].get("hook_formula", "—")
-            cta = post["post_data"].get("call_to_action", "")
-            # Zkrať CTA na max 40 znaků pro header
-            cta_short = (cta[:37] + "…") if len(cta) > 40 else cta
-
-            lines.append(f"### {slot['label']} {slot['time']} — `{post['post_type']}` | {hook} | {intent_cs}")
-            lines.append(f"> {score_emoji} Kvalita: **{score:.1f}/10**  ·  Téma: {post['topic']}")
-            if cta_short:
-                lines.append(f"> 💬 CTA: *{cta_short}*")
+            intent_cs = {
+                "pure_value": "bez propagace",
+                "soft_promo": "jemné pozvání",
+                "direct_promo": "propagační návrh",
+            }.get(intent, intent)
+            slot_label = slot.get("label", "Příspěvek")
+            slot_time = f" · {slot['time']}" if slot.get("time") else ""
+            lines.append(f"### {slot_label}{slot_time} — `{post['post_type']}` · {intent_cs}")
+            qg_errors = post.get("qg_errors", 0)
+            check_note = (
+                "bez blokující chyby; před zveřejněním zkontrolovat"
+                if qg_errors == 0 and post.get("qg_approved", False)
+                else f"{qg_errors} blokující chyby — ruční kontrola"
+                if qg_errors
+                else "čeká na ruční kontrolu"
+            )
+            lines.append(f"> Téma: {post['topic']} · Kontrola: {check_note}")
             lines.append("")
 
             # Caption — inline, ne code block
@@ -289,8 +293,7 @@ def _save_calendar_markdown(calendar: list, platform: str) -> "Path":
                 lines.append(image_prompt)
                 lines.append("```")
                 lines.append("")
-                lines.append("> 🎨 Styl: Premium 3D CGI render · ONE central floating object · NO frames NO borders")
-                lines.append("> 📐 Formát: Portrait 4:5 · 1080×1350px · Plain dark navy border pro ořez vodoznaku")
+                lines.append("> Obrazový směr odpovídá konkrétnímu captionu; ověř náhled pro vybrané umístění.")
                 lines.append("")
 
             lines.append("---")
@@ -305,73 +308,75 @@ def _show_batch_summary(calendar: list, errors: int):
     CS_DAYS_SHORT = ["Po", "Út", "St", "Čt", "Pá", "So", "Ne"]
 
     total = sum(len(d["posts"]) for d in calendar)
-    all_scores = [p["qg_score"] for d in calendar for p in d["posts"]]
-    avg_score = sum(all_scores) / len(all_scores) if all_scores else 0
-    high_quality = sum(1 for s in all_scores if s >= 7.5)
-
     console.print(f"\n[bold green]✅ Batch dokončen![/bold green]  "
                   f"[bold]{total}[/bold] postů · "
-                  f"průměr [cyan]{avg_score:.1f}/10[/cyan] · "
-                  f"[green]{high_quality}×[/green] skóre 7.5+ · "
                   f"[red]{errors}[/red] chyb\n")
 
     table = Table(
-        title="📅 Content Calendar — Přehled",
+        title="📅 Přehled návrhů",
         border_style="purple",
         box=box.ROUNDED,
         show_lines=True,
     )
     table.add_column("Den", style="bold cyan", width=4)
-    table.add_column("Datum", style="dim", width=6)
-    table.add_column("🌅 Ráno 8:00", width=26)
-    table.add_column("☀️ Poledne 12:00", width=26)
-    table.add_column("🌙 Večer 19:00", width=26)
+    table.add_column("Datum", style="dim", width=7)
+    table.add_column("Návrhy", width=72)
 
     for day in calendar:
         d = day["date"]
-        posts = {p["slot"]["id"]: p for p in day["posts"]}
-
-        def fmt_post(slot_id: str) -> str:
-            p = posts.get(slot_id)
-            if not p:
-                return "[dim]—[/dim]"
-            score = p["qg_score"]
-            color = "green" if score >= 7.5 else "yellow" if score >= 6.0 else "red"
-            return (
-                f"[{color}]{score:.1f}[/{color}] [dim]{p['post_type'][:12]}[/dim]\n"
-                f"{p['topic'][:22]}"
+        summaries = []
+        for p in day["posts"]:
+            slot_time = p.get("slot", {}).get("time")
+            time_label = f"{slot_time} · " if slot_time else ""
+            review_note = "" if p.get("qg_approved", False) else " · [yellow]ruční kontrola[/yellow]"
+            summaries.append(
+                f"{time_label}[dim]{p['post_type']}[/dim] — {p['topic']}{review_note}"
             )
 
         table.add_row(
             CS_DAYS_SHORT[d.weekday()],
             f"{d.day}.{d.month}.",
-            fmt_post("morning"),
-            fmt_post("noon"),
-            fmt_post("evening"),
+            "\n".join(summaries) if summaries else "[dim]Bez návrhu[/dim]",
         )
 
     console.print(table)
 
 
-def cmd_batch(days: int = 3, platform: str = "instagram"):
-    """Generuje content calendar — 3 posty denně na N dní."""
+def cmd_batch(days: int = 3, platform: str = "instagram", posts_per_day: int = 1):
+    """Připraví volitelný obsahový plán; standardně jeden neschedulovaný návrh denně."""
     print_banner()
 
     import random
     from datetime import date as dateclass, timedelta
 
-    total_posts = days * 3
+    posts_per_day = max(1, min(3, int(posts_per_day)))
+    total_posts = days * posts_per_day
+
+    if posts_per_day == 1:
+        slots = [{
+            "id": "post",
+            "label": "Příspěvek",
+            "time": "",
+            "preferred_types": [
+                "educational", "myth_bust", "story", "quote", "question",
+                "tip", "challenge", "daily_energy", "carousel_plan",
+                "cross_system", "save_worthy",
+            ],
+            "content_intent": "pure_value",
+        }]
+    else:
+        # Časy jsou orientační redakční sloty; výchozí režim žádný čas neurčuje.
+        slots = config.DAILY_TIME_SLOTS[:posts_per_day]
 
     console.print(Panel(
         f"Generuji [bold]{total_posts} postů[/bold] pro [bold]{days} dní[/bold]  "
-        f"[dim]({days} × 3 sloty)[/dim]\n"
-        f"[dim]🌅 Ráno 8:00  ·  ☀️ Poledne 12:00  ·  🌙 Večer 19:00[/dim]\n"
+        f"[dim]({posts_per_day} {'návrh' if posts_per_day == 1 else 'návrhy'} denně)[/dim]\n"
+        f"[dim]Časy jsou uvedené jen při výslovné volbě více příspěvků za den.[/dim]\n"
         f"[dim]Platforma: {platform}  ·  QG práh: 7.5  ·  1× refinement při chybách[/dim]",
         title="📅 Batch Generator",
         border_style="purple",
     ))
 
-    BATCH_THRESHOLD = 7.5
     calendar_data = []
     errors = 0
 
@@ -390,99 +395,44 @@ def cmd_batch(days: int = 3, platform: str = "instagram"):
 
             # ── Anti-repetition: sleduj co bylo použito dnes ──
             today_used_topics = []
-            today_used_hooks = []
             today_used_types = []
 
-            # ── Týdenní rytmus pro tento den ──
-            weekday = current_date.weekday()  # 0=Pondělí, 6=Neděle
-            weekly_rhythm = config.WEEKLY_RHYTHM.get(weekday, {})
-            rhythm_mood = weekly_rhythm.get("mood", "")
-            rhythm_focus = weekly_rhythm.get("focus", "")
-            rhythm_preferred = weekly_rhythm.get("preferred_themes", [])
-            rhythm_avoid_types = weekly_rhythm.get("avoid_types", [])
-            rhythm_boost_types = weekly_rhythm.get("boost_types", [])
-
-            for slot in config.DAILY_TIME_SLOTS:
-                # Téma — vyhni se nedávno použitým + DNES použitým
-                # Preferuj témata z týdenního rytmu
-                variety = get_variety_context()
-                recent_topics = variety.get("recent_topics", [])
-                blocked_topics = set(recent_topics) | set(today_used_topics)
-
-                # Nejdřív zkus témata z weekly rhythm (pokud jsou dostupná)
-                rhythm_available = [t for t in rhythm_preferred if t not in blocked_topics]
-                if rhythm_available:
-                    available_topics = rhythm_available
-                else:
-                    available_topics = [t for t in config.CONTENT_THEMES if t not in blocked_topics]
-                if not available_topics:
-                    available_topics = [t for t in config.CONTENT_THEMES if t not in today_used_topics]
+            for slot in slots:
+                # Historie pomáhá vyhnout se opisování formulací; starší téma není zakázané.
+                available_topics = [t for t in config.CONTENT_THEMES if t not in today_used_topics]
                 if not available_topics:
                     available_topics = config.CONTENT_THEMES
                 topic = random.choice(available_topics)
                 today_used_topics.append(topic)
 
-                # Typ z preferovaných pro slot — vyhni se dnes použitým typům + avoid_types z rytmu
-                from generators.content_memory import pick_post_type_for_slot
+                # Promo formáty zůstávají na výslovný výběr v interaktivním režimu.
                 slot_types = [
                     t for t in slot["preferred_types"]
-                    if t not in today_used_types and t not in rhythm_avoid_types
+                    if t not in today_used_types and t not in {"blog_promo", "tool_demo"}
                 ]
                 if not slot_types:
-                    slot_types = [t for t in slot["preferred_types"] if t not in today_used_types]
+                    slot_types = [
+                        t for t in slot["preferred_types"]
+                        if t not in {"blog_promo", "tool_demo"}
+                    ]
                 if not slot_types:
-                    slot_types = slot["preferred_types"]
-
-                # Boost types z weekly rytmu — přidej na začátek pro vyšší pravděpodobnost
-                boosted = [t for t in rhythm_boost_types if t in slot_types]
-                rest = [t for t in slot_types if t not in boosted]
-                slot_types_weighted = boosted + rest  # boosted typy mají přednost
-
-                post_type = pick_post_type_for_slot(slot_types_weighted)
+                    slot_types = ["educational", "story", "tip", "question"]
+                post_type = random.choice(slot_types)
                 today_used_types.append(post_type)
 
-                # Content intent
-                # Soft/direct promo jen pro témata s přímým nástrojem na webu
-                raw_intent = slot["content_intent"] or pick_content_intent()
-                if raw_intent in ("soft_promo", "direct_promo"):
-                    if topic not in config.PROMOTABLE_THEMES:
-                        raw_intent = "pure_value"
-                        log.info("Intent downgraded na pure_value — téma '%s' nemá nástroj na webu", topic)
-                content_intent = raw_intent
-
-                # URL pro promo — z PROMOTABLE_TOOLS dict (přesná URL pro dané téma)
-                promo_url = ""
-                if content_intent in ("soft_promo", "direct_promo"):
-                    promo_url = config.PROMOTABLE_TOOLS.get(topic, "")
-
-                # ── Kontext pro prompt: co už dnes bylo použito + týdenní rytmus + URL ──
+                content_intent = "pure_value"
                 today_context = ""
-                if today_used_topics[:-1]:  # předchozí posty (ne aktuální)
+                if today_used_topics[:-1]:
                     today_context = (
-                        f"\n\nDNEŠNÍ ANTI-REPETITION (POVINNÉ — dodržuj!):\n"
-                        f"Dnes už byly vygenerovány posty na: {', '.join(today_used_topics[:-1])}\n"
-                        f"Dnes použité hook formule: {', '.join(today_used_hooks) if today_used_hooks else 'žádné'}\n"
-                        f"Dnes použité typy: {', '.join(today_used_types[:-1])}\n"
-                        f"MUSÍŠ použít JINÝ úhel, JINOU hook formuli a JINÝ tón než předchozí posty dnes."
-                    )
-                if rhythm_mood:
-                    today_context += (
-                        f"\n\nTÝDENNÍ RYTMUS — dnes je {['pondělí','úterý','středa','čtvrtek','pátek','sobota','neděle'][weekday]}:\n"
-                        f"Nálada dne: {rhythm_mood}\n"
-                        f"Fokus: {rhythm_focus}\n"
-                        f"Přizpůsob tón a obsah tomuto zaměření."
-                    )
-                if promo_url:
-                    today_context += (
-                        f"\n\nPROMO URL (POVINNÉ — použij přesně tuto URL v CTA):\n"
-                        f"→ {promo_url}\n"
-                        f"NEZAMĚŇUJ s jinou URL — tato URL odpovídá tématu '{topic}'."
+                        "Při více návrzích pro stejný den dej každému vlastní konkrétní úhel; "
+                        "neopakuj pointu ani formulaci. Nenuť rozdílnost za každou cenu."
                     )
 
                 progress.update(
                     main_task,
                     description=(
-                        f"[dim]{current_date}[/dim] {slot['label']} · "
+                        f"[dim]{current_date}[/dim] {slot['label']} "
+                        f"{(slot.get('time') + ' · ') if slot.get('time') else '· '}"
                         f"[cyan]{post_type}[/cyan] · {topic[:18]}…"
                     ),
                 )
@@ -502,7 +452,7 @@ def cmd_batch(days: int = 3, platform: str = "instagram"):
                     qg_result = validate_post(qg_data, platform, run_ai_review=False)
 
                     # Jeden refinement pokus pokud jsou pravidlové chyby
-                    if qg_result["score"] < BATCH_THRESHOLD and qg_result.get("errors", 0) > 0:
+                    if qg_result.get("errors", 0) > 0:
                         refined = refine_post(
                             post_data=post_data,
                             qg_result=qg_result,
@@ -519,34 +469,27 @@ def cmd_batch(days: int = 3, platform: str = "instagram"):
                             post_data = refined
                             qg_result = refined_qg
 
-                    # Sleduj hook pro anti-repetition v rámci dne
-                    used_hook = post_data.get("hook_formula", "")
-                    if used_hook:
-                        today_used_hooks.append(used_hook)
-
                     # Uložení
                     post_data["quality_score"] = qg_result["score"]
+                    post_data["quality_verdict"] = qg_result["summary"]
+                    post_data["quality_approved"] = bool(qg_result.get("approved"))
                     json_path = save_post(post_data, None, platform, topic, post_type)
 
                     # Záznam do paměti
                     record_post(
                         topic, post_type,
-                        used_hook,
                         content_intent=content_intent,
                     )
-                    record_approved_post(
-                        topic=topic,
-                        post_type=post_type,
-                        caption=post_data.get("caption", ""),
-                        quality_score=qg_result["score"],
-                        content_intent=content_intent,
-                    )
-
-                    # Auto-Learning: QG issues + hook skóre + golden template
+                    # Ulož editorické poznámky pro přehled; nejde o automatické přepisování hlasu.
                     record_qg_issues(post_type, qg_result.get("issues", []))
-                    record_hook_score(post_data.get("hook_formula", ""), qg_result["score"])
-                    record_golden_template(post_type, post_data.get("caption", ""),
-                                           post_data.get("hook_formula", ""), qg_result["score"])
+                    if post_data["quality_approved"]:
+                        record_approved_post(
+                            topic=topic,
+                            post_type=post_type,
+                            caption=post_data.get("caption", ""),
+                            quality_score=qg_result["score"],
+                            content_intent=content_intent,
+                        )
 
                     day_posts.append({
                         "date": current_date,
@@ -555,6 +498,8 @@ def cmd_batch(days: int = 3, platform: str = "instagram"):
                         "post_type": post_type,
                         "post_data": post_data,
                         "qg_score": qg_result["score"],
+                        "qg_errors": qg_result.get("errors", 0),
+                        "qg_approved": post_data["quality_approved"],
                         "file": str(json_path),
                     })
 
@@ -571,7 +516,7 @@ def cmd_batch(days: int = 3, platform: str = "instagram"):
         _show_batch_summary(calendar_data, errors)
         console.print(f"\n[bold]📄 Kalendář uložen:[/bold] [dim]{cal_path}[/dim]")
         console.print(
-            "[dim]💡 Otevři soubor — máš připravené captions, hashtagy i image prompty na celý týden[/dim]"
+            "[dim]💡 Otevři soubor a uprav návrhy podle svého; hashtagy i grafický směr jsou volitelné.[/dim]"
         )
 
 
@@ -584,29 +529,18 @@ def cmd_generate(auto: bool = False, platform: str = "instagram", variations: in
 
     if auto:
         import random
-        # Smart auto: vyhni se nedávno použitým tématům
-        variety = get_variety_context()
-        recent = variety.get("recent_topics", [])
-        available_topics = [t for t in config.CONTENT_THEMES if t not in recent]
-        if not available_topics:
-            available_topics = config.CONTENT_THEMES
-
-        topic = random.choice(available_topics)
-        recent_types = variety.get("recent_post_types", [])
-        available_types = [t for t in config.POST_TYPES if t not in recent_types]
-        if not available_types:
-            available_types = list(config.POST_TYPES.keys())
+        # Paměť upozorňuje na podobnost; nezakazuje znovu otevřít důležité téma.
+        topic = random.choice(config.CONTENT_THEMES)
+        available_types = [
+            t for t in config.POST_TYPES
+            if t not in {"blog_promo", "tool_demo"}
+        ]
         post_type = random.choice(available_types)
-
-        # Automatický výběr content intentu podle poměru
-        content_intent = pick_content_intent()
-        intent_labels = {
-            "pure_value": "🎓 vzdělávací",
-            "soft_promo": "💫 soft promo",
-            "direct_promo": "📣 direct promo",
-        }
-        intent_label = intent_labels.get(content_intent, content_intent)
-        console.print(f"[dim]🤖 Auto mód: [cyan]{topic}[/cyan] / [yellow]{post_type}[/yellow] / {intent_label}[/dim]\n")
+        content_intent = "pure_value"
+        console.print(
+            f"[dim]🤖 Návrh: [cyan]{topic}[/cyan] / "
+            f"[yellow]{post_type}[/yellow] / bez propagace[/dim]\n"
+        )
     else:
         # Zobraz astro kontext
         try:
@@ -651,18 +585,17 @@ def cmd_generate(auto: bool = False, platform: str = "instagram", variations: in
 
         # Výběr content intentu (interaktivní mód)
         console.print("\n[bold]🎯 Záměr postu:[/bold]")
-        console.print("  [dim]1.[/dim] [green]Vzdělávací[/green]   — čistá hodnota, bez propagace webu [dim](doporučeno 60%)[/dim]")
-        console.print("  [dim]2.[/dim] [yellow]Soft promo[/yellow]  — přirozená zmínka webu pokud to sedí [dim](doporučeno 25%)[/dim]")
-        console.print("  [dim]3.[/dim] [red]Direct promo[/red] — explicitní propagace nástroje/blogu [dim](doporučeno 15%)[/dim]")
-        auto_intent = pick_content_intent()
+        console.print("  [dim]1.[/dim] [green]Bez propagace[/green] — samostatný užitečný obsah")
+        console.print("  [dim]2.[/dim] [yellow]Jemné pozvání[/yellow] — jen pokud přirozeně navazuje")
+        console.print("  [dim]3.[/dim] [red]Přímá propagace[/red] — pouze doložené funkce a odkazy")
         intent_map = {"1": "pure_value", "2": "soft_promo", "3": "direct_promo"}
-        auto_num = {"pure_value": "1", "soft_promo": "2", "direct_promo": "3"}.get(auto_intent, "1")
-        intent_num = Prompt.ask("Vyber záměr [dim](Enter = doporučeno dle poměru)[/dim]", default=auto_num)
-        content_intent = intent_map.get(intent_num, auto_intent)
+        default_intent = "3" if post_type == "blog_promo" else "1"
+        intent_num = Prompt.ask("Vyber záměr [dim](Enter = bez propagace)[/dim]", default=default_intent)
+        content_intent = intent_map.get(intent_num, "pure_value")
 
     # === GENEROVÁNÍ ===
     with Progress(SpinnerColumn(), TextColumn("[progress.description]{task.description}"), transient=True) as p:
-        p.add_task(f"✨ Gemini Flash generuje {variations}x caption pro [cyan]{topic}[/cyan]...", total=None)
+        p.add_task(f"Připravuji {variations} návrhů pro [cyan]{topic}[/cyan]...", total=None)
         post_data = generate_post(
             post_type=post_type,
             topic=topic,
@@ -678,7 +611,7 @@ def cmd_generate(auto: bool = False, platform: str = "instagram", variations: in
         for i, var in enumerate(post_data["variations"], 1):
             console.print(Panel(
                 var.get("caption", ""),
-                title=f"[yellow]Varianta {i}[/yellow] — [dim]{var.get('hook_formula', '')}[/dim]",
+                title=f"[yellow]Varianta {i}[/yellow]",
                 border_style="cyan" if i == post_data.get("recommended_variation", 0) + 1 else "dim",
             ))
 
@@ -689,7 +622,6 @@ def cmd_generate(auto: bool = False, platform: str = "instagram", variations: in
         post_data["hook_formula"] = selected.get("hook_formula", "")
     else:
         caption = post_data.get("caption", "")
-        hook = post_data.get("hook_formula", "")
         hashtags = post_data.get("hashtags", [])
         hashtag_str = "\n\n" + "  ".join(hashtags) if hashtags else ""
         grammar_changes = post_data.get("grammar_changes", [])
@@ -697,7 +629,7 @@ def cmd_generate(auto: bool = False, platform: str = "instagram", variations: in
         if grammar_changes:
             grammar_note = f"\n\n[dim yellow]✏️ Gramatické opravy ({len(grammar_changes)}): {' · '.join(grammar_changes[:3])}{'…' if len(grammar_changes) > 3 else ''}[/dim yellow]"
         console.print(Panel(
-            f"[dim]Hook: {hook}[/dim]\n\n{caption}{hashtag_str}{grammar_note}",
+            f"{caption}{hashtag_str}{grammar_note}",
             title=f"📝 {topic.upper()} / {post_type}",
             border_style="cyan",
         ))
@@ -719,8 +651,7 @@ def cmd_generate(auto: bool = False, platform: str = "instagram", variations: in
     # === QUALITY GATE + SELF-REFINEMENT LOOP ===
     console.print("\n[bold cyan]═══ QUALITY GATE ═══[/bold cyan]")
 
-    REFINEMENT_THRESHOLD = 7.5   # skóre pod tímto → spustí refinement
-    MAX_REFINEMENT_ITERATIONS = 2
+    MAX_REFINEMENT_ITERATIONS = 1
 
     # AI review: v auto módu zapnout, v interaktivním se zeptáme
     use_ai = True if auto else Confirm.ask(
@@ -737,22 +668,23 @@ def cmd_generate(auto: bool = False, platform: str = "instagram", variations: in
 
     print_quality_report(qg_result)
 
-    # ── Auto-Learning: zaznamenej QG problémy ──
+    # ── Ulož redakční připomínky pro přehled ──
     record_qg_issues(
         post_type=post_data.get("post_type", ""),
         issues=qg_result.get("issues", []),
         ai_review=qg_result.get("ai_review"),
     )
 
-    # ── SELF-REFINEMENT LOOP ──
+    # ── OPRAVA KONKRÉTNÍCH CHYB ──
     score_history = [qg_result["score"]]
 
-    if use_ai and qg_result["score"] < REFINEMENT_THRESHOLD:
+    # Editorial scores are not a reason to rewrite copy; only fix blocking errors.
+    if use_ai and qg_result.get("errors", 0) > 0:
         should_refine = True
         if not auto:
             should_refine = Confirm.ask(
-                f"\n🔄 Skóre {qg_result['score']}/10 je pod prahem {REFINEMENT_THRESHOLD}. "
-                f"Mám post automaticky vylepšit?",
+                f"\n🔄 Kontrola našla {qg_result['errors']} blokující chyby. "
+                "Mám zkusit opravit jen tyto konkrétní chyby?",
                 default=True
             )
 
@@ -761,7 +693,7 @@ def cmd_generate(auto: bool = False, platform: str = "instagram", variations: in
                 console.print(f"\n[bold magenta]🔄 Refinement iterace {iteration}/{MAX_REFINEMENT_ITERATIONS}...[/bold magenta]")
 
                 with Progress(SpinnerColumn(), TextColumn("[progress.description]{task.description}"), transient=True) as p:
-                    p.add_task(f"✨ Gemini přepisuje post na základě {len(qg_result.get('issues', []))} problémů...", total=None)
+                    p.add_task(f"✨ Opravuji {qg_result['errors']} blokující chyby...", total=None)
                     refined = refine_post(
                         post_data=post_data,
                         qg_result=qg_result,
@@ -776,41 +708,32 @@ def cmd_generate(auto: bool = False, platform: str = "instagram", variations: in
                     p.add_task("🔍  Quality Gate: kontrola vylepšené verze...", total=None)
                     refined_qg = _run_qg(refined)
 
-                score_change = refined_qg["score"] - qg_result["score"]
                 score_history.append(refined_qg["score"])
 
-                # Zobraz změny
+                # Skóre je pouze diagnostika; přepis ponecháme jen tehdy,
+                # pokud skutečně odstranil alespoň jednu blokující chybu.
                 changes = refined.get("refinement_changes", "")
-                score_color = "green" if score_change >= 0 else "red"
                 console.print(
-                    f"  [{score_color}]{qg_result['score']:.1f} → {refined_qg['score']:.1f} "
-                    f"({'+'if score_change>=0 else ''}{score_change:.1f})[/{score_color}]"
+                    f"  Blokující chyby: {qg_result.get('errors', 0)} → {refined_qg.get('errors', 0)}"
                     + (f"  [dim]{changes}[/dim]" if changes else "")
                 )
 
-                # Přijmout vylepšenou verzi (i pokud se skóre nezlepšilo — aspoň opravila rule errory)
-                if refined_qg["score"] >= qg_result["score"] or qg_result.get("errors", 0) > 0:
+                if refined_qg.get("errors", 0) < qg_result.get("errors", 0):
                     post_data = refined
                     qg_result = refined_qg
                 else:
-                    console.print(f"  [yellow]Refinement skóre kleslo — ponechávám původní verzi[/yellow]")
+                    console.print("  [yellow]Nálezy se nezlepšily — ponechávám původní draft k ruční úpravě.[/yellow]")
 
-                # Zastavit pokud dosáhli prahu nebo maximálního počtu
-                if qg_result["score"] >= REFINEMENT_THRESHOLD:
-                    console.print(f"  [green]✓ Dosáhli jsme prahu {REFINEMENT_THRESHOLD}/10 — refinement dokončen[/green]")
-                    break
-
-            # Shrnutí refinementu
+            # Shrnutí kontroly po opravě
             if len(score_history) > 1:
-                trajectory = " → ".join(f"{s:.1f}" for s in score_history)
-                console.print(f"\n[bold]📈 Průběh skóre: {trajectory}[/bold]")
                 print_quality_report(qg_result)
 
-    # Rozhodnutí po refinementu
-    if not qg_result["approved"]:
+    # Rozhodnutí po refinementu. Neúspěšný QG smí zůstat jen lokálním draftem.
+    quality_approved = bool(qg_result.get("approved"))
+    if not quality_approved:
         console.print("\n[bold red]⚠️  Quality Gate: post NESCHVÁLEN ani po vylepšení[/bold red]")
         action = Prompt.ask(
-            "Co chceš udělat?",
+            "Uložit jako nepublikovaný draft, nebo přeskočit?",
             choices=["save", "skip"],
             default="save",
         ) if not auto else "save"
@@ -821,6 +744,7 @@ def cmd_generate(auto: bool = False, platform: str = "instagram", variations: in
 
     # Ulož historii skóre do post_data
     post_data["score_history"] = score_history
+    post_data["quality_approved"] = quality_approved
 
     # === ULOŽENÍ ===
     # Přidej QG skóre do post záznamu
@@ -834,33 +758,31 @@ def cmd_generate(auto: bool = False, platform: str = "instagram", variations: in
     console.print(f"  Kvalita: [cyan]{qg_result['score']}/10[/cyan] | {qg_result['summary']}")
     console.print(f"[dim]  Otevři v prohlížeči: {html_path}[/dim]")
 
-    # === POSTING CHECKLIST ===
-    _print_posting_checklist()
+    if quality_approved:
+        # === POSTING CHECKLIST ===
+        _print_posting_checklist()
 
-    # === BUFFER PUBLISHING ===
-    _offer_buffer_publish(post_data, image_path, auto)
+        # === BUFFER PUBLISHING ===
+        _offer_buffer_publish(post_data, image_path, auto)
+    else:
+        console.print(
+            "[yellow]Quality Gate neprošel: draft není schválený, "
+            "nepředám ho Bufferu ani do paměti schváleného obsahu.[/yellow]"
+        )
 
-    # Zaznamenej do paměti (včetně content_intent pro tracking poměru)
+    # Zaznamenej do paměti pro kontrolu podobnosti a redakční přehled.
     record_post(topic, post_type, post_data.get("hook_formula", ""),
                 content_intent=post_data.get("content_intent", "pure_value"))
 
-    # Zaznamenej schválený post — sleduje blog slugy, caption preview, skóre
-    record_approved_post(
-        topic=topic,
-        post_type=post_type,
-        caption=post_data.get("caption", ""),
-        quality_score=qg_result["score"],
-        content_intent=post_data.get("content_intent", "pure_value"),
-    )
-
-    # Auto-Learning: zaznamenej hook skóre + golden template
-    record_hook_score(post_data.get("hook_formula", ""), qg_result["score"])
-    record_golden_template(
-        post_type=post_type,
-        caption=post_data.get("caption", ""),
-        hook_formula=post_data.get("hook_formula", ""),
-        score=qg_result["score"],
-    )
+    if quality_approved:
+        # Ulož schválený návrh a jeho skóre pro redakční přehled.
+        record_approved_post(
+            topic=topic,
+            post_type=post_type,
+            caption=post_data.get("caption", ""),
+            quality_score=qg_result["score"],
+            content_intent=post_data.get("content_intent", "pure_value"),
+        )
 
     return post_data
 
@@ -936,23 +858,29 @@ def cmd_blog_promo(platform: str = "instagram", show_all: bool = False):
     qg_result = validate_post(post_data_for_review, platform, image_path, run_ai_review=False)
     print_quality_report(qg_result, verbose=True)
 
-    if not qg_result["approved"]:
+    quality_approved = bool(qg_result.get("approved"))
+    if not quality_approved:
         action = Prompt.ask("Post neschválen. Uložit přesto?", choices=["save", "skip"], default="save")
         if action == "skip":
             console.print("[dim]Přeskočeno.[/dim]")
             return
 
     post_data["quality_score"] = qg_result["score"]
+    post_data["quality_verdict"] = qg_result["summary"]
+    post_data["quality_approved"] = quality_approved
     json_path = save_post(post_data, image_path, platform, formatted['title'], "blog_promo")
     record_post(formatted['title'], "blog_promo", blog_slug=article.get("slug", ""), content_intent="direct_promo")
-    record_approved_post(
-        topic=formatted['title'],
-        post_type="blog_promo",
-        caption=post_data.get("caption", ""),
-        quality_score=qg_result["score"],
-        content_intent="direct_promo",
-        blog_slugs=[article.get("slug", "")] if article.get("slug") else [],
-    )
+    if quality_approved:
+        record_approved_post(
+            topic=formatted['title'],
+            post_type="blog_promo",
+            caption=post_data.get("caption", ""),
+            quality_score=qg_result["score"],
+            content_intent="direct_promo",
+            blog_slugs=[article.get("slug", "")] if article.get("slug") else [],
+        )
+    else:
+        console.print("[yellow]Neprošlo QA: uložený pouze jako draft, nezapočítán mezi schválené příspěvky.[/yellow]")
     console.print(f"\n[green]✓ Blog promo uložen![/green]  Kvalita: [cyan]{qg_result['score']}/10[/cyan]")
     console.print(f"[dim]Náhled: {str(json_path).replace('.json', '.html')}[/dim]")
 
@@ -1106,14 +1034,14 @@ def cmd_carousel(topic: str, platform: str = "instagram"):
 
 def cmd_plan():
     print_banner()
-    console.print("[bold]📅 Generuji týdenní plán s lunárním kontextem...[/bold]\n")
+    console.print("[bold]📅 Připravuji výběr obsahových námětů na týden...[/bold]\n")
 
     from datetime import date
     current_week = date.today().isocalendar()[1]
     current_year = date.today().year
 
     with Progress(SpinnerColumn(), TextColumn("[progress.description]{task.description}"), transient=True) as p:
-        p.add_task(f"Gemini Flash plánuje týden {current_week}/{current_year}...", total=None)
+        p.add_task(f"Připravuji náměty pro týden {current_week}/{current_year}...", total=None)
         plan = generate_weekly_content_plan(current_week, current_year)
 
     if not plan:
@@ -1127,19 +1055,15 @@ def cmd_plan():
     )
     table.add_column("Den", style="bold cyan", width=10)
     table.add_column("Typ", style="yellow", width=14)
-    table.add_column("Téma", style="green", width=30)
-    table.add_column("Čas", style="dim", width=6)
-    table.add_column("Měsíc", style="magenta", width=8)
-    table.add_column("Popis", width=40)
+    table.add_column("Téma", style="green", width=32)
+    table.add_column("Směr příspěvku", width=70)
 
     for day in plan:
         table.add_row(
             day.get("day", ""),
             day.get("post_type", ""),
-            day.get("topic", "")[:35],
-            day.get("best_time", ""),
-            day.get("moon_connection", "")[:10],
-            day.get("brief", "")[:55],
+            day.get("topic", "")[:32],
+            day.get("brief", "")[:70],
         )
 
     console.print(table)
@@ -1181,7 +1105,6 @@ def cmd_list():
     table.add_column("Téma", style="green", width=28)
     table.add_column("Typ", style="yellow", width=14)
     table.add_column("Status", width=10)
-    table.add_column("Hook vzorec", style="dim", width=18)
 
     for post in posts[:20]:
         status_map = {
@@ -1195,7 +1118,6 @@ def cmd_list():
             post.get("topic", "")[:30],
             post.get("post_type", "")[:15],
             status_map.get(post.get("status", "draft"), "—"),
-            post.get("hook_formula", "")[:20],
         )
 
     console.print(table)
@@ -1208,9 +1130,9 @@ def cmd_list():
 # CMD: DAILY  (alias pro batch --days 1)
 # ══════════════════════════════════════════════════
 
-def cmd_daily(platform: str = "instagram"):
-    """Zkratka: vygeneruj dnešní 3 posty (ráno / poledne / večer)."""
-    cmd_batch(days=1, platform=platform)
+def cmd_daily(platform: str = "instagram", posts_per_day: int = 1):
+    """Zkratka: připrav dnešní jeden návrh, případně více na výslovnou volbu."""
+    cmd_batch(days=1, platform=platform, posts_per_day=posts_per_day)
 
 
 # ══════════════════════════════════════════════════
@@ -1242,21 +1164,24 @@ def cmd_status():
     ))
 
     if not week_posts:
-        console.print("[dim]Žádné posty tento týden. Začni s: python agent.py daily[/dim]")
+        console.print("[dim]Tento týden zatím nejsou žádné schválené návrhy.[/dim]")
         return
 
     table = Table(border_style="purple", box=box.SIMPLE)
     table.add_column("Datum", style="dim", width=12)
     table.add_column("Typ", style="cyan", width=14)
     table.add_column("Záměr", style="yellow", width=12)
-    table.add_column("Skóre", width=7)
+    table.add_column("QA", width=7)
     table.add_column("Náhled caption", style="dim", width=50)
 
     intent_cs = {"pure_value": "vzdělávací", "soft_promo": "soft promo", "direct_promo": "direct promo"}
 
     for e in sorted(week_posts, key=lambda x: x["date"], reverse=True):
-        score = e.get("quality_score", 0)
-        score_fmt = f"[green]{score:.1f}[/green]" if score >= 7.5 else f"[yellow]{score:.1f}[/yellow]"
+        score = e.get("quality_score")
+        score_fmt = (
+            f"[green]{score:.1f}[/green]" if score >= 7.5
+            else f"[yellow]{score:.1f}[/yellow]"
+        ) if isinstance(score, (int, float)) else "—"
         table.add_row(
             e.get("date", ""),
             e.get("post_type", ""),
@@ -1267,13 +1192,7 @@ def cmd_status():
 
     console.print(table)
 
-    # Upozornění na dnešní stav
-    if len(today_posts) == 0:
-        console.print("\n[yellow]Dnes ještě žádné posty — spusť:[/yellow] [bold]python agent.py daily[/bold]")
-    elif len(today_posts) < 3:
-        console.print(f"\n[yellow]Dnes {len(today_posts)}/3 postů[/yellow] — zbývá {3 - len(today_posts)}")
-    else:
-        console.print("\n[green]Dnes máš všechny 3 posty hotové.[/green]")
+    console.print(f"\n[dim]Dnes schválené návrhy: {len(today_posts)}. Počet příspěvků za den si určuješ sám.[/dim]")
 
     # Témata použitá v posl. 14 dnech
     recent_topics = list({
@@ -1281,42 +1200,23 @@ def cmd_status():
         if (today - date.fromisoformat(e["date"])).days <= 14
     })
     if recent_topics:
-        console.print(f"\n[dim]Témata posl. 14 dní (agent se jim vyhne): {', '.join(recent_topics)}[/dim]")
+        console.print(f"\n[dim]Témata z posledních 14 dní (pro kontrolu opakování, žádné není zakázané): {', '.join(recent_topics)}[/dim]")
 
-    # ── Auto-Learning Insights ──
-    from generators.content_memory import get_learning_stats, get_hook_ranking
+    # Historické počty pro redakční přehled; samy o sobě neurčují další obsah.
+    from generators.content_memory import get_learning_stats
 
     stats = get_learning_stats()
-    if any(v for v in stats.values()):
-        learning_lines = []
-        if stats["qg_issues_tracked"]:
-            learning_lines.append(f"QG vzorce: {stats['qg_issues_tracked']} problémů sledováno (posl. 30 dní)")
-        if stats["hooks_ranked"]:
-            learning_lines.append(f"Hook ranking: {stats['hooks_ranked']} hooků s daty")
-        if stats["engagement_ratings"]:
-            learning_lines.append(f"Engagement: {stats['engagement_ratings']} hodnocení (posl. 60 dní)")
-        if stats["has_lessons"]:
-            learning_lines.append("[green]Systém má naučené lekce → ovlivňují generování[/green]")
-
+    history_lines = []
+    if stats["qg_issues_tracked"]:
+        history_lines.append(f"Poznámky z kontroly kvality: {stats['qg_issues_tracked']}")
+    if stats["engagement_ratings"]:
+        history_lines.append(f"Ruční hodnocení engagementu: {stats['engagement_ratings']}")
+    if history_lines:
         console.print(Panel(
-            "\n".join(learning_lines),
-            title="🧠 Auto-Learning",
+            "\n".join(history_lines),
+            title="Historie obsahu",
             border_style="blue",
         ))
-
-    # Hook ranking (top 3 + bottom 2)
-    hook_ranking = get_hook_ranking()
-    if hook_ranking:
-        sorted_hooks = sorted(hook_ranking.items(), key=lambda x: x[1], reverse=True)
-        top = sorted_hooks[:3]
-        bottom = sorted_hooks[-2:] if len(sorted_hooks) >= 4 else []
-
-        hook_lines = [f"  [green]★[/green] {h}: {s}/10" for h, s in top]
-        if bottom:
-            hook_lines.append("  ---")
-            hook_lines.extend(f"  [dim]{h}: {s}/10[/dim]" for h, s in bottom)
-
-        console.print(Panel("\n".join(hook_lines), title="📎 Hook Efektivita", border_style="dim"))
 
     # Engagement trend
     eng_log = memory.get("engagement_log", [])
@@ -1333,6 +1233,8 @@ def cmd_status():
                 f"[green]{high}× high[/green] ({high_pct:.0f}%) / "
                 f"[yellow]{med}× med[/yellow] / [red]{low}× low[/red][/dim]"
             )
+            if total_eng < 5:
+                console.print("[dim]Malý počet hodnocení; nevyvozuj z něj trend ani recept na další obsah.[/dim]")
 
 
 # ══════════════════════════════════════════════════
@@ -1386,7 +1288,7 @@ def cmd_weekly(theme: str = ""):
         desc = Prompt.ask("Popis tématu (volitelné)", default="")
         set_weekly_theme(theme, desc)
         console.print(f"[green]Téma týdne nastaveno: '{theme}'[/green]")
-        console.print("[dim]Všechny posty tento týden budou rezonovat s tímto tématem.[/dim]")
+        console.print("[dim]Téma může inspirovat návrhy, ale žádný příspěvek se mu nemusí přizpůsobovat.[/dim]")
     else:
         ctx = get_weekly_theme_context()
         if ctx:
@@ -1400,7 +1302,7 @@ def cmd_weekly(theme: str = ""):
 # ══════════════════════════════════════════════════
 
 def cmd_rate():
-    """Manuální zaznamenání reálného engagementu postů — učí systém co funguje."""
+    """Zaznamená skutečný engagement jako podklad pro ruční redakční přehled."""
     from generators.content_memory import _load_memory, record_engagement
 
     print_banner()
@@ -1441,13 +1343,16 @@ def cmd_rate():
     ))
 
     for i, post in enumerate(unrated, 1):
-        score = post.get("quality_score", 0)
-        score_color = "green" if score >= 7.5 else "yellow"
+        score = post.get("quality_score")
+        score_text = (
+            f"[green]QA {score:.1f}[/green]" if score >= 7.5
+            else f"[yellow]QA {score:.1f}[/yellow]"
+        ) if isinstance(score, (int, float)) else "[dim]QA skóre nezaznamenáno[/dim]"
         console.print(
             f"\n[bold cyan]({i}/{len(unrated)})[/bold cyan]  "
             f"[dim]{post['date']}[/dim]  "
             f"[cyan]{post.get('post_type', '?')}[/cyan]  "
-            f"[{score_color}]QG {score:.1f}[/{score_color}]\n"
+            f"{score_text}\n"
             f"  {post.get('caption_preview', '')[:80]}…"
         )
 
@@ -1475,7 +1380,7 @@ def cmd_rate():
         )
         console.print(f"  [green]✓ Zaznamenáno: {rating}[/green]")
 
-    console.print("\n[bold green]Hotovo![/bold green] Systém se z feedbacku naučí a přizpůsobí budoucí generování.")
+    console.print("\n[bold green]Hotovo![/bold green] Záznam je podkladem pro redakční přehled; automaticky nemění další návrhy.")
 
 
 # ══════════════════════════════════════════════════
@@ -1713,15 +1618,19 @@ def main():
     carousel.add_argument("topic", help="Téma karuselu")
     carousel.add_argument("--platform", default="instagram")
 
-    batch = sub.add_parser("batch", help="Content calendar — 3 posty/den (default: 3 dny = 9 postů)")
+    batch = sub.add_parser("batch", help="Návrhy obsahu na několik dní; výchozí je 1 post denně")
     batch.add_argument("--days", type=int, default=3, help="Počet dní k vygenerování (default: 3)")
+    batch.add_argument("--posts-per-day", type=int, choices=[1, 2, 3], default=1,
+                       help="Počet návrhů denně (default: 1; časové sloty jen při 2–3)")
     batch.add_argument("--platform", default="instagram", choices=["instagram", "facebook"])
 
-    daily_p = sub.add_parser("daily", help="Dnešní 3 posty (ráno / poledne / večer) — zkratka pro batch --days 1")
+    daily_p = sub.add_parser("daily", help="Dnešní obsahový návrh (volitelně až 3 varianty/sloty)")
+    daily_p.add_argument("--posts-per-day", type=int, choices=[1, 2, 3], default=1,
+                         help="Počet návrhů pro dnešek (default: 1)")
     daily_p.add_argument("--platform", default="instagram", choices=["instagram", "facebook"])
 
-    sub.add_parser("status", help="Co bylo dnes/tento týden vygenerováno + auto-learning insights")
-    sub.add_parser("rate", help="Ohodnoť engagement nedávných postů — učí systém co funguje")
+    sub.add_parser("status", help="Přehled návrhů, QA a ručních engagement záznamů")
+    sub.add_parser("rate", help="Zaznamenej skutečný engagement nedávných postů")
     sub.add_parser("plan", help="Týdenní plán obsahu")
     sub.add_parser("list", help="Přehled postů")
     sub.add_parser("astro", help="Dnešní astro kontext")
@@ -1757,9 +1666,9 @@ def main():
     elif args.command == "carousel":
         cmd_carousel(topic=args.topic, platform=args.platform)
     elif args.command == "batch":
-        cmd_batch(days=args.days, platform=args.platform)
+        cmd_batch(days=args.days, platform=args.platform, posts_per_day=args.posts_per_day)
     elif args.command == "daily":
-        cmd_daily(platform=args.platform)
+        cmd_daily(platform=args.platform, posts_per_day=args.posts_per_day)
     elif args.command == "status":
         cmd_status()
     elif args.command == "rate":
@@ -1786,12 +1695,12 @@ def main():
         parser.print_help()
         console.print()
         console.print("[dim]Nejrychlejší start:[/dim]")
-        console.print("  [bold]python agent.py daily[/bold]              — dnešní 3 posty (ráno/poledne/večer)")
+        console.print("  [bold]python agent.py daily[/bold]              — dnešní obsahový návrh")
         console.print("  [bold]python agent.py status[/bold]             — co bylo dnes/tento týden vygenerováno")
         console.print("  [bold]python agent.py astro[/bold]              — co dnes říkají hvězdy")
         console.print("  [bold]python agent.py generate[/bold]           — vytvoř 1 post interaktivně")
-        console.print("  [bold]python agent.py batch --days 3[/bold]     — 9 postů na 3 dny dopředu")
-        console.print("  [bold]python agent.py plan[/bold]               — plán na celý týden")
+        console.print("  [bold]python agent.py batch --days 3[/bold]     — jeden návrh denně na 3 dny")
+        console.print("  [bold]python agent.py plan[/bold]               — výběr námětů na týden")
 
 
 if __name__ == "__main__":

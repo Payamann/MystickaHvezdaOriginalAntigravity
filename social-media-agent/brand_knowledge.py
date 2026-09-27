@@ -1,13 +1,10 @@
 """
 Brand Knowledge Base — kompletní znalostní báze Mystické Hvězdy.
 
-Agent musí perfektně znát:
-  1. Všechny funkce a nástroje platformy (22 free, 13 premium)
-  2. Ceník a předplatné (4 tarify)
-  3. Všechny blogové články (70+)
-  4. USP a konkurenční výhody
+Ověřený kontext pro návrhy obsahu a odpovědi.
+Přítomnost funkce v této databázi neznamená, že ji má agent automaticky propagovat.
 
-Tato znalostní báze se injektuje do promptů pro:
+Tato znalostní báze se používá pro:
   - Generování postů (text_generator.py)
   - Odpovídání na komentáře
   - Blog promo
@@ -32,7 +29,7 @@ MYSTICKÁ HVĚZDA — mystickahvezda.cz
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Webová platforma pro duchovní růst, sebepoznání a mystiku.
 Obsah a rozhraní v češtině, slovenštině a polštině.
-Freemium model: 22 nástrojů zdarma + 13 prémiových funkcí (35 celkem).
+Nabídku tvoří bezplatné i placené funkce; konkrétní vlastnosti a podmínky ověř podle aktuálního produktu.
 """
 
 # Kompletní přehled nástrojů (co agent musí znát a umět doporučit)
@@ -42,25 +39,25 @@ TOOLS_AND_FEATURES = {
         "tarot_denni": {
             "name": "Denní tarotová karta",
             "url": "/tarot.html",
-            "description": "Jedna tarotová karta denně zdarma s personalizovaným výkladem. Ideální pro ranní inspiraci.",
+            "description": "Denní tarotová karta s krátkým symbolickým výkladem.",
             "limit": "1 karta/den",
         },
         "tarot_ano_ne": {
             "name": "Tarot Ano/Ne",
             "url": "/tarot-ano-ne.html",
-            "description": "Jednoduchý tarotový výklad na otázky typu ano/ne.",
+            "description": "Tarotový výklad pro otázku formulovanou jako ano/ne.",
             "limit": "Neomezený",
         },
         "kristalova_koule": {
             "name": "Křišťálová koule",
             "url": "/kristalova-koule.html",
-            "description": "Mystický poradce — zeptej se na cokoliv a křišťálová koule ti odpoví s hlubokou moudrostí.",
+            "description": "Automatický symbolický průvodce pro zadanou otázku.",
             "limit": "3 otázky/den (zdarma)",
         },
         "horoskop_denni": {
             "name": "Denní horoskop",
             "url": "/horoskopy.html",
-            "description": "Denní horoskop pro všech 12 znamení, personalizovaný podle aktuálního astrologického kontextu.",
+            "description": "Denní horoskopy pro dvanáct znamení zvěrokruhu.",
             "limit": "Neomezený",
         },
         "cinsky_horoskop": {
@@ -72,7 +69,7 @@ TOOLS_AND_FEATURES = {
         "andelske_karty": {
             "name": "Andělské karty",
             "url": "/andelske-karty.html",
-            "description": "Vylosuj si andělské poselství dne — karty odvahy, léčení, míru a hojnosti.",
+            "description": "Jedna denní karta s krátkým symbolickým poselstvím.",
             "limit": "1 tah/den",
         },
         "andelska_posta": {
@@ -90,7 +87,7 @@ TOOLS_AND_FEATURES = {
         "numerologie_kalkulacka": {
             "name": "Numerologie",
             "url": "/numerologie.html",
-            "description": "Vypočítej si své životní číslo, číslo osudu, číslo duše a osobnosti.",
+            "description": "Numerologický přehled čísel odvozených ze zadaných údajů.",
             "limit": "Neomezený",
         },
         "biorytmy": {
@@ -102,13 +99,13 @@ TOOLS_AND_FEATURES = {
         "afirmace": {
             "name": "Denní afirmace",
             "url": "/afirmace.html",
-            "description": "Personalizované denní afirmace pro pozitivní myšlení a manifestaci.",
+            "description": "Krátké denní afirmace jako podnět k zamyšlení.",
             "limit": "Neomezený",
         },
         "snar": {
             "name": "Snář",
             "url": "/snar.html",
-            "description": "Slovník 100+ snových symbolů s interpretacemi — co znamenají tvé sny.",
+            "description": "Slovník snových symbolů s možnými interpretačními souvislostmi.",
             "limit": "Neomezený",
         },
         "jmena": {
@@ -138,7 +135,7 @@ TOOLS_AND_FEATURES = {
         "aura": {
             "name": "Analýza aury",
             "url": "/aura.html",
-            "description": "Zjisti barvu své aury a co o tobě prozrazuje.",
+            "description": "Výklad aury jako symbolický podnět k sebepoznání.",
             "limit": "Základní čtení",
         },
         "partnerska_shoda_basic": {
@@ -150,7 +147,7 @@ TOOLS_AND_FEATURES = {
         "shamansko_kolo": {
             "name": "Šamanské kolo",
             "url": "/shamansko-kolo.html",
-            "description": "Zjisti své totemové zvíře a co ti o tvé cestě prozrazuje.",
+            "description": "Výběr totemového zvířete s krátkým symbolickým výkladem.",
             "limit": "Základní totem",
         },
         "slovnik": {
@@ -177,18 +174,18 @@ TOOLS_AND_FEATURES = {
     "premium": {
         "tarot_neomezeny": {
             "name": "Neomezený tarot",
-            "description": "Kolik výkladů chceš, tolik dostaneš. Žádný denní limit.",
+            "description": "Tarotové výklady bez denního limitu podle aktuálních podmínek tarifu.",
             "min_plan": "Hvězdný Průvodce",
         },
         "kristalova_koule_neomezena": {
             "name": "Neomezená křišťálová koule",
-            "description": "Bez limitu 3 otázek denně — ptej se kolikrát potřebuješ.",
+            "description": "Použití bez denního limitu podle aktuálních podmínek tarifu.",
             "min_plan": "Hvězdný Průvodce",
         },
         "natalni_karta": {
             "name": "Natální karta (birth chart)",
             "url": "/natalni-karta.html",
-            "description": "Kompletní astrologická mapa při narození — planety, domy, aspekty s detailním výkladem.",
+            "description": "Astrologické zobrazení planet, domů a aspektů pro zadaný čas a místo narození.",
             "min_plan": "Hvězdný Průvodce",
         },
         "numerologicky_kod": {
@@ -198,35 +195,35 @@ TOOLS_AND_FEATURES = {
         },
         "lunarni_ritualy": {
             "name": "Lunární rituály",
-            "description": "Rituály a guidance přizpůsobené aktuální fázi Měsíce — novoluní, úplněk, čtvrtě.",
+            "description": "Rituální návrhy vztahující se k lunárním fázím.",
             "min_plan": "Hvězdný Průvodce",
         },
         "minuly_zivot": {
             "name": "Minulý život",
             "url": "/minuly-zivot.html",
-            "description": "Čtení z Akášických záznamů — kdo jsi byl/a v minulém životě a jaké karma neseš.",
+            "description": "Symbolický výklad tématu minulého života.",
             "min_plan": "Hvězdný Průvodce",
         },
         "tydenni_mesicni_horoskop": {
             "name": "Týdenní a měsíční horoskop",
-            "description": "Podrobné předpovědi na týden a měsíc dopředu, personalizované.",
+            "description": "Týdenní a měsíční astrologické výklady.",
             "min_plan": "Hvězdný Průvodce",
         },
         "partnerska_synastrie": {
             "name": "Partnerská synastrie (detailní)",
             "url": "/partnerska-shoda.html",
-            "description": "Kompletní porovnání dvou natálních karet — hlubší než jen znamení.",
+            "description": "Srovnávací astrologický výklad dvou natálních karet.",
             "min_plan": "Hvězdný Průvodce",
         },
         "astromapa": {
             "name": "Astromapa světa",
             "url": "/astro-mapa.html",
-            "description": "Astrokartografie — kde na světě ti hvězdy přejí v kariéře, lásce, zdraví.",
+            "description": "Astrokartografický přehled míst podle zadaných údajů narození.",
             "min_plan": "Osvícení",
         },
         "exkluzivni_ritualy": {
             "name": "Exkluzivní personalizované rituály",
-            "description": "Rituály na míru tvé natální kartě a aktuálním tranzitům.",
+            "description": "Rituální návrhy podle natální karty a aktuálního astrologického kontextu.",
             "min_plan": "Osvícení",
         },
         "duchov_pruvodce_premium": {
@@ -373,7 +370,7 @@ def get_blog_summary_for_prompt() -> str:
             categories[cat] = []
         categories[cat].append(a)
 
-    lines = [f"BLOG ({len(articles)} článků) — odkazuj čtenáře na relevantní články:"]
+    lines = [f"BLOG ({len(articles)} článků) — existující články; odkaz použij jen při přirozené návaznosti:"]
     for cat, arts in sorted(categories.items()):
         titles = [f"\"{a['title']}\" ({config.WEBSITE_URL}/blog/{a['slug']}.html)" for a in arts[:5]]
         lines.append(f"  {cat}: {'; '.join(titles)}")
@@ -383,20 +380,25 @@ def get_blog_summary_for_prompt() -> str:
     return "\n".join(lines)
 
 
+EDITORIAL_CONTEXT = """
+REDAKČNÍ PRAVIDLA K PRODUKTOVÝM PODKLADŮM
+- Popisy nástrojů jsou fakta k ověření, ne věty určené ke kopírování do příspěvku.
+- Neslibuj, co výklad odhalí, změní nebo zaručí. Astrologické a tarotové pojmy rámuj symbolicky.
+- Cenu, limit a dostupnost zmiň jen tehdy, když jsou součástí ověřeného aktuálního kontextu.
+- Pokud se čtenář ptá na automatizaci, odpověz pravdivě; nevydávej systémový výstup za lidskou konzultaci.
+"""
+
 # ══════════════════════════════════════════════════
 # 4. USP A KONKURENČNÍ VÝHODY
 # ══════════════════════════════════════════════════
 
 USP = """
-PROČ MYSTICKÁ HVĚZDA (co říkat, když se někdo ptá):
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-• 20+ nástrojů zdarma na jednom místě
-• Výklady, které pracují s údaji, jež do aplikace zadáš
-• Kompletní ekosystém: tarot, astrologie, numerologie, runy, sny, čakry, šamanismus
-• Blog se 70+ průvodci a články dostupnými zdarma
-• Obsah a rozhraní v češtině
-• 7 dní zdarma u Hvězdného Průvodce a Osvícení; VIP bez zkušební doby
-• Žádné závazky — zruš kdykoliv
+MYSTICKÁ HVĚZDA — FAKTICKÝ KONTEXT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• Web nabízí nástroje a články k tarotu, astrologii, numerologii a souvisejícím tématům.
+• Některé funkce jsou zdarma, jiné placené; přesnou cenu, dostupnost a limity ověř na aktuální stránce služby.
+• Automatický výklad pracuje se zadanými údaji a symbolickými rámci. Nepopisuj jej jako odbornou radu ani osobní konzultaci člověka.
+• Tyto body jsou podklady, ne hotový reklamní text. V příspěvku používej jen to, co přirozeně navazuje na jeho téma.
 """
 
 
@@ -407,11 +409,11 @@ PROČ MYSTICKÁ HVĚZDA (co říkat, když se někdo ptá):
 FAQ = {
     "kolik_to_stoji": {
         "q": "Kolik to stojí? / Je to zdarma?",
-        "a": "Máme 20+ nástrojů zdarma (tarot, horoskopy, numerologie, runy...). Placené plány začínají na 199 Kč/měsíc; u Hvězdného Průvodce a Osvícení můžeš využít 7 dní zdarma. VIP zkušební dobu nemá.",
+        "a": "Cena a případné limity se liší podle služby. Aktuální částku uvidíš přímo u konkrétní nabídky před potvrzením; starší příspěvky nemusí být aktuální.",
     },
     "jak_zacit": {
         "q": "Jak začít? / Kde se přihlásit?",
-        "a": "Stačí navštívit mystickahvezda.cz — většina nástrojů funguje hned bez registrace. Pro ukládání výkladů a premium funkce si vytvoř bezplatný účet.",
+        "a": "Začni na mystickahvezda.cz a otevři si konkrétní nástroj. Pokud vyžaduje účet nebo platbu, web tě provede dalším krokem.",
     },
     "je_to_presne": {
         "q": "Je to přesné? / Funguje to?",
@@ -419,7 +421,7 @@ FAQ = {
     },
     "rozdil_free_premium": {
         "q": "Jaký je rozdíl mezi free a premium?",
-        "a": "Free ti dává denní tarot, horoskop, numerologii a dalších 20+ nástrojů. Premium odemkne neomezený tarot, natální kartu s detailním výkladem, minulé životy, lunární rituály a týdenní/měsíční horoskopy.",
+        "a": "Dostupné funkce a limity se mohou měnit. Aktuální rozdíl mezi bezplatným a placeným přístupem najdeš u příslušné služby na webu.",
     },
     "natalni_karta": {
         "q": "Co je natální karta?",
@@ -427,11 +429,11 @@ FAQ = {
     },
     "jak_zrusit": {
         "q": "Jak zrušit předplatné?",
-        "a": "V profilu klikni na Správa předplatného → Zrušit. Žádné závazky, zrušíš kdykoliv a do konce fakturačního období ti premium zůstane.",
+        "a": "Postup závisí na tom, přes jakou službu a tarif byla platba sjednána. Ověř aktuální pokyny ve svém profilu nebo v potvrzení objednávky.",
     },
     "bezpecnost_dat": {
         "q": "Jsou moje data v bezpečí?",
-        "a": "Přenos dat chrání HTTPS a údaje zpracováváme podle zásad ochrany soukromí. Pro provoz používáme také uvedené zpracovatele, například Stripe pro platby; podrobnosti najdeš na stránce Ochrana soukromí.",
+        "a": "Konkrétní údaje o zpracování a jejich zpracovatelích najdeš v aktuálních zásadách ochrany soukromí na webu.",
     },
     "platebni_metody": {
         "q": "Jak mohu platit? / Jaké platební metody přijímáte?",
@@ -453,180 +455,13 @@ FAQ = {
 # ══════════════════════════════════════════════════
 
 AUDIENCE_PERSONA = """
-CÍLOVÉ PUBLIKUM — komu píšeš:
-
-PRIMÁRNÍ PERSONA: "Klára" — 28-42 let, žena (85% publika), žije v ČR/SR
-  Životní situace: Hledá smysl, prochází změnou (vztah, práce, sebehodnota)
-  Znalost mystiky: Středně pokročilá — zná znamení, základy tarotu, sleduje horoskopy
-  Co hledá: Praktické návody (ne teorie), validaci intuice, komunitu bez posuzování
-  Bolesti: "Cítím, že je toho víc, ale nevím kde začít" / "Okolí mě za to soudí"
-  Jazyk: Mluví česky, občas anglické pojmy (manifestace, healing, energy)
-  Chování na IG: Scrolluje večer, ukládá tipy/rituály, sdílí citáty do stories
-  Co ji zastaví: Osobní otázka, překvapivý fakt, "tohle jsem nevěděla"
-  Co ji odradí: Korporátní tón, povrchní "buď pozitivní", agresivní prodej
-
-SEKUNDÁRNÍ PERSONA: "Martin" — 32-50 let, muž (15% publika)
-  Přístup: Analytičtější, zajímá ho systém za mystikou (numerologie, astrologie jako systém)
-  Co hledá: Data, strukturu, logiku v duchovním — ne emoce bez kontextu
-
-PRAVIDLA TÓNU:
-- Piš jako moudrá kamarádka, ne jako guru nebo učitelka
-- Čtenář se musí cítit pochopený, ne poučovaný
-- Používej "ty" (ne "vy"), přímé oslovení
-- Sdílej znalost jako "tohle mě fascinuje" — ne "musíš vědět"
-- Validuj čtenářovy pocity: "Pokud cítíš X, máš pravdu — tady je proč"
+ČTENÁŘI A JAZYK
+- Oslovuj člověka se zájmem o sebepoznání, symboliku, tarot nebo astrologii; nepředpokládej jeho věk, pohlaví, vztahovou situaci, zkušenosti ani přesvědčení.
+- Piš česky a tykej. Mluv s člověkem jako s rovnocenným čtenářem, ne jako guru, léčitel nebo vševědoucí kamarádka.
+- Nabídni konkrétní myšlenku nebo otázku k zamyšlení, ne diagnózu jeho života či emocí.
+- Nevyužívej nejistotu, strach, vztahové obavy ani zranitelnost k prodeji nebo vynucení komentáře.
+- Nepředpokládej, co „většina lidí“ cítí, ukládá, sdílí nebo hledá, pokud pro to nemáme data.
 """
-
-# ══════════════════════════════════════════════════
-# 6b. PROBLEM-SOLUTION MAPPING — jaký nástroj na jaký problém
-# ══════════════════════════════════════════════════
-
-PROBLEM_SOLUTION_MAP = {
-    "vztahy": {
-        "label": "Vztahové problémy",
-        "problems": ["Nefungující vztah", "Hledám spřízněnou duši", "Karmický partner", "Rozchod"],
-        "tools_free": ["partnerska_shoda_basic", "tarot_ano_ne", "kristalova_koule"],
-        "tools_premium": ["partnerska_synastrie", "minuly_zivot"],
-        "upgrade_hook": "Synastrie ukáže hlubokou dynamiku, kterou základní shoda neodhalí.",
-    },
-    "kariéra": {
-        "label": "Kariéra a životní účel",
-        "problems": ["Nevím co dělat se životem", "Nespokojený v práci", "Hledám smysl"],
-        "tools_free": ["numerologie_kalkulacka", "horoskop_denni", "duchov_pruvodce"],
-        "tools_premium": ["numerologicky_kod", "natalni_karta", "rocni_vize"],
-        "upgrade_hook": "Numerologický kód odhalí tvé životní poslání a talenty zapsané v tvém datu narození.",
-    },
-    "sebepoznání": {
-        "label": "Kdo jsem? Sebepoznání",
-        "problems": ["Hledám sebe", "Neznám se", "Chci se pochopit hlouběji"],
-        "tools_free": ["testy", "aura", "znameni_zverokruhu", "biorytmy"],
-        "tools_premium": ["natalni_karta", "minuly_zivot", "astromapa"],
-        "upgrade_hook": "Natální karta je nejkompletnější mapa tvé osobnosti — planety, domy, aspekty.",
-    },
-    "denní_vedení": {
-        "label": "Každodenní inspirace a vedení",
-        "problems": ["Potřebuji vodítko na den", "Co mi říkají karty?", "Jaký je dnes den?"],
-        "tools_free": ["tarot_denni", "horoskop_denni", "andelske_karty", "afirmace"],
-        "tools_premium": ["tarot_neomezeny", "tydenni_mesicni_horoskop"],
-        "upgrade_hook": "Neomezený tarot = ptej se kolikrát chceš, na cokoliv, bez limitu.",
-    },
-    "duchovní_praxe": {
-        "label": "Duchovní praxe a rituály",
-        "problems": ["Jak začít meditovat", "Chci rituál na novoluní", "Jak pracovat s krystaly"],
-        "tools_free": ["ritualy", "lunace", "shamansko_kolo"],
-        "tools_premium": ["lunarni_ritualy", "exkluzivni_ritualy"],
-        "upgrade_hook": "Lunární rituály jsou přesně navázané na aktuální fázi Měsíce a tvé znamení.",
-    },
-}
-
-
-# ══════════════════════════════════════════════════
-# 6c. RELATABLE SCENARIOS — životní situace čtenáře
-# ══════════════════════════════════════════════════
-
-RELATABLE_SCENARIOS = {
-    "tarot": [
-        "Sedíš večer sama, v hlavě ti krouží otázka, na kterou nemáš odpověď. Otevřeš aplikaci a vytáhneš kartu...",
-        "Kamarádka ti říká 'to je jen kus papíru'. Ale ty víš, že ta karta dnes trefila přesně to, co cítíš.",
-        "Ráno před prací. Minutka pro sebe. Jedna karta. A najednou víš, s jakým záměrem do dne vstoupíš.",
-    ],
-    "astrologie": [
-        "Scrolluješ IG ve 23:00 a ptáš se — proč mě dnes všechno vytáčí? Pak zjistíš, že Mars je v opozici...",
-        "Rodiče ti říkají 'přestaň řešit horoskopy'. Ale ty víš, že porozumět svým planetám = porozumět sobě.",
-        "Retrográdní Merkur. Všichni se smějí. Ty ale víš, že jde o víc než zmeškané autobusy.",
-    ],
-    "numerologie": [
-        "Tvoje datum narození. Jen čísla? Ne — je v nich zakódovaný tvůj životní příběh.",
-        "Pořád vidíš stejná čísla — 11:11, 22:22. Náhoda? Nebo zpráva, kterou jsi dosud nepřečetla?",
-    ],
-    "vztahy": [
-        "Ten vztah, který bolel nejvíc — co když nebyl chyba, ale lekce, kterou jsi potřebovala?",
-        "Pondělní ráno, budík zvoní a ty přemýšlíš — jsem s tím správným člověkem?",
-        "Rozchod. Prázdný byt. A otázka: bylo to karmické, nebo spřízněná duše, která odešla příliš brzy?",
-    ],
-    "meditace": [
-        "Říkáš si 'nemám čas meditovat'. Ale 3 minuty máš. Vždycky.",
-        "Sedíš v tichu a myšlenky křičí. To je v pořádku. Meditace není ticho — je to pozorování.",
-    ],
-    "energie": [
-        "Jsou dny, kdy cítíš, že tě něco tíží — a nejde to vysvětlit logicky. Energie se nemýlí.",
-        "Vstaneš a bez důvodu se cítíš lehká. Podíváš se na Měsíc — a všechno dává smysl.",
-    ],
-    "krystaly": [
-        "Držíš v ruce ametyst a nevíš proč, ale cítíš klid. Není to placebo — je to rezonance.",
-        "Kamarádka ti dala růženín. 'Na lásku,' řekla. Za měsíc potkáváš někoho nového...",
-    ],
-    "rituály": [
-        "Zapálíš svíčku, zavřeš oči a řekneš si záměr. Nic složitého — a přesto se něco změní.",
-        "Novoluní. Čistý papír. Píšeš, co chceš přivolat. Za měsíc se podíváš zpátky — a žasneš.",
-    ],
-    "shadow_work": [
-        "To, co na druhých nesnášíš — je tvůj stín. A teprve když se mu podíváš do očí, přestane řídit tvůj život.",
-        "Pláčeš a nevíš proč. Možná je čas podívat se na to, co sis celé roky nedovolila cítit.",
-    ],
-    "sny": [
-        "Ten sen, co se ti zdá pořád dokola — tvé podvědomí se ti snaží něco říct.",
-        "Probudíš se s pocitem, který nedokážeš pojmenovat. Ale víš, že ten sen byl důležitý.",
-    ],
-    "general": [
-        "Scrolluješ feedem a hledáš něco, co ti dá víc než prázdné citáty. Jsi na správném místě.",
-        "Někdy máš pocit, že je toho víc, než vidíš. A máš pravdu.",
-        "Tvé okolí tomu třeba nerozumí. Ale tady — tady to nemusíš nikomu vysvětlovat.",
-    ],
-}
-
-
-def get_relatable_scenario(topic: str) -> str:
-    """Vybere ztotožnitelný scénář podle tématu pro injekci do promptu."""
-    import random
-    topic_lower = topic.lower()
-
-    # Map topic to scenario category
-    category_map = {
-        "tarot": ["tarot", "kart", "výklad"],
-        "astrologie": ["astro", "horoskop", "planeta", "znamení", "retrográd", "mars", "venuš"],
-        "numerologie": ["numero", "číslo", "životní číslo"],
-        "vztahy": ["vztah", "partner", "lásk", "karm", "spříz", "rozchod", "duše"],
-        "meditace": ["medita", "mindful", "dech"],
-        "energie": ["energi", "čakr", "aura", "vibrac"],
-        "krystaly": ["krystal", "minerál", "ametyst", "růženín"],
-        "rituály": ["rituál", "svíčk", "magie", "novoluní", "sabbat"],
-        "shadow_work": ["shadow", "stín", "léčení", "vnitřní"],
-        "sny": ["sen", "sn", "snář"],
-    }
-
-    for category, keywords in category_map.items():
-        if any(kw in topic_lower for kw in keywords):
-            return random.choice(RELATABLE_SCENARIOS[category])
-
-    return random.choice(RELATABLE_SCENARIOS["general"])
-
-
-def get_problem_solution(topic: str) -> str:
-    """Najde relevantní problem-solution mapping pro téma a vrátí prompt text."""
-    topic_lower = topic.lower()
-
-    # Mapping témat na kategorie
-    topic_map = {
-        "vztahy": ["vztah", "partner", "lásk", "karm", "spříz", "rozchod", "duše"],
-        "kariéra": ["kariér", "práce", "účel", "poslání", "smysl", "povolání"],
-        "sebepoznání": ["sebe", "kdo jsem", "osobnost", "identit", "shadow", "stín"],
-        "denní_vedení": ["denní", "dnes", "inspirac", "ráno", "vedení"],
-        "duchovní_praxe": ["rituál", "meditac", "krystal", "čakr", "praxe", "lunární"],
-    }
-
-    for category, keywords in topic_map.items():
-        if any(kw in topic_lower for kw in keywords):
-            ps = PROBLEM_SOLUTION_MAP[category]
-            free_tools = [TOOLS_AND_FEATURES["free"].get(t, {}).get("name", t) for t in ps["tools_free"]]
-            premium_tools = [TOOLS_AND_FEATURES["premium"].get(t, {}).get("name", t) for t in ps["tools_premium"]]
-            return (
-                f"DOPORUČENÍ NÁSTROJŮ pro téma '{topic}':\n"
-                f"  Zdarma: {', '.join(free_tools)}\n"
-                f"  Premium: {', '.join(premium_tools)}\n"
-                f"  Upgrade hook: \"{ps['upgrade_hook']}\""
-            )
-    return ""
 
 
 # ══════════════════════════════════════════════════
@@ -635,14 +470,15 @@ def get_problem_solution(topic: str) -> str:
 
 def build_knowledge_prompt(
     include_tools: bool = True,
-    include_pricing: bool = True,
+    include_pricing: bool = False,
     include_blog: bool = True,
     include_usp: bool = True,
     include_faq: bool = False,
     compact: bool = True,
+    allowed_tool_urls: set[str] | None = None,
 ) -> str:
     """
-    Sestaví znalostní kontext pro injekci do Gemini promptu.
+    Sestaví znalostní kontext pro prompt jazykového modelu.
 
     Args:
         include_tools: přehled nástrojů platformy
@@ -651,6 +487,7 @@ def build_knowledge_prompt(
         include_usp: USP a výhody
         include_faq: FAQ (hlavně pro komentáře)
         compact: kompaktní verze (šetří tokeny)
+        allowed_tool_urls: volitelný seznam URL funkcí, které lze do kontextu zahrnout
 
     Returns:
         str: formátovaný text pro prompt
@@ -658,29 +495,43 @@ def build_knowledge_prompt(
     sections = []
     sections.append(PLATFORM_OVERVIEW.strip())
     sections.append(AUDIENCE_PERSONA.strip())
+    sections.append(EDITORIAL_CONTEXT.strip())
 
     if include_tools:
+        free_entries = [
+            tool for tool in TOOLS_AND_FEATURES["free"].values()
+            if allowed_tool_urls is None or tool.get("url") in allowed_tool_urls
+        ]
+        premium_entries = [
+            tool for tool in TOOLS_AND_FEATURES["premium"].values()
+            if allowed_tool_urls is None or tool.get("url") in allowed_tool_urls
+        ]
         if compact:
             # Kompaktní verze — jen názvy a popis
             free_tools = [f"• {t['name']} ({t['url'] if 'url' in t else 'N/A'}) — {t['description'][:80]}"
-                         for t in TOOLS_AND_FEATURES["free"].values()]
+                         for t in free_entries]
             premium_tools = [f"• {t['name']} [{t['min_plan']}] — {t['description'][:80]}"
-                           for t in TOOLS_AND_FEATURES["premium"].values()]
-            sections.append(
-                "NÁSTROJE ZDARMA:\n" + "\n".join(free_tools) +
-                "\n\nPRÉMIOVÉ NÁSTROJE:\n" + "\n".join(premium_tools)
-            )
+                           for t in premium_entries]
+            if free_tools or premium_tools:
+                tool_sections = []
+                if free_tools:
+                    tool_sections.append("NÁSTROJE ZDARMA:\n" + "\n".join(free_tools))
+                if premium_tools:
+                    tool_sections.append("PRÉMIOVÉ NÁSTROJE:\n" + "\n".join(premium_tools))
+                sections.append("\n\n".join(tool_sections))
         else:
             # Plná verze
-            sections.append("NÁSTROJE ZDARMA (15+):")
-            for key, tool in TOOLS_AND_FEATURES["free"].items():
+            if free_entries:
+                sections.append("NÁSTROJE ZDARMA:")
+            for tool in free_entries:
                 sections.append(
                     f"  {tool['name']}: {tool['description']} "
                     f"[Limit: {tool.get('limit', 'N/A')}] "
                     f"URL: {config.WEBSITE_URL}{tool.get('url', '')}"
                 )
-            sections.append("\nPRÉMIOVÉ NÁSTROJE:")
-            for key, tool in TOOLS_AND_FEATURES["premium"].items():
+            if premium_entries:
+                sections.append("\nPRÉMIOVÉ NÁSTROJE:")
+            for tool in premium_entries:
                 sections.append(
                     f"  {tool['name']}: {tool['description']} "
                     f"[Min. tarif: {tool.get('min_plan', 'Premium')}]"
@@ -916,19 +767,19 @@ def get_blog_deep_context(slug: str, title: str = "") -> str:
         return ""
 
     return f"""
-OBSAH ČLÁNKU (přečteno z webu — použij pro přesný a lákavý teaser):
+OBSAH ČLÁNKU (faktický podklad; nevydávej odvození za citaci):
 Název: {title}
 URL: {config.WEBSITE_URL}/blog/{slug}.html
 
 Klíčové body z článku:
 {content}
 
-PRAVIDLA PRO BLOG PROMO S DEEP CONTEXTEM:
-- Vytáhni 1-2 nejzajímavější fakty nebo rady z článku
-- Použij je jako hook nebo hodnotu v captionnu
-- NEPROZRAZUJ vše — cíl je vyvolat zvědavost kliknout
-- Cituj konkrétní čísla, příklady nebo překvapivé informace z článku
-- Caption musí být tak dobrý, že čtenář MUSÍ kliknout na odkaz
+PRAVIDLA PRO PŘÍSPĚVEK O ČLÁNKU:
+- Vyber jednu užitečnou myšlenku, kterou článek skutečně obsahuje, a vysvětli ji vlastními slovy.
+- Čtenáři dej samostatnou hodnotu; důležité informace nezamlčuj jen kvůli prokliku.
+- Čísla a konkrétní příklady použij jen tehdy, když jsou v dodaném textu a dávají tématu smysl.
+- Odkaz a pozvání k přečtení přidej jen na vyžádání nebo když přirozeně navazují.
+- Nevymýšlej osobní zkušenost, slib ani důvod ke kliknutí.
 """
 
 

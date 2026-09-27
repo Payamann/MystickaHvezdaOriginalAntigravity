@@ -1,12 +1,11 @@
 """
 Image Generator — generování obrázků k postům.
 
-Pořadí priorit:
-  1. Imagen 3 (Google Cloud) — nejvyšší kvalita, vyžaduje Google Cloud API
-  2. Pollinations.ai (FLUX)  — zdarma, bez API klíče, automatický fallback
-  3. Placeholder             — záložní tmavý obrázek s hvězdami
-
-Pollinations.ai: https://pollinations.ai — free, FLUX model, žádná registrace.
+Pořadí fallbacků:
+  1. Imagen přes Gemini API
+  2. Hugging Face, pokud je nakonfigurovaný přístup
+  3. Pollinations.ai
+Pokud všechny služby selžou, vrátí se chyba. Statický placeholder není hotová grafika.
 """
 from google import genai
 from pathlib import Path
@@ -15,7 +14,6 @@ import sys
 import os
 import urllib.request
 import urllib.parse
-import random
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 import config
@@ -69,11 +67,11 @@ def generate_image(
     enhanced_prompt = f"""
 {prompt}
 
-Style: Mystical, ethereal, spiritual atmosphere.
-Color palette: Deep purple (#4a0080), gold (#c9a227), midnight blue (#0a0a2e), soft white stars.
-Mood: Mysterious yet welcoming, magical, transcendent.
-Quality: Professional, high resolution, suitable for social media.
-No text, no letters, no watermarks in the image.
+Follow the medium, palette, mood, and composition described in the specific prompt above.
+Use the Mystická Hvězda night-blue, violet, or soft-gold palette only when it strengthens
+this particular idea. Do not add a starfield, crystal, tarot card, floating icon, or frame
+unless the prompt asks for it. Create a polished, distinctive image that reads clearly in
+the requested social placement. No readable text, logos, or watermarks.
 """.strip()
 
     if not filename:
@@ -119,8 +117,8 @@ No text, no letters, no watermarks in the image.
         try:
             return _generate_pollinations(enhanced_prompt, filename, post_type, output_path)
         except Exception as pe:
-            log.warning("Pollinations.ai selhal (%s) — vytvářím placeholder...", str(pe)[:80])
-            return _create_placeholder_image(prompt, filename, platform)
+            log.error("Generování obrázku selhalo; náhradní falešný vizuál nevytvářím: %s", str(pe)[:160])
+            raise RuntimeError("Grafiku se nepodařilo vygenerovat. Zkontroluj službu a prompt; placeholder není publikovatelný výstup.") from pe
 
 
 def _generate_huggingface(
@@ -223,72 +221,6 @@ def _generate_pollinations(
         f.write(image_bytes)
 
     log.info("Pollinations.ai: obrázek uložen → %s (%d KB)", output_path.name, len(image_bytes) // 1024)
-    return output_path
-
-
-def _create_placeholder_image(
-    prompt: str,
-    filename: str,
-    platform: str = "instagram",
-) -> Path:
-    """
-    Vytvoří placeholder obrázek s textem promptu
-    (záložní řešení pokud Imagen není dostupný)
-    """
-    from PIL import Image, ImageDraw, ImageFont
-
-    # Rozměry dle platformy
-    if platform == "instagram":
-        size = (1080, 1080)
-    elif platform == "facebook":
-        size = (1200, 630)
-    else:
-        size = (1080, 1080)
-
-    # Vytvoř gradient obrázek (tmavě fialový)
-    img = Image.new('RGB', size, color=(10, 0, 30))
-    draw = ImageDraw.Draw(img)
-
-    # Přidej hvězdičky (náhodné body)
-    import random
-    random.seed(42)
-    for _ in range(200):
-        x = random.randint(0, size[0])
-        y = random.randint(0, size[1])
-        r = random.randint(1, 3)
-        brightness = random.randint(150, 255)
-        draw.ellipse([x-r, y-r, x+r, y+r], fill=(brightness, brightness, brightness))
-
-    # Přidej rámeček
-    border_color = (201, 162, 39)  # zlatá
-    draw.rectangle([20, 20, size[0]-20, size[1]-20], outline=border_color, width=3)
-
-    # Přidej text s promptem (zkrácený)
-    short_prompt = prompt[:100] + "..." if len(prompt) > 100 else prompt
-    try:
-        font = ImageFont.truetype("arial.ttf", 30)
-    except (IOError, OSError):
-        font = ImageFont.load_default()
-
-    # Zarovnání textu
-    text_bbox = draw.textbbox((0, 0), short_prompt, font=font)
-    text_width = text_bbox[2] - text_bbox[0]
-    x = (size[0] - text_width) // 2
-    y = size[1] // 2
-
-    draw.text((x, y), short_prompt, fill=(201, 162, 39), font=font)
-    draw.text((size[0]//2 - 100, size[1]//2 - 80), "🔮 Mystická Hvězda", fill=(150, 100, 200), font=font)
-
-    # Uložení
-    if not filename:
-        from datetime import datetime
-        filename = f"placeholder_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-
-    output_path = config.IMAGES_DIR / f"{filename}.png"
-    config.IMAGES_DIR.mkdir(parents=True, exist_ok=True)
-    img.save(output_path, "PNG")
-
-    log.warning("Imagen není dostupný — vytvořen placeholder: %s", output_path)
     return output_path
 
 

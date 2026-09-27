@@ -3,7 +3,7 @@
 Codex workflow helper for Mysticka Hvezda social content.
 
 It does not replace agent.py. It prepares the context Codex needs, checks
-drafts against AGENTS.md rules, and logs finished 3-post batches.
+drafts and logs approved copy without enforcing a fixed posting cadence.
 """
 from __future__ import annotations
 
@@ -13,14 +13,17 @@ import hashlib
 import html
 import io
 import json
+import os
 import re
 import subprocess
 import sys
+import tempfile
 import unicodedata
 from collections import Counter
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from pathlib import Path
+import statistics
 from typing import Any
 from urllib.parse import urlencode
 
@@ -45,53 +48,30 @@ GOOGLE_GROWTH_SCRIPT = ROOT_DIR / "scripts" / "export-google-growth-data.mjs"
 ENTITLEMENT_SYNC_SCRIPT = ROOT_DIR / "scripts" / "sync-premium-entitlements.mjs"
 
 ENGAGEMENT_TEMPLATE_FIELDS = [
+    "post_id",
+    "platform",
+    "published_at",
+    "metrics_as_of",
+    "window",
     "date",
     "post_type",
     "topic",
-    "caption_preview",
-    "likes",
+    "content_intent",
+    "slot_id",
+    "mode",
+    "page_id",
+    "link",
+    "image_path",
+    "reach",
+    "impressions",
+    "views",
+    "reactions",
     "comments",
     "shares",
     "saves",
-    "views",
-    "engagement",
+    "link_clicks",
+    "metrics_source",
     "notes",
-]
-
-SLOTS = [
-    {
-        "id": "morning",
-        "label": "RANO",
-        "emoji": "🌅",
-        "time": "08:00",
-        "types": ["quote", "tip", "daily_energy"],
-        "intent": "pure_value",
-        "tone": "kratky, motivacni",
-        "cta": "save trigger / ticho / kratka otazka",
-        "hook_mood": "poeticky/tichy",
-    },
-    {
-        "id": "noon",
-        "label": "POLEDNE",
-        "emoji": "☀️",
-        "time": "12:00",
-        "types": ["educational", "story", "blog_promo"],
-        "intent": "soft_promo",
-        "tone": "hloubkovy",
-        "cta": "web odkaz",
-        "hook_mood": "ostry/prekvapivy",
-    },
-    {
-        "id": "evening",
-        "label": "VECER",
-        "emoji": "🌙",
-        "time": "19:00",
-        "types": ["question", "challenge", "myth_bust"],
-        "intent": "pure_value",
-        "tone": "engagement",
-        "cta": "otazka / A-B volba",
-        "hook_mood": "provokativni/primy",
-    },
 ]
 
 WEB_FEATURES = {
@@ -128,69 +108,6 @@ LEGACY_URL_FIXES = {
     "/shamanske-kolo.html": "/shamansko-kolo.html",
 }
 
-TRAFFIC_COPY = {
-    "Natální karta": {
-        "keyword": "KARTA",
-        "promise": "uvidíš, jak se dnešní energie propisuje do tvého vlastního horoskopu",
-        "story": "Nečti jen obecnou předpověď. Podívej se, co říká tvoje vlastní mapa.",
-    },
-    "Horoskopy": {
-        "keyword": "HOROSKOP",
-        "promise": "získáš výklad pro svoje znamení",
-        "story": "Dnešní energie se každého znamení dotýká jinak. Najdi to svoje.",
-    },
-    "Tarot": {
-        "keyword": "TAROT",
-        "promise": "vytáhneš si vlastní kartu a dostaneš konkrétní směr",
-        "story": "Karta ve videu je začátek. Teď si vytáhni tu svoji.",
-    },
-    "Partnerská shoda": {
-        "keyword": "SHODA",
-        "promise": "uvidíš, kde mezi vámi vzniká tah i napětí",
-        "story": "Někdy nejde o lásku nebo nelásku. Jde o vzorec mezi vámi.",
-    },
-    "Numerologie": {
-        "keyword": "CISLO",
-        "promise": "spočítáš si vlastní číslo a jeho praktický význam",
-        "story": "Čísla nejsou dekorace. Zkus zjistit, které téma teď neseš ty.",
-    },
-    "Lunární kalendář": {
-        "keyword": "LUNA",
-        "promise": "zjistíš, co dnešní Luna podporuje a co raději netlačit",
-        "story": "Když víš, v jaké fázi je Luna, přestaneš tlačit proti proudu.",
-    },
-    "Runy": {
-        "keyword": "RUNY",
-        "promise": "vytáhneš si runu jako stručné znamení pro dnešek",
-        "story": "Jedna runa někdy řekne víc než dlouhý rozbor.",
-    },
-    "Andělské karty": {
-        "keyword": "ANDEL",
-        "promise": "vytáhneš si jemné poselství pro dnešní rozhodnutí",
-        "story": "Když potřebuješ klidnější odpověď, začni jednou kartou.",
-    },
-    "Šamanské kolo": {
-        "keyword": "KOLO",
-        "promise": "najdeš symbolický směr, kterým se teď podívat",
-        "story": "Někdy nepotřebuješ další plán. Potřebuješ změnit směr pohledu.",
-    },
-    "Hvězdný průvodce": {
-        "keyword": "PRUVODCE",
-        "promise": "dostaneš jemné vedení pro další krok",
-        "story": "Když je v hlavě moc hluku, nech si ukázat jen další krok.",
-    },
-    "Křišťálová koule": {
-        "keyword": "KOULE",
-        "promise": "položíš otázku a dostaneš intuitivní odpověď",
-        "story": "Otázka, kterou si nechceš položit nahlas, často potřebuje zrcadlo.",
-    },
-    "Minulý život": {
-        "keyword": "KARMA",
-        "promise": "prozkoumáš vzorec, který se může opakovat z minulosti",
-        "story": "Některé reakce jsou starší než dnešní situace.",
-    },
-}
-
 TOPIC_FEATURE_RULES = [
     (("natal", "birth chart", "radix"), "Natální karta"),
     (("horoskop", "astrolog", "znameni", "zverokruh"), "Horoskopy"),
@@ -206,21 +123,11 @@ TOPIC_FEATURE_RULES = [
     (("minul", "karma", "karmick"), "Minulý život"),
 ]
 
-QUIET_HOOKS = {"micro_story", "vulnerability", "celebration"}
-SHARP_HOOKS = {"pattern_interrupt", "curiosity_gap", "myth_bust", "contrarian"}
-DIRECT_HOOKS = {"question", "contrarian", "fear_reversal", "milestone"}
-ALLOWED_HOOKS = QUIET_HOOKS | SHARP_HOOKS | DIRECT_HOOKS
-ALLOWED_HOOKS |= {"pattern_interrupt", "micro_story"}
-
 ALLOWED_TYPES = {
     "educational", "question", "tip", "story", "quote", "blog_promo",
     "myth_bust", "carousel_plan", "daily_energy", "challenge",
 }
 
-MICRO_STORY_RE = re.compile(
-    r"\b(jdeš|vidíš|sedíš|stojíš|vcházíš|držíš|cítíš|slyšíš|bereš|máš|díváš)\b",
-    re.IGNORECASE,
-)
 SLASH_FORM_RE = re.compile(r"\b[A-Za-zÁ-ž]+/[A-Za-zÁ-ž]+\b")
 URL_RE = re.compile(
     r"(?:https?://(?:www\.)?mystickahvezda\.cz)?/[a-z0-9-]+\.html|"
@@ -266,6 +173,9 @@ class FacebookPublishPayload:
     slot_id: str
     tracking_source: str
     tracking_feature: str
+    post_type: str
+    content_intent: str
+    campaign: str
 
 
 @dataclass
@@ -292,7 +202,8 @@ def strip_accents(text: str) -> str:
     return "".join(ch for ch in normalized if not unicodedata.combining(ch)).lower()
 
 
-def load_memory(path: Path = MEMORY_FILE) -> dict[str, Any]:
+def load_memory(path: Path | None = None) -> dict[str, Any]:
+    path = path or MEMORY_FILE
     if not path.exists():
         return {
             "approved_posts": [],
@@ -317,10 +228,6 @@ def post_type_of(post: dict[str, Any]) -> str:
     return post.get("post_type") or post.get("type") or "?"
 
 
-def hook_of(post: dict[str, Any]) -> str:
-    return post.get("hook_formula") or post.get("hook") or "?"
-
-
 def posts_in_window(posts: list[dict[str, Any]], days: int, today: date) -> list[dict[str, Any]]:
     cutoff = today - timedelta(days=days)
     filtered = []
@@ -332,19 +239,9 @@ def posts_in_window(posts: list[dict[str, Any]], days: int, today: date) -> list
 
 
 def hook_rankings(memory: dict[str, Any]) -> list[tuple[str, float, int]]:
-    performance = memory.get("hook_performance") or {}
-    ranked: list[tuple[str, float, int]] = []
-    for hook, stats in performance.items():
-        avg = stats.get("avg_score")
-        if isinstance(avg, (int, float)):
-            ranked.append((hook, float(avg), int(stats.get("count", 0) or 0)))
-
-    if not ranked:
-        for hook, scores in (memory.get("hook_scores") or {}).items():
-            if scores:
-                ranked.append((hook, round(sum(scores) / len(scores), 1), len(scores)))
-
-    return sorted(ranked, key=lambda item: item[1], reverse=True)
+    """Legacy compatibility shim: internal QA ratings are not hook performance."""
+    del memory
+    return []
 
 
 def allowed_urls() -> set[str]:
@@ -454,8 +351,7 @@ def recent_summary_lines(memory: dict[str, Any], today: date) -> list[str]:
     lines = []
     for post in approved:
         lines.append(
-            f"[{post.get('date', '?')}] {post_type_of(post)} | "
-            f"{hook_of(post)} | {post.get('topic', '?')}"
+            f"[{post.get('date', '?')}] {post_type_of(post)} | {post.get('topic', '?')}"
         )
     if not lines:
         lines.append("(zatím nejsou uložené schválené posty)")
@@ -464,81 +360,41 @@ def recent_summary_lines(memory: dict[str, Any], today: date) -> list[str]:
 
 def build_brief(target_date: date) -> str:
     memory = load_memory()
-    avoid_topics = top_recent_topics(memory, 7, target_date)
-    top_hooks = hook_rankings(memory)[:5]
+    recent_topics = top_recent_topics(memory, 7, target_date)
     intents = last_intents(memory, 5)
-    last_intent = intents[-1] if intents else "unknown"
-    recent_topic_text = ", ".join(avoid_topics) if avoid_topics else "nic v posledních 7 dnech"
-    hook_text = ", ".join(f"{hook} ({score:.1f})" for hook, score, _ in top_hooks) or "bez dat"
+    last_intent = intents[-1] if intents else "zatím bez záznamu"
+    recent_text = ", ".join(recent_topics) if recent_topics else "v paměti není čerstvý obsah"
 
-    noon_feature = choose_noon_feature(memory, target_date)
     lines = [
-        f"# Codex social brief — {target_date.isoformat()}",
+        f"# Tvůrčí brief — {target_date.isoformat()}",
         "",
-        "## Paměť",
+        "## Co už víme",
         *[f"- {line}" for line in recent_summary_lines(memory, target_date)],
+        f"- Témata z posledních 7 dní: {recent_text}. Ber je jako upozornění na opakování úhlu, ne zákaz tématu.",
+        "- Starší texty slouží jen ke kontrole opakování; nepoužívej je jako stylistickou předlohu.",
+        f"- Poslední uložený intent: {last_intent}. Není to pokyn přidávat promo.",
         "",
-        "## Rozhodnutí pro dnešek",
-        f"- Vyhni se tématům posledních 7 dní: {recent_topic_text}.",
-        f"- Preferuj top hooky: {hook_text}.",
-        f"- Poslední intent: {last_intent}. Netlač promo dvakrát za sebou.",
-        "- Vygeneruj 3 různá témata, minimálně 1 soft_promo.",
-        "- Brand voice: tykání, bez lomených tvarů, min. 1 mikropříběh ve 2. osobě.",
-        "- Hashtagy: #mystickaHvezda první, celkem 4-6.",
-        "- Traffic vrstva: Reel stále dělá dosah. Web CTA formuluj jako vlastní odpověď/výklad, ne jako reklamu.",
+        "## Zadání",
+        "- Drž se počtu, sítě, formátu a cíle, které Pavel výslovně zadá. Když počet nezmíní, připrav jeden dotažený hlavní příspěvek.",
+        "- Nepřidávej povinné sloty, promo, hashtagy, CTA, Reel ani sérii. Přidej je jen tehdy, když pomohou konkrétnímu zadání.",
+        "- Napiš přirozenou češtinou, tykej a mluv ke konkrétnímu člověku. Jedna nosná myšlenka je lepší než několik obecných pouček.",
+        "- Začni způsobem, který přirozeně vyplývá z tématu; konkrétní detail je užitečný, ale žádná forma začátku není povinná. Neopakuj nedávnou větu či metaforu.",
+        "- Používej mystickou obraznost střídmě a s konkrétním významem. Tarot je podnět k sebereflexi, ne jistota o budoucnosti nebo pocitech druhých.",
+        "- Nevymýšlej osobní příběh, zkušenost zákazníka, výsledek, recenzi ani produktovou funkci.",
+        "- Vynech generické AI obraty, prázdné motivační fráze, umělé naléhání, přehnané emoji a seznam hashtagů jen kvůli dosahu.",
+        "- Webový odkaz přidej jen tehdy, když přirozeně navazuje; propaguj pouze skutečnou funkci z projektového seznamu.",
+        "- Aktuální astrologický údaj nebo proměnlivé pravidlo platformy ověř před použitím. Neuváděj univerzální tvrzení o algoritmu, dosahu ani ideálním čase.",
+        "- Vizuál navrhni až podle konkrétního textu. Měň médium, kompozici, motiv i náladu; nepřebírej automaticky hvězdné pozadí, krystal, zlatý rámeček ani 3D ikonu.",
         "",
-        "## Sloty",
+        "## Výstup",
+        "Vrať jen požadovaný návrh a krátkou poznámku k vizuálu, pokud je užitečná. U série můžeš použít hlavičku:",
+        "### Facebook — educational | pure_value",
+        "Text příspěvku",
+        "Hashtagy nebo Image prompt připoj jen tehdy, když je zadání skutečně potřebuje.",
+        "",
+        "Po dopsání spusť QA jen u markdown draftu. Traffic-pack nebo publish-pack vytvoř jen na výslovnou žádost o promo, odkaz nebo publikační balíček. Do paměti loguj až schválený text.",
     ]
-
-    for slot in SLOTS:
-        feature_hint = ""
-        if slot["id"] == "noon" and noon_feature:
-            feature_hint = f" | doporučený web odkaz: {noon_feature[0]} {noon_feature[1]}"
-        lines.append(
-            f"- {slot['emoji']} {slot['time']} {slot['label']}: "
-            f"{' / '.join(slot['types'])} | {slot['intent']} | CTA: {slot['cta']} | "
-            f"hook mood: {slot['hook_mood']}{feature_hint}"
-        )
-
-    lines.extend(
-        [
-            "",
-            "## Prompt pro Codex",
-            "Vygeneruj 3 IG posty podle AGENTS.md a tohoto briefu. "
-            "Na konci přidej souhrnnou tabulku: Slot | Téma | Typ | Hook | CTA | Intent. "
-            "Po vytvoření výstupu spusť QA přes `python codex_social_workflow.py qa --file <draft>` "
-            "potom traffic pack přes `python codex_social_workflow.py traffic-pack --file <draft> --write` "
-            "a publikační balíček přes `python codex_social_workflow.py publish-pack --file <draft> --write`. "
-            "Po schválení log přes `python codex_social_workflow.py log-draft --file <draft>`.",
-        ]
-    )
     return "\n".join(lines) + "\n"
-
-
-def choose_noon_feature(memory: dict[str, Any], today: date) -> tuple[str, str] | None:
-    recent_topics = [strip_accents(topic) for topic in top_recent_topics(memory, 14, today)]
-    used_features: set[str] = set()
-    for topic in recent_topics:
-        match = feature_for_topic(topic)
-        if match:
-            used_features.add(match[0])
-
-    ranked_candidates = [
-        "Tarot",
-        "Numerologie",
-        "Natální karta",
-        "Lunární kalendář",
-        "Partnerská shoda",
-        "Runy",
-        "Andělské karty",
-        "Minulý život",
-    ]
-    for feature in ranked_candidates:
-        if feature not in used_features:
-            return feature, WEB_FEATURES[feature]
-    feature = ranked_candidates[0]
-    return feature, WEB_FEATURES[feature]
-
 
 def write_daily_brief(target_date: date) -> Path:
     CODEX_DIR.mkdir(parents=True, exist_ok=True)
@@ -548,50 +404,16 @@ def write_daily_brief(target_date: date) -> Path:
 
 
 def build_draft_template(target_date: date) -> str:
-    prompt = (
-        "Replace placeholders with final posts, then run:\n"
-        f"python codex_social_workflow.py qa --file output/codex/daily_posts_{target_date.isoformat()}.md\n"
-        f"python codex_social_workflow.py traffic-pack --file output/codex/daily_posts_{target_date.isoformat()}.md --write\n"
-        f"python codex_social_workflow.py log-draft --file output/codex/daily_posts_{target_date.isoformat()}.md --score 8.0"
-    )
-    rows = [
-        f"# Daily posts — {target_date.isoformat()}",
-        "",
-        f"<!-- {prompt} -->",
-        "",
-    ]
-    for slot in SLOTS:
-        default_type = slot["types"][0]
-        default_hook = {
-            "morning": "micro_story",
-            "noon": "curiosity_gap",
-            "evening": "question",
-        }[slot["id"]]
-        rows.extend(
-            [
-                (
-                    f"### {slot['emoji']} {slot['label']} {slot['time']} — "
-                    f"{default_type} | {default_hook} | {slot['intent']} | CTA: {slot['cta']}"
-                ),
-                "[caption]",
-                "`#mystickaHvezda #tag2 #tag3 #tag4`",
-                f"**🖼️ Image prompt:** ```{IMAGE_PROMPT_TEMPLATE}```",
-                "",
-            ]
-        )
-    rows.extend(
+    return "\n".join(
         [
-            "Souhrnná tabulka:",
-            "| Slot | Téma | Typ | Hook | CTA | Intent |",
-            "|---|---|---|---|---|---|",
-            "| 08:00 |  |  |  |  |  |",
-            "| 12:00 |  |  |  |  |  |",
-            "| 19:00 |  |  |  |  |  |",
+            f"# Social draft — {target_date.isoformat()}",
+            "",
+            "<!-- Doplň text, platformu a stručná metadata. Nepřidávej povinné hashtagy ani vizuál. -->",
+            "### Facebook — educational | pure_value",
+            "[caption]",
             "",
         ]
     )
-    return "\n".join(rows)
-
 
 def write_daily_draft_template(target_date: date) -> Path:
     CODEX_DIR.mkdir(parents=True, exist_ok=True)
@@ -601,22 +423,43 @@ def write_daily_draft_template(target_date: date) -> Path:
     return path
 
 
-IMAGE_PROMPT_TEMPLATE = (
-    "[3D object], [material and light], [engravings/symbols], [nebula/stardust], "
-    "deep navy cosmic starfield background (#050510), premium 3D CGI render, "
-    "icon-art style, NO text NO people NO cards NO frames NO borders, portrait 4:5. "
-    "Aspect ratio 4:5, 1080x1350px. Plain solid #050510 border ~20% margin all sides, "
-    "no decorations in border. Object floats centered inside."
-)
-
 
 SECTION_RE = re.compile(
-    r"^###\s*(?P<slot>.+?)\s+[—-]\s+"
-    r"(?P<type>[a-z_]+)\s*\|\s*(?P<hook>[a-z_]+)\s*\|\s*"
-    r"(?P<intent>[a-z_]+)\s*\|\s*CTA:\s*(?P<cta>[^\n]+)\n"
+    r"^###\s*(?P<header>[^\n]+)\n"
     r"(?P<body>.*?)(?=^###\s|\nSouhrnná tabulka|\n\*\*Souhrnná tabulka|\Z)",
     re.MULTILINE | re.DOTALL | re.IGNORECASE,
 )
+
+
+def parse_section_header(header: str) -> tuple[str, str, str, str, str]:
+    """Read legacy metadata when present; ordinary headings need no hook/CTA labels."""
+    legacy = re.match(
+        r"^(?P<slot>.+?)\s+[—-]\s+(?P<type>[a-z_]+)\s*\|\s*"
+        r"(?P<hook>[a-z_]+)\s*\|\s*(?P<intent>[a-z_]+)\s*\|\s*"
+        r"CTA:\s*(?P<cta>[^\n]+)$",
+        header.strip(),
+        re.IGNORECASE,
+    )
+    if legacy:
+        return tuple(legacy.group(name).strip() for name in ("slot", "type", "hook", "intent", "cta"))
+
+    compact = re.match(
+        r"^(?P<slot>.+?)\s+[—-]\s+(?P<type>[a-z_]+)"
+        r"(?:\s*\|\s*(?P<intent>[a-z_]+))?"
+        r"(?:\s*\|\s*CTA:\s*(?P<cta>[^\n]+))?$",
+        header.strip(),
+        re.IGNORECASE,
+    )
+    if compact:
+        return (
+            compact.group("slot").strip(),
+            compact.group("type").strip(),
+            "",
+            (compact.group("intent") or "pure_value").strip(),
+            (compact.group("cta") or "").strip(),
+        )
+
+    return header.strip(), "", "", "pure_value", ""
 
 
 def extract_hashtags(text: str) -> list[str]:
@@ -660,15 +503,16 @@ def extract_caption(body: str) -> tuple[str, str]:
 def parse_draft(text: str) -> list[DraftSection]:
     sections = []
     for match in SECTION_RE.finditer(text):
+        slot_title, post_type, hook, intent, cta = parse_section_header(match.group("header"))
         body = match.group("body").strip()
         caption, first = extract_caption(body)
         sections.append(
             DraftSection(
-                slot_title=match.group("slot").strip(),
-                post_type=match.group("type").strip(),
-                hook=match.group("hook").strip(),
-                intent=match.group("intent").strip(),
-                cta=match.group("cta").strip(),
+                slot_title=slot_title,
+                post_type=post_type,
+                hook=hook,
+                intent=intent,
+                cta=cta,
                 body=body,
                 hashtags=extract_hashtags(body),
                 image_prompt=extract_image_prompt(body),
@@ -718,23 +562,11 @@ def urls_in_text(text: str) -> list[str]:
 
 
 def validate_image_prompt(prompt: str) -> list[str]:
-    required = [
-        "3d",
-        "#050510",
-        "premium 3d cgi render",
-        "icon-art",
-        "no text",
-        "no people",
-        "no cards",
-        "no frames",
-        "no borders",
-        "portrait 4:5",
-        "1080x1350",
-        "20% margin",
-        "object floats centered",
-    ]
-    prompt_l = prompt.lower()
-    return [item for item in required if item not in prompt_l]
+    if not prompt.strip():
+        return ["prázdný prompt"]
+    if PLACEHOLDER_RE.search(prompt) or re.search(r"\b(?:TODO|PLACEHOLDER|DOPLŇ)\b", prompt, re.IGNORECASE):
+        return ["nevyplněný zástupný text"]
+    return []
 
 
 def qa_draft(text: str) -> QaResult:
@@ -743,111 +575,70 @@ def qa_draft(text: str) -> QaResult:
     sections = parse_draft(text)
     summary_rows = parse_summary_table(text)
 
-    if len(sections) != 3:
-        errors.append(f"Výstup musí mít přesně 3 sekce, nalezeno {len(sections)}.")
+    if not sections:
+        errors.append("Nenašel jsem žádný příspěvek v rozpoznatelném markdown formátu.")
 
-    seen_slots = {section_slot_id(section) for section in sections}
-    for expected in {"morning", "noon", "evening"}:
-        if expected not in seen_slots:
-            errors.append(f"Chybí slot {expected}.")
-
-    ctas = []
-    hooks = []
-    found_micro_story = False
-    soft_promo_count = 0
-    all_allowed = {normalize_url(url) for url in allowed_urls()}
+    allowed = {normalize_url(url) for url in allowed_urls()}
+    ai_cliches = (
+        "v dnešní uspěchané době",
+        "vesmír ti posílá signál",
+        "všechno se děje z nějakého důvodu",
+        "zastav se a nadechni se",
+        "dovol si být tím, kým jsi",
+        "otevři své srdce",
+    )
+    changing_astro_terms = (
+        "retrográd", "retrograd", "konjunkce", "opozice", "tranzit",
+        "zatmění", "zatmeni", "úplněk", "uplnek", "novoluní", "novoluni",
+    )
 
     for index, section in enumerate(sections, 1):
-        slot_id = section_slot_id(section)
-        slot = next((item for item in SLOTS if item["id"] == slot_id), None)
-        label = f"sekce {index} ({section.slot_title})"
-
-        if section.post_type not in ALLOWED_TYPES:
-            errors.append(f"{label}: nepovolený typ `{section.post_type}`.")
-        if slot and section.post_type not in slot["types"]:
-            errors.append(
-                f"{label}: typ `{section.post_type}` nepatří do slotu {slot['time']} "
-                f"({', '.join(slot['types'])})."
-            )
-        if slot and section.intent != slot["intent"]:
-            errors.append(f"{label}: intent má být `{slot['intent']}`, je `{section.intent}`.")
-        if section.intent == "soft_promo":
-            soft_promo_count += 1
-
-        if section.hook not in ALLOWED_HOOKS:
-            warnings.append(f"{label}: hook `{section.hook}` není v hlavním AGENTS seznamu.")
-        hooks.append(section.hook)
-        ctas.append(strip_accents(section.cta))
+        label = f"příspěvek {index} ({section.slot_title})"
 
         if not section.caption:
-            errors.append(f"{label}: chybí caption.")
-        if SLASH_FORM_RE.search(re.sub(r"https?://\S+", "", section.caption)):
+            errors.append(f"{label}: chybí text příspěvku.")
+        caption_without_urls = section.caption
+        for url in urls_in_text(caption_without_urls):
+            caption_without_urls = caption_without_urls.replace(url, "")
+        if SLASH_FORM_RE.search(caption_without_urls):
             errors.append(f"{label}: obsahuje lomený tvar typu šel/šla.")
         if re.search(r"\b(vám|váš|vaše|vy)\b", section.caption, re.IGNORECASE):
-            warnings.append(f"{label}: možná používá vykání, zkontroluj tykání.")
-        if MICRO_STORY_RE.search(section.caption):
-            found_micro_story = True
+            warnings.append(f"{label}: možná používá vykání; zkontroluj, zda sedí hlas značky.")
+        if section.post_type and section.post_type not in ALLOWED_TYPES:
+            warnings.append(f"{label}: neobvyklý typ {section.post_type}; ověř jen pokud na něm závisí plán.")
+        caption_l = strip_accents(section.caption)
+        if any(strip_accents(phrase) in caption_l for phrase in ai_cliches):
+            warnings.append(f"{label}: může obsahovat obecnou frázi, která zní šablonovitě.")
 
-        if not section.hashtags:
-            errors.append(f"{label}: chybí hashtagy.")
-        elif section.hashtags[0] != "#mystickaHvezda":
-            errors.append(f"{label}: první hashtag musí být #mystickaHvezda.")
-        if section.hashtags and not (4 <= len(section.hashtags) <= 6):
-            errors.append(f"{label}: hashtagů má být 4-6, je {len(section.hashtags)}.")
-
-        section_urls = urls_in_text(section.caption)
-        if section.intent == "pure_value" and section_urls:
-            errors.append(f"{label}: pure_value nesmí obsahovat web odkaz ({', '.join(section_urls)}).")
-        if section.intent == "soft_promo" and not section_urls:
-            errors.append(f"{label}: soft_promo musí obsahovat logicky navazující web odkaz.")
-        for url in section_urls:
-            normalized = normalize_url(url)
+        urls = urls_in_text(section.caption)
+        known_product_urls = []
+        for url in urls:
+            normalized = normalize_url(url).split("?", 1)[0].split("#", 1)[0]
             if normalized in LEGACY_URL_FIXES:
-                errors.append(
-                    f"{label}: URL {normalized} je překlep, použij {LEGACY_URL_FIXES[normalized]}."
-                )
-            elif normalized not in all_allowed:
-                errors.append(f"{label}: URL `{url}` není v povoleném seznamu web funkcí.")
+                errors.append(f"{label}: URL {normalized} je známý překlep; použij {LEGACY_URL_FIXES[normalized]}.")
+            elif normalized.startswith("/") and normalized not in allowed:
+                errors.append(f"{label}: interní URL {url} není v seznamu skutečných webových funkcí.")
+            else:
+                known_product_urls.append(url)
 
-        if not section.image_prompt:
-            errors.append(f"{label}: chybí image prompt.")
-        else:
+        if section.intent == "soft_promo" and not known_product_urls:
+            errors.append(f"{label}: soft_promo vyžaduje relevantní odkaz na skutečnou webovou funkci.")
+
+        if section.image_prompt:
             missing = validate_image_prompt(section.image_prompt)
             if missing:
-                errors.append(f"{label}: image promptu chybí: {', '.join(missing)}.")
+                errors.append(f"{label}: image prompt obsahuje {', '.join(missing)}.")
 
-        astro_terms = ("luna", "měsíc", "mesic", "astro", "znamení", "znameni", "hvězdy", "hvezdy")
-        caption_l = strip_accents(section.caption)
-        if any(strip_accents(term) in caption_l for term in astro_terms):
-            if "dnes" not in caption_l:
-                warnings.append(f"{label}: astro kontext nezmiňuje konkrétní dnešek.")
-            if not any(marker in caption_l for marker in ("zkus", "vsimni", "napi", "poloz", "podivej", "vyber")):
-                warnings.append(f"{label}: astro kontext možná neříká, co dnes konkrétně udělat.")
+        if any(term in caption_l for term in changing_astro_terms):
+            warnings.append(f"{label}: ověř aktuální astrologický údaj a jeho datum z důvěryhodného zdroje.")
 
-    if soft_promo_count < 1:
-        errors.append("Série musí mít minimálně 1 soft_promo.")
-    if len(set(ctas)) < len(ctas):
-        errors.append("CTA se v sérii opakuje.")
-    if not found_micro_story:
-        errors.append("Chybí mikropříběh v přítomném čase ve 2. osobě.")
-
-    hook_set = set(hooks)
-    if not (hook_set & QUIET_HOOKS):
-        warnings.append("V hookách chybí poetický/tichý mood (např. micro_story nebo vulnerability).")
-    if not (hook_set & SHARP_HOOKS):
-        warnings.append("V hookách chybí ostrý/překvapivý mood (např. pattern_interrupt nebo curiosity_gap).")
-    if not (hook_set & DIRECT_HOOKS):
-        warnings.append("V hookách chybí provokativní/přímý mood (např. question nebo fear_reversal).")
-
-    if summary_rows:
-        topics = [row.get("tema", "") for row in summary_rows if row.get("tema")]
-        if len(topics) >= 3 and len({strip_accents(topic) for topic in topics}) < 3:
-            errors.append("Souhrnná tabulka nemá 3 různá témata.")
-    else:
-        warnings.append("Chybí souhrnná tabulka nebo nejde parsovat.")
+    if summary_rows and len(sections) > 1:
+        topics = [row.get("tema", "") or row.get("téma", "") for row in summary_rows]
+        topics = [strip_accents(topic.strip()) for topic in topics if topic.strip()]
+        if len(topics) != len(set(topics)):
+            warnings.append("Souhrnná tabulka může opakovat stejné téma; ověř, zda každý příspěvek přináší jiný úhel.")
 
     return QaResult(errors=errors, warnings=warnings)
-
 
 def print_qa(result: QaResult) -> None:
     status = "PASS" if result.passed else "FAIL"
@@ -882,9 +673,14 @@ def pick_traffic_target(
     rows: list[dict[str, str]],
     target_date: date,
 ) -> tuple[int, DraftSection, str, str]:
-    for index, section in enumerate(sections):
-        if section.intent != "soft_promo":
-            continue
+    del target_date  # legacy argument; a calendar slot never chooses the product.
+    promotional_sections = [
+        (index, section)
+        for index, section in enumerate(sections)
+        if section.intent in {"soft_promo", "direct_promo"}
+    ]
+
+    for index, section in promotional_sections:
         urls = urls_in_text(section.caption)
         if urls:
             match = feature_for_url(urls[0])
@@ -892,26 +688,18 @@ def pick_traffic_target(
                 feature, path = match
                 return index, section, feature, path
 
-    for index, section in enumerate(sections):
-        if section.intent == "soft_promo":
-            topic = topic_for_section(rows, index, section)
-            match = feature_for_topic(topic)
-            if match:
-                feature, path = match
-                return index, section, feature, path
-
-    for index, section in enumerate(sections):
-        if section_slot_id(section) == "noon":
-            topic = topic_for_section(rows, index, section)
-            match = feature_for_topic(topic) or choose_noon_feature(load_memory(), target_date)
-            if match:
-                feature, path = match
-                return index, section, feature, path
+    for index, section in promotional_sections:
+        topic = topic_for_section(rows, index, section)
+        match = feature_for_topic(topic)
+        if match:
+            feature, path = match
+            return index, section, feature, path
 
     if not sections:
         raise ValueError("Draft neobsahuje žádné parsovatelné sekce.")
-    feature, path = choose_noon_feature(load_memory(), target_date) or ("Tarot", "/tarot.html")
-    return 0, sections[0], feature, path
+    if not promotional_sections:
+        raise ValueError("Traffic pack vyžaduje příspěvek výslovně označený jako promo.")
+    raise ValueError("Nenašel jsem funkci webu, která by přirozeně odpovídala promo tématu.")
 
 
 def build_traffic_pack(
@@ -925,14 +713,7 @@ def build_traffic_pack(
     index, section, feature, path = pick_traffic_target(sections, rows, target_date)
     slot_id = section_slot_id(section) or f"slot_{index + 1}"
     topic = topic_for_section(rows, index, section)
-    copy = TRAFFIC_COPY.get(
-        feature,
-        {
-            "keyword": "VYKLAD",
-            "promise": "dostaneš vlastní výklad",
-            "story": "Post je začátek. Vlastní odpověď najdeš na webu.",
-        },
-    )
+
     campaign = campaign_for_date(target_date)
     content_base = f"{slot_id}_{slugify(feature)}"
     tracking_source = tracking_source_for(target_date, slot_id)
@@ -974,15 +755,15 @@ def build_traffic_pack(
         extra_params=funnel_params,
     )
 
-    hook = section.first_sentence.rstrip(".")
-    story_frame_1 = hook if hook else copy["story"]
-    story_frame_2 = f"{copy['story']} Tady je tvůj další krok."
-    story_frame_3 = f"Link: {feature}"
-    fb_post = (
-        f"{hook}.\n\n"
-        f"{copy['story']}\n\n"
-        f"Jestli chceš vlastní odpověď, otevři {feature}: {facebook_url}\n\n"
-        "#mystickaHvezda"
+    paragraphs = [part.strip() for part in section.caption.split("\n\n") if part.strip()]
+    story_frame_1 = section.first_sentence
+    story_frame_2 = paragraphs[1] if len(paragraphs) > 1 else ""
+    story_frame_3 = f"{feature}: {story_url}"
+    fb_post = facebook_caption_for_publish(
+        section,
+        facebook_url=facebook_url,
+        mode="link",
+        link_placement="none",
     )
 
     lines = [
@@ -1009,17 +790,15 @@ def build_traffic_pack(
         f"3. {story_frame_3}",
         "",
         "## Caption/Comment CTA",
-        f"- Jemné CTA: Chceš vlastní odpověď? Dej si {feature} přes odkaz v profilu.",
-        f"- DM keyword varianta: Napiš `{copy['keyword']}` a pošli si odkaz později.",
+        "- Použij CTA z původního příspěvku, pokud přirozeně navazuje.",
         "",
         "## Facebook post",
         fb_post,
         "",
         "## Minimum práce",
-        "- Reels nech jako hlavní růstový obsah.",
-        "- Po publikaci Reelu přidej jednu Story s link stickerem.",
-        "- Stejný den pošli Facebook link post přes API nebo ručně.",
-        "- Neměň celý bio link každý den, pokud je to otrava. Stačí 2-3 traffic dny týdně.",
+        "- Vyber jen kanály a formáty, které odpovídají zadání a kapacitě.",
+        "- Odkaz použij jen tehdy, když přirozeně navazuje na obsah.",
+        "- Balíček nic nepublikuje; každý výstup před použitím zkontroluj.",
         "",
     ]
     return "\n".join(lines)
@@ -1044,15 +823,58 @@ def instagram_ready_caption(section: DraftSection) -> str:
     return f"{caption}\n\n{hashtags}".strip()
 
 
+def story_frame_copy(section: DraftSection) -> str:
+    """Return the second story frame without leaking a raw URL into the text."""
+    paragraphs = [part.strip() for part in section.caption.split("\n\n") if part.strip()]
+    if len(paragraphs) < 2:
+        return ""
+    copy = paragraphs[1]
+    for url in urls_in_text(copy):
+        copy = copy.replace(url, "odkaz ve stickeru")
+    return copy
+
+
 def publish_caption(section: DraftSection) -> str:
     hashtags = " ".join(section.hashtags)
     return f"{section.caption}\n\n{hashtags}".strip()
 
 
-def facebook_story_copy(feature: str, copy: dict[str, str]) -> str:
-    if feature == "Tarot":
-        return "Tenhle symbol je začátek. Teď si vytáhni vlastní kartu."
-    return copy["story"]
+def facebook_caption_for_publish(
+    section: DraftSection,
+    *,
+    facebook_url: str,
+    mode: str,
+    link_placement: str,
+) -> str:
+    caption = section.caption.strip()
+    urls = urls_in_text(caption)
+    if urls and mode == "photo" and link_placement == "none":
+        for url in urls:
+            caption = re.sub(
+                rf"[^.!?\n]*{re.escape(url)}[^.!?\n]*[.!?]?",
+                "",
+                caption,
+            )
+        caption = re.sub(r"\n{3,}", "\n\n", caption).strip()
+        urls = []
+    if urls:
+        if mode == "link":
+            replacement = "odkaz u příspěvku"
+        elif link_placement == "first-comment":
+            replacement = "odkaz v prvním komentáři"
+        elif link_placement == "caption":
+            replacement = facebook_url
+        else:
+            replacement = ""
+        for url in sorted(urls, key=len, reverse=True):
+            caption = caption.replace(url, replacement)
+        caption = re.sub(r"\s+([.,!?])", r"\1", caption)
+        caption = re.sub(r"\s*:\s*([.!?])", r"\1", caption)
+        caption = re.sub(r"[ \t]{2,}", " ", caption)
+        caption = re.sub(r"\n{3,}", "\n\n", caption).strip()
+
+    hashtags = " ".join(section.hashtags)
+    return f"{caption}\n\n{hashtags}".strip()
 
 
 def build_facebook_publish_payload(
@@ -1070,43 +892,48 @@ def build_facebook_publish_payload(
 
     sections = parse_draft(text)
     rows = parse_summary_table(text)
-    index, section, feature, path = pick_traffic_target(sections, rows, target_date)
+    index, section, suggested_feature, suggested_path = pick_traffic_target(sections, rows, target_date)
     slot_id = section_slot_id(section) or f"slot_{index + 1}"
     topic = topic_for_section(rows, index, section)
-    copy = TRAFFIC_COPY.get(
-        feature,
-        {
-            "keyword": "VYKLAD",
-            "promise": "dostaneš vlastní výklad",
-            "story": "Post je začátek. Vlastní odpověď najdeš na webu.",
-        },
-    )
+
+    section_urls = urls_in_text(section.caption)
+    product_match = next((feature_for_url(url) for url in section_urls if feature_for_url(url)), None)
+    if not product_match and section.intent == "soft_promo":
+        product_match = feature_for_topic(topic)
+    has_relevant_link = product_match is not None
+
+    if product_match:
+        feature, path = product_match
+    else:
+        feature, path = suggested_feature, suggested_path
+
     campaign = campaign_for_date(target_date)
-    content_base = f"{slot_id}_{slugify(feature)}"
     tracking_source = tracking_source_for(target_date, slot_id)
-    tracking_feature = tracking_feature_for(feature)
-    facebook_url = build_utm_url(
-        path,
-        source="facebook",
-        medium="page_post",
-        campaign=campaign,
-        content=content_base,
-        extra_params={"source": tracking_source, "feature": tracking_feature},
+    tracking_feature = tracking_feature_for(feature) if has_relevant_link else ""
+    facebook_url = (
+        build_utm_url(
+            path,
+            source="facebook",
+            medium="page_post",
+            campaign=campaign,
+            content=f"{slot_id}_{slugify(feature)}",
+            extra_params={"source": tracking_source, "feature": tracking_feature},
+        )
+        if has_relevant_link
+        else ""
     )
-    hook = section.first_sentence.rstrip(".")
-    fb_story = facebook_story_copy(feature, copy)
 
+    message = facebook_caption_for_publish(
+        section,
+        facebook_url=facebook_url,
+        mode=mode,
+        link_placement=link_placement,
+    )
     first_comment = None
-    if mode == "photo":
-        if link_placement == "caption":
-            link_cta = f"Jestli chceš vlastní odpověď, otevři {feature}:\n{facebook_url}"
-        elif link_placement == "first-comment":
-            link_cta = f"Jestli chceš vlastní odpověď, otevři {feature}. Odkaz najdeš v prvním komentáři."
-            first_comment = f"Tady si vytáhneš vlastní kartu:\n{facebook_url}"
-        else:
-            link_cta = f"Jestli chceš vlastní odpověď, otevři {feature}."
+    if has_relevant_link and mode == "photo" and link_placement == "first-comment":
+        first_comment = f"{feature}:\n{facebook_url}"
 
-        message = f"{hook}.\n\n{fb_story}\n\n{link_cta}\n\n#mystickaHvezda"
+    if mode == "photo":
         if image_path:
             resolved_image_path: Path | None = Path(image_path)
         else:
@@ -1117,12 +944,6 @@ def build_facebook_publish_payload(
             )
             resolved_image_path = Path(image_destination)
     else:
-        message = (
-            f"{hook}.\n\n"
-            f"{fb_story}\n\n"
-            f"Jestli chceš vlastní odpověď, otevři {feature}.\n\n"
-            "#mystickaHvezda"
-        )
         resolved_image_path = None
 
     return FacebookPublishPayload(
@@ -1131,11 +952,14 @@ def build_facebook_publish_payload(
         link=facebook_url,
         first_comment=first_comment,
         image_path=resolved_image_path,
-        feature=feature,
+        feature=feature if has_relevant_link else "",
         topic=topic,
         slot_id=slot_id,
         tracking_source=tracking_source,
         tracking_feature=tracking_feature,
+        post_type=section.post_type or "",
+        content_intent=section.intent or "",
+        campaign=campaign,
     )
 
 
@@ -1150,14 +974,7 @@ def build_publish_pack(
     index, section, feature, path = pick_traffic_target(sections, rows, target_date)
     slot_id = section_slot_id(section) or f"slot_{index + 1}"
     topic = topic_for_section(rows, index, section)
-    copy = TRAFFIC_COPY.get(
-        feature,
-        {
-            "keyword": "VYKLAD",
-            "promise": "dostaneš vlastní výklad",
-            "story": "Post je začátek. Vlastní odpověď najdeš na webu.",
-        },
-    )
+
     campaign = campaign_for_date(target_date)
     content_base = f"{slot_id}_{slugify(feature)}"
     tracking_source = tracking_source_for(target_date, slot_id)
@@ -1196,22 +1013,21 @@ def build_publish_pack(
         mode="traffic",
     )
     image_status = "hotový soubor existuje" if Path(image_destination).exists() else "čeká na vygenerování"
-    hook = section.first_sentence.rstrip(".")
-    story_frame_1 = hook if hook else copy["story"]
-    story_frame_2 = f"{copy['story']} Tady je tvůj další krok."
-    story_frame_3 = f"Link sticker: {feature}"
-    fb_message = (
-        f"{hook}.\n\n"
-        f"{copy['story']}\n\n"
-        f"Jestli chceš vlastní odpověď, otevři {feature}.\n\n"
-        "#mystickaHvezda"
+    story_frame_1 = section.first_sentence
+    story_frame_2 = story_frame_copy(section)
+    story_frame_3 = f"{feature}: {story_url}"
+    fb_message = facebook_caption_for_publish(
+        section,
+        facebook_url=facebook_url,
+        mode="link",
+        link_placement="none",
     )
 
-    return f"""# Publish pack — {target_date.isoformat()}
+    return f"""# Publikační podklady — {target_date.isoformat()}
 
 ## Co dnes publikovat
-- Hlavní publikační výstup: polední traffic post, ne celý interní preview dashboard.
-- Slot: {slot_id} ({section.slot_title})
+- Vybraný příspěvek pro návštěvnost; balíček z něj připravuje varianty pro zvolené kanály.
+- Interní označení: {slot_id if section_slot_id(section) else 'neuvedeno'} ({section.slot_title})
 - Téma: {topic}
 - Web funkce: {feature}
 - Cílová URL: {absolute_url(path)}
@@ -1265,11 +1081,11 @@ Prompt pro finální obrázek:
 ```
 
 ## 5) Checklist
-- Vygeneruj jeden finální obrázek pro polední traffic slot.
+- Připrav vizuál podle image promptu, pokud je součástí zadání.
 - Zkopíruj Instagram caption z části 1.
 - Po publikaci Reelu přidej Story a ručně vlož link sticker URL.
 - Facebook pošli jako link post s message + linkem.
-- Po schválení/logování spusť `python codex_social_workflow.py log-draft --file output/codex/daily_posts_{target_date.isoformat()}.md --score 8.0`.
+- Po schválení můžeš draft zaznamenat příkazem `python codex_social_workflow.py log-draft --file output/codex/daily_posts_{target_date.isoformat()}.md`.
 """
 
 
@@ -1299,14 +1115,7 @@ def build_daily_operator_context(
     index, section, feature, path = pick_traffic_target(sections, rows, target_date)
     slot_id = section_slot_id(section) or f"slot_{index + 1}"
     topic = topic_for_section(rows, index, section)
-    copy = TRAFFIC_COPY.get(
-        feature,
-        {
-            "keyword": "VYKLAD",
-            "promise": "dostaneš vlastní výklad",
-            "story": "Post je začátek. Vlastní odpověď najdeš na webu.",
-        },
-    )
+
     campaign = campaign_for_date(target_date)
     content_base = f"{slot_id}_{slugify(feature)}"
     funnel_params = {
@@ -1338,9 +1147,9 @@ def build_daily_operator_context(
     )
     resolved_image = Path(image_path) if image_path else (payload.image_path or Path(""))
     story_frames = [
-        section.first_sentence.rstrip(".") or copy["story"],
-        f"{copy['story']} Tady je tvůj další krok.",
-        f"Link sticker: {feature}",
+        section.first_sentence,
+        story_frame_copy(section),
+        f"{feature}: {story_url}",
     ]
     return DailyOperatorContext(
         draft_path=draft_path,
@@ -1368,7 +1177,7 @@ def daily_operator_status_items(context: DailyOperatorContext) -> list[tuple[str
     return [
         ("QA", qa_status, "AGENTS pravidla a obsahová struktura"),
         ("Image", image_status, str(context.image_path)),
-        ("Facebook dry-run", fb_status, "photo post + první komentář s trackovaným odkazem"),
+        ("Facebook dry-run", fb_status, "autorský text + odkaz pouze pokud patří do draftu"),
         ("Tracking", "OK", f"{context.facebook_payload.tracking_source} / {context.facebook_payload.tracking_feature}"),
     ]
 
@@ -1649,9 +1458,8 @@ def build_visual_pack(
     lines = [
         f"# Visual pack — {target_date.isoformat()}",
         "",
-        f"- Režim: `{mode}`",
+        f"- Režim: {mode}",
         f"- Počet vizuálů: {len(selected)}",
-        "- Doporučení: pro běžný den generuj jen `traffic` vizuál. Všechny 3 vizuály nech na kampaně nebo carousel.",
         "",
     ]
 
@@ -1668,37 +1476,57 @@ def build_visual_pack(
         slot = section_slot_id(section) or f"slot_{index + 1}"
         topic = topic_for_section(rows, index, section)
         filename = visual_filename(target_date, index, section)
+        image_prompt = build_visual_prompt(section, topic, placement="Facebook feed")
         lines.extend(
             [
                 f"## {slot} — {topic}",
                 f"- Typ: {section.post_type}",
-                f"- Soubor: `{filename}.png`",
+                f"- Soubor: {filename}.png",
                 "",
-                "```",
-                section.image_prompt,
-                "```",
+                image_prompt,
                 "",
             ]
         )
         if generator:
             path = generator(
-                prompt=section.image_prompt,
-                platform="instagram",
+                prompt=image_prompt,
+                platform="facebook",
                 post_type="portrait",
                 filename=filename,
             )
             generated_paths.append(path)
-            lines.append(f"Vygenerováno: `{path}`")
+            lines.append(f"Vygenerováno: {path}")
             lines.append("")
 
     return "\n".join(lines), generated_paths
-
 
 def write_visual_pack(content: str, target_date: date) -> Path:
     CODEX_DIR.mkdir(parents=True, exist_ok=True)
     output = CODEX_DIR / f"visual_pack_{target_date.isoformat()}.md"
     output.write_text(content, encoding="utf-8")
     return output
+
+
+def build_visual_prompt(
+    section: DraftSection,
+    topic: str,
+    *,
+    placement: str = "Facebook feed",
+) -> str:
+    if section.image_prompt.strip():
+        return section.image_prompt.strip()
+
+    context = section.caption.strip().replace('"', "'")
+    return (
+        f"Create an original, editorial-quality visual for a Mystická Hvězda {placement} post. "
+        f"Post topic: {topic}. Post text for context: {context}. "
+        "Find one concrete visual metaphor that belongs to this exact text; avoid stock mystical symbols "
+        "and do not illustrate every sentence literally. Choose the medium, palette, lighting, and framing "
+        "to fit this idea. The brand may use night blue, violet, or soft gold when they help, but do not force "
+        "stars, nebulae, crystals, tarot cards, a centered floating object, a gold frame, or a 3D render. "
+        "Keep the image calm, distinctive, and legible at feed size. No readable text, logo, or watermark. "
+        "Compose for the selected placement and keep the main subject safe from common feed crops."
+    )
 
 
 def build_codex_image_brief(
@@ -1718,41 +1546,40 @@ def build_codex_image_brief(
     topic = topic_for_section(rows, index, section)
     filename = f"codex_{target_date.strftime('%Y%m%d')}_{slot}_{slugify(topic)}.png"
     destination = str((OUTPUT_DIR / "images" / filename).resolve())
+    visual_direction = build_visual_prompt(section, topic)
+    visual_context = facebook_caption_for_publish(
+        section,
+        facebook_url="",
+        mode="photo",
+        link_placement="none",
+    )
 
-    prompt = f"""Use case: stylized-concept
-Asset type: premium social traffic graphic for Instagram Story and Facebook link post
-Primary request: Create one polished mystical 3D CGI visual for "{topic}".
-Scene/backdrop: deep navy cosmic starfield background (#050510), subtle nebula and stardust, luxury mystical app aesthetic.
-Subject: {section.image_prompt}
-Style/medium: premium 3D CGI render, icon-art style, high-end spiritual brand visual.
-Composition/framing: portrait 4:5, one central floating object, generous empty solid #050510 margin around all sides, object centered and readable on mobile.
-Lighting/mood: dramatic inner violet/indigo/gold glow, mysterious but calm, premium not kitsch.
-Color palette: deep navy #050510, violet, indigo, soft gold, pearl highlights.
-Materials/textures: polished crystal, subtle metallic gold engravings, soft subsurface glow where relevant.
-Text: no text.
-Constraints: no people, no faces, no readable letters, no logos, no watermark, no cards, no frames, no borders, no decorative ornaments inside the empty margin.
-Avoid: flat design, watercolor, busy collage, social media template, poster text, tarot-card frame, beige/brown dominant palette."""
+    prompt = f"""Create one original visual for the Facebook post below.
+Post topic: {topic}
+Post copy for context:
+{visual_context}
 
-    brief = f"""# Codex image brief — {target_date.isoformat()}
+Art direction:
+{visual_direction}
 
-## Vybraný vizuál
-- Slot: {slot}
-- Téma: {topic}
-- Typ: {section.post_type}
-- Cílový soubor: `{destination}`
+Follow the specific art direction above. Keep the Mystická Hvězda palette only where it supports this post; let the chosen medium, composition, and subject vary with the idea. Match the target placement and keep important details clear on a phone. Do not add readable text, logos, or watermarks unless the user explicitly asked for them."""
 
-## Prompt pro Codex image tool
-```text
+    brief = f"""# Image brief — {target_date.isoformat()}
+
+## Selected visual
+- Section: {slot}
+- Topic: {topic}
+- Type: {section.post_type}
+- Target file: {destination}
+
+## Prompt
 {prompt}
-```
 
-## Použití
-- Primární: Story po Reelu s link stickerem.
-- Sekundární: Facebook link post.
-- Negeneruj všechny 3 vizuály v běžný den. Tenhle jeden má nést traffic cíl.
+## Use
+- This image is paired with the selected post.
+- Do not create additional variants unless the user asked for them.
 """
     return brief, prompt, destination
-
 
 def write_codex_image_brief(content: str, target_date: date) -> Path:
     CODEX_DIR.mkdir(parents=True, exist_ok=True)
@@ -1779,31 +1606,28 @@ def build_preview_html(text: str, *, target_date: date) -> str:
     cards: list[str] = []
     for index, section in enumerate(sections):
         slot_id = section_slot_id(section) or f"slot-{index + 1}"
-        slot_label = {
-            "morning": "08:00 Ráno",
-            "noon": "12:00 Poledne",
-            "evening": "19:00 Večer",
-        }.get(slot_id, section.slot_title)
+        slot_label = section.slot_title or "Příspěvek"
         topic = topic_for_section(rows, index, section)
         hashtags = " ".join(section.hashtags)
         prompt_preview = section.image_prompt[:220] + ("..." if len(section.image_prompt) > 220 else "")
+        metadata_chips = []
+        if section.post_type:
+            metadata_chips.append(f"<span>{html.escape(section.post_type)}</span>")
+        if section.intent and section.intent != "pure_value":
+            metadata_chips.append(
+                f'<span class="{html.escape(section.intent)}">{html.escape(section.intent)}</span>'
+            )
+        chips_html = f'<div class="chips">{"".join(metadata_chips)}</div>' if metadata_chips else ""
         cards.append(
             f"""
             <article class="post-card {html.escape(slot_id)}">
-              <div class="visual" aria-label="Vizuální placeholder">
-                <div class="stars"></div>
-                <div class="symbol"></div>
-                <div class="visual-label">{html.escape(topic)}</div>
+              <div class="visual" aria-label="Grafika zatím není přiložena">
+                <div class="visual-empty">Skutečná grafika se zobrazí po připojení hotového obrázku.</div>
               </div>
               <div class="content">
                 <div class="slot">{html.escape(slot_label)}</div>
                 <h2>{html.escape(topic)}</h2>
-                <div class="chips">
-                  <span>{html.escape(section.post_type)}</span>
-                  <span>{html.escape(section.hook)}</span>
-                  <span class="{html.escape(section.intent)}">{html.escape(section.intent)}</span>
-                  <span>CTA: {html.escape(section.cta)}</span>
-                </div>
+                {chips_html}
                 <div class="caption">{caption_to_html(section.caption)}</div>
                 <div class="hashtags">{html.escape(hashtags)}</div>
                 <details>
@@ -1913,64 +1737,19 @@ def build_preview_html(text: str, *, target_date: date) -> str:
       aspect-ratio: 4 / 5;
       display: grid;
       place-items: center;
-      background:
-        radial-gradient(circle at 50% 44%, rgba(143, 92, 255, 0.22), transparent 28%),
-        radial-gradient(circle at 50% 42%, rgba(228, 189, 104, 0.12), transparent 18%),
-        #050510;
+      padding: 24px;
+      background: linear-gradient(145deg, rgba(143, 92, 255, 0.12), transparent 48%), #090814;
       border-bottom: 1px solid var(--line);
       overflow: hidden;
     }}
-    .stars::before, .stars::after {{
-      content: "";
-      position: absolute;
-      inset: 13%;
-      background-image:
-        radial-gradient(circle, rgba(255,255,255,0.92) 0 1px, transparent 1.3px),
-        radial-gradient(circle, rgba(228,189,104,0.8) 0 1px, transparent 1.2px);
-      background-size: 54px 68px, 82px 92px;
-      opacity: 0.55;
-    }}
-    .symbol {{
-      position: relative;
-      width: 42%;
-      aspect-ratio: 1;
-      border-radius: 50%;
-      background:
-        radial-gradient(circle at 35% 25%, rgba(255,255,255,0.85), transparent 13%),
-        radial-gradient(circle at 50% 58%, rgba(88,214,155,0.92), rgba(20,74,69,0.95) 64%, rgba(5,5,16,0.9));
-      box-shadow: 0 0 42px rgba(143, 92, 255, 0.42), 0 0 80px rgba(88, 214, 155, 0.22);
-      border: 1px solid rgba(228, 189, 104, 0.5);
-    }}
-    .noon .symbol {{
-      width: 48%;
-      border-radius: 50%;
-      background:
-        radial-gradient(circle at 50% 45%, rgba(228,189,104,0.55), transparent 18%),
-        radial-gradient(circle at 50% 50%, #15101f 0 48%, rgba(228,189,104,0.85) 49% 54%, #050510 55%);
-    }}
-    .evening .symbol {{
-      width: 40%;
-      border-radius: 14%;
-      transform: rotate(9deg);
-    }}
-    .evening .symbol::after {{
-      content: "";
-      position: absolute;
-      inset: 35% -32%;
-      border: 2px solid rgba(228, 189, 104, 0.9);
-      border-radius: 50%;
-      transform: rotate(-25deg);
-      box-shadow: 0 0 22px rgba(228, 189, 104, 0.42);
-    }}
-    .visual-label {{
-      position: absolute;
-      left: 24px;
-      right: 24px;
-      bottom: 24px;
+    .visual-empty {{
+      max-width: 260px;
+      border: 1px dashed var(--line);
+      padding: 16px;
+      color: var(--muted);
       text-align: center;
-      color: rgba(248, 244, 255, 0.78);
       font-size: 13px;
-      line-height: 1.3;
+      line-height: 1.5;
     }}
     .content {{ padding: 18px; }}
     .slot {{
@@ -2073,7 +1852,7 @@ def already_logged(memory: dict[str, Any], section: DraftSection) -> bool:
     return False
 
 
-def log_draft(text: str, score: float, force: bool = False, dry_run: bool = False) -> int:
+def log_draft(text: str, score: float | None = None, force: bool = False, dry_run: bool = False) -> int:
     qa = qa_draft(text)
     if qa.errors and not force:
         print_qa(qa)
@@ -2082,17 +1861,11 @@ def log_draft(text: str, score: float, force: bool = False, dry_run: bool = Fals
 
     sections = parse_draft(text)
     rows = parse_summary_table(text)
-    if len(rows) < len(sections):
-        print("Logování vyžaduje souhrnnou tabulku s tématy.")
-        return 1
-
     sys.path.insert(0, str(BASE_DIR))
     from generators.content_memory import (  # noqa: WPS433
         _load_memory,
         _save_memory,
         record_approved_post,
-        record_golden_template,
-        record_hook_score,
         record_post,
     )
 
@@ -2105,34 +1878,29 @@ def log_draft(text: str, score: float, force: bool = False, dry_run: bool = Fals
         if already_logged(memory, section) and not force:
             skipped += 1
             continue
-        row = rows[index]
-        topic = row.get("tema") or row.get("téma") or section.first_sentence[:60] or "nezadané téma"
+        row = rows[index] if index < len(rows) else {}
+        topic = row.get("tema") or row.get("téma") or section.first_sentence[:60] or section.slot_title[:60] or "nezadané téma"
         if dry_run:
             planned.append((topic, section))
             logged += 1
             continue
         record_post(
             topic=topic,
-            post_type=section.post_type,
-            hook_formula=section.hook,
+            post_type=section.post_type or "unspecified",
             content_intent=section.intent,
         )
         record_approved_post(
             topic=topic,
-            post_type=section.post_type,
+            post_type=section.post_type or "unspecified",
             caption=section.caption,
             quality_score=score,
             content_intent=section.intent,
         )
-        record_hook_score(section.hook, score)
-        record_golden_template(section.post_type, section.caption, section.hook, score)
         memory = _load_memory()
         if memory.get("approved_posts"):
             memory["approved_posts"][-1].update(
                 {
                     "draft_hash": draft_hash(section),
-                    "hook_formula": section.hook,
-                    "cta_type": section.cta,
                     "slot": section_slot_id(section) or section.slot_title,
                 }
             )
@@ -2143,7 +1911,7 @@ def log_draft(text: str, score: float, force: bool = False, dry_run: bool = Fals
         print("DRY RUN: content_memory.json nebyl změněn.")
         for topic, section in planned:
             print(
-                f"- {topic} | {section.post_type} | {section.hook} | "
+                f"- {topic} | {section.post_type or 'bez typu'} | "
                 f"{section.intent} | {section_slot_id(section) or section.slot_title}"
             )
     print(f"Zalogováno: {logged}. Přeskočeno jako duplicita: {skipped}.")
@@ -2185,23 +1953,21 @@ def classify_engagement(
     return "low"
 
 
-def recent_unrated_posts(memory: dict[str, Any], days: int, today: date) -> list[dict[str, Any]]:
-    rated = {
-        (entry.get("date"), entry.get("topic"))
-        for entry in memory.get("engagement_log", [])
-    }
-    posts = posts_in_window(memory.get("approved_posts", []), days, today)
-    return [
-        post for post in posts
-        if (post.get("date"), post.get("topic")) not in rated
-    ]
+def recent_published_posts(memory: dict[str, Any], days: int, today: date) -> list[dict[str, Any]]:
+    cutoff = today - timedelta(days=max(0, days))
+    posts = []
+    for post in memory.get("published_posts", []):
+        published = parse_date(post.get("published_at"))
+        if published and cutoff <= published <= today:
+            posts.append(post)
+    return sorted(posts, key=lambda post: (post.get("published_at", ""), post.get("post_id", "")))
 
 
 def write_engagement_template(days: int = 14, output: Path | None = None, today: date | None = None) -> Path:
     today = today or date.today()
     output = output or CODEX_DIR / f"engagement_template_{today.isoformat()}.csv"
     memory = load_memory()
-    posts = recent_unrated_posts(memory, days, today)
+    posts = recent_published_posts(memory, days, today)
 
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("w", newline="", encoding="utf-8") as handle:
@@ -2209,30 +1975,62 @@ def write_engagement_template(days: int = 14, output: Path | None = None, today:
         writer.writeheader()
         for post in posts:
             writer.writerow({
-                "date": post.get("date", ""),
+                "post_id": post.get("post_id", ""),
+                "platform": post.get("platform", "facebook"),
+                "published_at": post.get("published_at", ""),
+                "metrics_as_of": "",
+                "window": "",
+                "date": str(post.get("published_at", ""))[:10],
                 "post_type": post_type_of(post),
                 "topic": post.get("topic", ""),
-                "caption_preview": post.get("caption_preview", ""),
-                "likes": "",
+                "content_intent": post.get("content_intent", ""),
+                "slot_id": post.get("slot_id", ""),
+                "mode": post.get("mode", ""),
+                "page_id": post.get("page_id", ""),
+                "link": post.get("link", ""),
+                "image_path": post.get("image_path", ""),
+                "reach": "",
+                "impressions": "",
+                "views": "",
+                "reactions": "",
                 "comments": "",
                 "shares": "",
                 "saves": "",
-                "views": "",
-                "engagement": "",
+                "link_clicks": "",
+                "metrics_source": "facebook_insights_manual" if post.get("platform") == "facebook" else "platform_insights_manual",
                 "notes": "",
             })
     return output
 
 
+def parse_optional_metric(value: Any, field: str) -> int | None:
+    text = str(value or "").strip()
+    if not text:
+        return None
+    compact = text.replace("\u00a0", "").replace(" ", "")
+    if re.fullmatch(r"\d{1,3}(?:[.,]\d{3})+", compact):
+        compact = re.sub(r"[.,]", "", compact)
+    if not compact.isdigit():
+        raise ValueError(f"{field} must be a non-negative whole number")
+    return int(compact)
+
+
 def import_engagement_csv(path: Path, dry_run: bool = False) -> int:
     sys.path.insert(0, str(BASE_DIR))
-    from generators.content_memory import _load_memory, record_engagement  # noqa: WPS433
+    from generators.content_memory import (  # noqa: WPS433
+        POST_METRIC_FIELDS,
+        _load_memory,
+        record_engagement,
+        record_post_metrics,
+        record_published_post,
+    )
 
     memory = _load_memory()
-    existing = {
+    legacy_existing = {
         (entry.get("date"), entry.get("topic"))
         for entry in memory.get("engagement_log", [])
     }
+    seen_snapshots: set[tuple[str, str, str]] = set()
     imported = 0
     skipped = 0
 
@@ -2241,10 +2039,89 @@ def import_engagement_csv(path: Path, dry_run: bool = False) -> int:
             post_date = (row.get("date") or "").strip()
             topic = (row.get("topic") or "").strip()
             post_type = (row.get("post_type") or "").strip()
+
+            post_id = (row.get("post_id") or "").strip()
+            if post_id:
+                published_at = (row.get("published_at") or post_date).strip()
+                measured_on = (row.get("metrics_as_of") or "").strip()
+                window = (row.get("window") or "").strip().lower()
+                try:
+                    metrics = {field: parse_optional_metric(row.get(field), field) for field in POST_METRIC_FIELDS}
+                except ValueError as exc:
+                    print(f"Řádek {imported + skipped + 2} přeskočen: {exc}")
+                    skipped += 1
+                    continue
+                try:
+                    measured_date = date.fromisoformat(measured_on)
+                except ValueError:
+                    measured_date = None
+                if (
+                    measured_date is None
+                    or measured_date > date.today()
+                    or not window
+                    or all(value is None for value in metrics.values())
+                ):
+                    skipped += 1
+                    continue
+                if window not in {"24h", "7d", "28d", "lifetime", "custom"}:
+                    skipped += 1
+                    continue
+                published_date = parse_date(published_at)
+                if (
+                    published_date is None
+                    or published_date > date.today()
+                    or not (row.get("platform") or "facebook").strip()
+                ):
+                    skipped += 1
+                    continue
+                snapshot_key = (post_id, measured_on[:10], window)
+                if snapshot_key in seen_snapshots:
+                    skipped += 1
+                    continue
+                seen_snapshots.add(snapshot_key)
+                post_metadata = {
+                    "post_id": post_id,
+                    "platform": (row.get("platform") or "facebook").strip(),
+                    "published_at": published_at,
+                    "topic": topic,
+                    "post_type": post_type,
+                    "content_intent": (row.get("content_intent") or "").strip(),
+                    "slot_id": (row.get("slot_id") or "").strip(),
+                    "mode": (row.get("mode") or "").strip(),
+                    "page_id": (row.get("page_id") or "").strip(),
+                    "link": (row.get("link") or "").strip(),
+                    "image_path": (row.get("image_path") or "").strip(),
+                }
+                if dry_run:
+                    action = "aktualizace" if snapshot_key in {
+                        (post.get("post_id"), snapshot.get("measured_on"), snapshot.get("window"))
+                        for post in memory.get("published_posts", [])
+                        for snapshot in post.get("metrics", [])
+                    } else "nový záznam"
+                    print(f"- {action}: {post_id} | {post_metadata['platform']} | {window} k {measured_on}: {metrics}")
+                    imported += 1
+                else:
+                    record_published_post(**post_metadata)
+                    changed = record_post_metrics(
+                        post_id=post_id,
+                        measured_on=measured_on,
+                        window=window,
+                        metrics=metrics,
+                        source=(row.get("metrics_source") or "platform_insights_manual").strip(),
+                        notes=(row.get("notes") or "").strip(),
+                    )
+                    if changed:
+                        imported += 1
+                    else:
+                        skipped += 1
+                continue
+
+            # Backwards compatibility for old summary-only CSV files. These
+            # rows remain unlinked and are never used for measured comparisons.
             if not post_date or not topic or not post_type:
                 skipped += 1
                 continue
-            if (post_date, topic) in existing:
+            if (post_date, topic) in legacy_existing:
                 skipped += 1
                 continue
 
@@ -2268,7 +2145,7 @@ def import_engagement_csv(path: Path, dry_run: bool = False) -> int:
                     notes=notes,
                 )
             imported += 1
-            existing.add((post_date, topic))
+            legacy_existing.add((post_date, topic))
 
     if dry_run:
         print("DRY RUN: content_memory.json nebyl změněn.")
@@ -2285,26 +2162,93 @@ def weekly_report(days: int) -> str:
     type_counts = Counter(post_type_of(post) for post in source)
     intent_counts = Counter(post.get("content_intent") or post.get("intent") or "unknown" for post in source)
     topic_counts = Counter(post.get("topic", "?") for post in source)
-    recent_hooks = Counter(hook_of(post) for post in source if hook_of(post) != "?")
-    ranked_hooks = hook_rankings(memory)[:5]
+    engagement = posts_in_window(memory.get("engagement_log", []), days, today)
+    published = recent_published_posts(memory, days, today)
+    performance_lines = summarize_published_metrics(published, days=days, today=today)
 
     lines = [
-        f"# Weekly Codex Review — posledních {days} dnů",
+        f"# Redakční přehled — posledních {days} dní",
         "",
         f"- Schválené posty: {len(approved)}",
         f"- Všechny logované pokusy: {len(used)}",
         f"- Typy: {format_counter(type_counts)}",
-        f"- Intenty: {format_counter(intent_counts)}",
+        f"- Záměry: {format_counter(intent_counts)}",
         f"- Nejčastější témata: {format_counter(topic_counts, limit=5)}",
-        f"- Hooky v období: {format_counter(recent_hooks, limit=5) or 'bez dat'}",
-        f"- Top hooky celkově: {', '.join(f'{h} ({s:.1f})' for h, s, _ in ranked_hooks) or 'bez dat'}",
+        f"- Ručně zaznamenané výsledky: {len(engagement)}",
+        f"- Skutečně publikované příspěvky: {len(published)}",
         "",
-        "## Doporučení",
+        "## K redakční kontrole",
     ]
 
-    recommendations = build_recommendations(type_counts, intent_counts, topic_counts, ranked_hooks, len(source))
-    lines.extend(f"- {item}" for item in recommendations)
+    observations = build_recommendations(type_counts, intent_counts, topic_counts, len(source))
+    lines.extend(f"- {item}" for item in observations)
+    if engagement:
+        engagement_counts = Counter(entry.get("engagement", "nezadáno") for entry in engagement)
+        lines.append("- Zaznamenané hodnocení: " + format_counter(engagement_counts))
+        if len(engagement) < 5:
+            lines.append("- Vzorek je malý; neber ho jako trend ani automatické pravidlo pro další obsah.")
+    lines.extend(["", "## Výkon zveřejněných příspěvků"])
+    lines.extend(f"- {line}" for line in performance_lines)
+    if not performance_lines:
+        lines.append("- Pro toto období nejsou uložené surové metriky zveřejněných příspěvků.")
     return "\n".join(lines) + "\n"
+
+
+def summarize_published_metrics(
+    published: list[dict[str, Any]],
+    *,
+    days: int,
+    today: date,
+) -> list[str]:
+    cutoff = today - timedelta(days=max(0, days))
+    latest: dict[tuple[str, str], tuple[dict[str, Any], dict[str, Any]]] = {}
+    for post in published:
+        post_id = str(post.get("post_id") or "")
+        for snapshot in post.get("metrics", []):
+            measured_on = parse_date(snapshot.get("measured_on"))
+            if not post_id or not measured_on or not cutoff <= measured_on <= today:
+                continue
+            key = (post_id, str(snapshot.get("window") or ""))
+            previous = latest.get(key)
+            if previous is None or str(snapshot.get("measured_on", "")) > str(previous[1].get("measured_on", "")):
+                latest[key] = (post, snapshot)
+
+    groups: dict[tuple[str, str, str, str], list[dict[str, Any]]] = {}
+    for (post_id, window), (post, snapshot) in latest.items():
+        group = (
+            str(post.get("platform") or "unknown"),
+            str(post.get("mode") or "unknown"),
+            str(post.get("post_type") or "unknown"),
+            window or "unspecified",
+        )
+        groups.setdefault(group, []).append(snapshot)
+
+    if not latest:
+        return []
+    lines = [f"Měření: {len(latest)} unikátních příspěvků × oken; zobrazen je medián v každé skupině."]
+    for (platform, mode, post_type, window), snapshots in sorted(groups.items()):
+        reaches = [int(row["reach"]) for row in snapshots if row.get("reach") is not None]
+        interaction_rates = [
+            sum(int(row[field]) for field in ("reactions", "comments", "shares", "saves")) / int(row["reach"])
+            for row in snapshots
+            if row.get("reach") and all(row.get(field) is not None for field in ("reactions", "comments", "shares", "saves"))
+        ]
+        click_rates = [
+            int(row["link_clicks"]) / int(row["reach"])
+            for row in snapshots
+            if row.get("reach") and row.get("link_clicks") is not None
+        ]
+        line = f"{platform} / {mode} / {post_type} / {window}: n={len(snapshots)}"
+        if reaches:
+            line += f", medián reach {statistics.median(reaches):g}"
+        if interaction_rates:
+            line += f", medián reakcí+komentářů+sdílení+uložení / reach {statistics.median(interaction_rates):.1%}"
+        if click_rates:
+            line += f", medián prokliků / reach {statistics.median(click_rates):.1%}"
+        lines.append(line)
+    if len(latest) < 5:
+        lines.append("Vzorek je malý; jde o popis dat, ne potvrzený trend.")
+    return lines
 
 
 def format_counter(counter: Counter, limit: int = 8) -> str:
@@ -2317,30 +2261,23 @@ def build_recommendations(
     type_counts: Counter,
     intent_counts: Counter,
     topic_counts: Counter,
-    ranked_hooks: list[tuple[str, float, int]],
     total: int,
 ) -> list[str]:
     if total == 0:
-        return ["Nejdřív vygeneruj a zaloguj první sérii přes daily → qa → log-draft."]
+        return ["V tomto období nejsou zaznamenané příspěvky; není z čeho vyvozovat vzorec."]
 
-    recommendations: list[str] = []
-    if type_counts.get("story", 0) / total > 0.5:
-        recommendations.append("Story formát dominuje. Přidej více question, myth_bust a tip, aby feed nebyl jen reelový deník.")
-    if intent_counts.get("soft_promo", 0) == 0:
-        recommendations.append("Chybí soft_promo. Další polední post napoj na jeden povolený web nástroj.")
-    if intent_counts.get("pure_value", 0) < max(1, total // 2):
-        recommendations.append("Zkontroluj promo tlak. Pure value by měla tvořit většinu běžné série.")
-    if ranked_hooks:
-        top = ", ".join(hook for hook, _, _ in ranked_hooks[:3])
-        recommendations.append(f"Preferuj top hooky: {top}.")
-    if "?" in type_counts or topic_counts.get("?", 0):
-        recommendations.append("Část starších logů nemá vyplněný hook nebo typ. Nový log-draft to bude ukládat konzistentně.")
-    repeated = [topic for topic, count in topic_counts.most_common(3) if count >= 3 and topic != "?"]
+    observations: list[str] = []
+    if total < 5:
+        observations.append(f"Záznamů je {total}; přehled ber jako seznam, ne jako důkaz trendu.")
+    repeated = [topic for topic, count in topic_counts.most_common(3) if count >= 3 and topic not in {"?", "bez tématu"}]
     if repeated:
-        recommendations.append(f"Opakují se témata: {', '.join(repeated)}. Další 7 dní je vynech.")
-    if not recommendations:
-        recommendations.append("Rytmus je v pořádku. Další zlepšení hledej v silnějších prvních větách a CTA rotaci.")
-    return recommendations
+        observations.append(f"Opakovala se témata {', '.join(repeated)}; ověř, zda případný další příspěvek přináší nový úhel.")
+    dominant = type_counts.most_common(1)
+    if total >= 5 and dominant and dominant[0][1] / total >= 0.7:
+        observations.append(f"Nejčastější formát je {dominant[0][0]} ({dominant[0][1]}/{total}); samo o sobě to není problém, ověř jeho vhodnost pro další zadání.")
+    if not observations:
+        observations.append("Záznam neukazuje zjevné opakování témat; konkrétní podobu dalšího obsahu dál určuje zadání.")
+    return observations
 
 
 def cmd_brief(args: argparse.Namespace) -> int:
@@ -2379,6 +2316,26 @@ def cmd_daily_operator(args: argparse.Namespace) -> int:
         print("Doplň finální posty nebo použij --allow-placeholders pro interní náhled.")
         return 1
 
+    sections = parse_draft(text)
+    qa = qa_draft(text)
+    has_soft_promo = any(section.intent == "soft_promo" for section in sections)
+    if not has_soft_promo:
+        preview_path = None
+        if not args.no_write:
+            preview_path = write_preview_html(build_preview_html(text, target_date=target), target)
+        print("Daily operator — kontrola obsahu")
+        print_qa(qa)
+        print("Traffic ani publikační balíček nevznikl: draft neoznačuje žádný post jako soft_promo.")
+        if preview_path:
+            print(f"Soukromý náhled: {preview_path}")
+        print("Pro propagaci přidej přirozeně navazující odkaz a intent soft_promo; balíčky pak zapni zvláštní volbou.")
+        return 1 if qa.errors and not args.no_fail else 0
+
+    if (args.traffic_pack or args.publish_pack) and qa.errors:
+        print_qa(qa)
+        print("Traffic/publikační balíček nebyl vytvořen: nejdřív oprav chyby v draftu.")
+        return 1
+
     context = build_daily_operator_context(
         text,
         draft_path=draft_path,
@@ -2391,15 +2348,17 @@ def cmd_daily_operator(args: argparse.Namespace) -> int:
 
     traffic_pack_path = publish_pack_path = preview_path = control_room_path = None
     if not args.no_write:
-        traffic_pack_path = write_traffic_pack(
-            draft_path,
-            build_traffic_pack(text, target_date=target, source=args.source),
-            target,
-        )
-        publish_pack_path = write_publish_pack(
-            build_publish_pack(text, target_date=target, source=args.source),
-            target,
-        )
+        if args.traffic_pack:
+            traffic_pack_path = write_traffic_pack(
+                draft_path,
+                build_traffic_pack(text, target_date=target, source=args.source),
+                target,
+            )
+        if args.publish_pack:
+            publish_pack_path = write_publish_pack(
+                build_publish_pack(text, target_date=target, source=args.source),
+                target,
+            )
         preview_path = write_preview_html(build_preview_html(text, target_date=target), target)
         control_room_path = write_daily_control_room(build_daily_control_room_html(context), target)
 
@@ -2732,11 +2691,80 @@ def cmd_publish_pack(args: argparse.Namespace) -> int:
     return 0
 
 
+def facebook_publish_state_path(payload: FacebookPublishPayload, target: date, page_id: str) -> Path:
+    image_identity: dict[str, Any] | None = None
+    if payload.image_path:
+        image = payload.image_path.resolve()
+        image_digest = hashlib.sha256()
+        with image.open("rb") as image_file:
+            for chunk in iter(lambda: image_file.read(1024 * 1024), b""):
+                image_digest.update(chunk)
+        image_identity = {
+            "sha256": image_digest.hexdigest(),
+        }
+    identity = {
+        "date": target.isoformat(),
+        "page_id": page_id,
+        "mode": payload.mode,
+        "message": payload.message,
+        "link": payload.link,
+        "first_comment": payload.first_comment,
+        "image": image_identity,
+    }
+    fingerprint = hashlib.sha256(
+        json.dumps(identity, ensure_ascii=False, sort_keys=True).encode("utf-8")
+    ).hexdigest()
+    return CODEX_DIR / "facebook_publish_state" / f"{target.isoformat()}_{fingerprint}.json"
+
+
+def save_facebook_publish_state(path: Path, state: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            "w", encoding="utf-8", dir=path.parent, suffix=".tmp", delete=False
+        ) as handle:
+            temporary_path = Path(handle.name)
+            json.dump(state, handle, ensure_ascii=False, indent=2)
+            handle.write("\n")
+        temporary_path.replace(path)
+    finally:
+        if temporary_path and temporary_path.exists():
+            temporary_path.unlink()
+
+
+def load_facebook_publish_state(path: Path) -> dict[str, Any] | None:
+    if not path.exists():
+        return None
+    try:
+        state = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ValueError(f"Stav publikace nelze bezpečně přečíst: {path} ({exc})") from exc
+    if not isinstance(state, dict) or not isinstance(state.get("status"), str):
+        raise ValueError(f"Stav publikace má neplatný formát: {path}")
+    if state["status"] in {"published", "comment_pending", "comment_attempting", "comment_uncertain"}:
+        if not isinstance(state.get("post_id"), str) or not state["post_id"]:
+            raise ValueError(f"Stavu publikace chybí ID Facebook příspěvku: {path}")
+    if state["status"] in {"comment_pending", "comment_attempting", "comment_uncertain"}:
+        if not isinstance(state.get("first_comment"), str) or not state["first_comment"]:
+            raise ValueError(f"Stavu komentáře chybí text prvního komentáře: {path}")
+    return state
+
+
 def cmd_facebook_publish(args: argparse.Namespace) -> int:
     draft_path = Path(args.file)
     text = draft_path.read_text(encoding="utf-8")
     if PLACEHOLDER_RE.search(text) and not args.allow_placeholders:
         print("Facebook publish zastaven: draft stále obsahuje placeholdery. Nejdřív doplň finální posty.")
+        return 1
+
+    qa = qa_draft(text)
+    print_qa(qa)
+    if args.execute and not qa.passed:
+        print("Facebook publish zastaven: oprav chyby QA; žádné API volání neproběhlo.")
+        return 1
+    if args.execute and PLACEHOLDER_RE.search(text):
+        print("Facebook publish zastaven: --allow-placeholders nelze použít při ostrém publikování.")
         return 1
 
     target = date.fromisoformat(args.date) if args.date else infer_date_from_path(draft_path)
@@ -2747,6 +2775,10 @@ def cmd_facebook_publish(args: argparse.Namespace) -> int:
         link_placement=args.link_placement,
         image_path=args.image,
     )
+
+    if payload.mode == "link" and not payload.link:
+        print("Facebook link post zastaven: příspěvek neobsahuje přirozený odkaz na funkci webu.")
+        return 1
 
     if payload.mode == "photo":
         if not payload.image_path or not payload.image_path.exists():
@@ -2793,25 +2825,214 @@ def cmd_facebook_publish(args: argparse.Namespace) -> int:
             return 1
         print(f"\nMeta API ověřeno: {verification.get('name')} ({verification.get('id')})")
 
-    result = publisher.publish_to_facebook(
-        message=payload.message,
-        image_path=publish_image,
-        link=publish_link,
-    )
-    if result.get("success"):
-        post_id = result.get("post_id")
-        print(f"\nFacebook post publikován: {post_id}")
-        if payload.first_comment:
-            comment_result = publisher.comment_on_facebook_object(post_id, payload.first_comment)
+    state_path = facebook_publish_state_path(payload, target, str(publisher.page_id))
+    lock_path = state_path.with_suffix(".lock")
+    try:
+        state_path.parent.mkdir(parents=True, exist_ok=True)
+    except OSError as exc:
+        print(f"Facebook publish zastaven: nelze vytvořit složku stavu: {exc}")
+        return 1
+    try:
+        lock_fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    except FileExistsError:
+        if not args.recover_stale_lock:
+            print(f"Facebook publish zastaven: stejný payload už zpracovává jiný běh ({lock_path}).")
+            print("Po pádu procesu ověř, že už neběží, a teprve potom použij --recover-stale-lock.")
+            return 1
+        try:
+            age_seconds = datetime.now().timestamp() - lock_path.stat().st_mtime
+            if age_seconds < 300:
+                print("Zámek je mladší než 5 minut; bezpečně ho nelze považovat za osiřelý.")
+                return 1
+            lock_path.unlink(missing_ok=True)
+            lock_fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        except (FileNotFoundError, FileExistsError, OSError) as exc:
+            print(f"Facebook publish zastaven: zámek nelze bezpečně obnovit ({exc}).")
+            return 1
+
+    try:
+        with os.fdopen(lock_fd, "w", encoding="ascii") as lock_handle:
+            lock_handle.write(f"pid={os.getpid()}\n")
+
+        try:
+            state = load_facebook_publish_state(state_path)
+        except ValueError as exc:
+            print(f"Facebook publish zastaven: {exc}")
+            return 1
+
+        if args.retry_first_comment and args.confirm_not_published:
+            print("Vyber pouze jednu možnost obnovy: komentář, nebo nejistý post.")
+            return 1
+        if args.confirm_not_published and not state:
+            print("--confirm-not-published vyžaduje existující nejistý stav publikace.")
+            return 1
+        if args.confirm_not_published and state and state["status"] not in {"publishing", "publish_uncertain"}:
+            print("--confirm-not-published lze použít jen pro nejistý stav publikace.")
+            return 1
+        if args.retry_first_comment and state and state["status"] not in {"comment_attempting", "comment_uncertain"}:
+            print("--retry-first-comment lze použít jen pro nejistý stav komentáře.")
+            return 1
+
+        if state and state["status"] in {"publishing", "publish_uncertain"}:
+            if not args.confirm_not_published:
+                print(
+                    "Výsledek publikace není jistý. Zkontroluj Facebook stránku; "
+                    "pokud tam tento post není, spusť znovu s --confirm-not-published."
+                )
+                return 1
+            state = None
+            print("Potvrzení přijato; po ruční kontrole stránky zkusím publikaci znovu.")
+
+        if state:
+            state_status = state["status"]
+            post_id = state.get("post_id")
+            if state_status == "published":
+                print(f"Facebook post už byl publikován ({post_id}); další kopie nebyla vytvořena.")
+                return 0
+            if state_status == "comment_pending":
+                print(f"Navazuji na už publikovaný post {post_id}; nový post se nevytvoří.")
+            elif state_status in {"comment_attempting", "comment_uncertain"}:
+                if args.confirm_not_published:
+                    print("U tohoto stavu je nejistý komentář, nikoli publikace; použij --retry-first-comment.")
+                    return 1
+                if not args.retry_first_comment:
+                    print(
+                        "Stav prvního komentáře není jistý. Zkontroluj ho na Facebooku; "
+                        "pokud tam není, spusť znovu s --retry-first-comment."
+                    )
+                    return 1
+                state["status"] = "comment_pending"
+                state["updated_at"] = datetime.now().isoformat(timespec="seconds")
+                save_facebook_publish_state(state_path, state)
+                print(f"Opakuji pouze první komentář u už publikovaného postu {post_id}.")
+            else:
+                print(
+                    f"Stav `{state_status}` může znamenat, že Facebook post už vznikl. "
+                    f"Ověř stránku a stavový soubor {state_path}; post nebyl znovu odeslán."
+                )
+                return 1
+        else:
+            if args.retry_first_comment:
+                print("--retry-first-comment vyžaduje existující nejistý stav komentáře.")
+                return 1
+            state = {
+                "status": "publishing",
+                "date": target.isoformat(),
+                "page_id": str(publisher.page_id),
+                "message": payload.message,
+                "link": payload.link,
+                "first_comment": payload.first_comment,
+                "platform": "facebook",
+                "topic": payload.topic,
+                "post_type": payload.post_type,
+                "content_intent": payload.content_intent,
+                "slot_id": payload.slot_id,
+                "mode": payload.mode,
+                "campaign": payload.campaign,
+                "tracking_source": payload.tracking_source,
+                "tracking_feature": payload.tracking_feature,
+                "image_path": str(payload.image_path or ""),
+                "created_at": datetime.now().isoformat(timespec="seconds"),
+            }
+            try:
+                save_facebook_publish_state(state_path, state)
+            except OSError as exc:
+                print(f"Nelze uložit ochranný stav publikace: {exc}; API volání neproběhlo.")
+                return 1
+
+            try:
+                result = publisher.publish_to_facebook(
+                    message=payload.message,
+                    image_path=publish_image,
+                    link=publish_link,
+                )
+            except Exception as exc:  # Network timeout may happen after Meta accepted the post.
+                state["status"] = "publish_uncertain"
+                state["error"] = str(exc)
+                state["updated_at"] = datetime.now().isoformat(timespec="seconds")
+                save_facebook_publish_state(state_path, state)
+                print(
+                    "Facebook publish skončil nejistým stavem (např. timeout). "
+                    f"Neopakuj ho, dokud nezkontroluješ stránku. Stav: {state_path}"
+                )
+                return 1
+
+            if not result.get("success") or not result.get("post_id"):
+                state["status"] = "publish_uncertain"
+                state["error"] = result.get("error", "Meta nevrátilo ID postu")
+                state["updated_at"] = datetime.now().isoformat(timespec="seconds")
+                save_facebook_publish_state(state_path, state)
+                print(
+                    f"Facebook publish nemá potvrzené ID ({state['error']}). "
+                    f"Pro jistotu neodesílej znovu; nejdřív zkontroluj stránku. Stav: {state_path}"
+                )
+                return 1
+
+            post_id = str(result["post_id"])
+            state["post_id"] = post_id
+            state["status"] = "comment_pending" if payload.first_comment else "published"
+            state["published_at"] = datetime.now().isoformat(timespec="seconds")
+            save_facebook_publish_state(state_path, state)
+            print(f"\nFacebook post publikován: {post_id}")
+
+        # Record the confirmed Facebook post by its stable Meta ID. Failure to
+        # write analytics must not interrupt the post's first-comment recovery.
+        try:
+            sys.path.insert(0, str(BASE_DIR))
+            from generators.content_memory import record_published_post  # noqa: WPS433
+
+            record_published_post(
+                post_id=str(post_id),
+                platform="facebook",
+                published_at=state.get("published_at") or state.get("created_at") or datetime.now().isoformat(timespec="seconds"),
+                topic=state.get("topic") or payload.topic,
+                post_type=state.get("post_type") or payload.post_type,
+                content_intent=state.get("content_intent") or payload.content_intent,
+                slot_id=state.get("slot_id") or payload.slot_id,
+                mode=state.get("mode") or payload.mode,
+                page_id=state.get("page_id") or str(publisher.page_id),
+                message=state.get("message") or payload.message,
+                link=state.get("link") or payload.link,
+                image_path=state.get("image_path") or str(payload.image_path or ""),
+                campaign=state.get("campaign") or payload.campaign,
+                tracking_source=state.get("tracking_source") or payload.tracking_source,
+            )
+        except Exception as exc:
+            print(f"Facebook post je potvrzený, ale záznam statistik se nepodařilo uložit: {exc}")
+
+        if payload.first_comment and state.get("status") == "comment_pending":
+            state["status"] = "comment_attempting"
+            state["updated_at"] = datetime.now().isoformat(timespec="seconds")
+            save_facebook_publish_state(state_path, state)
+            try:
+                comment_result = publisher.comment_on_facebook_object(
+                    str(post_id), payload.first_comment
+                )
+            except Exception as exc:  # A timeout can leave a comment live without a response.
+                comment_result = {"success": False, "error": str(exc)}
+
             if comment_result.get("success"):
+                state["status"] = "published"
+                state["comment_id"] = comment_result.get("comment_id")
+                state["updated_at"] = datetime.now().isoformat(timespec="seconds")
+                save_facebook_publish_state(state_path, state)
                 print(f"První komentář s odkazem přidán: {comment_result.get('comment_id')}")
             else:
-                print(f"První komentář se nepodařilo přidat: {comment_result.get('error')}")
+                state["status"] = "comment_uncertain"
+                state["error"] = comment_result.get("error", "Meta nepotvrdilo komentář")
+                state["updated_at"] = datetime.now().isoformat(timespec="seconds")
+                save_facebook_publish_state(state_path, state)
+                print(
+                    f"První komentář nemá potvrzený výsledek ({state['error']}). "
+                    "Post zůstává publikovaný; před případným opakováním ověř komentáře na Facebooku."
+                )
                 return 1
         return 0
-
-    print(f"\nFacebook publikace selhala: {result.get('error')}")
-    return 1
+    finally:
+        try:
+            lock_path.unlink(missing_ok=True)
+        except OSError as exc:
+            print(f"Pozor: publikační zámek zůstal uložený ({lock_path}): {exc}")
 
 
 def cmd_visual_pack(args: argparse.Namespace) -> int:
@@ -2894,8 +3115,8 @@ def build_parser() -> argparse.ArgumentParser:
     daily.add_argument("--date", help="Datum YYYY-MM-DD, default dnes")
     daily.set_defaults(func=cmd_daily)
 
-    operator = sub.add_parser("daily-operator", help="Spustí denní kontrolní workflow a vytvoří control room")
-    operator.add_argument("--file", help="Markdown soubor s 3 posty. Default output/codex/daily_posts_YYYY-MM-DD.md")
+    operator = sub.add_parser("daily-operator", help="Zkontroluje draft a vytvoří soukromý review náhled")
+    operator.add_argument("--file", help="Markdown draft s jedním nebo více příspěvky. Default output/codex/daily_posts_YYYY-MM-DD.md")
     operator.add_argument("--date", help="Datum YYYY-MM-DD, default dnes")
     operator.add_argument("--source", default="instagram", help="utm_source pro IG odkazy")
     operator.add_argument("--image", help="Volitelná cesta k hotovému obrázku pro Facebook photo post")
@@ -2912,19 +3133,21 @@ def build_parser() -> argparse.ArgumentParser:
         help="Kam dát trackovaný odkaz u photo postu. Default první komentář.",
     )
     operator.add_argument("--no-write", action="store_true", help="Jen vytisknout report, neukládat packy a HTML")
+    operator.add_argument("--traffic-pack", action="store_true", help="Navíc připravit traffic pack pro draft s intent=soft_promo")
+    operator.add_argument("--publish-pack", action="store_true", help="Navíc připravit publikační varianty pro draft s intent=soft_promo")
     operator.add_argument("--no-fail", action="store_true", help="Vrátit exit 0 i při QA chybách")
     operator.add_argument("--allow-missing-image", action="store_true", help="Neblokovat photo workflow, když chybí obrázek")
     operator.add_argument("--allow-placeholders", action="store_true", help="Povolit výstup i z nevyplněné šablony")
     operator.set_defaults(func=cmd_daily_operator)
 
     qa = sub.add_parser("qa", help="Zkontroluje hotový markdown draft podle AGENTS.md")
-    qa.add_argument("--file", required=True, help="Markdown soubor s 3 posty")
+    qa.add_argument("--file", required=True, help="Markdown draft s jedním nebo více příspěvky")
     qa.add_argument("--no-fail", action="store_true", help="Vždy exit 0 i při chybách")
     qa.set_defaults(func=cmd_qa)
 
     log = sub.add_parser("log-draft", help="Zaloguje schválený markdown draft do content_memory")
-    log.add_argument("--file", required=True, help="Markdown soubor s 3 posty")
-    log.add_argument("--score", type=float, default=8.0, help="QG skóre uložené k postům")
+    log.add_argument("--file", required=True, help="Markdown draft s jedním nebo více příspěvky")
+    log.add_argument("--score", type=float, help="Volitelné skutečně vypočtené QA skóre; nevyplňuj odhad")
     log.add_argument("--force", action="store_true", help="Logovat i při QA chybách nebo duplicitě")
     log.add_argument("--dry-run", action="store_true", help="Otestovat logování bez změny content_memory.json")
     log.set_defaults(func=cmd_log_draft)
@@ -2996,15 +3219,15 @@ def build_parser() -> argparse.ArgumentParser:
     growth.set_defaults(func=cmd_growth_operator)
 
     traffic = sub.add_parser("traffic-pack", help="Vytvoří UTM odkazy, Story CTA a Facebook post z denního draftu")
-    traffic.add_argument("--file", required=True, help="Markdown soubor s 3 posty")
+    traffic.add_argument("--file", required=True, help="Markdown draft s jedním nebo více příspěvky")
     traffic.add_argument("--date", help="Datum YYYY-MM-DD, default z názvu souboru nebo dnes")
     traffic.add_argument("--source", default="instagram", help="utm_source pro IG odkazy")
     traffic.add_argument("--write", action="store_true", help="Uložit traffic pack do output/codex")
     traffic.add_argument("--allow-placeholders", action="store_true", help="Povolit výstup i z nevyplněné šablony")
     traffic.set_defaults(func=cmd_traffic_pack)
 
-    publish = sub.add_parser("publish-pack", help="Vytvoří jasný publikační balíček z denního draftu")
-    publish.add_argument("--file", required=True, help="Markdown soubor s 3 posty")
+    publish = sub.add_parser("publish-pack", help="Vytvoří publikační balíček z vybraného draftu")
+    publish.add_argument("--file", required=True, help="Markdown draft s jedním nebo více příspěvky")
     publish.add_argument("--date", help="Datum YYYY-MM-DD, default z názvu souboru nebo dnes")
     publish.add_argument("--source", default="instagram", help="utm_source pro IG odkazy")
     publish.add_argument("--write", action="store_true", help="Uložit publish pack do output/codex")
@@ -3012,7 +3235,7 @@ def build_parser() -> argparse.ArgumentParser:
     publish.set_defaults(func=cmd_publish_pack)
 
     fb = sub.add_parser("facebook-publish", help="Pošle traffic post na Facebook stránku přes Meta API")
-    fb.add_argument("--file", required=True, help="Markdown soubor s 3 posty")
+    fb.add_argument("--file", required=True, help="Markdown draft s jedním nebo více příspěvky")
     fb.add_argument("--date", help="Datum YYYY-MM-DD, default z názvu souboru nebo dnes")
     fb.add_argument(
         "--mode",
@@ -3029,11 +3252,26 @@ def build_parser() -> argparse.ArgumentParser:
     fb.add_argument("--image", help="Volitelná cesta k obrázku pro --mode photo")
     fb.add_argument("--execute", action="store_true", help="Skutečně publikovat na Facebook stránku")
     fb.add_argument("--skip-verify", action="store_true", help="Přeskočit ověření Meta credentials před publikací")
+    fb.add_argument(
+        "--retry-first-comment",
+        action="store_true",
+        help="Po ruční kontrole Facebooku opakovat jen komentář, pokud předchozí výsledek nebyl jistý",
+    )
+    fb.add_argument(
+        "--confirm-not-published",
+        action="store_true",
+        help="Po ruční kontrole stránky potvrdit, že nejistý post nevznikl, a zkusit publikaci znovu",
+    )
+    fb.add_argument(
+        "--recover-stale-lock",
+        action="store_true",
+        help="Po kontrole, že původní proces neběží, obnovit zámek starší než 5 minut",
+    )
     fb.add_argument("--allow-placeholders", action="store_true", help="Povolit výstup i z nevyplněné šablony")
     fb.set_defaults(func=cmd_facebook_publish)
 
-    visual = sub.add_parser("visual-pack", help="Připraví image prompty nebo vygeneruje grafiku z denního draftu")
-    visual.add_argument("--file", required=True, help="Markdown soubor s 3 posty")
+    visual = sub.add_parser("visual-pack", help="Připraví vizuály nebo grafiku podle konkrétního draftu")
+    visual.add_argument("--file", required=True, help="Markdown draft s jedním nebo více příspěvky")
     visual.add_argument("--date", help="Datum YYYY-MM-DD, default z názvu souboru nebo dnes")
     visual.add_argument(
         "--mode",
@@ -3046,8 +3284,8 @@ def build_parser() -> argparse.ArgumentParser:
     visual.add_argument("--allow-placeholders", action="store_true", help="Povolit výstup i z nevyplněné šablony")
     visual.set_defaults(func=cmd_visual_pack)
 
-    codex_img = sub.add_parser("codex-image-brief", help="Vytvoří nejlepší prompt pro Codex image tool")
-    codex_img.add_argument("--file", required=True, help="Markdown soubor s 3 posty")
+    codex_img = sub.add_parser("codex-image-brief", help="Vytvoří proměnlivý, textem řízený prompt pro Codex image tool")
+    codex_img.add_argument("--file", required=True, help="Markdown draft s jedním nebo více příspěvky")
     codex_img.add_argument("--date", help="Datum YYYY-MM-DD, default z názvu souboru nebo dnes")
     codex_img.add_argument(
         "--mode",
@@ -3059,8 +3297,8 @@ def build_parser() -> argparse.ArgumentParser:
     codex_img.add_argument("--allow-placeholders", action="store_true", help="Povolit výstup i z nevyplněné šablony")
     codex_img.set_defaults(func=cmd_codex_image_brief)
 
-    preview = sub.add_parser("preview", help="Vytvoří HTML náhled denní série postů")
-    preview.add_argument("--file", required=True, help="Markdown soubor s 3 posty")
+    preview = sub.add_parser("preview", help="Vytvoří interní HTML náhled příspěvků z draftu")
+    preview.add_argument("--file", required=True, help="Markdown draft s jedním nebo více příspěvky")
     preview.add_argument("--date", help="Datum YYYY-MM-DD, default z názvu souboru nebo dnes")
     preview.add_argument("--allow-placeholders", action="store_true", help="Povolit výstup i z nevyplněné šablony")
     preview.set_defaults(func=cmd_preview)

@@ -16,6 +16,7 @@ import config
 from generators.content_memory import (
     _load_memory, _save_memory, record_post,
     get_variety_context, get_promoted_blog_slugs, MEMORY_FILE,
+    record_published_post, record_post_metrics, get_performance_learning_context,
 )
 
 
@@ -122,3 +123,56 @@ class TestVarietyContext:
         record_post("blog", "blog_promo", blog_slug="tarot-zaklady")
         slugs = get_promoted_blog_slugs()
         assert "tarot-zaklady" in slugs
+
+
+class TestPublishedPerformance:
+    def add_post(self, post_id, post_type, reach, interactions, *, platform="facebook", mode="photo"):
+        from datetime import date
+
+        record_published_post(
+            post_id=post_id,
+            platform=platform,
+            published_at=date.today().isoformat(),
+            topic="stejné téma",
+            post_type=post_type,
+            content_intent="pure_value",
+            mode=mode,
+        )
+        record_post_metrics(
+            post_id=post_id,
+            measured_on=date.today().isoformat(),
+            window="7d",
+            metrics={
+                "reach": reach,
+                "impressions": reach,
+                "views": None,
+                "reactions": interactions,
+                "comments": 0,
+                "shares": 0,
+                "saves": 0,
+                "link_clicks": 2,
+            },
+        )
+
+    def test_published_post_and_metrics_are_idempotent_and_keep_raw_values(self, clean_memory):
+        self.add_post("fb-1", "educational", 100, 8)
+        self.add_post("fb-1", "educational", 100, 8)
+
+        memory = _load_memory()
+        assert len(memory["published_posts"]) == 1
+        assert memory["published_posts"][0]["metrics"][0]["reach"] == 100
+        assert memory["published_posts"][0]["metrics"][0]["reactions"] == 8
+
+    def test_performance_context_waits_for_comparable_sample(self, clean_memory):
+        for index in range(2):
+            self.add_post(f"edu-{index}", "educational", 100, 5)
+            self.add_post(f"question-{index}", "question", 100, 8)
+        assert get_performance_learning_context("facebook") == ""
+
+        self.add_post("edu-2", "educational", 100, 6)
+        self.add_post("question-2", "question", 100, 9)
+        context = get_performance_learning_context("facebook")
+        assert "n=3" in context
+        assert "educational" in context
+        assert "question" in context
+        assert "medián" in context

@@ -141,10 +141,6 @@ def build_context_brief(
     if previous_reply:
         lines.append(f"Poslední naše odpověď ve vlákně: {previous_reply}")
 
-    previous_cta = thread_memory.get("last_cta_type")
-    if previous_cta:
-        lines.append(f"Nenavazuj stejnou CTA jako minule: {previous_cta}.")
-
     if allowed_url and tool_name:
         lines.append(f"Povolený jemný odkaz pouze pokud přirozeně sedí: {tool_name} ({allowed_url}).")
     else:

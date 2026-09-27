@@ -59,6 +59,29 @@ def test_quality_gate_blocks_ai_disclosure_and_unapproved_url():
     assert "unapproved_url" in quality.blocking_issues
 
 
+def test_direct_ai_question_allows_truthful_disclosure_but_blocks_false_human_claim():
+    comment = _comment("Jsi AI, nebo mi píše člověk?", "question")
+    strategy = decide_reply_strategy(comment, config.WEBSITE_URL)
+
+    truthful = evaluate_reply_quality(
+        "Mystická Hvězda používá při tvorbě odpovědí AI a automatizaci.",
+        comment,
+        strategy,
+        config.WEBSITE_URL,
+    )
+    misleading = evaluate_reply_quality(
+        "Za Mystickou Hvězdou stojí tým lidí.",
+        comment,
+        strategy,
+        config.WEBSITE_URL,
+    )
+
+    assert truthful.publishable is True
+    assert "ai_disclosure" not in truthful.blocking_issues
+    assert misleading.publishable is False
+    assert "false_human_authorship" in misleading.blocking_issues
+
+
 def test_quality_gate_allows_one_approved_soft_link():
     comment = _comment("Kde si můžu zkusit tarot výklad?", "question")
     strategy = decide_reply_strategy(comment, config.WEBSITE_URL)

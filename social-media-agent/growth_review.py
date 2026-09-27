@@ -402,27 +402,6 @@ def load_content_memory_summary(path: Path | None, days: int = 14, today: date |
     ]
     scores = [score for score in scores if score > 0]
 
-    hooks = []
-    hook_data = data.get("hook_performance") or data.get("hook_scores") or {}
-    for hook, stats in hook_data.items():
-        if isinstance(stats, dict):
-            score = parse_number(stats.get("avg_score") or stats.get("score") or stats.get("quality_score"))
-            count = parse_int(stats.get("count") or stats.get("uses") or stats.get("total"))
-            raw_scores = stats.get("scores") or stats.get("values")
-            if not score and isinstance(raw_scores, list):
-                score = parse_number(raw_scores)
-                count = len([item for item in raw_scores if parse_number(item) > 0])
-        elif isinstance(stats, list):
-            values = [parse_number(item) for item in stats]
-            values = [value for value in values if value > 0]
-            score = sum(values) / len(values) if values else 0.0
-            count = len(values)
-        else:
-            score = parse_number(stats)
-            count = 0
-        hooks.append({"hook": hook, "avg_score": round(score, 1), "count": count})
-    hooks.sort(key=lambda row: (row["avg_score"], row["count"]), reverse=True)
-
     return ContentMemorySummary(
         total_approved=len(approved),
         recent_count=len(recent),
@@ -430,7 +409,7 @@ def load_content_memory_summary(path: Path | None, days: int = 14, today: date |
         pillar_counts=dict(pillar_counts),
         post_type_counts=dict(post_type_counts),
         missing_pillars=[pillar for pillar in TARGET_PILLARS if pillar_counts.get(pillar, 0) == 0],
-        top_hooks=hooks[:5],
+        top_hooks=[],  # legacy QA scores are not engagement evidence
         engagement_entries=len(data.get("engagement_log") or []),
     )
 
@@ -790,21 +769,8 @@ def recommend_actions(
             "Add source+feature params to tool links, not only UTMs, so admin sourceFeatureSegments can attribute social traffic."
         )
 
-    if memory.missing_pillars:
-        actions.append(
-            "Rebalance next content batch: missing pillars in recent memory are "
-            + ", ".join(memory.missing_pillars)
-            + "."
-        )
-
     if memory.engagement_entries == 0:
-        actions.append(
-            "Start logging engagement outcomes. Without engagement_log, hook winners are based on quality estimates only."
-        )
-
-    if memory.top_hooks:
-        hooks = ", ".join(row["hook"] for row in memory.top_hooks[:3])
-        actions.append(f"Use the current top hook patterns in the next batch: {hooks}.")
+        actions.append("No manual engagement outcomes are recorded; treat content-memory counts as descriptive, not performance evidence.")
 
     winning = [
         row
@@ -862,9 +828,13 @@ def format_report(report: dict) -> str:
         f"missing UTMs: {pinterest['missing_utm_pins']} | source+feature ready: {pinterest['source_feature_ready_pins']}"
     )
     lines.append(
-        f"Recent content posts: {memory['recent_count']} | avg quality: {memory['avg_quality']} | "
-        f"missing pillars: {', '.join(memory['missing_pillars']) or 'none'}"
+        f"Recent content records: {memory['recent_count']} | "
+        f"internal QA average: {memory['avg_quality'] if memory['avg_quality'] else 'not recorded'}"
     )
+    if memory.get("post_type_counts"):
+        lines.append("Observed formats: " + ", ".join(
+            f"{name} ({count})" for name, count in sorted(memory["post_type_counts"].items())
+        ))
     if readiness:
         lines.append("")
         lines.append("Readiness notes")

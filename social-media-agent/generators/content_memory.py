@@ -8,6 +8,7 @@ se přejmenuje — chrání proti poškození při crashi.
 import json
 import random
 import re
+import statistics
 import tempfile
 import os
 import time
@@ -31,20 +32,21 @@ _EMPTY_MEMORY = lambda: {
     "used_post_types_last_7": [],
     "last_blog_promos": [],
     "approved_posts": [],        # schválené posty s náhledem a blog info
+    "published_posts": [],       # skutečně publikované posty s platformním ID
     "total_posts": 0,
     "total_approved": 0,
     "created_at": datetime.now().isoformat(),
-    # === AUTO-LEARNING ===
-    "qg_issue_log": [],          # záznamy opakujících se QG problémů
-    "hook_scores": {},            # hook_formula → [score1, score2, ...] — efektivita hooků
+    # Historické redakční záznamy; samy o sobě neurčují další text.
+    "qg_issue_log": [],
+    "hook_scores": {},            # staré interní QA skóre, nikoli výkon postů
     "engagement_log": [],         # manuální feedback o reálném engagementu
-    "golden_templates": [],       # captiony s QG 8.5+ — vzorové šablony
+    "editorial_notes": [],        # ruční poznámky, které nevstupují automaticky do generování
+    "golden_templates": [],       # starší záznamy, už se neinjektují do promptů
     # === CONTENT SERIES ===
     "active_series": None,        # aktivní mini-série {name, theme, posts_planned, posts_done, start_date}
     # === WEEKLY COHESION ===
     "weekly_theme": None,         # {theme, week_start, description}
-    # === CTA TRACKING ===
-    "used_ctas": [],              # posledních N použitých CTA pro rotaci
+    "used_ctas": [],              # historická kompatibilita
 }
 
 
@@ -101,115 +103,15 @@ def _save_memory(memory: dict):
 
 
 def pick_content_intent() -> str:
-    """
-    Automaticky vybere záměr postu podle sledovaného poměru:
-      pure_value   60% — čistě vzdělávací, žádné CTA na web
-      soft_promo   25% — přirozená zmínka pokud to sedí
-      direct_promo 15% — explicitní propagace nástroje/blogu
-
-    Sleduje posledních 20 postů a vybere záměr, který je nejvíc
-    pod svým cílovým poměrem.
-    """
-    TARGET = {"pure_value": 0.60, "soft_promo": 0.25, "direct_promo": 0.15}
-    memory = _load_memory()
-    today = date.today()
-
-    recent = [
-        e for e in memory.get("used_topics", [])
-        if (today - date.fromisoformat(e["date"])).days <= 30
-    ][-20:]  # posledních 20 postů
-
-    if not recent:
-        return "pure_value"
-
-    counts = {"pure_value": 0, "soft_promo": 0, "direct_promo": 0}
-    for e in recent:
-        intent = e.get("content_intent", "pure_value")
-        if intent in counts:
-            counts[intent] += 1
-
-    total = len(recent)
-    # Vyber záměr s největším deficitem vůči cíli
-    deficits = {k: TARGET[k] - (counts[k] / total) for k in TARGET}
-    chosen = max(deficits, key=deficits.get)
-    log.debug("Content intent: %s (poměr posl. 20: %s)", chosen, counts)
-    return chosen
+    """Zpětně kompatibilní výchozí záměr; propagaci volí člověk výslovně."""
+    return "pure_value"
 
 
 def pick_post_type_for_slot(slot_preferred_types: list[str]) -> str:
-    """
-    Vybere typ postu pro daný časový slot s respektováním Content Pillars.
-
-    Content Pillars (cílový poměr):
-      education   40% — educational, myth_bust, story
-      engagement  30% — question, challenge, daily_energy
-      promotion   20% — blog_promo, carousel_plan
-      inspiration 10% — quote, tip
-
-    Sleduje posledních 30 postů a vybere typ, jehož pilíř je nejvíc
-    pod svým cílovým poměrem — ale jen z typů vhodných pro daný slot.
-    """
-
-    PILLAR_TARGETS = {
-        "education": 0.40,
-        "engagement": 0.30,
-        "promotion": 0.20,
-        "inspiration": 0.10,
-    }
-    TYPE_TO_PILLAR = {
-        "educational": "education",
-        "myth_bust": "education",
-        "story": "education",
-        "question": "engagement",
-        "challenge": "engagement",
-        "daily_energy": "engagement",
-        "blog_promo": "promotion",
-        "carousel_plan": "promotion",
-        "quote": "inspiration",
-        "tip": "inspiration",
-        "cross_system": "education",
-        "tool_demo": "promotion",
-        "save_worthy": "inspiration",
-    }
-
-    memory = _load_memory()
-    today = date.today()
-
-    # Posledních 30 postů (10 dní × 3 denně)
-    recent = [
-        e for e in memory.get("used_topics", [])
-        if (today - date.fromisoformat(e["date"])).days <= 10
-    ][-30:]
-
-    if not recent:
-        return random.choice(slot_preferred_types)
-
-    # Spočítej aktuální poměr pilířů
-    pillar_counts = {"education": 0, "engagement": 0, "promotion": 0, "inspiration": 0}
-    for e in recent:
-        pt = e.get("post_type", "")
-        pillar = TYPE_TO_PILLAR.get(pt)
-        if pillar:
-            pillar_counts[pillar] += 1
-
-    total = len(recent)
-    pillar_ratios = {k: v / total for k, v in pillar_counts.items()}
-
-    # Deficit = target - actual (čím větší deficit, tím víc potřebujeme tento pilíř)
-    pillar_deficits = {k: PILLAR_TARGETS[k] - pillar_ratios.get(k, 0) for k in PILLAR_TARGETS}
-
-    # Z preferovaných typů pro slot vyber ten, jehož pilíř má největší deficit
-    best_type = None
-    best_deficit = -999
-
-    for pt in slot_preferred_types:
-        pillar = TYPE_TO_PILLAR.get(pt, "education")
-        deficit = pillar_deficits.get(pillar, 0)
-        if deficit > best_deficit:
-            best_deficit = deficit
-            best_type = pt
-
-    return best_type or random.choice(slot_preferred_types)
+    """Vybere z formátů vhodných pro slot bez předepsaných poměrů obsahu."""
+    if not slot_preferred_types:
+        return "educational"
+    return random.choice(slot_preferred_types)
 
 
 def record_post(topic: str, post_type: str, hook_formula: str = "", blog_slug: str = "", content_intent: str = "pure_value"):
@@ -255,16 +157,16 @@ def record_approved_post(
     topic: str,
     post_type: str,
     caption: str,
-    quality_score: float,
+    quality_score: float | None = None,
     content_intent: str = "pure_value",
     blog_slugs: Optional[list] = None,
 ):
     """
-    Zaznamená schválený post (prošel Quality Gate) do paměti.
+    Zaznamená finální text schválený člověkem do paměti.
     Automaticky extrahuje zmíněné blog slugy z caption textu.
 
-    Volej po QG schválení — odlišné od record_post() který sleduje
-    i zamítnuté pokusy. approved_posts = jen to co skutečně publikujeme.
+    Odlišné od record_post(), který sleduje i zamítnuté pokusy.
+    Uložený návrh nemusí být publikován; QA skóre je pouze interní redakční údaj.
     """
     memory = _load_memory()
 
@@ -276,11 +178,12 @@ def record_approved_post(
         "topic": topic,
         "post_type": post_type,
         "caption_preview": caption[:100].replace("\n", " ").strip(),
-        "quality_score": round(quality_score, 1),
         "content_intent": content_intent,
         "blog_slugs": all_slugs,
         "date": date.today().isoformat(),
     }
+    if isinstance(quality_score, (int, float)):
+        entry["quality_score"] = round(float(quality_score), 1)
 
     memory.setdefault("approved_posts", []).append(entry)
     memory["total_approved"] = memory.get("total_approved", 0) + 1
@@ -299,16 +202,15 @@ def record_approved_post(
         memory["last_blog_promos"] = memory["last_blog_promos"][-100:]
 
     _save_memory(memory)
-    log.info(
-        "Schválený post uložen do paměti: '%s' / %s (skóre %.1f, blogy: %s)",
-        topic, post_type, quality_score, all_slugs or "žádné"
-    )
+    score_label = f"QA {quality_score:.1f}" if isinstance(quality_score, (int, float)) else "bez QA skóre"
+    log.info("Schválený post uložen do paměti: '%s' / %s (%s, blogy: %s)",
+             topic, post_type, score_label, all_slugs or "žádné")
 
 
-def get_variety_context() -> dict:
+def get_variety_context(platform: str | None = None) -> dict:
     """
     Vrátí kontext pro prompt, aby se vyhnul opakování.
-    Zahrnuje témata, typy, hooky i naposledy použité blog články.
+    Zahrnuje nedávná témata, formáty a blogové články.
     """
     memory = _load_memory()
     today = date.today()
@@ -323,12 +225,6 @@ def get_variety_context() -> dict:
     recent_types = [
         e["type"] for e in memory.get("used_post_types_last_7", [])
         if (today - date.fromisoformat(e["date"])).days <= 7
-    ]
-
-    # Hooky z posledních 21 dní
-    recent_hooks = [
-        e["formula"] for e in memory.get("used_hooks", [])
-        if (today - date.fromisoformat(e["date"])).days <= 21
     ]
 
     # Blog slugy ze schválených postů (posledních 60 dní) — hlavní zdroj
@@ -352,26 +248,34 @@ def get_variety_context() -> dict:
         if (today - date.fromisoformat(e["date"])).days <= 30
     ]
 
-    has_any = recent_topics or recent_types or recent_hooks
     blog_avoid = (
-        f"\nVYHNI SE těmto blog článkům (již propagovány v posl. 60 dnech): "
+        f"\nNedávno použitý blog (zvaž jiný, pokud existuje lepší volba): "
         f"{', '.join(all_blog_slugs)}"
     ) if all_blog_slugs else ""
+
+    performance_context = get_performance_learning_context(platform)
+
+    avoid_parts = []
+    if recent_topics or recent_types:
+        avoid_parts.append(
+            "KONTEXT PRO ORIGINALITU — tato témata/formáty se nedávno objevily: "
+            f"témata: {', '.join(set(recent_topics)) or 'žádná'}; "
+            f"formáty: {', '.join(set(recent_types)) or 'žádné'}. "
+            "Při podobném zadání zkus jiný konkrétní úhel; téma ani formát nejsou zakázané."
+        )
+    if blog_avoid:
+        avoid_parts.append(blog_avoid.strip())
 
     return {
         "recent_topics": list(set(recent_topics)),
         "recent_post_types": list(set(recent_types)),
-        "recent_hooks": list(set(recent_hooks)),
+        "recent_hooks": [],  # kompatibilita se staršími volajícími; štítky hooků se nepoužívají
         "recent_blog_slugs": all_blog_slugs,
         "recent_captions": recent_captions[-10:],
         "total_posts": memory.get("total_posts", 0),
         "total_approved": memory.get("total_approved", 0),
-        "avoid_instruction": (
-            f"VYHNI SE těmto tématům (použita v posl. 14 dnech): {', '.join(set(recent_topics)) or 'zatím žádná'}\n"
-            f"VYHNI SE těmto typům postů (posl. 7 dní): {', '.join(set(recent_types)) or 'zatím žádné'}\n"
-            f"VYHNI SE těmto hook formulím (posl. 21 dní): {', '.join(set(recent_hooks)) or 'zatím žádné'}"
-            f"{blog_avoid}"
-        ) if has_any else blog_avoid
+        "avoid_instruction": "\n".join(avoid_parts),
+        "performance_context": performance_context,
     }
 
 
@@ -387,7 +291,12 @@ def get_approved_post_stats() -> dict:
     approved = memory.get("approved_posts", [])
 
     last_30 = [e for e in approved if (today - date.fromisoformat(e["date"])).days <= 30]
-    avg_score = round(sum(e["quality_score"] for e in last_30) / len(last_30), 1) if last_30 else 0
+    scores = [
+        float(e["quality_score"])
+        for e in last_30
+        if isinstance(e.get("quality_score"), (int, float))
+    ]
+    avg_score = round(sum(scores) / len(scores), 1) if scores else 0
     blog_count = sum(1 for e in last_30 if e.get("blog_slugs"))
 
     return {
@@ -400,13 +309,12 @@ def get_approved_post_stats() -> dict:
 
 
 # ══════════════════════════════════════════════════
-# AUTO-LEARNING: QG Issue Tracking
+# REDAKČNÍ QA ZÁZNAM
 # ══════════════════════════════════════════════════
 
 def record_qg_issues(post_type: str, issues: list[dict], ai_review: dict | None = None):
     """
-    Zaznamená QG problémy pro učení. Sleduje opakující se vzorce
-    a umožňuje generátoru se jim v budoucnu vyhnout.
+    Uloží redakční připomínky pro přehled; neopravují automaticky další texty.
 
     Args:
         post_type: typ postu (educational, quote, ...)
@@ -453,19 +361,8 @@ def record_qg_issues(post_type: str, issues: list[dict], ai_review: dict | None 
 
 
 def record_hook_score(hook_formula: str, score: float):
-    """Zaznamená QG skóre pro konkrétní hook formuli — umožní rankovat efektivitu hooků."""
-    if not hook_formula:
-        return
-
-    memory = _load_memory()
-    hook_scores = memory.setdefault("hook_scores", {})
-    hook_scores.setdefault(hook_formula, []).append(round(score, 1))
-
-    # Udržuj max 20 skóre na hook (posledních 20 použití)
-    if len(hook_scores[hook_formula]) > 20:
-        hook_scores[hook_formula] = hook_scores[hook_formula][-20:]
-
-    _save_memory(memory)
+    """Deprecated: editorial QA scores are not evidence of a hook's performance."""
+    return
 
 
 def record_engagement(post_date: str, post_type: str, topic: str, engagement: str, notes: str = ""):
@@ -500,159 +397,242 @@ def record_engagement(post_date: str, post_type: str, topic: str, engagement: st
     log.info("Engagement zaznamenán: %s / %s = %s", topic, post_type, engagement)
 
 
-def get_learned_lessons() -> str:
-    """
-    Analyzuje historii QG problémů a engagement dat.
-    Vrátí textovou instrukci pro generátor — co se naučil z minulých chyb.
+POST_METRIC_FIELDS = (
+    "reach", "impressions", "views", "reactions", "comments", "shares", "saves", "link_clicks",
+)
+INTERACTION_FIELDS = ("reactions", "comments", "shares", "saves")
 
-    Returns:
-        str: instrukce pro prompt (prázdný string pokud není co říct)
-    """
+
+def record_published_post(
+    *,
+    post_id: str,
+    platform: str,
+    published_at: str,
+    topic: str = "",
+    post_type: str = "",
+    content_intent: str = "",
+    slot_id: str = "",
+    mode: str = "",
+    page_id: str = "",
+    message: str = "",
+    link: str = "",
+    image_path: str = "",
+    campaign: str = "",
+    tracking_source: str = "",
+) -> bool:
+    """Idempotently saves public post metadata by the platform's stable post ID."""
+    clean_id = str(post_id or "").strip()
+    clean_platform = str(platform or "").strip().lower()
+    if not clean_id or not clean_platform:
+        raise ValueError("published post requires a platform and a stable post_id")
+    if not published_at:
+        raise ValueError("published post requires published_at")
+    try:
+        published_date = date.fromisoformat(str(published_at)[:10])
+    except ValueError as exc:
+        raise ValueError("published_at must begin with a YYYY-MM-DD date") from exc
+    if published_date > date.today():
+        raise ValueError("published_at cannot be in the future")
+
+    entry = {
+        "post_id": clean_id[:180],
+        "platform": clean_platform[:40],
+        "published_at": str(published_at)[:40],
+        "topic": str(topic or "")[:240],
+        "post_type": str(post_type or "")[:80],
+        "content_intent": str(content_intent or "")[:40],
+        "slot_id": str(slot_id or "")[:100],
+        "mode": str(mode or "")[:40],
+        "page_id": str(page_id or "")[:100],
+        "message": str(message or "")[:10000],
+        "link": str(link or "")[:2000],
+        "image_path": str(image_path or "")[:1000],
+        "campaign": str(campaign or "")[:100],
+        "tracking_source": str(tracking_source or "")[:120],
+        "metrics": [],
+    }
+
+    memory = _load_memory()
+    posts = memory.setdefault("published_posts", [])
+    existing = next((post for post in posts if post.get("post_id") == clean_id), None)
+    if existing is None:
+        posts.append(entry)
+        memory["published_posts"] = posts[-500:]
+        _save_memory(memory)
+        return True
+
+    changed = False
+    for key, value in entry.items():
+        if key == "metrics":
+            continue
+        if value and existing.get(key) != value:
+            existing[key] = value
+            changed = True
+    existing.setdefault("metrics", [])
+    if changed:
+        _save_memory(memory)
+    return changed
+
+
+def record_post_metrics(
+    *,
+    post_id: str,
+    measured_on: str,
+    window: str,
+    metrics: dict,
+    source: str = "facebook_insights_manual",
+    notes: str = "",
+) -> bool:
+    """Stores raw aggregate metrics; returns False for an identical repeated import."""
+    clean_id = str(post_id or "").strip()
+    if not clean_id:
+        raise ValueError("metrics require a stable post_id")
+    try:
+        measured_date = date.fromisoformat(str(measured_on))
+    except ValueError as exc:
+        raise ValueError("metrics_as_of must be a date in YYYY-MM-DD format") from exc
+    if measured_date > date.today():
+        raise ValueError("metrics_as_of cannot be in the future")
+    clean_window = str(window or "").strip().lower()
+    if clean_window not in {"24h", "7d", "28d", "lifetime", "custom"}:
+        raise ValueError("window must be 24h, 7d, 28d, lifetime, or custom")
+
+    clean_metrics = {}
+    for field in POST_METRIC_FIELDS:
+        value = metrics.get(field)
+        if value is None or value == "":
+            clean_metrics[field] = None
+            continue
+        if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+            raise ValueError(f"{field} must be a non-negative integer or empty")
+        clean_metrics[field] = value
+    if all(value is None for value in clean_metrics.values()):
+        raise ValueError("at least one raw metric must be provided")
+
+    memory = _load_memory()
+    post = next((item for item in memory.get("published_posts", []) if item.get("post_id") == clean_id), None)
+    if post is None:
+        raise ValueError(f"published post not found for post_id={clean_id}")
+
+    snapshot = {
+        "measured_on": str(measured_on)[:10],
+        "window": clean_window,
+        "source": str(source or "facebook_insights_manual")[:100],
+        **clean_metrics,
+        "notes": str(notes or "")[:1000],
+    }
+    snapshots = post.setdefault("metrics", [])
+    existing = next((row for row in snapshots if row.get("measured_on") == snapshot["measured_on"] and row.get("window") == clean_window), None)
+    if existing == snapshot:
+        return False
+    if existing is not None:
+        existing.update(snapshot)
+    else:
+        snapshots.append(snapshot)
+    post["metrics"] = snapshots[-100:]
+    _save_memory(memory)
+    return True
+
+
+def get_performance_learning_context(platform: str | None = None) -> str:
+    """Return cautious comparisons only after three measured posts in two comparable groups."""
     memory = _load_memory()
     today = date.today()
-    lessons = []
+    latest: dict[tuple[str, str, str, str, str], dict] = {}
+    for post in memory.get("published_posts", []):
+        post_platform = str(post.get("platform") or "").lower()
+        post_type = str(post.get("post_type") or "").strip()
+        mode = str(post.get("mode") or "").strip().lower()
+        post_id = str(post.get("post_id") or "")
+        if not post_id or not post_type or (platform and post_platform != platform.lower()):
+            continue
+        try:
+            if (today - date.fromisoformat(str(post.get("published_at", ""))[:10])).days > 180:
+                continue
+        except ValueError:
+            continue
+        for snapshot in post.get("metrics", []):
+            try:
+                if (today - date.fromisoformat(str(snapshot.get("measured_on", ""))[:10])).days > 180:
+                    continue
+            except ValueError:
+                continue
+            if snapshot.get("reach") is None or snapshot.get("reach", 0) <= 0:
+                continue
+            if any(snapshot.get(field) is None for field in INTERACTION_FIELDS):
+                continue
+            key = (post_platform, str(snapshot.get("window") or ""), mode, post_type, post_id)
+            current = latest.get(key)
+            if current is None or str(snapshot.get("measured_on", "")) > str(current.get("measured_on", "")):
+                latest[key] = snapshot
 
-    # ── 1. Opakující se QG problémy (posledních 30 dní) ──
-    qg_log = [
-        e for e in memory.get("qg_issue_log", [])
-        if (today - date.fromisoformat(e["date"])).days <= 30
-    ]
+    groups: dict[tuple[str, str, str, str], list[dict]] = {}
+    for (post_platform, window, mode, post_type, _post_id), snapshot in latest.items():
+        groups.setdefault((post_platform, window, mode, post_type), []).append(snapshot)
 
-    if qg_log:
-        # Počítej frekvenci problémových oblastí
-        issue_counts: dict[str, int] = {}
-        for entry in qg_log:
-            for issue in entry.get("rule_issues", []):
-                check = issue.get("check", "unknown")
-                issue_counts[check] = issue_counts.get(check, 0) + 1
-            for weak in entry.get("weak_areas", []):
-                area = weak.get("area", "unknown")
-                issue_counts[f"ai_{area}"] = issue_counts.get(f"ai_{area}", 0) + 1
+    eligible_by_comparison: dict[tuple[str, str, str], list[tuple[str, list[dict]]]] = {}
+    for (post_platform, window, mode, post_type), snapshots in groups.items():
+        if len(snapshots) >= 3:
+            eligible_by_comparison.setdefault((post_platform, window, mode), []).append((post_type, snapshots))
 
-        # Top 3 nejčastější problémy
-        top_issues = sorted(issue_counts.items(), key=lambda x: x[1], reverse=True)[:3]
-        if top_issues and top_issues[0][1] >= 2:  # alespoň 2× opakování
-            issue_map = {
-                "hook_strength": "SLABÉ HOOKY — začni odvážněji, konkrétním faktem nebo provokativní otázkou",
-                "ai_hook": "SLABÉ HOOKY — první 2 řádky musí zastavit scrollování",
-                "brand_voice": "BRAND VOICE — tón musí být teplý, moudrý, přístupný (ne korporátní)",
-                "ai_brand_voice": "BRAND VOICE — přirozený tón Mystické Hvězdy, ne generický",
-                "ai_value": "NÍZKÁ HODNOTA — post musí obsahovat konkrétní znalost, ne vágní fráze",
-                "ai_language": "JAZYK — přirozená čeština bez klišé a anglicismů",
-                "ai_engagement": "ENGAGEMENT — přidej osobní otázku nebo výzvu k akci",
-                "cta_missing": "CHYBÍ CTA — každý post potřebuje výzvu k interakci",
-                "english_leak": "ANGLIČTINA V TEXTU — piš čistě česky",
-                "emoji_count": "PŘÍLIŠ EMOJI — max 4, strategicky",
-                "caption_length": "DÉLKA TEXTU — dodržuj limit pro platformu",
-                "ai_image_prompt": "SLABÝ IMAGE PROMPT — více detailů, dodržuj brand styl",
-                "ai_hashtags": "HASHTAGY — relevantnější mix, ne generické",
-            }
-            recurring = []
-            for check, count in top_issues:
-                desc = issue_map.get(check, check.replace("ai_", "").replace("_", " ").upper())
-                recurring.append(f"  • {desc} (opakuje se {count}×)")
-            lessons.append(
-                "UČENÍ Z MINULÝCH CHYB (tyto problémy se opakovaly — VYHNI SE JIM):\n"
-                + "\n".join(recurring)
-            )
-
-        # Nejčastější AI improvement tipy
-        all_improvements: dict[str, int] = {}
-        for entry in qg_log[-15:]:  # posledních 15
-            for tip in entry.get("ai_improvements", []):
-                # Normalizuj tip na klíčové slovo
-                tip_lower = tip.lower()[:60]
-                all_improvements[tip_lower] = all_improvements.get(tip_lower, 0) + 1
-
-        repeated_tips = [tip for tip, count in all_improvements.items() if count >= 2]
-        if repeated_tips:
-            lessons.append(
-                "OPAKOVANÉ TIPY OD AI REVIEWERA:\n"
-                + "\n".join(f"  • {t}" for t in repeated_tips[:3])
-            )
-
-    # ── 2. Hook efektivita ──
-    hook_scores = memory.get("hook_scores", {})
-    if hook_scores:
-        # Průměrné skóre per hook
-        avg_scores = {}
-        for hook, scores in hook_scores.items():
-            if len(scores) >= 2:  # alespoň 2 použití
-                avg_scores[hook] = round(sum(scores) / len(scores), 1)
-
-        if avg_scores:
-            best = sorted(avg_scores.items(), key=lambda x: x[1], reverse=True)[:3]
-            worst = sorted(avg_scores.items(), key=lambda x: x[1])[:2]
-
-            if best and best[0][1] >= 7.0:
-                lessons.append(
-                    "NEJEFEKTIVNĚJŠÍ HOOK FORMULE (preferuj tyto):\n"
-                    + "\n".join(f"  • {h} (průměr {s}/10)" for h, s in best)
-                )
-            if worst and worst[0][1] < 6.5:
-                lessons.append(
-                    "MÉNĚ EFEKTIVNÍ HOOKY (použij jen s opatrností):\n"
-                    + "\n".join(f"  • {h} (průměr {s}/10)" for h, s in worst)
-                )
-
-    # ── 3. Engagement feedback ──
-    eng_log = [
-        e for e in memory.get("engagement_log", [])
-        if (today - date.fromisoformat(e["rated_at"])).days <= 60
-    ]
-
-    if eng_log:
-        # Co funguje: high engagement témata a typy
-        high_topics = [e["topic"] for e in eng_log if e["engagement"] == "high"]
-        low_topics = [e["topic"] for e in eng_log if e["engagement"] == "low"]
-        high_types = [e["post_type"] for e in eng_log if e["engagement"] == "high"]
-
-        if high_topics:
-            # Deduplikace
-            unique_high = list(dict.fromkeys(high_topics))[:5]
-            lessons.append(
-                f"TÉMATA S VYSOKÝM ENGAGEMENTEM (dělej více podobného): {', '.join(unique_high)}"
-            )
-        if low_topics:
-            unique_low = list(dict.fromkeys(low_topics))[:3]
-            lessons.append(
-                f"TÉMATA S NÍZKÝM ENGAGEMENTEM (přistupuj jinak): {', '.join(unique_low)}"
-            )
-        if high_types:
-            from collections import Counter
-            type_counts = Counter(high_types).most_common(3)
-            lessons.append(
-                "NEJÚSPĚŠNĚJŠÍ TYPY POSTŮ: "
-                + ", ".join(f"{t} ({c}× high)" for t, c in type_counts)
-            )
-
-        # Poznámky z feedbacku
-        useful_notes = [e["notes"] for e in eng_log if e.get("notes") and e["engagement"] == "high"]
-        if useful_notes:
-            lessons.append(
-                "CO FUNGOVALO (z manuálního feedbacku):\n"
-                + "\n".join(f"  • {n[:100]}" for n in useful_notes[-3:])
-            )
-
-    if not lessons:
+    lines = []
+    for (post_platform, window, mode), type_groups in eligible_by_comparison.items():
+        if len(type_groups) < 2:
+            continue
+        lines.append(f"{post_platform} / {mode or 'nezadáno'} / okno {window}:")
+        for post_type, snapshots in sorted(type_groups):
+            interaction_rates = [
+                sum(int(snapshot[field]) for field in INTERACTION_FIELDS) / int(snapshot["reach"])
+                for snapshot in snapshots
+            ]
+            link_rates = [
+                int(snapshot["link_clicks"]) / int(snapshot["reach"])
+                for snapshot in snapshots if snapshot.get("link_clicks") is not None
+            ]
+            line = f"- {post_type}: n={len(snapshots)}, medián reakcí+komentářů+sdílení+uložení / reach {statistics.median(interaction_rates):.1%}"
+            if len(link_rates) >= 3:
+                line += f", medián prokliků / reach {statistics.median(link_rates):.1%}"
+            lines.append(line)
+    if not lines:
         return ""
+    return (
+        "Popisné výsledky srovnatelných zveřejněných příspěvků (nejméně 3 kusy na skupinu, "
+        "stejná platforma, umístění a okno měření):\n"
+        + "\n".join(lines)
+        + "\nPoužij pouze jako slabý podklad pro nový test; malý nebo nesrovnatelný vzorek nic nedokazuje. "
+        "Nekopíruj starší text a neoptimalizuj jen na reakce."
+    )
 
-    return "\n\n".join(lessons)
 
+def record_editorial_note(note: str, source: str = "manual"):
+    """Uloží ruční redakční poznámku odděleně od metrik engagementu."""
+    cleaned = str(note or "").strip()
+    if not cleaned:
+        return
+
+    memory = _load_memory()
+    notes = memory.setdefault("editorial_notes", [])
+    notes.append({
+        "date": date.today().isoformat(),
+        "source": str(source or "manual")[:40],
+        "note": cleaned[:1000],
+    })
+    memory["editorial_notes"] = notes[-100:]
+    _save_memory(memory)
+    log.info("Redakční poznámka uložena (%s)", source)
+
+
+def get_learned_lessons() -> str:
+    """Legacy compatibility shim; historical scores no longer steer generated copy."""
+    return ""
 
 def get_hook_ranking() -> dict[str, float]:
-    """Vrátí průměrné QG skóre per hook formula. Prázdný dict pokud nejsou data."""
-    memory = _load_memory()
-    hook_scores = memory.get("hook_scores", {})
-    return {
-        hook: round(sum(scores) / len(scores), 1)
-        for hook, scores in hook_scores.items()
-        if len(scores) >= 2
-    }
+    """Legacy compatibility shim; an internal QA score cannot rank hook performance."""
+    return {}
 
 
 def get_learning_stats() -> dict:
-    """Vrátí statistiky auto-learning systému pro cmd_status."""
+    """Vrátí počty historických poznámek pro příkaz status."""
     memory = _load_memory()
     today = date.today()
 
@@ -677,82 +657,18 @@ def get_learning_stats() -> dict:
 
 
 # ══════════════════════════════════════════════════
-# GOLDEN TEMPLATES — učení z nejlepších postů
+# STARŠÍ ŠABLONY — ponecháno jen pro kompatibilitu existujících záznamů
 # ══════════════════════════════════════════════════
 
-GOLDEN_THRESHOLD = 8.5  # QG skóre pro zařazení do golden templates
-
 def record_golden_template(post_type: str, caption: str, hook_formula: str, score: float):
-    """
-    Uloží caption s vysokým QG skóre jako vzorovou šablonu.
-    Automaticky voláno po schválení postu s skóre >= GOLDEN_THRESHOLD.
-    """
-    if score < GOLDEN_THRESHOLD:
-        return
-
-    memory = _load_memory()
-    golden = memory.setdefault("golden_templates", [])
-
-    # Deduplikace — nesdílej podobné captiony
-    caption_start = caption[:60].lower()
-    for existing in golden:
-        if existing.get("caption_start", "")[:60].lower() == caption_start:
-            return  # už existuje podobný
-
-    entry = {
-        "post_type": post_type,
-        "hook_formula": hook_formula,
-        "caption_start": caption[:200].replace("\n", " ").strip(),
-        "caption_length": len(caption.split()),
-        "score": round(score, 1),
-        "date": date.today().isoformat(),
-    }
-
-    golden.append(entry)
-
-    # Max 30 golden templates (nejnovější)
-    if len(golden) > 30:
-        golden.sort(key=lambda x: x["score"], reverse=True)
-        memory["golden_templates"] = golden[:30]
-
-    _save_memory(memory)
-    log.info("Golden template uložen: %s / %s (skóre %.1f)", post_type, hook_formula, score)
+    """Deprecated: an editorial QA score does not make a post a reusable template."""
+    return
 
 
 def get_golden_examples(post_type: str = None, limit: int = 3) -> str:
-    """
-    Vrátí textovou sekci s golden templates pro injekci do promptu.
-    Pokud je zadán post_type, preferuje šablony stejného typu.
-    """
-    memory = _load_memory()
-    golden = memory.get("golden_templates", [])
+    """Legacy compatibility shim; old high-scoring copy is not injected as a template."""
+    return ""
 
-    if not golden:
-        return ""
-
-    # Preferuj šablony stejného typu, pak ostatní
-    same_type = [g for g in golden if g["post_type"] == post_type] if post_type else []
-    other = [g for g in golden if g["post_type"] != post_type] if post_type else golden
-
-    selected = (same_type[:2] + other[:1]) if same_type else other[:limit]
-
-    if not selected:
-        return ""
-
-    examples = []
-    for g in selected:
-        examples.append(
-            f"  [{g['post_type']}] (QG {g['score']}/10, hook: {g['hook_formula']})\n"
-            f"  \"{g['caption_start']}…\""
-        )
-
-    return (
-        "GOLDEN TEMPLATES — tak vypadá perfektní post (inspiruj se strukturou, ne obsahem):\n"
-        + "\n\n".join(examples)
-    )
-
-
-# ══════════════════════════════════════════════════
 # CONTENT SERIES — mini-série postů
 # ══════════════════════════════════════════════════
 
@@ -808,11 +724,8 @@ Téma série: {series['theme']}
 {('Popis: ' + series['description']) if series.get('description') else ''}
 {'Předchozí posty v sérii:' + chr(10) + history if history else 'Toto je první post série.'}
 
-PRAVIDLA SÉRIE:
-- Navazuj na předchozí posty — čtenář musí cítit kontinuitu
-- Začni odkazem na minulý díl: "Včera jsme mluvili o X, dnes jdeme hlouběji..."
-- Buduj napětí — na konci naznač co přijde příště
-- Každý díl musí stát i sám o sobě (pro ty co neviděli předchozí)
+Série může mít společnou linku, pokud to tématu pomáhá. Každý díl může fungovat samostatně;
+neodkazuj na pořadí, včerejší vydání ani příští díl, pokud to není skutečnou součástí zadání.
 """
 
 
@@ -821,7 +734,7 @@ PRAVIDLA SÉRIE:
 # ══════════════════════════════════════════════════
 
 def set_weekly_theme(theme: str, description: str = ""):
-    """Nastaví téma týdne — všechny posty budou mít společný tón."""
+    """Uloží dobrovolné téma týdne jako možnou inspiraci."""
     memory = _load_memory()
     # Začátek týdne = pondělí
     today = date.today()
@@ -853,163 +766,21 @@ def get_weekly_theme_context() -> str:
         return ""
 
     return f"""
-TÉMA TÝDNE: "{wt['theme']}"
+MOŽNÉ TÉMA TÝDNE: "{wt['theme']}"
 {('Popis: ' + wt['description']) if wt.get('description') else ''}
-Všechny posty tento týden by měly rezonovat s tímto tématem.
-Ne každý post musí být přímo o tomto tématu — ale tón, metafory nebo závěrečná
-myšlenka by měly směřovat k weekly theme. Buduje to koherenci a profesionální dojem.
+Použij ho jen tehdy, když přirozeně souvisí s aktuálním zadáním. Není to povinné téma,
+metafora ani závěr a obsah kvůli němu neohýbej.
 """
 
 
 # ══════════════════════════════════════════════════
-# CTA LIBRARY s rotací
-# ══════════════════════════════════════════════════
-
-# ============================================================
-# ENGAGEMENT BOOSTERS — techniky pro konkrétní metriky
-# ============================================================
-
-ENGAGEMENT_BOOSTERS = {
-    "save_triggers": [
-        "📌 Ulož si tohle na později — budeš to potřebovat.",
-        "Tohle si ulož. Až přijde ten moment, budeš vědět proč.",
-        "Save-worthy? Pokud ano, klikni na záložku 📎",
-        "Tenhle post si zaslouží bookmark — vrátíš se k němu.",
-    ],
-    "share_triggers": [
-        "Označ kamarádku, která to potřebuje slyšet 💜",
-        "Sdílej do stories — možná to dnes někdo potřebuje víc než ty.",
-        "Pošli to někomu, na koho jsi při čtení myslela.",
-        "Sdílej → někdo v tvém okolí tohle právě teď hledá.",
-    ],
-    "comment_starters": [
-        "A nebo B? Napiš do komentářů 👇",
-        "Jedním slovem — co ti teď přišlo na mysl? Napiš to dole.",
-        "Souhlasíš, nebo vidíš to jinak? Zajímá mě tvůj pohled.",
-        "Napiš emoji, která vystihuje tvůj dnešní stav 🌙",
-        "Odpověz jednou větou — první, co tě napadne.",
-    ],
-    "poll_binary": [
-        "Intuice 🌙 nebo logika 🧠? Co volíš?",
-        "Ráno 🌅 nebo večer 🌙? Kdy je tvá energie nejsilnější?",
-        "Tarot 🃏 nebo astrologie ⭐? Co ti dává víc?",
-    ],
-}
-
-# ============================================================
-# MICRO-INTERACTIONS — drobné engagement triggery v textu
-# ============================================================
-
-MICRO_INTERACTIONS = [
-    "Dej 🔥 pokud ti tohle rezonuje.",
-    "Double tap, pokud tohle znáš.",
-    "Dej ❤️ pokud souhlasíš — chci vědět, kolik nás je.",
-    "Napiš ANO do komentáře, pokud jsi to taky zažila.",
-    "Klikni na 💾 — tenhle post si zaslouží záložku.",
-    "Pošli to kamarádce — ví proč.",
-    "Napiš svou kartu / číslo / znamení do komentáře 👇",
-    "Dej 🙌 pokud jsi to potřebovala slyšet.",
-]
-
-
-CTA_LIBRARY = {
-    "engagement": [
-        "Napiš mi do komentářů svou zkušenost",
-        "Označ někoho, kdo to potřebuje slyšet",
-        "Sdílej to do stories, ať to vidí víc lidí",
-        "Co tě napadlo jako první? Napiš to dole",
-        "Souhlasíš? Dej ❤️ pokud ano",
-        "Jaká je tvá zkušenost? Zajímá mě tvůj příběh",
-        "Dej vědět v komentářích, jestli to rezonuje",
-        "Řekni mi — které téma chceš probrat příště?",
-    ],
-    "save": [
-        "Ulož si tohle na později",
-        "Tohle si bookmarkni — budeš to potřebovat",
-        "Ulož a vrať se k tomu, až to budeš potřebovat",
-        "Sdílej s někým, kdo prochází podobným",
-    ],
-    "web": [
-        "Víc se dozvíš na mystickahvezda.cz",
-        "Vyzkoušej si to zdarma na mystickahvezda.cz",
-        "Odkaz na nástroj najdeš v biu",
-        "Pronikni hlouběji — článek čeká na mystickahvezda.cz",
-    ],
-    "reflection": [
-        "Zavři oči a polož si tu otázku znovu. Co přijde?",
-        "Zkus si to dnes večer zapsat do deníku",
-        "Nech to v sobě chvíli být. Odpověď přijde",
-        "Dnes večer si na to vzpomeň — a všimni si, co cítíš",
-    ],
-}
-
+# CTA a interakce se píší podle konkrétního příspěvku, ne z rotující knihovny.
 
 def pick_cta(content_intent: str, post_type: str) -> str:
-    """
-    Vybere CTA z knihovny — rotuje, aby se neopakovalo.
-
-    Args:
-        content_intent: pure_value / soft_promo / direct_promo
-        post_type: typ postu pro lepší výběr kategorie
-    """
-    memory = _load_memory()
-    used_ctas = memory.get("used_ctas", [])
-
-    # Vyber kategorii podle intentu a typu
-    if content_intent == "pure_value":
-        if post_type in ("question", "challenge"):
-            pool = CTA_LIBRARY["engagement"]
-        elif post_type in ("save_worthy", "tip"):
-            pool = CTA_LIBRARY["save"]
-        else:
-            pool = CTA_LIBRARY["engagement"] + CTA_LIBRARY["reflection"]
-    elif content_intent == "soft_promo":
-        pool = CTA_LIBRARY["engagement"] + CTA_LIBRARY["web"][:2]
-    else:  # direct_promo
-        pool = CTA_LIBRARY["web"] + CTA_LIBRARY["engagement"][:3]
-
-    # Vyhni se naposledy použitým
-    available = [c for c in pool if c not in used_ctas[-6:]]
-    if not available:
-        available = pool  # fallback
-
-    chosen = random.choice(available)
-
-    # Zaznamenej
-    used_ctas.append(chosen)
-    if len(used_ctas) > 30:
-        used_ctas = used_ctas[-30:]
-    memory["used_ctas"] = used_ctas
-    _save_memory(memory)
-
-    return chosen
+    """Zpětně kompatibilní rozhraní; CTA se do textu automaticky nevkládá."""
+    return ""
 
 
 def pick_engagement_booster(post_type: str, content_intent: str) -> str:
-    """
-    Vybere engagement booster + micro-interaction podle typu postu.
-    Vrátí text pro injekci do promptu.
-    """
-    # Vyber kategorii boosteru podle typu postu
-    if post_type in ("save_worthy", "tip", "educational", "carousel_plan"):
-        category = "save_triggers"
-    elif post_type in ("quote", "story", "daily_energy"):
-        category = "share_triggers"
-    elif post_type in ("question", "challenge"):
-        category = "comment_starters"
-    else:
-        category = random.choice(["save_triggers", "share_triggers", "comment_starters"])
-
-    booster = random.choice(ENGAGEMENT_BOOSTERS[category])
-    micro = random.choice(MICRO_INTERACTIONS)
-
-    # Pro pure_value nepřidávej poll_binary (příliš agresivní)
-    poll = ""
-    if content_intent != "pure_value" and post_type in ("question", "challenge"):
-        poll = f"\n  Volitelně binární volba: \"{random.choice(ENGAGEMENT_BOOSTERS['poll_binary'])}\""
-
-    return (
-        f"ENGAGEMENT BOOSTER (zapracuj přirozeně, ne násilně):\n"
-        f"  Primární: \"{booster}\"\n"
-        f"  Micro-interaction: \"{micro}\"{poll}"
-    )
+    """Zpětně kompatibilní rozhraní; interakce se nevkládá automaticky."""
+    return ""

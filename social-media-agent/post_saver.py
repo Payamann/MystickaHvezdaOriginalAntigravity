@@ -1,6 +1,7 @@
 """
 Post Saver — ukládá posty a generuje pixel-perfect Instagram/Facebook náhledy
 """
+import html as html_utils
 import json
 import os
 from pathlib import Path
@@ -87,6 +88,9 @@ def save_post(
         "hook_formula": post_data.get("hook_formula", ""),
         "image_path": str(image_path) if image_path else None,
         "published_at": None,
+        "quality_score": post_data.get("quality_score"),
+        "quality_verdict": post_data.get("quality_verdict", ""),
+        "quality_approved": bool(post_data.get("quality_approved", False)),
         # Uložíme i varianty pokud existují
         "variations": post_data.get("variations", []),
     }
@@ -118,7 +122,6 @@ def _create_instagram_preview(post_record: dict, image_path: Path, filename: str
     caption = post_record.get("caption", "")
     hashtags = post_record.get("hashtags", [])
     platform = post_record.get("platform", "instagram")
-    hook = post_record.get("hook_formula", "")
     variations = post_record.get("variations", [])
 
     # Příprava obrázku
@@ -128,14 +131,8 @@ def _create_instagram_preview(post_record: dict, image_path: Path, filename: str
     else:
         img_html = '<div class="post-image placeholder-img">🔮</div>'
 
-    # Caption → HTML (zachovat zalomení, první řádek bold)
-    caption_lines = caption.strip().split('\n')
-    first_line = caption_lines[0] if caption_lines else ""
-    rest = '\n'.join(caption_lines[1:]) if len(caption_lines) > 1 else ""
-
-    caption_html = f'<strong>{first_line}</strong>'
-    if rest:
-        caption_html += '<br>' + rest.replace('\n', '<br>')
+    # First line is not a forced hook; preserve the caption's own rhythm.
+    caption_html = html_utils.escape(caption).replace('\n', '<br>')
 
     hashtags_html = ' '.join(f'<span class="hashtag">{h}</span>' for h in hashtags)
 
@@ -145,13 +142,11 @@ def _create_instagram_preview(post_record: dict, image_path: Path, filename: str
         variants_html = """<div class="variants-section">
         <h3>🔀 Varianty captionů</h3>"""
         for i, var in enumerate(variations):
-            var_caption = var.get("caption", "").replace('\n', '<br>')
-            var_hook = var.get("hook_formula", "")
+            var_caption = html_utils.escape(var.get("caption", "")).replace('\n', '<br>')
             variants_html += f"""
         <div class="variant-card" onclick="selectVariant({i})">
           <div class="variant-header">
             <span class="variant-num">Varianta {i+1}</span>
-            <span class="hook-badge">{var_hook}</span>
           </div>
           <div class="variant-caption">{var_caption}</div>
         </div>"""
@@ -231,9 +226,6 @@ def _create_instagram_preview(post_record: dict, image_path: Path, filename: str
   .meta-key {{ color: #888; }}
   .meta-val {{ color: #e8deff; font-weight: 500; }}
 
-  .hook-badge {{ display: inline-block; background: #2a0060; color: #a855f7;
-               padding: 3px 10px; border-radius: 8px; font-size: 11px; font-style: italic; }}
-
   .prompt-box {{ background: #0a0020; border-radius: 8px; padding: 12px; font-size: 12px;
                 color: #a080c0; font-style: italic; line-height: 1.5; }}
 
@@ -298,7 +290,7 @@ def _create_instagram_preview(post_record: dict, image_path: Path, filename: str
           <span class="ig-action">📤</span>
           <span class="ig-action ig-bookmark">🔖</span>
         </div>
-        <div class="ig-likes">🤍 Buď první kdo to ocení</div>
+        <div class="ig-likes">Náhled rozvržení · bez skutečných metrik</div>
         <div class="ig-caption-wrap">
           <strong>mystickahvezda</strong>&nbsp;{caption_html}<br><br>
           {hashtags_html}
@@ -332,11 +324,7 @@ def _create_instagram_preview(post_record: dict, image_path: Path, filename: str
         <span class="meta-val">{post_record.get('post_type', '—')}</span>
       </div>
       <div class="meta-row">
-        <span class="meta-key">Hook vzorec</span>
-        <span class="hook-badge">{hook or '—'}</span>
-      </div>
-      <div class="meta-row">
-        <span class="meta-key">Délka captionу</span>
+        <span class="meta-key">Délka textu</span>
         <span class="meta-val">{word_count} slov / {char_count} znaků</span>
       </div>
     </div>
@@ -349,7 +337,7 @@ def _create_instagram_preview(post_record: dict, image_path: Path, filename: str
 
     <!-- Hashtags -->
     <div class="info-card">
-      <h3>🏷️ Hashtags ({len(hashtags)} tagů)</h3>
+      <h3>🏷️ Hashtagy ({len(hashtags)})</h3>
       <div class="hashtag-cloud">
         {''.join(f'<span class="hashtag-pill">{h}</span>' for h in hashtags)}
       </div>

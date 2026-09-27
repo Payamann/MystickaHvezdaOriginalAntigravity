@@ -10,7 +10,7 @@ env_path = Path(__file__).parent / ".env"
 load_dotenv(env_path, override=True, encoding='utf-8')
 
 # === API KLÍČE ===
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")   # Claude — generování textů
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")         # GPT-6 Luna — texty a komentáře
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")          # Gemini — generování obrázků (Imagen 3)
 META_ACCESS_TOKEN = os.getenv("META_ACCESS_TOKEN", "")
 META_PAGE_ID = os.getenv("META_PAGE_ID", "")
@@ -33,10 +33,17 @@ BRAND_NAME = os.getenv("BRAND_NAME", "Mystická Hvězda")
 WEBSITE_URL = os.getenv("WEBSITE_URL", "https://www.mystickahvezda.cz")
 LANGUAGE = os.getenv("LANGUAGE", "cs")
 
-# === CLAUDE MODELY ===
-TEXT_MODEL = "claude-sonnet-4-5"              # Pro texty, captions, hashtags
-TEXT_MODEL_PRO = "claude-opus-4-5"            # Pro složitější úlohy (refinement, weekly plan)
-TEXT_MODEL_FAST = "claude-haiku-4-5-20251001" # Pro rychlé úlohy (quality gate, scoring)
+# === OPENAI TEXT MODEL ===
+# Veškeré textové cesty používají GPT-6 Luna s výchozím reasoningem medium.
+# Tři aliasy zachovávají existující rozhraní pro volání podle typu úlohy.
+TEXT_MODEL = "gpt-6-luna"
+TEXT_MODEL_PRO = "gpt-6-luna"
+TEXT_MODEL_FAST = "gpt-6-luna"
+TEXT_REASONING_EFFORT = os.getenv("TEXT_REASONING_EFFORT", "medium").strip().lower() or "medium"
+if TEXT_REASONING_EFFORT not in {"none", "low", "medium", "high", "xhigh", "max"}:
+    raise ValueError("TEXT_REASONING_EFFORT musí být none, low, medium, high, xhigh nebo max")
+# Responses API započítává reasoning tokeny do max_output_tokens.
+TEXT_MAX_OUTPUT_TOKENS = max(1024, int(os.getenv("TEXT_MAX_OUTPUT_TOKENS", "8192")))
 IMAGE_MODEL = "imagen-3.0-generate-002"       # Imagen 3 pro obrázky (Gemini zůstává jen pro obrázky)
 
 # === META GRAPH API ===
@@ -52,7 +59,7 @@ IMAGES_DIR = OUTPUT_DIR / "images"
 BLOG_INDEX_PATH = BASE_DIR.parent / "data" / "blog-index.json"
 
 # === CONTENT NASTAVENÍ ===
-# Témata pro posty (rotujeme automaticky)
+# Témata jako výchozí nabídka; žádné téma není povinné ani automaticky zakázané.
 CONTENT_THEMES = [
     # Systémy — přímé nástroje na webu
     "tarot",
@@ -74,6 +81,7 @@ CONTENT_THEMES = [
     "čínský horoskop",
     "křišťálová koule a věštění",
     "astromapa a místa na světě",
+    "hvězdný průvodce a osobní záměry",
     # Životní témata (pure_value, bez přímého nástroje)
     "karmické vztahy a spřízněné duše",
     "synchronicita a znamení",
@@ -82,27 +90,22 @@ CONTENT_THEMES = [
     "sezónní energie a astrologie roku",
 ]
 
-# Témata s přímým nástrojem na webu — vhodná pro soft_promo a direct_promo
-# Každé téma má URL na mystickahvezda.cz — agent MUSÍ odkazovat jen na relevantní URL
+# Pouze doložené funkce, které smějí být použity v dobrovolném promo příspěvku.
 PROMOTABLE_TOOLS = {
-    "tarot":                           "mystickahvezda.cz/tarot.html",
-    "numerologie":                     "mystickahvezda.cz/numerologie.html",
-    "astrologie":                      "mystickahvezda.cz/horoskopy.html",
-    "runy":                            "mystickahvezda.cz/runy.html",
-    "andělé a andělské karty":         "mystickahvezda.cz/andelske-karty.html",
-    "lunární rituály a fáze měsíce":   "mystickahvezda.cz/lunace.html",
-    "natální karta a birth chart":     "mystickahvezda.cz/natalni-karta.html",
-    "partnerská shoda a kompatibilita":"mystickahvezda.cz/partnerska-shoda.html",
-    "minulé životy a karma":           "mystickahvezda.cz/minuly-zivot.html",
-    "šamanské kolo a totemová zvířata":"mystickahvezda.cz/shamansko-kolo.html",
-    "horoskopy a předpovědi":          "mystickahvezda.cz/horoskopy.html",
-    "sny a jejich výklad":             "mystickahvezda.cz/snar.html",
-    "biorytmy a osobní cykly":         "mystickahvezda.cz/biorytmy.html",
-    "aura a barvy energie":            "mystickahvezda.cz/aura.html",
-    "afirmace a denní záměry":         "mystickahvezda.cz/mentor.html",
-    "čínský horoskop":                 "mystickahvezda.cz/cinsky-horoskop.html",
-    "křišťálová koule a věštění":      "mystickahvezda.cz/kristalova-koule.html",
-    "astromapa a místa na světě":      "mystickahvezda.cz/astro-mapa.html",
+    "tarot":                           "/tarot.html",
+    "numerologie":                     "/numerologie.html",
+    "astrologie":                      "/horoskopy.html",
+    "runy":                            "/runy.html",
+    "andělé a andělské karty":         "/andelske-karty.html",
+    "lunární rituály a fáze měsíce":   "/lunace.html",
+    "natální karta a birth chart":     "/natalni-karta.html",
+    "partnerská shoda a kompatibilita":"/partnerska-shoda.html",
+    "minulé životy a karma":           "/minuly-zivot.html",
+    "šamanské kolo a totemová zvířata":"/shamansko-kolo.html",
+    "horoskopy a předpovědi":          "/horoskopy.html",
+    "afirmace a denní záměry":         "/mentor.html",
+    "hvězdný průvodce a osobní záměry":"/mentor.html",
+    "křišťálová koule a věštění":      "/kristalova-koule.html",
 }
 
 # Zpětná kompatibilita — seznam témat pro anti-repetition logiku
@@ -112,125 +115,58 @@ PROMOTABLE_THEMES = list(PROMOTABLE_TOOLS.keys())
 POST_TYPES = {
     "educational":   "Vzdělávací post — vysvětluje mystický koncept",
     "myth_bust":     "Odhalení mýtu — bourá běžné omyly o mystice",
-    "story":         "Příběhový post — s konkrétní scénou a lekcí",
-    "quote":         "Původní citát nebo moudrost značky",
+    "story":         "Příběhová miniatura; nesmí se vydávat za skutečný osobní zážitek",
+    "quote":         "Původní myšlenka značky; bez smyšleného autora nebo citace",
     "question":      "Zapojovací otázka pro komunitu",
     "tip":           "Konkrétní praktický rituál nebo tip",
-    "challenge":     "Výzva pro komunitu (3-7 denní)",
+    "challenge":     "Volitelný nenátlakový námět k vyzkoušení; bez slibů výsledku",
     "blog_promo":    "Propagace blogového článku",
-    "daily_energy":  "Denní energetická předpověď (lunár + astro)",
-    "carousel_plan": "Plán karusel postu (7 slidů)",
-    "cross_system":  "Propojení 2+ mystických systémů (tarot+astro, numerologie+runy...)",
-    "tool_demo":     "Ukázka nástroje na konkrétním příkladu — taste of premium",
-    "save_worthy":   "Checklist / porovnání / quick reference — obsah k uložení",
+    "daily_energy":  "Reflexivní denní obsah; aktuální astro údaje jen z ověřeného kontextu",
+    "carousel_plan": "Osnova carouselu podle skutečného tématu a zvoleného počtu slidů",
+    "cross_system":  "Opatrné symbolické propojení systémů, pouze když dává smysl",
+    "tool_demo":     "Ukázka funkce jen na ověřených podkladech; bez vymyšleného výstupu",
+    "save_worthy":   "Praktický přehled nebo postup, pokud se pro téma hodí",
 }
 
-# Denní časové sloty pro 3× denní posting (ráno / poledne / večer)
+# Orientační sloty se používají pouze při výslovné volbě více návrhů denně.
+# Časy jsou provozní poznámka, ne doporučení založené na datech o publiku.
 DAILY_TIME_SLOTS = [
     {
         "id": "morning",
-        "label": "🌅 Ráno",
+        "label": "Návrh 1",
         "time": "08:00",
-        # save_worthy zvýšeno — ranní saves jsou nejsilnější signál pro IG algoritmus
-        "preferred_types": ["daily_energy", "quote", "tip", "save_worthy"],
-        "type_weights":    [0.30,           0.20,    0.25,  0.25],
-        "content_intent": "pure_value",
+        "preferred_types": ["educational", "quote", "tip", "daily_energy", "save_worthy"],
     },
     {
         "id": "noon",
-        "label": "☀️ Poledne",
+        "label": "Návrh 2",
         "time": "12:00",
-        # cross_system a tool_demo jsou unikátní formáty — musí být v rotaci každý týden
-        "preferred_types": ["educational", "myth_bust", "story", "cross_system", "tool_demo", "blog_promo"],
-        "type_weights":    [0.25,           0.15,        0.20,   0.20,            0.15,         0.05],
-        "content_intent": None,  # auto z pick_content_intent()
+        "preferred_types": ["educational", "myth_bust", "story", "cross_system", "carousel_plan"],
     },
     {
         "id": "evening",
-        "label": "🌙 Večer",
+        "label": "Návrh 3",
         "time": "19:00",
-        "preferred_types": ["question", "challenge", "myth_bust"],
-        "type_weights":    [0.55,        0.25,         0.20],
-        "content_intent": "pure_value",
+        "preferred_types": ["question", "challenge", "myth_bust", "story"],
     },
 ]
-
-# Týdenní rytmus — různé dny mají různý obsah a energii
-# Agent to použije pro výběr témat a tónu
-WEEKLY_RHYTHM = {
-    0: {  # Pondělí
-        "mood": "motivační",
-        "focus": "nový začátek, záměry, energie týdne",
-        "preferred_themes": ["afirmace a denní záměry", "numerologie", "lunární rituály a fáze měsíce"],
-        "avoid_types": ["challenge"],  # Pondělí není den pro výzvy — lidé teprve startují
-        "boost_types": ["daily_energy", "quote", "save_worthy"],
-    },
-    1: {  # Úterý
-        "mood": "vzdělávací",
-        "focus": "hloubkové znalosti, systémy, jak věci fungují",
-        "preferred_themes": ["tarot", "runy", "astrologie", "numerologie", "andělé a andělské karty"],
-        "avoid_types": [],
-        "boost_types": ["educational", "cross_system", "myth_bust"],
-    },
-    2: {  # Středa
-        "mood": "praktický",
-        "focus": "rituály, tipy, konkrétní nástroje",
-        "preferred_themes": ["lunární rituály a fáze měsíce", "šamanské kolo a totemová zvířata", "biorytmy a osobní cykly"],
-        "avoid_types": [],
-        "boost_types": ["tip", "tool_demo", "save_worthy"],
-    },
-    3: {  # Čtvrtek
-        "mood": "hluboký",
-        "focus": "sebepoznání, stíny, karmanické vzorce",
-        "preferred_themes": ["natální karta a birth chart", "minulé životy a karma", "karmické vztahy a spřízněné duše"],
-        "avoid_types": [],
-        "boost_types": ["story", "cross_system", "educational"],
-    },
-    4: {  # Pátek
-        "mood": "lehký a zábavný",
-        "focus": "vztahy, kompatibilita, horoskopy — konec týdne, odlehčení",
-        "preferred_themes": ["partnerská shoda a kompatibilita", "horoskopy a předpovědi", "synchronicita a znamení"],
-        "avoid_types": ["challenge"],
-        "boost_types": ["question", "myth_bust", "quote"],
-    },
-    5: {  # Sobota
-        "mood": "komunitní",
-        "focus": "sdílení, příběhy, otázky — víkend = více času na čtení",
-        "preferred_themes": ["sny a jejich výklad", "aura a barvy energie", "duchovní rozvoj"],
-        "avoid_types": [],
-        "boost_types": ["story", "question", "save_worthy"],
-    },
-    6: {  # Neděle
-        "mood": "reflexivní",
-        "focus": "uzavírání týdne, příprava na nový, introspekce",
-        "preferred_themes": ["sebepoznání a životní účel", "sezónní energie a astrologie roku", "afirmace a denní záměry"],
-        "avoid_types": ["tool_demo"],  # Neděle není prodejní den
-        "boost_types": ["quote", "daily_energy", "tip"],
-    },
-}
 
 # Adresář pro content kalendáře
 CALENDAR_DIR = OUTPUT_DIR / "calendar"
 
-# Content Pillars — doporučený poměr typů obsahu
-# 40% vzdělávání | 30% zapojení | 20% propagace | 10% inspirace
+# Orientační tematické skupiny pro starší nástroje; bez předepsaných poměrů.
 CONTENT_PILLARS = {
-    "education":   ["educational", "myth_bust", "story", "cross_system"],  # 40%
-    "engagement":  ["question", "challenge", "daily_energy"],              # 30%
-    "promotion":   ["blog_promo", "carousel_plan", "tool_demo"],           # 20%
-    "inspiration": ["quote", "tip", "save_worthy"],                        # 10%
+    "education": ["educational", "myth_bust", "story", "cross_system"],
+    "engagement": ["question", "challenge", "daily_energy"],
+    "promotion": ["blog_promo", "tool_demo"],
+    "inspiration": ["quote", "tip", "save_worthy"],
 }
 
-# Hashtags základní sada (vždy přidány)
-BASE_HASHTAGS = [
-    "#mystickahvezda",
-    "#spiritualita",
-    "#duchovnírozvoj",
-    "#ezoterika",
-]
+# Výchozí hashtagy se automaticky nepřidávají.
+BASE_HASHTAGS = []
 
-# Hashtag Clusters — tematické sady pro lepší dosah
-# Agent vybere 2-3 relevantní clustery + base = optimální mix
+# Volitelné tematické hashtagy pro ruční výběr; agent je nepřidává automaticky.
+# Nejde o příslib dosahu ani o povinný počet hashtagů.
 HASHTAG_CLUSTERS = {
     "tarot": {
         "big": ["#tarot", "#tarotreading", "#tarotcommunity"],

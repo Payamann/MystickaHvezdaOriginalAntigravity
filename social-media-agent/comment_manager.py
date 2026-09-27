@@ -4,7 +4,7 @@ Comment Manager — správa komentářů na Facebooku a Instagramu
 Funkce:
   - Načtení nových komentářů z Meta Graph API
   - Detekce tónu a typu komentáře (AI)
-  - Generování odpovědí (Gemini)
+  - Generování odpovědí (GPT-6 Luna přes OpenAI Responses API)
   - Označení komentářů jako vyřízených
   - Lokální databáze komentářů (JSON)
   - Ochrana před spamem a negativními komentáři
@@ -905,7 +905,7 @@ def get_pending_comments(
     min_priority: int = 0,
 ) -> list[dict]:
     """
-    Vrátí nevyřízené komentáře seřazené podle priority. Žádné Claude API volání.
+    Vrátí nevyřízené komentáře seřazené podle priority. Žádné textové API volání.
 
     Args:
         platform: filtr platformy (facebook | instagram | None = obě)

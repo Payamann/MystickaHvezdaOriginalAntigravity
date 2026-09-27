@@ -38,9 +38,11 @@ class TestCaptionLength:
     def test_too_short_caption(self):
         post = _make_post(caption="Krátký.")
         result = validate_post(post, platform="instagram", run_ai_review=False)
-        # Měl by dostat warning/error za příliš krátký text
-        issues = [i for i in result["issues"] if "délk" in i["message"].lower() or "krátk" in i["message"].lower()]
-        assert len(issues) > 0 or result["score"] < 8
+        length_issues = [
+            issue for issue in result["issues"]
+            if "délk" in issue["message"].lower() or "krátk" in issue["message"].lower()
+        ]
+        assert length_issues == []
 
     def test_good_length_caption(self):
         caption = """Věděli jste, že tarotové karty nejsou jen o předpovídání budoucnosti?
@@ -60,25 +62,17 @@ Zkuste si vytáhnout jednu kartu dnes a nechte se překvapit."""
         assert len(length_errors) == 0
 
 
-class TestAIDisclosure:
-    """KRITICKÉ: Agent nesmí prozradit, že je AI"""
+class TestAiTransparency:
+    """Zmínka o automatizaci sama o sobě není důvodem k blokování textu."""
 
-    @pytest.mark.parametrize("phrase", [
-        "Jako AI vám mohu říct",
-        "Jsem umělá inteligence",
-        "generováno AI a je skvělé",
-        "tento text vytvořila umělá inteligence",
-        "jsem bot a pomáhám",
-        "vytvořeno AI nástrojem",
-        "Gemini to vygenerovalo",
-        "GPT je super",
-    ])
-    def test_ai_disclosure_blocked(self, phrase):
-        post = _make_post(caption=f"Krásný den! {phrase} a tady je tip pro vás.")
+    def test_truthful_ai_disclosure_is_not_silenced_by_copy_gate(self):
+        post = _make_post(caption="Tento výklad připravuje automatizovaný systém.")
         result = validate_post(post, platform="instagram", run_ai_review=False)
-        ai_issues = [i for i in result["issues"]
-                     if "ai" in i["check"].lower() or "disclosure" in i["check"].lower()]
-        assert len(ai_issues) > 0, f"AI disclosure '{phrase}' nebylo detekováno!"
+        disclosure_issues = [
+            issue for issue in result["issues"]
+            if "disclosure" in issue["check"].lower()
+        ]
+        assert disclosure_issues == []
 
     def test_normal_post_no_ai_flag(self):
         post = _make_post(caption="Dnešní energie Úplňku vám přináší mocnou sílu transformace.")
@@ -91,11 +85,23 @@ class TestAIDisclosure:
 class TestHashtags:
     """Kontrola hashtagů"""
 
-    def test_too_many_hashtags_instagram(self):
+    def test_hashtag_count_is_not_a_fixed_quality_rule(self):
         post = _make_post(hashtags=[f"#tag{i}" for i in range(35)])
         result = validate_post(post, platform="instagram", run_ai_review=False)
-        hashtag_issues = [i for i in result["issues"] if "hashtag" in i["message"].lower()]
-        assert len(hashtag_issues) > 0
+        hashtag_issues = [
+            issue for issue in result["issues"]
+            if "hashtag" in issue["message"].lower()
+        ]
+        assert hashtag_issues == []
+
+    def test_no_hashtags_is_valid(self):
+        post = _make_post(hashtags=[])
+        result = validate_post(post, platform="instagram", run_ai_review=False)
+        hashtag_errors = [
+            issue for issue in result["issues"]
+            if issue["severity"] == "error" and "hashtag" in issue["message"].lower()
+        ]
+        assert hashtag_errors == []
 
     def test_good_hashtag_count(self):
         post = _make_post(hashtags=["#mystickahvezda", "#tarot", "#duchovnost"])

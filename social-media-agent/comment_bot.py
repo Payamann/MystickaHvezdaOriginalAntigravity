@@ -3,7 +3,7 @@ Comment Bot — automatický agent pro odpovídání na Facebook komentáře
 
 Režimy:
   --auto     Automaticky odpoví na všechny komentáře bez potvrzení
-  --review   (výchozí) Zobrazí návrhy, po 30 min bez akce odpoví sám
+  --review   (výchozí) Zobrazí návrhy a odešle je jen po stisku Enter
   --dry-run  Jen zobrazí co by odpověděl, nic neposílá
 
 Spuštění:
@@ -52,7 +52,7 @@ from reply_templates import render_template_reply
 log = get_logger("comment_bot")
 
 POLL_INTERVAL    = int(os.getenv("COMMENT_POLL_INTERVAL", "1200"))  # 20 min
-AUTO_REPLY_DELAY = int(os.getenv("AUTO_REPLY_DELAY", "1800"))        # 30 min v review mode
+REVIEW_TIMEOUT   = int(os.getenv("COMMENT_REVIEW_TIMEOUT", "1800"))  # 30 min; timeout vždy přeskočí
 REPLY_DELAY_MIN  = int(os.getenv("REPLY_DELAY_MIN", "180"))          # min. sekund mezi odpověďmi
 REPLY_DELAY_MAX  = int(os.getenv("REPLY_DELAY_MAX", "420"))          # max. sekund mezi odpověďmi
 DAILY_LIMIT      = int(os.getenv("DAILY_REPLY_LIMIT", "60"))         # max odpovědí za den
@@ -103,6 +103,54 @@ def _human_delay(mode: str):
     delay = random.uniform(REPLY_DELAY_MIN, REPLY_DELAY_MAX)
     log.debug("Čekám %.0fs před další odpovědí...", delay)
     time.sleep(delay)
+
+
+def _read_review_choice(timeout_seconds: int) -> tuple[str | None, bool]:
+    """Read a TTY choice with a timeout. None means no explicit confirmation."""
+    if os.name == "nt":
+        import msvcrt
+
+        deadline = time.monotonic() + timeout_seconds
+        chars: list[str] = []
+        while time.monotonic() < deadline:
+            if not msvcrt.kbhit():
+                time.sleep(0.05)
+                continue
+            char = msvcrt.getwch()
+            if char in {"\r", "\n"}:
+                print()
+                return "".join(chars).strip().lower(), False
+            if char == "\x03":
+                raise KeyboardInterrupt
+            if char in {"\x00", "\xe0"}:
+                msvcrt.getwch()
+                continue
+            if char == "\b":
+                if chars:
+                    chars.pop()
+                    print("\b \b", end="", flush=True)
+                continue
+            chars.append(char)
+            print(char, end="", flush=True)
+        print()
+        return None, True
+
+    import select
+
+    ready, _, _ = select.select([sys.stdin], [], [], timeout_seconds)
+    if not ready:
+        print()
+        return None, True
+    line = sys.stdin.readline()
+    if line == "":
+        return None, False
+    return line.strip().lower(), False
+
+
+def _release_review_claim(comment: dict, reason: str) -> None:
+    claim_token = comment.pop("_claim_token", None)
+    if claim_token:
+        release_comment_claim(comment["id"], claim_token, reason)
 
 
 # ══════════════════════════════════════════════════
@@ -192,9 +240,9 @@ def build_reply_for_comment(comment: dict, mode: str) -> str | None:
             recent_replies=recent_replies,
         )
         _save_quality_result(comment, quality.cleaned_reply, strategy, quality)
-        if quality.publishable or mode == "review":
+        if quality.publishable:
             return quality.cleaned_reply
-        if mode != "dry-run":
+        if mode == "auto":
             mark_comment_ignored(cid, "quality_gate_failed:" + ",".join(quality.issues))
         log.warning("Quality gate stopnul existující návrh %s: %s", cid, quality.issues)
         return None
@@ -209,9 +257,9 @@ def build_reply_for_comment(comment: dict, mode: str) -> str | None:
             recent_replies=recent_replies,
         )
         _save_quality_result(comment, reply, strategy, quality, template_key=strategy.template_key)
-        if quality.publishable or mode == "review":
+        if quality.publishable:
             return quality.cleaned_reply
-        if mode != "dry-run":
+        if mode == "auto":
             mark_comment_ignored(cid, "template_quality_failed:" + ",".join(quality.issues))
         log.warning("Template quality gate stopnul %s: %s", cid, quality.issues)
         return None
@@ -277,10 +325,10 @@ def build_reply_for_comment(comment: dict, mode: str) -> str | None:
         },
     )
 
-    if last_quality.publishable or mode == "review":
+    if last_quality.publishable:
         return last_quality.cleaned_reply
 
-    if mode != "dry-run":
+    if mode == "auto":
         mark_comment_ignored(cid, "quality_gate_failed:" + ",".join(last_quality.issues))
     log.warning("Quality gate stopnul AI odpověď %s: %s", cid, last_quality.issues)
     return None
@@ -298,9 +346,9 @@ def process_comment(comment: dict, mode: str) -> bool:
     cid = comment["id"]
     reply = comment.get("suggested_reply")
 
-    # Skryj spam/hate bez odpovědi
+    # Skrytí mění veřejný stav komentáře; review ho pouze označí ke kontrole.
     if comment.get("should_hide"):
-        if mode != "dry-run":
+        if mode == "auto":
             result = hide_comment(cid, comment.get("platform", "facebook"))
             if result.get("success"):
                 log.info("Skryto [%s]: %s", cid, comment["message"][:40])
@@ -308,7 +356,7 @@ def process_comment(comment: dict, mode: str) -> bool:
                 log.warning("Nepodařilo se skrýt [%s]: %s", cid, result.get("error"))
                 _raise_if_meta_rate_limited(result)
         else:
-            print(f"  [DRY-RUN] Skryji spam: {comment['message'][:40]}")
+            print(f"  [KE KONTROLE] Možné skrytí komentáře: {comment['message'][:40]}")
         return False
 
     # Bez návrhu odpovědi přeskoč
@@ -344,44 +392,25 @@ def process_comment(comment: dict, mode: str) -> bool:
             return False
 
     if mode == "review":
-        # Semi-auto: zobraz návrh, čekej na vstup nebo timeout
+        # Review: odeslání vyžaduje explicitní potvrzení v interaktivním TTY.
         print(f"\n  💬 {comment['from_name']}: {comment['message']}")
         print(f"  📝 Návrh: {reply}")
         print(f"  [Enter=odešli | s=přeskoč | e=uprav]  ", end="", flush=True)
 
-        # Na Railway (non-interactive) — chovej se jako auto mode (s delay + counter)
         if not sys.stdin.isatty():
-            print("(auto-odesílám — non-interactive)")
-            claim_token = comment.get("_claim_token") or claim_comment_for_reply(cid)
-            if not claim_token:
-                log.info("Komentář už je zpracovaný nebo zamčený, přeskakuji: %s", cid)
-                return False
-            _human_delay("auto")
-            try:
-                result = _reply_to_comment(cid, reply, claim_token=claim_token)
-            except Exception as e:
-                log.error("Nejistý stav při odpovídání %s: %s", cid, e, exc_info=True)
-                return False
-            if result["success"]:
-                _increment_today_count()
-            else:
-                release_comment_claim(cid, claim_token, result.get("error", "reply failed"))
-                _raise_if_meta_rate_limited(result)
-            return result["success"]
+            print("(non-interactive: návrh zůstává čekající, nic se neodesílá)")
+            _release_review_claim(comment, "review requires interactive confirmation")
+            return False
 
-        try:
-            import select
-            rlist, _, _ = select.select([sys.stdin], [], [], 30)
-            if rlist:
-                choice = sys.stdin.readline().strip().lower()
-            else:
-                choice = ""   # timeout → odešli
-        except (AttributeError, ImportError):
-            # Windows nemá select pro stdin
-            choice = input().strip().lower()
+        choice, timed_out = _read_review_choice(REVIEW_TIMEOUT)
+        if timed_out:
+            print("  ⏭ Čas vypršel — návrh zůstává čekající")
+            _release_review_claim(comment, "review confirmation timeout")
+            return False
 
         if choice == "s":
             print("  ⏭ Přeskočeno")
+            _release_review_claim(comment, "review skipped")
             return False
         elif choice == "e":
             new_reply = input("  Nový text: ").strip()
@@ -389,18 +418,24 @@ def process_comment(comment: dict, mode: str) -> bool:
             if not claim_token:
                 print("  ⏭ Komentář už je zpracovaný nebo zamčený")
                 return False
-            if new_reply:
-                result = _reply_to_comment(cid, new_reply, claim_token=claim_token)
-            else:
-                result = _reply_to_comment(cid, reply, claim_token=claim_token)
-        else:
+            if not new_reply:
+                print("  ⏭ Prázdná úprava — návrh zůstává čekající")
+                _release_review_claim(comment, "review edit was empty")
+                return False
+            result = _reply_to_comment(cid, new_reply, claim_token=claim_token)
+        elif choice == "":
             claim_token = comment.get("_claim_token") or claim_comment_for_reply(cid)
             if not claim_token:
                 print("  ⏭ Komentář už je zpracovaný nebo zamčený")
                 return False
             result = _reply_to_comment(cid, reply, claim_token=claim_token)
+        else:
+            print("  ⏭ Neznámá volba — návrh zůstává čekající")
+            _release_review_claim(comment, "review received unknown choice")
+            return False
 
         if result["success"]:
+            _increment_today_count()
             print(f"  ✅ Odesláno")
             return True
         else:
@@ -527,7 +562,7 @@ def run_once(mode: str, limit: int = 0, since_hours: int = None):
         if not comment.get("needs_reply") or not comment.get("message", "").strip():
             continue
         preclaim_token = None
-        if mode == "auto":
+        if mode in {"auto", "review"}:
             preclaim_token = claim_comment_for_reply(comment["id"])
             if not preclaim_token:
                 log.info("Komentář už je zpracovaný nebo zamčený, přeskakuji: %s", comment["id"])

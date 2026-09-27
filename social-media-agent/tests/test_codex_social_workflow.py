@@ -1,8 +1,13 @@
+import csv
+import json
 import subprocess
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
+
+import codex_social_workflow as workflow  # noqa: E402
+import meta_publisher  # noqa: E402
 
 from codex_social_workflow import (  # noqa: E402
     build_codex_image_brief,
@@ -90,15 +95,133 @@ def test_qa_good_draft_passes():
     assert result.errors == []
 
 
-def test_qa_blocks_pure_value_url():
-    bad = GOOD_DRAFT.replace("Ulož si tenhle tichý signál na později.", "Mrkni na /tarot.html.")
+def test_qa_allows_relevant_link_in_pure_value_copy_but_blocks_unknown_internal_url():
+    bad = GOOD_DRAFT.replace("Ulož si tenhle tichý signál na později.", "Mrkni na /neexistuje.html.")
     result = qa_draft(bad)
-    assert any("pure_value" in error for error in result.errors)
+    assert any("není v seznamu skutečných webových funkcí" in error for error in result.errors)
 
 
-def test_hook_rankings_supports_hook_scores():
+def isolate_published_content_memory(monkeypatch, tmp_path):
+    import generators.content_memory as content_memory
+
+    monkeypatch.setattr(content_memory, "MEMORY_FILE", tmp_path / "content_memory.json")
+    monkeypatch.setattr(content_memory.config, "OUTPUT_DIR", tmp_path)
+
+
+def test_facebook_execute_blocks_failed_qa_before_api(monkeypatch, tmp_path):
+    draft = tmp_path / "daily_posts_2026-09-26.md"
+    draft.write_text(GOOD_DRAFT.replace("Ulož si tenhle tichý signál na později.", "Mrkni na /neexistuje.html."), encoding="utf-8")
+    monkeypatch.setattr(meta_publisher, "MetaPublisher", lambda: (_ for _ in ()).throw(AssertionError("Meta API called")))
+    args = workflow.build_parser().parse_args([
+        "facebook-publish", "--file", str(draft), "--mode", "link", "--execute"
+    ])
+
+    assert args.func(args) == 1
+
+
+def test_facebook_execute_does_not_publish_same_payload_twice(monkeypatch, tmp_path):
+    isolate_published_content_memory(monkeypatch, tmp_path)
+    draft = tmp_path / "daily_posts_2026-09-26.md"
+    draft.write_text(GOOD_DRAFT, encoding="utf-8")
+    monkeypatch.setattr(workflow, "CODEX_DIR", tmp_path / "codex")
+    published = []
+
+    class FakePublisher:
+        page_id = "page-test"
+
+        def publish_to_facebook(self, **kwargs):
+            published.append(kwargs)
+            return {"success": True, "post_id": "post-1"}
+
+    monkeypatch.setattr(meta_publisher, "MetaPublisher", FakePublisher)
+    args = workflow.build_parser().parse_args([
+        "facebook-publish", "--file", str(draft), "--mode", "link", "--execute", "--skip-verify"
+    ])
+
+    assert args.func(args) == 0
+    assert args.func(args) == 0
+    assert len(published) == 1
+    state_files = list((tmp_path / "codex" / "facebook_publish_state").glob("*.json"))
+    assert len(state_files) == 1
+    assert json.loads(state_files[0].read_text(encoding="utf-8"))["post_id"] == "post-1"
+
+
+def test_facebook_comment_retry_resumes_without_republishing(monkeypatch, tmp_path):
+    isolate_published_content_memory(monkeypatch, tmp_path)
+    draft = tmp_path / "daily_posts_2026-09-26.md"
+    draft.write_text(GOOD_DRAFT, encoding="utf-8")
+    image = tmp_path / "image.png"
+    image.write_bytes(b"local test image")
+    monkeypatch.setattr(workflow, "CODEX_DIR", tmp_path / "codex")
+    published = []
+    comments = []
+
+    class FakePublisher:
+        page_id = "page-test"
+
+        def publish_to_facebook(self, **kwargs):
+            published.append(kwargs)
+            return {"success": True, "post_id": "post-1"}
+
+        def comment_on_facebook_object(self, post_id, message):
+            comments.append((post_id, message))
+            if len(comments) == 1:
+                return {"success": False, "error": "timeout"}
+            return {"success": True, "comment_id": "comment-1"}
+
+    monkeypatch.setattr(meta_publisher, "MetaPublisher", FakePublisher)
+    command = [
+        "facebook-publish", "--file", str(draft), "--image", str(image),
+        "--execute", "--skip-verify",
+    ]
+    args = workflow.build_parser().parse_args(command)
+    retry_args = workflow.build_parser().parse_args(command + ["--retry-first-comment"])
+
+    assert args.func(args) == 1
+    assert args.func(args) == 1
+    assert retry_args.func(retry_args) == 0
+    assert len(published) == 1
+    assert len(comments) == 2
+    state_file = next((tmp_path / "codex" / "facebook_publish_state").glob("*.json"))
+    state = json.loads(state_file.read_text(encoding="utf-8"))
+    assert state["status"] == "published"
+    assert state["comment_id"] == "comment-1"
+
+
+def test_facebook_timeout_requires_explicit_confirmation_before_retry(monkeypatch, tmp_path):
+    isolate_published_content_memory(monkeypatch, tmp_path)
+    draft = tmp_path / "daily_posts_2026-09-26.md"
+    draft.write_text(GOOD_DRAFT, encoding="utf-8")
+    monkeypatch.setattr(workflow, "CODEX_DIR", tmp_path / "codex")
+    attempts = []
+
+    class FakePublisher:
+        page_id = "page-test"
+
+        def publish_to_facebook(self, **kwargs):
+            attempts.append(kwargs)
+            if len(attempts) == 1:
+                raise TimeoutError("simulated timeout")
+            return {"success": True, "post_id": "post-1"}
+
+    monkeypatch.setattr(meta_publisher, "MetaPublisher", FakePublisher)
+    command = [
+        "facebook-publish", "--file", str(draft), "--mode", "link",
+        "--execute", "--skip-verify",
+    ]
+    args = workflow.build_parser().parse_args(command)
+    retry_args = workflow.build_parser().parse_args(command + ["--confirm-not-published"])
+
+    assert args.func(args) == 1
+    assert args.func(args) == 1
+    assert len(attempts) == 1
+    assert retry_args.func(retry_args) == 0
+    assert len(attempts) == 2
+
+
+def test_legacy_hook_scores_are_not_reported_as_performance():
     ranked = hook_rankings({"hook_scores": {"question": [8, 9], "micro_story": [7]}})
-    assert ranked[0] == ("question", 8.5, 2)
+    assert ranked == []
 
 
 def test_build_utm_url_adds_tracking_params():
@@ -151,13 +274,14 @@ def test_publish_pack_is_clear_actionable_output():
         target_date=_dt.date(2026, 5, 16),
         source="instagram",
     )
-    assert "Publish pack" in pack
+    assert "Publikační podklady" in pack
     assert "Instagram Reel / feed caption" in pack
     assert "Facebook link post" in pack
     assert "Není to post k publikování" not in pack
     assert "source=daily_social_2026_05_16_noon" in pack
     assert "Funnel feature: `tarot`" in pack
     assert "Pro hlubší výklad použij odkaz v profilu." in pack
+    assert "Pro hlubší výklad použij odkaz ve stickeru." in pack
     assert "Pro hlubší výklad použij /tarot.html." not in pack
 
 
@@ -174,7 +298,8 @@ def test_facebook_publish_payload_photo_moves_long_url_to_first_comment():
     assert payload.image_path == Path("output/images/test.png")
     assert "https://www.mystickahvezda.cz/tarot.html?" not in payload.message
     assert "Karta ve videu" not in payload.message
-    assert "Tenhle symbol je začátek" in payload.message
+    assert "Tarot ti dnes neřekne" in payload.message
+    assert "odkaz v prvním komentáři" in payload.message
     assert payload.first_comment is not None
     assert "utm_source=facebook" in payload.first_comment
     assert "source=daily_social_2026_05_16_noon" in payload.first_comment
@@ -264,10 +389,11 @@ def test_codex_image_brief_targets_one_workspace_file():
         target_date=_dt.date(2026, 5, 16),
         mode="traffic",
     )
-    assert "Codex image brief" in brief
-    assert "Prompt pro Codex image tool" in brief
+    assert "# Image brief" in brief
+    assert "## Prompt" in brief
     assert "tarot_jako_zrcadlo" in destination
-    assert "Use case: stylized-concept" in prompt
+    assert "Create one original visual" in prompt
+    assert "tarot" in prompt.lower()
     assert "no text" in prompt.lower()
 
 
@@ -294,6 +420,97 @@ def test_classify_engagement_uses_weighted_rate_when_views_exist():
     assert classify_engagement(likes=10, comments=1, shares=1, saves=1, views=1000) == "medium"
     assert classify_engagement(likes=70, comments=10, shares=8, saves=12, views=1000) == "high"
     assert classify_engagement(likes=2, comments=0, shares=0, saves=0, views=1000) == "low"
+
+
+def test_metrics_import_preserves_raw_values_and_keys_by_post_id(tmp_path, monkeypatch):
+    from datetime import date
+    import generators.content_memory as content_memory
+
+    monkeypatch.setattr(content_memory, "MEMORY_FILE", tmp_path / "content_memory.json")
+    monkeypatch.setattr(content_memory.config, "OUTPUT_DIR", tmp_path)
+    measured_on = date.today().isoformat()
+    rows = []
+    for post_id in ["fb-post-one", "fb-post-one", "fb-post-two"]:
+        rows.append({
+            "post_id": post_id,
+            "platform": "facebook",
+            "published_at": measured_on,
+            "metrics_as_of": measured_on,
+            "window": "7d",
+            "date": measured_on,
+            "post_type": "educational",
+            "topic": "stejné téma",
+            "content_intent": "pure_value",
+            "slot_id": "slot_1",
+            "mode": "photo",
+            "page_id": "page-1",
+            "link": "",
+            "image_path": "fox.png",
+            "reach": "500",
+            "impressions": "650",
+            "views": "",
+            "reactions": "14",
+            "comments": "2",
+            "shares": "1",
+            "saves": "3",
+            "link_clicks": "",
+            "metrics_source": "facebook_insights_manual",
+            "notes": "",
+        })
+    source = tmp_path / "metrics.csv"
+    with source.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=workflow.ENGAGEMENT_TEMPLATE_FIELDS)
+        writer.writeheader()
+        writer.writerows(rows)
+
+    workflow.import_engagement_csv(source)
+    memory = content_memory._load_memory()
+
+    assert len(memory["published_posts"]) == 2
+    assert {post["post_id"] for post in memory["published_posts"]} == {"fb-post-one", "fb-post-two"}
+    assert memory["published_posts"][0]["metrics"][0]["reach"] == 500
+    assert memory["published_posts"][0]["metrics"][0]["shares"] == 1
+    assert memory["published_posts"][0]["metrics"][0]["impressions"] == 650
+    assert memory["published_posts"][0]["metrics"][0]["reactions"] == 14
+
+    corrected = dict(rows[0], reactions="16")
+    with source.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=workflow.ENGAGEMENT_TEMPLATE_FIELDS)
+        writer.writeheader()
+        writer.writerow(corrected)
+    workflow.import_engagement_csv(source)
+    corrected_memory = content_memory._load_memory()
+    post_one = next(post for post in corrected_memory["published_posts"] if post["post_id"] == "fb-post-one")
+    assert post_one["metrics"][0]["reactions"] == 16
+
+
+def test_engagement_template_lists_published_posts_not_approved_drafts(tmp_path, monkeypatch):
+    from datetime import date
+    import generators.content_memory as content_memory
+
+    monkeypatch.setattr(workflow, "MEMORY_FILE", tmp_path / "content_memory.json")
+    monkeypatch.setattr(workflow, "CODEX_DIR", tmp_path / "codex")
+    monkeypatch.setattr(content_memory, "MEMORY_FILE", tmp_path / "content_memory.json")
+    monkeypatch.setattr(content_memory.config, "OUTPUT_DIR", tmp_path)
+    content_memory.record_published_post(
+        post_id="fb-post-live",
+        platform="facebook",
+        published_at=date.today().isoformat(),
+        topic="Liška jako symbol",
+        post_type="educational",
+        mode="photo",
+    )
+    memory = content_memory._load_memory()
+    memory["approved_posts"].append({"date": date.today().isoformat(), "topic": "Jen návrh"})
+    content_memory._save_memory(memory)
+
+    output = workflow.write_engagement_template(days=14, output=tmp_path / "metrics.csv", today=date.today())
+
+    with output.open(newline="", encoding="utf-8") as handle:
+        rows = list(csv.DictReader(handle))
+    assert len(rows) == 1
+    assert rows[0]["post_id"] == "fb-post-live"
+    assert rows[0]["metrics_as_of"] == ""
 
 
 def test_growth_operator_command_runs_report(tmp_path, capsys):

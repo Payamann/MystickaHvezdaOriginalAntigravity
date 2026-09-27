@@ -1,6 +1,7 @@
 """
 Railway runner pro Comment Bot.
-Spouští comment_bot.py --auto a pak čeká na další cron trigger.
+Výchozí review režim v non-interactive prostředí pouze uloží návrhy jako čekající.
+Automatické odesílání vyžaduje dvě explicitní konfigurační hodnoty.
 """
 import sys
 import os
@@ -14,4 +15,13 @@ load_dotenv(Path(__file__).parent / ".env", override=True, encoding="utf-8")
 from comment_bot import run_once
 
 if __name__ == "__main__":
-    run_once("auto")
+    mode = os.getenv("COMMENT_BOT_MODE", "review").strip().lower()
+    if mode not in {"review", "auto", "dry-run"}:
+        raise RuntimeError("COMMENT_BOT_MODE musí být review, auto nebo dry-run")
+    if mode == "auto":
+        confirmation = os.getenv("COMMENT_BOT_AUTO_CONFIRM", "").strip()
+        if confirmation != "SEND_REPLIES_WITHOUT_REVIEW":
+            raise RuntimeError(
+                "Auto režim vyžaduje COMMENT_BOT_AUTO_CONFIRM=SEND_REPLIES_WITHOUT_REVIEW"
+            )
+    run_once(mode)

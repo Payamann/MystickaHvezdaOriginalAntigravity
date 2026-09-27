@@ -1,212 +1,123 @@
 #!/usr/bin/env python3
-"""
-weekly_review.py — Týdenní přehled výkonu social media agenta.
+"""Factual editorial and engagement summary for the social media agent."""
 
-Zobrazí:
-  - Počet postů za posledních 7 dní
-  - Rozložení content pillars (vs. cíl 40/30/20/10)
-  - Nejpoužívanější hooky a jejich průměrné skóre
-  - Nejpoužívanější témata
-  - Golden templates z tohoto týdne
-  - Doporučení co příští týden zlepšit
-
-Použití:
-  python weekly_review.py
-  python weekly_review.py --days 14   # posledních 14 dní
-  python weekly_review.py --feedback "Tarot post měl 2× více saves"
-"""
 import argparse
-import json
-import sys
 import io
+import sys
+from collections import Counter
 from datetime import date, timedelta
 from pathlib import Path
-from collections import Counter
 
-# Windows CP1250 fix — force UTF-8 output
+# Keep Czech output readable in the Windows console.
 if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 sys.path.insert(0, str(Path(__file__).parent))
-import config
-from generators.content_memory import _load_memory, record_engagement
-from logger import get_logger
-
-log = get_logger(__name__)
+from generators.content_memory import _load_memory, record_editorial_note
 
 
-def get_posts_in_range(memory: dict, days: int) -> list:
-    today = date.today()
-    cutoff = today - timedelta(days=days)
+def _entry_date(entry: dict) -> date | None:
+    raw = entry.get("date") or entry.get("rated_at")
+    try:
+        return date.fromisoformat(str(raw)[:10])
+    except (TypeError, ValueError):
+        return None
+
+
+def get_posts_in_range(memory: dict, days: int) -> list[dict]:
+    """Return recorded topics inside an inclusive, user-selected date window."""
+    cutoff = date.today() - timedelta(days=max(days - 1, 0))
     return [
-        p for p in memory.get("used_topics", [])
-        if date.fromisoformat(p["date"]) >= cutoff
+        post for post in memory.get("used_topics", [])
+        if (entry_date := _entry_date(post)) is not None and entry_date >= cutoff
     ]
 
 
-def pillar_for_type(post_type: str) -> str:
-    TYPE_TO_PILLAR = {
-        "educational": "vzdělávání", "myth_bust": "vzdělávání",
-        "story": "vzdělávání", "cross_system": "vzdělávání",
-        "question": "engagement", "challenge": "engagement", "daily_energy": "engagement",
-        "blog_promo": "propagace", "carousel_plan": "propagace", "tool_demo": "propagace",
-        "quote": "inspirace", "tip": "inspirace", "save_worthy": "inspirace",
-    }
-    return TYPE_TO_PILLAR.get(post_type, "ostatní")
-
-
-def print_separator(char="─", width=60):
+def print_separator(char: str = "─", width: int = 60):
     print(char * width)
 
 
 def run_review(days: int = 7, feedback: str = ""):
+    days = max(1, days)
     memory = _load_memory()
     posts = get_posts_in_range(memory, days)
+    cutoff = date.today() - timedelta(days=days - 1)
     approved = [
-        p for p in memory.get("approved_posts", [])
-        if date.fromisoformat(p["date"]) >= date.today() - timedelta(days=days)
+        post for post in memory.get("approved_posts", [])
+        if (entry_date := _entry_date(post)) is not None and entry_date >= cutoff
+    ]
+    engagement = [
+        entry for entry in memory.get("engagement_log", [])
+        if (entry_date := _entry_date(entry)) is not None and entry_date >= cutoff
     ]
 
     print()
     print_separator("═")
-    print(f"  📊 TÝDENNÍ REVIEW — posledních {days} dní")
-    print(f"  {date.today() - timedelta(days=days)} → {date.today()}")
+    print(f"  REDAKČNÍ PŘEHLED — posledních {days} dní")
+    print(f"  {cutoff.isoformat()} → {date.today().isoformat()}")
     print_separator("═")
-
-    # ── Celkový počet ──
-    print(f"\n  Celkem postů: {len(posts)}")
-    print(f"  Schválených:  {len(approved)}")
+    print(f"\n  Zaznamenaná témata: {len(posts)}")
+    print(f"  Schválené návrhy:   {len(approved)}")
     if approved:
-        avg_score = sum(p.get("quality_score", 0) for p in approved) / len(approved)
-        print(f"  Průměrné QG skóre: {avg_score:.1f}/10")
+        scores = [
+            float(post["quality_score"])
+            for post in approved
+            if isinstance(post.get("quality_score"), (int, float))
+        ]
+        if scores:
+            print(f"  Průměrné interní QA skóre: {sum(scores) / len(scores):.1f}/10 ({len(scores)} hodnocení)")
+            print("  QA skóre je redakční signál, ne údaj o dosahu ani úspěchu příspěvku.")
 
-    # ── Content Pillars ──
-    print_separator()
-    print("  CONTENT PILLARS (cíl: 40% vzdělávání / 30% engagement / 20% propagace / 10% inspirace)")
-    print_separator()
-    pillar_counts = Counter(pillar_for_type(p.get("post_type", "")) for p in posts)
-    total = len(posts) or 1
-    targets = {"vzdělávání": 0.40, "engagement": 0.30, "propagace": 0.20, "inspirace": 0.10}
-    for pillar, target in targets.items():
-        count = pillar_counts.get(pillar, 0)
-        ratio = count / total
-        bar = "█" * int(ratio * 20)
-        target_bar = "░" * int(target * 20)
-        status = "✅" if abs(ratio - target) < 0.10 else ("⬆️" if ratio < target else "⬇️")
-        print(f"  {status} {pillar:<12} {count:>2}× ({ratio:.0%}) cíl {target:.0%}  [{bar:<20}]")
+    if posts:
+        print_separator()
+        print("  TÉMATA A FORMÁTY, KTERÉ SE OBJEVILY")
+        print_separator()
+        topics = Counter((post.get("topic") or "bez tématu").strip() for post in posts)
+        for topic, count in topics.most_common(10):
+            print(f"  {count}×  {topic[:52]}")
+        types = Counter(post.get("post_type") or "bez typu" for post in posts)
+        print("\n  Formáty: " + ", ".join(f"{name} ({count}×)" for name, count in types.most_common()))
 
-    # ── Hooky ──
-    print_separator()
-    print("  HOOK VÝKON")
-    print_separator()
-    hook_scores = memory.get("hook_scores", {})
-    if hook_scores:
-        # hook_scores = {formula: [score1, score2, ...]}
-        hook_stats = {
-            h: {"avg": sum(scores) / len(scores), "count": len(scores)}
-            for h, scores in hook_scores.items() if scores
-        }
-        for hook, stats in sorted(hook_stats.items(), key=lambda x: -x[1]["avg"])[:6]:
-            avg = stats["avg"]
-            count = stats["count"]
-            bar = "█" * int(avg * 2)
-            print(f"  {hook:<22} avg {avg:.1f}  {count:>2}× použit  [{bar}]")
-    else:
-        print("  (zatím žádná data)")
+    if engagement:
+        print_separator()
+        print("  RUČNĚ ZAZNAMENANÝ ENGAGEMENT")
+        print_separator()
+        counts = Counter(entry.get("engagement", "nezadáno") for entry in engagement)
+        print("  " + " · ".join(f"{name}: {count}×" for name, count in counts.items()))
+        for entry in engagement[-5:]:
+            note = f" — {entry['notes'][:100]}" if entry.get("notes") else ""
+            print(f"  {entry.get('engagement', '?')}: {entry.get('topic', '?')[:42]}{note}")
+        if len(engagement) < 5:
+            print("  Malý vzorek: ber ho jako poznámku, ne jako trend nebo pravidlo pro další obsah.")
+        else:
+            print("  Výsledek popisuje jen tyto zaznamenané příspěvky; sám neurčuje další témata ani formáty.")
 
-    # ── Témata ──
-    print_separator()
-    print("  NEJPOUŽÍVANĚJŠÍ TÉMATA (posledních 7 dní)")
-    print_separator()
-    topic_counts = Counter(p.get("topic", "") for p in posts)
-    for topic, count in topic_counts.most_common(8):
-        bar = "█" * count
-        print(f"  {count}×  {topic[:45]:<45}  [{bar}]")
-
-    # ── Golden templates ──
-    golden = [
-        g for g in memory.get("golden_templates", [])
-        if date.fromisoformat(g.get("date", "2000-01-01")) >= date.today() - timedelta(days=days)
+    saved_notes = [
+        note for note in memory.get("editorial_notes", [])
+        if (entry_date := _entry_date(note)) is not None and entry_date >= cutoff
     ]
-    if golden:
+    if saved_notes:
         print_separator()
-        print(f"  ⭐ GOLDEN TEMPLATES tento týden ({len(golden)}×)")
+        print("  REDAKČNÍ POZNÁMKY")
         print_separator()
-        for g in golden:
-            print(f"  [{g.get('post_type','?')}] skóre {g.get('score','?')} — {g.get('caption','')[:60]}...")
+        for note in saved_notes[-8:]:
+            print(f"  {note.get('date', '')} — {note.get('note', '')[:180]}")
 
-    # ── Engagement feedback ──
-    eng_log = memory.get("engagement_log", [])
-    recent_eng = [
-        e for e in eng_log
-        if date.fromisoformat(e.get("date", "2000-01-01")) >= date.today() - timedelta(days=days)
-    ]
-    if recent_eng:
+    if feedback.strip():
+        record_editorial_note(feedback, source="weekly_review")
         print_separator()
-        print("  📈 ENGAGEMENT FEEDBACK")
-        print_separator()
-        for e in recent_eng[-5:]:
-            emoji = {"high": "🔥", "medium": "👍", "low": "👎"}.get(e.get("engagement", ""), "·")
-            print(f"  {emoji} {e.get('engagement','?'):6} — {e.get('topic','?')[:40]} ({e.get('post_type','?')})")
-
-    # ── Doporučení ──
-    print_separator("═")
-    print("  💡 DOPORUČENÍ NA PŘÍŠTÍ TÝDEN")
-    print_separator("═")
-
-    recommendations = []
-
-    # Pillar doporučení
-    for pillar, target in targets.items():
-        count = pillar_counts.get(pillar, 0)
-        ratio = count / total
-        if ratio < target - 0.10:
-            recommendations.append(f"⬆️  Přidej více '{pillar}' postů (máš {ratio:.0%}, cíl {target:.0%})")
-        elif ratio > target + 0.15:
-            recommendations.append(f"⬇️  Méně '{pillar}' postů (máš {ratio:.0%}, cíl {target:.0%})")
-
-    # Cross_system a tool_demo check
-    cross_count = sum(1 for p in posts if p.get("post_type") == "cross_system")
-    tool_count = sum(1 for p in posts if p.get("post_type") == "tool_demo")
-    if cross_count == 0:
-        recommendations.append("🔗 Přidej aspoň 1 cross_system post — propojení systémů je unikátní obsah")
-    if tool_count == 0:
-        recommendations.append("🛠️  Přidej aspoň 1 tool_demo post — taste of premium konvertuje")
-
-    # Hook doporučení
-    used_hooks = set(p.get("hook_formula", "") for p in posts)
-    missing_hooks = {"micro_story", "contrarian", "pattern_interrupt"} - used_hooks
-    if missing_hooks:
-        recommendations.append(f"🎣 Chybějící hooky tento týden: {', '.join(missing_hooks)}")
-
-    if not recommendations:
-        recommendations.append("✅ Obsah je vyvážený — pokračuj v stejném rytmu")
-
-    for r in recommendations:
-        print(f"  {r}")
-
-    # ── Uložení manuálního feedbacku ──
-    if feedback:
-        print_separator()
-        print(f"  📝 Ukládám feedback: {feedback}")
-        record_engagement(
-            post_date=date.today().isoformat(),
-            post_type="weekly_review",
-            topic="weekly_feedback",
-            engagement="medium",
-            notes=feedback,
-        )
-        print("  Feedback uložen do content_memory.json")
+        print("  Poznámka uložena odděleně od engagement metrik.")
+        print(f"  {feedback.strip()[:240]}")
 
     print_separator("═")
     print()
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Týdenní přehled výkonu social media agenta")
-    parser.add_argument("--days", type=int, default=7, help="Počet dní pro analýzu (default: 7)")
-    parser.add_argument("--feedback", default="", help="Manuální feedback k uložení (co fungovalo/nefungovalo)")
+    parser = argparse.ArgumentParser(description="Faktický redakční a engagement přehled")
+    parser.add_argument("--days", type=int, default=7, help="Počet zahrnutých dní (default: 7)")
+    parser.add_argument("--feedback", default="", help="Volitelná ruční redakční poznámka")
     args = parser.parse_args()
     run_review(days=args.days, feedback=args.feedback)
 
