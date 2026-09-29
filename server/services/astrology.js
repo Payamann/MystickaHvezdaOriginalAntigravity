@@ -1,4 +1,5 @@
 import { supabase } from '../db-supabase.js';
+import { getReviewedHoroscope } from './reviewed-horoscopes.js';
 
 // ============================================
 // MOON PHASE CALCULATIONS
@@ -1632,8 +1633,7 @@ export function formatAstrocartographyForPrompt(insights) {
 // ============================================
 
 // Generate cache key based on sign, period, and date
-export function getHoroscopeCacheKey(sign, period) {
-    const now = new Date();
+export function getHoroscopeCacheKey(sign, period, now = new Date()) {
     const signNormalized = sign.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
     if (period === 'weekly') {
@@ -1646,13 +1646,19 @@ export function getHoroscopeCacheKey(sign, period) {
         return `${signNormalized}_monthly_${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}_v3`;
     } else {
         // Daily (default)
-        return `${signNormalized}_daily_${now.toISOString().split('T')[0]}_v3`;
+        const parts = new Intl.DateTimeFormat('en-GB', {
+            timeZone: 'Europe/Prague', year: 'numeric', month: '2-digit', day: '2-digit'
+        }).formatToParts(now);
+        const date = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+        return `${signNormalized}_daily_${date.year}-${date.month}-${date.day}_v3`;
     }
 }
 
 // Get cached horoscope from database
-export async function getCachedHoroscope(cacheKey) {
+export async function getCachedHoroscope(cacheKey, now = new Date()) {
     try {
+        const reviewed = getReviewedHoroscope(cacheKey, now);
+        if (reviewed) return reviewed;
         const { data, error } = await supabase
             .from('cache_horoscopes')
             .select('cache_key, response, period_label, generated_at')

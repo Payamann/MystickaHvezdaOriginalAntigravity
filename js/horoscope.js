@@ -7,6 +7,15 @@ document.addEventListener('DOMContentLoaded', () => {
     initHoroscope();
 });
 
+function getPragueHoroscopeDate(date = new Date()) {
+    const parts = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Europe/Prague',
+        year: 'numeric', month: '2-digit', day: '2-digit'
+    }).formatToParts(date);
+    const values = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return `${values.year}-${values.month}-${values.day}`;
+}
+
 function buildHoroscopeUpgradeUrl(period) {
     const feature = `${period}_horoscope`;
     const pricingUrl = new URL('/cenik.html', window.location.origin);
@@ -423,9 +432,15 @@ function initHoroscope() {
             : '';
 
         detailText.innerHTML = `${reasonText}${buildHoroscopeUpsell(period)}`;
-        if (detailWork) detailWork.innerHTML = '';
+        if (detailWork) {
+            detailWork.innerHTML = '';
+            detailWork.hidden = true;
+        }
         if (detailRelationships) detailRelationships.hidden = true;
-        if (detailNumbers) detailNumbers.innerText = '-';
+        if (detailNumbers) {
+            detailNumbers.innerText = '';
+            detailNumbers.parentElement.hidden = true;
+        }
 
         const upsellBtn = detailText.querySelector('.horoscope-upsell-btn');
         upsellBtn?.addEventListener('click', () => {
@@ -504,11 +519,11 @@ function initHoroscope() {
 
         const loadingMessages = {
             cs: [
-                'Navazuji spojeni s Vesmirem...',
-                'Ctu postaveni vasich hvezd...',
-                'Analyzuji planetarni vlivy...',
-                'Prekladam zpravy osudu...',
-                'Finalizuji vasi predpoved...'
+                'Připravuji dnešní inspiraci...',
+                'Načítám text pro tvoje znamení...',
+                'Skládám dnešní podnět...',
+                'Ještě chvíli...',
+                'Dnešní inspirace je skoro připravená...'
             ],
             sk: [
                 'Nadvazujem spojenie s Vesmirom...',
@@ -546,7 +561,7 @@ function initHoroscope() {
         try {
             let context = [];
             try {
-                if (window.Auth && window.Auth.isLoggedIn()) {
+                if (window.Auth && window.Auth.isLoggedIn() && !(currentLang === 'cs' && currentPeriod === 'daily')) {
                     const journalRes = await fetch(`${window.API_CONFIG?.BASE_URL || '/api'}/user/readings`, {
                         credentials: 'include'
                     });
@@ -570,6 +585,7 @@ function initHoroscope() {
 
             const dateLocales = { cs: 'cs-CZ', sk: 'sk-SK', pl: 'pl-PL' };
             const today = new Date().toLocaleDateString(dateLocales[currentLang] || 'cs-CZ', {
+                timeZone: 'Europe/Prague',
                 day: 'numeric',
                 month: 'long',
                 year: 'numeric',
@@ -589,7 +605,7 @@ function initHoroscope() {
                 predictionData = { prediction: data.response, affirmation: null, luckyNumbers: null };
             }
 
-            let cleanPrediction = predictionData.prediction || 'Energie jsou dnes nejasne...';
+            let cleanPrediction = predictionData.prediction || 'Dnešní podnět se nepodařilo připravit.';
             const affirmationPatterns = [
                 /\*\*?(?:Afirmace|Afirmacia|Afirmacja):?\*?\*?\s*[^*]*\*?/gi,
                 /(?:Afirmace|Afirmacia|Afirmacja):\s*.+$/gim
@@ -612,27 +628,33 @@ function initHoroscope() {
 
             if (detailWork) {
                 const affLabel = { cs: 'Afirmace', sk: 'Afirmacia', pl: 'Afirmacja' }[currentLang] || 'Afirmace';
-                const affFallback = { cs: 'Jsem v souladu s vesmirem.', sk: 'Som v sulade s vesmirom.', pl: 'Jestem w harmonii z wszechswiatem.' }[currentLang] || 'Jsem v souladu s vesmirem.';
-                const affirmationText = predictionData.affirmation || extractedAffirmation || affFallback;
-                const rawHtml = `<strong class="horoscope-affirmation-label">&#10024; ${affLabel}:</strong> ${affirmationText}`;
-                const sanitized = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(rawHtml) : rawHtml.replace(/<[^>]*>/g, '');
-                detailWork.innerHTML = sanitized;
+                const affirmationText = predictionData.affirmation || extractedAffirmation;
+                detailWork.hidden = !affirmationText;
+                if (affirmationText) {
+                    const rawHtml = `<strong class="horoscope-affirmation-label">&#10024; ${affLabel}:</strong> ${affirmationText}`;
+                    const sanitized = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(rawHtml) : rawHtml.replace(/<[^>]*>/g, '');
+                    detailWork.innerHTML = sanitized;
+                } else {
+                    detailWork.textContent = '';
+                }
             }
 
             if (detailRelationships) detailRelationships.hidden = true;
 
             if (detailNumbers) {
-                if (predictionData.luckyNumbers && Array.isArray(predictionData.luckyNumbers)) {
+                const hasLuckyNumbers = Array.isArray(predictionData.luckyNumbers) && predictionData.luckyNumbers.length > 0;
+                detailNumbers.parentElement.hidden = !hasLuckyNumbers;
+                if (hasLuckyNumbers) {
                     detailNumbers.innerText = predictionData.luckyNumbers.join(', ');
                 } else {
-                    detailNumbers.innerText = generateLuckyNumbers();
+                    detailNumbers.innerText = '';
                 }
             }
 
             if (detailSection) detailSection.dataset.loaded = 'true';
             if (activationSelection) completeActivationResult(signName);
 
-            const saveKey = `horoscope_saved_${signName}_${currentPeriod}_${new Date().toISOString().split('T')[0]}`;
+            const saveKey = `horoscope_saved_${signName}_${currentPeriod}_${getPragueHoroscopeDate()}`;
             if (window.Auth && window.Auth.saveReading && !sessionStorage.getItem(saveKey)) {
                 sessionStorage.setItem(saveKey, '1');
                 const saveResult = await window.Auth.saveReading('horoscope', {
@@ -640,7 +662,7 @@ function initHoroscope() {
                     period: currentPeriod,
                     prediction: cleanPrediction,
                     affirmation: predictionData.affirmation || extractedAffirmation,
-                    luckyNumbers: predictionData.luckyNumbers || generateLuckyNumbers()
+                    luckyNumbers: predictionData.luckyNumbers || null
                 });
 
                 if (saveResult && saveResult.id) {

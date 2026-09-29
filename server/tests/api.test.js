@@ -989,7 +989,7 @@ describe('API Endpoint Tests', () => {
             expect(stale.text).toContain('<meta name="robots" content="noindex, follow">');
         });
 
-        test('GET /horoskop/:sign/:date uses deterministic content without paid AI', async () => {
+        test('GET /horoskop/:sign/:date reports missing content without paid AI or invented details', async () => {
             const originalForceError = process.env.MOCK_AI_FORCE_ERROR;
             process.env.MOCK_AI_FORCE_ERROR = 'true';
 
@@ -1003,7 +1003,9 @@ describe('API Endpoint Tests', () => {
                     .expect(200);
 
                 expect(first.text).not.toContain('Testovaci AI odpoved');
-                expect(first.text).toContain('Čísla štěstí');
+                expect(first.text).toContain('Pro tento den zatím nemáme připravený výklad.');
+                expect(first.text).toContain('<meta name="robots" content="noindex, follow">');
+                expect(first.text).not.toContain('Čísla štěstí');
                 expect(first.text).toBe(second.text);
             } finally {
                 if (originalForceError === undefined) {

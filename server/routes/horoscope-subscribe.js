@@ -146,7 +146,8 @@ async function getTodaysHoroscopeText(sign) {
             import('../services/astrology.js'),
             import('../services/horoscope-response.js')
         ]);
-        const cached = await getCachedHoroscope(`${getHoroscopeCacheKey(sign, 'daily')}-cs-nocontext`);
+        const now = new Date();
+        const cached = await getCachedHoroscope(`${getHoroscopeCacheKey(sign, 'daily', now)}-cs-nocontext`, now);
         return cached?.response ? formatHoroscopeForEmail(cached.response) : '';
     } catch (err) {
         console.warn('[HoroscopeSub] Dnešní horoskop se nepodařilo načíst:', err.message);

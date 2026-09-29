@@ -140,7 +140,7 @@ async function getRuntimeDeps() {
 }
 
 // Get or generate horoscope — uses the SAME cache table as the website
-async function getOrGenerateHoroscope(sign) {
+async function getOrGenerateHoroscope(sign, now = new Date()) {
     const {
         callClaude,
         callGemini,
@@ -153,10 +153,10 @@ async function getOrGenerateHoroscope(sign) {
     // jinak job cache mine a generuje přes placené AI znovu. Web skládá klíč jako
     // `${getHoroscopeCacheKey(...)}-${lang}-${contextHash}`; e-mail je česky a bez
     // kontextu z deníku, takže `-cs-nocontext`.
-    const cacheKey = `${getHoroscopeCacheKey(sign, 'daily')}-cs-nocontext`;
+    const cacheKey = `${getHoroscopeCacheKey(sign, 'daily', now)}-cs-nocontext`;
 
     // Try the same cache the website uses
-    const cached = await getCachedHoroscope(cacheKey);
+    const cached = await getCachedHoroscope(cacheKey, now);
     if (cached?.response) return formatHoroscopeForEmail(cached.response);
 
     // Generate fresh via Claude and save to cache (website will reuse it)
@@ -174,11 +174,13 @@ async function getOrGenerateHoroscope(sign) {
             text = await callGemini(systemPrompt, userMsg);
         } catch (geminiError) {
             console.warn(`[DailyHoroscope] Gemini unavailable for ${sign}: ${geminiError.message}`);
-            text = buildFallbackDailyHoroscope(sign);
+            text = buildFallbackDailyHoroscope(sign, now);
         }
     }
 
-    const today = new Date().toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' });
+    const today = now.toLocaleDateString('cs-CZ', {
+        day: 'numeric', month: 'long', year: 'numeric', timeZone: DAILY_HOROSCOPE_TIME_ZONE
+    });
     await saveCachedHoroscope(cacheKey, sign, 'daily', text, today);
 
     return text;
@@ -218,7 +220,7 @@ export async function run(options = {}) {
 
     for (const sign of uniqueSigns) {
         try {
-            horoscopeCache[sign] = await getOrGenerateHoroscope(sign);
+            horoscopeCache[sign] = await getOrGenerateHoroscope(sign, now);
             console.log(`[DailyHoroscope] ✓ Generated horoscope for ${sign}`);
         } catch (e) {
             console.error(`[DailyHoroscope] ✗ Failed to generate for ${sign}:`, e.message);

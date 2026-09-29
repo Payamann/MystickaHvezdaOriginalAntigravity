@@ -1,0 +1,511 @@
+{
+  "version": "pilot-v2",
+  "status": "approved",
+  "source": "docs/horoscope-pilot-week-input-2026-09-29.md",
+  "items": [
+    {
+      "date": "2026-09-29",
+      "sign": "Beran",
+      "area": "7 — dohoda a vztahy",
+      "prediction": "„Ano“ vyslovené příliš rychle se někdy později mění v tiché „tohle jsem nechtěl“. U další společné prosby si nejdřív ověř, kolik času a energie skutečně máš, a teprve pak nabídni odpověď."
+    },
+    {
+      "date": "2026-09-29",
+      "sign": "Býk",
+      "area": "6 — rytmus práce a denní návyky",
+      "prediction": "Ráno se může zadrhnout na maličkosti, kterou hledáš každý den. Dej klíčům, nabíječce nebo pracovní pomůcce stálé místo a pár dní sleduj, jestli ti tahle změna opravdu šetří kroky."
+    },
+    {
+      "date": "2026-09-29",
+      "sign": "Blíženci",
+      "area": "5 — tvorba a radost",
+      "prediction": "Zachyť větu, která tě během dne rozesměje nebo překvapí, a přepiš ji do poznámek. Nemusí z ní hned být příběh; někdy stačí uchovat si malý kousek jazyka, ke kterému se můžeš vrátit."
+    },
+    {
+      "date": "2026-09-29",
+      "sign": "Rak",
+      "area": "4 — domov a zázemí",
+      "prediction": "Vstupní prostor často rozhoduje o tom, jak snadno se doma zabydlíš po návratu. Uvolni jedinou plochu na boty, tašku nebo poštu; drobný pořádek může udělat příchod o něco klidnější."
+    },
+    {
+      "date": "2026-09-29",
+      "sign": "Lev",
+      "area": "3 — rozhovor a sdělení",
+      "prediction": "Ve zprávě, kterou máš poslat více lidem, se může ztratit hlavní informace mezi podrobnostmi. Napiš nejdřív termín nebo rozhodnutí a teprve potom vysvětlení; čtenář rychleji pozná, co od něj potřebuješ."
+    },
+    {
+      "date": "2026-09-29",
+      "sign": "Panna",
+      "area": "2 — zdroje a hodnoty",
+      "prediction": "V kabelce, batohu nebo kapse se mohou hromadit věci, které nosíš ze zvyku. Vylož je na stůl a vrať zpět jen to, co se ti v běžném dni skutečně hodí; uvolníš prostor bez velkého třídění."
+    },
+    {
+      "date": "2026-09-29",
+      "sign": "Váhy",
+      "area": "1 — vlastní směr",
+      "prediction": "Na schůzku můžeš přijít s názorem, který ještě není uhlazený pro ostatní. Řekni nejdřív, co si opravdu myslíš, a teprve potom hledej společnou podobu. Vlastní hlas nemusí být hlasitý."
+    },
+    {
+      "date": "2026-09-29",
+      "sign": "Štír",
+      "area": "12 — odpočinek a uzavírání",
+      "prediction": "Otevřená záložka v prohlížeči není závazek, který musíš dnes splnit. Pokud tě k tématu nic konkrétního nevrací, zavři ji; pokud ano, ulož si důvod jednou větou. Hlava nemusí držet seznam za počítač."
+    },
+    {
+      "date": "2026-09-29",
+      "sign": "Střelec",
+      "area": "11 — přátelé a spolupráce",
+      "prediction": "Neurčité „někdy se uvidíme“ může zůstat viset celé týdny. Pošli člověku, na kterého myslíš, jeden konkrétní termín a jednoduchý návrh. Odmítnutí termínu pak není odmítnutí přátelství."
+    },
+    {
+      "date": "2026-09-29",
+      "sign": "Kozoroh",
+      "area": "10 — práce a odpovědnost",
+      "prediction": "Když se zadání vejde do slova „dodělat“, každý si pod ním může představit jiný výsledek. Napiš, co má být na konci vidět a kdo to převezme. Taková věta může ušetřit práci, která by se jinak dělala dvakrát."
+    },
+    {
+      "date": "2026-09-29",
+      "sign": "Vodnář",
+      "area": "9 — učení a širší souvislosti",
+      "prediction": "Zaujalo tě tvrzení, které všichni opakují? Zkus najít původní zdroj a zjistit, zda říká totéž. Rozdíl mezi citací a jejím kolováním bývá sám o sobě poučný."
+    },
+    {
+      "date": "2026-09-29",
+      "sign": "Ryby",
+      "area": "8 — sdílené závazky a hranice",
+      "prediction": "U společného úkolu si oba můžete být jistí, že se o něj postará ten druhý. Zapiš, kdo udělá který krok a do kdy, i kdyby šlo o malou věc. Jasnost je zde ohleduplnější než další domněnka."
+    },
+    {
+      "date": "2026-09-30",
+      "sign": "Beran",
+      "area": "7 — dohoda a vztahy",
+      "prediction": "Při plánování setkání se mohou lišit představy o tom, co znamená příjemný večer. Místo hádání navrhni dvě konkrétní možnosti a nechte rozhodnutí vzniknout z toho, co vyhovuje oběma."
+    },
+    {
+      "date": "2026-09-30",
+      "sign": "Býk",
+      "area": "6 — rytmus práce a denní návyky",
+      "prediction": "Když se úkol vrací pořád dokola, někdy pomůže připravit si jeho začátek. Nachystej si večer potřebné věci na ráno, ať nemusíš první minuty směny věnovat hledání a rozhodování."
+    },
+    {
+      "date": "2026-09-30",
+      "sign": "Blíženci",
+      "area": "5 — tvorba a radost",
+      "prediction": "Pokud máš chuť něco vyrobit, ale hlava nabízí jen prázdnou stránku, začni omezením: použij tři barvy, pět slov nebo jednu ingredienci. Hra s malým rámcem může být zajímavější než čekání na velký nápad."
+    },
+    {
+      "date": "2026-09-30",
+      "sign": "Rak",
+      "area": "4 — domov a zázemí",
+      "prediction": "Ve společné domácnosti se může opakovat otázka, kdo co zařídí. Rozdělte si jednu konkrétní povinnost podle toho, komu lépe zapadá do dne, a domluvte se, kdy si ověříte, zda rozdělení funguje."
+    },
+    {
+      "date": "2026-09-30",
+      "sign": "Lev",
+      "area": "3 — rozhovor a sdělení",
+      "prediction": "V obchodě, na zastávce nebo v čekárně může krátký rozhovor začít obyčejnou poznámkou k situaci. Pokud se do něj pustíš, nech druhému možnost odpovědět nebo pokračovat po svém."
+    },
+    {
+      "date": "2026-09-30",
+      "sign": "Panna",
+      "area": "2 — zdroje a hodnoty",
+      "prediction": "Při nákupu drogerie či potravin porovnej jednu položku s tím, co už doma máš. Zkontroluj množství a dobu použitelnosti, než přidáš další balení do zásoby; přehled je užitek sám o sobě."
+    },
+    {
+      "date": "2026-09-30",
+      "sign": "Váhy",
+      "area": "1 — vlastní směr",
+      "prediction": "Před odchodem z domu sáhneš po věci, kterou nosíš hlavně ze zvyku. Zkus vybrat jeden detail podle toho, jak se v něm cítíš ty. Drobná volba může být příjemnější než snaha udělat správný dojem."
+    },
+    {
+      "date": "2026-09-30",
+      "sign": "Štír",
+      "area": "12 — odpočinek a uzavírání",
+      "prediction": "Když máš po rušném setkání plnou hlavu cizích hlasů, nemusíš hned vyvozovat závěr. Krátká cesta domů bez dalšího poslechu může nechat dojmy dosednout. Ticho tu není úkol, jen prostor."
+    },
+    {
+      "date": "2026-09-30",
+      "sign": "Střelec",
+      "area": "11 — přátelé a spolupráce",
+      "prediction": "Ve společné práci se snadno stane, že ochotný člověk dostane všechno, co nikdo nechce. Nabídni jednu věc, kterou zvládneš dobře, a rovnou řekni, kolik času jí můžeš dát. Skupině pomůže přesná nabídka víc než neomezený slib."
+    },
+    {
+      "date": "2026-09-30",
+      "sign": "Kozoroh",
+      "area": "10 — práce a odpovědnost",
+      "prediction": "Kalendář umí vypadat plnější než skutečná kapacita člověka. U jedné věci, která se do týdne nevejde, řekni včas nový rozsah nebo termín. Odpovědnost někdy začíná přesným „tohle zvládnu“."
+    },
+    {
+      "date": "2026-09-30",
+      "sign": "Vodnář",
+      "area": "9 — učení a širší souvislosti",
+      "prediction": "Vezmi známou věc a podívej se, jak vypadala před deseti nebo sto lety. Může to být jídlo, slovo i způsob práce. Krátký návrat do historie často ukáže, že dnešní samozřejmost byla kdysi něčí volba."
+    },
+    {
+      "date": "2026-09-30",
+      "sign": "Ryby",
+      "area": "8 — sdílené závazky a hranice",
+      "prediction": "Půjčená věc se může stát zdrojem napětí, když nikdo neřekl, kdy se vrátí. Domluv konkrétní termín a stav, ve kterém ji druhý potřebuje zpět. Péče o vztah někdy vypadá jako prostá přesnost."
+    },
+    {
+      "date": "2026-10-01",
+      "sign": "Beran",
+      "area": "7 — dohoda a vztahy",
+      "prediction": "Ve sporu se snadno začne obhajovat každá věta zvlášť. Zkus rozhovor na chvíli vrátit k otázce, kterou společně řešíte; možná zjistíte, že se přete hlavně o způsob, ne o samotný cíl."
+    },
+    {
+      "date": "2026-10-01",
+      "sign": "Býk",
+      "area": "6 — rytmus práce a denní návyky",
+      "prediction": "V kalendáři bývají přechody mezi schůzkami neviditelné, přesto stojí čas. Nech si mezi dvěma závazky krátké okno na poznámky, vodu nebo cestu; denní rytmus se pak nemusí lámat o každé zpoždění."
+    },
+    {
+      "date": "2026-10-01",
+      "sign": "Blíženci",
+      "area": "5 — tvorba a radost",
+      "prediction": "Vyber si knihu, film nebo píseň jen podle názvu či obalu a dej jí deset minut. Když tě nechytí, můžeš skončit; zvědavost nemusí pokaždé vést k dokončení."
+    },
+    {
+      "date": "2026-10-01",
+      "sign": "Rak",
+      "area": "4 — domov a zázemí",
+      "prediction": "Zvuk pračky, konvice nebo větru u okna může být součástí domácího dne, kterou obvykle přeslechneš. Věnuj chvíli tomu, co doma slyšíš, a všimni si, který kout ti dopřává nejvíc klidu."
+    },
+    {
+      "date": "2026-10-01",
+      "sign": "Lev",
+      "area": "3 — rozhovor a sdělení",
+      "prediction": "Instrukce, které jsou jasné tobě, nemusí být jasné tomu, kdo je slyší poprvé. U jednoho vysvětlení přidej příklad z praxe a ověř, zda si druhý odnáší stejný postup."
+    },
+    {
+      "date": "2026-10-01",
+      "sign": "Panna",
+      "area": "2 — zdroje a hodnoty",
+      "prediction": "Čas je také zdroj, který může mizet v drobných přerušeních. Všimni si, kolikrát během jedné práce kontroluješ oznámení, a zkus si na krátký úsek nechat otevřenou jen věc, kterou právě potřebuješ."
+    },
+    {
+      "date": "2026-10-01",
+      "sign": "Váhy",
+      "area": "1 — vlastní směr",
+      "prediction": "Když tě někdo požádá o rychlou odpověď, smíš si nechat čas. Věta „ozvu se odpoledne“ dá tvému rozhodnutí prostor, aniž by druhého nechala v nejistotě."
+    },
+    {
+      "date": "2026-10-01",
+      "sign": "Štír",
+      "area": "12 — odpočinek a uzavírání",
+      "prediction": "Některá zpráva čeká na odpověď, protože nevíš, jak ji uzavřít. Může stačit poctivé „potřebuji čas, vrátím se k tomu v pátek“. Nemusíš v jedné větě vyřešit celý rozhovor."
+    },
+    {
+      "date": "2026-10-01",
+      "sign": "Střelec",
+      "area": "11 — přátelé a spolupráce",
+      "prediction": "Skupinový nápad se někdy rozplyne v dlouhém chatu. Zeptej se, kdo chce udělat první konkrétní krok a co k němu potřebuje. Nemusíš se automaticky stát tím, kdo celý plán ponese."
+    },
+    {
+      "date": "2026-10-01",
+      "sign": "Kozoroh",
+      "area": "10 — práce a odpovědnost",
+      "prediction": "Po dokončené práci se zeptej na jednu konkrétní věc: co bylo pro druhého užitečné a co mu chybělo? Krátká zpětná vazba může být cennější než hádání, jak tvůj výsledek působil."
+    },
+    {
+      "date": "2026-10-01",
+      "sign": "Vodnář",
+      "area": "9 — učení a širší souvislosti",
+      "prediction": "Když se učíš něco nového, zkus to po chvíli vysvětlit bez odborných slov. Místo, kde se zarazíš, není ostuda; ukazuje přesně, na co se chceš zeptat příště."
+    },
+    {
+      "date": "2026-10-01",
+      "sign": "Ryby",
+      "area": "8 — sdílené závazky a hranice",
+      "prediction": "Sdílet prostor neznamená sdílet každou informaci. Pokud někdo používá tvůj účet, zařízení nebo věci, ujasni si, k čemu má přístup a co si chceš ponechat pro sebe. Hranici lze říct klidně, bez obvinění."
+    },
+    {
+      "date": "2026-10-02",
+      "sign": "Beran",
+      "area": "7 — dohoda a vztahy",
+      "prediction": "„Ozvu se“ může pro každého znamenat jiný čas. Pokud na něčem závisí tvůj další plán, domluvte si, kdy se k tématu vrátíte, a mezitím si ponech vlastní prostor."
+    },
+    {
+      "date": "2026-10-02",
+      "sign": "Býk",
+      "area": "6 — rytmus práce a denní návyky",
+      "prediction": "Při dlouhé práci u obrazovky si vyber jeden přirozený předěl, třeba konec kapitoly či odeslání zprávy, a vstaň od stolu. Krátká změna polohy může být součástí práce, ne další povinnost na seznamu."
+    },
+    {
+      "date": "2026-10-02",
+      "sign": "Blíženci",
+      "area": "5 — tvorba a radost",
+      "prediction": "Když v rozhovoru zaslechneš nečekané přirovnání, zapiš si ho. Zkus z něj vytvořit vlastní obraz nebo krátký odstavec; tvoření někdy začíná tím, že si všimneš cizího způsobu vidění."
+    },
+    {
+      "date": "2026-10-02",
+      "sign": "Rak",
+      "area": "4 — domov a zázemí",
+      "prediction": "Zásuvka s drobnostmi se někdy změní v malý archiv minulých plánů. Vyber z ní tři věci: jednu ponech, jednu přesuň jinam a jednu vyhoď či daruj, pokud už ji nepotřebuješ."
+    },
+    {
+      "date": "2026-10-02",
+      "sign": "Lev",
+      "area": "3 — rozhovor a sdělení",
+      "prediction": "Na cestě známou trasou vyber jednu věc, kterou obvykle míjíš bez povšimnutí: nápis, průchod nebo změnu výlohy. Popiš ji jednou větou někomu blízkému; pozorné sdílení otevírá rozhovor bez velkého tématu."
+    },
+    {
+      "date": "2026-10-02",
+      "sign": "Panna",
+      "area": "2 — zdroje a hodnoty",
+      "prediction": "Věc pořízená kvůli jedné konkrétní potřebě už možná leží ladem. Rozhodni, zda ji můžeš půjčit, darovat nebo uložit tam, kde bude dostupná; její hodnota se nemusí měřit tím, jak často ji vidíš."
+    },
+    {
+      "date": "2026-10-02",
+      "sign": "Váhy",
+      "area": "1 — vlastní směr",
+      "prediction": "Staré rozhodnutí nemusíš obhajovat jen proto, že kdysi dávalo smysl. Pokud se změnily okolnosti, pojmenuj, co platí teď a co už ne. Změnit směr není totéž jako popřít předchozí cestu."
+    },
+    {
+      "date": "2026-10-02",
+      "sign": "Štír",
+      "area": "12 — odpočinek a uzavírání",
+      "prediction": "Před večerem se ohlédni po závazku, který už trvá jen ze setrvačnosti. Ještě před změnou zjisti, komu slouží a co by znamenalo jej ukončit. Uzavření bývá snazší, když znáš jeho skutečný dopad."
+    },
+    {
+      "date": "2026-10-02",
+      "sign": "Střelec",
+      "area": "11 — přátelé a spolupráce",
+      "prediction": "Při setkání, které už máte domluvené, nemusíš přijít s programem. Všímej si, kdy je vám dobře i při obyčejném čaji nebo procházce. Společný čas nemusí být výkon."
+    },
+    {
+      "date": "2026-10-02",
+      "sign": "Kozoroh",
+      "area": "10 — práce a odpovědnost",
+      "prediction": "Když za tebou přijde někdo s úkolem, který už umí sám, nemusíš ho tiše převzít. Ukaž první krok a domluv, kdy se může zeptat znovu. Předaná dovednost vydrží déle než jednorázová záchrana."
+    },
+    {
+      "date": "2026-10-02",
+      "sign": "Vodnář",
+      "area": "9 — učení a širší souvislosti",
+      "prediction": "Cizí názor může znít nesmyslně, dokud neznáš zkušenost, ze které vyrostl. Polož jednu otázku na jeho předpoklad, ne na obhajobu člověka. Porozumět důvodu ještě neznamená souhlasit."
+    },
+    {
+      "date": "2026-10-02",
+      "sign": "Ryby",
+      "area": "8 — sdílené závazky a hranice",
+      "prediction": "Když se rozhoduje o společné věci, mohou v rozhovoru zapadnout malé osobní potřeby. Řekni jednu svou a nech zaznít i druhého. Společné řešení není automaticky to, při kterém jeden člověk ustoupí beze slova."
+    },
+    {
+      "date": "2026-10-03",
+      "sign": "Beran",
+      "area": "7 — dohoda a vztahy",
+      "prediction": "Všimni si, komu ve vztahu pravidelně přenecháváš výběr, i když na něm záleží také tobě. Příště řekni jednu konkrétní preferenci a nech druhému stejný prostor pro jeho."
+    },
+    {
+      "date": "2026-10-03",
+      "sign": "Býk",
+      "area": "6 — rytmus práce a denní návyky",
+      "prediction": "Oběd nebo svačina se snadno odsune, když se úkoly kupí. Připrav si dostupnou možnost předem a zvaž, zda můžeš jíst bez současného vyřizování zpráv; všimneš si, jaký rytmus ti vyhovuje."
+    },
+    {
+      "date": "2026-10-03",
+      "sign": "Blíženci",
+      "area": "5 — tvorba a radost",
+      "prediction": "Radost se nemusí vejít do dalšího projektu. Pusť si jednu skladbu a věnuj jí celou dobu pozornosti, bez focení, hodnocení či hledání další; i krátký zážitek může zůstat sám sebou."
+    },
+    {
+      "date": "2026-10-03",
+      "sign": "Rak",
+      "area": "4 — domov a zázemí",
+      "prediction": "Jestli se chystáš někoho přivítat, nemusíš připravovat celý byt. Nachystej místo k sezení a jednu jednoduchou věc k pití; pohostinnost může mít podobu prostoru, kde se dá pohodlně být."
+    },
+    {
+      "date": "2026-10-03",
+      "sign": "Lev",
+      "area": "3 — rozhovor a sdělení",
+      "prediction": "Když chceš někomu něco sdělit, hlasová zpráva může znít osobněji než dlouhý odstavec. Před nahráváním si ujasni jedinou hlavní myšlenku a nech zprávu tak krátkou, jak situace dovoluje."
+    },
+    {
+      "date": "2026-10-03",
+      "sign": "Panna",
+      "area": "2 — zdroje a hodnoty",
+      "prediction": "Předplatné, členství nebo pravidelný poplatek se snadno schová do měsíčního výpisu. Najdi jeden řádek, který neumíš hned přiřadit, a zjisti, co přesně pokrývá, než se rozhodneš, zda ti stále slouží."
+    },
+    {
+      "date": "2026-10-03",
+      "sign": "Váhy",
+      "area": "1 — vlastní směr",
+      "prediction": "Když se skupina rozhoduje, nemusíš automaticky převzít roli člověka, který všechny usmíří. Nejdřív řekni, kterou podmínku považuješ za důležitou, a teprve potom hledej společné řešení. Tvůj pohled do rozhovoru také patří."
+    },
+    {
+      "date": "2026-10-03",
+      "sign": "Štír",
+      "area": "12 — odpočinek a uzavírání",
+      "prediction": "Když se stará vzpomínka připomene při obyčejné činnosti, nemusíš jí hned dávat velký význam. Zaznamenej si, co přesně se vybavilo, a pak se vrať k přítomné chvíli. Někdy stačí věc vidět, ne ji rozebrat."
+    },
+    {
+      "date": "2026-10-03",
+      "sign": "Střelec",
+      "area": "11 — přátelé a spolupráce",
+      "prediction": "Někdo ve tvém okruhu možná odvedl kus práce, který nebyl vidět. Řekni konkrétně, jakou práci oceňuješ, bez velkého projevu před ostatními. Přátelství i spolupráci drží také drobná přesná uznání."
+    },
+    {
+      "date": "2026-10-03",
+      "sign": "Kozoroh",
+      "area": "10 — práce a odpovědnost",
+      "prediction": "Postup, který děláš automaticky, si občas zaslouží novou otázku: kdo jeho výsledek ještě používá? Pokud odpověď neznáš, zjisti ji dřív, než mu věnuješ další hodinu. Zvyk sám není důkaz potřebnosti."
+    },
+    {
+      "date": "2026-10-03",
+      "sign": "Vodnář",
+      "area": "9 — učení a širší souvislosti",
+      "prediction": "Některé souvislosti se čtou lépe mimo obrazovku. V knihovně, muzeu nebo na obyčejné vycházce si všimni jedné věci, kterou bys doma nehledal. Vezmi si z ní otázku, ne povinnost stát se odborníkem."
+    },
+    {
+      "date": "2026-10-03",
+      "sign": "Ryby",
+      "area": "8 — sdílené závazky a hranice",
+      "prediction": "Některá pomoc se časem změní v očekávání, o kterém se už nemluví. Zeptej se, zda současné rozdělení pořád vyhovuje oběma, a připusť i jinou podobu podpory. Starou dohodu je možné upravit."
+    },
+    {
+      "date": "2026-10-04",
+      "sign": "Beran",
+      "area": "7 — dohoda a vztahy",
+      "prediction": "Poděkování nemusí být slavnostní, aby bylo přesné. Pojmenuj jednu drobnost, kterou druhý udělal a která ti ulehčila den; konkrétní uznání často řekne víc než obecná pochvala."
+    },
+    {
+      "date": "2026-10-04",
+      "sign": "Býk",
+      "area": "6 — rytmus práce a denní návyky",
+      "prediction": "Na konci dne zkus zavřít pracovní prostor jedním drobným úkonem: ulož rozepsané soubory, ukliď hrnek nebo si poznamenej první krok na zítřek. Nedokončená práce tak nemusí zůstávat rozlitá po celém večeru."
+    },
+    {
+      "date": "2026-10-04",
+      "sign": "Blíženci",
+      "area": "5 — tvorba a radost",
+      "prediction": "Vezmi známý recept, melodii nebo rukodělný postup a změň jediný detail podle momentální chuti. Sleduj, co změna udělá, aniž bys výsledek musel ukazovat nebo obhajovat."
+    },
+    {
+      "date": "2026-10-04",
+      "sign": "Rak",
+      "area": "4 — domov a zázemí",
+      "prediction": "Na domácí práci se dá dívat i jako na péči o věci, které sdílíte. Oprav drobnou závadu, vyměň žárovku nebo si poznamenej, co je potřeba zařídit, místo aby tě nedořešená maličkost znovu překvapila."
+    },
+    {
+      "date": "2026-10-04",
+      "sign": "Lev",
+      "area": "3 — rozhovor a sdělení",
+      "prediction": "V debatě zkus položit otázku, na kterou nejde odpovědět jen „ano“ nebo „ne“. Pak nech chvíli na odpověď a všimni si, kterou část tématu druhý považuje za důležitou."
+    },
+    {
+      "date": "2026-10-04",
+      "sign": "Panna",
+      "area": "2 — zdroje a hodnoty",
+      "prediction": "Když něco potřebuje opravu, zapiš si její rozsah a cenu, místo okamžitého rozhodnutí mezi opravou a náhradou. Srozumitelná fakta ti dají pevnější základ pro volbu, která odpovídá tvému rozpočtu i potřebě."
+    },
+    {
+      "date": "2026-10-04",
+      "sign": "Váhy",
+      "area": "1 — vlastní směr",
+      "prediction": "Volný den se může naplnit cizími plány stejně rychle jako pracovní. Vyhraď si kousek času bez programu a rozhodni se až v něm, co ti dává smysl. Nemusí z něj vzniknout nic užitečného pro ostatní."
+    },
+    {
+      "date": "2026-10-04",
+      "sign": "Štír",
+      "area": "12 — odpočinek a uzavírání",
+      "prediction": "Odpočinek nemusí čekat na prázdný seznam povinností. Zkus si domluvit jasný konec jedné činnosti a potom chvíli, do které nic dalšího nevložíš. Hranice mezi prací a klidem se dá udělat docela obyčejně."
+    },
+    {
+      "date": "2026-10-04",
+      "sign": "Střelec",
+      "area": "11 — přátelé a spolupráce",
+      "prediction": "Ne každá skupina, do které patříš, musí dostat stejný díl tvého víkendu. Vyber, kde chceš být opravdu přítomný, a ostatním odpověz poctivě, místo abys nechal všechna pozvání otevřená."
+    },
+    {
+      "date": "2026-10-04",
+      "sign": "Kozoroh",
+      "area": "10 — práce a odpovědnost",
+      "prediction": "Pracovní role se snadno přilepí i na volný den. Když tě napadne něco k projektu, poznamenej to jednou větou a vrať se k tomu v určený čas. Nápad neztratíš a den nemusí změnit majitele."
+    },
+    {
+      "date": "2026-10-04",
+      "sign": "Vodnář",
+      "area": "9 — učení a širší souvislosti",
+      "prediction": "Dva poctivé zdroje mohou stejný problém popsat různě. Zkus rozlišit, na čem se shodují, jaké otázky pokládají a co zatím nevíš. I otevřený závěr je někdy přesnější než rychlý soud."
+    },
+    {
+      "date": "2026-10-04",
+      "sign": "Ryby",
+      "area": "8 — sdílené závazky a hranice",
+      "prediction": "Při společném nákupu nebo výpůjčce si předem ujasni, kdo věc používá, kdo se o ni stará a jak se rozhodne o případné opravě. Nemusíš očekávat spor, aby stálo za to mít jednoduchou dohodu."
+    },
+    {
+      "date": "2026-10-05",
+      "sign": "Beran",
+      "area": "7 — dohoda a vztahy",
+      "prediction": "Na začátku týdne projdi jednu dohodu, která zůstala otevřená. Napiš, co už je vyřešené a co ještě potřebuje společné rozhodnutí, aby na obou stranách nezůstávaly různé domněnky."
+    },
+    {
+      "date": "2026-10-05",
+      "sign": "Býk",
+      "area": "6 — rytmus práce a denní návyky",
+      "prediction": "Rutina, která kdysi pomáhala, se může stát zbytečně složitou. Vyber jeden opakující se postup a škrtni krok, který nikomu neslouží; pak si ověř, zda se výsledek stále daří dokončit."
+    },
+    {
+      "date": "2026-10-05",
+      "sign": "Blíženci",
+      "area": "5 — tvorba a radost",
+      "prediction": "Na začátku týdne si prohlédni náčrtky, fotky nebo rozehrané nápady, které jsi odložil. Jeden si vyber jen proto, že tě pořád těší, a dej mu další malý kousek času."
+    },
+    {
+      "date": "2026-10-05",
+      "sign": "Rak",
+      "area": "4 — domov a zázemí",
+      "prediction": "Zkus na chvíli změnit kout, kde odpočíváš: přesuň lampu, přines deku nebo odlož věci z křesla. Pak se posaď a rozhodni podle vlastní zkušenosti, jestli ti nové uspořádání sedí."
+    },
+    {
+      "date": "2026-10-05",
+      "sign": "Lev",
+      "area": "3 — rozhovor a sdělení",
+      "prediction": "Na začátku týdne projdi rozpracovanou konverzaci nebo poznámku, ke které se chceš vrátit. Napiš si jednu navazující větu či otázku, ať příště nemusíš znovu skládat, kde jste rozhovor opustili."
+    },
+    {
+      "date": "2026-10-05",
+      "sign": "Panna",
+      "area": "2 — zdroje a hodnoty",
+      "prediction": "Na začátku týdne si všimni jedné věci, kterou používáš často a bez potíží. Očisti ji, doplň nebo vrať na místo; péče o funkční zdroj někdy ušetří víc než hledání nového."
+    },
+    {
+      "date": "2026-10-05",
+      "sign": "Váhy",
+      "area": "1 — vlastní směr",
+      "prediction": "Na začátku týdne si napiš jednu věc, kterou chceš udělat po svém, a jednu, u které se hodí přijmout pomoc. Vlastní směr neznamená nést všechno bez pomoci; pomáhá vědět, co je tvoje volba."
+    },
+    {
+      "date": "2026-10-05",
+      "sign": "Štír",
+      "area": "12 — odpočinek a uzavírání",
+      "prediction": "Úkol, který má pokračovat bez tebe, potřebuje předání, ne tiché zmizení. Napiš, kde věc stojí, co zbývá a kdo má další krok. Pak se k ní nemusíš v duchu stále vracet."
+    },
+    {
+      "date": "2026-10-05",
+      "sign": "Střelec",
+      "area": "11 — přátelé a spolupráce",
+      "prediction": "Nový rozhovor může začít u věci, která oba zajímá, ne u snahy být zajímavý. Pošli jeden článek, obraz nebo tip s krátkou větou, co tě na něm zaujalo. Druhému nech prostor vidět něco úplně jiného."
+    },
+    {
+      "date": "2026-10-05",
+      "sign": "Kozoroh",
+      "area": "10 — práce a odpovědnost",
+      "prediction": "Na začátku týdne se podívej na jednu dokončenou věc, která nikde nesvítí jako velký úspěch. Komu ve skutečnosti usnadnila práci? Tenhle konkrétní dopad ti může pomoci volit další priority lépe než délka seznamu."
+    },
+    {
+      "date": "2026-10-05",
+      "sign": "Vodnář",
+      "area": "9 — učení a širší souvislosti",
+      "prediction": "Když tě nová informace přiměje upravit starý názor, nemusíš ze sebe dělat člověka, který se předtím mýlil ve všem. Pojmenuj jen část, která se změnila, a proč. Tak se dá učit bez potřeby mít vždy poslední slovo."
+    },
+    {
+      "date": "2026-10-05",
+      "sign": "Ryby",
+      "area": "8 — sdílené závazky a hranice",
+      "prediction": "Když někdo blízký potřebuje oporu, nemusíš hned slíbit všechen svůj čas. Zeptej se, co by mu skutečně pomohlo, a nabídni jen to, co můžeš dát. Upřímná míra podpory bývá bezpečnější pro oba."
+    }
+  ]
+}

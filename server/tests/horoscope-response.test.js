@@ -30,4 +30,15 @@ describe('horoscope AI response contract', () => {
             responseWithPrediction('Jedna starší věta.')
         )).not.toThrow();
     });
+
+    test('accepts a reviewed cache entry without fabricated supplemental fields', () => {
+        const textOnly = JSON.stringify({ prediction: 'Jedna poctivá denní inspirace.' });
+        expect(() => normalizeHoroscopeAiResponse(textOnly)).toThrow(/incomplete/iu);
+        const result = normalizeHoroscopeAiResponse(textOnly, { allowMissingSupplemental: true });
+        expect(result.parsed).toEqual({
+            prediction: 'Jedna poctivá denní inspirace.',
+            affirmation: '',
+            luckyNumbers: []
+        });
+    });
 });

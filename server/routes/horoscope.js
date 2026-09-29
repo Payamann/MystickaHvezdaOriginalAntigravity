@@ -147,10 +147,11 @@ router.post('/', optionalPremiumCheck, async (req, res) => {
             context: sanitizedContext,
             userId: req.user?.id
         });
-        const cacheKey = `${getHoroscopeCacheKey(sign, period)}-${targetLang}-${contextHash}`;
+        const now = new Date();
+        const cacheKey = `${getHoroscopeCacheKey(sign, period, now)}-${targetLang}-${contextHash}`;
 
         // Check database cache first
-        const cachedData = await getCachedHoroscope(cacheKey);
+        const cachedData = await getCachedHoroscope(cacheKey, now);
         if (cachedData) {
             console.log(`📦 Horoscope Cache HIT: ${cacheKey}`);
             return res.json({
@@ -213,8 +214,8 @@ router.post('/', optionalPremiumCheck, async (req, res) => {
         const signEnergy = SIGN_ENERGY[sign] ? `\nENERGIE ZNAMENÍ ${sign.toUpperCase()}: ${SIGN_ENERGY[sign]}. Přizpůsob tón, metafory a radu této energii.` : '';
 
         const dateLocales = { 'cs': 'cs-CZ', 'sk': 'sk-SK', 'pl': 'pl-PL' };
-        const today = new Date();
-        const dateStr = today.toLocaleDateString(dateLocales[targetLang]);
+        const today = now;
+        const dateStr = today.toLocaleDateString(dateLocales[targetLang], { timeZone: 'Europe/Prague' });
 
         const genderInstruction = `\nTEXT VŽDY FORMULUJ PŘÍSNĚ GENDEROVĚ NEUTRÁLNĚ (vyhni se minulému času a slovům, která určují pohlaví čtenáře, např. místo "jsi připraven" nebo "udělal jsi" piš "je čas se připravit" nebo "došlo k pokroku"). Text piš i nadále poutavě a plynule.`;
         const voiceContract = HOROSCOPE_VOICE_CONTRACTS[targetLang] || HOROSCOPE_VOICE_CONTRACTS.cs;

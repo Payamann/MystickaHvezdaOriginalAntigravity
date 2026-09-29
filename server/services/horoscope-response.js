@@ -35,7 +35,7 @@ function countSentences(value) {
     return (String(value).match(/[.!?](?=\s|$)/g) || []).length;
 }
 
-export function normalizeHoroscopeAiResponse(rawResponse, { expectedSentenceCount = null } = {}) {
+export function normalizeHoroscopeAiResponse(rawResponse, { expectedSentenceCount = null, allowMissingSupplemental = false } = {}) {
     const cleanResponse = String(rawResponse || '')
         .replace(/^```(?:json)?\s*/i, '')
         .replace(/\s*```\s*$/i, '')
@@ -57,7 +57,7 @@ export function normalizeHoroscopeAiResponse(rawResponse, { expectedSentenceCoun
             .slice(0, 4)
         : [];
 
-    if (!prediction || !affirmation || luckyNumbers.length < 4) {
+    if (!prediction || (!allowMissingSupplemental && (!affirmation || luckyNumbers.length < 4))) {
         throw new Error('Claude returned incomplete horoscope JSON.');
     }
 

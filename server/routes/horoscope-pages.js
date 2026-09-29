@@ -33,6 +33,12 @@ const SIGN_MAP = {
 const CZECH_MONTHS = ['ledna', 'února', 'března', 'dubna', 'května', 'června',
     'července', 'srpna', 'září', 'října', 'listopadu', 'prosince'];
 
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, character => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[character]);
+}
+
 function formatCzechDate(dateStr) {
     const [year, month, day] = dateStr.split('-').map(Number);
     return `${day}. ${CZECH_MONTHS[month - 1]} ${year}`;
@@ -64,61 +70,11 @@ function parseIsoDateStrict(dateStr) {
     return targetDate.toISOString().split('T')[0] === dateStr ? targetDate : null;
 }
 
-const FALLBACK_THEMES = Object.freeze([
-    {
-        theme: 'jasných priorit',
-        guidance: 'Vyber si jednu věc, která má skutečnou váhu, a dej jí přednost před drobným rozptýlením.',
-        affirmation: 'Volím jasně a svou energii dávám tomu, co má pro mě opravdový význam.'
-    },
-    {
-        theme: 'klidné odvahy',
-        guidance: 'Udělej malý krok, který už delší dobu odkládáš, ale netlač na výsledek.',
-        affirmation: 'Jednám odvážně, klidně a důvěřuji tempu, které je pro mě udržitelné.'
-    },
-    {
-        theme: 'pravdivé komunikace',
-        guidance: 'Pojmenuj své potřeby jednoduše a nech druhé odpovědět bez domýšlení jejich záměrů.',
-        affirmation: 'Mluvím pravdivě a zároveň nechávám prostor pro porozumění.'
-    },
-    {
-        theme: 'obnovy vnitřní rovnováhy',
-        guidance: 'Vrať se k činnosti, po které se cítíš pevněji, a dopřej jí dnes konkrétní čas.',
-        affirmation: 'Vrátím se k sobě pokaždé, když vědomě zvolím klid a jednoduchost.'
-    },
-    {
-        theme: 'trpělivého dokončení',
-        guidance: 'Nezačínej další úkol, dokud neposuneš alespoň o jeden krok to, co už máš otevřené.',
-        affirmation: 'Dokončuji podstatné věci s trpělivostí a čistou pozorností.'
-    },
-    {
-        theme: 'otevřenosti novému pohledu',
-        guidance: 'Zkus se na známou situaci podívat očima člověka, který v ní nehledá chybu, ale možnost.',
-        affirmation: 'Dovoluji si vidět nové možnosti tam, kde dříve byla jen překážka.'
-    }
-]);
-
-function stableSeed(value) {
-    let seed = 0;
-    for (const character of value) {
-        seed = ((seed * 31) + character.codePointAt(0)) >>> 0;
-    }
-    return seed;
-}
-
-function buildFallbackHoroscopePage(signData, dateStr) {
-    const seed = stableSeed(`${signData.name}:${dateStr}`);
-    const theme = FALLBACK_THEMES[seed % FALLBACK_THEMES.length];
-    const luckyNumbers = [];
-
-    for (let offset = 0; luckyNumbers.length < 4; offset += 1) {
-        const number = ((seed + (offset * 11)) % 49) + 1;
-        if (!luckyNumbers.includes(number)) luckyNumbers.push(number);
-    }
-
+function buildUnavailableHoroscopePage() {
     return {
-        prediction: `Dne ${formatCzechDate(dateStr)} se pro ${signData.nameAcc} otevírá téma ${theme.theme}. ${theme.guidance} Večer si všimni, co se změnilo, když místo spěchu dostal prostor vědomý krok.`,
-        affirmation: theme.affirmation,
-        luckyNumbers
+        prediction: 'Pro tento den zatím nemáme připravený výklad. Zkus si vybrat dnešní inspiraci v přehledu horoskopů.',
+        affirmation: '',
+        luckyNumbers: []
     };
 }
 
@@ -196,16 +152,18 @@ router.get('/:sign/:date', async (req, res, next) => {
 
         // Try cache first
         let parsed;
-        const cached = await getCachedHoroscope(cacheKey);
+        let hasUsableCache = false;
+        const cached = date <= todayStr ? await getCachedHoroscope(cacheKey) : null;
         if (cached) {
             try {
-                ({ parsed } = normalizeHoroscopeAiResponse(cached.response));
+                ({ parsed } = normalizeHoroscopeAiResponse(cached.response, { allowMissingSupplemental: true }));
+                hasUsableCache = true;
             } catch {
-                parsed = buildFallbackHoroscopePage(signData, date);
+                parsed = buildUnavailableHoroscopePage();
             }
         } else {
             // Public crawlable GET routes must never initiate paid AI requests.
-            parsed = buildFallbackHoroscopePage(signData, date);
+            parsed = buildUnavailableHoroscopePage();
         }
 
         const prevDate = shiftDate(date, -1);
@@ -213,12 +171,14 @@ router.get('/:sign/:date', async (req, res, next) => {
         const hasNext = date < todayStr;
         const isToday = date === todayStr;
         const earliestIndexableDate = shiftDate(todayStr, -60);
-        const isIndexableDate = date >= earliestIndexableDate && date <= todayStr;
+        const isIndexableDate = hasUsableCache && date >= earliestIndexableDate && date <= todayStr;
 
         const canonicalUrl = `${SITE_ORIGIN}/horoskop/${slug}/${date}`;
         const titleStr = `Horoskop ${signData.nameGen} — ${czechDate} | Mystická Hvězda`;
         const prediction = parsed.prediction || '';
-        const descStr = `Denní horoskop pro ${signData.nameAcc} na ${czechDate}. ${prediction.substring(0, 130).replace(/"/g, '&quot;')}…`;
+        const rawDescription = `Denní horoskop pro ${signData.nameAcc} na ${czechDate}. ${prediction.substring(0, 130)}…`;
+        const descStr = escapeHtml(rawDescription);
+        const jsonLdDescription = JSON.stringify(rawDescription).replace(/</g, '\\u003c');
         const robotsContent = isIndexableDate ? 'index, follow' : 'noindex, follow';
 
         const luckyNumbersHtml = Array.isArray(parsed.luckyNumbers) && parsed.luckyNumbers.length
@@ -233,7 +193,7 @@ router.get('/:sign/:date', async (req, res, next) => {
         const affirmationHtml = parsed.affirmation
             ? `<div class="horoscope-day-affirmation">
                 <p class="horoscope-day-affirmation__label">Afirmace dne</p>
-                <p class="horoscope-day-affirmation__text">&ldquo;${parsed.affirmation}&rdquo;</p>
+                <p class="horoscope-day-affirmation__text">&ldquo;${escapeHtml(parsed.affirmation)}&rdquo;</p>
               </div>`
             : '';
 
@@ -271,7 +231,7 @@ router.get('/:sign/:date', async (req, res, next) => {
     "@context": "https://schema.org",
     "@type": "Article",
     "headline": "${titleStr.replace(/"/g, '\\"')}",
-    "description": "${descStr.replace(/"/g, '\\"')}",
+    "description": ${jsonLdDescription},
     "datePublished": "${date}",
     "dateModified": "${date}",
     "inLanguage": "cs",
@@ -332,7 +292,7 @@ router.get('/:sign/:date', async (req, res, next) => {
             <span class="text-gradient">Horoskop ${signData.nameGen}</span>
           </h1>
           <p class="hero__subtitle horoscope-day-subtitle">${czechDate} • ${signData.dates}</p>
-          ${isToday ? '<p class="horoscope-day-pill">✨ Dnešní předpověď</p>' : ''}
+          ${isToday ? '<p class="horoscope-day-pill">Dnešní inspirace</p>' : ''}
         </div>
       </div>
     </section>
@@ -343,9 +303,9 @@ router.get('/:sign/:date', async (req, res, next) => {
         <div class="card horoscope-day-card" data-animate>
           <span class="section__badge">Denní inspirace • ${signData.name} ${signData.symbol}</span>
           <h2 class="horoscope-day-heading">
-            Co vám hvězdy říkají
+            Podnět pro tento den
           </h2>
-          <p class="horoscope-day-prediction">${prediction}</p>
+          <p class="horoscope-day-prediction">${escapeHtml(prediction)}</p>
           ${affirmationHtml}
           ${luckyNumbersHtml}
 
@@ -376,8 +336,8 @@ router.get('/:sign/:date', async (req, res, next) => {
       <div class="container horoscope-day-cta-container">
         <div class="cta-banner" data-animate>
           <div class="cta-banner__content">
-            <h2 class="cta-banner__title">Chcete osobnější výklad?</h2>
-            <p class="cta-banner__text">Zadejte datum, čas a místo narození pro natální kartu, která doplní obecný horoskop o osobní kontext a konkrétní témata k sebereflexi.</p>
+            <h2 class="cta-banner__title">Chceš osobnější výklad?</h2>
+            <p class="cta-banner__text">Zadej datum, čas a místo narození pro natální kartu, která doplní obecný horoskop o osobní kontext a konkrétní témata k zamyšlení.</p>
             <a href="/natalni-karta.html?source=seo_horoscope_day&feature=natalni_karta" class="btn btn--primary btn--lg">Vytvořit natální kartu</a>
           </div>
         </div>
