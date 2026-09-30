@@ -166,7 +166,7 @@ def render_tarot_cards() -> int:
 
 if __name__ == "__main__":
     OUTPUT.mkdir(parents=True, exist_ok=True)
-    for artwork, filename in (("astrology", "astrology-hero.webp"), ("card", "tarot-cloth-hero.webp")):
+    for artwork, filename in (("astrology", "astrology-hero.webp"), ("card", "tarot-cloth-hero.webp"), ("tarot", "home-hero.webp")):
         hero = ImageOps.fit(
             Image.open(ART / f"{artwork}.png").convert("RGB"),
             (1600, 900),

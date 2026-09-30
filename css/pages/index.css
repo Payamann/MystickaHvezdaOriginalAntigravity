@@ -471,6 +471,10 @@ body.page-home .section--hero {
     min-height: clamp(620px, 88svh, 740px);
     padding-top: 7.5rem;
     padding-bottom: 4rem;
+    background:
+        linear-gradient(90deg, rgba(5, 8, 22, 0.83), rgba(5, 8, 22, 0.76) 54%, rgba(5, 8, 22, 0.57)),
+        url('/img/search-preview/home-hero.webp') center / cover no-repeat;
+    border-bottom: 1px solid rgba(223, 184, 125, 0.26);
 }
 
 body.page-home .section--hero::before {
@@ -496,7 +500,7 @@ body.page-home .hero__content {
 body.page-home .hero__eyebrow {
     display: inline-block;
     margin-bottom: 0.9rem;
-    color: var(--color-mystic-gold);
+    color: #efd39a;
     font-size: 0.78rem;
     font-weight: 800;
     letter-spacing: 0.14em;
@@ -535,6 +539,26 @@ body.page-home .hero__cta .btn {
 
 body.page-home #hero-cta-btn {
     min-width: 320px;
+    border: 1px solid rgba(255, 236, 184, 0.42);
+    background: linear-gradient(110deg, #f0d69a, #c89b4b);
+    color: #1c1822;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.26);
+}
+
+body.page-home #hero-explore-link {
+    border-color: rgba(231, 195, 143, 0.34);
+    background: rgba(12, 14, 33, 0.56);
+}
+
+@media (max-width: 768px) {
+    body.page-home .section--hero {
+        background-position: 61% center;
+    }
+
+    body.page-home .hero__title {
+        font-family: var(--font-heading);
+        font-weight: 700;
+    }
 }
 
 body.page-home #hero-explore-link {
@@ -600,8 +624,8 @@ body.page-home .home-start-section {
     border-top: 1px solid rgba(212, 175, 55, 0.12);
     border-bottom: 1px solid rgba(212, 175, 55, 0.12);
     background:
-        radial-gradient(circle at 18% 18%, rgba(157, 78, 221, 0.16), transparent 34%),
-        linear-gradient(180deg, rgba(7, 5, 20, 0.34), rgba(12, 6, 26, 0.62));
+        radial-gradient(circle at 50% 0%, rgba(188, 135, 88, 0.11), transparent 42%),
+        linear-gradient(180deg, #0d1025, #13132a);
 }
 
 .home-intent-grid {
