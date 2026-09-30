@@ -24,6 +24,135 @@ html body #main-content > .section--hero .hero__content {
     }
 }
 
+/* The sign picker continues the illustrated hero without the old nebula tiles. */
+html body #main-content > .section--hero + .section {
+    position: relative;
+    background:
+        radial-gradient(ellipse at 50% -12%, rgba(188, 135, 88, 0.15), transparent 43%),
+        linear-gradient(180deg, #0d1025 0%, #111329 100%);
+}
+
+html body #main-content > .section--hero + .section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(224, 184, 121, 0.65), transparent);
+}
+
+html body #main-content > .section--hero + .section .container {
+    position: relative;
+}
+
+html body #main-content > .section--hero + .section .tabs {
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto 1.75rem;
+    border: 1px solid rgba(220, 183, 128, 0.2);
+    background: rgba(5, 8, 22, 0.7);
+}
+
+html body #main-content > .section--hero + .section .tab {
+    min-height: 44px;
+    color: #e7d8c3;
+}
+
+html body #main-content > .section--hero + .section .tab.active {
+    color: #15121d;
+}
+
+html body #main-content > .section--hero + .section .tab:focus-visible,
+html body #main-content > .section--hero + .section .zodiac-card:focus-visible {
+    outline: 2px solid #f1d69c;
+    outline-offset: 3px;
+}
+
+html body #main-content > .section--hero + .section .zodiac-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 0.85rem;
+    margin-top: 0;
+}
+
+html body #main-content > .section--hero + .section .zodiac-card {
+    min-width: 0;
+    min-height: 142px;
+    align-items: flex-start;
+    padding: 1rem 1.1rem;
+    border: 1px solid rgba(218, 182, 127, 0.24);
+    border-radius: 14px;
+    background: linear-gradient(150deg, rgba(36, 34, 53, 0.94), rgba(16, 21, 39, 0.98));
+    box-shadow: 0 12px 25px rgba(2, 4, 15, 0.16);
+    text-align: left;
+}
+
+html body #main-content > .section--hero + .section .zodiac-card:hover,
+html body #main-content > .section--hero + .section .zodiac-card.active {
+    border-color: rgba(229, 190, 128, 0.74);
+    background: linear-gradient(150deg, rgba(52, 43, 60, 0.98), rgba(22, 27, 45, 0.98));
+    box-shadow: 0 16px 30px rgba(2, 4, 15, 0.26);
+}
+
+html body #main-content > .section--hero + .section .zodiac-card__symbol {
+    margin: 0 0 0.35rem;
+    color: #e5c48d;
+    font-family: "Segoe UI Symbol", "Noto Sans Symbols 2", serif;
+    font-size: 2rem;
+    font-variant-emoji: text;
+    line-height: 1;
+}
+
+html body #main-content > .section--hero + .section .zodiac-card__name {
+    margin: 0;
+    font-size: 1rem;
+}
+
+html body #main-content > .section--hero + .section .zodiac-card__dates {
+    color: #c2b8b5;
+    font-size: 0.76rem;
+}
+
+@media (max-width: 980px) {
+    html body #main-content > .section--hero + .section .zodiac-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    html body #main-content > .section--hero {
+        min-height: 380px !important;
+        padding: 58px 0 28px !important;
+    }
+
+    html body #main-content > .section--hero .hero__content {
+        padding: 1.6rem 1.2rem;
+    }
+
+    html body #main-content > .section--hero + .section .tabs {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.2rem;
+        width: min(100%, 370px);
+        padding: 0.35rem;
+    }
+
+    html body #main-content > .section--hero + .section .tab {
+        padding: 0.65rem 0.35rem;
+        font-size: 0.84rem;
+    }
+
+    html body #main-content > .section--hero + .section .zodiac-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.7rem;
+    }
+
+    html body #main-content > .section--hero + .section .zodiac-card {
+        min-height: 128px;
+        padding: 0.9rem;
+    }
+}
+
 /* Migrated from horoskopy.html static style attributes. */
 html body .mh-inline-c7ca2aadf5 { display:none; background: linear-gradient(90deg, rgba(212,175,55,0.1), rgba(155,89,182,0.1)); border-bottom: 1px solid rgba(212,175,55,0.2); padding: 0.65rem 1rem; text-align: center; font-size: 0.88rem; color: rgba(255,255,255,0.8); }
 html body .mh-inline-ab7a727fdb { color: #d4af37; font-weight: 600; }

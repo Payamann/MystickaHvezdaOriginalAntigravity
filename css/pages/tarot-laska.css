@@ -3,7 +3,20 @@
     padding-bottom: 2rem;
 }
 
-.page-tarot-love .stars { background-image: linear-gradient(#050510b8, #050510e8), url('/img/bg-cosmic-hd.webp'); }
+.page-tarot-love .stars {
+    background-image: radial-gradient(ellipse at 70% 15%, rgba(89, 52, 98, 0.19), transparent 48%), linear-gradient(#080b1d, #090b1b);
+}
+
+.page-tarot-love .love-tarot-hero {
+    background:
+        linear-gradient(90deg, rgba(5, 8, 22, 0.9), rgba(7, 9, 27, 0.67) 53%, rgba(8, 9, 27, 0.45)),
+        url('/img/search-preview/tarot-cloth-hero.webp') center / cover no-repeat;
+    border-bottom: 1px solid rgba(221, 182, 122, 0.2);
+}
+
+.page-tarot-love .love-tarot-visual img {
+    filter: drop-shadow(0 22px 28px rgba(0, 0, 0, 0.72));
+}
 .love-tarot-hero .section__title { font-size: clamp(32px, 3.6vw, 46px); line-height: 1.3; margin-bottom: 20px; }
 .love-tarot-hero .section__text { font-size: 14px; line-height: 1.8; color: #c3b8d0; }
 .love-tarot-hero .section__badge { color: #e9c572; font-size: 10px; letter-spacing: 2px; }

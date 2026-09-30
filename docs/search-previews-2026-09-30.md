@@ -30,3 +30,9 @@ První skript vyžaduje Pillow a používá zdrojové ilustrace a písma uložen
 - Kontrola opětovným spuštěním přiřazovacího skriptu: 0 dalších změn.
 
 Google může ve výsledcích vybrat jiný obrázek z viditelného obsahu stránky a přepsat úryvek textu. Metadatům proto nelze připisovat zaručenou podobu výsledku vyhledávání. Po nasazení má smysl ověřit několik skutečných výsledků a sdílecích náhledů; indexované staré úryvky se mohou aktualizovat se zpožděním.
+
+## Následné vizuální doladění 30. 9. 2026
+
+- Základní náhledy a metadata běží na produkci v commitu `d0d84330`; Railway kontrola i přímé veřejné URL prošly.
+- Lokálně je připravené sjednocení výběru znamení na `horoskopy.html`: tmavé karty ve dvou řadách, textové zlaté symboly, klidnější pozadí a na mobilu vodorovný přepínač období. `tarot-laska.html` používá optimalizovaný texturovaný podklad `tarot-cloth-hero.webp` z existující ilustrace.
+- Lokální prohlídka proběhla pro obě stránky na desktopu 1440 px a mobilu 390 px. Bez vodorovného přetékání; přepnutí období, výběr znamení a fokus klávesnice fungují. Toto následné doladění zatím **není nasazené**.
