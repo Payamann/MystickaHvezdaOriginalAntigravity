@@ -166,7 +166,7 @@ function renderPage(dream, index, dreams, seoContent) {
     <meta property="og:type" content="article">
     <meta property="og:title" content="Sen o: ${keyword} — výklad snu | Mystická Hvězda">
     <meta property="og:description" content="${description}">
-    <meta property="og:image" content="${CANONICAL_ORIGIN}/img/hero-3d.webp">
+    <meta property="og:image" content="${CANONICAL_ORIGIN}/img/search-preview/dreams.webp">
     <meta property="og:url" content="${pageUrl}">
     <meta property="og:locale" content="cs_CZ">
     <meta name="twitter:card" content="summary_large_image">

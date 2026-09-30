@@ -58,7 +58,7 @@ function buildPage(sign) {
     <meta property="og:title" content="${sign.name} znamení (${sign.en}): vlastnosti a láska">
     <meta property="og:description" content="${sign.name} znamení: období, povaha, láska, silné stránky, slabiny a kompatibilita s dalšími znameními.">
     <meta property="og:type" content="article">
-    <meta property="og:image" content="../img/hero-bg-2.webp">
+    <meta property="og:image" content="https://www.mystickahvezda.cz/img/search-preview/horoscopes.webp">
     <meta property="og:url" content="https://www.mystickahvezda.cz/horoskop/${sign.slug}.html">
     <link rel="canonical" href="https://www.mystickahvezda.cz/horoskop/${sign.slug}.html">
 

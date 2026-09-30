@@ -266,6 +266,7 @@ function buildDetailPage(name, card, relatedCards = []) {
         action: seo.action || defaultAngles.action
     };
     const canonical = detailCanonical(name);
+    const previewImage = `${siteOrigin}/img/search-preview/tarot-cards/${slugify(name)}.webp`;
     const encodedName = encodeURIComponent(name);
     // CTR: cluster stál na pozici ~8 s CTR 1,07 % — rankování bylo v pořádku, ale
     // snippet sliboval seznam sekcí ("láska, práce, ano/ne") místo odpovědi. Lidé
@@ -367,14 +368,14 @@ function buildDetailPage(name, card, relatedCards = []) {
     <meta property="og:title" content="${escapeHtml(title)}">
     <meta property="og:description" content="${escapeHtml(description)}">
     <meta property="og:url" content="${escapeHtml(canonical)}">
-    <meta property="og:image" content="${escapeHtml(assetUrl(image))}">
+    <meta property="og:image" content="${escapeHtml(previewImage)}">
     <meta property="og:image:alt" content="${escapeHtml(`${name} tarot karta`)}">
     <meta property="og:locale" content="cs_CZ">
     <meta property="og:site_name" content="Mystická Hvězda">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="${escapeHtml(title)}">
     <meta name="twitter:description" content="${escapeHtml(description)}">
-    <meta name="twitter:image" content="${escapeHtml(assetUrl(image))}">
+    <meta name="twitter:image" content="${escapeHtml(previewImage)}">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔮</text></svg>">
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/img/icon-192.webp">

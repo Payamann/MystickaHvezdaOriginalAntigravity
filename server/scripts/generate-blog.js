@@ -67,7 +67,7 @@ async function generateBlog() {
             "@context": "https://schema.org",
             "@type": "BlogPosting",
             "headline": post.title,
-            "image": post.featured_image || "https://www.mystickahvezda.cz/img/hero-3d.png",
+            "image": post.featured_image || "https://www.mystickahvezda.cz/img/search-preview/blog.webp",
             "author": {
                 "@type": "Person",
                 "name": post.author || "Mystická Hvězda"
@@ -84,7 +84,7 @@ async function generateBlog() {
         html = html.replace(/{{AUTHOR}}/g, post.author || 'Mystická Hvězda');
         html = html.replace(/{{PUBLISHED_AT}}/g, publishedDate.toISOString());
         html = html.replace(/{{PUBLISHED_DATE_FORMATTED}}/g, formattedDate);
-        html = html.replace(/{{FEATURED_IMAGE}}/g, post.featured_image || '../img/hero-3d.png');
+        html = html.replace(/{{FEATURED_IMAGE}}/g, post.featured_image || '../img/search-preview/blog.webp');
         html = html.replace(/{{FEATURED_IMAGE_HTML}}/g, featuredImageHtml);
         html = html.replace(/{{READ_TIME}}/g, readTime.toString());
         // Generate Related Posts (up to 3 other posts)
@@ -99,7 +99,7 @@ async function generateBlog() {
         } else {
             related.forEach(r => {
                 const rDate = r.published_at ? new Date(r.published_at).toLocaleDateString('cs-CZ', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
-                const rImg = r.featured_image || '../img/hero-3d.png';
+                const rImg = r.featured_image || '../img/search-preview/blog.webp';
                 // Simple word count for read time
                 const rWordCount = (r.content_html || '').replace(/<[^>]*>?/gm, '').split(/\s+/).length;
                 const rTime = Math.max(1, Math.ceil(rWordCount / 200));

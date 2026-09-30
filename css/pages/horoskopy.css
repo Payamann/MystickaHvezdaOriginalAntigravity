@@ -3,6 +3,27 @@
     .section--hero { min-height: 45vh !important; display: flex; align-items: center; justify-content: center; padding: 100px 0 40px !important; }
     .hero__title { font-size: clamp(2.5rem, 8vw, 4rem); text-align: center; margin-bottom: 1rem; }
 
+/* Keep the first screen in the same illustrated family as its shared preview. */
+html body #main-content > .section--hero {
+    background: linear-gradient(90deg, rgba(6, 8, 24, 0.88), rgba(6, 8, 24, 0.66) 48%, rgba(6, 8, 24, 0.38)), url('/img/search-preview/astrology-hero.webp') center / cover no-repeat;
+    border-bottom: 1px solid rgba(214, 170, 105, 0.2);
+}
+
+html body #main-content > .section--hero .hero__content {
+    max-width: 760px;
+    margin-inline: auto;
+    padding: 2.5rem 1.5rem;
+    border-radius: 20px;
+    background: rgba(7, 9, 29, 0.42);
+    backdrop-filter: blur(4px);
+}
+
+@media (max-width: 600px) {
+    html body #main-content > .section--hero {
+        background-position: 63% center;
+    }
+}
+
 /* Migrated from horoskopy.html static style attributes. */
 html body .mh-inline-c7ca2aadf5 { display:none; background: linear-gradient(90deg, rgba(212,175,55,0.1), rgba(155,89,182,0.1)); border-bottom: 1px solid rgba(212,175,55,0.2); padding: 0.65rem 1rem; text-align: center; font-size: 0.88rem; color: rgba(255,255,255,0.8); }
 html body .mh-inline-ab7a727fdb { color: #d4af37; font-weight: 600; }
