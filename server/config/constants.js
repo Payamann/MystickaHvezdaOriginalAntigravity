@@ -55,7 +55,7 @@ export const SUBSCRIPTION_PLANS = Object.freeze({
         type: PLAN_TYPES.PREMIUM,
         interval: 'month',
         trialDays: 7,
-        description: 'Premium přístup - Neomezené tarotové výklady, Týdenní + měsíční horoskopy, Natální karta s interpretací'
+        description: 'Premium přístup - Rozšířené tarotové výklady, Týdenní + měsíční horoskopy, Natální karta s interpretací'
     },
     'pruvodce-rocne': {
         name: 'Hvězdný Průvodce (Roční)',
@@ -94,20 +94,11 @@ export const SUBSCRIPTION_PLANS = Object.freeze({
 const PUBLIC_PLAN_ORDER = Object.freeze([
     'poutnik',
     'pruvodce',
-    'pruvodce-rocne',
-    'osviceni',
-    'osviceni-rocne',
-    'vip-majestrat',
 ]);
 
 const PRICING_PAGE_PLAN_MAP = Object.freeze({
     monthly: Object.freeze({
         pruvodce: 'pruvodce',
-        osviceni: 'osviceni',
-    }),
-    yearly: Object.freeze({
-        pruvodce: 'pruvodce-rocne',
-        osviceni: 'osviceni-rocne',
     }),
 });
 
@@ -138,7 +129,7 @@ export function getPublicPlanManifest() {
                 const plan = SUBSCRIPTION_PLANS[planId];
                 return {
                     id: planId,
-                    name: plan.name,
+                    name: planId === 'pruvodce' ? 'Členství Mystické Hvězdy' : plan.name,
                     planType: plan.type,
                     priceMinor: plan.price,
                     priceCzk: plan.price / 100,
@@ -179,8 +170,15 @@ export function getPlanTypeForPlanId(planId, fallback = PLAN_TYPES.PREMIUM) {
 }
 
 export function planTypeMeetsRequirement(currentPlanType, requiredPlanId) {
+    const requiredPlan = getPlanById(requiredPlanId);
+    if (!requiredPlan) return false;
+
     const current = normalizePlanType(currentPlanType);
-    const required = getPlanTypeForPlanId(requiredPlanId);
+    const required = normalizePlanType(requiredPlan.type);
+    if (isPremiumPlanType(required)) {
+        return isPremiumPlanType(current);
+    }
+
     return (PLAN_TYPE_RANK[current] || 0) >= (PLAN_TYPE_RANK[required] || 0);
 }
 

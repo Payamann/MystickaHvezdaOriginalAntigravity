@@ -2,14 +2,15 @@
 /**
  * Local daily horoscope prefill.
  *
- * Generates deterministic Czech daily horoscopes without Claude/Gemini API calls
- * and writes them into the same cache table used by /api/horoscope and
- * /horoskop/:sign/:date.
+ * Generates a preview of deterministic Czech daily horoscopes without
+ * Claude/Gemini API calls. Historical output used the same cache table as
+ * /api/horoscope and /horoskop/:sign/:date.
+ * Historical preview only: the legacy astro-events input has not been verified
+ * for factual publication. Database writes are intentionally disabled.
  *
  * Usage:
  *   node server/scripts/prefill-horoscopes-local.js --from 2026-05-11 --to 2026-05-31
- *   node server/scripts/prefill-horoscopes-local.js --from 2026-05-11 --to 2026-05-31 --write
- *   node server/scripts/prefill-horoscopes-local.js --from 2026-05-11 --to 2026-05-31 --write --force
+ *   --write is disabled until the source data and copy are verified.
  */
 import 'dotenv/config';
 import fs from 'node:fs';
@@ -812,6 +813,9 @@ function writeReport({ args, dates, rows, skipped, written, sample }) {
 
 async function main() {
     const args = parseArgs(process.argv.slice(2));
+    if (args.write) {
+        throw new Error('Zápis legacy šablonových horoskopů je vypnutý: astrologické podklady a tvrzení nejsou ověřené. Použij nový redakčně schválený postup.');
+    }
     const dates = datesBetween(args.from, args.to);
     const events = loadAstroEvents();
     const rows = buildRows(dates, events);
@@ -823,7 +827,7 @@ async function main() {
     if (!args.write) {
         console.log('[DRY RUN] Lokální horoskopy nebyly zapsány do databáze.');
         console.log(`[DRY RUN] Rozsah: ${args.from} až ${args.to}, řádků: ${rows.length}`);
-        console.log('[DRY RUN] Pro zápis přidej --write.');
+        console.log('[DRY RUN] Zápis legacy výstupu je zablokovaný do ověření podkladů.');
     } else {
         const supabaseUrl = normalizeSupabaseUrl(process.env.SUPABASE_URL);
         const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;

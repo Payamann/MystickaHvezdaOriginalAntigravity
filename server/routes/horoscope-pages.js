@@ -156,7 +156,9 @@ router.get('/:sign/:date', async (req, res, next) => {
         const cached = date <= todayStr ? await getCachedHoroscope(cacheKey) : null;
         if (cached) {
             try {
-                ({ parsed } = normalizeHoroscopeAiResponse(cached.response, { allowMissingSupplemental: true }));
+                ({ parsed } = normalizeHoroscopeAiResponse(cached.response, {
+                    allowMissingSupplemental: cached.source === 'reviewed:pilot-v2'
+                }));
                 hasUsableCache = true;
             } catch {
                 parsed = buildUnavailableHoroscopePage();

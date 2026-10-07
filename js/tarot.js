@@ -12,7 +12,7 @@ const TAROT_YES_NO_UPGRADE_CONTEXT_KEY = 'mh_tarot_yes_no_upgrade_context';
 const TAROT_YES_NO_UPGRADE_CONTEXT_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
 function getTarotPlanForSpread(spreadType) {
-    return spreadType === 'Celtic Cross' ? 'vip-majestrat' : 'pruvodce';
+    return 'pruvodce';
 }
 
 function getTarotFeatureForSpread(spreadType) {
@@ -197,7 +197,7 @@ function bindTarotImageFallbacks(root) {
         image.addEventListener('error', () => {
             if (image.dataset.fallbackApplied === '1') return;
             image.dataset.fallbackApplied = '1';
-            image.src = '/img/tarot/tarot_placeholder.webp';
+            image.src = '/img/tarot-v2/tarot_card_back.webp';
         });
     });
 }
@@ -604,7 +604,7 @@ async function startReading(spreadType, isSoftGated = false) {
                     <div class="tarot-flip-card ${isLocked ? 'locked-card' : ''}" data-index="${index}">
                         <div class="tarot-flip-inner">
                             <div class="tarot-flip-front">
-                                <img src="img/tarot-back.webp" alt="Tarot Card Back">
+                                <img src="img/tarot-v2/tarot_card_back.webp" alt="Rub tarotové karty">
                             </div>
                             <div class="tarot-flip-back ${card.image ? 'has-image' : ''}">
                                 ${isLocked ? `
@@ -617,7 +617,7 @@ async function startReading(spreadType, isSoftGated = false) {
                                         <a href="${buildTarotUpgradeUrl(spreadType, 'tarot_locked_card')}" class="btn btn--primary tarot-upgrade-btn">${getTarotUpgradeLabel(spreadType, 'locked_card')}</a>
                                         ${getTarotPaymentReassuranceHtml()}
                                     </div>
-                                    <img src="img/tarot-back.webp" class="tarot-card-image--locked" alt="Locked">
+                                    <img src="img/tarot-v2/tarot_card_back.webp" class="tarot-card-image--locked" alt="Rub tarotové karty">
                                 ` : (card.image ? `
                                     <img src="${card.image}" alt="${escapeHtml(card.name)}" class="tarot-card-image" loading="lazy">
                                 ` : `

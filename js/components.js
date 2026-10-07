@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Use high priority for header as it affects LCP/CLS
     await Promise.all([
         loadComponent('header-placeholder', `${basePath}components/header.html?v=7`, basePath, true),
-        loadComponent('footer-placeholder', `${basePath}components/footer.html?v=20260705-cluster-links`, basePath, false)
+        loadComponent('footer-placeholder', `${basePath}components/footer.html?v=20261005-support-label`, basePath, false)
     ]);
 
     // STANDALONE: Init hamburger menu + header scroll (no module dependency)

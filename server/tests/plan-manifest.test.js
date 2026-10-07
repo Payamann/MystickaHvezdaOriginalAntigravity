@@ -3,6 +3,8 @@ import app from '../index.js';
 import {
     getPublicPlanManifest,
     getRequiredPlanForFeature,
+    getPlanById,
+    LIVE_STRIPE_PRICE_IDS,
     planTypeMeetsRequirement,
     SUBSCRIPTION_PLANS,
     userHasFeatureAccess
@@ -15,11 +17,7 @@ describe('Public plan manifest', () => {
 
         expect(manifestIds).toEqual([
             'poutnik',
-            'pruvodce',
-            'pruvodce-rocne',
-            'osviceni',
-            'osviceni-rocne',
-            'vip-majestrat'
+            'pruvodce'
         ]);
 
         for (const plan of manifest.plans) {
@@ -28,11 +26,11 @@ describe('Public plan manifest', () => {
             expect(plan.checkoutEnabled).toBe(SUBSCRIPTION_PLANS[plan.id].price > 0);
         }
 
-        expect(manifest.pricingPage.monthly.pruvodce).toBe('pruvodce');
-        expect(manifest.pricingPage.yearly.pruvodce).toBe('pruvodce-rocne');
-        expect(manifest.pricingPage.monthly.osviceni).toBe('osviceni');
-        expect(manifest.pricingPage.yearly.osviceni).toBe('osviceni-rocne');
-        expect(manifest.featurePlanMap.astrocartography).toBe('osviceni');
+        expect(manifest.pricingPage).toEqual({
+            monthly: { pruvodce: 'pruvodce' }
+        });
+        expect(new Set(Object.values(manifest.featurePlanMap))).toEqual(new Set(['pruvodce']));
+        expect(manifest.featurePlanMap.astrocartography).toBe('pruvodce');
         expect(manifest.featurePlanMap.angel_card_deep).toBe('pruvodce');
         expect(manifest.featurePlanMap.andelske_karty_hluboky_vhled).toBe('pruvodce');
         expect(manifest.featurePlanMap.daily_guidance).toBe('pruvodce');
@@ -46,23 +44,69 @@ describe('Public plan manifest', () => {
         expect(manifest.featurePlanMap.hvezdny_mentor).toBe('pruvodce');
         expect(manifest.featurePlanMap.kristalova_koule).toBe('pruvodce');
         expect(manifest.featurePlanMap.tarot).toBe('pruvodce');
-        expect(manifest.featurePlanMap.tarot_celtic_cross).toBe('vip-majestrat');
+        expect(manifest.featurePlanMap.tarot_celtic_cross).toBe('pruvodce');
+        expect(manifest.plans.find(plan => plan.id === 'pruvodce').description).not.toMatch(/neomezen/i);
     });
 
-    test('centralized feature gates compare plan hierarchy', () => {
-        expect(getRequiredPlanForFeature('astrocartography')).toBe('osviceni');
-        expect(planTypeMeetsRequirement('premium_monthly', 'pruvodce')).toBe(true);
-        expect(planTypeMeetsRequirement('premium_monthly', 'osviceni')).toBe(false);
-        expect(planTypeMeetsRequirement('exclusive_monthly', 'pruvodce')).toBe(true);
-        expect(planTypeMeetsRequirement('vip_majestrat', 'osviceni')).toBe(true);
+    test('keeps historical plans available to checkout and webhook lookups', () => {
+        expect(Object.keys(SUBSCRIPTION_PLANS)).toEqual([
+            'poutnik',
+            'pruvodce',
+            'pruvodce-rocne',
+            'osviceni',
+            'osviceni-rocne',
+            'vip-majestrat'
+        ]);
+        expect(LIVE_STRIPE_PRICE_IDS).toEqual({
+            pruvodce: 'price_1TRBKpAo8bdbnsKapn6BM0Wj',
+            'pruvodce-rocne': 'price_1TRBKqAo8bdbnsKacSK9KoSa',
+            osviceni: 'price_1TCjhkAo8bdbnsKaBes5yjmW',
+            'osviceni-rocne': 'price_1TRBKrAo8bdbnsKaja6EEMKa',
+            'vip-majestrat': 'price_1TCjijAo8bdbnsKaAk3Km66K'
+        });
+        expect(Object.fromEntries(Object.entries(SUBSCRIPTION_PLANS).map(([id, plan]) => [id, {
+            price: plan.price,
+            interval: plan.interval,
+            trialDays: plan.trialDays,
+            type: plan.type
+        }]))).toEqual({
+            poutnik: { price: 0, interval: null, trialDays: 0, type: 'free' },
+            pruvodce: { price: 19900, interval: 'month', trialDays: 7, type: 'premium_monthly' },
+            'pruvodce-rocne': { price: 199000, interval: 'year', trialDays: 7, type: 'premium_monthly' },
+            osviceni: { price: 49900, interval: 'month', trialDays: 7, type: 'exclusive_monthly' },
+            'osviceni-rocne': { price: 499000, interval: 'year', trialDays: 7, type: 'exclusive_monthly' },
+            'vip-majestrat': { price: 99900, interval: 'month', trialDays: 0, type: 'vip_majestrat' }
+        });
+        for (const planId of Object.keys(SUBSCRIPTION_PLANS)) {
+            expect(getPlanById(planId)).toBe(SUBSCRIPTION_PLANS[planId]);
+        }
+    });
 
+    test('all paid historical plan types satisfy the single paid requirement', () => {
+        expect(getRequiredPlanForFeature('astrocartography')).toBe('pruvodce');
+        expect(getRequiredPlanForFeature('tarot_celtic_cross')).toBe('pruvodce');
+        for (const planType of ['premium_monthly', 'exclusive_monthly', 'vip_majestrat']) {
+            expect(planTypeMeetsRequirement(planType, 'pruvodce')).toBe(true);
+            expect(planTypeMeetsRequirement(planType, 'osviceni')).toBe(true);
+            expect(planTypeMeetsRequirement(planType, 'vip-majestrat')).toBe(true);
+        }
+        expect(planTypeMeetsRequirement('free', 'pruvodce')).toBe(false);
+        expect(planTypeMeetsRequirement('unknown_plan', 'pruvodce')).toBe(false);
+        expect(planTypeMeetsRequirement('premium_monthly', 'unknown-plan')).toBe(false);
+
+        for (const planType of ['premium_monthly', 'exclusive_monthly', 'vip_majestrat']) {
+            expect(userHasFeatureAccess({
+                isPremium: true,
+                subscription_status: planType
+            }, 'astrocartography')).toBe(true);
+        }
+        expect(userHasFeatureAccess({
+            isPremium: false,
+            subscription_status: 'free'
+        }, 'astrocartography')).toBe(false);
         expect(userHasFeatureAccess({
             isPremium: true,
-            subscription_status: 'exclusive_monthly'
-        }, 'astrocartography')).toBe(true);
-        expect(userHasFeatureAccess({
-            isPremium: true,
-            subscription_status: 'premium_monthly'
+            subscription_status: 'unknown_plan'
         }, 'astrocartography')).toBe(false);
     });
 
@@ -74,10 +118,15 @@ describe('Public plan manifest', () => {
         expect(res.body.success).toBe(true);
         expect(res.body.currency).toBe('CZK');
         expect(res.body.featurePlanMap).toEqual(expect.objectContaining({
-            astrocartography: 'osviceni',
+            astrocartography: 'pruvodce',
             mentor: 'pruvodce'
         }));
-        expect(res.body.plans).toEqual(expect.arrayContaining([
+        expect(res.body.plans).toEqual([
+            expect.objectContaining({
+                id: 'poutnik',
+                priceMinor: 0,
+                checkoutEnabled: false
+            }),
             expect.objectContaining({
                 id: 'pruvodce',
                 priceMinor: 19900,
@@ -85,16 +134,8 @@ describe('Public plan manifest', () => {
                 priceLabel: '199 Kč',
                 billingInterval: 'monthly',
                 checkoutEnabled: true
-            }),
-            expect.objectContaining({
-                id: 'pruvodce-rocne',
-                priceMinor: 199000,
-                priceCzk: 1990,
-                priceLabel: '1 990 Kč',
-                billingInterval: 'yearly',
-                checkoutEnabled: true
             })
-        ]));
+        ]);
         expect(JSON.stringify(res.body)).not.toMatch(/STRIPE|SECRET|SERVICE_ROLE/i);
     });
 });

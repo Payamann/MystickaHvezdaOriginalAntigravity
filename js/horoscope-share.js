@@ -16,15 +16,22 @@
     const CARD_H = 1350;
 
     // Barvy
-    const C_BG_TOP    = '#050510';
-    const C_BG_BTM    = '#0d0620';
-    const C_NEBULA_1  = 'rgba(90,40,160,0.45)';
-    const C_NEBULA_2  = 'rgba(50,20,100,0.35)';
-    const C_GOLD      = '#ebc066';
-    const C_GOLD_DIM  = 'rgba(235,192,102,0.15)';
-    const C_WHITE     = '#ffffff';
-    const C_WHITE_DIM = 'rgba(255,255,255,0.75)';
-    const C_STAR      = 'rgba(255,255,255,0.7)';
+    const C_BG_TOP    = '#0b1929';
+    const C_BG_BTM    = '#102638';
+    const C_GOLD      = '#d0b17c';
+    const C_GOLD_DIM  = 'rgba(189,155,101,0.08)';
+    const C_WHITE     = '#e9e3d7';
+    const C_WHITE_DIM = '#c0c8ca';
+    let artworkPromise;
+    function loadArtwork() {
+        if (!artworkPromise) artworkPromise = new Promise(resolve => {
+            const image = new Image();
+            image.onload = () => resolve(image);
+            image.onerror = () => resolve(null);
+            image.src = '/img/atlas/tools-v1/02-mesicni-krajina.webp';
+        });
+        return artworkPromise;
+    }
 
     // ─── Vygeneruj hvězdičky náhodně ─────────────────────────────────────────
     function drawStars(ctx, w, h, count = 120) {
@@ -54,7 +61,9 @@
             if (metrics.width > maxWidth && n > 0) {
                 if (linesDrawn >= maxLines - 1) {
                     // Poslední řádek — přidej …
-                    ctx.fillText(line.trimEnd() + '…', x, y);
+                    let lastLine = line.trimEnd();
+                    while (lastLine && ctx.measureText(lastLine + '…').width > maxWidth) lastLine = lastLine.slice(0, -1).trimEnd();
+                    ctx.fillText(lastLine + '…', x, y);
                     return;
                 }
                 ctx.fillText(line.trimEnd(), x, y);
@@ -69,7 +78,8 @@
     }
 
     // ─── Hlavní generátor canvas karty ──────────────────────────────────────
-    function generateHoroscopeCard(signSymbol, signName, dateStr, predictionText, affirmationText) {
+    async function generateHoroscopeCard(signSymbol, signName, dateStr, predictionText, affirmationText, period = 'daily') {
+        const [artwork] = await Promise.all([loadArtwork(), document.fonts?.ready]);
         const canvas = document.createElement('canvas');
         canvas.width  = CARD_W;
         canvas.height = CARD_H;
@@ -78,34 +88,36 @@
         // ── Pozadí — vertikální gradient ───────────────────────
         const bgGrad = ctx.createLinearGradient(0, 0, 0, CARD_H);
         bgGrad.addColorStop(0,   C_BG_TOP);
-        bgGrad.addColorStop(0.5, '#0b0418');
+        bgGrad.addColorStop(0.5, '#102638');
         bgGrad.addColorStop(1,   C_BG_BTM);
         ctx.fillStyle = bgGrad;
         ctx.fillRect(0, 0, CARD_W, CARD_H);
 
-        // ── Nebula světelné skvrny ─────────────────────────────
-        const neb1 = ctx.createRadialGradient(CARD_W * 0.3, CARD_H * 0.25, 0, CARD_W * 0.3, CARD_H * 0.25, CARD_W * 0.55);
-        neb1.addColorStop(0, C_NEBULA_1);
-        neb1.addColorStop(1, 'transparent');
-        ctx.fillStyle = neb1;
-        ctx.fillRect(0, 0, CARD_W, CARD_H);
-
-        const neb2 = ctx.createRadialGradient(CARD_W * 0.75, CARD_H * 0.45, 0, CARD_W * 0.75, CARD_H * 0.45, CARD_W * 0.45);
-        neb2.addColorStop(0, C_NEBULA_2);
-        neb2.addColorStop(1, 'transparent');
-        ctx.fillStyle = neb2;
-        ctx.fillRect(0, 0, CARD_W, CARD_H);
-
-        // ── Hvězdičky ──────────────────────────────────────────
-        drawStars(ctx, CARD_W, CARD_H, 140);
+        // The same painted landscape as the lunar tool; no random nebula layer.
+        if (artwork) {
+            const artHeight = 660;
+            const scale = Math.max(CARD_W / artwork.width, artHeight / artwork.height);
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(0, 0, CARD_W, artHeight);
+            ctx.clip();
+            ctx.drawImage(artwork, (CARD_W - artwork.width * scale) / 2, 0, artwork.width * scale, artwork.height * scale);
+            const veil = ctx.createLinearGradient(0, 0, 0, artHeight);
+            veil.addColorStop(0, 'rgba(11,25,41,.88)');
+            veil.addColorStop(.45, 'rgba(11,25,41,.28)');
+            veil.addColorStop(1, C_BG_BTM);
+            ctx.fillStyle = veil;
+            ctx.fillRect(0, 0, CARD_W, artHeight);
+            ctx.restore();
+        }
 
         // ── Zlatý kruh za symbolem ─────────────────────────────
         const circX = CARD_W / 2;
         const circY = 420;
         const circR = 210;
         const circGrad = ctx.createRadialGradient(circX, circY, 60, circX, circY, circR);
-        circGrad.addColorStop(0, 'rgba(235,192,102,0.18)');
-        circGrad.addColorStop(0.6, 'rgba(235,192,102,0.06)');
+        circGrad.addColorStop(0, 'rgba(11,25,41,0.72)');
+        circGrad.addColorStop(0.6, 'rgba(11,25,41,0.3)');
         circGrad.addColorStop(1, 'transparent');
         ctx.fillStyle = circGrad;
         ctx.beginPath();
@@ -115,7 +127,7 @@
         // Tenký zlatý kroužek
         ctx.beginPath();
         ctx.arc(circX, circY, circR - 10, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(235,192,102,0.25)';
+        ctx.strokeStyle = 'rgba(189,155,101,0.45)';
         ctx.lineWidth = 1.5;
         ctx.stroke();
 
@@ -125,7 +137,7 @@
         ctx.letterSpacing = '6px';
         ctx.fillStyle = C_GOLD;
         ctx.textAlign = 'center';
-        ctx.fillText('DENNÍ HOROSKOP', CARD_W / 2, badgeY);
+        ctx.fillText(({ daily: 'DENNÍ HOROSKOP', weekly: 'TÝDENNÍ HOROSKOP', monthly: 'MĚSÍČNÍ HOROSKOP' })[period] || 'HOROSKOP', CARD_W / 2, badgeY);
         ctx.letterSpacing = '0px';
 
         // Tenká zlatá linka pod badge
@@ -145,7 +157,8 @@
         // ── Zodiac symbol (emoji) ──────────────────────────────
         ctx.font = '180px serif';
         ctx.textAlign = 'center';
-        ctx.fillText(signSymbol, CARD_W / 2, circY + 65);
+        ctx.fillStyle = C_GOLD;
+        ctx.fillText(signSymbol.replace(/\uFE0F/g, '') + '\uFE0E', CARD_W / 2, circY + 65);
 
         // ── Jméno znamení ──────────────────────────────────────
         ctx.font = 'bold 88px Cinzel, Georgia, serif';
@@ -186,17 +199,17 @@
             const affY = 1110;
             // Rámečk afirmace
             ctx.fillStyle = C_GOLD_DIM;
-            roundRect(ctx, textX - 20, affY - 46, textMaxW + 40, 130, 16);
+            roundRect(ctx, textX - 20, affY - 46, textMaxW + 40, 160, 6);
             ctx.fill();
             ctx.strokeStyle = 'rgba(235,192,102,0.3)';
             ctx.lineWidth = 1;
-            roundRect(ctx, textX - 20, affY - 46, textMaxW + 40, 130, 16);
+            roundRect(ctx, textX - 20, affY - 46, textMaxW + 40, 160, 6);
             ctx.stroke();
 
             ctx.font = '500 30px Inter, sans-serif';
             ctx.fillStyle = C_GOLD;
             ctx.textAlign = 'left';
-            ctx.fillText('✨ Afirmace', textX, affY);
+            ctx.fillText('Afirmace', textX, affY);
 
             ctx.font = 'italic 34px Inter, sans-serif';
             ctx.fillStyle = C_WHITE_DIM;
@@ -280,11 +293,13 @@
 
         // Preview náhled karty (zmenšená)
         const previewCanvas = document.createElement('canvas');
-        previewCanvas.width  = 270;
-        previewCanvas.height = 338;
+        previewCanvas.width  = CARD_W;
+        previewCanvas.height = CARD_H;
         const pCtx = previewCanvas.getContext('2d');
-        pCtx.drawImage(canvas, 0, 0, 270, 338);
+        pCtx.drawImage(canvas, 0, 0);
         previewCanvas.className = 'hs-preview-canvas';
+        previewCanvas.setAttribute('role', 'img');
+        previewCanvas.setAttribute('aria-label', `Horoskop ${signName} – obrázek ke sdílení`);
 
         // Share URL — UTM + anchor (pro clipboard)
         const shareUrl = shareUrlWithUTM || canonicalUrl;
@@ -329,12 +344,12 @@
                             </span>
                             <span>Kopírovat odkaz</span>
                         </button>
-                        <button class="hs-opt" id="hs-download-btn">
+                        <a class="hs-opt" id="hs-download-btn">
                             <span class="hs-opt-icon">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                             </span>
                             <span>Uložit obrázek</span>
-                        </button>
+                        </a>
                     </div>
                 </div>
                 <div class="hs-toast" id="hs-toast" role="status" aria-live="polite">✅ Odkaz zkopírován!</div>
@@ -365,13 +380,10 @@
             } catch (e) { /* uživatel zrušil nebo nepodporováno */ }
         });
 
-        // Download
-        panel.querySelector('#hs-download-btn').addEventListener('click', () => {
-            const link = document.createElement('a');
-            link.download = `horoskop-${signName.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.jpg`;
-            link.href = canvas.toDataURL('image/jpeg', 0.92);
-            link.click();
-        });
+        // A native download link also supports keyboard activation and saving via context menu.
+        const downloadLink = panel.querySelector('#hs-download-btn');
+        downloadLink.download = `horoskop-${signName.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.jpg`;
+        downloadLink.href = canvas.toDataURL('image/jpeg', 0.92);
 
         // Copy link
         panel.querySelector('#hs-copy-btn').addEventListener('click', async () => {
@@ -406,13 +418,14 @@
 
         let lastSign = null;
 
-        function tryRenderPanel() {
+        async function tryRenderPanel() {
             const signName    = document.getElementById('detail-name')?.innerText?.trim();
             const signSymbol  = document.getElementById('detail-symbol')?.innerText?.trim();
             const dateStr     = document.getElementById('detail-date')?.innerText?.trim();
             const prediction  = document.getElementById('detail-text')?.innerText?.trim();
             const affirmation = document.getElementById('detail-work')?.innerText
-                ?.replace(/^✨\s*Afirmace:\s*/i, '').trim();
+                ?.replace(/^✨\s*(?:Afirmace|Afirmacia|Afirmacja):\s*/i, '').trim();
+            const period = document.querySelector('[data-tab].active')?.dataset.tab || 'daily';
 
             // Přeskočit pokud není vybrané znamení nebo text je placeholder / příliš krátký
             if (!signName || signName === 'Zvěrokruh') return;
@@ -421,8 +434,9 @@
             if (prediction.includes('Zkuste se ztišit')) return;
 
             // Nespouštět znovu pokud se nic nezměnilo
-            if (lastSign === signName + prediction.slice(0, 20)) return;
-            lastSign = signName + prediction.slice(0, 20);
+            const renderKey = JSON.stringify([signName, signSymbol, dateStr, prediction, affirmation, period]);
+            if (lastSign === renderKey) return;
+            lastSign = renderKey;
 
             // Canonical URL se slugem znamení
             const slug = signName.toLowerCase()
@@ -438,7 +452,9 @@
             updateOGMeta(signName, prediction, canonical, slug);
 
             // Vygeneruj canvas kartu
-            const canvas = generateHoroscopeCard(signSymbol, signName, dateStr || '', prediction, affirmation || '');
+            const canvas = await generateHoroscopeCard(signSymbol, signName, dateStr || '', prediction, affirmation || '', period);
+            // An older image load must not overwrite a more recently selected sign.
+            if (lastSign !== renderKey || !detailSection.isConnected) return;
 
             // Vlož share panel
             const contentContainer = detailSection.querySelector('.horoscope-content');
@@ -463,6 +479,7 @@
             subtree: true,
             characterData: true,
         });
+        tryRenderPanel();
     }
 
     if (document.readyState === 'loading') {

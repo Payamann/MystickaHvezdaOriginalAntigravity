@@ -408,7 +408,14 @@
     };
 
     const CARD_DATA_URL = 'data/tarot-cards.json';
-    const FALLBACK_CARD_IMAGE = 'img/tarot/tarot_card_back_straight_v2.webp';
+    const FALLBACK_CARD_IMAGE = 'img/tarot-v2/tarot_card_back.webp';
+
+    function applyCardImageFallback(image) {
+        image.onerror = () => {
+            image.onerror = null;
+            image.src = FALLBACK_CARD_IMAGE;
+        };
+    }
 
     let cardPool = [];
     let cardDataLoaded = false;
@@ -1238,6 +1245,7 @@
 
         const cardImage = document.createElement('img');
         cardImage.className = 'card-front-image';
+        applyCardImageFallback(cardImage);
         cardImage.src = drawnCard.image;
         cardImage.alt = drawnCard.name;
         cardImage.loading = 'lazy';
@@ -1260,6 +1268,7 @@
         setTimeout(() => {
             const resultImage = document.getElementById('result-card-image');
             if (resultImage) {
+                applyCardImageFallback(resultImage);
                 resultImage.src = drawnCard.image;
                 resultImage.alt = `Tarotová karta: ${drawnCard.name}`;
                 resultImage.hidden = false;

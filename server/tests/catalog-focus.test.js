@@ -30,9 +30,11 @@ describe('Focused public catalog', () => {
         expect(source).not.toContain('feature=rocni_horoskop_2026');
     });
 
-    test('pricing and homepage expose the evergreen Personal Map', () => {
-        expect(read('cenik.html')).toContain('data-product="osobni_mapa_2026"');
-        expect(read('index.html')).toContain('img/personal-map/personal-map-soft-v3.webp');
+    test('pricing prioritizes relationship tarot while the evergreen Personal Map remains reachable', () => {
+        expect(read('cenik.html')).toContain('data-product="relationship_tarot"');
+        expect(read('cenik.html')).toContain('<span>149 Kč</span>');
+        expect(read('index.html')).toContain('href="osobni-mapa.html?source=homepage_nav"');
+        expect(read('index.html')).toContain('/img/atlas/01-lucerna-na-rozcesti.webp');
         expect(read('osobni-mapa.html')).toContain('12 měsíců od objednávky');
     });
 

@@ -4,7 +4,7 @@ const PREMIUM_BLOG_POSTS = [
         title: 'Životní číslo: Starověký klíč k vaší karmě a skrytému potenciálu',
         short_description: 'Vaše datum narození není matematická náhoda. Objevte, jak starořecká numerologie dešifruje mapu vaší duše a jaký osudový úkol vám byl svěřen.',
         category: 'Numerologie',
-        featured_image: '../img/tarot-bg.jpg',
+        featured_image: '../img/atlas/tools-v1/03-numerologicky-zapisnik.webp',
         author: 'Mystická Hvězda',
         content_html: `
             <p>Už řecký filozof a matematik Pythagoras, otec moderní geometrie, před více než dvěma a půl tisíci lety prohlásil, že "celý vesmír je postaven na síle čísel". Pythagoras a jeho mystická škola nevnímali čísla pouze jako prostředek k měření vzdáleností nebo objemů. Pro zasvěcence byla čísla živoucími entitami, rezonujícími specifickou frekvencí a nesoucími v sobě esenciálních archetypy lidského bytí.</p>
@@ -58,7 +58,7 @@ const PREMIUM_BLOG_POSTS = [
         title: 'Iluze jménem "Spřízněná duše": Proč nás tytéž vztahy chronicky stahují ke dnu?',
         short_description: 'Motýlci v břiše, pocit, že se znáte staletí, a pak náhlý a zničující pád. Proč astrologická praxe nabádá k maximální opatrnosti před karmickými svazky?',
         category: 'Vztahy',
-        featured_image: '../img/synastry-bg.webp',
+        featured_image: '../img/atlas/social-v1/01-dva-hrnky.webp',
         author: 'Mystický Průvodce',
         content_html: `
             <p>Nacházíte se v situaci, kterou nelze popsat jinak než jako magickou. Potkáte osobu a během prvních pár sekund cítíte doslova elektrický šok. Vše kolem mizí. Díváte se jí do očí a víte, s absolutní, chladnou jistotou, že toho člověka znáte tisíce let. Neumíte vysvětlit proč, ale vaše duše křičí domů. Říkáte si: "Tohle je konečně ono. Našel jsem svou spřízněnou duši."</p>
@@ -103,7 +103,7 @@ const PREMIUM_BLOG_POSTS = [
         title: 'Za oponou prostoru a času: Skutečné umění "Scryingu" z Křišťálové koule',
         short_description: 'Pokud považujete křišťálovou kouli jen za rekvizitu pro hollywoodské filmy o čarodějnicích, připravujete se o jednu z nejsilnějších technik starověkého zření (scrying).',
         category: 'Věštění',
-        featured_image: '../img/crystal-ball-bg.jpg',
+        featured_image: '../img/atlas/tools-v1/05-kristalova-koule.webp',
         author: 'Mystická Hvězda',
         content_html: `
             <p>Zářící skleněná koule na fialovém sametu, nad kterou se naklání osoba dožadující se jména svého budoucího manžela. Tento zprofanovaný obraz zatemnil obrovskou psychologickou a spirituální hloubku, kterou praxe nazývaná <strong>Scrying</strong> ve skutečnosti disponuje.</p>
@@ -146,7 +146,7 @@ const PREMIUM_BLOG_POSTS = [
         title: 'Věda a Esoterika Biorytmů: Proč neštěstí nechodí náhodou, ale v sinusoidách',
         short_description: 'Některé dny sršíte vtipem a všechno se daří. O týden později máte pocit, že se proti vám spikl svět. Co když ale tyto výkyvy nejsou náhodné, ale přísně matematické?',
         category: 'Spiritualita',
-        featured_image: '../img/tarot-bg.jpg',
+        featured_image: '../img/atlas/social-v1/03-posledni-list.webp',
         author: 'Mystický Průvodce',
         content_html: `
             <p>Každému z nás se občas stane den, kdy to lidově řečeno "prostě neběží". Vyrazíte z domova a zapomenete klíče, při řízení vás všichni vybržďují, v práci špatně napíšete důležitý e-mail a aby dnu dodala korunu vaše vlastní nervová soustava, kvůli naprosté malichernosti vyvoláte ostrou hádku se svým dlouholetým partnerem. Večer si říkáte: „Měl jsem smůlu“. Ale z hlediska starých esoterických zákonů, a dnes i fascinujících polovědeckých teorií lidských cyklů, se o náhodnou smůlu nejedná ani zdaleka. Procházíte tzv. kritickým dnem <strong>Biorytmu</strong>.</p>
@@ -189,7 +189,7 @@ const PREMIUM_BLOG_POSTS = [
         title: 'Hrůzostrašná karta Věž XVI: Nekompromisní hlubinná transformace plamenem',
         short_description: 'Pokud existuje karta, u níž zkušeným kartářkám hrkne v hrudi, nebývá to s populární legendou opředená Smrt, nýbrž hrůzostrašná a ničivá karta Věž.',
         category: 'Tarot',
-        featured_image: '../img/tarot-bg.jpg',
+        featured_image: '../img/tarot-v2/tarot_vez.webp',
         author: 'Mystický Průvodce',
         content_html: `
             <p>Pop kultura naprosto znehodnotila archetypy Tarotu, když určila XIII. Arkánu, Smrtku opírajícího se o kosu po boku černé vlajky, za zvěstovatele hrůzy. Kdo ovšem chápe velkou mystickou tradici ví, že proces transformace symbolizované kartou Smrt je zcela přirozenou záležitostí, plavným sezónním procesem – naprostým utlumením listí z podzimních větví stromů pro vznik jarního zrodu nového, o němž v jádru tušíte již celé měsíce a odevzdaně jej na úrovni klidné duše akceptujete.</p>
@@ -230,7 +230,7 @@ const PREMIUM_BLOG_POSTS = [
         title: 'Architektura Osudu: Skryté tajemství 12 Astrologických domů',
         short_description: 'Myslíte si, že znát své znamení stačí? Pokud neznáte své Astrologické domy, čtete z mapy svého života jen obal s názvem knihy. Pojďme do hloubky.',
         category: 'Astrologie',
-        featured_image: '../img/natal-bg.webp',
+        featured_image: '../img/atlas/tools-v1/01-astrolab.webp',
         author: 'Mystická Hvězda',
         content_html: `
             <p>Většina lidí dokáže bez zaváhání odpovědět na otázku „V jakém jsi znamení?“. Mnozí si navíc zjistili i svůj Ascendent nebo pozici Měsíce. Hlubinná astrologie ale pracuje s jemnějším symbolickým jazykem: pomáhá pojmenovat, proč neustále přitahujete konkrétní typ partnerů, nebo proč se vám chronicky nedaří udržet si peníze. Tou úrovní jsou <strong>Astrologické domy</strong>.</p>
@@ -271,7 +271,7 @@ const PREMIUM_BLOG_POSTS = [
         title: 'Futhark: Syrová krása Run a proč severská magie není hrou pro slabé',
         short_description: 'Zatímco Tarot odpovídá v jemných psychologických nuancích, Runy do vás vrhnou syrovou, ostrulou severskou pravdu. Jak bezpečně pracovat s tímto starodávným systémem?',
         category: 'Věštění',
-        featured_image: '../img/crystal-ball-bg.jpg',
+        featured_image: '../img/atlas/tools-v1/04-runove-kameny.webp',
         author: 'Mystický Průvodce',
         content_html: `
             <p>Vryté do kamenů, krvavě zbarvené na kusech popadaného jasanového dřeva nebo kosti. <strong>Runy</strong>, starogermánská a severská abeceda Futhark, nikdy nebyly pouhými písmeny pro komunikaci mezi lidmi. Podle mytologie za ně Ódin, nejvyšší z bohů, zaplatil obrovskou cenu – obětoval sám sebe, visel devět dní a nocí probodnut vlastním kopím na větvi světového stromu Yggdrasilu, aby z hlubin chaosu vytrhl toto mocné tajné vědění.</p>
@@ -310,7 +310,7 @@ const PREMIUM_BLOG_POSTS = [
         title: 'Andělská čísla a Synchronicita: Co znamená opakováné 11:11 a 22:22?',
         short_description: 'Podíváte se na telefon – je přesně 11:11. Účet za kávu je 222 Kč. Před vámi jede auto s poznávací značkou 333. Ztrácíte rozum, nebo s vámi promlouvá Vesmír?',
         category: 'Spiritualita',
-        featured_image: '../img/hero-bg-2.png',
+        featured_image: '../img/atlas/tools-v1/03-numerologicky-zapisnik.webp',
         author: 'Mystická Hvězda',
         content_html: `
             <p>Fenomén synchronicity, kdy se ve vašem životě objevují záhadná opakující se čísla, se v posledních desetiletích stal globální záležitostí. Zatímco racionální skeptik mávne rukou s tím, že se jedná o tzv. "frekvenční iluzi" (náš mozek si všímá toho, na co je podvědomě zaměřen), mystické nauky a hlubinná psychologie C. G. Junga trvají na tom, že stojíme před mnohem sofistikovanějším jevem. Tyto číselné posloupnosti prolamují strukturu denní rutiny jako <strong>Andělská čísla</strong> (Angel Numbers), nebo jako digitální kód propadající se do naší trojrozměrné reality z vyšších dimenzí.</p>
@@ -342,7 +342,7 @@ const PREMIUM_BLOG_POSTS = [
         title: 'Vypadané zuby a sen o pádu: Co se vám snaží říct vaše stínové nevědomí?',
         short_description: 'Myslíte si, že ten mrazivý sen, v němž nemůžete utéct, je jen hloupost? Sny jsou královskou cestou do hlubin toho nejtemnějšího uvnitř nás. Pojďme je rozluštit.',
         category: 'Snář',
-        featured_image: '../img/hero-3d.png',
+        featured_image: '../img/atlas/social-v1/10-sova.webp',
         author: 'Mystický Průvodce',
         content_html: `
             <p>Známe to všichni. Probudíte se zpocení, se staženým hrdlem, pamatujete si absolutně absurdní, nelogický a fantastický fragment příběhu a první instinkt po probuzení zní "to byla ale blbost, včera jsem to asi přehnal s jídlem těsně před spaním". Pravda ovšem je, že se dobrovolně obíráte o jednu z nejbohatších esoterických a psychoterapeutických zbraní, jakou má lidstvo k dispozici – <strong>vědomou archetypální analýzu snů</strong>.</p>
@@ -375,7 +375,7 @@ const PREMIUM_BLOG_POSTS = [
         title: '7 Čaker: Zevrubná anatomie neviditelného energetického světla',
         short_description: 'Myslíte si, že tělo končí vaší kožní bariérou? Existuje prastará mapa sedmi silových generátorů, u níž by zablokování i jediné pumpy ohrozilo všechny psychofyzikální vrstvy.',
         category: 'Spiritualita',
-        featured_image: '../img/tarot-bg.jpg',
+        featured_image: '../img/atlas/social-v1/06-zalevani.webp',
         author: 'Průvodkyně Světla',
         content_html: `
             <p>Zatímco západní medicína chápe tělo jako biochemický stroj, tisíce let stará indická léčebná tradice pracuje s naprosto jiným modelem. Říká, že skrze naše fyzické tělo proudí neviditelná, ale reálně pociťovaná životní síla – <strong>Prána</strong>. A tato energie má svá hlavní energetická křižovatky: sedm roztáčejících se vírů podél páteře, od kostrče až po temeno hlavy. Říkáme jim <strong>Čakry</strong> – sanskritský výraz pro „kolo" nebo „vír".</p>

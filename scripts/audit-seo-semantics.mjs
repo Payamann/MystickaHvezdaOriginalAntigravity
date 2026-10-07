@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const failures = [];
 const skippedDirs = new Set([
-    '.git', '.agents', '.claude', '.claire', 'coverage', 'docs', 'node_modules',
+    '.git', '.agents', '.claude', '.claire', '.tmp', 'coverage', 'docs', 'node_modules', 'production-release-v2',
     'playwright-report', 'social-media-agent', 'templates', 'test-results', 'tmp', 'tmp_email_previews'
 ]);
 

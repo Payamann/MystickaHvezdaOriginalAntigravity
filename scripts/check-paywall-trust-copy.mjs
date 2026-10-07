@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { getPublicPlanManifest } from '../server/config/constants.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -40,21 +41,11 @@ const forbiddenSnippets = [
 const errors = [];
 
 const appTrustSource = `${pricingCopySource}\n${loginSource}\n${profileDashboardSource}`;
-const appTrustRequired = [
-    'Keltský kříž a pokročilé výklady',
-    'Přednostní přístup k novým funkcím'
-];
 const appTrustForbidden = [
     'Začít VIP konzultaci',
     'Roční mapa a VIP odpovědi',
     'Prioritní podpora a nejvyšší hloubka'
 ];
-
-for (const snippet of appTrustRequired) {
-    if (!appTrustSource.includes(snippet)) {
-        errors.push(`Missing truthful VIP feature copy: ${snippet}`);
-    }
-}
 
 for (const snippet of appTrustForbidden) {
     if (appTrustSource.includes(snippet)) {
@@ -62,11 +53,44 @@ for (const snippet of appTrustForbidden) {
     }
 }
 
+const publicPlanManifest = getPublicPlanManifest();
+const paidPublicPlans = publicPlanManifest.plans.filter(plan => plan.checkoutEnabled);
+
+if (paidPublicPlans.length !== 1) {
+    errors.push(`Expected one public paid membership, found ${paidPublicPlans.length}.`);
+} else {
+    const [membership] = paidPublicPlans;
+    if (membership.id !== 'pruvodce') {
+        errors.push(`Unexpected public paid membership id: ${membership.id}`);
+    }
+    if (membership.name !== 'Členství Mystické Hvězdy') {
+        errors.push(`Unexpected public membership name: ${membership.name}`);
+    }
+    if (membership.priceCzk !== 199 || membership.interval !== 'month') {
+        errors.push(`Unexpected public membership price: ${membership.priceLabel}/${membership.interval}`);
+    }
+    if (membership.trialDays !== 7) {
+        errors.push(`Unexpected public membership trial: ${membership.trialDays} days`);
+    }
+}
+
+const currentPricingStart = socialKnowledgeSource.indexOf('PRICING_PLANS = {');
+const historicalPricingStart = socialKnowledgeSource.indexOf('LEGACY_PRICING_PLANS = {');
+const currentSocialPricing = currentPricingStart >= 0 && historicalPricingStart > currentPricingStart
+    ? socialKnowledgeSource.slice(currentPricingStart, historicalPricingStart)
+    : '';
+
+if (!currentSocialPricing) {
+    errors.push('Could not locate current social pricing block.');
+}
+
 const socialPricingRequired = [
-    '1 990 Kč/rok (2 měsíce zdarma)',
-    '4 990 Kč/rok (2 měsíce zdarma)',
-    'VIP zkušební dobu nemá',
-    'Platba probíhá v zabezpečeném Stripe Checkout'
+    'Členství Mystické Hvězdy',
+    '199 Kč/měsíc',
+    '7 dní zdarma',
+    'Platba probíhá v zabezpečeném Stripe Checkout',
+    'LEGACY_PRICING_PLANS',
+    '"historical": True'
 ];
 
 const socialTrustForbidden = [
@@ -83,6 +107,20 @@ const socialTrustForbidden = [
 for (const snippet of socialPricingRequired) {
     if (!socialKnowledgeSource.includes(snippet)) {
         errors.push(`Missing social pricing/trust source-of-truth snippet: ${snippet}`);
+    }
+}
+
+const staleCurrentPricingSnippets = [
+    '1 990 Kč/rok',
+    '499 Kč/měsíc',
+    '4 990 Kč/rok',
+    '999 Kč/měsíc',
+    'VIP Majestát'
+];
+
+for (const snippet of staleCurrentPricingSnippets) {
+    if (currentSocialPricing.includes(snippet)) {
+        errors.push(`Stale multi-plan pricing found in current social pricing: ${snippet}`);
     }
 }
 

@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="description" content="Porovnejte zdarma a Premium přístup. Získejte osobní výklady, denní vedení, natální kartu a hlubší vhled s jasnou cenou a bez skrytých poplatků.">
+    <meta name="description" content="Členství Mystické Hvězdy za 199 Kč měsíčně po 7 dnech zdarma. Tarot včetně Keltského kříže, astrokartografie, horoskopy a osobní výklady na jednom místě.">
     <meta name="keywords" content="ceník, předplatné, astrologie, tarot, numerologie, premium">
-    <meta name="theme-color" content="#0a0a1a">
+    <meta name="theme-color" content="#0b1929">
 
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Ceník Premium | Mystická Hvězda">
-    <meta property="og:description" content="Porovnejte zdarma a Premium přístup k osobním výkladům, dennímu vedení a natální kartě.">
+    <meta property="og:title" content="Členství za 199 Kč měsíčně | Mystická Hvězda">
+    <meta property="og:description" content="Jedno členství za 199 Kč měsíčně po 7 dnech zdarma: tarot, Keltský kříž, astrokartografie, horoskopy a osobní výklady.">
     <meta property="og:image" content="https://www.mystickahvezda.cz/img/search-preview/other.webp">
     <meta property="og:locale" content="cs_CZ">
     <meta name="twitter:card" content="summary_large_image">
@@ -23,15 +23,13 @@
         "operatingSystem": "Web",
         "url": "https://www.mystickahvezda.cz/cenik.html",
         "offers": [
-            { "@type": "Offer", "name": "Poutník", "price": "0", "priceCurrency": "CZK" },
-            { "@type": "Offer", "name": "Hvězdný Průvodce", "price": "199", "priceCurrency": "CZK", "priceSpecification": { "@type": "UnitPriceSpecification", "price": "199", "priceCurrency": "CZK", "billingDuration": "P1M" } },
-            { "@type": "Offer", "name": "Osvícení", "price": "499", "priceCurrency": "CZK", "priceSpecification": { "@type": "UnitPriceSpecification", "price": "499", "priceCurrency": "CZK", "billingDuration": "P1M" } },
-            { "@type": "Offer", "name": "Osobní mapa na 12 měsíců", "price": "299", "priceCurrency": "CZK", "url": "https://www.mystickahvezda.cz/osobni-mapa.html" }
+            { "@type": "Offer", "name": "Členství Mystické Hvězdy", "price": "199", "priceCurrency": "CZK", "priceSpecification": { "@type": "UnitPriceSpecification", "price": "199", "priceCurrency": "CZK", "billingDuration": "P1M" } },
+            { "@type": "Offer", "name": "Osobní vztahový výklad", "price": "149", "priceCurrency": "CZK", "url": "https://www.mystickahvezda.cz/vztahovy-vyklad.html" }
         ]
     }
     </script>
 
-    <title>Ceník Premium | Výklady zdarma i předplatné | Mystická Hvězda</title>
+    <title>Členství za 199 Kč měsíčně | Mystická Hvězda</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="img/icon-192.webp">
@@ -44,7 +42,7 @@
     <link rel="preload" href="/fonts/cinzel-latin-ext.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/fonts/inter-latin-ext.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="css/site.min.css?v=1">
-    <link rel="stylesheet" href="css/pages/cenik.css?v=12">
+    <link rel="stylesheet" href="css/pages/cenik.css?v=20261003-membership-design">
     <script defer src="https://js.stripe.com/v3/"></script>
     <script src="https://cdn.jsdelivr.net/npm/lucide@1.13.0/dist/umd/lucide.min.js" integrity="sha384-EHKCF1r0kkLgXLXtUe79iQzyUeZou+h3FZLoZWdcIAyctVNKMHqqy5wqYWQFUq6k" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
@@ -54,75 +52,64 @@
 <script src="/js/dist/analytics-init.js" defer></script>
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Ceník Premium | Výklady zdarma i předplatné | Mystická Hvězda">
 <meta name="twitter:image" content="https://www.mystickahvezda.cz/img/search-preview/other.webp">
-<meta name="twitter:image:alt" content="Ceník Premium | Výklady zdarma i předplatné | Mystická Hvězda">
+<meta property="og:image:alt" content="Členství Mystické Hvězdy za 199 Kč měsíčně">
+<meta name="twitter:image:alt" content="Členství Mystické Hvězdy za 199 Kč měsíčně">
+
+    <link rel="stylesheet" href="/css/atlas-web.css?v=1">
+    <link rel="stylesheet" href="/css/atlas-remaining.css?v=1">
+    <link rel="stylesheet" href="/css/pages/membership-card.css?v=20261003-1">
 </head>
 
-<body class="page-pricing">
+<body class="page-pricing atlas-page atlas-remaining-page">
     <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
-    <div class="stars" aria-hidden="true"></div>
     <div id="header-placeholder"></div>
 
     <main id="main-content" tabindex="-1">
         <section class="section section--hero pricing-hero mh-inline-fd21170680">
             <div class="container text-center">
                 <span class="section__badge">Členství Mystická Hvězda</span>
-                <h1 class="hero__title mh-inline-44e3a01151">Hlubší výklady. <span class="text-gradient">Všechny na jednom místě.</span></h1>
-                <p class="hero__subtitle mh-inline-9536a1e4b5">Tarot, horoskopy, natální karta, numerologie i historie tvých výkladů. Začni 7 dní za 0 Kč a pokračuj jen tehdy, když ti členství dává smysl.</p>
+                <h1 class="hero__title mh-inline-44e3a01151">Jedno členství. <span class="text-gradient">Všechny hlubší výklady.</span></h1>
+                <p class="hero__subtitle mh-inline-9536a1e4b5">Tarot včetně Keltského kříže, astrokartografie, horoskopy, natální karta, numerologie i historie tvých výkladů. Začni 7 dní za 0 Kč a pokračuj jen tehdy, když ti členství dává smysl.</p>
                 <div class="pricing-hero__actions">
-                    <a class="btn btn--primary" href="#clenstvi">Vybrat členství</a>
-                    <a class="btn btn--ghost" href="#osobni-mapa">Chci jen Osobní mapu PDF</a>
+                    <a class="btn btn--primary" href="#clenstvi">Zobrazit členství</a>
+                    <a class="btn btn--ghost" href="#jednorazovy-vyklad">Chci jen jeden výklad</a>
                 </div>
-                <div class="hero__trust-badge"><span>Dnes 0 Kč</span><span aria-hidden="true">•</span><span>potom od 199 Kč/měsíc</span><span aria-hidden="true">•</span><span>zrušíš kdykoliv v profilu</span></div>
+                <div class="hero__trust-badge"><span>Dnes 0 Kč</span><span aria-hidden="true">•</span><span>potom 199 Kč/měsíc</span><span aria-hidden="true">•</span><span>zrušíš kdykoliv v profilu</span></div>
             </div>
         </section>
 
         <section class="section pricing-offer" id="clenstvi" aria-labelledby="pricing-plans-title">
             <div class="container">
-                <div class="pricing-offer__header">
-                    <div>
-                        <span class="pricing-offer__eyebrow">Vyber si členství</span>
-                        <h2 id="pricing-plans-title">Začni Průvodcem. Vyšší plán zvol jen pro pokročilé analýzy.</h2>
-                    </div>
-                    <div class="pricing-billing-toggle" aria-label="Frekvence platby">
-                        <button id="toggle-monthly" class="mh-inline-c838d5f69c">Měsíčně</button>
-                        <button id="toggle-yearly" class="mh-inline-8cb51f9572">Ročně <span class="mh-inline-0cf125c745">2 měsíce zdarma</span></button>
-                    </div>
-                </div>
-
-                <div class="pricing-grid">
-                    <article class="card card--pricing card--pricing-primary featured mh-inline-166747a07d">
-                        <div class="vip-badge">Doporučený start</div>
-                        <span class="pricing-plan-fit">Pro pravidelné výklady</span>
-                        <h3 class="card__title mh-inline-db5d8166dc">Hvězdný Průvodce</h3>
-                        <p class="card__text mh-inline-c6c050eb74">Vše podstatné pro osobní vedení a návrat k tomu, co právě řešíš.</p>
+                <div class="pricing-grid pricing-grid--single">
+                    <article class="card card--pricing card--pricing-primary featured membership-card">
+                        <div class="membership-card__art" aria-hidden="true">
+                            <img src="img/tarot-v2/tarot_hvezda.webp" alt="" width="600" height="1000" loading="lazy" decoding="async">
+                        </div>
+                        <div class="membership-card__content">
+                        <div class="membership-card__heading">
+                        <div>
+                            <span class="membership-card__eyebrow">Pro tvé další otázky</span>
+                            <h2 id="pricing-plans-title" class="card__title">Členství Mystické Hvězdy</h2>
+                        </div>
                         <div class="card__price" data-price-plan="pruvodce"><span class="price-amount">199 Kč</span><span class="price-suffix">/měsíc</span></div>
-                        <p class="pricing-trial-note">Dnes 0 Kč. Po 7 dnech 199 Kč/měsíc, pokud předtím nezrušíš.</p>
+                        </div>
+                        <p class="membership-card__lead">Prozkoumej souvislosti a vrať se k tomu, co tě ve výkladu zaujalo.</p>
                         <ul class="card__features">
-                            <li><i data-lucide="check" class="feature-icon" aria-hidden="true"></i> Neomezený tarot a další hlubší výklady</li>
+                            <li><i data-lucide="check" class="feature-icon" aria-hidden="true"></i> Tarotové výklady včetně Keltského kříže</li>
+                            <li><i data-lucide="check" class="feature-icon" aria-hidden="true"></i> Astrokartografie, natální karta a numerologie</li>
                             <li><i data-lucide="check" class="feature-icon" aria-hidden="true"></i> Týdenní a měsíční horoskopy</li>
-                            <li><i data-lucide="check" class="feature-icon" aria-hidden="true"></i> Výklad natální karty a numerologie</li>
-                            <li><i data-lucide="check" class="feature-icon" aria-hidden="true"></i> Historie, souvislosti a osobní návratový rituál</li>
+                            <li><i data-lucide="check" class="feature-icon" aria-hidden="true"></i> Historie výkladů a souvislosti v čase</li>
                         </ul>
                         <a href="prihlaseni.html?mode=register&redirect=/cenik.html&plan=pruvodce&source=pricing_page&feature=premium_membership" class="btn btn--primary btn-full plan-checkout-btn" data-plan="pruvodce">Začít 7 dní za 0 Kč</a>
-                        <small class="pricing-card-note">K aktivaci je potřeba karta. Platbu zpracuje Stripe.</small>
+                        <p class="pricing-trial-note">Dnes 0 Kč. Po 7 dnech 199 Kč/měsíc, pokud předtím nezrušíš.</p>
+                        <details class="membership-card__terms">
+                            <summary>Podmínky zkoušky a používání</summary>
+                            <p>K aktivaci zkoušky je potřeba platební karta. Platbu zpracuje Stripe. Generované výklady podléhají limitům používání a dostupné kapacitě služby.</p>
+                        </details>
+                        </div>
                     </article>
 
-                    <article class="card card--pricing card--pricing-advanced">
-                        <span class="pricing-plan-fit">Pro pokročilé analýzy</span>
-                        <h3 class="card__title">Osvícení</h3>
-                        <p class="card__text mh-inline-b3f39e388b">Pro chvíli, kdy už využiješ i astrokartografii a další pokročilé vrstvy.</p>
-                        <div class="card__price" data-price-plan="osviceni"><span class="price-amount">499 Kč</span><span class="price-suffix">/měsíc</span></div>
-                        <p class="pricing-trial-note">Dnes 0 Kč. Po 7 dnech 499 Kč/měsíc, pokud předtím nezrušíš.</p>
-                        <ul class="card__features">
-                            <li><i data-lucide="check" class="feature-icon" aria-hidden="true"></i> Vše z Hvězdného Průvodce</li>
-                            <li><i data-lucide="check" class="feature-icon" aria-hidden="true"></i> Astrokartografie a pokročilé analýzy</li>
-                            <li><i data-lucide="check" class="feature-icon" aria-hidden="true"></i> Přednostní přístup k novým funkcím</li>
-                        </ul>
-                        <a href="prihlaseni.html?mode=register&redirect=/cenik.html&plan=osviceni&source=pricing_page&feature=premium_membership" class="btn btn-full plan-checkout-btn mh-inline-31d501362b" data-plan="osviceni">Začít 7 dní za 0 Kč</a>
-                        <small class="pricing-card-note">K aktivaci je potřeba karta. Platbu zpracuje Stripe.</small>
-                    </article>
                 </div>
 
                 <div class="pricing-free-path">
@@ -139,7 +126,7 @@
                     <div><strong>Zrušení v profilu</strong><span>Bez e-mailu na podporu a bez dalších kroků.</span></div>
                 </div>
 
-                <p class="pricing-checkout-disclaimer">Předplatné se po 7 dnech automaticky obnovuje ve zvoleném období, dokud ho nezrušíš. Po zrušení zůstává přístup do konce zaplaceného období.</p>
+                <p class="pricing-checkout-disclaimer">Předplatné se po 7 dnech automaticky obnovuje každý měsíc za 199 Kč, dokud ho nezrušíš. Po zrušení zůstává přístup do konce zaplaceného období.</p>
 
                 <div class="pricing-trust-links" aria-label="Důležité informace před platbou">
                     <span>Podrobnosti:</span>
@@ -149,47 +136,21 @@
                     <a href="kontakt.html">Kontakt na podporu</a>
                 </div>
 
-                <aside class="pricing-addon" id="osobni-mapa" aria-labelledby="personal-map-title">
+                <aside class="pricing-addon" id="jednorazovy-vyklad" aria-labelledby="single-reading-title">
                     <div>
                         <span class="pricing-addon__eyebrow">Bez předplatného</span>
-                        <h2 id="personal-map-title">Chceš jeden konkrétní výstup?</h2>
-                        <p>Osobní mapa je jednorázový 20stránkový PDF výklad jedné otázky na 12 měsíců od nákupu.</p>
+                        <h2 id="single-reading-title">Chceš vyřešit jednu vztahovou otázku?</h2>
+                        <p>Osobní vztahový výklad propojí tvoji otázku se třemi tarotovými kartami a přijde e-mailem. Zaplatíš jednou, bez účtu a bez členství.</p>
                     </div>
                     <div class="pricing-addon__products">
-                        <a href="osobni-mapa.html?source=pricing_addon" class="pricing-addon__product pricing-addon__product--entry" data-product="osobni_mapa_2026">
+                        <a href="vztahovy-vyklad.html?source=pricing_addon" class="pricing-addon__product pricing-addon__product--entry" data-product="relationship_tarot">
                             <span class="pricing-addon__badge">Jednorázová platba</span>
-                            <strong><span>Osobní mapa PDF</span><span>299 Kč</span></strong>
-                            <span class="pricing-addon__description">Zaplatíš jednou. Hotové PDF dostaneš e-mailem.</span>
-                            <span class="pricing-addon__cta">Prohlédnout Osobní mapu →</span>
+                            <strong><span>Osobní vztahový výklad</span><span>149 Kč</span></strong>
+                            <span class="pricing-addon__description">Jedna otázka, tři tarotové karty a souvislý výklad e-mailem.</span>
+                            <span class="pricing-addon__cta">Prohlédnout jednorázový výklad →</span>
                         </a>
                     </div>
                 </aside>
-
-                <details class="pricing-comparison">
-                    <summary>
-                        <span>Chceš porovnat všechny rozdíly?</span>
-                        <strong>Zobrazit srovnání plánů</strong>
-                    </summary>
-                    <div class="comparison-table-wrap">
-                        <table class="pricing-comparison-table">
-                            <thead>
-                                <tr class="pricing-comparison-table__head-row">
-                                    <th class="pricing-comparison-table__head-cell pricing-comparison-table__head-cell--feature">Funkce</th>
-                                    <th class="pricing-comparison-table__head-cell">Zdarma</th>
-                                    <th class="pricing-comparison-table__head-cell pricing-comparison-table__head-cell--highlight">Průvodce</th>
-                                    <th class="pricing-comparison-table__head-cell">Osvícení</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="pricing-comparison-table__row"><td class="pricing-comparison-table__cell">Horoskopy</td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center">Základní</td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center"><strong>Plné</strong></td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center">Plné</td></tr>
-                                <tr class="pricing-comparison-table__row"><td class="pricing-comparison-table__cell">Tarot a výklady</td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center">Omezeně</td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center"><strong>Neomezeně</strong></td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center">Neomezeně</td></tr>
-                                <tr class="pricing-comparison-table__row"><td class="pricing-comparison-table__cell">Natální karta a numerologie</td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center">Základ</td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center"><strong>Plný výklad</strong></td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center">Pokročilý výklad</td></tr>
-                                <tr class="pricing-comparison-table__row"><td class="pricing-comparison-table__cell">Historie a souvislosti</td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center">Základ</td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center"><strong>Ano</strong></td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center">Ano</td></tr>
-                                <tr class="pricing-comparison-table__row"><td class="pricing-comparison-table__cell">Astrokartografie</td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center">Ne</td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center">Ne</td><td class="pricing-comparison-table__cell pricing-comparison-table__cell--center"><strong>Ano</strong></td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </details>
             </div>
         </section>
 
@@ -197,10 +158,10 @@
             <div class="container text-center">
                 <div class="section__header"><span class="section__badge">Bez nejasností</span><h2 class="section__title">Než členství aktivuješ</h2></div>
                 <div class="mh-inline-fcfa6c58cb">
-                    <div class="faq-item"><button class="faq-question">Co se stane po 7 dnech? <span class="faq-icon">+</span></button><div class="faq-answer"><p>Pokud členství předtím nezrušíš, Stripe strhne cenu zvoleného plánu a období. Přesnou částku vždy vidíš před potvrzením.</p></div></div>
+                    <div class="faq-item"><button class="faq-question">Co se stane po 7 dnech? <span class="faq-icon">+</span></button><div class="faq-answer"><p>Pokud členství předtím nezrušíš, Stripe strhne 199 Kč za další měsíc. Přesnou částku vždy vidíš před potvrzením.</p></div></div>
                     <div class="faq-item"><button class="faq-question">Jak členství zruším? <span class="faq-icon">+</span></button><div class="faq-answer"><p>Kdykoliv ve svém profilu. Přístup ti zůstane do konce zaplaceného období.</p></div></div>
                     <div class="faq-item"><button class="faq-question">Potřebuji kartu už při registraci? <span class="faq-icon">+</span></button><div class="faq-answer"><p>Ne. Účet zdarma založíš bez karty. Kartu potřebuješ až k aktivaci 7denního zkušebního období členství.</p></div></div>
-                    <div class="faq-item"><button class="faq-question">Jaký je rozdíl mezi členstvím a Osobní mapou? <span class="faq-icon">+</span></button><div class="faq-answer"><p>Členství odemyká opakované používání nástrojů a historii. Osobní mapa je jednorázové PDF k jedné otázce, bez předplatného.</p></div></div>
+                    <div class="faq-item"><button class="faq-question">Jaký je rozdíl mezi členstvím a vztahovým výkladem? <span class="faq-icon">+</span></button><div class="faq-answer"><p>Členství odemyká opakované používání členských nástrojů a historii. Osobní vztahový výklad stojí jednorázově 149 Kč a přijde e-mailem bez účtu a předplatného.</p></div></div>
                 </div>
             </div>
         </section>
@@ -210,11 +171,11 @@
 
     <script src="js/dist/analytics.js?v=6" defer></script>
     <script src="js/dist/api-config.js?v=5" defer></script>
-    <script src="js/dist/auth-client.js?v=20260828-product-simplification" defer></script>
+    <script src="js/dist/auth-client.js?v=20261003-single-membership" defer></script>
     <script src="js/dist/auth-copy-fixes.js" defer></script>
     <script src="js/dist/templates.js?v=14" defer></script>
     <script src="js/dist/components.js?v=20260522-premium-gate-cache" defer></script>
     <script type="module" src="js/dist/main.js?v=12"></script>
-    <script src="js/dist/cenik.js?v=20260814-cta-guard" defer></script>
+    <script src="js/dist/cenik.js?v=20261003-single-membership" defer></script>
 </body>
 </html>

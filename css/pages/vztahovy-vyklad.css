@@ -61,7 +61,7 @@ p { margin: 0 0 20px; }
   box-shadow: 0 14px 40px rgba(0, 0, 0, .2);
 }
 .continuation-context img {
-  width: 54px; height: 91px; object-fit: cover; border: 1px solid #b99b54;
+  width: 54px; height: 90px; object-fit: contain; border: 1px solid #b99b54;
   border-radius: 5px; box-shadow: 0 7px 18px rgba(0, 0, 0, .45);
 }
 .continuation-context p { margin: 0; }
@@ -97,7 +97,7 @@ p { margin: 0 0 20px; }
   font-size: 20px; text-shadow: 0 0 20px #e9c572;
 }
 .card {
-  position: absolute; width: 175px; height: 285px; object-fit: cover;
+  position: absolute; width: 175px; height: auto; aspect-ratio: 3/5; object-fit: contain;
   border-radius: 11px; border: 3px solid #b99b54;
   box-shadow: 0 20px 45px #0009, 0 0 24px #9964bf16;
 }
@@ -170,7 +170,7 @@ footer nav { display: flex; gap: 24px; font-size: 12px; color: var(--muted); }
   h1 { letter-spacing: -.5px; }
   .hero-art { min-height: 340px; overflow: hidden; }
   .orbit { width: 290px; height: 290px; }
-  .card { width: 135px; height: 220px; }
+  .card { width: 135px; height: auto; }
   .card-left { transform: translate(-83px, 9px) rotate(-14deg); }
   .card-right { transform: translate(83px, 9px) rotate(14deg); }
   .art-caption { font-size: 12px; bottom: 0; }

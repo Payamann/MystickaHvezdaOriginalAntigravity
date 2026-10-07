@@ -243,7 +243,7 @@ describe('Oracle AI fallbacks', () => {
             success: false,
             code: 'PREMIUM_REQUIRED',
             feature: 'tarot_celtic_cross',
-            requiredPlan: 'vip-majestrat'
+            requiredPlan: 'pruvodce'
         });
     });
 

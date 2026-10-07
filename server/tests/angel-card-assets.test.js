@@ -44,7 +44,8 @@ describe('Angel card deck assets', () => {
 
         for (const archetype of archetypes) {
             expect(css).toContain(`.angel-card-back--${archetype}`);
-            expect(fs.existsSync(path.join(ROOT_DIR, 'img', 'angel-archetypes', `${archetype}.webp`))).toBe(true);
+            expect(css).toContain(`/img/atlas/angels-v1/${archetype}.webp`);
+            expect(fs.existsSync(path.join(ROOT_DIR, 'img', 'atlas', 'angels-v1', `${archetype}.webp`))).toBe(true);
         }
     });
 });

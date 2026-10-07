@@ -1,0 +1,81 @@
+/* Cohesive reading surfaces for the dream, dictionary and name lexicons.
+   Loaded after atlas-web.css so the migration remains local to atlas content. */
+body.atlas-content-page {
+  --atlas-navy: #0b1929;
+  --atlas-surface: #102638;
+  --atlas-gold: #bd9b65;
+  --atlas-ivory: #e9e3d7;
+  --atlas-muted: #c3c9cb;
+  background: var(--atlas-navy);
+  color: var(--atlas-ivory);
+}
+
+body.atlas-content-page main { position: relative; z-index: 1; }
+body.atlas-content-detail main .container { max-width:860px; }
+body.atlas-content-detail .card { margin-block:16px; text-align:left; }
+body.atlas-content-detail .card :is(ul,ol) { padding-left:1.3em; }
+body.atlas-content-detail .card :is(h2,h3) { font-size:clamp(24px,3vw,32px); font-weight:400; margin-bottom:16px; }
+body.atlas-content-detail .card :is(p,ul,ol) { max-width:68ch; }
+body.atlas-content-detail .section__title { font-weight:400; }
+body.atlas-content-page .text-gradient { color:#e9e3d7; background:none; -webkit-text-fill-color:currentColor; }
+body.atlas-content-page main > .section:first-child { padding-top:128px; }
+body.atlas-content-page :is(.dream-of-day,.dream-card,.dictionary-card) { background:#102638; border-color:#b3955e55; box-shadow:none; }
+body.atlas-content-page .container { width: min(100% - 40px, 1120px); }
+body.atlas-content-page :is(.hero, .dream-hero, .dictionary-header, main > .section:first-child) {
+  background: radial-gradient(circle at 78% 12%, #294b5f33, transparent 42%), var(--atlas-navy);
+}
+body.atlas-content-page :is(.hero, .dream-hero) { padding-top: 132px; padding-bottom: 64px; }
+body.atlas-content-page :is(.section, .faq-section) { padding-block: 56px; }
+body.atlas-content-page :is(.hero__title, .section__title, .dream-hero h1, .dictionary-header h1) {
+  color: var(--atlas-ivory);
+  text-shadow: none;
+  letter-spacing: .01em;
+}
+body.atlas-content-page :is(.hero__subtitle, .section__text, .dream-hero p, .dictionary-header p) {
+  color: var(--atlas-muted);
+  line-height: 1.8;
+}
+body.atlas-content-page :is(.card, .term-card, .name-card, .result, .detail-item, .faq-item, .search-container, .name-search) {
+  background: var(--atlas-surface);
+  border: 1px solid #bd9b6548;
+  border-radius: 6px;
+  box-shadow: none;
+}
+body.atlas-content-page :is(.card, .result) { padding: clamp(22px, 4vw, 34px); }
+body.atlas-content-page :is(.card, .term-card, .name-card) { transition: border-color .2s ease, background-color .2s ease; }
+body.atlas-content-page :is(.card, .term-card, .name-card):hover { border-color: #bd9b65a8; background: #153149; transform: none; }
+body.atlas-content-page :is(.card h2, .card h3, .term-title, .name-label, .faq-item h3) { color: var(--atlas-ivory); }
+body.atlas-content-page :is(.card p, .card li, .term-desc, .name-meta, .detail-item span, .faq-item p) {
+  color: var(--atlas-muted);
+  line-height: 1.8;
+}
+body.atlas-content-page :is(.section__badge, .term-category, .letter-header, .detail-item strong) { color: var(--atlas-gold); }
+body.atlas-content-page :is(a, .related-chip) { color: var(--atlas-gold); }
+body.atlas-content-page :is(a, button, input, textarea, select, summary):focus-visible {
+  outline: 2px solid var(--atlas-gold); outline-offset: 3px;
+}
+body.atlas-content-page :is(.btn, button, .alpha-btn) { min-height: 44px; }
+body.atlas-content-page :is(.btn--primary, .alpha-btn.active) { background: var(--atlas-gold); border-color: var(--atlas-gold); color: #142032; }
+body.atlas-content-page :is(.btn--secondary, .btn--ghost, .alpha-btn) { border-color: #bd9b6570; color: var(--atlas-ivory); background: transparent; }
+body.atlas-content-page :is(.search-input, .name-input, input, textarea, select) { background: #0b1929; color: var(--atlas-ivory); border-color: #bd9b6570; }
+body.atlas-content-page .related-links { gap: 10px; }
+body.atlas-content-page :is(.alphabet-btn,.name-chip) { background:#102638; border:1px solid #b3955e55; border-radius:3px; color:#e9e3d7; padding:10px 14px; font:inherit; min-height:44px; }
+body.atlas-content-page .alphabet-btn.active { background:#bd9b65; color:#142032; }
+body.atlas-content-page :is(.alphabet-nav,.alphabet-filter) { gap:6px; }
+body.atlas-content-page .search-container { background:transparent; border:0; }
+body.atlas-content-page :is(.search-input,.dream-search-input) { border:1px solid #b3955e66; border-radius:3px; box-shadow:none; min-height:48px; }
+body.atlas-content-page :is(.search-input,.dream-search-input):focus { box-shadow:none; }
+body.atlas-content-page .related-chip { border-color: #bd9b6570; background: transparent; border-radius: 4px; }
+body.atlas-content-page .related-chip:hover { background: #bd9b651a; border-color: var(--atlas-gold); }
+body.atlas-content-page :is(.autocomplete-dropdown, .no-results) { background: var(--atlas-surface); border-color: #bd9b6570; color: var(--atlas-muted); }
+@media (max-width: 760px) {
+  body.atlas-content-page main > .section:first-child { padding-top:96px; }
+  body.atlas-content-page .container { width: min(100% - 28px, 1120px); }
+  body.atlas-content-page :is(.hero, .dream-hero) { padding-top: 102px; padding-bottom: 40px; }
+  body.atlas-content-page :is(.section, .faq-section) { padding-block: 40px; }
+  body.atlas-content-page :is(.card, .result) { padding: 20px; }
+  body.atlas-content-page .detail-grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.atlas-content-page * { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}

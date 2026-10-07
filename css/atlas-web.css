@@ -1,0 +1,148 @@
+/* Shared atlas surfaces. Opt in per reviewed page; no changes to draws or access. */
+body.atlas-page .cookie-banner { background:#102638; border-color:#b3955e55; border-radius:5px; box-shadow:0 10px 28px #030c1755; }
+body.atlas-page :is(#cookie-accept,#cookie-save) { background:#bd9b65; color:#142032; border:1px solid #bd9b65; }
+body.atlas-page #cookie-reject { background:transparent; color:#e9e3d7; border:1px solid #b3955e66; }
+body.atlas-page .cookie-banner__text { color:#c3c9cb; }
+/* Interactive tool, free introduction and the standalone order page. */
+body.page-tarot.atlas-page .atlas-spread-art { display:flex; gap:6px; justify-content:center; height:110px; margin-bottom:20px; }
+body.page-tarot.atlas-page .atlas-spread-art img { width:54px; height:90px; object-fit:contain; }
+body.page-tarot.atlas-page .atlas-spread-art img:nth-child(2) { transform:translateY(8px); }
+body.page-tarot-free.atlas-page .demo-card { padding:0; background:#0b1929; border:1px solid #bd9b6566; border-radius:3px; box-shadow:none; }
+body.page-tarot-free.atlas-page .demo-card img { width:100%; height:100%; object-fit:contain; pointer-events:none; }
+body.page-tarot-free.atlas-page .demo-card:hover { box-shadow:none; transform:translateY(-4px); }
+body.page-tarot-free.atlas-page .atlas-demo-caption { color:#c3c9cb; max-width:55ch; margin:16px auto; min-height:3.6em; }
+@media(max-width:480px) { body.page-tarot-free.atlas-page .card-row { gap:10px; flex-wrap:nowrap; } body.page-tarot-free.atlas-page .demo-card { width:80px; height:134px; flex-shrink:0; } }
+body.atlas-page :is(.tarot-celtic-hero,.tarot-hero,.section--hero.mh-inline-92c056aeba) { padding-top:128px; min-height:0; }
+body.atlas-page :is(.t-spread-card,.tarot-intent-card,.feature-card,.tarot-meaning-bridge,.tarot-yes-no-resume-context,.tarot-celtic-intent-card) { background:#102638; border:1px solid #b3955e44; border-radius:5px; box-shadow:none; }
+body.atlas-page .t-spread-card.featured { border-color:#bd9b65; background:#153044; }
+body.atlas-page :is(.t-spread-card,.tarot-intent-card,.tarot-celtic-intent-card)::before { display:none; }
+body.atlas-page :is(.t-spread-icon img,.tarot-celtic-visual img) { filter:drop-shadow(0 12px 18px #030c1766); }
+body.atlas-page :is(.t-spread-title,.hero__title,.text-gradient) { color:#e9e3d7; background:none; -webkit-text-fill-color:currentColor; text-shadow:none; }
+body.atlas-page :is(.t-spread-desc,.hero__subtitle,.tarot-celtic-position-grid p,.tarot-celtic-use__grid p,.tarot-celtic-faq p) { color:#c3c9cb; }
+body.atlas-page .btn--glass { background:transparent; border:1px solid #b3955e66; color:#e9e3d7; }
+body.atlas-page :is(.tarot-celtic-position-grid,.tarot-celtic-use__grid,.tarot-celtic-faq__grid) article { background:transparent; border:0; border-top:1px solid #b3955e55; border-radius:0; box-shadow:none; }
+body.atlas-page .tarot-celtic-trust span { border:0; background:none; padding-left:0; color:#c3c9cb; }
+body.page-tarot.atlas-page :is(.card,.cross-link-card,.tarot-interpretation) { background:#102638; border-color:#b3955e44; border-radius:5px; box-shadow:none; }
+body.atlas-page.atlas-reading-order { --ink:#e9e3d7; --paper:#0b1929; --muted:#c3c9cb; --gold:#bd9b65; --gold-light:#d0b17c; --purple:#c3c9cb; --line:#b3955e44; }
+body.atlas-reading-order :is(.lead,.topbar > a:last-child,.consent,.notice,details p,.continuation-result) { color:#c3c9cb; }
+body.atlas-reading-order :is(.sample,form,.continuation-context) { background:#102638; border-color:#b3955e44; border-radius:5px; box-shadow:none; }
+body.atlas-reading-order .order-section { background:#102638; }
+body.atlas-reading-order :is(textarea,input[type=email]) { background:#0b1929; border-color:#b3955e66; border-radius:3px; }
+body.atlas-reading-order .button { background:#bd9b65; border-color:#bd9b65; border-radius:3px; box-shadow:none; min-height:48px; color:#142032; }
+body.atlas-reading-order .button:hover { background:#d0b17c; box-shadow:none; }
+body.atlas-reading-order .orbit { background:radial-gradient(circle,#294b5f44,transparent 68%); box-shadow:none; }
+body.atlas-reading-order h1 { font-weight:400; }
+body.atlas-reading-order .card-label { color:#d0b17c; }
+body.atlas-reading-order :is(.sample-entry p:last-child,.sample-close p,.included p) { color:#c3c9cb; }
+body.atlas-reading-order ::selection { background:#365568; color:#e9e3d7; }
+@media(max-width:760px) {
+ body.atlas-page :is(.tarot-celtic-hero,.tarot-hero,.section--hero.mh-inline-92c056aeba) { padding-top:96px; }
+ body.atlas-page .tarot-celtic-visual { min-height:0; }
+}
+html:has(body.atlas-page),html:has(body.atlas-page)::before { background:#0b1929 !important; color-scheme:dark; }
+body.atlas-page { --color-mystic-gold:#d0b17c; --color-mystic-gold-light:#e1cba5; --color-ethereal-silver:#c3c9cb; --reading-gold:#d0b17c; --reading-muted:#c3c9cb; --reading-line:#b3955e44; background:#0b1929; color:#e9e3d7; }
+body.atlas-page::before,body.atlas-page::after { display:none; }
+body.atlas-page :is(.header,.header.scrolled,.nav__list,.nav__dropdown,.footer) { background:#0b1929 !important; }
+body.atlas-page .section { padding-block:64px; background:transparent; }
+body.atlas-page .section--alt { background:#102638; }
+body.atlas-page .footer__grid { margin-bottom:48px; }
+body.atlas-page .footer__bottom { flex-wrap:wrap; gap:16px 24px; }
+body.atlas-page .footer__bottom > * { min-width:0; }
+body.atlas-page .love-tarot-alternatives { padding-block:20px; }
+body.atlas-page .tarot-three-intent-card { background:#102638; border-color:#b3955e55; border-radius:5px; }
+body.atlas-page .tarot-three-intent-card--primary { background:#153044; border-color:#bd9b65; }
+body.atlas-page :is(.love-tarot-hero,.tarot-three-hero) { padding-top:128px; padding-bottom:56px; background:radial-gradient(ellipse at 85% 45%,#294b5f44,transparent 65%),#0b1929; }
+body.atlas-page .section__header { margin-bottom:36px; }
+body.atlas-page .section__title { color:#e9e3d7; font-weight:400; text-shadow:none; line-height:1.3; }
+body.atlas-page h1.section__title { font-size:clamp(34px,4vw,50px); }
+body.atlas-page :is(.section__badge,.yes-no-eyebrow) { color:#d0b17c; letter-spacing:.14em; }
+body.atlas-page :is(.section__text,.love-tarot-intent-card em) { color:#c3c9cb; line-height:1.8; }
+body.atlas-page .btn { min-height:44px; border-radius:3px; text-transform:none; letter-spacing:.02em; box-shadow:none; }
+body.atlas-page .btn--primary { background:#bd9b65; color:#142032; border-color:#bd9b65; }
+body.atlas-page .btn--primary:hover { background:#d0b17c; border-color:#d0b17c; }
+body.atlas-page :is(.btn--secondary,.btn--ghost) { background:transparent; color:#e9e3d7; border:1px solid #b3955e55; }
+body.atlas-page :is(a,button,input,textarea,select,summary):focus-visible { outline:2px solid #d0b17c; outline-offset:4px; }
+body.atlas-page .header .auth-buttons .btn { height:44px; display:inline-flex; align-items:center; padding:0 15px; font-size:12px; }
+body.atlas-page :is(.love-tarot-trust span,.tarot-three-trust span) { border:0; background:none; border-radius:0; color:#c3c9cb; padding:0 14px 0 0; }
+body.atlas-page :is(.love-tarot-visual,.tarot-three-visual) { gap:20px; }
+body.atlas-page :is(.love-tarot-visual,.tarot-three-visual)::before { display:none; }
+body.atlas-page :is(.love-tarot-visual,.tarot-three-visual) img { height:auto; aspect-ratio:3/5; border-radius:3px; filter:drop-shadow(0 14px 20px #030c1766); }
+body.atlas-page .love-tarot-hero__grid { grid-template-columns:1.05fr .95fr; gap:52px; }
+body.atlas-page .love-tarot-hero__copy > .section__text:first-of-type { max-width:470px; font-size:15px; }
+body.atlas-page .love-tarot-hero__copy > .section__text:last-of-type { max-width:470px; font-size:12px; }
+body.atlas-page .love-tarot-visual { grid-template-columns:minmax(0,1fr) minmax(0,.38fr); max-width:375px; margin:auto; padding:18px 8px; }
+body.atlas-page .love-tarot-visual img { max-height:210px; transform:none; }
+body.atlas-page .love-tarot-visual img:first-child { grid-column:1; grid-row:1/3; max-height:470px; transform:rotate(-3deg); }
+body.atlas-page .love-tarot-visual img:nth-child(2) { align-self:end; transform:rotate(4deg); }
+body.atlas-page .love-tarot-visual img:nth-child(3) { align-self:start; transform:rotate(2deg); }
+body.atlas-page :is(.love-tarot-guides article,.love-tarot-faq__grid article,.love-tarot-question-grid article,.tarot-three-position-grid article,.tarot-three-use__grid article,.tarot-three-faq__grid article) { background:transparent; border:0; border-top:1px solid #b3955e55; border-radius:0; box-shadow:none; }
+body.atlas-page :is(.love-tarot-intent-card,.relationship-offer,.tarot-result-upgrade-bridge) { background:#102638; border-color:#b3955e55; border-radius:5px; box-shadow:none; }
+body.atlas-page :is(.love-tarot-guides,.love-tarot-question-grid,.tarot-three-position-grid,.tarot-three-use__grid) p { color:#c3c9cb; line-height:1.8; }
+body.atlas-page .atlas-story-art { display:block; width:100%; height:auto; aspect-ratio:3/2; object-fit:cover; border-radius:3px; margin-bottom:22px; border-bottom:2px solid #b3955e66; }
+body.atlas-page .love-tarot-question-grid article { border-top:0; padding-top:0; }
+body.atlas-page .atlas-position-card { display:block; width:84px; height:140px; object-fit:contain; margin:0 auto 22px; }
+body.atlas-page .tarot-three-position-grid article { text-align:center; }
+body.atlas-page .tarot-three-position-grid article > span { display:block; margin-inline:auto; }
+body.atlas-page.page-tarot-yes-no { background:#0b1929; }
+body.atlas-page .yes-no-experience { padding-top:108px; }
+body.atlas-page .yes-no-intro h1 em { color:#d0b17c; }
+body.atlas-page :is(.yes-no-table,.yes-no-reading) { background:#102638; border:1px solid #b3955e55; border-radius:8px; box-shadow:none; }
+body.atlas-page .question-input { background:#0b1929; color:#e9e3d7; border-color:#b3955e66; border-radius:4px; }
+body.atlas-page :is(.yes-no-question label,.yes-no-pick-label,.yes-no-table-note,.yes-no-reflection,.tarot-yes-no-trust-strip) { color:#c3c9cb; }
+body.atlas-page .yes-no-practical { background:#bd9b650d; border-color:#bd9b65; }
+body.atlas-page .yes-no-result-actions .btn { background:transparent; border-color:#b3955e66; color:#e9e3d7; }
+body.atlas-page .cookie-banner { background:#0b1929; border-color:#b3955e55; }
+body.atlas-page :is(.love-tarot-question-grid article > span,.love-tarot-question-grid h3,.tarot-three-position-grid strong,.tarot-three-use__grid h3,.love-tarot-intent-card strong) { color:#d0b17c; }
+body.atlas-page :is(#question-hint,.yes-no-guide details p) { color:#c3c9cb; }
+/* The catalogue and all 78 meanings share this generated surface. */
+body.atlas-page :is(.tarot-meaning-hero,.tarot-card-detail-hero) { padding-top:128px; background:radial-gradient(ellipse at 85% 35%,#294b5f33,transparent 60%),#0b1929; }
+body.atlas-page :is(.tarot-meaning-card,.tarot-meaning-stat,.tarot-reading-method__item,.tarot-card-detail-panel,.tarot-card-detail-next-step,.tarot-related-card,.mh-email-bridge) { background:#102638; border:1px solid #b3955e44; border-radius:5px; box-shadow:none; }
+body.atlas-page .tarot-meaning-card { overflow:hidden; }
+body.atlas-page .tarot-meaning-card__image { background:#0b1929; }
+body.atlas-page .tarot-meaning-card__image img { border-radius:3px; }
+body.atlas-page :is(.tarot-meaning-card__meaning,.tarot-card-detail-content p,.tarot-card-detail-panel dd,.tarot-related-card small,.tarot-meaning-stat span,.tarot-reading-method__item p) { color:#c3c9cb; line-height:1.8; }
+body.atlas-page :is(.tarot-meaning-card__meta,.tarot-meaning-card__link,.tarot-related-card strong,.tarot-card-detail-next-step span,.tarot-meaning-stat strong) { color:#d0b17c; }
+body.atlas-page .tarot-card-detail-content { max-width:68ch; text-align:left; }
+body.atlas-page .tarot-card-detail-content p { text-align:left; }
+body.atlas-page .tarot-related-card img { width:66px; height:110px; object-fit:contain; grid-column:1; grid-row:1 / 4; }
+body.atlas-page .tarot-related-card { text-align:left; min-height:144px; grid-template-columns:66px minmax(0,1fr); column-gap:18px; align-content:center; }
+body.atlas-page .tarot-related-card :is(span,strong,small) { grid-column:2; }
+@media(max-width:760px) {
+ body.atlas-page .footer__grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important; gap:28px 20px; }
+ body.atlas-page .footer__brand { grid-column:1 / -1; }
+ body.atlas-page .footer__links a { display:flex; align-items:center; min-height:44px; font-size:14px; line-height:1.4; }
+ body.atlas-page .footer__links li { margin:0; }
+ body.atlas-page .footer__title { font-size:15px; }
+}
+body.atlas-page .tarot-card-detail-content h2 { color:#e9e3d7; font-weight:400; line-height:1.4; margin-top:32px; }
+body.atlas-page .tarot-card-detail-hero__image { background:transparent; border:0; box-shadow:none; }
+body.atlas-page .tarot-card-detail-hero__image img { border-radius:4px; filter:drop-shadow(0 16px 22px #030c1766); }
+body.atlas-page :is(.tarot-meaning-search input,.mh-email-bridge__input,.mh-email-bridge__select) { background:#0b1929; border:1px solid #b3955e66; border-radius:4px; color:#e9e3d7; }
+body.atlas-page .tarot-meaning-filter { min-height:44px; border-radius:3px; background:transparent; border-color:#b3955e55; color:#e9e3d7; }
+body.atlas-page .tarot-meaning-filter.is-active { background:#bd9b65; border-color:#bd9b65; color:#142032; }
+body.atlas-page .tarot-meaning-search label { display:block; margin-bottom:10px; color:#c3c9cb; }
+body.atlas-page .tarot-meaning-search input { display:block; width:100%; min-height:48px; padding:12px 16px; font:inherit; box-sizing:border-box; }
+body.atlas-page .faq-item { background:transparent; border:0; border-bottom:1px solid #b3955e44; border-radius:0; }
+@media(max-width:760px) {
+ body.atlas-page :is(.tarot-meaning-hero,.tarot-card-detail-hero) { padding-top:96px; }
+}
+@media(max-width:992px) {
+ body.atlas-page .nav__list { display:none!important; position:absolute; top:100%; left:0; right:0; flex-direction:column; padding:16px 24px; max-height:70vh; overflow-y:auto; }
+ body.atlas-page .nav__list.open { display:flex!important; }
+ body.atlas-page .love-tarot-hero__grid { grid-template-columns:1fr; gap:28px; }
+}
+@media(max-width:760px) {
+ body.atlas-page .section { padding-block:44px; }
+ body.atlas-page .love-tarot-alternatives { padding-block:16px; }
+ body.atlas-page .tarot-meaning-stats { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+ body.atlas-page :is(.love-tarot-hero,.tarot-three-hero,.tarot-meaning-hero,.tarot-card-detail-hero,.tarot-celtic-hero,.tarot-hero,.section--hero.mh-inline-92c056aeba) { padding-top:96px; }
+ body.atlas-page .yes-no-experience { padding-top:90px; }
+ body.atlas-page .love-tarot-visual { max-width:300px; gap:18px; }
+ body.atlas-page .love-tarot-visual img:first-child { max-height:340px; }
+ body.atlas-page .love-tarot-visual img { max-height:150px; }
+ body.atlas-page .tarot-three-visual { gap:12px; min-height:0; }
+ body.atlas-page .tarot-three-visual img { max-height:230px; }
+}
+@media(prefers-reduced-motion:reduce) {
+ body.atlas-page :is(.love-tarot-visual,.tarot-three-visual) img { transform:none; }
+}

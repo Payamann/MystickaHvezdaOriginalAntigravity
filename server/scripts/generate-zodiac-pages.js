@@ -1,4 +1,5 @@
 import fs from 'fs';
+import {atlasShell} from '../../scripts/atlas-shell.mjs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import ZODIAC_SIGNS from '../data/zodiac-signs.js';
@@ -45,7 +46,7 @@ function buildPage(sign) {
         ]
     }, null, 2);
 
-    return `<!DOCTYPE html>
+    return atlasShell(`<!DOCTYPE html>
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
@@ -100,7 +101,7 @@ function buildPage(sign) {
         <section class="sign-hero">
             <div class="container">
                 <div class="bread"><a href="../index.html">Domů</a> &raquo; <a href="../horoskopy.html">Horoskopy</a> &raquo; ${sign.name}</div>
-                <span class="sign-emoji">${sign.emoji}</span>
+                <span class="sign-emoji">${sign.emoji.replace(/[\uFE0E\uFE0F]/g, '')}︎</span>
                 <h1 class="hero__title">${sign.name} <span class="text-gradient">(${sign.en})</span></h1>
                 <p class="sign-dates">📅 ${sign.dates}</p>
 
@@ -200,7 +201,7 @@ function buildPage(sign) {
     <script src="../js/dist/components.js" defer></script>
     <script type="module" src="../js/dist/main.js"></script>
 </body>
-</html>`;
+</html>`, 'atlas-astro-page', 'atlas-astro.css');
 }
 
 const sitemapEntries = [];

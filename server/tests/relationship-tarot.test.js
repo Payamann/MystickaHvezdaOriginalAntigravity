@@ -88,6 +88,21 @@ describe('Paid reading and delivery', () => {
         expect(html).toContain('&lt;script&gt;');
         expect(html).not.toContain('<script>');
     });
+    test('incomplete text and unsuitable helpline contacts cannot be delivered', () => {
+        expect(() => parseRelationshipReading({ ...reading, cards: [`${paragraph.slice(0, -1)},`, ...reading.cards.slice(1)] })).toThrow('Incomplete relationship reading');
+        expect(() => parseRelationshipReading({ ...reading, questions: [`${reading.questions[0].slice(0, -1)},`, ...reading.questions.slice(1)] })).toThrow('Incomplete relationship reading');
+        expect(() => parseRelationshipReading({ ...reading, nextStep: `${paragraph} Linka bezpečí pro dospělé: 116 111.` })).toThrow('Unverified relationship reading contact');
+        expect(() => parseRelationshipReading({ ...reading, nextStep: `${paragraph} Volej 123 456 789.` })).toThrow('Unverified relationship reading contact');
+        expect(() => parseRelationshipReading({ ...reading, nextStep: `${paragraph} DONA linka 251 511 313.` })).not.toThrow();
+    });
+    test('gendered direct address is rejected while third-person context remains valid', () => {
+        expect(() => parseRelationshipReading({ ...reading, nextStep: `${paragraph} Udělala jsi první krok.` })).toThrow('Gendered relationship reading address');
+        expect(() => parseRelationshipReading({ ...reading, nextStep: `${paragraph} Kdybys dokázal bys to pojmenovat, začni dnes.` })).toThrow('Gendered relationship reading address');
+        expect(() => parseRelationshipReading({ ...reading, nextStep: `${paragraph} Jsi zahlcený a potřebuješ pauzu.` })).toThrow('Gendered relationship reading address');
+        expect(() => parseRelationshipReading({ ...reading, nextStep: `${paragraph} Plánuješ sám a potřebuješ změnu.` })).toThrow('Gendered relationship reading address');
+        expect(() => parseRelationshipReading({ ...reading, nextStep: `${paragraph} Téma dosud neotevřel, proto se k němu vrať.` })).toThrow('Gendered relationship reading address');
+        expect(() => parseRelationshipReading({ ...reading, nextStep: `${paragraph} Partner chtěl mluvit v klidu, proto si zvolte čas.` })).not.toThrow();
+    });
     test.each([{ amount_total: 1 }, { currency: 'eur' }, { payment_status: 'unpaid' }, { payment_status: 'no_payment_required' }, { status: 'open' }, { metadata: { ...paidSession.metadata, orderId: 'other' } }])('reconciliation cannot fulfill a mismatched or unpaid session %j', async patch => {
         const session = { ...paidSession, ...patch };
         expect(isPaidRelationshipSession(session, 'order-1')).toBe(false);

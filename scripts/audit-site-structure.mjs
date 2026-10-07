@@ -15,6 +15,7 @@ const skippedDirs = new Set([
     '.codex-worktrees',
     '.pytest_cache',
     '.pytest-tmp',
+    '.tmp',
     'components',
     'coverage',
     'docs',
@@ -50,7 +51,7 @@ const publicSourceExtensions = new Set([
     '.yml'
 ]);
 const criticalAssetVersions = new Map([
-    ['js/dist/auth-client.js', '20260828-product-simplification']
+    ['js/dist/auth-client.js', '20261003-single-membership']
 ]);
 const nonCanonicalOrigin = siteOrigin.replace('https://www.', 'https://');
 const allowedNonCanonicalOriginLines = new Map([

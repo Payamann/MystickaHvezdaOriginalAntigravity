@@ -38,7 +38,7 @@ router.post('/chat', authenticateToken, requirePremiumSoft, async (req, res) => 
             } else if (messageCount >= 3) {
                 trackPaywallHit(userId, 'mentor_unlimited').catch(() => {});
                 return res.status(402).json({
-                    error: 'Denní limit 3 zpráv byl vyčerpán. Upgrade na Premium pro neomezený přístup.',
+                    error: 'Dnešní 3 bezplatné zprávy jsou vyčerpané. Ve členství můžeš pokračovat; i členské výklady podléhají provozním limitům.',
                     code: 'PREMIUM_REQUIRED',
                     feature: 'mentor_unlimited'
                 });

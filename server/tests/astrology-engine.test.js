@@ -9,12 +9,26 @@ import {
     formatAstrocartographyForPrompt,
     formatNatalChartForPrompt,
     formatSynastryForPrompt,
+    getHoroscopeCacheKey,
     getZodiacSignByLongitude,
     normalizeDegrees,
     resolveBirthLocation
 } from '../services/astrology.js';
 
 describe('Astro engine', () => {
+    test('daily horoscope cache key follows Prague date at midnight and DST', () => {
+        expect(getHoroscopeCacheKey('Beran', 'daily', new Date('2026-09-28T22:30:00Z')))
+            .toBe('beran_daily_2026-09-29_v3');
+        expect(getHoroscopeCacheKey('Beran', 'daily', new Date('2026-12-31T23:30:00Z')))
+            .toBe('beran_daily_2027-01-01_v3');
+        expect(getHoroscopeCacheKey('Beran', 'daily', new Date('2026-10-24T22:30:00Z')))
+            .toBe('beran_daily_2026-10-25_v3');
+        expect(getHoroscopeCacheKey('Beran', 'monthly', new Date('2026-09-30T22:30:00Z')))
+            .toBe('beran_monthly_2026-10_v3');
+        expect(getHoroscopeCacheKey('Beran', 'weekly', new Date('2027-01-01T12:00:00Z')))
+            .toBe('beran_weekly_2026-W53_v3');
+    });
+
     test('calculates deterministic moon phase for supplied dates', () => {
         expect(calculateMoonPhase('2024-01-11T11:57:00Z')).toContain('Nov');
         expect(calculateMoonPhase('2024-01-25T17:54:00Z')).toContain('Úplněk');

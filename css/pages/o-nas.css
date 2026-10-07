@@ -9,7 +9,8 @@ html body .mh-inline-6ea68e7aa9 { width: 300px; height: 300px; transform: scale(
 html body .mh-inline-9d43b51666 { max-width: 450px; width: 100%; height: auto; filter: drop-shadow(0 0 50px rgba(212, 175, 55, 0.2)); position: relative; z-index: 2; }
 html body .mh-inline-ffe220d0c7 { padding: 2.5rem; text-align: center; }
 html body .mh-inline-0282e76368 { margin-bottom: 1.5rem; }
-html body .mh-inline-bf4d6a1cd0 { width: 80px; height: 80px; margin: 0 auto; }
+html body .mh-inline-bf4d6a1cd0 { width: 168px; height: 112px; object-fit: cover; border-radius: 4px; margin: 0 auto; }
+html body .mh-inline-bf4d6a1cd0[src*="tarot-v2"] { object-fit: contain; }
 html body .mh-inline-b08009ce44 { font-size: 0.95rem; line-height: 1.6; }
 
 /* Migrated from o-nas.html remaining static style attributes. */

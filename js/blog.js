@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }, true);
 
     try {
-        const response = await fetch('/data/blog-index.json');
+        const response = await fetch('/data/blog-index.json?v=atlas-art-v1', { cache: 'no-cache' });
         if (!response.ok) throw new Error('Data index nebyl nalezen');
         allPosts = await response.json();
 
@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const date = new Date(post.published_at).toLocaleDateString('cs-CZ', {
             year: 'numeric', month: 'long', day: 'numeric'
         });
-        const imageSrc = post.featured_image || 'img/hero-3d.webp';
+        const imageSrc = post.featured_image || 'img/search-preview/blog.webp';
         const readTime = post.readTime ? `${post.readTime} min.` : 'Zajímavost';
 
         featuredContainer.innerHTML = `
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const date = new Date(post.published_at).toLocaleDateString('cs-CZ', {
                 year: 'numeric', month: 'short', day: 'numeric'
             });
-            const imageSrc = post.featured_image || 'img/hero-3d.webp';
+            const imageSrc = post.featured_image || 'img/search-preview/blog.webp';
             const readTime = post.readTime ? `${post.readTime} min.` : '';
 
             const el = document.createElement('a');

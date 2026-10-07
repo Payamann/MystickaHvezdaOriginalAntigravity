@@ -1,0 +1,52 @@
+/* Scoped zodiac, compatibility and life-number calculator surfaces. */
+body.atlas-astro-page { --astro-ink:#e9e3d7; --astro-muted:#c3c9cb; --astro-gold:#d0b17c; }
+body.atlas-astro-page :is(.text-gradient,.hero__title) { color:#e9e3d7; background:none; -webkit-text-fill-color:currentColor; text-shadow:none; }
+body.atlas-astro-page :is(.sign-hero,.compatibility-header,.section--hero) { padding-top:128px; padding-bottom:48px; min-height:0; background:radial-gradient(ellipse at 80% 20%,#294b5f33,transparent 60%),#0b1929; }
+body.atlas-astro-page main.container.section { padding-top:128px; }
+body.atlas-astro-page :is(.sign-panel,.sign-faq,.sign-answer-box,.meta-card,.calc-card,.person-card,.card,.link-card,.zodiac-card) { background:#102638; border:1px solid #b3955e44; border-radius:5px; box-shadow:none; }
+body.atlas-astro-page :is(.sign-panel,.sign-faq,.compatibility-content) { max-width:72ch; margin-inline:auto; }
+body.atlas-astro-page :is(.sign-panel,.sign-faq,.compatibility-content) :is(p,li) { color:#c3c9cb; line-height:1.85; }
+body.atlas-astro-page :is(.sign-panel,.sign-faq,.compatibility-content) :is(h2,h3) { color:#e9e3d7; font-weight:400; line-height:1.4; }
+body.atlas-astro-page .compatibility-content { padding:28px; background:#102638; border:1px solid #b3955e44; border-radius:5px; }
+body.atlas-astro-page .compatibility-content p { text-align:left; }
+body.atlas-astro-page .compatibility-content .mh-inline-41de93a0b7 { background:#0b1929; border:1px solid #bd9b6555; border-radius:5px; }
+body.atlas-astro-page .compatibility-score { color:#d0b17c; background:none; -webkit-text-fill-color:currentColor; text-shadow:none; font-weight:400; }
+body.atlas-astro-page .hub-hero { padding-top:128px; padding-bottom:36px; }
+body.atlas-astro-page :is(.sign-card,.hub-cta,.sign-cta) { background:#102638; border:1px solid #b3955e44; border-radius:5px; box-shadow:none; }
+body.atlas-astro-page :is(.hub-title,.sign-card__name) { color:#e9e3d7; font-weight:400; }
+body.atlas-astro-page .hub-subtitle { color:#c3c9cb; }
+body.atlas-astro-page .compatibility-meter-container { background:#0b1929; border:1px solid #b3955e44; }
+body.atlas-astro-page .compatibility-meter-fill { background:#bd9b65; box-shadow:none; }
+body.atlas-astro-page .compatibility-search-note { background:transparent; color:#c3c9cb; border-color:#b3955e55; }
+body.atlas-astro-page :is(.mh-inline-8ecfdbba6f,.mh-inline-9100924a4e) { background:#0b1929; border-color:#b3955e55; border-radius:4px; }
+body.atlas-astro-page :is(.related-chip,.link-card,.sign-compat-tag) { color:#d0b17c; background:#102638; border-color:#b3955e55; border-radius:3px; }
+body.atlas-astro-page .related-chip { min-height:44px; display:inline-flex; align-items:center; }
+body.atlas-astro-page .sign-emoji { animation:none; color:#d0b17c; }
+body.atlas-astro-page :is(.sign-emoji,.sign-card__emoji,.zodiac-group-title .icon) { font-family:Georgia,'Segoe UI Symbol',serif; font-variant-emoji:text; color:#d0b17c; }
+body.atlas-astro-page .date-inputs input { border-radius:3px; }
+body.atlas-astro-page .calc-card h2 { color:#e9e3d7; font-weight:400; }
+body.atlas-astro-page .person-card h3 { color:#d0b17c; }
+body.atlas-astro-page .compatibility-header + .section { padding-top:32px; }
+body.atlas-astro-page :is(.meta-value,.sign-dates,.result-number,.zodiac-group-title) { color:#d0b17c; text-shadow:none; }
+body.atlas-astro-page :is(.hero__subtitle,.section__text,.meta-label,.bread) { color:#c3c9cb; }
+body.atlas-astro-page :is(input,select,textarea,.form-input) { background:#0b1929; color:#e9e3d7; border:1px solid #b3955e66; border-radius:3px; min-height:44px; }
+body.atlas-astro-page :is(.form-input:focus,input:focus,select:focus) { border-color:#d0b17c; box-shadow:none; }
+body.atlas-astro-page :is(.btn--glass,.btn--secondary) { background:transparent; color:#e9e3d7; border:1px solid #b3955e55; }
+body.atlas-astro-page :is(.related-chip:hover,.link-card:hover) { background:#153044; box-shadow:none; transform:none; }
+body.atlas-astro-page .date-inputs > * { min-width:0; }
+@media(max-width:760px) {
+ body.atlas-astro-page .hub-hero { padding-top:96px; }
+ body.atlas-astro-page :is(.sign-hero,.compatibility-header,.section--hero) { padding-top:96px; padding-bottom:36px; }
+ body.atlas-astro-page main.container.section { padding-top:96px; }
+ body.atlas-astro-page :is(.sign-panel,.sign-faq,.compatibility-content) { padding:22px; }
+ body.atlas-astro-page .sign-auth-buttons { display:none; }
+ body.atlas-astro-page .header__inner { flex-direction:row; flex-wrap:nowrap; justify-content:space-between; }
+ body.atlas-astro-page .header__inner > .nav { position:static; margin-left:auto; display:flex; flex:0 0 44px; width:44px; height:44px; }
+ body.atlas-astro-page .nav__toggle { position:static; margin:0; }
+ body.atlas-astro-page .sign-hero h1 { font-size:clamp(30px,8vw,42px); }
+}
+body.atlas-astro-page #horoscope-share-panel { background: #102638; border: 1px solid #bd9b6538; box-shadow: none; border-radius: 5px; }
+body.atlas-astro-page .hs-title { color: #e9e3d7; }
+body.atlas-astro-page .hs-preview-canvas { width: min(100%, 270px); height: auto; border: 1px solid #bd9b6555; border-radius: 4px; box-shadow: 0 12px 30px #030c1744; }
+body.atlas-astro-page .hs-btn--primary { background: #bd9b65; color: #142032; box-shadow: none; }
+body.atlas-astro-page .hs-btn--primary:hover { background: #d0b17c; box-shadow: none; }

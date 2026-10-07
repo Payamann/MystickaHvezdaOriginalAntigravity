@@ -266,7 +266,7 @@
 
         let cardImage = null;
         try {
-            cardImage = await loadCanvasImage(card.image || 'img/tarot/tarot_card_back_straight_v2.webp');
+            cardImage = await loadCanvasImage(card.image || 'img/tarot-v2/tarot_card_back.webp');
         } catch (error) {
             console.warn('[Tarot karta dne] Image export fallback:', error.message);
         }
@@ -493,7 +493,7 @@
 
     function revealCard(card, elements, options = {}) {
         elements.result.dataset.state = 'revealed';
-        elements.image.src = card.image || 'img/tarot/tarot_card_back_straight_v2.webp';
+        elements.image.src = card.image || 'img/tarot-v2/tarot_card_back.webp';
         elements.image.alt = `Tarot karta dne: ${card.name}`;
         elements.date.textContent = `Karta pro ${getLocalDateKey()}`;
         elements.name.textContent = card.name;

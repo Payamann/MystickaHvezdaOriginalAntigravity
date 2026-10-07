@@ -3,7 +3,7 @@
  * Provides offline caching with stale-while-revalidate strategy
  */
 
-const CACHE_NAME = 'mysticka-hvezda-bda272c388d7';
+const CACHE_NAME = 'mysticka-hvezda-2dd5eb2a3d15';
 const MAX_RUNTIME_CACHE_SIZE = 150;
 const STATIC_ASSETS = [
     '/fonts/local-fonts.css',
@@ -16,6 +16,17 @@ const STATIC_ASSETS = [
     '/css/site.min.css',
     '/css/profile-refresh.css',
     '/css/pages/index.css',
+    '/css/pages/tarot-karta-dne.css',
+    '/css/tarot-atlas.css',
+    '/css/atlas-web.css',
+    '/css/atlas-blog.css',
+    '/css/atlas-content.css',
+    '/css/atlas-tools.css',
+    '/css/atlas-astro.css',
+    '/css/atlas-angels.css',
+    '/css/pages/andelske-karty.css',
+    '/css/atlas-remaining.css',
+    '/css/atlas-art.css',
     '/css/pages/cenik.css',
     '/css/pages/rocni-horoskop.css',
     '/css/pages/osobni-mapa.css',
@@ -31,6 +42,10 @@ const STATIC_ASSETS = [
     '/js/dist/cookie-handler.js',
     '/js/dist/crystal-ball.js',
     '/js/dist/daily-card.js',
+    '/js/dist/angel-cards.js',
+    '/js/dist/horoscope-share.js',
+    '/js/dist/share-image-canvas.js',
+    '/js/dist/tarot-karta-dne.js',
     '/js/dist/index-lazy-load.js',
     '/js/gemini-service.js',
     '/js/dist/mobile-nav.js',
@@ -42,11 +57,17 @@ const STATIC_ASSETS = [
     '/js/dist/rocni-horoskop.js',
     '/js/dist/osobni-mapa.js',
     '/img/logo-3d.webp',
-    '/img/hero-3d-mobile-640.webp',
-    '/img/hero-3d-mobile-720.webp',
-    '/img/hero-3d.webp',
-    '/img/bg-cosmic-hd.webp',
-    '/img/bg-cosmic-mobile.webp',
+    '/img/atlas/01-lucerna-na-rozcesti.webp',
+    '/img/atlas/tools-v1/02-mesicni-krajina.webp',
+    '/img/atlas/angels-v1/back.webp',
+    '/img/atlas/angels-v1/abundance.webp',
+    '/img/atlas/angels-v1/guidance.webp',
+    '/img/atlas/angels-v1/healing.webp',
+    '/img/atlas/angels-v1/love.webp',
+    '/img/atlas/angels-v1/nature.webp',
+    '/img/atlas/angels-v1/peace.webp',
+    '/img/atlas/angels-v1/purpose.webp',
+    '/img/atlas/angels-v1/strength.webp',
     '/img/icon-192.webp',
     '/img/icon-192.png',
     '/img/personal-map/personal-map-soft-v3.webp',
@@ -172,7 +193,8 @@ self.addEventListener('fetch', (event) => {
             .then((cachedResponse) => {
                 // Start network fetch regardless (for revalidation)
                 const pathname = new URL(event.request.url).pathname;
-                const shouldRevalidateStaticCode = /\.(?:css|js)$/i.test(pathname);
+                // Editorial index must agree with the freshly rendered article art.
+                const shouldRevalidateStaticCode = /\.(?:css|js)$/i.test(pathname) || pathname === '/data/blog-index.json';
                 const networkFetch = fetch(event.request, shouldRevalidateStaticCode ? { cache: 'no-cache' } : undefined)
                     .then((response) => {
                         // Don't cache non-successful, non-basic or explicitly private responses

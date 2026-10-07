@@ -84,7 +84,7 @@ window.Premium = {
         const plan = this._plansById.get(planId);
         if (!plan) return fallbackLabel;
 
-        const icon = planId === 'osviceni' ? '\u{1F52D}' : '\u2728';
+        const icon = planId === 'pruvodce' ? '\u{1F52D}' : '\u2728';
         const name = this.readablePlanName(plan.name);
         let suffix = '';
         if (plan.interval === 'month') suffix = '/m\u011bs\u00edc';
@@ -127,7 +127,7 @@ window.Premium = {
     },
 
     getFeaturePlanId(featureName, fallbackPlanId = 'pruvodce') {
-        return this._featurePlanMap?.[featureName] || fallbackPlanId;
+        return 'pruvodce';
     },
 
     buildCheckoutMetadata(source, feature, metadata = {}) {
@@ -374,9 +374,9 @@ window.Premium = {
                 benefits: ['✓ Hlubší dynamika vztahu', '✓ Silné stránky a napětí mezi vámi', '✓ Doporučení pro komunikaci', '✓ Uložený rozbor pro pozdější návrat']
             },
             mentor: {
-                title: 'Hvězdný Průvodce bez limitu',
+                title: 'Návazné otázky pro Hvězdného Průvodce',
                 message: 'Jedna odpověď pomůže v tu chvíli. Premium odemkne pokračování, historii a možnost jít v tématu hlouběji.',
-                benefits: ['✓ Neomezené otázky na průvodce', '✓ Návazné odpovědi k jednomu tématu', '✓ Historie předchozích vhledů', '✓ Doporučení podle vašeho profilu']
+                benefits: ['✓ Návazné otázky v rámci provozních limitů', '✓ Návazné odpovědi k jednomu tématu', '✓ Historie předchozích vhledů', '✓ Doporučení podle vašeho profilu']
             },
             rituals: {
                 title: 'Lunární rituály pro návrat k sobě',
@@ -395,10 +395,10 @@ window.Premium = {
             },
             astrocartography: {
                 title: 'Astrokartografie a místa, která vás volají',
-                message: 'Tato pokročilá mapa patří do plánu Osvícení a ukáže, kde se podporuje práce, vztahy i vnitřní růst.',
-                planId: 'osviceni',
-                ctaLabel: this.getPlanCtaLabel('osviceni', '🔭 Odemknout Osvícení'),
-                footer: this.getPlanFooter('osviceni'),
+                message: 'Členství zahrnuje astrologickou mapu míst a jejich symbolický výklad.',
+                planId: 'pruvodce',
+                ctaLabel: this.getPlanCtaLabel('pruvodce', '🔭 Odemknout členství'),
+                footer: this.getPlanFooter('pruvodce'),
                 benefits: ['✓ Hvězdná mapa míst', '✓ Linie pro vztahy, práci a růst', '✓ Pokročilé interpretace', '✓ Roční kontext a hlubší analýzy']
             },
             journal_insights: {
@@ -415,7 +415,7 @@ window.Premium = {
                 '✓ Plné výklady místo krátkých náhledů',
                 '✓ Osobní profil a uložená historie',
                 '✓ Denní, týdenní i měsíční vedení',
-                '✓ Hvězdný Průvodce bez limitu'
+                '✓ Návazné otázky pro Hvězdného Průvodce'
             ]
         };
 
@@ -424,7 +424,7 @@ window.Premium = {
         this.trackPaywallHit(featureName, 'inline_paywall', planId);
 
         const overlay = this.createOverlay({
-            icon: planId === 'osviceni' ? '🔭' : '✨',
+            icon: planId === 'pruvodce' ? '🔭' : '✨',
             title: config.title,
             message: displayMessage,
             benefits: config.benefits,
@@ -440,26 +440,26 @@ window.Premium = {
     },
 
     showExclusivePaywall(featureName) {
-        this.trackPaywallHit(featureName, 'exclusive_paywall', 'osviceni');
+        this.trackPaywallHit(featureName, 'exclusive_paywall', 'pruvodce');
 
         const overlay = this.createOverlay({
             icon: '🔭',
-            title: 'Osvícení',
-            message: 'Tato funkce je dostupná od plánu Osvícení.',
+            title: 'Členství Mystické Hvězdy',
+            message: 'Tato funkce je součástí členství Mystické Hvězdy.',
             benefits: [
                 '✓ Astrokartografie a vaše hvězdná mapa světa',
                 '✓ Pokročilá natální karta s hlubším výkladem',
                 '✓ Exkluzivní lunární rituály',
-                '✓ Prioritní odpovědi duchovního průvodce'
+                '✓ Návazné odpovědi Hvězdného Průvodce'
             ],
-            ctaLabel: this.getPlanCtaLabel('osviceni', '🔭 Odemknout Osvícení'),
-            footer: this.getPlanFooter('osviceni')
+            ctaLabel: this.getPlanCtaLabel('pruvodce', '🔭 Odemknout členství'),
+            footer: this.getPlanFooter('pruvodce')
         });
 
-        this.bindOverlayActions(overlay, () => this.startUpgradeFlow('osviceni', featureName, 'exclusive_paywall'), {
+        this.bindOverlayActions(overlay, () => this.startUpgradeFlow('pruvodce', featureName, 'exclusive_paywall'), {
             source: 'exclusive_paywall',
             feature: featureName,
-            planId: 'osviceni'
+            planId: 'pruvodce'
         });
     },
 
@@ -560,7 +560,7 @@ window.Premium = {
             natalni_interpretace: 'Odemkni domy, aspekty, silné stránky a opakující se životní vzorce ve své natální kartě.',
             tarot_multi_card: 'První karta naznačí směr. Premium odemkne celý výklad, skryté vlivy a konkrétní další krok.',
             tarot_celtic_cross: 'Keltský kříž dává smysl pro složitější situace, kde jedna karta nestačí.',
-            mentor: 'Pokračuj v otázce bez limitu a vrať se k historii předchozích vhledů.'
+            mentor: 'Pokračuj ve své otázce a vrať se k historii předchozích vhledů.'
         };
 
         const benefits = {
@@ -568,7 +568,7 @@ window.Premium = {
             numerologie_vyklad: ['✓ Osobní numerologický výklad', '✓ Denní a měsíční cykly', '✓ Doporučení pro načasování', '✓ Uložená historie rozborů'],
             natalni_interpretace: ['✓ Výklad domů a aspektů', '✓ Silné stránky a citlivá místa', '✓ Vztahové a pracovní vzorce', '✓ Profil pro další osobní výklady'],
             tarot_multi_card: ['✓ Vícekaretní výklady', '✓ Skryté vlivy a další krok', '✓ Uložená historie tarotu', '✓ Návrat k opakujícím se tématům'],
-            default: ['✓ Plné výklady bez krátkých náhledů', '✓ Osobní profil a historie', '✓ Denní, týdenní i měsíční vedení', '✓ Hvězdný Průvodce bez limitu']
+            default: ['✓ Plné výklady bez krátkých náhledů', '✓ Osobní profil a historie', '✓ Denní, týdenní i měsíční vedení', '✓ Návazné otázky pro Hvězdného Průvodce']
         };
 
         const selectedBenefits = benefits[featureName] || benefits.default;

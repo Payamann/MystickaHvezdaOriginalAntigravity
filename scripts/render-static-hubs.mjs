@@ -23,7 +23,7 @@ function replaceRegion(source, marker, content) {
 }
 
 function renderFeaturedPost(post) {
-    const image = escapeHtml(post.featured_image || 'img/hero-3d.webp');
+    const image = escapeHtml(post.featured_image || 'img/atlas/social-v1/09-granatove-jablko.webp');
     return `                    <a href="blog/${escapeHtml(post.slug)}.html" class="featured-post">
                         <div class="featured-post__image-wrapper">
                             <img src="${image}" alt="" role="presentation" class="featured-post__image" width="640" height="360" loading="eager" fetchpriority="high">
@@ -39,7 +39,7 @@ function renderFeaturedPost(post) {
 
 function renderBlogCards(posts) {
     return posts.map((post) => {
-        const image = escapeHtml(post.featured_image || 'img/hero-3d.webp');
+        const image = escapeHtml(post.featured_image || 'img/atlas/social-v1/09-granatove-jablko.webp');
         return `                    <a href="blog/${escapeHtml(post.slug)}.html" class="blog-card">
                         <div class="blog-card-image-wrapper">
                             <img src="${image}" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">

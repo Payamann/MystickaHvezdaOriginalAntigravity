@@ -1,0 +1,101 @@
+/* Decorative art only. Card faces, moon phase and chart colours belong to the tools. */
+body.atlas-page #main-content .atlas-art-hero {
+  background-color: #0b1929;
+  background-image: linear-gradient(90deg, #0b1929 8%, rgba(11,25,41,.92) 36%, rgba(11,25,41,.3) 75%), var(--atlas-art-image);
+  background-size: cover;
+  background-position: center, right center;
+  border-bottom: 1px solid rgba(189,155,101,.18);
+}
+.atlas-art-astrolab { --atlas-art-image: url('/img/atlas/tools-v1/01-astrolab.webp'); }
+.atlas-art-notebook { --atlas-art-image: url('/img/atlas/tools-v1/03-numerologicky-zapisnik.webp'); }
+.atlas-art-moon { --atlas-art-image: url('/img/atlas/tools-v1/02-mesicni-krajina.webp'); }
+.atlas-art-runes { --atlas-art-image: url('/img/atlas/tools-v1/04-runove-kameny.webp'); }
+.atlas-art-forest { --atlas-art-image: url('/img/atlas/tools-v1/06-lesni-kruh.webp'); }
+.atlas-art-mirror { --atlas-art-image: url('/img/atlas/social-v1/08-zrcadlo.webp'); }
+.atlas-art-rest { --atlas-art-image: url('/img/atlas/social-v1/05-kocka-u-okna.webp'); }
+body.atlas-page #main-content .atlas-art-hero:is(.atlas-art-astrolab,.atlas-art-notebook,.atlas-art-forest,.atlas-art-mirror,.atlas-art-rest) {
+  min-height: 370px;
+  padding: 128px 0 64px;
+  text-align: left;
+}
+body.atlas-page #main-content .atlas-art-hero:is(.atlas-art-astrolab,.atlas-art-notebook,.atlas-art-forest,.atlas-art-mirror,.atlas-art-rest) .container {
+  text-align: left;
+}
+body.atlas-page #main-content .atlas-art-hero:is(.atlas-art-astrolab,.atlas-art-notebook,.atlas-art-forest,.atlas-art-mirror,.atlas-art-rest) :is(h1,p) {
+  max-width: 650px;
+  width: 60%;
+  margin-left: 0;
+}
+/* These heroes contain interactive controls: soften art behind the complete layout. */
+body.atlas-page #main-content .atlas-art-crystal { min-height:0; display:block; padding:128px 0 48px; }
+body.atlas-page #main-content .atlas-art-hero:is(.atlas-art-moon,.atlas-art-runes) {
+  background-image: linear-gradient(rgba(11,25,41,.83), rgba(11,25,41,.94)), var(--atlas-art-image);
+}
+body.atlas-page #main-content .atlas-art-crystal .ball-container {
+  width: min(540px,100%);
+  height: auto;
+  margin: 24px auto;
+  aspect-ratio: auto;
+  max-height: none;
+  display: block;
+}
+body.atlas-page #main-content .atlas-art-crystal .ball-image,
+body.atlas-page #main-content .atlas-art-crystal .ball-container:hover .ball-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border: 1px solid rgba(189,155,101,.3);
+  border-radius: 16px;
+  filter: none;
+  transform: none;
+}
+body.atlas-page #main-content .atlas-art-crystal .ball-glow { display: none; }
+body.atlas-page #main-content .atlas-art-crystal .answer-box:not(.visible) { display:none; }
+body.atlas-page #main-content .atlas-art-crystal .answer-box.visible { max-width:600px; margin:24px auto; padding:24px; background:#102638; border:1px solid #bd9b6555; border-radius:5px; color:#e9e3d7; }
+body.atlas-page #main-content .atlas-art-crystal .hero__title { max-width:24ch; margin-inline:auto; font-weight:400; }
+/* The original shaman hero has independent overlays and no .container. */
+body.atlas-page #main-content .atlas-art-forest::before,
+body.atlas-page #main-content .atlas-art-forest::after { display: none; }
+body.atlas-page #main-content .atlas-art-forest .mw-hero__content {
+  max-width: 1120px; margin-inline: auto; padding-inline: 24px;
+  box-sizing: border-box;
+}
+body.atlas-page #main-content .atlas-art-forest .mw-hero__title-gradient {
+  color: #d0b17c; background: none; -webkit-text-fill-color: currentColor;
+  animation: none;
+}
+body.atlas-page #main-content .atlas-art-about .hero__visual img {
+  width: 100%; height: auto; max-width: 540px; border-radius: 16px;
+  filter: none; animation: none;
+}
+body.atlas-page #main-content .atlas-art-about .hero__glow-effect { display: none; }
+body.atlas-page #main-content .atlas-art-interlude {
+  max-width: 1120px;
+  height: 240px;
+  margin: 32px auto;
+  overflow: hidden;
+  border-block: 1px solid rgba(189,155,101,.25);
+  border-radius: 16px;
+  background: #0b1929;
+}
+body.atlas-page #main-content .atlas-art-interlude img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 48%;
+}
+@media (max-width: 700px) {
+  body.atlas-page #main-content .atlas-art-crystal { padding-top:96px; padding-bottom:36px; }
+  body.atlas-page #main-content .atlas-art-hero:is(.atlas-art-astrolab,.atlas-art-notebook,.atlas-art-forest,.atlas-art-mirror,.atlas-art-rest) {
+    min-height: 0;
+    padding: 96px 0 180px;
+    background-size: cover, auto 100%;
+    background-position: center, right bottom;
+    background-image: linear-gradient(#0b1929 0%, rgba(11,25,41,.95) 48%, rgba(11,25,41,.2) 100%),var(--atlas-art-image);
+  }
+  body.atlas-page #main-content .atlas-art-hero:is(.atlas-art-astrolab,.atlas-art-notebook,.atlas-art-forest,.atlas-art-mirror,.atlas-art-rest) :is(h1,p) { width: 100%; }
+  body.atlas-page #main-content .atlas-art-interlude { margin: 24px 20px; height: 240px; }
+}

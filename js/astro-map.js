@@ -14,7 +14,7 @@ const mapContainer = document.querySelector('.map-container');
 
 function buildAstroMapPricingUrl(source) {
     const pricingUrl = new URL('/cenik.html', window.location.origin);
-    pricingUrl.searchParams.set('plan', 'osviceni');
+    pricingUrl.searchParams.set('plan', 'pruvodce');
     pricingUrl.searchParams.set('source', source);
     pricingUrl.searchParams.set('feature', 'astrocartography');
     pricingUrl.searchParams.set('entry_source', source);
@@ -96,12 +96,12 @@ const CITY_POSITIONS = {
 
 function startAstroMapUpgradeFlow(source) {
     window.MH_ANALYTICS?.trackCTA?.(source, {
-        plan_id: 'osviceni',
+        plan_id: 'pruvodce',
         feature: 'astrocartography'
     });
 
     if (window.Auth?.startPlanCheckout) {
-        window.Auth.startPlanCheckout('osviceni', {
+        window.Auth.startPlanCheckout('pruvodce', {
             source,
             feature: 'astrocartography',
             redirect: '/cenik.html',
@@ -121,9 +121,9 @@ function showAstroMapUpgradeGate() {
     const source = 'astro_map_exclusive_gate';
     showError(`
         <div class="text-center">
-            <h3>🔭 Osvícení funkce</h3>
-            <p class="mb-lg">Astrokartografie je dostupná od plánu Osvícení (499 Kč/měsíc).</p>
-            <a href="${buildAstroMapPricingUrl(source)}" class="btn btn--primary astro-map-upgrade-btn">Zobrazit plány</a>
+            <h3>🔭 Součást členství</h3>
+            <p class="mb-lg">Astrokartografie je součástí členství Mystické Hvězdy. Podmínky najdeš v ceníku.</p>
+            <a href="${buildAstroMapPricingUrl(source)}" class="btn btn--primary astro-map-upgrade-btn">Prohlédnout členství</a>
         </div>
     `);
 
@@ -237,7 +237,7 @@ async function handleFormSubmit(e) {
         return;
     }
 
-    if (!window.Auth.isExclusive()) {
+    if (!window.Auth.isPremium()) {
         // Show Osvícení-tier paywall
         if (window.Premium) {
             window.Premium.showExclusivePaywall('astrocartography');

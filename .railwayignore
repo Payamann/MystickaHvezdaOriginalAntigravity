@@ -1,3 +1,7 @@
 # Pinterest pin exports (~66 MB PNG) are posted manually from a local machine
 # and are not referenced by any HTML page — keep them out of the deploy image.
 img/pinterest/
+
+# Tarot source art and review gallery are manufacturing artifacts; ship only final WebP in img/tarot-v2/.
+img/tarot-v2/source/
+docs/tarot-deck-v2/

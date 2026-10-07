@@ -164,9 +164,9 @@ export const requireExclusive = async (req, res, next) => {
 
     if (!req.user || !req.user.isPremium || !isExclusive) {
         return res.status(403).json({
-            error: 'Tato funkce vyžaduje plán Osvícení nebo vyšší.',
+            error: 'Tato funkce je součástí členství Mystické Hvězdy.',
             requireUpgrade: true,
-            requiredPlan: 'osviceni'
+            requiredPlan: 'pruvodce'
         });
     }
     next();
@@ -191,7 +191,7 @@ export const requireFeature = (featureName) => async (req, res, next) => {
         const isExclusive = requiredPlan === 'osviceni' || requiredPlan === 'osviceni-rocne' || requiredPlan === 'vip-majestrat';
         return res.status(403).json({
             error: isExclusive
-                ? 'Tato funkce vyžaduje plán Osvícení nebo vyšší.'
+                ? 'Tato funkce je součástí členství Mystické Hvězdy.'
                 : 'Tato funkce vyžaduje Premium předplatné.',
             requireUpgrade: true,
             requiredPlan,
@@ -320,7 +320,7 @@ export const aiLimiter = rateLimit({
         if (isDevelopmentRuntime() || isTestRuntime()) return 10000;
         return getAiRequestLimit(req);
     },
-    message: { error: 'Překročen denní limit pro generování výkladů. Upgradujte na premium pro neomezený přístup.' },
+    message: { error: 'Denní limit pro generování výkladů je vyčerpaný. Zkus to znovu po obnovení limitu.' },
     standardHeaders: true,
     legacyHeaders: false,
     validate: { xForwardedForHeader: false },

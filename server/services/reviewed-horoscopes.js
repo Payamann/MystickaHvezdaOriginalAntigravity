@@ -61,6 +61,7 @@ export function getReviewedHoroscopeFromBatch(cacheKey, now, entries) {
     if (!prediction) return null;
     return {
         cache_key: cacheKey,
+        source: 'reviewed:pilot-v2',
         response: JSON.stringify({ prediction }),
         period_label: 'Denní inspirace',
         generated_at: null

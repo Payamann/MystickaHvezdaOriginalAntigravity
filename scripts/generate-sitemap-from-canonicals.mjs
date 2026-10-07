@@ -19,6 +19,7 @@ const skippedDirs = new Set([
     '.codex-worktrees',
     '.pytest_cache',
     '.pytest-tmp',
+    '.tmp',
     'components',
     'coverage',
     'docs',

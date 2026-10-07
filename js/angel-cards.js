@@ -255,14 +255,28 @@ function scheduleMobileAngelResultsScroll(behavior = 'smooth') {
     setTimeout(() => scrollAngelResultsIntoView(behavior), 1600);
 }
 
+const ANGEL_ART_TYPES = new Set(['abundance', 'guidance', 'healing', 'love', 'nature', 'peace', 'purpose', 'strength']);
+const DAILY_ANGEL_ART = {
+    hojnost: 'abundance', vdecnost: 'abundance', radost: 'abundance', vitez: 'abundance',
+    'vnitrni-mir': 'peace', harmonie: 'peace', uvolneni: 'peace', prijeti: 'peace',
+    odvaha: 'strength', prulom: 'strength', ohraniceni: 'strength',
+    laska: 'love', propojeni: 'love', pratelstvi: 'love',
+    hojeni: 'healing', transformace: 'healing',
+    koreny: 'nature', 'propojen-se-zemi': 'nature',
+    'novy-zacatek': 'purpose', vudce: 'purpose', kreativita: 'purpose', vizionar: 'purpose'
+};
+
+function angelArtType(card) {
+    // Historical daily links did not store a meaningful archetype.
+    const type = DAILY_ANGEL_ART[card.dailyImageSlug] || card.archetype;
+    return ANGEL_ART_TYPES.has(type) ? type : 'guidance';
+}
+
 function setCardBack(backEl, card) {
     if (!backEl || !card) return;
 
-    const archetype = card.archetype || 'guidance';
+    const archetype = angelArtType(card);
     backEl.className = `angel-card-back angel-card-back--${archetype}`;
-    if (card.dailyImageSlug) {
-        backEl.classList.add('angel-card-back--daily', `angel-card-back--daily-${card.dailyImageSlug}`);
-    }
     backEl.innerHTML = `
         <div class="angel-card-overlay"></div>
         <div class="angel-card-content">
@@ -704,46 +718,46 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
-function drawAngelCardImage(card) {
+async function drawAngelCardImage(card) {
     const shareImage = window.MH_SHARE_IMAGE;
     const canvas = shareImage.createCanvas();
     const ctx = canvas.getContext('2d');
     const centerX = canvas.width / 2;
-    const seed = String(card.name || '').length * 29 + String(card.theme || '').length;
+    await document.fonts?.ready;
+    ctx.fillStyle = '#0b1929';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    const art = await shareImage.loadImage(`/img/atlas/angels-v1/${angelArtType(card)}.webp`);
+    shareImage.drawImageContain(ctx, art, 250, 34, 580, 720);
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#bd9b65';
+    ctx.font = '500 26px Inter, Arial, sans-serif';
+    ctx.fillText('ANDĚLSKÁ KARTA', centerX, 790);
 
-    shareImage.drawBrandBackground(ctx, canvas, seed);
-
-    ctx.fillStyle = '#f1d06b';
-    ctx.font = '700 52px Cinzel, Georgia, serif';
-    ctx.fillText('ANDĚLSKÁ KARTA', centerX, 244);
-
-    ctx.font = '160px serif';
-    ctx.fillText('🕊️', centerX, 470);
-
-    ctx.fillStyle = '#fff7d6';
-    ctx.font = '700 58px Cinzel, Georgia, serif';
-    let y = shareImage.drawCenteredLines(ctx, shareImage.wrapText(ctx, card.name || '', 860), centerX, 590, 68, 2);
+    ctx.fillStyle = '#e9e3d7';
+    ctx.font = '500 46px Cinzel, Georgia, serif';
+    let y = shareImage.drawCenteredLines(ctx, shareImage.wrapText(ctx, card.name || '', 900), centerX, 854, 56, 2);
 
     if (card.theme) {
         ctx.fillStyle = 'rgba(255,255,255,0.75)';
-        ctx.font = '600 36px Inter, Arial, sans-serif';
+        ctx.font = '500 28px Inter, Arial, sans-serif';
         ctx.fillText(card.theme, centerX, y + 26);
-        y += 74;
+        y += 54;
     }
 
     ctx.fillStyle = 'rgba(212,175,55,0.86)';
     ctx.fillRect(170, y + 12, 740, 3);
-    y += 78;
+    y += 48;
 
     const message = card.short_message || card.message || '';
     if (message) {
-        ctx.fillStyle = '#f6f1ff';
-        ctx.font = '500 38px Inter, Arial, sans-serif';
-        shareImage.drawCenteredLines(ctx, shareImage.wrapText(ctx, message, 840), centerX, y, 50, 5);
+        ctx.fillStyle = '#e9e3d7';
+        ctx.font = '400 30px Inter, Arial, sans-serif';
+        shareImage.drawCenteredLines(ctx, shareImage.wrapText(ctx, message, 900), centerX, y, 40, Math.max(1, Math.floor((1220 - y) / 40)));
     }
 
-    shareImage.drawFooter(ctx, canvas, 'mystickahvezda.cz/andelske-karty.html',
-        'Vytáhni si svou andělskou kartu na dnešek.');
+    ctx.fillStyle = '#bd9b65';
+    ctx.font = '400 24px Inter, Arial, sans-serif';
+    ctx.fillText('Mystická Hvězda · andělské karty', centerX, 1290);
 
     return canvas;
 }
@@ -757,7 +771,7 @@ async function shareCard() {
 
     if (window.MH_SHARE_IMAGE?.shareOrDownload) {
         try {
-            const canvas = drawAngelCardImage(drawnCard);
+            const canvas = await drawAngelCardImage(drawnCard);
             await window.MH_SHARE_IMAGE.shareOrDownload({
                 canvas,
                 fileName: 'andelska-karta.png',

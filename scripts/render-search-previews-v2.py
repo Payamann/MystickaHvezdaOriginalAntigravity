@@ -166,14 +166,13 @@ def render_tarot_cards() -> int:
 
 if __name__ == "__main__":
     OUTPUT.mkdir(parents=True, exist_ok=True)
-    for artwork, filename in (("astrology", "astrology-hero.webp"), ("card", "tarot-cloth-hero.webp"), ("tarot", "home-hero.webp")):
-        hero = ImageOps.fit(
-            Image.open(ART / f"{artwork}.png").convert("RGB"),
-            (1600, 900),
-            method=Image.Resampling.LANCZOS,
-            centering=(0.5, 0.5),
-        )
-        hero.save(OUTPUT / filename, "WEBP", quality=82, method=6)
+    hero = ImageOps.fit(
+        Image.open(ART / "astrology.png").convert("RGB"),
+        (1600, 900),
+        method=Image.Resampling.LANCZOS,
+        centering=(0.5, 0.5),
+    )
+    hero.save(OUTPUT / "astrology-hero.webp", "WEBP", quality=82, method=6)
     for key, values in PREVIEWS.items():
         render_category(key, *values)
     cards = render_tarot_cards()

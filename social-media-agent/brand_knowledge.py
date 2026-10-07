@@ -261,25 +261,29 @@ PRICING_PLANS = {
             "Mystické testy sebepoznání (7 testů)",
         ],
     },
-    "hvezdny_pruvodce": {
-        "name": "Hvězdný Průvodce",
-        "name_en": "Star Guide",
+    "clenstvi": {
+        "name": "Členství Mystické Hvězdy",
+        "name_en": "Mystical Star Membership",
         "price_monthly": "199 Kč/měsíc",
-        "price_yearly": "1 990 Kč/rok (2 měsíce zdarma)",
+        "price_yearly": None,
         "trial": "7 dní zdarma",
-        "tagline": "Doporučený — odemkni plný potenciál",
+        "tagline": "Jedno členství pro placené funkce",
         "recommended": True,
         "highlights": [
-            "Vše z Poutníka +",
-            "Neomezený tarot a křišťálová koule",
-            "Natální karta s detailním výkladem",
-            "Numerologický kód (hloubkový rozbor)",
-            "Lunární rituály (plný přístup)",
-            "Minulý život (Akášické záznamy)",
-            "Týdenní + měsíční horoskop",
-            "Partnerská synastrie (detailní)",
-            "Neomezený chat s duchovním průvodcem",
+            "Rozšířené tarotové výklady",
+            "Týdenní a měsíční horoskopy",
+            "Natální karta s interpretací",
         ],
+    },
+}
+
+# Historické tarify zůstávají zachované kvůli starším účtům a obsahu. Nejsou
+# součástí aktuální veřejné nabídky a build_knowledge_prompt je nepublikuje.
+LEGACY_PRICING_PLANS = {
+    "hvezdny_pruvodce_rocne": {
+        "name": "Hvězdný Průvodce (roční)",
+        "price_yearly": "1 990 Kč/rok (2 měsíce zdarma)",
+        "historical": True,
     },
     "osviceni": {
         "name": "Osvícení",
@@ -288,6 +292,7 @@ PRICING_PLANS = {
         "price_yearly": "4 990 Kč/rok (2 měsíce zdarma)",
         "trial": "7 dní zdarma",
         "tagline": "Pro vášnivé hledače — exkluzivní obsah",
+        "historical": True,
         "highlights": [
             "Vše z Hvězdného Průvodce +",
             "Astromapa světa (astrokartografie)",
@@ -303,6 +308,7 @@ PRICING_PLANS = {
         "price_yearly": None,
         "trial": None,
         "tagline": "Pokročilé výklady a přednostní přístup k novinkám",
+        "historical": True,
         "highlights": [
             "Vše z Osvícení +",
             "Keltský kříž a pokročilé výklady",

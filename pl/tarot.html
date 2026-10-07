@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="Online tarot z gwiezdną interpretacją. Wybierz spośród 22 kart Wielkich Arkanów i otrzymaj spersonalizowany odczyt.">
     <meta name="keywords" content="tarot, karty tarota, odczyt, wróżenie, wielkie arkana">
-    <meta name="theme-color" content="#0a0a1a">
+    <meta name="theme-color" content="#0b1929">
 
     <meta property="og:type" content="website">
     <meta property="og:title" content="Wróżba Tarota Online | Mistyczna Gwiazda">
@@ -26,14 +26,17 @@
     <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Czy tarot online jest darmowy?", "acceptedAnswer": {"@type": "Answer", "text": "Tak. Rozkład jednej karty jest darmowy i nie wymaga rejestracji. Głębsze rozkłady wielokartowe są częścią członkostwa premium."}}, {"@type": "Question", "name": "Jak zadać pytanie?", "acceptedAnswer": {"@type": "Answer", "text": "Konkretnie i o sobie. Zamiast „Czy wszystko będzie dobrze?” spróbuj „Co powinienem zobaczyć w mojej sytuacji zawodowej?”. Karty najlepiej odpowiadają na pytania, na które masz wpływ."}}, {"@type": "Question", "name": "Czy tarot przepowiada przyszłość?", "acceptedAnswer": {"@type": "Answer", "text": "Tarot pokazuje kierunek i energię chwili, nie ustalony los. Traktuj go jak lustro, które pomaga podjąć świadomą decyzję — decyzja należy do ciebie."}}, {"@type": "Question", "name": "Co jeśli karta nie ma dla mnie sensu?", "acceptedAnswer": {"@type": "Answer", "text": "Daj jej chwilę popracować. Znaczenie często odsłania się w ciągu kilku dni. Możesz też zadać pytanie doprecyzowujące albo spróbować rozkładu trzech kart."}}]}</script>
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Rozkłady Tarota Online | Mistyczna Gwiazda">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://www.mystickahvezda.cz/img/search-preview/tarot-pl.webp">
+<meta property="og:image:alt" content="Rozkłady Tarota Online | Mistyczna Gwiazda">
 <meta name="twitter:image:alt" content="Rozkłady Tarota Online | Mistyczna Gwiazda">
+
+    <link rel="stylesheet" href="/css/atlas-web.css?v=1">
+    <link rel="stylesheet" href="/css/atlas-remaining.css?v=1">
+<link rel="stylesheet" href="/css/atlas-localized-tarot.css?v=1">
 </head>
 
-<body>
-    <div class="stars" aria-hidden="true"></div>
+<body class="atlas-page atlas-remaining-page atlas-language-page atlas-localized-tarot">
     <div id="header-placeholder"></div>
 
     <main id="main-content">
@@ -51,30 +54,31 @@
                         <div class="t-spread-card">
                             <h3 class="t-spread-title">Jedna Karta</h3>
                             <p class="t-spread-desc">Szybka odpowiedź na proste pytanie. Idealne dla dziennej inspiracji.</p>
-                            <button class="btn btn--glass btn--full spread-trigger" data-spread-type="Jedna karta">Rozłóż kartę</button>
+                            <a class="btn btn--glass btn--full" href="/tarot-karta-dne.html">Rozłóż kartę</a>
                         </div>
                         <div class="t-spread-card featured">
                             <h3 class="t-spread-title">Trzy Karty</h3>
                             <p class="t-spread-desc">Klasyczny rozkład Przeszłość - Teraźniejszość - Przyszłość. Zrozumienie powiązań.</p>
-                            <button class="btn btn--primary btn--full spread-trigger" data-spread-type="Trzy karty">Rozłóż karty</button>
+                            <a class="btn btn--primary btn--full" href="/tarot-tri-karty.html">Rozłóż karty</a>
                         </div>
                         <div class="t-spread-card">
                             <h3 class="t-spread-title">Krzyż Celtycki</h3>
                             <p class="t-spread-desc">Najbardziej kompleksowy rozkład 10 kart. Głęboka analiza sytuacji i wpływów.</p>
-                            <button class="btn btn--glass btn--full spread-trigger" data-spread-type="Celtic Cross">Rozłóż karty</button>
+                            <a class="btn btn--glass btn--full" href="/tarot-keltsky-kriz.html">Rozłóż karty</a>
                         </div>
-                    </div>
+                    <p class="tarot-language-note">Szczegółowe odczyty otwierają się w czeskiej wersji strony.</p>
+</div>
                 </div>
             </div>
         </section>
 
         <section class="section">
             <div class="container text-center">
-                <p class="mb-xl">Kliknij na kartę, aby przetasować talię</p>
+                <p class="mb-xl">Karty z naszej malowanej talii tarota</p>
                 <div class="tarot-deck">
-                    <div class="tarot-card"><img src="../img/tarot-back.webp" alt="Tarot Card"></div>
-                    <div class="tarot-card"><img src="../img/tarot-back.webp" alt="Tarot Card"></div>
-                    <div class="tarot-card"><img src="../img/tarot-back.webp" alt="Tarot Card"></div>
+                    <div class="tarot-card" aria-hidden="true"><img src="/img/tarot-v2/tarot_hvezda.webp" alt="" width="600" height="1000" loading="lazy" decoding="async"></div>
+                    <div class="tarot-card" aria-hidden="true"><img src="/img/tarot-v2/tarot_card_back.webp" alt="" width="600" height="1000" loading="lazy" decoding="async"></div>
+                    <div class="tarot-card" aria-hidden="true"><img src="/img/tarot-v2/tarot_slunce.webp" alt="" width="600" height="1000" loading="lazy" decoding="async"></div>
                 </div>
             </div>
         </section>

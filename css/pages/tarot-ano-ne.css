@@ -135,7 +135,7 @@
   flex: 0 0 auto;
   position: relative;
   width: clamp(64px,13vw,112px);
-  aspect-ratio: 585/901;
+  aspect-ratio: 3/5;
   padding: 0;
   border: 0;
   border-radius: 10px;
@@ -177,9 +177,15 @@
   overflow: hidden
 }
 .card-back {
-  background: #101c2c url('/img/tarot-back.webp') center/cover no-repeat;
-  border: 1px solid #d5b46e9c;
-  box-shadow: 0 10px 22px #0007
+  background: #10101b url('/img/tarot-v2/tarot_card_back.webp') center/cover no-repeat;
+  border: 1px solid #d5b46ecc;
+  box-shadow: 0 12px 26px #0008,0 0 18px #b79c5420;
+  transition: box-shadow .25s,border-color .25s
+}
+.page-tarot-yes-no .tarot-card:not(.tarot-card--locked):hover .card-back,
+.page-tarot-yes-no .tarot-card:focus-visible .card-back {
+  border-color: #f0d68f;
+  box-shadow: 0 16px 34px #0009,0 0 24px #e9c57235
 }
 .card-front {
   transform: rotateY(180deg);
@@ -187,12 +193,13 @@
   align-items: center;
   justify-content: center;
   background: #141126;
-  border: 1px solid #d5b46e9c
+  border: 1px solid #d5b46ecc;
+  box-shadow: 0 12px 30px #0008
 }
 .card-front-image {
   width: 100%;
   height: 100%;
-  object-fit: cover
+  object-fit: contain
 }
 .card-front-name,
 .answer-label {

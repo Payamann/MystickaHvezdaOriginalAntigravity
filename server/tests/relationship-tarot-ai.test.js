@@ -30,6 +30,11 @@ test('real generator requests constrained JSON from the provider and validates i
     expect(body.output_config.format.type).toBe('json_schema');
     expect(body.output_config.format.schema.required).toEqual(['introduction', 'card1', 'card2', 'card3', 'connection', 'nextStep', 'question1', 'question2', 'question3']);
     expect(body.output_config.format.schema.additionalProperties).toBe(false);
+    expect(body.system).toContain('DONA linku Bílého kruhu bezpečí 251 511 313');
+    expect(body.system).toContain('Linku bezpečí 116 111 nikdy neoznačuj jako linku pro dospělé');
+    expect(body.system).toContain('„jsi zahlcený“');
+    expect(body.system).toContain('„ochotný nebo ochotná“');
+    expect(body.system).toContain('„téma dosud neotevřel“');
 });
 
 test('malformed upstream content never exposes private fragments through parsing errors', async () => {

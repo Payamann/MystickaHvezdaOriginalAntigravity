@@ -118,7 +118,7 @@
             image.addEventListener('error', () => {
                 if (image.dataset.fallbackApplied === '1') return;
                 image.dataset.fallbackApplied = '1';
-                image.src = 'img/tarot/tarot_placeholder.webp';
+                image.src = 'img/tarot-v2/tarot_card_back.webp';
             });
         });
     }
@@ -141,7 +141,8 @@
         bindImageFallbacks(grid);
 
         if (count) {
-            count.textContent = `${visibleCards.length} karet`;
+            const total = visibleCards.length;
+            count.textContent = `${total} ${total === 1 ? 'karta' : total >= 2 && total <= 4 ? 'karty' : 'karet'}`;
         }
 
         if (noResults) {
@@ -166,7 +167,7 @@
                     name,
                     group,
                     groupLabel: groupLabels[group] || 'Tarot',
-                    image: card.image || 'img/tarot/tarot_placeholder.webp',
+                    image: card.image || 'img/tarot-v2/tarot_card_back.webp',
                     meaning: card.meaning || '',
                     interpretation: card.interpretation || ''
                 };

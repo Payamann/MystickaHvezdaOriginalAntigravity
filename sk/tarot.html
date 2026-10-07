@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="Online tarot s hviezdnou interpretáciou. Vyberte si z 22 kariet Veľkej Arkány a získajte personalizovaný výklad.">
     <meta name="keywords" content="tarot, tarotové karty, výklad, veštenie, veľká arkána">
-    <meta name="theme-color" content="#0a0a1a">
+    <meta name="theme-color" content="#0b1929">
 
     <meta property="og:type" content="website">
     <meta property="og:title" content="Tarotové Výklady Online | Mystická Hviezda">
@@ -26,14 +26,17 @@
     <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Je online tarot zadarmo?", "acceptedAnswer": {"@type": "Answer", "text": "Áno. Výklad jednej karty aj rýchly tarot ÁNO/NIE sú zadarmo a bez registrácie. Hlbšie viackartové rozklady sú súčasťou prémiového členstva."}}, {"@type": "Question", "name": "Ako si mám položiť otázku?", "acceptedAnswer": {"@type": "Answer", "text": "Konkrétne a o sebe. Namiesto „Bude všetko dobré?“ skús „Čo potrebujem vidieť vo svojej pracovnej situácii?“. Karty odpovedajú najlepšie na otázky, ktoré máš vo vlastných rukách."}}, {"@type": "Question", "name": "Predpovedá tarot budúcnosť?", "acceptedAnswer": {"@type": "Answer", "text": "Tarot ukazuje smer a energiu momentu, nie pevný osud. Ber ho ako zrkadlo, ktoré pomôže rozhodnúť sa vedome — rozhodnutie zostáva na tebe."}}, {"@type": "Question", "name": "Čo ak mi karta nedáva zmysel?", "acceptedAnswer": {"@type": "Answer", "text": "Nechaj ju chvíľu pôsobiť. Význam sa často ukáže do pár dní. Môžeš tiež položiť doplňujúcu otázku alebo skúsiť trojkartový rozklad pre viac kontextu."}}]}</script>
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Tarotové Výklady Online | Mystická Hviezda">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://www.mystickahvezda.cz/img/search-preview/tarot-sk.webp">
+<meta property="og:image:alt" content="Tarotové Výklady Online | Mystická Hviezda">
 <meta name="twitter:image:alt" content="Tarotové Výklady Online | Mystická Hviezda">
+
+    <link rel="stylesheet" href="/css/atlas-web.css?v=1">
+    <link rel="stylesheet" href="/css/atlas-remaining.css?v=1">
+<link rel="stylesheet" href="/css/atlas-localized-tarot.css?v=1">
 </head>
 
-<body>
-    <div class="stars" aria-hidden="true"></div>
+<body class="atlas-page atlas-remaining-page atlas-language-page atlas-localized-tarot">
     <div id="header-placeholder"></div>
 
     <main id="main-content">
@@ -51,30 +54,31 @@
                         <div class="t-spread-card">
                             <h3 class="t-spread-title">Jedna Karta</h3>
                             <p class="t-spread-desc">Rýchla odpoveď na jednoduchú otázku. Ideálne pre dennú inšpiráciu.</p>
-                            <button class="btn btn--glass btn--full spread-trigger" data-spread-type="Jedna karta">Vyložiť kartu</button>
+                            <a class="btn btn--glass btn--full" href="/tarot-karta-dne.html">Vyložiť kartu</a>
                         </div>
                         <div class="t-spread-card featured">
                             <h3 class="t-spread-title">Tri Karty</h3>
                             <p class="t-spread-desc">Klasický rozklad Minulosť - Prítomnosť - Budúcnosť. Pochopenie súvislostí.</p>
-                            <button class="btn btn--primary btn--full spread-trigger" data-spread-type="Tri karty">Vyložiť karty</button>
+                            <a class="btn btn--primary btn--full" href="/tarot-tri-karty.html">Vyložiť karty</a>
                         </div>
                         <div class="t-spread-card">
                             <h3 class="t-spread-title">Keltský Kríž</h3>
                             <p class="t-spread-desc">Najkomplexnejší 10-kartový rozklad. Hlboká analýza situácie a vplyvov.</p>
-                            <button class="btn btn--glass btn--full spread-trigger" data-spread-type="Celtic Cross">Vyložiť karty</button>
+                            <a class="btn btn--glass btn--full" href="/tarot-keltsky-kriz.html">Vyložiť karty</a>
                         </div>
-                    </div>
+                    <p class="tarot-language-note">Podrobné výklady sa otvárajú v českej verzii webu.</p>
+</div>
                 </div>
             </div>
         </section>
 
         <section class="section">
             <div class="container text-center">
-                <p class="mb-xl">Kliknite na kartu pre zamiešanie balíčka</p>
+                <p class="mb-xl">Karty z nášho maľovaného tarotového balíčka</p>
                 <div class="tarot-deck">
-                    <div class="tarot-card"><img src="../img/tarot-back.webp" alt="Tarot Card"></div>
-                    <div class="tarot-card"><img src="../img/tarot-back.webp" alt="Tarot Card"></div>
-                    <div class="tarot-card"><img src="../img/tarot-back.webp" alt="Tarot Card"></div>
+                    <div class="tarot-card" aria-hidden="true"><img src="/img/tarot-v2/tarot_hvezda.webp" alt="" width="600" height="1000" loading="lazy" decoding="async"></div>
+                    <div class="tarot-card" aria-hidden="true"><img src="/img/tarot-v2/tarot_card_back.webp" alt="" width="600" height="1000" loading="lazy" decoding="async"></div>
+                    <div class="tarot-card" aria-hidden="true"><img src="/img/tarot-v2/tarot_slunce.webp" alt="" width="600" height="1000" loading="lazy" decoding="async"></div>
                 </div>
             </div>
         </section>

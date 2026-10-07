@@ -9,6 +9,7 @@
  * Idempotent: re-running overwrites generated pages in place.
  */
 import fs from 'fs';
+import {atlasShell} from './atlas-shell.mjs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -59,7 +60,7 @@ function renderPage(number, entry, allNumbers) {
         ]
     }, null, 2);
 
-    return `<!DOCTYPE html>
+    return atlasShell(`<!DOCTYPE html>
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
@@ -140,7 +141,7 @@ function renderPage(number, entry, allNumbers) {
     <script type="module" src="../js/dist/main.js?v=10"></script>
 </body>
 </html>
-`;
+`, 'atlas-content-page atlas-content-detail', 'atlas-content.css');
 }
 
 function updateHubLinks(numbers, data) {

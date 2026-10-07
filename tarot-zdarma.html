@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#0a0a1a">    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔮</text></svg>">
+    <meta name="theme-color" content="#0b1929">    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔮</text></svg>">
 <link rel="apple-touch-icon" href="img/icon-192.webp">
     <meta name="apple-mobile-web-app-capable" content="yes">
 
@@ -81,16 +81,15 @@
     <link rel="stylesheet" href="/css/pages/relationship-tarot-bridge.css?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Tarot zdarma online bez registrace | Mystická Hvězda">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://www.mystickahvezda.cz/img/search-preview/tarot.webp">
+<meta property="og:image:alt" content="Tarot zdarma online bez registrace | Mystická Hvězda">
 <meta name="twitter:image:alt" content="Tarot zdarma online bez registrace | Mystická Hvězda">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=1">
 </head>
 
-<body class="page-tarot-free">
+<body class="page-tarot-free atlas-page">
     <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
-
-    <div class="stars" aria-hidden="true"></div>
 
     <div id="header-placeholder"></div>
 
@@ -132,17 +131,16 @@
 
                     <div class="card-row">
 
-                        <div class="demo-card" data-action="flipCard" title="Klikněte pro výklad">✨</div>
+                        <button class="demo-card" type="button" data-action="flipCard" data-preview-card="0" aria-label="Otočit ukázkovou kartu"><img src="/img/tarot-v2/tarot_card_back.webp" width="120" height="200" alt="Rub tarotové karty"></button>
 
-                        <div class="demo-card mh-inline-7721223c29" data-action="flipCard" title="Klikněte pro výklad"
+                        <button class="demo-card" type="button" data-action="flipCard" data-preview-card="1" aria-label="Otočit ukázkovou kartu"><img src="/img/tarot-v2/tarot_card_back.webp" width="120" height="200" alt="Rub tarotové karty"></button>
 
-                           >✨</div>
-
-                        <div class="demo-card" data-action="flipCard" title="Klikněte pro výklad">✨</div>
+                        <button class="demo-card" type="button" data-action="flipCard" data-preview-card="2" aria-label="Otočit ukázkovou kartu"><img src="/img/tarot-v2/tarot_card_back.webp" width="120" height="200" alt="Rub tarotové karty"></button>
 
                     </div>
 
                     <p class="mh-inline-6d57abf60c">Klikněte na kartu pro ukázku</p>
+<p id="tarot-demo-caption" class="atlas-demo-caption" aria-live="polite"></p>
 
                 </div>
 
@@ -152,8 +150,8 @@
 
 <div class="container relationship-entry"><aside class="relationship-offer relationship-offer--illustrated" data-relationship-offer="tarot_free_landing" hidden aria-labelledby="relationship-free-offer-title">
     <div class="relationship-offer__art" aria-hidden="true">
-        <img src="/img/tarot/tarot_milenci.webp" width="600" height="1046" alt="" loading="lazy">
-        <img src="/img/tarot/tarot_mirnost.webp" width="600" height="1046" alt="" loading="lazy">
+        <img src="/img/tarot-v2/tarot_milenci.webp" width="600" height="1000" alt="" loading="lazy">
+        <img src="/img/tarot-v2/tarot_mirnost.webp" width="600" height="1000" alt="" loading="lazy">
     </div>
     <div class="relationship-offer__copy">
         <p class="relationship-eyebrow">OSOBNÍ VZTAHOVÝ VÝKLAD</p>
@@ -470,7 +468,7 @@
     <script src="js/dist/api-config.js?v=5" defer></script>
 
     <script src="js/dist/templates.js?v=14" defer></script>
-    <script src="js/dist/auth-client.js?v=20260828-product-simplification" defer></script>
+    <script src="js/dist/auth-client.js?v=20261003-single-membership" defer></script>
 <script src="js/dist/auth-copy-fixes.js" defer></script>
     <script src="js/dist/secondary-pages-copy-fixes.js?v=7" defer></script>
 

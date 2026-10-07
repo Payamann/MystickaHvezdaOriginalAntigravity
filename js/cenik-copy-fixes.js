@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // The single-membership page owns its copy; do not restore legacy tiers.
+    if (document.querySelector('.pricing-grid--single')) return;
     document.title = 'Ceník | Mystická Hvězda';
 
     const setMeta = (selector, value) => {

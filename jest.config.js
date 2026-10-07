@@ -19,8 +19,9 @@ export default {
         }
     },
     testMatch: [
-        '<rootDir>/server/tests/**/*.test.js'
+        '**/server/tests/**/*.test.js'
     ],
+    testPathIgnorePatterns: ['<rootDir>/production-release-v2/'],
     modulePathIgnorePatterns: [
         '<rootDir>/.claude/worktrees/',
         '<rootDir>/.codex-tmp/',

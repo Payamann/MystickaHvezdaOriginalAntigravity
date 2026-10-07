@@ -227,7 +227,7 @@ function bindReadingImageFallbacks(root) {
         image.addEventListener('error', () => {
             if (image.dataset.fallbackApplied === '1') return;
             image.dataset.fallbackApplied = '1';
-            image.src = '/img/tarot/tarot_placeholder.webp';
+            image.src = '/img/tarot-v2/tarot_card_back.webp';
         });
     });
 }
@@ -518,12 +518,12 @@ function renderReadingContent(reading) {
     }
 
     function getTarotImageByName(name) {
-        if (!name) return 'img/tarot/tarot_placeholder.webp';
+        if (!name) return 'img/tarot-v2/tarot_card_back.webp';
         const normalized = name.normalize('NFD')
             .replace(/[\u0300-\u036f]/g, '')
             .toLowerCase()
             .replace(/ /g, '_');
-        return `img/tarot/tarot_${normalized}.webp`;
+        return `img/tarot-v2/tarot_${normalized}.webp`;
     }
 
     if (typeof data === 'string') {

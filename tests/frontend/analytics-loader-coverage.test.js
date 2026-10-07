@@ -10,6 +10,8 @@ const skippedDirectories = new Set([
     '.agents',
     '.claude',
     '.claire',
+    '.tmp',
+    'production-release-v2',
     'artifacts',
     'components',
     'coverage',

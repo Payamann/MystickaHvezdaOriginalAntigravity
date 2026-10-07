@@ -1,0 +1,170 @@
+/* Atlas visual pass for the four standalone tools. Keep every rule page scoped. */
+body.atlas-page.page-runes,
+body.atlas-page.page-crystal-ball,
+body.atlas-page.page-numerology,
+body.atlas-page.page-lunace {
+  --atlas-navy: #0b1929;
+  --atlas-surface: #102638;
+  --atlas-gold: #bd9b65;
+  --atlas-ivory: #e9e3d7;
+  --atlas-muted: #c3c9cb;
+  background: var(--atlas-navy);
+  color: var(--atlas-ivory);
+}
+
+body.atlas-page.page-runes .runes-hero,
+body.atlas-page.page-crystal-ball .crystal-hero,
+body.atlas-page.page-numerology .hero--compact,
+body.atlas-page.page-lunace .lunar-hero {
+  min-height: 0;
+  padding: 126px 0 58px;
+  background: radial-gradient(ellipse at 80% 25%, rgba(41, 75, 95, .28), transparent 58%), var(--atlas-navy);
+}
+
+body.atlas-page.page-runes .hero__title,
+body.atlas-page.page-crystal-ball .hero__title,
+body.atlas-page.page-numerology .hero__title,
+body.atlas-page.page-lunace .hero__title {
+  color: var(--atlas-ivory);
+  text-shadow: none;
+}
+
+body.atlas-page.page-runes .text-gradient,
+body.atlas-page.page-crystal-ball .text-gradient,
+body.atlas-page.page-numerology .text-gradient,
+body.atlas-page.page-lunace .text-gradient {
+  color: var(--atlas-ivory);
+  background: none;
+  -webkit-text-fill-color: currentColor;
+}
+
+body.atlas-page.page-runes .hero__subtitle,
+body.atlas-page.page-crystal-ball .hero__subtitle,
+body.atlas-page.page-numerology .hero__subtitle,
+body.atlas-page.page-lunace .hero__subtitle {
+  color: var(--atlas-muted);
+  max-width: 58ch;
+  margin-inline: auto;
+  line-height: 1.75;
+}
+
+body.atlas-page.page-runes .rune-pouch-container { gap: 1.4rem; margin-top: 1rem; }
+body.atlas-page.page-runes .rune-stone {
+  width: 128px;
+  height: 164px;
+  background: linear-gradient(145deg, #19344a, #0b1929);
+  border: 1px solid rgba(189, 155, 101, .48);
+  box-shadow: inset -5px -5px 15px rgba(0, 0, 0, .35), 0 16px 30px rgba(0, 0, 0, .24);
+  color: var(--atlas-gold);
+}
+body.atlas-page.page-runes .rune-stone.hidden { background: linear-gradient(145deg, #163047, #0b1929); }
+body.atlas-page.page-runes .rune-result-frame,
+body.atlas-page.page-runes .runes-upgrade-preview,
+body.atlas-page.page-runes .runes-intent-card {
+  background: var(--atlas-surface);
+  border-color: rgba(189, 155, 101, .35);
+  border-radius: 5px;
+  box-shadow: none;
+}
+body.atlas-page.page-runes .runes-intent-card:hover,
+body.atlas-page.page-runes .runes-intent-card:focus-visible { background: #153044; border-color: var(--atlas-gold); }
+body.atlas-page.page-runes .rune-result-frame h2,
+body.atlas-page.page-runes .runes-upgrade-preview h4,
+body.atlas-page.page-runes .runes-intent-card strong { color: var(--atlas-ivory); }
+body.atlas-page.page-runes .rune-result-frame p,
+body.atlas-page.page-runes .runes-upgrade-preview p,
+body.atlas-page.page-runes .runes-intent-card em { color: var(--atlas-muted); }
+
+body.atlas-page.page-crystal-ball .ball-container { max-width: 360px; max-height: 360px; }
+body.atlas-page.page-crystal-ball .ball-glow { background: radial-gradient(circle, rgba(189, 155, 101, .3), transparent 70%); }
+body.atlas-page.page-crystal-ball :is(.ball-image,.ball-container:hover .ball-image) { filter:drop-shadow(0 12px 20px #030c1766); border-radius:5px; }
+body.atlas-page.page-lunace :is(#next-new-moon-box,#next-full-moon-box) { background:#0b1929; border:1px solid #b3955e55; border-radius:5px; box-shadow:none; }
+body.atlas-page.page-crystal-ball .answer-box,
+body.atlas-page.page-crystal-ball .crystal-intent-card {
+  background: var(--atlas-surface);
+  border-color: rgba(189, 155, 101, .38);
+  border-radius: 5px;
+  box-shadow: none;
+}
+body.atlas-page.page-crystal-ball #answer-text,
+body.atlas-page.page-crystal-ball .crystal-intent-card strong { color: var(--atlas-ivory); text-shadow: none; }
+body.atlas-page.page-crystal-ball .instruction-text,
+body.atlas-page.page-crystal-ball .crystal-intent-card em { color: var(--atlas-muted); }
+body.atlas-page.page-crystal-ball .cross-link-card.card { background:#102638; border:1px solid #bd9b6544; border-radius:5px; box-shadow:none; }
+body.atlas-page.page-crystal-ball .cross-link-card__icon { display:none; }
+body.atlas-page.page-crystal-ball .cross-link-card__title { color:#e9e3d7; }
+body.atlas-page.page-crystal-ball .cross-link-card__text { color:#c3c9cb; }
+body.atlas-page.page-crystal-ball .section--alt .card { background:#102638; border-color:#bd9b6544; border-radius:5px; box-shadow:none; }
+body.atlas-page.page-crystal-ball #freemium-banner { max-width:800px; margin:0 auto 24px; background:#102638; border:1px solid #bd9b6544; border-radius:5px; padding:16px 24px; color:#c3c9cb; line-height:1.7; }
+body.atlas-page.page-crystal-ball .crystal-intent-card:hover,
+body.atlas-page.page-crystal-ball .crystal-intent-card:focus-visible { background: #153044; border-color: var(--atlas-gold); }
+
+body.atlas-page.page-numerology .numerology-calculator-card,
+body.atlas-page.page-numerology .number-card,
+body.atlas-page.page-numerology .info-card,
+body.atlas-page.page-numerology .numerology-cluster-link-card,
+body.atlas-page.page-numerology .card {
+  background: var(--atlas-surface);
+  border-color: rgba(189, 155, 101, .32);
+  border-radius: 5px;
+  box-shadow: none;
+}
+body.atlas-page.page-numerology .form-input,
+body.atlas-page.page-numerology input[type='date'],
+body.atlas-page.page-numerology input[type='time'] {
+  background: var(--atlas-navy);
+  color: var(--atlas-ivory);
+  border-color: rgba(189, 155, 101, .48);
+  border-radius: 3px;
+  min-height: 46px;
+}
+body.atlas-page.page-numerology .form-label,
+body.atlas-page.page-numerology .card__text,
+body.atlas-page.page-numerology .info-card p,
+body.atlas-page.page-numerology .numerology-cluster-link-card p { color: var(--atlas-muted); }
+body.atlas-page.page-numerology .card__title,
+body.atlas-page.page-numerology .info-card h3,
+body.atlas-page.page-numerology .numerology-cluster-link-card strong { color: var(--atlas-ivory); }
+body.atlas-page.page-numerology.cookie-banner-active .section--alt { margin-top:0; }
+
+body.atlas-page.page-lunace .moon-container,
+body.atlas-page.page-lunace #lunar-countdown-wrap,
+body.atlas-page.page-lunace .phase-card,
+body.atlas-page.page-lunace .lunar-practice-card,
+body.atlas-page.page-lunace .faq-section,
+body.atlas-page.page-lunace .lunar-cycle-grid {
+  background: var(--atlas-surface);
+  border-color: rgba(189, 155, 101, .34);
+  border-radius: 5px;
+  box-shadow: none;
+}
+body.atlas-page.page-lunace .phase-name,
+body.atlas-page.page-lunace #phaseIntroTitle,
+body.atlas-page.page-lunace .lunar-practice-card strong,
+body.atlas-page.page-lunace .faq-item summary { color: var(--atlas-ivory); }
+body.atlas-page.page-lunace .phase-date,
+body.atlas-page.page-lunace #phaseInterpretation,
+body.atlas-page.page-lunace #phaseAdvice,
+body.atlas-page.page-lunace .lunar-practice-card em,
+body.atlas-page.page-lunace .faq-item p { color: var(--atlas-muted); }
+body.atlas-page.page-lunace .illumination-bar { background: #0b1929; }
+body.atlas-page.page-lunace .illumination-fill { background: var(--atlas-gold); }
+
+body.atlas-page :is(a, button, input, textarea, select, summary):focus-visible {
+  outline: 2px solid #d0b17c;
+  outline-offset: 4px;
+}
+body.atlas-page :is(.btn--primary, .numerology-submit-btn) { background: var(--atlas-gold); border-color: var(--atlas-gold); color: #142032; box-shadow: none; }
+body.atlas-page :is(.btn--secondary, .btn--ghost) { background: transparent; border-color: rgba(189, 155, 101, .48); color: var(--atlas-ivory); box-shadow: none; }
+@media (max-width: 760px) {
+  body.atlas-page.page-runes .runes-hero,
+  body.atlas-page.page-crystal-ball .crystal-hero,
+  body.atlas-page.page-numerology .hero--compact,
+  body.atlas-page.page-lunace .lunar-hero { padding-top: 94px; padding-bottom: 40px; }
+  body.atlas-page.page-crystal-ball .ball-container { width: min(82vw, 320px); height: auto; aspect-ratio: 1; }
+  body.atlas-page.page-runes .rune-stone { width: 108px; height: 140px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.atlas-page.page-runes .rune-stone,
+  body.atlas-page.page-crystal-ball .ball-glow { animation: none; transition: none; }
+}

@@ -43,7 +43,7 @@
     if (!grid) return;
 
     try {
-      const response = await fetch('/data/blog-index.json', { credentials: 'same-origin' });
+      const response = await fetch('/data/blog-index.json?v=atlas-art-v1', { credentials: 'same-origin', cache: 'no-cache' });
       if (!response.ok) throw new Error('Blog index unavailable');
 
       const posts = await response.json();

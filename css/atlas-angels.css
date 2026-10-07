@@ -1,0 +1,46 @@
+/* Angel tool only. Keep the existing card faces and flip geometry intact. */
+body.atlas-angel-page { background:#0b1929; color:#e9e3d7; }
+body.atlas-angel-page main { position:relative; z-index:1; }
+body.atlas-angel-page .container { width:min(100% - 40px,1120px); }
+body.atlas-angel-page .angel-hero { padding-top:128px; padding-bottom:24px; background:radial-gradient(ellipse at 75% 15%,#294b5f33,transparent 50%); }
+body.atlas-angel-page :is(.hero__title,.section__title,.wow-title,.angel-name) { color:#e9e3d7; text-shadow:none; font-weight:400; }
+body.atlas-angel-page .text-gradient { background:none; color:#d0b17c; -webkit-text-fill-color:currentColor; }
+body.atlas-angel-page :is(.hero__subtitle,.section__text,.wow-message,.angel-return-message) { color:#c3c9cb; text-shadow:none; line-height:1.8; }
+body.atlas-angel-page .hero__subtitle { max-width:62ch; margin-inline:auto; }
+body.atlas-angel-page .angel-draw-section { padding-top:16px; }
+body.atlas-angel-page .angel-card-container { max-width:100%; }
+body.atlas-angel-page :is(.angel-card-front,.angel-card-back) { border:1px solid #bd9b6588; border-radius:6px; box-shadow:0 12px 28px #0005; }
+body.atlas-angel-page .glow-effect { animation:none; }
+body.atlas-angel-page .angel-card-back { background-color:#102638; }
+body.atlas-angel-page .angel-card-hint { color:#d0b17c !important; letter-spacing:.04em; }
+body.atlas-angel-page :is(.message-box,.angel-intent-card,.angel-profile-cta,.card) { background:#102638; border:1px solid #bd9b6548; border-radius:6px; box-shadow:none; backdrop-filter:none; }
+body.atlas-angel-page .message-box { padding:clamp(22px,4vw,36px); }
+body.atlas-angel-page .message-box::before,body.atlas-angel-page .message-box::after { content:none; }
+body.atlas-angel-page .wow-title { font-size:clamp(25px,4vw,36px); letter-spacing:0; }
+body.atlas-angel-page .wow-message { font-size:18px; font-weight:400; }
+body.atlas-angel-page :is(.angel-intent-card,.card):hover { transform:none; border-color:#bd9b6588; }
+body.atlas-angel-page :is(.angel-intent-card h3,.angel-profile-cta h3,.cross-link-card__title,.faq-item h3) { color:#e9e3d7; }
+body.atlas-angel-page :is(.angel-profile-cta__eyebrow,.section__badge,a,.angel-theme) { color:#d0b17c; }
+body.atlas-angel-page a.btn--primary { color:#142032; }
+body.atlas-angel-page .btn-magical { background:#bd9b65; border:1px solid #bd9b65; border-radius:3px; color:#142032; box-shadow:none; min-height:44px; letter-spacing:0; text-transform:none; }
+body.atlas-angel-page .btn-magical:hover { background:#d0b17c; transform:none; box-shadow:none; }
+body.atlas-angel-page .related-links { display:flex; flex-wrap:wrap; gap:10px; }
+body.atlas-angel-page .related-chip { border:1px solid #bd9b6560; border-radius:4px; background:transparent; padding:10px 14px; min-height:44px; }
+body.atlas-angel-page #vyznamy-andelskych-karet { width:min(100% - 40px,1120px); margin-inline:auto; }
+body.atlas-angel-page :is(a,button,[role="button"],summary):focus-visible { outline:2px solid #d0b17c; outline-offset:4px; }
+@media(max-width:760px) {
+ body.atlas-angel-page .container,body.atlas-angel-page #vyznamy-andelskych-karet { width:min(100% - 28px,1120px); }
+ body.atlas-angel-page .angel-hero { padding-top:96px; }
+ body.atlas-angel-page .angel-intent-grid { grid-template-columns:1fr; }
+ body.atlas-angel-page .angel-card-container { width:250px; height:428px; }
+}
+@media(prefers-reduced-motion:reduce) {
+ body.atlas-angel-page * { animation-duration:.01ms !important; transition-duration:.01ms !important; scroll-behavior:auto !important; }
+}
+
+/* Painted angel art: keep the face visible and put its title in the quiet lower area. */
+body.atlas-angel-page .angel-card-front::before { content:none; }
+body.atlas-angel-page .angel-card-content { justify-content:flex-end; padding-bottom:24px; }
+body.atlas-angel-page .angel-card-sparkle { display:none; }
+body.atlas-angel-page .angel-card-back .angel-card-overlay { background:linear-gradient(to top,#0b1929e6,transparent 45%); }
+body.atlas-angel-page .angel-return-message { margin-bottom:20px; }

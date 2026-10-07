@@ -1,41 +1,19 @@
-// Event delegation for flipCard function
-document.addEventListener('click', (e) => {
-    const action = e.target.getAttribute('data-action');
-    if (action === 'flipCard') {
-        flipCard(e.target);
-    }
+// Fixed illustrative examples, separate from the actual tarot draw.
+const previewCards = [
+ ['hvezda', 'Hvězda', 'Co ti pomáhá znovu najít klid a směr?'],
+ ['slunce', 'Slunce', 'Kterou jednoduchou radost si dnes můžeš dopřát?'],
+ ['soud', 'Soud', 'Na kterou zkušenost se dnes můžeš podívat s odstupem?']
+];
+document.addEventListener('click', (event) => {
+ const button = event.target.closest('[data-action="flipCard"][data-preview-card]');
+ if (!button) return;
+ const card = previewCards[Number(button.dataset.previewCard)];
+ if (!card) return;
+ const [slug, name, message] = card;
+ const image = button.querySelector('img');
+ image.src = `/img/tarot-v2/tarot_${slug}.webp`;
+ image.alt = name;
+ button.classList.add('flipped');
+ button.setAttribute('aria-label', `${name}: ${message}`);
+ document.getElementById('tarot-demo-caption').textContent = `${name} — ${message} Toto je ukázka, vlastní kartu si vytáhneš v nástroji.`;
 });
-
-function flipCard(el) {
-
-    const cards = ['🌙', '⭐', '🔮', '🌟', '✨', '🌙'];
-
-    const names = ['Měsíc', 'Hvězda', 'Věž', 'Slunce', 'Svět', 'Soudce'];
-
-    const msgs = [
-
-        'Naslouchejte svým emocím a snům.',
-
-        'Naděje a inspirace jsou na vaší straně.',
-
-        'Čas na změnu — pustit se staré struktury.',
-
-        'Radost, úspěch a jasnost přichází.',
-
-        'Naplnění a dokončení dlouhé cesty.',
-
-        'Čas zúčtování a nového pohledu na minulost.'
-
-    ];
-
-    const i = Math.floor(Math.random() * cards.length);
-
-    el.classList.add('flipped');
-
-    el.textContent = cards[i];
-
-    el.title = names[i] + ': ' + msgs[i];
-
-    el.setAttribute('aria-label', names[i] + ': ' + msgs[i]);
-
-}

@@ -13,6 +13,7 @@ const siteOrigin = 'https://www.mystickahvezda.cz';
 const seoOverrides = fs.existsSync(seoOverridesPath)
     ? JSON.parse(fs.readFileSync(seoOverridesPath, 'utf8'))
     : {};
+const editorialSummaries = JSON.parse(fs.readFileSync(path.join(rootDir, 'data', 'tarot-editorial-summaries.json'), 'utf8'));
 
 const majorArcana = new Set([
     'Blázen',
@@ -220,6 +221,7 @@ function buildRelatedCardLinks(relatedCards) {
         .map(([relatedName, relatedCard]) => {
             const relatedGroup = groupLabels[getCardGroup(relatedName)] || 'Tarot';
             return `<a class="tarot-related-card" href="/${escapeHtml(detailHref(relatedName))}">
+                        <img src="${escapeHtml(rootAssetPath(relatedCard.image))}" alt="" width="66" height="110" loading="lazy" decoding="async">
                         <span>${escapeHtml(relatedGroup)}</span>
                         <strong>${escapeHtml(relatedName)}</strong>
                         <small>${escapeHtml(relatedCard.meaning || '')}</small>
@@ -257,7 +259,7 @@ function buildDetailPage(name, card, relatedCards = []) {
     const image = card.image || 'img/tarot/tarot_placeholder.webp';
     const meaning = card.meaning || '';
     const seo = seoOverrides[name] || {};
-    const interpretation = seo.summary || card.interpretation || getFirstSentence(meaning);
+    const interpretation = seo.summary || editorialSummaries[name] || card.interpretation || getFirstSentence(meaning);
     const sentences = getSentences(interpretation, 4);
     const defaultAngles = getReadingAngles(group, name, meaning);
     const angles = {
@@ -382,15 +384,15 @@ function buildDetailPage(name, card, relatedCards = []) {
     <link rel="stylesheet" href="/fonts/local-fonts.css">
     <link rel="stylesheet" href="/css/style.v2.min.css?v=12">
     <link rel="stylesheet" href="/css/pages/tarot-meaning-hub.css">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=1">
     <script type="application/ld+json">
 ${jsonLd([articleSchema, breadcrumbSchema, faqSchema])}
     </script>
     <script src="/js/dist/analytics-init.js" defer></script>
     <script src="/js/dist/analytics.js?v=8" defer></script>
 </head>
-<body>
+<body class="atlas-page">
     <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
-    <div class="stars" aria-hidden="true"></div>
     <div id="header-placeholder"></div>
 
     <main id="main-content">
@@ -588,7 +590,17 @@ if (!cardsMarkerPattern.test(page) || !countPattern.test(page)) {
     throw new Error('tarot-vyznam-karet.html is missing generation markers.');
 }
 
-const nextPage = page
+// Idempotent migration of the maintained hub alongside generated details.
+function applyAtlasShell(html) {
+    let next = html.replace(/<body(?: class="([^"]*)")?>/, (_, classes = '') =>
+        `<body class="${[...new Set([...classes.split(/\s+/).filter(Boolean), 'atlas-page'])].join(' ')}">`);
+    next = next.replace(/\s*<div class="stars" aria-hidden="true"><\/div>/g, '');
+    if (!next.includes('href="/css/atlas-web.css?v=1"')) {
+        next = next.replace('</head>', '    <link rel="stylesheet" href="/css/atlas-web.css?v=1">\n</head>');
+    }
+    return next;
+}
+const nextPage = applyAtlasShell(page)
     .replace(
         cardsMarkerPattern,
         `<!-- TAROT_MEANING_CARDS_START -->\n${generatedCards}\n                    <!-- TAROT_MEANING_CARDS_END -->`

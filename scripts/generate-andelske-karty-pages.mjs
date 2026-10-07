@@ -10,6 +10,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { atlasShell } from './atlas-shell.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
@@ -170,7 +171,7 @@ function renderPage(card, cards, seoContent) {
         ]
     }, null, 2);
 
-    return `<!DOCTYPE html>
+    return atlasShell(`<!DOCTYPE html>
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
@@ -249,7 +250,7 @@ ${faqBlock}
     <script type="module" src="../js/dist/main.js?v=10"></script>
 </body>
 </html>
-`;
+`, 'atlas-content-page atlas-content-detail', 'atlas-content.css');
 }
 
 function updateHubLinks(cards) {

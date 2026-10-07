@@ -40,10 +40,36 @@ const PLAN_META = {
     }
 };
 
+const PUBLIC_MEMBERSHIP_META = {
+    name: 'Členství Mystické Hvězdy',
+    headline: 'Tarot včetně Keltského kříže, astrokartografie, horoskopy a osobní výklady v jednom členství.',
+    recommendedFor: 'Jedna měsíční varianta za 199 Kč po sedmidenní zkušební době.'
+};
+
+const LEGACY_PUBLIC_PLAN_IDS = new Set([
+    'osviceni',
+    'osviceni-rocne',
+    'pruvodce-rocne',
+    'vip',
+    'vip-majestrat'
+]);
+
+function normalizePublicPlanId(planId) {
+    if (typeof planId !== 'string' || planId.length === 0) return 'pruvodce';
+    if (LEGACY_PUBLIC_PLAN_IDS.has(planId) || planId.endsWith('-rocne') || planId.endsWith('-yearly')) {
+        return 'pruvodce';
+    }
+    return planId === 'pruvodce' ? planId : 'pruvodce';
+}
+
+function getPublicPlanMeta() {
+    return PUBLIC_MEMBERSHIP_META;
+}
+
 const FALLBACK_FEATURE_PLAN_MAP = {
     angel_card_deep: 'pruvodce',
     andelske_karty_hluboky_vhled: 'pruvodce',
-    astrocartography: 'osviceni',
+    astrocartography: 'pruvodce',
     crystal_ball_unlimited: 'pruvodce',
     daily_guidance: 'pruvodce',
     horoskopy: 'pruvodce',
@@ -68,7 +94,7 @@ const FALLBACK_FEATURE_PLAN_MAP = {
     shamanske_kolo_plne_cteni: 'pruvodce',
     tarot: 'pruvodce',
     tarot_multi_card: 'pruvodce',
-    tarot_celtic_cross: 'vip-majestrat',
+    tarot_celtic_cross: 'pruvodce',
     weekly_horoscope: 'pruvodce',
     mentor: 'pruvodce'
 };
@@ -119,80 +145,80 @@ const FEATURE_PREVIEW_DESTINATIONS = {
 };
 
 const CANCEL_DOWNSELL_PRODUCTS = {
-    osobni_mapa_2026: {
-        path: '/osobni-mapa.html',
-        label: 'Jednorázová Osobní mapa na 12 měsíců',
-        productId: 'osobni_mapa_2026'
+    relationship_tarot: {
+        path: '/vztahovy-vyklad.html',
+        label: 'Osobní vztahový výklad za 149 Kč bez účtu',
+        productId: 'relationship_tarot'
     }
 };
 
 const CANCEL_DOWNSELL_FEATURE_PRODUCTS = {
-    angel_card_deep: 'osobni_mapa_2026',
-    andelske_karty_hluboky_vhled: 'osobni_mapa_2026',
-    astrocartography: 'osobni_mapa_2026',
-    crystal_ball_unlimited: 'osobni_mapa_2026',
-    daily_guidance: 'osobni_mapa_2026',
-    horoskopy: 'osobni_mapa_2026',
-    hvezdny_mentor: 'osobni_mapa_2026',
-    journal_insights: 'osobni_mapa_2026',
-    kristalova_koule: 'osobni_mapa_2026',
-    medicine_wheel: 'osobni_mapa_2026',
-    mentor: 'osobni_mapa_2026',
-    minuly_zivot: 'osobni_mapa_2026',
-    monthly_horoscope: 'osobni_mapa_2026',
-    natal_chart: 'osobni_mapa_2026',
-    natalni_interpretace: 'osobni_mapa_2026',
-    numerologie_vyklad: 'osobni_mapa_2026',
-    numerology: 'osobni_mapa_2026',
-    partnerska_detail: 'osobni_mapa_2026',
-    past_life: 'osobni_mapa_2026',
-    ritual_memory: 'osobni_mapa_2026',
-    rituals: 'osobni_mapa_2026',
-    runes_deep_reading: 'osobni_mapa_2026',
-    runy_hluboky_vyklad: 'osobni_mapa_2026',
-    shamanske_kolo_plne_cteni: 'osobni_mapa_2026',
-    synastry: 'osobni_mapa_2026',
-    tarot: 'osobni_mapa_2026',
-    tarot_celtic_cross: 'osobni_mapa_2026',
-    tarot_multi_card: 'osobni_mapa_2026',
-    weekly_horoscope: 'osobni_mapa_2026'
+    angel_card_deep: 'relationship_tarot',
+    andelske_karty_hluboky_vhled: 'relationship_tarot',
+    astrocartography: 'relationship_tarot',
+    crystal_ball_unlimited: 'relationship_tarot',
+    daily_guidance: 'relationship_tarot',
+    horoskopy: 'relationship_tarot',
+    hvezdny_mentor: 'relationship_tarot',
+    journal_insights: 'relationship_tarot',
+    kristalova_koule: 'relationship_tarot',
+    medicine_wheel: 'relationship_tarot',
+    mentor: 'relationship_tarot',
+    minuly_zivot: 'relationship_tarot',
+    monthly_horoscope: 'relationship_tarot',
+    natal_chart: 'relationship_tarot',
+    natalni_interpretace: 'relationship_tarot',
+    numerologie_vyklad: 'relationship_tarot',
+    numerology: 'relationship_tarot',
+    partnerska_detail: 'relationship_tarot',
+    past_life: 'relationship_tarot',
+    ritual_memory: 'relationship_tarot',
+    rituals: 'relationship_tarot',
+    runes_deep_reading: 'relationship_tarot',
+    runy_hluboky_vyklad: 'relationship_tarot',
+    shamanske_kolo_plne_cteni: 'relationship_tarot',
+    synastry: 'relationship_tarot',
+    tarot: 'relationship_tarot',
+    tarot_celtic_cross: 'relationship_tarot',
+    tarot_multi_card: 'relationship_tarot',
+    weekly_horoscope: 'relationship_tarot'
 };
 
 const SOURCE_RECOMMENDATION_COPY = {
     annual_horoscope_email_day3: {
         eyebrow: 'Navazuje na Roční horoskop',
-        title: 'Roční výhled dal směr. Průvodce drží denní rytmus.',
-        text: 'Roční horoskop ukázal hlavní témata roku. Hvězdný Průvodce k tomu přidá denní a týdenní výklady, tarot a návrat k otázce: co z toho pro mě platí právě dnes?',
-        actionLabel: 'Ukázat plán Průvodce'
+        title: 'Roční výhled dal směr. Členství pomáhá držet denní rytmus.',
+        text: 'Roční horoskop ukázal hlavní témata roku. Členství Mystické Hvězdy k tomu přidá denní a týdenní výklady, tarot a návrat k otázce: co z toho pro mě platí právě dnes?',
+        actionLabel: 'Zobrazit členství'
     },
     annual_horoscope_success: {
         eyebrow: 'Další krok po Ročním horoskopu',
-        title: 'PDF dá velký směr. Průvodce pomáhá vracet se k němu každý den.',
-        text: 'Roční horoskop je jednorázový výhled. Hvězdný Průvodce z něj udělá pravidelnou oporu přes horoskopy, tarot, historii výkladů a osobní návratový rituál.',
-        actionLabel: 'Ukázat plán Průvodce'
+        title: 'PDF dá velký směr. Členství pomáhá vracet se k němu každý den.',
+        text: 'Roční horoskop je jednorázový výhled. Členství Mystické Hvězdy k němu přidá horoskopy, tarot a historii výkladů.',
+        actionLabel: 'Zobrazit členství'
     },
     personal_map_email_day3: {
         eyebrow: 'Navazuje na Osobn\u00ed mapu',
-        title: 'Mapa ti dala sm\u011br. Pr\u016fvodce pom\u016f\u017ee dr\u017eet rytmus.',
-        text: 'Osobn\u00ed mapa uk\u00e1zala hlavn\u00ed t\u00e9ma. Hv\u011bzdn\u00fd Pr\u016fvodce k tomu p\u0159id\u00e1 pravideln\u00e9 v\u00fdklady, historii a n\u00e1vrat k tomu, co \u0159e\u0161\u00ed\u0161 pr\u00e1v\u011b te\u010f.',
-        actionLabel: 'Uk\u00e1zat pl\u00e1n Pr\u016fvodce'
+        title: 'Mapa ti dala sm\u011br. \u010clenstv\u00ed pom\u016f\u017ee dr\u017eet rytmus.',
+        text: 'Osobn\u00ed mapa uk\u00e1zala hlavn\u00ed t\u00e9ma. \u010clenstv\u00ed Mystick\u00e9 Hv\u011bzdy k tomu p\u0159id\u00e1 pravideln\u00e9 v\u00fdklady a jejich historii.',
+        actionLabel: 'Zobrazit \u010dlenstv\u00ed'
     },
     personal_map_success: {
         eyebrow: 'Dal\u0161\u00ed krok po Osobn\u00ed map\u011b',
         title: 'Jednor\u00e1zov\u00fd vhled m\u00e1 navazovat na ka\u017edodenn\u00ed veden\u00ed.',
-        text: 'Hv\u011bzdn\u00fd Pr\u016fvodce odemkne hlub\u0161\u00ed v\u00fdklady a osobn\u00ed historii, aby se z mapy stal pravideln\u00fd kompas.',
-        actionLabel: 'Uk\u00e1zat pl\u00e1n Pr\u016fvodce'
+        text: '\u010clenstv\u00ed Mystick\u00e9 Hv\u011bzdy zp\u0159\u00edstupn\u00ed hlub\u0161\u00ed v\u00fdklady a jejich historii.',
+        actionLabel: 'Zobrazit \u010dlenstv\u00ed'
     },
     profile_memory: {
         eyebrow: 'Navazuje na Pam\u011b\u0165 ritu\u00e1lu',
-        title: 'Pam\u011b\u0165 uk\u00e1zala opakuj\u00edc\u00ed se t\u00e9ma. Pr\u016fvodce z n\u011bj ud\u011bl\u00e1 pravideln\u00fd sm\u011br.',
-        text: 'Profil u\u017e dr\u017e\u00ed v\u00fdklady, zp\u011btnou vazbu a reflexe pohromad\u011b. Hv\u011bzdn\u00fd Pr\u016fvodce p\u0159id\u00e1 hlub\u0161\u00ed v\u00fdklady a osobn\u00ed historii, aby se z opakovan\u00e9ho t\u00e9matu stal konkr\u00e9tn\u00ed dal\u0161\u00ed krok.',
+        title: 'Pam\u011b\u0165 uk\u00e1zala opakuj\u00edc\u00ed se t\u00e9ma. \u010clenstv\u00ed p\u0159id\u00e1 dal\u0161\u00ed souvislosti.',
+        text: 'Profil u\u017e dr\u017e\u00ed v\u00fdklady, zp\u011btnou vazbu a reflexe pohromad\u011b. \u010clenstv\u00ed Mystick\u00e9 Hv\u011bzdy p\u0159id\u00e1 hlub\u0161\u00ed v\u00fdklady a jejich historii.',
         actionLabel: 'Odemknout hlub\u0161\u00ed pam\u011b\u0165'
     },
     tarot_love_landing: {
         eyebrow: 'Navazuje na tarot na l\u00e1sku',
         title: 'Vztahov\u00e1 ot\u00e1zka pot\u0159ebuje souvislosti, ne jen rychlou odpov\u011b\u010f.',
-        text: 'Hv\u011bzdn\u00fd Pr\u016fvodce odemkne v\u00edcekartov\u00fd vztahov\u00fd tarot, historii v\u00fdklad\u016f a osobn\u00ed kontext, aby se z nejistoty stal konkr\u00e9tn\u00ed dal\u0161\u00ed krok.',
+        text: '\u010clenstv\u00ed Mystick\u00e9 Hv\u011bzdy zp\u0159\u00edstupn\u00ed v\u00edcekartov\u00fd vztahov\u00fd tarot a historii v\u00fdklad\u016f.',
         actionLabel: 'Odemknout vztahov\u00fd v\u00fdklad'
     }
 };
@@ -201,13 +227,13 @@ const FEATURE_RECOMMENDATION_COPY = {
     tarot_multi_card: {
         eyebrow: 'Navazuje na v\u00fdklad 3 karet',
         title: 'Jedna karta otev\u0159e t\u00e9ma. T\u0159i karty uk\u00e1\u017eou souvislosti.',
-        text: 'Hv\u011bzdn\u00fd Pr\u016fvodce odemkne cel\u00fd t\u0159\u00edkartov\u00fd v\u00fdklad s minulost\u00ed, p\u0159\u00edtomnost\u00ed a nejbli\u017e\u0161\u00edm krokem, aby odpov\u011b\u010f nebyla jen pocit, ale praktick\u00fd sm\u011br.',
+        text: '\u010clenstv\u00ed Mystick\u00e9 Hv\u011bzdy zp\u0159\u00edstupn\u00ed cel\u00fd t\u0159\u00edkartov\u00fd v\u00fdklad s minulost\u00ed, p\u0159\u00edtomnost\u00ed a nejbli\u017e\u0161\u00edm krokem.',
         actionLabel: 'Odemknout v\u00fdklad 3 karet'
     },
     tarot_celtic_cross: {
         eyebrow: 'Navazuje na Keltsk\u00fd k\u0159\u00ed\u017e',
         title: 'Velk\u00e1 ot\u00e1zka pot\u0159ebuje v\u00edc ne\u017e rychlou kartu.',
-        text: 'VIP Majestr\u00e1t odemkne Keltsk\u00fd k\u0159\u00ed\u017e s deseti pozicemi a hlub\u0161\u00edm kontextem pro situace, kde rozhoduje nuance. Cena se zobraz\u00ed ve Stripe p\u0159ed potvrzen\u00edm.',
+        text: '\u010clenstv\u00ed Mystick\u00e9 Hv\u011bzdy zp\u0159\u00edstupn\u00ed Keltsk\u00fd k\u0159\u00ed\u017e s deseti pozicemi a hlub\u0161\u00edm kontextem pro situace, kde rozhoduje nuance.',
         actionLabel: 'Odemknout Keltsk\u00fd k\u0159\u00ed\u017e'
     }
 };
@@ -301,18 +327,17 @@ function updatePricingCopy() {
     const heroSubtitle = document.querySelector('.section--hero .hero__subtitle');
     const heroTrustBadge = document.querySelector('.hero__trust-badge');
     const guideCard = document.querySelector('[data-price-plan="pruvodce"]')?.closest('.card--pricing');
-    const advancedCard = document.querySelector('[data-price-plan="osviceni"]')?.closest('.card--pricing');
 
     if (heroTitle) {
-        heroTitle.innerHTML = 'Hlubší výklady. <span class="text-gradient">Všechny na jednom místě.</span>';
+        heroTitle.innerHTML = 'Jedno členství. <span class="text-gradient">Všechny hlubší výklady.</span>';
     }
 
     if (heroSubtitle) {
-        heroSubtitle.textContent = 'Tarot, horoskopy, natální karta, numerologie i historie tvých výkladů. Začni 7 dní za 0 Kč a pokračuj jen tehdy, když ti členství dává smysl.';
+        heroSubtitle.textContent = 'Tarot včetně Keltského kříže, astrokartografie, horoskopy, natální karta, numerologie i historie tvých výkladů. Začni 7 dní za 0 Kč a pokračuj jen tehdy, když ti členství dává smysl.';
     }
 
     if (heroTrustBadge) {
-        heroTrustBadge.innerHTML = '<span>Dnes 0 Kč</span><span aria-hidden="true">•</span><span>potom od 199 Kč/měsíc</span><span aria-hidden="true">•</span><span>zrušíš kdykoliv v profilu</span>';
+        heroTrustBadge.innerHTML = '<span>Dnes 0 Kč</span><span aria-hidden="true">•</span><span>potom 199 Kč/měsíc</span><span aria-hidden="true">•</span><span>zrušíš kdykoliv v profilu</span>';
     }
 
     if (guideCard) {
@@ -320,22 +345,12 @@ function updatePricingCopy() {
         const guideFeatures = guideCard.querySelectorAll('.card__features li');
         const guideCta = guideCard.querySelector('.plan-checkout-btn');
 
-        if (guideDescription) guideDescription.textContent = 'Vše podstatné pro osobní vedení a návrat k tomu, co právě řešíš.';
-        setFeatureText(guideFeatures[0], 'Neomezený tarot a další hlubší výklady');
-        setFeatureText(guideFeatures[1], 'Týdenní a měsíční horoskopy');
-        setFeatureText(guideFeatures[2], 'Výklad natální karty a numerologie');
-        setFeatureText(guideFeatures[3], 'Historie, souvislosti a osobní návratový rituál');
+        if (guideDescription) guideDescription.textContent = 'Členské nástroje, pokročilé výklady a jejich historie v jednom přístupu.';
+        setFeatureText(guideFeatures[0], 'Tarotové výklady včetně Keltského kříže');
+        setFeatureText(guideFeatures[1], 'Astrokartografie, natální karta a numerologie');
+        setFeatureText(guideFeatures[2], 'Týdenní a měsíční horoskopy');
+        setFeatureText(guideFeatures[3], 'Historie výkladů a souvislosti v čase');
         if (guideCta) guideCta.textContent = 'Začít 7 dní za 0 Kč';
-    }
-
-    if (advancedCard) {
-        const advancedDescription = advancedCard.querySelector('.card__text');
-        const advancedFeatures = advancedCard.querySelectorAll('.card__features li');
-
-        if (advancedDescription) advancedDescription.textContent = 'Pro chvíli, kdy už využiješ i astrokartografii a další pokročilé vrstvy.';
-        setFeatureText(advancedFeatures[0], 'Vše z Hvězdného Průvodce');
-        setFeatureText(advancedFeatures[1], 'Astrokartografie a pokročilé analýzy');
-        setFeatureText(advancedFeatures[2], 'Přednostní přístup k novým funkcím');
     }
 }
 
@@ -355,8 +370,9 @@ function setToggleState(billing) {
 }
 
 function setPrices(billing = currentBilling) {
+    billing = 'monthly';
     currentBilling = billing;
-    const config = priceConfig[billing] || priceConfig.monthly;
+    const config = priceConfig.monthly;
 
     document.querySelectorAll('[data-price-plan]').forEach((element) => {
         const plan = element.dataset.pricePlan;
@@ -389,8 +405,7 @@ function setPrices(billing = currentBilling) {
             checkoutButton.setAttribute('href', `${checkoutUrl.pathname}${checkoutUrl.search}${checkoutUrl.hash}`);
         }
         if (trialNote) {
-            const renewalPeriod = billing === 'yearly' ? 'rok' : 'měsíc';
-            trialNote.textContent = `Dnes 0 Kč. Po 7 dnech ${planConfig.amount}/${renewalPeriod}, pokud předtím nezrušíš.`;
+            trialNote.textContent = `Dnes 0 Kč. Po 7 dnech ${planConfig.amount}/měsíc, pokud předtím nezrušíš.`;
         }
     });
 
@@ -533,7 +548,7 @@ function resolveCheckoutContext() {
     const feature = params.get('feature') || pendingContext.feature || recoveryContext?.feature || null;
     const explicitPlan = params.get('plan') || pendingContext.planId || recoveryContext?.recommendedPlan || null;
     const source = params.get('source') || pendingContext.source || recoveryContext?.source || 'pricing_page';
-    const recommendedPlan = explicitPlan || featurePlanMap[feature] || 'pruvodce';
+    const recommendedPlan = normalizePublicPlanId(explicitPlan || featurePlanMap[feature] || 'pruvodce');
     const metadata = resolveCheckoutMetadata(params, pendingContext, recoveryContext);
 
     return {
@@ -583,8 +598,8 @@ function getCancelDownsellDestination(context) {
 }
 
 function getCancelDownsellProduct(context) {
-    const productId = CANCEL_DOWNSELL_FEATURE_PRODUCTS[context.feature] || 'osobni_mapa_2026';
-    return CANCEL_DOWNSELL_PRODUCTS[productId] || CANCEL_DOWNSELL_PRODUCTS.osobni_mapa_2026;
+    const productId = CANCEL_DOWNSELL_FEATURE_PRODUCTS[context.feature] || 'relationship_tarot';
+    return CANCEL_DOWNSELL_PRODUCTS[productId] || CANCEL_DOWNSELL_PRODUCTS.relationship_tarot;
 }
 
 function getRecoveryPreviewLabel(label) {
@@ -673,7 +688,7 @@ function renderCheckoutCancelRecovery(context, paymentState = 'cancel') {
     const existing = document.getElementById('pricing-cancel-recovery');
     if (existing) existing.remove();
 
-    const planMeta = PLAN_META[context.recommendedPlan] || PLAN_META.pruvodce;
+    const planMeta = getPublicPlanMeta();
     const previewDestination = getPreviewDestination(context);
     const downsellProduct = getCancelDownsellDestination(context);
     const isFailure = paymentState === 'failure';
@@ -832,8 +847,7 @@ function renderRecommendationBanner(context) {
     // feature, campaign or interrupted checkout.
     if (!shouldShowPreviewDestination(context)) return;
 
-    const planMeta = PLAN_META[context.recommendedPlan];
-    if (!planMeta) return;
+    const planMeta = getPublicPlanMeta();
 
     const banner = document.createElement('div');
     const hasVisiblePlanCard = !!document.querySelector(`.plan-checkout-btn[data-plan="${context.recommendedPlan}"]`);
@@ -900,7 +914,7 @@ function highlightPricingCard(card) {
 }
 
 function highlightRecommendedPlan(planId) {
-    if (!planId) return false;
+    planId = normalizePublicPlanId(planId);
 
     const button = document.querySelector(`.plan-checkout-btn[data-plan="${planId}"]`);
     const card = button?.closest('.card--pricing');
@@ -909,11 +923,11 @@ function highlightRecommendedPlan(planId) {
 
 function resolveBillingIntervalFromPlan(planId) {
     if (typeof planId !== 'string' || planId.length === 0) return null;
-    return planId.endsWith('-rocne') ? 'yearly' : 'monthly';
+    return 'monthly';
 }
 
 function resolveDisplayedPlanId(planKey) {
-    return priceConfig[currentBilling]?.[planKey]?.planId || priceConfig.monthly?.[planKey]?.planId || planKey;
+    return normalizePublicPlanId(priceConfig.monthly?.[planKey]?.planId || planKey);
 }
 
 function highlightFreePlan() {
@@ -927,7 +941,7 @@ function highlightOneTimeProducts() {
     const addon = document.querySelector('.pricing-addon');
     if (!addon) return false;
 
-    const entryProduct = addon.querySelector('[data-product="osobni_mapa_2026"]')
+    const entryProduct = addon.querySelector('[data-product="relationship_tarot"]')
         || addon.querySelector('.pricing-addon__product');
 
     addon.classList.add('pricing-addon--recommended');
@@ -938,7 +952,8 @@ function highlightOneTimeProducts() {
 
 function startRecommendedCheckout(planId, context) {
     clearRecoveryContext();
-    const resolvedBillingInterval = resolveBillingIntervalFromPlan(planId) || currentBilling;
+    const normalizedPlanId = normalizePublicPlanId(planId);
+    const resolvedBillingInterval = 'monthly';
     const checkoutContext = {
         source: context.source || 'pricing_recommendation',
         feature: context.feature || null,
@@ -954,14 +969,14 @@ function startRecommendedCheckout(planId, context) {
     };
 
     if (window.Auth?.startPlanCheckout) {
-        window.Auth.startPlanCheckout(planId, checkoutContext);
+        window.Auth.startPlanCheckout(normalizedPlanId, checkoutContext);
         return;
     }
 
     const authUrl = new URL('/prihlaseni.html', window.location.origin);
     authUrl.searchParams.set('mode', 'register');
     authUrl.searchParams.set('redirect', '/cenik.html');
-    authUrl.searchParams.set('plan', planId);
+    authUrl.searchParams.set('plan', normalizedPlanId);
     authUrl.searchParams.set('source', checkoutContext.source);
     if (checkoutContext.feature) authUrl.searchParams.set('feature', checkoutContext.feature);
     authUrl.searchParams.set('billing_interval', checkoutContext.billing_interval);
@@ -1189,8 +1204,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await loadPlanManifest();
     const context = resolveCheckoutContext();
-    const initialBilling = resolveBillingIntervalFromPlan(context.recommendedPlan) || 'monthly';
-    setPrices(initialBilling);
+    setPrices('monthly');
     updatePricingCopy();
 
     showPaymentReturnState(context);
@@ -1201,22 +1215,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         feature: context.feature || null,
         ...(context.metadata || {})
     });
-
-    const toggleMonthly = document.getElementById('toggle-monthly');
-    const toggleYearly = document.getElementById('toggle-yearly');
-
-    toggleMonthly?.addEventListener('click', () => {
-        setPrices('monthly');
-        window.MH_ANALYTICS?.trackEvent?.('pricing_billing_toggled', { billing_interval: 'monthly' });
-    });
-
-    if (toggleYearly) {
-        toggleYearly.title = 'Roční platba sníží cenu přibližně o dva měsíce';
-        toggleYearly.addEventListener('click', () => {
-            setPrices('yearly');
-            window.MH_ANALYTICS?.trackEvent?.('pricing_billing_toggled', { billing_interval: 'yearly' });
-        });
-    }
 
     bindCheckoutButtons(context);
     bindProductLinks(context);

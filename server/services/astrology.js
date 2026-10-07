@@ -1635,22 +1635,23 @@ export function formatAstrocartographyForPrompt(insights) {
 // Generate cache key based on sign, period, and date
 export function getHoroscopeCacheKey(sign, period, now = new Date()) {
     const signNormalized = sign.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const pragueDateParts = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Europe/Prague',
+        year: 'numeric', month: '2-digit', day: '2-digit'
+    }).formatToParts(now);
+    const pragueDate = Object.fromEntries(pragueDateParts.map(({ type, value }) => [type, value]));
 
     if (period === 'weekly') {
-        // ISO week number
-        const startOfYear = new Date(now.getFullYear(), 0, 1);
-        const days = Math.floor((now - startOfYear) / (24 * 60 * 60 * 1000));
-        const week = Math.ceil((days + startOfYear.getDay() + 1) / 7);
-        return `${signNormalized}_weekly_${now.getFullYear()}-W${String(week).padStart(2, '0')}_v3`;
+        const day = new Date(Date.UTC(Number(pragueDate.year), Number(pragueDate.month) - 1, Number(pragueDate.day)));
+        day.setUTCDate(day.getUTCDate() + 4 - (day.getUTCDay() || 7));
+        const weekYear = day.getUTCFullYear();
+        const week = Math.ceil((((day - new Date(Date.UTC(weekYear, 0, 1))) / 86400000) + 1) / 7);
+        return `${signNormalized}_weekly_${weekYear}-W${String(week).padStart(2, '0')}_v3`;
     } else if (period === 'monthly') {
-        return `${signNormalized}_monthly_${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}_v3`;
+        return `${signNormalized}_monthly_${pragueDate.year}-${pragueDate.month}_v3`;
     } else {
         // Daily (default)
-        const parts = new Intl.DateTimeFormat('en-GB', {
-            timeZone: 'Europe/Prague', year: 'numeric', month: '2-digit', day: '2-digit'
-        }).formatToParts(now);
-        const date = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${signNormalized}_daily_${date.year}-${date.month}-${date.day}_v3`;
+        return `${signNormalized}_daily_${pragueDate.year}-${pragueDate.month}-${pragueDate.day}_v3`;
     }
 }
 

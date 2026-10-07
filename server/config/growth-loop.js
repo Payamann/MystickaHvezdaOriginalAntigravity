@@ -317,8 +317,7 @@ export const FEATURE_CATALOG = Object.freeze({
         cluster: 'tarot',
         primaryPath: '/tarot-keltsky-kriz.html',
         freeValue: 'Understand when the Celtic cross is useful.',
-        premiumValue: 'Unlock the full deep spread.',
-        recommendedPlanId: 'vip-majestrat'
+        premiumValue: 'Unlock the full deep spread.'
     }),
     andelske_karty_hluboky_vhled: feature({
         id: 'andelske_karty_hluboky_vhled',
@@ -462,8 +461,7 @@ export const FEATURE_CATALOG = Object.freeze({
         cluster: 'natal',
         primaryPath: '/astro-mapa.html',
         freeValue: 'Preview places and map context.',
-        premiumValue: 'Unlock advanced location interpretation.',
-        recommendedPlanId: 'osviceni'
+        premiumValue: 'Unlock advanced location interpretation.'
     }),
     partnerska_detail: feature({
         id: 'partnerska_detail',

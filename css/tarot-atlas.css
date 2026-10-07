@@ -1,0 +1,44 @@
+/* Tarotový atlas: shared daily-card surface, without changing other tools. */
+html:has(body.page-tarot-daily),html:has(body.page-tarot-daily)::before { background:#0b1929 !important; }
+body.page-tarot-daily { --color-mystic-gold:#d0b17c; --color-mystic-gold-light:#e1cba5; color:#e9e3d7; background:#0b1929; }
+body.page-tarot-daily .stars { display:none; }
+body.page-tarot-daily :is(.header,.header--scrolled,.nav__list,.nav__dropdown,.footer) { background:#0b1929 !important; }
+body.page-tarot-daily .section { background:transparent; padding-block:56px; }
+body.page-tarot-daily .tarot-daily-hero { padding-top:130px; background:radial-gradient(ellipse at 80% 40%,#28485c55,transparent 65%); }
+body.page-tarot-daily .section__title { font-weight:400; color:#e9e3d7; text-shadow:none; }
+body.page-tarot-daily .section__badge { color:#d0b17c; letter-spacing:.12em; }
+body.page-tarot-daily .section__text { color:#c3c9cb; }
+/* Keep editorial headings close to the content they introduce. */
+body.page-tarot-daily .section__header { margin-bottom:32px; }
+body.page-tarot-daily .section__header .section__title { margin-bottom:20px; }
+body.page-tarot-daily .footer__grid { margin-bottom:48px; }
+body.page-tarot-daily .footer__bottom { flex-wrap:wrap; gap:16px 24px; }
+body.page-tarot-daily .btn,.home-tarot-daily .btn { min-height:44px; border-radius:3px; text-transform:none; letter-spacing:.02em; box-shadow:none; }
+body.page-tarot-daily .btn--primary,.home-tarot-daily .btn--primary { background:#bd9b65; color:#142032; border-color:#bd9b65; }
+body.page-tarot-daily :is(.btn--secondary,.btn--ghost) { background:transparent; border:1px solid #bd9b6566; color:#e9e3d7; }
+body.page-tarot-daily :is(a,button,input,select):focus-visible,.home-tarot-daily :is(a,button):focus-visible { outline:2px solid #d0b17c; outline-offset:4px; }
+body.page-tarot-daily .tarot-daily-trust span { border:0; background:none; padding:0 12px 0 0; }
+body.page-tarot-daily :is(.tarot-daily-tool__panel,.tarot-daily-card-result,.tarot-daily-primer__card,.tarot-daily-steps article,.tarot-daily-intent-card,.tarot-daily-faq__grid article,.mh-email-bridge) { background:#102638; border-color:#bd9b6544; border-radius:4px; box-shadow:none; }
+body.page-tarot-daily .tarot-daily-card-result__advice { border-color:#bd9b65; background:#bd9b650d; }
+.home-tarot-daily { background:#102638; color:#e9e3d7; padding:36px; border:1px solid #bd9b6544; border-radius:4px; margin-top:40px; }
+.home-tarot-daily .tarot-daily-tool__panel { padding:0; background:none; border:0; box-shadow:none; }
+.home-tarot-daily .tarot-daily-tool__copy .section__title { font-weight:400; font-size:clamp(26px,3vw,38px); text-align:left; color:#e9e3d7; }
+.home-tarot-daily .section__text { color:#c3c9cb; text-align:left; }
+.home-tarot-daily .section__badge { color:#d0b17c; }
+.home-tarot-daily .tarot-daily-card-result { background:none; border:0; box-shadow:none; padding:0; }
+.home-tarot-daily .tarot-daily-card-result__advice { border-color:#bd9b65; background:#bd9b650d; }
+.home-tarot-daily .tarot-daily-card-result__actions a:not(.btn--primary) { color:#e9e3d7; }
+.home-tarot-daily .tarot-daily-card-result__actions .btn--primary { color:#142032; }
+.home-tarot-daily .tarot-daily-card-result__date { color:#d0b17c; }
+@media(max-width:992px) {
+ body.page-tarot-daily .nav__list { display:none !important; position:absolute; top:100%; left:0; right:0; flex-direction:column; padding:16px 24px; max-height:70vh; overflow-y:auto; }
+ body.page-tarot-daily .nav__list.open { display:flex !important; }
+}
+@media(max-width:700px) {
+ body.page-tarot-daily .footer__grid { grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:28px 20px; }
+ body.page-tarot-daily .footer__brand { grid-column:1 / -1; }
+ body.page-tarot-daily .footer__links a { min-height:44px; display:flex; align-items:center; }
+ body.page-tarot-daily .tarot-daily-hero { padding-top:100px; }
+ body.page-tarot-daily .section { padding-bottom:40px; }
+ .home-tarot-daily { padding:24px 18px; }
+}

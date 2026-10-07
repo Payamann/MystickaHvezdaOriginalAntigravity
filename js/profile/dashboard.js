@@ -267,7 +267,7 @@ const PREMIUM_ACTIONS = {
         {
             href: '/tarot-keltsky-kriz.html',
             title: 'Otevřít Keltský kříž',
-            description: 'Vyzkoušejte pokročilý tarotový výklad, který je součástí VIP plánu.'
+            description: 'Vyzkoušejte pokročilý tarotový výklad, který je součástí členství.'
         },
         {
             href: '/profil.html#tab-settings',

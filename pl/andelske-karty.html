@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="Wylosuj swoją Anielską Kartę na dziś. Delikatne anielskie wsparcie i przesłanie światła dla Twojej duszy.">
     <meta name="keywords" content="karty anielskie, karta dnia, anioły, wróżby, wsparcie duchowe">
-    <meta name="theme-color" content="#0a0a1a">
+    <meta name="theme-color" content="#0b1929">
 
     <meta property="og:type" content="website">
     <meta property="og:title" content="Anielska Karta Dnia | Mistyczna Gwiazda">
@@ -28,14 +28,16 @@
     <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Czy karta anielska dnia jest darmowa?", "acceptedAnswer": {"@type": "Answer", "text": "Tak, jedną kartę możesz pociągnąć każdego dnia za darmo i bez rejestracji."}}, {"@type": "Question", "name": "Czym różnią się karty anielskie od tarota?", "acceptedAnswer": {"@type": "Answer", "text": "Karty anielskie wspierają i są łagodne — nie konfrontują, lecz dodają otuchy. Tarot idzie głębiej i nazywa także cienie sytuacji."}}, {"@type": "Question", "name": "Dlaczego mogę ciągnąć tylko raz dziennie?", "acceptedAnswer": {"@type": "Answer", "text": "Jedna karta dziennie ma większą wagę. Dostajesz jedno przesłanie, z którym możesz świadomie pracować przez cały dzień."}}, {"@type": "Question", "name": "Co z kartą, która do mnie nie pasuje?", "acceptedAnswer": {"@type": "Answer", "text": "Pozwól jej popracować. Anielskie przesłania bywają subtelne i często odsłaniają się dopiero w sytuacji, która nadejdzie w ciągu dnia."}}]}</script>
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Anielska Karta Dnia | Mistyczna Gwiazda">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://www.mystickahvezda.cz/img/search-preview/angels-pl.webp">
+<meta property="og:image:alt" content="Anielska Karta Dnia | Mistyczna Gwiazda">
 <meta name="twitter:image:alt" content="Anielska Karta Dnia | Mistyczna Gwiazda">
+
+    <link rel="stylesheet" href="/css/atlas-web.css?v=1">
+    <link rel="stylesheet" href="/css/atlas-remaining.css?v=1">
 </head>
 
-<body>
-    <div class="stars" aria-hidden="true"></div>
+<body class="atlas-page atlas-remaining-page atlas-language-page">
     <div id="header-placeholder"></div>
 
     <main id="main-content">
@@ -46,26 +48,9 @@
                 </h1>
                 <p class="hero__subtitle">Przesłania miłości i nadziei przewodników niebieskich.</p>
 
-                <div class="angel-card-container mb-xl" id="angel-card-draw">
-                    <div class="angel-card-inner">
-                        <div class="angel-card-front">
-                            <img src="../img/angel-card-back.webp" alt="Rewers karty">
-                        </div>
-                        <div class="angel-card-back" id="angel-result-card">
-                            <!-- Dynamic Content -->
-                        </div>
-                    </div>
-                </div>
-
-                <div id="angel-interpretation" class="card mt-xl mh-inline-f84c7568ce">
-                    <h3 id="card-name" class="mh-inline-76c98785d7">---</h3>
-                    <p id="card-message" class="mh-inline-f942cac2fb"></p>
-                </div>
-
-                <div class="mt-xl">
-                    <button class="btn btn--primary btn--lg" id="draw-btn">Wylosuj Kartę</button>
-                    <button class="btn btn--secondary btn--lg mh-inline-4e8480f4ea" id="next-btn">Pokaż kolejną kartę</button>
-                </div>
+                <figure class="atlas-angel-preview"><img src="/img/atlas/angels-v1/back.webp" width="600" height="1000" alt="Rewers nowych kart anielskich"></figure>
+                <p>Nowy malowany zestaw. Losowanie karty i jej przesłanie są na razie dostępne po czesku.</p>
+                <a href="/andelske-karty.html?source=pl_angel_landing" class="btn btn--primary btn--lg">Otwórz karty anielskie po czesku</a>
             </div>
         </section>
         <!-- LOCALE-DEPTH:START -->
@@ -117,7 +102,6 @@
     <script src="../js/dist/api-config.js" defer></script>
     <script src="../js/dist/templates.js" defer></script>
     <script src="../js/dist/components.js" defer></script>
-    <script src="../js/dist/angel-cards.js" defer></script>
     <script type="module" src="../js/dist/main.js"></script>
 </body>
 </html>

@@ -370,7 +370,8 @@ describe('manual script guardrails', () => {
         expect(source).not.toContain('callClaude(');
         expect(source).not.toContain('saveCachedHoroscope(');
         expect(source).toContain('Public crawlable GET routes must never initiate paid AI requests.');
-        expect(source).toContain('buildUnavailableHoroscopePage()');
+        expect(source).toContain('function buildUnavailableHoroscopePage()');
+        expect(source.match(/parsed = buildUnavailableHoroscopePage\(\);/g)).toHaveLength(2);
     });
 
     test('production background jobs handle process and promise failures locally', () => {

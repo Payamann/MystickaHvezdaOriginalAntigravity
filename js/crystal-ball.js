@@ -6,12 +6,44 @@
 let questionHistory = [];
 const COOLDOWN_SECONDS = 10;
 const CRYSTAL_DAILY_LIMIT = 3;
+const CRYSTAL_UI_COPY = {
+    cs: {
+        cooldown: seconds => `Koule čerpá energii (${seconds}s)`,
+        ask: 'Zeptat se koule',
+        limitTitle: 'Limit dosažen',
+        anonymousLimit: 'Dnešní ukázky zdarma jsou vyčerpané. Další odpovědi jsou součástí členství a podléhají provozním limitům.',
+        questionTooLongTitle: 'Příliš dlouhá',
+        questionTooLong: 'Otázka je příliš dlouhá. Prosím, zkraťte ji.',
+        favorite: 'Přidat do oblíbených',
+        registrationTitle: 'První otázka zdarma využita',
+        registrationMessage: 'Zaregistruj se zdarma a ptej se dál — účet zdarma dává 3 otázky denně.',
+        memberLimit: 'Ve členství můžeš pokračovat v rámci provozních limitů.',
+        silent: 'Hvězdy mlčí...',
+        disconnected: 'Spojení přerušeno.'
+    },
+    sk: {
+        cooldown: seconds => `Guľa čerpá energiu (${seconds}s)`,
+        ask: 'Opýtať sa gule',
+        limitTitle: 'Limit dosiahnutý',
+        anonymousLimit: 'Dnešné ukážky zadarmo sú vyčerpané. Ďalšie odpovede sú súčasťou členstva a podliehajú prevádzkovým limitom.',
+        questionTooLongTitle: 'Príliš dlhá otázka',
+        questionTooLong: 'Otázka je príliš dlhá. Prosím, skráť ju.',
+        favorite: 'Pridať medzi obľúbené',
+        registrationTitle: 'Prvá otázka zadarmo využitá',
+        registrationMessage: 'Zaregistruj sa zadarmo a pýtaj sa ďalej — bezplatný účet ponúka 3 otázky denne.',
+        memberLimit: 'V členstve môžeš pokračovať v rámci prevádzkových limitov.',
+        silent: 'Hviezdy mlčia...',
+        disconnected: 'Spojenie bolo prerušené.'
+    }
+};
 
 document.addEventListener('DOMContentLoaded', () => {
     initCrystalBall();
 });
 
 function initCrystalBall() {
+    const locale = document.documentElement.lang.toLowerCase().startsWith('sk') ? 'sk' : 'cs';
+    const copy = CRYSTAL_UI_COPY[locale];
     const ballContainer = document.getElementById('crystal-ball');
     // Note: 'answer' ID is now below the ball in the HTML update
     const answerContainer = document.getElementById('answer-container');
@@ -108,7 +140,7 @@ function initCrystalBall() {
         if (remaining > 0) {
             if (askBtn) {
                 askBtn.disabled = true;
-                askBtn.innerText = `Koule čerpá energii (${remaining}s)`;
+                askBtn.innerText = copy.cooldown(remaining);
                 askBtn.classList.add('crystal-action--cooldown');
             }
             if (ballContainer) ballContainer.classList.add('ball-container--cooldown');
@@ -119,7 +151,7 @@ function initCrystalBall() {
         } else {
             if (askBtn) {
                 askBtn.disabled = false;
-                askBtn.innerText = 'Zeptat se koule';
+                askBtn.innerText = copy.ask;
                 askBtn.classList.remove('crystal-action--cooldown');
             }
             if (ballContainer) ballContainer.classList.remove('ball-container--cooldown');
@@ -135,7 +167,7 @@ function initCrystalBall() {
         const isLoggedIn = Boolean(window.Auth?.isLoggedIn?.());
 
         if (!isLoggedIn && getLocalDailyUsage() >= CRYSTAL_DAILY_LIMIT) {
-            window.Auth?.showToast?.('Limit dosažen', 'Dnešní ukázky zdarma jsou vyčerpané. Pro neomezené odpovědi pokračuj na Premium.', 'info');
+            window.Auth?.showToast?.(copy.limitTitle, copy.anonymousLimit, 'info');
             startCrystalCheckout('crystal_ball_limit_gate', 'register');
             return;
         }
@@ -146,7 +178,7 @@ function initCrystalBall() {
         if (isThinking || !question.trim()) return;
 
         if (question.length > 200) {
-            window.Auth?.showToast?.('Příliš dlouhá', 'Otázka je příliš dlouhá. Prosím, zkraťte ji.', 'info');
+            window.Auth?.showToast?.(copy.questionTooLongTitle, copy.questionTooLong, 'info');
             return;
         }
 
@@ -216,7 +248,7 @@ function initCrystalBall() {
                         favoriteBtn.className = 'text-center favorite-reading-action';
                         favoriteBtn.innerHTML = `
                             <button id="favorite-crystal-btn" class="btn btn--glass favorite-reading-action__button">
-                                <span class="favorite-icon">⭐</span> Přidat do oblíbených
+                                <span class="favorite-icon">⭐</span> ${copy.favorite}
                             </button>
                         `;
                         answerContainer.appendChild(favoriteBtn);
@@ -231,7 +263,7 @@ function initCrystalBall() {
                 if (data.code === 'REGISTRATION_REQUIRED') {
                     // Anonymní vyčerpal free otázku — pošli na registraci zdarma, ne do premium checkoutu.
                     if (answerContainer) answerContainer.classList.remove('visible');
-                    window.Auth?.showToast?.('První otázka zdarma využita', 'Zaregistruj se zdarma a ptej se dál — účet zdarma dává 3 otázky denně.', 'info');
+                    window.Auth?.showToast?.(copy.registrationTitle, copy.registrationMessage, 'info');
                     window.MH_ANALYTICS?.trackCTA?.('crystal_ball_register_gate', { feature: 'kristalova_koule' });
                     const backTo = encodeURIComponent(window.location.pathname);
                     setTimeout(() => {
@@ -239,11 +271,11 @@ function initCrystalBall() {
                     }, 1600);
                 } else if (response.status === 402 || response.status === 403 || (data.error && data.error.toLowerCase().includes('limit'))) {
                     if (answerContainer) answerContainer.classList.remove('visible');
-                    window.Auth?.showToast?.('Limit dosažen', 'Chceš neomezené odpovědi? Aktivuj si Hvězdného Průvodce.', 'info');
+                    window.Auth?.showToast?.(copy.limitTitle, copy.memberLimit, 'info');
                     startCrystalCheckout('crystal_ball_limit_gate', 'register');
                 } else {
                     if (answerContainer) answerContainer.classList.add('visible');
-                    if (answerText) answerText.textContent = data.error || 'Hvězdy mlčí...';
+                    if (answerText) answerText.textContent = data.error || copy.silent;
                 }
             }
 
@@ -251,7 +283,7 @@ function initCrystalBall() {
             console.error('Oracle Error:', error);
             ballContainer.classList.remove('shaking');
             if (answerContainer) answerContainer.classList.add('visible');
-            if (answerText) answerText.textContent = 'Spojení přerušeno.';
+            if (answerText) answerText.textContent = copy.disconnected;
         }
 
         // Show reset btn

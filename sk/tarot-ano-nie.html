@@ -6,7 +6,7 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🃏</text></svg>">
     <link rel="apple-touch-icon" href="../img/icon-192.webp">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#0a0a1a">
+    <meta name="theme-color" content="#0b1929">
 
     <title>Tarot áno nie zadarmo – jasná odpoveď z kariet hneď</title>
     <meta name="description" content="Máš otázku a chceš jasný smer? Polož ju kartám — tarot áno nie zadarmo a bez registrácie. Vytiahni kartu a získaj odpoveď áno, nie alebo ešte nie.">
@@ -40,14 +40,16 @@
     <script src="../js/dist/analytics-init.js" defer></script>
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Tarot áno nie zadarmo – jasná odpoveď z kariet hneď">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://www.mystickahvezda.cz/img/search-preview/tarot-sk.webp">
+<meta property="og:image:alt" content="Tarot áno nie zadarmo – jasná odpoveď z kariet hneď">
 <meta name="twitter:image:alt" content="Tarot áno nie zadarmo – jasná odpoveď z kariet hneď">
+
+    <link rel="stylesheet" href="/css/atlas-web.css?v=1">
+    <link rel="stylesheet" href="/css/atlas-remaining.css?v=1">
 </head>
 
-<body>
-    <div class="stars" aria-hidden="true"></div>
+<body class="atlas-page atlas-remaining-page atlas-language-page atlas-localized-yes-no">
     <div id="header-placeholder"></div>
 
     <main id="main-content">
@@ -66,48 +68,6 @@
                         placeholder="Napíš svoju otázku... (napr. Mám prijať túto ponuku?)" maxlength="200"
                         aria-label="Tvoja otázka">
                 </div>
-
-                <div class="tarot-yes-no-trust-strip" aria-label="Čo dostaneš v rýchlom tarote" data-animate>
-                    <div class="tarot-yes-no-trust-item">
-                        <strong>Zadarmo bez registrácie</strong>
-                        <span>Jedna karta dá rýchly smer bez čakania.</span>
-                    </div>
-                    <div class="tarot-yes-no-trust-item">
-                        <strong>Konkrétna otázka</strong>
-                        <span>Najlepšie funguje pre rozhodnutie, ktoré riešiš práve teraz.</span>
-                    </div>
-                    <div class="tarot-yes-no-trust-item">
-                        <strong>Hlbší výklad nadväzuje</strong>
-                        <span>Keď odpoveď nestačí, pokračuj viacerými kartami.</span>
-                    </div>
-                </div>
-
-                <div class="tarot-yes-no-query-strip" aria-label="Rýchle otázky pre tarot áno nie" data-animate>
-                    <strong>Hľadáš ano nie tarot, karty ano nie alebo odpoveď ano nie?</strong>
-                    <span>Ide o rovnaký rýchly princíp: položíš jednu jasnú otázku, vyberieš kartu a výsledok si môžeš uložiť do Denníka výkladov.</span>
-                </div>
-
-                <section class="tarot-yes-no-intent-guide" aria-labelledby="tarot-yes-no-intent-guide-title" data-animate>
-                    <div>
-                        <span class="section__badge">Ako sa pýtať</span>
-                        <h2 id="tarot-yes-no-intent-guide-title">Najlepšia otázka je konkrétna a dnešná</h2>
-                        <p>Veštba áno nie funguje najlepšie, keď sa pýtaš na jeden krok, nie na celý život. Namiesto „bude vzťah dobrý?“ skús „mám sa dnes ozvať?“ alebo „mám prijať túto ponuku?“</p>
-                    </div>
-                    <div class="tarot-yes-no-intent-steps" aria-label="Postup pre odpoveď áno nie">
-                        <div>
-                            <strong>1. Polož jednu vetu</strong>
-                            <span>Otázka má smerovať k odpovedi áno, nie alebo ešte nie.</span>
-                        </div>
-                        <div>
-                            <strong>2. Vyber jednu kartu</strong>
-                            <span>Nepreklikávaj. Prvá voľba je pre tento typ výkladu najčistejšia.</span>
-                        </div>
-                        <div>
-                            <strong>3. Ulož odpoveď</strong>
-                            <span>Denník ukáže, či sa symbol opakuje a ako sa tvoje otázky menia.</span>
-                        </div>
-                    </div>
-                </section>
 
                 <!-- Karty -->
                 <div class="cards-area" id="cards-area" aria-label="Tarotové karty — vyber jednu">
@@ -130,6 +90,21 @@
                     <div class="tarot-card" data-index="4" role="button" aria-label="Karta 5">
                         <div class="card-back card-face"></div>
                         <div class="card-front card-face"></div>
+                    </div>
+                </div>
+
+                <div class="tarot-yes-no-trust-strip" aria-label="Čo dostaneš v rýchlom tarote" data-animate>
+                    <div class="tarot-yes-no-trust-item">
+                        <strong>Zadarmo bez registrácie</strong>
+                        <span>Jedna karta dá rýchly smer bez čakania.</span>
+                    </div>
+                    <div class="tarot-yes-no-trust-item">
+                        <strong>Konkrétna otázka</strong>
+                        <span>Najlepšie funguje pre rozhodnutie, ktoré riešiš práve teraz.</span>
+                    </div>
+                    <div class="tarot-yes-no-trust-item">
+                        <strong>Hlbší výklad nadväzuje</strong>
+                        <span>Keď odpoveď nestačí, pokračuj viacerými kartami.</span>
                     </div>
                 </div>
 
@@ -186,6 +161,33 @@
                         </a>
                     </div>
                     <p class="tarot-yes-no-next-alt">Alebo si polož ďalšiu otázku zadarmo: <a href="tarot.html?source=tarot_yes_no_intent_sk&amp;feature=tarot" data-tarot-yes-no-intent="one_card">jedna karta</a> · <a href="andelske-karty.html?source=tarot_yes_no_intent_sk&amp;feature=angel_card_deep" data-tarot-yes-no-intent="angel_card_deep">anjelské karty</a></p>
+                </section>
+
+                <div class="tarot-yes-no-query-strip" aria-label="Rýchle otázky pre tarot áno nie" data-animate>
+                    <strong>Hľadáš ano nie tarot, karty ano nie alebo odpoveď ano nie?</strong>
+                    <span>Ide o rovnaký rýchly princíp: položíš jednu jasnú otázku, vyberieš kartu a výsledok si môžeš uložiť do Denníka výkladov.</span>
+                </div>
+
+                <section class="tarot-yes-no-intent-guide" aria-labelledby="tarot-yes-no-intent-guide-title" data-animate>
+                    <div>
+                        <span class="section__badge">Ako sa pýtať</span>
+                        <h2 id="tarot-yes-no-intent-guide-title">Najlepšia otázka je konkrétna a dnešná</h2>
+                        <p>Veštba áno nie funguje najlepšie, keď sa pýtaš na jeden krok, nie na celý život. Namiesto „bude vzťah dobrý?“ skús „mám sa dnes ozvať?“ alebo „mám prijať túto ponuku?“</p>
+                    </div>
+                    <div class="tarot-yes-no-intent-steps" aria-label="Postup pre odpoveď áno nie">
+                        <div>
+                            <strong>1. Polož jednu vetu</strong>
+                            <span>Otázka má smerovať k odpovedi áno, nie alebo ešte nie.</span>
+                        </div>
+                        <div>
+                            <strong>2. Vyber jednu kartu</strong>
+                            <span>Nepreklikávaj. Prvá voľba je pre tento typ výkladu najčistejšia.</span>
+                        </div>
+                        <div>
+                            <strong>3. Ulož odpoveď</strong>
+                            <span>Denník ukáže, či sa symbol opakuje a ako sa tvoje otázky menia.</span>
+                        </div>
+                    </div>
                 </section>
 
                 <!-- Info sekcia -->
@@ -273,7 +275,7 @@
 
     <div id="footer-placeholder"></div>
 
-    <script src="../js/dist/core.js?v=1" defer></script>
+    <script src="../js/dist/core.js?v=20261003-single-membership" defer></script>
 
     
     <script src="../js/dist/analytics.js" defer></script>

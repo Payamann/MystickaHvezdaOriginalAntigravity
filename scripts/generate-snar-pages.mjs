@@ -177,10 +177,11 @@ function renderPage(dream, index, dreams, seoContent) {
     <link rel="stylesheet" href="/fonts/local-fonts.css">
     <link rel="stylesheet" href="../css/style.v2.min.css?v=11">
 <script src="/js/dist/analytics-init.js" defer></script>
+    <link rel="stylesheet" href="/css/atlas-web.css?v=1">
+    <link rel="stylesheet" href="/css/atlas-content.css?v=1">
 </head>
-<body>
+<body class="atlas-page atlas-content-page atlas-content-detail">
     <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
-    <div class="stars" aria-hidden="true"></div>
     <div id="header-placeholder"></div>
 
     <main id="main-content">

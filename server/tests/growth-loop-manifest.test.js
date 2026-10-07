@@ -67,8 +67,8 @@ describe('Growth loop manifest', () => {
             expect(FEATURE_PLAN_MAP[featureId]).toBeTruthy();
         });
 
-        expect(FEATURE_PLAN_MAP.astrocartography).toBe('osviceni');
-        expect(FEATURE_PLAN_MAP.tarot_celtic_cross).toBe('vip-majestrat');
+        expect(FEATURE_PLAN_MAP.astrocartography).toBe('pruvodce');
+        expect(FEATURE_PLAN_MAP.tarot_celtic_cross).toBe('pruvodce');
         expect(PRODUCT_CATALOG.rocni_horoskop_2026.productType).toBe('one_time');
         expect(PRODUCT_CATALOG.rocni_horoskop_2026).toEqual(expect.objectContaining({
             available: false,

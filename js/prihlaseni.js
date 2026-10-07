@@ -13,8 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const PRIVACY_VERSION = '2026-08-28';
     const PLAN_COPY = {
         pruvodce: {
-            title: 'Hvězdný Průvodce',
-            copy: 'Odemkneš plné výklady, natální kartu, numerologii a každodenní vedení bez limitu.',
+            title: 'Členství Mystické Hvězdy',
+            copy: 'Odemkneš plné výklady, natální kartu a numerologii. Generované výklady podléhají provozním limitům.',
             trialDays: 7
         },
         osviceni: {
@@ -126,9 +126,9 @@ document.addEventListener('DOMContentLoaded', () => {
             stepCopy: 'Kontext plánu zůstane zachovaný i po dokončení auth kroku.'
         },
         vip_membership: {
-            title: 'VIP členství bez ztráty kontextu',
-            copy: 'Po registraci budete pokračovat k VIP plánu s Keltským křížem a pokročilými výklady.',
-            stepTitle: 'Vrátíme vás k VIP plánu',
+            title: 'Členství bez ztráty kontextu',
+            copy: 'Po registraci můžeš pokračovat ke členství s Keltským křížem a dalšími výklady.',
+            stepTitle: 'Vrátíme tě ke členství',
             stepCopy: 'Neztratíte cestu z homepage ani plán, který jste otevřeli.'
         },
         astrocartography: {

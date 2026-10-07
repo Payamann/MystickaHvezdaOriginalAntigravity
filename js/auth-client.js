@@ -291,16 +291,9 @@
             return true;
         },
 
-        // Osvícení or VIP level check (exclusive_monthly, vip)
+        // Compatibility alias: all active paid memberships have the same access.
         isExclusive() {
-            if (!this.user || !this.user.subscription_status) return false;
-            const s = this.user.subscription_status.toLowerCase();
-            if (!s.includes('exclusive') && !s.includes('vip')) return false;
-            if (this.user.premiumExpires) {
-                const expires = new Date(this.user.premiumExpires);
-                if (expires < new Date()) return false;
-            }
-            return true;
+            return this.isPremium();
         },
 
         async register(email, password, additionalData = {}) {
@@ -713,7 +706,7 @@
                 premium_membership: {
                     path: '/cenik.html',
                     title: 'Registrace je hotová',
-                    message: 'Můžete pokračovat k porovnání plánů a vybrat úroveň vedení, která dává smysl.'
+                    message: 'Můžeš si prohlédnout členství a jeho podmínky.'
                 },
                 subscription_management: {
                     path: '/profil.html',
@@ -723,7 +716,7 @@
                 vip_membership: {
                     path: '/cenik.html',
                     title: 'Registrace je hotová',
-                    message: 'Můžete pokračovat k VIP členství a nejvyšší úrovni osobního vedení.'
+                    message: 'Můžeš pokračovat ke členství s Keltským křížem a dalšími výklady.'
                 },
                 daily_guidance: {
                     path: '/horoskopy.html',
