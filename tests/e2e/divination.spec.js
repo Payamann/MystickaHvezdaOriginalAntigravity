@@ -106,7 +106,14 @@ test.describe('Andělské karty', () => {
     });
 
     test('SEO landing a vylozeni andelske karty se propisi do analytics a funnelu', async ({ page }) => {
+        // Consented analytics normally flush immediately; keep events queued so attribution stays observable.
+        await page.route('**/api/analytics/batch', route => route.fulfill({
+            status: 503,
+            contentType: 'application/json',
+            body: '{}'
+        }));
         await page.addInitScript(() => {
+            localStorage.setItem('mh_cookie_prefs', JSON.stringify({ necessary: true, analytics: true }));
             localStorage.removeItem('mh_attribution_first_touch');
             sessionStorage.removeItem('mh_attribution_last_touch');
         });
@@ -252,10 +259,10 @@ test.describe('Andělské karty', () => {
         await expect(page.locator('.angel-name')).toHaveText('Intuice');
         await expect(page.locator('.angel-theme')).toHaveText('Vhled');
         await expect(page.locator('#angel-short-message')).toContainText('smysl');
-        await expect(page.locator('.angel-card-back')).toHaveClass(/angel-card-back--daily/);
+        await expect(page.locator('.angel-card-back')).toHaveClass(/angel-card-back--guidance/);
 
         const backgroundImage = await page.locator('.angel-card-back').evaluate(element => getComputedStyle(element).backgroundImage);
-        expect(backgroundImage).toContain('intuice.webp');
+        expect(backgroundImage).toContain('/img/atlas/angels-v1/guidance.webp');
     });
 });
 
@@ -690,8 +697,8 @@ test.describe('Runy', () => {
     });
 
     test('runes bundle ma cache-busting verzi', async ({ page }) => {
-        const src = await page.locator('script[src*="runes.js"]').first().getAttribute('src');
-        expect(src).toContain('v=2');
+        const src = await page.locator('script[src*="runes"]').first().getAttribute('src');
+        expect(src).toMatch(/\/runes\.mh-[a-f0-9]{16}\.js$/);
     });
 
     test('žádný horizontální scroll na mobilu', async ({ page }) => {
@@ -922,8 +929,8 @@ test.describe('Minulý život', () => {
     });
 
     test('past-life bundle ma cache-busting verzi', async ({ page }) => {
-        const src = await page.locator('script[src*="minuly-zivot.js"]').first().getAttribute('src');
-        expect(src).toContain('v=2');
+        const src = await page.locator('script[src*="minuly-zivot"]').first().getAttribute('src');
+        expect(src).toMatch(/\/minuly-zivot\.mh-[a-f0-9]{16}\.js$/);
     });
 
     test('vstupní pole přijímají data', async ({ page }) => {

@@ -270,8 +270,11 @@ router.get('/:sign/:date', async (req, res, next) => {
   <link rel="preload" href="/fonts/local-fonts.css" as="style">
   <link rel="stylesheet" href="/fonts/local-fonts.css">
   <link rel="stylesheet" href="/css/style.v2.min.css?v=11">
+  <link rel="stylesheet" href="/css/atlas-web.css?v=1">
+  <link rel="stylesheet" href="/css/atlas-astro.css?v=1">
+  <link rel="stylesheet" href="/css/atlas-art.css?v=1">
 </head>
-<body>
+<body class="atlas-page atlas-astro-page">
   <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
   <div class="stars" aria-hidden="true"></div>
   <div id="header-placeholder"></div>
@@ -279,7 +282,7 @@ router.get('/:sign/:date', async (req, res, next) => {
   <main id="main-content">
 
     <!-- HERO -->
-    <section class="section section--hero horoscope-day-hero">
+    <section class="section section--hero horoscope-day-hero atlas-art-hero atlas-art-astrolab">
       <div class="container">
         <div class="hero__content">
           <nav aria-label="Drobečková navigace" class="horoscope-day-breadcrumb">

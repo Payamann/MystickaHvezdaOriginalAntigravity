@@ -482,7 +482,8 @@ test.describe('Tarot 3 karty landing', () => {
         await waitForPageReady(page);
 
         await expect(page.locator('.tarot-three-intent-card')).toHaveCount(4);
-        await expect(page.locator('a[href*="tarot-zdarma.html?source=tarot_three_card_faq"]')).toBeVisible();
+        await expect(page.locator('a[href*="tarot-ano-ne.html?source=tarot_three_card_faq"]')).toBeVisible();
+        await expect(page.locator('a[href*="tarot-karta-dne.html?source=tarot_three_card_faq"]')).toBeVisible();
         const hasHorizontalScroll = await page.evaluate(() =>
             document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
         );
@@ -491,7 +492,7 @@ test.describe('Tarot 3 karty landing', () => {
 });
 
 test.describe('Keltsky kriz tarot landing', () => {
-    test('tarot-keltsky-kriz.html vede do VIP tarot kontextu', async ({ page }) => {
+    test('tarot-keltsky-kriz.html vede do členského tarot kontextu', async ({ page }) => {
         const res = await page.request.get('/tarot-keltsky-kriz.html');
         expect(res.status()).toBe(200);
 
@@ -512,7 +513,8 @@ test.describe('Keltsky kriz tarot landing', () => {
         expect(href).toContain('spread=celtic_cross');
 
         const pricing = page.locator('[data-analytics-cta="tarot_celtic_intent_pricing"]');
-        await expect(pricing).toHaveAttribute('href', /plan=vip-majestrat/);
+        await expect(pricing).toHaveAttribute('href', /plan=pruvodce/);
+        await expect(pricing).toHaveAttribute('data-analytics-plan', 'pruvodce');
         await expect(pricing).toHaveAttribute('href', /feature=tarot_celtic_cross/);
 
         const faqTypes = await page.locator('script[type="application/ld+json"]').evaluateAll((scripts) => scripts.map((script) => {
@@ -590,7 +592,7 @@ test.describe('Tarot význam karet', () => {
         expect(canonical).toBe('https://www.mystickahvezda.cz/tarot-vyznam/hvezda.html');
 
         await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
-        await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute('content', /tarot_hvezda\.webp/);
+        await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute('content', /img\/search-preview\/tarot-cards\/hvezda\.webp$/);
         await expect(page.locator('meta[property="og:image:alt"]')).toHaveAttribute('content', /Hvězda tarot karta/);
         await expect(page.locator('.tarot-card-detail-panel')).toContainText('Nad');
         await expect(page.locator('.tarot-card-detail-next-step')).toContainText('Co udělat');
@@ -897,7 +899,7 @@ test.describe('Tarot Ano/Ne', () => {
         const resultImage = page.locator('#result-card-image');
         await expect(resultImage).toBeVisible();
         const imageSrc = await resultImage.getAttribute('src');
-        expect(imageSrc).toMatch(/img\/tarot\/.+\.webp$/);
+        expect(imageSrc).toMatch(/img\/tarot-v2\/tarot_[a-z0-9_-]+\.webp$/);
         await expect(page.locator('#result-card-name')).not.toBeEmpty();
 
         // Verdikt je jeden ze tří možných.

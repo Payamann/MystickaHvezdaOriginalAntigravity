@@ -146,3 +146,15 @@ body.atlas-page .faq-item { background:transparent; border:0; border-bottom:1px 
 @media(prefers-reduced-motion:reduce) {
  body.atlas-page :is(.love-tarot-visual,.tarot-three-visual) img { transform:none; }
 }
+
+/* Transactional confirmation pages share the public Atlas palette. */
+body.atlas-page.unsubscribe-page { min-height: 100svh; padding: 24px; color: #e9e3d7; }
+body.atlas-page.unsubscribe-page .unsubscribe-page__box { background: #102638; border: 1px solid #bd9b6544; border-radius: 5px; box-shadow: none; max-width: 38rem; }
+body.atlas-page.unsubscribe-page .unsubscribe-page__box a { color: #d0b17c; display: inline-flex; align-items: center; min-height: 44px; }
+/* Preserve the compact desktop header when Atlas auth buttons are present. */
+@media (min-width: 993px) and (max-width: 1320px) {
+  body.atlas-page .header .auth-buttons .btn { padding-inline: .62rem; font-size: .66rem; letter-spacing: .06em; }
+}
+@media (min-width: 993px) and (max-width: 1160px) {
+  body.atlas-page .header .auth-buttons .btn { padding-inline: .5rem; font-size: .64rem; }
+}

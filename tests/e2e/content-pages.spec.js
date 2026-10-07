@@ -110,7 +110,7 @@ test.describe('Blog', () => {
 test.describe('Ceník', () => {
 
     test('stránka se načte s 200 a má h1', async ({ page }) => {
-        await smokeTest(page, '/cenik.html', 'cen');
+        await smokeTest(page, '/cenik.html', 'členství');
     });
 
     test('pricing karty jsou přítomné', async ({ page }) => {
@@ -132,11 +132,13 @@ test.describe('Ceník', () => {
         }
     });
 
-    test('billing toggle existuje (měsíční/roční)', async ({ page }) => {
+    test('jediné členství uvádí cenu a zkušební dobu bez starého billing toggle', async ({ page }) => {
         await page.goto('/cenik.html');
         await waitForPageReady(page);
-        const toggle = page.locator('#toggle-monthly, #toggle-yearly, [id*="toggle"]').first();
-        await expect(toggle).toBeAttached();
+        await expect(page.locator('#toggle-monthly, #toggle-yearly, [id*="toggle"]')).toHaveCount(0);
+        await expect(page.locator('[data-price-plan="pruvodce"]')).toContainText('199 Kč');
+        await expect(page.locator('[data-price-plan="pruvodce"]')).toContainText('/měsíc');
+        await expect(page.locator('.plan-checkout-btn[data-plan="pruvodce"]')).toContainText('7 dní za 0 Kč');
     });
 
     test('canonical link existuje', async ({ page }) => {
@@ -257,7 +259,7 @@ test.describe('FAQ', () => {
         await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /práci s (osobními )?daty/);
         await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', /hranic(e|ích) služby/);
         await expect(page.locator('.hero__subtitle')).toContainText('kde jsou hranice služby');
-        await expect(page.locator('script[src*="secondary-pages-copy-fixes.js"]')).toHaveAttribute('src', /v=5/);
+        await expect(page.locator('script[src*="secondary-pages-copy-fixes"]')).toHaveAttribute('src', /\/secondary-pages-copy-fixes\.mh-[a-f0-9]{16}\.js$/);
 
         const fullText = await page.locator('body').textContent();
         expect(fullText).not.toContain('přesných astronomických dat');
@@ -295,7 +297,7 @@ test.describe('O nás', () => {
         await expect(trustCard.locator('a[href="soukromi.html"]')).toBeVisible();
         await expect(page.locator('.hero__title')).toContainText('jasnější další krok');
         await expect(page.locator('.hero__subtitle')).toContainText('ne jako slib pevného osudu');
-        await expect(page.locator('script[src*="secondary-pages-copy-fixes.js"]')).toHaveAttribute('src', /secondary-pages-copy-fixes\.js\?v=4/);
+        await expect(page.locator('script[src*="secondary-pages-copy-fixes"]')).toHaveAttribute('src', /\/secondary-pages-copy-fixes\.mh-[a-f0-9]{16}\.js$/);
         await expect(page.locator('.card--service', { hasText: 'Naše mise' })).toContainText('mapu témat');
         await expect(page.locator('.card--service', { hasText: 'Osobní přístup' })).toContainText('Nepředstíráme osobní guru péči');
         await expect(page.locator('.stat-item')).toHaveCount(4);
@@ -466,7 +468,7 @@ test.describe('Tarot zdarma', () => {
 
         await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /jednu kartu zdarma/);
         await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /bez registrace/);
-        await expect(page.locator('script[src*="secondary-pages-copy-fixes.js"]')).toHaveAttribute('src', /v=7/);
+        await expect(page.locator('script[src*="secondary-pages-copy-fixes"]')).toHaveAttribute('src', /\/secondary-pages-copy-fixes\.mh-[a-f0-9]{16}\.js$/);
         await expect(page.locator('.section__text').first()).toContainText('ne slib pevné budoucnosti');
         await expect(page.locator('main')).toContainText('Bez registrace, bez platební karty, s jasným dalším krokem');
         await expect(page.locator('main')).toContainText('Jak z výkladu získat víc');
@@ -538,13 +540,19 @@ test.describe('Tarot karta dne', () => {
         await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', 'Tarot karta dne zdarma: dnešní výklad online | Mystická Hvězda');
     });
 
-    test('primární CTA vede do tarot nástroje s atribucí', async ({ page }) => {
+    test('primární CTA otevře kartu dne a další krok vede do tarot nástroje s atribucí', async ({ page }) => {
         await page.goto('/tarot-karta-dne.html');
         await waitForPageReady(page);
 
-        const cta = page.locator('main a[href*="tarot.html?source=tarot_daily_card_landing"][href*="intent=daily_card"]').first();
+        const cta = page.locator('main a[data-analytics-cta="tarot_daily_card_landing_primary"]');
         await expect(cta).toBeVisible();
-        await expect(cta).toHaveAttribute('href', /feature=tarot/);
+        await expect(cta).toHaveAttribute('href', '#denni-karta');
+        await expect(cta).toHaveAttribute('data-analytics-feature', 'tarot');
+        await expect(cta).toHaveAttribute('data-analytics-intent', 'daily_card');
+        await expect(page.locator('#tarot-daily-full-reading')).toHaveAttribute(
+            'href',
+            /tarot\.html\?source=tarot_daily_card_widget&feature=tarot&intent=daily_card/
+        );
 
         await page.evaluate(() => {
             window.MH_ANALYTICS_QUEUE = [];
@@ -557,7 +565,7 @@ test.describe('Tarot karta dne', () => {
             item => item.name === 'cta_clicked' && item.location === 'tarot_daily_card_landing_primary'
         ));
         expect(event).toEqual(expect.objectContaining({
-            destination: expect.stringContaining('tarot.html?source=tarot_daily_card_landing'),
+            destination: '#denni-karta',
             feature: 'tarot',
             intent: 'daily_card'
         }));
@@ -883,7 +891,7 @@ test.describe('Jak to funguje', () => {
         await expect(page.locator('.tech-section .section__text')).toContainText('co zůstává na vás');
         await expect(page.locator('.tech-section')).toContainText('Nenahrazují terapii');
         await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', /symbolick.*výklad/);
-        await expect(page.locator('script[src*="secondary-pages-copy-fixes.js"]')).toHaveAttribute('src', /v=7/);
+        await expect(page.locator('script[src*="secondary-pages-copy-fixes"]')).toHaveAttribute('src', /\/secondary-pages-copy-fixes\.mh-[a-f0-9]{16}\.js$/);
 
         const structuredData = await page.locator('script[type="application/ld+json"]').first().textContent();
         expect(structuredData).toContain('symbolický výklad');
@@ -953,7 +961,7 @@ test.describe('Astro mapa', () => {
         await expect(page.locator('#astro-form button[type="submit"]')).toContainText('Sestavit symbolickou mapu');
         await expect(page.locator('.card--service', { hasText: 'Relokace' })).toContainText('podklad k rozhodnutí');
         await expect(page.locator('.card--service', { hasText: 'Cestování' })).toContainText('ne vybrat dovolenou za vás');
-        await expect(page.locator('script[src*="secondary-pages-copy-fixes.js"]')).toHaveAttribute('src', /secondary-pages-copy-fixes\.js\?v=4/);
+        await expect(page.locator('script[src*="secondary-pages-copy-fixes"]')).toHaveAttribute('src', /\/secondary-pages-copy-fixes\.mh-[a-f0-9]{16}\.js$/);
 
         const bodyText = await page.locator('body').innerText();
         expect(bodyText).not.toContain('Odhalit mou mapu štěstí');
@@ -1002,7 +1010,7 @@ test.describe('Šamanské kolo', () => {
         await expect(page.locator('.mw-form__subtitle')).toContainText('symbolický rámec pro další otázku');
         await expect(page.locator('.mw-premium-wall__title')).toContainText('plné symbolické čtení');
         await expect(page.locator('.mw-premium-wall__desc')).toContainText('bez slibů pevného osudu');
-        await expect(page.locator('script[src*="secondary-pages-copy-fixes.js"]')).toHaveAttribute('src', /secondary-pages-copy-fixes\.js\?v=4/);
+        await expect(page.locator('script[src*="secondary-pages-copy-fixes"]')).toHaveAttribute('src', /\/secondary-pages-copy-fixes\.mh-[a-f0-9]{16}\.js$/);
 
         const bodyText = await page.locator('body').innerText();
         expect(bodyText).not.toContain('Indiánská moudrost Severní Ameriky');
@@ -1453,11 +1461,33 @@ test.describe('Osobní mapa', () => {
         }));
     });
 
-    test('úspěšná platba ukáže upsell na Průvodce a schová objednávku', async ({ page }) => {
+    test('ověřená úspěšná platba ukáže upsell na Průvodce a schová objednávku', async ({ page }) => {
+        let verificationCalls = 0;
+        await page.route('**/api/osobni-mapa/checkout-result?**', route => {
+            verificationCalls += 1;
+            const result = verificationCalls === 1
+                ? { status: 'pending' }
+                : {
+                    status: 'paid',
+                    product_id: 'osobni_mapa_2026',
+                    transaction_id: 'cs_test_123',
+                    value: 299,
+                    currency: 'CZK'
+                };
+            return route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true, result })
+            });
+        });
         await page.goto('/osobni-mapa.html?status=success&source=e2e_success&session_id=cs_test_123');
         await waitForPageReady(page);
 
+        await expect(page.locator('#bannerVerification')).toBeVisible();
+        await expect(page.locator('#bannerSuccess')).toBeHidden();
+        await page.locator('#pdf-verification-retry').click();
         await expect(page.locator('#bannerSuccess')).toBeVisible();
+        await expect(page.locator('#bannerVerification')).toBeHidden();
         await expect(page.locator('#order')).toBeHidden();
         await expect(page.locator('[data-success-upsell]')).toHaveAttribute(
             'href',
