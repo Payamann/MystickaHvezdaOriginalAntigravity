@@ -407,7 +407,7 @@
         nejasne: { label: 'NEJASNÉ', emoji: '🔮', class: 'mozna' }
     };
 
-    const CARD_DATA_URL = 'data/tarot-cards.json';
+    const CARD_DATA_URL = 'data/tarot-cards.json?v=20261007-deck-v2';
     const FALLBACK_CARD_IMAGE = 'img/tarot-v2/tarot_card_back.webp';
 
     function applyCardImageFallback(image) {
@@ -437,7 +437,7 @@
         if (cardDataLoaded) return cardPool;
 
         try {
-            const response = await fetch(CARD_DATA_URL, { credentials: 'same-origin' });
+            const response = await fetch(CARD_DATA_URL, { credentials: 'same-origin', cache: 'no-cache' });
             if (!response.ok) throw new Error(`Tarot data failed: ${response.status}`);
             const data = await response.json();
 

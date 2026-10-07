@@ -157,7 +157,7 @@
         const error = document.querySelector('[data-tarot-meaning-error]');
 
         try {
-            const response = await fetch('/data/tarot-cards.json?v=2');
+            const response = await fetch('/data/tarot-cards.json?v=20261007-deck-v2', { cache: 'no-cache' });
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
             const data = await response.json();

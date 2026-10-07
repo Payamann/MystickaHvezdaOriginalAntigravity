@@ -1,5 +1,5 @@
 (() => {
-    const DATA_URL = 'data/tarot-cards.json';
+    const DATA_URL = 'data/tarot-cards.json?v=20261007-deck-v2';
     const SOURCE = 'tarot_daily_card_widget';
     const FEATURE = 'tarot';
     const PROFILE_SAVE_RETURN_SOURCE = 'tarot_daily_card_profile_save_return';
@@ -357,7 +357,7 @@
     }
 
     async function loadCards() {
-        const response = await fetch(DATA_URL, { credentials: 'same-origin' });
+        const response = await fetch(DATA_URL, { credentials: 'same-origin', cache: 'no-cache' });
         if (!response.ok) throw new Error(`Tarot data failed: ${response.status}`);
         const cards = await response.json();
         return Object.entries(cards).map(([name, card]) => ({ name, ...card }));

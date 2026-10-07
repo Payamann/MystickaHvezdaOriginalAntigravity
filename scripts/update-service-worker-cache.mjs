@@ -52,7 +52,7 @@ async function buildCacheName(assets) {
     for (const asset of assets) {
         if (asset === '/') continue;
 
-        const assetPath = path.join(rootDir, asset.replace(/^\//, ''));
+        const assetPath = path.join(rootDir, new URL(asset, 'https://local.invalid').pathname.replace(/^\//, ''));
         const content = await readFile(assetPath);
         hash.update(asset);
         hash.update('\0');
@@ -64,7 +64,7 @@ async function buildCacheName(assets) {
 }
 
 function normalizeAssetContent(asset, content) {
-    const extension = path.extname(asset).toLowerCase();
+    const extension = path.extname(new URL(asset, 'https://local.invalid').pathname).toLowerCase();
     if (BINARY_ASSET_EXTENSIONS.has(extension)) {
         return content;
     }

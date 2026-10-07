@@ -46,7 +46,7 @@ function buildExpectedCacheName(assets) {
     for (const asset of assets) {
         if (asset === '/') continue;
 
-        const filePath = path.join(ROOT_DIR, asset.replace(/^\//, ''));
+        const filePath = path.join(ROOT_DIR, new URL(asset, 'https://local.invalid').pathname.replace(/^\//, ''));
         hash.update(asset);
         hash.update('\0');
         hash.update(normalizeAssetContent(asset, fs.readFileSync(filePath)));
@@ -57,7 +57,7 @@ function buildExpectedCacheName(assets) {
 }
 
 function normalizeAssetContent(asset, content) {
-    const extension = path.extname(asset).toLowerCase();
+    const extension = path.extname(new URL(asset, 'https://local.invalid').pathname).toLowerCase();
     if (BINARY_ASSET_EXTENSIONS.has(extension)) {
         return content;
     }
@@ -82,7 +82,7 @@ describe('Service worker cache manifest', () => {
         for (const asset of assets) {
             if (asset === '/') continue;
 
-            const filePath = path.join(ROOT_DIR, asset.replace(/^\//, ''));
+            const filePath = path.join(ROOT_DIR, new URL(asset, 'https://local.invalid').pathname.replace(/^\//, ''));
             expect(fs.existsSync(filePath)).toBe(true);
         }
     });

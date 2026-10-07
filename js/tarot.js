@@ -336,7 +336,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function loadTarotData() {
     try {
-        const response = await fetch('/data/tarot-cards.json?v=2');
+        const response = await fetch('/data/tarot-cards.json?v=20261007-deck-v2', { cache: 'no-cache' });
         if (!response.ok) throw new Error('Failed to load tarot data');
         TAROT_CARDS = await response.json();
         TAROT_CARDS_ARRAY = Object.keys(TAROT_CARDS);

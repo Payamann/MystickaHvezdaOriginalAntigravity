@@ -28,3 +28,12 @@ test('query variants cannot fall back to a different precache version', async ()
     await vm.runInContext("matchCachedRequest(new Request('https://example.com/js/dist/core.js?v=new'))", h.context);
     expect(h.cache.match).toHaveBeenCalledTimes(1);
 });
+
+// Artwork data must follow the same release as newly versioned browser code.
+test('returning clients receive fresh tarot artwork metadata instead of stale cache', async () => {
+    const h = harness();
+    let response;
+    h.listeners.fetch({ request: new Request('https://example.com/data/tarot-cards.json?v=20261007-deck-v2'), respondWith: p => { response = p; } });
+    expect(await response).toBe(h.fresh);
+    expect(h.fetch).toHaveBeenCalledWith(expect.any(Request), { cache: 'no-cache' });
+});

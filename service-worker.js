@@ -3,7 +3,7 @@
  * Provides offline caching with stale-while-revalidate strategy
  */
 
-const CACHE_NAME = 'mysticka-hvezda-bf2143832e62';
+const CACHE_NAME = 'mysticka-hvezda-9d79ceec5e83';
 const MAX_RUNTIME_CACHE_SIZE = 150;
 const STATIC_ASSETS = [
     '/fonts/local-fonts.css',
@@ -76,7 +76,7 @@ const STATIC_ASSETS = [
     '/img/personal-map/preview-mantra.webp',
     '/img/personal-map/preview-actions.webp',
     '/img/personal-map/preview-contact-sheet.webp',
-    '/data/tarot-cards.json',
+    '/data/tarot-cards.json?v=20261007-deck-v2',
     '/data/runes.json',
     '/js/dist/runes.js',
     '/js/dist/platby-init.js',
@@ -194,7 +194,7 @@ self.addEventListener('fetch', (event) => {
                 // Start network fetch regardless (for revalidation)
                 const pathname = new URL(event.request.url).pathname;
                 // Editorial index must agree with the freshly rendered article art.
-                const shouldRevalidateStaticCode = /\.(?:css|js)$/i.test(pathname) || pathname === '/data/blog-index.json';
+                const shouldRevalidateStaticCode = /\.(?:css|js)$/i.test(pathname) || pathname === '/data/blog-index.json' || pathname === '/data/tarot-cards.json';
                 const networkFetch = fetch(event.request, shouldRevalidateStaticCode ? { cache: 'no-cache' } : undefined)
                     .then((response) => {
                         // Don't cache non-successful, non-basic or explicitly private responses
