@@ -50,3 +50,6 @@ body.atlas-astro-page .hs-title { color: #e9e3d7; }
 body.atlas-astro-page .hs-preview-canvas { width: min(100%, 270px); height: auto; border: 1px solid #bd9b6555; border-radius: 4px; box-shadow: 0 12px 30px #030c1744; }
 body.atlas-astro-page .hs-btn--primary { background: #bd9b65; color: #142032; box-shadow: none; }
 body.atlas-astro-page .hs-btn--primary:hover { background: #d0b17c; box-shadow: none; }
+/* Zodiac glyphs follow the illustrated palette, not platform colour emoji. */
+body.atlas-astro-page { font-variant-emoji: text; }
+body.atlas-astro-page :is(.horoscope-day-symbol,.zodiac-card__symbol) { font-family: 'Segoe UI Symbol',Georgia,serif; font-variant-emoji: text; color: #d0b17c; }
