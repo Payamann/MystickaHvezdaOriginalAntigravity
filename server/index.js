@@ -5,7 +5,7 @@ import cookieParser from 'cookie-parser'; // Security: HttpOnly cookie support
 import rateLimit from 'express-rate-limit'; // Security: Rate Limiting
 import helmet from 'helmet'; // Security: HTTP Headers
 import { sanitizeRequestInput } from './utils/sanitize-input.js'; // Security: Input Sanitization
-import { createAssetVersioning } from './utils/asset-versioning.js';
+import { publicAssetVersioning as assetVersioning } from './utils/public-assets.js';
 import compression from 'compression'; // Performance: Gzip compression
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -75,7 +75,7 @@ import { createServer5xxAlertMonitor, sendOperationalAlert } from './services/al
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '../');
-const assetVersioning = createAssetVersioning(rootDir);
+
 dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();

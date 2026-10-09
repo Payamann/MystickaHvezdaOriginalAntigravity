@@ -964,7 +964,9 @@ describe('API Endpoint Tests', () => {
 
             expect(res.headers['content-type']).toContain('text/html');
             expect(res.headers['content-security-policy']).toContain("'sha256-");
-            expect(res.text).toContain('/js/dist/main.js');
+            expect(res.text).toMatch(/\/js\/dist\/main\.mh-[a-f0-9]{16}\.js/);
+            expect(res.text).toMatch(/\/css\/atlas-astro\.mh-[a-f0-9]{16}\.css/);
+            expect(res.text).not.toContain('/css/atlas-astro.css?v=1');
             expect(res.text).not.toMatch(/<style\b/i);
             expect(res.text).not.toMatch(/\sstyle\s*=/i);
             expect(res.text).toContain(`<meta name="robots" content="index, follow">`);

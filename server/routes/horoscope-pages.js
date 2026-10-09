@@ -8,6 +8,7 @@
  * long-tail searches like "horoskop štír 12 března 2026".
  */
 import express from 'express';
+import { publicAssetVersioning } from '../utils/public-assets.js';
 import { getCachedHoroscope } from '../services/astrology.js';
 import { normalizeHoroscopeAiResponse } from '../services/horoscope-response.js';
 import { setHtmlContentSecurityPolicy } from '../utils/csp.js';
@@ -216,12 +217,12 @@ router.get('/:sign/:date', async (req, res, next) => {
   <meta name="description" content="${descStr}">
   <meta name="keywords" content="horoskop ${signData.name.toLowerCase()}, ${signData.name.toLowerCase()} horoskop, denní horoskop ${signData.name.toLowerCase()}, astrologie ${czechDate}">
   <meta name="robots" content="${robotsContent}">
-  <meta name="theme-color" content="#0a0a1a">
+  <meta name="theme-color" content="#0b1929">
 
   <meta property="og:type" content="article">
   <meta property="og:title" content="${titleStr}">
   <meta property="og:description" content="${descStr}">
-  <meta property="og:image" content="${SITE_ORIGIN}/img/icon-zodiac.webp">
+  <meta property="og:image" content="${SITE_ORIGIN}/img/search-preview/horoscopes.webp">
   <meta property="og:locale" content="cs_CZ">
   <meta property="og:url" content="${canonicalUrl}">
   <meta name="twitter:card" content="summary_large_image">
@@ -361,8 +362,9 @@ router.get('/:sign/:date', async (req, res, next) => {
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         // Cache 1h browser, 24h CDN — content is stable once generated
         res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400');
-        setHtmlContentSecurityPolicy(res, html);
-        res.send(html);
+        const renderedHtml = publicAssetVersioning.html(html, req.originalUrl);
+        setHtmlContentSecurityPolicy(res, renderedHtml);
+        res.send(renderedHtml);
 
     } catch (err) {
         console.error('[HoroscopePage] Error:', err.message);
