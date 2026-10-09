@@ -344,3 +344,91 @@ html body .mh-inline-78489344ad { font-size: 12rem; opacity: 0.1; }
         text-align: center;
     }
 }
+
+/* Illustrated zodiac picker: same card portraits as the zodiac detail pages. */
+.zodiac-grid .zodiac-card {
+    position: relative;
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr);
+    grid-template-rows: 1fr auto;
+    grid-template-areas: "portrait name" "portrait dates";
+    align-items: center;
+    justify-items: start;
+    gap: 0.35rem 0.8rem;
+    min-height: 124px;
+    padding: 0.7rem;
+    border-color: #bd9b6544;
+    background: #102638;
+    text-align: left;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+.zodiac-grid .zodiac-card::before {
+    grid-area: portrait;
+    width: 56px;
+    aspect-ratio: 1 / 2;
+    border: 1px solid #bd9b65aa;
+    border-radius: 3px;
+    background-image: url("/img/atlas/western-zodiac-v1.webp");
+    background-repeat: no-repeat;
+    background-size: 400% 300%;
+    box-shadow: 0 5px 14px #030c1755;
+    content: "";
+}
+
+.zodiac-grid .zodiac-card__symbol {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.zodiac-grid .zodiac-card__name {
+    grid-area: name;
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.25;
+}
+
+.zodiac-grid .zodiac-card__dates {
+    grid-area: dates;
+    align-self: start;
+    font-size: 0.72rem;
+    line-height: 1.35;
+}
+
+.zodiac-grid .zodiac-card:focus-visible {
+    outline: 2px solid #d0b17c;
+    outline-offset: 3px;
+}
+
+.zodiac-grid .zodiac-card[href="#beran"]::before { background-position: 0% 0%; }
+.zodiac-grid .zodiac-card[href="#byk"]::before { background-position: 33.333% 0%; }
+.zodiac-grid .zodiac-card[href="#blizenci"]::before { background-position: 66.667% 0%; }
+.zodiac-grid .zodiac-card[href="#rak"]::before { background-position: 100% 0%; }
+.zodiac-grid .zodiac-card[href="#lev"]::before { background-position: 0% 50%; }
+.zodiac-grid .zodiac-card[href="#panna"]::before { background-position: 33.333% 50%; }
+.zodiac-grid .zodiac-card[href="#vahy"]::before { background-position: 66.667% 50%; }
+.zodiac-grid .zodiac-card[href="#stir"]::before { background-position: 100% 50%; }
+.zodiac-grid .zodiac-card[href="#strelec"]::before { background-position: 0% 100%; }
+.zodiac-grid .zodiac-card[href="#kozoroh"]::before { background-position: 33.333% 100%; }
+.zodiac-grid .zodiac-card[href="#vodnar"]::before { background-position: 66.667% 100%; }
+.zodiac-grid .zodiac-card[href="#ryby"]::before { background-position: 100% 100%; }
+
+@media (max-width: 560px) {
+    .zodiac-grid .zodiac-card {
+        grid-template-columns: 48px minmax(0, 1fr);
+        min-height: 104px;
+        gap: 0.3rem 0.65rem;
+        padding: 0.6rem;
+    }
+
+    .zodiac-grid .zodiac-card::before { width: 48px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .zodiac-grid .zodiac-card { transition: none; }
+}
