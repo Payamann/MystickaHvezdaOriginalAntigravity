@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { jest } from '@jest/globals';
 import { reconcileStuckOneTimeOrders, verifyOneTimeOrderPayment } from '../jobs/one-time-order-reconciliation.js';
 import { listStuckOneTimeOrderInputs, getOneTimeOrderInput } from '../services/one-time-orders.js';
 import { supabase } from '../db-supabase.js';
@@ -69,6 +70,21 @@ describe('one-time order reconciliation', () => {
             id: orderId,
             status: 'fulfilled'
         });
+    });
+
+    test('a rejected fulfillment write stays retryable and never reports recovery', async () => {
+        const orderId = await insertOrder({ created_at: TWENTY_ONE_MINUTES_AGO() });
+        const markFulfilledFn = jest.fn(async () => false);
+        await reconcileStuckOneTimeOrders({ fulfillFn: jestSafeResolve(), verifyPaymentFn: PAID, markFulfilledFn });
+        expect(markFulfilledFn).toHaveBeenCalledWith(orderId);
+        expect(await readOrder(orderId)).toMatchObject({ status: 'checkout_created', last_error: 'Could not confirm order fulfillment' });
+        expect(console.log.mock.calls.flat().some(message => String(message).includes(`Recovered paid order ${orderId}`))).toBe(false);
+    });
+
+    test('retries persisted email alerts even without an order awaiting fulfillment', async () => {
+        const notifyDeliveryFailures = jest.fn(async () => {});
+        await reconcileStuckOneTimeOrders({ fulfillFn: jestSafeResolve(), verifyPaymentFn: async () => 'unpaid', notifyDeliveryFailures });
+        expect(notifyDeliveryFailures).toHaveBeenCalledTimes(1);
     });
 
     test('NEVER fulfills an unpaid abandoned cart — marks it expired, no free PDF', async () => {
@@ -152,6 +168,17 @@ describe('one-time order reconciliation', () => {
         await expect(verifyOneTimeOrderPayment({ stripe_session_id: 'cs_1' }, stub({ payment_status: 'unpaid', status: 'expired' }))).resolves.toBe('expired');
         await expect(verifyOneTimeOrderPayment({ stripe_session_id: 'cs_1' }, stub({ payment_status: 'unpaid', status: 'open' }))).resolves.toBe('unpaid');
         await expect(verifyOneTimeOrderPayment({ stripe_session_id: null }, stub({}))).resolves.toBe('unknown');
+    });
+
+    test('a paid relationship session recovered without its webhook records the receipt', async () => {
+        const orderId = await insertOrder({ product_type: 'relationship_tarot', product_id: 'relationship_tarot' });
+        const order = await readOrder(orderId);
+        const session = { id: order.stripe_session_id, mode: 'payment', status: 'complete', payment_status: 'paid', amount_total: 14900, currency: 'czk',
+            metadata: { orderId, productType: 'relationship_tarot', productId: 'relationship_tarot', question: 'PRIVATE_QUESTION' } };
+        await expect(verifyOneTimeOrderPayment(order, { checkout: { sessions: { retrieve: async () => session } } })).resolves.toBe('paid');
+        const { data: receipt } = await supabase.from('one_time_purchases').select('*').eq('stripe_session_id', session.id).maybeSingle();
+        expect(receipt).toMatchObject({ amount_total: 14900, status: 'paid', product_type: 'relationship_tarot' });
+        expect(JSON.stringify(receipt.metadata)).not.toContain('PRIVATE_QUESTION');
     });
 });
 

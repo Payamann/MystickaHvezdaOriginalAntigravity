@@ -5,11 +5,14 @@ import {
     markOneTimeOrderInputFulfilled,
     markOneTimeOrderInputFailed,
     markOneTimeOrderInputExpired,
-    recordOneTimeOrderInputAttemptFailure
+    recordOneTimeOrderInputAttemptFailure,
+    sanitizeOneTimePurchaseMetadata
 } from '../services/one-time-orders.js';
+import { supabase } from '../db-supabase.js';
 import { fulfillOneTimeOrder } from '../services/one-time-fulfillment.js';
 import { sendOperationalAlert } from '../services/alerts.js';
 import { isPaidRelationshipSession } from '../services/relationship-tarot.js';
+import { relationshipEmailDelivery } from '../services/relationship-email-delivery.js';
 
 /**
  * ONE-TIME ORDER RECONCILIATION JOB
@@ -71,7 +74,21 @@ export async function verifyOneTimeOrderPayment(order, stripe = getStripeClient(
 
     const session = await stripe.checkout.sessions.retrieve(sessionId);
     if (order.product_type === 'relationship_tarot') {
-        if (isPaidRelationshipSession(session, order.id)) return 'paid';
+        if (isPaidRelationshipSession(session, order.id)) {
+            // If the Stripe webhook was missed entirely, recovery must also
+            // persist purchase truth. A unique session and ignoreDuplicates
+            // preserve an existing receipt without changing the buyer/content.
+            const { error } = await supabase.from('one_time_purchases').upsert({
+                stripe_session_id: session.id,
+                stripe_payment_intent_id: session.payment_intent || null,
+                customer_email: order.customer_email,
+                product_type: 'relationship_tarot', product_id: 'relationship_tarot',
+                amount_total: session.amount_total, currency: session.currency,
+                status: 'paid', metadata: sanitizeOneTimePurchaseMetadata(session.metadata)
+            }, { onConflict: 'stripe_session_id', ignoreDuplicates: true });
+            if (error) throw new Error('Could not record recovered relationship payment');
+            return 'paid';
+        }
         return session.status === 'expired' ? 'expired' : 'unpaid';
     }
     if (session?.payment_status === 'paid' || session?.payment_status === 'no_payment_required') {
@@ -91,7 +108,9 @@ export async function verifyOneTimeOrderPayment(order, stripe = getStripeClient(
  */
 export async function reconcileStuckOneTimeOrders({
     fulfillFn = fulfillOneTimeOrder,
-    verifyPaymentFn = verifyOneTimeOrderPayment
+    verifyPaymentFn = verifyOneTimeOrderPayment,
+    markFulfilledFn = markOneTimeOrderInputFulfilled,
+    notifyDeliveryFailures = () => relationshipEmailDelivery.notifyFailures()
 } = {}) {
     if (jobRunning) {
         console.log('[JOB] One-time order reconciliation already running, skipping...');
@@ -101,6 +120,8 @@ export async function reconcileStuckOneTimeOrders({
     jobRunning = true;
 
     try {
+        try { await notifyDeliveryFailures(); }
+        catch { console.warn('[JOB] Relationship delivery alerts remain pending'); }
         const stuckOrders = await listStuckOneTimeOrderInputs({
             olderThanMs: GRACE_PERIOD_MS,
             maxRetries: MAX_RETRIES,
@@ -162,7 +183,7 @@ export async function reconcileStuckOneTimeOrders({
                     customerEmail: order.customer_email,
                     payload: order.payload || {}
                 });
-                await markOneTimeOrderInputFulfilled(order.id);
+                if (!await markFulfilledFn(order.id)) throw new Error('Could not confirm order fulfillment');
                 recovered++;
                 console.log(`[JOB] ✓ Recovered paid order ${order.id} (${order.product_type})`);
             } catch (err) {

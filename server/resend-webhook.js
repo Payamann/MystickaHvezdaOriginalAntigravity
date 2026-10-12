@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { DELIVERY_EVENTS, relationshipEmailDelivery } from './services/relationship-email-delivery.js';
 
 const DEFAULT_FORWARD_FROM = 'Mysticka Hvezda <noreply@mystickahvezda.cz>';
 const SAME_DOMAIN_FORWARD_ALLOWED = process.env.ALLOW_SAME_DOMAIN_SUPPORT_FORWARD === 'true';
@@ -64,7 +65,7 @@ function getForwardFrom() {
         DEFAULT_FORWARD_FROM;
 }
 
-export async function handleResendWebhook(rawBody, headers = {}) {
+export async function handleResendWebhook(rawBody, headers = {}, { delivery = relationshipEmailDelivery } = {}) {
     const webhookSecret = process.env.RESEND_WEBHOOK_SECRET;
     if (!webhookSecret) {
         throw new Error('RESEND_WEBHOOK_SECRET is required for Resend inbound email webhooks');
@@ -81,6 +82,9 @@ export async function handleResendWebhook(rawBody, headers = {}) {
         webhookSecret
     });
 
+    if (DELIVERY_EVENTS.has(event.type)) {
+        return delivery.recordEvent(event, getHeader(headers, 'svix-id'));
+    }
     if (event.type !== 'email.received') {
         return {
             ignored: true,

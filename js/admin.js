@@ -683,7 +683,7 @@ const ONE_TIME_PRODUCT_LABELS = {
 
 const ONE_TIME_STATUS_LABELS = {
     checkout_created: 'Zpracovává se',
-    fulfilled: 'Doručeno',
+    fulfilled: 'Vyřízeno (odesláno)',
     failed: 'Selhalo',
     expired: 'Vypršelo'
 };
@@ -734,7 +734,10 @@ function renderOneTimeOrders(orders) {
         appendCell(tr, formatDateTime(order.created_at));
         appendCell(tr, ONE_TIME_PRODUCT_LABELS[order.product_type] || order.product_type);
         appendCell(tr, order.customer_email || '-');
-        appendCell(tr, ONE_TIME_STATUS_LABELS[order.status] || order.status);
+        const state = order.email_delivery?.status;
+        const deliveryLabels = { unknown: 'Doručení nepotvrzeno', sent: 'Odesláno', delivered: 'Doručeno poštovnímu serveru', delivery_delayed: 'Doručení zpožděno', bounced: 'E-mail odmítnut', failed: 'Odeslání selhalo', suppressed: 'Odeslání blokováno', complained: 'Označeno jako spam' };
+        const statusText = ONE_TIME_STATUS_LABELS[order.status] || order.status;
+        appendCell(tr, state ? `${statusText} · ${deliveryLabels[state] || 'Doručení nepotvrzeno'}` : statusText);
         appendCell(tr, String(order.retry_count ?? 0));
         appendCell(tr, order.last_error || '-', 'admin-message-cell');
         tbody.appendChild(tr);

@@ -2,8 +2,9 @@ import { supabase } from '../db-supabase.js';
 import { getOneTimeOrderInput } from './one-time-orders.js';
 import { generateRelationshipReading, parseRelationshipReading } from './relationship-tarot.js';
 import { sendEmail } from '../email-service.js';
+import { relationshipEmailDelivery } from './relationship-email-delivery.js';
 
-export function createRelationshipFulfillment({ getOrder = getOneTimeOrderInput, generate = generateRelationshipReading, send = sendEmail, db = supabase } = {}) {
+export function createRelationshipFulfillment({ getOrder = getOneTimeOrderInput, generate = generateRelationshipReading, send = sendEmail, db = supabase, delivery = relationshipEmailDelivery } = {}) {
 const inFlight = new Map();
 // Webhook and reconciliation share the same promise on this process. A persisted
 // reading and provider idempotency key also make later retries repeatable.
@@ -15,8 +16,11 @@ return async function fulfillRelationshipTarotOrder({ orderId }) {
         if (!order || order.product_type !== 'relationship_tarot' || !order.customer_email
             || !order.payload?.question || order.payload?.cards?.length !== 3) throw new Error('Invalid relationship order');
         if (order.status === 'fulfilled') return;
+        // A saved provider ID proves acceptance, not delivery. It nevertheless
+        // prevents another send when only the final fulfillment write failed.
+        if (order.email_id) return;
         let reading = order.payload.reading;
-        if (reading) parseRelationshipReading(reading);
+        if (reading) parseRelationshipReading(reading, { strictLanguage: false });
         else {
             reading = await generate(order.payload);
             parseRelationshipReading(reading);
@@ -28,10 +32,11 @@ return async function fulfillRelationshipTarotOrder({ orderId }) {
                 // Another worker won the optimistic write. All deliveries must use
                 // that same saved content so the provider idempotency key matches.
                 reading = (await getOrder(orderId))?.payload?.reading;
-                parseRelationshipReading(reading);
+                parseRelationshipReading(reading, { strictLanguage: false });
             }
         }
-        await send({ to: order.customer_email, template: 'relationship_tarot', data: { ...order.payload, reading } }, { idempotencyKey: `relationship-tarot-${orderId}` });
+        const result = await send({ to: order.customer_email, template: 'relationship_tarot', data: { ...order.payload, reading } }, { idempotencyKey: `relationship-tarot-${orderId}` });
+        await delivery.recordAccepted(orderId, result?.emailId);
     })();
     inFlight.set(orderId, work);
     try { return await work; } finally { inFlight.delete(orderId); }

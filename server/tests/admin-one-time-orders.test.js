@@ -103,4 +103,17 @@ describe('Admin one-time orders API', () => {
         expect(res.body.status).toBe('fulfilled');
         expect(res.body.orders.map((order) => order.id)).toContain(fulfilledId);
     });
+
+    test('reports email acceptance separately from confirmed mail-server delivery', async () => {
+        const emailId = `email-${randomUUID()}`;
+        const orderId = await insertOrder({ product_type: 'relationship_tarot', product_id: 'relationship_tarot', status: 'fulfilled', email_id: emailId });
+        await supabase.from('relationship_email_events').insert({ event_id: `msg-${randomUUID()}`, email_id: emailId, event_type: 'email.delivered', event_at: '2026-10-11T09:00:00Z' });
+        const response = await request(app).get('/api/admin/one-time-orders?status=fulfilled')
+            .set('Authorization', `Bearer ${adminToken()}`).expect(200);
+        expect(response.body.orders.find(order => order.id === orderId).email_delivery.status).toBe('delivered');
+        const legacyId = await insertOrder({ product_type: 'relationship_tarot', status: 'fulfilled' });
+        const legacy = await request(app).get('/api/admin/one-time-orders?status=fulfilled')
+            .set('Authorization', `Bearer ${adminToken()}`).expect(200);
+        expect(legacy.body.orders.find(order => order.id === legacyId).email_delivery.status).toBe('unknown');
+    });
 });

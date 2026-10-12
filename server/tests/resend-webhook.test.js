@@ -84,4 +84,21 @@ describe('Resend inbound email webhook', () => {
             .toThrow('RESEND_WEBHOOK_SECRET is required');
         expect(forwardMock).not.toHaveBeenCalled();
     });
+
+    test('routes verified delivery events using the signed event ID without forwarding', async () => {
+        const event = { type: 'email.delivered', created_at: '2026-10-11T09:00:00Z', data: { email_id: 'email-1' } };
+        verifyMock.mockReturnValue(event);
+        const delivery = { recordEvent: jest.fn(async () => ({ recorded: true })) };
+        await expect(handleResendWebhook(Buffer.from('{}'), { 'svix-id': 'msg-1' }, { delivery })).resolves.toEqual({ recorded: true });
+        expect(delivery.recordEvent).toHaveBeenCalledWith(event, 'msg-1');
+        expect(forwardMock).not.toHaveBeenCalled();
+    });
+
+    test('a rejected webhook signature cannot mutate delivery status', async () => {
+        verifyMock.mockImplementation(() => { throw new Error('Invalid signature'); });
+        const delivery = { recordEvent: jest.fn() };
+        await expect(handleResendWebhook(Buffer.from('{}'), {}, { delivery })).rejects.toThrow('Invalid signature');
+        expect(delivery.recordEvent).not.toHaveBeenCalled();
+        expect(forwardMock).not.toHaveBeenCalled();
+    });
 });

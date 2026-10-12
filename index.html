@@ -72,8 +72,8 @@
   <link rel="dns-prefetch" href="https://www.googletagmanager.com">
 
   <!-- Homepage CSS bundle: local fonts + global CSS + homepage-only rules -->
-  <link rel="preload" href="/css/home.min.css?v=14" as="style">
-  <link rel="stylesheet" href="/css/home.min.css?v=14">
+  <link rel="preload" href="/css/home.min.css?v=20261012-reading-finish" as="style">
+  <link rel="stylesheet" href="/css/home.min.css?v=20261012-reading-finish">
 
   <!-- SEO Schema -->
 
@@ -459,9 +459,9 @@
             <div class="tarot-daily-tool__copy">
               <span class="section__badge">Tarot karta dne</span>
               <h3 class="section__title">Jedna karta. Chvíle pro sebe.</h3>
-              <p class="section__text">Otoč kartu z naší malované sady. Najdeš krátký význam a podnět k zamyšlení. Dnešní karta zůstává celý den stejná.</p>
+              <p class="section__text">Otoč jednu kartu a vezmi si z ní myšlenku pro dnešek. Po celý den zůstává stejná.</p>
               <button id="tarot-daily-reveal" class="btn btn--primary" type="button">Otočit kartu dne</button>
-              <p class="section__text text-sm">Zdarma a bez registrace. Karta nabízí nový pohled, rozhodnutí zůstává na tobě.</p>
+              <p class="section__text text-sm">Zdarma, bez registrace. Rozhodnutí zůstává na tobě.</p>
             </div>
             <div id="tarot-daily-card-result" class="tarot-daily-card-result" aria-live="polite" data-state="waiting">
               <div class="tarot-daily-card-result__image">
@@ -469,8 +469,8 @@
               </div>
               <div class="tarot-daily-card-result__content">
                 <span id="tarot-daily-date" class="tarot-daily-card-result__date">Karta čeká na otočení</span>
-                <h3 id="tarot-daily-card-name">Tvoje dnešní karta</h3>
-                <p id="tarot-daily-card-meaning">Otoč kartu a uvidíš její význam.</p>
+                <h3 id="tarot-daily-card-name">Chvíle k zamyšlení</h3>
+                <p id="tarot-daily-card-meaning"></p>
                 <p id="tarot-daily-card-advice" class="tarot-daily-card-result__advice"></p>
                 <div class="tarot-daily-card-result__actions">
                   <a id="tarot-daily-full-reading" href="/tarot.html?source=tarot_daily_card_widget&amp;feature=tarot&amp;intent=daily_card" class="btn btn--primary">Rozvinout výklad</a>
@@ -788,6 +788,30 @@
     </section>
 
 
+
+    <section class="section home-reading-section" id="home-relationship-reading" data-relationship-offer="homepage_relationship_spotlight" hidden aria-labelledby="home-reading-title">
+      <div class="container home-reading-grid">
+        <div class="home-reading-copy">
+          <span class="section__badge">Pro jednu vztahovou otázku</span>
+          <h2 class="section__title" id="home-reading-title">Když otázka potřebuje<br>víc prostoru.</h2>
+          <p class="section__text">Tři karty, jejich společné téma a jeden konkrétní krok. Osobní výklad se vytvoří automaticky podle tvého zadání a přijde celý do e-mailu.</p>
+          <div class="home-reading-excerpt">
+            <span>Zkrácená modelová ukázka</span>
+            <blockquote>Samotná úleva po usmíření ještě neodpovídá na to, zda ve vztahu má prostor také tvoje potřeba mluvit.</blockquote>
+          </div>
+          <a class="btn btn--primary" href="/vztahovy-vyklad.html?source=homepage_relationship_spotlight">Prohlédnout osobní výklad <span aria-hidden="true">→</span></a>
+          <p class="home-reading-price"><strong>149 Kč</strong> jednorázově · bez členství a registrace</p>
+        </div>
+        <figure class="home-reading-art">
+          <div class="home-reading-cards">
+            <img src="/img/tarot-v2/tarot_spravedlnost.webp" alt="Ukázková karta Spravedlnost" width="600" height="1000" loading="lazy" decoding="async">
+            <img src="/img/tarot-v2/tarot_milenci.webp" alt="Ukázková karta Milenci" width="600" height="1000" loading="lazy" decoding="async">
+            <img src="/img/tarot-v2/tarot_mirnost.webp" alt="Ukázková karta Mírnost" width="600" height="1000" loading="lazy" decoding="async">
+          </div>
+          <figcaption>Tvoje potřeby · Tvoje hranice · Tvůj další krok<br><span>Karty z ukázky. Pro tvůj výklad vybereme tři nové.</span></figcaption>
+        </figure>
+      </div>
+    </section>
 
     <section class="section section--alt section--compact" id="cenik">
       <div class="container">
@@ -1768,6 +1792,7 @@
 
   <script type="module" src="js/dist/analytics-page-init.js" async></script>
 
+  <script src="js/dist/relationship-tarot-bridge.js?v=20261011-home-offer" defer></script>
   <script src="js/dist/index-lazy-load.js?v=4" defer></script>
 
   <script src="js/dist/pwa-install.js" defer></script>

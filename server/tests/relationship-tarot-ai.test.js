@@ -35,6 +35,36 @@ test('real generator requests constrained JSON from the provider and validates i
     expect(body.system).toContain('„jsi zahlcený“');
     expect(body.system).toContain('„ochotný nebo ochotná“');
     expect(body.system).toContain('„téma dosud neotevřel“');
+    expect(body.system).toContain('„co bys chtělo“');
+    expect(body.system).toContain('„pokud se cítíš připraveno“');
+    expect(body.system).toContain('Neutrální oslovení vytvoř přestavbou věty');
+});
+
+const providerResponse = value => ({ ok: true, status: 200, json: async () => ({ content: [{ type: 'text', text: JSON.stringify(value) }] }) });
+const neuterProviderReading = { ...providerReading, nextStep: `${paragraph} Co bys chtělo v rozhovoru otevřít?` };
+
+test('second-person neuter gets one corrective generation with the same input', async () => {
+    upstream.mockResolvedValueOnce(providerResponse(neuterProviderReading)).mockResolvedValueOnce(providerResponse(providerReading));
+    const before = upstream.mock.calls.length;
+    await expect(generateRelationshipReading({ question: 'Co se dá otevřít v rozhovoru?', cards: drawRelationshipCards() })).resolves.toEqual(reading);
+    const [first, second] = upstream.mock.calls.slice(before).map(([, options]) => JSON.parse(options.body));
+    expect(upstream.mock.calls.length - before).toBe(2);
+    expect(second.messages).toEqual(first.messages);
+    expect(second.system).toContain('Oprav jazyk přímého oslovení');
+});
+
+test('second neuter output fails after one correction', async () => {
+    upstream.mockResolvedValueOnce(providerResponse(neuterProviderReading)).mockResolvedValueOnce(providerResponse(neuterProviderReading));
+    const before = upstream.mock.calls.length;
+    await expect(generateRelationshipReading({ question: 'Co se dá otevřít v rozhovoru?', cards: drawRelationshipCards() })).rejects.toMatchObject({ code: 'RELATIONSHIP_READING_NEUTER_ADDRESS' });
+    expect(upstream.mock.calls.length - before).toBe(2);
+});
+
+test('structural validation errors do not trigger corrective generation', async () => {
+    upstream.mockResolvedValueOnce(providerResponse({ ...providerReading, card1: 'short' }));
+    const before = upstream.mock.calls.length;
+    await expect(generateRelationshipReading({ question: 'Co se dá otevřít v rozhovoru?', cards: drawRelationshipCards() })).rejects.toThrow('Invalid relationship reading structure');
+    expect(upstream.mock.calls.length - before).toBe(1);
 });
 
 test('malformed upstream content never exposes private fragments through parsing errors', async () => {

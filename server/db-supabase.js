@@ -194,7 +194,13 @@ function createMockSupabaseClient() {
         }
 
         filteredRows() {
-            let rows = [...tableRows(this.table)];
+            // Mirror the read-only SQL view used by delivery tracking in tests.
+            let rows = this.table === 'relationship_pending_email_alerts'
+                ? tableRows('relationship_email_events').filter(event => event.alert_pending === true && event.alert_claim === 'idle')
+                    .flatMap(event => tableRows('one_time_order_inputs')
+                        .filter(order => order.product_type === 'relationship_tarot' && order.email_id === event.email_id)
+                        .map(order => ({ ...event, order_id: order.id })))
+                : [...tableRows(this.table)];
 
             for (const filter of this.filters) {
                 rows = rows.filter(row => this.matchesFilter(row, filter));

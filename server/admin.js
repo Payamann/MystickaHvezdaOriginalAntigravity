@@ -12,6 +12,7 @@ import {
 } from './services/gmail-support.js';
 import { getCachedStripeWebhookAudit } from './services/stripe-webhook-audit.js';
 import { buildRelationshipTarotReport } from './services/relationship-tarot-report.js';
+import { relationshipDeliveryState } from './services/relationship-email-delivery.js';
 
 const router = express.Router();
 
@@ -2445,7 +2446,7 @@ router.get('/one-time-orders', authenticateToken, requireAdmin, async (req, res)
 
         let query = supabase
             .from('one_time_order_inputs')
-            .select('id, product_type, product_id, customer_email, customer_name, status, retry_count, last_error, last_attempt_at, created_at, fulfilled_at', { count: 'exact' })
+            .select('id, product_type, product_id, customer_email, customer_name, status, retry_count, last_error, last_attempt_at, created_at, fulfilled_at, email_id, email_sent_at', { count: 'exact' })
             .order('created_at', { ascending: false })
             .range(offset, offset + limit - 1);
 
@@ -2454,10 +2455,20 @@ router.get('/one-time-orders', authenticateToken, requireAdmin, async (req, res)
         const { data, error, count } = await query;
         if (error) throw error;
 
+        const emailIds = (data || []).filter(order => order.product_type === 'relationship_tarot' && order.email_id).map(order => order.email_id);
+        let deliveryEvents = [];
+        if (emailIds.length) {
+            const events = await supabase.from('relationship_email_events').select('email_id,event_type,event_at').in('email_id', emailIds);
+            if (events.error) throw new Error('Could not load email delivery states');
+            deliveryEvents = events.data || [];
+        }
+
         res.json({
             success: true,
             status,
-            orders: data || [],
+            orders: (data || []).map(order => ({ ...order,
+                email_delivery: order.product_type === 'relationship_tarot' ? relationshipDeliveryState(order, deliveryEvents) : null
+            })),
             pagination: {
                 limit,
                 offset,

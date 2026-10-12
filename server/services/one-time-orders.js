@@ -103,7 +103,7 @@ export async function getOneTimeOrderInput(orderId) {
 
     const { data, error } = await supabase
         .from('one_time_order_inputs')
-        .select('id, product_type, product_id, customer_email, customer_name, payload, status, stripe_session_id, fulfilled_at, updated_at')
+        .select('id, product_type, product_id, customer_email, customer_name, payload, status, stripe_session_id, fulfilled_at, updated_at, email_id, email_sent_at')
         .eq('id', cleanOrderId)
         .maybeSingle();
 
@@ -139,17 +139,17 @@ export async function markOneTimeOrderInputFulfilled(orderId) {
     const cleanOrderId = cleanString(orderId, 80);
     if (!cleanOrderId) return false;
 
-    const { error } = await supabase
+    const { data, error } = await supabase
         .from('one_time_order_inputs')
         .update({
             status: 'fulfilled',
             fulfilled_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
         })
-        .eq('id', cleanOrderId);
+        .eq('id', cleanOrderId).select('id').maybeSingle();
 
-    if (error) {
-        console.warn('[ONE_TIME_ORDER] Could not mark order fulfilled:', error.message);
+    if (error || !data) {
+        console.warn('[ONE_TIME_ORDER] Could not mark order fulfilled:', error?.message || 'Order not found');
         return false;
     }
 

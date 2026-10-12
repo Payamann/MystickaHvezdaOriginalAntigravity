@@ -103,6 +103,16 @@ describe('Paid reading and delivery', () => {
         expect(() => parseRelationshipReading({ ...reading, nextStep: `${paragraph} Téma dosud neotevřel, proto se k němu vrať.` })).toThrow('Gendered relationship reading address');
         expect(() => parseRelationshipReading({ ...reading, nextStep: `${paragraph} Partner chtěl mluvit v klidu, proto si zvolte čas.` })).not.toThrow();
     });
+    test('new readings reject second-person neuter forms but preserve third-person neuter and stored readings', () => {
+        const neuterPast = { ...reading, nextStep: `${paragraph} Co bys chtělo v rozhovoru otevřít?` };
+        const neuterAdjective = { ...reading, nextStep: `${paragraph} Pokud se cítíš připraveno, zkus začít.` };
+        expect(() => parseRelationshipReading(neuterPast)).toThrow('Unnatural relationship reading address');
+        expect(() => parseRelationshipReading(neuterAdjective)).toThrow('Unnatural relationship reading address');
+        expect(() => parseRelationshipReading(neuterPast, { strictLanguage: false })).not.toThrow();
+        expect(() => parseRelationshipReading(neuterAdjective, { strictLanguage: false })).not.toThrow();
+        expect(() => parseRelationshipReading({ ...reading, nextStep: `${paragraph} Co by dítě chtělo, můžeš zjistit otázkou.` })).not.toThrow();
+        expect(() => parseRelationshipReading({ ...reading, nextStep: `${paragraph} Je připraveno místo, kde můžete v klidu mluvit.` })).not.toThrow();
+    });
     test.each([{ amount_total: 1 }, { currency: 'eur' }, { payment_status: 'unpaid' }, { payment_status: 'no_payment_required' }, { status: 'open' }, { metadata: { ...paidSession.metadata, orderId: 'other' } }])('reconciliation cannot fulfill a mismatched or unpaid session %j', async patch => {
         const session = { ...paidSession, ...patch };
         expect(isPaidRelationshipSession(session, 'order-1')).toBe(false);
@@ -112,7 +122,7 @@ describe('Paid reading and delivery', () => {
     test('delivery failure retries the stored reading with the same email idempotency key', async () => {
         const order = await createOneTimeOrderInput({ productId: 'relationship_tarot', productType: 'relationship_tarot', customerEmail: orderInput.email, customerName: '', payload: { question: orderInput.question, cards: drawRelationshipCards() } });
         const generate = jest.fn(async () => reading);
-        const send = jest.fn().mockRejectedValueOnce(new Error('provider down')).mockResolvedValue({ success: true });
+        const send = jest.fn().mockRejectedValueOnce(new Error('provider down')).mockResolvedValue({ success: true, emailId: 'email-test-relationship' });
         const fulfill = createRelationshipFulfillment({ generate, send });
         await expect(fulfill({ orderId: order.id })).rejects.toThrow('provider down');
         expect((await getOneTimeOrderInput(order.id)).payload.reading).toEqual(reading);
@@ -120,6 +130,9 @@ describe('Paid reading and delivery', () => {
         expect(generate).toHaveBeenCalledTimes(1);
         expect(send.mock.calls[0]).toEqual(send.mock.calls[1]);
         expect(send.mock.calls[0][1].idempotencyKey).toBe(`relationship-tarot-${order.id}`);
+        expect((await getOneTimeOrderInput(order.id)).email_id).toBe('email-test-relationship');
+        await fulfill({ orderId: order.id });
+        expect(send).toHaveBeenCalledTimes(2);
     });
     test('bad AI output and persistence failure never deliver filler', async () => {
         const order = await createOneTimeOrderInput({ productId: 'relationship_tarot', productType: 'relationship_tarot', customerEmail: orderInput.email, customerName: '', payload: { question: orderInput.question, cards: drawRelationshipCards() } });
