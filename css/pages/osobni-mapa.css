@@ -3,15 +3,15 @@
 }
 
 :root {
-    --pm-bg: #050510;
-    --pm-bg-2: #09111d;
-    --pm-panel: rgba(12, 20, 33, 0.82);
-    --pm-panel-strong: rgba(15, 26, 42, 0.94);
-    --pm-line: rgba(214, 183, 106, 0.18);
-    --pm-line-strong: rgba(214, 183, 106, 0.34);
-    --pm-gold: #d6b76a;
-    --pm-gold-bright: #f2d987;
-    --pm-teal: #62d5c7;
+    --pm-bg: #0b1929;
+    --pm-bg-2: #102638;
+    --pm-panel: rgba(16, 38, 56, 0.82);
+    --pm-panel-strong: #102638;
+    --pm-line: rgba(189, 155, 101, 0.24);
+    --pm-line-strong: rgba(189, 155, 101, 0.44);
+    --pm-gold: #bd9b65;
+    --pm-gold-bright: #d0b17c;
+    --pm-teal: #d0b17c;
     --pm-text: #f3ead8;
     --pm-muted: rgba(243, 234, 216, 0.72);
     --pm-soft: rgba(243, 234, 216, 0.52);
@@ -44,10 +44,10 @@ body.page-personal-map::before {
     inset: 0;
     pointer-events: none;
     background-image:
-        radial-gradient(circle at 12% 18%, rgba(214, 183, 106, 0.28) 0 1px, transparent 1.5px),
-        radial-gradient(circle at 72% 22%, rgba(98, 213, 199, 0.22) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 12% 18%, rgba(189, 155, 101, 0.28) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 72% 22%, rgba(208, 177, 124, 0.22) 0 1px, transparent 1.5px),
         radial-gradient(circle at 42% 74%, rgba(243, 234, 216, 0.22) 0 1px, transparent 1.5px),
-        radial-gradient(circle at 88% 62%, rgba(214, 183, 106, 0.2) 0 1px, transparent 1.5px);
+        radial-gradient(circle at 88% 62%, rgba(189, 155, 101, 0.2) 0 1px, transparent 1.5px);
     background-size: 220px 220px, 310px 310px, 260px 260px, 360px 360px;
     opacity: 0.52;
     z-index: -2;
@@ -186,7 +186,7 @@ body.page-personal-map::before {
 .pm-button--primary {
     background: linear-gradient(135deg, #c69c35, #f2d987 54%, #d2aa43);
     color: var(--pm-ink);
-    box-shadow: 0 14px 38px rgba(214, 183, 106, 0.24);
+    box-shadow: 0 14px 38px rgba(189, 155, 101, 0.24);
 }
 
 .pm-button--ghost {
@@ -200,7 +200,7 @@ body.page-personal-map::before {
 }
 
 .pm-button--primary:hover:not(:disabled) {
-    box-shadow: 0 18px 48px rgba(214, 183, 106, 0.32);
+    box-shadow: 0 18px 48px rgba(189, 155, 101, 0.32);
 }
 
 .pm-button--ghost:hover:not(:disabled) {
@@ -238,10 +238,10 @@ body.page-personal-map::before {
 }
 
 .pm-hero__meta span {
-    border: 1px solid rgba(98, 213, 199, 0.2);
+    border: 1px solid rgba(208, 177, 124, 0.2);
     border-radius: 999px;
     padding: 7px 11px;
-    background: rgba(98, 213, 199, 0.055);
+    background: rgba(208, 177, 124, 0.055);
     color: rgba(229, 251, 247, 0.82);
     font-size: 0.83rem;
     line-height: 1.25;
@@ -296,7 +296,7 @@ body.page-personal-map::before {
     min-width: 170px;
     flex: 1 1 0;
     padding: 4px 4px 4px 12px;
-    border-left: 1px solid rgba(98, 213, 199, 0.24);
+    border-left: 1px solid rgba(208, 177, 124, 0.24);
 }
 
 .pm-offer-bar span,
@@ -485,9 +485,9 @@ body.page-personal-map::before {
 
 .pm-breakdown__grid span {
     min-width: 52px;
-    border: 1px solid rgba(214, 183, 106, 0.24);
+    border: 1px solid rgba(189, 155, 101, 0.24);
     border-radius: 999px;
-    background: rgba(214, 183, 106, 0.06);
+    background: rgba(189, 155, 101, 0.06);
 }
 
 .pm-breakdown__grid h3 {
@@ -578,11 +578,11 @@ body.page-personal-map::before {
     align-items: start;
     max-width: 860px;
     margin: 0 auto;
-    border: 1px solid rgba(98, 213, 199, 0.22);
+    border: 1px solid rgba(208, 177, 124, 0.22);
     border-radius: var(--pm-radius);
     padding: 26px;
     background:
-        linear-gradient(90deg, rgba(98, 213, 199, 0.08), rgba(12, 20, 33, 0.82)),
+        linear-gradient(90deg, rgba(208, 177, 124, 0.08), rgba(12, 20, 33, 0.82)),
         var(--pm-panel);
 }
 
@@ -642,9 +642,9 @@ body.page-personal-map::before {
 .pm-period-preview {
     margin: 16px 0 0;
     padding: 13px 15px;
-    border: 1px solid rgba(98, 213, 199, 0.28);
+    border: 1px solid rgba(208, 177, 124, 0.28);
     border-radius: 12px;
-    background: rgba(98, 213, 199, 0.08);
+    background: rgba(208, 177, 124, 0.08);
     color: var(--pm-text);
     font-size: 0.9rem;
     font-weight: 700;
@@ -747,7 +747,7 @@ body.page-personal-map::before {
 .pm-form textarea {
     width: 100%;
     min-height: 46px;
-    border: 1px solid rgba(214, 183, 106, 0.24);
+    border: 1px solid rgba(189, 155, 101, 0.24);
     border-radius: var(--pm-radius);
     background: rgba(5, 5, 16, 0.74);
     color: var(--pm-text);
@@ -782,9 +782,9 @@ body.page-personal-map::before {
 .pm-form input:focus,
 .pm-form select:focus,
 .pm-form textarea:focus {
-    border-color: rgba(98, 213, 199, 0.74);
+    border-color: rgba(208, 177, 124, 0.74);
     background: rgba(5, 5, 16, 0.9);
-    box-shadow: 0 0 0 3px rgba(98, 213, 199, 0.1);
+    box-shadow: 0 0 0 3px rgba(208, 177, 124, 0.1);
 }
 
 .pm-form input:focus-visible,
@@ -808,9 +808,9 @@ body.page-personal-map::before {
 .pm-form__restored {
     margin: -2px 0 0;
     padding: 11px 13px;
-    border: 1px solid rgba(98, 213, 199, 0.22);
+    border: 1px solid rgba(208, 177, 124, 0.22);
     border-radius: 12px;
-    background: rgba(98, 213, 199, 0.07);
+    background: rgba(208, 177, 124, 0.07);
     color: rgba(229, 251, 247, 0.86);
     font-size: 0.86rem;
     line-height: 1.5;
@@ -827,10 +827,10 @@ body.page-personal-map::before {
     gap: 10px;
     margin-top: -2px;
     padding: 14px;
-    border: 1px solid rgba(98, 213, 199, 0.18);
+    border: 1px solid rgba(208, 177, 124, 0.18);
     border-radius: var(--pm-radius);
     background:
-        linear-gradient(180deg, rgba(98, 213, 199, 0.06), rgba(12, 20, 33, 0.36)),
+        linear-gradient(180deg, rgba(208, 177, 124, 0.06), rgba(12, 20, 33, 0.36)),
         rgba(5, 5, 16, 0.42);
 }
 
@@ -913,7 +913,7 @@ body.page-personal-map::before {
 }
 
 .pm-status__inner--cancel {
-    border-color: rgba(214, 183, 106, 0.28);
+    border-color: rgba(189, 155, 101, 0.28);
 }
 
 .pm-faq {
@@ -1158,6 +1158,33 @@ body.page-personal-map .cookie-banner__actions .btn {
 body.page-personal-map #cookie-accept {
     grid-column: 1 / -1;
     min-height: 36px;
+}
+
+/* The public preview and delivered PDF share the painted Atlas cover. */
+body.page-personal-map { background:#0b1929; }
+body.page-personal-map::before, .personal-map-stars { display:none; }
+body.page-personal-map .pm-hero { min-height:0; padding-top:120px; padding-bottom:64px; }
+body.page-personal-map .pm-preview-stack { width:min(100%,330px); aspect-ratio:210 / 297; }
+body.page-personal-map .pm-preview-stack__page { object-fit:contain; border-radius:3px; transform:none; border-color:#bd9b6544; box-shadow:0 18px 40px #0004; }
+body.page-personal-map .pm-hero__meta span { background:transparent; color:#c3c9cb; border-color:#bd9b6544; border-radius:3px; }
+body.page-personal-map .pm-button--primary { background:#bd9b65; color:#0b1929; box-shadow:none; }
+body.page-personal-map .pm-button--primary:hover:not(:disabled) { background:#d0b17c; box-shadow:none; }
+body.page-personal-map .pm-gallery figure { border-radius:4px; background:#102638; border-color:#bd9b6544; }
+body.page-personal-map .pm-preview-download { text-align:center; margin:28px 0 0; }
+body.page-personal-map .pm-gallery img { background:#0b1929; }
+body.page-personal-map .pm-sample__copy p { color:#e9e3d7; }
+@media(max-width:700px) {
+    body.page-personal-map .pm-hero { padding-top:100px; padding-bottom:40px; grid-template-columns:minmax(0,1fr) 110px; gap:22px 16px; }
+    body.page-personal-map .pm-hero__content { display:contents; }
+    body.page-personal-map .pm-hero__content > :not(h1) { grid-column:1 / -1; }
+    body.page-personal-map .pm-hero h1 { grid-column:1; grid-row:2; margin:0; }
+    body.page-personal-map .pm-hero__visual { grid-column:2; grid-row:2; align-self:center; }
+    body.page-personal-map .pm-preview-stack { width:100%; }
+    body.page-personal-map .pm-hero__lead { margin:0; font-size:1.04rem; }
+    body.page-personal-map .pm-hero__sublead { margin:0; font-size:.93rem; }
+    body.page-personal-map .pm-hero__actions,
+    body.page-personal-map .pm-hero__meta { margin-top:0; }
+    body.page-personal-map .pm-preview-download a { white-space:normal; }
 }
 
 @media (max-width: 520px) {

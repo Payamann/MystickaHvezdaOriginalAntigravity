@@ -129,6 +129,18 @@ body.atlas-home .step__text { line-height:1.8; max-width:32ch; }
 body.atlas-home .card--pricing { padding:32px; }
 body.atlas-home .card--pricing.featured { border-top:2px solid #b3955e; }
 body.atlas-home .personal-map-spotlight { padding:clamp(24px,4vw,48px); }
+
+body.atlas-home .personal-map-spotlight { background:linear-gradient(110deg,#102638f2,#102638eb),url('/img/atlas/09-nocni-zahrada.webp') center / cover !important; border:0; }
+body.atlas-home .personal-map-spotlight__copy .section__title { max-width:620px; font-size:clamp(2rem,3.4vw,3rem); }
+body.atlas-home .personal-map-spotlight__preview { width:min(100%,280px); }
+body.atlas-home .personal-map-spotlight__preview::before,
+body.atlas-home .personal-map-spotlight__preview::after { display:none; }
+body.atlas-home .personal-map-spotlight__preview img { border-radius:3px; transform:none; box-shadow:0 16px 35px #0004; }
+body.atlas-home .personal-map-spotlight__preview-caption { display:block; color:#c3c9cb; text-align:center; font-size:.76rem; line-height:1.6; margin-top:14px; }
+@media(max-width:700px) {
+    body.atlas-home .personal-map-spotlight__preview { width:min(72%,240px); }
+    body.atlas-home .personal-map-spotlight { gap:28px; }
+}
 body.atlas-home .homepage-faq-card summary { font-size:16px; line-height:1.6; min-height:72px; }
 body.atlas-home .homepage-faq-card p { font-size:14px; line-height:1.8; }
 body.atlas-home .cta-banner { border-radius:8px; padding:clamp(32px,5vw,64px); }

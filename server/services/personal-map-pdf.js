@@ -602,8 +602,8 @@ export function buildPersonalMapHtml(input) {
         text: sections.yearMantra?.text || 'Tahle věta se doplní podle osobního výkladu.'
     };
     const months = normalizeMonths(sections.months);
-    const coverArt = input.assets?.cover || imageDataUri('img/personal-map/cover-luxury-pdf.jpg');
-    const pageBg = input.assets?.pageBackground || imageDataUri('img/personal-map/page-bg-luxury-pdf.jpg');
+    const coverArt = input.assets?.cover || imageDataUri('img/personal-map/cover-arch-v2.webp');
+    const pageBg = input.assets?.pageBackground || imageDataUri('img/atlas/09-nocni-zahrada.webp');
 
     const monthHtml = months.length
         ? months.map((item, index) => `
@@ -645,7 +645,7 @@ html { color-scheme: dark; }
 
 body {
   margin: 0;
-  background: #050510;
+  background: #0b1929;
   color: #f4ead6;
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 12.2pt;
@@ -660,7 +660,7 @@ body {
   position: relative;
   overflow: hidden;
   page-break-after: always;
-  background: #050510;
+  background: #0b1929;
 }
 
 .mh-pdf-page:last-child { page-break-after: auto; }
@@ -673,11 +673,11 @@ body {
   right: 18mm;
   z-index: 2;
   padding-bottom: 3mm;
-  border-bottom: 1px solid rgba(255, 215, 0, .22);
+  border-bottom: 1px solid rgba(189, 155, 101, .22);
   font-family: InterLocal, Arial, sans-serif;
   text-transform: uppercase;
   letter-spacing: 3px;
-  color: rgba(255, 215, 0, .58);
+  color: rgba(189, 155, 101, .58);
   font-size: 7.2pt;
 }
 
@@ -689,18 +689,18 @@ body {
   bottom: 8mm;
   z-index: 2;
   padding-top: 3mm;
-  border-top: 1px solid rgba(255, 215, 0, .18);
+  border-top: 1px solid rgba(189, 155, 101, .18);
   font-family: InterLocal, Arial, sans-serif;
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 3px;
-  color: rgba(255, 215, 0, .42);
+  color: rgba(189, 155, 101, .42);
   font-size: 7pt;
 }
 
 .mh-pdf-page--cover {
-  background-color: #050510;
-  background-image: url('${coverArt}');
+  background-color: #0b1929;
+  background-image: linear-gradient(180deg,rgba(11,25,41,.16),transparent 20%,transparent 58%,rgba(11,25,41,.15)), url('${coverArt}');
   background-size: cover;
   background-position: center;
   display: grid;
@@ -712,20 +712,23 @@ body {
 .cover-frame {
   width: 100%;
   height: 100%;
-  border: 1px solid rgba(238, 197, 95, .34);
-  outline: 1px solid rgba(238, 197, 95, .1);
-  outline-offset: -6mm;
-  display: flex;
-  flex-direction: column;
+  border: 1px solid rgba(208, 177, 124, .34);
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  gap: 5mm;
   align-items: center;
-  justify-content: space-between;
-  padding: 16mm 14mm 14mm;
+  height: 261mm;
+  padding: 10mm 12mm;
   background: transparent;
 }
 
 .cover-title-block {
-  margin-top: 122mm;
+  margin-top: 0;
+  align-self: end;
+  margin-bottom: 0;
 }
+
+.cover-model-label { margin:4mm 0 0; color:#d0b17c; font:8pt InterLocal,Arial,sans-serif; letter-spacing:.4px; }
 
 .brand-mark,
 .content-kicker,
@@ -733,7 +736,7 @@ body {
   font-family: InterLocal, Arial, sans-serif;
   text-transform: uppercase;
   letter-spacing: 3.5px;
-  color: rgba(238, 197, 95, .72);
+  color: rgba(208, 177, 124, .72);
   font-size: 8.3pt;
 }
 
@@ -782,13 +785,13 @@ body {
 .mh-pdf-page--notes,
 .mh-pdf-page--closing {
   padding: 28mm 19mm 23mm;
-  background-color: #050510;
-  background-image: url('${pageBg}');
+  background-color: #0b1929;
+  background-image: linear-gradient(rgba(11,25,41,.94), rgba(11,25,41,.97)), url('${pageBg}');
   background-size: cover;
   background-position: center;
   box-shadow:
-    inset 0 0 0 1px rgba(255, 215, 0, .08),
-    inset 12mm 0 40mm rgba(5,5,16,.28);
+    inset 0 0 0 1px rgba(189, 155, 101, .08),
+    inset 12mm 0 40mm rgba(11,25,41,.28);
 }
 
 .mh-pdf-page--intro {
@@ -805,7 +808,7 @@ body {
 .essence-title {
   margin-top: 4mm;
   font-family: CinzelLocal, Georgia, serif;
-  color: #f1cf76;
+  color: #d0b17c;
   text-transform: uppercase;
   letter-spacing: 1.2px;
   font-size: 22pt;
@@ -827,7 +830,7 @@ body {
 .insight-card {
   min-height: 63mm;
   border: 1px solid rgba(255,215,0,.24);
-  background: rgba(10, 12, 30, .9);
+  background: rgba(16, 38, 56, .9);
   padding: 6mm;
   position: relative;
   box-shadow: 0 12px 34px rgba(0,0,0,.16);
@@ -845,7 +848,7 @@ body {
   font-family: InterLocal, Arial, sans-serif;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  color: #f1cf76;
+  color: #d0b17c;
   font-size: 8.8pt;
 }
 
@@ -867,8 +870,8 @@ body {
 .mantra-shell {
   width: 100%;
   max-width: 150mm;
-  border-top: 1px solid rgba(212,175,55,.34);
-  border-bottom: 1px solid rgba(212,175,55,.34);
+  border-top: 1px solid rgba(189,155,101,.34);
+  border-bottom: 1px solid rgba(189,155,101,.34);
   padding: 18mm 10mm;
 }
 
@@ -895,7 +898,7 @@ body {
 .intro-panel {
   border: 1px solid rgba(255,215,0,.28);
   padding: 18mm 16mm;
-  background: rgba(10, 12, 30, .92);
+  background: rgba(16, 38, 56, .92);
   box-shadow: inset 0 0 70px rgba(255,215,0,.05), 0 16px 48px rgba(0,0,0,.22);
 }
 
@@ -904,7 +907,7 @@ body {
 .timeline-title,
 .closing-title {
   font-family: CinzelLocal, Georgia, serif;
-  color: #f1cf76;
+  color: #d0b17c;
   text-transform: uppercase;
   letter-spacing: 1.2px;
   line-height: 1.18;
@@ -928,7 +931,7 @@ body {
 }
 
 .signal {
-  border-top: 1px solid rgba(212,175,55,.42);
+  border-top: 1px solid rgba(189,155,101,.42);
   padding-top: 4mm;
 }
 
@@ -936,7 +939,7 @@ body {
   font-family: InterLocal, Arial, sans-serif;
   font-size: 7.4pt;
   letter-spacing: 2px;
-  color: rgba(238,197,95,.72);
+  color: rgba(208,177,124,.72);
   text-transform: uppercase;
 }
 
@@ -962,11 +965,11 @@ body {
   position: relative;
   width: 58mm;
   height: 58mm;
-  border: 1px solid rgba(212,175,55,.44);
+  border: 1px solid rgba(189,155,101,.44);
   border-radius: 50%;
   display: grid;
   place-items: center;
-  color: #f1cf76;
+  color: #d0b17c;
   background: transparent;
   box-shadow: none;
 }
@@ -975,7 +978,7 @@ body {
 .signature-seal::after {
   content: '';
   position: absolute;
-  border: 1px solid rgba(212,175,55,.2);
+  border: 1px solid rgba(189,155,101,.2);
   border-radius: 50%;
 }
 
@@ -993,7 +996,7 @@ body {
 .signature-title {
   margin: 4mm 0 6mm;
   font-family: CinzelLocal, Georgia, serif;
-  color: #f1cf76;
+  color: #d0b17c;
   font-size: 24pt;
   line-height: 1.14;
   text-transform: uppercase;
@@ -1016,21 +1019,21 @@ body {
 }
 
 .signature-keywords span {
-  border: 1px solid rgba(212,175,55,.24);
+  border: 1px solid rgba(189,155,101,.24);
   padding: 2mm 4mm;
   font-family: InterLocal, Arial, sans-serif;
   font-size: 7.6pt;
   letter-spacing: 2px;
   text-transform: uppercase;
   color: rgba(241,207,118,.82);
-  background: rgba(10,12,30,.58);
+  background: rgba(16,38,56,.58);
 }
 
 .signature-question {
   margin-top: 10mm;
   padding: 6mm 7mm;
-  border-left: 2px solid rgba(212,175,55,.62);
-  background: rgba(212,175,55,.07);
+  border-left: 2px solid rgba(189,155,101,.62);
+  background: rgba(189,155,101,.07);
   color: rgba(255,248,232,.9);
   font-size: 12pt;
 }
@@ -1041,8 +1044,8 @@ body {
   top: 18mm;
   bottom: 18mm;
   width: 8mm;
-  border-right: 1px solid rgba(212,175,55,.22);
-  color: rgba(212,175,55,.38);
+  border-right: 1px solid rgba(189,155,101,.22);
+  color: rgba(189,155,101,.38);
   font-family: Georgia, serif;
   font-size: 18pt;
   display: flex;
@@ -1062,7 +1065,7 @@ body {
 
 .chapter-rule {
   height: 1px;
-  background: rgba(212,175,55,.46);
+  background: rgba(189,155,101,.46);
   margin: 7mm 0 8mm 8mm;
 }
 
@@ -1086,22 +1089,22 @@ body {
   font-size: 34pt;
   line-height: .9;
   padding: 1.6mm 2mm 0 0;
-  color: #f1cf76;
+  color: #d0b17c;
 }
 
 .callout {
   margin-top: 8mm;
   padding: 6mm 7mm;
-  border-left: 2px solid rgba(212,175,55,.58);
-  background: rgba(212,175,55,.075);
+  border-left: 2px solid rgba(189,155,101,.58);
+  background: rgba(189,155,101,.075);
   color: rgba(255,248,232,.9);
 }
 
 .deep-note {
   margin-top: 6mm;
   padding: 5mm 6mm;
-  border: 1px solid rgba(212,175,55,.18);
-  background: rgba(5,5,16,.36);
+  border: 1px solid rgba(189,155,101,.18);
+  background: rgba(11,25,41,.36);
   color: rgba(244,234,214,.78);
   font-size: 11.4pt;
 }
@@ -1124,10 +1127,10 @@ body {
 
 .side-note {
   align-self: start;
-  border: 1px solid rgba(212,175,55,.22);
-  border-top: 3px solid rgba(212,175,55,.54);
+  border: 1px solid rgba(189,155,101,.22);
+  border-top: 3px solid rgba(189,155,101,.54);
   padding: 5mm;
-  background: rgba(10,12,30,.76);
+  background: rgba(16,38,56,.76);
   color: rgba(244,234,214,.78);
 }
 
@@ -1137,7 +1140,7 @@ body {
   font-size: 7.3pt;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: #f1cf76;
+  color: #d0b17c;
 }
 
 .side-note p {
@@ -1166,7 +1169,7 @@ body {
   grid-template-columns: 15mm 1fr;
   gap: 5mm;
   padding: 3.6mm 0;
-  border-top: 1px solid rgba(212,175,55,.18);
+  border-top: 1px solid rgba(189,155,101,.18);
 }
 
 .month-index {
@@ -1180,7 +1183,7 @@ body {
   text-transform: uppercase;
   letter-spacing: 1.6px;
   font-size: 8.5pt;
-  color: #f1cf76;
+  color: #d0b17c;
   margin-bottom: 1.5mm;
 }
 
@@ -1194,7 +1197,7 @@ body {
 .actions-title {
   margin-top: 4mm;
   font-family: CinzelLocal, Georgia, serif;
-  color: #f1cf76;
+  color: #d0b17c;
   text-transform: uppercase;
   letter-spacing: 1.2px;
   font-size: 22pt;
@@ -1212,7 +1215,7 @@ body {
   grid-template-columns: 14mm 1fr;
   gap: 5mm;
   padding: 3.3mm 0;
-  border-top: 1px solid rgba(212,175,55,.18);
+  border-top: 1px solid rgba(189,155,101,.18);
 }
 
 .action-number {
@@ -1226,7 +1229,7 @@ body {
   text-transform: uppercase;
   letter-spacing: 1.5px;
   font-size: 8.4pt;
-  color: #f1cf76;
+  color: #d0b17c;
   margin-bottom: 1.5mm;
 }
 
@@ -1247,15 +1250,15 @@ body {
 .ritual-shell {
   width: 100%;
   max-width: 150mm;
-  border: 1px solid rgba(212,175,55,.3);
+  border: 1px solid rgba(189,155,101,.3);
   padding: 15mm 16mm;
-  background: rgba(10,12,30,.78);
+  background: rgba(16,38,56,.78);
 }
 
 .ritual-title {
   margin: 0 0 7mm;
   font-family: CinzelLocal, Georgia, serif;
-  color: #f1cf76;
+  color: #d0b17c;
   font-size: 23pt;
   line-height: 1.15;
   text-transform: uppercase;
@@ -1278,7 +1281,7 @@ body {
 .journal-title {
   margin: 4mm 0 5mm;
   font-family: CinzelLocal, Georgia, serif;
-  color: #f1cf76;
+  color: #d0b17c;
   font-size: 22pt;
   line-height: 1.16;
   text-transform: uppercase;
@@ -1296,7 +1299,7 @@ body {
   grid-template-columns: 13mm 1fr;
   gap: 5mm;
   padding: 4.2mm 0;
-  border-top: 1px solid rgba(212,175,55,.18);
+  border-top: 1px solid rgba(189,155,101,.18);
 }
 
 .journal-index {
@@ -1319,7 +1322,7 @@ body {
 .notes-title {
   margin: 4mm 0 5mm;
   font-family: CinzelLocal, Georgia, serif;
-  color: #f1cf76;
+  color: #d0b17c;
   font-size: 22pt;
   line-height: 1.16;
   text-transform: uppercase;
@@ -1368,7 +1371,7 @@ body {
   left: 0;
   right: 0;
   text-align: center;
-  color: rgba(238,197,95,.42);
+  color: rgba(208,177,124,.42);
 }
 </style>
 </head>
@@ -1378,7 +1381,8 @@ body {
       <div class="brand-mark">Mystická Hvězda · osobní výklad</div>
       <div class="cover-title-block">
         <h1 class="cover-title">${escapeHtml(productName)}</h1>
-        <p class="cover-subtitle">Personalizovaný výklad od dneška na 12 měsíců. Ne obecný horoskop, ale mapa témat, rozhodnutí a malých kroků, které tě povedou dál.</p>
+        <p class="cover-subtitle">Osobní otázka, souvislosti a malé kroky pro následujících 12 měsíců.</p>
+        ${input.preview === true ? '<p class="cover-model-label">Modelová ukázka · fiktivní údaje a zadání</p>' : ''}
       </div>
       <div>
         <div class="cover-name">${name}</div>
