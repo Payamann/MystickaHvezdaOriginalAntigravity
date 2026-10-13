@@ -27,3 +27,7 @@ Oddělený kandidát: `.codex-tmp/release-20261012`, základ `12ba756f6b22db07c0
 ## Jediný další krok
 
 Prohlédnout hotový obsah a tři návrhy. Po konkrétním zadání nasazení použít release guard nad izolovaným diffem; po schválení textů publikovat/naplánovat konkrétní FB objekty s reálným náhledem. Poté doplnit results až ze skutečného crawl a provozu. Žádné automatické budoucí sledování není nastavené.
+
+## Uložený kandidát
+
+Obsahový commit `bf8002cec17f2dbafce35005eafc07ed6d22eb87`, lokální větev `codex/organic-growth-20261013`. Žádný push ani deploy. Závěrečná sitemap kontrola odhalila starý lastmod horoskopy.html z předchozího mobilního vydání; jeho oprava je doložená Git historií a nemění stránku ani URL set.

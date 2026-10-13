@@ -17,7 +17,7 @@ Obsah dvou karet je v `data/tarot-card-seo-overrides.json`, včetně `hubSummary
 
 První regenerování odhalilo drift šablony: z 78 detailů by zmizely OG rozměry a twitter alt a jejich core script by se vrátil ke starému query v=1. Generátor nyní reprodukuje existující metadata a platnou verzi core scriptu. Po opravě je skutečný obsahový diff pouze na dvou detailech a hubu. Opakované generování hlásí **78 detailů, changed 0**; žádná karta nebyla smazána.
 
-Cíleně sestaveny jen dva runtime soubory: `js/dist/tarot-meaning-hub.js` a `js/dist/tarot-karta-dne.js`, podle existujícího classic build nastavení (`minify`, `bundle:false`, `format:iife`, `platform:browser`). Lastmod v sitemapě je upraven jen u sedmi skutečně změněných stránek, původní URL set zůstává zachovaný. Podrobnosti k druhému jsou v [návratové cestě](return-path-check.md).
+Cíleně sestaveny jen dva runtime soubory: `js/dist/tarot-meaning-hub.js` a `js/dist/tarot-karta-dne.js`, podle existujícího classic build nastavení (`minify`, `bundle:false`, `format:iife`, `platform:browser`). Lastmod v sitemapě je upraven jen u sedmi skutečně změněných stránek a u horoskopy.html, jejíž skutečnou změnu z 13. 10. dokládá předchozí commit e1a4d84. První sitemap kontrola odhalila právě tento jeden starý lastmod (9. 10.); opraven na datum doložené změny. Původní URL set zůstává zachovaný. Podrobnosti k druhému jsou v [návratové cestě](return-path-check.md).
 
 ## Nezávislá kontrola
 
