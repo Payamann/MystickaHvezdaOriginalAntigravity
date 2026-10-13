@@ -36,3 +36,17 @@ html body .mh-inline-2308fae4b2 { color: rgba(255,255,255,0.3); font-size: 0.8re
 html body .mh-inline-a106b343aa { margin: 2rem 0 3rem; }
 html body .mh-inline-a8e1559a72 { font-family: 'Cinzel', serif; color: #d4af37; font-size: 1.1rem; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(212,175,55,0.2); }
 html body .mh-inline-98159b2108 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+
+/* Illustrated sword guide: scoped to this article. */
+.swords-guide-nav{display:flex;flex-wrap:wrap;gap:.6rem;margin:1.5rem 0 2rem}
+.swords-guide-nav a{display:flex;align-items:center;min-height:44px;padding:.5rem .8rem;border:1px solid #b99b6355;border-radius:6px;color:#dec28b;text-decoration:none}
+.blog-content h2[id],.swords-guide-card[id]{scroll-margin-top:110px}
+.swords-guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin:1.5rem 0 2rem}
+.swords-guide-card{display:grid;grid-template-columns:72px minmax(0,1fr);align-items:start;gap:1rem;padding:1rem;background:#0e2031;border:1px solid #b99b6333;border-radius:10px}
+.swords-guide-card img{display:block;width:72px;height:120px;object-fit:contain;border-radius:4px}
+.blog-content .swords-guide-card h3{margin:0 0 .35rem;font-size:1rem}
+.blog-content .swords-guide-card p{margin:0 0 .65rem;font-size:.9rem;line-height:1.65}
+.blog-content .swords-guide-card .swords-guide-card__theme{color:#dec28b;font-size:.78rem}
+.swords-guide-card a,.swords-guide-nav a{overflow-wrap:anywhere}
+.swords-guide-card a:focus-visible,.swords-guide-nav a:focus-visible{outline:2px solid #dec28b;outline-offset:4px}
+@media(max-width:700px){.swords-guide-grid{grid-template-columns:1fr}.swords-guide-card{grid-template-columns:72px minmax(0,1fr);padding:.9rem;gap:.8rem}}

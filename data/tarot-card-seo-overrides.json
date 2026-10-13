@@ -128,5 +128,61 @@
     "question": "Kde ve vztahu vidím vzájemnou odezvu a o čem se potřebujeme domluvit?",
     "dateModified": "2026-10-13",
     "hubSummary": "Dvojka pohárů představuje setkání a vzájemnou odezvu. Dva poháry připomínají, že prostor pro rozhovor vytvářejí oba lidé. Vztahová otázka se tak vrací ke konkrétním projevům zájmu a k dohodám, které se daří naplňovat."
+  },
+  "Eso mečů": {
+    "summary": "Eso mečů může připomenout jasnou otázku, přesné pojmenování a nový pohled. Pomáhá otevřít rozdíl mezi informací, kterou máš, a předpokladem, který potřebuješ ověřit. Samotná karta neurčuje pravdu ani správnost rozhodnutí.",
+    "love": "Ve vztahu může Eso připomenout přímočarý rozhovor. Pojmenuj konkrétní domluvu nebo potřebu, místo abys hádal, co si druhý myslí. Odpověď a jednání druhého člověka mají větší váhu než symbol na kartě.",
+    "work": "U práce zkus jednou větou popsat zadání, očekávaný výsledek a chybějící informaci. Eso může připomenout potřebu vyjasnit podmínky před dalším krokem. Rozhodnutí pak opři o skutečná fakta.",
+    "yesNo": "Ve čtení ano/ne může Eso otevřít otázku, zda máš dost jasné informace pro vlastní volbu. Symbol neověří podmínky za tebe a nenahradí rozhodnutí.",
+    "action": "Sepiš, co víš jistě, co si domýšlíš a na co se potřebuješ zeptat. Vyber jednu otázku, kterou lze dnes ověřit.",
+    "reversed": "Obrácené Eso lze číst jako otázku na nejasné zadání, překotný úsudek nebo slova, kterým každý rozumí jinak. Vrať se k přesnému významu a ověř zdroj informace.",
+    "example": "Modelová situace: na návrh schůzky zatím nepřišla odpověď. Víš, že odpověď chybí, ale ne proč. Eso může připomenout konkrétní dotaz „Platí pátek?“ a vlastní plán pro případ, že domluva nebude potvrzená. Neodhaluje důvod mlčení.",
+    "question": "Kterou domněnku potřebuji nahradit ověřenou informací?",
+    "hubSummary": "Eso mečů může připomenout jasnou otázku, přesné pojmenování a nový pohled.",
+    "dateModified": "2026-10-13",
+    "guidePath": "/blog/mecove-karty-tarot-vyznam.html",
+    "guideLabel": "Mečové karty: porovnání všech 14 významů a modelová ukázka"
+  },
+  "Dvojka mečů": {
+    "summary": "Dvojka mečů může otevřít téma váhání mezi dvěma možnostmi. Někdy chybí informace, jindy je třeba ujasnit vlastní kritéria nebo získat prostor bez tlaku. Karta nerozhoduje za tebe a neznamená, že odmítáš vidět pravdu.",
+    "love": "Pokud váháš nad vztahovou volbou, pojmenuj, které potřeby se střetávají a co ještě nevíš. Dvojka nepotvrdí city druhého ani správnost pokračování či odchodu. Pro rozhodnutí potřebuješ skutečné okolnosti a vlastní hranice.",
+    "work": "Při volbě mezi nabídkami porovnej pracovní náplň, podmínky a časové možnosti. Dvojka může připomenout chybějící kritérium. Nezaměňuj nejasnou nabídku za vlastní nerozhodnost.",
+    "yesNo": "Dvojka může sloužit jako podnět k doplnění informací před odpovědí ano či ne. Není to pevný zákaz ani předpověď, že volba přijde sama.",
+    "action": "Napiš obě možnosti a jedno kritérium, na kterém ti opravdu záleží. Zjisti, co je potřeba doplnit, a stanov si reálný čas pro rozhodnutí.",
+    "reversed": "Obrácená Dvojka může připomenout tlak rozhodnout rychle nebo dlouhé odkládání bez dalšího kroku. Zkus rozlišit, zda potřebuješ informaci, čas, nebo konkrétní domluvu.",
+    "example": "Modelová situace: dvě pracovní nabídky mají podobný plat, ale u jedné neznáš směny. Místo dalšího porovnávání dojmů si vyžádej rozvrh. Dvojka poslouží k pojmenování chybějícího údaje; neřekne, která firma je lepší.",
+    "question": "Co potřebuji vědět, než se mezi těmito možnostmi rozhodnu?",
+    "hubSummary": "Dvojka mečů může otevřít téma váhání mezi dvěma možnostmi.",
+    "dateModified": "2026-10-13",
+    "guidePath": "/blog/mecove-karty-tarot-vyznam.html",
+    "guideLabel": "Mečové karty: porovnání všech 14 významů a modelová ukázka"
+  },
+  "Trojka mečů": {
+    "summary": "Trojka mečů je výrazný obraz zklamání nebo bolestivého rozhovoru. Může pomoci pojmenovat, co tě zasáhlo, a oddělit událost od domněnek o jejím významu. Samotná karta nedokazuje zradu, nepředpovídá rozchod a neslibuje uzdravení.",
+    "love": "Ve vztahové otázce se můžeš zamyslet nad tím, která věta či dohoda zranila důvěru a co potřebuje vysvětlení. Trojka není důkaz nevěry. Rozhovor a další rozhodnutí opři o skutečné chování, vlastní potřeby a bezpečí.",
+    "work": "Nepříjemná zpětná vazba může zasáhnout i tehdy, když je v ní užitečná informace. Zkus oddělit konkrétní připomínku k práci od osobního hodnocení. Pokud je kritika nejasná, požádej o příklad.",
+    "yesNo": "Trojka může připomenout dopad rozhodnutí na tvoje potřeby a hranice. Karta sama nevydává konečné ne a neurčuje, jak situace skončí.",
+    "action": "Napiš jednu větu o tom, co se stalo, a druhou o tom, co teď potřebuješ. Nemusíš vyřešit celý vztah nebo spor během jednoho rozhovoru.",
+    "reversed": "Obrácenou Trojku lze číst jako otázku na to, co z nepříjemné události dál zůstává nevyřčené. Neznamená automatické smíření ani povinnost odpustit. Další krok záleží na okolnostech a na tobě.",
+    "example": "Modelová situace: blízký člověk zruší domluvu na poslední chvíli. Zasáhne tě to, ale důvod zatím neznáš. Trojka může připomenout větu „Mrzí mě změna bez včasné zprávy; potřebuju vědět, jak se budeme domlouvat příště.“ Neurčuje motiv druhého.",
+    "question": "Co mě konkrétně zasáhlo a jakou potřebu chci pojmenovat?",
+    "hubSummary": "Trojka mečů je výrazný obraz zklamání nebo bolestivého rozhovoru.",
+    "dateModified": "2026-10-13",
+    "guidePath": "/blog/mecove-karty-tarot-vyznam.html",
+    "guideLabel": "Mečové karty: porovnání všech 14 významů a modelová ukázka"
+  },
+  "Devítka mečů": {
+    "summary": "Devítka mečů může nabídnout obraz opakující se starosti nebo nejistoty. Slouží k pojmenování toho, co se vrací v myšlenkách, ne k hodnocení závažnosti potíží. Karta nerozliší skutečné riziko od obavy a nepředpovídá katastrofu.",
+    "love": "Když se obava týká vztahu, rozliš vlastní představu od toho, co druhý skutečně řekl či udělal. Devítka nepotvrzuje odmítnutí ani nevěru. Může připomenout konkrétní otázku nebo potřebu podpory.",
+    "work": "Před obtížným pracovním rozhovorem si sepiš podklady, nejasnosti a otázku, kterou chceš položit. Některé obavy mohou mít reálný základ; karta jejich závažnost neposoudí. Pomůže jen dát zamyšlení konkrétní rámec.",
+    "yesNo": "Devítka není důkaz, že se něco nepovede, ani důvod obavu odmítnout. Před rozhodnutím zkontroluj skutečná rizika a informace, které potřebuješ.",
+    "action": "Vyber jednu opakující se nejistotu. Napiš, co už víš a s čím potřebuješ informace či pomoc. Nemusíš všechno vyřešit další kartou.",
+    "reversed": "Obrácená Devítka může otevřít otázku, zda jde starost pojmenovat a sdílet. Nepředpovídá konec trápení a neříká, že je problém jen v myšlenkách.",
+    "example": "Modelová situace: čeká tě pracovní schůzka a neznáš její důvod. Devítka může připomenout chybějící informaci. Zeptej se na téma a připrav si dostupné podklady. Symbol neposoudí výsledek schůzky ani oprávněnost obavy.",
+    "question": "Kterou nejistotu mohu pojmenovat a na koho se s ní obrátit?",
+    "hubSummary": "Devítka mečů může nabídnout obraz opakující se starosti nebo nejistoty.",
+    "dateModified": "2026-10-13",
+    "guidePath": "/blog/mecove-karty-tarot-vyznam.html",
+    "guideLabel": "Mečové karty: porovnání všech 14 významů a modelová ukázka"
   }
 }

@@ -180,13 +180,14 @@
     "readTime": 5
   },
   {
-    "title": "Mečové karty v Tarotu: Průvodce bolestí, pravdou a mentální silou",
+    "title": "Mečové karty v tarotu: význam všech 14 karet a příklady",
     "slug": "mecove-karty-tarot-vyznam",
-    "short_description": "Meče jsou nejobávanější suitou tarotu. Ale co když právě tyto karty přinášejí osvobozující pravdu, kterou jste potřebovali slyšet?",
+    "short_description": "Přehled 14 mečových karet s vlastními ilustracemi: jasnost, volba, rozhovor a hranice. Praktický příklad, obrácené polohy a souvislosti bez strašení.",
     "category": "Tarot",
     "published_at": "2026-03-17T10:00:00.000Z",
     "featured_image": "img/tarot-v2/tarot_eso_mecu.webp",
-    "readTime": 4
+    "readTime": 6,
+    "updated_at": "2026-10-13"
   },
   {
     "title": "Keltský kříž: Jak číst nejslavnější tarotové rozložení krok za krokem",

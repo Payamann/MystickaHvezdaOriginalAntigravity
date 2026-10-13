@@ -21,3 +21,7 @@ Po doloženém crawlu použít stejná plná období, oddělit mobil/Česko a ko
 ## Druhá dávka · 13. 10. 2026
 
 Přidány tarot.html, tarot-tri-karty.html a Slunce blog/detail/katalog. [Důkazy](batch-2/README.md). Lokální QA návštěvy nejsou provozní výsledky. Také tato dávka čeká na nasazení a crawl.
+
+## Třetí dávka · 13. 10. 2026
+
+Průvodce meči, čtyři katalogové detaily a souhrn: [důkazy](batch-3/README.md). Také tato dávka čeká na skutečné nasazení a crawl. Lokální odhalení karty a QA návštěvy nejsou zákaznické či obchodní výsledky.
