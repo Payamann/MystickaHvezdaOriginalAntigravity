@@ -130,8 +130,8 @@ ALLOWED_TYPES = {
 
 SLASH_FORM_RE = re.compile(r"\b[A-Za-zÁ-ž]+/[A-Za-zÁ-ž]+\b")
 URL_RE = re.compile(
-    r"(?:https?://(?:www\.)?mystickahvezda\.cz)?/[a-z0-9-]+\.html|"
-    r"(?:https?://)?(?:www\.)?mystickahvezda\.cz/[a-z0-9-]+\.html",
+    r"(?:https?://(?:www\.)?mystickahvezda\.cz)?/(?:[a-z0-9-]+/)*[a-z0-9-]+\.html|"
+    r"(?:https?://)?(?:www\.)?mystickahvezda\.cz/(?:[a-z0-9-]+/)*[a-z0-9-]+\.html",
     re.IGNORECASE,
 )
 PLACEHOLDER_RE = re.compile(r"\[(?:caption|3D object|tag\d+|material and light|engravings/symbols)\]", re.IGNORECASE)
@@ -246,6 +246,11 @@ def hook_rankings(memory: dict[str, Any]) -> list[tuple[str, float, int]]:
 
 def allowed_urls() -> set[str]:
     urls = set(WEB_FEATURES.values())
+    urls.update({
+        "/blog/karta-milenci-tarot-vyznam.html",
+        "/tarot-vyznam/milenci.html",
+        "/tarot-vyznam/dvojka-poharu.html",
+    })
     urls.update(f"https://www.mystickahvezda.cz{url}" for url in WEB_FEATURES.values())
     urls.update(f"https://mystickahvezda.cz{url}" for url in WEB_FEATURES.values())
     urls.update(f"mystickahvezda.cz{url}" for url in WEB_FEATURES.values())

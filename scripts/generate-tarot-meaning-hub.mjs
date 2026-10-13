@@ -235,7 +235,7 @@ function buildCard(name, card) {
     const groupLabel = groupLabels[group] || 'Tarot';
     const image = card.image || 'img/tarot/tarot_placeholder.webp';
     const meaning = card.meaning || '';
-    const interpretation = getFirstSentence(card.interpretation || '');
+    const interpretation = getFirstSentence(seoOverrides[name]?.hubSummary || card.interpretation || '');
     const detail = detailHref(name);
 
     return `                    <article class="tarot-meaning-card" data-group="${escapeHtml(group)}" data-card="${escapeHtml(name)}">
@@ -287,6 +287,9 @@ function buildDetailPage(name, card, relatedCards = []) {
                     <p>${escapeHtml(seo.example)}</p>`
         : '';
     const extraInsightSections = [reversedSection, exampleSection].filter(Boolean).join('\n\n                    ');
+    const guideSection = seo.guidePath && /^\/blog\/[a-z0-9-]+\.html$/.test(seo.guidePath)
+        ? `<p><a href="${escapeHtml(seo.guidePath)}">${escapeHtml(seo.guideLabel || 'Praktický průvodce touto kartou')}</a></p>`
+        : '';
     const reversedFaq = seo.reversed
         ? `\n                <details class="faq-item">
                     <summary>Co znamená ${escapeHtml(name)} obráceně?</summary>
@@ -307,6 +310,7 @@ function buildDetailPage(name, card, relatedCards = []) {
         },
         mainEntityOfPage: canonical,
         inLanguage: 'cs-CZ',
+        ...(seo.dateModified ? { dateModified: seo.dateModified } : {}),
         about: [
             { '@type': 'Thing', name: 'Tarot' },
             { '@type': 'Thing', name },
@@ -390,6 +394,9 @@ ${jsonLd([articleSchema, breadcrumbSchema, faqSchema])}
     </script>
     <script src="/js/dist/analytics-init.js" defer></script>
     <script src="/js/dist/analytics.js?v=8" defer></script>
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image:alt" content="${escapeHtml(title)}">
 </head>
 <body class="atlas-page">
     <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
@@ -433,7 +440,7 @@ ${jsonLd([articleSchema, breadcrumbSchema, faqSchema])}
                     <p>${escapeHtml(yesNoSignal)}</p>${extraInsightSections ? `\n\n                    ${extraInsightSections}` : ''}
 
                     <h2>Co si z karty odnést dnes</h2>
-                    <p>${escapeHtml(angles.action)}</p>
+                    <p>${escapeHtml(angles.action)}</p>${guideSection ? `\n                    ${guideSection}` : ''}
 
                     <div class="tarot-card-detail-next-step">
                         <span>Další krok</span>
@@ -537,7 +544,7 @@ ${jsonLd([articleSchema, breadcrumbSchema, faqSchema])}
     </main>
 
     <div id="footer-placeholder"></div>
-    <script src="/js/dist/core.js?v=1" defer></script>
+    <script src="/js/dist/core.js?v=20261003-single-membership" defer></script>
     <script src="/js/dist/horoscope-subscribe.js?v=2" defer></script>
     <script type="module" src="/js/dist/main.js?v=10"></script>
 </body>

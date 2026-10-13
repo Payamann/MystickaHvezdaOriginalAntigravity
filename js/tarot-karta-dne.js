@@ -493,6 +493,8 @@
 
     function revealCard(card, elements, options = {}) {
         elements.result.dataset.state = 'revealed';
+        const horoscopeBridge = document.querySelector('.mh-email-bridge[data-analytics-source="tarot_daily_card_result"]');
+        if (horoscopeBridge) horoscopeBridge.hidden = false;
         elements.image.src = card.image || 'img/tarot-v2/tarot_card_back.webp';
         elements.image.alt = `Tarot karta dne: ${card.name}`;
         elements.date.textContent = `Karta pro ${getLocalDateKey()}`;

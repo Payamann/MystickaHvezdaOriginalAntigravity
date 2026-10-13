@@ -96,9 +96,15 @@ def test_qa_good_draft_passes():
 
 
 def test_qa_allows_relevant_link_in_pure_value_copy_but_blocks_unknown_internal_url():
+    linked = GOOD_DRAFT.replace("Ulož si tenhle tichý signál na později.",
+                               "https://www.mystickahvezda.cz/blog/karta-milenci-tarot-vyznam.html")
+    assert qa_draft(linked).errors == []
     bad = GOOD_DRAFT.replace("Ulož si tenhle tichý signál na později.", "Mrkni na /neexistuje.html.")
     result = qa_draft(bad)
     assert any("není v seznamu skutečných webových funkcí" in error for error in result.errors)
+    bad_nested = GOOD_DRAFT.replace("Ulož si tenhle tichý signál na později.",
+                                   "https://www.mystickahvezda.cz/blog/neexistuje.html")
+    assert any("není v seznamu skutečných webových funkcí" in error for error in qa_draft(bad_nested).errors)
 
 
 def isolate_published_content_memory(monkeypatch, tmp_path):
