@@ -61,7 +61,7 @@ test('only a verified payment shows success; errors offer retry without another 
             analytics.trackPurchaseCompleted = (...args) => window.verifiedPurchases.push(args);
         });
     });
-    await page.route('**/api/vztahovy-vyklad/checkout-result?*', route => paid ? route.fulfill({ json: { status: 'paid' } }) : route.fulfill({ status: 502 }));
+    await page.route('**/api/vztahovy-vyklad/checkout-result?*', route => paid ? route.fulfill({ json: { status: 'paid', deliveryState: 'delivered', orderRef: 'order-safe-1' } }) : route.fulfill({ status: 502 }));
     await page.goto('/vztahovy-vyklad.html?status=success&session_id=cs_test_example');
     await expect(page.locator('#payment-message')).toContainText('nemůžeme ověřit');
     await expect(page.locator('#objednavka')).toBeHidden();
@@ -75,6 +75,29 @@ test('only a verified payment shows success; errors offer retry without another 
         'CZK',
         expect.objectContaining({ verified: true, transaction_id: 'cs_test_example' })
     ]);
+});
+
+test('a paid delivery failure is explicit and keeps safe support access without retrying payment', async ({ page }, testInfo) => {
+    await prepare(page);
+    let statusUnavailable = false;
+    await page.route('**/api/vztahovy-vyklad/checkout-result?*', route => statusUnavailable
+        ? route.fulfill({ status: 502 })
+        : route.fulfill({ json: { status: 'paid', deliveryState: 'failed', orderRef: 'order-safe-2' } }));
+    await page.goto('/vztahovy-vyklad.html?status=success&session_id=cs_test_private_session');
+    await expect(page.locator('#payment-message')).toContainText('doručení výkladu selhalo');
+    await expect(page.locator('#payment-message')).toContainText('order-safe-2');
+    await expect(page.locator('#retry-payment')).toHaveText('Zkontrolovat stav znovu');
+    await expect(page.locator('#retry-payment')).toBeVisible();
+    const supportHref = await page.locator('#payment-result a').getAttribute('href');
+    expect(supportHref).toBe('/kontakt.html');
+    expect(supportHref).not.toContain('cs_test_private_session');
+    expect(supportHref).not.toContain('mailto:');
+    await page.screenshot({ path: testInfo.outputPath('paid-delivery-failed.png'), fullPage: true });
+    statusUnavailable = true;
+    await page.locator('#retry-payment').click();
+    await expect(page.locator('#payment-message')).toContainText('Platba je potvrzená');
+    await expect(page.locator('#payment-message')).toContainText('Stav doručení teď nemůžeme ověřit');
+    await expect(page.locator('#payment-message')).toContainText('order-safe-2');
 });
 
 test('tarot entry is gated by availability and carries only source in the URL', async ({ page }) => {

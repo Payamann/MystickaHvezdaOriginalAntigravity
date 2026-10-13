@@ -28,6 +28,9 @@ html body #main-content > .section--hero .hero__content {
 html body .mh-inline-c7ca2aadf5 { display:none; background: linear-gradient(90deg, rgba(212,175,55,0.1), rgba(155,89,182,0.1)); border-bottom: 1px solid rgba(212,175,55,0.2); padding: 0.65rem 1rem; text-align: center; font-size: 0.88rem; color: rgba(255,255,255,0.8); }
 html body .mh-inline-ab7a727fdb { color: #d4af37; font-weight: 600; }
 html body .mh-inline-71ff7bdda8 { background:none;border:none;color:rgba(255,255,255,0.3);cursor:pointer;font-size:1rem;vertical-align:middle; }
+body[data-atlas-polish="horoskopy"] #freemium-banner { background:#102638; border-color:#b3955e44; color:#c3c9cb; }
+body[data-atlas-polish="horoskopy"] #freemium-banner a { color:#d0b17c; }
+body[data-atlas-polish="horoskopy"] #freemium-banner button { min-width:44px; min-height:44px; color:#e9e3d7; }
 html body .mh-inline-2f124be5b2 { min-height: 60vh; }
 html body .mh-inline-9aa7a0fc6b { padding-top: 0; }
 html body .mh-inline-1f4e53068f { padding-top: 1.5rem; padding-bottom: 1.5rem; }

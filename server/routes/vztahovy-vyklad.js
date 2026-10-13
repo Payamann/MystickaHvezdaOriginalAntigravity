@@ -5,12 +5,48 @@ import { randomBytes, timingSafeEqual } from 'node:crypto';
 import { pdfProofCookie, pdfProofHash } from './pdf-checkout-result.js';
 import { createOneTimeOrderInput, attachStripeSessionToOrderInput } from '../services/one-time-orders.js';
 import { RELATIONSHIP_TAROT as PRODUCT, drawRelationshipCards, isPaidRelationshipSession } from '../services/relationship-tarot.js';
+import { relationshipDeliveryState } from '../services/relationship-email-delivery.js';
+import { supabase } from '../db-supabase.js';
 import { recordFunnelEvent } from '../payment.js';
 
 export const relationshipTarotEnabled = () => process.env.RELATIONSHIP_TAROT_ENABLED === 'true'
     && Boolean(process.env.STRIPE_SECRET_KEY && process.env.ANTHROPIC_API_KEY && process.env.RESEND_API_KEY);
 const cleanSource = value => typeof value === 'string' && /^[a-z0-9_:-]{1,80}$/i.test(value) ? value : 'relationship_tarot_page';
 const cleanFlowId = value => typeof value === 'string' && /^[a-z0-9_-]{16,80}$/i.test(value) ? value : null;
+const cleanOrderRef = value => typeof value === 'string' && /^[a-z0-9_-]{1,80}$/i.test(value) ? value : null;
+const DELIVERY_STATES = new Set(['preparing', 'provider_accepted', 'delivered', 'delivery_delayed', 'failed', 'unavailable']);
+
+export function createRelationshipDeliveryStatusReader({ db = supabase } = {}) {
+    return async ({ orderId, sessionId }) => {
+        const orderRef = cleanOrderRef(orderId);
+        if (!orderRef || typeof sessionId !== 'string') return { deliveryState: 'unavailable' };
+        let orderQuery = db.from('one_time_order_inputs')
+            .select('id,status,email_id,email_sent_at')
+            .eq('id', orderRef)
+            .eq('stripe_session_id', sessionId)
+            .eq('product_type', PRODUCT.type)
+            .eq('product_id', PRODUCT.id);
+        if (typeof orderQuery.abortSignal === 'function') orderQuery = orderQuery.abortSignal(AbortSignal.timeout(2500));
+        const orderResult = await orderQuery.maybeSingle();
+        if (orderResult.error || !orderResult.data) return { deliveryState: 'unavailable' };
+        const order = orderResult.data;
+        if (order.status === 'failed' && !order.email_id) return { deliveryState: 'failed', orderRef };
+        if (!order.email_id) return { deliveryState: order.status === 'fulfilled' ? 'unavailable' : 'preparing', orderRef };
+        let eventsQuery = db.from('relationship_email_events')
+            .select('email_id,event_type,event_at')
+            .eq('email_id', order.email_id);
+        if (typeof eventsQuery.abortSignal === 'function') eventsQuery = eventsQuery.abortSignal(AbortSignal.timeout(2500));
+        const eventsResult = await eventsQuery;
+        if (eventsResult.error) return { deliveryState: 'unavailable', orderRef };
+        const state = relationshipDeliveryState(order, eventsResult.data || []).status;
+        const deliveryState = state === 'sent' ? 'provider_accepted'
+            : state === 'delivery_delayed' ? 'delivery_delayed'
+                : state === 'delivered' ? 'delivered'
+                    : ['failed', 'bounced', 'suppressed', 'complained'].includes(state) ? 'failed'
+                        : 'preparing';
+        return { deliveryState, orderRef };
+    };
+}
 
 export function createRelationshipTarotRouter(deps = {}) {
     const router = express.Router();
@@ -19,6 +55,7 @@ export function createRelationshipTarotRouter(deps = {}) {
     const enabled = deps.enabled || relationshipTarotEnabled;
     const createOrder = deps.createOrder || createOneTimeOrderInput;
     const attach = deps.attach || attachStripeSessionToOrderInput;
+    const getDeliveryStatus = deps.getDeliveryStatus || createRelationshipDeliveryStatusReader();
     const track = async (event, source, extra = {}) => {
         try { await (deps.track || recordFunnelEvent)(event, { source, feature: PRODUCT.id, planType: PRODUCT.type, ...extra }); } catch { /* Telemetry must never block payment. */ }
     };
@@ -69,7 +106,13 @@ export function createRelationshipTarotRouter(deps = {}) {
             const hash = session.metadata?.returnProofHash;
             if (typeof hash !== 'string' || !/^[a-f0-9]{64}$/.test(hash) || !timingSafeEqual(Buffer.from(hash), Buffer.from(pdfProofHash(proof)))) return res.sendStatus(403);
             const paid = isPaidRelationshipSession(session);
-            return res.json({ status: paid ? 'paid' : 'pending' });
+            if (!paid) return res.json({ status: 'pending' });
+            let delivery = { deliveryState: 'unavailable' };
+            try { delivery = await getDeliveryStatus({ orderId: session.metadata.orderId, sessionId: session.id }); }
+            catch { /* A delivery lookup failure must not erase verified payment status. */ }
+            const deliveryState = DELIVERY_STATES.has(delivery?.deliveryState) ? delivery.deliveryState : 'unavailable';
+            const orderRef = cleanOrderRef(delivery?.orderRef);
+            return res.json({ status: 'paid', deliveryState, ...(orderRef ? { orderRef } : {}) });
         } catch { return res.sendStatus(502); }
     });
     return router;

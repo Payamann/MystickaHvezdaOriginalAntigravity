@@ -2,7 +2,7 @@ import { jest } from '@jest/globals';
 import request from 'supertest';
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import { createRelationshipTarotRouter } from '../routes/vztahovy-vyklad.js';
+import { createRelationshipDeliveryStatusReader, createRelationshipTarotRouter } from '../routes/vztahovy-vyklad.js';
 import { drawRelationshipCards, parseRelationshipReading, buildRelationshipReadingHtml, isPaidRelationshipSession } from '../services/relationship-tarot.js';
 import { pdfProofHash, pdfProofCookie } from '../routes/pdf-checkout-result.js';
 import { createRelationshipFulfillment } from '../services/relationship-tarot-fulfillment.js';
@@ -16,13 +16,13 @@ const proof = 'a'.repeat(64);
 const paidSession = { id: 'cs_test_relationship', mode: 'payment', status: 'complete', payment_status: 'paid', currency: 'czk', amount_total: 14900,
     metadata: { productId: 'relationship_tarot', productType: 'relationship_tarot', orderId: 'order-1', returnProofHash: pdfProofHash(proof) } };
 
-function setup({ enabled = true, attachResult = true, telemetryFails = false } = {}) {
+function setup({ enabled = true, attachResult = true, telemetryFails = false, getDeliveryStatus = jest.fn(async () => ({ deliveryState: 'provider_accepted', orderRef: 'order-1' })) } = {}) {
     const stripe = { checkout: { sessions: { create: jest.fn(async () => ({ id: paidSession.id, url: 'https://checkout.stripe.com/c/pay/test' })), retrieve: jest.fn(async () => paidSession), expire: jest.fn(async () => ({})) } } };
     const createOrder = jest.fn(async () => ({ id: 'order-1' }));
     const attach = jest.fn(async () => attachResult);
     const track = jest.fn(async () => { if (telemetryFails) throw new Error('telemetry unavailable'); });
-    const app = express().use(express.json(), cookieParser(), createRelationshipTarotRouter({ getStripe: () => stripe, enabled: () => enabled, createOrder, attach, track }));
-    return { app, stripe, createOrder, attach, track };
+    const app = express().use(express.json(), cookieParser(), createRelationshipTarotRouter({ getStripe: () => stripe, enabled: () => enabled, createOrder, attach, track, getDeliveryStatus }));
+    return { app, stripe, createOrder, attach, track, getDeliveryStatus };
 }
 
 describe('Relationship tarot checkout', () => {
@@ -62,16 +62,54 @@ describe('Relationship tarot checkout', () => {
         expect(stripe.checkout.sessions.expire).toHaveBeenCalledWith(paidSession.id);
     });
     test('return requires a valid browser proof and a matching paid product', async () => {
-        const { app, stripe } = setup();
+        const { app, stripe, getDeliveryStatus } = setup();
         await request(app).get('/checkout-result?session_id=cs_test_relationship').expect(403);
         expect(stripe.checkout.sessions.retrieve).not.toHaveBeenCalled();
+        expect(getDeliveryStatus).not.toHaveBeenCalled();
         const cookie = `${pdfProofCookie(paidSession.id)}=${proof}`;
         const verified = await request(app).get('/checkout-result?session_id=cs_test_relationship').set('Cookie', cookie).expect(200);
-        expect(verified.body.status).toBe('paid');
+        expect(verified.body).toEqual({ status: 'paid', deliveryState: 'provider_accepted', orderRef: 'order-1' });
+        expect(getDeliveryStatus).toHaveBeenCalledWith({ orderId: 'order-1', sessionId: paidSession.id });
         stripe.checkout.sessions.retrieve.mockResolvedValueOnce({ ...paidSession, payment_status: 'unpaid' });
         const pending = await request(app).get('/checkout-result?session_id=cs_test_relationship').set('Cookie', cookie).expect(200);
         expect(pending.body.status).toBe('pending');
+        expect(getDeliveryStatus).toHaveBeenCalledTimes(1);
         await request(app).get('/checkout-result?session_id=cs_test_relationship').set('Cookie', `${pdfProofCookie(paidSession.id)}=${'b'.repeat(64)}`).expect(403);
+    });
+    test('a delivery lookup outage preserves paid status without exposing customer data', async () => {
+        const getDeliveryStatus = jest.fn(async () => { throw new Error('database unavailable buyer@example.com'); });
+        const { app } = setup({ getDeliveryStatus });
+        const cookie = `${pdfProofCookie(paidSession.id)}=${proof}`;
+        const response = await request(app).get('/checkout-result?session_id=cs_test_relationship').set('Cookie', cookie).expect(200);
+        expect(response.body).toEqual({ status: 'paid', deliveryState: 'unavailable' });
+        expect(JSON.stringify(response.body)).not.toContain('buyer@example.com');
+        expect(JSON.stringify(response.body)).not.toContain(paidSession.id);
+    });
+    test('delivery state matches the paid order and provider acceptance is not delivery', async () => {
+        const filters = [];
+        let events = [];
+        let order = { id: 'order-1', status: 'fulfilled', email_id: 'email-provider-1', email_sent_at: '2026-10-13T08:00:00Z' };
+        const query = result => {
+            const chain = {
+                select: () => chain,
+                eq: (column, value) => { filters.push([column, value]); return chain; },
+                maybeSingle: async () => result,
+                then: (resolve, reject) => Promise.resolve(result).then(resolve, reject)
+            };
+            return chain;
+        };
+        const db = { from: table => table === 'one_time_order_inputs'
+            ? query({ data: order, error: null })
+            : query({ data: events, error: null }) };
+        const read = createRelationshipDeliveryStatusReader({ db });
+        await expect(read({ orderId: 'order-1', sessionId: paidSession.id })).resolves.toEqual({ deliveryState: 'provider_accepted', orderRef: 'order-1' });
+        events = [{ email_id: 'email-provider-1', event_type: 'email.delivered', event_at: '2026-10-13T08:01:00Z' }];
+        await expect(read({ orderId: 'order-1', sessionId: paidSession.id })).resolves.toEqual({ deliveryState: 'delivered', orderRef: 'order-1' });
+        order = { id: 'order-1', status: 'fulfilled', email_id: null, email_sent_at: null };
+        await expect(read({ orderId: 'order-1', sessionId: paidSession.id })).resolves.toEqual({ deliveryState: 'unavailable', orderRef: 'order-1' });
+        expect(filters).toEqual(expect.arrayContaining([
+            ['id', 'order-1'], ['stripe_session_id', paidSession.id], ['product_type', 'relationship_tarot'], ['product_id', 'relationship_tarot']
+        ]));
     });
 });
 

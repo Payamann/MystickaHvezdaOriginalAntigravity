@@ -116,8 +116,8 @@
     <link rel="alternate" hreflang="pl" href="https://www.mystickahvezda.cz/pl/horoskopy.html">
 
     <link rel="alternate" hreflang="x-default" href="https://www.mystickahvezda.cz/horoskopy.html">
-<!-- DOMPurify for XSS protection (must load synchronously before other scripts use it) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" integrity="sha384-XQqX/4yiUGu+oyr87jvWzRuqBUK/adrY0DunhL+tID9m/9dwSpV8h9Fk/Sg6ifVQ" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- Deferred in document order before dependent scripts; does not block HTML parsing. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" integrity="sha384-XQqX/4yiUGu+oyr87jvWzRuqBUK/adrY0DunhL+tID9m/9dwSpV8h9Fk/Sg6ifVQ" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
     <script src="/js/dist/analytics-init.js" defer></script>
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -129,7 +129,7 @@
     <link rel="stylesheet" href="/css/atlas-remaining.css?v=1">
 </head>
 
-<body class="atlas-page atlas-remaining-page">
+<body class="atlas-page atlas-remaining-page" data-atlas-polish="horoskopy">
 
     <!-- Skip to main content -->
 
@@ -138,22 +138,6 @@
     <!-- HEADER (loaded dynamically) -->
 
     <div id="header-placeholder"></div>
-
-    <!-- FREEMIUM LIMIT BANNER (pro nepřihlášené a free uživatele) -->
-
-    <div id="freemium-banner" class="mh-inline-c7ca2aadf5">
-
-        <span id="freemium-banner-text">🆓 Dnes zbývá: <strong id="freemium-count">...</strong> výkladů zdarma</span>
-
-        &nbsp;•&nbsp;
-
-        <a href="/cenik.html?plan=pruvodce&source=horoscope_freemium_banner&feature=weekly_horoscope" class="mh-inline-ab7a727fdb">✨ Získat Premium →</a>
-
-        &nbsp;
-
-        <button data-action="closeBanner" class="mh-inline-71ff7bdda8" aria-label="Zavřít premium upozornění">×</button>
-
-    </div>
 
     <script src="js/dist/freemium-horoskopy.js" defer></script>
 
@@ -182,6 +166,15 @@
             </div>
 
         </section>
+
+        <!-- Keep the allowance beside the picker, outside the fixed header. -->
+        <div id="freemium-banner" class="mh-inline-c7ca2aadf5">
+            <span id="freemium-banner-text">🆓 Dnes zbývá: <strong id="freemium-count">...</strong> výkladů zdarma</span>
+            &nbsp;•&nbsp;
+            <a href="/cenik.html?plan=pruvodce&source=horoscope_freemium_banner&feature=weekly_horoscope" class="mh-inline-ab7a727fdb">✨ Prohlédnout členství →</a>
+            &nbsp;
+            <button data-action="closeBanner" class="mh-inline-71ff7bdda8" aria-label="Zavřít upozornění o členství">×</button>
+        </div>
 
         <!-- TABS -->
 

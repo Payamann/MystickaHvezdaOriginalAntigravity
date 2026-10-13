@@ -42,6 +42,8 @@ body.atlas-reading-order ::selection { background:#365568; color:#e9e3d7; }
 html:has(body.atlas-page),html:has(body.atlas-page)::before { background:#0b1929 !important; color-scheme:dark; }
 body.atlas-page { --color-mystic-gold:#d0b17c; --color-mystic-gold-light:#e1cba5; --color-ethereal-silver:#c3c9cb; --reading-gold:#d0b17c; --reading-muted:#c3c9cb; --reading-line:#b3955e44; background:#0b1929; color:#e9e3d7; }
 body.atlas-page::before,body.atlas-page::after { display:none; }
+/* The loaded header is fixed too: its placeholder must never reserve flow space. */
+body.atlas-page #header-placeholder { position:fixed; inset:0 0 auto; min-height:0; }
 body.atlas-page :is(.header,.header.scrolled,.nav__list,.nav__dropdown,.footer) { background:#0b1929 !important; }
 body.atlas-page .section { padding-block:64px; background:transparent; }
 body.atlas-page .section--alt { background:#102638; }
