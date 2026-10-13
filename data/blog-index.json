@@ -558,13 +558,14 @@
     "readTime": 5
   },
   {
-    "title": "Karta Slunce (XIX) v Tarotu: Radost, úspěch a životní síla",
+    "title": "Karta Slunce v tarotu: význam, láska a obrácená poloha",
     "slug": "karta-slunce-tarot-vyznam",
-    "short_description": "Karta Slunce v tarotu je symbolem radosti, vítězství a životní síly. Zjistěte, co přesně tato karta říká ve výkladu a jak přivolat její energii.",
+    "short_description": "Slunce v tarotu jako téma radosti, jasnosti a otevřenosti. Symboly na kartě, modelová situace, láska, práce a obrácená poloha bez slibů o budoucnosti.",
     "category": "Tarot",
     "published_at": "2025-07-26T10:00:00.000Z",
     "featured_image": "img/tarot-v2/tarot_slunce.webp",
-    "readTime": 4
+    "readTime": 4,
+    "updated_at": "2026-10-13"
   },
   {
     "title": "Mistrovská čísla 11, 22 a 33 v numerologii: Dar nebo prokletí?",

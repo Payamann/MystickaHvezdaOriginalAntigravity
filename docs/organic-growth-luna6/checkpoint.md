@@ -24,10 +24,14 @@ Oddělený kandidát: `.codex-tmp/release-20261012`, základ `12ba756f6b22db07c0
 - Odběrový API success je záznam odběru, ne důkaz email delivery. Celý audit textu/verze souhlasu není uložen ve stávajícím DB schématu; DB migrace nebyla provedena.
 - Úplný nový denní query × URL × mobil/Česko export nebyl získán. Příčina ANO/NE poklesu a dopad úprav na růst zatím nejsou prokázané.
 
-## Jediný další krok
+## Další krok první dávky (historický checkpoint)
 
 Prohlédnout hotový obsah a tři návrhy. Po konkrétním zadání nasazení použít release guard nad izolovaným diffem; po schválení textů publikovat/naplánovat konkrétní FB objekty s reálným náhledem. Poté doplnit results až ze skutečného crawl a provozu. Žádné automatické budoucí sledování není nastavené.
 
 ## Uložený kandidát
 
 Obsahový commit `bf8002cec17f2dbafce35005eafc07ed6d22eb87`, lokální větev `codex/organic-growth-20261013`. Žádný push ani deploy. Závěrečná sitemap kontrola odhalila starý lastmod horoskopy.html z předchozího mobilního vydání; jeho oprava je doložená Git historií a nemění stránku ani URL set.
+
+## Druhá dávka · 13. 10. 2026
+
+Tarotový rozcestník, 3 karty a Slunce blog/detail/katalog dokončené lokálně. Opraven runtime návrat starých textů, neodpovídající denní počítadlo a konkrétní tvrzení/průchod do free a členství. Čtyři cílené existující E2E PASS, parser pěti HTML v izolovaném kandidátu i rootu PASS, opakovaná regenerace 78 detailů změnila 0, sitemap 907 URL PASS. [Přehled a důkazy druhé dávky](batch-2/README.md), [skutečné náhledy](batch-2/overview.html). Žádný push/deploy/publikování. Root změny úzce sloučené, starší práce zachovaná; engine v izolovaném diffu beze změny. Další krok: navazující existující karta/průvodce podle dat, nebo konkrétně autorizované vydání obou dávek z izolovaného kandidáta. Výsledky růstu po těchto dávkách ještě nejsou.

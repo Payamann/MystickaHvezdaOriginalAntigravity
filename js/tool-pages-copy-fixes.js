@@ -28,11 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (path.endsWith('/tarot.html') || path.endsWith('tarot.html')) {
         document.title = 'Tarot online: výklad z 78 karet | Mystická Hvězda';
-        setMeta('meta[name="description"]', 'Vyber si tarot online: jedna karta zdarma, tři karty nebo Keltský kříž. Český výklad z 78 karet s osobním vedením a dalším krokem.');
+        setMeta('meta[name="description"]', 'Vyber si tarot online z 78 karet: jedna karta zdarma, celý tříkartový výklad a Keltský kříž v členství. Symboly a podněty pro vlastní další krok.');
         setMeta('meta[property="og:title"]', 'Tarot online: výklad z 78 karet | Mystická Hvězda');
-        setMeta('meta[property="og:description"]', 'Jedna karta zdarma, tři karty nebo Keltský kříž. Český tarotový výklad z 78 karet s osobním vedením.');
+        setMeta('meta[property="og:description"]', 'Jedna karta zdarma; celý tříkartový výklad a Keltský kříž v členství. Významy 78 karet a podněty pro vlastní zamyšlení.');
         setHtml('.hero__title', 'Tarotové <span class="text-gradient">výklady</span>');
-        setText('.hero__subtitle', 'Vyberte si výklad, zamíchejte karty a nechte symboliku tarotu promluvit do vaší aktuální situace.');
+        setText('.hero__subtitle', 'Jedna karta zdarma, nebo celý vícekartový výklad v členství. Vyber si podle otázky a porovnej symboly karet s tím, co o své situaci skutečně víš.');
     }
 
     if (path.endsWith('/numerologie.html') || path.endsWith('numerologie.html')) {

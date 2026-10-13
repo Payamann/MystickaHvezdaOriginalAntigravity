@@ -70,14 +70,18 @@
     "question": "Kterému jemnému impulsu mohu dát bezpečný prostor, aniž ho idealizuji?"
   },
   "Slunce": {
-    "summary": "Slunce přináší jasnost, vitalitu a radost z věcí, které už nemusíš skrývat ani komplikovat. Často potvrzuje úspěch, uznání a návrat energie. Jeho optimismus není výzva přehlížet potíže; dovoluje je vidět v plném světle a jednat bez zbytečného strachu.",
-    "love": "V lásce je Slunce znamením otevřenosti, vzájemné radosti a vztahu, ve kterém můžeš být sám sebou. U nezadaných přeje setkání, kde není nutné hrát hry. Ve vztahu podporuje společný zážitek, upřímnost a ocenění toho, co už funguje.",
-    "work": "V práci ukazuje viditelný výsledek, uznání, sebevědomou prezentaci nebo projekt, který dostává zelenou. Sdílej zásluhy a ukaž výsledky konkrétně. Jasnost je zde silnější než skromnost, která nechá dobrou práci bez povšimnutí.",
-    "yesNo": "Jako odpověď ano/ne znamená Slunce jedno z nejsilnějších ano v tarotu. Podporuje cestu, která přináší jasnost, energii a možnost být otevřený. Přesto si ověř praktické detaily — dobrý výsledek nemusí znamenat nulovou práci.",
-    "action": "Pojmenuj, co se podařilo, a udělej výsledek viditelný. Radost dnes není odměna až po dalším výkonu; může být energií pro další krok.",
-    "reversed": "Obrácené Slunce obvykle nezhasíná pozitivní potenciál, ale ukazuje zpožděnou radost, přehnaná očekávání nebo neschopnost uznat vlastní pokrok. Můžeš čekat na dokonalý výsledek a přehlížet dobrý. Uprav měřítko a podívej se, co už je skutečně lepší.",
-    "example": "Ptáš se, zda veřejně představit hotový projekt. Slunce říká ano: ukaž jej srozumitelně a sebevědomě. Před zveřejněním zkontroluj poslední fakta, ale nenech další drobné úpravy zakrýt to, že je práce připravená.",
-    "question": "Co dobrého už je dostatečně skutečné, abych to mohl ukázat?"
+    "summary": "Slunce je obraz radosti, jasnosti a otevřenosti. Může připomenout dobré věci, které už mají oporu ve skutečnosti, a možnost přiznat si vlastní pokrok. Pozitivní symbol nenahrazuje ověření podmínek ani neurčuje výsledek situace.",
+    "love": "V lásce může Slunce otevřít téma společné radosti a přímého rozhovoru. Všimni si, kdy je vám spolu dobře a zda můžeš pojmenovat i vlastní potřebu. Samotná karta nepotvrdí city ani upřímnost druhého člověka; důvěru opírej o jeho slova, činy a respekt k dohodám.",
+    "work": "V práci může Slunce připomenout viditelný výsledek. Pojmenuj, co jsi dokončil, jaký to má přínos a kdo ti pomohl. Při další volbě ověř zadání, čas a podmínky; karta nezaručuje uznání, finanční příjem ani úspěch projektu.",
+    "yesNo": "Slunce lze v symbolickém výkladu číst jako podnět k ano, pokud vlastní krok odpovídá tomu, co skutečně víš a můžeš udělat. Není zárukou výsledku. U otázky na city druhého nebo důležité praktické rozhodnutí doplň skutečné informace místo spoléhání na jednu kartu.",
+    "action": "Vyber jednu věc, která se podařila, a dej jí konkrétní jméno. K ní přidej jeden další krok, který má oporu v současných možnostech. Nemusíš čekat na dokonalý výsledek, abys vlastní pokrok zaznamenal.",
+    "reversed": "Obrácené Slunce lze číst jako téma přehlédnuté radosti, vysokých očekávání nebo optimismu, který zakrývá důležitý detail. Zeptej se, co už funguje a co ještě potřebuje kontrolu. Poloha karty neříká nic spolehlivého o zdravotním stavu ani o datu budoucího úspěchu.",
+    "example": "Modelová ukázka: projekt splňuje zadání, ale místo odeslání znovu měníš poslední odstavec. Slunce může připomenout, že hotová práce potřebuje také okamžik předání. Porovnej ji se zadáním, oprav konkrétní chybu a stanov si termín odeslání. Výsledek ani reakci příjemce karta nezaručí.",
+    "question": "Čeho dobrého si mohu všimnout a co má ještě místo pro další péči?",
+    "hubSummary": "Slunce je obraz radosti, jasnosti a otevřenosti.",
+    "dateModified": "2026-10-13",
+    "guidePath": "/blog/karta-slunce-tarot-vyznam.html",
+    "guideLabel": "Slunce v běžném dni: symboly, otevřenost a dokončená práce"
   },
   "Luna": {
     "summary": "Luna osvětluje nejistotu, intuici, sny a místa, kde nejsou všechny informace dostupné. Silný pocit může být důležitým signálem, ale stejně tak ozvěnou strachu. Karta tě učí nespěchat k jistotě a rozlišovat mezi vnitřním věděním a příběhem, který vytváří úzkost.",

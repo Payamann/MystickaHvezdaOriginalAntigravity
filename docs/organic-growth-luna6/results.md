@@ -17,3 +17,7 @@ Baseline: GSC Web **14. 9.–11. 10. vs. 17. 8.–13. 9.**, v [baseline.md](base
 | Zaplacené a doručené 149 Kč objednávky | Historická první fulfilled platba bez provider ID a prokázaného Google origin | V tomto kole nebyly získány nové obchodní údaje |
 
 Po doloženém crawlu použít stejná plná období, oddělit mobil/Česko a konkrétní URL. U malého vzorku uvést absolutní počty a „nelze rozhodnout“. GSC součet dotazů není souhrn služby; submitted event není zákazník a legacy fulfilled není provider delivery. Automatické kontroly později nebyly nastaveny.
+
+## Druhá dávka · 13. 10. 2026
+
+Přidány tarot.html, tarot-tri-karty.html a Slunce blog/detail/katalog. [Důkazy](batch-2/README.md). Lokální QA návštěvy nejsou provozní výsledky. Také tato dávka čeká na nasazení a crawl.
