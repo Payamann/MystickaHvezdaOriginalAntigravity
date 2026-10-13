@@ -160,7 +160,7 @@ export async function buildRelationshipReadingAttachments({ cards }) {
 export function buildRelationshipReadingHtml({ question, cards, reading }, { inlineImages = false } = {}) {
     const e = escapeReadingText;
     parseRelationshipReading(reading, { strictLanguage: false });
-    const paragraphStyle = 'margin:0;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:27px;color:#35404b;word-wrap:break-word;';
+    const paragraphStyle = 'margin:0;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:27px;color:#35404b;word-wrap:break-word;overflow-wrap:anywhere;';
     const labelStyle = 'margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:18px;font-weight:bold;letter-spacing:2px;color:#79613a;';
     const headingStyle = 'margin:7px 0 16px;font-family:Georgia,Times,serif;font-size:25px;line-height:32px;font-weight:normal;color:#172b3a;';
     const numerals = ['I', 'II', 'III'];
@@ -191,7 +191,7 @@ export function buildRelationshipReadingHtml({ question, cards, reading }, { inl
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;font-size:1px;line-height:1px;color:#0b1929;">Tvoje tři karty, jejich společné téma a jeden malý krok. Udělej si chvíli pro sebe.</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#0b1929" style="width:100%;background-color:#0b1929;"><tr><td align="center" style="padding:24px 8px;">
 <!--[if mso]><table role="presentation" width="640" align="center" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
-<table role="presentation" width="100%" align="center" cellpadding="0" cellspacing="0" border="0" bgcolor="#f8f3e9" style="width:100%;max-width:640px;background-color:#f8f3e9;border-collapse:separate;border-spacing:0;">
+<table role="presentation" width="100%" align="center" cellpadding="0" cellspacing="0" border="0" bgcolor="#f8f3e9" style="width:100%;max-width:640px;table-layout:fixed;background-color:#f8f3e9;border-collapse:separate;border-spacing:0;">
     <tr><td height="4" bgcolor="#bd9b65" style="height:4px;font-size:1px;line-height:4px;background-color:#bd9b65;">&nbsp;</td></tr>
     <tr><td align="center" bgcolor="#102638" style="padding:30px 24px 32px;background-color:#102638;">
         <p style="margin:0 0 10px;font-family:Georgia,Times,serif;font-size:30px;line-height:38px;color:#d0b17c;">✦</p>
@@ -201,8 +201,8 @@ export function buildRelationshipReadingHtml({ question, cards, reading }, { inl
         <table role="presentation" width="100%" align="center" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:400px;table-layout:fixed;"><tr>${cardGallery}</tr></table>
     </td></tr>
     <tr><td style="padding:28px 26px 30px;">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="#fffdf8" style="padding:20px 21px;background-color:#fffdf8;border-left:3px solid #bd9b65;">
-            <p style="${labelStyle}">TVOJE OTÁZKA</p><p style="margin:11px 0 0;font-family:Georgia,Times,serif;font-size:18px;line-height:29px;color:#253744;word-wrap:break-word;">${e(question)}</p>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="table-layout:fixed;"><tr><td bgcolor="#fffdf8" style="padding:20px 21px;background-color:#fffdf8;border-left:3px solid #bd9b65;">
+            <p style="${labelStyle}">TVOJE OTÁZKA</p><p style="margin:11px 0 0;font-family:Georgia,Times,serif;font-size:18px;line-height:29px;color:#253744;word-wrap:break-word;overflow-wrap:anywhere;">${e(question)}</p>
         </td></tr></table>
         <p style="${paragraphStyle}margin-top:24px;">${e(reading.introduction)}</p>
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:6px;">${cardSections}</table>
