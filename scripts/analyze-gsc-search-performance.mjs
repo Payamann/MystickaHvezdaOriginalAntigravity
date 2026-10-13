@@ -11,7 +11,9 @@ function parseArgs(argv) {
         dir: null,
         output: null,
         top: 20,
-        minImpressions: 50
+        minImpressions: 50,
+        currentRange: null,
+        priorRange: null
     };
 
     for (let index = 0; index < argv.length; index += 1) {
@@ -20,6 +22,8 @@ function parseArgs(argv) {
         else if (arg === '--output') args.output = argv[++index];
         else if (arg === '--top') args.top = Number(argv[++index]);
         else if (arg === '--min-impressions') args.minImpressions = Number(argv[++index]);
+        else if (arg === '--current-range') args.currentRange = argv[++index];
+        else if (arg === '--prior-range') args.priorRange = argv[++index];
         else if (arg === '--help' || arg === '-h') args.help = true;
         else throw new Error(`Unknown argument: ${arg}`);
     }
@@ -33,6 +37,11 @@ function usage() {
 
 Reads Czech Google Search Console CSV export files:
   Dotazy.csv, Stránky.csv, Graf.csv, Zařízení.csv, Země.csv
+
+Comparison exports with headers such as "Posledních 28 dnů Prokliky" and
+"Předchozích 28 dnů Prokliky" are reported with observed deltas. When the
+export does not contain explicit date ranges, pass --current-range and
+--prior-range; the script never invents dates.
 
 The report is aggregate-only and safe to keep internally. Do not commit raw GSC exports.`;
 }
@@ -83,49 +92,49 @@ function readCsv(dir, fileName) {
     return parseCsv(fs.readFileSync(filePath, 'utf8'));
 }
 
-function asInteger(value) {
-    const normalized = String(value || '0').replace(/\s+/g, '').replace(',', '.');
-    return Number.parseInt(normalized, 10) || 0;
+function metric(value) {
+    if (value === undefined || value === null || String(value).trim() === '') return null;
+    const normalized = String(value).replace('%', '').replace(/\s+/g, '').replace(',', '.');
+    const parsed = Number.parseFloat(normalized);
+    return Number.isFinite(parsed) ? parsed : null;
 }
 
-function asNumber(value) {
-    const normalized = String(value || '0').replace('%', '').replace(/\s+/g, '').replace(',', '.');
-    return Number.parseFloat(normalized) || 0;
+function periodKey(row, period, metricName) {
+    if (period === 'single' && Object.hasOwn(row, metricName)) return metricName;
+    const marker = period === 'current' ? /^Posledních\s+\d+\s+dnů\s+/u : /^Předchozích\s+\d+\s+dnů\s+/u;
+    return Object.keys(row).find((key) => marker.test(key) && key.endsWith(` ${metricName}`)) || null;
 }
 
 function normalizeRows(rows, dimensionName) {
-    return rows.map((row) => ({
-        dimension: row[dimensionName] || '',
-        clicks: asInteger(row.Prokliky),
-        impressions: asInteger(row.Zobrazení),
-        ctr: asNumber(row.CTR),
-        position: asNumber(row.Pozice)
-    })).filter((row) => row.dimension);
-}
-
-function expectedCtr(position) {
-    if (position <= 3) return 10;
-    if (position <= 5) return 6;
-    if (position <= 10) return 4;
-    if (position <= 20) return 2.5;
-    return 1.5;
-}
-
-function opportunity(row) {
-    const targetCtr = expectedCtr(row.position);
-    const potentialClicks = Math.max(0, Math.round((row.impressions * (targetCtr / 100)) - row.clicks));
-    return { ...row, targetCtr, potentialClicks };
+    return rows.map((row) => {
+        const currentPrefix = periodKey(row, 'current', 'Prokliky') ? 'current' : 'single';
+        const value = (period, name) => {
+            const key = periodKey(row, period, name);
+            return key ? metric(row[key]) : null;
+        };
+        return {
+            dimension: row[dimensionName] || '',
+            clicks: value(currentPrefix, 'Prokliky'),
+            impressions: value(currentPrefix, 'Zobrazení'),
+            ctr: value(currentPrefix, 'CTR'),
+            position: value(currentPrefix, 'Pozice'),
+            priorClicks: value('prior', 'Prokliky'),
+            priorImpressions: value('prior', 'Zobrazení'),
+            priorCtr: value('prior', 'CTR'),
+            priorPosition: value('prior', 'Pozice'),
+            comparison: currentPrefix === 'current'
+        };
+    }).filter((row) => row.dimension);
 }
 
 function classifyAction(row, type) {
     const value = row.dimension.toLowerCase();
 
-    if (row.position <= 10 && row.ctr < 1) return 'Přepsat český title/meta a první odpověď nad foldem';
-    if (row.position <= 10 && row.ctr < 3.5) return 'CTR refresh: title/meta + přesnější český snippet';
-    if (row.position > 10 && row.position <= 20) return 'Content refresh + interní odkazy z hubů';
+    if (row.position !== null && row.position <= 10) return 'Prověřit soulad snippetu s intentem a první odpovědí';
+    if (row.position !== null && row.position <= 20) return 'Prověřit obsah a interní odkazy';
     if (type === 'query' && /ano\s*(ne|\/ne)|ano nebo ne|áno|nie|karta dne/u.test(value)) return 'Zpřesnit intent rychlé odpovědi a CTA';
     if (/partnerska-shoda|panna|lev|beran|aries|střelec|ryby|vodnář|býk/u.test(value)) return 'Posílit vztahový/znamení intent česky';
-    if (/tarot-vyznam|význam|karta/u.test(value)) return 'Rozšířit šablonu významu o lásku, práci a ano/ne';
+    if (/tarot-vyznam|význam|karta/u.test(value)) return 'Posoudit obsah a interní odkazy';
 
     return 'Monitorovat nebo zařadit do dalšího content slicu';
 }
@@ -139,7 +148,27 @@ function table(rows, columns) {
 }
 
 function formatPct(value) {
-    return `${value.toFixed(2).replace('.', ',')} %`;
+    return value === null || value === undefined ? '—' : `${value.toFixed(2).replace('.', ',')} %`;
+}
+
+function formatMetric(value) {
+    return value === null || value === undefined ? '—' : formatNumber(value);
+}
+
+function formatPosition(value) {
+    return value === null || value === undefined ? '—' : value.toFixed(2).replace('.', ',');
+}
+
+function delta(current, prior) {
+    return current === null || current === undefined || prior === null || prior === undefined
+        ? null
+        : current - prior;
+}
+
+function formatDelta(current, prior) {
+    const value = delta(current, prior);
+    if (value === null) return '—';
+    return `${value > 0 ? '+' : ''}${formatNumber(value)}`;
 }
 
 function formatNumber(value) {
@@ -152,11 +181,13 @@ function summarizeTrend(graphRows) {
     const normalized = graphRows
         .map((row) => ({
             date: row.Datum,
-            clicks: asInteger(row.Prokliky),
-            impressions: asInteger(row.Zobrazení)
+            clicks: metric(row.Prokliky),
+            impressions: metric(row.Zobrazení)
         }))
-        .filter((row) => row.date)
+        .filter((row) => row.date && row.clicks !== null && row.impressions !== null)
         .sort((a, b) => a.date.localeCompare(b.date));
+
+    if (!normalized.length) return null;
 
     const first14 = normalized.slice(0, 14);
     const last14 = normalized.slice(-14);
@@ -168,11 +199,41 @@ function summarizeTrend(graphRows) {
         first14Clicks: sum(first14, 'clicks'),
         first14Impressions: sum(first14, 'impressions'),
         last14Clicks: sum(last14, 'clicks'),
-        last14Impressions: sum(last14, 'impressions')
+        last14Impressions: sum(last14, 'impressions'),
+        days: normalized.length,
+        totalClicks: sum(normalized, 'clicks'),
+        totalImpressions: sum(normalized, 'impressions')
     };
 }
 
-function buildReport({ dir, top, minImpressions }) {
+function graphTotals(graphRows) {
+    if (!graphRows.length) return null;
+    const rows = graphRows.map((row) => ({
+        date: row.Datum,
+        clicks: metric(row.Prokliky),
+        impressions: metric(row.Zobrazení)
+    }));
+    if (rows.some((row) => !row.date || row.clicks === null || row.impressions === null)) return null;
+    return {
+        clicks: rows.reduce((total, row) => total + row.clicks, 0),
+        impressions: rows.reduce((total, row) => total + row.impressions, 0)
+    };
+}
+
+function sumMetric(rows, field) {
+    if (!rows.length || rows.some((row) => row[field] === null || row[field] === undefined)) return null;
+    return rows.reduce((total, row) => total + row[field], 0);
+}
+
+function weightedPosition(rows, positionField, impressionField) {
+    if (!rows.length || rows.some((row) => row[positionField] === null || row[impressionField] === null)) return null;
+    const impressions = sumMetric(rows, impressionField);
+    return impressions > 0
+        ? rows.reduce((sum, row) => sum + (row[positionField] * row[impressionField]), 0) / impressions
+        : null;
+}
+
+function buildReport({ dir, top, minImpressions, currentRange, priorRange }) {
     const queries = normalizeRows(readCsv(dir, 'Dotazy.csv'), 'Nejčastější dotazy');
     const pages = normalizeRows(readCsv(dir, 'Stránky.csv'), 'Nejvýznamnější stránky');
     const devices = normalizeRows(readCsv(dir, 'Zařízení.csv'), 'Zařízení');
@@ -180,27 +241,32 @@ function buildReport({ dir, top, minImpressions }) {
     const graph = readCsv(dir, 'Graf.csv');
     const filters = readCsv(dir, 'Filtry.csv');
     const trend = summarizeTrend(graph);
+    const graphAggregate = graphTotals(graph);
 
-    const totals = devices.reduce((acc, row) => ({
-        clicks: acc.clicks + row.clicks,
-        impressions: acc.impressions + row.impressions
-    }), { clicks: 0, impressions: 0 });
-    const ctr = totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0;
-    const avgPosition = devices.reduce((sum, row) => sum + (row.position * row.impressions), 0)
-        / Math.max(1, totals.impressions);
+    const totalRows = devices.length ? devices : pages;
+    const currentAggregate = graphAggregate || null;
+    const totals = {
+        clicks: currentAggregate?.clicks ?? sumMetric(totalRows, 'clicks'),
+        impressions: currentAggregate?.impressions ?? sumMetric(totalRows, 'impressions'),
+        priorClicks: sumMetric(totalRows, 'priorClicks'),
+        priorImpressions: sumMetric(totalRows, 'priorImpressions')
+    };
+    const totalsSource = currentAggregate ? 'Graf.csv (součet platných dnů)' : devices.length ? 'Zařízení.csv' : pages.length ? 'Stránky.csv (částečný součet exportovaných řádků)' : 'neuvedeno';
+    const ctr = totals.clicks !== null && totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : null;
+    const priorCtr = totals.priorClicks !== null && totals.priorImpressions > 0
+        ? (totals.priorClicks / totals.priorImpressions) * 100
+        : null;
+    const avgPosition = weightedPosition(totalRows, 'position', 'impressions');
+    const priorAvgPosition = weightedPosition(totalRows, 'priorPosition', 'priorImpressions');
 
     const queryOpportunities = queries
-        .filter((row) => row.impressions >= minImpressions)
-        .map(opportunity)
-        .filter((row) => row.potentialClicks > 0 || (row.position <= 12 && row.ctr < 3.5))
-        .sort((a, b) => b.potentialClicks - a.potentialClicks || b.impressions - a.impressions)
+        .filter((row) => row.impressions !== null && row.impressions >= minImpressions && row.position !== null)
+        .sort((a, b) => b.impressions - a.impressions)
         .slice(0, top);
 
     const pageOpportunities = pages
-        .filter((row) => row.impressions >= minImpressions)
-        .map(opportunity)
-        .filter((row) => row.potentialClicks > 0 || (row.position <= 12 && row.ctr < 3.5))
-        .sort((a, b) => b.potentialClicks - a.potentialClicks || b.impressions - a.impressions)
+        .filter((row) => row.impressions !== null && row.impressions >= minImpressions && row.position !== null)
+        .sort((a, b) => b.impressions - a.impressions)
         .slice(0, top);
 
     const filterSummary = filters.map((row) => `${row.Filtr}: ${row.Hodnota}`).join(', ') || 'neuvedeno';
@@ -214,23 +280,29 @@ Zdroj: český Search Console export z adresáře \`${path.relative(repoRoot, di
 | Metrika | Hodnota |
 |---|---:|
 | Filtry | ${filterSummary} |
-| Období grafu | ${trend ? `${trend.firstDate} až ${trend.lastDate}` : 'neuvedeno'} |
-| Kliky | ${formatNumber(totals.clicks)} |
-| Zobrazení | ${formatNumber(totals.impressions)} |
+| Zdroj souhrnu | ${totalsSource} |
+| Aktuální období | ${currentRange || (filters.find((row) => row.Filtr === 'Datum')?.Hodnota || 'neuvedeno')} |
+| Předchozí období | ${priorRange || 'neuvedeno (export jej neuvádí)'} |
+| Kliky (aktuální / předchozí) | ${formatMetric(totals.clicks)} / ${formatMetric(totals.priorClicks)} (${formatDelta(totals.clicks, totals.priorClicks)}) |
+| Zobrazení (aktuální / předchozí) | ${formatMetric(totals.impressions)} / ${formatMetric(totals.priorImpressions)} (${formatDelta(totals.impressions, totals.priorImpressions)}) |
 | CTR | ${formatPct(ctr)} |
-| Průměrná pozice | ${avgPosition.toFixed(2).replace('.', ',')} |
-| Prvních 14 dní | ${trend ? `${formatNumber(trend.first14Clicks)} kliků / ${formatNumber(trend.first14Impressions)} zobrazení` : 'neuvedeno'} |
-| Posledních 14 dní | ${trend ? `${formatNumber(trend.last14Clicks)} kliků / ${formatNumber(trend.last14Impressions)} zobrazení` : 'neuvedeno'} |
+| CTR (předchozí) | ${formatPct(priorCtr)} |
+| Průměrná pozice (aktuální / předchozí) | ${formatPosition(avgPosition)} / ${formatPosition(priorAvgPosition)} |
+| Prvních 14 dní | ${trend?.days >= 28 ? `${formatNumber(trend.first14Clicks)} kliků / ${formatNumber(trend.first14Impressions)} zobrazení` : trend ? 'neuvedeno (graf má méně než 28 dní)' : 'neuvedeno'} |
+| Posledních 14 dní | ${trend?.days >= 28 ? `${formatNumber(trend.last14Clicks)} kliků / ${formatNumber(trend.last14Impressions)} zobrazení` : trend ? 'neuvedeno (graf má méně než 28 dní)' : 'neuvedeno'} |
 
 ## Prioritní dotazy
 
 ${table(queryOpportunities, [
         { label: 'Dotaz', format: (row) => row.dimension.replace(/\|/g, '/') },
-        { label: 'Kliky', format: (row) => formatNumber(row.clicks) },
-        { label: 'Zobrazení', format: (row) => formatNumber(row.impressions) },
+        { label: 'Kliky akt.', format: (row) => formatMetric(row.clicks) },
+        { label: 'Kliky před.', format: (row) => formatMetric(row.priorClicks) },
+        { label: 'Δ kliky', format: (row) => formatDelta(row.clicks, row.priorClicks) },
+        { label: 'Zobrazení akt.', format: (row) => formatMetric(row.impressions) },
+        { label: 'Zobrazení před.', format: (row) => formatMetric(row.priorImpressions) },
+        { label: 'Δ zobrazení', format: (row) => formatDelta(row.impressions, row.priorImpressions) },
         { label: 'CTR', format: (row) => formatPct(row.ctr) },
-        { label: 'Pozice', format: (row) => row.position.toFixed(2).replace('.', ',') },
-        { label: 'Potenciál', format: (row) => `+${formatNumber(row.potentialClicks)}` },
+        { label: 'Pozice', format: (row) => formatPosition(row.position) },
         { label: 'Akce', format: (row) => classifyAction(row, 'query') }
     ])}
 
@@ -238,11 +310,14 @@ ${table(queryOpportunities, [
 
 ${table(pageOpportunities, [
         { label: 'Stránka', format: (row) => row.dimension.replace('https://www.mystickahvezda.cz', '') },
-        { label: 'Kliky', format: (row) => formatNumber(row.clicks) },
-        { label: 'Zobrazení', format: (row) => formatNumber(row.impressions) },
+        { label: 'Kliky akt.', format: (row) => formatMetric(row.clicks) },
+        { label: 'Kliky před.', format: (row) => formatMetric(row.priorClicks) },
+        { label: 'Δ kliky', format: (row) => formatDelta(row.clicks, row.priorClicks) },
+        { label: 'Zobrazení akt.', format: (row) => formatMetric(row.impressions) },
+        { label: 'Zobrazení před.', format: (row) => formatMetric(row.priorImpressions) },
+        { label: 'Δ zobrazení', format: (row) => formatDelta(row.impressions, row.priorImpressions) },
         { label: 'CTR', format: (row) => formatPct(row.ctr) },
-        { label: 'Pozice', format: (row) => row.position.toFixed(2).replace('.', ',') },
-        { label: 'Potenciál', format: (row) => `+${formatNumber(row.potentialClicks)}` },
+        { label: 'Pozice', format: (row) => formatPosition(row.position) },
         { label: 'Akce', format: (row) => classifyAction(row, 'page') }
     ])}
 
@@ -250,28 +325,33 @@ ${table(pageOpportunities, [
 
 ${table(devices, [
         { label: 'Zařízení', format: (row) => row.dimension },
-        { label: 'Kliky', format: (row) => formatNumber(row.clicks) },
-        { label: 'Zobrazení', format: (row) => formatNumber(row.impressions) },
+        { label: 'Kliky akt.', format: (row) => formatMetric(row.clicks) },
+        { label: 'Kliky před.', format: (row) => formatMetric(row.priorClicks) },
+        { label: 'Δ kliky', format: (row) => formatDelta(row.clicks, row.priorClicks) },
+        { label: 'Zobrazení akt.', format: (row) => formatMetric(row.impressions) },
+        { label: 'Zobrazení před.', format: (row) => formatMetric(row.priorImpressions) },
+        { label: 'Δ zobrazení', format: (row) => formatDelta(row.impressions, row.priorImpressions) },
         { label: 'CTR', format: (row) => formatPct(row.ctr) },
-        { label: 'Pozice', format: (row) => row.position.toFixed(2).replace('.', ',') }
+        { label: 'Pozice', format: (row) => formatPosition(row.position) }
     ])}
 
 ## Země
 
 ${table(countries.slice(0, 10), [
         { label: 'Země', format: (row) => row.dimension },
-        { label: 'Kliky', format: (row) => formatNumber(row.clicks) },
-        { label: 'Zobrazení', format: (row) => formatNumber(row.impressions) },
+        { label: 'Kliky akt.', format: (row) => formatMetric(row.clicks) },
+        { label: 'Kliky před.', format: (row) => formatMetric(row.priorClicks) },
+        { label: 'Δ kliky', format: (row) => formatDelta(row.clicks, row.priorClicks) },
+        { label: 'Zobrazení akt.', format: (row) => formatMetric(row.impressions) },
+        { label: 'Zobrazení před.', format: (row) => formatMetric(row.priorImpressions) },
+        { label: 'Δ zobrazení', format: (row) => formatDelta(row.impressions, row.priorImpressions) },
         { label: 'CTR', format: (row) => formatPct(row.ctr) },
-        { label: 'Pozice', format: (row) => row.position.toFixed(2).replace('.', ',') }
+        { label: 'Pozice', format: (row) => formatPosition(row.position) }
     ])}
 
-## Doporučený další slice
+## Kandidáti k ruční kontrole
 
-1. CTR refresh pro stránky s pozicí do 10 a CTR pod 3,5 %.
-2. Český snippet a první odpověď nad foldem pro dotazy s vysokými zobrazeními.
-3. Šablonové rozšíření tarotových významů a partnerských dvojic.
-4. Interní odkazy z výkonných hubů na revenue nástroje.
+Řádky výše jsou vybrané podle pozorovaných zobrazení a pozice. Nejde o předpověď růstu kliků ani o cílovou CTR.
 `;
 }
 
@@ -290,7 +370,9 @@ try {
     const report = buildReport({
         dir,
         top: Number.isFinite(args.top) ? args.top : 20,
-        minImpressions: Number.isFinite(args.minImpressions) ? args.minImpressions : 50
+        minImpressions: Number.isFinite(args.minImpressions) ? args.minImpressions : 50,
+        currentRange: args.currentRange,
+        priorRange: args.priorRange
     });
 
     if (args.output) {

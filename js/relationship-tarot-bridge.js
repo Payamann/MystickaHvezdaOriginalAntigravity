@@ -39,6 +39,23 @@
         }).catch(error => { csrfPromise = null; throw error; });
         return csrfPromise;
     }
+    function consentedAcquisition() {
+        try {
+            const raw = localStorage.getItem('mh_cookie_prefs');
+            const allowed = raw ? JSON.parse(raw)?.analytics === true : localStorage.getItem('cookieConsent') === 'accepted';
+            if (!allowed) return {};
+            const meta = window.MH_ANALYTICS?.getAttributionContext?.()?.metadata;
+            if (!meta) return {};
+            const origin = String(meta.referrer_host || meta.first_source || '').toLowerCase();
+            let channel = 'direct_or_unknown';
+            if (/^(?:www\.)?google\.(?:com|cz|sk)$/.test(origin) || origin === 'google') channel = 'google';
+            else if (/(?:^|\.)seznam\.cz$/.test(origin) || origin === 'seznam') channel = 'seznam';
+            else if (/(?:^|\.)bing\.com$/.test(origin) || origin === 'bing') channel = 'bing';
+            else if (/(?:^|\.)(?:facebook\.com|instagram\.com|tiktok\.com)$/.test(origin) || /^(?:facebook|instagram|tiktok)$/.test(origin)) channel = 'social';
+            else if (origin) channel = 'other';
+            return { acquisition_channel: channel };
+        } catch { return {}; }
+    }
     async function track(eventName, source, funnelStep) {
         const analyticsMetadata = {
             source,
@@ -49,7 +66,8 @@
             currency: 'CZK',
             placement: source,
             funnel_step: funnelStep,
-            flow_id: flowId()
+            flow_id: flowId(),
+            ...consentedAcquisition()
         };
         try {
             window.MH_ANALYTICS?.trackEvent?.(eventName, analyticsMetadata);
@@ -64,7 +82,7 @@
         if (typeof value !== 'string') return '';
         try {
             const url = new URL(value, location.origin);
-            return url.origin === location.origin && /^\/img\/tarot\/[a-z0-9_]+\.webp$/i.test(url.pathname) ? url.pathname : '';
+            return url.origin === location.origin && /^\/img\/(?:tarot|tarot-v2)\/[a-z0-9_]+\.webp$/i.test(url.pathname) ? url.pathname : '';
         } catch {
             return '';
         }
@@ -129,6 +147,13 @@
         const product = await response.json();
         if (!product.enabled || product.amount !== 14900 || product.currency !== 'czk') return;
         productAvailable = true;
+        document.querySelectorAll('[data-relationship-link]').forEach(link => {
+            if (initialized.has(link)) return;
+            initialized.add(link);
+            link.addEventListener('click', () => {
+                void track('one_time_product_cta_clicked', link.dataset.relationshipLink, 'entry_offer');
+            });
+        });
         void csrf().catch(() => {});
         revealOffers();
     }).catch(() => {});

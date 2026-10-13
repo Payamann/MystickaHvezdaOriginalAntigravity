@@ -78,16 +78,23 @@ test('only a verified payment shows success; errors offer retry without another 
 });
 
 test('tarot entry is gated by availability and carries only source in the URL', async ({ page }) => {
-    await prepare(page, false);
-    await page.goto('/tarot-laska.html');
+    const funnelEvents = [];
+    await prepare(page, false, funnelEvents);
+    await page.goto('/tarot-laska.html?utm_source=google');
     await expect(page.locator('[data-relationship-offer]')).toBeHidden();
-    await prepare(page, true);
+    await prepare(page, true, funnelEvents);
     await page.reload();
     const offer = page.locator('[data-relationship-offer]');
     await expect(offer).toBeVisible();
+    await page.evaluate(() => {
+        localStorage.setItem('mh_cookie_prefs', JSON.stringify({ analytics: true, marketing: false, ts: Date.now() }));
+        window.dispatchEvent(new CustomEvent('mh_cookie_consent', { detail: { analytics: true, marketing: false } }));
+    });
     await offer.locator('a').click();
     await expect(page).toHaveURL(/vztahovy-vyklad.html\?source=tarot_love_landing$/);
     await expect(page.locator('#checkout-button')).toBeEnabled();
+    await expect.poll(() => funnelEvents.some(event => event.eventName === 'one_time_product_cta_clicked'
+        && event.metadata?.acquisition_channel === 'google')).toBe(true);
 });
 
 test('yes/no free result leads to the new question, without counting the hidden membership offer', async ({ page }) => {
@@ -132,6 +139,7 @@ test('yes/no free result leads to the new question, without counting the hidden 
     await expect(page.locator('[data-reading-cta-label]')).toHaveText('Rozvinout mou otázku');
     await expect.poll(() => funnelEvents.some(event => event.eventName === 'one_time_product_cta_clicked' && event.metadata?.funnel_step === 'entry_offer')).toBe(true);
     expect(JSON.stringify(funnelEvents)).not.toContain(question);
+    expect(funnelEvents.every(event => !Object.hasOwn(event.metadata || {}, 'acquisition_channel'))).toBe(true);
 });
 
 test('yes/no works with the keyboard, explains missing input and resets cleanly', async ({ page }) => {

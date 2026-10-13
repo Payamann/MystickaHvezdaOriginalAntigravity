@@ -31,7 +31,7 @@
                 question: form.question.value,
                 cardName: typeof draft.cardName === 'string' ? draft.cardName.slice(0, 80) : '',
                 answerLabel: typeof draft.answerLabel === 'string' ? draft.answerLabel.slice(0, 40) : '',
-                cardImage: typeof draft.cardImage === 'string' && /^\/img\/tarot\/[a-z0-9_]+\.webp$/i.test(draft.cardImage) ? draft.cardImage : ''
+                cardImage: typeof draft.cardImage === 'string' && /^\/img\/(?:tarot|tarot-v2)\/[a-z0-9_]+\.webp$/i.test(draft.cardImage) ? draft.cardImage : ''
             };
             sessionStorage.setItem(draftKey, JSON.stringify({ ...draft, flowId, at: Date.now() }));
         }
@@ -70,8 +70,25 @@
         }).catch(error => { csrfPromise = null; throw error; });
         return csrfPromise;
     }
+    function consentedAcquisition() {
+        try {
+            const raw = localStorage.getItem('mh_cookie_prefs');
+            const allowed = raw ? JSON.parse(raw)?.analytics === true : localStorage.getItem('cookieConsent') === 'accepted';
+            if (!allowed) return {};
+            const meta = window.MH_ANALYTICS?.getAttributionContext?.()?.metadata;
+            if (!meta) return {};
+            const origin = String(meta.referrer_host || meta.first_source || '').toLowerCase();
+            let channel = 'direct_or_unknown';
+            if (/^(?:www\.)?google\.(?:com|cz|sk)$/.test(origin) || origin === 'google') channel = 'google';
+            else if (/(?:^|\.)seznam\.cz$/.test(origin) || origin === 'seznam') channel = 'seznam';
+            else if (/(?:^|\.)bing\.com$/.test(origin) || origin === 'bing') channel = 'bing';
+            else if (/(?:^|\.)(?:facebook\.com|instagram\.com|tiktok\.com)$/.test(origin) || /^(?:facebook|instagram|tiktok)$/.test(origin)) channel = 'social';
+            else if (origin) channel = 'other';
+            return { acquisition_channel: channel };
+        } catch { return {}; }
+    }
     function track(eventName, details = {}) {
-        const metadata = { product_id: 'relationship_tarot', price: 149, currency: 'CZK', flow_id: flowId, ...details };
+        const metadata = { product_id: 'relationship_tarot', price: 149, currency: 'CZK', flow_id: flowId, ...details, ...consentedAcquisition() };
         try { window.MH_ANALYTICS?.trackEvent?.(eventName, { source, ...metadata }); } catch { /* non-blocking */ }
         void csrf().then(token => fetch('/api/payment/funnel-event', { method: 'POST', keepalive: true, credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token }, body: JSON.stringify({ eventName, source, feature: 'relationship_tarot', planType: 'relationship_tarot', metadata }) })).catch(() => {});
     }

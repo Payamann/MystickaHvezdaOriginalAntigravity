@@ -888,6 +888,10 @@ app.use((req, res, next) => {
     const file = assetVersioning.localFile(htmlPath);
     if (!file || !fs.existsSync(file) || !fs.statSync(file).isFile()) return next();
     setStaticHeaders(res, file);
+    if (htmlPath === '/vztahovy-vyklad.html' && ('status' in req.query || 'session_id' in req.query)) {
+        res.setHeader('Cache-Control', HTML_PRIVATE_CACHE_CONTROL);
+        res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    }
     res.type('html').send(assetVersioning.html(fs.readFileSync(file, 'utf8'), htmlPath));
 });
 app.use(express.static(rootDir, staticOptions));

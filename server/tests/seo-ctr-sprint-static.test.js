@@ -57,7 +57,7 @@ describe('CTR sprint static SEO pages', () => {
     const js = await readPage('js/tarot-ano-ne.js');
 
     expectCoreMetadata(html);
-    expect(html).toContain('Tarot ano ne zdarma | Karty ano ne online');
+    expect(html).toContain('Tarot ano/ne zdarma: výklad z jedné karty');
     expect(html).toContain('Tarot ano ne zdarma a bez registrace');
     expect(html).toContain('id="btn-save-reading"');
     expect(html).toContain('Tarot ano ne, karty ano ne i věštba ano ne označují stejný rychlý výklad.');
