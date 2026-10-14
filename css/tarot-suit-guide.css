@@ -1,0 +1,16 @@
+/* Shared illustrated editorial suit/arcana guides. */
+.tarot-suit-guide{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin:1.5rem 0 2rem}
+.tarot-suit-guide__card{display:grid;grid-template-columns:72px minmax(0,1fr);align-items:start;gap:1rem;padding:1rem;background:#0e2031;border:1px solid #b99b6333;border-radius:10px}
+.tarot-suit-guide__card img{display:block;width:72px;height:120px;object-fit:contain;border-radius:4px}
+.blog-content .tarot-suit-guide__card h3{margin:0 0 .35rem;font-size:1rem}
+.blog-content .tarot-suit-guide__card p{margin:0 0 .65rem;font-size:.9rem;line-height:1.65}
+.tarot-suit-guide__card a{display:inline-block;overflow-wrap:anywhere}
+.tarot-suit-guide__theme{color:#dec28b;font-size:.8rem}
+.tarot-suit-guide__card a:focus-visible{outline:2px solid #dec28b;outline-offset:4px}
+.blog-content h2[id],.blog-content h3[id]{scroll-margin-top:110px}
+.tarot-guide-next{max-width:800px;margin:2rem auto;padding:1.8rem;background:#112739;border:1px solid #b99b6355;border-radius:10px;text-align:center}
+.tarot-guide-next p{max-width:600px;margin:1rem auto}
+.tarot-guide-next__actions{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:center}
+.tarot-guide-next__actions a{display:flex;align-items:center;justify-content:center;min-height:44px;padding:.8rem 1.2rem;border:1px solid #b99b63;border-radius:6px;color:#f2eadc;text-decoration:none}
+.tarot-guide-next__actions a:first-child{background:#b99b63;color:#0b1929;font-weight:600}
+@media(max-width:700px){.tarot-suit-guide{grid-template-columns:1fr}.tarot-suit-guide__card{gap:.8rem;padding:.9rem}.tarot-guide-next{margin:1.5rem 16px;padding:1.3rem}}

@@ -27,13 +27,14 @@
     "readTime": 8
   },
   {
-    "title": "Karta Blázen (0) v tarotu: Nejmoudřejší karta balíčku",
+    "title": "Blázen v tarotu: význam, nový začátek a modelová situace",
     "slug": "karta-blazen-tarot-vyznam",
-    "short_description": "Blázen má číslo nula, kráčí k propasti a směje se — a přesto je nejmoudřejší kartou tarotu. Význam v lásce, práci, jako karta dne, obrácený Blázen a Bláznova cesta velkou arkánou.",
+    "short_description": "Co může karta Blázen otevřít v lásce, práci i při rozhodování? Praktický průvodce významem, obrácenou polohou a souvislostmi bez předpovědí.",
     "category": "Tarot",
     "published_at": "2026-07-12T14:00:00.000Z",
     "featured_image": "img/tarot-v2/tarot_blazen.webp",
-    "readTime": 7
+    "readTime": 2,
+    "updated_at": "2026-10-14"
   },
   {
     "title": "Andělské číslo 222: Co znamená, když ho vidíš všude",
@@ -117,22 +118,24 @@
     "readTime": 6
   },
   {
-    "title": "Pentagramy v Tarotu: Průvodce materiálním světem, penězi a kariérou",
+    "title": "Pentákly v tarotu: práce, hodnota a každodenní zázemí",
     "slug": "pentagramy-tarot-penize-kariera",
-    "short_description": "Pentagramy nejsou nudnou suitou. Jsou mapou materiálního světa — práce, peněz, těla i hojnosti. Průvodce všemi 14 kartami zemního živlu.",
+    "short_description": "Průvodce všemi 14 kartami pentáklů. Jejich význam v lásce, práci i běžném životě, obrácená poloha a otázka k zamyšlení.",
     "category": "Tarot",
     "published_at": "2026-04-10T10:00:00.000Z",
     "featured_image": "img/tarot-v2/tarot_eso_pentaklu.webp",
-    "readTime": 4
+    "readTime": 3,
+    "updated_at": "2026-10-14"
   },
   {
-    "title": "Hůlkové karty v Tarotu: Oheň, vášeň a energie, která mění životy",
+    "title": "Hůlkové karty v tarotu: význam všech 14 karet a příklady",
     "slug": "hulkove-karty-tarot-vyznam",
-    "short_description": "Hůlky jsou suitou ohně, vůle a životní síly. Průvodce všemi 14 kartami — od Esa po Krále — a jak je číst v kontextu kariéry, lásky i varování.",
+    "short_description": "Přehled 14 hůlkových karet s ilustracemi, modelovou situací a otázkami pro lásku, práci i obrácenou polohu. Význam záleží na kontextu.",
     "category": "Tarot",
     "published_at": "2026-04-07T10:00:00.000Z",
     "featured_image": "img/tarot-v2/tarot_eso_holi.webp",
-    "readTime": 4
+    "readTime": 5,
+    "updated_at": "2026-10-14"
   },
   {
     "title": "Numerologie jména: Co skrývá vaše křestní jméno a jak ho změna ovlivní osud",
@@ -162,13 +165,14 @@
     "readTime": 4
   },
   {
-    "title": "Karta Soudce (XX) v Tarotu: Volání vyššího já a karmická bilance",
+    "title": "Soud (XX) v tarotu: zhodnotit zkušenost a zvolit další krok",
     "slug": "karta-soudce-tarot-vyznam",
-    "short_description": "Karta Soudce nepřichází jako trest — přichází jako volání. Probuzení, absolution a karmická bilance v jednom mocném obrazu.",
+    "short_description": "Význam Soudu v tarotu: bilance zkušenosti, vztahy, práce i obrácená poloha. V katalogu Mystické Hvězdy se karta jmenuje Soud; Soudce zůstává v původní adrese.",
     "category": "Tarot",
     "published_at": "2026-03-24T10:00:00.000Z",
     "featured_image": "img/tarot-v2/tarot_soud.webp",
-    "readTime": 4
+    "readTime": 2,
+    "updated_at": "2026-10-14"
   },
   {
     "title": "Partnerská kompatibilita v numerologii: Jsou vaše čísla osudu ve shodě?",
@@ -190,13 +194,14 @@
     "updated_at": "2026-10-13"
   },
   {
-    "title": "Keltský kříž: Jak číst nejslavnější tarotové rozložení krok za krokem",
+    "title": "Keltský kříž v tarotu: 10 pozic a praktický postup",
     "slug": "keltsky-kriz-tarot-rozlozeni",
-    "short_description": "Keltský kříž je nejkomplexnější tarotové rozložení, jaké existuje. Naučte se číst všech 10 pozic a poskládat z nich jeden ucelený příběh.",
+    "short_description": "Deset pozic Keltského kříže podle našeho webu. Jedna otázka, propojení symbolů a modelová situace bez pevných předpovědí; celý online rozklad v členství.",
     "category": "Tarot",
     "published_at": "2026-03-13T10:00:00.000Z",
     "featured_image": "img/tarot-v2/tarot_hvezda.webp",
-    "readTime": 5
+    "readTime": 3,
+    "updated_at": "2026-10-14"
   },
   {
     "title": "Šamanské Kolo: Jak zjistit své totemové zvíře a co vám o sobě prozradí",
@@ -343,13 +348,14 @@
     "readTime": 3
   },
   {
-    "title": "Pohárové karty v Tarotu: Skrytý svět emocí, lásky a intuice",
+    "title": "Poháry v tarotu: význam všech 14 karet",
     "slug": "co-znamenaji-pohary-v-tarotu",
-    "short_description": "Barva pohárů v malých arkánách vypovídá o našem emocionálním životě, lásce a intuici. Naučte se číst poselství elementu vody.",
+    "short_description": "Přehled 14 karet Pohárů: jejich symbolika, obrácená poloha a modelové situace pro lásku, práci i každodenní rozhodování.",
     "category": "Tarot",
-    "published_at": "2026-02-12T10:00:00.000Z",
+    "published_at": "2026-02-14T18:56:29.246Z",
     "featured_image": "img/tarot-v2/tarot_eso_poharu.webp",
-    "readTime": 4
+    "readTime": 4,
+    "updated_at": "2026-10-14"
   },
   {
     "title": "Vypadané zuby a sen o pádu: Co se vám snaží říct vaše stínové nevědomí?",
@@ -424,13 +430,14 @@
     "readTime": 3
   },
   {
-    "title": "Hrůzostrašná karta Věž XVI: Nekompromisní hlubinná transformace plamenem",
+    "title": "Věž (XVI) v tarotu: co dělat, když se změní plán",
     "slug": "lekce-padajici-veze-tarot",
-    "short_description": "Pokud existuje karta, u níž zkušeným kartářkám hrkne v hrudi, nebývá to s populární legendou opředená Smrt, nýbrž hrůzostrašná a ničivá karta Věž.",
+    "short_description": "Význam Věže v tarotu pro vztahy a práci, obrácená poloha i modelová situace. Karta není předpovědí katastrofy ani příkazem ke změně.",
     "category": "Tarot",
     "published_at": "2025-12-31T20:06:34.988Z",
     "featured_image": "img/tarot-v2/tarot_vez.webp",
-    "readTime": 4
+    "readTime": 3,
+    "updated_at": "2026-10-14"
   },
   {
     "title": "Jak odrazit energetické upíry: Štíty v každodenním životě",
@@ -478,13 +485,14 @@
     "readTime": 3
   },
   {
-    "title": "Jak vyložit Tarot doma zadarmo: Manuál pro úplné začátečníky",
+    "title": "Tarot pro začátečníky: jedna otázka, karta a vlastní krok",
     "slug": "vyklad-tarotu-pro-zacatecniky",
-    "short_description": "Chcete se zeptat karet na budoucnost, ale bojíte se, že něco pokazíte? Tento průvodce vás krok za krokem provede prvním bezpečným domácím výkladem.",
+    "short_description": "Jak začít s tarotem: připravit otázku, číst symbol a vybrat vlastní krok. Přehled 22 karet Velké arkány, modelová situace a bezplatné online možnosti.",
     "category": "Tarot",
     "published_at": "2025-12-06T18:56:29.000Z",
     "featured_image": "img/tarot-v2/tarot_blazen.webp",
-    "readTime": 3
+    "readTime": 4,
+    "updated_at": "2026-10-14"
   },
   {
     "title": "Saturův návrat: Proč je 29. rok života zlomový a co ti přinese",
@@ -496,13 +504,14 @@
     "readTime": 5
   },
   {
-    "title": "Karta Hvězda (XVII) v Tarotu: Naděje, uzdravení a světlo po temnotě",
+    "title": "Hvězda v tarotu: význam, naděje a vlastní další krok",
     "slug": "karta-hvezda-tarot-vyznam",
-    "short_description": "Karta Hvězda v tarotu symbolizuje naději a uzdravení po těžkých časech. Poznej její symboliku, výklad v lásce, kariéře i kombinace s jinými kartami.",
+    "short_description": "Co může karta Hvězda nabídnout při otázkách na vztahy, práci a další směr? Praktický průvodce jejím významem, obrácenou polohou a souvislostmi.",
     "category": "Tarot",
     "published_at": "2025-11-01T10:00:00.000Z",
     "featured_image": "img/tarot-v2/tarot_hvezda.webp",
-    "readTime": 4
+    "readTime": 2,
+    "updated_at": "2026-10-14"
   },
   {
     "title": "Uzel osudu v astrologii: Severní a Jižní uzel — tvoje karmická cesta",
@@ -523,13 +532,14 @@
     "readTime": 5
   },
   {
-    "title": "Karta Měsíc (XVIII) v Tarotu: Iluze, podvědomí a skryté pravdy",
+    "title": "Karta Měsíc v tarotu: nejistota, dojem a chybějící informace",
     "slug": "karta-mesic-tarot-vyznam",
-    "short_description": "Karta Měsíc v tarotu odhaluje iluze, podvědomé strachy a skryté pravdy. Zjisti, co znamená ve vztazích, kariéře a jak projít jejím mlžným územím.",
+    "short_description": "Karta Měsíc v tarotu připomíná nejistotu a rozdíl mezi dojmem a ověřenou informací. Podívej se na význam, obrácenou polohu i modelovou situaci.",
     "category": "Tarot",
     "published_at": "2025-09-20T10:00:00.000Z",
     "featured_image": "img/tarot-v2/tarot_luna.webp",
-    "readTime": 4
+    "readTime": 4,
+    "updated_at": "2026-10-14"
   },
   {
     "title": "Attachment styly v lásce: Proč se opakují stejné vzorce ve vztazích",

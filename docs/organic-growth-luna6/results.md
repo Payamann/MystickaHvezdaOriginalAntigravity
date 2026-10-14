@@ -29,3 +29,7 @@ Průvodce meči, čtyři katalogové detaily a souhrn: [důkazy](batch-3/README.
 ## Čtvrtá dávka · 14. 10. 2026
 
 Dokončený redakční mečový katalog a zachování témat při filtrování: [důkazy](batch-4/README.md). Nový export ani výkonnostní měření nebylo získáno. Dávka zůstává lokální a čeká na skutečné nasazení/crawl.
+
+## Dokončení katalogu · 14. 10. 2026
+
+Všech 78 redakčních záznamů a deset návazných průvodců v této dokončovací dávce: [důkazy a přesný rozsah](completion/README.md). Pokrytí a lokální QA nejsou důkaz organického růstu. Ani tato dávka nebyla nasazená; nový GSC export, zákaznické či obchodní výsledky po úpravách nejsou získané.
