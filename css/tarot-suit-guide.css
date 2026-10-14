@@ -7,6 +7,10 @@
 .tarot-suit-guide__card a{display:inline-block;overflow-wrap:anywhere}
 .tarot-suit-guide__theme{color:#dec28b;font-size:.8rem}
 .tarot-suit-guide__card a:focus-visible{outline:2px solid #dec28b;outline-offset:4px}
+.tarot-suit-guide__nav{display:flex;flex-wrap:wrap;gap:.5rem .65rem;margin:1.5rem 0}
+.tarot-suit-guide__nav a{display:inline-flex;align-items:center;min-height:44px;padding:.55rem .8rem;border:1px solid #b99b6355;border-radius:6px;color:#dec28b;font-size:.85rem;line-height:1.4;text-decoration:none}
+.tarot-suit-guide__nav a:hover{border-color:#b99b63}
+.tarot-suit-guide__nav a:focus-visible{outline:2px solid #dec28b;outline-offset:4px}
 .blog-content h2[id],.blog-content h3[id]{scroll-margin-top:110px}
 .tarot-guide-next{max-width:800px;margin:2rem auto;padding:1.8rem;background:#112739;border:1px solid #b99b6355;border-radius:10px;text-align:center}
 .tarot-guide-next p{max-width:600px;margin:1rem auto}
