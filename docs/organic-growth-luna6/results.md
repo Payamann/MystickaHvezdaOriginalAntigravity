@@ -25,3 +25,7 @@ Přidány tarot.html, tarot-tri-karty.html a Slunce blog/detail/katalog. [Důkaz
 ## Třetí dávka · 13. 10. 2026
 
 Průvodce meči, čtyři katalogové detaily a souhrn: [důkazy](batch-3/README.md). Také tato dávka čeká na skutečné nasazení a crawl. Lokální odhalení karty a QA návštěvy nejsou zákaznické či obchodní výsledky.
+
+## Čtvrtá dávka · 14. 10. 2026
+
+Dokončený redakční mečový katalog a zachování témat při filtrování: [důkazy](batch-4/README.md). Nový export ani výkonnostní měření nebylo získáno. Dávka zůstává lokální a čeká na skutečné nasazení/crawl.

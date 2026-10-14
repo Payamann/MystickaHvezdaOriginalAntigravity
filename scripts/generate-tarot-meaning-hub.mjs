@@ -216,6 +216,11 @@ function getRelatedCards(entries, index, limit = 3) {
     return candidates.slice(0, limit);
 }
 
+function getEditorialTheme(name, card) {
+    const theme = seoOverrides[name]?.theme;
+    return typeof theme === 'string' && theme.trim() ? theme.trim() : (card.meaning || '');
+}
+
 function buildRelatedCardLinks(relatedCards) {
     return relatedCards
         .map(([relatedName, relatedCard]) => {
@@ -224,7 +229,7 @@ function buildRelatedCardLinks(relatedCards) {
                         <img src="${escapeHtml(rootAssetPath(relatedCard.image))}" alt="" width="66" height="110" loading="lazy" decoding="async">
                         <span>${escapeHtml(relatedGroup)}</span>
                         <strong>${escapeHtml(relatedName)}</strong>
-                        <small>${escapeHtml(relatedCard.meaning || '')}</small>
+                        <small>${escapeHtml(getEditorialTheme(relatedName, relatedCard))}</small>
                     </a>`;
         })
         .join('\n                    ');
@@ -234,7 +239,7 @@ function buildCard(name, card) {
     const group = getCardGroup(name);
     const groupLabel = groupLabels[group] || 'Tarot';
     const image = card.image || 'img/tarot/tarot_placeholder.webp';
-    const meaning = card.meaning || '';
+    const meaning = getEditorialTheme(name, card);
     const interpretation = getFirstSentence(seoOverrides[name]?.hubSummary || card.interpretation || '');
     const detail = detailHref(name);
 
@@ -257,7 +262,7 @@ function buildDetailPage(name, card, relatedCards = []) {
     const group = getCardGroup(name);
     const groupLabel = groupLabels[group] || 'Tarot';
     const image = card.image || 'img/tarot/tarot_placeholder.webp';
-    const meaning = card.meaning || '';
+    const meaning = getEditorialTheme(name, card);
     const seo = seoOverrides[name] || {};
     const interpretation = seo.summary || editorialSummaries[name] || card.interpretation || getFirstSentence(meaning);
     const sentences = getSentences(interpretation, 4);

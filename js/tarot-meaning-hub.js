@@ -158,7 +158,8 @@
         // Keep the maintained editorial summary when filtering regenerates the cards.
         const editorialByName = new Map(Array.from(document.querySelectorAll('.tarot-meaning-card[data-card]'))
             .map((entry) => [entry.dataset.card,
-                entry.querySelector('.tarot-meaning-card__body > p:not(.tarot-meaning-card__meaning)')?.textContent?.trim()]));
+                { meaning: entry.querySelector('.tarot-meaning-card__meaning')?.textContent?.trim(),
+                interpretation: entry.querySelector('.tarot-meaning-card__body > p:not(.tarot-meaning-card__meaning)')?.textContent?.trim() }]));
 
         try {
             const response = await fetch('/data/tarot-cards.json?v=20261007-deck-v2', { cache: 'no-cache' });
@@ -172,8 +173,8 @@
                     group,
                     groupLabel: groupLabels[group] || 'Tarot',
                     image: card.image || 'img/tarot-v2/tarot_card_back.webp',
-                    meaning: card.meaning || '',
-                    interpretation: editorialByName.get(name) || card.interpretation || ''
+                    meaning: editorialByName.get(name)?.meaning || card.meaning || '',
+                    interpretation: editorialByName.get(name)?.interpretation || card.interpretation || ''
                 };
                 return {
                     ...enriched,
