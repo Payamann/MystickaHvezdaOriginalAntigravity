@@ -1,0 +1,19 @@
+{
+  "expected": 166,
+  "unique": 166,
+  "mobileCount": 166,
+  "desktopCount": 166,
+  "mobileWidths": [
+    390
+  ],
+  "desktopWidths": [
+    1280
+  ],
+  "mobileOverflow": [],
+  "desktopOverflow": [],
+  "missingMobile": [],
+  "missingDesktop": [],
+  "productionCount": 166,
+  "legacySourceCandidates": 842,
+  "method": "read-only coverage validation, not product tests"
+}

@@ -1,0 +1,373 @@
+{
+  "date": "2026-10-14",
+  "candidate_root": ".codex-tmp/release-20261012",
+  "head": "9d6814def",
+  "mode": "research_only",
+  "changes_made": false,
+  "localized_public_html_count": 13,
+  "localized_files": {
+    "sk": [
+      "sk/index.html",
+      "sk/horoskopy.html",
+      "sk/andelske-karty.html",
+      "sk/kristalova-koule.html",
+      "sk/natalni-karta.html",
+      "sk/tarot.html",
+      "sk/tarot-ano-nie.html"
+    ],
+    "pl": [
+      "pl/index.html",
+      "pl/horoskopy.html",
+      "pl/andelske-karty.html",
+      "pl/kristalova-koule.html",
+      "pl/natalni-karta.html",
+      "pl/tarot.html"
+    ]
+  },
+  "localized_functional_inventory": [
+    {
+      "path": "sk/index.html",
+      "surface": "landing hub",
+      "hooks": [],
+      "keep": [
+        "localized copy",
+        "canonical/hreflang",
+        "shared header/footer"
+      ]
+    },
+    {
+      "path": "sk/horoskopy.html",
+      "surface": "daily horoscope selection/result",
+      "hooks": [
+        "subscribe-push-btn"
+      ],
+      "keep": [
+        "12 sign cards",
+        "result shell",
+        "shared auth/premium"
+      ]
+    },
+    {
+      "path": "sk/andelske-karty.html",
+      "surface": "daily angel card",
+      "hooks": [],
+      "keep": [
+        "card action",
+        "FAQ/reference"
+      ]
+    },
+    {
+      "path": "sk/kristalova-koule.html",
+      "surface": "question tool",
+      "hooks": [
+        "question-input",
+        "ask-btn",
+        "reset-btn"
+      ],
+      "keep": [
+        "question flow",
+        "result/premium behavior"
+      ]
+    },
+    {
+      "path": "sk/natalni-karta.html",
+      "surface": "birth data natal tool",
+      "hooks": [
+        "birth-date",
+        "birth-time",
+        "birth-place",
+        "calculate-natal"
+      ],
+      "keep": [
+        "form/result API flow"
+      ]
+    },
+    {
+      "path": "sk/tarot.html",
+      "surface": "tarot entry",
+      "hooks": [],
+      "keep": [
+        "one/three/Celtic links",
+        "FAQ/reference"
+      ]
+    },
+    {
+      "path": "sk/tarot-ano-nie.html",
+      "surface": "yes/no tarot",
+      "hooks": [
+        "question-input",
+        "btn-reset",
+        "btn-save-reading",
+        "btn-save-result-image"
+      ],
+      "keep": [
+        "free answer",
+        "save/share actions",
+        "long reference content"
+      ]
+    },
+    {
+      "path": "pl/index.html",
+      "surface": "landing hub",
+      "hooks": [],
+      "keep": [
+        "localized copy",
+        "canonical/hreflang",
+        "shared header/footer"
+      ]
+    },
+    {
+      "path": "pl/horoskopy.html",
+      "surface": "daily horoscope selection/result",
+      "hooks": [
+        "subscribe-push-btn"
+      ],
+      "keep": [
+        "12 sign cards",
+        "result shell",
+        "shared auth/premium"
+      ]
+    },
+    {
+      "path": "pl/andelske-karty.html",
+      "surface": "daily angel card",
+      "hooks": [],
+      "keep": [
+        "card action",
+        "FAQ/reference"
+      ]
+    },
+    {
+      "path": "pl/kristalova-koule.html",
+      "surface": "question tool",
+      "hooks": [
+        "question-input",
+        "ask-btn",
+        "reset-btn"
+      ],
+      "keep": [
+        "question flow",
+        "result/premium behavior"
+      ]
+    },
+    {
+      "path": "pl/natalni-karta.html",
+      "surface": "birth data natal tool",
+      "hooks": [
+        "birth-date",
+        "birth-time",
+        "birth-place",
+        "calculate-natal"
+      ],
+      "keep": [
+        "form/result API flow"
+      ]
+    },
+    {
+      "path": "pl/tarot.html",
+      "surface": "tarot entry",
+      "hooks": [],
+      "keep": [
+        "one/three/Celtic links",
+        "FAQ/reference"
+      ]
+    }
+  ],
+  "metadata": {
+    "all_localized_pages_have_lang_locale_canonical_hreflang": true,
+    "hreflang_targets": [
+      "cs",
+      "sk",
+      "pl"
+    ],
+    "x_default_present_on": [
+      "sk/index.html",
+      "pl/index.html",
+      "sk/tarot-ano-nie.html"
+    ]
+  },
+  "shared_sources": {
+    "header": {
+      "file": "components/header.html",
+      "lines": "2-106",
+      "features": [
+        "logo",
+        "mobile hamburger",
+        "Astrologie dropdown",
+        "Věštění & Tarot dropdown",
+        "Čísla & Energie dropdown",
+        "Poznání dropdown",
+        "Premium dropdown",
+        "mobile auth",
+        "desktop profile/register/login",
+        "language switcher"
+      ]
+    },
+    "footer": {
+      "file": "components/footer.html",
+      "lines": "3-139",
+      "features": [
+        "brand/trust/support/social",
+        "astrology links",
+        "tarot links",
+        "numbers/tools",
+        "learning links",
+        "legal/support",
+        "language switcher"
+      ]
+    },
+    "loader": {
+      "file": "js/components.js",
+      "lines": "82-152",
+      "features": [
+        "parallel header/footer fetch",
+        "relative path rewrite",
+        "error-loading fallback",
+        "components:loaded event"
+      ]
+    },
+    "auth_modal": {
+      "file": "js/templates.js",
+      "lines": "214-263",
+      "states": [
+        "login",
+        "register",
+        "forgot password",
+        "reset password"
+      ],
+      "ids": [
+        "auth-modal",
+        "auth-title",
+        "auth-submit",
+        "auth-mode-toggle",
+        "register-fields",
+        "reset-password-fields",
+        "gdpr-consent-wrapper"
+      ]
+    },
+    "premium": {
+      "file": "js/premium-gates.js",
+      "lines": "287-595",
+      "states": [
+        "inline paywall",
+        "exclusive paywall",
+        "login gate",
+        "lock overlay",
+        "trial paywall",
+        "plan manifest fallback"
+      ],
+      "preserve": [
+        "plan/price/footer",
+        "checkout metadata",
+        "close/backdrop dismissal"
+      ]
+    },
+    "generic_share": {
+      "file": "js/share-result.js",
+      "lines": "9-54,119-232",
+      "result_selectors": [
+        ".result-section",
+        "#chart-results",
+        "#phaseCard",
+        "#astro-results",
+        "#horoscope-result",
+        "#result-panel",
+        "#tarot-result",
+        "#tarot-results"
+      ],
+      "output": [
+        "share button",
+        "Web Share/clipboard",
+        "share toast"
+      ]
+    },
+    "horoscope_share": {
+      "file": "js/horoscope-share.js",
+      "lines": "286-405,410-466",
+      "id": "horoscope-share-panel",
+      "toast": "hs-toast",
+      "options": [
+        "native",
+        "Facebook",
+        "WhatsApp",
+        "copy",
+        "download"
+      ]
+    },
+    "subscribe": {
+      "file": "js/horoscope-subscribe.js",
+      "lines": "39-143",
+      "states": [
+        "email/sign validation",
+        "CSRF",
+        "API success",
+        "API/network failure",
+        "success message/toast"
+      ],
+      "ids": [
+        "horoscope-subscribe-btn",
+        "horoscope-subscribed-msg"
+      ]
+    },
+    "exit_intent": {
+      "file": "js/exit-intent.js",
+      "lines": "1-2",
+      "behavior": "leaving/switching tabs never opens upgrade dialog"
+    },
+    "newsletter": {
+      "file": "js/newsletter-popup.js",
+      "lines": "1-2",
+      "behavior": "browsing/elapsed time/leaving never opens signup dialog"
+    }
+  },
+  "background_inventory": {
+    "all_html_files": 937,
+    "raw_html_scan_files": 937,
+    "public_static_files_authoritative": 917,
+    "public_stars_layers_authoritative": 3,
+    "exact_stars_class_occurrences_raw": 5,
+    "exact_stars_files": [
+      "index.html:173",
+      "offline.html:28",
+      "tarot-karta-dne.html:44",
+      "templates/blog-post.html:307",
+      "templates/dictionary-term.html:296"
+    ],
+    "stars_named_files": [
+      "index.html:173:.stars",
+      "offline.html:28:.stars",
+      "osobni-mapa.html:98:.personal-map-stars",
+      "ritualy/session.html:27:.stars-bg",
+      "tarot-karta-dne.html:44:.stars",
+      "templates/blog-post.html:307:.stars",
+      "templates/dictionary-term.html:296:.stars"
+    ],
+    "declarations": [
+      "css/style.v2.css:281-333,376-446 global cosmic image and radial pseudo-elements",
+      "css/style.v2.css:6017-6059 .stars",
+      "css/style.v2.css:12515 .stars-canvas",
+      "css/pages/home-atlas.css:4 hides .stars/.nebula/.cosmic-particles on atlas home",
+      "css/atlas-remaining.css:3 hides .stars on atlas-remaining-page",
+      "css/tarot-atlas.css:4 hides .stars on page-tarot-daily",
+      "css/pages/offline.css:6-25 owns offline .stars pseudo-elements",
+      "css/pages/ritualy-session.css:35 owns .stars-bg",
+      "css/pages/osobni-mapa.css owns .personal-map-stars"
+    ],
+    "main_runtime_observation": "Production dated daily DOM has body.atlas-page plus an active .stars element display:block with background:url(bg-cosmic-mobile.webp); body::before was absent/disabled in inspected state. Route source server/routes/horoscope-pages.js:280 creates the div.stars layer."
+  },
+  "layout_guardrails": {
+    "fixed_header": "css/atlas-web.css:45-50; css/style.v2.css:1219-1260",
+    "mobile_header_and_aria": "js/components.js:160-305; css/style.v2.css:1293-1391,6269-6373",
+    "mobile_touch_targets": "css/atlas-web.css:113-117 gives footer links min-height 44px; header auth buttons 44px in atlas override",
+    "footer_spacing": "css/atlas-web.css:50 and css/style.v2.css:4926-5188",
+    "atlas_background": "css/atlas-web.css and css/atlas-remaining.css set navy surfaces while global image/radial layer remains"
+  },
+  "constraints": [
+    "read-only product review",
+    "no localized HTML edits",
+    "no shared JS/CSS edits",
+    "preserve canonical/hreflang/JSON-LD and result selectors",
+    "preserve fixed mobile header, ARIA menu behavior, touch targets, footer support/legal/language links",
+    "do not reintroduce exit-intent or time-based signup dialogs"
+  ]
+}

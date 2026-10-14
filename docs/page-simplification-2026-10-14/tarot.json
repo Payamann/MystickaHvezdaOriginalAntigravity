@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-14",
+  "candidate": "release-20261012",
+  "base_head": "9d6814defaeaf493f207dcdc0b7b3192532d1d7a",
+  "mode": "read-only-inventory",
+  "visual_review": false,
+  "rows": [
+    {"page":"tarot.html","state":"landing","source_words":601,"sections":6,"primary":"spread selection","result":"dynamic #tarot-results","recommendation":"keep tool/demo; collapse explanatory and broad cross-links"},
+    {"page":"tarot.html","state":"result-single-card","source":"js/tarot.js:596-750","primary":"revealed card interpretation","result":"interpretation + optional relationship offer","recommendation":"keep result, gate and hidden template unchanged"},
+    {"page":"tarot.html","state":"result-multi-card","source":"js/tarot.js:596-895; js/templates.js:57-180","primary":"multi-card reading","result":"card interpretations + summary + async summary","recommendation":"keep all result and error states"},
+    {"page":"tarot-karta-dne.html","state":"waiting","source_words":527,"sections":6,"primary":"Otočit kartu dne","result":"#tarot-daily-card-result[data-state=waiting]","recommendation":"keep functional block; collapse supporting sections"},
+    {"page":"tarot-karta-dne.html","state":"revealed","source":"js/tarot-karta-dne.js:494-510","primary":"daily card","result":"meaning + advice + links + save/share/email","recommendation":"keep result/actions/bridge"},
+    {"page":"tarot-karta-dne.html","state":"load-error","source":"js/tarot-karta-dne.js:537-563","primary":"fallback","result":"redirect to tarot hub","recommendation":"preserve redirect"},
+    {"page":"tarot-ano-ne.html","state":"empty","source_words":485,"sections":2,"primary":"question input + card buttons","result":"empty result shell","recommendation":"keep tool and validation hooks"},
+    {"page":"tarot-ano-ne.html","state":"validation-error","source":"js/tarot-ano-ne.js:1177-1195","primary":"write one question","result":"#question-error visible","recommendation":"keep error and aria-describedby"},
+    {"page":"tarot-ano-ne.html","state":"revealed","source":"js/tarot-ano-ne.js:1198-1314","primary":"free answer","result":"answer + next step + save/reset/image","recommendation":"keep full result and actions"},
+    {"page":"tarot-ano-ne.html","state":"paid-continuation-offer","source":"tarot-ano-ne.html:96-140; js/relationship-tarot-bridge.js:91-127","primary":"continue same question","result":"hidden contextual 149 Kč offer","recommendation":"keep hidden/runtime gate and legacy suppression"},
+    {"page":"tarot-laska.html","state":"landing","source_words":692,"sections":5,"primary":"ANO/NE relationship question","result":"free entry; hidden paid offer","recommendation":"keep trust/safety content; collapse alternatives and FAQ"},
+    {"page":"tarot-laska.html","state":"seo-question-cards","source":"tarot-laska.html:142-181","primary":"question-specific entry links","result":"three substantive answer cards","recommendation":"keep content, optionally collapse whole reference section"},
+    {"page":"tarot-tri-karty.html","state":"premium-landing","source_words":412,"sections":5,"primary":"open three-card Premium","result":"routes to tarot.html spread=three_cards","recommendation":"keep offer/positions; collapse repeated use/intent/FAQ"},
+    {"page":"tarot-keltsky-kriz.html","state":"membership-landing","source_words":390,"sections":5,"primary":"open Celtic Cross","result":"routes to tarot.html spread=celtic_cross","recommendation":"keep offer/positions; collapse repeated use/intent/FAQ"},
+    {"page":"tarot-zdarma.html","state":"landing-demo","source_words":434,"sections":6,"primary":"flip preview / start free tarot","result":"demo caption + hidden relationship offer","recommendation":"keep demo; collapse methods/advice/final related CTA"},
+    {"page":"tarot-zdarma.html","state":"preview-card-flipped","source":"js/tarot-zdarma.js:8-12","primary":"flipCard[data-preview-card]","result":"caption update","recommendation":"keep selectors and caption"},
+    {"page":"tarot-vyznam-karet.html","state":"catalog","source_words":2198,"sections":5,"primary":"search/filter 78 cards","result":"interactive card grid","recommendation":"keep catalog and controls; collapse only educational preface/suit explainer"},
+    {"page":"tarot-vyznam-karet.html","state":"loading","source":"tarot-vyznam-karet.html:163; js/tarot-meaning-hub.js:156-185","primary":"load card data","result":"loading message","recommendation":"keep"},
+    {"page":"tarot-vyznam-karet.html","state":"no-results","source":"tarot-vyznam-karet.html:165; js/tarot-meaning-hub.js:149","primary":"search/filter","result":"no-results message","recommendation":"keep"},
+    {"page":"tarot-vyznam-karet.html","state":"fetch-error","source":"tarot-vyznam-karet.html:164; js/tarot-meaning-hub.js:188-190","primary":"retry/refresh","result":"error message","recommendation":"keep"},
+    {"page":"shared","state":"auth-modal","source":"js/templates.js:214-265","primary":"login/register/reset","result":"hidden modal states","recommendation":"do not wrap or simplify from page HTML"},
+    {"page":"shared","state":"freemium-banner","source":"js/freemium-tarot.js:16-35","primary":"usage-limit context","result":"#freemium-banner visible","recommendation":"preserve global gate"},
+    {"page":"shared","state":"share-export","source":"js/share-image-canvas.js:147-179; js/tarot-ano-ne.js:978-1053; js/tarot-karta-dne.js:314-354","primary":"share or download","result":"shared/downloaded/cancelled/error","recommendation":"preserve controls and fallback paths"}
+  ]
+}

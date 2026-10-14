@@ -1,0 +1,174 @@
+{
+  "checkedAt": "2026-10-14T19:20:03.993Z",
+  "scope": "Twelve observed sign links on 2026-10-01, read-only browser DOM inspection",
+  "results": [
+    {
+      "bodyClass": "atlas-page atlas-astro-page",
+      "heading": "Horoskop Berana",
+      "height": 5546,
+      "signLinks": 12,
+      "stars": [
+        {
+          "display": "block",
+          "image": "url(\"https://www.mystickahvezda.cz/img/bg-cosmic-mobile.webp\")"
+        }
+      ],
+      "url": "https://www.mystickahvezda.cz/horoskop/beran/2026-10-01",
+      "width": 390
+    },
+    {
+      "bodyClass": "atlas-page atlas-astro-page",
+      "heading": "Horoskop Býka",
+      "height": 5504,
+      "signLinks": 12,
+      "stars": [
+        {
+          "display": "block",
+          "image": "url(\"https://www.mystickahvezda.cz/img/bg-cosmic-mobile.webp\")"
+        }
+      ],
+      "url": "https://www.mystickahvezda.cz/horoskop/byk/2026-10-01",
+      "width": 390
+    },
+    {
+      "bodyClass": "atlas-page atlas-astro-page",
+      "heading": "Horoskop Blíženců",
+      "height": 5513,
+      "signLinks": 12,
+      "stars": [
+        {
+          "display": "block",
+          "image": "url(\"https://www.mystickahvezda.cz/img/bg-cosmic-mobile.webp\")"
+        }
+      ],
+      "url": "https://www.mystickahvezda.cz/horoskop/blizenci/2026-10-01",
+      "width": 390
+    },
+    {
+      "bodyClass": "atlas-page atlas-astro-page",
+      "heading": "Horoskop Raka",
+      "height": 5504,
+      "signLinks": 12,
+      "stars": [
+        {
+          "display": "block",
+          "image": "url(\"https://www.mystickahvezda.cz/img/bg-cosmic-mobile.webp\")"
+        }
+      ],
+      "url": "https://www.mystickahvezda.cz/horoskop/rak/2026-10-01",
+      "width": 390
+    },
+    {
+      "bodyClass": "atlas-page atlas-astro-page",
+      "heading": "Horoskop Lva",
+      "height": 5471,
+      "signLinks": 12,
+      "stars": [
+        {
+          "display": "block",
+          "image": "url(\"https://www.mystickahvezda.cz/img/bg-cosmic-mobile.webp\")"
+        }
+      ],
+      "url": "https://www.mystickahvezda.cz/horoskop/lev/2026-10-01",
+      "width": 390
+    },
+    {
+      "bodyClass": "atlas-page atlas-astro-page",
+      "heading": "Horoskop Panny",
+      "height": 5579,
+      "signLinks": 12,
+      "stars": [
+        {
+          "display": "block",
+          "image": "url(\"https://www.mystickahvezda.cz/img/bg-cosmic-mobile.webp\")"
+        }
+      ],
+      "url": "https://www.mystickahvezda.cz/horoskop/panna/2026-10-01",
+      "width": 390
+    },
+    {
+      "bodyClass": "atlas-page atlas-astro-page",
+      "heading": "Horoskop Vah",
+      "height": 5471,
+      "signLinks": 12,
+      "stars": [
+        {
+          "display": "block",
+          "image": "url(\"https://www.mystickahvezda.cz/img/bg-cosmic-mobile.webp\")"
+        }
+      ],
+      "url": "https://www.mystickahvezda.cz/horoskop/vahy/2026-10-01",
+      "width": 390
+    },
+    {
+      "bodyClass": "atlas-page atlas-astro-page",
+      "heading": "Horoskop Štíra",
+      "height": 5504,
+      "signLinks": 12,
+      "stars": [
+        {
+          "display": "block",
+          "image": "url(\"https://www.mystickahvezda.cz/img/bg-cosmic-mobile.webp\")"
+        }
+      ],
+      "url": "https://www.mystickahvezda.cz/horoskop/stir/2026-10-01",
+      "width": 390
+    },
+    {
+      "bodyClass": "atlas-page atlas-astro-page",
+      "heading": "Horoskop Střelce",
+      "height": 5579,
+      "signLinks": 12,
+      "stars": [
+        {
+          "display": "block",
+          "image": "url(\"https://www.mystickahvezda.cz/img/bg-cosmic-mobile.webp\")"
+        }
+      ],
+      "url": "https://www.mystickahvezda.cz/horoskop/strelec/2026-10-01",
+      "width": 390
+    },
+    {
+      "bodyClass": "atlas-page atlas-astro-page",
+      "heading": "Horoskop Kozoroha",
+      "height": 5546,
+      "signLinks": 12,
+      "stars": [
+        {
+          "display": "block",
+          "image": "url(\"https://www.mystickahvezda.cz/img/bg-cosmic-mobile.webp\")"
+        }
+      ],
+      "url": "https://www.mystickahvezda.cz/horoskop/kozoroh/2026-10-01",
+      "width": 390
+    },
+    {
+      "bodyClass": "atlas-page atlas-astro-page",
+      "heading": "Horoskop Vodnáře",
+      "height": 5546,
+      "signLinks": 12,
+      "stars": [
+        {
+          "display": "block",
+          "image": "url(\"https://www.mystickahvezda.cz/img/bg-cosmic-mobile.webp\")"
+        }
+      ],
+      "url": "https://www.mystickahvezda.cz/horoskop/vodnar/2026-10-01",
+      "width": 390
+    },
+    {
+      "bodyClass": "atlas-page atlas-astro-page",
+      "heading": "Horoskop Ryb",
+      "height": 5538,
+      "signLinks": 12,
+      "stars": [
+        {
+          "display": "block",
+          "image": "url(\"https://www.mystickahvezda.cz/img/bg-cosmic-mobile.webp\")"
+        }
+      ],
+      "url": "https://www.mystickahvezda.cz/horoskop/ryby/2026-10-01",
+      "width": 390
+    }
+  ]
+}

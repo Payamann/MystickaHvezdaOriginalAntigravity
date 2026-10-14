@@ -1,0 +1,2588 @@
+{
+  "checkedAt": "2026-10-14T19:18:44.579Z",
+  "scope": "GET public HTML only; no browser state, login or form submission",
+  "results": [
+    {
+      "path": "/404.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/404.html",
+      "title": "Stránka nenalezena | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/404.mh-2f81a11af20e5eda.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 3184
+    },
+    {
+      "path": "/afirmace.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/afirmace.html",
+      "title": "Denní afirmace podle znamení zvěrokruhu | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/afirmace.mh-169720df03d46500.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 7903
+    },
+    {
+      "path": "/andelska-posta.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/andelska-posta.html",
+      "title": "Andělská pošta — Napište vzkaz andělům | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/andelska-posta.mh-c8cb2d3569c1fe9d.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 7049
+    },
+    {
+      "path": "/andelske-karty.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/andelske-karty.html",
+      "title": "Andělská karta dne zdarma – poselství pro tvůj dnešek",
+      "bodyClass": "page-angel-cards atlas-page atlas-angel-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/andelske-karty.mh-9d444cecf02a9f1f.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-angels.mh-5469f81357d56f04.css"
+      ],
+      "stars": false,
+      "bytes": 37981
+    },
+    {
+      "path": "/astro-mapa.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/astro-mapa.html",
+      "title": "Astro mapa míst | Astrokartografie | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/astro-mapa.mh-d20b74eab36842b2.css",
+        "/css/page-extras.mh-1763b7e912230150.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 17583
+    },
+    {
+      "path": "/aura.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/aura.html",
+      "title": "Aura Kalkulačka — Zjistěte barvu své aury | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/aura.mh-55e5b3b0a1d64b5e.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css",
+        "/css/atlas-art.mh-3be3a50f799e2ccb.css"
+      ],
+      "stars": false,
+      "bytes": 11878
+    },
+    {
+      "path": "/biorytmy.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/biorytmy.html",
+      "title": "Osobní Biorytmy | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/biorytmy.mh-39735d4afccf3173.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css",
+        "/css/atlas-art.mh-3be3a50f799e2ccb.css"
+      ],
+      "stars": false,
+      "bytes": 16428
+    },
+    {
+      "path": "/blog.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/blog.html",
+      "title": "Blog Mystická Hvězda | Tarot, horoskopy a numerologie",
+      "bodyClass": "atlas-page atlas-blog",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/blog.mh-f92a0b034589839d.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-blog.mh-89cf29e356f5362e.css"
+      ],
+      "stars": false,
+      "bytes": 69699
+    },
+    {
+      "path": "/cenik.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/cenik.html",
+      "title": "Členství za 199 Kč měsíčně | Mystická Hvězda",
+      "bodyClass": "page-pricing atlas-page atlas-remaining-page",
+      "styles": [
+        "/css/site.min.mh-d05e9f98f38e467f.css",
+        "/css/pages/cenik.mh-513b14d311f6c105.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css",
+        "/css/pages/membership-card.mh-0feb7331ec791fe9.css"
+      ],
+      "stars": false,
+      "bytes": 13349
+    },
+    {
+      "path": "/cinsky-horoskop.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/cinsky-horoskop.html",
+      "title": "Čínský horoskop 2026 — Zjistěte své čínské znamení | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/cinsky-horoskop.mh-1f2d8940ff2ac111.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 17965
+    },
+    {
+      "path": "/faq.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/faq.html",
+      "title": "FAQ k výkladům, platbám a soukromí | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/faq.mh-bfc7186e0da55a9a.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 13226
+    },
+    {
+      "path": "/horoskop/beran.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/horoskop/beran.html",
+      "title": "Aries znamení česky: Beran, datum, povaha a láska",
+      "bodyClass": "atlas-page atlas-astro-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.mh-11d9e4f1a688f3c6.css",
+        "/css/pages/horoskop-znameni.mh-34c38355cfe7fbb5.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-astro.mh-255ea92d1360264d.css"
+      ],
+      "stars": false,
+      "bytes": 11905
+    },
+    {
+      "path": "/horoskop/blizenci.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/horoskop/blizenci.html",
+      "title": "Blíženci znamení (Gemini): vlastnosti, láska a kompatibilita",
+      "bodyClass": "atlas-page atlas-astro-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.mh-11d9e4f1a688f3c6.css",
+        "/css/pages/horoskop-znameni.mh-34c38355cfe7fbb5.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-astro.mh-255ea92d1360264d.css"
+      ],
+      "stars": false,
+      "bytes": 11515
+    },
+    {
+      "path": "/horoskop/byk.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/horoskop/byk.html",
+      "title": "Býk znamení (Taurus): vlastnosti, láska a kompatibilita",
+      "bodyClass": "atlas-page atlas-astro-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.mh-11d9e4f1a688f3c6.css",
+        "/css/pages/horoskop-znameni.mh-34c38355cfe7fbb5.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-astro.mh-255ea92d1360264d.css"
+      ],
+      "stars": false,
+      "bytes": 11735
+    },
+    {
+      "path": "/horoskop/index.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/horoskop/index.html",
+      "title": "Znamení zvěrokruhu – Vlastnosti, živly a vládci | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-astro-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/horoskop-index.mh-82db100840dea27f.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-astro.mh-255ea92d1360264d.css"
+      ],
+      "stars": false,
+      "bytes": 13774
+    },
+    {
+      "path": "/horoskop/kozoroh.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/horoskop/kozoroh.html",
+      "title": "Kozoroh znamení (Capricorn): vlastnosti, láska a kompatibilita",
+      "bodyClass": "atlas-page atlas-astro-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.mh-11d9e4f1a688f3c6.css",
+        "/css/pages/horoskop-znameni.mh-34c38355cfe7fbb5.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-astro.mh-255ea92d1360264d.css"
+      ],
+      "stars": false,
+      "bytes": 11425
+    },
+    {
+      "path": "/horoskop/lev.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/horoskop/lev.html",
+      "title": "Lev znamení (Leo): vlastnosti, láska a kompatibilita",
+      "bodyClass": "atlas-page atlas-astro-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.mh-11d9e4f1a688f3c6.css",
+        "/css/pages/horoskop-znameni.mh-34c38355cfe7fbb5.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-astro.mh-255ea92d1360264d.css"
+      ],
+      "stars": false,
+      "bytes": 11366
+    },
+    {
+      "path": "/horoskop/panna.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/horoskop/panna.html",
+      "title": "Panna znamení (Virgo): vlastnosti, láska a kompatibilita",
+      "bodyClass": "atlas-page atlas-astro-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.mh-11d9e4f1a688f3c6.css",
+        "/css/pages/horoskop-znameni.mh-34c38355cfe7fbb5.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-astro.mh-255ea92d1360264d.css"
+      ],
+      "stars": false,
+      "bytes": 11554
+    },
+    {
+      "path": "/horoskop/rak.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/horoskop/rak.html",
+      "title": "Rak znamení (Cancer): vlastnosti, láska a kompatibilita",
+      "bodyClass": "atlas-page atlas-astro-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.mh-11d9e4f1a688f3c6.css",
+        "/css/pages/horoskop-znameni.mh-34c38355cfe7fbb5.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-astro.mh-255ea92d1360264d.css"
+      ],
+      "stars": false,
+      "bytes": 11386
+    },
+    {
+      "path": "/horoskop/ryby.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/horoskop/ryby.html",
+      "title": "Ryby znamení (Pisces): vlastnosti, láska a kompatibilita",
+      "bodyClass": "atlas-page atlas-astro-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.mh-11d9e4f1a688f3c6.css",
+        "/css/pages/horoskop-znameni.mh-34c38355cfe7fbb5.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-astro.mh-255ea92d1360264d.css"
+      ],
+      "stars": false,
+      "bytes": 11455
+    },
+    {
+      "path": "/horoskop/stir.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/horoskop/stir.html",
+      "title": "Štír znamení (Scorpio): vlastnosti, láska a kompatibilita",
+      "bodyClass": "atlas-page atlas-astro-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.mh-11d9e4f1a688f3c6.css",
+        "/css/pages/horoskop-znameni.mh-34c38355cfe7fbb5.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-astro.mh-255ea92d1360264d.css"
+      ],
+      "stars": false,
+      "bytes": 11444
+    },
+    {
+      "path": "/horoskop/strelec.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/horoskop/strelec.html",
+      "title": "Střelec znamení (Sagittarius): vlastnosti, láska a kompatibilita",
+      "bodyClass": "atlas-page atlas-astro-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.mh-11d9e4f1a688f3c6.css",
+        "/css/pages/horoskop-znameni.mh-34c38355cfe7fbb5.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-astro.mh-255ea92d1360264d.css"
+      ],
+      "stars": false,
+      "bytes": 11621
+    },
+    {
+      "path": "/horoskop/vahy.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/horoskop/vahy.html",
+      "title": "Váhy znamení (Libra): vlastnosti, láska a kompatibilita",
+      "bodyClass": "atlas-page atlas-astro-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.mh-11d9e4f1a688f3c6.css",
+        "/css/pages/horoskop-znameni.mh-34c38355cfe7fbb5.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-astro.mh-255ea92d1360264d.css"
+      ],
+      "stars": false,
+      "bytes": 11485
+    },
+    {
+      "path": "/horoskop/vodnar.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/horoskop/vodnar.html",
+      "title": "Vodnář znamení (Aquarius): vlastnosti, láska a kompatibilita",
+      "bodyClass": "atlas-page atlas-astro-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.mh-11d9e4f1a688f3c6.css",
+        "/css/pages/horoskop-znameni.mh-34c38355cfe7fbb5.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-astro.mh-255ea92d1360264d.css"
+      ],
+      "stars": false,
+      "bytes": 11606
+    },
+    {
+      "path": "/horoskopy.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/horoskopy.html",
+      "title": "Horoskop na dnes pro 12 znamení | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/css/site.min.mh-d05e9f98f38e467f.css",
+        "/css/pages/horoskopy.mh-b1832f19dadb8c60.css",
+        "/css/pages/horoscope-cluster.mh-1fac002199bee3d7.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 32147
+    },
+    {
+      "path": "/index.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/index.html",
+      "title": "Mystická Hvězda | Tarot zdarma, horoskopy a osobní výklady",
+      "bodyClass": "page-home atlas-home",
+      "styles": [
+        "/css/home.min.mh-6920bff16a36aa8f.css",
+        "/css/home.min.mh-6920bff16a36aa8f.css",
+        "/css/pages/tarot-karta-dne.mh-19e440056409535e.css",
+        "/css/tarot-atlas.mh-2e938648f7d4fc19.css"
+      ],
+      "stars": true,
+      "bytes": 66078
+    },
+    {
+      "path": "/jak-to-funguje.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/jak-to-funguje.html",
+      "title": "Jak fungují výklady | Data, AI a hranice | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/jak-to-funguje.mh-5ff90a22f926132f.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 8793
+    },
+    {
+      "path": "/jmena/index.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/jmena/index.html",
+      "title": "Databáze jmen — Původ, Význam, Numerologie | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-content-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/jmena-index.mh-7bf67fdea1b1ec2f.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-content.mh-b979524a1706dc0f.css"
+      ],
+      "stars": false,
+      "bytes": 28433
+    },
+    {
+      "path": "/kalkulacka-cisla-osudu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/kalkulacka-cisla-osudu.html",
+      "title": "Kalkulačka Čísla Osudu – Vaše numerologické číslo zdarma | Mystická Hvězda",
+      "bodyClass": "page-life-number atlas-page atlas-astro-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/kalkulacka-cisla-osudu.mh-25581dfe93d8e096.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-astro.mh-255ea92d1360264d.css"
+      ],
+      "stars": false,
+      "bytes": 15816
+    },
+    {
+      "path": "/kontakt.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/kontakt.html",
+      "title": "Kontakt a podpora | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/kontakt.mh-84d96b688c69873e.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 8531
+    },
+    {
+      "path": "/kristalova-koule.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/kristalova-koule.html",
+      "title": "Křišťálová koule ano ne – odpověď na jednu otázku",
+      "bodyClass": "page-crystal-ball atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/kristalova-koule.mh-20a20033c7543a18.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-tools.mh-493dc452da24be9c.css",
+        "/css/atlas-art.mh-3be3a50f799e2ccb.css"
+      ],
+      "stars": false,
+      "bytes": 19257
+    },
+    {
+      "path": "/lunace.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/lunace.html",
+      "title": "Lunární fáze dnes | Energie Měsíce | Mystická Hvězda",
+      "bodyClass": "atlas-page page-lunace",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/lunace.mh-6c795bde02080e7b.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-tools.mh-493dc452da24be9c.css",
+        "/css/atlas-art.mh-3be3a50f799e2ccb.css"
+      ],
+      "stars": false,
+      "bytes": 16443
+    },
+    {
+      "path": "/mentor.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/mentor.html",
+      "title": "Hvězdný průvodce | Osobní otázky a výklad | Mystická Hvězda",
+      "bodyClass": "page-mentor atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/mentor.mh-9fabab883c32c3ea.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 13022
+    },
+    {
+      "path": "/mesicni-horoskop.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/mesicni-horoskop.html",
+      "title": "Měsíční horoskop | Astrologický výhled na celý měsíc",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/horoscope-cluster.mh-1fac002199bee3d7.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 11598
+    },
+    {
+      "path": "/minuly-zivot.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/minuly-zivot.html",
+      "title": "Minulý Život — Akashické Záznamy | Mystická Hvězda",
+      "bodyClass": "page-past-life atlas-page atlas-remaining-page",
+      "styles": [
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/minuly-zivot.mh-3d702acd9589ebbc.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css",
+        "/css/atlas-art.mh-3be3a50f799e2ccb.css"
+      ],
+      "stars": false,
+      "bytes": 21146
+    },
+    {
+      "path": "/natalni-karta.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/natalni-karta.html",
+      "title": "Natální karta online: výklad narození | Mystická Hvězda",
+      "bodyClass": "page-natal atlas-page atlas-remaining-page",
+      "styles": [
+        "/css/site.min.mh-d05e9f98f38e467f.css",
+        "/css/pages/natalni-karta.mh-9c89cb8aa08b6aca.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css",
+        "/css/atlas-art.mh-3be3a50f799e2ccb.css"
+      ],
+      "stars": false,
+      "bytes": 34720
+    },
+    {
+      "path": "/numerologie.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/numerologie.html",
+      "title": "Numerologie online: životní číslo a osud | Mystická Hvězda",
+      "bodyClass": "page-numerology atlas-page",
+      "styles": [
+        "/css/site.min.mh-d05e9f98f38e467f.css",
+        "/css/pages/numerologie.mh-4e1d1db4c39225e9.css",
+        "/css/pages/numerology-cluster.mh-6dbd1ca051cee230.css",
+        "/css/page-extras.mh-1763b7e912230150.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-tools.mh-493dc452da24be9c.css",
+        "/css/atlas-art.mh-3be3a50f799e2ccb.css"
+      ],
+      "stars": false,
+      "bytes": 24430
+    },
+    {
+      "path": "/o-nas.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/o-nas.html",
+      "title": "O Mystické Hvězdě | Přístup k výkladům a datům",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/o-nas.mh-19940bfb1fc28207.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css",
+        "/css/atlas-art.mh-3be3a50f799e2ccb.css"
+      ],
+      "stars": false,
+      "bytes": 15540
+    },
+    {
+      "path": "/offline.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/offline.html",
+      "title": "Jste offline | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/pages/offline.mh-27f1dc142abb367e.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": true,
+      "bytes": 1461
+    },
+    {
+      "path": "/ochrana-soukromi.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/soukromi.html",
+      "title": "Ochrana soukromí | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/soukromi.mh-faa14dc804e0242b.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 9966
+    },
+    {
+      "path": "/onboarding.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/onboarding.html",
+      "title": "Vítejte v Mystické Hvězdě | Nastavení",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/css/site.min.mh-d05e9f98f38e467f.css",
+        "/css/pages/onboarding.mh-fdb0e93a21abc63d.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 9814
+    },
+    {
+      "path": "/osobni-mapa.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/osobni-mapa.html",
+      "title": "Osobní mapa na příštích 12 měsíců | Mystická Hvězda",
+      "bodyClass": "page-personal-map atlas-page atlas-remaining-page",
+      "styles": [
+        "/css/site.min.mh-d05e9f98f38e467f.css",
+        "/css/pages/osobni-mapa.mh-07d2250096ee3c63.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 29409
+    },
+    {
+      "path": "/osobni-rok-2026.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/osobni-rok-2026.html",
+      "title": "Osobní rok 2026 numerologie | Výpočet a význam cyklu",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/numerology-cluster.mh-6dbd1ca051cee230.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 14580
+    },
+    {
+      "path": "/partnerska-numerologie.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/partnerska-numerologie.html",
+      "title": "Partnerská numerologie | Kompatibilita podle data narození",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/numerology-cluster.mh-6dbd1ca051cee230.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 14258
+    },
+    {
+      "path": "/partnerska-shoda.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/partnerska-shoda.html",
+      "title": "Partnerská shoda znamení online | Mystická Hvězda",
+      "bodyClass": "page-compatibility atlas-page atlas-astro-page",
+      "styles": [
+        "/css/site.min.mh-d05e9f98f38e467f.css",
+        "/css/pages/partnerska-shoda.mh-b78eb6cfa41cacb3.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-astro.mh-255ea92d1360264d.css"
+      ],
+      "stars": false,
+      "bytes": 50636
+    },
+    {
+      "path": "/pl/andelske-karty.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/pl/andelske-karty.html",
+      "title": "Anielska Karta Dnia | Mistyczna Gwiazda",
+      "bodyClass": "atlas-page atlas-remaining-page atlas-language-page",
+      "styles": [
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/pl-andelske-karty.mh-9a2981fda98cddce.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 7561
+    },
+    {
+      "path": "/pl/horoskopy.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/pl/horoskopy.html",
+      "title": "Horoskopy Dzienne | Mistyczna Gwiazda",
+      "bodyClass": "atlas-page atlas-remaining-page atlas-language-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/pl-horoskopy.mh-97b2700e9fc34629.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 14487
+    },
+    {
+      "path": "/pl/index.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/pl/index.html",
+      "title": "Mistyczna Gwiazda | Astrologia dla samopoznania i Tarot",
+      "bodyClass": "atlas-page atlas-remaining-page atlas-language-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/pl-index.mh-7684bc8cb7ff0a98.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 6536
+    },
+    {
+      "path": "/pl/kristalova-koule.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/pl/kristalova-koule.html",
+      "title": "Kryształowa kula tak czy nie – odpowiedź na jedno pytanie",
+      "bodyClass": "atlas-page atlas-remaining-page atlas-language-page",
+      "styles": [
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/pl-kristalova-koule.mh-f920bfec50b9dd36.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css",
+        "/css/atlas-art.mh-3be3a50f799e2ccb.css"
+      ],
+      "stars": false,
+      "bytes": 8643
+    },
+    {
+      "path": "/pl/natalni-karta.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/pl/natalni-karta.html",
+      "title": "Kosmogram | Mistyczna Gwiazda",
+      "bodyClass": "atlas-page atlas-remaining-page atlas-language-page",
+      "styles": [
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/pl-natalni-karta.mh-e09b17c200191f4f.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 9074
+    },
+    {
+      "path": "/pl/tarot.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/pl/tarot.html",
+      "title": "Rozkłady Tarota Online | Mistyczna Gwiazda",
+      "bodyClass": "atlas-page atlas-remaining-page atlas-language-page atlas-localized-tarot",
+      "styles": [
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/pl-tarot.mh-046efe4ca7320f39.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css",
+        "/css/atlas-localized-tarot.mh-5beadcfd058070c4.css"
+      ],
+      "stars": false,
+      "bytes": 10029
+    },
+    {
+      "path": "/podminky.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/podminky.html",
+      "title": "Obchodní podmínky | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/podminky.mh-0e15b8e91dc6d59c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 9166
+    },
+    {
+      "path": "/prihlaseni.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/prihlaseni.html",
+      "title": "Přihlášení | Mystická Hvězda",
+      "bodyClass": "page-login atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/prihlaseni.mh-ed3ec1c29ab40e68.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 10804
+    },
+    {
+      "path": "/profil.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/profil.html",
+      "title": "Můj profil | Mystická Hvězda",
+      "bodyClass": "page-profile atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/profil.mh-c470f3ce01d6aabe.css",
+        "/css/profile-refresh.mh-8a802bf296caa497.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 24625
+    },
+    {
+      "path": "/ritualy/index.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/ritualy/index.html",
+      "title": "Lunární Rituál dnes | Personalizovaný podle vašeho znamení | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/ritualy-index.mh-346b9fb726383731.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 11628
+    },
+    {
+      "path": "/ritualy/session.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/ritualy/session.html",
+      "title": "Rituální Seance | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/pages/ritualy-session.mh-543562b7a0057f83.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 7071
+    },
+    {
+      "path": "/rocni-horoskop.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/osobni-mapa.html?source=annual_horoscope_retired",
+      "title": "Osobní mapa na příštích 12 měsíců | Mystická Hvězda",
+      "bodyClass": "page-personal-map atlas-page atlas-remaining-page",
+      "styles": [
+        "/css/site.min.mh-d05e9f98f38e467f.css",
+        "/css/pages/osobni-mapa.mh-07d2250096ee3c63.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 29409
+    },
+    {
+      "path": "/runy.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/runy.html",
+      "title": "Runy online: denní runa zdarma | Mystická Hvězda",
+      "bodyClass": "page-runes atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/runy.mh-b2bac88c50950746.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-tools.mh-493dc452da24be9c.css",
+        "/css/atlas-art.mh-3be3a50f799e2ccb.css"
+      ],
+      "stars": false,
+      "bytes": 22292
+    },
+    {
+      "path": "/shamansko-kolo.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/shamansko-kolo.html",
+      "title": "Šamanské kolo | Totemový výklad | Mystická Hvězda",
+      "bodyClass": "page-shaman-wheel atlas-page atlas-remaining-page",
+      "styles": [
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/shamansko-kolo.mh-d622b356c44ede7a.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css",
+        "/css/atlas-art.mh-3be3a50f799e2ccb.css"
+      ],
+      "stars": false,
+      "bytes": 27093
+    },
+    {
+      "path": "/sk/andelske-karty.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/sk/andelske-karty.html",
+      "title": "Anjelská Karta Dňa | Mystická Hviezda",
+      "bodyClass": "atlas-page atlas-remaining-page atlas-language-page",
+      "styles": [
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/sk-andelske-karty.mh-f135db3e696593c1.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 7415
+    },
+    {
+      "path": "/sk/horoskopy.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/sk/horoskopy.html",
+      "title": "Denné Horoskopy | Mystická Hviezda",
+      "bodyClass": "atlas-page atlas-remaining-page atlas-language-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/sk-horoskopy.mh-481c479b59778f6f.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 14340
+    },
+    {
+      "path": "/sk/index.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/sk/index.html",
+      "title": "Mystická Hviezda | Astrológia pre sebapoznanie a Tarot",
+      "bodyClass": "atlas-page atlas-remaining-page atlas-language-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/sk-index.mh-9fe99638ccc7e284.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 6417
+    },
+    {
+      "path": "/sk/kristalova-koule.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/sk/kristalova-koule.html",
+      "title": "Krištáľová guľa áno nie – odpoveď na jednu otázku",
+      "bodyClass": "atlas-page atlas-remaining-page atlas-language-page atlas-localized-crystal",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/kristalova-koule.mh-20a20033c7543a18.css",
+        "/css/pages/sk-kristalova-koule.mh-ffcca683abaccb89.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css",
+        "/css/atlas-art.mh-3be3a50f799e2ccb.css"
+      ],
+      "stars": false,
+      "bytes": 8570
+    },
+    {
+      "path": "/sk/natalni-karta.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/sk/natalni-karta.html",
+      "title": "Natálna Karta | Mystická Hviezda",
+      "bodyClass": "atlas-page atlas-remaining-page atlas-language-page",
+      "styles": [
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/sk-natalni-karta.mh-5f33326885d71a75.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 9037
+    },
+    {
+      "path": "/sk/tarot-ano-nie.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/sk/tarot-ano-nie.html",
+      "title": "Tarot áno nie zadarmo – jasná odpoveď z kariet hneď",
+      "bodyClass": "atlas-page atlas-remaining-page atlas-language-page atlas-localized-yes-no",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-ano-ne.mh-9046224ff1531228.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 24776
+    },
+    {
+      "path": "/sk/tarot.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/sk/tarot.html",
+      "title": "Tarotové Výklady Online | Mystická Hviezda",
+      "bodyClass": "atlas-page atlas-remaining-page atlas-language-page atlas-localized-tarot",
+      "styles": [
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/sk-tarot.mh-6ec8b1b583f2a4a0.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css",
+        "/css/atlas-localized-tarot.mh-5beadcfd058070c4.css"
+      ],
+      "stars": false,
+      "bytes": 9996
+    },
+    {
+      "path": "/slovnik.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/slovnik.html",
+      "title": "Ezoterický slovník pojmů | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-content-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/slovnik.mh-6b2239b13c8cb9b6.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-content.mh-b979524a1706dc0f.css"
+      ],
+      "stars": false,
+      "bytes": 17124
+    },
+    {
+      "path": "/snar.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/snar.html",
+      "title": "Snář: Výklad Snů & Lexikon Snových Symbolů | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-content-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/snar.mh-72ccffa1b1f6187e.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-content.mh-b979524a1706dc0f.css"
+      ],
+      "stars": false,
+      "bytes": 38499
+    },
+    {
+      "path": "/soukromi.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/soukromi.html",
+      "title": "Ochrana soukromí | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/soukromi.mh-faa14dc804e0242b.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 9966
+    },
+    {
+      "path": "/tarot-ano-ne.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-ano-ne.html",
+      "title": "Tarot ano/ne zdarma: výklad z jedné karty",
+      "bodyClass": "page-tarot-yes-no atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-ano-ne.mh-9046224ff1531228.css",
+        "/css/pages/relationship-tarot-bridge.mh-df89f9aa36daa66b.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 18323
+    },
+    {
+      "path": "/tarot-karta-dne.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-karta-dne.html",
+      "title": "Tarot karta dne zdarma: dnešní výklad online | Mystická Hvězda",
+      "bodyClass": "page-tarot-daily",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-karta-dne.mh-19e440056409535e.css",
+        "/css/tarot-atlas.mh-2e938648f7d4fc19.css"
+      ],
+      "stars": true,
+      "bytes": 22108
+    },
+    {
+      "path": "/tarot-keltsky-kriz.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-keltsky-kriz.html",
+      "title": "Keltský kříž tarot online | členský výklad 10 karet",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-keltsky-kriz.mh-853ca2f39318bef3.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 14707
+    },
+    {
+      "path": "/tarot-laska.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-laska.html",
+      "title": "Tarot na lásku zdarma | Výklad vztahu online | Mystická Hvězda",
+      "bodyClass": "page-tarot-love atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-laska.mh-c06c4a882dc31005.css",
+        "/css/pages/relationship-tarot-bridge.mh-df89f9aa36daa66b.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19871
+    },
+    {
+      "path": "/tarot-tri-karty.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-tri-karty.html",
+      "title": "Tarot 3 karty online | Výklad v Premium",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-tri-karty.mh-f4650a73f48f0f4c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 15834
+    },
+    {
+      "path": "/tarot-vyznam-karet.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam-karet.html",
+      "title": "Význam tarotových karet: 78 karet, láska i ano/ne",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 101816
+    },
+    {
+      "path": "/tarot-vyznam/blazen.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/blazen.html",
+      "title": "Blázen: začít malým krokem – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19360
+    },
+    {
+      "path": "/tarot-vyznam/cisar.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/cisar.html",
+      "title": "Císař: uspořádat odpovědnost – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19273
+    },
+    {
+      "path": "/tarot-vyznam/cisarovna.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/cisarovna.html",
+      "title": "Císařovna: péče, která má prostor – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19633
+    },
+    {
+      "path": "/tarot-vyznam/ctyrka-holi.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/ctyrka-holi.html",
+      "title": "Čtyřka holí: sdílená radost a pevný základ – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19962
+    },
+    {
+      "path": "/tarot-vyznam/ctyrka-mecu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/ctyrka-mecu.html",
+      "title": "Čtyřka mečů: pauza před další reakcí – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20267
+    },
+    {
+      "path": "/tarot-vyznam/ctyrka-pentaklu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/ctyrka-pentaklu.html",
+      "title": "Čtyřka pentáklů: bezpečí bez sevření – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19902
+    },
+    {
+      "path": "/tarot-vyznam/ctyrka-poharu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/ctyrka-poharu.html",
+      "title": "Čtyřka pohárů: všimnout si, co je na dosah – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20342
+    },
+    {
+      "path": "/tarot-vyznam/dabel.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/dabel.html",
+      "title": "Ďábel: rozpoznat tlak a vlastní možnosti – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19603
+    },
+    {
+      "path": "/tarot-vyznam/desitka-holi.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/desitka-holi.html",
+      "title": "Desítka holí: zátěž, kterou lze přerozdělit – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19807
+    },
+    {
+      "path": "/tarot-vyznam/desitka-mecu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/desitka-mecu.html",
+      "title": "Desítka mečů: konec podle skutečných okolností – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20395
+    },
+    {
+      "path": "/tarot-vyznam/desitka-pentaklu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/desitka-pentaklu.html",
+      "title": "Desítka pentáklů: zázemí, které se sdílí – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20038
+    },
+    {
+      "path": "/tarot-vyznam/desitka-poharu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/desitka-poharu.html",
+      "title": "Desítka pohárů: společná spokojenost a dohoda – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20464
+    },
+    {
+      "path": "/tarot-vyznam/devitka-holi.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/devitka-holi.html",
+      "title": "Devítka holí: vytrvalost s prostorem na oddech – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19896
+    },
+    {
+      "path": "/tarot-vyznam/devitka-mecu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/devitka-mecu.html",
+      "title": "Devítka mečů: pojmenovat opakující se obavu – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20390
+    },
+    {
+      "path": "/tarot-vyznam/devitka-pentaklu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/devitka-pentaklu.html",
+      "title": "Devítka pentáklů: samostatnost s prostorem pro radost – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20141
+    },
+    {
+      "path": "/tarot-vyznam/devitka-poharu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/devitka-poharu.html",
+      "title": "Devítka pohárů: spokojenost bez přehlížení ceny – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20384
+    },
+    {
+      "path": "/tarot-vyznam/dvojka-holi.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/dvojka-holi.html",
+      "title": "Dvojka holí: výhled a rozhodnutí o směru – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19737
+    },
+    {
+      "path": "/tarot-vyznam/dvojka-mecu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/dvojka-mecu.html",
+      "title": "Dvojka mečů: volba, která potřebuje prostor – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20299
+    },
+    {
+      "path": "/tarot-vyznam/dvojka-pentaklu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/dvojka-pentaklu.html",
+      "title": "Dvojka pentáklů: rytmus mezi závazky – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19813
+    },
+    {
+      "path": "/tarot-vyznam/dvojka-poharu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/dvojka-poharu.html",
+      "title": "Dvojka pohárů: setkání a vzájemná odezva – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20516
+    },
+    {
+      "path": "/tarot-vyznam/eso-holi.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/eso-holi.html",
+      "title": "Eso holí: jiskra, která čeká na tvar – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19799
+    },
+    {
+      "path": "/tarot-vyznam/eso-mecu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/eso-mecu.html",
+      "title": "Eso mečů: jasnost a přesná otázka – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20115
+    },
+    {
+      "path": "/tarot-vyznam/eso-pentaklu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/eso-pentaklu.html",
+      "title": "Eso pentáklů: první krok potřebuje pevnou půdu – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19808
+    },
+    {
+      "path": "/tarot-vyznam/eso-poharu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/eso-poharu.html",
+      "title": "Eso pohárů: otevřenost bez spěchu – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19886
+    },
+    {
+      "path": "/tarot-vyznam/hvezda.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/hvezda.html",
+      "title": "Hvězda: najít konkrétní oporu naděje – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19516
+    },
+    {
+      "path": "/tarot-vyznam/kolo-stesti.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/kolo-stesti.html",
+      "title": "Kolo štěstí: přizpůsobit plán změně – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19751
+    },
+    {
+      "path": "/tarot-vyznam/kral-holi.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/kral-holi.html",
+      "title": "Král holí: vize, odpovědnost a směr – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19712
+    },
+    {
+      "path": "/tarot-vyznam/kral-mecu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/kral-mecu.html",
+      "title": "Král mečů: rozhodnutí podle kritérií – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20169
+    },
+    {
+      "path": "/tarot-vyznam/kral-pentaklu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/kral-pentaklu.html",
+      "title": "Král pentáklů: zdroje spravovat odpovědně – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19978
+    },
+    {
+      "path": "/tarot-vyznam/kral-poharu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/kral-poharu.html",
+      "title": "Král pohárů: klidná reakce v citové situaci – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20219
+    },
+    {
+      "path": "/tarot-vyznam/kralovna-holi.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/kralovna-holi.html",
+      "title": "Královna holí: sebejistota, která nechává prostor – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19956
+    },
+    {
+      "path": "/tarot-vyznam/kralovna-mecu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/kralovna-mecu.html",
+      "title": "Královna mečů: jasná hranice v rozhovoru – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20332
+    },
+    {
+      "path": "/tarot-vyznam/kralovna-pentaklu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/kralovna-pentaklu.html",
+      "title": "Královna pentáklů: péče, která zahrnuje i tebe – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19991
+    },
+    {
+      "path": "/tarot-vyznam/kralovna-poharu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/kralovna-poharu.html",
+      "title": "Královna pohárů: empatie s vlastními hranicemi – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20246
+    },
+    {
+      "path": "/tarot-vyznam/luna.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/luna.html",
+      "title": "Luna: rozlišit dojem a chybějící informaci – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19566
+    },
+    {
+      "path": "/tarot-vyznam/mag.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/mag.html",
+      "title": "Mág: použít dostupné možnosti – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19359
+    },
+    {
+      "path": "/tarot-vyznam/milenci.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/milenci.html",
+      "title": "Milenci: přitažlivost a společná volba – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20533
+    },
+    {
+      "path": "/tarot-vyznam/mirnost.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/mirnost.html",
+      "title": "Mírnost: sladit tempo a možnosti – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19456
+    },
+    {
+      "path": "/tarot-vyznam/osmicka-holi.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/osmicka-holi.html",
+      "title": "Osmička holí: rychlost, zpráva a načasování – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19864
+    },
+    {
+      "path": "/tarot-vyznam/osmicka-mecu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/osmicka-mecu.html",
+      "title": "Osmička mečů: rozlišit omezení – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20226
+    },
+    {
+      "path": "/tarot-vyznam/osmicka-pentaklu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/osmicka-pentaklu.html",
+      "title": "Osmička pentáklů: mistrovství z opakování – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19851
+    },
+    {
+      "path": "/tarot-vyznam/osmicka-poharu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/osmicka-poharu.html",
+      "title": "Osmička pohárů: odejít od toho, co nenaplňuje – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20322
+    },
+    {
+      "path": "/tarot-vyznam/paze-holi.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/paze-holi.html",
+      "title": "Páže holí: zvědavost a první pokus – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19650
+    },
+    {
+      "path": "/tarot-vyznam/paze-mecu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/paze-mecu.html",
+      "title": "Páže mečů: zvědavost a ověření – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19983
+    },
+    {
+      "path": "/tarot-vyznam/paze-pentaklu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/paze-pentaklu.html",
+      "title": "Páže pentáklů: zvědavost převést do praxe – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19696
+    },
+    {
+      "path": "/tarot-vyznam/paze-poharu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/paze-poharu.html",
+      "title": "Páže pohárů: citlivá zpráva a první pokus – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20154
+    },
+    {
+      "path": "/tarot-vyznam/petka-holi.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/petka-holi.html",
+      "title": "Pětka holí: tření, soutěž a různé nápady – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19721
+    },
+    {
+      "path": "/tarot-vyznam/petka-mecu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/petka-mecu.html",
+      "title": "Pětka mečů: cena sporu – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19977
+    },
+    {
+      "path": "/tarot-vyznam/petka-pentaklu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/petka-pentaklu.html",
+      "title": "Pětka pentáklů: pojmenovat nedostatek a hledat oporu – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20093
+    },
+    {
+      "path": "/tarot-vyznam/petka-poharu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/petka-poharu.html",
+      "title": "Pětka pohárů: ztráta i to, co zůstává – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20102
+    },
+    {
+      "path": "/tarot-vyznam/poustevnik.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/poustevnik.html",
+      "title": "Poustevník: získat prostor pro vlastní otázku – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19816
+    },
+    {
+      "path": "/tarot-vyznam/rytir-holi.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/rytir-holi.html",
+      "title": "Rytíř holí: tah na branku a jeho cena – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19620
+    },
+    {
+      "path": "/tarot-vyznam/rytir-mecu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/rytir-mecu.html",
+      "title": "Rytíř mečů: rychlost s rozvahou – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20053
+    },
+    {
+      "path": "/tarot-vyznam/rytir-pentaklu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/rytir-pentaklu.html",
+      "title": "Rytíř pentáklů: vytrvalost, která kontroluje směr – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19861
+    },
+    {
+      "path": "/tarot-vyznam/rytir-poharu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/rytir-poharu.html",
+      "title": "Rytíř pohárů: nabídka, která potřebuje obsah – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20203
+    },
+    {
+      "path": "/tarot-vyznam/sedmicka-holi.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/sedmicka-holi.html",
+      "title": "Sedmička holí: obhájit hranici bez vyčerpání – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20023
+    },
+    {
+      "path": "/tarot-vyznam/sedmicka-mecu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/sedmicka-mecu.html",
+      "title": "Sedmička mečů: strategie a nevyřčené věci – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20413
+    },
+    {
+      "path": "/tarot-vyznam/sedmicka-pentaklu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/sedmicka-pentaklu.html",
+      "title": "Sedmička pentáklů: zhodnotit, co už roste – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20007
+    },
+    {
+      "path": "/tarot-vyznam/sedmicka-poharu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/sedmicka-poharu.html",
+      "title": "Sedmička pohárů: možnosti potřebují ověření – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20223
+    },
+    {
+      "path": "/tarot-vyznam/sestka-holi.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/sestka-holi.html",
+      "title": "Šestka holí: uznání a viditelnost výsledku – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19920
+    },
+    {
+      "path": "/tarot-vyznam/sestka-mecu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/sestka-mecu.html",
+      "title": "Šestka mečů: přechod s konkrétní oporou – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20209
+    },
+    {
+      "path": "/tarot-vyznam/sestka-pentaklu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/sestka-pentaklu.html",
+      "title": "Šestka pentáklů: férovost v dávání a přijímání – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19939
+    },
+    {
+      "path": "/tarot-vyznam/sestka-poharu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/sestka-poharu.html",
+      "title": "Šestka pohárů: vzpomínka v přítomném čase – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20185
+    },
+    {
+      "path": "/tarot-vyznam/sila.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/sila.html",
+      "title": "Síla: reagovat pevně a trpělivě – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19297
+    },
+    {
+      "path": "/tarot-vyznam/slunce.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/slunce.html",
+      "title": "Slunce: radost, jasnost a otevřenost – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20579
+    },
+    {
+      "path": "/tarot-vyznam/smrt.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/smrt.html",
+      "title": "Smrt: pojmenovat ukončení a změnu – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19399
+    },
+    {
+      "path": "/tarot-vyznam/soud.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/soud.html",
+      "title": "Soud: zhodnotit zkušenost a zvolit pokračování – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19537
+    },
+    {
+      "path": "/tarot-vyznam/spravedlnost.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/spravedlnost.html",
+      "title": "Spravedlnost: porovnat podklady a dopady – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19853
+    },
+    {
+      "path": "/tarot-vyznam/svet.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/svet.html",
+      "title": "Svět: dokončit a pojmenovat výsledek – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19552
+    },
+    {
+      "path": "/tarot-vyznam/trojka-holi.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/trojka-holi.html",
+      "title": "Trojka holí: rozvoj, který potřebuje trpělivost – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19857
+    },
+    {
+      "path": "/tarot-vyznam/trojka-mecu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/trojka-mecu.html",
+      "title": "Trojka mečů: pojmenovat zklamání – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20317
+    },
+    {
+      "path": "/tarot-vyznam/trojka-pentaklu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/trojka-pentaklu.html",
+      "title": "Trojka pentáklů: kvalita roste ve spolupráci – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19861
+    },
+    {
+      "path": "/tarot-vyznam/trojka-poharu.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/trojka-poharu.html",
+      "title": "Trojka pohárů: radost, která se sdílí – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 20208
+    },
+    {
+      "path": "/tarot-vyznam/veleknez.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/veleknez.html",
+      "title": "Velekněz: rozumět pravidlům a vedení – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19657
+    },
+    {
+      "path": "/tarot-vyznam/veleknezka.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/veleknezka.html",
+      "title": "Velekněžka: vnímat dojem a ověřit souvislosti – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19883
+    },
+    {
+      "path": "/tarot-vyznam/vez.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/vez.html",
+      "title": "Věž: reagovat na narušený plán – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19355
+    },
+    {
+      "path": "/tarot-vyznam/viselec.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/viselec.html",
+      "title": "Viselec: podívat se z jiného úhlu – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19441
+    },
+    {
+      "path": "/tarot-vyznam/vuz.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-vyznam/vuz.html",
+      "title": "Vůz: dát úsilí jasný směr – význam v tarotu",
+      "bodyClass": "atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-meaning-hub.mh-21edc2bd9588526c.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 19180
+    },
+    {
+      "path": "/tarot-zdarma.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot-zdarma.html",
+      "title": "Tarot zdarma online bez registrace | Mystická Hvězda",
+      "bodyClass": "page-tarot-free atlas-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/tarot-zdarma.mh-8ea9d7929faec7e1.css",
+        "/css/pages/relationship-tarot-bridge.mh-df89f9aa36daa66b.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 17849
+    },
+    {
+      "path": "/tarot.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tarot.html",
+      "title": "Tarot online: výklad z 78 karet | Mystická Hvězda",
+      "bodyClass": "page-tarot atlas-page",
+      "styles": [
+        "/css/site.min.mh-d05e9f98f38e467f.css",
+        "/css/pages/tarot.mh-989cfa267f816b05.css",
+        "/css/pages/relationship-tarot-bridge.mh-df89f9aa36daa66b.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 28103
+    },
+    {
+      "path": "/testy/archetyp-duse.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/testy/archetyp-duse.html",
+      "title": "Archetyp vaší duše | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/testy-archetyp-duse.mh-2b92f2e0cc4b04ee.css",
+        "/css/testy.mh-f832a39ab401718d.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 11302
+    },
+    {
+      "path": "/testy/barva-aury.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/testy/barva-aury.html",
+      "title": "Barva vaší aury | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/testy-barva-aury.mh-67062f2b4ebf5b73.css",
+        "/css/testy.mh-f832a39ab401718d.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 10215
+    },
+    {
+      "path": "/testy/dar-intuice.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/testy/dar-intuice.html",
+      "title": "Duchovní dar intuice | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/testy-dar-intuice.mh-481ff3a9b8cf4119.css",
+        "/css/testy.mh-f832a39ab401718d.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 10375
+    },
+    {
+      "path": "/testy/index.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/testy/index.html",
+      "title": "Mystická Sebepoznání | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/testy-index.mh-90136a72da414287.css",
+        "/css/testy.mh-f832a39ab401718d.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 9308
+    },
+    {
+      "path": "/testy/karmicke-dedictvi.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/testy/karmicke-dedictvi.html",
+      "title": "Odkud kráčí vaše duše? | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/testy-karmicke-dedictvi.mh-3d0b5d67a9757735.css",
+        "/css/testy.mh-f832a39ab401718d.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 10511
+    },
+    {
+      "path": "/testy/stin-znameni.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/testy/stin-znameni.html",
+      "title": "Stín vašeho znamení | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/testy-stin-znameni.mh-ba60890beb370a9f.css",
+        "/css/testy.mh-f832a39ab401718d.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 10293
+    },
+    {
+      "path": "/testy/totem-pruvodce.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/testy/totem-pruvodce.html",
+      "title": "Totemový průvodce | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/testy-totem-pruvodce.mh-ef682ebcd3f7774a.css",
+        "/css/testy.mh-f832a39ab401718d.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 10062
+    },
+    {
+      "path": "/testy/zivlova-rovnovaha.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/testy/zivlova-rovnovaha.html",
+      "title": "Živlová rovnováha | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/testy-zivlova-rovnovaha.mh-d633e50dc6844e97.css",
+        "/css/testy.mh-f832a39ab401718d.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 10254
+    },
+    {
+      "path": "/tydenni-horoskop.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/tydenni-horoskop.html",
+      "title": "Týdenní horoskop | Výhled na vztahy, práci a energii",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/horoscope-cluster.mh-1fac002199bee3d7.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 11407
+    },
+    {
+      "path": "/vyznam-data-narozeni.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/vyznam-data-narozeni.html",
+      "title": "Význam data narození | Numerologie dne, měsíce a roku",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/style.v2.min.mh-523284366d59e716.css",
+        "/css/pages/numerology-cluster.mh-6dbd1ca051cee230.css",
+        "/css/atlas-web.mh-80450244fbae2471.css",
+        "/css/atlas-remaining.mh-721c21896f23f448.css"
+      ],
+      "stars": false,
+      "bytes": 14683
+    },
+    {
+      "path": "/vztahovy-vyklad.html",
+      "status": 200,
+      "finalUrl": "https://www.mystickahvezda.cz/vztahovy-vyklad.html",
+      "title": "Osobní vztahový výklad · 149 Kč jednorázově | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-reading-order",
+      "styles": [
+        "/fonts/local-fonts.mh-68ec9b9ce5c00d72.css",
+        "/css/pages/vztahovy-vyklad.mh-87c15c036ee2449d.css",
+        "/css/atlas-web.mh-80450244fbae2471.css"
+      ],
+      "stars": false,
+      "bytes": 11710
+    }
+  ]
+}

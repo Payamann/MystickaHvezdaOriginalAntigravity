@@ -1,0 +1,137 @@
+[
+  {
+    "id": "V01",
+    "priority": 1,
+    "title": "Stará mlhovina v denních horoskopech s datem",
+    "evidence": "Produkční DOM: všech 12 znamení pro 1. 10. 2026 má viditelnou .stars s bg-cosmic-mobile.webp. Šablona server/routes/horoscope-pages.js:280; css/style.v2.css:6017–6059.",
+    "action": "Vypnout starou dekorativní vrstvu pro tuto šablonu a použít stejné malované navy pozadí. Zkontrolovat mobil i desktop a každý serverový stav této rodiny.",
+    "scope": "/horoskop/:sign/:date",
+    "kind": "produkční DOM + zdroj"
+  },
+  {
+    "id": "V02",
+    "priority": 1,
+    "title": "Celý katalog dalších služeb pod jednotlivými nástroji",
+    "evidence": "Zdroj i vykreslené stránky: např. mentor.html:152–199, tarot.html:500, numerologie.html:434–499; andelske-karty.html má dvě různé cross-link sekce.",
+    "action": "Nahradit katalog jednou smysluplnou návazností. Všechny nástroje zpřístupnit přes navigaci nebo samostatný přehled. Zachovat přístupové informace a hlavní výsledek.",
+    "scope": "Tarot, andělské karty, numerologie, natální karta, partnerská shoda, astro-mapa, runy, koule, mentor",
+    "kind": "lokální DOM + zdroj"
+  },
+  {
+    "id": "V03",
+    "priority": 1,
+    "title": "Patička zabírá na mobilu více než dvě obrazovky",
+    "evidence": "Měřený společný footer má na mnoha stránkách 1882–2052 px při šířce 390 px; domovská stránka má vlastní kratší footer. components/footer.html, css/atlas-web.css:50.",
+    "action": "Zkrátit svislé mezery a složit rozcestníky do jasných skupin. Kontakt, soukromí, podmínky a jazyk ponechat dostupné; zachovat dotykové plochy.",
+    "scope": "Stránky se společnou patičkou, včetně loginu, profilu, detailů karet, chybové stránky",
+    "kind": "lokální DOM"
+  },
+  {
+    "id": "V04",
+    "priority": 1,
+    "title": "Blog a galerie karet načítají celý katalog do jedné dlouhé stránky",
+    "evidence": "Blog: 41 574 px, js/blog.js:75 posts.slice(1) a renderPostsGrid všech položek. Význam karet: 46 294 px, js/tarot-meaning-hub.js renderCards mapuje všech 78.",
+    "action": "Použít menší první dávku, hledání/filtry a dostupné další stránky nebo načíst další. Zachovat procházetelné odkazy na všechny články a karty. Snář už načítání dalších položek má.",
+    "scope": "/blog.html, /tarot-vyznam-karet.html",
+    "kind": "lokální DOM + zdroj"
+  },
+  {
+    "id": "V05",
+    "priority": 2,
+    "title": "Na detailech 78 karet se opakuje několik cest k témuž výkladu",
+    "evidence": "Každý detail má hero CTA, další krok, rychlý přehled, spodní CTA a nabídku denního horoskopu; všechny 78 URL jsou uvedené v seznamu. Obsah karty a nativní FAQ jsou samostatné.",
+    "action": "Zachovat kvalitní ilustraci a vlastní význam, jeden hlavní přechod na výklad a související karty. Zmenšit opakované CTA; denní e-mail nabídnout jako vedlejší volbu. Existující FAQ znovu neobalovat.",
+    "scope": "/tarot-vyznam/*.html — všech 78",
+    "kind": "lokální DOM + zdroj"
+  },
+  {
+    "id": "V06",
+    "priority": 2,
+    "title": "Dlouhé vysvětlovací a prodejní ocasy na nástrojích",
+    "evidence": "Partnerská shoda 14 531 px; andělské karty 13 461 px; numerologie 8825 px; tarot 10 014 px. Jsou to celkové výšky včetně katalogů a footeru, ne samotný počet slov.",
+    "action": "Nástroj → celý výsledek → jedna návaznost → volitelné vysvětlení. Sbalovat jen dlouhý referenční text, který není už v details. Ceny, limity, souhlas a slíbený výsledek ponechat otevřené.",
+    "scope": "Partnerská shoda, andělské karty, tarot, numerologie, runy, snář, astrologické nástroje",
+    "kind": "lokální DOM + návrh"
+  },
+  {
+    "id": "V07",
+    "priority": 2,
+    "title": "Velké přepínání všech znamení převáží krátký denní výklad",
+    "evidence": "Produkční denní stránka má 12 velkých karet znamení a 5471–5579 px celkové výšky. Vlastní text pro Blížence je krátký podnět.",
+    "action": "Použít kompaktní přepínač „Změnit znamení“ s dostupnými odkazy. Předchozí/dnešní/následující den zachovat.",
+    "scope": "Denní datované stránky, přehled /horoskop/index.html",
+    "kind": "produkční DOM"
+  },
+  {
+    "id": "V08",
+    "priority": 2,
+    "title": "Fialový plastový Měsíc neodpovídá malovaným ilustracím",
+    "evidence": "Mobilní snímky lunace.html a ritualy/index.html ukazují žluto-fialový prostorový Měsíc, zatímco okolí používá navy/malovanou krajinu.",
+    "action": "Nahradit čistým navy/zlatým vykreslením skutečné fáze nebo odpovídající ilustrací. Fázi a datum nadále určovat současným výpočtem; nepoužít obrázek s nesprávnou fází.",
+    "scope": "/lunace.html, /ritualy/index.html",
+    "kind": "lokální screenshot"
+  },
+  {
+    "id": "V09",
+    "priority": 2,
+    "title": "Rituální sezení má vlastní starší vizuální jazyk",
+    "evidence": "ritualy/session.html: screenshot fialového pole, svíčka a barevné nálady; css/pages/ritualy-session.css:31–40 vlastní gradient a stars-bg.",
+    "action": "Sladit pozadí, typografii a ovládání s malovaným stylem. Zachovat kroky, nálady a ukončení sezení. Nálady jsou vstupní hodnoty, ne automaticky odstranitelná dekorace.",
+    "scope": "/ritualy/session.html",
+    "kind": "lokální screenshot + zdroj"
+  },
+  {
+    "id": "V10",
+    "priority": 2,
+    "title": "Onboarding a offline stránka zůstaly mimo jednotnou úpravu",
+    "evidence": "onboarding: vlastní fialová plocha a vybrané hranice; css/pages/onboarding.css. offline.html:32 má doslovné ??, css/pages/offline.css:45 fialové tlačítko; ve snímku je vidět odkrytý skip link.",
+    "action": "Převzít společné navy/zlaté povrchy, nahradit ?? platnou ikonou a opravit viditelnost skip linku. Onboarding ponechat krátký, se zachovaným výběrem/odmítnutím.",
+    "scope": "/onboarding.html, /offline.html",
+    "kind": "lokální screenshot + zdroj"
+  },
+  {
+    "id": "V11",
+    "priority": 2,
+    "title": "Barevné emoji se vracejí v CTA, datech a výsledkových šablonách",
+    "evidence": "Např. čínská znamení, menší „Pokračuj“ bloky, andělská pošta, testy a jejich výsledky; konkrétní původ je v HTML i JS datech. Není to jen hlavní mřížka SVG ikon.",
+    "action": "Rozlišit obsahový symbol od UI dekorace. Dekorativní ikonky převést na existující SVG; znamení, barvy a nálady ponechat s přístupným popiskem a významem.",
+    "scope": "Čínský horoskop, malé CTA, runtime výsledky, SK/PL varianty",
+    "kind": "lokální screenshot + zdroj"
+  },
+  {
+    "id": "V12",
+    "priority": 2,
+    "title": "Některé exporty výsledků používají starší hvězdný canvas",
+    "evidence": "js/share-image-canvas.js:78–81 a js/tarot-ano-ne.js:846–860 kreslí tmavě fialový gradient a hvězdičky. Zdrojová kontrola, exporty zde nebyly všechny staženy. js/horoscope-share.js už používá malovanou krajinu a navy paletu.",
+    "action": "Navázat ostatní exporty na již upravený horoskopový styl; ověřit délku textu, diakritiku, ořez a skutečně stažený obrázek. Horoskopový export nevydávat za dosud starý.",
+    "scope": "Tarot ANO/NE a sdílený canvas dalších nástrojů",
+    "kind": "zdroj; vizuální ověření exportů zbývá"
+  },
+  {
+    "id": "V13",
+    "priority": 2,
+    "title": "Jazykové varianty se liší od aktuální české cesty",
+    "evidence": "Všech 13 SK/PL stránek zachycených v mobile/desktop. Mají jiné hero, rozsáhlé související bloky a barevné emoji; lokalizované home používají starší text a odlišný rozcestník.",
+    "action": "Sladit strukturu a grafiku s českými vzory, zachovat přirozený překlad a hreflang. Zvlášť ověřit načítání společné navigace a text výsledků podle jazyka.",
+    "scope": "Všech 7 SK a 6 PL souborů",
+    "kind": "lokální screenshot + zdroj"
+  },
+  {
+    "id": "V14",
+    "priority": 3,
+    "title": "Opakovaná plná vysvětlení v rámečcích působí těžkopádně",
+    "evidence": "Ve snímcích aura, čínský horoskop, bioritmy, měsíční/týdenní stránky a denní karta mají několik otevřených boxů otázek s odpovědí. FAQ jinde je již nativně sbalené.",
+    "action": "Tam, kde jde jen o FAQ, použít jednotné jednotlivé details. Nezmenšovat vše plošně; krátká informace o použitelnosti výsledku má zůstat.",
+    "scope": "Aura, bioritmy, čínský horoskop, periodické horoskopy, denní tarot",
+    "kind": "lokální screenshot + návrh"
+  },
+  {
+    "id": "V15",
+    "priority": 3,
+    "title": "Za uživatele nelze rozhodnout podle délky textu",
+    "evidence": "Login má 28 viditelných slov v main; testy 54–80; vztahový výklad má důležitý popis, cenu a souhlas. Právní stránky jsou referenční obsah. Homepage má 371 viditelných main slov proti většímu počtu ve zdroji kvůli skrytým částem.",
+    "action": "Tyto stránky mechanicky nekrátit. Vylepšit návazné stavy a společné komponenty, zachovat jasnost nabídky a zákonné informace.",
+    "scope": "Přihlášení, kvízy, kontakty, soukromí/podmínky, placené produkty",
+    "kind": "lokální DOM + zdroj"
+  }
+]

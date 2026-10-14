@@ -1,0 +1,607 @@
+{
+  "date": "2026-10-14",
+  "candidate_root": ".codex-tmp/release-20261012",
+  "head": "9d6814def",
+  "mode": "research_only",
+  "changes_made": false,
+  "reviewed": {
+    "assigned_html": [
+      "horoskopy.html",
+      "tydenni-horoskop.html",
+      "mesicni-horoskop.html",
+      "lunace.html",
+      "cinsky-horoskop.html",
+      "natalni-karta.html",
+      "astro-mapa.html",
+      "partnerska-shoda.html",
+      "horoskop/index.html"
+    ],
+    "zodiac_pages": [
+      "beran",
+      "byk",
+      "blizenci",
+      "rak",
+      "lev",
+      "panna",
+      "vahy",
+      "stir",
+      "strelec",
+      "kozoroh",
+      "vodnar",
+      "ryby"
+    ],
+    "generated_source": [
+      "server/routes/horoscope-pages.js",
+      "js/horoscope.js",
+      "server/routes/horoscope.js"
+    ]
+  },
+  "states": {
+    "daily_hub": [
+      "sign picker collapsed/expanded",
+      "free-limit count",
+      "welcome",
+      "loading",
+      "daily result",
+      "activation offer/dismiss",
+      "subscription success",
+      "shared auth/premium modal",
+      "API fallback/error"
+    ],
+    "weekly_monthly": [
+      "entry handoff to horoskopy.html",
+      "shared premium gate",
+      "shared login/register modal",
+      "no local result DOM"
+    ],
+    "lunar": [
+      "phase/date/illumination placeholders",
+      "countdown pending",
+      "phase loading",
+      "phase/advice/cycle result",
+      "ritual premium bridge",
+      "shared auth/premium modal"
+    ],
+    "chinese": [
+      "year form blank/validation",
+      "12 animal selection",
+      "sign result",
+      "synastry blank/loading/result/error",
+      "shared auth/premium modal"
+    ],
+    "natal": [
+      "birth form/profile autofill",
+      "validation/submitting",
+      "chart summary/SVG/3D/tooltip",
+      "transit loading/result",
+      "shared auth/premium modal"
+    ],
+    "astro_map": [
+      "birth form/profile autofill",
+      "validation/submitting",
+      "map loading/result/tooltip",
+      "premium gate",
+      "shared auth/premium modal"
+    ],
+    "synastry": [
+      "two-person form/profile autofill",
+      "validation/submitting",
+      "score/verdict/detail result",
+      "hidden-to-visible premium next step",
+      "shared auth/premium modal"
+    ],
+    "dated_daily_route": [
+      "strict date validation",
+      "cached usable result",
+      "unavailable fallback",
+      "future/noindex state",
+      "previous/today/next navigation",
+      "other-signs grid",
+      "natal CTA",
+      "shared auth modal if invoked"
+    ],
+    "sign_static_family": [
+      "static hero and facts",
+      "direct compatibility and natal links",
+      "native FAQ details",
+      "shared auth modal if invoked",
+      "no dynamic result/loading/error/premium/export DOM"
+    ]
+  },
+  "background_evidence": {
+    "global": "css/style.v2.min.css or css/site.min.css html/html::before use bg-cosmic-hd.webp and bg-cosmic-mobile.webp; body pseudo-elements add violet/cyan radial glows",
+    "sign_cascade": "css/pages/horoskop-index.css or horoskop-znameni.css load before css/atlas-astro.css; atlas-astro.css:14-16 overrides sign cards to #102638",
+    "remaining_cascade": "css/atlas-remaining.css uses navy #0b1929 radial hero backgrounds",
+    "art_cascade": "css/atlas-art.css supplies moon/astrolab artwork over the navy layer",
+    "comparison": "Declarations and shared CSS are source context only. Confirmed production cause is active .stars layer created by dated route at server/routes/horoscope-pages.js:280, showing bg-cosmic-mobile.webp. Body pseudo-elements were disabled in inspected production DOM."
+  },
+  "pages": [
+    {
+      "path": "horoskopy.html",
+      "lines": "146-715",
+      "sections": [
+        "hero/banner",
+        "sign picker + 12 cards",
+        "SEO priority links",
+        "time-horizon links",
+        "subscription",
+        "daily detail/result",
+        "10-card cross-link grid"
+      ],
+      "keep": [
+        "free daily result",
+        "all result/loading/error IDs",
+        "subscription",
+        "activation truth"
+      ],
+      "collapse": [
+        "SEO/time-horizon explanatory prose"
+      ],
+      "remove_or_reduce": [
+        "generic cross-link grid after result"
+      ]
+    },
+    {
+      "path": "tydenni-horoskop.html",
+      "lines": "45-126",
+      "sections": [
+        "hero",
+        "three questions",
+        "weekly sign/period links",
+        "four FAQ articles"
+      ],
+      "keep": [
+        "weekly handoff",
+        "premium truth"
+      ],
+      "collapse": [
+        "questions + FAQ into feature-reference"
+      ],
+      "remove_or_reduce": [
+        "duplicate generic navigation"
+      ]
+    },
+    {
+      "path": "mesicni-horoskop.html",
+      "lines": "45-126",
+      "sections": [
+        "hero",
+        "monthly use explanation",
+        "monthly sign/period links",
+        "four FAQ articles"
+      ],
+      "keep": [
+        "monthly handoff",
+        "symbolic-framework truth"
+      ],
+      "collapse": [
+        "explanation + FAQ into feature-reference"
+      ],
+      "remove_or_reduce": [
+        "duplicate generic navigation"
+      ]
+    },
+    {
+      "path": "lunace.html",
+      "lines": "150-357",
+      "sections": [
+        "moon hero/countdown",
+        "phase result",
+        "practical action",
+        "ritual/premium bridge",
+        "cycle grid",
+        "four FAQ details"
+      ],
+      "keep": [
+        "phase/date/illumination",
+        "interpretation/advice",
+        "cycle grid",
+        "premium price/access near action"
+      ],
+      "collapse": [
+        "long ritual/FAQ reference prose"
+      ],
+      "remove_or_reduce": [
+        "duplicate month-start promotion"
+      ]
+    },
+    {
+      "path": "cinsky-horoskop.html",
+      "lines": "59-381",
+      "sections": [
+        "year input + animal buttons",
+        "sign result",
+        "Chinese synastry",
+        "education",
+        "FAQ/continuation"
+      ],
+      "keep": [
+        "both calculators",
+        "all result hooks"
+      ],
+      "collapse": [
+        "education + FAQ into feature-reference"
+      ],
+      "remove_or_reduce": [
+        "generic continuation promotion"
+      ]
+    },
+    {
+      "path": "natalni-karta.html",
+      "lines": "220-875",
+      "sections": [
+        "art hero",
+        "birth form",
+        "chart summary/result/SVG/3D",
+        "transits",
+        "three explanation cards",
+        "learning section",
+        "large cross-link grid"
+      ],
+      "keep": [
+        "form",
+        "chart/transit result",
+        "calculation-limit note"
+      ],
+      "collapse": [
+        "explanation + learning prose"
+      ],
+      "remove_or_reduce": [
+        "generic cross-link grid"
+      ]
+    },
+    {
+      "path": "astro-mapa.html",
+      "lines": "44-347",
+      "sections": [
+        "hero",
+        "birth form",
+        "map/tooltip/loading/result",
+        "three explanatory cards",
+        "cross-link grid"
+      ],
+      "keep": [
+        "form",
+        "map/tooltip/loading/result",
+        "premium gate"
+      ],
+      "collapse": [
+        "three explanatory cards into feature-reference"
+      ],
+      "remove_or_reduce": [
+        "generic cross-link grid"
+      ]
+    },
+    {
+      "path": "partnerska-shoda.html",
+      "lines": "45-416",
+      "sections": [
+        "hero",
+        "two-person form",
+        "intent explanation",
+        "score/detail result",
+        "premium next step",
+        "SEO relationship clusters",
+        "FAQ",
+        "cross-link grid"
+      ],
+      "keep": [
+        "free score/detail",
+        "premium next step and truth"
+      ],
+      "collapse": [
+        "SEO clusters + FAQ"
+      ],
+      "remove_or_reduce": [
+        "generic cross-link grid"
+      ]
+    },
+    {
+      "path": "horoskop/index.html",
+      "lines": "39-267",
+      "sections": [
+        "hub hero",
+        "12 sign cards",
+        "footer"
+      ],
+      "keep": [
+        "all direct sign links and metadata"
+      ],
+      "collapse": [],
+      "remove_or_reduce": []
+    },
+    {
+      "path": "horoskop/beran.html",
+      "lines": "91-189",
+      "sections": [
+        "sign hero/quick answer",
+        "relationship editorial body",
+        "compatibility link",
+        "lucky numbers",
+        "natální karta CTA",
+        "three FAQ details"
+      ],
+      "keep": [
+        "quick answer",
+        "facts",
+        "compatibility/natal links",
+        "FAQ"
+      ],
+      "collapse": [
+        "long relationship editorial body if needed"
+      ],
+      "remove_or_reduce": []
+    },
+    {
+      "path": "horoskop/byk.html",
+      "lines": "91-189",
+      "sections": [
+        "sign hero/quick answer",
+        "relationship editorial body",
+        "compatibility link",
+        "lucky numbers",
+        "natální karta CTA",
+        "three FAQ details"
+      ],
+      "keep": [
+        "quick answer",
+        "facts",
+        "compatibility/natal links",
+        "FAQ"
+      ],
+      "collapse": [
+        "long relationship editorial body if needed"
+      ],
+      "remove_or_reduce": []
+    },
+    {
+      "path": "horoskop/blizenci.html",
+      "lines": "91-187",
+      "sections": [
+        "sign hero/quick answer",
+        "relationship editorial body",
+        "compatibility link",
+        "lucky numbers",
+        "natální karta CTA",
+        "three FAQ details"
+      ],
+      "keep": [
+        "quick answer",
+        "facts",
+        "compatibility/natal links",
+        "FAQ"
+      ],
+      "collapse": [
+        "long relationship editorial body if needed"
+      ],
+      "remove_or_reduce": []
+    },
+    {
+      "path": "horoskop/rak.html",
+      "lines": "91-187",
+      "sections": [
+        "sign hero/quick answer",
+        "relationship editorial body",
+        "compatibility link",
+        "lucky numbers",
+        "natální karta CTA",
+        "three FAQ details"
+      ],
+      "keep": [
+        "quick answer",
+        "facts",
+        "compatibility/natal links",
+        "FAQ"
+      ],
+      "collapse": [
+        "long relationship editorial body if needed"
+      ],
+      "remove_or_reduce": []
+    },
+    {
+      "path": "horoskop/lev.html",
+      "lines": "91-187",
+      "sections": [
+        "sign hero/quick answer",
+        "relationship editorial body",
+        "compatibility link",
+        "lucky numbers",
+        "natální karta CTA",
+        "three FAQ details"
+      ],
+      "keep": [
+        "quick answer",
+        "facts",
+        "compatibility/natal links",
+        "FAQ"
+      ],
+      "collapse": [
+        "long relationship editorial body if needed"
+      ],
+      "remove_or_reduce": []
+    },
+    {
+      "path": "horoskop/panna.html",
+      "lines": "91-187",
+      "sections": [
+        "sign hero/quick answer",
+        "relationship editorial body",
+        "compatibility link",
+        "lucky numbers",
+        "natální karta CTA",
+        "three FAQ details"
+      ],
+      "keep": [
+        "quick answer",
+        "facts",
+        "compatibility/natal links",
+        "FAQ"
+      ],
+      "collapse": [
+        "long relationship editorial body if needed"
+      ],
+      "remove_or_reduce": []
+    },
+    {
+      "path": "horoskop/vahy.html",
+      "lines": "91-187",
+      "sections": [
+        "sign hero/quick answer",
+        "relationship editorial body",
+        "compatibility link",
+        "lucky numbers",
+        "natální karta CTA",
+        "three FAQ details"
+      ],
+      "keep": [
+        "quick answer",
+        "facts",
+        "compatibility/natal links",
+        "FAQ"
+      ],
+      "collapse": [
+        "long relationship editorial body if needed"
+      ],
+      "remove_or_reduce": []
+    },
+    {
+      "path": "horoskop/stir.html",
+      "lines": "91-188",
+      "sections": [
+        "sign hero/quick answer",
+        "relationship editorial body",
+        "compatibility link",
+        "lucky numbers",
+        "natální karta CTA",
+        "three FAQ details"
+      ],
+      "keep": [
+        "quick answer",
+        "facts",
+        "compatibility/natal links",
+        "FAQ"
+      ],
+      "collapse": [
+        "long relationship editorial body if needed"
+      ],
+      "remove_or_reduce": []
+    },
+    {
+      "path": "horoskop/strelec.html",
+      "lines": "91-187",
+      "sections": [
+        "sign hero/quick answer",
+        "relationship editorial body",
+        "compatibility link",
+        "lucky numbers",
+        "natální karta CTA",
+        "three FAQ details"
+      ],
+      "keep": [
+        "quick answer",
+        "facts",
+        "compatibility/natal links",
+        "FAQ"
+      ],
+      "collapse": [
+        "long relationship editorial body if needed"
+      ],
+      "remove_or_reduce": []
+    },
+    {
+      "path": "horoskop/kozoroh.html",
+      "lines": "91-187",
+      "sections": [
+        "sign hero/quick answer",
+        "relationship editorial body",
+        "compatibility link",
+        "lucky numbers",
+        "natální karta CTA",
+        "three FAQ details"
+      ],
+      "keep": [
+        "quick answer",
+        "facts",
+        "compatibility/natal links",
+        "FAQ"
+      ],
+      "collapse": [
+        "long relationship editorial body if needed"
+      ],
+      "remove_or_reduce": []
+    },
+    {
+      "path": "horoskop/vodnar.html",
+      "lines": "91-187",
+      "sections": [
+        "sign hero/quick answer",
+        "relationship editorial body",
+        "compatibility link",
+        "lucky numbers",
+        "natální karta CTA",
+        "three FAQ details"
+      ],
+      "keep": [
+        "quick answer",
+        "facts",
+        "compatibility/natal links",
+        "FAQ"
+      ],
+      "collapse": [
+        "long relationship editorial body if needed"
+      ],
+      "remove_or_reduce": []
+    },
+    {
+      "path": "horoskop/ryby.html",
+      "lines": "91-187",
+      "sections": [
+        "sign hero/quick answer",
+        "relationship editorial body",
+        "compatibility link",
+        "lucky numbers",
+        "natální karta CTA",
+        "three FAQ details"
+      ],
+      "keep": [
+        "quick answer",
+        "facts",
+        "compatibility/natal links",
+        "FAQ"
+      ],
+      "collapse": [
+        "long relationship editorial body if needed"
+      ],
+      "remove_or_reduce": []
+    },
+    {
+      "path": "server/routes/horoscope-pages.js",
+      "lines": "1-370",
+      "sections": [
+        "dated route validation/cache/fallback",
+        "metadata",
+        "daily hero",
+        "prediction card",
+        "date navigation",
+        "other signs",
+        "natal CTA"
+      ],
+      "keep": [
+        "prediction",
+        "fallback",
+        "date navigation",
+        "natal CTA"
+      ],
+      "collapse": [
+        "secondary other-sign grid only if duplicated"
+      ],
+      "remove_or_reduce": []
+    }
+  ],
+  "constraints": [
+    "No HTML/CSS/JS/server edits in this research pass",
+    "No generated daily/date pages or generated js/dist edits",
+    "Preserve IDs, selectors, data attributes, metadata, canonical URLs, JSON-LD and functional result hooks",
+    "Do not hide substantive free result, calculation limits, pricing/access truth, loading or error states"
+  ]
+}
