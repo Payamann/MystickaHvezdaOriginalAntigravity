@@ -1,0 +1,140 @@
+- link "Přeskočit na obsah":
+  - /url: "#main-content"
+- banner:
+  - link "Mystická Hvězda Logo MystickáHvězda":
+    - /url: /index.html
+    - img "Mystická Hvězda Logo"
+    - generic: MystickáHvězda
+  - button "Otevřít hlavní menu"
+  - navigation "Hlavní navigace"
+- main:
+  - generic: "*"
+  - heading "Vítejte zpět" [level=1]
+  - paragraph: Přihlaste se ke svému účtu a pokračujte tam, kde jste skončili.
+  - generic: Email
+  - textbox "Email" [active]:
+    - /placeholder: vas@email.cz
+  - generic: Heslo
+  - textbox "Heslo":
+    - /placeholder: "********"
+  - button "Zobrazit heslo": Zobrazit
+  - button "Přihlásit se"
+  - button "Zapomněli jste heslo?"
+  - button "Nemáte účet? Zaregistrujte se zdarma →"
+  - generic: Přihlášení
+- contentinfo:
+  - img "Mystická Hvězda Logo"
+  - generic: MystickáHvězda
+  - paragraph: Moderní astrologická služba pro českou komunitu. Spojujeme tisíciletou moudrost s důvěryhodnou praxí.
+  - paragraph:
+    - text: Provozovatel služby Mystická Hvězda. Potřebuješ pomoc? Napiš nám kdykoliv na
+    - link "support@mystickahvezda.cz":
+      - /url: mailto:support@mystickahvezda.cz
+    - text: .
+  - link "TikTok":
+    - /url: https://www.tiktok.com/@mysticka.hvezda
+    - text: 🎵
+  - link "Instagram":
+    - /url: https://www.instagram.com/mystickahvezda/
+    - text: 📷
+  - link "Facebook":
+    - /url: https://www.facebook.com/profile.php?id=61578521197797
+    - text: 📘
+  - paragraph: Pomohla ti tato stránka?
+  - button "Ano"
+  - button "Ne"
+  - heading "Astrologie" [level=5]
+  - list:
+    - link "Horoskopy":
+      - /url: /horoskopy.html
+    - link "Znamení zvěrokruhu":
+      - /url: /horoskop/index.html
+    - link "Natální Karta":
+      - /url: /natalni-karta.html
+    - link "Partnerská Shoda":
+      - /url: /partnerska-shoda.html
+    - link "Lunární Fáze":
+      - /url: /lunace.html
+    - link "Astro Mapa":
+      - /url: /astro-mapa.html
+    - link "Čínský Horoskop":
+      - /url: /cinsky-horoskop.html
+  - heading "Věštění & Energie" [level=5]
+  - list:
+    - link "Tarot & Výklady":
+      - /url: /tarot.html
+    - link "Tarot karta dne":
+      - /url: /tarot-karta-dne.html
+    - link "Tarot 3 karty":
+      - /url: /tarot-tri-karty.html
+    - link "Keltský kříž":
+      - /url: /tarot-keltsky-kriz.html
+    - link "Tarot na lásku":
+      - /url: /tarot-laska.html
+    - link "Andělské Karty":
+      - /url: /andelske-karty.html
+    - link "Věštění z Run":
+      - /url: /runy.html
+    - link "Křišťálová Koule":
+      - /url: /kristalova-koule.html
+    - link "Šamanské Kolo":
+      - /url: /shamansko-kolo.html
+    - link "Osobní mapa na 12 měsíců":
+      - /url: /osobni-mapa.html
+    - link "Hvězdný Průvodce":
+      - /url: /mentor.html
+    - link "Numerologie":
+      - /url: /numerologie.html
+    - link "Aura kalkulačka":
+      - /url: /aura.html
+    - link "Biorytmy":
+      - /url: /biorytmy.html
+  - heading "Poznání" [level=5]
+  - list:
+    - link "Mystické Testy":
+      - /url: /testy/index.html
+    - link "Mystický Blog":
+      - /url: /blog.html
+    - link "Ezoterický Slovník":
+      - /url: /slovnik.html
+    - link "Snář":
+      - /url: /snar.html
+    - link "Významy tarotových karet":
+      - /url: /tarot-vyznam-karet.html
+    - link "Databáze jmen":
+      - /url: /jmena/
+    - link "Kalkulačka čísla osudu":
+      - /url: /kalkulacka-cisla-osudu.html
+  - heading "Podpora" [level=5]
+  - list:
+    - link "O nás":
+      - /url: /o-nas.html
+    - link "Ceník":
+      - /url: /cenik.html
+    - link "Kontakt":
+      - /url: /kontakt.html
+    - link "Napsat podpoře":
+      - /url: mailto:support@mystickahvezda.cz
+    - link "FAQ (Časté dotazy)":
+      - /url: /faq.html
+    - link "Jak to funguje":
+      - /url: /jak-to-funguje.html
+  - paragraph: © 2026 Mystická Hvězda. Všechna práva vyhrazena.
+  - paragraph:
+    - text: "Podpora:"
+    - link "support@mystickahvezda.cz":
+      - /url: mailto:support@mystickahvezda.cz
+  - paragraph:
+    - text: "Jazyk:"
+    - link "Čeština":
+      - /url: /
+    - text: ·
+    - link "Slovenčina":
+      - /url: /sk/
+    - text: ·
+    - link "Polski":
+      - /url: /pl/
+  - link "Obchodní podmínky":
+    - /url: /podminky.html
+  - link "Ochrana soukromí":
+    - /url: /soukromi.html

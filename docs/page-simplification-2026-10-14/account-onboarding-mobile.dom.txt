@@ -1,0 +1,44 @@
+- link "Přeskočit na obsah":
+  - /url: "#main-content"
+- heading "Vyber své znamení" [level=2]
+- paragraph: Jeden výběr a otevřeme dnešní osobní horoskop. Bez dalšího dotazníku.
+- paragraph: Znamení uložíme jen pro osobní nastavení. Platební údaje tu nezadáváš.
+- button "♈ Beran":
+  - generic: ♈
+  - text: Beran
+- button "♉ Býk":
+  - generic: ♉
+  - text: Býk
+- button "♊ Blíženci":
+  - generic: ♊
+  - text: Blíženci
+- button "♋ Rak":
+  - generic: ♋
+  - text: Rak
+- button "♌ Lev":
+  - generic: ♌
+  - text: Lev
+- button "♍ Panna":
+  - generic: ♍
+  - text: Panna
+- button "♎ Váhy":
+  - generic: ♎
+  - text: Váhy
+- button "♏ Štír":
+  - generic: ♏
+  - text: Štír
+- button "♐ Střelec":
+  - generic: ♐
+  - text: Střelec
+- button "♑ Kozoroh":
+  - generic: ♑
+  - text: Kozoroh
+- button "♒ Vodnář":
+  - generic: ♒
+  - text: Vodnář
+- button "♓ Ryby":
+  - generic: ♓
+  - text: Ryby
+- button "Zobrazit denní horoskop ✨" [disabled]
+- button "Nevím znamení nebo chci jiné téma →"
+- paragraph: Po výběru znamení otevřeme dnešní osobní horoskop. Další nastavení můžeš doplnit kdykoliv později.

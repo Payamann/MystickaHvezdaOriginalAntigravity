@@ -1,0 +1,971 @@
+{
+  "checkedAt": "2026-10-14T19:49:14.871Z",
+  "scope": "Public guest forms and empty validation; local-only synthetic failed login and synthetic expired-link fragment; no account created, no recovery email, no password set/reset, no paid checkout",
+  "checks": [
+    {
+      "alerts": [
+        "Zkontrolujte prosím zvýrazněná pole.",
+        "Vyplňte prosím toto pole.",
+        "Vyplňte prosím toto pole."
+      ],
+      "bodyClass": "page-login atlas-page atlas-remaining-page auth-register-mode",
+      "buttons": [
+        {
+          "ariaLabel": "Zobrazit heslo",
+          "height": 44,
+          "pressed": "false",
+          "text": "Zobrazit"
+        },
+        {
+          "ariaLabel": null,
+          "height": 46,
+          "pressed": null,
+          "text": "Vytvořit účet zdarma"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Máte účet? Přihlaste se"
+        }
+      ],
+      "fields": [
+        {
+          "autocomplete": "email",
+          "describedby": "email-error",
+          "id": "email",
+          "invalid": "true",
+          "minlength": -1,
+          "required": true,
+          "type": "email"
+        },
+        {
+          "autocomplete": "new-password",
+          "describedby": "password-help password-error",
+          "id": "password",
+          "invalid": "true",
+          "minlength": 8,
+          "required": true,
+          "type": "password"
+        },
+        {
+          "autocomplete": "",
+          "describedby": null,
+          "id": "gdpr-consent",
+          "invalid": null,
+          "minlength": -1,
+          "required": true,
+          "type": "checkbox"
+        }
+      ],
+      "headings": [
+        "Vytvoř si účet zdarma"
+      ],
+      "height": 1814,
+      "scrollWidth": 1272,
+      "url": "http://localhost:3346/prihlaseni.html?mode=register",
+      "width": 1280,
+      "label": "register-stale-errors-desktop"
+    },
+    {
+      "alerts": [],
+      "bodyClass": "page-login atlas-page atlas-remaining-page",
+      "buttons": [
+        {
+          "ariaLabel": null,
+          "height": 46,
+          "pressed": null,
+          "text": "Odeslat odkaz pro obnovu"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Zpět na přihlášení"
+        }
+      ],
+      "fields": [
+        {
+          "autocomplete": "email",
+          "describedby": null,
+          "id": "forgot-email",
+          "invalid": null,
+          "minlength": -1,
+          "required": true,
+          "type": "email"
+        }
+      ],
+      "headings": [
+        "Zapomenuté heslo"
+      ],
+      "height": 1694,
+      "scrollWidth": 1272,
+      "url": "http://localhost:3346/prihlaseni.html?mode=login",
+      "width": 1280,
+      "label": "forgot-desktop"
+    },
+    {
+      "alerts": [
+        "Zkontrolujte prosím zvýrazněná pole.",
+        "Vyplňte prosím toto pole."
+      ],
+      "bodyClass": "page-login atlas-page atlas-remaining-page",
+      "buttons": [
+        {
+          "ariaLabel": null,
+          "height": 46,
+          "pressed": null,
+          "text": "Odeslat odkaz pro obnovu"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Zpět na přihlášení"
+        }
+      ],
+      "fields": [
+        {
+          "autocomplete": "email",
+          "describedby": "forgot-email-error",
+          "id": "forgot-email",
+          "invalid": "true",
+          "minlength": -1,
+          "required": true,
+          "type": "email"
+        }
+      ],
+      "headings": [
+        "Zapomenuté heslo"
+      ],
+      "height": 1714,
+      "scrollWidth": 1272,
+      "url": "http://localhost:3346/prihlaseni.html?mode=login",
+      "width": 1280,
+      "label": "forgot-empty-desktop"
+    },
+    {
+      "alerts": [],
+      "bodyClass": "page-login atlas-page atlas-remaining-page auth-register-mode",
+      "buttons": [
+        {
+          "ariaLabel": "Zobrazit heslo",
+          "height": 44,
+          "pressed": "false",
+          "text": "Zobrazit"
+        },
+        {
+          "ariaLabel": null,
+          "height": 46,
+          "pressed": null,
+          "text": "Vytvořit účet zdarma"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Máte účet? Přihlaste se"
+        }
+      ],
+      "fields": [
+        {
+          "autocomplete": "email",
+          "describedby": null,
+          "id": "email",
+          "invalid": null,
+          "minlength": -1,
+          "required": true,
+          "type": "email"
+        },
+        {
+          "autocomplete": "new-password",
+          "describedby": "password-help",
+          "id": "password",
+          "invalid": null,
+          "minlength": 8,
+          "required": true,
+          "type": "password"
+        },
+        {
+          "autocomplete": "",
+          "describedby": null,
+          "id": "gdpr-consent",
+          "invalid": null,
+          "minlength": -1,
+          "required": true,
+          "type": "checkbox"
+        }
+      ],
+      "headings": [
+        "Vytvoř si účet zdarma"
+      ],
+      "height": 1958,
+      "scrollWidth": 1272,
+      "url": "http://localhost:3346/prihlaseni.html?mode=register&source=header_register&feature=account",
+      "width": 1280,
+      "label": "register-fresh-desktop"
+    },
+    {
+      "alerts": [],
+      "bodyClass": "page-login atlas-page atlas-remaining-page auth-register-mode",
+      "buttons": [
+        {
+          "ariaLabel": "Zobrazit heslo",
+          "height": 44,
+          "pressed": "false",
+          "text": "Zobrazit"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Vytvořit účet zdarma"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Máte účet? Přihlaste se"
+        }
+      ],
+      "fields": [
+        {
+          "autocomplete": "email",
+          "describedby": null,
+          "id": "email",
+          "invalid": null,
+          "minlength": -1,
+          "required": true,
+          "type": "email"
+        },
+        {
+          "autocomplete": "new-password",
+          "describedby": "password-help",
+          "id": "password",
+          "invalid": null,
+          "minlength": 8,
+          "required": true,
+          "type": "password"
+        },
+        {
+          "autocomplete": "",
+          "describedby": null,
+          "id": "gdpr-consent",
+          "invalid": null,
+          "minlength": -1,
+          "required": true,
+          "type": "checkbox"
+        }
+      ],
+      "headings": [
+        "Vytvoř si účet zdarma"
+      ],
+      "height": 3354,
+      "scrollWidth": 382,
+      "url": "http://localhost:3346/prihlaseni.html?mode=register&source=header_register&feature=account",
+      "width": 390,
+      "label": "register-fresh-mobile"
+    },
+    {
+      "alerts": [],
+      "bodyClass": "page-login atlas-page atlas-remaining-page",
+      "buttons": [
+        {
+          "ariaLabel": "Zobrazit heslo",
+          "height": 44,
+          "pressed": "false",
+          "text": "Zobrazit"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Přihlásit se"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Zapomněli jste heslo?"
+        },
+        {
+          "ariaLabel": null,
+          "height": 52,
+          "pressed": null,
+          "text": "Nemáte účet? Zaregistrujte se zdarma →"
+        }
+      ],
+      "fields": [
+        {
+          "autocomplete": "email",
+          "describedby": null,
+          "id": "email",
+          "invalid": null,
+          "minlength": -1,
+          "required": true,
+          "type": "email"
+        },
+        {
+          "autocomplete": "current-password",
+          "describedby": "password-help",
+          "id": "password",
+          "invalid": null,
+          "minlength": -1,
+          "required": true,
+          "type": "password"
+        }
+      ],
+      "headings": [
+        "Vítejte zpět"
+      ],
+      "height": 2958,
+      "scrollWidth": 382,
+      "url": "http://localhost:3346/prihlaseni.html?mode=login&source=header_register&feature=account",
+      "width": 390,
+      "label": "login-mobile"
+    },
+    {
+      "alerts": [],
+      "bodyClass": "page-login atlas-page atlas-remaining-page",
+      "buttons": [
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Odeslat odkaz pro obnovu"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Zpět na přihlášení"
+        }
+      ],
+      "fields": [
+        {
+          "autocomplete": "email",
+          "describedby": null,
+          "id": "forgot-email",
+          "invalid": null,
+          "minlength": -1,
+          "required": true,
+          "type": "email"
+        }
+      ],
+      "headings": [
+        "Zapomenuté heslo"
+      ],
+      "height": 2810,
+      "scrollWidth": 382,
+      "url": "http://localhost:3346/prihlaseni.html?mode=login&source=header_register&feature=account",
+      "width": 390,
+      "label": "forgot-mobile"
+    },
+    {
+      "alerts": [],
+      "bodyClass": "page-login atlas-page atlas-remaining-page",
+      "buttons": [
+        {
+          "ariaLabel": "Zobrazit heslo",
+          "height": 44,
+          "pressed": "false",
+          "text": "Zobrazit"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Přihlásit se"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Zapomněli jste heslo?"
+        },
+        {
+          "ariaLabel": null,
+          "height": 53,
+          "pressed": null,
+          "text": "Nemáte účet? Zaregistrujte se zdarma →"
+        }
+      ],
+      "fields": [
+        {
+          "autocomplete": "email",
+          "describedby": null,
+          "id": "email",
+          "invalid": null,
+          "minlength": -1,
+          "required": true,
+          "type": "email"
+        },
+        {
+          "autocomplete": "current-password",
+          "describedby": "password-help",
+          "id": "password",
+          "invalid": null,
+          "minlength": -1,
+          "required": true,
+          "type": "password"
+        }
+      ],
+      "headings": [
+        "Vítejte zpět"
+      ],
+      "height": 3029,
+      "scrollWidth": 382,
+      "url": "http://localhost:3346/prihlaseni.html?reset=true",
+      "width": 390,
+      "label": "reset-missing-token-mobile"
+    },
+    {
+      "alerts": [],
+      "bodyClass": "page-profile atlas-page atlas-remaining-page",
+      "buttons": [],
+      "fields": [],
+      "headings": [
+        "Můj profil",
+        "Takhle vypadá tvůj deník výkladů"
+      ],
+      "height": 3098,
+      "scrollWidth": 382,
+      "url": "http://localhost:3346/profil.html",
+      "width": 390,
+      "label": "profile-guest-mobile"
+    },
+    {
+      "alerts": [],
+      "bodyClass": "page-login atlas-page atlas-remaining-page auth-register-mode",
+      "buttons": [
+        {
+          "ariaLabel": "Zobrazit heslo",
+          "height": 44,
+          "pressed": "false",
+          "text": "Zobrazit"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Vytvořit účet zdarma"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Máte účet? Přihlaste se"
+        }
+      ],
+      "fields": [
+        {
+          "autocomplete": "email",
+          "describedby": null,
+          "id": "email",
+          "invalid": null,
+          "minlength": -1,
+          "required": true,
+          "type": "email"
+        },
+        {
+          "autocomplete": "new-password",
+          "describedby": "password-help",
+          "id": "password",
+          "invalid": null,
+          "minlength": 8,
+          "required": true,
+          "type": "password"
+        },
+        {
+          "autocomplete": "",
+          "describedby": null,
+          "id": "gdpr-consent",
+          "invalid": null,
+          "minlength": -1,
+          "required": true,
+          "type": "checkbox"
+        }
+      ],
+      "headings": [
+        "Vytvoř si účet zdarma"
+      ],
+      "height": 3423,
+      "scrollWidth": 382,
+      "url": "http://localhost:3346/prihlaseni.html?mode=register&source=journal_preview&feature=profile_history&redirect=/profil.html",
+      "width": 390,
+      "label": "profile-to-register-mobile"
+    },
+    {
+      "alerts": [],
+      "bodyClass": "page-pricing atlas-page atlas-remaining-page",
+      "buttons": [
+        {
+          "ariaLabel": null,
+          "height": 123,
+          "pressed": null,
+          "text": "Co se stane po 7 dnech?"
+        },
+        {
+          "ariaLabel": null,
+          "height": 123,
+          "pressed": null,
+          "text": "Jak členství zruším?"
+        },
+        {
+          "ariaLabel": null,
+          "height": 123,
+          "pressed": null,
+          "text": "Potřebuji kartu už při registraci?"
+        },
+        {
+          "ariaLabel": null,
+          "height": 138,
+          "pressed": null,
+          "text": "Jaký je rozdíl mezi členstvím a vztahovým výkladem?"
+        }
+      ],
+      "fields": [],
+      "headings": [
+        "Jedno členství. Všechny hlubší výklady.",
+        "Členství Mystické Hvězdy",
+        "Chceš vyřešit jednu vztahovou otázku?",
+        "Než členství aktivuješ"
+      ],
+      "height": 3902,
+      "scrollWidth": 382,
+      "url": "http://localhost:3346/cenik.html",
+      "width": 390,
+      "label": "membership-mobile"
+    },
+    {
+      "alerts": [],
+      "bodyClass": "page-login atlas-page atlas-remaining-page auth-register-mode auth-checkout-plan-mode",
+      "buttons": [
+        {
+          "ariaLabel": null,
+          "height": 35,
+          "pressed": null,
+          "text": "Účet už mám — přihlásit se"
+        },
+        {
+          "ariaLabel": "Zobrazit heslo",
+          "height": 44,
+          "pressed": "false",
+          "text": "Zobrazit"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Vytvořit účet a pokračovat"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Máte účet? Přihlaste se"
+        }
+      ],
+      "fields": [
+        {
+          "autocomplete": "email",
+          "describedby": null,
+          "id": "email",
+          "invalid": null,
+          "minlength": -1,
+          "required": true,
+          "type": "email"
+        },
+        {
+          "autocomplete": "new-password",
+          "describedby": "password-help",
+          "id": "password",
+          "invalid": null,
+          "minlength": 8,
+          "required": true,
+          "type": "password"
+        },
+        {
+          "autocomplete": "",
+          "describedby": null,
+          "id": "gdpr-consent",
+          "invalid": null,
+          "minlength": -1,
+          "required": true,
+          "type": "checkbox"
+        }
+      ],
+      "headings": [
+        "Vytvoř si účet a pokračuj k odemčení"
+      ],
+      "height": 3046,
+      "scrollWidth": 382,
+      "url": "http://localhost:3346/prihlaseni.html?mode=register&redirect=%2Fcenik.html&plan=pruvodce&source=pricing_page&feature=premium_membership&billing_interval=monthly&entry_source=pricing_page&entry_feature=premium_membership",
+      "width": 390,
+      "label": "membership-register-mobile"
+    },
+    {
+      "alerts": [],
+      "bodyClass": "page-login atlas-page atlas-remaining-page auth-checkout-plan-mode",
+      "buttons": [
+        {
+          "ariaLabel": "Zobrazit heslo",
+          "height": 44,
+          "pressed": "false",
+          "text": "Zobrazit"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Přihlásit se a pokračovat"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Zapomněli jste heslo?"
+        },
+        {
+          "ariaLabel": null,
+          "height": 53,
+          "pressed": null,
+          "text": "Nemáte účet? Zaregistrujte se zdarma →"
+        }
+      ],
+      "fields": [
+        {
+          "autocomplete": "email",
+          "describedby": null,
+          "id": "email",
+          "invalid": null,
+          "minlength": -1,
+          "required": true,
+          "type": "email"
+        },
+        {
+          "autocomplete": "current-password",
+          "describedby": "password-help",
+          "id": "password",
+          "invalid": null,
+          "minlength": -1,
+          "required": true,
+          "type": "password"
+        }
+      ],
+      "headings": [
+        "Přihlaste se a pokračujte k odemčení"
+      ],
+      "height": 2932,
+      "scrollWidth": 382,
+      "url": "http://localhost:3346/prihlaseni.html?mode=login&redirect=%2Fcenik.html&plan=pruvodce&source=pricing_page&feature=premium_membership&billing_interval=monthly&entry_source=pricing_page&entry_feature=premium_membership",
+      "width": 390,
+      "label": "membership-login-mobile"
+    },
+    {
+      "alerts": [],
+      "bodyClass": "atlas-page atlas-remaining-page onboarding-quick-flow",
+      "buttons": [],
+      "fields": [],
+      "headings": [],
+      "height": 977,
+      "scrollWidth": 382,
+      "url": "http://localhost:3346/onboarding.html",
+      "width": 390,
+      "label": "onboarding-mobile"
+    },
+    {
+      "alerts": [
+        "Zkontrolujte prosím zvýrazněná pole.",
+        "Vyplňte prosím toto pole.",
+        "Vyplňte prosím toto pole."
+      ],
+      "bodyClass": "page-login atlas-page atlas-remaining-page auth-register-mode",
+      "buttons": [
+        {
+          "ariaLabel": "Zobrazit heslo",
+          "height": 38,
+          "pressed": "false",
+          "text": "Zobrazit"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Vytvořit účet zdarma"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Máte účet? Přihlaste se"
+        }
+      ],
+      "fields": [
+        {
+          "autocomplete": "email",
+          "describedby": "email-error",
+          "id": "email",
+          "invalid": "true",
+          "minlength": -1,
+          "required": true,
+          "type": "email"
+        },
+        {
+          "autocomplete": "new-password",
+          "describedby": "password-help password-error",
+          "id": "password",
+          "invalid": "true",
+          "minlength": 8,
+          "required": true,
+          "type": "password"
+        },
+        {
+          "autocomplete": "",
+          "describedby": null,
+          "id": "gdpr-consent",
+          "invalid": null,
+          "minlength": -1,
+          "required": true,
+          "type": "checkbox"
+        }
+      ],
+      "headings": [
+        "Vytvoř si účet zdarma"
+      ],
+      "height": 3303,
+      "scrollWidth": 382,
+      "url": "https://www.mystickahvezda.cz/prihlaseni.html?mode=register",
+      "width": 390,
+      "label": "production-register-stale-errors-mobile"
+    },
+    {
+      "alerts": [],
+      "bodyClass": "page-login atlas-page atlas-remaining-page auth-checkout-plan-mode",
+      "buttons": [
+        {
+          "ariaLabel": "Zobrazit heslo",
+          "height": 44,
+          "pressed": "false",
+          "text": "Zobrazit"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Přihlásit se a pokračovat"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Zapomněli jste heslo?"
+        },
+        {
+          "ariaLabel": null,
+          "height": 53,
+          "pressed": null,
+          "text": "Nemáte účet? Zaregistrujte se zdarma →"
+        }
+      ],
+      "fields": [
+        {
+          "autocomplete": "email",
+          "describedby": null,
+          "id": "email",
+          "invalid": null,
+          "minlength": -1,
+          "required": true,
+          "type": "email"
+        },
+        {
+          "autocomplete": "current-password",
+          "describedby": "password-help",
+          "id": "password",
+          "invalid": null,
+          "minlength": -1,
+          "required": true,
+          "type": "password"
+        }
+      ],
+      "headings": [
+        "Přihlaste se a pokračujte k odemčení"
+      ],
+      "height": 2926,
+      "scrollWidth": 382,
+      "url": "https://www.mystickahvezda.cz/prihlaseni.html?mode=login&redirect=%2Fcenik.html&plan=pruvodce&source=pricing_page&feature=premium_membership&billing_interval=monthly&entry_source=pricing_page&entry_feature=premium_membership",
+      "width": 390,
+      "label": "production-membership-login-mobile"
+    },
+    {
+      "alerts": [],
+      "bodyClass": "page-login atlas-page atlas-remaining-page",
+      "buttons": [
+        {
+          "ariaLabel": "Zobrazit heslo",
+          "height": 44,
+          "pressed": "false",
+          "text": "Zobrazit"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Přihlásit se"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Zapomněli jste heslo?"
+        },
+        {
+          "ariaLabel": null,
+          "height": 53,
+          "pressed": null,
+          "text": "Nemáte účet? Zaregistrujte se zdarma →"
+        }
+      ],
+      "fields": [
+        {
+          "autocomplete": "email",
+          "describedby": null,
+          "id": "email",
+          "invalid": null,
+          "minlength": -1,
+          "required": true,
+          "type": "email"
+        },
+        {
+          "autocomplete": "current-password",
+          "describedby": "password-help",
+          "id": "password",
+          "invalid": null,
+          "minlength": -1,
+          "required": true,
+          "type": "password"
+        }
+      ],
+      "headings": [
+        "Vítejte zpět"
+      ],
+      "height": 3022,
+      "scrollWidth": 382,
+      "url": "https://www.mystickahvezda.cz/prihlaseni.html?reset=true",
+      "width": 390,
+      "label": "production-reset-missing-token-mobile"
+    },
+    {
+      "alerts": [
+        "Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"
+      ],
+      "bodyClass": "page-login atlas-page atlas-remaining-page",
+      "buttons": [
+        {
+          "ariaLabel": "Zobrazit heslo",
+          "height": 44,
+          "pressed": "false",
+          "text": "Zobrazit"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Přihlásit se"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Zapomněli jste heslo?"
+        },
+        {
+          "ariaLabel": null,
+          "height": 52,
+          "pressed": null,
+          "text": "Nemáte účet? Zaregistrujte se zdarma →"
+        }
+      ],
+      "fields": [
+        {
+          "autocomplete": "email",
+          "describedby": null,
+          "id": "email",
+          "invalid": null,
+          "minlength": -1,
+          "required": true,
+          "type": "email"
+        },
+        {
+          "autocomplete": "current-password",
+          "describedby": "password-help",
+          "id": "password",
+          "invalid": null,
+          "minlength": -1,
+          "required": true,
+          "type": "password"
+        }
+      ],
+      "headings": [
+        "Vítejte zpět"
+      ],
+      "height": 3041,
+      "scrollWidth": 382,
+      "url": "http://localhost:3346/prihlaseni.html",
+      "width": 390,
+      "label": "api-unavailable-local-mobile"
+    },
+    {
+      "alerts": [],
+      "bodyClass": "page-login atlas-page atlas-remaining-page",
+      "buttons": [
+        {
+          "ariaLabel": "Zobrazit nové heslo",
+          "height": 44,
+          "pressed": "false",
+          "text": "Zobrazit"
+        },
+        {
+          "ariaLabel": "Zobrazit potvrzení nového hesla",
+          "height": 44,
+          "pressed": "false",
+          "text": "Zobrazit"
+        },
+        {
+          "ariaLabel": null,
+          "height": 44,
+          "pressed": null,
+          "text": "Nastavit nové heslo"
+        }
+      ],
+      "fields": [
+        {
+          "autocomplete": "new-password",
+          "describedby": null,
+          "id": "new-password",
+          "invalid": null,
+          "minlength": 8,
+          "required": true,
+          "type": "password"
+        },
+        {
+          "autocomplete": "new-password",
+          "describedby": null,
+          "id": "confirm-password",
+          "invalid": null,
+          "minlength": 8,
+          "required": true,
+          "type": "password"
+        }
+      ],
+      "headings": [
+        "Obnovení hesla"
+      ],
+      "height": 2905,
+      "scrollWidth": 382,
+      "url": "http://localhost:3346/prihlaseni.html?reset=true",
+      "width": 390,
+      "label": "reset-expired-local-mobile"
+    }
+  ]
+}

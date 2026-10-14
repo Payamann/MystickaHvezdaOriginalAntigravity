@@ -1,0 +1,128 @@
+- link "Přeskočit na obsah":
+  - /url: "#main-content"
+- banner:
+  - link "Mystická Hvězda Logo MystickáHvězda":
+    - /url: /index.html
+    - img "Mystická Hvězda Logo"
+    - generic: MystickáHvězda
+  - button "Otevřít hlavní menu"
+  - navigation "Hlavní navigace"
+- main:
+  - generic: Členství Mystická Hvězda
+  - heading "Jedno členství. Všechny hlubší výklady." [level=1]
+  - paragraph: Tarot včetně Keltského kříže, astrokartografie, horoskopy, natální karta, numerologie i historie tvých výkladů. Začni 7 dní za 0 Kč a pokračuj jen tehdy, když ti členství dává smysl.
+  - link "Zobrazit členství":
+    - /url: "#clenstvi"
+  - link "Chci jen jeden výklad":
+    - /url: "#jednorazovy-vyklad"
+  - generic: Dnes 0 Kč
+  - generic: •
+  - generic: potom 199 Kč/měsíc
+  - generic: •
+  - generic: zrušíš kdykoliv v profilu
+  - region "Členství Mystické Hvězdy":
+    - status
+    - article:
+      - generic: Pro tvé další otázky
+      - heading "Členství Mystické Hvězdy" [level=2]
+      - generic: 199 Kč
+      - generic: /měsíc
+      - paragraph: Prozkoumej souvislosti a vrať se k tomu, co tě ve výkladu zaujalo.
+      - list:
+        - text: ✦
+        - text: Tarotové výklady včetně Keltského kříže
+        - text: ✦
+        - text: Astrokartografie, natální karta a numerologie
+        - text: ✦
+        - text: Týdenní a měsíční horoskopy
+        - text: ✦
+        - text: Historie výkladů a souvislosti v čase
+      - link "Začít 7 dní za 0 Kč":
+        - /url: /prihlaseni.html?mode=register&redirect=%2Fcenik.html&plan=pruvodce&source=pricing_page&feature=premium_membership&billing_interval=monthly
+      - paragraph: Dnes 0 Kč. Po 7 dnech 199 Kč/měsíc, pokud předtím nezrušíš.
+      - generic "Podmínky zkoušky a používání"
+    - strong: Chceš se nejdřív jen podívat?
+    - generic: Účet zdarma je bez karty a nechá tě vyzkoušet základní horoskopy i výklady.
+    - link "Vytvořit účet zdarma":
+      - /url: prihlaseni.html?mode=register&redirect=/horoskopy.html&source=pricing_free_cta&feature=daily_guidance
+    - generic "Co potřebuješ vědět před aktivací":
+      - strong: 7 dní za 0 Kč
+      - generic: Platíš až po skončení zkušební doby.
+      - strong: Bezpečně přes Stripe
+      - generic: Údaje z karty na webu neukládáme.
+      - strong: Zrušení v profilu
+      - generic: Bez e-mailu na podporu a bez dalších kroků.
+    - paragraph: Předplatné se po 7 dnech automaticky obnovuje každý měsíc za 199 Kč, dokud ho nezrušíš. Po zrušení zůstává přístup do konce zaplaceného období.
+    - generic "Důležité informace před platbou":
+      - generic: "Podrobnosti:"
+      - link "Obchodní podmínky":
+        - /url: podminky.html
+      - link "Zásady soukromí":
+        - /url: soukromi.html
+      - link "Správa cookies":
+        - /url: "#cookie-banner"
+      - link "Kontakt na podporu":
+        - /url: kontakt.html
+    - complementary "Chceš vyřešit jednu vztahovou otázku?":
+      - generic: Bez předplatného
+      - heading "Chceš vyřešit jednu vztahovou otázku?" [level=2]
+      - paragraph: Osobní vztahový výklad propojí tvoji otázku se třemi tarotovými kartami a přijde e-mailem. Zaplatíš jednou, bez účtu a bez členství.
+      - link "Jednorázová platba Osobní vztahový výklad 149 Kč Jedna otázka, tři tarotové karty a souvislý výklad e-mailem. Prohlédnout jednorázový výklad →":
+        - /url: vztahovy-vyklad.html?source=pricing_addon
+        - generic: Jednorázová platba
+        - strong:
+          - generic: Osobní vztahový výklad
+          - generic: 149 Kč
+        - generic: Jedna otázka, tři tarotové karty a souvislý výklad e-mailem.
+        - generic: Prohlédnout jednorázový výklad →
+  - generic: Bez nejasností
+  - heading "Než členství aktivuješ" [level=2]
+  - button "Co se stane po 7 dnech? +"
+  - region "Co se stane po 7 dnech? +":
+    - paragraph: Pokud členství předtím nezrušíš, Stripe strhne 199 Kč za další měsíc. Přesnou částku vždy vidíš před potvrzením.
+  - button "Jak členství zruším? +"
+  - region "Jak členství zruším? +":
+    - paragraph: Kdykoliv ve svém profilu. Přístup ti zůstane do konce zaplaceného období.
+  - button "Potřebuji kartu už při registraci? +"
+  - region "Potřebuji kartu už při registraci? +":
+    - paragraph: Ne. Účet zdarma založíš bez karty. Kartu potřebuješ až k aktivaci 7denního zkušebního období členství.
+  - button "Jaký je rozdíl mezi členstvím a vztahovým výkladem? +"
+  - region "Jaký je rozdíl mezi členstvím a vztahovým výkladem? +":
+    - paragraph: Členství odemyká opakované používání členských nástrojů a historii. Osobní vztahový výklad stojí jednorázově 149 Kč a přijde e-mailem bez účtu a předplatného.
+- contentinfo:
+  - img "Mystická Hvězda Logo"
+  - generic: MystickáHvězda
+  - paragraph: Moderní astrologická služba pro českou komunitu. Spojujeme tisíciletou moudrost s důvěryhodnou praxí.
+  - paragraph:
+    - text: Provozovatel služby Mystická Hvězda. Potřebuješ pomoc? Napiš nám kdykoliv na
+    - link "support@mystickahvezda.cz":
+      - /url: mailto:support@mystickahvezda.cz
+    - text: .
+  - link "TikTok":
+    - /url: https://www.tiktok.com/@mysticka.hvezda
+  - link "Instagram":
+    - /url: https://www.instagram.com/mystickahvezda/
+  - link "Facebook":
+    - /url: https://www.facebook.com/profile.php?id=61578521197797
+  - paragraph: Pomohla ti tato stránka?
+  - button "Ano"
+  - button "Ne"
+  - paragraph: © 2026 Mystická Hvězda. Všechna práva vyhrazena.
+  - paragraph:
+    - text: "Podpora:"
+    - link "support@mystickahvezda.cz":
+      - /url: mailto:support@mystickahvezda.cz
+  - paragraph:
+    - text: "Jazyk:"
+    - link "Čeština":
+      - /url: /
+    - text: ·
+    - link "Slovenčina":
+      - /url: /sk/
+    - text: ·
+    - link "Polski":
+      - /url: /pl/
+  - link "Obchodní podmínky":
+    - /url: /podminky.html
+  - link "Ochrana soukromí":
+    - /url: /soukromi.html

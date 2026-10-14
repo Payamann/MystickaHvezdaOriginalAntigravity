@@ -1,0 +1,160 @@
+- link "Přeskočit na obsah":
+  - /url: "#main-content"
+- banner:
+  - link "Mystická Hvězda Logo MystickáHvězda":
+    - /url: /index.html
+    - img "Mystická Hvězda Logo"
+    - generic: MystickáHvězda
+  - button "Otevřít hlavní menu"
+  - navigation "Hlavní navigace"
+- main:
+  - heading "Vytvoř si účet zdarma" [level=1]
+  - paragraph: Stačí e-mail a heslo. Platební kartu nevyžadujeme a osobní údaje doplníš až u výkladu, který je opravdu potřebuje.
+  - paragraph: Tvoje data používáme jen pro osobní výklady a nastavení účtu.
+  - generic: Účet zdarma
+  - strong: Účet zdarma bez zdržení
+  - paragraph: Po registraci vás provedeme prvním nastavením a pošleme k osobnímu výkladu, který dává smysl jako první.
+  - generic: Co se stane po registraci
+  - list "Co dostanete hned po registraci":
+    - generic: "1"
+    - strong: Vytvoříte účet zdarma
+    - generic: Stačí e-mail a heslo. Bez platební karty.
+    - generic: "2"
+    - strong: Otevřeme první osobní krok
+    - generic: Začnete krátkým výběrem znamení a hned potom konkrétním výkladem.
+    - generic: "3"
+    - strong: Profil doplníte později
+    - generic: Datum narození vyžádáme až tam, kde je potřeba pro osobní výklad.
+  - generic: Email
+  - textbox "Email" [active]:
+    - /placeholder: vas@email.cz
+  - generic: Heslo
+  - textbox "Heslo":
+    - /placeholder: "********"
+  - button "Zobrazit heslo": Zobrazit
+  - paragraph: Stačí 8 znaků. Klidně použij celou větu nebo pár slov, které si snadno zapamatuješ — bez povinných velkých písmen a symbolů.
+  - checkbox "Souhlasím s obchodními podmínkami a potvrzuji seznámení se zásadami soukromí."
+  - text: Souhlasím s
+  - link "obchodními podmínkami":
+    - /url: podminky.html
+  - text: a potvrzuji seznámení se
+  - link "zásadami soukromí":
+    - /url: soukromi.html
+  - text: .
+  - button "Vytvořit účet zdarma"
+  - paragraph: Registrace je zdarma a bez platební karty. Výklady slouží jako osobní inspirace a nenahrazují odbornou péči.
+  - button "Máte účet? Přihlaste se"
+  - generic: Přihlášení
+- contentinfo:
+  - img "Mystická Hvězda Logo"
+  - generic: MystickáHvězda
+  - paragraph: Moderní astrologická služba pro českou komunitu. Spojujeme tisíciletou moudrost s důvěryhodnou praxí.
+  - paragraph:
+    - text: Provozovatel služby Mystická Hvězda. Potřebuješ pomoc? Napiš nám kdykoliv na
+    - link "support@mystickahvezda.cz":
+      - /url: mailto:support@mystickahvezda.cz
+    - text: .
+  - link "TikTok":
+    - /url: https://www.tiktok.com/@mysticka.hvezda
+  - link "Instagram":
+    - /url: https://www.instagram.com/mystickahvezda/
+  - link "Facebook":
+    - /url: https://www.facebook.com/profile.php?id=61578521197797
+  - paragraph: Pomohla ti tato stránka?
+  - button "Ano"
+  - button "Ne"
+  - heading "Astrologie" [level=5]
+  - list:
+    - link "Horoskopy":
+      - /url: /horoskopy.html
+    - link "Znamení zvěrokruhu":
+      - /url: /horoskop/index.html
+    - link "Natální Karta":
+      - /url: /natalni-karta.html
+    - link "Partnerská Shoda":
+      - /url: /partnerska-shoda.html
+    - link "Lunární Fáze":
+      - /url: /lunace.html
+    - link "Astro Mapa":
+      - /url: /astro-mapa.html
+    - link "Čínský Horoskop":
+      - /url: /cinsky-horoskop.html
+  - heading "Věštění & Energie" [level=5]
+  - list:
+    - link "Tarot & Výklady":
+      - /url: /tarot.html
+    - link "Tarot karta dne":
+      - /url: /tarot-karta-dne.html
+    - link "Tarot 3 karty":
+      - /url: /tarot-tri-karty.html
+    - link "Keltský kříž":
+      - /url: /tarot-keltsky-kriz.html
+    - link "Tarot na lásku":
+      - /url: /tarot-laska.html
+    - link "Andělské Karty":
+      - /url: /andelske-karty.html
+    - link "Věštění z Run":
+      - /url: /runy.html
+    - link "Křišťálová Koule":
+      - /url: /kristalova-koule.html
+    - link "Šamanské Kolo":
+      - /url: /shamansko-kolo.html
+    - link "Osobní mapa na 12 měsíců":
+      - /url: /osobni-mapa.html
+    - link "Hvězdný Průvodce":
+      - /url: /mentor.html
+    - link "Numerologie":
+      - /url: /numerologie.html
+    - link "Aura kalkulačka":
+      - /url: /aura.html
+    - link "Biorytmy":
+      - /url: /biorytmy.html
+  - heading "Poznání" [level=5]
+  - list:
+    - link "Mystické Testy":
+      - /url: /testy/index.html
+    - link "Mystický Blog":
+      - /url: /blog.html
+    - link "Ezoterický Slovník":
+      - /url: /slovnik.html
+    - link "Snář":
+      - /url: /snar.html
+    - link "Významy tarotových karet":
+      - /url: /tarot-vyznam-karet.html
+    - link "Databáze jmen":
+      - /url: /jmena/
+    - link "Kalkulačka čísla osudu":
+      - /url: /kalkulacka-cisla-osudu.html
+  - heading "Podpora" [level=5]
+  - list:
+    - link "O nás":
+      - /url: /o-nas.html
+    - link "Ceník":
+      - /url: /cenik.html
+    - link "Kontakt":
+      - /url: /kontakt.html
+    - link "Napsat podpoře":
+      - /url: mailto:support@mystickahvezda.cz
+    - link "FAQ (Časté dotazy)":
+      - /url: /faq.html
+    - link "Jak to funguje":
+      - /url: /jak-to-funguje.html
+  - paragraph: © 2026 Mystická Hvězda. Všechna práva vyhrazena.
+  - paragraph:
+    - text: "Podpora:"
+    - link "support@mystickahvezda.cz":
+      - /url: mailto:support@mystickahvezda.cz
+  - paragraph:
+    - text: "Jazyk:"
+    - link "Čeština":
+      - /url: /
+    - text: ·
+    - link "Slovenčina":
+      - /url: /sk/
+    - text: ·
+    - link "Polski":
+      - /url: /pl/
+  - link "Obchodní podmínky":
+    - /url: /podminky.html
+  - link "Ochrana soukromí":
+    - /url: /soukromi.html

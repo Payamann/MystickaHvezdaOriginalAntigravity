@@ -1,0 +1,92 @@
+[
+  {
+    "id": "A01",
+    "priority": "P1",
+    "title": "Chyby se přenášejí mezi přihlášením a registrací",
+    "verified": "Lokální desktop i produkční mobil",
+    "evidence": "Prázdné Přihlásit se → přepnout na Registraci. Nový režim stále ukazuje shrnutí a dvě chyby Vyplňte prosím toto pole, i když v registraci ještě nic odeslané nebylo.",
+    "source": "js/prihlaseni.js:710 applyMode, :1099 toggleBtn; js/ui/forms.js inline validation",
+    "fix": "Při změně režimu vyčistit souhrn i chyby všech polí; zachovat běžné hodnoty jen podle úmyslu uživatele a validovat až aktuální režim.",
+    "proof": "production-register-stale-errors-mobile"
+  },
+  {
+    "id": "A02",
+    "priority": "P2",
+    "title": "Přepnutí režimu nechá začátek nového formuláře mimo obrazovku",
+    "verified": "Produkční mobil, též lokální přechody",
+    "evidence": "Po stejném přepnutí register bylo scrollY 353,6 px a nadpis začínal na −218,8 px. Fokus zůstává na přepínacím tlačítku; uživatel nevidí nový začátek.",
+    "source": "js/prihlaseni.js:972–985 forgot/back handlers; :1099–1103 mode toggle",
+    "fix": "Po přepnutí přesunout fokus na nový nadpis nebo první pole a zajistit viditelnost pod pevným záhlavím. Nedělat plošný autoscroll během psaní.",
+    "proof": "forgot-mobile"
+  },
+  {
+    "id": "A03",
+    "priority": "P2",
+    "title": "Registrace míchá tykání, vykání a opakované vysvětlování",
+    "verified": "Lokální i produkční veřejné režimy",
+    "evidence": "Vytvoř si účet / tvoje data vedle Vytvoříte účet, Profil doplníte a Po registraci vás provedeme. Několikrát opakuje zdarma, bez karty a doplnění údajů později.",
+    "source": "prihlaseni.html:42–65 signup value panel; js/prihlaseni.js SIGNUP_CONTEXT_BY_FEATURE a applyMode",
+    "fix": "Sjednotit tykání a zkrátit obsah na jeden kontextový odstavec. Mobilní pole už jsou nahoře (e-mail kolem 312 px); nepřesouvat je kvůli source pořadí.",
+    "proof": "register-fresh-mobile"
+  },
+  {
+    "id": "A04",
+    "priority": "P2",
+    "title": "Text členství po přepnutí na login stále mluví o registraci",
+    "verified": "Produkční mobil",
+    "evidence": "Ceník → Začít 7 dní za 0 Kč → Účet už mám. Nadpis i submit jsou pro přihlášení, ale banner stále říká Po registraci rovnou otevřeme bezpečný checkout. Main nepřipomíná následných 199 Kč/měsíc.",
+    "source": "js/prihlaseni.js:38–43 getCheckoutPromiseCopy; :641–657 renderCheckoutContext",
+    "fix": "Text odvodit od aktuálního režimu. Vedle CTA stručně zopakovat aktuální cenu po zkoušce a požadavek karty, údaje převzít z manifestu. Samotný plán/redirect/source/billing interval se při přepnutí zachoval.",
+    "proof": "production-membership-login-mobile"
+  },
+  {
+    "id": "A05",
+    "priority": "P1",
+    "title": "Neplatný vstup do resetu nemá jasný recovery stav",
+    "verified": "Produkce bez tokenu; lokální syntetický vypršelý fragment",
+    "evidence": "/prihlaseni.html?reset=true bez tokenu ukáže běžný login bez informace o obnově. Lokální reset=true#error=access_denied&error_code=otp_expired ukázal formulář nového hesla; po vyčištění URL zůstal formulář otevřený. Nebyl zadán ani změněn nový password.",
+    "source": "js/prihlaseni.js:404–405, :844–854 — režim vyžaduje jen neprázdný hash; :1056–1061 validuje token až při submitu; js/auth-client.js:221–249",
+    "fix": "Rozlišit platný recovery vstup, chybějící token a provider error před zobrazením polí. Neplatný odkaz musí nabídnout vyžádání nového odkazu. Skutečný platný e-mailový reset se musí ověřit zvlášť.",
+    "proof": "reset-expired-local-mobile"
+  },
+  {
+    "id": "A06",
+    "priority": "P2",
+    "title": "Při odpovědi API mimo JSON se zákazníkovi ukáže technická chyba",
+    "verified": "Lokální simulace nedostupného API",
+    "evidence": "Smyšlené přihlášení audit@example.invalid proti statickému lokálnímu serveru zobrazilo anglický JSON parse error: Unexpected token < … is not valid JSON. Toto není důkaz výpadku produkce.",
+    "source": "js/auth-client.js:413–442 login res.json/catch; js/prihlaseni.js:946–961 převzetí error.message",
+    "fix": "Ošetřit neočekávaný formát/HTTP odpověď; zobrazit srozumitelnou českou chybu a ponechat možnost zopakovat. Technický detail logovat zvlášť, bez hesel/tokenů.",
+    "proof": "api-unavailable-local-mobile"
+  },
+  {
+    "id": "A07",
+    "priority": "P2",
+    "title": "Starší auth modal má slabší přístupnost než samostatná stránka",
+    "verified": "Zdroj; aktivní modal nebyl v této kontrole vyvolán",
+    "evidence": "Close je span bez keyboard role/tabindex, labely nejsou svázané s poli, obal nemá dialog/aria-modal. Auth-copy-fixes dodává close aria-label, nikoli keyboard button. Auth-client otevření nemá vlastní fokus/Escape management.",
+    "source": "js/templates.js:214–265; js/auth-client.js:1654–1697; js/auth-copy-fixes.js:21–25",
+    "fix": "Buď sjednotit aktivní vstupy na samostatnou stránku, nebo doplnit skutečný dialog s tlačítkem zavření, názvy polí, fokusovým cyklem a návratem fokusu. Nejprve určit, které vstupy legacy modal používají.",
+    "proof": null
+  },
+  {
+    "id": "A08",
+    "priority": "P2",
+    "title": "Potvrzení úspěšného resetu zmizí při okamžité navigaci",
+    "verified": "Zdroj; skutečné heslo se neměnilo",
+    "evidence": "Po data.success vytvoří stránka toast a ihned nastaví location.href na login. Potvrzení v původním dokumentu nepřežije reload.",
+    "source": "js/prihlaseni.js:1077–1081",
+    "fix": "Předat potvrzení do nové přihlašovací obrazovky a ukázat ho jako trvalou srozumitelnou informaci. Nenastavovat fiktivní úspěch podle samotného query parametru.",
+    "proof": null
+  },
+  {
+    "id": "A09",
+    "priority": "P2",
+    "title": "Účet potřebuje kratší společnou patičku a sjednocený onboarding",
+    "verified": "Lokální veřejný profil a onboarding",
+    "evidence": "Guest profil má hezky označené ukázky a funkční odkazy na registraci/free tarot. Hlavní clutter je společná dlouhá patička; onboarding má jiné fialové povrchy. Profil za přihlášením nebyl vizuálně otevřený.",
+    "source": "components/footer.html; css/pages/onboarding.css; profil.html:39–95",
+    "fix": "Použít úpravy V03/V10; zachovat veřejnou ukázku a jedno hlavní CTA. Historii, oblíbené, deník, nastavení a billing doladit až v odpovídajícím testovacím účtu.",
+    "proof": "profile-guest-mobile"
+  }
+]

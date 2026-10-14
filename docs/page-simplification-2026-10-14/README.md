@@ -11,6 +11,10 @@
 - Přihlášené, členské, platební a doručovací stavy byly v tomto průzkumu posouzené ze zdroje. Nebyly provedeny skutečné platby, registrace, odeslání zprávy/e-mailu ani použití osobních dat. Statický náhled nemá API; jeho chyby načítání nejsou automaticky chyby produkce.
 - V ověřených vstupních DOM nebylo naměřené vodorovné přetečení při 390 ani 1280 px. To není úplná certifikace přístupnosti.
 
+## Doplnění: přihlášení a účet
+
+Navazující samostatná kontrola má 19 zaznamenaných stavů a 9 konkrétních bodů: [review účtu](account-review.md), [vizuální přehled](account-overview.html). Zahrnuje také prázdnou produkční validaci; žádný produkční auth účet, e-mail, nové heslo ani platba nebyly vytvořené. Lokální simulace nedostupného API je zvlášť označená.
+
 ## Seznam problémů podle priority
 
 ### V01 · P1 · Stará mlhovina v denních horoskopech s datem
