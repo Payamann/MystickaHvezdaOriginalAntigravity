@@ -160,3 +160,9 @@ body.atlas-page.unsubscribe-page .unsubscribe-page__box a { color: #d0b17c; disp
 @media (min-width: 993px) and (max-width: 1160px) {
   body.atlas-page .header .auth-buttons .btn { padding-inline: .5rem; font-size: .64rem; }
 }
+
+/* Keep the loaded desktop header within its own navigation column. */
+body.atlas-page .header .nav__list>.nav__item>.nav__link{display:inline-flex;align-items:center;gap:4px}
+body.atlas-page .header .nav__link--dropdown-toggle{padding-right:0}
+body.atlas-page .header .dropdown-icon{position:static;inset:auto;transform:none}
+@media(min-width:993px) and (max-width:1180px){body.atlas-page .header .nav__list{gap:4px}body.atlas-page .header .nav__link{font-size:.7rem}body.atlas-page .header .logo{font-size:1.1rem}body.atlas-page .header .logo__image{width:32px;height:32px}}

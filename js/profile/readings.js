@@ -2,7 +2,7 @@
  * Reading history management
  */
 
-import { escapeHtml, apiUrl, authHeaders, getReadingIcon, getReadingTitle } from './shared.js';
+import { profileIconMarkup, escapeHtml, apiUrl, authHeaders, getReadingIcon, getReadingTitle } from './shared.js';
 
 // State
 let allReadings = [];
@@ -53,7 +53,7 @@ export async function loadReadings() {
         if (container) {
             container.innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-state__icon">⚠️</div>
+                    <div class="empty-state__icon">${profileIconMarkup('warning')}</div>
                     <p class="empty-state__text">Nepodařilo se načíst historii.</p>
                     <button class="btn btn--glass btn--sm" data-readings-action="reload">Zkusit znovu</button>
                 </div>
@@ -201,7 +201,7 @@ export function renderReadings() {
 
         container.innerHTML = `
             <div class="empty-state">
-                <div class="empty-state__icon">🔮</div>
+                <div class="empty-state__icon">${profileIconMarkup('book')}</div>
                 <h4 class="empty-state__title">${currentFilter === 'all' ? 'Deník výkladů zatím čeká na první odpověď' : 'Tady zatím není žádný výklad tohoto typu'}</h4>
                 <p class="empty-state__text">${currentFilter === 'all'
                     ? 'Tady se budou držet tvoje otázky, odpovědi a opakující se témata. Začni krátkým výkladem, ať má profil první signál pro návrat.'

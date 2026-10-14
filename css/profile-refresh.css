@@ -1241,3 +1241,12 @@ body.page-profile .profile-guest-card {
         grid-template-columns: 1fr;
     }
 }
+
+/* Calm Atlas profile details; each symbol has a distinct purpose. */
+body.page-profile .stat-icon-wrapper{width:52px;height:52px;border-radius:10px;background:#bd9b650b;transition:background-color .2s,border-color .2s}
+body.page-profile .stat-card:hover .stat-icon-wrapper{transform:none;box-shadow:none;background:#bd9b6514;border-color:#bd9b6580}
+body.page-profile .stat-icon-wrapper .mh-symbol{width:28px;height:28px}
+body.page-profile .profile-tab-icon .mh-symbol{width:20px;height:20px}
+body.page-profile .profile-avatar .mh-symbol{width:38px;height:38px}
+body.page-profile .empty-state__icon .mh-symbol{width:46px;height:46px}
+body.page-profile .stat-value{background:none;color:#e9e3d7;-webkit-text-fill-color:currentColor}

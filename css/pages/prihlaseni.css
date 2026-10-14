@@ -492,3 +492,13 @@ html body .mh-flex-visible {
         font-size: 0.82rem;
     }
 }
+
+/* Atlas account details: align controls with the actual input, not its margin. */
+body.page-login .login-icon{display:grid;place-items:center;width:56px;height:56px;margin:0 auto 20px;border:1px solid #bd9b6544;border-radius:50%;background:#bd9b650b}
+body.page-login .login-icon .mh-symbol{width:36px;height:36px}
+body.page-login .password-input-wrap .form-input{margin-bottom:0!important;min-height:48px}
+body.page-login .password-toggle{right:3px;border:0;border-radius:3px;background:transparent;min-height:44px}
+body.page-login .password-toggle:hover,body.page-login .password-toggle:focus-visible{background:#bd9b6514}
+@media(min-width:1000px){body.auth-register-mode .login-icon{margin-left:0}}
+@media(max-width:999px){body.auth-register-mode .login-icon{display:none}}
+

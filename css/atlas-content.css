@@ -79,3 +79,9 @@ body.atlas-content-page :is(.autocomplete-dropdown, .no-results) { background: v
 @media (prefers-reduced-motion: reduce) {
   body.atlas-content-page * { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+/* Dictionary articles and their topic badge share the same reading surface. */
+body.atlas-content-detail .dictionary-content{background:#102638;border:1px solid #bd9b6548;border-radius:6px;backdrop-filter:none;box-shadow:none;padding:clamp(20px,4vw,32px)}
+body.atlas-content-detail .dictionary-badge{background:#bd9b6510;border:1px solid #bd9b6555;border-radius:4px;color:#d0b17c;padding:7px 12px;font-size:.8rem}
+body.atlas-content-detail .related-features{border-top-color:#bd9b6544}
+body.atlas-content-detail .feature-card{border-radius:6px;box-shadow:none}

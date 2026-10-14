@@ -2,14 +2,14 @@
  * Favorites tab functionality
  */
 
-import { escapeHtml, apiUrl, authHeaders, getReadingIcon, getReadingTitle } from './shared.js';
+import { profileIconMarkup, escapeHtml, apiUrl, authHeaders, getReadingIcon, getReadingTitle } from './shared.js';
 
 function renderEmptyFavorites(readingCount = 0) {
     const hasReadings = readingCount > 0;
 
     return `
         <div class="empty-state">
-            <div class="empty-state__icon">⭐</div>
+            <div class="empty-state__icon">${profileIconMarkup('bookmark')}</div>
             <h4 class="empty-state__title">${hasReadings ? 'Vyber si první výklad pro návrat' : 'Oblíbené zatím čekají na první návrat'}</h4>
             <p class="empty-state__text">${hasReadings
         ? 'Najdi v historii výklad, ke kterému se chceš vrátit. Hvězda z něj udělá krátký seznam témat, která se opakují.'
@@ -72,7 +72,7 @@ export async function loadFavorites() {
         console.error('Error loading favorites:', error);
         container.innerHTML = `
             <div class="empty-state">
-                <div class="empty-state__icon">⚠️</div>
+                <div class="empty-state__icon">${profileIconMarkup('warning')}</div>
                 <p class="empty-state__text">Nepodařilo se načíst oblíbené.</p>
             </div>
         `;

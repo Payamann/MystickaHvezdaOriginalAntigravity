@@ -220,3 +220,10 @@ export function getZodiacIconName(symbol) {
     // Note: Lucide doesn't have all zodiac signs directly, using closest analogs
     return map[symbol] || 'sparkles';
 }
+
+// Decorative UI markup only. Never interpolate user text into an SVG URL.
+export function profileIconMarkup(name) {
+ const allowed = new Set(['book', 'bookmark', 'warning']);
+ if (!allowed.has(name)) throw new Error('Unknown profile UI icon');
+ return '<svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#' + name + '"></use></svg>';
+}
