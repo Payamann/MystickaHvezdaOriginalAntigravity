@@ -1,0 +1,165 @@
+{
+  "checkedAt": "2026-10-14T18:02:03.239Z",
+  "results": [
+    {
+      "path": "/api/health",
+      "status": 200,
+      "data": {
+        "status": "ok",
+        "timestamp": "2026-10-14T18:02:03.107Z",
+        "checks": {
+          "db": "ok",
+          "ai": "ok",
+          "emailQueue": "ok"
+        },
+        "features": {
+          "pushNotifications": "configured",
+          "scheduledJobs": {
+            "general": "enabled",
+            "emailQueue": {
+              "status": "idle",
+              "lastStartedAt": "2026-10-14T18:02:00.014Z",
+              "lastFinishedAt": "2026-10-14T18:02:00.142Z",
+              "lastBatchSize": 0,
+              "lastSent": 0,
+              "lastSkipped": 0,
+              "lastFailed": 0,
+              "lastErrorCode": null
+            },
+            "socialAgent": "disabled",
+            "dailyHoroscopeEmail": "enabled",
+            "dailyPushNotification": "enabled",
+            "weeklyNewsletter": "enabled"
+          }
+        },
+        "deployment": {
+          "commit": "9782cab61671200a57859f933621585b87a7b7c5",
+          "branch": "main",
+          "environment": "production",
+          "service": "MystickaHvezdaOriginalAntigravity"
+        }
+      }
+    },
+    {
+      "path": "/api/vztahovy-vyklad/product",
+      "status": 200,
+      "data": {
+        "id": "relationship_tarot",
+        "type": "relationship_tarot",
+        "name": "Osobní vztahový výklad",
+        "amount": 14900,
+        "currency": "czk",
+        "enabled": true
+      }
+    },
+    {
+      "path": "/api/osobni-mapa/product",
+      "status": 200,
+      "data": {
+        "id": "osobni_mapa_2026",
+        "name": "Osobní mapa na 12 měsíců",
+        "price": 29900,
+        "currency": "czk",
+        "periodMonths": 12,
+        "period": {
+          "start": "2026-10-14",
+          "end": "2027-10-13",
+          "label": "14. října 2026 - 13. října 2027",
+          "months": 12
+        },
+        "stripePriceId": "price_1TRAzfAo8bdbnsKa82dgiM61"
+      }
+    },
+    {
+      "path": "/api/plans",
+      "status": 200,
+      "data": {
+        "success": true,
+        "currency": "CZK",
+        "featurePlanMap": {
+          "daily_guidance": "pruvodce",
+          "horoskopy": "pruvodce",
+          "weekly_horoscope": "pruvodce",
+          "monthly_horoscope": "pruvodce",
+          "lunar_calendar": "pruvodce",
+          "rituals": "pruvodce",
+          "ritual_memory": "pruvodce",
+          "profile_history": "pruvodce",
+          "another_reading": "pruvodce",
+          "tarot": "pruvodce",
+          "tarot_yes_no": "pruvodce",
+          "tarot_love": "pruvodce",
+          "dream_dictionary": "pruvodce",
+          "tarot_daily_card_profile_save": "pruvodce",
+          "tarot_multi_card": "pruvodce",
+          "tarot_celtic_cross": "pruvodce",
+          "andelske_karty_hluboky_vhled": "pruvodce",
+          "angel_card_deep": "pruvodce",
+          "daily_angel_card": "pruvodce",
+          "angel_numbers": "pruvodce",
+          "kristalova_koule": "pruvodce",
+          "crystal_ball_unlimited": "pruvodce",
+          "runy_hluboky_vyklad": "pruvodce",
+          "runes_deep_reading": "pruvodce",
+          "shamanske_kolo_plne_cteni": "pruvodce",
+          "medicine_wheel": "pruvodce",
+          "minuly_zivot": "pruvodce",
+          "past_life": "pruvodce",
+          "numerologie_vyklad": "pruvodce",
+          "numerology": "pruvodce",
+          "natalni_interpretace": "pruvodce",
+          "natal_chart": "pruvodce",
+          "natalni_karta": "pruvodce",
+          "astrocartography": "pruvodce",
+          "partnerska_detail": "pruvodce",
+          "synastry": "pruvodce",
+          "compatibility": "pruvodce",
+          "mentor": "pruvodce",
+          "hvezdny_mentor": "pruvodce",
+          "mentor_unlimited": "pruvodce",
+          "journal_insights": "pruvodce",
+          "premium_membership": "pruvodce",
+          "rocni_horoskop_2026": "pruvodce",
+          "annual_horoscope": "pruvodce",
+          "rocni_horoskop": "pruvodce",
+          "osobni_mapa_2026": "pruvodce",
+          "personal_map": "pruvodce",
+          "zodiac_signs": "pruvodce"
+        },
+        "pricingPage": {
+          "monthly": {
+            "pruvodce": "pruvodce"
+          }
+        },
+        "plans": [
+          {
+            "id": "poutnik",
+            "name": "Poutník (Základ)",
+            "planType": "free",
+            "priceMinor": 0,
+            "priceCzk": 0,
+            "priceLabel": "0 Kč",
+            "interval": null,
+            "billingInterval": "free",
+            "trialDays": 0,
+            "checkoutEnabled": false,
+            "description": "Základní přístup - Denní horoskop, Tarot 1x denně, Křišťálová koule 3x denně"
+          },
+          {
+            "id": "pruvodce",
+            "name": "Členství Mystické Hvězdy",
+            "planType": "premium_monthly",
+            "priceMinor": 19900,
+            "priceCzk": 199,
+            "priceLabel": "199 Kč",
+            "interval": "month",
+            "billingInterval": "monthly",
+            "trialDays": 7,
+            "checkoutEnabled": true,
+            "description": "Premium přístup - Rozšířené tarotové výklady, Týdenní + měsíční horoskopy, Natální karta s interpretací"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "methods": "Standalone sums all date digits; full numerology reduces day/month/year separately, retaining master numbers.",
+  "differences": [
+    {
+      "date": "1980-01-01",
+      "fullNumerology": 11,
+      "simpleCalculator": 2
+    },
+    {
+      "date": "1980-01-03",
+      "fullNumerology": 4,
+      "simpleCalculator": 22
+    },
+    {
+      "date": "1980-01-10",
+      "fullNumerology": 11,
+      "simpleCalculator": 2
+    },
+    {
+      "date": "1980-01-12",
+      "fullNumerology": 4,
+      "simpleCalculator": 22
+    },
+    {
+      "date": "1980-01-21",
+      "fullNumerology": 4,
+      "simpleCalculator": 22
+    }
+  ]
+}

@@ -1,0 +1,3761 @@
+{
+  "reviewed": "2026-10-14",
+  "candidate": "a6d9f96c",
+  "catalogIdentifiers": 52,
+  "uniquePages": 59,
+  "features": {
+    "relationship_tarot": {
+      "id": "relationship_tarot",
+      "label": "Personal relationship tarot reading",
+      "cluster": "one_time",
+      "primaryPath": "/vztahovy-vyklad.html",
+      "freeValue": "Read the sample without registering.",
+      "premiumValue": "Buy one reading by email without a subscription or account.",
+      "recommendedPlanId": null,
+      "productId": "relationship_tarot",
+      "activationStep": null
+    },
+    "account": {
+      "id": "account",
+      "label": "Account",
+      "cluster": "activation",
+      "primaryPath": "/prihlaseni.html",
+      "freeValue": "Create a free account without a card.",
+      "premiumValue": "Account context keeps paid checkout and saved readings connected.",
+      "recommendedPlanId": null,
+      "productId": null,
+      "activationStep": "signup"
+    },
+    "daily_guidance": {
+      "id": "daily_guidance",
+      "label": "Daily guidance",
+      "cluster": "horoscopes",
+      "primaryPath": "/horoskopy.html",
+      "freeValue": "Open today's horoscope and one concrete next step.",
+      "premiumValue": "Unlock full daily, weekly and monthly guidance with history.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "horoskopy": {
+      "id": "horoskopy",
+      "label": "Horoscopes",
+      "cluster": "horoscopes",
+      "primaryPath": "/horoskopy.html",
+      "freeValue": "Read the daily horoscope hub.",
+      "premiumValue": "Unlock deeper periods and personal continuity.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "weekly_horoscope": {
+      "id": "weekly_horoscope",
+      "label": "Weekly horoscope",
+      "cluster": "horoscopes",
+      "primaryPath": "/tydenni-horoskop.html",
+      "freeValue": "Preview the weekly direction.",
+      "premiumValue": "Unlock week-level timing and context.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "monthly_horoscope": {
+      "id": "monthly_horoscope",
+      "label": "Monthly horoscope",
+      "cluster": "horoscopes",
+      "primaryPath": "/mesicni-horoskop.html",
+      "freeValue": "Preview the month theme.",
+      "premiumValue": "Unlock month-level planning and context.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "lunar_calendar": {
+      "id": "lunar_calendar",
+      "label": "Lunar calendar",
+      "cluster": "rituals",
+      "primaryPath": "/lunace.html",
+      "freeValue": "Check today's lunar phase.",
+      "premiumValue": "Turn lunar timing into a saved ritual.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "rituals": {
+      "id": "rituals",
+      "label": "Rituals",
+      "cluster": "rituals",
+      "primaryPath": "/lunace.html",
+      "freeValue": "Use a simple lunar practice.",
+      "premiumValue": "Unlock deeper ritual guidance and return prompts.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "ritual_memory": {
+      "id": "ritual_memory",
+      "label": "Ritual memory",
+      "cluster": "profile",
+      "primaryPath": "/profil.html#ritual-memory-card",
+      "freeValue": "See recent readings and reflection prompts.",
+      "premiumValue": "Connect recurring themes across readings and rituals.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "profile_history": {
+      "id": "profile_history",
+      "label": "Profile history",
+      "cluster": "profile",
+      "primaryPath": "/profil.html",
+      "freeValue": "Keep readings in one account.",
+      "premiumValue": "Use history as a personalized return loop.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "another_reading": {
+      "id": "another_reading",
+      "label": "Follow-up reading",
+      "cluster": "profile",
+      "primaryPath": "/profil.html",
+      "freeValue": "Continue from the latest reading context.",
+      "premiumValue": "Unlock deeper follow-up interpretation.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "tarot": {
+      "id": "tarot",
+      "label": "Tarot",
+      "cluster": "tarot",
+      "primaryPath": "/tarot.html",
+      "freeValue": "Draw a first card and receive a useful answer.",
+      "premiumValue": "Unlock deeper spreads, context and saved history.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "tarot_yes_no": {
+      "id": "tarot_yes_no",
+      "label": "Tarot yes/no",
+      "cluster": "tarot",
+      "primaryPath": "/tarot-ano-ne.html",
+      "freeValue": "Ask one focused yes/no question and receive an immediate answer.",
+      "premiumValue": "Save the answer, connect it to history and continue into deeper tarot context.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "tarot_love": {
+      "id": "tarot_love",
+      "label": "Love tarot",
+      "cluster": "tarot",
+      "primaryPath": "/tarot-laska.html",
+      "freeValue": "Open a focused relationship reading.",
+      "premiumValue": "Continue into a deeper relationship interpretation and saved context.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "dream_dictionary": {
+      "id": "dream_dictionary",
+      "label": "Dream dictionary",
+      "cluster": "dreams",
+      "primaryPath": "/snar.html",
+      "freeValue": "Look up a dream symbol and understand its common meaning.",
+      "premiumValue": "Continue from the symbol into a more personal interpretation.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "tarot_daily_card_profile_save": {
+      "id": "tarot_daily_card_profile_save",
+      "label": "Daily tarot card save",
+      "cluster": "tarot",
+      "primaryPath": "/tarot-karta-dne.html",
+      "freeValue": "Open the daily card.",
+      "premiumValue": "Save the card and connect it to profile history.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "tarot_multi_card": {
+      "id": "tarot_multi_card",
+      "label": "Multi-card tarot",
+      "cluster": "tarot",
+      "primaryPath": "/tarot.html",
+      "freeValue": "Start with a one-card answer.",
+      "premiumValue": "Unlock multi-card context and next steps.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "tarot_celtic_cross": {
+      "id": "tarot_celtic_cross",
+      "label": "Celtic cross tarot",
+      "cluster": "tarot",
+      "primaryPath": "/tarot-keltsky-kriz.html",
+      "freeValue": "Understand when the Celtic cross is useful.",
+      "premiumValue": "Unlock the full deep spread.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "andelske_karty_hluboky_vhled": {
+      "id": "andelske_karty_hluboky_vhled",
+      "label": "Angel cards",
+      "cluster": "divination",
+      "primaryPath": "/andelske-karty.html",
+      "freeValue": "Draw an angel card.",
+      "premiumValue": "Unlock deeper interpretation and saved context.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "angel_card_deep": {
+      "id": "angel_card_deep",
+      "label": "Angel card deep reading",
+      "cluster": "divination",
+      "primaryPath": "/andelske-karty.html",
+      "freeValue": "Draw an angel card.",
+      "premiumValue": "Unlock the deeper angel card reading.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "daily_angel_card": {
+      "id": "daily_angel_card",
+      "label": "Daily angel card",
+      "cluster": "divination",
+      "primaryPath": "/andelske-karty.html",
+      "freeValue": "Open today's symbol.",
+      "premiumValue": "Connect the daily card to a deeper reading.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "angel_numbers": {
+      "id": "angel_numbers",
+      "label": "Angel numbers",
+      "cluster": "content",
+      "primaryPath": "/andelske-karty.html",
+      "freeValue": "Read the angel number meaning.",
+      "premiumValue": "Connect the symbol to a deeper angel reading.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "kristalova_koule": {
+      "id": "kristalova_koule",
+      "label": "Crystal ball",
+      "cluster": "divination",
+      "primaryPath": "/kristalova-koule.html",
+      "freeValue": "Ask a first symbolic question.",
+      "premiumValue": "Unlock more personal questions and saved context.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "crystal_ball_unlimited": {
+      "id": "crystal_ball_unlimited",
+      "label": "Crystal ball unlimited",
+      "cluster": "divination",
+      "primaryPath": "/kristalova-koule.html",
+      "freeValue": "Ask a limited symbolic question.",
+      "premiumValue": "Unlock more questions and deeper continuity.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "runy_hluboky_vyklad": {
+      "id": "runy_hluboky_vyklad",
+      "label": "Runes deep reading",
+      "cluster": "divination",
+      "primaryPath": "/runy.html",
+      "freeValue": "Draw a rune and take one direction.",
+      "premiumValue": "Unlock deeper rune interpretation and history.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "runes_deep_reading": {
+      "id": "runes_deep_reading",
+      "label": "Runes deep reading alias",
+      "cluster": "divination",
+      "primaryPath": "/runy.html",
+      "freeValue": "Draw a rune.",
+      "premiumValue": "Unlock deeper rune interpretation.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "shamanske_kolo_plne_cteni": {
+      "id": "shamanske_kolo_plne_cteni",
+      "label": "Shamanic wheel full reading",
+      "cluster": "divination",
+      "primaryPath": "/shamansko-kolo.html",
+      "freeValue": "Open the symbolic wheel.",
+      "premiumValue": "Unlock full reading and return prompts.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "medicine_wheel": {
+      "id": "medicine_wheel",
+      "label": "Medicine wheel",
+      "cluster": "divination",
+      "primaryPath": "/shamansko-kolo.html",
+      "freeValue": "Open the symbolic wheel.",
+      "premiumValue": "Unlock full reading and continuity.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "minuly_zivot": {
+      "id": "minuly_zivot",
+      "label": "Past life",
+      "cluster": "divination",
+      "primaryPath": "/minuly-zivot.html",
+      "freeValue": "Open a symbolic archetype story.",
+      "premiumValue": "Unlock deeper reflection and saved context.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "past_life": {
+      "id": "past_life",
+      "label": "Past life alias",
+      "cluster": "divination",
+      "primaryPath": "/minuly-zivot.html",
+      "freeValue": "Open a symbolic archetype story.",
+      "premiumValue": "Unlock deeper reflection.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "numerologie_vyklad": {
+      "id": "numerologie_vyklad",
+      "label": "Numerology reading",
+      "cluster": "numerology",
+      "primaryPath": "/numerologie.html",
+      "freeValue": "Calculate a first number and meaning.",
+      "premiumValue": "Unlock cycles, timing and profile history.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "numerology": {
+      "id": "numerology",
+      "label": "Numerology alias",
+      "cluster": "numerology",
+      "primaryPath": "/numerologie.html",
+      "freeValue": "Calculate a first number.",
+      "premiumValue": "Unlock deeper numerology interpretation.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "natalni_interpretace": {
+      "id": "natalni_interpretace",
+      "label": "Natal chart interpretation",
+      "cluster": "natal",
+      "primaryPath": "/natalni-karta.html",
+      "freeValue": "Generate the basic natal chart.",
+      "premiumValue": "Unlock houses, aspects and interpretation.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "natal_chart": {
+      "id": "natal_chart",
+      "label": "Natal chart",
+      "cluster": "natal",
+      "primaryPath": "/natalni-karta.html",
+      "freeValue": "Generate the basic natal chart.",
+      "premiumValue": "Unlock deeper interpretation.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "natalni_karta": {
+      "id": "natalni_karta",
+      "label": "Natal chart product link",
+      "cluster": "natal",
+      "primaryPath": "/natalni-karta.html",
+      "freeValue": "Generate the basic natal chart.",
+      "premiumValue": "Unlock full interpretation.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "astrocartography": {
+      "id": "astrocartography",
+      "label": "Astrocartography",
+      "cluster": "natal",
+      "primaryPath": "/astro-mapa.html",
+      "freeValue": "Preview places and map context.",
+      "premiumValue": "Unlock advanced location interpretation.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "partnerska_detail": {
+      "id": "partnerska_detail",
+      "label": "Relationship compatibility",
+      "cluster": "relationships",
+      "primaryPath": "/partnerska-shoda.html",
+      "freeValue": "Calculate a first compatibility score.",
+      "premiumValue": "Unlock deeper dynamics and communication advice.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "synastry": {
+      "id": "synastry",
+      "label": "Synastry",
+      "cluster": "relationships",
+      "primaryPath": "/partnerska-shoda.html",
+      "freeValue": "Calculate a first compatibility score.",
+      "premiumValue": "Unlock deeper relationship interpretation.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "compatibility": {
+      "id": "compatibility",
+      "label": "Compatibility content",
+      "cluster": "relationships",
+      "primaryPath": "/partnerska-shoda.html",
+      "freeValue": "Read compatibility context.",
+      "premiumValue": "Run a personal relationship analysis.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "mentor": {
+      "id": "mentor",
+      "label": "Star guide",
+      "cluster": "mentor",
+      "primaryPath": "/mentor.html",
+      "freeValue": "Ask a limited first question.",
+      "premiumValue": "Unlock ongoing guidance and history.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "hvezdny_mentor": {
+      "id": "hvezdny_mentor",
+      "label": "Star guide alias",
+      "cluster": "mentor",
+      "primaryPath": "/mentor.html",
+      "freeValue": "Ask a limited first question.",
+      "premiumValue": "Unlock ongoing guidance.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "mentor_unlimited": {
+      "id": "mentor_unlimited",
+      "label": "Mentor unlimited",
+      "cluster": "mentor",
+      "primaryPath": "/mentor.html",
+      "freeValue": "Ask a limited first question.",
+      "premiumValue": "Unlock unlimited guidance.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "journal_insights": {
+      "id": "journal_insights",
+      "label": "Journal insights",
+      "cluster": "profile",
+      "primaryPath": "/profil.html",
+      "freeValue": "Save a reflection.",
+      "premiumValue": "Find recurring themes across journal and readings.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "premium_membership": {
+      "id": "premium_membership",
+      "label": "Premium membership",
+      "cluster": "pricing",
+      "primaryPath": "/cenik.html",
+      "freeValue": "Compare free and paid value.",
+      "premiumValue": "Unlock the recurring paid plan.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    },
+    "subscription_management": {
+      "id": "subscription_management",
+      "label": "Subscription management",
+      "cluster": "pricing",
+      "primaryPath": "/profil.html#tab-settings",
+      "freeValue": "Understand current plan state.",
+      "premiumValue": "Manage active subscription safely.",
+      "recommendedPlanId": null,
+      "productId": null,
+      "activationStep": "first_value"
+    },
+    "billing": {
+      "id": "billing",
+      "label": "Billing",
+      "cluster": "pricing",
+      "primaryPath": "/profil.html#tab-settings",
+      "freeValue": "Understand billing state.",
+      "premiumValue": "Manage subscription safely.",
+      "recommendedPlanId": null,
+      "productId": null,
+      "activationStep": "first_value"
+    },
+    "rocni_horoskop_2026": {
+      "id": "rocni_horoskop_2026",
+      "label": "Annual horoscope 2026 (retired)",
+      "cluster": "one_time",
+      "primaryPath": "/osobni-mapa.html",
+      "freeValue": "Legacy attribution redirects to Personal Map.",
+      "premiumValue": "Continue with Personal Map or Premium.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "osobni_mapa_2026",
+      "activationStep": "first_value"
+    },
+    "annual_horoscope": {
+      "id": "annual_horoscope",
+      "label": "Annual horoscope (retired)",
+      "cluster": "one_time",
+      "primaryPath": "/osobni-mapa.html",
+      "freeValue": "Legacy attribution redirects to Personal Map.",
+      "premiumValue": "Continue with Personal Map or Premium.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "osobni_mapa_2026",
+      "activationStep": "first_value"
+    },
+    "rocni_horoskop": {
+      "id": "rocni_horoskop",
+      "label": "Annual horoscope alias (retired)",
+      "cluster": "one_time",
+      "primaryPath": "/osobni-mapa.html",
+      "freeValue": "Legacy attribution redirects to Personal Map.",
+      "premiumValue": "Continue with Personal Map or Premium.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "osobni_mapa_2026",
+      "activationStep": "first_value"
+    },
+    "osobni_mapa_2026": {
+      "id": "osobni_mapa_2026",
+      "label": "Personal map for the next 12 months",
+      "cluster": "one_time",
+      "primaryPath": "/osobni-mapa.html",
+      "freeValue": "Preview the personal map.",
+      "premiumValue": "Buy the personal map or bridge into Premium.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "osobni_mapa_2026",
+      "activationStep": "first_value"
+    },
+    "personal_map": {
+      "id": "personal_map",
+      "label": "Personal map",
+      "cluster": "one_time",
+      "primaryPath": "/osobni-mapa.html",
+      "freeValue": "Preview the personal map.",
+      "premiumValue": "Buy the personal map or bridge into Premium.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "osobni_mapa_2026",
+      "activationStep": "first_value"
+    },
+    "zodiac_signs": {
+      "id": "zodiac_signs",
+      "label": "Zodiac signs",
+      "cluster": "content",
+      "primaryPath": "/horoskop/",
+      "freeValue": "Read sign context.",
+      "premiumValue": "Continue into a personal horoscope or natal chart.",
+      "recommendedPlanId": "pruvodce",
+      "productId": "premium_membership",
+      "activationStep": "first_value"
+    }
+  },
+  "pages": [
+    {
+      "path": "/vztahovy-vyklad.html",
+      "exists": true,
+      "title": "Osobní vztahový výklad · 149 Kč jednorázově | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-reading-order",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "/css/pages/vztahovy-vyklad.css?v=20261012-illustrated-reading",
+        "/css/atlas-web.css?v=1"
+      ],
+      "scripts": [
+        "/js/dist/analytics-init.js",
+        "/js/dist/analytics.js?v=6",
+        "/js/dist/vztahovy-vyklad.js?v=20261013-seo"
+      ],
+      "h1": [
+        "Některé otázkypotřebují víc prostoru."
+      ],
+      "images": [
+        {
+          "src": "/img/logo-3d.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/tarot-v2/tarot_spravedlnost.webp",
+          "exists": true,
+          "alt": "Spravedlnost"
+        },
+        {
+          "src": "/img/tarot-v2/tarot_mirnost.webp",
+          "exists": true,
+          "alt": "Mírnost"
+        },
+        {
+          "src": "/img/tarot-v2/tarot_milenci.webp",
+          "exists": true,
+          "alt": "Milenci"
+        },
+        {
+          "src": "/img/tarot-v2/tarot_milenci.webp",
+          "exists": true,
+          "alt": "Karta Milenci"
+        },
+        {
+          "src": "/img/tarot-v2/tarot_spravedlnost.webp",
+          "exists": true,
+          "alt": "Karta Spravedlnost"
+        },
+        {
+          "src": "/img/tarot-v2/tarot_mirnost.webp",
+          "exists": true,
+          "alt": "Karta Mírnost"
+        },
+        {
+          "src": "/img/logo-3d.webp",
+          "exists": true,
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "path": "/prihlaseni.html",
+      "exists": true,
+      "title": "Přihlášení | Mystická Hvězda",
+      "bodyClass": "page-login atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/prihlaseni.css?v=20261014-detail-polish",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "/js/dist/analytics-init.js",
+        "js/dist/analytics.js?v=5",
+        "js/dist/growth-loop-client.js?v=1",
+        "js/dist/prihlaseni.js?v=20261003-single-membership",
+        "js/dist/core.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/main.js?v=10"
+      ],
+      "h1": [
+        "Vítejte zpět"
+      ],
+      "images": []
+    },
+    {
+      "path": "/horoskopy.html",
+      "exists": true,
+      "title": "Horoskop na dnes pro 12 znamení | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "css/site.min.css?v=1",
+        "css/pages/horoskopy.css?v=20261009-zodiac-atlas",
+        "css/pages/horoscope-cluster.css",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/analytics-init.js",
+        "js/dist/freemium-horoskopy.js",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/landing-pages-copy-fixes.js?v=6",
+        "js/dist/moon-phase.js",
+        "js/dist/favorites-helper.js",
+        "js/dist/horoscope.js?v=20260929-horoscope-v2",
+        "js/dist/horoscope-share.js",
+        "/js/dist/close-banner.js",
+        "/js/dist/register-sw.js",
+        "js/dist/share-result.js?v=1",
+        "js/dist/exit-intent.js",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/main.js?v=10",
+        "js/dist/newsletter-popup.js?v=20260809-activation-guard",
+        "js/dist/retention.js?v=6",
+        "js/dist/personalization.js?v=5",
+        "js/dist/horoscope-subscribe.js",
+        "js/dist/push-notifications.js",
+        "js/dist/pwa-install.js"
+      ],
+      "h1": [
+        "\n\n                        Denní Horoskop\n\n                    "
+      ],
+      "images": []
+    },
+    {
+      "path": "/tydenni-horoskop.html",
+      "exists": true,
+      "title": "Týdenní horoskop | Výhled na vztahy, práci a energii",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/horoscope-cluster.css",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "/js/dist/analytics-init.js",
+        "js/dist/core.js?v=20261003-single-membership",
+        "js/dist/main.js?v=10"
+      ],
+      "h1": [
+        "Týdenní horoskop ukáže, co má tento týden prioritu"
+      ],
+      "images": [
+        {
+          "src": "/img/atlas/tools-v1/02-mesicni-krajina.webp",
+          "exists": true,
+          "alt": "Symbol zvěrokruhu pro týdenní horoskop"
+        }
+      ]
+    },
+    {
+      "path": "/mesicni-horoskop.html",
+      "exists": true,
+      "title": "Měsíční horoskop | Astrologický výhled na celý měsíc",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/horoscope-cluster.css",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "/js/dist/analytics-init.js",
+        "js/dist/core.js?v=20261003-single-membership",
+        "js/dist/main.js?v=10"
+      ],
+      "h1": [
+        "Měsíční horoskop pomůže číst delší vzorec"
+      ],
+      "images": [
+        {
+          "src": "/img/atlas/tools-v1/02-mesicni-krajina.webp",
+          "exists": true,
+          "alt": "Symbol zvěrokruhu pro měsíční horoskop"
+        }
+      ]
+    },
+    {
+      "path": "/lunace.html",
+      "exists": true,
+      "title": "Lunární fáze dnes | Energie Měsíce | Mystická Hvězda",
+      "bodyClass": "atlas-page page-lunace",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/lunace.css?v=2",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-tools.css?v=1",
+        "/css/atlas-art.css?v=1"
+      ],
+      "scripts": [
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/analytics-init.js",
+        "js/dist/lunace-countdown.js",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/landing-pages-copy-fixes.js?v=3",
+        "js/dist/share-result.js?v=1",
+        "js/dist/exit-intent.js",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/retention.js?v=6",
+        "js/dist/personalization.js?v=5",
+        "js/dist/main.js?v=10",
+        "js/dist/lunace.js",
+        "js/dist/newsletter-popup.js?v=20260706-sign-step",
+        "js/dist/push-notifications.js"
+      ],
+      "h1": [
+        "Dnešní Lunární Fáze"
+      ],
+      "images": []
+    },
+    {
+      "path": "/profil.html",
+      "exists": true,
+      "title": "Můj profil | Mystická Hvězda",
+      "bodyClass": "page-profile atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/profil.css",
+        "css/profile-refresh.css?v=20261014-detail-polish",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "https://cdn.jsdelivr.net/npm/lucide@1.13.0/dist/umd/lucide.min.js",
+        "js/dist/growth-loop-client.js?v=1",
+        "/js/dist/profile/dashboard.js?v=20261003-single-membership",
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/register-sw.js",
+        "/js/dist/analytics-init.js",
+        "js/dist/analytics.js?v=6",
+        "js/dist/core.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/retention.js?v=6",
+        "js/dist/personalization.js?v=5",
+        "js/dist/main.js?v=10",
+        "js/dist/lucide-init.js",
+        "js/dist/nav-failsafe.js",
+        "js/dist/push-notifications.js",
+        "js/dist/pwa-install.js"
+      ],
+      "h1": [
+        "Můj profil"
+      ],
+      "images": []
+    },
+    {
+      "path": "/profil.html",
+      "exists": true,
+      "title": "Můj profil | Mystická Hvězda",
+      "bodyClass": "page-profile atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/profil.css",
+        "css/profile-refresh.css?v=20261014-detail-polish",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "https://cdn.jsdelivr.net/npm/lucide@1.13.0/dist/umd/lucide.min.js",
+        "js/dist/growth-loop-client.js?v=1",
+        "/js/dist/profile/dashboard.js?v=20261003-single-membership",
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/register-sw.js",
+        "/js/dist/analytics-init.js",
+        "js/dist/analytics.js?v=6",
+        "js/dist/core.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/retention.js?v=6",
+        "js/dist/personalization.js?v=5",
+        "js/dist/main.js?v=10",
+        "js/dist/lucide-init.js",
+        "js/dist/nav-failsafe.js",
+        "js/dist/push-notifications.js",
+        "js/dist/pwa-install.js"
+      ],
+      "h1": [
+        "Můj profil"
+      ],
+      "images": []
+    },
+    {
+      "path": "/tarot.html",
+      "exists": true,
+      "title": "Tarot online: výklad z 78 karet | Mystická Hvězda",
+      "bodyClass": "page-tarot atlas-page",
+      "atlas": true,
+      "styles": [
+        "css/site.min.css?v=1",
+        "css/pages/tarot.css?v=4",
+        "/css/pages/relationship-tarot-bridge.css?v=2",
+        "/css/atlas-web.css?v=1"
+      ],
+      "scripts": [
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/analytics-init.js",
+        "/js/dist/analytics.js?v=8",
+        "/js/dist/close-banner.js",
+        "js/dist/freemium-tarot.js",
+        "js/dist/favorites-helper.js",
+        "js/dist/tarot.js?v=20261003-single-membership",
+        "/js/dist/register-sw.js",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/tool-pages-copy-fixes.js?v=3",
+        "js/dist/share-result.js?v=2",
+        "js/dist/exit-intent.js",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/retention.js?v=6",
+        "js/dist/personalization.js?v=5",
+        "js/dist/main.js?v=10",
+        "js/dist/newsletter-popup.js?v=20260706-sign-step",
+        "js/dist/push-notifications.js",
+        "js/dist/pwa-install.js",
+        "/js/dist/relationship-tarot-bridge.js?v=20261013-seo"
+      ],
+      "h1": [
+        "\n\n                        Tarot Online\n\n                    "
+      ],
+      "images": [
+        {
+          "src": "/img/tarot-v2/tarot_card_back.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/tarot-v2/tarot_card_back.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/tarot-v2/tarot_card_back.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/tarot-v2/tarot_card_back.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/tarot-v2/tarot_card_back.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/tarot-v2/tarot_card_back.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/tarot-v2/tarot_card_back.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/tarot-v2/tarot_card_back.webp",
+          "exists": true,
+          "alt": "Rub tarotové karty"
+        },
+        {
+          "src": "img/tarot-v2/tarot_card_back.webp",
+          "exists": true,
+          "alt": "Rub tarotové karty"
+        },
+        {
+          "src": "img/tarot-v2/tarot_card_back.webp",
+          "exists": true,
+          "alt": "Rub tarotové karty"
+        },
+        {
+          "src": "img/tarot-v2/tarot_card_back.webp",
+          "exists": true,
+          "alt": "Rub tarotové karty"
+        },
+        {
+          "src": "/img/tarot-v2/tarot_milenci.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/tarot-v2/tarot_mirnost.webp",
+          "exists": true,
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "path": "/tarot-ano-ne.html",
+      "exists": true,
+      "title": "Tarot ano/ne zdarma: výklad z jedné karty",
+      "bodyClass": "page-tarot-yes-no atlas-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=12",
+        "css/pages/tarot-ano-ne.css?v=13",
+        "/css/pages/relationship-tarot-bridge.css?v=2",
+        "/css/atlas-web.css?v=1"
+      ],
+      "scripts": [
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/analytics-init.js",
+        "/js/dist/analytics.js?v=8",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=4",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/exit-intent.js",
+        "js/dist/main.js?v=10",
+        "js/dist/tarot-ano-ne.js?v=18",
+        "/js/dist/relationship-tarot-bridge.js?v=20261013-seo"
+      ],
+      "h1": [
+        "Tarot ano, nebo ne?"
+      ],
+      "images": [
+        {
+          "src": "/img/tarot-v2/tarot_milenci.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/tarot-v2/tarot_mirnost.webp",
+          "exists": true,
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "path": "/tarot-laska.html",
+      "exists": true,
+      "title": "Tarot na lásku zdarma | Výklad vztahu online | Mystická Hvězda",
+      "bodyClass": "page-tarot-love atlas-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/tarot-laska.css?v=3",
+        "/css/pages/relationship-tarot-bridge.css?v=2",
+        "/css/atlas-web.css?v=1"
+      ],
+      "scripts": [
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/analytics-init.js",
+        "/js/dist/analytics.js?v=8",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=4",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/exit-intent.js",
+        "js/dist/main.js?v=10",
+        "/js/dist/relationship-tarot-bridge.js?v=20261013-seo"
+      ],
+      "h1": [
+        "Tarot na lásku pro otázky srdce"
+      ],
+      "images": [
+        {
+          "src": "img/tarot-v2/tarot_milenci.webp",
+          "exists": true,
+          "alt": "Tarotová karta Milenci"
+        },
+        {
+          "src": "img/tarot-v2/tarot_dvojka_poharu.webp",
+          "exists": true,
+          "alt": "Tarotová karta Dvojka pohárů"
+        },
+        {
+          "src": "img/tarot-v2/tarot_cisarovna.webp",
+          "exists": true,
+          "alt": "Tarotová karta Císařovna"
+        },
+        {
+          "src": "/img/tarot-v2/tarot_milenci.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/tarot-v2/tarot_mirnost.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/atlas/atlas-mutuality-v1.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/atlas/atlas-bridge-v1.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/atlas/atlas-shared-path-v1.webp",
+          "exists": true,
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "path": "/snar.html",
+      "exists": true,
+      "title": "Snář: Výklad Snů & Lexikon Snových Symbolů | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-content-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/snar.css",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-content.css?v=1"
+      ],
+      "scripts": [
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/analytics-init.js",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=4",
+        "js/dist/share-result.js?v=1",
+        "js/dist/exit-intent.js",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/snar.js?v=7",
+        "js/dist/main.js?v=10",
+        "js/dist/snar-inline.js"
+      ],
+      "h1": [
+        "\n                            Lexikon Snů\n                        "
+      ],
+      "images": []
+    },
+    {
+      "path": "/tarot-karta-dne.html",
+      "exists": true,
+      "title": "Tarot karta dne zdarma: dnešní výklad online | Mystická Hvězda",
+      "bodyClass": "page-tarot-daily",
+      "atlas": false,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=12",
+        "css/pages/tarot-karta-dne.css",
+        "/css/tarot-atlas.css?v=1"
+      ],
+      "scripts": [
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/analytics-init.js",
+        "/js/dist/analytics.js?v=8",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=4",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/share-image-canvas.js",
+        "js/dist/tarot-karta-dne.js",
+        "js/dist/horoscope-subscribe.js?v=2",
+        "js/dist/exit-intent.js",
+        "js/dist/main.js?v=10"
+      ],
+      "h1": [
+        "Tarot karta dne pro dnešní směr"
+      ],
+      "images": [
+        {
+          "src": "img/tarot-v2/tarot_hvezda.webp",
+          "exists": true,
+          "alt": "Tarotová karta Hvězda"
+        },
+        {
+          "src": "img/tarot-v2/tarot_card_back.webp",
+          "exists": true,
+          "alt": "Zadní strana tarotové karty"
+        },
+        {
+          "src": "img/tarot-v2/tarot_slunce.webp",
+          "exists": true,
+          "alt": "Tarotová karta Slunce"
+        },
+        {
+          "src": "img/tarot-v2/tarot_card_back.webp",
+          "exists": true,
+          "alt": "Zadní strana tarotové karty"
+        }
+      ]
+    },
+    {
+      "path": "/tarot-keltsky-kriz.html",
+      "exists": true,
+      "title": "Keltský kříž tarot online | členský výklad 10 karet",
+      "bodyClass": "atlas-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/tarot-keltsky-kriz.css",
+        "/css/atlas-web.css?v=1"
+      ],
+      "scripts": [
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/analytics-init.js",
+        "/js/dist/analytics.js?v=8",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=4",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/exit-intent.js",
+        "js/dist/main.js?v=10"
+      ],
+      "h1": [
+        "Keltský kříž tarot pro otázky, které mají víc vrstev"
+      ],
+      "images": [
+        {
+          "src": "img/tarot-v2/tarot_spravedlnost.webp",
+          "exists": true,
+          "alt": "Tarotová karta Spravedlnost"
+        },
+        {
+          "src": "img/tarot-v2/tarot_soud.webp",
+          "exists": true,
+          "alt": "Tarotová karta Soud"
+        },
+        {
+          "src": "img/tarot-v2/tarot_kolo_stesti.webp",
+          "exists": true,
+          "alt": "Tarotová karta Kolo štěstí"
+        }
+      ]
+    },
+    {
+      "path": "/andelske-karty.html",
+      "exists": true,
+      "title": "Andělská karta dne zdarma – poselství pro tvůj dnešek",
+      "bodyClass": "page-angel-cards atlas-page atlas-angel-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/andelske-karty.css?v=6",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-angels.css?v=1"
+      ],
+      "scripts": [
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/analytics-init.js",
+        "/js/dist/analytics.js?v=8",
+        "js/dist/favorites-helper.js",
+        "js/dist/share-image-canvas.js",
+        "js/dist/angel-cards.js?v=11",
+        "/js/dist/register-sw.js",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=9",
+        "js/dist/landing-pages-copy-fixes.js?v=7",
+        "js/dist/share-result.js?v=1",
+        "js/dist/exit-intent.js",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/main.js?v=10",
+        "js/dist/newsletter-popup.js?v=20260706-sign-step"
+      ],
+      "h1": [
+        "\n\n                    Andělská karta dne\n\n                "
+      ],
+      "images": []
+    },
+    {
+      "path": "/kristalova-koule.html",
+      "exists": true,
+      "title": "Křišťálová koule ano ne – odpověď na jednu otázku",
+      "bodyClass": "page-crystal-ball atlas-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/kristalova-koule.css?v=2",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-tools.css?v=1",
+        "/css/atlas-art.css?v=1"
+      ],
+      "scripts": [
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "js/dist/freemium-koule.js?v=2",
+        "js/dist/favorites-helper.js",
+        "js/dist/crystal-ball.js?v=20261003-single-membership",
+        "/js/dist/register-sw.js",
+        "/js/dist/analytics-init.js",
+        "/js/dist/close-banner.js",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/landing-pages-copy-fixes.js?v=7",
+        "js/dist/share-result.js?v=1",
+        "js/dist/exit-intent.js",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/main.js?v=10"
+      ],
+      "h1": [
+        "\n\n                    Křišťálová koule ano/ne: hlas intuice\n\n                "
+      ],
+      "images": [
+        {
+          "src": "/img/atlas/tools-v1/05-kristalova-koule.webp",
+          "exists": true,
+          "alt": "Křišťálová koule u okna ve světle svíčky"
+        }
+      ]
+    },
+    {
+      "path": "/runy.html",
+      "exists": true,
+      "title": "Runy online: denní runa zdarma | Mystická Hvězda",
+      "bodyClass": "page-runes atlas-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/runy.css?v=3",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-tools.css?v=1",
+        "/css/atlas-art.css?v=1"
+      ],
+      "scripts": [
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/analytics-init.js",
+        "/js/dist/close-banner.js",
+        "js/dist/freemium-runy.js?v=2",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/landing-pages-copy-fixes.js?v=6",
+        "js/dist/share-result.js?v=1",
+        "js/dist/exit-intent.js",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/main.js?v=10",
+        "js/dist/share-image-canvas.js",
+        "js/dist/runes.js?v=2",
+        "js/dist/favorites-helper.js"
+      ],
+      "h1": [
+        "Věštění z Run"
+      ],
+      "images": [
+        {
+          "src": "/img/atlas/social-v1/07-volavka.webp",
+          "exists": true,
+          "alt": "Volavka u klidného jezera"
+        }
+      ]
+    },
+    {
+      "path": "/shamansko-kolo.html",
+      "exists": true,
+      "title": "Šamanské kolo | Totemový výklad | Mystická Hvězda",
+      "bodyClass": "page-shaman-wheel atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "css/style.v2.min.css?v=11",
+        "css/pages/shamansko-kolo.css?v=2",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1",
+        "/css/atlas-art.css?v=1"
+      ],
+      "scripts": [
+        "/js/dist/analytics-init.js",
+        "js/dist/api-config.js?v=5",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=4",
+        "js/dist/nav-failsafe.js",
+        "js/dist/favorites-helper.js",
+        "js/dist/shamansko-kolo.js"
+      ],
+      "h1": [
+        "\n                    Šamanské\n                    Kolo\n                "
+      ],
+      "images": []
+    },
+    {
+      "path": "/minuly-zivot.html",
+      "exists": true,
+      "title": "Minulý Život — Akashické Záznamy | Mystická Hvězda",
+      "bodyClass": "page-past-life atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "css/style.v2.min.css?v=11",
+        "css/pages/minuly-zivot.css?v=3",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1",
+        "/css/atlas-art.css?v=1"
+      ],
+      "scripts": [
+        "/js/dist/analytics-init.js",
+        "js/dist/api-config.js?v=5",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/landing-pages-copy-fixes.js?v=3",
+        "js/dist/nav-failsafe.js",
+        "js/dist/favorites-helper.js",
+        "js/dist/share-image-canvas.js",
+        "js/dist/minuly-zivot.js?v=2"
+      ],
+      "h1": [
+        "\n                    Akashické ZáznamyMinulého Života\n                "
+      ],
+      "images": []
+    },
+    {
+      "path": "/numerologie.html",
+      "exists": true,
+      "title": "Numerologie online: životní číslo a osud | Mystická Hvězda",
+      "bodyClass": "page-numerology atlas-page",
+      "atlas": true,
+      "styles": [
+        "css/site.min.css?v=1",
+        "css/pages/numerologie.css?v=4",
+        "css/pages/numerology-cluster.css",
+        "css/page-extras.css",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-tools.css?v=1",
+        "/css/atlas-art.css?v=1"
+      ],
+      "scripts": [
+        "js/dist/premium-gates.js?v=20261003-single-membership",
+        "js/dist/share-image-canvas.js",
+        "js/dist/numerology.js?v=5",
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/analytics-init.js",
+        "js/dist/favorites-helper.js",
+        "/js/dist/register-sw.js",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/tool-pages-copy-fixes.js?v=3",
+        "js/dist/share-result.js?v=1",
+        "js/dist/exit-intent.js",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/main.js?v=10"
+      ],
+      "h1": [
+        "\n\n                    Numerologie\n\n                "
+      ],
+      "images": [
+        {
+          "src": "/img/atlas/social-v1/01-dva-hrnky.webp",
+          "exists": true,
+          "alt": "Dva hrnky na terase v ranním světle"
+        }
+      ]
+    },
+    {
+      "path": "/natalni-karta.html",
+      "exists": true,
+      "title": "Natální karta online: výklad narození | Mystická Hvězda",
+      "bodyClass": "page-natal atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "css/site.min.css?v=1",
+        "css/pages/natalni-karta.css?v=2",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1",
+        "/css/atlas-art.css?v=1"
+      ],
+      "scripts": [
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/analytics-init.js",
+        "js/dist/favorites-helper.js",
+        "js/dist/three.min.js",
+        "js/dist/natal-3d.js?v=1",
+        "js/dist/natal-chart.js?v=7",
+        "/js/dist/register-sw.js",
+        "js/dist/api-config.js?v=5",
+        "js/dist/birth-location-suggestions.js",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/landing-pages-copy-fixes.js?v=6",
+        "js/dist/share-result.js?v=1",
+        "js/dist/exit-intent.js",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/main.js?v=10",
+        "js/dist/newsletter-popup.js?v=20260706-sign-step"
+      ],
+      "h1": [
+        "\n\n                    Natální karta: klíč k sebepoznání\n\n                "
+      ],
+      "images": []
+    },
+    {
+      "path": "/astro-mapa.html",
+      "exists": true,
+      "title": "Astro mapa míst | Astrokartografie | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/astro-mapa.css",
+        "css/page-extras.css",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/analytics-init.js",
+        "js/dist/favorites-helper.js",
+        "js/dist/astro-map.js?v=20261003-single-membership",
+        "/js/dist/register-sw.js",
+        "js/dist/api-config.js?v=5",
+        "js/dist/birth-location-suggestions.js",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=4",
+        "js/dist/share-result.js?v=1",
+        "js/dist/exit-intent.js",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/main.js?v=10"
+      ],
+      "h1": [
+        "\n\n                    Astrokartografie\n\n                "
+      ],
+      "images": [
+        {
+          "src": "img/world-map-flat.webp",
+          "exists": true,
+          "alt": "Astrokartografická mapa světa"
+        },
+        {
+          "src": "/img/atlas/tools-v1/01-astrolab.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/atlas/tools-v1/06-lesni-kruh.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/atlas/tools-v1/02-mesicni-krajina.webp",
+          "exists": true,
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "path": "/partnerska-shoda.html",
+      "exists": true,
+      "title": "Partnerská shoda znamení online | Mystická Hvězda",
+      "bodyClass": "page-compatibility atlas-page atlas-astro-page",
+      "atlas": true,
+      "styles": [
+        "css/site.min.css?v=1",
+        "css/pages/partnerska-shoda.css?v=3",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-astro.css?v=1"
+      ],
+      "scripts": [
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/analytics-init.js",
+        "js/dist/favorites-helper.js",
+        "js/dist/share-image-canvas.js",
+        "js/dist/synastry.js?v=4",
+        "/js/dist/register-sw.js",
+        "js/dist/api-config.js?v=5",
+        "js/dist/birth-location-suggestions.js",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/tool-pages-copy-fixes.js?v=3",
+        "js/dist/share-result.js?v=1",
+        "js/dist/exit-intent.js",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/main.js?v=10"
+      ],
+      "h1": [
+        "\n\n                    Partnerská Shoda\n\n                "
+      ],
+      "images": []
+    },
+    {
+      "path": "/mentor.html",
+      "exists": true,
+      "title": "Hvězdný průvodce | Osobní otázky a výklad | Mystická Hvězda",
+      "bodyClass": "page-mentor atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/mentor.css?v=4",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/analytics-init.js",
+        "/js/dist/close-banner.js",
+        "js/dist/freemium-mentor.js",
+        "js/dist/mentor.js?v=3",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/tool-pages-copy-fixes.js?v=3",
+        "js/dist/share-result.js?v=1",
+        "js/dist/exit-intent.js",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/main.js?v=11"
+      ],
+      "h1": [
+        "Hvězdný Průvodce"
+      ],
+      "images": []
+    },
+    {
+      "path": "/cenik.html",
+      "exists": true,
+      "title": "Členství za 199 Kč měsíčně | Mystická Hvězda",
+      "bodyClass": "page-pricing atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "css/site.min.css?v=1",
+        "css/pages/cenik.css?v=20261003-membership-design",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1",
+        "/css/pages/membership-card.css?v=20261003-1"
+      ],
+      "scripts": [
+        "https://js.stripe.com/v3/",
+        "https://cdn.jsdelivr.net/npm/lucide@1.13.0/dist/umd/lucide.min.js",
+        "/js/dist/analytics-init.js",
+        "js/dist/analytics.js?v=6",
+        "js/dist/api-config.js?v=5",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/templates.js?v=14",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/main.js?v=12",
+        "js/dist/cenik.js?v=20261003-single-membership"
+      ],
+      "h1": [
+        "Jedno členství. Všechny hlubší výklady."
+      ],
+      "images": [
+        {
+          "src": "img/tarot-v2/tarot_hvezda.webp",
+          "exists": true,
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "path": "/profil.html",
+      "exists": true,
+      "title": "Můj profil | Mystická Hvězda",
+      "bodyClass": "page-profile atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/profil.css",
+        "css/profile-refresh.css?v=20261014-detail-polish",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "https://cdn.jsdelivr.net/npm/lucide@1.13.0/dist/umd/lucide.min.js",
+        "js/dist/growth-loop-client.js?v=1",
+        "/js/dist/profile/dashboard.js?v=20261003-single-membership",
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/register-sw.js",
+        "/js/dist/analytics-init.js",
+        "js/dist/analytics.js?v=6",
+        "js/dist/core.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/retention.js?v=6",
+        "js/dist/personalization.js?v=5",
+        "js/dist/main.js?v=10",
+        "js/dist/lucide-init.js",
+        "js/dist/nav-failsafe.js",
+        "js/dist/push-notifications.js",
+        "js/dist/pwa-install.js"
+      ],
+      "h1": [
+        "Můj profil"
+      ],
+      "images": []
+    },
+    {
+      "path": "/osobni-mapa.html",
+      "exists": true,
+      "title": "Osobní mapa na příštích 12 měsíců | Mystická Hvězda",
+      "bodyClass": "page-personal-map atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "css/site.min.css?v=1",
+        "css/pages/osobni-mapa.css?v=20261012-atlas-map",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "https://js.stripe.com/v3/",
+        "https://cdn.jsdelivr.net/npm/lucide@1.13.0/dist/umd/lucide.min.js",
+        "/js/dist/analytics-init.js",
+        "js/dist/analytics.js?v=6",
+        "js/dist/api-config.js?v=5",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/templates.js?v=14",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/main.js?v=12",
+        "js/dist/osobni-mapa.js?v=5"
+      ],
+      "h1": [
+        "Osobní mapa na 12 měsíců"
+      ],
+      "images": [
+        {
+          "src": "img/personal-map/preview-cover-arch-v2.webp",
+          "exists": true,
+          "alt": "Modelová obálka PDF s malovaným kamenným obloukem, krajinou a kompasem"
+        },
+        {
+          "src": "img/personal-map/preview-cover-arch-v2.webp",
+          "exists": true,
+          "alt": "Modelová obálka PDF Osobní mapa na 12 měsíců"
+        },
+        {
+          "src": "img/personal-map/preview-signature-atlas.webp",
+          "exists": true,
+          "alt": "Stránka s osobním hvězdným podpisem"
+        },
+        {
+          "src": "img/personal-map/preview-actions-atlas.webp",
+          "exists": true,
+          "alt": "Stránka s konkrétními kroky pro běžný život"
+        },
+        {
+          "src": "img/personal-map/preview-contact-sheet-arch-v2.webp",
+          "exists": true,
+          "alt": "Přehled všech 20 stran modelového PDF"
+        }
+      ]
+    },
+    {
+      "path": "/horoskop/",
+      "exists": true,
+      "title": "Znamení zvěrokruhu – Vlastnosti, živly a vládci | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-astro-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "../css/style.v2.min.css?v=4",
+        "../css/pages/horoskop-index.css",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-astro.css?v=1"
+      ],
+      "scripts": [
+        "/js/dist/analytics-init.js",
+        "../js/dist/core.js?v=20261003-single-membership",
+        "../js/dist/main.js"
+      ],
+      "h1": [
+        "Znamení Zvěrokruhu"
+      ],
+      "images": []
+    },
+    {
+      "path": "/index.html",
+      "exists": true,
+      "title": "Mystická Hvězda | Tarot zdarma, horoskopy a osobní výklady",
+      "bodyClass": "page-home atlas-home",
+      "atlas": true,
+      "styles": [
+        "/css/home.min.css?v=20261012-personal-map",
+        "/css/home.min.css?v=20261012-personal-map",
+        "/css/pages/tarot-karta-dne.css",
+        "/css/tarot-atlas.css?v=1"
+      ],
+      "scripts": [
+        "/js/dist/register-sw.js",
+        "js/dist/analytics-init.js",
+        "js/dist/analytics.js",
+        "js/dist/api-config.js",
+        "js/dist/sentry-init.js",
+        "js/dist/templates.js?v=14",
+        "js/dist/personalization.js?v=6",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/premium-gates.js?v=20261003-single-membership",
+        "js/dist/feedback-widget.js",
+        "js/dist/tarot-karta-dne.js",
+        "js/dist/platby-init.js",
+        "js/dist/moon-phase.js?v=2",
+        "js/dist/main.js",
+        "js/dist/error-boundary.js",
+        "js/dist/mobile-nav.js?v=5",
+        "js/dist/cookie-handler.js?v=20260711-optin-default",
+        "js/dist/analytics-page-init.js",
+        "js/dist/relationship-tarot-bridge.js?v=20261013-seo",
+        "js/dist/index-lazy-load.js?v=4",
+        "js/dist/pwa-install.js"
+      ],
+      "h1": [
+        "\n\n              Najdi nový pohled na to,\n\n              co právě řešíš.\n\n            "
+      ],
+      "images": [
+        {
+          "src": "img/logo-3d.webp",
+          "exists": true,
+          "alt": "Mystická Hvězda logo"
+        },
+        {
+          "src": "/img/atlas/01-lucerna-na-rozcesti.webp",
+          "exists": true,
+          "alt": "Lucerna osvětluje rozcestí v malované večerní krajině"
+        },
+        {
+          "src": "/img/atlas/15-zlaty-klic.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/atlas/10-hory-pred-svitanim.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/atlas/05-studna-hvezd.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/tarot-v2/tarot_card_back.webp",
+          "exists": true,
+          "alt": "Zadní strana tarotové karty"
+        },
+        {
+          "src": "/img/atlas/16-kompas-oliva.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/atlas/08-seminko-mezi-kameny.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/atlas/18-zapisnik-pero.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/tarot-v2/tarot_spravedlnost.webp",
+          "exists": true,
+          "alt": "Ukázková karta Spravedlnost"
+        },
+        {
+          "src": "/img/tarot-v2/tarot_milenci.webp",
+          "exists": true,
+          "alt": "Ukázková karta Milenci"
+        },
+        {
+          "src": "/img/tarot-v2/tarot_mirnost.webp",
+          "exists": true,
+          "alt": "Ukázková karta Mírnost"
+        },
+        {
+          "src": "img/personal-map/preview-cover-arch-v2.webp",
+          "exists": true,
+          "alt": "Modelová obálka PDF s malovaným kamenným obloukem, krajinou a kompasem"
+        },
+        {
+          "src": "img/logo-3d.webp",
+          "exists": true,
+          "alt": "Mystická Hvězda logo"
+        }
+      ]
+    },
+    {
+      "path": "/horoskop/index.html",
+      "exists": true,
+      "title": "Znamení zvěrokruhu – Vlastnosti, živly a vládci | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-astro-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "../css/style.v2.min.css?v=4",
+        "../css/pages/horoskop-index.css",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-astro.css?v=1"
+      ],
+      "scripts": [
+        "/js/dist/analytics-init.js",
+        "../js/dist/core.js?v=20261003-single-membership",
+        "../js/dist/main.js"
+      ],
+      "h1": [
+        "Znamení Zvěrokruhu"
+      ],
+      "images": []
+    },
+    {
+      "path": "/ritualy/",
+      "exists": true,
+      "title": "Lunární Rituál dnes | Personalizovaný podle vašeho znamení | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "../css/style.v2.min.css?v=11",
+        "../css/pages/ritualy-index.css",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/analytics-init.js",
+        "../js/dist/core.js?v=20261003-single-membership",
+        "../js/dist/exit-intent.js",
+        "../js/dist/main.js?v=10",
+        "../js/dist/ritualy-content.js?v=2",
+        "../js/dist/ritualy.js"
+      ],
+      "h1": [
+        "Dnešní Rituál"
+      ],
+      "images": []
+    },
+    {
+      "path": "/cinsky-horoskop.html",
+      "exists": true,
+      "title": "Čínský horoskop 2026 — Zjistěte své čínské znamení | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/cinsky-horoskop.css",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/analytics-init.js",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=4",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/exit-intent.js",
+        "js/dist/main.js?v=10",
+        "js/dist/share-image-canvas.js",
+        "js/dist/cinsky-horoskop.js?v=6"
+      ],
+      "h1": [
+        "Čínský Horoskop 2026"
+      ],
+      "images": []
+    },
+    {
+      "path": "/tarot-tri-karty.html",
+      "exists": true,
+      "title": "Tarot 3 karty online | Výklad v Premium",
+      "bodyClass": "atlas-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/tarot-tri-karty.css",
+        "/css/atlas-web.css?v=1"
+      ],
+      "scripts": [
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/analytics-init.js",
+        "/js/dist/analytics.js?v=8",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=4",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/exit-intent.js",
+        "js/dist/main.js?v=10"
+      ],
+      "h1": [
+        "Tarot 3 karty pro situace, kde jedna odpověď nestačí"
+      ],
+      "images": [
+        {
+          "src": "img/tarot-v2/tarot_poustevnik.webp",
+          "exists": true,
+          "alt": "Tarotová karta Poustevník"
+        },
+        {
+          "src": "img/tarot-v2/tarot_veleknezka.webp",
+          "exists": true,
+          "alt": "Tarotová karta Velekněžka"
+        },
+        {
+          "src": "img/tarot-v2/tarot_vuz.webp",
+          "exists": true,
+          "alt": "Tarotová karta Vůz"
+        },
+        {
+          "src": "/img/tarot-v2/tarot_card_back.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/tarot-v2/tarot_card_back.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/tarot-v2/tarot_card_back.webp",
+          "exists": true,
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "path": "/tarot-vyznam-karet.html",
+      "exists": true,
+      "title": "Význam tarotových karet: 78 karet, láska i ano/ne",
+      "bodyClass": "atlas-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/tarot-meaning-hub.css",
+        "/css/atlas-web.css?v=1"
+      ],
+      "scripts": [
+        "/js/dist/analytics-init.js",
+        "/js/dist/analytics.js?v=8",
+        "js/dist/core.js?v=20261003-single-membership",
+        "js/dist/tarot-meaning-hub.js",
+        "js/dist/main.js?v=10"
+      ],
+      "h1": [
+        "Význam tarotových karet"
+      ],
+      "images": [
+        {
+          "src": "img/tarot-v2/tarot_blazen.webp",
+          "exists": true,
+          "alt": "Blázen tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_mag.webp",
+          "exists": true,
+          "alt": "Mág tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_veleknezka.webp",
+          "exists": true,
+          "alt": "Velekněžka tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_cisarovna.webp",
+          "exists": true,
+          "alt": "Císařovna tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_cisar.webp",
+          "exists": true,
+          "alt": "Císař tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_veleknez.webp",
+          "exists": true,
+          "alt": "Velekněz tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_milenci.webp",
+          "exists": true,
+          "alt": "Milenci tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_vuz.webp",
+          "exists": true,
+          "alt": "Vůz tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_sila.webp",
+          "exists": true,
+          "alt": "Síla tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_poustevnik.webp",
+          "exists": true,
+          "alt": "Poustevník tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_kolo_stesti.webp",
+          "exists": true,
+          "alt": "Kolo štěstí tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_spravedlnost.webp",
+          "exists": true,
+          "alt": "Spravedlnost tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_viselec.webp",
+          "exists": true,
+          "alt": "Viselec tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_smrt.webp",
+          "exists": true,
+          "alt": "Smrt tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_mirnost.webp",
+          "exists": true,
+          "alt": "Mírnost tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_dabel.webp",
+          "exists": true,
+          "alt": "Ďábel tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_vez.webp",
+          "exists": true,
+          "alt": "Věž tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_hvezda.webp",
+          "exists": true,
+          "alt": "Hvězda tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_luna.webp",
+          "exists": true,
+          "alt": "Luna tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_slunce.webp",
+          "exists": true,
+          "alt": "Slunce tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_soud.webp",
+          "exists": true,
+          "alt": "Soud tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_svet.webp",
+          "exists": true,
+          "alt": "Svět tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_eso_holi.webp",
+          "exists": true,
+          "alt": "Eso holí tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_dvojka_holi.webp",
+          "exists": true,
+          "alt": "Dvojka holí tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_trojka_holi.webp",
+          "exists": true,
+          "alt": "Trojka holí tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_ctyrka_holi.webp",
+          "exists": true,
+          "alt": "Čtyřka holí tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_petka_holi.webp",
+          "exists": true,
+          "alt": "Pětka holí tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_sestka_holi.webp",
+          "exists": true,
+          "alt": "Šestka holí tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_sedmicka_holi.webp",
+          "exists": true,
+          "alt": "Sedmička holí tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_osmicka_holi.webp",
+          "exists": true,
+          "alt": "Osmička holí tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_devitka_holi.webp",
+          "exists": true,
+          "alt": "Devítka holí tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_desitka_holi.webp",
+          "exists": true,
+          "alt": "Desítka holí tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_paze_holi.webp",
+          "exists": true,
+          "alt": "Páže holí tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_rytir_holi.webp",
+          "exists": true,
+          "alt": "Rytíř holí tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_kralovna_holi.webp",
+          "exists": true,
+          "alt": "Královna holí tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_kral_holi.webp",
+          "exists": true,
+          "alt": "Král holí tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_eso_poharu.webp",
+          "exists": true,
+          "alt": "Eso pohárů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_dvojka_poharu.webp",
+          "exists": true,
+          "alt": "Dvojka pohárů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_trojka_poharu.webp",
+          "exists": true,
+          "alt": "Trojka pohárů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_ctyrka_poharu.webp",
+          "exists": true,
+          "alt": "Čtyřka pohárů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_petka_poharu.webp",
+          "exists": true,
+          "alt": "Pětka pohárů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_sestka_poharu.webp",
+          "exists": true,
+          "alt": "Šestka pohárů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_sedmicka_poharu.webp",
+          "exists": true,
+          "alt": "Sedmička pohárů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_osmicka_poharu.webp",
+          "exists": true,
+          "alt": "Osmička pohárů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_devitka_poharu.webp",
+          "exists": true,
+          "alt": "Devítka pohárů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_desitka_poharu.webp",
+          "exists": true,
+          "alt": "Desítka pohárů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_paze_poharu.webp",
+          "exists": true,
+          "alt": "Páže pohárů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_rytir_poharu.webp",
+          "exists": true,
+          "alt": "Rytíř pohárů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_kralovna_poharu.webp",
+          "exists": true,
+          "alt": "Královna pohárů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_kral_poharu.webp",
+          "exists": true,
+          "alt": "Král pohárů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_eso_mecu.webp",
+          "exists": true,
+          "alt": "Eso mečů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_dvojka_mecu.webp",
+          "exists": true,
+          "alt": "Dvojka mečů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_trojka_mecu.webp",
+          "exists": true,
+          "alt": "Trojka mečů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_ctyrka_mecu.webp",
+          "exists": true,
+          "alt": "Čtyřka mečů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_petka_mecu.webp",
+          "exists": true,
+          "alt": "Pětka mečů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_sestka_mecu.webp",
+          "exists": true,
+          "alt": "Šestka mečů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_sedmicka_mecu.webp",
+          "exists": true,
+          "alt": "Sedmička mečů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_osmicka_mecu.webp",
+          "exists": true,
+          "alt": "Osmička mečů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_devitka_mecu.webp",
+          "exists": true,
+          "alt": "Devítka mečů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_desitka_mecu.webp",
+          "exists": true,
+          "alt": "Desítka mečů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_paze_mecu.webp",
+          "exists": true,
+          "alt": "Páže mečů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_rytir_mecu.webp",
+          "exists": true,
+          "alt": "Rytíř mečů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_kralovna_mecu.webp",
+          "exists": true,
+          "alt": "Královna mečů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_kral_mecu.webp",
+          "exists": true,
+          "alt": "Král mečů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_eso_pentaklu.webp",
+          "exists": true,
+          "alt": "Eso pentáklů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_dvojka_pentaklu.webp",
+          "exists": true,
+          "alt": "Dvojka pentáklů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_trojka_pentaklu.webp",
+          "exists": true,
+          "alt": "Trojka pentáklů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_ctyrka_pentaklu.webp",
+          "exists": true,
+          "alt": "Čtyřka pentáklů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_petka_pentaklu.webp",
+          "exists": true,
+          "alt": "Pětka pentáklů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_sestka_pentaklu.webp",
+          "exists": true,
+          "alt": "Šestka pentáklů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_sedmicka_pentaklu.webp",
+          "exists": true,
+          "alt": "Sedmička pentáklů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_osmicka_pentaklu.webp",
+          "exists": true,
+          "alt": "Osmička pentáklů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_devitka_pentaklu.webp",
+          "exists": true,
+          "alt": "Devítka pentáklů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_desitka_pentaklu.webp",
+          "exists": true,
+          "alt": "Desítka pentáklů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_paze_pentaklu.webp",
+          "exists": true,
+          "alt": "Páže pentáklů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_rytir_pentaklu.webp",
+          "exists": true,
+          "alt": "Rytíř pentáklů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_kralovna_pentaklu.webp",
+          "exists": true,
+          "alt": "Královna pentáklů tarot karta"
+        },
+        {
+          "src": "img/tarot-v2/tarot_kral_pentaklu.webp",
+          "exists": true,
+          "alt": "Král pentáklů tarot karta"
+        }
+      ]
+    },
+    {
+      "path": "/andelska-posta.html",
+      "exists": true,
+      "title": "Andělská pošta — Napište vzkaz andělům | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/andelska-posta.css",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/analytics-init.js",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=4",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/exit-intent.js",
+        "js/dist/main.js?v=10",
+        "js/dist/angel-post.js",
+        "js/dist/share-result.js?v=1"
+      ],
+      "h1": [
+        "Andělská Pošta"
+      ],
+      "images": []
+    },
+    {
+      "path": "/kalkulacka-cisla-osudu.html",
+      "exists": true,
+      "title": "Kalkulačka Čísla Osudu – Vaše numerologické číslo zdarma | Mystická Hvězda",
+      "bodyClass": "page-life-number atlas-page atlas-astro-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/kalkulacka-cisla-osudu.css?v=3",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-astro.css?v=1"
+      ],
+      "scripts": [
+        "/js/dist/analytics-init.js",
+        "js/dist/kalkulacka-cisla-osudu.js?v=2",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=4",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/main.js?v=10",
+        "js/dist/retention.js?v=6",
+        "js/dist/personalization.js?v=5",
+        "js/dist/newsletter-popup.js?v=20260706-sign-step"
+      ],
+      "h1": [
+        "Kalkulačka Čísla Osudu"
+      ],
+      "images": []
+    },
+    {
+      "path": "/aura.html",
+      "exists": true,
+      "title": "Aura Kalkulačka — Zjistěte barvu své aury | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/aura.css",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1",
+        "/css/atlas-art.css?v=1"
+      ],
+      "scripts": [
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/analytics-init.js",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=4",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/exit-intent.js",
+        "js/dist/main.js?v=10",
+        "js/dist/aura.js",
+        "js/dist/share-result.js?v=1"
+      ],
+      "h1": [
+        "Aura Kalkulačka"
+      ],
+      "images": [
+        {
+          "src": "/img/atlas/social-v1/10-sova.webp",
+          "exists": true,
+          "alt": "Sova v koruně stromu za soumraku"
+        }
+      ]
+    },
+    {
+      "path": "/afirmace.html",
+      "exists": true,
+      "title": "Denní afirmace podle znamení zvěrokruhu | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/afirmace.css",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/analytics-init.js",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=4",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/exit-intent.js",
+        "js/dist/main.js?v=10",
+        "js/dist/afirmace.js"
+      ],
+      "h1": [
+        "Denní Afirmace"
+      ],
+      "images": []
+    },
+    {
+      "path": "/jmena/",
+      "exists": true,
+      "title": "Databáze jmen — Původ, Význam, Numerologie | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-content-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "../css/style.v2.min.css?v=11",
+        "../css/pages/jmena-index.css",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-content.css?v=1"
+      ],
+      "scripts": [
+        "/js/dist/analytics-init.js",
+        "../js/dist/core.js?v=20261003-single-membership",
+        "../js/dist/exit-intent.js",
+        "../js/dist/main.js?v=11",
+        "../js/dist/jmena.js",
+        "../js/dist/newsletter-popup.js?v=20260706-sign-step"
+      ],
+      "h1": [
+        "Databáze Jmen"
+      ],
+      "images": []
+    },
+    {
+      "path": "/biorytmy.html",
+      "exists": true,
+      "title": "Osobní Biorytmy | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/biorytmy.css",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1",
+        "/css/atlas-art.css?v=1"
+      ],
+      "scripts": [
+        "js/vendor/chart.js",
+        "js/dist/biorhythms.js?v=2",
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/analytics-init.js",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=4",
+        "js/dist/share-result.js?v=1",
+        "js/dist/exit-intent.js",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/main.js?v=10"
+      ],
+      "h1": [
+        "\n\n                    Osobní Biorytmy\n\n                "
+      ],
+      "images": [
+        {
+          "src": "/img/atlas/social-v1/05-kocka-u-okna.webp",
+          "exists": true,
+          "alt": "Kočka odpočívající u otevřeného okna"
+        }
+      ]
+    },
+    {
+      "path": "/slovnik.html",
+      "exists": true,
+      "title": "Ezoterický slovník pojmů | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-content-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/slovnik.css",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-content.css?v=1"
+      ],
+      "scripts": [
+        "/js/dist/analytics-init.js",
+        "js/dist/api-config.js",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=4",
+        "js/dist/exit-intent.js",
+        "js/dist/components.js",
+        "js/dist/main.js",
+        "js/dist/slovnik.js"
+      ],
+      "h1": [
+        "Ezoterický Slovník"
+      ],
+      "images": []
+    },
+    {
+      "path": "/testy/index.html",
+      "exists": true,
+      "title": "Mystická Sebepoznání | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "../css/style.v2.min.css?v=9",
+        "../css/pages/testy-index.css",
+        "../css/testy.css?v=2",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "/js/dist/analytics-init.js",
+        "../js/dist/api-config.js?v=5",
+        "../js/dist/components.js?v=20260522-premium-gate-cache",
+        "../js/dist/main.js?v=11"
+      ],
+      "h1": [
+        "Pohleďte do Hvězdných Zrcadel"
+      ],
+      "images": []
+    },
+    {
+      "path": "/blog.html",
+      "exists": true,
+      "title": "Blog Mystická Hvězda | Tarot, horoskopy a numerologie",
+      "bodyClass": "atlas-page atlas-blog",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/blog.css",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-blog.css?v=1"
+      ],
+      "scripts": [
+        "/js/dist/analytics-init.js",
+        "js/dist/api-config.js",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=4",
+        "js/dist/exit-intent.js",
+        "js/dist/components.js",
+        "js/dist/main.js",
+        "js/dist/blog.js?v=20261002-atlas-art",
+        "js/dist/newsletter-popup.js?v=20260706-sign-step"
+      ],
+      "h1": [
+        "Mystický Blog"
+      ],
+      "images": [
+        {
+          "src": "img/atlas/social-v1/04-prvni-schody.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/02-zahradni-branka.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/06-lesni-kruh.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/tarot-v2/tarot_blazen.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/03-numerologicky-zapisnik.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/01-dva-hrnky.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/09-granatove-jablko.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/tarot-v2/tarot_milenci.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/02-mesicni-krajina.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/05-kocka-u-okna.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/03-numerologicky-zapisnik.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/08-zrcadlo.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/01-astrolab.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/tarot-v2/tarot_eso_pentaklu.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/tarot-v2/tarot_eso_holi.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/03-numerologicky-zapisnik.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/06-zalevani.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/02-mesicni-krajina.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/tarot-v2/tarot_soud.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/01-dva-hrnky.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/tarot-v2/tarot_eso_mecu.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/tarot-v2/tarot_hvezda.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/06-lesni-kruh.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/01-dva-hrnky.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/02-mesicni-krajina.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/02-mesicni-krajina.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/01-astrolab.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/08-zrcadlo.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/03-numerologicky-zapisnik.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/01-astrolab.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/01-astrolab.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/01-dva-hrnky.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/04-runove-kameny.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/01-astrolab.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/editorial-v1/11-11-morning-1200.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/01-dva-hrnky.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/03-numerologicky-zapisnik.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/01-dva-hrnky.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/tarot-v2/tarot_eso_poharu.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/10-sova.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/01-astrolab.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/06-zalevani.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/05-kristalova-koule.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/10-sova.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/09-granatove-jablko.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/03-posledni-list.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/05-kocka-u-okna.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/tarot-v2/tarot_vez.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/08-zrcadlo.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/02-mesicni-krajina.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/01-dva-hrnky.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/01-astrolab.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/04-prvni-schody.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/tarot-v2/tarot_blazen.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/04-prvni-schody.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/tarot-v2/tarot_hvezda.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/02-zahradni-branka.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/03-numerologicky-zapisnik.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/tarot-v2/tarot_luna.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/08-zrcadlo.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/07-volavka.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/02-zahradni-branka.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/tarot-v2/tarot_slunce.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/03-numerologicky-zapisnik.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/02-mesicni-krajina.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/03-numerologicky-zapisnik.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/01-astrolab.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/08-zrcadlo.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/04-runove-kameny.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/02-zahradni-branka.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/tools-v1/02-mesicni-krajina.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/tarot-v2/tarot_slunce.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/07-volavka.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "img/atlas/social-v1/08-zrcadlo.webp",
+          "exists": true,
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "path": "/faq.html",
+      "exists": true,
+      "title": "FAQ k výkladům, platbám a soukromí | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/faq.css",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "https://cdn.jsdelivr.net/npm/lucide@1.13.0/dist/umd/lucide.min.js",
+        "/js/dist/analytics-init.js",
+        "/js/dist/register-sw.js",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=5",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/main.js?v=10",
+        "js/dist/lucide-init.js"
+      ],
+      "h1": [
+        "\n\n                        Často kladené otázky\n\n                    "
+      ],
+      "images": []
+    },
+    {
+      "path": "/o-nas.html",
+      "exists": true,
+      "title": "O Mystické Hvězdě | Přístup k výkladům a datům",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/o-nas.css",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1",
+        "/css/atlas-art.css?v=1"
+      ],
+      "scripts": [
+        "https://cdn.jsdelivr.net/npm/lucide@1.13.0/dist/umd/lucide.min.js",
+        "/js/dist/analytics-init.js",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=4",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/main.js?v=11",
+        "js/dist/lucide-init.js"
+      ],
+      "h1": [
+        "\n                            Astrologie pro jasnější další krok\n                        "
+      ],
+      "images": [
+        {
+          "src": "/img/atlas/tools-v1/01-astrolab.webp",
+          "exists": true,
+          "alt": "Mosazný astroláb v malované noční krajině"
+        },
+        {
+          "src": "/img/atlas/tools-v1/01-astrolab.webp",
+          "exists": true,
+          "alt": "Mise"
+        },
+        {
+          "src": "/img/tarot-v2/tarot_hvezda.webp",
+          "exists": true,
+          "alt": "Přístup"
+        },
+        {
+          "src": "/img/atlas/tools-v1/05-kristalova-koule.webp",
+          "exists": true,
+          "alt": "Důvěra"
+        },
+        {
+          "src": "/img/atlas/tools-v1/01-astrolab.webp",
+          "exists": true,
+          "alt": "Astronomický výpočet"
+        },
+        {
+          "src": "/img/tarot-v2/tarot_hvezda.webp",
+          "exists": true,
+          "alt": "Kontrola hranic výkladu"
+        },
+        {
+          "src": "/img/atlas/tools-v1/03-numerologicky-zapisnik.webp",
+          "exists": true,
+          "alt": "Náš příběh"
+        }
+      ]
+    },
+    {
+      "path": "/prihlaseni.html",
+      "exists": true,
+      "title": "Přihlášení | Mystická Hvězda",
+      "bodyClass": "page-login atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/prihlaseni.css?v=20261014-detail-polish",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "/js/dist/analytics-init.js",
+        "js/dist/analytics.js?v=5",
+        "js/dist/growth-loop-client.js?v=1",
+        "js/dist/prihlaseni.js?v=20261003-single-membership",
+        "js/dist/core.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/main.js?v=10"
+      ],
+      "h1": [
+        "Vítejte zpět"
+      ],
+      "images": []
+    },
+    {
+      "path": "/prihlaseni.html",
+      "exists": true,
+      "title": "Přihlášení | Mystická Hvězda",
+      "bodyClass": "page-login atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/prihlaseni.css?v=20261014-detail-polish",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "/js/dist/analytics-init.js",
+        "js/dist/analytics.js?v=5",
+        "js/dist/growth-loop-client.js?v=1",
+        "js/dist/prihlaseni.js?v=20261003-single-membership",
+        "js/dist/core.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/main.js?v=10"
+      ],
+      "h1": [
+        "Vítejte zpět"
+      ],
+      "images": []
+    },
+    {
+      "path": "/prihlaseni.html",
+      "exists": true,
+      "title": "Přihlášení | Mystická Hvězda",
+      "bodyClass": "page-login atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/prihlaseni.css?v=20261014-detail-polish",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "/js/dist/analytics-init.js",
+        "js/dist/analytics.js?v=5",
+        "js/dist/growth-loop-client.js?v=1",
+        "js/dist/prihlaseni.js?v=20261003-single-membership",
+        "js/dist/core.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/main.js?v=10"
+      ],
+      "h1": [
+        "Vítejte zpět"
+      ],
+      "images": []
+    },
+    {
+      "path": "/prihlaseni.html",
+      "exists": true,
+      "title": "Přihlášení | Mystická Hvězda",
+      "bodyClass": "page-login atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/prihlaseni.css?v=20261014-detail-polish",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "/js/dist/analytics-init.js",
+        "js/dist/analytics.js?v=5",
+        "js/dist/growth-loop-client.js?v=1",
+        "js/dist/prihlaseni.js?v=20261003-single-membership",
+        "js/dist/core.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/main.js?v=10"
+      ],
+      "h1": [
+        "Vítejte zpět"
+      ],
+      "images": []
+    },
+    {
+      "path": "/kontakt.html",
+      "exists": true,
+      "title": "Kontakt a podpora | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/kontakt.css",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "/js/dist/analytics-init.js",
+        "js/dist/kontakt.js",
+        "/js/dist/register-sw.js",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=4",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/main.js?v=10"
+      ],
+      "h1": [
+        "\n\n                        Kontaktujte nás\n\n                    "
+      ],
+      "images": []
+    },
+    {
+      "path": "/jak-to-funguje.html",
+      "exists": true,
+      "title": "Jak fungují výklady | Data, AI a hranice | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/jak-to-funguje.css",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "https://cdn.jsdelivr.net/npm/lucide@1.13.0/dist/umd/lucide.min.js",
+        "/js/dist/analytics-init.js",
+        "/js/dist/components.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=7",
+        "js/dist/main.js"
+      ],
+      "h1": [
+        "\n                        Jak to funguje\n                    "
+      ],
+      "images": []
+    },
+    {
+      "path": "/",
+      "exists": true,
+      "title": "Mystická Hvězda | Tarot zdarma, horoskopy a osobní výklady",
+      "bodyClass": "page-home atlas-home",
+      "atlas": true,
+      "styles": [
+        "/css/home.min.css?v=20261012-personal-map",
+        "/css/home.min.css?v=20261012-personal-map",
+        "/css/pages/tarot-karta-dne.css",
+        "/css/tarot-atlas.css?v=1"
+      ],
+      "scripts": [
+        "/js/dist/register-sw.js",
+        "js/dist/analytics-init.js",
+        "js/dist/analytics.js",
+        "js/dist/api-config.js",
+        "js/dist/sentry-init.js",
+        "js/dist/templates.js?v=14",
+        "js/dist/personalization.js?v=6",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/premium-gates.js?v=20261003-single-membership",
+        "js/dist/feedback-widget.js",
+        "js/dist/tarot-karta-dne.js",
+        "js/dist/platby-init.js",
+        "js/dist/moon-phase.js?v=2",
+        "js/dist/main.js",
+        "js/dist/error-boundary.js",
+        "js/dist/mobile-nav.js?v=5",
+        "js/dist/cookie-handler.js?v=20260711-optin-default",
+        "js/dist/analytics-page-init.js",
+        "js/dist/relationship-tarot-bridge.js?v=20261013-seo",
+        "js/dist/index-lazy-load.js?v=4",
+        "js/dist/pwa-install.js"
+      ],
+      "h1": [
+        "\n\n              Najdi nový pohled na to,\n\n              co právě řešíš.\n\n            "
+      ],
+      "images": [
+        {
+          "src": "img/logo-3d.webp",
+          "exists": true,
+          "alt": "Mystická Hvězda logo"
+        },
+        {
+          "src": "/img/atlas/01-lucerna-na-rozcesti.webp",
+          "exists": true,
+          "alt": "Lucerna osvětluje rozcestí v malované večerní krajině"
+        },
+        {
+          "src": "/img/atlas/15-zlaty-klic.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/atlas/10-hory-pred-svitanim.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/atlas/05-studna-hvezd.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/tarot-v2/tarot_card_back.webp",
+          "exists": true,
+          "alt": "Zadní strana tarotové karty"
+        },
+        {
+          "src": "/img/atlas/16-kompas-oliva.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/atlas/08-seminko-mezi-kameny.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/atlas/18-zapisnik-pero.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/tarot-v2/tarot_spravedlnost.webp",
+          "exists": true,
+          "alt": "Ukázková karta Spravedlnost"
+        },
+        {
+          "src": "/img/tarot-v2/tarot_milenci.webp",
+          "exists": true,
+          "alt": "Ukázková karta Milenci"
+        },
+        {
+          "src": "/img/tarot-v2/tarot_mirnost.webp",
+          "exists": true,
+          "alt": "Ukázková karta Mírnost"
+        },
+        {
+          "src": "img/personal-map/preview-cover-arch-v2.webp",
+          "exists": true,
+          "alt": "Modelová obálka PDF s malovaným kamenným obloukem, krajinou a kompasem"
+        },
+        {
+          "src": "img/logo-3d.webp",
+          "exists": true,
+          "alt": "Mystická Hvězda logo"
+        }
+      ]
+    },
+    {
+      "path": "/sk/",
+      "exists": true,
+      "title": "Mystická Hviezda | Astrológia pre sebapoznanie a Tarot",
+      "bodyClass": "atlas-page atlas-remaining-page atlas-language-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "../css/style.v2.min.css?v=9",
+        "../css/pages/sk-index.css",
+        "../css/style.v2.min.css?v=9",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "../js/dist/analytics-init.js",
+        "../js/dist/api-config.js",
+        "../js/dist/templates.js",
+        "../js/dist/components.js",
+        "../js/dist/main.js"
+      ],
+      "h1": [
+        "\n              Hviezdy neurčujú osud, ale ukazujú\n              smer\n            "
+      ],
+      "images": [
+        {
+          "src": "/img/atlas/01-lucerna-na-rozcesti.webp",
+          "exists": true,
+          "alt": "Lucerna osvetľujúca cestu nočnou krajinou"
+        },
+        {
+          "src": "/img/atlas/tools-v1/02-mesicni-krajina.webp",
+          "exists": true,
+          "alt": "Horoskopy"
+        },
+        {
+          "src": "/img/tarot-v2/tarot_card_back.webp",
+          "exists": true,
+          "alt": "Tarot"
+        },
+        {
+          "src": "/img/atlas/tools-v1/05-kristalova-koule.webp",
+          "exists": true,
+          "alt": "Krištáľová guľa"
+        }
+      ]
+    },
+    {
+      "path": "/pl/",
+      "exists": true,
+      "title": "Mistyczna Gwiazda | Astrologia dla samopoznania i Tarot",
+      "bodyClass": "atlas-page atlas-remaining-page atlas-language-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "../css/style.v2.min.css?v=9",
+        "../css/pages/pl-index.css",
+        "../css/style.v2.min.css?v=9",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "../js/dist/analytics-init.js",
+        "../js/dist/api-config.js",
+        "../js/dist/templates.js",
+        "../js/dist/components.js",
+        "../js/dist/main.js"
+      ],
+      "h1": [
+        "\n              Gwiazdy nie determinują losu, ale wskazują\n              kierunek\n            "
+      ],
+      "images": [
+        {
+          "src": "/img/atlas/01-lucerna-na-rozcesti.webp",
+          "exists": true,
+          "alt": "Latarnia oświetlająca drogę przez nocny krajobraz"
+        },
+        {
+          "src": "/img/atlas/tools-v1/02-mesicni-krajina.webp",
+          "exists": true,
+          "alt": "Horoskopy"
+        },
+        {
+          "src": "/img/tarot-v2/tarot_card_back.webp",
+          "exists": true,
+          "alt": "Tarot"
+        },
+        {
+          "src": "/img/atlas/tools-v1/05-kristalova-koule.webp",
+          "exists": true,
+          "alt": "Kryształowa kula"
+        }
+      ]
+    },
+    {
+      "path": "/podminky.html",
+      "exists": true,
+      "title": "Obchodní podmínky | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/podminky.css",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "/js/dist/analytics-init.js",
+        "/js/dist/register-sw.js",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=4",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/main.js?v=10"
+      ],
+      "h1": [
+        "\n\n                        Obchodní podmínky\n\n                    "
+      ],
+      "images": []
+    },
+    {
+      "path": "/soukromi.html",
+      "exists": true,
+      "title": "Ochrana soukromí | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/soukromi.css",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "/js/dist/analytics-init.js",
+        "/js/dist/register-sw.js",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=4",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/main.js?v=10"
+      ],
+      "h1": [
+        "\n\n                        Ochrana soukromí\n\n                    "
+      ],
+      "images": []
+    },
+    {
+      "path": "/tarot-zdarma.html",
+      "exists": true,
+      "title": "Tarot zdarma online bez registrace | Mystická Hvězda",
+      "bodyClass": "page-tarot-free atlas-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/tarot-zdarma.css",
+        "/css/pages/relationship-tarot-bridge.css?v=2",
+        "/css/atlas-web.css?v=1"
+      ],
+      "scripts": [
+        "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js",
+        "/js/dist/analytics-init.js",
+        "/js/dist/analytics.js?v=8",
+        "js/dist/tarot-zdarma.js",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=7",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/exit-intent.js",
+        "js/dist/main.js?v=10",
+        "/js/dist/relationship-tarot-bridge.js?v=20261013-seo"
+      ],
+      "h1": [
+        "Tarot výklad zdarma online"
+      ],
+      "images": [
+        {
+          "src": "/img/tarot-v2/tarot_card_back.webp",
+          "exists": true,
+          "alt": "Rub tarotové karty"
+        },
+        {
+          "src": "/img/tarot-v2/tarot_card_back.webp",
+          "exists": true,
+          "alt": "Rub tarotové karty"
+        },
+        {
+          "src": "/img/tarot-v2/tarot_card_back.webp",
+          "exists": true,
+          "alt": "Rub tarotové karty"
+        },
+        {
+          "src": "/img/tarot-v2/tarot_milenci.webp",
+          "exists": true,
+          "alt": ""
+        },
+        {
+          "src": "/img/tarot-v2/tarot_mirnost.webp",
+          "exists": true,
+          "alt": ""
+        }
+      ]
+    },
+    {
+      "path": "/partnerska-numerologie.html",
+      "exists": true,
+      "title": "Partnerská numerologie: výpočet podle data narození",
+      "bodyClass": "atlas-page atlas-remaining-page numbers-editorial",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "css/style.v2.min.css?v=11",
+        "css/pages/numerology-cluster.css",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1",
+        "/css/pages/numbers-editorial.css"
+      ],
+      "scripts": [
+        "/js/dist/analytics-init.js",
+        "/js/dist/analytics.js?v=8",
+        "js/dist/api-config.js?v=5",
+        "js/dist/templates.js?v=14",
+        "js/dist/auth-client.js?v=20261003-single-membership",
+        "js/dist/auth-copy-fixes.js",
+        "js/dist/secondary-pages-copy-fixes.js?v=4",
+        "js/dist/components.js?v=20260522-premium-gate-cache",
+        "js/dist/exit-intent.js",
+        "js/dist/main.js?v=10"
+      ],
+      "h1": [
+        "Partnerská numerologie podle data narození"
+      ],
+      "images": [
+        {
+          "src": "/img/atlas/editorial-v1/partner-cups-960.webp",
+          "exists": true,
+          "alt": "Dva různě zdobené hrnky na společném stole v malovaném stylu Mystické Hvězdy"
+        }
+      ]
+    },
+    {
+      "path": "/testy/",
+      "exists": true,
+      "title": "Mystická Sebepoznání | Mystická Hvězda",
+      "bodyClass": "atlas-page atlas-remaining-page",
+      "atlas": true,
+      "styles": [
+        "/fonts/local-fonts.css",
+        "../css/style.v2.min.css?v=9",
+        "../css/pages/testy-index.css",
+        "../css/testy.css?v=2",
+        "/css/atlas-web.css?v=1",
+        "/css/atlas-remaining.css?v=1"
+      ],
+      "scripts": [
+        "/js/dist/analytics-init.js",
+        "../js/dist/api-config.js?v=5",
+        "../js/dist/components.js?v=20260522-premium-gate-cache",
+        "../js/dist/main.js?v=11"
+      ],
+      "h1": [
+        "Pohleďte do Hvězdných Zrcadel"
+      ],
+      "images": []
+    }
+  ]
+}

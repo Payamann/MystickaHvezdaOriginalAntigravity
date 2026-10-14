@@ -1,0 +1,227 @@
+{
+  "reviewed": "2026-10-14",
+  "candidate": "a6d9f96c",
+  "scope": "local mock regression plus public read-only product/health GET",
+  "tests": [
+    {
+      "group": "engine",
+      "passedSuites": 13,
+      "failedSuites": 0,
+      "passedTests": 61,
+      "failedTests": 0,
+      "suites": [
+        {
+          "file": "/server/tests/astrology-routes.test.js",
+          "status": "passed",
+          "assertions": 11
+        },
+        {
+          "file": "/server/tests/oracle-fallbacks.test.js",
+          "status": "passed",
+          "assertions": 12
+        },
+        {
+          "file": "/server/tests/astrology-engine.test.js",
+          "status": "passed",
+          "assertions": 13
+        },
+        {
+          "file": "/server/tests/mentor-gate.test.js",
+          "status": "passed",
+          "assertions": 3
+        },
+        {
+          "file": "/server/tests/past-life.test.js",
+          "status": "passed",
+          "assertions": 2
+        },
+        {
+          "file": "/server/tests/medicine-wheel.test.js",
+          "status": "passed",
+          "assertions": 2
+        },
+        {
+          "file": "/server/tests/crystal-ball-anon-gate.test.js",
+          "status": "passed",
+          "assertions": 3
+        },
+        {
+          "file": "/server/tests/numerology.test.js",
+          "status": "passed",
+          "assertions": 1
+        },
+        {
+          "file": "/server/tests/reviewed-horoscopes-guards.test.js",
+          "status": "passed",
+          "assertions": 3
+        },
+        {
+          "file": "/server/tests/reviewed-horoscopes.test.js",
+          "status": "passed",
+          "assertions": 3
+        },
+        {
+          "file": "/server/tests/angel-card-assets.test.js",
+          "status": "passed",
+          "assertions": 2
+        },
+        {
+          "file": "/server/tests/horoscope-response.test.js",
+          "status": "passed",
+          "assertions": 4
+        },
+        {
+          "file": "/server/tests/daily-card-assets.test.js",
+          "status": "passed",
+          "assertions": 2
+        }
+      ]
+    },
+    {
+      "group": "paid",
+      "passedSuites": 17,
+      "failedSuites": 0,
+      "passedTests": 159,
+      "failedTests": 0,
+      "suites": [
+        {
+          "file": "/server/tests/auth.test.js",
+          "status": "passed",
+          "assertions": 28
+        },
+        {
+          "file": "/server/tests/payment-webhook-entitlement-failures.test.js",
+          "status": "passed",
+          "assertions": 5
+        },
+        {
+          "file": "/server/tests/payment-checkout.test.js",
+          "status": "passed",
+          "assertions": 18
+        },
+        {
+          "file": "/server/tests/user-readings.test.js",
+          "status": "passed",
+          "assertions": 7
+        },
+        {
+          "file": "/server/tests/payment-billing-state.test.js",
+          "status": "passed",
+          "assertions": 10
+        },
+        {
+          "file": "/server/tests/auth-edge-cases.test.js",
+          "status": "passed",
+          "assertions": 9
+        },
+        {
+          "file": "/server/tests/personal-map-pdf.test.js",
+          "status": "passed",
+          "assertions": 11
+        },
+        {
+          "file": "/server/tests/payment-webhook-reservation.test.js",
+          "status": "passed",
+          "assertions": 5
+        },
+        {
+          "file": "/server/tests/plan-manifest.test.js",
+          "status": "passed",
+          "assertions": 4
+        },
+        {
+          "file": "/server/tests/relationship-tarot-webhook.test.js",
+          "status": "passed",
+          "assertions": 4
+        },
+        {
+          "file": "/server/tests/one-time-orders.test.js",
+          "status": "passed",
+          "assertions": 2
+        },
+        {
+          "file": "/server/tests/one-time-pdf-email-guard.test.js",
+          "status": "passed",
+          "assertions": 2
+        },
+        {
+          "file": "/server/tests/one-time-fulfillment.test.js",
+          "status": "passed",
+          "assertions": 1
+        },
+        {
+          "file": "/server/tests/relationship-tarot.test.js",
+          "status": "passed",
+          "assertions": 23
+        },
+        {
+          "file": "/server/tests/relationship-email-delivery.test.js",
+          "status": "passed",
+          "assertions": 12
+        },
+        {
+          "file": "/server/tests/one-time-order-reconciliation.test.js",
+          "status": "passed",
+          "assertions": 13
+        },
+        {
+          "file": "/server/tests/relationship-tarot-ai.test.js",
+          "status": "passed",
+          "assertions": 5
+        }
+      ]
+    },
+    {
+      "group": "frontend",
+      "passedSuites": 4,
+      "failedSuites": 0,
+      "passedTests": 24,
+      "failedTests": 0,
+      "suites": [
+        {
+          "file": "/tests/frontend/numerology.test.js",
+          "status": "passed",
+          "assertions": 8
+        },
+        {
+          "file": "/tests/frontend/checkout-result.test.js",
+          "status": "passed",
+          "assertions": 11
+        },
+        {
+          "file": "/tests/frontend/synastry.test.js",
+          "status": "passed",
+          "assertions": 3
+        },
+        {
+          "file": "/tests/frontend/mentor-paywall.test.js",
+          "status": "passed",
+          "assertions": 2
+        }
+      ]
+    }
+  ],
+  "totalPassed": 244,
+  "totalSuites": 34,
+  "tarotAssets": {
+    "cards": 78,
+    "found": 78,
+    "missing": 0
+  },
+  "manual": [
+    "Login desktop/mobile and password toggle",
+    "Mobile menu open/close and astrology expansion",
+    "Dictionary navy surface",
+    "Profile CSS component model only",
+    "Daily card reveal and repeat after reload",
+    "Number calculator 1980-01-01 => 2",
+    "Dream dictionary Had search"
+  ],
+  "limits": [
+    "No real purchase, AI generation, account creation or email send",
+    "No private production customer data accessed",
+    "No exhaustive manual inspection of generated URL catalog",
+    "Profile authenticated browser session not tested"
+  ],
+  "delegation": "Feature inventory Luna and paid Astra requests failed at usage limit; no results claimed."
+}
