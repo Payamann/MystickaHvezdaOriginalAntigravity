@@ -1,0 +1,23 @@
+[
+  {
+    "file": "partnerska-numerologie.html",
+    "merged": true
+  },
+  {
+    "file": "blog/andelska-cisla-1111.html",
+    "merged": true,
+    "resolution": "New reviewed content, retained root atlas-blog v4; removed obsolete callout replaced by actual free calculator CTA"
+  },
+  {
+    "file": "blog.html",
+    "merged": true
+  },
+  {
+    "file": "data/blog-index.json",
+    "merged": true
+  },
+  {
+    "file": "server/data/blog-posts.js",
+    "merged": true
+  }
+]

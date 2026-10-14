@@ -1,0 +1,9 @@
+# Ilustrace 11:11
+
+Mode: generation, built-in imagegen, 14. 10. 2026.
+
+Originál: 11-11-source.png (1536 × 1024). Publikační soubory: /img/atlas/editorial-v1/11-11-morning-{480,960,1200}.webp. Převod Sharp, quality 83, bez změny obsahu. Partner cups je odvozená velikost existujícího /img/atlas/social-v1/01-dva-hrnky.webp.
+
+## Použitý prompt
+
+Create one finished editorial illustration for a Czech mystical-but-grounded article about noticing 11:11. Landscape 3:2 image, richly hand-painted Romantic oil painting with very fine brushwork, deep ink navy, warm antique gold, ivory, forest green, a subtle tactile canvas surface. It must visually belong to a beautiful classic painted tarot deck: elegant botanical details and luminous atmosphere, but without a card frame. A quiet wooden table beside a stone window at late morning: a small dark wood and brass desk clock has a very understated rectangular face displaying exactly '11:11' in clear small ivory numerals. Beside it a closed navy notebook, a simple brass pen, an olive branch and a cup. Four slim warm shafts of sunlight echo the four ones in the clock, suggesting noticing a pattern in an ordinary moment. Through the window a distant blue-green garden and calm hills. Balanced intimate composition with objects in middle/right and breathable dark navy left area; the clock remains visible in a center crop. Natural light and quiet curiosity, restrained mysticism, carefully designed realistic painting rather than shiny 3D rendering or obvious generative fantasy. No angels, people, neon, purple nebula, sparkly portals, celestial text, typography overlay, logo, border or watermark. Only the small clock digits '11:11' should be legible text. Intended as a web article hero and social preview; high quality illustration, not a web page mockup.

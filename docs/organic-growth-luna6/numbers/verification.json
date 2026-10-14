@@ -1,0 +1,43 @@
+{
+  "checkedAt": "2026-10-14T15:37:02.027Z",
+  "pages": [
+    {
+      "page": "partnerska-numerologie.html",
+      "h1": "Partnerská numerologie podle data narození",
+      "canonical": "preserved",
+      "schemas": 2,
+      "faq": 5,
+      "localReferences": 28,
+      "titleLength": 51,
+      "hero": [
+        960,
+        960
+      ]
+    },
+    {
+      "page": "blog/andelska-cisla-1111.html",
+      "h1": "Co znamená 11:11 a číslo 1111?",
+      "canonical": "preserved",
+      "schemas": 2,
+      "faq": 3,
+      "localReferences": 23,
+      "titleLength": 59,
+      "hero": [
+        1200,
+        800
+      ]
+    }
+  ],
+  "articleSources": "index, fallback, static HTML and blog card agree; original publication retained",
+  "manual": {
+    "partnerDesktop": "PASS",
+    "partnerMobile390": "PASS: no horizontal overflow",
+    "calculatorEmpty": "visible validation",
+    "dateA": "1990-05-14 → 11",
+    "dateB": "1992-02-08 → 4",
+    "blogDesktop": "PASS after header alignment fix",
+    "blogMobile390": "PASS: no horizontal overflow",
+    "faqKeyboard": "native details opened with Enter",
+    "blogCalculator": "source=blog_1111_life_number retained"
+  }
+}
