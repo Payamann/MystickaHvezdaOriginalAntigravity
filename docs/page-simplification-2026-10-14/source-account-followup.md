@@ -21,13 +21,6 @@ Dopad: klávesnice a screen reader nemusí nabídnout zavření ani správné po
 
 Dopad: toast je v původním dokumentu a při navigaci může zmizet dřív, než jej uživatel přečte. Samotný reset request používá hash access token a `Authorization` (`:1056–1069`); v source není důkaz serverové chyby.
 
-### Stavová integrita: client UI považuje čitelný cookie indikátor za přihlášení
-
-- `js/auth-client.js:58–60` určuje `hasLoginCookie()` podle `document.cookie === 'logged_in=1'`.
-- `js/auth-client.js:272–280` vrací tuto hodnotu z `isLoggedIn()` a podle ní přepíná UI; skutečný profil se načítá až následně v `refreshSession()` (`:170–194`).
-
-Dopad: podvržený nebo zastaralý indikátor může krátce zobrazit přihlášené UI, i když serverové API session odmítne. To není přímý bypass serverové autorizace, ale zdroj zvyšuje riziko matoucího loading/error stavu; server musí zůstat jediným rozhodovatelem přístupu.
-
 ## Potvrzené ochrany a cesty
 
 - `js/prihlaseni.js:1115–1124` a `:1142–1151` odmítají redirect bez počátečního `/` nebo s `//`; zůstává interní fallback `/profil.html`.
@@ -44,5 +37,5 @@ Dopad: podvržený nebo zastaralý indikátor může krátce zobrazit přihláš
 
 ## Klasifikace
 
-- **Bezpečnost:** nebyl potvrzen přímý auth bypass ani otevřený redirect; cookie indikátor je stavové riziko klientského UI, ne autorizace.
+- **Bezpečnost:** nebyl potvrzen přímý auth bypass ani otevřený redirect; serverové API zůstává autoritou.
 - **UX/accessibility:** potvrzené jsou modal close/label markup a krátce žijící success toast po resetu.

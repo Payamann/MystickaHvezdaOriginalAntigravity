@@ -118,9 +118,11 @@
 
 [Snímek daného stavu](screenshots/account-profile-guest-mobile.png)
 
-## Co zatím nelze označit za ověřené
+## Původní omezení a navazující ověření
 
 Úspěšné přihlášení skutečného účtu, doručení a průchod platným recovery e-mailem, úspěšná registrace/ověření e-mailu, členský profil, skutečná historie/oblíbené/zápis deníku a zrušení předplatného. Nebyl použit účet zákazníka ani soukromá data. Tyto stavy byly posouzené ze zdroje; současná kontrola nenahrazuje bezpečný testovací účet a sandbox platby.
+
+**Následné rozšíření 14. 10.:** Vlastník výslovně určil svůj účet pro čtení z databáze. Profil, jeho historie, prázdné oblíbené a nastavení byly následně vykreslené v soukromém lokálním klientu se skutečnými daty. Podrobný [navazující profilový report](profile-authenticated-review.md) nahrazuje původní omezení u těchto zobrazovacích stavů. Produkční přihlášení, ukládání, heslo a platební změny tím ověřené nejsou.
 
 Zdroj profilu již má loading/error/empty stavy, stránkování historie a ve `js/profile/modal.js` také fokusový cyklus a návrat fokusu. Proto není správné přenášet slabiny starého auth modalu na profilový modal automaticky.
 

@@ -150,6 +150,7 @@ Zachovat hlavní výsledek, cenu, limity, souhlas, doručení, chybové/recovery
 
 ## Soubory průzkumu
 
+- [Profil vykreslený ze skutečných dat vlastníka](profile-authenticated-review.md): deset konkrétních nálezů, rozlišení DB, místního UI a zdrojového ověření; soukromá data mimo verzovaný report.
 - [Přehled s filtrem a všech 166 řádků](overview.html)
 - [Seznam každé stránky](pages.md)
 - [Všech 917 souborů (CSV)](all-files.csv)
