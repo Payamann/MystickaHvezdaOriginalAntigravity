@@ -200,11 +200,10 @@ describe('CTR sprint static SEO pages', () => {
     const html = await readPage('tarot-vyznam/kralovna-poharu.html');
 
     expectCoreMetadata(html);
-    // Titulek nese skutečný význam karty (CTR: cluster měl na pozici ~8 jen 1,07 %,
-    // protože sliboval seznam sekcí místo odpovědi) — viz generate-tarot-meaning-hub.mjs.
-    expect(html).toContain('Královna pohárů: empatie a intuice – význam v tarotu');
+    // Titulek a shrnutí odpovídají revidovanému redakčnímu tématu karty.
+    expect(html).toContain('Královna pohárů: empatie s vlastními hranicemi – význam v tarotu');
     expect(html).toContain('Královna pohárů jako odpověď ano/ne');
-    expect(html).toContain('Královna pohárů spojuje empatii, citlivost a vyzrálou intuici');
+    expect(html).toContain('Královna pohárů spojuje citlivost, empatii a pozornost k vlastním hranicím');
     expect(html).toContain('Královna pohárů obráceně');
     expect(html).toContain('Příklad výkladu karty Královna pohárů');
     expect(html).toContain('/tarot.html?source=tarot_card_detail_next_step');
