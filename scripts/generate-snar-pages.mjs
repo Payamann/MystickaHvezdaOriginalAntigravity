@@ -156,7 +156,7 @@ function renderPage(dream, index, dreams, seoContent) {
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔮</text></svg>">
+  <link rel="icon" type="image/svg+xml" href="/img/icons/mh-favicon.svg">
   <link rel="apple-touch-icon" href="../img/icon-192.webp">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Sen o: ${keyword} — výklad snu | Snář Mystická Hvězda</title>

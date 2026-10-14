@@ -15510,3 +15510,16 @@ body.page-profile .cookie-banner__actions .btn {
         font-size: 0.68rem !important;
     }
 }
+
+/* Local SVG symbols: decorative navigation and utility icons only. */
+.mh-symbol{display:inline-block;width:48px;height:48px;flex:none;vertical-align:middle;color:var(--color-mystic-gold,#d0b17c);overflow:visible}
+.cross-link-card__icon:has(>.mh-symbol){line-height:0;margin:0 auto 16px}
+.cross-link-card__icon>.mh-symbol{width:46px;height:46px}
+.feature-icon>.mh-symbol,.test-card__icon>.mh-symbol{width:42px;height:42px}
+.page-404__icon>.mh-symbol{width:80px;height:80px}
+.popular-card-emoji>.mh-symbol,.search-icon>.mh-symbol,.emoji>.mh-symbol{width:30px;height:30px}
+.footer__social .mh-symbol{width:22px;height:22px;color:inherit}
+.toast__icon .mh-symbol,.error-icon .mh-symbol{width:24px;height:24px;color:inherit}
+@media(forced-colors:active){.mh-symbol{color:CanvasText}}
+
+.mh-symbol.mh-symbol--inline{width:18px;height:18px;margin-right:.35em;vertical-align:-3px}.status-icon>.mh-symbol{width:24px;height:24px}

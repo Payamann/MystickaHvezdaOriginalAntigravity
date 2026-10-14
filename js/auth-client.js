@@ -382,14 +382,13 @@
             const toast = document.createElement('div');
             toast.className = `toast toast--${type}`;
 
-            let icon = 'ℹ️';
-            if (type === 'success') icon = '✅';
-            if (type === 'error') icon = '❌';
+            const icons = {"info":"<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#info\"></use></svg>","success":"<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#check\"></use></svg>","error":"<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#error\"></use></svg>"};
+            const icon = type === 'success' ? icons.success : type === 'error' ? icons.error : icons.info;
 
-            // Build toast safely using textContent to prevent XSS
+            // Only fixed local SVG markup goes into the icon; user-facing text remains textContent.
             const iconDiv = document.createElement('div');
             iconDiv.className = 'toast__icon';
-            iconDiv.textContent = icon;
+            iconDiv.innerHTML = icon;
             const textDiv = document.createElement('div');
             const titleDiv = document.createElement('div');
             titleDiv.className = 'toast__title';

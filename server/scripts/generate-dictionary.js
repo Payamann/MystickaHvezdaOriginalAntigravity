@@ -1,3 +1,4 @@
+import { symbolMarkup } from '../../scripts/lib/ui-symbols.mjs';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -14,15 +15,15 @@ const SITEMAP_ENTRIES_PATH = path.join(ROOT, 'data/dictionary-sitemap.json');
 
 function categoryToFeature(category) {
     const map = {
-        'Astrologie': { icon: '⭐', link: '../natalni-karta.html', label: 'Natální Karta' },
-        'Tarot': { icon: '🃏', link: '../tarot.html', label: 'Tarot výklad' },
-        'Numerologie': { icon: '🔢', link: '../numerologie.html', label: 'Numerologie' },
-        'Runosloví': { icon: 'ᚱ', link: '../runy.html', label: 'Výklad Run' },
-        'Energie': { icon: '⚡', link: '../mentor.html', label: 'Průvodce' },
-        'Spiritualita': { icon: '🌌', link: '../horoskopy.html', label: 'Horoskopy' },
-        'Snář': { icon: '🌙', link: '../snar.html', label: 'Snář' },
+        'Astrologie': { icon: symbolMarkup('chart'), link: '../natalni-karta.html', label: 'Natální Karta' },
+        'Tarot': { icon: symbolMarkup('tarot'), link: '../tarot.html', label: 'Tarot výklad' },
+        'Numerologie': { icon: symbolMarkup('numbers'), link: '../numerologie.html', label: 'Numerologie' },
+        'Runosloví': { icon: symbolMarkup('rune'), link: '../runy.html', label: 'Výklad Run' },
+        'Energie': { icon: symbolMarkup('energy'), link: '../mentor.html', label: 'Průvodce' },
+        'Spiritualita': { icon: symbolMarkup('star'), link: '../horoskopy.html', label: 'Horoskopy' },
+        'Snář': { icon: symbolMarkup('dream'), link: '../snar.html', label: 'Snář' },
     };
-    return map[category] || { icon: '✨', link: '../index.html', label: 'Mystická Hvězda' };
+    return map[category] || { icon: symbolMarkup('star'), link: '../index.html', label: 'Mystická Hvězda' };
 }
 
 function buildRelatedTermsHtml(term, allTerms) {
@@ -36,7 +37,7 @@ function buildRelatedTermsHtml(term, allTerms) {
             ${r.title}
         </a>`).join('');
     return `<div style="margin-top:3rem; padding-top:2rem; border-top: 1px solid rgba(255,255,255,0.08);">
-        <p style="font-size:0.85rem; text-transform:uppercase; letter-spacing:1px; color:var(--color-text-mutated); margin-bottom:1rem;">📚 Související pojmy</p>
+        <p style="font-size:0.85rem; text-transform:uppercase; letter-spacing:1px; color:var(--color-text-mutated); margin-bottom:1rem;">${symbolMarkup('book',true)} Související pojmy</p>
         <div>${items}</div>
     </div>`;
 }
@@ -44,7 +45,7 @@ function buildRelatedTermsHtml(term, allTerms) {
 function buildRelatedBlogHtml(term) {
     if (!term.linked_blog_slug) return '';
     return `<div style="margin-top:2rem; padding: 1.5rem; background: rgba(155,89,182,0.08); border-left: 3px solid var(--color-primary); border-radius:0 12px 12px 0;">
-        <p style="margin:0; font-size:0.9rem; color:var(--color-text-mutated);">📖 <strong style="color:white;">Čtěte v blogu:</strong> <a href="../blog/${term.linked_blog_slug}.html" style="color:var(--color-primary); text-decoration:underline;">Přejít na článek →</a></p>
+        <p style="margin:0; font-size:0.9rem; color:var(--color-text-mutated);">${symbolMarkup('book',true)} <strong style="color:white;">Čtěte v blogu:</strong> <a href="../blog/${term.linked_blog_slug}.html" style="color:var(--color-primary); text-decoration:underline;">Přejít na článek →</a></p>
     </div>`;
 }
 
@@ -65,11 +66,11 @@ function generate() {
                 <div class="feature-title">${feature.label}</div>
             </a>
             <a href="../blog.html" class="feature-card">
-                <div class="feature-icon">📝</div>
+                <div class="feature-icon">${symbolMarkup('pen')}</div>
                 <div class="feature-title">Blog</div>
             </a>
             <a href="../slovnik.html" class="feature-card">
-                <div class="feature-icon">📖</div>
+                <div class="feature-icon">${symbolMarkup('book')}</div>
                 <div class="feature-title">Celý Slovník</div>
             </a>`;
 

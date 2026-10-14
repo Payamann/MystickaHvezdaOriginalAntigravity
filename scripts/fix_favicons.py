@@ -1,12 +1,7 @@
 import glob
 
 
-FAVICON_SVG = (
-    "<link rel=\"icon\" type=\"image/svg+xml\" "
-    "href=\"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' "
-    "viewBox='0 0 100 100'><text y='.9em' font-size='90'>"
-    "%F0%9F%94%AE</text></svg>\">"
-)
+FAVICON_SVG = '<link rel="icon" type="image/svg+xml" href="/img/icons/mh-favicon.svg">'
 
 SKIP = [
     ".claude",

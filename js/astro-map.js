@@ -573,11 +573,11 @@ function showError(message) {
         // If message is a safe HTML string from our code (premium gate), allow it
         // Otherwise use textContent for user-facing strings
         if (message.includes('class="btn')) {
-            errorDiv.innerHTML = `<span class="error-icon">⚠️</span>${message}`;
+            errorDiv.innerHTML = `<span class="error-icon"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#warning"></use></svg></span>${message}`;
         } else {
             const icon = document.createElement('span');
             icon.className = 'error-icon';
-            icon.textContent = '⚠️';
+            icon.innerHTML = "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#warning\"></use></svg>";
             const p = document.createElement('p');
             p.textContent = message;
             errorDiv.append(icon, p);

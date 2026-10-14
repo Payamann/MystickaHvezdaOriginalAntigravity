@@ -3,9 +3,11 @@
  * Provides offline caching with stale-while-revalidate strategy
  */
 
-const CACHE_NAME = 'mysticka-hvezda-3cd3bc00d7b3';
+const CACHE_NAME = 'mysticka-hvezda-c516824bad30';
 const MAX_RUNTIME_CACHE_SIZE = 150;
 const STATIC_ASSETS = [
+    '/img/icons/mh-symbols.svg',
+    '/img/icons/mh-favicon.svg',
     '/fonts/local-fonts.css',
     '/fonts/cinzel-latin-ext.woff2',
     '/fonts/cinzel-latin.woff2',

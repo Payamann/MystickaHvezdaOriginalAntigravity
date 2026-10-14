@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-14",
+  "changedHtml": 919,
+  "svgInstancesInChangedHtml": 329,
+  "spriteIds": 51,
+  "preserved": [
+    "title",
+    "h1",
+    "canonical",
+    "anchor URLs",
+    "data attributes",
+    "structured data"
+  ],
+  "failures": [],
+  "manual": {
+    "horoscopeDesktop1280": "PASS: golden icons, native link names and keyboard focus",
+    "horoscopeMobile390": "PASS: width390/scroll382",
+    "dictionaryDesktop": "PASS: three nav icons and link focus",
+    "testIndexDesktop": "SVG icons loaded; pre-existing crowded header noted",
+    "spriteOverview": "51 vectors visually inspected; bird silhouette refined",
+    "profileGuest": "PASS: star SVG 48×48 in actual guest state",
+    "footer": "PASS: three SVGs 22×22 with retained labels and keyboard focus; stale cached HTML resolved by component URL version"
+  },
+  "code": {
+    "changedSources": [
+      "auth-client.js: only fixed local status SVG",
+      "astro-map.js: only fixed warning SVG",
+      "mentor.js: only lock SVG",
+      "onboarding.js: only neutral chart SVG",
+      "components.js: footer resource version only"
+    ],
+    "untrustedMessages": "still textContent; SVG strings are fixed local constants",
+    "syntax": "PASS",
+    "svgXml": "PASS: sprite and favicon",
+    "migrationIdempotence": "PASS: changed0/unmapped0",
+    "deployment": "not performed",
+    "assetHistory": 845
+  }
+}

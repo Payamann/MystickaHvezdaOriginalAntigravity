@@ -461,7 +461,7 @@ function activateQuickOnboardingFlow() {
     document.body.classList.add('onboarding-quick-flow');
     if (title) title.textContent = 'Vyber své znamení';
     if (subtitle) subtitle.textContent = 'Jeden výběr a otevřeme dnešní osobní horoskop. Bez dalšího dotazníku.';
-    if (stepIcon) stepIcon.textContent = '✦';
+    if (stepIcon) stepIcon.innerHTML = "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#chart\"></use></svg>";
     if (privacyNote) privacyNote.textContent = 'Znamení uložíme jen pro osobní nastavení. Platební údaje tu nezadáváš.';
     if (quickFinishBtn) quickFinishBtn.hidden = false;
     if (quickNote) quickNote.hidden = false;

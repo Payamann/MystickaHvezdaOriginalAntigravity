@@ -387,7 +387,7 @@ function buildDetailPage(name, card, relatedCards = []) {
     <meta name="twitter:title" content="${escapeHtml(title)}">
     <meta name="twitter:description" content="${escapeHtml(description)}">
     <meta name="twitter:image" content="${escapeHtml(previewImage)}">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔮</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="/img/icons/mh-favicon.svg">
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/img/icon-192.webp">
     <link rel="stylesheet" href="/fonts/local-fonts.css">
@@ -535,7 +535,7 @@ ${jsonLd([articleSchema, breadcrumbSchema, faqSchema])}
                             <option value="Ryby">♓ Ryby (19.2–20.3)</option>
                         </select>
                         <button id="horoscope-subscribe-btn" type="button"
-                            class="btn btn--primary mh-email-bridge__btn">✨ Chci ranní horoskop</button>
+                            class="btn btn--primary mh-email-bridge__btn"> Chci ranní horoskop</button>
                     </div>
                     <p id="horoscope-subscribed-msg" class="mh-email-bridge__done" hidden>
                         ✅ Hotovo — zítra ráno ti přijde první horoskop.

@@ -423,7 +423,7 @@ function showTeaserResponse() {
         <p>Hvězdný průvodce zachytil vzorec: ptáš se na rozhodnutí, ale odpověď začíná u hranice, kterou teď chráníš.</p>
         <p class="blur-text">V plné odpovědi bys dostal jeden konkrétní další krok, návaznou otázku a propojení s předchozí historií chatu.</p>
         <div class="premium-lock-overlay">
-            <div class="lock-icon">🔒</div>
+            <div class="lock-icon"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#lock"></use></svg></div>
             <h3>Odemknout návazný krok</h3>
             <p>Zamčeno: konkrétní další krok k této otázce a navazující otázka pro pokračování.</p>
             <div class="mentor-paywall__actions">
@@ -518,7 +518,7 @@ function showPaywall() {
 
     overlay.innerHTML = `
         <div class="mentor-paywall">
-            <div class="mentor-paywall__icon">🔒</div>
+            <div class="mentor-paywall__icon"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#lock"></use></svg></div>
             <h2 class="mentor-paywall__title">Denní limit zdarma je vyčerpaný</h2>
             <p class="mentor-paywall__copy">
                 Zamčený výstup: navazující odpověď k poslední otázce, jeden konkrétní další krok a propojení s historií chatu.
