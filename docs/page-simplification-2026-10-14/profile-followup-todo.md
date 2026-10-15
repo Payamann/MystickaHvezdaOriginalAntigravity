@@ -2,7 +2,7 @@
 
 Zařazení do celého redesignu: [společný TODO webu](../web-redesign-todo.md). Tento soubor drží podrobné PF/PV úkoly účtu.
 
-15. 10. 2026 · kontrolovaný kandidát `007612ec` · **pouze review a dokumentace, bez oprav produktu a nasazení**.
+15. 10. 2026 · původní review kandidáta `007612ec`; následná místní realizace níže. **PF01 opraveno a ověřeno, bez nasazení.**
 
 Navazuje na [původní P01–P10](profile-authenticated-review.md) a [jejich implementaci](../profile-unification-2026-10-14/README.md). Dřívější opravy zde znovu nevydáváme za otevřené závady.
 
@@ -25,7 +25,9 @@ Nejslabší část je Přehled: kombinuje obecný denní tip, statistiky, checkl
 
 ### PF01 · P1 · Ochránit detail a jeho akce před opožděnou odpovědí
 
-- [ ] V detailu navázat načtený obsah i akce na stejné ID a aktuální požadavek. Během načítání/chyby vypnout mazání a oblíbené; opožděnou odpověď ignorovat po zavření nebo otevření jiného detailu.
+- [x] V detailu navázat načtený obsah i akce na stejné ID a aktuální požadavek. Během načítání/chyby vypnout mazání a oblíbené; opožděnou odpověď ignorovat po zavření nebo otevření jiného detailu.
+
+**Oprava a důkaz, 15. 10.:** pořadí požadavků a AbortController chrání obsah i chybový stav; nesouhlasící ID odpovědi se odmítne. Oblíbené a mazání jsou dostupné až po načtení a během změny se vypnou. Dokončení staré akce neupraví nově otevřený jiný detail. Při přepnutí se nehromadí posluchače klávesnice a fokus se vrátí na původní spouštěč. [Regrese](../../tests/frontend/profile-modal.test.js): **11/11** kontrol nad skutečným modulem s modelovým DOM a řízenými odpověďmi; žádné reálné mazání. Skutečný klient v lokální mock aplikaci: otevření detailu, odebrání hvězdičky a Escape s návratem fokusu prošly. [Důkaz a omezení](../profile-unification-2026-10-14/pf01/README.md).
 
 **Důkaz: zdroj.** `js/profile/modal.js:30–63` nastaví `currentReadingId` před GET, ale výsledek nekontroluje proti aktuálnímu ID ani pořadí požadavku. `deleteReading` a `toggleFavoriteModal` používají aktuální ID, zatímco zobrazený obsah může patřit opožděné odpovědi jiného požadavku. Po chybě navíc akce nezmizí. Toto je riziko práce s nesprávným záznamem v tomtéž účtu, nikoli potvrzený přístup k cizím datům.
 
@@ -115,4 +117,4 @@ PF01 → společný stav PF02/PF03 → dostupnost poznámek a checklist PF04/PF0
 
 PF11 zařadit k filtrům PF04 a ověřit pomocí PV04. PF12 je volitelná produktová návaznost až po opravě funkčních chyb; není blokací nynějšího doručování ani důvodem rozšiřovat členství.
 
-Stav: **TODO zapsané, produktový kód v této kontrole nezměněný.** Soukromá produkční data nebyla načítaná. Snímky a záznam kontrolního pokusu jsou v [modelových podkladech](../profile-unification-2026-10-14/profile-followup/verification.json); tento konkrétní pokus změnu témat po uložení nastavení nepotvrdil, a proto není veden jako potvrzená UI závada.
+Stav: **PF01 místně hotovo; ostatní PF/PV zůstávají otevřené podle svých checkboxů. Bez nového nasazení.** Soukromá produkční data nebyla načítaná. Snímky a záznam původního kontrolního pokusu jsou v [modelových podkladech](../profile-unification-2026-10-14/profile-followup/verification.json); tento konkrétní pokus změnu témat po uložení nastavení nepotvrdil, a proto není veden jako potvrzená UI závada.

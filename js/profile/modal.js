@@ -9,6 +9,10 @@ import { loadFavorites } from './favorites.js';
 // State
 let currentReadingId = null;
 let currentReadingIsFavorite = false;
+let loadedReadingId = null;
+let detailVersion = 0;
+let detailRequest = null;
+let modalActionPending = false;
 let previousFocus = null;
 let activeModal = null;
 let focusTrapHandler = null;
@@ -32,59 +36,98 @@ export async function viewReading(id) {
     const content = document.getElementById('reading-modal-content');
     if (!modal || !content) return;
 
+    const version = ++detailVersion;
+    detailRequest?.abort();
+    const request = new AbortController();
+    detailRequest = request;
     currentReadingId = id;
+    loadedReadingId = null;
+    currentReadingIsFavorite = false;
+    modalActionPending = false;
+    updateFavoriteButton();
+    updateModalActions();
     modal.hidden = false;
     modal.classList.add('is-visible');
-    content.innerHTML = '<p class="reading-modal__loading">Načítání...</p>';
+    content.setAttribute('aria-busy', 'true');
+    content.innerHTML = '<p class="reading-modal__loading" role="status">Načítání...</p>';
 
     // Trap focus inside modal
     trapFocus(modal);
 
     try {
-        const response = await fetch(`${apiUrl()}/user/readings/${id}`, {
+        const response = await fetch(`${apiUrl()}/user/readings/${encodeURIComponent(id)}`, {
             credentials: 'include',
-            headers: authHeaders()
+            headers: authHeaders(),
+            signal: request.signal
         });
 
         if (!response.ok) throw new Error('Failed to fetch reading');
 
         const data = await response.json();
+        if (version !== detailVersion) return;
         const reading = data.reading;
-
-        currentReadingIsFavorite = reading.is_favorite;
-        updateFavoriteButton();
+        if (!reading || String(reading.id) !== String(id)) throw new Error('Invalid reading detail');
 
         content.innerHTML = renderReadingContent(reading);
         bindReadingImageFallbacks(content);
         bindReadingFeedback(content, reading);
+        loadedReadingId = id;
+        currentReadingIsFavorite = Boolean(reading.is_favorite);
+        updateFavoriteButton();
 
     } catch (error) {
+        if (version !== detailVersion) return;
+        loadedReadingId = null;
         console.error('Error loading reading:', error);
-        content.innerHTML = '<p class="reading-modal__error">Nepodařilo se načíst výklad.</p>';
+        content.innerHTML = '<p class="reading-modal__error" role="alert">Nepodařilo se načíst výklad. Zavři detail a zkus ho otevřít znovu.</p>';
+    } finally {
+        if (version === detailVersion) {
+            detailRequest = null;
+            content.setAttribute('aria-busy', 'false');
+            updateModalActions();
+        }
     }
 }
 
 export function closeReadingModal() {
+    ++detailVersion;
+    detailRequest?.abort();
+    detailRequest = null;
     const modal = document.getElementById('reading-modal');
     if (modal) {
         modal.classList.remove('is-visible');
         modal.hidden = true;
     }
     currentReadingId = null;
+    loadedReadingId = null;
+    modalActionPending = false;
+    document.getElementById('reading-modal-content')?.setAttribute('aria-busy', 'false');
+    updateModalActions();
     releaseFocus();
 }
 
 export async function toggleFavoriteModal() {
-    if (!currentReadingId) return;
-    const favoriteState = await toggleFavorite(currentReadingId);
-    if (favoriteState === undefined) return;
-    currentReadingIsFavorite = favoriteState;
-    updateFavoriteButton();
+    if (!canUseModalActions()) return;
+    const id = loadedReadingId;
+    const version = detailVersion;
+    modalActionPending = true;
+    updateModalActions();
+    try {
+        const favoriteState = await toggleFavorite(id);
+        if (version !== detailVersion || favoriteState === undefined) return;
+        currentReadingIsFavorite = favoriteState;
+        updateFavoriteButton();
+    } finally {
+        if (version === detailVersion) {
+            modalActionPending = false;
+            updateModalActions();
+        }
+    }
 }
 
 export async function toggleFavorite(id, buttonEl = null) {
     try {
-        const response = await fetch(`${apiUrl()}/user/readings/${id}/favorite`, {
+        const response = await fetch(`${apiUrl()}/user/readings/${encodeURIComponent(id)}/favorite`, {
             method: 'PATCH',
             credentials: 'include',
             headers: await authHeadersWithCsrf()
@@ -129,14 +172,18 @@ export async function toggleFavorite(id, buttonEl = null) {
 }
 
 export async function deleteReading() {
-    if (!currentReadingId) return;
+    if (!canUseModalActions()) return;
+    const id = loadedReadingId;
+    const version = detailVersion;
 
     if (!confirm('Opravdu chceš smazat tento výklad? Tuto akci nelze vrátit.')) {
         return;
     }
 
+    modalActionPending = true;
+    updateModalActions();
     try {
-        const response = await fetch(`${apiUrl()}/user/readings/${currentReadingId}`, {
+        const response = await fetch(`${apiUrl()}/user/readings/${encodeURIComponent(id)}`, {
             method: 'DELETE',
             credentials: 'include',
             headers: await authHeadersWithCsrf()
@@ -145,7 +192,7 @@ export async function deleteReading() {
         if (!response.ok) throw new Error('Failed to delete reading');
 
         window.Auth?.showToast?.('Smazáno', 'Výklad byl smazán.', 'success');
-        closeReadingModal();
+        if (version === detailVersion) closeReadingModal();
 
         // Reload readings to refresh list and stats
         const readings = await loadReadings();
@@ -154,7 +201,23 @@ export async function deleteReading() {
     } catch (error) {
         console.error('Error deleting reading:', error);
         window.Auth?.showToast?.('Chyba', 'Nepodařilo se smazat výklad.', 'error');
+    } finally {
+        if (version === detailVersion) {
+            modalActionPending = false;
+            updateModalActions();
+        }
     }
+}
+
+function canUseModalActions() {
+    return loadedReadingId !== null && loadedReadingId === currentReadingId && !modalActionPending;
+}
+
+function updateModalActions() {
+    ['modal-favorite-btn', 'modal-delete-btn'].forEach(id => {
+        const button = document.getElementById(id);
+        if (button) button.disabled = !canUseModalActions();
+    });
 }
 
 function updateFavoriteButton() {
@@ -166,6 +229,7 @@ function updateFavoriteButton() {
 }
 
 function trapFocus(modal) {
+    if (activeModal === modal) return;
     previousFocus = document.activeElement;
     activeModal = modal;
 

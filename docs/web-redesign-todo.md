@@ -142,7 +142,7 @@ Tyto body už jsou doložené v navazovaných auditech. Nejde o nově vymyšlen�
 
 ## Nejbližší ohraničený krok
 
-**PF01: opravit souběh načítání detailu a vypnutí jeho akcí v načítání/chybě.** Ověřit opožděné A po otevření B na modelových datech a uložit checkpoint. Potom PF02/PF03 a souběžně ohraničená příprava W02/W03, pokud řeší jiné soubory. Přechod k rozsáhlému kosmetickému přepisu všech stránek není první krok.
+**PF02/PF03: sjednotit aktuální stav profilu a rozsah vlastních poznámek.** PF01 byl 15. 10. místně opraven: 11/11 cílených regresí a skutečný profil nad syntetickou databází; [checkpoint](profile-unification-2026-10-14/pf01/README.md). Další krok má odstranit staré reference po změně záznamu a oddělit profilové podklady od první stránky historie. Rozsáhlý kosmetický přepis všech stránek není první krok.
 
 ## Co je již doloženě hotové
 
