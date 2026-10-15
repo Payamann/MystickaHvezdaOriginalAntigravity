@@ -46,9 +46,9 @@ const PLAN_TYPE_ALIASES = {
 
 const FALLBACK_PLAN_LABELS = {
     free: 'Poutn\u00edk',
-    premium_monthly: 'Hv\u011bzdn\u00fd Pr\u016fvodce',
-    exclusive_monthly: 'Osv\u00edcen\u00ed',
-    vip_majestrat: 'VIP Majest\u00e1t'
+    premium_monthly: '\u010clenstv\u00ed Mystick\u00e9 Hv\u011bzdy',
+    exclusive_monthly: '\u010clenstv\u00ed Mystick\u00e9 Hv\u011bzdy',
+    vip_majestrat: '\u010clenstv\u00ed Mystick\u00e9 Hv\u011bzdy'
 };
 
 const FALLBACK_PLAN_PRICES_CZK = {
@@ -113,7 +113,7 @@ export async function loadPlanManifest() {
 export function formatPlanLabel(planType, options = {}) {
     const normalizedPlanType = normalizePlanType(planType);
     const manifestPlan = plansByType.get(normalizedPlanType);
-    const baseLabel = readablePlanName(manifestPlan?.name) || FALLBACK_PLAN_LABELS[normalizedPlanType] || normalizedPlanType || FALLBACK_PLAN_LABELS.free;
+    const baseLabel = FALLBACK_PLAN_LABELS[normalizedPlanType] || readablePlanName(manifestPlan?.name) || 'Přístup k výkladům';
 
     if (normalizedPlanType === 'free' && options.freeSuffix) {
         return `${baseLabel} (zdarma)`;
@@ -167,7 +167,7 @@ export function getReadingTitle(type) {
         'crystal-ball': 'Křišťálová koule',
         'daily-wisdom': 'Denní moudrost',
         'horoscope': 'Horoskop',
-        'journal': 'Manifestační deník',
+        'journal': 'Osobní poznámka',
         'medicine-wheel': 'Šamanské kolo',
         'natal': 'Natální karta',
         'natal-chart': 'Natální karta',
@@ -178,6 +178,16 @@ export function getReadingTitle(type) {
         'tarot': 'Tarotový výklad'
     };
     return titles[type] || 'Výklad';
+}
+
+export function getReadingLabel(reading) {
+    if (reading?.type !== 'horoscope') return getReadingTitle(reading?.type);
+    let data = reading.data;
+    if (typeof data === 'string') {
+        try { data = JSON.parse(data); } catch { return 'Horoskop'; }
+    }
+    const periods = { daily: 'Denní horoskop', weekly: 'Týdenní horoskop', monthly: 'Měsíční horoskop', yearly: 'Roční horoskop' };
+    return [periods[data?.period] || 'Horoskop', data?.sign].filter(value => typeof value === 'string' && value).join(' · ');
 }
 // Get Zodiac Sign from birth date string
 export function getZodiacSign(dateStr) {

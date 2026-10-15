@@ -2,24 +2,65 @@
  * Reading history management
  */
 
-import { profileIconMarkup, escapeHtml, apiUrl, authHeaders, getReadingIcon, getReadingTitle } from './shared.js';
+import { profileIconMarkup, escapeHtml, apiUrl, authHeaders, getReadingIcon, getReadingLabel } from './shared.js';
 
 // State
 let allReadings = [];
 let currentFilter = 'all';
 let displayedCount = 0;
+let visibleReadings = [];
+let serverPage = 1;
+let serverTotal = 0;
+let serverPages = 0;
+let readingSummary = null;
+let requestVersion = 0;
+let loadingMore = false;
 const PAGE_SIZE = 10;
 const FILTER_ALIASES = {
     'crystal-ball': ['crystal-ball', 'crystal'],
     'natal-chart': ['natal-chart', 'natal']
 };
 let emptyHistoryViewTracked = false;
-let historyNextStepViewTracked = false;
+
 let activationHeroViewTracked = false;
 
 // Getter for allReadings (used by modal.js)
 export function getAllReadings() {
     return allReadings;
+}
+
+export function getReadingSummary() { return readingSummary; }
+
+export async function loadJournalReadings() {
+    try { return (await fetchPage(1, 'journal')).readings; }
+    catch { return null; }
+}
+
+export function updateFavoriteSummary(wasFavorite, isFavorite) {
+    if (readingSummary && wasFavorite !== isFavorite) {
+        readingSummary.favorites = Math.max(0, readingSummary.favorites + (isFavorite ? 1 : -1));
+    }
+}
+
+async function fetchPage(page, filter = 'all', summary = false) {
+    const query = new URLSearchParams({ page: String(page), limit: '20' });
+    if (filter !== 'all') query.set('type', (FILTER_ALIASES[filter] || [filter]).join(','));
+    if (summary) query.set('summary', 'true');
+    const response = await fetch(`${apiUrl()}/user/readings?${query}`, { credentials: 'include', headers: authHeaders() });
+    if (!response.ok) throw new Error('Nepodařilo se načíst historii.');
+    const data = await response.json();
+    if (!data.success || !Array.isArray(data.readings)) throw new Error('Nepodařilo se načíst historii.');
+    return data;
+}
+
+function acceptPage(data, append = false) {
+    const merge = (previous, next) => [...new Map([...previous, ...next].map(reading => [reading.id, reading])).values()];
+    visibleReadings = append ? merge(visibleReadings, data.readings) : data.readings;
+    allReadings = merge(allReadings, data.readings);
+    serverPage = data.pagination?.page || 1;
+    serverTotal = data.pagination?.total ?? visibleReadings.length;
+    serverPages = data.pagination?.totalPages || 1;
+    if (data.summary) readingSummary = data.summary;
 }
 
 // Setter for updating a reading (used by modal.js)
@@ -34,16 +75,15 @@ export async function loadReadings() {
     const container = document.getElementById('readings-list');
 
     try {
-        const response = await fetch(`${apiUrl()}/user/readings`, {
-            credentials: 'include',
-            headers: authHeaders()
-        });
-
-        if (!response.ok) throw new Error('Failed to load readings');
-
-        const data = await response.json();
-        allReadings = data.readings || [];
-        displayedCount = 0;
+        const version = ++requestVersion;
+        currentFilter = 'all';
+        const select = document.getElementById('readings-filter');
+        if (select) select.value = 'all';
+        const data = await fetchPage(1, 'all', true);
+        if (version !== requestVersion) return allReadings;
+        allReadings = [];
+        acceptPage(data);
+        displayedCount = PAGE_SIZE;
 
         renderReadings();
         return allReadings;
@@ -64,86 +104,29 @@ export async function loadReadings() {
     }
 }
 
-export function handleFilterChange(e) {
+export async function handleFilterChange(e) {
     currentFilter = e.target.value;
-    displayedCount = 0;
-    renderReadings();
+    const version = ++requestVersion;
+    const container = document.getElementById('readings-list');
+    if (container) container.innerHTML = '<p class="profile-loading" role="status">Načítání…</p>';
+    updatePagination(0, 0);
+    try {
+        const data = await fetchPage(1, currentFilter);
+        if (version !== requestVersion) return;
+        acceptPage(data);
+        displayedCount = PAGE_SIZE;
+        renderReadings();
+    } catch {
+        if (version !== requestVersion) return;
+        if (container) {
+            container.innerHTML = '<p role="alert">Nepodařilo se načíst historii.</p><button type="button" class="btn btn--glass btn--sm" data-readings-action="retry-filter">Zkusit znovu</button>';
+            container.querySelector('button')?.addEventListener('click', () => handleFilterChange({ target: { value: currentFilter } }));
+        }
+    }
 }
 
 function getFilteredReadings() {
-    if (currentFilter === 'all') return allReadings;
-    const acceptedTypes = FILTER_ALIASES[currentFilter] || [currentFilter];
-    return allReadings.filter(r => acceptedTypes.includes(r.type));
-}
-
-function latestReading(readings) {
-    return [...readings].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0] || null;
-}
-
-function historyNextStepConfig(reading) {
-    const type = reading?.type || 'reading';
-
-    if (type === 'synastry') {
-        return {
-            title: 'Navázat jednou konkrétní vztahovou otázkou',
-            description: 'Když už znáš dynamiku vztahu, další krok je krátká otázka ano/ne k tomu, co teď udělat.',
-            href: 'tarot-ano-ne.html?source=profile_history_next_step&feature=tarot_yes_no&intent=relationship_follow_up',
-            label: 'Zeptat se tarotu ano/ne',
-            feature: 'tarot_yes_no',
-            intent: 'relationship_follow_up'
-        };
-    }
-
-    if (type === 'tarot') {
-        return {
-            title: 'Položit navazující otázku',
-            description: 'Deník má největší hodnotu, když na první odpověď navážeš jedním dalším konkrétním krokem.',
-            href: 'tarot-ano-ne.html?source=profile_history_next_step&feature=tarot_yes_no&intent=follow_up',
-            label: 'Položit další otázku',
-            feature: 'tarot_yes_no',
-            intent: 'follow_up'
-        };
-    }
-
-    return {
-        title: 'Proměnit výklad v další krok',
-        description: 'Vyber si jednu praktickou otázku a nech Deník držet souvislost mezi odpověďmi.',
-        href: 'partnerska-shoda.html?source=profile_history_next_step&feature=partnerska_detail&intent=relationship_follow_up',
-        label: 'Prověřit vztahové téma',
-        feature: 'partnerska_detail',
-        intent: 'relationship_follow_up'
-    };
-}
-
-function renderHistoryNextStep(readings) {
-    if (currentFilter !== 'all' || readings.length === 0) return '';
-
-    const latest = latestReading(readings);
-    const nextStep = historyNextStepConfig(latest);
-
-    if (!historyNextStepViewTracked) {
-        historyNextStepViewTracked = true;
-        window.MH_ANALYTICS?.trackEvent?.('profile_history_next_step_viewed', {
-            source: 'profile_history',
-            feature: 'profile_history',
-            reading_count: readings.length,
-            latest_type: latest?.type || null
-        });
-    }
-
-    return `
-        <div class="profile-history-next-step">
-            <div class="profile-history-next-step__copy">
-                <span class="profile-history-next-step__eyebrow">Další krok po uložení</span>
-                <strong>${escapeHtml(nextStep.title)}</strong>
-                <p>${escapeHtml(nextStep.description)}</p>
-            </div>
-            <div class="profile-history-next-step__actions">
-                ${latest?.id ? `<button class="btn btn--glass btn--sm" data-reading-action="view" data-reading-id="${escapeHtml(latest.id)}">Vrátit se k poslednímu výkladu</button>` : ''}
-                <a href="${escapeHtml(nextStep.href)}" class="btn btn--primary btn--sm" data-profile-history-next-step="${escapeHtml(nextStep.intent)}" data-analytics-cta="profile_history_next_step" data-analytics-feature="${escapeHtml(nextStep.feature)}">${escapeHtml(nextStep.label)}</a>
-            </div>
-        </div>
-    `;
+    return visibleReadings;
 }
 
 function renderActivationHero() {
@@ -184,7 +167,7 @@ export function renderReadings() {
 
     const filtered = getFilteredReadings();
 
-    if (currentFilter === 'all' && allReadings.length === 0) {
+    if (currentFilter === 'all' && serverTotal === 0) {
         container.innerHTML = renderActivationHero();
         updatePagination(0, 0);
         return;
@@ -220,16 +203,15 @@ export function renderReadings() {
     }
 
     // Show paginated results
-    const toShow = filtered.slice(0, displayedCount + PAGE_SIZE);
-    displayedCount = toShow.length;
+    const toShow = filtered.slice(0, displayedCount);
 
-    container.innerHTML = `${renderHistoryNextStep(filtered)}${toShow.map(reading => `
+    container.innerHTML = `${toShow.map(reading => `
         <div class="reading-item card" data-reading-id="${escapeHtml(reading.id)}" role="button" tabindex="0">
             <div class="reading-item__inner">
                 <div class="reading-item__left">
                     <span class="reading-item__icon" aria-hidden="true">${getReadingIcon(reading.type)}</span>
                     <div>
-                        <strong>${escapeHtml(getReadingTitle(reading.type))}</strong>
+                        <strong>${escapeHtml(getReadingLabel(reading))}</strong>
                         <p class="reading-item__date">
                             ${new Date(reading.created_at).toLocaleDateString('cs-CZ', {
         day: 'numeric', month: 'long', year: 'numeric',
@@ -242,7 +224,7 @@ export function renderReadings() {
                     <button class="btn btn--sm btn--glass" data-reading-action="favorite" data-reading-id="${escapeHtml(reading.id)}"
                         title="${reading.is_favorite ? 'Odebrat z oblíbených' : 'Přidat do oblíbených'}"
                         aria-label="${reading.is_favorite ? 'Odebrat z oblíbených' : 'Přidat do oblíbených'}">
-                        ${reading.is_favorite ? '⭐' : '☆'}
+                        ${reading.is_favorite ? '★' : '☆'}
                     </button>
                     <button class="btn btn--sm btn--glass" data-reading-action="view" data-reading-id="${escapeHtml(reading.id)}" aria-label="Zobrazit detail">Zobrazit</button>
                 </div>
@@ -250,11 +232,30 @@ export function renderReadings() {
         </div>
     `).join('')}`;
 
-    updatePagination(displayedCount, filtered.length);
+    updatePagination(toShow.length, serverTotal);
+    window.lucide?.createIcons?.();
 }
 
-export function showMoreReadings() {
-    renderReadings();
+export async function showMoreReadings() {
+    if (loadingMore) return;
+    const version = requestVersion;
+    const button = document.getElementById('readings-load-more');
+    loadingMore = true;
+    if (button) { button.disabled = true; button.textContent = 'Načítání…'; }
+    try {
+        if (displayedCount >= visibleReadings.length && serverPage < serverPages) {
+            const data = await fetchPage(serverPage + 1, currentFilter);
+            if (version !== requestVersion) return;
+            acceptPage(data, true);
+        }
+        displayedCount += PAGE_SIZE;
+        renderReadings();
+    } catch {
+        if (version === requestVersion && button) button.textContent = 'Načtení selhalo · zkusit znovu';
+    } finally {
+        loadingMore = false;
+        if (button) button.disabled = false;
+    }
 }
 
 function updatePagination(shown, total) {

@@ -36,11 +36,31 @@ document.addEventListener('DOMContentLoaded', () => {
         return Math.max(0, Number(PLAN_COPY[planId]?.trialDays || 0));
     };
 
-    const getCheckoutPromiseCopy = (planId) => {
+    const getPlanPriceLabel = (planId) => {
+        const plan = planManifestById.get(planId);
+        if (!plan) return '';
+        const amount = typeof plan.priceLabel === 'string' && plan.priceLabel.trim()
+            ? plan.priceLabel.trim()
+            : typeof plan.priceCzk === 'number' && Number.isFinite(plan.priceCzk)
+                ? `${new Intl.NumberFormat('cs-CZ').format(plan.priceCzk)} Kč`
+                : '';
+        if (!amount) return '';
+        const period = plan.interval === 'month' ? '/měsíc' : plan.interval === 'year' ? '/rok' : '';
+        return `${amount}${period}`;
+    };
+
+    const getCheckoutPromiseCopy = (planId, registerMode = isRegisterMode) => {
         const trialDays = getPlanTrialDays(planId);
-        return trialDays > 0
-            ? `Po registraci rovnou otevřeme bezpečný checkout — prvních ${trialDays} dní zdarma.`
-            : 'Po registraci rovnou otevřeme bezpečný checkout. Cenu a období uvidíš ve Stripe před potvrzením.';
+        const priceLabel = getPlanPriceLabel(planId);
+        const priceCopy = priceLabel
+            ? `${trialDays > 0 ? 'Po zkoušce' : 'Cena členství:'} ${priceLabel}.`
+            : 'Cenu a období uvidíš ve Stripe před potvrzením.';
+        if (registerMode) {
+            return trialDays > 0
+                ? `Po registraci otevřeme bezpečný checkout s ${trialDays} dny zdarma. Kartu zadáš až ve Stripe checkoutu. ${priceCopy}`
+                : `Po registraci otevřeme bezpečný checkout. ${priceCopy}`;
+        }
+        return `Po přihlášení otevřeme bezpečný checkout. ${trialDays > 0 ? `Zkušební období má ${trialDays} dní; jeho dostupnost potvrdí checkout. ` : ''}${priceCopy}`;
     };
 
     const loadPlanManifest = async () => {
@@ -109,193 +129,193 @@ document.addEventListener('DOMContentLoaded', () => {
     const SIGNUP_CONTEXT_BY_FEATURE = {
         account: {
             title: 'Účet zdarma bez zdržení',
-            copy: 'Po registraci vás provedeme prvním nastavením a pošleme k osobnímu výkladu, který dává smysl jako první.',
+            copy: 'Po registraci tě provedeme prvním nastavením a pošleme k osobnímu výkladu, který dává smysl jako první.',
             stepTitle: 'Otevřeme první osobní krok',
-            stepCopy: 'Začnete krátkým výběrem znamení a hned potom konkrétním výkladem.'
+            stepCopy: 'Začneš krátkým výběrem znamení a hned potom konkrétním výkladem.'
         },
         premium_membership: {
-            title: 'Premium bez ztráty kontextu',
-            copy: 'Po registraci vás vrátíme k plánu, který jste si vybrali, aby šlo pokračovat bez hledání.',
-            stepTitle: 'Vrátíme vás k vybranému plánu',
-            stepCopy: 'Registrace drží plán i zdroj kliknutí, takže další krok zůstane jasný.'
+            title: 'Premium bez přerušení',
+            copy: 'Po registraci tě vrátíme k vybranému plánu, aby šlo pokračovat bez hledání.',
+            stepTitle: 'Vrátíme tě k vybranému plánu',
+            stepCopy: 'Vybraný plán zůstane zachovaný, takže další krok bude jasný.'
         },
         subscription_management: {
-            title: 'Předplatné bez ztráty kontextu',
-            copy: 'Po přihlášení nebo registraci se vrátíte ke správě předplatného a dalšímu kroku kolem plánu.',
-            stepTitle: 'Vrátíme vás ke správě plánu',
-            stepCopy: 'Kontext plánu zůstane zachovaný i po dokončení auth kroku.'
+            title: 'Předplatné bez přerušení',
+            copy: 'Po přihlášení nebo registraci se vrátíš ke správě předplatného a dalšímu kroku kolem plánu.',
+            stepTitle: 'Vrátíme tě ke správě plánu',
+            stepCopy: 'Vybraný plán zůstane zachovaný i po přihlášení nebo registraci.'
         },
         vip_membership: {
-            title: 'Členství bez ztráty kontextu',
+            title: 'Členství bez přerušení',
             copy: 'Po registraci můžeš pokračovat ke členství s Keltským křížem a dalšími výklady.',
             stepTitle: 'Vrátíme tě ke členství',
-            stepCopy: 'Neztratíte cestu z homepage ani plán, který jste otevřeli.'
+            stepCopy: 'Neztratíš cestu z úvodní stránky ani vybraný plán.'
         },
         astrocartography: {
             title: 'Astrokartografie po registraci',
-            copy: 'Po vytvoření účtu budete pokračovat k astro mapě a místům, která s vámi astrologicky rezonují.',
+            copy: 'Po vytvoření účtu budeš pokračovat k astro mapě a místům, která s tebou astrologicky rezonují.',
             stepTitle: 'Otevřeme astro mapu',
-            stepCopy: 'Začnete nástrojem, kvůli kterému jste klikli.'
+            stepCopy: 'Začneš nástrojem, který tě sem přivedl.'
         },
         daily_guidance: {
             title: 'Denní vedení po registraci',
-            copy: 'Po vytvoření účtu vás pošleme rovnou na horoskopy, kde získáte první osobní vhled.',
+            copy: 'Po vytvoření účtu tě pošleme rovnou na horoskopy, kde získáš první osobní vhled.',
             stepTitle: 'Otevřeme denní horoskopy',
-            stepCopy: 'Začnete tím nejrychlejším: dnešním vedením bez čekání.'
+            stepCopy: 'Začneš tím nejrychlejším: dnešním vedením bez čekání.'
         },
         horoskopy: {
             title: 'Osobní horoskopy po registraci',
-            copy: 'Po vytvoření účtu budete pokračovat na horoskopy a vezmete si první denní vhled.',
+            copy: 'Po vytvoření účtu budeš pokračovat na horoskopy a vezmeš si první denní vhled.',
             stepTitle: 'Otevřeme osobní horoskopy',
-            stepCopy: 'První hodnota přijde hned po registraci, ne až v profilu.'
+            stepCopy: 'První výklad přijde hned po registraci, ne až na stránce profilu.'
         },
         weekly_horoscope: {
             title: 'Týdenní horoskop po registraci',
-            copy: 'Po vytvoření účtu budete pokračovat k horoskopům a můžete otevřít širší týdenní vedení.',
+            copy: 'Po vytvoření účtu budeš pokračovat k horoskopům a můžeš otevřít širší týdenní vedení.',
             stepTitle: 'Otevřeme horoskopy',
-            stepCopy: 'Začnete denním vhledem a snadno přejdete na týdenní vedení.'
+            stepCopy: 'Začneš denním vhledem a snadno přejdeš na týdenní vedení.'
         },
         monthly_horoscope: {
             title: 'Měsíční horoskop po registraci',
-            copy: 'Po vytvoření účtu budete pokračovat k horoskopům a můžete otevřít širší měsíční vedení.',
+            copy: 'Po vytvoření účtu budeš pokračovat k horoskopům a můžeš otevřít širší měsíční vedení.',
             stepTitle: 'Otevřeme horoskopy',
-            stepCopy: 'Začnete denním vhledem a snadno přejdete na měsíční vedení.'
+            stepCopy: 'Začneš denním vhledem a snadno přejdeš na měsíční vedení.'
         },
         lunar_calendar: {
             title: 'Lunární kalendář po registraci',
-            copy: 'Po vytvoření účtu budete pokračovat k lunárnímu kalendáři a vezmete si z dnešní fáze jeden praktický krok.',
+            copy: 'Po vytvoření účtu budeš pokračovat k lunárnímu kalendáři a vezmeš si z dnešní fáze jeden praktický krok.',
             stepTitle: 'Otevřeme lunární kalendář',
-            stepCopy: 'Začnete konkrétním rytmem dne, ne prázdným profilem.'
+            stepCopy: 'Začneš konkrétním rytmem dne, ne prázdnou stránkou.'
         },
         zodiac_signs: {
             title: 'Znamení zvěrokruhu po registraci',
-            copy: 'Po vytvoření účtu budete pokračovat k přehledu znamení a můžete si vybrat osobní vstup do horoskopů.',
+            copy: 'Po vytvoření účtu budeš pokračovat k přehledu znamení a můžeš si vybrat osobní vstup do horoskopů.',
             stepTitle: 'Otevřeme znamení zvěrokruhu',
-            stepCopy: 'Navážete na téma, které jste otevřeli, a rychle najdete vlastní znamení.'
+            stepCopy: 'Navážeš na otevřené téma a rychle najdeš vlastní znamení.'
         },
         ritual_memory: {
             title: 'Paměť rituálu po registraci',
-            copy: 'Po vytvoření účtu se budete vracet k výkladům, reflexím a tématům, která se opravdu opakují.',
+            copy: 'Po vytvoření účtu se budeš vracet k výkladům, reflexím a tématům, která se opravdu opakují.',
             stepTitle: 'Otevřeme osobní profil',
-            stepCopy: 'Profil nebude prázdný archiv. Povede vás k prvnímu výkladu, reflexi a návratovému vzorci.'
+            stepCopy: 'Profil nebude prázdný archiv. Povede tě k prvnímu výkladu, reflexi a návratu k tématům.'
         },
         profile_history: {
             title: 'Historie výkladů po registraci',
-            copy: 'Po vytvoření účtu budete mít místo, kam ukládat výklady, zpětnou vazbu a večerní reflexe.',
+            copy: 'Po vytvoření účtu budeš mít místo, kam ukládat výklady, zpětnou vazbu a večerní reflexe.',
             stepTitle: 'Otevřeme osobní historii',
             stepCopy: 'Výklady nepůjdou do ztracena. Profil je propojí s dalším konkrétním krokem.'
         },
         another_reading: {
             title: 'Navazující výklad po registraci',
-            copy: 'Po vytvoření účtu budete pokračovat k dalšímu výkladu bez ztráty tématu, které jste právě označili.',
+            copy: 'Po vytvoření účtu budeš pokračovat k dalšímu výkladu bez ztráty právě zvoleného tématu.',
             stepTitle: 'Otevřeme další výklad',
             stepCopy: 'Zpětná vazba se neztratí a další výklad naváže na předchozí signál.'
         },
         tarot: {
             title: 'Tarotový výklad po registraci',
-            copy: 'Po vytvoření účtu budete pokračovat k tarotu a můžete si rovnou položit první otázku.',
+            copy: 'Po vytvoření účtu budeš pokračovat k tarotu a můžeš si rovnou položit první otázku.',
             stepTitle: 'Otevřeme tarotový výklad',
-            stepCopy: 'Navážete přímo na záměr, se kterým jste přišli.'
+            stepCopy: 'Navážeš přímo na svůj záměr.'
         },
         tarot_yes_no: {
             title: 'Uložíme výklad do Deníku',
-            copy: 'Po registraci se vrátíte do profilu a odpověď z Tarotu ano/ne přidáme do Deníku výkladů.',
+            copy: 'Po registraci se vrátíš do profilu a odpověď z Tarotu ano/ne přidáme do Deníku výkladů.',
             stepTitle: 'Otevřeme Deník výkladů',
-            stepCopy: 'Otázka, karta i odpověď zůstanou pohromadě, takže se k nim můžete vrátit.'
+            stepCopy: 'Otázka, karta i odpověď zůstanou pohromadě, takže se k nim můžeš vrátit.'
         },
         tarot_love: {
             title: 'Tarot na lásku po registraci',
-            copy: 'Po vytvoření účtu se vrátíte k tématu vztahu a můžete pokračovat v hlubším výkladu.',
+            copy: 'Po vytvoření účtu se vrátíš k tématu vztahu a můžeš pokračovat v hlubším výkladu.',
             stepTitle: 'Otevřeme tarot na lásku',
-            stepCopy: 'Registrace zachová vztahový záměr, se kterým jste přišli.'
+            stepCopy: 'Registrace zachová tvůj vztahový záměr.'
         },
         dream_dictionary: {
             title: 'Výklad snu po registraci',
-            copy: 'Po vytvoření účtu navážete na symbol, který jste hledali, a můžete pokračovat k osobnímu výkladu.',
-            stepTitle: 'Vrátíme vás k výkladu snu',
+            copy: 'Po vytvoření účtu navážeš na symbol, který tě sem přivedl, a můžeš pokračovat k osobnímu výkladu.',
+            stepTitle: 'Vrátíme tě k výkladu snu',
             stepCopy: 'Hlavní motiv snu zůstane součástí dalšího osobního kroku.'
         },
         tarot_daily_card_profile_save: {
-            title: 'Uložte kartu dne do profilu',
-            copy: 'Vytvořte si účet zdarma a vraťte se ke stejné kartě dne, aby nezmizela jen jako jednorázový náhodný vhled.',
-            stepTitle: 'Vrátíme vás ke kartě dne',
-            stepCopy: 'Po registraci pokračujete u stejného symbolu a můžete si výklad uložit do profilu.'
+            title: 'Ulož si kartu dne do profilu',
+            copy: 'Vytvoř si účet zdarma a vrať se ke stejné kartě dne, aby nezmizela jako jednorázový náhodný vhled.',
+            stepTitle: 'Vrátíme tě ke kartě dne',
+            stepCopy: 'Po registraci pokračuješ u stejného symbolu a můžeš si výklad uložit do profilu.'
         },
         tarot_multi_card: {
             title: 'Vícekartový tarot po registraci',
-            copy: 'Po vytvoření účtu se vrátíte k tarotu a můžete pokračovat v hlubším výkladu.',
+            copy: 'Po vytvoření účtu se vrátíš k tarotu a můžeš pokračovat v hlubším výkladu.',
             stepTitle: 'Otevřeme vícekartový tarot',
-            stepCopy: 'Registrace naváže na výklad, který jste chtěli odemknout.'
+            stepCopy: 'Registrace naváže na výklad, který si chceš odemknout.'
         },
         daily_angel_card: {
             title: 'Karta dne po registraci',
-            copy: 'Po vytvoření účtu se vrátíte k dennímu symbolu z homepage a navážete na něj v Andělských kartách.',
-            stepTitle: 'Vrátíme vás k dennímu symbolu',
-            stepCopy: 'Nepřijdete o Kartu dne, kvůli které jste klikli.'
+            copy: 'Po vytvoření účtu se vrátíš k dennímu symbolu z úvodní stránky a navážeš na něj v Andělských kartách.',
+            stepTitle: 'Vrátíme tě k dennímu symbolu',
+            stepCopy: 'Karta dne zůstane dostupná i po registraci.'
         },
         andelske_karty_hluboky_vhled: {
             title: 'Andělské karty po registraci',
-            copy: 'Po vytvoření účtu se vrátíte k andělským kartám a můžete pokračovat v hlubším výkladu.',
-            stepTitle: 'Vrátíme vás k andělským kartám',
-            stepCopy: 'Registrace drží kontext výkladu a otevře další krok.'
+            copy: 'Po vytvoření účtu se vrátíš k andělským kartám a můžeš pokračovat v hlubším výkladu.',
+            stepTitle: 'Vrátíme tě k andělským kartám',
+            stepCopy: 'Registrace zachová téma výkladu a otevře další krok.'
         },
         partnerska_detail: {
             title: 'Partnerská shoda po registraci',
-            copy: 'Po vytvoření účtu budete pokračovat k partnerské shodě bez hledání správné stránky.',
+            copy: 'Po vytvoření účtu budeš pokračovat k partnerské shodě bez hledání správné stránky.',
             stepTitle: 'Otevřeme partnerskou shodu',
-            stepCopy: 'Začnete rovnou tam, kde vzniká první osobní výsledek.'
+            stepCopy: 'Začneš rovnou tam, kde vzniká první osobní výsledek.'
         },
         natalni_interpretace: {
             title: 'Natální karta po registraci',
-            copy: 'Po vytvoření účtu vás navedeme na natální kartu a první osobní interpretaci.',
+            copy: 'Po vytvoření účtu tě navedeme na natální kartu a první osobní interpretaci.',
             stepTitle: 'Otevřeme natální kartu',
             stepCopy: 'Datum narození doplníte až v nástroji, který ho opravdu potřebuje.'
         },
         numerologie_vyklad: {
             title: 'Numerologie po registraci',
-            copy: 'Po vytvoření účtu budete pokračovat k numerologii a prvnímu osobnímu výkladu.',
+            copy: 'Po vytvoření účtu budeš pokračovat k numerologii a prvnímu osobnímu výkladu.',
             stepTitle: 'Otevřeme numerologii',
-            stepCopy: 'První vhled dostanete z konkrétního nástroje, ne z prázdného profilu.'
+            stepCopy: 'První vhled dostaneš z konkrétního nástroje, ne z prázdné stránky.'
         },
         annual_horoscope: {
             title: 'Osobní mapa po registraci',
-            copy: 'Roční horoskop už nenabízíme. Po vytvoření účtu budete pokračovat k hlubší Osobní mapě.',
+            copy: 'Roční horoskop už nenabízíme. Po vytvoření účtu budeš pokračovat k hlubší Osobní mapě.',
             stepTitle: 'Otevřeme Osobní mapu',
-            stepCopy: 'Navážete na jednorázový hlubší PDF výklad místo obecného profilu.'
+            stepCopy: 'Navážeš na jednorázový hlubší PDF výklad místo obecného profilu.'
         },
         personal_map: {
             title: 'Osobní mapa po registraci',
-            copy: 'Po vytvoření účtu budete pokračovat k osobní mapě a hlubšímu rozboru vlastního směru.',
+            copy: 'Po vytvoření účtu budeš pokračovat k osobní mapě a hlubšímu rozboru vlastního směru.',
             stepTitle: 'Otevřeme osobní mapu',
-            stepCopy: 'Registrace vás vrátí k hlubšímu výstupu, kvůli kterému jste klikli.'
+            stepCopy: 'Registrace tě vrátí k hlubšímu výstupu, který na této stránce čeká.'
         },
         runy_hluboky_vyklad: {
             title: 'Runy po registraci',
-            copy: 'Po vytvoření účtu se vrátíte k runám a můžete pokračovat v hlubším výkladu.',
+            copy: 'Po vytvoření účtu se vrátíš k runám a můžeš pokračovat v hlubším výkladu.',
             stepTitle: 'Otevřeme runový výklad',
-            stepCopy: 'Registrace naváže na otázku, kvůli které jste přišli.'
+            stepCopy: 'Registrace naváže na tvoji otázku.'
         },
         shamanske_kolo_plne_cteni: {
             title: 'Šamanské kolo po registraci',
-            copy: 'Po vytvoření účtu se vrátíte k šamanskému kolu a můžete pokračovat v plném čtení.',
+            copy: 'Po vytvoření účtu se vrátíš k šamanskému kolu a můžeš pokračovat v plném čtení.',
             stepTitle: 'Otevřeme šamanské kolo',
-            stepCopy: 'Navážete na výklad, který jste si vybrali.'
+            stepCopy: 'Navážeš na zvolený výklad.'
         },
         minuly_zivot: {
             title: 'Minulý život po registraci',
-            copy: 'Po vytvoření účtu se vrátíte k symbolickému výkladu minulého života a můžete pokračovat bez ztráty kontextu.',
+            copy: 'Po vytvoření účtu se vrátíš k symbolickému výkladu minulého života a můžeš pokračovat bez ztráty tématu.',
             stepTitle: 'Otevřeme minulý život',
-            stepCopy: 'Začnete archetypálním příběhem pro sebereflexi, ne tvrdým slibem.'
+            stepCopy: 'Začneš archetypálním příběhem pro sebereflexi, ne tvrdým slibem.'
         },
         kristalova_koule: {
             title: 'Křišťálová koule po registraci',
-            copy: 'Po vytvoření účtu se vrátíte ke křišťálové kouli a můžete položit první osobní otázku.',
+            copy: 'Po vytvoření účtu se vrátíš ke křišťálové kouli a můžeš položit první osobní otázku.',
             stepTitle: 'Otevřeme křišťálovou kouli',
-            stepCopy: 'Registrace vás nepřesměruje do prázdného profilu, ale zpět k otázce.'
+            stepCopy: 'Registrace tě vrátí k otázce, ne na prázdnou stránku profilu.'
         },
         mentor: {
             title: 'Hvězdný průvodce po registraci',
-            copy: 'Po vytvoření účtu budete pokračovat k průvodci a můžete položit první otázku.',
+            copy: 'Po vytvoření účtu budeš pokračovat k průvodci a můžeš položit první otázku.',
             stepTitle: 'Otevřeme Hvězdného průvodce',
             stepCopy: 'První kontakt s produktem začne okamžitou otázkou.'
         }
@@ -319,7 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tarot_celtic_cross: SIGNUP_CONTEXT_BY_FEATURE.tarot_multi_card,
         rituals: {
             title: 'Lunární rituály po registraci',
-            copy: 'Po vytvoření účtu budete pokračovat k rituálům a můžete začít osobní praxí podle aktuálního rytmu.',
+            copy: 'Po vytvoření účtu budeš pokračovat k rituálům a můžeš začít osobní praxí podle aktuálního rytmu.',
             stepTitle: 'Otevřeme lunární rituály',
             stepCopy: 'První krok povede rovnou k praxi, ne do prázdného profilu.'
         }
@@ -329,15 +349,15 @@ document.addEventListener('DOMContentLoaded', () => {
         homepage_hero: SIGNUP_CONTEXT_BY_FEATURE.tarot_yes_no,
         pricing_free_cta: {
             title: 'Začínáte zdarma',
-            copy: 'Vytvoříte si účet bez platební karty a potom vás pošleme na první denní horoskop.',
+            copy: 'Vytvoříš si účet bez platební karty a potom tě pošleme na první denní horoskop.',
             stepTitle: 'Otevřeme bezplatný denní vhled',
-            stepCopy: 'Uvidíte, co účet zdarma umí, dřív než řešíte placený plán.'
+            stepCopy: 'Uvidíš, co účet zdarma umí, dřív než začneš řešit placený plán.'
         },
         homepage_pricing_free_cta: {
             title: 'Začínáte zdarma',
-            copy: 'Vytvoříte si účet bez platební karty a potom pokračujete k dennímu vedení.',
+            copy: 'Vytvoříš si účet bez platební karty a potom pokračuješ k dennímu vedení.',
             stepTitle: 'Otevřeme denní horoskopy',
-            stepCopy: 'První hodnota přijde hned po registraci.'
+            stepCopy: 'První vhled přijde hned po registraci.'
         },
         newsletter_form: SIGNUP_CONTEXT_BY_FEATURE.daily_guidance,
         newsletter_popup: SIGNUP_CONTEXT_BY_FEATURE.daily_guidance,
@@ -358,9 +378,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const GENERIC_SIGNUP_CONTEXT = {
         title: 'Účet zdarma bez zdržení',
-        copy: 'Po registraci vás navedeme k prvnímu osobnímu výkladu. Nepotřebujeme platební kartu ani dlouhý dotazník.',
+        copy: 'Po registraci tě navedeme k prvnímu osobnímu výkladu. Nepotřebujeme platební kartu ani dlouhý dotazník.',
         stepTitle: 'Otevřeme první osobní výklad',
-        stepCopy: 'Začnete produktem, ne prázdnou administrací.'
+        stepCopy: 'Začneš konkrétním výkladem, ne prázdnou stránkou.'
     };
 
     const loginForm = document.getElementById('login-form');
@@ -469,14 +489,33 @@ document.addEventListener('DOMContentLoaded', () => {
         if (field) {
             getFormUx().setFieldError?.(field, message);
             field.focus({ preventScroll: true });
-            field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            field.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
         window.Auth?.showToast?.('Chyba', message, 'error');
     };
 
     const clearAuthErrors = () => {
-        getFormUx().clearFormSummary?.(loginForm);
-        [passwordInput, gdprConsent].forEach(clearFieldError);
+        [loginForm, forgotPasswordForm, resetPasswordForm].forEach((form) => {
+            getFormUx().clearFormSummary?.(form);
+            form?.querySelectorAll('input, select, textarea').forEach(clearFieldError);
+        });
+    };
+
+    const getFriendlyAuthError = (error, fallback) => {
+        const raw = String(error?.message || '').trim();
+        if (!raw || /unexpected token|not valid json|json parse|failed to fetch|networkerror|network request failed/i.test(raw)) {
+            return fallback;
+        }
+        return raw;
+    };
+
+    const focusAndReveal = (element) => {
+        if (!element) return;
+        if (!element.hasAttribute('tabindex')) element.setAttribute('tabindex', '-1');
+        requestAnimationFrame(() => {
+            element.focus({ preventScroll: true });
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
     };
 
     // Sdílená hláška: použije ji i nativní validace přes setCustomValidity, aby GDPR
@@ -618,9 +657,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return {
             title: `${label} po registraci`,
-            copy: 'Po vytvoření účtu budete pokračovat k prvnímu konkrétnímu kroku bez návratu do obecného katalogu.',
+            copy: 'Po vytvoření účtu budeš pokračovat k prvnímu konkrétnímu kroku bez návratu do obecného katalogu.',
             stepTitle: `Otevřeme ${label}`,
-            stepCopy: 'Registrace zachová původní zdroj kliknutí a naváže rovnou první hodnotou.'
+            stepCopy: 'Registrace zachová původní téma a naváže rovnou prvním výkladem.'
         };
     };
 
@@ -634,9 +673,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const renderSignupValuePanel = () => {
         const context = getSignupContext();
-        if (signupNextStepTitle) signupNextStepTitle.textContent = context.stepTitle;
-        if (signupNextStepCopy) signupNextStepCopy.textContent = context.stepCopy;
+        if (signupNextStepTitle) signupNextStepTitle.textContent = normalizeSignupCopy(context.stepTitle);
+        if (signupNextStepCopy) signupNextStepCopy.textContent = normalizeSignupCopy(context.stepCopy);
     };
+
+    const normalizeSignupCopy = (text) => String(text || '')
+        .replace(/\bvás\b/g, 'tě')
+        .replace(/\bVás\b/g, 'Tě')
+        .replace(/\bvám\b/g, 'tobě')
+        .replace(/\bVám\b/g, 'Tobě')
+        .replace(/\bbudete\b/g, 'budeš')
+        .replace(/\bBudete\b/g, 'Budeš')
+        .replace(/\bzačnete\b/g, 'začneš')
+        .replace(/\bZačnete\b/g, 'Začneš')
+        .replace(/\bneztratíte\b/g, 'neztratíš')
+        .replace(/\bNeztratíte\b/g, 'Neztratíš')
+        .replace(/\bjste\b/g, 'jsi')
+        .replace(/\bJste\b/g, 'Jsi');
 
     const renderCheckoutContext = () => {
         if (!checkoutContextBanner) return;
@@ -647,13 +700,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (plan) {
             if (checkoutContextTitle) checkoutContextTitle.textContent = plan.title;
             if (checkoutContextCopy) {
-                const checkoutPromise = getCheckoutPromiseCopy(requestedPlan);
+                const checkoutPromise = getCheckoutPromiseCopy(requestedPlan, isRegisterMode);
                 checkoutContextCopy.textContent = featureLabel
                     ? `Navazuješ na funkci: ${featureLabel}. ${plan.copy} ${checkoutPromise}`
                     : `${plan.copy} ${checkoutPromise}`;
             }
             if (checkoutContextLabel) {
-                checkoutContextLabel.textContent = requestedSource ? 'Pokračujete k odemčení' : 'Pokračujete k plánu';
+                checkoutContextLabel.textContent = requestedSource ? 'Pokračuješ k odemčení' : 'Pokračuješ k vybranému plánu';
             }
             setBlockVisible(checkoutContextBanner, true);
             return;
@@ -671,9 +724,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const context = getSignupContext();
-        if (checkoutContextLabel) checkoutContextLabel.textContent = featureLabel || 'První hodnota';
-        if (checkoutContextTitle) checkoutContextTitle.textContent = context.title;
-        if (checkoutContextCopy) checkoutContextCopy.textContent = context.copy;
+        if (checkoutContextLabel) checkoutContextLabel.textContent = featureLabel || 'Další krok';
+        if (checkoutContextTitle) checkoutContextTitle.textContent = normalizeSignupCopy(context.title);
+        if (checkoutContextCopy) checkoutContextCopy.textContent = normalizeSignupCopy(context.copy);
         setBlockVisible(checkoutContextBanner, true);
     };
 
@@ -756,14 +809,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 syncGdprValidity();
             }
             authSubmitBtn.textContent = requestedPlan ? 'Vytvořit účet a pokračovat' : 'Vytvořit účet zdarma';
-            if (toggleBtn) toggleBtn.textContent = 'Máte účet? Přihlaste se';
+            if (toggleBtn) toggleBtn.textContent = 'Máš účet? Přihlas se';
         } else {
             if (requestedPlan) {
-                if (loginHeader) loginHeader.textContent = 'Přihlaste se a pokračujte k odemčení';
+                if (loginHeader) loginHeader.textContent = 'Přihlas se a pokračuj k odemčení';
                 if (loginSubtitle) loginSubtitle.textContent = 'Po přihlášení zachováme vybraný plán a otevřeme bezpečný Stripe checkout.';
             } else {
-                if (loginHeader) loginHeader.textContent = 'Vítejte zpět';
-                if (loginSubtitle) loginSubtitle.textContent = 'Přihlaste se ke svému účtu a pokračujte tam, kde jste skončili.';
+                if (loginHeader) loginHeader.textContent = 'Vítej zpět';
+                if (loginSubtitle) loginSubtitle.textContent = 'Přihlas se a otevři svoje uložené výklady.';
             }
             setBlockVisible(socialProofEl, false);
             setBlockVisible(signupValuePanel, false);
@@ -781,7 +834,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 gdprConsent.setCustomValidity('');
             }
             authSubmitBtn.textContent = requestedPlan ? 'Přihlásit se a pokračovat' : 'Přihlásit se';
-            if (toggleBtn) toggleBtn.textContent = 'Nemáte účet? Zaregistrujte se zdarma →';
+            if (toggleBtn) toggleBtn.textContent = 'Nemáš účet? Vytvoř si ho zdarma →';
         }
 
         setBlockVisible(checkoutExistingAccount, Boolean(requestedPlan && isRegisterMode));
@@ -841,14 +894,38 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }, true);
 
-    if (isResetMode && hash) {
+    const hashParams = new URLSearchParams(hash.startsWith('#') ? hash.slice(1) : hash);
+    const recoveryError = hashParams.get('error_code') || hashParams.get('error_description') || hashParams.get('error');
+    const accessToken = hashParams.get('access_token');
+    const hasValidRecoveryInput = isResetMode && Boolean(accessToken) && !recoveryError;
+
+    if (hasValidRecoveryInput) {
         setBlockVisible(loginForm, false);
         setBlockVisible(forgotPasswordForm, false);
         setBlockVisible(resetPasswordForm, true);
         setBlockVisible(forgotPasswordLink, false);
         setBlockVisible(authModeWrapper, false);
         if (loginHeader) loginHeader.textContent = 'Obnovení hesla';
-        if (loginSubtitle) loginSubtitle.textContent = 'Zadejte nové heslo a vraťte se zpět do svého účtu.';
+        if (loginSubtitle) loginSubtitle.textContent = 'Zadej nové heslo a vrať se zpět do svého účtu.';
+    } else if (isResetMode) {
+        setBlockVisible(loginForm, false);
+        setBlockVisible(resetPasswordForm, false);
+        setBlockVisible(forgotPasswordForm, true);
+        setBlockVisible(forgotPasswordLink, false);
+        setBlockVisible(authModeWrapper, false);
+        if (loginHeader) loginHeader.textContent = 'Obnova hesla';
+        if (loginSubtitle) {
+            loginSubtitle.textContent = recoveryError
+                ? 'Tento odkaz už není platný. Požádej o nový odkaz pro obnovu hesla.'
+                : 'Pro obnovu hesla zadej e-mail a pošleme ti nový odkaz.';
+        }
+        getFormUx().setFormSummary?.(
+            forgotPasswordForm,
+            recoveryError
+                ? 'Odkaz pro obnovu hesla vypršel nebo už byl použit. Zadej e-mail a vyžádej si nový.'
+                : 'Chybí platný odkaz pro obnovu hesla. Zadej e-mail a vyžádej si nový.'
+        );
+        focusAndReveal(forgotPasswordForm?.querySelector('input'));
     } else {
         applyMode();
         void loadPlanManifest().then(applyMode);
@@ -954,11 +1031,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 }
 
-                window.Auth.showToast?.('Vítejte zpět', 'Byli jste úspěšně přihlášeni.', 'success');
+                window.Auth.showToast?.('Vítej zpět', 'Přihlášení proběhlo úspěšně.', 'success');
             }
         } catch (error) {
-            getFormUx().setFormSummary?.(loginForm, error.message);
-            window.Auth.showToast?.('Chyba', error.message, 'error');
+            const message = getFriendlyAuthError(error, 'Přihlášení se teď nepodařilo. Zkus to znovu za chvíli.');
+            getFormUx().setFormSummary?.(loginForm, message);
+            window.Auth.showToast?.('Chyba', message, 'error');
         } finally {
             authSubmitBtn.disabled = false;
             if ((isRegisterMode ? 'register' : 'login') === submittedMode) {
@@ -975,7 +1053,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setBlockVisible(forgotPasswordLink, false);
         setBlockVisible(authModeWrapper, false);
         if (loginHeader) loginHeader.textContent = 'Zapomenuté heslo';
-        if (loginSubtitle) loginSubtitle.textContent = 'Pošleme vám odkaz pro nastavení nového hesla.';
+        if (loginSubtitle) loginSubtitle.textContent = 'Pošleme ti odkaz pro nastavení nového hesla.';
     });
 
     backToLoginBtn?.addEventListener('click', () => {
@@ -1009,19 +1087,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ email })
             });
 
-            const data = await response.json();
+            const data = await response.json().catch(() => null);
 
-            if (data.success) {
+            if (response.ok && data?.success) {
                 window.trackEvent?.('password_reset_requested', {
                     source: 'forgot_password_form'
                 });
                 window.Auth?.showToast?.('E-mail odeslán', data.message, 'success');
                 backToLoginBtn?.click();
             } else {
-                throw new Error(data.error || 'Nepodařilo se odeslat e-mail s obnovou hesla.');
+                throw new Error(data?.error || 'Nepodařilo se odeslat e-mail s obnovou hesla.');
             }
         } catch (error) {
-            window.Auth?.showToast?.('Chyba', error.message, 'error');
+            const message = getFriendlyAuthError(error, 'Odkaz pro obnovu se teď nepodařilo odeslat. Zkus to znovu za chvíli.');
+            getFormUx().setFormSummary?.(forgotPasswordForm, message);
+            window.Auth?.showToast?.('Chyba', message, 'error');
         } finally {
             submitBtn.textContent = originalText || 'Odeslat odkaz pro obnovu';
             submitBtn.disabled = false;
@@ -1053,9 +1133,6 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.disabled = true;
 
         try {
-            const hashParams = new URLSearchParams(hash.substring(1));
-            const accessToken = hashParams.get('access_token');
-
             if (!accessToken) {
                 throw new Error('Neplatný odkaz pro obnovení hesla.');
             }
@@ -1071,19 +1148,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ password: newPassword })
             });
 
-            const data = await response.json();
+            const data = await response.json().catch(() => null);
 
-            if (data.success) {
+            if (response.ok && data?.success) {
                 window.trackEvent?.('password_reset_completed', {
                     source: 'reset_password_form'
                 });
-                window.Auth?.showToast?.('Úspěch', 'Heslo bylo změněno. Můžete se přihlásit.', 'success');
+                window.Auth?.showToast?.('Hotovo', 'Heslo bylo změněno. Teď se můžeš přihlásit.', 'success');
                 window.location.href = '/prihlaseni.html';
             } else {
-                throw new Error(data.error || 'Nepodařilo se změnit heslo.');
+                throw new Error(data?.error || 'Nepodařilo se změnit heslo.');
             }
         } catch (error) {
-            window.Auth?.showToast?.('Chyba', error.message, 'error');
+            const message = getFriendlyAuthError(error, 'Heslo se teď nepodařilo změnit. Zkus to znovu za chvíli.');
+            getFormUx().setFormSummary?.(resetPasswordForm, message);
+            window.Auth?.showToast?.('Chyba', message, 'error');
         } finally {
             submitBtn.textContent = originalText || 'Nastavit nové heslo';
             submitBtn.disabled = false;
@@ -1097,9 +1176,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     toggleBtn?.addEventListener('click', () => {
+        clearAuthErrors();
         isRegisterMode = !isRegisterMode;
         syncAuthModeInUrl();
         applyMode();
+        focusAndReveal(loginHeader || document.getElementById('email'));
         trackAuthView('toggle');
     });
 
@@ -1108,7 +1189,7 @@ document.addEventListener('DOMContentLoaded', () => {
         syncAuthModeInUrl();
         applyMode();
         trackAuthView('checkout_existing_account');
-        document.getElementById('email')?.focus();
+        focusAndReveal(loginHeader || document.getElementById('email'));
     });
 
     setTimeout(() => {

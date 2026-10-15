@@ -166,3 +166,69 @@ body.atlas-page .header .nav__list>.nav__item>.nav__link{display:inline-flex;ali
 body.atlas-page .header .nav__link--dropdown-toggle{padding-right:0}
 body.atlas-page .header .dropdown-icon{position:static;inset:auto;transform:none}
 @media(min-width:993px) and (max-width:1180px){body.atlas-page .header .nav__list{gap:4px}body.atlas-page .header .nav__link{font-size:.7rem}body.atlas-page .header .logo{font-size:1.1rem}body.atlas-page .header .logo__image{width:32px;height:32px}}
+
+/* Dated horoscope pages use the painted atlas surface; suppress the legacy star layer. */
+body.atlas-astro-page--dated .stars { display:none; }
+.mh-moon-art { display:block; width:1em; height:1em; }
+body.atlas-page details.feature-reference { margin:1.25rem 0; padding:1.1rem 1.35rem; border:1px solid #bd9b6538; border-radius:12px; background:rgba(11,25,41,.72); }
+body.atlas-page .feature-reference__summary { min-height:44px; padding:8px 0; color:#e9e3d7; font-size:1rem; font-weight:600; line-height:1.5; cursor:pointer; }
+body.atlas-page .feature-reference__summary:focus-visible { outline:2px solid #bd9b65; outline-offset:6px; }
+body.atlas-page details.feature-reference[open] > summary { margin-bottom:16px; }
+body.atlas-page .tarot-meaning-card,
+body.atlas-page .blog-card { scroll-margin-top:96px; }
+body.atlas-page .moon-display,
+body.atlas-page .ritual-moon-emoji { display:inline-flex; align-items:center; justify-content:center; animation:none; filter:none; font-size:clamp(5rem,18vw,9rem); }
+body.atlas-page .cycle-emoji { display:inline-flex; align-items:center; justify-content:center; }
+body.atlas-astro-page--dated .horoscope-day-sign-switcher { padding:16px 20px; border:1px solid #bd9b6538; border-radius:12px; background:#102436; }
+body.atlas-astro-page--dated .horoscope-day-sign-switcher summary { min-height:44px; cursor:pointer; color:#e9e3d7; font-weight:600; }
+body.atlas-astro-page--dated .horoscope-day-sign-switcher summary:focus-visible { outline:2px solid #bd9b65; outline-offset:4px; }
+body.atlas-astro-page--dated .horoscope-day-sign-switcher .zodiac-grid { grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-top:16px; }
+body.atlas-astro-page--dated .horoscope-day-sign-switcher .zodiac-card { min-height:74px; padding:12px; background:#0b1929; border:1px solid #bd9b6538; box-shadow:none; }
+body.atlas-astro-page--dated .horoscope-day-sign-switcher .zodiac-card__symbol { font-size:1.5rem; line-height:1.2; margin-bottom:6px; }
+body.atlas-astro-page--dated .horoscope-day-sign-switcher .zodiac-card__name { font-size:.95rem; margin:0; }
+body.atlas-astro-page--dated .horoscope-day-sign-switcher .zodiac-card__dates { display:none; }
+@media(max-width:600px) { body.atlas-astro-page--dated .horoscope-day-sign-switcher .zodiac-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+
+/* Keep the shared footer compact while retaining every link in native disclosure groups. */
+body.atlas-page .footer { padding:40px 0 24px; }
+body.atlas-page .footer__grid { gap:24px 28px; margin-bottom:32px; }
+body.atlas-page .footer__brand { max-width:320px; }
+body.atlas-page .footer__desc { margin-bottom:12px; }
+body.atlas-page .footer__trust-note { margin-bottom:12px; }
+body.atlas-page .footer__group { min-width:0; }
+body.atlas-page .footer__group > .footer__title {
+  display:flex;
+  align-items:center;
+  min-height:44px;
+  margin:0;
+  cursor:pointer;
+  color:#e9e3d7;
+  font-size:15px;
+  letter-spacing:.08em;
+}
+body.atlas-page .footer__group > .footer__title::marker { color:#d0b17c; }
+body.atlas-page .footer__group[open] > .footer__title { margin-bottom:8px; }
+body.atlas-page .footer__links { margin:0; }
+body.atlas-page .footer__links li { margin:0; }
+body.atlas-page .footer__links a {
+  display:flex;
+  align-items:center;
+  min-height:44px;
+  padding:6px 0;
+  font-size:14px;
+  line-height:1.35;
+}
+body.atlas-page .footer__bottom { gap:12px 20px; padding-top:16px; }
+body.atlas-page .footer-feedback { display:flex; align-items:center; flex-wrap:wrap; gap:8px 12px; margin-top:16px; padding:12px; }
+body.atlas-page .footer-feedback p { margin:0; }
+body.atlas-page .footer-feedback [data-feedback-status]:empty { display:none; }
+body.atlas-page .footer__social a { width:44px; height:44px; }
+body.atlas-page .footer__bottom a { display:inline-flex; align-items:center; min-height:44px; }
+@media(max-width:760px) {
+  body.atlas-page .footer__grid { grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important; gap:16px 18px; margin-bottom:20px; }
+  body.atlas-page .footer__brand { grid-column:1 / -1; max-width:none; }
+  body.atlas-page .footer__logo { margin-bottom:12px; }
+  body.atlas-page .footer__social { gap:8px; }
+  body.atlas-page .footer__group > .footer__title { font-size:14px; letter-spacing:.06em; }
+  body.atlas-page .footer__bottom { gap:4px 12px; }
+}

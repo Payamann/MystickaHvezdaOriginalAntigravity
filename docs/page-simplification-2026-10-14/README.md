@@ -2,6 +2,8 @@
 
 14. října 2026 · pouze průzkum, produktové soubory beze změny · lokální kandidát `9d6814de`.
 
+**Navazující implementace 15. 10.:** [co už je opravené a co zbývá](../profile-unification-2026-10-14/README.md), [nové snímky](../profile-unification-2026-10-14/overview.html). Následující text popisuje původní auditovaný stav.
+
 ## Rozsah a důkazy
 
 - Zdrojově inventarizováno **917 veřejných HTML souborů**: 166 funkčních, přehledových a podpůrných vstupů, 749 obsahových souborů a 2 interní stránky.

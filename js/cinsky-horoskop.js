@@ -273,27 +273,29 @@ function drawChineseZodiacImage(result) {
 
     shareImage.drawBrandBackground(ctx, canvas, seed);
 
-    ctx.fillStyle = '#f1d06b';
+    ctx.fillStyle = '#d0b17c';
     ctx.font = '700 52px Cinzel, Georgia, serif';
     ctx.fillText('ČÍNSKÝ HOROSKOP', centerX, 244);
 
     ctx.font = '190px serif';
     ctx.fillText(result.emoji || '🐉', centerX, 500);
 
-    ctx.fillStyle = '#fff7d6';
+    ctx.fillStyle = '#e9e3d7';
     ctx.font = '700 64px Cinzel, Georgia, serif';
     ctx.fillText(result.name || '', centerX, 640);
 
     ctx.fillStyle = 'rgba(255,255,255,0.75)';
     ctx.font = '600 34px Inter, Arial, sans-serif';
     ctx.fillText(result.elementLabel || '', centerX, 706);
-    ctx.fillText(result.yearsLabel || '', centerX, 756);
+    ctx.font = '500 28px Inter, Arial, sans-serif';
+    const years = String(result.yearsLabel || '').replace(/,\s*/g, ', ');
+    shareImage.drawCenteredLines(ctx, shareImage.wrapText(ctx, years, 840), centerX, 752, 38, 2);
 
-    ctx.fillStyle = 'rgba(212,175,55,0.86)';
-    ctx.fillRect(170, 800, 740, 3);
+    ctx.fillStyle = 'rgba(208,177,124,0.86)';
+    ctx.fillRect(170, 824, 740, 3);
 
     if (result.desc) {
-        ctx.fillStyle = '#f6f1ff';
+        ctx.fillStyle = '#e9e3d7';
         ctx.font = '500 37px Inter, Arial, sans-serif';
         shareImage.drawCenteredLines(ctx, shareImage.wrapText(ctx, result.desc, 840), centerX, 880, 49, 6);
     }

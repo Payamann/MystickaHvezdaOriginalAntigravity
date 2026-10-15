@@ -14,9 +14,9 @@ import {
     normalizePlanType,
     formatPlanLabel
 } from './shared.js';
-import { loadReadings, showMoreReadings, handleFilterChange } from './readings.js';
+import { loadReadings, showMoreReadings, handleFilterChange, getReadingSummary, loadJournalReadings } from './readings.js';
 import { loadFavorites } from './favorites.js';
-import { toggleAvatarPicker, selectAvatar, loadSubscriptionStatus, initSettingsForm, saveSettings } from './settings.js';
+import { toggleAvatarPicker, selectAvatar, loadSubscriptionStatus, initSettingsForm, saveSettings, changePassword } from './settings.js';
 import { viewReading, closeReadingModal, toggleFavoriteModal, toggleFavorite, deleteReading } from './modal.js';
 import { verifyCheckoutResult } from './checkout-result.js';
 
@@ -228,17 +228,17 @@ const PREMIUM_ACTIONS = {
         {
             href: '/mentor.html',
             title: 'Otevřít Hvězdného Průvodce',
-            description: 'Začněte otázkou, která vás teď nejvíc táhne.'
+            description: 'Začni jednou konkrétní otázkou.'
         },
         {
             href: '/natalni-karta.html',
             title: 'Spustit natální kartu',
-            description: 'Otevřete osobní mapu, ke které se dá vracet při dalších výkladech.'
+            description: 'Prohlédni si souvislosti svého narození.'
         },
         {
             href: '/horoskopy.html',
             title: 'Otevřít plné horoskopy',
-            description: 'Denní, týdenní i měsíční vedení už máte odemčené.'
+            description: 'Přečti si horoskop pro své znamení.'
         }
     ],
     exclusive_monthly: [
@@ -250,29 +250,29 @@ const PREMIUM_ACTIONS = {
         {
             href: '/mentor.html',
             title: 'Otevřít Hvězdného Průvodce',
-            description: 'Použijte prioritní odpovědi rovnou na konkrétní téma.'
+            description: 'Polož otázku ke konkrétnímu tématu.'
         },
         {
             href: '/natalni-karta.html',
             title: 'Jít hlouběji do natální karty',
-            description: 'Propojte základní vhled s pokročilým výkladem.'
+            description: 'Prozkoumej osobní astrologické souvislosti.'
         }
     ],
     vip_majestrat: [
         {
             href: '/mentor.html',
             title: 'Položit otázku Průvodci',
-            description: 'Začněte jednou konkrétní otázkou, aby odpověď navázala na reálné téma.'
+            description: 'Začni otázkou, kterou právě řešíš.'
         },
         {
             href: '/tarot-keltsky-kriz.html',
             title: 'Otevřít Keltský kříž',
-            description: 'Vyzkoušejte pokročilý tarotový výklad, který je součástí členství.'
+            description: 'Prozkoumej svou otázku ve větším tarotovém rozkladu.'
         },
         {
             href: '/profil.html#tab-settings',
             title: 'Dokončit nastavení profilu',
-            description: 'Čím víc údajů doplníte, tím lépe na sebe navážou další výklady.'
+            description: 'Doplň dobrovolné údaje pro osobní astrologické výpočty.'
         }
     ]
 };
@@ -495,15 +495,20 @@ function initTabs() {
     });
 
     tabs.forEach(tab => {
+        tab.tabIndex = tab.classList.contains('active') ? 0 : -1;
+        if (tab.dataset.profileBound) return;
+        tab.dataset.profileBound = 'true';
         tab.addEventListener('click', () => {
             const targetId = tab.dataset.tab;
 
             tabs.forEach(t => {
                 t.classList.remove('active');
                 t.setAttribute('aria-selected', 'false');
+                t.tabIndex = -1;
             });
             tab.classList.add('active');
             tab.setAttribute('aria-selected', 'true');
+            tab.tabIndex = 0;
 
             contents.forEach(c => {
                 const isTarget = c.id === `tab-${targetId}`;
@@ -515,6 +520,16 @@ function initTabs() {
             if (targetId === 'favorites') {
                 loadFavorites();
             }
+        });
+        tab.addEventListener('keydown', event => {
+            const index = [...tabs].indexOf(tab);
+            const targetIndex = event.key === 'ArrowRight' ? (index + 1) % tabs.length
+                : event.key === 'ArrowLeft' ? (index + tabs.length - 1) % tabs.length
+                : event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : null;
+            if (targetIndex === null) return;
+            event.preventDefault();
+            tabs[targetIndex].click();
+            tabs[targetIndex].focus();
         });
     });
 }
@@ -698,31 +713,14 @@ function renderPremiumActivation(sub, user, paymentContext = null) {
         return;
     }
 
-    if (!shouldForceShow && hasSeenActivation(planType)) {
+    if (!shouldForceShow) {
         setProfileBlockVisible(card, false);
         return;
     }
 
-    const displayName = user?.first_name || user?.email?.split('@')[0] || 'poutníku';
-    const titleMap = {
-        premium_monthly: `Vítejte v Hvězdném Průvodci, ${displayName}`,
-        exclusive_monthly: `Odemkli jste Osvícení, ${displayName}`,
-        vip_majestrat: `VIP Majestát je aktivní, ${displayName}`
-    };
-    const copyMap = {
-        premium_monthly: 'Největší šance na návrat je udělat teď první plný výklad. Začněte jedním z kroků níže.',
-        exclusive_monthly: 'Právě jste odemkli pokročilé nástroje. Největší hodnotu teď přinese vyzkoušet funkci, kterou free plán neuměl.',
-        vip_majestrat: 'Máte nejvyšší plán. Udělejte teď první krok, který z něj vytvoří každodenní oporu, ne jen aktivní členství.'
-    };
-    const badgeMap = {
-        premium_monthly: 'Premium aktivní',
-        exclusive_monthly: 'Osvícení aktivní',
-        vip_majestrat: 'VIP aktivní'
-    };
-
-    titleEl.textContent = titleMap[planType] || 'Vítejte v Premium';
-    copyEl.textContent = copyMap[planType] || 'Právě jste odemkli plné výklady a osobní vedení.';
-    badgeEl.textContent = badgeMap[planType] || 'Premium aktivní';
+    titleEl.textContent = 'Členství je aktivní';
+    copyEl.textContent = 'Můžeš navázat na svou otázku nebo se vrátit k uloženým výkladům.';
+    badgeEl.textContent = 'Aktivní přístup';
 
     const paymentReturnAction = shouldForceShow
         ? getPaymentReturnDestination(getProfileSign(user), paymentContext)
@@ -800,7 +798,7 @@ function renderPremiumActivation(sub, user, paymentContext = null) {
 }
 
 function handleLogout() {
-    if (confirm('Opravdu se chcete odhlásit?')) {
+    if (confirm('Chceš se odhlásit?')) {
         window.Auth?.logout();
     }
 }
@@ -864,7 +862,7 @@ function getProfileSign(user) {
 }
 
 function getReadingKinds(readings) {
-    return new Set((readings || []).map(reading => reading.type));
+    return new Set((readings || []).filter(reading => reading.type !== 'journal').map(reading => reading.type));
 }
 
 function buildDailyHoroscopeHref(sign, source = 'profile_daily') {
@@ -1103,7 +1101,7 @@ function collectRitualMemorySignals(readings, now = new Date()) {
         }
 
         structuredReadings.push(reading);
-        (MEMORY_TYPE_THEMES[type] || []).forEach(themeKey => addThemeSignal(themeScores, themeKey, 1));
+        // A generated reading's type is not evidence of the user's own experience.
 
         const feedback = getReadingFeedback(reading);
         if (feedback) {
@@ -1118,10 +1116,8 @@ function collectRitualMemorySignals(readings, now = new Date()) {
         .sort((a, b) => b.score - a.score || a.label.localeCompare(b.label, 'cs'));
 
     const todayJournal = journals.some(reading => isSameLocalDay(getValidReadingDate(reading), now));
-    const totalSignals = structuredReadings.length + journals.length + feedbackEntries.length;
-    const strengthLabel = feedbackEntries.length >= 2 || totalSignals >= 6
-        ? 'Silná stopa'
-        : totalSignals >= 2 ? 'Roste' : 'Nové';
+    const totalSignals = journals.length + feedbackEntries.length;
+    const strengthLabel = totalSignals >= 2 ? 'Tvoje poznámky' : 'Zatím málo podkladů';
 
     return {
         totalReadings: safeReadings.length,
@@ -1151,18 +1147,14 @@ function buildMemoryFeatureHref(themeKey) {
 
 function buildRitualMemoryCopy(memory) {
     if (!memory.totalReadings) {
-        return 'Paměť začne fungovat po prvním uloženém výkladu nebo večerní reflexi. Cílem není další archiv, ale návrat k tomu, co se v čase opravdu opakuje.';
+        return 'Ulož si výklad nebo vlastní poznámku. Později se k nim můžeš vrátit a porovnat je se svou zkušeností.';
     }
 
     if (!memory.topTheme) {
-        return `Máte uložených ${memory.totalReadings} stop. Přidejte k výkladům zpětnou vazbu nebo večerní reflexi a paměť začne rozlišovat, které téma se vrací nejčastěji.`;
+        return 'Samotný text výkladu nestačí k osobnímu závěru. Vlastní poznámka nebo zpětná vazba pomůže zachytit, co pro tebe bylo užitečné.';
     }
 
-    const signalSource = memory.feedbackCount
-        ? 'zpětné vazby, výkladů a reflexí'
-        : 'uložených výkladů a reflexí';
-
-    return `Z ${memory.totalReadings} uložených stop nejvíc vystupuje téma ${memory.topTheme.label.toLowerCase()}. Je to pracovní hypotéza z ${signalSource}, ne diagnóza ani osud. Další krok má téma zpřesnit.`;
+    return `V nedávných poznámkách nebo zpětné vazbě se objevuje téma ${memory.topTheme.label.toLowerCase()}. Připomeň si, z jaké situace vychází a co se od té doby změnilo.`;
 }
 
 function getMemoryMeterBucket(score, topScore) {
@@ -1191,8 +1183,8 @@ function renderRitualMemory(user, readings, subscription) {
     const topScore = memory.topTheme?.score || 1;
 
     titleEl.textContent = memory.topTheme
-        ? `Co se ti opakuje: ${memory.topTheme.label}`
-        : 'Co se ti opakuje';
+        ? `Téma tvých poznámek: ${memory.topTheme.label}`
+        : 'Tvoje poznámky v souvislostech';
     strengthEl.textContent = memory.strengthLabel;
     strengthEl.className = `badge ${memory.strengthLabel === 'Silná stopa' ? 'badge--premium' : 'badge--secondary'}`;
     copyEl.textContent = buildRitualMemoryCopy(memory);
@@ -1211,8 +1203,8 @@ function renderRitualMemory(user, readings, subscription) {
     } else {
         themesEl.innerHTML = `
             <div class="ritual-memory-theme">
-                <strong>Ještě sbíráme signály</strong>
-                <span>Stačí první výklad, jedna reflexe nebo zpětná vazba. Pak se tu začne ukazovat návratový vzorec.</span>
+                <strong>Zatím bez osobního závěru</strong>
+                <span>Ohlédni se za uloženým výkladem a přidej vlastní zkušenost, pokud chceš.</span>
                 <div class="ritual-memory-theme__meter" aria-hidden="true"><span class="ritual-memory-theme__meter-fill ritual-memory-theme__meter-fill--18"></span></div>
             </div>
         `;
@@ -1264,15 +1256,6 @@ function renderRitualMemory(user, readings, subscription) {
         });
     }
 
-    if (!isPremium && memory.totalReadings >= 2) {
-        actions.push({
-            href: 'cenik.html?source=profile_memory&feature=ritual_memory',
-            label: 'Odemknout hlubší paměť',
-            description: 'Dává smysl ve chvíli, kdy už se k tématům pravidelně vracíte.',
-            action: 'memory_upgrade'
-        });
-    }
-
     actionsEl.innerHTML = actions.map(action => `
         <a href="${action.href}" class="ritual-memory-action ${action.primary ? 'ritual-memory-action--primary' : ''}" data-memory-action="${action.action}" data-memory-theme="${action.theme || ''}">
             <strong>${escapeHtml(action.label)}</strong>
@@ -1320,8 +1303,8 @@ function renderDailyGuidance(user, readings, subscription) {
         : 'Dnešní směr čeká na doplnění profilu';
 
     copyEl.textContent = sign
-        ? `Máte připravený denní rituál podle svého profilu. Poslední stopa v historii: ${getLastReadingLabel(readings)}.`
-        : 'Doplňte znamení nebo datum narození a denní přehled začne dávat přesnější osobní kontext.';
+        ? `Můžeš si přečíst horoskop pro své znamení nebo otevřít kartu dne. Poslední výklad: ${getLastReadingLabel(readings)}.`
+        : 'Znamení si můžeš vybrat v úvodním nastavení nebo doplnit datum narození v profilu.';
 
     focusEl.textContent = focus;
 
@@ -1335,15 +1318,15 @@ function renderDailyGuidance(user, readings, subscription) {
             primary: true
         },
         {
-            href: 'tarot.html?source=profile_daily&feature=tarot',
-            label: readingKinds.has('tarot') ? 'Navázat dalším tarotem' : 'Vyložit kartu dne',
-            description: 'Jeden symbol pro rozhodnutí, které máte před sebou.',
+            href: 'tarot-karta-dne.html?source=profile_daily&feature=tarot',
+            label: 'Otevřít kartu dne',
+            description: 'Jeden symbol k zamyšlení pro dnešní den.',
             action: 'daily_tarot'
         },
         {
             href: '#journal-input',
             label: 'Zapsat večerní reflexi',
-            description: 'Zachytíte vzorec dřív, než z něj bude další opakování.',
+            description: 'Poznamenej si, co pro tebe dnes bylo důležité.',
             action: 'daily_journal'
         }
     ];
@@ -1389,10 +1372,10 @@ function renderActivationChecklist(user, readings, subscription) {
         ? buildDailyHoroscopeHref(sign, 'profile_activation')
         : buildTarotYesNoHref('profile_activation', 'first_reading'));
     const firstReadingDescription = kinds.size
-        ? 'Už máte první stopu, ke které se dá vracet.'
+        ? 'První výklad už máš uložený v historii.'
         : sign
-            ? `Začněte dnešním horoskopem pro ${sign.name}, ať první krok naváže na profil.`
-            : 'Vyberte první konkrétní krok: tarot, horoskop nebo otázku pro křišťálovou kouli.';
+            ? `Začni dnešním horoskopem pro ${sign.name}, ať první krok naváže na profil.`
+            : 'Vyber si první nástroj podle své otázky.';
 
     const effectiveFirstReadingDescription = signupIntentDestination?.description || firstReadingDescription;
 
@@ -1407,7 +1390,7 @@ function renderActivationChecklist(user, readings, subscription) {
         {
             key: 'profile_personalized',
             title: 'Osobní profil je doplněný',
-            description: sign ? `Dnešní vedení se může opřít o znamení ${sign.name}.` : 'Doplňte datum narození nebo znamení pro přesnější návraty.',
+            description: sign ? `Dnešní vedení se může opřít o znamení ${sign.name}.` : 'Doplň dobrovolné datum narození nebo vyber znamení.',
             done: Boolean(sign),
             href: sign ? '#tab-settings' : 'onboarding.html?source=profile_activation&feature=daily_guidance',
             action: sign ? 'open_settings' : 'start_onboarding'
@@ -1423,22 +1406,23 @@ function renderActivationChecklist(user, readings, subscription) {
         {
             key: 'daily_reflection',
             title: 'Vzniká návratový rituál',
-            description: streak > 1 ? `Aktuální série: ${streak} dny.` : 'Zapište si večerní reflexi nebo se vraťte zítra pro další výklad.',
+            description: streak > 1 ? `Aktuální série: ${streak} dny.` : 'Zapiš vlastní poznámku, pokud se k ní chceš později vrátit.',
             done: streak > 1 || kinds.has('journal'),
             href: '#journal-input',
             action: 'focus_journal'
         },
         {
-            key: 'premium_depth',
-            title: 'Hlubší vedení je odemčené',
-            description: isPremium ? 'Plné výklady a osobní historie jsou aktivní.' : 'Premium dává smysl ve chvíli, kdy se chcete vracet pravidelně.',
-            done: isPremium,
-            href: isPremium ? '#daily-guidance-card' : 'cenik.html?source=profile_activation&feature=daily_guidance',
-            action: isPremium ? 'daily_guidance' : 'upgrade'
+            key: 'first_favorite',
+            title: 'Výklad pro příští návrat',
+            description: 'Oblíbené udrží vybraný výklad po ruce.',
+            done: (getReadingSummary()?.favorites ?? readings.filter(reading => reading.is_favorite).length) > 0,
+            href: '#tab-favorites',
+            action: 'open_favorites'
         }
     ];
 
     const completed = items.filter(item => item.done).length;
+    setProfileBlockVisible(document.getElementById('activation-checklist-card'), completed < items.length);
     labelEl.textContent = `${completed}/${items.length}`;
     barEl.className = `activation-progress__bar activation-progress__bar--${completed}`;
 
@@ -1465,6 +1449,7 @@ function renderActivationChecklist(user, readings, subscription) {
 function focusJournalInput() {
     const input = document.getElementById('journal-input');
     if (!input) return;
+    document.querySelector('.profile-tab[data-tab="overview"]')?.click();
 
     input.scrollIntoView({ behavior: 'smooth', block: 'center' });
     setTimeout(() => input.focus(), 250);
@@ -1515,6 +1500,12 @@ function handleActivationChecklistClick(event) {
     if (action === 'open_history') {
         event.preventDefault();
         openProfileTab('history');
+        return;
+    }
+
+    if (action === 'open_favorites') {
+        event.preventDefault();
+        openProfileTab('favorites');
         return;
     }
 
@@ -1584,15 +1575,17 @@ function animateCounter(elementId, target) {
 
 function updateStats(readings) {
     const safeReadings = readings || [];
-    const total = safeReadings.length;
+    const summary = getReadingSummary();
+    const activity = summary?.activity?.map(created_at => ({ created_at })) || safeReadings;
+    const total = summary?.total ?? safeReadings.length;
     const now = new Date();
-    const thisMonth = safeReadings.filter(r => {
+    const thisMonth = activity.filter(r => {
         const date = new Date(r.created_at);
         return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
     }).length;
 
-    const favorites = safeReadings.filter(r => r.is_favorite).length;
-    const streak = calculateStreak(safeReadings);
+    const favorites = summary?.favorites ?? safeReadings.filter(r => r.is_favorite).length;
+    const streak = calculateStreak(activity);
 
     animateCounter('stat-total', total);
     animateCounter('stat-month', thisMonth);
@@ -1712,6 +1705,7 @@ async function handleReadingListInteraction(event) {
 
 function handleReadingListKeyboard(event) {
     if (event.key !== 'Enter' && event.key !== ' ') return;
+    if (event.target.closest('button, a, input, select, textarea')) return;
 
     const card = event.target.closest('[data-reading-id]');
     if (!card || !event.currentTarget.contains(card)) return;
@@ -1757,8 +1751,7 @@ async function initProfile() {
     const pendingReadingSavedId = await savePendingProfileReading();
 
     if (user) {
-        const displayName = user.first_name || user.email.split('@')[0];
-        if (greeting) greeting.textContent = `Vítejte zpět, ${displayName}! ✨`;
+        if (greeting) greeting.textContent = user.first_name ? `Vítej zpět, ${user.first_name}` : 'Tvoje výklady na jednom místě';
 
         const emailEl = document.getElementById('user-email');
         if (emailEl) emailEl.textContent = user.email;
@@ -1799,9 +1792,10 @@ async function initProfile() {
     initTabs();
     initSettingsForm();
 
-    const [readings, subscription] = await Promise.all([
+    const [readings, subscription, journals] = await Promise.all([
         loadReadings(),
-        loadSubscriptionStatus()
+        loadSubscriptionStatus(),
+        loadJournalReadings()
     ]);
 
     const paymentReturnContext = handlePaymentReturnState(subscription, user) || activePaymentReturnContext;
@@ -1810,11 +1804,17 @@ async function initProfile() {
     renderActivationChecklist(user, readings, subscription);
     renderRitualMemory(user, readings, subscription);
     updateStats(readings);
-    renderJournalEntries(readings);
+    if (journals) renderJournalEntries(journals);
+    else {
+        const journalEntries = document.getElementById('journal-entries');
+        if (journalEntries) journalEntries.innerHTML = '<p role="status">Poznámky se nepodařilo načíst. Zkus stránku obnovit.</p>';
+    }
     focusPendingReadingInHistory(typeof pendingReadingSavedId === 'string' ? pendingReadingSavedId : null);
 
     if (window.location.hash === '#journal-input') {
         focusJournalInput();
+    } else if (['#tab-history', '#tab-favorites', '#tab-settings', '#tab-overview'].includes(window.location.hash)) {
+        openProfileTab(window.location.hash.slice(5));
     }
 
     if (!listenersAttached) {
@@ -1851,6 +1851,21 @@ async function initProfile() {
         });
 
         document.getElementById('save-settings-btn')?.addEventListener('click', saveSettings);
+        document.getElementById('change-password-btn')?.addEventListener('click', changePassword);
+        window.addEventListener('hashchange', () => {
+            if (window.location.hash === '#journal-input') focusJournalInput();
+            else if (['#tab-history', '#tab-favorites', '#tab-settings', '#tab-overview'].includes(window.location.hash)) openProfileTab(window.location.hash.slice(5));
+        });
+        document.addEventListener('profile:updated', event => {
+            const nextUser = event.detail?.user;
+            if (!nextUser) return;
+            if (greeting) greeting.textContent = nextUser.first_name ? `Vítej zpět, ${nextUser.first_name}` : 'Tvoje výklady na jednom místě';
+            renderDailyGuidance(nextUser, readings, subscription);
+            renderActivationChecklist(nextUser, readings, subscription);
+            const zodiac = document.getElementById('user-zodiac');
+            if (zodiac) setProfileBlockVisible(zodiac, false);
+            if (nextUser.birth_date) showZodiacSignLocal(nextUser.birth_date);
+        });
         document.getElementById('user-avatar')?.addEventListener('click', toggleAvatarPicker);
         document.getElementById('avatar-picker')?.addEventListener('click', e => {
             const option = e.target.closest('.avatar-option');
@@ -1881,7 +1896,8 @@ async function initProfile() {
                         if (window.createStardust) window.createStardust(journalBtn);
                         const refreshedReadings = await loadReadings();
                         updateStats(refreshedReadings);
-                        renderJournalEntries(refreshedReadings);
+                        const refreshedJournals = await loadJournalReadings();
+                        if (refreshedJournals) renderJournalEntries(refreshedJournals);
                         renderDailyGuidance(window.Auth?.user, refreshedReadings, subscription);
                         renderActivationChecklist(window.Auth?.user, refreshedReadings, subscription);
                         renderRitualMemory(window.Auth?.user, refreshedReadings, subscription);

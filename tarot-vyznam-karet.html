@@ -157,13 +157,13 @@
                         <button class="tarot-meaning-filter" type="button" data-tarot-filter="swords" aria-pressed="false">Meče</button>
                         <button class="tarot-meaning-filter" type="button" data-tarot-filter="pentacles" aria-pressed="false">Pentákly</button>
                     </div>
-                    <div id="tarot-card-count" class="tarot-meaning-count" aria-live="polite">78 karet</div>
+                    <div id="tarot-card-count" class="tarot-meaning-count" aria-live="polite">12 z 78 karet</div>
                 </div>
 
                 <p class="tarot-meaning-state" data-tarot-meaning-loading>Načítám interaktivní filtr...</p>
                 <p class="tarot-meaning-state" data-tarot-meaning-error hidden>Nepodařilo se načíst katalog. Zkuste stránku obnovit.</p>
                 <p class="tarot-meaning-state" data-tarot-no-results hidden>Pro tento dotaz jsme nenašli žádnou kartu.</p>
-                <div class="tarot-meaning-grid" data-tarot-meaning-grid>
+                <div class="tarot-meaning-grid" id="tarot-card-grid" data-tarot-meaning-grid>
                     <!-- TAROT_MEANING_CARDS_START -->
                     <article class="tarot-meaning-card" data-group="major" data-card="Blázen">
                         <div class="tarot-meaning-card__image">
@@ -175,7 +175,6 @@
                             <p class="tarot-meaning-card__meaning">Začít malým krokem</p>
                             <p>Blázen může otevřít chuť vyzkoušet něco nového.</p>
                             <a href="tarot-vyznam/blazen.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Bl%C3%A1zen" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
                         </div>
                     </article>
                     <article class="tarot-meaning-card" data-group="major" data-card="Mág">
@@ -188,7 +187,6 @@
                             <p class="tarot-meaning-card__meaning">Použít dostupné možnosti</p>
                             <p>Mág může připomenout, že nápad potřebuje konkrétní nástroj a jednání.</p>
                             <a href="tarot-vyznam/mag.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=M%C3%A1g" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
                         </div>
                     </article>
                     <article class="tarot-meaning-card" data-group="major" data-card="Velekněžka">
@@ -201,7 +199,6 @@
                             <p class="tarot-meaning-card__meaning">Vnímat dojem a ověřit souvislosti</p>
                             <p>Velekněžka může otevřít prostor pro tichý postřeh a otázku, kterou zatím neumíš přesně vyslovit.</p>
                             <a href="tarot-vyznam/veleknezka.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Velekn%C4%9B%C5%BEka" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
                         </div>
                     </article>
                     <article class="tarot-meaning-card" data-group="major" data-card="Císařovna">
@@ -214,7 +211,6 @@
                             <p class="tarot-meaning-card__meaning">Péče, která má prostor</p>
                             <p>Císařovna může připomenout péči, tvořivost a podmínky, v nichž se něčemu dobře daří.</p>
                             <a href="tarot-vyznam/cisarovna.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=C%C3%ADsa%C5%99ovna" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
                         </div>
                     </article>
                     <article class="tarot-meaning-card" data-group="major" data-card="Císař">
@@ -227,7 +223,6 @@
                             <p class="tarot-meaning-card__meaning">Uspořádat odpovědnost</p>
                             <p>Císař může připomenout jasný rámec a rozdělení odpovědnosti.</p>
                             <a href="tarot-vyznam/cisar.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=C%C3%ADsa%C5%99" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
                         </div>
                     </article>
                     <article class="tarot-meaning-card" data-group="major" data-card="Velekněz">
@@ -240,7 +235,6 @@
                             <p class="tarot-meaning-card__meaning">Rozumět pravidlům a vedení</p>
                             <p>Velekněz může nabídnout téma předávané zkušenosti, pravidel a rady někoho dalšího.</p>
                             <a href="tarot-vyznam/veleknez.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Velekn%C4%9Bz" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
                         </div>
                     </article>
                     <article class="tarot-meaning-card" data-group="major" data-card="Milenci">
@@ -253,7 +247,6 @@
                             <p class="tarot-meaning-card__meaning">Přitažlivost a společná volba</p>
                             <p>Milenci spojují přitažlivost, volbu a hodnoty.</p>
                             <a href="tarot-vyznam/milenci.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Milenci" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
                         </div>
                     </article>
                     <article class="tarot-meaning-card" data-group="major" data-card="Vůz">
@@ -266,7 +259,6 @@
                             <p class="tarot-meaning-card__meaning">Dát úsilí jasný směr</p>
                             <p>Vůz může připomenout soustředění na jeden cíl a sladění různých požadavků.</p>
                             <a href="tarot-vyznam/vuz.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=V%C5%AFz" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
                         </div>
                     </article>
                     <article class="tarot-meaning-card" data-group="major" data-card="Síla">
@@ -279,7 +271,6 @@
                             <p class="tarot-meaning-card__meaning">Reagovat pevně a trpělivě</p>
                             <p>Síla může připomenout jednání, které je pevné bez zbytečného nátlaku.</p>
                             <a href="tarot-vyznam/sila.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=S%C3%ADla" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
                         </div>
                     </article>
                     <article class="tarot-meaning-card" data-group="major" data-card="Poustevník">
@@ -292,7 +283,6 @@
                             <p class="tarot-meaning-card__meaning">Získat prostor pro vlastní otázku</p>
                             <p>Poustevník může připomenout chvíli, kdy potřebuješ srovnat vlastní pohled.</p>
                             <a href="tarot-vyznam/poustevnik.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Poustevn%C3%ADk" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
                         </div>
                     </article>
                     <article class="tarot-meaning-card" data-group="major" data-card="Kolo štěstí">
@@ -305,7 +295,6 @@
                             <p class="tarot-meaning-card__meaning">Přizpůsobit plán změně</p>
                             <p>Kolo štěstí může otevřít téma proměnlivých okolností.</p>
                             <a href="tarot-vyznam/kolo-stesti.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Kolo%20%C5%A1t%C4%9Bst%C3%AD" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
                         </div>
                     </article>
                     <article class="tarot-meaning-card" data-group="major" data-card="Spravedlnost">
@@ -318,868 +307,13 @@
                             <p class="tarot-meaning-card__meaning">Porovnat podklady a dopady</p>
                             <p>Spravedlnost může připomenout rozhodnutí, které umíš vysvětlit podle podkladů a dopadu na druhé.</p>
                             <a href="tarot-vyznam/spravedlnost.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Spravedlnost" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="major" data-card="Viselec">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_viselec.webp" alt="Viselec tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Velká arkána</div>
-                            <h3><a href="tarot-vyznam/viselec.html">Viselec</a></h3>
-                            <p class="tarot-meaning-card__meaning">Podívat se z jiného úhlu</p>
-                            <p>Viselec může připomenout přerušení obvyklého postupu a jiný pohled.</p>
-                            <a href="tarot-vyznam/viselec.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Viselec" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="major" data-card="Smrt">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_smrt.webp" alt="Smrt tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Velká arkána</div>
-                            <h3><a href="tarot-vyznam/smrt.html">Smrt</a></h3>
-                            <p class="tarot-meaning-card__meaning">Pojmenovat ukončení a změnu</p>
-                            <p>Karta Smrt může nabídnout symbolické téma uzavření a proměny.</p>
-                            <a href="tarot-vyznam/smrt.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Smrt" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="major" data-card="Mírnost">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_mirnost.webp" alt="Mírnost tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Velká arkána</div>
-                            <h3><a href="tarot-vyznam/mirnost.html">Mírnost</a></h3>
-                            <p class="tarot-meaning-card__meaning">Sladit tempo a možnosti</p>
-                            <p>Mírnost může připomenout rozumné dávkování úsilí a spojení různých potřeb.</p>
-                            <a href="tarot-vyznam/mirnost.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=M%C3%ADrnost" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="major" data-card="Ďábel">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_dabel.webp" alt="Ďábel tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Velká arkána</div>
-                            <h3><a href="tarot-vyznam/dabel.html">Ďábel</a></h3>
-                            <p class="tarot-meaning-card__meaning">Rozpoznat tlak a vlastní možnosti</p>
-                            <p>Ďábel může nabídnout otázku na tlak, závazek nebo opakovaný vzorec.</p>
-                            <a href="tarot-vyznam/dabel.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=%C4%8E%C3%A1bel" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="major" data-card="Věž">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_vez.webp" alt="Věž tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Velká arkána</div>
-                            <h3><a href="tarot-vyznam/vez.html">Věž</a></h3>
-                            <p class="tarot-meaning-card__meaning">Reagovat na narušený plán</p>
-                            <p>Věž může nabídnout obraz plánu, jehož předpoklady se změnily.</p>
-                            <a href="tarot-vyznam/vez.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=V%C4%9B%C5%BE" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="major" data-card="Hvězda">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_hvezda.webp" alt="Hvězda tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Velká arkána</div>
-                            <h3><a href="tarot-vyznam/hvezda.html">Hvězda</a></h3>
-                            <p class="tarot-meaning-card__meaning">Najít konkrétní oporu naděje</p>
-                            <p>Hvězda může připomenout naději, inspiraci a něco, o co se můžeš opřít už teď.</p>
-                            <a href="tarot-vyznam/hvezda.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Hv%C4%9Bzda" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="major" data-card="Luna">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_luna.webp" alt="Luna tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Velká arkána</div>
-                            <h3><a href="tarot-vyznam/luna.html">Luna</a></h3>
-                            <p class="tarot-meaning-card__meaning">Rozlišit dojem a chybějící informaci</p>
-                            <p>Luna (Měsíc) může připomenout nejistotu, dojem a to, co zatím nemá jasné souvislosti.</p>
-                            <a href="tarot-vyznam/luna.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Luna" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="major" data-card="Slunce">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_slunce.webp" alt="Slunce tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Velká arkána</div>
-                            <h3><a href="tarot-vyznam/slunce.html">Slunce</a></h3>
-                            <p class="tarot-meaning-card__meaning">Radost, jasnost a otevřenost</p>
-                            <p>Slunce je obraz radosti, jasnosti a otevřenosti.</p>
-                            <a href="tarot-vyznam/slunce.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Slunce" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="major" data-card="Soud">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_soud.webp" alt="Soud tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Velká arkána</div>
-                            <h3><a href="tarot-vyznam/soud.html">Soud</a></h3>
-                            <p class="tarot-meaning-card__meaning">Zhodnotit zkušenost a zvolit pokračování</p>
-                            <p>Soud (Soudce) může připomenout bilanci zkušenosti a rozhodnutí, jak pokračovat.</p>
-                            <a href="tarot-vyznam/soud.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Soud" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="major" data-card="Svět">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_svet.webp" alt="Svět tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Velká arkána</div>
-                            <h3><a href="tarot-vyznam/svet.html">Svět</a></h3>
-                            <p class="tarot-meaning-card__meaning">Dokončit a pojmenovat výsledek</p>
-                            <p>Svět může připomenout dokončení úkolu, propojení zkušeností a prostor všimnout si výsledku.</p>
-                            <a href="tarot-vyznam/svet.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Sv%C4%9Bt" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="wands" data-card="Eso holí">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_eso_holi.webp" alt="Eso holí tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Hůlky</div>
-                            <h3><a href="tarot-vyznam/eso-holi.html">Eso holí</a></h3>
-                            <p class="tarot-meaning-card__meaning">Jiskra, která čeká na tvar</p>
-                            <p>Eso holí otevírá téma prvotního zápalu: nápad, chuť něco zkusit nebo nová tvůrčí energie.</p>
-                            <a href="tarot-vyznam/eso-holi.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Eso%20hol%C3%AD" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="wands" data-card="Dvojka holí">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_dvojka_holi.webp" alt="Dvojka holí tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Hůlky</div>
-                            <h3><a href="tarot-vyznam/dvojka-holi.html">Dvojka holí</a></h3>
-                            <p class="tarot-meaning-card__meaning">Výhled a rozhodnutí o směru</p>
-                            <p>Dvojka holí stojí mezi známým zázemím a možností rozšířit obzor.</p>
-                            <a href="tarot-vyznam/dvojka-holi.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Dvojka%20hol%C3%AD" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="wands" data-card="Trojka holí">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_trojka_holi.webp" alt="Trojka holí tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Hůlky</div>
-                            <h3><a href="tarot-vyznam/trojka-holi.html">Trojka holí</a></h3>
-                            <p class="tarot-meaning-card__meaning">Rozvoj, který potřebuje trpělivost</p>
-                            <p>Trojka holí navazuje na rozhodnutí a obrací pozornost k tomu, jak se záměr setká se světem.</p>
-                            <a href="tarot-vyznam/trojka-holi.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Trojka%20hol%C3%AD" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="wands" data-card="Čtyřka holí">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_ctyrka_holi.webp" alt="Čtyřka holí tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Hůlky</div>
-                            <h3><a href="tarot-vyznam/ctyrka-holi.html">Čtyřka holí</a></h3>
-                            <p class="tarot-meaning-card__meaning">Sdílená radost a pevný základ</p>
-                            <p>Čtyřka holí zachycuje chvíli, kdy lze něco oslavit nebo se opřít o společné zázemí.</p>
-                            <a href="tarot-vyznam/ctyrka-holi.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=%C4%8Cty%C5%99ka%20hol%C3%AD" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="wands" data-card="Pětka holí">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_petka_holi.webp" alt="Pětka holí tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Hůlky</div>
-                            <h3><a href="tarot-vyznam/petka-holi.html">Pětka holí</a></h3>
-                            <p class="tarot-meaning-card__meaning">Tření, soutěž a různé nápady</p>
-                            <p>Pětka holí dává prostor nesouhlasu a soupeření.</p>
-                            <a href="tarot-vyznam/petka-holi.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=P%C4%9Btka%20hol%C3%AD" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="wands" data-card="Šestka holí">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_sestka_holi.webp" alt="Šestka holí tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Hůlky</div>
-                            <h3><a href="tarot-vyznam/sestka-holi.html">Šestka holí</a></h3>
-                            <p class="tarot-meaning-card__meaning">Uznání a viditelnost výsledku</p>
-                            <p>Šestka holí se pojí s uznáním, veřejným výsledkem nebo chvílí, kdy si všimneš vlastního pokroku.</p>
-                            <a href="tarot-vyznam/sestka-holi.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=%C5%A0estka%20hol%C3%AD" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="wands" data-card="Sedmička holí">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_sedmicka_holi.webp" alt="Sedmička holí tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Hůlky</div>
-                            <h3><a href="tarot-vyznam/sedmicka-holi.html">Sedmička holí</a></h3>
-                            <p class="tarot-meaning-card__meaning">Obhájit hranici bez vyčerpání</p>
-                            <p>Sedmička holí zobrazuje potřebu stát si za stanoviskem, zvlášť když na tebe působí tlak.</p>
-                            <a href="tarot-vyznam/sedmicka-holi.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Sedmi%C4%8Dka%20hol%C3%AD" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="wands" data-card="Osmička holí">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_osmicka_holi.webp" alt="Osmička holí tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Hůlky</div>
-                            <h3><a href="tarot-vyznam/osmicka-holi.html">Osmička holí</a></h3>
-                            <p class="tarot-meaning-card__meaning">Rychlost, zpráva a načasování</p>
-                            <p>Osmička holí připomíná rychlý sled událostí, zpráv nebo úkolů.</p>
-                            <a href="tarot-vyznam/osmicka-holi.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Osmi%C4%8Dka%20hol%C3%AD" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="wands" data-card="Devítka holí">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_devitka_holi.webp" alt="Devítka holí tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Hůlky</div>
-                            <h3><a href="tarot-vyznam/devitka-holi.html">Devítka holí</a></h3>
-                            <p class="tarot-meaning-card__meaning">Vytrvalost s prostorem na oddech</p>
-                            <p>Devítka holí představuje zkušenost, která tě naučila hlídat si síly.</p>
-                            <a href="tarot-vyznam/devitka-holi.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Dev%C3%ADtka%20hol%C3%AD" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="wands" data-card="Desítka holí">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_desitka_holi.webp" alt="Desítka holí tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Hůlky</div>
-                            <h3><a href="tarot-vyznam/desitka-holi.html">Desítka holí</a></h3>
-                            <p class="tarot-meaning-card__meaning">Zátěž, kterou lze přerozdělit</p>
-                            <p>Desítka holí ukazuje mnoho povinností naráz.</p>
-                            <a href="tarot-vyznam/desitka-holi.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Des%C3%ADtka%20hol%C3%AD" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="wands" data-card="Páže holí">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_paze_holi.webp" alt="Páže holí tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Hůlky</div>
-                            <h3><a href="tarot-vyznam/paze-holi.html">Páže holí</a></h3>
-                            <p class="tarot-meaning-card__meaning">Zvědavost a první pokus</p>
-                            <p>Páže holí je obrazem začátečnické zvědavosti, která chce prozkoumat nový směr.</p>
-                            <a href="tarot-vyznam/paze-holi.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=P%C3%A1%C5%BEe%20hol%C3%AD" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="wands" data-card="Rytíř holí">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_rytir_holi.webp" alt="Rytíř holí tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Hůlky</div>
-                            <h3><a href="tarot-vyznam/rytir-holi.html">Rytíř holí</a></h3>
-                            <p class="tarot-meaning-card__meaning">Tah na branku a jeho cena</p>
-                            <p>Rytíř holí přináší odvahu vyrazit a silný tah k cíli.</p>
-                            <a href="tarot-vyznam/rytir-holi.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Ryt%C3%AD%C5%99%20hol%C3%AD" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="wands" data-card="Královna holí">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_kralovna_holi.webp" alt="Královna holí tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Hůlky</div>
-                            <h3><a href="tarot-vyznam/kralovna-holi.html">Královna holí</a></h3>
-                            <p class="tarot-meaning-card__meaning">Sebejistota, která nechává prostor</p>
-                            <p>Královna holí spojuje tvořivost, vřelost a sebejisté vystupování.</p>
-                            <a href="tarot-vyznam/kralovna-holi.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Kr%C3%A1lovna%20hol%C3%AD" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="wands" data-card="Král holí">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_kral_holi.webp" alt="Král holí tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Hůlky</div>
-                            <h3><a href="tarot-vyznam/kral-holi.html">Král holí</a></h3>
-                            <p class="tarot-meaning-card__meaning">Vize, odpovědnost a směr</p>
-                            <p>Král holí představuje schopnost spojit vizi s rozhodnutím a nést za něj odpovědnost.</p>
-                            <a href="tarot-vyznam/kral-holi.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Kr%C3%A1l%20hol%C3%AD" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="cups" data-card="Eso pohárů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_eso_poharu.webp" alt="Eso pohárů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Poháry</div>
-                            <h3><a href="tarot-vyznam/eso-poharu.html">Eso pohárů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Otevřenost bez spěchu</p>
-                            <p>Eso pohárů otevírá prostor pro cit, tvořivost a nový začátek bez záruky výsledku.</p>
-                            <a href="tarot-vyznam/eso-poharu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Eso%20poh%C3%A1r%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="cups" data-card="Dvojka pohárů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_dvojka_poharu.webp" alt="Dvojka pohárů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Poháry</div>
-                            <h3><a href="tarot-vyznam/dvojka-poharu.html">Dvojka pohárů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Setkání a vzájemná odezva</p>
-                            <p>Dvojka pohárů představuje setkání, vzájemnou odezvu a prostor pro jasnou dohodu.</p>
-                            <a href="tarot-vyznam/dvojka-poharu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Dvojka%20poh%C3%A1r%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="cups" data-card="Trojka pohárů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_trojka_poharu.webp" alt="Trojka pohárů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Poháry</div>
-                            <h3><a href="tarot-vyznam/trojka-poharu.html">Trojka pohárů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Radost, která se sdílí</p>
-                            <p>Trojka pohárů připomíná přátelství, společnou radost a podporu okolí.</p>
-                            <a href="tarot-vyznam/trojka-poharu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Trojka%20poh%C3%A1r%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="cups" data-card="Čtyřka pohárů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_ctyrka_poharu.webp" alt="Čtyřka pohárů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Poháry</div>
-                            <h3><a href="tarot-vyznam/ctyrka-poharu.html">Čtyřka pohárů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Všimnout si, co je na dosah</p>
-                            <p>Čtyřka pohárů vybízí rozlišit skutečný nezájem od únavy nebo zklamání.</p>
-                            <a href="tarot-vyznam/ctyrka-poharu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=%C4%8Cty%C5%99ka%20poh%C3%A1r%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="cups" data-card="Pětka pohárů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_petka_poharu.webp" alt="Pětka pohárů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Poháry</div>
-                            <h3><a href="tarot-vyznam/petka-poharu.html">Pětka pohárů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Ztráta i to, co zůstává</p>
-                            <p>Pětka pohárů uznává zklamání a postupně rozšiřuje pohled i na to, co zůstává.</p>
-                            <a href="tarot-vyznam/petka-poharu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=P%C4%9Btka%20poh%C3%A1r%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="cups" data-card="Šestka pohárů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_sestka_poharu.webp" alt="Šestka pohárů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Poháry</div>
-                            <h3><a href="tarot-vyznam/sestka-poharu.html">Šestka pohárů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Vzpomínka v přítomném čase</p>
-                            <p>Šestka pohárů propojuje vzpomínky s otázkou, co má smysl v přítomnosti.</p>
-                            <a href="tarot-vyznam/sestka-poharu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=%C5%A0estka%20poh%C3%A1r%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="cups" data-card="Sedmička pohárů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_sedmicka_poharu.webp" alt="Sedmička pohárů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Poháry</div>
-                            <h3><a href="tarot-vyznam/sedmicka-poharu.html">Sedmička pohárů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Možnosti potřebují ověření</p>
-                            <p>Sedmička pohárů pomáhá oddělit lákavé představy od možností s ověřitelnými podmínkami.</p>
-                            <a href="tarot-vyznam/sedmicka-poharu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Sedmi%C4%8Dka%20poh%C3%A1r%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="cups" data-card="Osmička pohárů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_osmicka_poharu.webp" alt="Osmička pohárů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Poháry</div>
-                            <h3><a href="tarot-vyznam/osmicka-poharu.html">Osmička pohárů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Odejít od toho, co nenaplňuje</p>
-                            <p>Osmička pohárů otevírá otázku, kdy situace přestává naplňovat důležité potřeby.</p>
-                            <a href="tarot-vyznam/osmicka-poharu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Osmi%C4%8Dka%20poh%C3%A1r%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="cups" data-card="Devítka pohárů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_devitka_poharu.webp" alt="Devítka pohárů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Poháry</div>
-                            <h3><a href="tarot-vyznam/devitka-poharu.html">Devítka pohárů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Spokojenost bez přehlížení ceny</p>
-                            <p>Devítka pohárů se ptá na osobní spokojenost a cenu, kterou za ni platíš.</p>
-                            <a href="tarot-vyznam/devitka-poharu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Dev%C3%ADtka%20poh%C3%A1r%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="cups" data-card="Desítka pohárů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_desitka_poharu.webp" alt="Desítka pohárů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Poháry</div>
-                            <h3><a href="tarot-vyznam/desitka-poharu.html">Desítka pohárů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Společná spokojenost a dohoda</p>
-                            <p>Desítka pohárů spojuje představu sounáležitosti s konkrétními dohodami.</p>
-                            <a href="tarot-vyznam/desitka-poharu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Des%C3%ADtka%20poh%C3%A1r%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="cups" data-card="Páže pohárů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_paze_poharu.webp" alt="Páže pohárů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Poháry</div>
-                            <h3><a href="tarot-vyznam/paze-poharu.html">Páže pohárů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Citlivá zpráva a první pokus</p>
-                            <p>Páže pohárů vybízí k citlivému prvnímu kroku a jasnému vyjádření.</p>
-                            <a href="tarot-vyznam/paze-poharu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=P%C3%A1%C5%BEe%20poh%C3%A1r%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="cups" data-card="Rytíř pohárů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_rytir_poharu.webp" alt="Rytíř pohárů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Poháry</div>
-                            <h3><a href="tarot-vyznam/rytir-poharu.html">Rytíř pohárů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Nabídka, která potřebuje obsah</p>
-                            <p>Rytíř pohárů spojuje citové gesto s potřebou jasných podmínek.</p>
-                            <a href="tarot-vyznam/rytir-poharu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Ryt%C3%AD%C5%99%20poh%C3%A1r%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="cups" data-card="Královna pohárů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_kralovna_poharu.webp" alt="Královna pohárů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Poháry</div>
-                            <h3><a href="tarot-vyznam/kralovna-poharu.html">Královna pohárů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Empatie s vlastními hranicemi</p>
-                            <p>Královna pohárů připomíná empatii, která neztrácí vlastní hranice.</p>
-                            <a href="tarot-vyznam/kralovna-poharu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Kr%C3%A1lovna%20poh%C3%A1r%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="cups" data-card="Král pohárů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_kral_poharu.webp" alt="Král pohárů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Poháry</div>
-                            <h3><a href="tarot-vyznam/kral-poharu.html">Král pohárů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Klidná reakce v citové situaci</p>
-                            <p>Král pohárů spojuje citovou vyrovnanost s jasnou a respektující komunikací.</p>
-                            <a href="tarot-vyznam/kral-poharu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Kr%C3%A1l%20poh%C3%A1r%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="swords" data-card="Eso mečů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_eso_mecu.webp" alt="Eso mečů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Meče</div>
-                            <h3><a href="tarot-vyznam/eso-mecu.html">Eso mečů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Jasnost a přesná otázka</p>
-                            <p>Eso mečů může připomenout jasnou otázku, přesné pojmenování a nový pohled.</p>
-                            <a href="tarot-vyznam/eso-mecu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Eso%20me%C4%8D%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="swords" data-card="Dvojka mečů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_dvojka_mecu.webp" alt="Dvojka mečů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Meče</div>
-                            <h3><a href="tarot-vyznam/dvojka-mecu.html">Dvojka mečů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Volba, která potřebuje prostor</p>
-                            <p>Dvojka mečů může otevřít téma váhání mezi dvěma možnostmi.</p>
-                            <a href="tarot-vyznam/dvojka-mecu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Dvojka%20me%C4%8D%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="swords" data-card="Trojka mečů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_trojka_mecu.webp" alt="Trojka mečů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Meče</div>
-                            <h3><a href="tarot-vyznam/trojka-mecu.html">Trojka mečů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Pojmenovat zklamání</p>
-                            <p>Trojka mečů je výrazný obraz zklamání nebo bolestivého rozhovoru.</p>
-                            <a href="tarot-vyznam/trojka-mecu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Trojka%20me%C4%8D%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="swords" data-card="Čtyřka mečů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_ctyrka_mecu.webp" alt="Čtyřka mečů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Meče</div>
-                            <h3><a href="tarot-vyznam/ctyrka-mecu.html">Čtyřka mečů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Pauza před další reakcí</p>
-                            <p>Čtyřka mečů může připomenout prostor mezi podnětem a reakcí.</p>
-                            <a href="tarot-vyznam/ctyrka-mecu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=%C4%8Cty%C5%99ka%20me%C4%8D%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="swords" data-card="Pětka mečů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_petka_mecu.webp" alt="Pětka mečů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Meče</div>
-                            <h3><a href="tarot-vyznam/petka-mecu.html">Pětka mečů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Cena sporu</p>
-                            <p>Pětka mečů může otevřít otázku, co spor stojí a čeho jím chceš dosáhnout.</p>
-                            <a href="tarot-vyznam/petka-mecu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=P%C4%9Btka%20me%C4%8D%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="swords" data-card="Šestka mečů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_sestka_mecu.webp" alt="Šestka mečů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Meče</div>
-                            <h3><a href="tarot-vyznam/sestka-mecu.html">Šestka mečů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Přechod s konkrétní oporou</p>
-                            <p>Šestka mečů může připomenout přechod mezi známou situací a něčím novým.</p>
-                            <a href="tarot-vyznam/sestka-mecu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=%C5%A0estka%20me%C4%8D%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="swords" data-card="Sedmička mečů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_sedmicka_mecu.webp" alt="Sedmička mečů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Meče</div>
-                            <h3><a href="tarot-vyznam/sedmicka-mecu.html">Sedmička mečů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Strategie a nevyřčené věci</p>
-                            <p>Sedmička mečů může otevřít téma strategie, soukromí a věcí, které zůstávají nevyřčené.</p>
-                            <a href="tarot-vyznam/sedmicka-mecu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Sedmi%C4%8Dka%20me%C4%8D%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="swords" data-card="Osmička mečů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_osmicka_mecu.webp" alt="Osmička mečů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Meče</div>
-                            <h3><a href="tarot-vyznam/osmicka-mecu.html">Osmička mečů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Rozlišit omezení</p>
-                            <p>Osmička mečů může nabídnout obraz omezení a nejistoty, kudy dál.</p>
-                            <a href="tarot-vyznam/osmicka-mecu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Osmi%C4%8Dka%20me%C4%8D%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="swords" data-card="Devítka mečů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_devitka_mecu.webp" alt="Devítka mečů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Meče</div>
-                            <h3><a href="tarot-vyznam/devitka-mecu.html">Devítka mečů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Pojmenovat opakující se obavu</p>
-                            <p>Devítka mečů může nabídnout obraz opakující se starosti nebo nejistoty.</p>
-                            <a href="tarot-vyznam/devitka-mecu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Dev%C3%ADtka%20me%C4%8D%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="swords" data-card="Desítka mečů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_desitka_mecu.webp" alt="Desítka mečů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Meče</div>
-                            <h3><a href="tarot-vyznam/desitka-mecu.html">Desítka mečů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Konec podle skutečných okolností</p>
-                            <p>Desítka mečů může otevřít téma vyčerpání nebo nefungujících podmínek.</p>
-                            <a href="tarot-vyznam/desitka-mecu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Des%C3%ADtka%20me%C4%8D%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="swords" data-card="Páže mečů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_paze_mecu.webp" alt="Páže mečů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Meče</div>
-                            <h3><a href="tarot-vyznam/paze-mecu.html">Páže mečů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Zvědavost a ověření</p>
-                            <p>Páže mečů může připomenout zvědavost, první otázku a ověřování nové informace.</p>
-                            <a href="tarot-vyznam/paze-mecu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=P%C3%A1%C5%BEe%20me%C4%8D%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="swords" data-card="Rytíř mečů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_rytir_mecu.webp" alt="Rytíř mečů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Meče</div>
-                            <h3><a href="tarot-vyznam/rytir-mecu.html">Rytíř mečů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Rychlost s rozvahou</p>
-                            <p>Rytíř mečů může otevřít téma rychlé reakce a přesného směru.</p>
-                            <a href="tarot-vyznam/rytir-mecu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Ryt%C3%AD%C5%99%20me%C4%8D%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="swords" data-card="Královna mečů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_kralovna_mecu.webp" alt="Královna mečů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Meče</div>
-                            <h3><a href="tarot-vyznam/kralovna-mecu.html">Královna mečů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Jasná hranice v rozhovoru</p>
-                            <p>Královna mečů může připomenout jasnou řeč, vlastní hranice a rozlišování faktů od dojmů.</p>
-                            <a href="tarot-vyznam/kralovna-mecu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Kr%C3%A1lovna%20me%C4%8D%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="swords" data-card="Král mečů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_kral_mecu.webp" alt="Král mečů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Meče</div>
-                            <h3><a href="tarot-vyznam/kral-mecu.html">Král mečů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Rozhodnutí podle kritérií</p>
-                            <p>Král mečů může nabídnout obraz rozhodování podle srozumitelných kritérií.</p>
-                            <a href="tarot-vyznam/kral-mecu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Kr%C3%A1l%20me%C4%8D%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="pentacles" data-card="Eso pentáklů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_eso_pentaklu.webp" alt="Eso pentáklů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Pentákly</div>
-                            <h3><a href="tarot-vyznam/eso-pentaklu.html">Eso pentáklů</a></h3>
-                            <p class="tarot-meaning-card__meaning">První krok potřebuje pevnou půdu</p>
-                            <p>Praktický začátek, který stojí za ověření.</p>
-                            <a href="tarot-vyznam/eso-pentaklu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Eso%20pent%C3%A1kl%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="pentacles" data-card="Dvojka pentáklů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_dvojka_pentaklu.webp" alt="Dvojka pentáklů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Pentákly</div>
-                            <h3><a href="tarot-vyznam/dvojka-pentaklu.html">Dvojka pentáklů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Rytmus mezi závazky</p>
-                            <p>Přizpůsobování tempa a prioritám.</p>
-                            <a href="tarot-vyznam/dvojka-pentaklu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Dvojka%20pent%C3%A1kl%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="pentacles" data-card="Trojka pentáklů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_trojka_pentaklu.webp" alt="Trojka pentáklů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Pentákly</div>
-                            <h3><a href="tarot-vyznam/trojka-pentaklu.html">Trojka pentáklů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Kvalita roste ve spolupráci</p>
-                            <p>Řemeslo, zpětná vazba a společné úsilí.</p>
-                            <a href="tarot-vyznam/trojka-pentaklu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Trojka%20pent%C3%A1kl%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="pentacles" data-card="Čtyřka pentáklů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_ctyrka_pentaklu.webp" alt="Čtyřka pentáklů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Pentákly</div>
-                            <h3><a href="tarot-vyznam/ctyrka-pentaklu.html">Čtyřka pentáklů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Bezpečí bez sevření</p>
-                            <p>Hranice, jistota a ochota něco pustit.</p>
-                            <a href="tarot-vyznam/ctyrka-pentaklu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=%C4%8Cty%C5%99ka%20pent%C3%A1kl%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="pentacles" data-card="Pětka pentáklů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_petka_pentaklu.webp" alt="Pětka pentáklů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Pentákly</div>
-                            <h3><a href="tarot-vyznam/petka-pentaklu.html">Pětka pentáklů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Pojmenovat nedostatek a hledat oporu</p>
-                            <p>Vyloučení, potřeby a možnost požádat o pomoc.</p>
-                            <a href="tarot-vyznam/petka-pentaklu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=P%C4%9Btka%20pent%C3%A1kl%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="pentacles" data-card="Šestka pentáklů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_sestka_pentaklu.webp" alt="Šestka pentáklů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Pentákly</div>
-                            <h3><a href="tarot-vyznam/sestka-pentaklu.html">Šestka pentáklů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Férovost v dávání a přijímání</p>
-                            <p>Rovnováha pomoci, odměny a závazků.</p>
-                            <a href="tarot-vyznam/sestka-pentaklu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=%C5%A0estka%20pent%C3%A1kl%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="pentacles" data-card="Sedmička pentáklů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_sedmicka_pentaklu.webp" alt="Sedmička pentáklů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Pentákly</div>
-                            <h3><a href="tarot-vyznam/sedmicka-pentaklu.html">Sedmička pentáklů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Zhodnotit, co už roste</p>
-                            <p>Trpělivé vyhodnocení vložené práce.</p>
-                            <a href="tarot-vyznam/sedmicka-pentaklu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Sedmi%C4%8Dka%20pent%C3%A1kl%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="pentacles" data-card="Osmička pentáklů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_osmicka_pentaklu.webp" alt="Osmička pentáklů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Pentákly</div>
-                            <h3><a href="tarot-vyznam/osmicka-pentaklu.html">Osmička pentáklů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Mistrovství z opakování</p>
-                            <p>Praxe, soustředění a smysluplná oprava.</p>
-                            <a href="tarot-vyznam/osmicka-pentaklu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Osmi%C4%8Dka%20pent%C3%A1kl%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="pentacles" data-card="Devítka pentáklů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_devitka_pentaklu.webp" alt="Devítka pentáklů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Pentákly</div>
-                            <h3><a href="tarot-vyznam/devitka-pentaklu.html">Devítka pentáklů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Samostatnost s prostorem pro radost</p>
-                            <p>Vlastní prostor, výsledky a jejich udržování.</p>
-                            <a href="tarot-vyznam/devitka-pentaklu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Dev%C3%ADtka%20pent%C3%A1kl%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="pentacles" data-card="Desítka pentáklů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_desitka_pentaklu.webp" alt="Desítka pentáklů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Pentákly</div>
-                            <h3><a href="tarot-vyznam/desitka-pentaklu.html">Desítka pentáklů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Zázemí, které se sdílí</p>
-                            <p>Rodinné dohody a dlouhodobé zázemí.</p>
-                            <a href="tarot-vyznam/desitka-pentaklu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Des%C3%ADtka%20pent%C3%A1kl%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="pentacles" data-card="Páže pentáklů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_paze_pentaklu.webp" alt="Páže pentáklů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Pentákly</div>
-                            <h3><a href="tarot-vyznam/paze-pentaklu.html">Páže pentáklů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Zvědavost převést do praxe</p>
-                            <p>Učení, první pokus a realistický začátek.</p>
-                            <a href="tarot-vyznam/paze-pentaklu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=P%C3%A1%C5%BEe%20pent%C3%A1kl%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="pentacles" data-card="Rytíř pentáklů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_rytir_pentaklu.webp" alt="Rytíř pentáklů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Pentákly</div>
-                            <h3><a href="tarot-vyznam/rytir-pentaklu.html">Rytíř pentáklů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Vytrvalost, která kontroluje směr</p>
-                            <p>Spolehlivé tempo s prostorem pro úpravy.</p>
-                            <a href="tarot-vyznam/rytir-pentaklu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Ryt%C3%AD%C5%99%20pent%C3%A1kl%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="pentacles" data-card="Královna pentáklů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_kralovna_pentaklu.webp" alt="Královna pentáklů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Pentákly</div>
-                            <h3><a href="tarot-vyznam/kralovna-pentaklu.html">Královna pentáklů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Péče, která zahrnuje i tebe</p>
-                            <p>Praktická péče a udržitelné každodenní zázemí.</p>
-                            <a href="tarot-vyznam/kralovna-pentaklu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Kr%C3%A1lovna%20pent%C3%A1kl%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
-                        </div>
-                    </article>
-                    <article class="tarot-meaning-card" data-group="pentacles" data-card="Král pentáklů">
-                        <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="img/tarot-v2/tarot_kral_pentaklu.webp" alt="Král pentáklů tarot karta" width="180" height="300">
-                        </div>
-                        <div class="tarot-meaning-card__body">
-                            <div class="tarot-meaning-card__meta">Pentákly</div>
-                            <h3><a href="tarot-vyznam/kral-pentaklu.html">Král pentáklů</a></h3>
-                            <p class="tarot-meaning-card__meaning">Zdroje spravovat odpovědně</p>
-                            <p>Odpovědnost za zdroje, vedení a udržitelný plán.</p>
-                            <a href="tarot-vyznam/kral-pentaklu.html" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=Kr%C3%A1l%20pent%C3%A1kl%C5%AF" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
                         </div>
                     </article>
                     <!-- TAROT_MEANING_CARDS_END -->
+                </div>
+                <div class="text-center">
+                    <button type="button" id="tarot-cards-load-more" class="btn btn--ghost" aria-controls="tarot-card-grid" hidden>Načíst další karty</button>
+                    <p id="tarot-cards-load-status" class="sr-only" aria-live="polite"></p>
                 </div>
             </div>
         </section>

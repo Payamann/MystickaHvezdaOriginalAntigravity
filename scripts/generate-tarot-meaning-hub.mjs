@@ -253,7 +253,6 @@ function buildCard(name, card) {
                             <p class="tarot-meaning-card__meaning">${escapeHtml(meaning)}</p>
                             <p>${escapeHtml(interpretation)}</p>
                             <a href="${escapeHtml(detail)}" class="tarot-meaning-card__link">Význam karty</a>
-                            <a href="tarot.html?source=tarot_meaning_card&amp;card=${encodeURIComponent(name)}" class="tarot-meaning-card__link">Vyložit tarot s touto energií</a>
                         </div>
                     </article>`;
 }
@@ -418,7 +417,7 @@ ${jsonLd([articleSchema, breadcrumbSchema, faqSchema])}
                     <h1 class="section__title">${escapeHtml(name)} tarot význam</h1>
                     <p class="section__text hero__subtitle">${escapeHtml(meaning)}</p>
                     <div class="tarot-card-detail-actions">
-                        <a href="/tarot.html?source=tarot_card_detail&amp;card=${encodedName}" class="btn btn--primary">Vyložit kartu ${escapeHtml(name)}</a>
+                            <a href="/tarot.html?source=tarot_card_detail&amp;card=${encodedName}" class="btn btn--primary">Otevřít tarotový výklad</a>
                         <a href="/tarot-vyznam-karet.html?source=tarot_card_detail&amp;card=${encodedName}" class="btn btn--ghost">Zpět na všech 78 karet</a>
                     </div>
                 </div>
@@ -447,16 +446,6 @@ ${jsonLd([articleSchema, breadcrumbSchema, faqSchema])}
                     <h2>Co si z karty odnést dnes</h2>
                     <p>${escapeHtml(angles.action)}</p>${guideSection ? `\n                    ${guideSection}` : ''}
 
-                    <div class="tarot-card-detail-next-step">
-                        <span>Další krok</span>
-                        <h2>Co udělat, když se ti ukazuje ${escapeHtml(name)}</h2>
-                        <p>Význam karty je nejsilnější ve chvíli, kdy ho převedeš do konkrétní otázky. Porovnej kartu ${escapeHtml(name)} s dnešní kartou, nebo ji rovnou použij jako vstup do osobního výkladu.</p>
-                        <div class="tarot-card-detail-next-step__actions">
-                            <a href="/tarot-karta-dne.html?source=tarot_card_detail_next_step&amp;feature=tarot&amp;intent=daily_card&amp;card=${encodedName}#denni-karta" class="btn btn--primary" data-analytics-cta="tarot_card_detail_next_daily" data-analytics-feature="tarot" data-analytics-intent="daily_card">Vytáhnout dnešní kartu</a>
-                            <a href="/tarot.html?source=tarot_card_detail_next_step&amp;feature=tarot&amp;intent=card_context&amp;card=${encodedName}" class="btn btn--ghost" data-analytics-cta="tarot_card_detail_next_reading" data-analytics-feature="tarot" data-analytics-intent="card_context">Rozvinout výklad</a>
-                        </div>
-                        <a class="tarot-card-detail-next-step__link" href="/prihlaseni.html?mode=register&amp;source=tarot_card_detail_profile&amp;feature=tarot_daily_card_profile_save&amp;intent=save_history&amp;card=${encodedName}&amp;redirect=%2Ftarot-karta-dne.html%23denni-karta" data-analytics-cta="tarot_card_detail_next_profile" data-analytics-feature="tarot_daily_card_profile_save" data-analytics-intent="save_history">Chci si výklady ukládat do profilu</a>
-                    </div>
                 </article>
 
                 <aside class="tarot-card-detail-panel" aria-label="Rychlý přehled karty">
@@ -466,7 +455,6 @@ ${jsonLd([articleSchema, breadcrumbSchema, faqSchema])}
                         <div><dt>Hlavní téma</dt><dd>${escapeHtml(meaning)}</dd></div>
                         <div><dt>Otázka pro tebe</dt><dd>${escapeHtml(seo.question || 'Kde se toto téma ukazuje právě teď?')}</dd></div>
                     </dl>
-                    <a href="/tarot.html?source=tarot_card_detail_panel&amp;card=${encodedName}" class="btn btn--primary">Použít ve výkladu</a>
                 </aside>
             </div>
         </section>
@@ -503,14 +491,14 @@ ${jsonLd([articleSchema, breadcrumbSchema, faqSchema])}
                     <p>Začni jasnou otázkou a nech kartu zasadit do kontextu. Online výklad ti pomůže propojit symbol s konkrétní situací.</p>
                 </details>${reversedFaq}
                 <div class="tarot-meaning-hero__actions">
-                    <a href="/tarot.html?source=tarot_card_detail_bottom&amp;card=${encodedName}" class="btn btn--primary">Vyložit tarot s touto kartou</a>
+                    <a href="/tarot.html?source=tarot_card_detail_bottom&amp;card=${encodedName}" class="btn btn--primary">Otevřít tarotový výklad</a>
                     <a href="/tarot-vyznam-karet.html" class="btn btn--ghost">Prohlédnout všechny karty</a>
                 </div>
 
                 <!-- Most na denní horoskop e-mailem. Čtenář významu karty už o symboliku
                      zájem má; ranní horoskop je nízkoprahové pokračování bez zakládání účtu. -->
-                <div class="mh-email-bridge" data-analytics-source="tarot_card_detail">
-                    <p class="mh-email-bridge__title">Chceš vedení každé ráno?</p>
+                <details class="mh-email-bridge feature-reference" data-analytics-source="tarot_card_detail">
+                    <summary class="feature-reference__summary">Denní horoskop e-mailem</summary>
                     <p class="mh-email-bridge__text">
                         Význam karty ${escapeHtml(name)} máš. Denní horoskop pro tvoje znamení ti může chodit každé ráno e-mailem — zdarma a bez zakládání účtu.
                     </p>
@@ -538,12 +526,12 @@ ${jsonLd([articleSchema, breadcrumbSchema, faqSchema])}
                             class="btn btn--primary mh-email-bridge__btn"> Chci ranní horoskop</button>
                     </div>
                     <p id="horoscope-subscribed-msg" class="mh-email-bridge__done" hidden>
-                        ✅ Hotovo — zítra ráno ti přijde první horoskop.
+                        Odběr denního horoskopu je nastavený.
                     </p>
                     <p class="mh-email-bridge__note">
                         Každé ráno, zdarma. Odhlásit se můžeš kdykoliv jedním klikem.
                     </p>
-                </div>
+                </details>
             </div>
         </section>
     </main>
@@ -590,7 +578,14 @@ function generateDetailPages(cards) {
 }
 
 const cards = JSON.parse(fs.readFileSync(cardsPath, 'utf8'));
+const hubCards = Object.fromEntries(Object.entries(cards).map(([name, card]) => [name, {
+    image: card.image || 'img/tarot-v2/tarot_card_back.webp',
+    meaning: getEditorialTheme(name, card),
+    interpretation: getFirstSentence(seoOverrides[name]?.hubSummary || card.interpretation || '')
+}]));
+writeIfChanged(path.join(rootDir, 'data', 'tarot-card-hub.json'), JSON.stringify(hubCards, null, 2) + '\n');
 const generatedCards = Object.entries(cards)
+    .slice(0, 12)
     .map(([name, card]) => buildCard(name, card))
     .join('\n');
 
@@ -619,14 +614,14 @@ const nextPage = applyAtlasShell(page)
     )
     .replace(
         countPattern,
-        `<div id="tarot-card-count" class="tarot-meaning-count" aria-live="polite">${Object.keys(cards).length} karet</div>`
+        `<div id="tarot-card-count" class="tarot-meaning-count" aria-live="polite">${Math.min(12, Object.keys(cards).length)} z ${Object.keys(cards).length} karet</div>`
     );
 
 if (nextPage === page) {
     console.log(`Static tarot card entries already up to date in ${path.relative(rootDir, pagePath)}`);
 } else {
     fs.writeFileSync(pagePath, nextPage, 'utf8');
-    console.log(`Generated ${Object.keys(cards).length} static tarot card entries in ${path.relative(rootDir, pagePath)}`);
+    console.log(`Generated ${Math.min(12, Object.keys(cards).length)} initial cards of ${Object.keys(cards).length} in ${path.relative(rootDir, pagePath)}`);
 }
 
 const detailResult = generateDetailPages(cards);

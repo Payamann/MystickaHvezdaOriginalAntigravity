@@ -21,7 +21,7 @@
     <script src="https://cdn.jsdelivr.net/npm/lucide@1.13.0/dist/umd/lucide.min.js" integrity="sha384-EHKCF1r0kkLgXLXtUe79iQzyUeZou+h3FZLoZWdcIAyctVNKMHqqy5wqYWQFUq6k" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link rel="stylesheet" href="css/style.v2.min.css?v=11">
     <link rel="stylesheet" href="css/pages/profil.css">
-    <link rel="stylesheet" href="css/profile-refresh.css?v=20261014-detail-polish">
+    <link rel="stylesheet" href="css/profile-refresh.css?v=20261014-profile-layout">
     <script src="js/dist/growth-loop-client.js?v=1" defer></script>
     <script type="module" src="/js/dist/profile/dashboard.js?v=20261003-single-membership" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" integrity="sha384-XQqX/4yiUGu+oyr87jvWzRuqBUK/adrY0DunhL+tID9m/9dwSpV8h9Fk/Sg6ifVQ" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -103,10 +103,10 @@
                     <div class="card glass-card profile-user-card mh-inline-721fcfae6c">
                         <div class="profile-user-info">
                             <div class="profile-user-left">
-                                <button id="user-avatar" class="profile-avatar" aria-label="Změnit avatar" title="Klikněte pro změnu avataru"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#user"></use></svg></button>
+                                <button id="user-avatar" class="profile-avatar" aria-label="Změnit avatar" title="Klikni pro změnu avataru"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#user"></use></svg></button>
                                 <div class="profile-user-details">
                                     <h2 class="profile-user-email"><span id="user-email">-</span></h2>
-                                    <p class="profile-user-plan">Předplatné: <span id="user-plan" class="badge">-</span></p>
+                                    <p class="profile-user-plan">Přístup: <span id="user-plan" class="badge">-</span></p>
                                     <p id="user-zodiac" class="profile-user-zodiac mh-inline-6f6243d92c"></p>
                                 </div>
                             </div>
@@ -119,7 +119,7 @@
                         </div>
 
                         <div id="avatar-picker" class="avatar-picker mh-inline-6f6243d92c">
-                            <p class="avatar-picker__label">Vyberte si avatar:</p>
+                            <p class="avatar-picker__label">Vyber si avatar:</p>
                             <div class="avatar-picker__grid">
                                 <button class="avatar-option" data-avatar="A" aria-label="Vybrat avatar A">A</button>
                                 <button class="avatar-option" data-avatar="B" aria-label="Vybrat avatar B">B</button>
@@ -137,75 +137,17 @@
                         </div>
                     </div>
 
-                    <div class="profile-return-grid" id="profile-return-grid">
-                        <section id="daily-guidance-card" class="card glass-card daily-guidance-card" aria-labelledby="daily-guidance-title">
-                            <div class="daily-guidance-card__header">
-                                <div>
-                                    <span id="daily-guidance-date" class="daily-guidance-card__eyebrow">Dnes</span>
-                                    <h2 id="daily-guidance-title" class="daily-guidance-card__title">Načítám dnešní vedení...</h2>
-                                </div>
-                                <span id="daily-guidance-plan" class="badge">Poutník</span>
-                            </div>
-                            <p id="daily-guidance-copy" class="daily-guidance-card__copy">Připravujeme osobní přehled pro dnešní den.</p>
-                            <div id="daily-guidance-focus" class="daily-guidance-focus"></div>
-                            <div id="daily-guidance-actions" class="daily-guidance-actions"></div>
-                        </section>
-
-                        <section id="activation-checklist-card" class="card glass-card activation-checklist-card" aria-labelledby="activation-checklist-title">
-                            <div class="activation-checklist-card__header">
-                                <div>
-                                    <span class="daily-guidance-card__eyebrow">Aktivace</span>
-                                    <h2 id="activation-checklist-title" class="activation-checklist-card__title">Proměňte účet v osobní místo</h2>
-                                </div>
-                                <span id="activation-progress-label" class="badge">0/5</span>
-                            </div>
-                            <div class="activation-progress" aria-hidden="true"><div id="activation-progress-bar" class="activation-progress__bar"></div></div>
-                            <div id="activation-checklist-items" class="activation-checklist-items"></div>
-                        </section>
-
-                        <section id="ritual-memory-card" class="card glass-card ritual-memory-card" aria-labelledby="ritual-memory-title">
-                            <div class="ritual-memory-card__header">
-                                <div>
-                                    <span class="daily-guidance-card__eyebrow">Paměť rituálu</span>
-                                    <h2 id="ritual-memory-title" class="ritual-memory-card__title">Co se ti opakuje</h2>
-                                </div>
-                                <span id="ritual-memory-strength" class="badge badge--secondary">Nové</span>
-                            </div>
-                            <p id="ritual-memory-copy" class="ritual-memory-card__copy">Paměť začne dávat smysl po prvním uloženém výkladu nebo večerní reflexi.</p>
-                            <div id="ritual-memory-themes" class="ritual-memory-themes"></div>
-                            <div id="ritual-memory-actions" class="ritual-memory-actions"></div>
-                        </section>
-                    </div>
-
-                    <div class="stats-grid">
-                        <div class="stat-card card glass-card"><div class="stat-icon-wrapper"><span class="stat-icon-emoji"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#book"></use></svg></span></div><div id="stat-total" class="stat-value">0</div><div class="stat-label">Celkem výkladů</div></div>
-                        <div class="stat-card card glass-card"><div class="stat-icon-wrapper"><span class="stat-icon-emoji"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#calendar"></use></svg></span></div><div id="stat-month" class="stat-value">0</div><div class="stat-label">Tento měsíc</div></div>
-                        <div class="stat-card card glass-card"><div class="stat-icon-wrapper"><span class="stat-icon-emoji"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#bookmark"></use></svg></span></div><div id="stat-favorites" class="stat-value">0</div><div class="stat-label">Oblíbené</div></div>
-                        <div class="stat-card card glass-card"><div class="stat-icon-wrapper"><span class="stat-icon-emoji"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#cycle"></use></svg></span></div><div id="stat-streak" class="stat-value">0</div><div class="stat-label">Denní série</div></div>
-                    </div>
-
-                    <div class="profile-grid">
-                        <div class="card glass-card">
-                            <h3 class="card-title">Večerní reflexe</h3>
-                            <textarea id="journal-input" class="form-input" rows="3" placeholder="Co si z dnešního výkladu odnášíš? Všimni si pocitu, rozhodnutí nebo opakujícího se vzorce."></textarea>
-                            <button id="journal-submit" class="btn btn--primary journal-submit-btn">Uložit reflexi</button>
-                            <div class="journal-recent">
-                                <h4 class="journal-recent-title">Poslední záznamy</h4>
-                                <div id="journal-entries" class="journal-entries-list"><p class="journal-empty">Zatím prázdno...</p></div>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="profile-tabs" role="tablist" aria-label="Sekce profilu">
                         <button class="profile-tab active" role="tab" id="tab-btn-history" data-tab="history" aria-selected="true" aria-controls="tab-history"><span class="profile-tab-icon" aria-hidden="true"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#book"></use></svg></span><span class="profile-tab-label">Historie výkladů</span></button>
                         <button class="profile-tab" role="tab" id="tab-btn-favorites" data-tab="favorites" aria-selected="false" aria-controls="tab-favorites"><span class="profile-tab-icon" aria-hidden="true"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#bookmark"></use></svg></span><span class="profile-tab-label">Oblíbené</span></button>
                         <button class="profile-tab" role="tab" id="tab-btn-settings" data-tab="settings" aria-selected="false" aria-controls="tab-settings"><span class="profile-tab-icon" aria-hidden="true"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#settings"></use></svg></span><span class="profile-tab-label">Nastavení</span></button>
+                        <button class="profile-tab" role="tab" id="tab-btn-overview" data-tab="overview" aria-selected="false" aria-controls="tab-overview"><span class="profile-tab-icon" aria-hidden="true"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg></span><span class="profile-tab-label">Přehled</span></button>
                     </div>
 
                     <div class="tab-content active" id="tab-history" role="tabpanel" aria-labelledby="tab-btn-history">
                         <div class="card glass-card">
                             <div class="readings-header">
-                                <h3>Vaše poslední výklady</h3>
+                                <h3>Tvoje poslední výklady</h3>
                                 <select id="readings-filter" class="form-input readings-filter" aria-label="Filtrovat podle typu">
                                     <option value="all">Vše</option>
                                     <option value="tarot">Tarot</option>
@@ -228,7 +170,7 @@
                                 <div class="empty-state">
                                     <div class="empty-state__icon"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#bookmark"></use></svg></div>
                                     <h4 class="empty-state__title">Oblíbené zatím čekají na první návrat</h4>
-                                    <p class="empty-state__text">Začněte jedním výkladem. Oblíbené pak nejsou sbírka hvězdiček, ale místo pro odpovědi, které mají zůstat po ruce.</p>
+                                    <p class="empty-state__text">Začni jedním výkladem. Oblíbené pak nejsou sbírka hvězdiček, ale místo pro odpovědi, které mají zůstat po ruce.</p>
                                     <div class="empty-state__actions">
                                         <a href="tarot.html?source=profile_favorites_empty&feature=tarot" class="btn btn--primary btn--sm">Tarot</a>
                                         <a href="horoskopy.html?source=profile_favorites_empty&feature=daily_guidance" class="btn btn--glass btn--sm">Denní horoskop</a>
@@ -246,22 +188,85 @@
                             <button id="install-app-btn" type="button" class="btn btn--glass" hidden>Přidat aplikaci na plochu</button>
                             <div class="settings-form">
                                 <h4 class="settings-section-title">Osobní údaje</h4>
-                                <div><label class="form-label" for="settings-name">Jméno / přezdívka</label><input type="text" id="settings-name" name="name" class="form-input" placeholder="Vaše jméno" autocomplete="given-name"></div>
+                                <div><label class="form-label" for="settings-name">Jméno / přezdívka</label><input type="text" id="settings-name" name="name" class="form-input" placeholder="Tvoje jméno" autocomplete="given-name"></div>
                                 <div class="settings-row">
-                                    <div><label class="form-label" for="settings-birthtime">Čas narození</label><input type="time" id="settings-birthtime" name="birth_time" class="form-input" autocomplete="off"></div>
+                                    <div><label class="form-label" for="settings-birthdate">Datum narození <span class="settings-optional">(nepovinné)</span></label><input type="date" id="settings-birthdate" name="birth_date" min="1900-01-01" class="form-input" autocomplete="bday"><p class="settings-field-hint">Pomáhá zpřesnit osobní astrologické výpočty.</p></div>
+                                    <div><label class="form-label" for="settings-birthtime">Čas narození <span class="settings-optional">(nepovinné)</span></label><input type="time" id="settings-birthtime" name="birth_time" class="form-input" autocomplete="off"></div>
                                     <div><label class="form-label" for="settings-birthplace">Místo narození</label><input type="text" id="settings-birthplace" name="birth_place" class="form-input" placeholder="Např. Praha" autocomplete="address-level2"></div>
                                 </div>
                                 <h4 class="settings-section-title">Účet</h4>
-                                <div><label class="form-label" for="settings-email">Email</label><input type="email" id="settings-email" name="email" class="form-input" disabled title="Email nelze změnit" autocomplete="email" spellcheck="false"></div>
-                                <div><label class="form-label" for="settings-current-password">Aktuální heslo</label><input type="password" id="settings-current-password" name="current_password" class="form-input" placeholder="Vyžadováno pro změnu hesla" autocomplete="current-password"></div>
-                                <div><label class="form-label" for="settings-password">Nové heslo</label><input type="password" id="settings-password" name="new_password" class="form-input" placeholder="Min. 8 znaků" minlength="8" autocomplete="new-password"></div>
-                                <div><label class="form-label" for="settings-password-confirm">Potvrdit nové heslo</label><input type="password" id="settings-password-confirm" name="new_password_confirm" class="form-input" placeholder="Zopakujte nové heslo" autocomplete="new-password"></div>
+                                <div><label class="form-label" for="settings-email">Email</label><input type="email" id="settings-email" name="email" class="form-input" disabled title="Email nemůžeš změnit" autocomplete="email" spellcheck="false"></div>
+                                <details class="settings-password-details">
+                                    <summary>Změnit heslo <span>Nepovinné</span></summary>
+                                    <div class="settings-password-fields">
+                                        <div><label class="form-label" for="settings-current-password">Aktuální heslo</label><input type="password" id="settings-current-password" name="current_password" class="form-input" placeholder="Vyžadováno pro změnu hesla" autocomplete="current-password"></div>
+                                        <div><label class="form-label" for="settings-password">Nové heslo</label><input type="password" id="settings-password" name="new_password" class="form-input" placeholder="Min. 8 znaků" minlength="8" autocomplete="new-password"></div>
+                                        <div><label class="form-label" for="settings-password-confirm">Potvrdit nové heslo</label><input type="password" id="settings-password-confirm" name="new_password_confirm" class="form-input" placeholder="Zopakuj nové heslo" autocomplete="new-password"></div>
+                                        <button type="button" id="change-password-btn" class="btn btn--secondary">Změnit heslo</button>
+                                    </div>
+                                </details>
                                 <button id="save-settings-btn" class="btn btn--primary">Uložit změny</button>
                             </div>
                         </div>
                         <div class="card glass-card subscription-card mh-inline-3b7e64dbd0" id="subscription-card">
-                            <h3>Správa předplatného</h3>
+                            <h3>Členství a platby</h3>
                             <div id="subscription-details" class="subscription-details"><p class="mh-inline-aedbc7dfa7">Načítám...</p></div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content mh-inline-6f6243d92c" id="tab-overview" role="tabpanel" aria-labelledby="tab-btn-overview">
+                        <div class="profile-return-grid" id="profile-return-grid">
+                            <section id="daily-guidance-card" class="card glass-card daily-guidance-card" aria-labelledby="daily-guidance-title">
+                                <div class="daily-guidance-card__header">
+                                    <div>
+                                        <span id="daily-guidance-date" class="daily-guidance-card__eyebrow">Dnes</span>
+                                        <h2 id="daily-guidance-title" class="daily-guidance-card__title">Načítám dnešní vedení...</h2>
+                                    </div>
+                                    <span id="daily-guidance-plan" class="badge">Poutník</span>
+                                </div>
+                                <p id="daily-guidance-copy" class="daily-guidance-card__copy">Připravujeme osobní přehled pro dnešní den.</p>
+                                <div id="daily-guidance-focus" class="daily-guidance-focus"></div>
+                                <div id="daily-guidance-actions" class="daily-guidance-actions"></div>
+                            </section>
+
+                            <details id="activation-checklist-card" class="card glass-card activation-checklist-card" aria-labelledby="activation-checklist-title">
+                                <summary class="profile-optional-header">
+                                    <strong id="activation-checklist-title">Nastavení a první kroky</strong>
+                                    <span id="activation-progress-label" class="badge">0/5</span>
+                                </summary>
+                                <div class="activation-progress" aria-hidden="true"><div id="activation-progress-bar" class="activation-progress__bar"></div></div>
+                                <div id="activation-checklist-items" class="activation-checklist-items"></div>
+                            </details>
+
+                            <details id="ritual-memory-card" class="card glass-card ritual-memory-card" aria-labelledby="ritual-memory-title">
+                                <summary class="profile-optional-header">
+                                    <strong id="ritual-memory-title">Tvoje poznámky v souvislostech</strong>
+                                    <span id="ritual-memory-strength" class="badge badge--secondary">Nové</span>
+                                </summary>
+                                <p id="ritual-memory-copy" class="ritual-memory-card__copy">Paměť začne dávat smysl po prvním uloženém výkladu nebo večerní reflexi.</p>
+                                <div id="ritual-memory-themes" class="ritual-memory-themes"></div>
+                                <div id="ritual-memory-actions" class="ritual-memory-actions"></div>
+                            </details>
+                        </div>
+
+                        <div class="stats-grid">
+                            <div class="stat-card card glass-card"><div class="stat-icon-wrapper"><span class="stat-icon-emoji"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#book"></use></svg></span></div><div id="stat-total" class="stat-value">0</div><div class="stat-label">Uložené záznamy</div></div>
+                            <div class="stat-card card glass-card"><div class="stat-icon-wrapper"><span class="stat-icon-emoji"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#calendar"></use></svg></span></div><div id="stat-month" class="stat-value">0</div><div class="stat-label">Tento měsíc</div></div>
+                            <div class="stat-card card glass-card"><div class="stat-icon-wrapper"><span class="stat-icon-emoji"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#bookmark"></use></svg></span></div><div id="stat-favorites" class="stat-value">0</div><div class="stat-label">Oblíbené</div></div>
+                            <div class="stat-card card glass-card"><div class="stat-icon-wrapper"><span class="stat-icon-emoji"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#cycle"></use></svg></span></div><div id="stat-streak" class="stat-value">0</div><div class="stat-label">Denní série</div></div>
+                        </div>
+
+                        <div class="profile-grid">
+                            <div class="card glass-card">
+                                <h3 class="card-title">Večerní reflexe</h3>
+                                <label class="form-label" for="journal-input">Tvoje poznámka</label>
+                                <textarea id="journal-input" class="form-input" rows="3" placeholder="Co si z dnešního výkladu odnášíš? Všimni si pocitu, rozhodnutí nebo opakujícího se vzorce."></textarea>
+                                <button id="journal-submit" class="btn btn--primary journal-submit-btn">Uložit reflexi</button>
+                                <div class="journal-recent">
+                                    <h4 class="journal-recent-title">Poslední záznamy</h4>
+                                    <div id="journal-entries" class="journal-entries-list"><p class="journal-empty">Zatím prázdno...</p></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

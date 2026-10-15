@@ -1,0 +1,392 @@
+{
+  "Blázen": {
+    "image": "img/tarot-v2/tarot_blazen.webp",
+    "meaning": "Začít malým krokem",
+    "interpretation": "Blázen může otevřít chuť vyzkoušet něco nového."
+  },
+  "Mág": {
+    "image": "img/tarot-v2/tarot_mag.webp",
+    "meaning": "Použít dostupné možnosti",
+    "interpretation": "Mág může připomenout, že nápad potřebuje konkrétní nástroj a jednání."
+  },
+  "Velekněžka": {
+    "image": "img/tarot-v2/tarot_veleknezka.webp",
+    "meaning": "Vnímat dojem a ověřit souvislosti",
+    "interpretation": "Velekněžka může otevřít prostor pro tichý postřeh a otázku, kterou zatím neumíš přesně vyslovit."
+  },
+  "Císařovna": {
+    "image": "img/tarot-v2/tarot_cisarovna.webp",
+    "meaning": "Péče, která má prostor",
+    "interpretation": "Císařovna může připomenout péči, tvořivost a podmínky, v nichž se něčemu dobře daří."
+  },
+  "Císař": {
+    "image": "img/tarot-v2/tarot_cisar.webp",
+    "meaning": "Uspořádat odpovědnost",
+    "interpretation": "Císař může připomenout jasný rámec a rozdělení odpovědnosti."
+  },
+  "Velekněz": {
+    "image": "img/tarot-v2/tarot_veleknez.webp",
+    "meaning": "Rozumět pravidlům a vedení",
+    "interpretation": "Velekněz může nabídnout téma předávané zkušenosti, pravidel a rady někoho dalšího."
+  },
+  "Milenci": {
+    "image": "img/tarot-v2/tarot_milenci.webp",
+    "meaning": "Přitažlivost a společná volba",
+    "interpretation": "Milenci spojují přitažlivost, volbu a hodnoty."
+  },
+  "Vůz": {
+    "image": "img/tarot-v2/tarot_vuz.webp",
+    "meaning": "Dát úsilí jasný směr",
+    "interpretation": "Vůz může připomenout soustředění na jeden cíl a sladění různých požadavků."
+  },
+  "Síla": {
+    "image": "img/tarot-v2/tarot_sila.webp",
+    "meaning": "Reagovat pevně a trpělivě",
+    "interpretation": "Síla může připomenout jednání, které je pevné bez zbytečného nátlaku."
+  },
+  "Poustevník": {
+    "image": "img/tarot-v2/tarot_poustevnik.webp",
+    "meaning": "Získat prostor pro vlastní otázku",
+    "interpretation": "Poustevník může připomenout chvíli, kdy potřebuješ srovnat vlastní pohled."
+  },
+  "Kolo štěstí": {
+    "image": "img/tarot-v2/tarot_kolo_stesti.webp",
+    "meaning": "Přizpůsobit plán změně",
+    "interpretation": "Kolo štěstí může otevřít téma proměnlivých okolností."
+  },
+  "Spravedlnost": {
+    "image": "img/tarot-v2/tarot_spravedlnost.webp",
+    "meaning": "Porovnat podklady a dopady",
+    "interpretation": "Spravedlnost může připomenout rozhodnutí, které umíš vysvětlit podle podkladů a dopadu na druhé."
+  },
+  "Viselec": {
+    "image": "img/tarot-v2/tarot_viselec.webp",
+    "meaning": "Podívat se z jiného úhlu",
+    "interpretation": "Viselec může připomenout přerušení obvyklého postupu a jiný pohled."
+  },
+  "Smrt": {
+    "image": "img/tarot-v2/tarot_smrt.webp",
+    "meaning": "Pojmenovat ukončení a změnu",
+    "interpretation": "Karta Smrt může nabídnout symbolické téma uzavření a proměny."
+  },
+  "Mírnost": {
+    "image": "img/tarot-v2/tarot_mirnost.webp",
+    "meaning": "Sladit tempo a možnosti",
+    "interpretation": "Mírnost může připomenout rozumné dávkování úsilí a spojení různých potřeb."
+  },
+  "Ďábel": {
+    "image": "img/tarot-v2/tarot_dabel.webp",
+    "meaning": "Rozpoznat tlak a vlastní možnosti",
+    "interpretation": "Ďábel může nabídnout otázku na tlak, závazek nebo opakovaný vzorec."
+  },
+  "Věž": {
+    "image": "img/tarot-v2/tarot_vez.webp",
+    "meaning": "Reagovat na narušený plán",
+    "interpretation": "Věž může nabídnout obraz plánu, jehož předpoklady se změnily."
+  },
+  "Hvězda": {
+    "image": "img/tarot-v2/tarot_hvezda.webp",
+    "meaning": "Najít konkrétní oporu naděje",
+    "interpretation": "Hvězda může připomenout naději, inspiraci a něco, o co se můžeš opřít už teď."
+  },
+  "Luna": {
+    "image": "img/tarot-v2/tarot_luna.webp",
+    "meaning": "Rozlišit dojem a chybějící informaci",
+    "interpretation": "Luna (Měsíc) může připomenout nejistotu, dojem a to, co zatím nemá jasné souvislosti."
+  },
+  "Slunce": {
+    "image": "img/tarot-v2/tarot_slunce.webp",
+    "meaning": "Radost, jasnost a otevřenost",
+    "interpretation": "Slunce je obraz radosti, jasnosti a otevřenosti."
+  },
+  "Soud": {
+    "image": "img/tarot-v2/tarot_soud.webp",
+    "meaning": "Zhodnotit zkušenost a zvolit pokračování",
+    "interpretation": "Soud (Soudce) může připomenout bilanci zkušenosti a rozhodnutí, jak pokračovat."
+  },
+  "Svět": {
+    "image": "img/tarot-v2/tarot_svet.webp",
+    "meaning": "Dokončit a pojmenovat výsledek",
+    "interpretation": "Svět může připomenout dokončení úkolu, propojení zkušeností a prostor všimnout si výsledku."
+  },
+  "Eso holí": {
+    "image": "img/tarot-v2/tarot_eso_holi.webp",
+    "meaning": "Jiskra, která čeká na tvar",
+    "interpretation": "Eso holí otevírá téma prvotního zápalu: nápad, chuť něco zkusit nebo nová tvůrčí energie."
+  },
+  "Dvojka holí": {
+    "image": "img/tarot-v2/tarot_dvojka_holi.webp",
+    "meaning": "Výhled a rozhodnutí o směru",
+    "interpretation": "Dvojka holí stojí mezi známým zázemím a možností rozšířit obzor."
+  },
+  "Trojka holí": {
+    "image": "img/tarot-v2/tarot_trojka_holi.webp",
+    "meaning": "Rozvoj, který potřebuje trpělivost",
+    "interpretation": "Trojka holí navazuje na rozhodnutí a obrací pozornost k tomu, jak se záměr setká se světem."
+  },
+  "Čtyřka holí": {
+    "image": "img/tarot-v2/tarot_ctyrka_holi.webp",
+    "meaning": "Sdílená radost a pevný základ",
+    "interpretation": "Čtyřka holí zachycuje chvíli, kdy lze něco oslavit nebo se opřít o společné zázemí."
+  },
+  "Pětka holí": {
+    "image": "img/tarot-v2/tarot_petka_holi.webp",
+    "meaning": "Tření, soutěž a různé nápady",
+    "interpretation": "Pětka holí dává prostor nesouhlasu a soupeření."
+  },
+  "Šestka holí": {
+    "image": "img/tarot-v2/tarot_sestka_holi.webp",
+    "meaning": "Uznání a viditelnost výsledku",
+    "interpretation": "Šestka holí se pojí s uznáním, veřejným výsledkem nebo chvílí, kdy si všimneš vlastního pokroku."
+  },
+  "Sedmička holí": {
+    "image": "img/tarot-v2/tarot_sedmicka_holi.webp",
+    "meaning": "Obhájit hranici bez vyčerpání",
+    "interpretation": "Sedmička holí zobrazuje potřebu stát si za stanoviskem, zvlášť když na tebe působí tlak."
+  },
+  "Osmička holí": {
+    "image": "img/tarot-v2/tarot_osmicka_holi.webp",
+    "meaning": "Rychlost, zpráva a načasování",
+    "interpretation": "Osmička holí připomíná rychlý sled událostí, zpráv nebo úkolů."
+  },
+  "Devítka holí": {
+    "image": "img/tarot-v2/tarot_devitka_holi.webp",
+    "meaning": "Vytrvalost s prostorem na oddech",
+    "interpretation": "Devítka holí představuje zkušenost, která tě naučila hlídat si síly."
+  },
+  "Desítka holí": {
+    "image": "img/tarot-v2/tarot_desitka_holi.webp",
+    "meaning": "Zátěž, kterou lze přerozdělit",
+    "interpretation": "Desítka holí ukazuje mnoho povinností naráz."
+  },
+  "Páže holí": {
+    "image": "img/tarot-v2/tarot_paze_holi.webp",
+    "meaning": "Zvědavost a první pokus",
+    "interpretation": "Páže holí je obrazem začátečnické zvědavosti, která chce prozkoumat nový směr."
+  },
+  "Rytíř holí": {
+    "image": "img/tarot-v2/tarot_rytir_holi.webp",
+    "meaning": "Tah na branku a jeho cena",
+    "interpretation": "Rytíř holí přináší odvahu vyrazit a silný tah k cíli."
+  },
+  "Královna holí": {
+    "image": "img/tarot-v2/tarot_kralovna_holi.webp",
+    "meaning": "Sebejistota, která nechává prostor",
+    "interpretation": "Královna holí spojuje tvořivost, vřelost a sebejisté vystupování."
+  },
+  "Král holí": {
+    "image": "img/tarot-v2/tarot_kral_holi.webp",
+    "meaning": "Vize, odpovědnost a směr",
+    "interpretation": "Král holí představuje schopnost spojit vizi s rozhodnutím a nést za něj odpovědnost."
+  },
+  "Eso pohárů": {
+    "image": "img/tarot-v2/tarot_eso_poharu.webp",
+    "meaning": "Otevřenost bez spěchu",
+    "interpretation": "Eso pohárů otevírá prostor pro cit, tvořivost a nový začátek bez záruky výsledku."
+  },
+  "Dvojka pohárů": {
+    "image": "img/tarot-v2/tarot_dvojka_poharu.webp",
+    "meaning": "Setkání a vzájemná odezva",
+    "interpretation": "Dvojka pohárů představuje setkání, vzájemnou odezvu a prostor pro jasnou dohodu."
+  },
+  "Trojka pohárů": {
+    "image": "img/tarot-v2/tarot_trojka_poharu.webp",
+    "meaning": "Radost, která se sdílí",
+    "interpretation": "Trojka pohárů připomíná přátelství, společnou radost a podporu okolí."
+  },
+  "Čtyřka pohárů": {
+    "image": "img/tarot-v2/tarot_ctyrka_poharu.webp",
+    "meaning": "Všimnout si, co je na dosah",
+    "interpretation": "Čtyřka pohárů vybízí rozlišit skutečný nezájem od únavy nebo zklamání."
+  },
+  "Pětka pohárů": {
+    "image": "img/tarot-v2/tarot_petka_poharu.webp",
+    "meaning": "Ztráta i to, co zůstává",
+    "interpretation": "Pětka pohárů uznává zklamání a postupně rozšiřuje pohled i na to, co zůstává."
+  },
+  "Šestka pohárů": {
+    "image": "img/tarot-v2/tarot_sestka_poharu.webp",
+    "meaning": "Vzpomínka v přítomném čase",
+    "interpretation": "Šestka pohárů propojuje vzpomínky s otázkou, co má smysl v přítomnosti."
+  },
+  "Sedmička pohárů": {
+    "image": "img/tarot-v2/tarot_sedmicka_poharu.webp",
+    "meaning": "Možnosti potřebují ověření",
+    "interpretation": "Sedmička pohárů pomáhá oddělit lákavé představy od možností s ověřitelnými podmínkami."
+  },
+  "Osmička pohárů": {
+    "image": "img/tarot-v2/tarot_osmicka_poharu.webp",
+    "meaning": "Odejít od toho, co nenaplňuje",
+    "interpretation": "Osmička pohárů otevírá otázku, kdy situace přestává naplňovat důležité potřeby."
+  },
+  "Devítka pohárů": {
+    "image": "img/tarot-v2/tarot_devitka_poharu.webp",
+    "meaning": "Spokojenost bez přehlížení ceny",
+    "interpretation": "Devítka pohárů se ptá na osobní spokojenost a cenu, kterou za ni platíš."
+  },
+  "Desítka pohárů": {
+    "image": "img/tarot-v2/tarot_desitka_poharu.webp",
+    "meaning": "Společná spokojenost a dohoda",
+    "interpretation": "Desítka pohárů spojuje představu sounáležitosti s konkrétními dohodami."
+  },
+  "Páže pohárů": {
+    "image": "img/tarot-v2/tarot_paze_poharu.webp",
+    "meaning": "Citlivá zpráva a první pokus",
+    "interpretation": "Páže pohárů vybízí k citlivému prvnímu kroku a jasnému vyjádření."
+  },
+  "Rytíř pohárů": {
+    "image": "img/tarot-v2/tarot_rytir_poharu.webp",
+    "meaning": "Nabídka, která potřebuje obsah",
+    "interpretation": "Rytíř pohárů spojuje citové gesto s potřebou jasných podmínek."
+  },
+  "Královna pohárů": {
+    "image": "img/tarot-v2/tarot_kralovna_poharu.webp",
+    "meaning": "Empatie s vlastními hranicemi",
+    "interpretation": "Královna pohárů připomíná empatii, která neztrácí vlastní hranice."
+  },
+  "Král pohárů": {
+    "image": "img/tarot-v2/tarot_kral_poharu.webp",
+    "meaning": "Klidná reakce v citové situaci",
+    "interpretation": "Král pohárů spojuje citovou vyrovnanost s jasnou a respektující komunikací."
+  },
+  "Eso mečů": {
+    "image": "img/tarot-v2/tarot_eso_mecu.webp",
+    "meaning": "Jasnost a přesná otázka",
+    "interpretation": "Eso mečů může připomenout jasnou otázku, přesné pojmenování a nový pohled."
+  },
+  "Dvojka mečů": {
+    "image": "img/tarot-v2/tarot_dvojka_mecu.webp",
+    "meaning": "Volba, která potřebuje prostor",
+    "interpretation": "Dvojka mečů může otevřít téma váhání mezi dvěma možnostmi."
+  },
+  "Trojka mečů": {
+    "image": "img/tarot-v2/tarot_trojka_mecu.webp",
+    "meaning": "Pojmenovat zklamání",
+    "interpretation": "Trojka mečů je výrazný obraz zklamání nebo bolestivého rozhovoru."
+  },
+  "Čtyřka mečů": {
+    "image": "img/tarot-v2/tarot_ctyrka_mecu.webp",
+    "meaning": "Pauza před další reakcí",
+    "interpretation": "Čtyřka mečů může připomenout prostor mezi podnětem a reakcí."
+  },
+  "Pětka mečů": {
+    "image": "img/tarot-v2/tarot_petka_mecu.webp",
+    "meaning": "Cena sporu",
+    "interpretation": "Pětka mečů může otevřít otázku, co spor stojí a čeho jím chceš dosáhnout."
+  },
+  "Šestka mečů": {
+    "image": "img/tarot-v2/tarot_sestka_mecu.webp",
+    "meaning": "Přechod s konkrétní oporou",
+    "interpretation": "Šestka mečů může připomenout přechod mezi známou situací a něčím novým."
+  },
+  "Sedmička mečů": {
+    "image": "img/tarot-v2/tarot_sedmicka_mecu.webp",
+    "meaning": "Strategie a nevyřčené věci",
+    "interpretation": "Sedmička mečů může otevřít téma strategie, soukromí a věcí, které zůstávají nevyřčené."
+  },
+  "Osmička mečů": {
+    "image": "img/tarot-v2/tarot_osmicka_mecu.webp",
+    "meaning": "Rozlišit omezení",
+    "interpretation": "Osmička mečů může nabídnout obraz omezení a nejistoty, kudy dál."
+  },
+  "Devítka mečů": {
+    "image": "img/tarot-v2/tarot_devitka_mecu.webp",
+    "meaning": "Pojmenovat opakující se obavu",
+    "interpretation": "Devítka mečů může nabídnout obraz opakující se starosti nebo nejistoty."
+  },
+  "Desítka mečů": {
+    "image": "img/tarot-v2/tarot_desitka_mecu.webp",
+    "meaning": "Konec podle skutečných okolností",
+    "interpretation": "Desítka mečů může otevřít téma vyčerpání nebo nefungujících podmínek."
+  },
+  "Páže mečů": {
+    "image": "img/tarot-v2/tarot_paze_mecu.webp",
+    "meaning": "Zvědavost a ověření",
+    "interpretation": "Páže mečů může připomenout zvědavost, první otázku a ověřování nové informace."
+  },
+  "Rytíř mečů": {
+    "image": "img/tarot-v2/tarot_rytir_mecu.webp",
+    "meaning": "Rychlost s rozvahou",
+    "interpretation": "Rytíř mečů může otevřít téma rychlé reakce a přesného směru."
+  },
+  "Královna mečů": {
+    "image": "img/tarot-v2/tarot_kralovna_mecu.webp",
+    "meaning": "Jasná hranice v rozhovoru",
+    "interpretation": "Královna mečů může připomenout jasnou řeč, vlastní hranice a rozlišování faktů od dojmů."
+  },
+  "Král mečů": {
+    "image": "img/tarot-v2/tarot_kral_mecu.webp",
+    "meaning": "Rozhodnutí podle kritérií",
+    "interpretation": "Král mečů může nabídnout obraz rozhodování podle srozumitelných kritérií."
+  },
+  "Eso pentáklů": {
+    "image": "img/tarot-v2/tarot_eso_pentaklu.webp",
+    "meaning": "První krok potřebuje pevnou půdu",
+    "interpretation": "Praktický začátek, který stojí za ověření."
+  },
+  "Dvojka pentáklů": {
+    "image": "img/tarot-v2/tarot_dvojka_pentaklu.webp",
+    "meaning": "Rytmus mezi závazky",
+    "interpretation": "Přizpůsobování tempa a prioritám."
+  },
+  "Trojka pentáklů": {
+    "image": "img/tarot-v2/tarot_trojka_pentaklu.webp",
+    "meaning": "Kvalita roste ve spolupráci",
+    "interpretation": "Řemeslo, zpětná vazba a společné úsilí."
+  },
+  "Čtyřka pentáklů": {
+    "image": "img/tarot-v2/tarot_ctyrka_pentaklu.webp",
+    "meaning": "Bezpečí bez sevření",
+    "interpretation": "Hranice, jistota a ochota něco pustit."
+  },
+  "Pětka pentáklů": {
+    "image": "img/tarot-v2/tarot_petka_pentaklu.webp",
+    "meaning": "Pojmenovat nedostatek a hledat oporu",
+    "interpretation": "Vyloučení, potřeby a možnost požádat o pomoc."
+  },
+  "Šestka pentáklů": {
+    "image": "img/tarot-v2/tarot_sestka_pentaklu.webp",
+    "meaning": "Férovost v dávání a přijímání",
+    "interpretation": "Rovnováha pomoci, odměny a závazků."
+  },
+  "Sedmička pentáklů": {
+    "image": "img/tarot-v2/tarot_sedmicka_pentaklu.webp",
+    "meaning": "Zhodnotit, co už roste",
+    "interpretation": "Trpělivé vyhodnocení vložené práce."
+  },
+  "Osmička pentáklů": {
+    "image": "img/tarot-v2/tarot_osmicka_pentaklu.webp",
+    "meaning": "Mistrovství z opakování",
+    "interpretation": "Praxe, soustředění a smysluplná oprava."
+  },
+  "Devítka pentáklů": {
+    "image": "img/tarot-v2/tarot_devitka_pentaklu.webp",
+    "meaning": "Samostatnost s prostorem pro radost",
+    "interpretation": "Vlastní prostor, výsledky a jejich udržování."
+  },
+  "Desítka pentáklů": {
+    "image": "img/tarot-v2/tarot_desitka_pentaklu.webp",
+    "meaning": "Zázemí, které se sdílí",
+    "interpretation": "Rodinné dohody a dlouhodobé zázemí."
+  },
+  "Páže pentáklů": {
+    "image": "img/tarot-v2/tarot_paze_pentaklu.webp",
+    "meaning": "Zvědavost převést do praxe",
+    "interpretation": "Učení, první pokus a realistický začátek."
+  },
+  "Rytíř pentáklů": {
+    "image": "img/tarot-v2/tarot_rytir_pentaklu.webp",
+    "meaning": "Vytrvalost, která kontroluje směr",
+    "interpretation": "Spolehlivé tempo s prostorem pro úpravy."
+  },
+  "Královna pentáklů": {
+    "image": "img/tarot-v2/tarot_kralovna_pentaklu.webp",
+    "meaning": "Péče, která zahrnuje i tebe",
+    "interpretation": "Praktická péče a udržitelné každodenní zázemí."
+  },
+  "Král pentáklů": {
+    "image": "img/tarot-v2/tarot_kral_pentaklu.webp",
+    "meaning": "Zdroje spravovat odpovědně",
+    "interpretation": "Odpovědnost za zdroje, vedení a udržitelný plán."
+  }
+}

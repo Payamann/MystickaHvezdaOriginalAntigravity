@@ -3,7 +3,7 @@
  */
 
 import { escapeHtml, apiUrl, authHeaders, authHeadersWithCsrf, getReadingIcon, getReadingTitle } from './shared.js';
-import { getAllReadings, updateReading, renderReadings, loadReadings } from './readings.js';
+import { getAllReadings, updateReading, renderReadings, loadReadings, updateFavoriteSummary } from './readings.js';
 import { loadFavorites } from './favorites.js';
 
 // State
@@ -76,8 +76,9 @@ export function closeReadingModal() {
 
 export async function toggleFavoriteModal() {
     if (!currentReadingId) return;
-    await toggleFavorite(currentReadingId);
-    currentReadingIsFavorite = !currentReadingIsFavorite;
+    const favoriteState = await toggleFavorite(currentReadingId);
+    if (favoriteState === undefined) return;
+    currentReadingIsFavorite = favoriteState;
     updateFavoriteButton();
 }
 
@@ -92,9 +93,11 @@ export async function toggleFavorite(id, buttonEl = null) {
         if (!response.ok) throw new Error('Failed to toggle favorite');
 
         const data = await response.json();
+        if (typeof data.is_favorite !== 'boolean') throw new Error('Neplatná odpověď oblíbených.');
+        updateFavoriteSummary(!data.is_favorite, data.is_favorite);
 
         if (buttonEl) {
-            buttonEl.textContent = data.is_favorite ? '⭐' : '☆';
+            buttonEl.textContent = data.is_favorite ? '★' : '☆';
             buttonEl.title = data.is_favorite ? 'Odebrat z oblíbených' : 'Přidat do oblíbených';
             buttonEl.setAttribute('aria-label', data.is_favorite ? 'Odebrat z oblíbených' : 'Přidat do oblíbených');
         }
@@ -117,6 +120,7 @@ export async function toggleFavorite(id, buttonEl = null) {
         if (favoritesTab && favoritesTab.classList.contains('is-active')) {
             loadFavorites();
         }
+        return data.is_favorite;
 
     } catch (error) {
         console.error('Error toggling favorite:', error);
@@ -127,7 +131,7 @@ export async function toggleFavorite(id, buttonEl = null) {
 export async function deleteReading() {
     if (!currentReadingId) return;
 
-    if (!confirm('Opravdu chcete smazat tento výklad? Tuto akci nelze vrátit.')) {
+    if (!confirm('Opravdu chceš smazat tento výklad? Tuto akci nelze vrátit.')) {
         return;
     }
 
@@ -156,7 +160,7 @@ export async function deleteReading() {
 function updateFavoriteButton() {
     const btn = document.getElementById('modal-favorite-btn');
     if (btn) {
-        btn.textContent = currentReadingIsFavorite ? '⭐ V oblíbených' : '☆ Přidat do oblíbených';
+        btn.textContent = currentReadingIsFavorite ? '★ V oblíbených' : '☆ Přidat do oblíbených';
         btn.setAttribute('aria-label', currentReadingIsFavorite ? 'Odebrat z oblíbených' : 'Přidat do oblíbených');
     }
 }
@@ -211,7 +215,10 @@ function releaseFocus() {
     activeModal = null;
 
     if (previousFocus) {
-        previousFocus.focus();
+        const readingId = previousFocus.closest('[data-reading-id]')?.dataset.readingId;
+        const replacement = [...document.querySelectorAll('[data-reading-action="view"]')].find(button => button.dataset.readingId === readingId && button.offsetParent !== null);
+        const focusTarget = previousFocus.isConnected ? previousFocus : replacement || document.querySelector('.profile-tab[aria-selected="true"]');
+        focusTarget?.focus();
         previousFocus = null;
     }
 }

@@ -130,26 +130,60 @@ router.get('/readings', authenticateToken, async (req, res) => {
         const page = Math.max(1, parseInt(req.query.page) || 1);
         const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 20));
         const offset = (page - 1) * limit;
+        const readingTypes = String(req.query.type || '').split(',').filter(Boolean);
+        if (readingTypes.some(type => !VALID_READING_TYPES.has(type) && type !== 'crystal')) {
+            return res.status(400).json({ error: 'Neznámý typ výkladu.' });
+        }
+        const favoritesOnly = req.query.favorites === 'true';
+        const scopeQuery = query => {
+            query = query.eq('user_id', req.user.id);
+            if (readingTypes.length) query = query.in('type', readingTypes);
+            if (favoritesOnly) query = query.eq('is_favorite', true);
+            return query;
+        };
 
-        const { count, error: countError } = await supabase
+        const { count, error: countError } = await scopeQuery(supabase
             .from('readings')
-            .select('*', { count: 'exact', head: true })
-            .eq('user_id', req.user.id);
+            .select('id', { count: 'exact', head: true }));
 
         if (countError) throw countError;
 
-        const { data, error } = await supabase
+        const { data, error } = await scopeQuery(supabase
             .from('readings')
-            .select('*')
-            .eq('user_id', req.user.id)
+            .select('*'))
             .order('created_at', { ascending: false })
+            .order('id', { ascending: false })
             .range(offset, offset + limit - 1);
 
         if (error) throw error;
 
+        // Summary uses only dates and favorite flags, never full reading bodies.
+        // Page through metadata too: Supabase caps individual result sets.
+        let summary;
+        if (req.query.summary === 'true' && page === 1 && !readingTypes.length && !favoritesOnly) {
+            const activity = [];
+            let favorites = 0;
+            for (let metadataOffset = 0; metadataOffset < (count || 0); metadataOffset += 1000) {
+                const metadata = await supabase.from('readings')
+                    .select('created_at,is_favorite')
+                    .eq('user_id', req.user.id)
+                    .order('created_at', { ascending: false })
+                    .order('id', { ascending: false })
+                    .range(metadataOffset, metadataOffset + 999);
+                if (metadata.error) throw metadata.error;
+                if (!metadata.data?.length) break;
+                for (const reading of metadata.data) {
+                    activity.push(reading.created_at);
+                    if (reading.is_favorite) favorites++;
+                }
+            }
+            summary = { total: count || 0, favorites, activity };
+        }
+
         res.json({
             success: true,
             readings: data || [],
+            ...(summary && { summary }),
             pagination: {
                 page,
                 limit,
@@ -241,7 +275,7 @@ router.get('/readings/:id', authenticateToken, async (req, res) => {
             .select('*')
             .eq('id', req.params.id)
             .eq('user_id', req.user.id)
-            .single();
+            .maybeSingle();
 
         if (error) throw error;
         if (!data) return res.status(404).json({ success: false, error: 'Výklad nenalezen.' });

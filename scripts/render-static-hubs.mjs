@@ -77,7 +77,7 @@ if (!blogPosts.length || !dictionaryTerms.length) throw new Error('Hub data must
 
 const blogChanged = updateFile('blog.html', (source) => {
     const withFeatured = replaceRegion(source, 'STATIC-BLOG-FEATURED', renderFeaturedPost(blogPosts[0]));
-    return replaceRegion(withFeatured, 'STATIC-BLOG-LINKS', renderBlogCards(blogPosts.slice(1)));
+    return replaceRegion(withFeatured, 'STATIC-BLOG-LINKS', renderBlogCards(blogPosts.slice(1, 12)));
 });
 const dictionaryChanged = updateFile('slovnik.html', (source) => (
     replaceRegion(source, 'STATIC-DICTIONARY-LINKS', renderDictionaryCards(dictionaryTerms))

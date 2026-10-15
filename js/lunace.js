@@ -105,10 +105,13 @@ function renderCycleGrid(currentPhase) {
     const grid = document.getElementById('lunarCycleGrid');
     grid.innerHTML = PHASES.map(p => `
         <div class="cycle-item ${p.name === currentPhase.name ? 'active' : ''}">
-            <span class="cycle-emoji">${p.emoji}</span>
+            <span class="cycle-emoji" data-moon-phase="${p.emoji}">${p.emoji}</span>
             <div class="cycle-name">${p.name}</div>
         </div>
     `).join('');
+    grid.querySelectorAll('[data-moon-phase]').forEach((element, index) => {
+        window.MH_MOON_ART?.render(element, element.dataset.moonPhase, PHASES[index].name);
+    });
 }
 
 function calcIllumination(age) {
@@ -126,6 +129,7 @@ function renderPhase() {
     const illumination = calcIllumination(age);
 
     document.getElementById('moonEmoji').textContent = phase.emoji;
+    window.MH_MOON_ART?.render(document.getElementById('moonEmoji'), phase.emoji, phase.name);
     document.getElementById('phaseName').textContent = phase.name;
     document.getElementById('phaseDate').textContent = formatDate(now) + ` · Věk Měsíce: ${age.toFixed(1)} dní`;
     const illuminationStep = Math.round(illumination / 5) * 5;

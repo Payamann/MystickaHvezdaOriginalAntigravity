@@ -249,8 +249,8 @@
         },
         'Královna pohárů': {
             verdict: 'ano',
-            proc: 'Královna pohárů je hluboká empatie a intuice, která tě teď dobře vede. Odpověď je ano, tvůj vnitřní pocit je spolehlivý.',
-            krok: 'Důvěřuj prvnímu pocitu, který k této otázce máš, a jednej podle něj.'
+            proc: 'Královna pohárů připomíná citlivost a vlastní potřeby. Symbolicky se přiklání k ano, pokud tento krok odpovídá tomu, co potřebuješ a skutečně víš.',
+            krok: 'Pojmenuj svůj pocit a porovnej ho s konkrétními okolnostmi. Potom zvol jeden přiměřený krok.'
         },
         'Král pohárů': {
             verdict: 'ano',
@@ -836,7 +836,45 @@
         ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
     }
 
+    function drawImageCover(ctx, image, x, y, width, height) {
+        const ratio = Math.max(width / image.naturalWidth, height / image.naturalHeight);
+        const drawWidth = image.naturalWidth * ratio;
+        const drawHeight = image.naturalHeight * ratio;
+        const drawX = x + (width - drawWidth) / 2;
+        const drawY = y + (height - drawHeight) / 2;
+        ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
+    }
+
+    function limitCanvasLines(ctx, lines, maxLines, maxWidth) {
+        if (lines.length <= maxLines) return lines;
+
+        const visible = lines.slice(0, maxLines);
+        let lastLine = visible[maxLines - 1].trimEnd();
+        while (lastLine && ctx.measureText(`${lastLine}…`).width > maxWidth) {
+            lastLine = lastLine.slice(0, -1).trimEnd();
+        }
+        visible[maxLines - 1] = `${lastLine}…`;
+        return visible;
+    }
+
+    const PAINTED_EXPORT_BACKGROUND = '/img/atlas/tools-v1/02-mesicni-krajina.webp';
+    let paintedExportBackgroundPromise = null;
+    function loadPaintedExportBackground() {
+        if (!paintedExportBackgroundPromise) {
+            paintedExportBackgroundPromise = loadCanvasImage(PAINTED_EXPORT_BACKGROUND)
+                .catch((error) => {
+                    console.warn('[Tarot ANO/NE] Painted background fallback:', error.message);
+                    return null;
+                });
+        }
+        return paintedExportBackgroundPromise;
+    }
+
     async function drawTarotYesNoResultCard(result) {
+        const [paintedBackground] = await Promise.all([
+            loadPaintedExportBackground(),
+            document.fonts?.ready
+        ]);
         const canvas = document.createElement('canvas');
         canvas.width = 1080;
         canvas.height = 1350;
@@ -844,34 +882,34 @@
         const centerX = canvas.width / 2;
 
         const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        gradient.addColorStop(0, '#141038');
-        gradient.addColorStop(0.48, '#070716');
-        gradient.addColorStop(1, '#050510');
+        gradient.addColorStop(0, '#0b1929');
+        gradient.addColorStop(0.52, '#102638');
+        gradient.addColorStop(1, '#07121f');
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        const seed = result.answerKey.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0) + result.question.length;
-        for (let i = 0; i < 220; i += 1) {
-            const x = (Math.sin(seed + i * 12.9898) * 43758.5453) % 1;
-            const y = (Math.sin(seed + i * 78.233) * 24634.6345) % 1;
-            const px = Math.abs(x) * canvas.width;
-            const py = Math.abs(y) * canvas.height * 0.72;
-            const r = i % 9 === 0 ? 2.3 : 1.2;
-            ctx.fillStyle = i % 7 === 0 ? 'rgba(230,195,80,0.75)' : 'rgba(235,240,255,0.72)';
+        if (paintedBackground) {
+            const artworkHeight = 620;
+            ctx.save();
             ctx.beginPath();
-            ctx.arc(px, py, r, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.rect(0, 0, canvas.width, artworkHeight);
+            ctx.clip();
+            drawImageCover(ctx, paintedBackground, 0, 0, canvas.width, artworkHeight);
+            const veil = ctx.createLinearGradient(0, 0, 0, artworkHeight);
+            veil.addColorStop(0, 'rgba(11,25,41,0.88)');
+            veil.addColorStop(0.48, 'rgba(11,25,41,0.3)');
+            veil.addColorStop(1, '#102638');
+            ctx.fillStyle = veil;
+            ctx.fillRect(0, 0, canvas.width, artworkHeight);
+            ctx.restore();
         }
 
-        ctx.strokeStyle = 'rgba(212,175,55,0.84)';
-        ctx.lineWidth = 5;
-        ctx.strokeRect(54, 54, canvas.width - 108, canvas.height - 108);
-        ctx.strokeStyle = 'rgba(212,175,55,0.34)';
+        ctx.strokeStyle = 'rgba(208,177,124,0.5)';
         ctx.lineWidth = 2;
-        ctx.strokeRect(78, 78, canvas.width - 156, canvas.height - 156);
+        ctx.strokeRect(54, 54, canvas.width - 108, canvas.height - 108);
 
         ctx.textAlign = 'center';
-        ctx.fillStyle = '#d4af37';
+        ctx.fillStyle = '#d0b17c';
         ctx.font = '600 38px Inter, Arial, sans-serif';
         ctx.fillText('Mystická Hvězda', centerX, 130);
 
@@ -883,55 +921,55 @@
         }
 
         const cardBox = { x: 440, y: 165, width: 200, height: 292 };
-        ctx.fillStyle = 'rgba(212,175,55,0.12)';
+        ctx.fillStyle = 'rgba(208,177,124,0.12)';
         ctx.fillRect(cardBox.x - 12, cardBox.y - 12, cardBox.width + 24, cardBox.height + 24);
-        ctx.strokeStyle = 'rgba(212,175,55,0.58)';
+        ctx.strokeStyle = 'rgba(208,177,124,0.58)';
         ctx.lineWidth = 3;
         ctx.strokeRect(cardBox.x - 12, cardBox.y - 12, cardBox.width + 24, cardBox.height + 24);
         if (cardImage) {
             drawImageContain(ctx, cardImage, cardBox.x, cardBox.y, cardBox.width, cardBox.height);
         } else {
-            ctx.fillStyle = 'rgba(255,255,255,0.08)';
+            ctx.fillStyle = 'rgba(233,227,215,0.08)';
             ctx.fillRect(cardBox.x, cardBox.y, cardBox.width, cardBox.height);
         }
 
-        ctx.fillStyle = '#fff7d6';
+        ctx.fillStyle = '#e9e3d7';
         ctx.font = '700 38px Cinzel, Georgia, serif';
         ctx.fillText(result.cardName, centerX, 512);
 
-        ctx.fillStyle = result.answerClass === 'ne' ? '#ff9ea8' : (result.answerClass === 'ano' ? '#b9f3c2' : '#f1d06b');
+        ctx.fillStyle = '#d0b17c';
         ctx.font = '700 74px Cinzel, Georgia, serif';
         ctx.fillText(result.label, centerX, 605);
 
         let y = 700;
         if (result.question) {
-            ctx.fillStyle = 'rgba(255,255,255,0.72)';
+            ctx.fillStyle = '#c0c8ca';
             ctx.font = '500 32px Inter, Arial, sans-serif';
             ctx.fillText('Ptáš se', centerX, y);
             y += 48;
 
-            ctx.fillStyle = '#ffffff';
+            ctx.fillStyle = '#e9e3d7';
             ctx.font = '600 36px Inter, Arial, sans-serif';
-            const questionLines = wrapCanvasText(ctx, result.question, 820);
+            const questionLines = limitCanvasLines(ctx, wrapCanvasText(ctx, result.question, 820), 2, 820);
             y = drawCenteredLines(ctx, questionLines, centerX, y, 46, 2) + 24;
         }
 
-        ctx.fillStyle = 'rgba(212,175,55,0.86)';
+        ctx.fillStyle = 'rgba(208,177,124,0.86)';
         ctx.fillRect(170, y, 740, 3);
         y += 58;
 
-        ctx.fillStyle = '#f6f1ff';
+        ctx.fillStyle = '#e9e3d7';
         ctx.font = '500 36px Inter, Arial, sans-serif';
-        const resultLines = wrapCanvasText(ctx, result.text, 840);
+        const resultLines = limitCanvasLines(ctx, wrapCanvasText(ctx, result.text, 840), 5, 840);
         y = drawCenteredLines(ctx, resultLines, centerX, y, 47, 5);
 
-        ctx.fillStyle = 'rgba(255,255,255,0.78)';
+        ctx.fillStyle = '#e9e3d7';
         ctx.font = '500 30px Inter, Arial, sans-serif';
-        ctx.fillText('mystickahvezda.cz/tarot-ano-ne.html', centerX, 1268);
+        ctx.fillText('mystickahvezda.cz/tarot-ano-ne.html', centerX, 1240);
 
-        ctx.fillStyle = 'rgba(212,175,55,0.9)';
+        ctx.fillStyle = '#d0b17c';
         ctx.font = '600 26px Inter, Arial, sans-serif';
-        ctx.fillText('Ulož si výsledek nebo ho pošli někomu, kdo se ptá stejně.', centerX, 1304);
+        ctx.fillText('Ulož si výsledek nebo ho pošli někomu, kdo se ptá stejně.', centerX, 1280);
 
         return canvas;
     }

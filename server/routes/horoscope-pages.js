@@ -186,7 +186,7 @@ router.get('/:sign/:date', async (req, res, next) => {
 
         const luckyNumbersHtml = Array.isArray(parsed.luckyNumbers) && parsed.luckyNumbers.length
             ? `<div class="horoscope-day-lucky">
-                <span class="horoscope-day-lucky__label">✨ Čísla štěstí:</span>
+                <span class="horoscope-day-lucky__label">Čísla štěstí:</span>
                 ${parsed.luckyNumbers.map(n =>
                 `<span class="horoscope-day-lucky__number">${Number(n)}</span>`
             ).join('')}
@@ -201,7 +201,7 @@ router.get('/:sign/:date', async (req, res, next) => {
             : '';
 
         const otherSignsHtml = Object.entries(SIGN_MAP).map(([s, d]) =>
-            `<a href="/horoskop/${s}/${date}" class="zodiac-card${s === slug ? ' zodiac-card--highlighted' : ''}">
+            `<a href="/horoskop/${s}/${date}" class="zodiac-card${s === slug ? ' zodiac-card--highlighted' : ''}"${s === slug ? ' aria-current="page"' : ''}>
                 <span class="zodiac-card__symbol">${d.symbol}</span>
                 <h3 class="zodiac-card__name">${d.name}</h3>
                 <span class="zodiac-card__dates">${d.dates}</span>
@@ -275,7 +275,7 @@ router.get('/:sign/:date', async (req, res, next) => {
   <link rel="stylesheet" href="/css/atlas-astro.css?v=1">
   <link rel="stylesheet" href="/css/atlas-art.css?v=1">
 </head>
-<body class="atlas-page atlas-astro-page">
+<body class="atlas-page atlas-astro-page atlas-astro-page--dated">
   <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
   <div class="stars" aria-hidden="true"></div>
   <div id="header-placeholder"></div>
@@ -328,12 +328,10 @@ router.get('/:sign/:date', async (req, res, next) => {
     <!-- OTHER SIGNS SAME DAY -->
     <section class="section horoscope-day-section--flush">
       <div class="container">
-        <h3 class="horoscope-day-other-title">
-          Horoskop pro jiné znamení — ${czechDate}
-        </h3>
-        <div class="zodiac-grid" data-animate>
-          ${otherSignsHtml}
-        </div>
+        <details class="horoscope-day-sign-switcher">
+          <summary>Změnit znamení · ${czechDate}</summary>
+          <div class="zodiac-grid">${otherSignsHtml}</div>
+        </details>
       </div>
     </section>
 

@@ -45,3 +45,36 @@
         .btn { display: inline-block; padding: 0.9rem 2rem; background: linear-gradient(135deg, #9b59b6, #6c3483); border: none; border-radius: 50px; color: white; text-decoration: none; font-size: 1rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
 
         .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(155,89,182,0.4); }
+
+/* V09: quiet offline surface using the shared navy and cream palette. */
+body.atlas-page {
+    background: #0b1929;
+    color: #f7f0df;
+    overflow-x: hidden;
+}
+body.atlas-page .stars { display: none; }
+body.atlas-page .container { max-width: 34rem; padding: 2rem 1.25rem; }
+body.atlas-page .icon { color: #c9a96e; font-size: 0; animation: none; margin-bottom: 1.25rem; }
+body.atlas-page .icon .mh-symbol { width: 4.5rem; height: 4.5rem; }
+body.atlas-page h1 {
+    color: #f7f0df;
+    background: none;
+    -webkit-text-fill-color: currentColor;
+    margin-bottom: 0.85rem;
+}
+body.atlas-page p { color: rgba(247,240,223,0.72); }
+body.atlas-page .btn {
+    background: #c9a96e;
+    color: #0b1929;
+    border: 1px solid #dfc58f;
+    box-shadow: none;
+    min-height: 2.75rem;
+}
+body.atlas-page .btn:hover { background: #dfc58f; transform: translateY(-2px); box-shadow: none; }
+body.atlas-page .skip-link {
+    position: absolute;
+    top: -100%;
+    left: 1rem;
+    z-index: 10;
+}
+body.atlas-page .skip-link:focus-visible { top: 1rem; }

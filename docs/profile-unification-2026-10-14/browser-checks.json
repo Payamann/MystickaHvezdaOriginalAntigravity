@@ -1,0 +1,83 @@
+[
+  {
+    "route": "tarot.html",
+    "footerHeight": 674.2750244140625,
+    "heading": "Tarotové výklady",
+    "height": 6479,
+    "mainWords": 389,
+    "scrollWidth": 382,
+    "width": 390
+  },
+  {
+    "route": "andelske-karty.html",
+    "footerHeight": 770.6124877929688,
+    "heading": "Andělská karta dne",
+    "height": 7990,
+    "mainWords": 310,
+    "scrollWidth": 382,
+    "width": 390
+  },
+  {
+    "route": "numerologie.html",
+    "footerHeight": 739.4125366210938,
+    "heading": "Numerologie",
+    "height": 5897,
+    "mainWords": 475,
+    "scrollWidth": 382,
+    "width": 390
+  },
+  {
+    "route": "natalni-karta.html",
+    "footerHeight": 739.4125366210938,
+    "heading": "Natální karta jako klíč k sebepoznání",
+    "height": 3955,
+    "mainWords": 235,
+    "scrollWidth": 382,
+    "width": 390
+  },
+  {
+    "route": "partnerska-shoda.html",
+    "footerHeight": 739.4125366210938,
+    "heading": "Partnerská shoda",
+    "height": 11490,
+    "mainWords": 914,
+    "scrollWidth": 382,
+    "width": 390
+  },
+  {
+    "route": "astro-mapa.html",
+    "footerHeight": 674.2750244140625,
+    "heading": "Astrokartografie",
+    "height": 3317,
+    "mainWords": 147,
+    "scrollWidth": 382,
+    "width": 390
+  },
+  {
+    "route": "runy.html",
+    "footerHeight": 739.4125366210938,
+    "heading": "Věštění z run",
+    "height": 5866,
+    "mainWords": 503,
+    "scrollWidth": 382,
+    "width": 390
+  },
+  {
+    "route": "kristalova-koule.html",
+    "footerHeight": 739.4125366210938,
+    "heading": "Křišťálová koule a hlas intuice",
+    "height": 4850,
+    "mainWords": 363,
+    "scrollWidth": 382,
+    "width": 390
+  },
+  {
+    "route": "mentor.html",
+    "footerHeight": 739.4125366210938,
+    "heading": "Hvězdný Průvodce",
+    "height": 2028,
+    "mainWords": 105,
+    "scrollWidth": 382,
+    "width": 390
+  }
+]

@@ -1168,7 +1168,9 @@ router.get('/subscription/status', authenticateToken, async (req, res) => {
                 pauseUntil: null,
                 canCancel: false,
                 canResume: false,
-                needsPaymentUpdate: false
+                needsPaymentUpdate: false,
+                canManagePayments: Boolean(userData?.stripe_customer_id),
+                hasBillingSubscription: false
             });
         }
 
@@ -1182,7 +1184,9 @@ router.get('/subscription/status', authenticateToken, async (req, res) => {
             pauseUntil: subscription.pause_until || null,
             canCancel,
             canResume: subscription.status === 'paused' && Boolean(subscription.stripe_subscription_id),
-            needsPaymentUpdate: ['past_due', 'unpaid', 'incomplete'].includes(subscription.status)
+            needsPaymentUpdate: ['past_due', 'unpaid', 'incomplete'].includes(subscription.status),
+            canManagePayments: Boolean(userData?.stripe_customer_id),
+            hasBillingSubscription: Boolean(subscription.stripe_subscription_id)
         });
     } catch (error) {
         console.error('Subscription Status Error:', error);

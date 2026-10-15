@@ -50,6 +50,7 @@
         const nameEl = document.getElementById('ritual-moon-name');
         const descEl = document.getElementById('ritual-moon-desc');
         if (iconEl) iconEl.textContent = currentPhase.icon;
+        window.MH_MOON_ART?.render(iconEl, currentPhase.icon, currentPhase.name);
         if (nameEl) nameEl.textContent = currentPhase.name;
         if (descEl) descEl.textContent = RITUAL_DESC[currentPhase.slug] || '';
 

@@ -48,11 +48,17 @@ export function initSettingsForm() {
     const nameEl = document.getElementById('settings-name');
     const emailEl = document.getElementById('settings-email');
     const birthtimeEl = document.getElementById('settings-birthtime');
+    const birthdateEl = document.getElementById('settings-birthdate');
     const birthplaceEl = document.getElementById('settings-birthplace');
 
     if (nameEl) nameEl.value = user.first_name || '';
     if (emailEl) emailEl.value = user.email || '';
     if (birthtimeEl) birthtimeEl.value = user.birth_time || '';
+    if (birthdateEl) {
+        birthdateEl.value = user.birth_date?.slice(0, 10) || '';
+        const now = new Date();
+        birthdateEl.max = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    }
     if (birthplaceEl) birthplaceEl.value = user.birth_place || '';
 }
 
@@ -62,7 +68,7 @@ export async function saveSettings() {
     const formUx = window.MH_FORM_UX || {};
 
     formUx.clearFormSummary?.(settingsForm);
-    ['settings-current-password', 'settings-password', 'settings-password-confirm'].forEach(id => {
+    ['settings-name', 'settings-birthdate', 'settings-birthtime', 'settings-birthplace'].forEach(id => {
         formUx.clearFieldError?.(document.getElementById(id));
     });
 
@@ -76,13 +82,23 @@ export async function saveSettings() {
         const name = document.getElementById('settings-name')?.value.trim();
         const birthtime = document.getElementById('settings-birthtime')?.value;
         const birthplace = document.getElementById('settings-birthplace')?.value.trim();
-        const currentPassword = document.getElementById('settings-current-password')?.value;
-        const newPassword = document.getElementById('settings-password')?.value;
-        const confirmPassword = document.getElementById('settings-password-confirm')?.value;
+        const birthdateEl = document.getElementById('settings-birthdate');
+        if (birthdateEl && !birthdateEl.checkValidity()) {
+            formUx.setFieldError?.(birthdateEl, 'Zadej platné datum narození, které není v budoucnosti.');
+            birthdateEl.focus();
+            throw new Error('Zadej platné datum narození, které není v budoucnosti.');
+        }
 
         const profileBody = {};
-        if (name !== undefined) profileBody.first_name = name;
-        if (birthtime) profileBody.birth_time = birthtime;
+        if (name) profileBody.first_name = name;
+        else if (window.Auth?.user?.first_name) {
+            const nameField = document.getElementById('settings-name');
+            formUx.setFieldError?.(nameField, 'Vyplň jméno, které chceš v profilu používat.');
+            nameField?.focus();
+            throw new Error('Vyplň jméno, které chceš v profilu používat.');
+        }
+        if (birthdateEl) profileBody.birth_date = birthdateEl.value || null;
+        if (birthtime !== undefined) profileBody.birth_time = birthtime || null;
         if (birthplace !== undefined) profileBody.birth_place = birthplace;
 
         const profileRes = await fetch(`${apiUrl()}/auth/profile`, {
@@ -113,50 +129,8 @@ export async function saveSettings() {
         localStorage.setItem('auth_user', JSON.stringify(cached));
         if (window.Auth) window.Auth.user = cached;
 
-        if (newPassword) {
-            if (!currentPassword) {
-                const currentPasswordField = document.getElementById('settings-current-password');
-                formUx.setFieldError?.(currentPasswordField, 'Zadejte prosím aktuální heslo.');
-                currentPasswordField?.focus({ preventScroll: true });
-                throw new Error('Zadejte prosím aktuální heslo.');
-            }
-            if (newPassword !== confirmPassword) {
-                const confirmPasswordField = document.getElementById('settings-password-confirm');
-                formUx.setFieldError?.(confirmPasswordField, 'Nová hesla se neshodují.');
-                confirmPasswordField?.focus({ preventScroll: true });
-                throw new Error('Nová hesla se neshodují.');
-            }
-
-            const pwRes = await fetch(`${apiUrl()}/user/password`, {
-                method: 'PUT',
-                credentials: 'include',
-                headers: {
-                    ...authHeaders(true),
-                    ...(csrfToken && { 'X-CSRF-Token': csrfToken })
-                },
-                body: JSON.stringify({
-                    currentPassword,
-                    password: newPassword,
-                    password_confirm: confirmPassword
-                })
-            });
-
-            if (!pwRes.ok) {
-                const err = await pwRes.json().catch(() => ({}));
-                throw new Error(err.error || 'Nepodařilo se změnit heslo.');
-            }
-
-            ['settings-current-password', 'settings-password', 'settings-password-confirm'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.value = '';
-            });
-
-            window.Auth?.showToast?.('Heslo změněno', 'Heslo bylo úspěšně změněno. Za chvíli vás odhlásíme.', 'success');
-            setTimeout(() => window.Auth?.logout?.(), 2000);
-            return;
-        }
-
-        window.Auth?.showToast?.('Uloženo', 'Nastavení bylo úspěšně uloženo.', 'success');
+        document.dispatchEvent(new CustomEvent('profile:updated', { detail: { user: cached } }));
+        window.Auth?.showToast?.('Uloženo', 'Tvoje údaje jsou uložené.', 'success');
     } catch (e) {
         console.error('Settings save error:', e);
         formUx.setFormSummary?.(settingsForm, e.message || 'Nepodařilo se uložit nastavení.');
@@ -166,6 +140,46 @@ export async function saveSettings() {
             btn.disabled = false;
             btn.textContent = 'Uložit změny';
         }
+    }
+}
+
+export async function changePassword() {
+    const btn = document.getElementById('change-password-btn');
+    const form = document.querySelector('.settings-password-fields');
+    const ux = window.MH_FORM_UX || {};
+    const ids = ['settings-current-password', 'settings-password', 'settings-password-confirm'];
+    const fields = ids.map(id => document.getElementById(id));
+    ux.clearFormSummary?.(form);
+    fields.forEach(field => ux.clearFieldError?.(field));
+    try {
+        const [currentPassword, password, password_confirm] = fields.map(field => field?.value || '');
+        const invalid = !currentPassword ? [0, 'Zadej aktuální heslo.']
+            : password.length < 8 ? [1, 'Nové heslo musí mít alespoň 8 znaků.']
+            : password !== password_confirm ? [2, 'Nová hesla se neshodují.'] : null;
+        if (invalid) {
+            ux.setFieldError?.(fields[invalid[0]], invalid[1]);
+            fields[invalid[0]]?.focus();
+            throw new Error(invalid[1]);
+        }
+        if (btn) { btn.disabled = true; btn.textContent = 'Měním heslo…'; }
+        const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+        const response = await fetch(`${apiUrl()}/user/password`, {
+            method: 'PUT', credentials: 'include',
+            headers: { ...authHeaders(true), ...(csrfToken && { 'X-CSRF-Token': csrfToken }) },
+            body: JSON.stringify({ currentPassword, password, password_confirm })
+        });
+        if (!response.ok) {
+            const data = await response.json().catch(() => ({}));
+            throw new Error(data.error || 'Nepodařilo se změnit heslo.');
+        }
+        fields.forEach(field => { if (field) field.value = ''; });
+        window.Auth?.showToast?.('Heslo změněno', 'Přihlas se znovu svým novým heslem.', 'success');
+        setTimeout(() => window.Auth?.logout?.(), 2000);
+    } catch (error) {
+        ux.setFormSummary?.(form, error.message);
+        window.Auth?.showToast?.('Změna hesla', error.message, 'error');
+    } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Změnit heslo'; }
     }
 }
 
@@ -253,16 +267,14 @@ export async function loadSubscriptionStatus() {
         container.innerHTML = `
             <div class="subscription-info">
                 <div class="subscription-plan">
-                    <span class="subscription-plan__name">Poutník (zdarma)</span>
+                    <span class="subscription-plan__name">Stav přístupu se nepodařilo načíst</span>
                 </div>
                 <div class="subscription-actions">
-                    <button id="sub-upgrade-fallback-btn" type="button" class="btn btn--gold btn--sm">Upgradovat</button>
+                    <button id="sub-retry-btn" type="button" class="btn btn--glass btn--sm">Zkusit znovu</button>
                 </div>
             </div>
         `;
-        document.getElementById('sub-upgrade-fallback-btn')?.addEventListener('click', () => {
-            startProfileUpgradeCheckout('profile_subscription_fallback');
-        });
+        document.getElementById('sub-retry-btn')?.addEventListener('click', loadSubscriptionStatus);
         return null;
     }
 }
@@ -286,6 +298,8 @@ function renderSubscriptionCard(sub) {
     const planName = formatPlanLabel(normalizedPlanType, { freeSuffix: true });
     const statusInfo = statusLabels[sub.status] || { text: sub.status, class: '' };
     const isPremium = normalizedPlanType !== 'free';
+    const canManagePayments = sub.canManagePayments === true;
+    const hasBillingSubscription = typeof sub.hasBillingSubscription === 'boolean' ? sub.hasBillingSubscription : null;
     const periodEnd = sub.currentPeriodEnd ? new Date(sub.currentPeriodEnd) : null;
     const periodEndStr = periodEnd ? periodEnd.toLocaleDateString('cs-CZ', {
         day: 'numeric', month: 'long', year: 'numeric'
@@ -321,34 +335,37 @@ function renderSubscriptionCard(sub) {
             ? `Do ${pauseUntilStr} se nic neúčtuje a prémiový přístup je pozastavený. Obnovit ho můžeš kdykoliv.`
             : 'Během pauzy se nic neúčtuje a prémiový přístup je pozastavený. Obnovit ho můžeš kdykoliv.';
         html += `<p class="subscription-period"><strong>Předplatné je pozastavené.</strong> ${pauseCopy}</p>`;
+    } else if (isPremium && hasBillingSubscription === false) {
+        html += '<p class="subscription-period">Přístup je přidělený samostatně. Není u něj nastavená automatická platba.</p>';
+        if (periodEnd && periodEnd.getFullYear() < 2090) html += `<p class="subscription-period">Platnost přístupu: <strong>${periodEndStr}</strong></p>`;
     } else if (isPremium && periodEndStr) {
         const label = sub.status === 'cancel_pending'
             ? 'Přístup končí'
             : sub.status === 'trialing'
             ? 'Zkušební období končí'
-            : 'Další obnova';
+            : hasBillingSubscription ? 'Konec aktuálního platebního období' : 'Platnost přístupu';
         html += `<p class="subscription-period">${label}: <strong>${periodEndStr}</strong></p>`;
     }
 
     html += '<div class="subscription-actions">';
 
     if (!isPremium) {
-        html += '<button id="sub-upgrade-btn" type="button" class="btn btn--gold btn--sm">Upgradovat na Premium</button>';
+        html += '<button id="sub-upgrade-btn" type="button" class="btn btn--gold btn--sm">Prohlédnout členství</button>';
     } else {
-        if (needsPaymentUpdate) {
+        if (needsPaymentUpdate && canManagePayments) {
             html += '<button id="sub-payment-update-btn" type="button" class="btn btn--primary btn--sm">Aktualizovat kartu</button>';
             if (sub.canCancel) {
                 html += '<button id="sub-cancel-btn" data-cancel-immediate="true" class="btn btn--sm btn--glass">Zrušit a zastavit další pokusy</button>';
             }
-        } else if (isPaused && sub.canResume !== false) {
+        } else if (isPaused && sub.canResume === true) {
             html += '<button id="sub-resume-btn" type="button" class="btn btn--primary btn--sm">Obnovit předplatné</button>';
         } else if (sub.canCancel && sub.status !== 'cancel_pending') {
             html += '<button id="sub-cancel-btn" class="btn btn--sm btn--glass">Zrušit předplatné</button>';
         }
-        if (sub.status === 'cancel_pending') {
+        if (sub.status === 'cancel_pending' && hasBillingSubscription) {
             html += '<button id="sub-reactivate-btn" class="btn btn--sm btn--primary">Obnovit předplatné</button>';
         }
-        html += '<button id="sub-portal-btn" class="btn btn--sm btn--glass">Správa plateb</button>';
+        if (canManagePayments) html += `<button id="sub-portal-btn" class="btn btn--sm btn--glass">${hasBillingSubscription ? 'Správa plateb' : 'Platební údaje a faktury'}</button>`;
     }
 
     html += '</div></div>';

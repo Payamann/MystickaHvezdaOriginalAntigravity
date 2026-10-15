@@ -4,8 +4,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const featuredContainer = document.getElementById('featuredContainer');
     const filterContainer = document.getElementById('categoryFilter');
     const gridTitle = document.getElementById('gridTitle');
+    const loadMoreButton = document.getElementById('blog-load-more');
+    const loadStatus = document.getElementById('blog-load-status');
 
+    const PAGE_SIZE = 12;
     let allPosts = [];
+    let currentGridPosts = [];
+    let visibleCount = PAGE_SIZE;
 
     document.addEventListener('error', (event) => {
         const image = event.target;
@@ -53,6 +58,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             e.target.classList.add('active');
 
             const cat = e.target.dataset.category;
+            visibleCount = PAGE_SIZE;
             if (cat === 'all') {
                 renderAll(allPosts);
             } else {
@@ -60,6 +66,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 renderFilteredGrid(filtered, cat);
             }
         }
+    });
+
+    loadMoreButton?.addEventListener('click', () => {
+        const firstNewIndex = Math.min(visibleCount, currentGridPosts.length);
+        visibleCount += PAGE_SIZE;
+        renderPostsGrid(currentGridPosts);
+        const firstNewCard = container.querySelectorAll('.blog-card')[firstNewIndex];
+        firstNewCard?.focus({ preventScroll: true });
+        firstNewCard?.scrollIntoView({ block: 'start', behavior: 'auto' });
     });
 
     function renderAll(posts) {
@@ -75,6 +90,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const rest = posts.slice(1);
 
         renderFeaturedPost(featured);
+        visibleCount = Math.max(0, PAGE_SIZE - 1);
         renderPostsGrid(rest);
     }
 
@@ -84,6 +100,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         gridTitle.hidden = false;
         gridTitle.classList.add('mh-block-visible');
         gridTitle.textContent = `Články v kategorii: ${categoryStr}`;
+        visibleCount = PAGE_SIZE;
         renderPostsGrid(posts);
     }
 
@@ -117,13 +134,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function renderPostsGrid(posts) {
+        currentGridPosts = posts;
         container.innerHTML = '';
         if (posts.length === 0) {
             container.innerHTML = '<div class="no-results">Žádné další články k zobrazení.</div>';
+            updateLoadMore(0, 0);
             return;
         }
 
-        posts.forEach(post => {
+        const shownPosts = posts.slice(0, visibleCount);
+        shownPosts.forEach(post => {
             const date = new Date(post.published_at).toLocaleDateString('cs-CZ', {
                 year: 'numeric', month: 'short', day: 'numeric'
             });
@@ -151,6 +171,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             `;
             container.appendChild(el);
         });
+
+        updateLoadMore(shownPosts.length, posts.length);
+    }
+
+    function updateLoadMore(shown, total) {
+        if (loadStatus) loadStatus.textContent = `Zobrazeno ${shown} z ${total} článků v seznamu.`;
+        if (!loadMoreButton) return;
+
+        const remaining = Math.max(0, total - shown);
+        loadMoreButton.hidden = remaining === 0;
+        loadMoreButton.textContent = remaining > 0
+            ? `Načíst další články (${remaining})`
+            : 'Všechny články jsou zobrazené';
+        loadMoreButton.setAttribute('aria-label', remaining > 0
+            ? `Načíst další články. Zbývá ${remaining}`
+            : 'Všechny články jsou zobrazené');
     }
 
 });

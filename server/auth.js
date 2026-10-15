@@ -867,16 +867,20 @@ router.put('/profile', authenticateToken, async (req, res) => {
             updateData.first_name = validateName(first_name);
         }
 
-        if (birth_date !== undefined && birth_date !== null) {
-            updateData.birth_date = validateBirthDate(birth_date);
+        if (birth_date !== undefined) {
+            try {
+                updateData.birth_date = birth_date === null || birth_date === '' ? null : validateBirthDate(birth_date);
+            } catch {
+                return res.status(400).json({ error: 'Zadej platné datum narození od roku 1900, které není v budoucnosti.' });
+            }
         }
 
-        if (birth_time !== undefined && birth_time !== null) {
+        if (birth_time !== undefined) {
             // Basic format check for HH:MM
-            if (!/^\d{2}:\d{2}$/.test(birth_time)) {
-                throw new Error('Birth time must be in HH:MM format');
+            if (birth_time !== null && birth_time !== '' && (!/^\d{2}:\d{2}$/.test(birth_time) || Number(birth_time.slice(0, 2)) > 23 || Number(birth_time.slice(3)) > 59)) {
+                return res.status(400).json({ error: 'Zadej platný čas narození ve formátu HH:MM.' });
             }
-            updateData.birth_time = birth_time;
+            updateData.birth_time = birth_time || null;
         }
 
         if (birth_place !== undefined && birth_place !== null) {

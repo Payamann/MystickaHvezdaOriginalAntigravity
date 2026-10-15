@@ -405,3 +405,37 @@
 html body .mh-inline-9aead1b566 { display:none; }
 html body .mh-inline-5f069ec654 { color:var(--muted);font-size:0.95rem;margin-bottom:0.5rem; }
 html body .mh-inline-0959972fab { display:block;margin-top:2rem;font-size:0.82rem;color:var(--muted);text-decoration:none; }
+
+/* V10: calm full-session surface; mood emojis, flame colors and status states stay intact. */
+body.atlas-page {
+    --bg: #0b1929;
+    --white: rgba(247, 240, 223, 0.9);
+    --muted: rgba(247, 240, 223, 0.68);
+    background: var(--bg);
+}
+body.atlas-page .session-overlay {
+    background: linear-gradient(180deg, rgba(11, 25, 41, 0.98), rgba(11, 25, 41, 0.94));
+}
+body.atlas-page .stars-bg { display: none; }
+body.atlas-page .session-header {
+    background: rgba(11, 25, 41, 0.94);
+    border-bottom-color: rgba(247, 240, 223, 0.12);
+}
+body.atlas-page .breath-guide { border-color: rgba(201, 169, 110, 0.55); }
+body.atlas-page .breath-guide.inhale,
+body.atlas-page .breath-guide.hold,
+body.atlas-page .breath-guide.exhale { box-shadow: none; }
+body.atlas-page .btn-next {
+    border-color: rgba(201, 169, 110, 0.7);
+    color: #dfc58f;
+    box-shadow: none;
+}
+body.atlas-page .btn-next:hover {
+    background: rgba(201, 169, 110, 0.14);
+    border-color: #dfc58f;
+    box-shadow: none;
+}
+body.atlas-page .journal-premium-gate {
+    background: rgba(11, 25, 41, 0.76);
+    border-color: rgba(201, 169, 110, 0.32);
+}

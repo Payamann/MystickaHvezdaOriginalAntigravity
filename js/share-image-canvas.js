@@ -9,6 +9,21 @@
 
     const CARD_WIDTH = 1080;
     const CARD_HEIGHT = 1350;
+    const PAINTED_BACKGROUND_SRC = '/img/atlas/tools-v1/02-mesicni-krajina.webp';
+    const COLOR_NAVY = '#0b1929';
+    const COLOR_NAVY_DEEP = '#07121f';
+    const COLOR_GOLD = '#d0b17c';
+    const COLOR_CREAM = '#e9e3d7';
+    let paintedBackground = null;
+
+    // Keep drawBrandBackground synchronous for legacy callers. The local
+    // artwork is warmed in the background and the renderer falls back to a
+    // complete navy card when the image is not ready or cannot be loaded.
+    const paintedBackgroundImage = new Image();
+    paintedBackgroundImage.onload = () => { paintedBackground = paintedBackgroundImage; };
+    paintedBackgroundImage.onerror = () => { paintedBackground = null; };
+    paintedBackgroundImage.decoding = 'async';
+    paintedBackgroundImage.src = PAINTED_BACKGROUND_SRC;
 
     function createCanvas() {
         const canvas = document.createElement('canvas');
@@ -60,53 +75,64 @@
     }
 
     function drawSeededStars(ctx, seed, width, height) {
-        for (let i = 0; i < 220; i += 1) {
-            const x = (Math.sin(seed + i * 12.9898) * 43758.5453) % 1;
-            const y = (Math.sin(seed + i * 78.233) * 24634.6345) % 1;
-            const px = Math.abs(x) * width;
-            const py = Math.abs(y) * height * 0.72;
-            const r = i % 9 === 0 ? 2.3 : 1.2;
-            ctx.fillStyle = i % 7 === 0 ? 'rgba(230,195,80,0.75)' : 'rgba(235,240,255,0.72)';
-            ctx.beginPath();
-            ctx.arc(px, py, r, 0, Math.PI * 2);
-            ctx.fill();
-        }
+        // Retained as a no-op for older tools that reference this public
+        // helper directly. Current exports use the painted navy background.
+        if (!ctx || !Number.isFinite(seed) || width <= 0 || height <= 0) return;
     }
 
-    // Gradient night sky + stars + double gold frame + brand header.
+    function drawImageCover(ctx, image, x, y, width, height) {
+        const ratio = Math.max(width / image.naturalWidth, height / image.naturalHeight);
+        const drawWidth = image.naturalWidth * ratio;
+        const drawHeight = image.naturalHeight * ratio;
+        ctx.drawImage(image, x + (width - drawWidth) / 2, y + (height - drawHeight) / 2, drawWidth, drawHeight);
+    }
+
+    // Painted navy surface + restrained gold frame + brand header. The seed
+    // argument remains accepted because existing tools pass it.
     function drawBrandBackground(ctx, canvas, seed = 7) {
         const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        gradient.addColorStop(0, '#141038');
-        gradient.addColorStop(0.48, '#070716');
-        gradient.addColorStop(1, '#050510');
+        gradient.addColorStop(0, COLOR_NAVY);
+        gradient.addColorStop(0.52, '#102638');
+        gradient.addColorStop(1, COLOR_NAVY_DEEP);
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        drawSeededStars(ctx, seed, canvas.width, canvas.height);
+        if (paintedBackground?.naturalWidth) {
+            const artworkHeight = Math.min(660, canvas.height * 0.52);
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(0, 0, canvas.width, artworkHeight);
+            ctx.clip();
+            drawImageCover(ctx, paintedBackground, 0, 0, canvas.width, artworkHeight);
+            const veil = ctx.createLinearGradient(0, 0, 0, artworkHeight);
+            veil.addColorStop(0, 'rgba(11,25,41,0.86)');
+            veil.addColorStop(0.5, 'rgba(11,25,41,0.34)');
+            veil.addColorStop(1, '#102638');
+            ctx.fillStyle = veil;
+            ctx.fillRect(0, 0, canvas.width, artworkHeight);
+            ctx.restore();
+        }
 
-        ctx.strokeStyle = 'rgba(212,175,55,0.84)';
-        ctx.lineWidth = 5;
-        ctx.strokeRect(54, 54, canvas.width - 108, canvas.height - 108);
-        ctx.strokeStyle = 'rgba(212,175,55,0.34)';
+        ctx.strokeStyle = 'rgba(208,177,124,0.5)';
         ctx.lineWidth = 2;
-        ctx.strokeRect(78, 78, canvas.width - 156, canvas.height - 156);
+        ctx.strokeRect(54, 54, canvas.width - 108, canvas.height - 108);
 
         ctx.textAlign = 'center';
-        ctx.fillStyle = '#d4af37';
+        ctx.fillStyle = COLOR_GOLD;
         ctx.font = '600 38px Inter, Arial, sans-serif';
         ctx.fillText('Mystická Hvězda', canvas.width / 2, 130);
     }
 
     function drawFooter(ctx, canvas, pageUrl, ctaText) {
         ctx.textAlign = 'center';
-        ctx.fillStyle = 'rgba(255,255,255,0.78)';
+        ctx.fillStyle = COLOR_CREAM;
         ctx.font = '500 30px Inter, Arial, sans-serif';
-        ctx.fillText(pageUrl, canvas.width / 2, 1268);
+        ctx.fillText(pageUrl, canvas.width / 2, 1240);
 
         if (ctaText) {
-            ctx.fillStyle = 'rgba(212,175,55,0.9)';
+            ctx.fillStyle = COLOR_GOLD;
             ctx.font = '600 26px Inter, Arial, sans-serif';
-            ctx.fillText(ctaText, canvas.width / 2, 1304);
+            ctx.fillText(ctaText, canvas.width / 2, 1280);
         }
     }
 
