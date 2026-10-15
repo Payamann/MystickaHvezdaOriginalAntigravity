@@ -1,5 +1,7 @@
 # Funkce, smysl a styl Mystické Hvězdy · 14. 10. 2026
 
+Navazující [společný TODO pro dokončení celého webu](../web-redesign-todo.md) určuje pořadí práce; níže zůstává původní datovaný audit a jeho rozsah důkazů.
+
 ## Závěr
 
 Technický základ hlavních cest je použitelný, ale nelze poctivě říct, že je vše dotažené. Nejdůležitější další práce je konzistence výpočtů, pravdivé chování při výpadku a spolehlivé opakování placeného doručení. Další ilustrace samy tyto problémy nevyřeší.

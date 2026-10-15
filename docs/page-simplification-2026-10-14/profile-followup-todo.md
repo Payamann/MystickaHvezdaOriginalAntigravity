@@ -1,5 +1,7 @@
 # Profil — navazující funkční review a TODO
 
+Zařazení do celého redesignu: [společný TODO webu](../web-redesign-todo.md). Tento soubor drží podrobné PF/PV úkoly účtu.
+
 15. 10. 2026 · kontrolovaný kandidát `007612ec` · **pouze review a dokumentace, bez oprav produktu a nasazení**.
 
 Navazuje na [původní P01–P10](profile-authenticated-review.md) a [jejich implementaci](../profile-unification-2026-10-14/README.md). Dřívější opravy zde znovu nevydáváme za otevřené závady.
