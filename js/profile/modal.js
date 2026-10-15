@@ -2,9 +2,9 @@
  * Modal logic for viewing reading details
  */
 
-import { escapeHtml, apiUrl, authHeaders, authHeadersWithCsrf, getReadingIcon, getReadingTitle } from './shared.js';
-import { getAllReadings, updateReading, renderReadings, loadReadings, updateFavoriteSummary } from './readings.js';
-import { loadFavorites } from './favorites.js';
+import { escapeHtml, apiUrl, authHeaders, authHeadersWithCsrf, getReadingIcon, getReadingLabel, getReadingData } from './shared.js';
+import { getAllReadings, updateReading, renderReadings, updateFavoriteSummary } from './readings.js';
+import { formatReadingHtml, getFallbackMessage } from '../utils/reading-display.js';
 
 // State
 let currentReadingId = null;
@@ -16,6 +16,25 @@ let modalActionPending = false;
 let previousFocus = null;
 let activeModal = null;
 let focusTrapHandler = null;
+const readingMutations = new Map();
+
+function readingMutationKey(id) { return `${window.Auth?.user?.id || ''}:${id}`; }
+
+function beginReadingMutation(id) {
+    const key = readingMutationKey(id);
+    if (readingMutations.has(key)) return null;
+    let finish;
+    const promise = new Promise(resolve => { finish = resolve; });
+    const mutation = { key, promise, finish };
+    readingMutations.set(key, mutation);
+    return mutation;
+}
+
+function finishReadingMutation(mutation) {
+    readingMutations.delete(mutation.key);
+    mutation.finish();
+    updateModalActions();
+}
 
 const FEEDBACK_RESONANCE_OPTIONS = [
     { value: 'fits', label: 'Sedí' },
@@ -55,6 +74,11 @@ export async function viewReading(id) {
     trapFocus(modal);
 
     try {
+        const pending = readingMutations.get(readingMutationKey(id));
+        if (pending) {
+            await pending.promise;
+            if (version !== detailVersion) return;
+        }
         const response = await fetch(`${apiUrl()}/user/readings/${encodeURIComponent(id)}`, {
             credentials: 'include',
             headers: authHeaders(),
@@ -126,6 +150,10 @@ export async function toggleFavoriteModal() {
 }
 
 export async function toggleFavorite(id, buttonEl = null) {
+    const ownerId = window.Auth?.user?.id;
+    const mutation = beginReadingMutation(id);
+    if (!mutation) return;
+    if (buttonEl) buttonEl.disabled = true;
     try {
         const response = await fetch(`${apiUrl()}/user/readings/${encodeURIComponent(id)}/favorite`, {
             method: 'PATCH',
@@ -137,6 +165,7 @@ export async function toggleFavorite(id, buttonEl = null) {
 
         const data = await response.json();
         if (typeof data.is_favorite !== 'boolean') throw new Error('Neplatná odpověď oblíbených.');
+        if (ownerId !== window.Auth?.user?.id) return data.is_favorite;
         updateFavoriteSummary(!data.is_favorite, data.is_favorite);
 
         if (buttonEl) {
@@ -156,18 +185,16 @@ export async function toggleFavorite(id, buttonEl = null) {
         }
 
         // Dispatch custom event for stats update
-        document.dispatchEvent(new CustomEvent('reading:updated', { detail: { readings: allReadings } }));
+        document.dispatchEvent(new CustomEvent('reading:updated', { detail: { reason: 'favorite', id, isFavorite: data.is_favorite } }));
 
-        // Refresh favorites tab if visible
-        const favoritesTab = document.getElementById('tab-favorites');
-        if (favoritesTab && favoritesTab.classList.contains('is-active')) {
-            loadFavorites();
-        }
         return data.is_favorite;
 
     } catch (error) {
         console.error('Error toggling favorite:', error);
         window.Auth?.showToast?.('Chyba', 'Nepodařilo se změnit oblíbené.', 'error');
+    } finally {
+        finishReadingMutation(mutation);
+        if (buttonEl) buttonEl.disabled = false;
     }
 }
 
@@ -180,7 +207,10 @@ export async function deleteReading() {
         return;
     }
 
+    const mutation = beginReadingMutation(id);
+    if (!mutation) return;
     modalActionPending = true;
+    const ownerId = window.Auth?.user?.id;
     updateModalActions();
     try {
         const response = await fetch(`${apiUrl()}/user/readings/${encodeURIComponent(id)}`, {
@@ -190,18 +220,19 @@ export async function deleteReading() {
         });
 
         if (!response.ok) throw new Error('Failed to delete reading');
+        if (ownerId !== window.Auth?.user?.id) return;
 
         window.Auth?.showToast?.('Smazáno', 'Výklad byl smazán.', 'success');
         if (version === detailVersion) closeReadingModal();
 
         // Reload readings to refresh list and stats
-        const readings = await loadReadings();
-        document.dispatchEvent(new CustomEvent('reading:updated', { detail: { readings } }));
+        document.dispatchEvent(new CustomEvent('reading:updated', { detail: { reason: 'delete', id } }));
 
     } catch (error) {
         console.error('Error deleting reading:', error);
         window.Auth?.showToast?.('Chyba', 'Nepodařilo se smazat výklad.', 'error');
     } finally {
+        finishReadingMutation(mutation);
         if (version === detailVersion) {
             modalActionPending = false;
             updateModalActions();
@@ -210,7 +241,8 @@ export async function deleteReading() {
 }
 
 function canUseModalActions() {
-    return loadedReadingId !== null && loadedReadingId === currentReadingId && !modalActionPending;
+    return loadedReadingId !== null && loadedReadingId === currentReadingId && !modalActionPending
+        && !readingMutations.has(readingMutationKey(loadedReadingId));
 }
 
 function updateModalActions() {
@@ -317,46 +349,51 @@ async function saveProfileReadingFeedback(readingId, payload, panel, trigger) {
     setReadingFeedbackStatus(panel, 'Ukládám zpětnou vazbu...', 'pending');
 
     let result = null;
-    if (window.Auth?.saveReadingFeedback) {
-        result = await window.Auth.saveReadingFeedback(readingId, {
-            ...payload,
-            feature: 'profile_history',
-            source: 'profile_reading_modal'
-        });
-    } else {
-        const response = await fetch(`${apiUrl()}/user/readings/${encodeURIComponent(readingId)}/feedback`, {
-            method: 'PATCH',
-            credentials: 'include',
-            headers: await authHeadersWithCsrf(true),
-            body: JSON.stringify({
+    try {
+        if (window.Auth?.saveReadingFeedback) {
+            result = await window.Auth.saveReadingFeedback(readingId, {
                 ...payload,
                 feature: 'profile_history',
                 source: 'profile_reading_modal'
-            })
-        });
-        result = await response.json().catch(() => null);
-        if (!response.ok) result = null;
-    }
+            });
+        } else {
+            const response = await fetch(`${apiUrl()}/user/readings/${encodeURIComponent(readingId)}/feedback`, {
+                method: 'PATCH',
+                credentials: 'include',
+                headers: await authHeadersWithCsrf(true),
+                body: JSON.stringify({
+                    ...payload,
+                    feature: 'profile_history',
+                    source: 'profile_reading_modal'
+                })
+            });
+            result = await response.json().catch(() => null);
+            if (!response.ok) result = null;
+        }
 
-    if (trigger) trigger.disabled = false;
+        if (!result?.success) {
+            setReadingFeedbackStatus(panel, 'Nepodařilo se uložit. Zkus to znovu.', 'error');
+            return null;
+        }
 
-    if (!result?.success) {
+        if (result.reading) {
+            updateReading(readingId, result.reading);
+        }
+
+        document.dispatchEvent(new CustomEvent('reading:updated', { detail: { reason: 'feedback', id: readingId } }));
+        setReadingFeedbackStatus(panel, 'Zpětná vazba je uložená.', 'success');
+        return result;
+    } catch (error) {
+        console.warn('Reading feedback unavailable:', error.message);
         setReadingFeedbackStatus(panel, 'Nepodařilo se uložit. Zkus to znovu.', 'error');
         return null;
+    } finally {
+        if (trigger) trigger.disabled = false;
     }
-
-    if (result.reading) {
-        updateReading(readingId, result.reading);
-    }
-
-    const refreshedReadings = await loadReadings();
-    document.dispatchEvent(new CustomEvent('reading:updated', { detail: { readings: refreshedReadings } }));
-    setReadingFeedbackStatus(panel, 'Uloženo. Paměť profilu má další signál pro návratový rituál.', 'success');
-    return result;
 }
 
 function renderReadingFeedbackPanel(reading) {
-    const data = reading?.data;
+    const data = getReadingData(reading || {});
     if (reading?.type === 'journal' || !data || typeof data !== 'object' || Array.isArray(data)) return '';
 
     const feedback = data.feedback && typeof data.feedback === 'object' && !Array.isArray(data.feedback)
@@ -571,13 +608,17 @@ function renderReadingContent(reading) {
     let contentHtml = `
         <div class="reading-detail__header">
             <span class="reading-detail__icon" aria-hidden="true">${getReadingIcon(reading.type)}</span>
-            <h2 class="reading-detail__title">${escapeHtml(getReadingTitle(reading.type))}</h2>
+            <h2 class="reading-detail__title">${escapeHtml(getReadingLabel(reading))}</h2>
             <p class="reading-detail__date">${date}</p>
         </div>
         <div class="reading-content reading-detail__body">
     `;
 
-    const data = reading.data || {};
+    const data = getReadingData(reading) || {};
+    if (data?.fallback) contentHtml += `<p class="result-context-notice">${escapeHtml(getFallbackMessage())}</p>`;
+    if (typeof data?.question === 'string' && data.question) {
+        contentHtml += `<div class="reading-question"><small class="reading-question__label">Tvoje otázka</small><p class="reading-question__text">${escapeHtml(data.question)}</p></div>`;
+    }
     if (data && typeof data === 'object') {
         if (reading.type === 'synastry') {
             contentHtml += renderSynastrySummary(data);
@@ -589,19 +630,21 @@ function renderReadingContent(reading) {
     }
 
     function getTarotImageByName(name) {
-        if (!name) return 'img/tarot-v2/tarot_card_back.webp';
+        if (!name || typeof name !== 'string') return 'img/tarot-v2/tarot_card_back.webp';
         const normalized = name.normalize('NFD')
             .replace(/[\u0300-\u036f]/g, '')
             .toLowerCase()
-            .replace(/ /g, '_');
+            .replace(/ /g, '_')
+            .replace(/[^a-z0-9_]/g, '');
         return `img/tarot-v2/tarot_${normalized}.webp`;
     }
 
     if (typeof data === 'string') {
         contentHtml += `<div class="reading-plain-text">${escapeHtml(data).replace(/\n/g, '<br>')}</div>`;
-    } else if (reading.type === 'tarot' && data.cards) {
+    } else if (reading.type === 'tarot' && Array.isArray(data.cards)) {
         contentHtml += '<div class="reading-tarot-grid">';
-        data.cards.forEach(card => {
+        data.cards.forEach(savedCard => {
+            const card = typeof savedCard === 'string' ? { name: savedCard } : savedCard || {};
             const imagePath = getTarotImageByName(card.name);
             contentHtml += `
                 <div class="reading-tarot-card">
@@ -621,7 +664,9 @@ function renderReadingContent(reading) {
 
         const summary = data.response || data.interpretation;
         if (summary) {
-            const escapedSummary = escapeHtml(summary).replace(/\n/g, '<br>');
+            const escapedSummary = typeof summary === 'object'
+                ? renderStructuredObjectContent(summary)
+                : formatReadingHtml(summary);
             contentHtml += `
                 <div class="reading-interpretation">
                     <h4 class="reading-interpretation__title">VÝKLAD KARET</h4>
@@ -655,14 +700,6 @@ function renderReadingContent(reading) {
             `;
         }
     } else if (data.answer) {
-        if (data.question) {
-            contentHtml += `
-                <div class="reading-question">
-                    <small class="reading-question__label">Otázka</small>
-                    <p class="reading-question__text">"${escapeHtml(data.question)}"</p>
-                </div>
-            `;
-        }
         contentHtml += `
             <div class="reading-answer">
                 ${escapeHtml(data.answer)}
@@ -672,8 +709,7 @@ function renderReadingContent(reading) {
         let content = data.interpretation || data.response || data.text || data.result;
 
         if (typeof content === 'string') {
-            const fallbackHtml = escapeHtml(content).replace(/\n/g, '<br>');
-            const sanitized = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(fallbackHtml) : fallbackHtml;
+            const sanitized = formatReadingHtml(content);
             contentHtml += `<div class="formatted-content reading-formatted-content">${sanitized}</div>`;
         } else {
             contentHtml += `<div class="reading-structured">${renderStructuredObjectContent(content)}</div>`;

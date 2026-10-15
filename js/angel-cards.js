@@ -3,6 +3,8 @@
  * Handles card drawing, 3D animations, and API communication for deep readings.
  */
 
+import { showFallbackNotice } from './utils/reading-display.js';
+
 let angelCardsData = [];
 let drawnCard = null;
 let angelFirstValueTracked = false;
@@ -637,6 +639,7 @@ async function requestDeepInsight() {
         }
 
         renderDeepInsightText(response, data.response);
+        showFallbackNotice(response, data.fallback);
 
         if (window.Auth?.saveReading) {
             const saveResult = await window.Auth.saveReading('angel-card', {

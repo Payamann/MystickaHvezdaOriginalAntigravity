@@ -2,7 +2,7 @@
  * Reading history management
  */
 
-import { profileIconMarkup, escapeHtml, apiUrl, authHeaders, getReadingIcon, getReadingLabel } from './shared.js';
+import { profileIconMarkup, escapeHtml, apiUrl, authHeaders, getReadingIcon, getReadingLabel, getReadingPreview, READING_FILTERS } from './shared.js';
 
 // State
 let allReadings = [];
@@ -16,10 +16,6 @@ let readingSummary = null;
 let requestVersion = 0;
 let loadingMore = false;
 const PAGE_SIZE = 10;
-const FILTER_ALIASES = {
-    'crystal-ball': ['crystal-ball', 'crystal'],
-    'natal-chart': ['natal-chart', 'natal']
-};
 let emptyHistoryViewTracked = false;
 
 let activationHeroViewTracked = false;
@@ -31,9 +27,20 @@ export function getAllReadings() {
 
 export function getReadingSummary() { return readingSummary; }
 
-export async function loadJournalReadings() {
-    try { return (await fetchPage(1, 'journal')).readings; }
-    catch { return null; }
+export function resetReadingsState() {
+    ++requestVersion;
+    allReadings = [];
+    visibleReadings = [];
+    readingSummary = null;
+    currentFilter = 'all';
+    displayedCount = serverPage = serverTotal = serverPages = 0;
+    document.getElementById('readings-list')?.replaceChildren();
+}
+
+export function initReadingFilters() {
+    const select = document.getElementById('readings-filter');
+    if (!select) return;
+    select.innerHTML = READING_FILTERS.map(filter => `<option value="${filter.value}">${filter.label}</option>`).join('');
 }
 
 export function updateFavoriteSummary(wasFavorite, isFavorite) {
@@ -44,7 +51,7 @@ export function updateFavoriteSummary(wasFavorite, isFavorite) {
 
 async function fetchPage(page, filter = 'all', summary = false) {
     const query = new URLSearchParams({ page: String(page), limit: '20' });
-    if (filter !== 'all') query.set('type', (FILTER_ALIASES[filter] || [filter]).join(','));
+    if (filter !== 'all') query.set('type', (READING_FILTERS.find(item => item.value === filter)?.types || [filter]).join(','));
     if (summary) query.set('summary', 'true');
     const response = await fetch(`${apiUrl()}/user/readings?${query}`, { credentials: 'include', headers: authHeaders() });
     if (!response.ok) throw new Error('Nepodařilo se načíst historii.');
@@ -71,24 +78,30 @@ export function updateReading(id, updates) {
     }
 }
 
-export async function loadReadings() {
+export async function loadReadings({ preserveFilter = false } = {}) {
     const container = document.getElementById('readings-list');
+    const version = ++requestVersion;
 
     try {
-        const version = ++requestVersion;
-        currentFilter = 'all';
+        if (!preserveFilter) currentFilter = 'all';
+        const filter = currentFilter;
         const select = document.getElementById('readings-filter');
-        if (select) select.value = 'all';
-        const data = await fetchPage(1, 'all', true);
+        if (select) select.value = filter;
+        const [data, summaryData] = await Promise.all([
+            fetchPage(1, filter, filter === 'all'),
+            filter === 'all' ? null : fetchPage(1, 'all', true)
+        ]);
         if (version !== requestVersion) return allReadings;
-        allReadings = [];
+        allReadings = summaryData?.readings || [];
         acceptPage(data);
+        if (summaryData?.summary) readingSummary = summaryData.summary;
         displayedCount = PAGE_SIZE;
 
         renderReadings();
         return allReadings;
 
     } catch (error) {
+        if (version !== requestVersion) return allReadings;
         console.error('Error loading readings:', error);
         if (container) {
             container.innerHTML = `
@@ -212,6 +225,7 @@ export function renderReadings() {
                     <span class="reading-item__icon" aria-hidden="true">${getReadingIcon(reading.type)}</span>
                     <div>
                         <strong>${escapeHtml(getReadingLabel(reading))}</strong>
+                        ${getReadingPreview(reading) ? `<p class="reading-item__preview">${escapeHtml(getReadingPreview(reading))}</p>` : ''}
                         <p class="reading-item__date">
                             ${new Date(reading.created_at).toLocaleDateString('cs-CZ', {
         day: 'numeric', month: 'long', year: 'numeric',

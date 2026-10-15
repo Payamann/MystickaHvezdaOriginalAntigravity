@@ -34,7 +34,6 @@ const PLANETS = [
 ];
 
 const PLANET_ORBIT_RADII = [35, 55, 78, 101, 124, 146, 165];
-const PLANET_ORBIT_SPEEDS = [0, 30, 25, 40, 60, 120, 180];
 const PLANET_VISUAL_SIZES = [46, 26, 20, 24, 22, 36, 34];
 const ASPECT_SHORT_LABELS = {
     conjunction: 'konj.',
@@ -117,14 +116,6 @@ function initNatalChart() {
 
     // Render Zodiac Ring
     renderZodiacRing(zodiacGroup);
-
-    // Initialize 3D Chart
-    if (window.Natal3D) {
-        window.Natal3DInstance = new window.Natal3D('natal-3d-container');
-    }
-
-    // Render demo planets on load (random positions)
-    generatePlanets(planetsGroup, 42); // Demo seed for initial display
 
     // Handle Form Submit
     if (form) {
@@ -261,8 +252,8 @@ function renderZodiacRing(group) {
     });
 }
 
-function generatePlanets(group, seed, planetPositions = null) {
-    if (window.MH_DEBUG) console.debug('Generating planets with seed:', seed);
+function generatePlanets(group, planetPositions) {
+    if (!planetPositions) return;
 
     // Clear existing
     group.innerHTML = '';
@@ -280,13 +271,10 @@ function generatePlanets(group, seed, planetPositions = null) {
         const isSaturn = planet.name === 'Saturn';
         const calculatedPlanet = planetPositions?.[planet.id];
         const hasCalculatedLongitude = typeof calculatedPlanet?.longitude === 'number';
-        const radius = isSun && !hasCalculatedLongitude ? 0 : PLANET_ORBIT_RADII[index];
-        const speed = isSun ? 0 : PLANET_ORBIT_SPEEDS[index];
-        const shouldAnimate = !hasCalculatedLongitude && !isSun;
+        if (!hasCalculatedLongitude) return;
 
-        let angle = hasCalculatedLongitude
-            ? calculatedPlanet.longitude
-            : (seed * 37 + index * 55) % 360;
+        const radius = PLANET_ORBIT_RADII[index];
+        const angle = calculatedPlanet.longitude;
 
         // Create orbit wrapper for animation
         const orbitWrapper = document.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -303,16 +291,6 @@ function generatePlanets(group, seed, planetPositions = null) {
             orbitRing.setAttribute("stroke-width", "1");
             group.appendChild(orbitRing);
 
-            if (shouldAnimate) {
-                const animateOrbit = document.createElementNS("http://www.w3.org/2000/svg", "animateTransform");
-                animateOrbit.setAttribute("attributeName", "transform");
-                animateOrbit.setAttribute("type", "rotate");
-                animateOrbit.setAttribute("from", "0 0 0");
-                animateOrbit.setAttribute("to", "360 0 0");
-                animateOrbit.setAttribute("dur", `${speed}s`);
-                animateOrbit.setAttribute("repeatCount", "indefinite");
-                orbitWrapper.appendChild(animateOrbit);
-            }
         }
 
         const angleRad = (angle - 90) * (Math.PI / 180);
@@ -388,7 +366,7 @@ function generatePlanets(group, seed, planetPositions = null) {
 
         } else {
             // For rounded planets: Use Clip Path
-            const clipId = `clip-${index}-${seed}`;
+            const clipId = `clip-${index}`;
             const clipPath = document.createElementNS("http://www.w3.org/2000/svg", "clipPath");
             clipPath.setAttribute("id", clipId);
             const clipCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -673,6 +651,51 @@ function applyComputedNatalChart(chart) {
     return true;
 }
 
+function hasRequiredNatalPlanetPositions(chart) {
+    return Boolean(chart?.planets) && PLANETS.every((planet) =>
+        Number.isFinite(chart.planets?.[planet.id]?.longitude)
+    );
+}
+
+function showNatalCalculationError(message) {
+    let errorContainer = document.getElementById('natal-calculation-error');
+    if (!errorContainer) {
+        errorContainer = document.createElement('div');
+        errorContainer.id = 'natal-calculation-error';
+        errorContainer.className = 'natal-ai';
+        document.getElementById('chart-results')?.insertAdjacentElement('afterend', errorContainer);
+    }
+
+    errorContainer.innerHTML = `
+        <h4 class="natal-ai__title">Výpočet mapy se nepodařilo načíst</h4>
+        <div class="ai-content natal-ai__content">
+            <p>${message}</p>
+            <button type="button" class="btn btn--primary natal-calculation-retry">Zkusit výpočet znovu</button>
+        </div>
+    `;
+    errorContainer.querySelector('.natal-calculation-retry')?.addEventListener('click', () => {
+        document.getElementById('natal-form')?.requestSubmit();
+    });
+    setBlockVisible(errorContainer, true);
+    errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function showNatalInterpretationError(container) {
+    const content = container?.querySelector('.ai-content');
+    if (!content) return;
+
+    content.innerHTML = '';
+    const text = document.createElement('p');
+    text.textContent = 'Vypočtená mapa zůstává zobrazená. Pro osobní výklad zkuste požadavek znovu.';
+    const retry = document.createElement('button');
+    retry.type = 'button';
+    retry.className = 'btn btn--primary natal-interpretation-retry';
+    retry.textContent = 'Zkusit výklad znovu';
+    retry.addEventListener('click', () => document.getElementById('natal-form')?.requestSubmit());
+    content.append(text, retry);
+    setBlockVisible(container, true);
+}
+
 async function generateNatalChart(planetsGroup) {
     const btn = document.querySelector('#natal-form button');
     const originalHTML = btn.innerHTML; // Capture full HTML (icons etc.)
@@ -690,38 +713,31 @@ async function generateNatalChart(planetsGroup) {
     clearNatalComputedLayers();
     setBlockVisible(document.getElementById('chart-results'), false);
 
-    // Get or create AI results container
+    setBlockVisible(document.getElementById('natal-calculation-error'), false);
+
+    // Hide a previous interpretation while a fresh server calculation is pending.
     let aiResultsDiv = document.getElementById('ai-interpretation');
-    if (!aiResultsDiv) {
-        aiResultsDiv = createAIResultsContainer();
-    }
     setBlockVisible(aiResultsDiv, false);
 
     try {
-        // Generate server-calculated positions for the public chart visual.
-        const seed = name.length + birthDate.length;
-        let computedChart = null;
+        // Only server-calculated positions may be presented as a personal chart.
+        let computedChart;
         try {
             computedChart = await fetchCalculatedNatalChart({ birthDate, birthTime, birthPlace, name });
+            if (!hasRequiredNatalPlanetPositions(computedChart)) {
+                throw new Error('Natal calculation returned incomplete planetary positions.');
+            }
             trackNatalCalculation(computedChart, { birthTime, birthPlace });
         } catch (calcError) {
-            console.warn('Natal engine calculation fallback:', calcError.message);
+            console.warn('Natal engine calculation unavailable:', calcError.message);
+            showNatalCalculationError('Zadané údaje zůstaly ve formuláři. Zkontrolujte připojení a zkuste výpočet znovu.');
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+            btn.classList.remove('btn--processing');
+            return;
         }
-        generatePlanets(planetsGroup, seed, computedChart?.planets);
+        generatePlanets(planetsGroup, computedChart.planets);
         renderNatalComputedLayers(computedChart);
-
-        // Update 3D Chart
-        if (window.Natal3DInstance) {
-            const container = document.getElementById('natal-3d-container');
-            setBlockVisible(container, true);
-            window.Natal3DInstance.onWindowResize(); // Force resize since it was hidden
-            window.Natal3DInstance.updatePlanets(seed);
-        }
-
-        // Calculate sign positions for display
-        // Calculate REAL zodiac sign based on date
-        const dateObj = new Date(`${birthDate}T${birthTime || '12:00'}`);
-        const sunSignResult = getZodiacSign(dateObj);
 
         // Update Transits (Phase 2)
         if (typeof updateTransits === 'function') {
@@ -730,11 +746,13 @@ async function generateNatalChart(planetsGroup) {
 
         // Show basic results (Text)
         if (!applyComputedNatalChart(computedChart)) {
-            const sunSign = sunSignResult || getSignFromAngle((seed * 37) % 360);
-            document.getElementById('res-sun').textContent = `${sunSign.name}`;
-            document.getElementById('tip-sign').textContent = sunSign.name;
+            throw new Error('Natal calculation could not be displayed.');
         }
         setBlockVisible(document.getElementById('chart-results'), true);
+
+        if (!aiResultsDiv) {
+            aiResultsDiv = createAIResultsContainer();
+        }
 
         // Call AI for interpretation
         btn.innerHTML = '<span class="loading-spinner"></span> Navazuji spojení s hvězdami...';
@@ -747,6 +765,7 @@ async function generateNatalChart(planetsGroup) {
         if (!window.Auth || !window.Auth.isLoggedIn()) {
             btn.innerHTML = originalHTML;
             btn.disabled = false;
+            btn.classList.remove('btn--processing');
             setBlockVisible(aiResultsDiv, true);
             const contentDiv = aiResultsDiv.querySelector('.ai-content');
             if (window.Premium) {
@@ -764,6 +783,7 @@ async function generateNatalChart(planetsGroup) {
         if (!window.Auth.isPremium()) {
             btn.innerHTML = originalHTML;
             btn.disabled = false;
+            btn.classList.remove('btn--processing');
             if (window.Premium?.showTrialPaywall) {
                 window.Premium.showTrialPaywall('natalni_interpretace');
             }
@@ -900,9 +920,12 @@ async function generateNatalChart(planetsGroup) {
 
     } catch (error) {
         console.error('Natal Chart Error:', error);
-        setBlockVisible(aiResultsDiv, true);
-        aiResultsDiv.querySelector('.ai-content').textContent =
-            'Výklad teď nejde načíst. Zkuste to prosím později.';
+        if (aiResultsDiv) {
+            showNatalInterpretationError(aiResultsDiv);
+        } else {
+            setBlockVisible(document.getElementById('chart-results'), false);
+            showNatalCalculationError('Zadané údaje zůstaly ve formuláři. Zkuste výpočet znovu.');
+        }
     }
 
     btn.innerHTML = originalHTML; // Restore full HTML
@@ -956,11 +979,6 @@ function createAIResultsContainer() {
     });
 
     return container;
-}
-
-function getSignFromAngle(angle) {
-    const index = Math.floor(angle / 30);
-    return ZODIAC_SIGNS[index % 12];
 }
 
 async function typewriterEffect(element, htmlContent) {

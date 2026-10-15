@@ -1,15 +1,15 @@
 import { jest } from '@jest/globals';
 
 const originals = Object.fromEntries(['fetch', 'document', 'window', 'confirm', 'CustomEvent'].map(key => [key, globalThis[key]]));
-const loadReadings = jest.fn(async () => []);
 const updateFavoriteSummary = jest.fn();
 jest.unstable_mockModule('../../js/profile/shared.js', () => ({
     escapeHtml: value => String(value ?? ''), apiUrl: () => '/api', authHeaders: () => ({}),
-    authHeadersWithCsrf: async () => ({}), getReadingIcon: () => '', getReadingTitle: () => 'Poznámka'
+    authHeadersWithCsrf: async () => ({}), getReadingIcon: () => '', getReadingLabel: () => 'Poznámka',
+    getReadingData: reading => reading.data
 }));
 jest.unstable_mockModule('../../js/profile/readings.js', () => ({
     getAllReadings: () => [], updateReading: jest.fn(), renderReadings: jest.fn(),
-    loadReadings, updateFavoriteSummary
+    updateFavoriteSummary
 }));
 jest.unstable_mockModule('../../js/profile/favorites.js', () => ({ loadFavorites: jest.fn() }));
 const { viewReading, closeReadingModal, toggleFavoriteModal, deleteReading } = await import('../../js/profile/modal.js');
@@ -166,6 +166,24 @@ test('failed favorite reenables actions for the same loaded detail', async () =>
     expect(nodes['modal-favorite-btn'].textContent).toContain('Přidat');
 });
 
+test('reopening the same record waits for its mutation before requesting a fresh detail', async () => {
+    const mutation = deferred();
+    fetch.mockResolvedValueOnce(detail('A')).mockReturnValueOnce(mutation.promise).mockResolvedValueOnce(detail('A', true));
+    await viewReading('A');
+    const saving = toggleFavoriteModal();
+    await Promise.resolve();
+    closeReadingModal();
+    const reopening = viewReading('A');
+    expect(fetch).toHaveBeenCalledTimes(2);
+    expectActionsDisabled(true);
+    mutation.resolve(favoriteResponse(true));
+    await saving;
+    await reopening;
+    expect(fetch).toHaveBeenCalledTimes(3);
+    expect(nodes['modal-favorite-btn'].textContent).toContain('V oblíbených');
+    expectActionsDisabled(false);
+});
+
 test('delete captures A, blocks duplicates, and its completion cannot close B', async () => {
     const mutation = deferred();
     fetch.mockResolvedValueOnce(detail('A')).mockReturnValueOnce(mutation.promise).mockResolvedValueOnce(detail('B'));
@@ -182,7 +200,7 @@ test('delete captures A, blocks duplicates, and its completion cannot close B', 
     expect(nodes['reading-modal'].hidden).toBe(false);
     expect(nodes['reading-modal-content'].innerHTML).toContain('Content B');
     expectActionsDisabled(false);
-    expect(loadReadings).toHaveBeenCalledTimes(1);
+    expect(document.dispatchEvent).toHaveBeenCalledWith(expect.objectContaining({ type: 'reading:updated', detail: { reason: 'delete', id: 'A' } }));
 });
 
 test('failed delete keeps the loaded detail available for retry', async () => {
@@ -191,5 +209,5 @@ test('failed delete keeps the loaded detail available for retry', async () => {
     await deleteReading();
     expect(nodes['reading-modal'].hidden).toBe(false);
     expectActionsDisabled(false);
-    expect(loadReadings).not.toHaveBeenCalled();
+    expect(document.dispatchEvent).not.toHaveBeenCalled();
 });

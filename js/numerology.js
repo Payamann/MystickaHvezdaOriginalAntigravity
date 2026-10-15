@@ -5,6 +5,7 @@ import {
     calculatePersonality,
     NUMBER_MEANINGS
 } from './utils/numerology-logic.js';
+import { showFallbackNotice, formatReadingHtml } from './utils/reading-display.js';
 
 const NUMEROLOGY_RESULT_SOURCE = 'numerology_result';
 let lastNumerologyShareResult = null;
@@ -618,14 +619,14 @@ async function displayInterpretation(name, birthDate, birthTime, lifePath, desti
         // Display AI interpretation
         interpretationContainer.innerHTML = `
             <div class="interpretation-section">
-                ${(data.cached || data.fromCache) ? '<span class="badge badge--cache">📦 Z cache (deterministic result)</span>' : ''}
                 <div class="interpretation-content">
-                    ${data.response.replace(/```html/g, '').replace(/```/g, '')}
+                    ${formatReadingHtml(data.response)}
                 </div>
                 ${buildPersonalMapOfferMarkup()}
             </div>
         `;
         wirePersonalMapOffer(interpretationContainer);
+        showFallbackNotice(interpretationContainer, data.fallback);
 
         // Save reading to history (with birth time)
         if (window.Auth && window.Auth.saveReading) {
@@ -637,7 +638,8 @@ async function displayInterpretation(name, birthDate, birthTime, lifePath, desti
                 destiny,
                 soul,
                 personality,
-                response: data.response
+                response: data.response,
+                fallback: !!data.fallback
             });
             if (window.MH_DEBUG) console.debug('Reading saved:', saveResult);
         }
@@ -645,7 +647,7 @@ async function displayInterpretation(name, birthDate, birthTime, lifePath, desti
         console.error('AI interpretation error:', error);
         interpretationContainer.innerHTML = `
             <div class="error-message error-message--inline">
-                <p class="error-message__text">❌ Nepodařilo se načíst interpretaci. Zkuste to prosím znovu.</p>
+                <p class="error-message__text" role="alert">Výklad se nepodařilo načíst. Vypočtená čísla zůstávají dostupná; zkus požadavek znovu.</p>
             </div>
         `;
     }

@@ -62,7 +62,10 @@ export async function createOneTimeOrderInput({
         product_id: cleanString(productId, 120),
         customer_email: cleanString(customerEmail, 254).toLowerCase(),
         customer_name: cleanString(customerName, 120),
-        payload: normalizePayload(payload),
+        payload: {
+            ...normalizePayload(payload),
+            ...(productType === 'personal_map' ? { personalMapFulfillment: { version: 1, state: 'pending' } } : {})
+        },
         status: 'checkout_created',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()

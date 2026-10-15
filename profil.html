@@ -121,22 +121,12 @@
                         <div id="avatar-picker" class="avatar-picker mh-inline-6f6243d92c">
                             <p class="avatar-picker__label">Vyber si avatar:</p>
                             <div class="avatar-picker__grid">
-                                <button class="avatar-option" data-avatar="A" aria-label="Vybrat avatar A">A</button>
-                                <button class="avatar-option" data-avatar="B" aria-label="Vybrat avatar B">B</button>
-                                <button class="avatar-option" data-avatar="C" aria-label="Vybrat avatar C">C</button>
-                                <button class="avatar-option" data-avatar="D" aria-label="Vybrat avatar D">D</button>
-                                <button class="avatar-option" data-avatar="E" aria-label="Vybrat avatar E">E</button>
-                                <button class="avatar-option" data-avatar="F" aria-label="Vybrat avatar F">F</button>
-                                <button class="avatar-option" data-avatar="G" aria-label="Vybrat avatar G">G</button>
-                                <button class="avatar-option" data-avatar="H" aria-label="Vybrat avatar H">H</button>
-                                <button class="avatar-option" data-avatar="I" aria-label="Vybrat avatar I">I</button>
-                                <button class="avatar-option" data-avatar="J" aria-label="Vybrat avatar J">J</button>
-                                <button class="avatar-option" data-avatar="K" aria-label="Vybrat avatar K">K</button>
-                                <button class="avatar-option" data-avatar="L" aria-label="Vybrat avatar L">L</button>
+                                <p>Načítání symbolů…</p>
                             </div>
                         </div>
                     </div>
 
+                    <div id="profile-context-status" class="profile-refresh-status" role="status" hidden>Část přehledu se nepodařilo načíst. <button type="button" id="profile-context-retry" class="btn btn--glass btn--sm">Obnovit přehled</button></div>
                     <div class="profile-tabs" role="tablist" aria-label="Sekce profilu">
                         <button class="profile-tab active" role="tab" id="tab-btn-history" data-tab="history" aria-selected="true" aria-controls="tab-history"><span class="profile-tab-icon" aria-hidden="true"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#book"></use></svg></span><span class="profile-tab-label">Historie výkladů</span></button>
                         <button class="profile-tab" role="tab" id="tab-btn-favorites" data-tab="favorites" aria-selected="false" aria-controls="tab-favorites"><span class="profile-tab-icon" aria-hidden="true"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#bookmark"></use></svg></span><span class="profile-tab-label">Oblíbené</span></button>
@@ -215,16 +205,32 @@
                     </div>
 
                     <div class="tab-content mh-inline-6f6243d92c" id="tab-overview" role="tabpanel" aria-labelledby="tab-btn-overview">
+                        <div class="profile-grid">
+                            <div class="card glass-card">
+                                <h3 class="card-title">Večerní reflexe</h3>
+                                <label class="form-label" for="journal-input">Tvoje poznámka</label>
+                                <textarea id="journal-input" class="form-input" rows="3" maxlength="50000" aria-describedby="journal-status" placeholder="Co si z dnešního výkladu odnášíš? Všimni si pocitu, rozhodnutí nebo opakujícího se vzorce."></textarea>
+                                <button id="journal-submit" class="btn btn--primary journal-submit-btn">Uložit reflexi</button>
+                                <p id="journal-status" role="status" aria-live="polite"></p>
+                                <a id="journal-login" class="btn btn--secondary btn--sm" href="/prihlaseni.html?redirect=%2Fprofil.html%23journal-input" hidden>Znovu se přihlásit</a>
+                                <div class="journal-recent">
+                                    <h4 class="journal-recent-title">Poslední poznámky</h4>
+                                    <button type="button" id="all-journal-entries" class="btn btn--glass btn--sm">Všechny moje poznámky</button>
+                                    <div id="journal-entries" class="journal-entries-list"><p class="journal-empty">Zatím prázdno...</p></div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="profile-return-grid" id="profile-return-grid">
                             <section id="daily-guidance-card" class="card glass-card daily-guidance-card" aria-labelledby="daily-guidance-title">
                                 <div class="daily-guidance-card__header">
                                     <div>
                                         <span id="daily-guidance-date" class="daily-guidance-card__eyebrow">Dnes</span>
-                                        <h2 id="daily-guidance-title" class="daily-guidance-card__title">Načítám dnešní vedení...</h2>
+                                        <h2 id="daily-guidance-title" class="daily-guidance-card__title">Načítám tvoje odkazy...</h2>
                                     </div>
                                     <span id="daily-guidance-plan" class="badge">Poutník</span>
                                 </div>
-                                <p id="daily-guidance-copy" class="daily-guidance-card__copy">Připravujeme osobní přehled pro dnešní den.</p>
+                                <p id="daily-guidance-copy" class="daily-guidance-card__copy">Připravujeme odkazy na tvoje nástroje.</p>
                                 <div id="daily-guidance-focus" class="daily-guidance-focus"></div>
                                 <div id="daily-guidance-actions" class="daily-guidance-actions"></div>
                             </section>
@@ -244,30 +250,23 @@
                                     <span id="ritual-memory-strength" class="badge badge--secondary">Nové</span>
                                 </summary>
                                 <p id="ritual-memory-copy" class="ritual-memory-card__copy">Paměť začne dávat smysl po prvním uloženém výkladu nebo večerní reflexi.</p>
+                                <p id="ritual-memory-scope" class="settings-field-hint"></p>
                                 <div id="ritual-memory-themes" class="ritual-memory-themes"></div>
                                 <div id="ritual-memory-actions" class="ritual-memory-actions"></div>
                             </details>
                         </div>
 
+                        <details class="card glass-card profile-usage-stats">
+                            <summary>Přehled používání</summary>
                         <div class="stats-grid">
                             <div class="stat-card card glass-card"><div class="stat-icon-wrapper"><span class="stat-icon-emoji"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#book"></use></svg></span></div><div id="stat-total" class="stat-value">0</div><div class="stat-label">Uložené záznamy</div></div>
                             <div class="stat-card card glass-card"><div class="stat-icon-wrapper"><span class="stat-icon-emoji"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#calendar"></use></svg></span></div><div id="stat-month" class="stat-value">0</div><div class="stat-label">Tento měsíc</div></div>
                             <div class="stat-card card glass-card"><div class="stat-icon-wrapper"><span class="stat-icon-emoji"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#bookmark"></use></svg></span></div><div id="stat-favorites" class="stat-value">0</div><div class="stat-label">Oblíbené</div></div>
                             <div class="stat-card card glass-card"><div class="stat-icon-wrapper"><span class="stat-icon-emoji"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#cycle"></use></svg></span></div><div id="stat-streak" class="stat-value">0</div><div class="stat-label">Denní série</div></div>
                         </div>
+                        </details>
 
-                        <div class="profile-grid">
-                            <div class="card glass-card">
-                                <h3 class="card-title">Večerní reflexe</h3>
-                                <label class="form-label" for="journal-input">Tvoje poznámka</label>
-                                <textarea id="journal-input" class="form-input" rows="3" placeholder="Co si z dnešního výkladu odnášíš? Všimni si pocitu, rozhodnutí nebo opakujícího se vzorce."></textarea>
-                                <button id="journal-submit" class="btn btn--primary journal-submit-btn">Uložit reflexi</button>
-                                <div class="journal-recent">
-                                    <h4 class="journal-recent-title">Poslední záznamy</h4>
-                                    <div id="journal-entries" class="journal-entries-list"><p class="journal-empty">Zatím prázdno...</p></div>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
             </div>

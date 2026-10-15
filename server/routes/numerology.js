@@ -4,6 +4,7 @@
  * Premium only, with database caching
  */
 import express from 'express';
+import { calculateLifePath, calculateDestiny, calculateSoul, calculatePersonality } from '../../js/utils/numerology-logic.js';
 import crypto from 'crypto';
 import { aiLimiter, authenticateToken, requireFeature } from '../middleware.js';
 import { callClaude } from '../services/claude.js';
@@ -12,73 +13,6 @@ import { assertCzechReadingVoice } from '../services/reading-quality.js';
 import { supabase } from '../db-supabase.js';
 
 export const router = express.Router();
-
-function reduceToSingleDigit(num, preserveMaster = true) {
-    let value = Number(num);
-    if (!Number.isFinite(value) || value < 0) return 0;
-
-    while (value > 9) {
-        if (preserveMaster && (value === 11 || value === 22 || value === 33)) {
-            return value;
-        }
-        value = String(value).split('').reduce((sum, digit) => sum + Number.parseInt(digit, 10), 0);
-    }
-    return value;
-}
-
-function letterToNumber(letter) {
-    const letterMap = {
-        A: 1, B: 2, C: 3, D: 4, E: 5, F: 6, G: 7, H: 8, I: 9,
-        J: 1, K: 2, L: 3, M: 4, N: 5, O: 6, P: 7, Q: 8, R: 9,
-        S: 1, T: 2, U: 3, V: 4, W: 5, X: 6, Y: 7, Z: 8
-    };
-    const normalized = String(letter).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
-    return letterMap[normalized] || 0;
-}
-
-function calculateLifePath(birthDate) {
-    const [year, month, day] = String(birthDate).split('-').map(Number);
-    return reduceToSingleDigit(
-        reduceToSingleDigit(day) + reduceToSingleDigit(month) + reduceToSingleDigit(year)
-    );
-}
-
-function calculateDestiny(name) {
-    return reduceToSingleDigit(
-        String(name)
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .replace(/[^a-zA-Z]/g, '')
-            .split('')
-            .reduce((total, char) => total + letterToNumber(char), 0)
-    );
-}
-
-function calculateSoul(name) {
-    const vowels = 'AEIOUY';
-    return reduceToSingleDigit(
-        String(name)
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .toUpperCase()
-            .split('')
-            .filter(char => vowels.includes(char))
-            .reduce((total, char) => total + letterToNumber(char), 0)
-    );
-}
-
-function calculatePersonality(name) {
-    const vowels = 'AEIOUY';
-    return reduceToSingleDigit(
-        String(name)
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .toUpperCase()
-            .split('')
-            .filter(char => !vowels.includes(char) && /[A-Z]/.test(char))
-            .reduce((total, char) => total + letterToNumber(char), 0)
-    );
-}
 
 function isValidIsoDate(value) {
     const date = new Date(`${value}T00:00:00Z`);

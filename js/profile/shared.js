@@ -136,25 +136,15 @@ export function getPlanPriceCzk(planId) {
 // Get icon for reading type
 export function getReadingIcon(type) {
     const icons = {
-        'angel': 'feather',
-        'angel-card': 'feather',
-        'astrocartography': 'map-pinned',
-        'crystal': 'crystal-ball',
-        'crystal-ball': 'crystal-ball',
-        'daily-wisdom': 'sun',
-        'horoscope': 'sparkles',
-        'journal': 'pen-tool',
-        'medicine-wheel': 'compass',
-        'natal': 'map',
-        'natal-chart': 'map',
-        'numerology': 'hash',
-        'past-life': 'history',
-        'runes': 'gem',
-        'synastry': 'heart',
-        'tarot': 'book-marked'
+        'angel': 'angel', 'angel-card': 'angel', 'astrocartography': 'globe',
+        'crystal': 'crystal', 'crystal-ball': 'crystal', 'daily-wisdom': 'star',
+        'horoscope': 'chart', 'journal': 'pen', 'medicine-wheel': 'compass',
+        'natal': 'chart', 'natal-chart': 'chart', 'numerology': 'numbers',
+        'past-life': 'hourglass', 'runes': 'rune', 'synastry': 'partner',
+        'tarot': 'tarot', 'oracle': 'eye'
     };
     const iconName = icons[type] || 'star';
-    return `<i data-lucide="${iconName}" class="reading-type-icon"></i>`;
+    return profileIconMarkup(iconName);
 }
 
 // Get title for reading type
@@ -172,6 +162,7 @@ export function getReadingTitle(type) {
         'natal': 'Natální karta',
         'natal-chart': 'Natální karta',
         'numerology': 'Numerologie',
+        'oracle': 'Orákulum',
         'past-life': 'Minulý život',
         'runes': 'Runový výklad',
         'synastry': 'Partnerská shoda',
@@ -180,14 +171,69 @@ export function getReadingTitle(type) {
     return titles[type] || 'Výklad';
 }
 
-export function getReadingLabel(reading) {
-    if (reading?.type !== 'horoscope') return getReadingTitle(reading?.type);
+export const READING_FILTERS = [
+    { value: 'all', label: 'Vše' },
+    ...[
+        ['tarot', 'Tarot'], ['horoscope', 'Horoskopy'], ['journal', 'Moje poznámky'],
+        ['crystal-ball', 'Křišťálová koule', ['crystal-ball', 'crystal']],
+        ['natal-chart', 'Natální karta', ['natal-chart', 'natal']],
+        ['numerology', 'Numerologie'], ['synastry', 'Partnerská shoda'],
+        ['angel-card', 'Andělské karty', ['angel-card', 'angel']],
+        ['runes', 'Runy'], ['astrocartography', 'Astro mapa'], ['past-life', 'Minulý život'],
+        ['medicine-wheel', 'Šamanské kolo'], ['daily-wisdom', 'Denní moudrost'], ['oracle', 'Orákulum']
+    ].map(([value, label, types]) => ({ value, label, types: types || [value] }))
+];
+
+export function getReadingData(reading) {
     let data = reading.data;
+    if (reading.type === 'journal') return data;
     if (typeof data === 'string') {
-        try { data = JSON.parse(data); } catch { return 'Horoskop'; }
+        try { data = JSON.parse(data); } catch { return data; }
     }
+    return data;
+}
+
+export function getReadingLabel(reading) {
+    const data = getReadingData(reading || {});
+    if (reading?.type === 'tarot') {
+        if (data?.tool === 'tarot_yes_no') return 'Tarot ano/ne';
+        const spreads = {
+            'Tarot karta dne': 'Tarot karta dne', 'daily': 'Tarot karta dne',
+            'Jedna karta': 'Tarot · jedna karta', 'Tři karty': 'Tarot · tři karty',
+            'Celtic Cross': 'Tarot · Keltský kříž'
+        };
+        if (spreads[data?.spreadType]) return spreads[data.spreadType];
+        if (typeof data?.spreadType === 'string' && data.spreadType.endsWith(' (Ukázka)')) {
+            return `${spreads[data.spreadType.slice(0, -9)] || 'Tarotový výklad'} · ukázka`;
+        }
+    }
+    if (reading?.type !== 'horoscope') return getReadingTitle(reading?.type);
     const periods = { daily: 'Denní horoskop', weekly: 'Týdenní horoskop', monthly: 'Měsíční horoskop', yearly: 'Roční horoskop' };
     return [periods[data?.period] || 'Horoskop', data?.sign].filter(value => typeof value === 'string' && value).join(' · ');
+}
+
+export function getReadingPreview(reading) {
+    const data = getReadingData(reading || {});
+    const text = reading?.type === 'journal' && typeof data === 'string' ? data
+        : typeof data?.question === 'string' ? data.question
+            : Array.isArray(data?.cards) ? data.cards.map(card => typeof card === 'string' ? card : card?.name || '').join(' · ')
+                : data?.cardName || '';
+    return typeof text === 'string' ? text.replace(/\s+/g, ' ').trim().slice(0, 160) : '';
+}
+
+export const PROFILE_AVATARS = [
+    { symbol: 'star', label: 'Hvězda' }, { symbol: 'dream', label: 'Měsíc' },
+    { symbol: 'leaf', label: 'List' }, { symbol: 'flower', label: 'Květ' },
+    { symbol: 'compass', label: 'Kompas' }, { symbol: 'tarot', label: 'Karty' }
+];
+
+export function renderProfileAvatar(element, value) {
+    if (!element) return;
+    const symbol = typeof value === 'string' && value.startsWith('symbol:') ? value.slice(7) : null;
+    const avatar = PROFILE_AVATARS.find(item => item.symbol === symbol);
+    element.innerHTML = profileIconMarkup(avatar?.symbol || 'user');
+    element.dataset.avatar = value || '';
+    element.setAttribute('aria-label', `Změnit avatar${avatar ? `: ${avatar.label}` : ''}`);
 }
 // Get Zodiac Sign from birth date string
 export function getZodiacSign(dateStr) {
@@ -233,7 +279,7 @@ export function getZodiacIconName(symbol) {
 
 // Decorative UI markup only. Never interpolate user text into an SVG URL.
 export function profileIconMarkup(name) {
- const allowed = new Set(['book', 'bookmark', 'warning']);
+ const allowed = new Set(['book', 'bookmark', 'warning', 'angel', 'globe', 'crystal', 'star', 'chart', 'pen', 'compass', 'numbers', 'hourglass', 'rune', 'partner', 'tarot', 'eye', 'dream', 'leaf', 'flower', 'user', 'check']);
  if (!allowed.has(name)) throw new Error('Unknown profile UI icon');
  return '<svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#' + name + '"></use></svg>';
 }

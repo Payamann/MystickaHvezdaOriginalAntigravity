@@ -1935,14 +1935,7 @@ export async function sendHoroscopePdf({ to, name, sign, pdfBuffer }) {
 /**
  * Sends a personalized Osobní mapa PDF as an email attachment.
  */
-export async function sendPersonalMapPdf({ to, name, sign, pdfBuffer, periodStart = '', periodEnd = '' }) {
-  const client = getResend();
-  if (!client) {
-    // Paid order: a silent return here would mark the order fulfilled
-    // without any email — callers rely on a throw to keep it retryable.
-    throw new Error('Resend not initialized - missing RESEND_API_KEY (personal map PDF)');
-  }
-
+export function buildPersonalMapEmailPayload({ to, name, sign, pdfBuffer, periodStart = '', periodEnd = '' }) {
   const signName = SIGN_NAMES_EMAIL[sign] || sign;
   const safeName = formatEmailName(name, 'Ahoj');
   const period = buildPersonalMapPeriod({ periodStart, periodEnd });
@@ -1966,7 +1959,7 @@ export async function sendPersonalMapPdf({ to, name, sign, pdfBuffer, periodStar
 
   const pdfBase64 = Buffer.from(pdfBuffer).toString('base64');
 
-  const { data, error } = await client.emails.send(buildResendPayload({
+  return buildResendPayload({
     to,
     subject: `✦ Tvoje Osobní mapa na 12 měsíců — ${signName}`,
     html,
@@ -1976,7 +1969,14 @@ export async function sendPersonalMapPdf({ to, name, sign, pdfBuffer, periodStar
       content: pdfBase64,
       type: 'application/pdf',
     }],
-  }));
+  });
+}
+
+export async function sendPersonalMapPdf(input, { idempotencyKey, preparedPayload } = {}) {
+  const client = getResend();
+  if (!client) throw new Error('Resend not initialized - missing RESEND_API_KEY (personal map PDF)');
+  const payload = preparedPayload || buildPersonalMapEmailPayload(input);
+  const { data, error } = await client.emails.send(payload, idempotencyKey ? { idempotencyKey } : undefined);
 
   if (error) {
     throw new Error(`Resend error: ${error.message} (${error.statusCode})`);

@@ -576,9 +576,8 @@ export async function generatePersonalMapContent(input = {}) {
         const normalized = normalizePersonalMapSections(sections);
         return assertPersonalMapSectionsMatchInput(normalized, input);
     } catch (error) {
-        console.error('[PERSONAL_MAP] AI generation failed, using local fallback:', error.message);
-        const fallback = normalizePersonalMapSections(buildPersonalMapFallbackSections(input));
-        return assertPersonalMapSectionsMatchInput(fallback, input);
+        console.error('[PERSONAL_MAP] AI generation failed; paid order remains pending');
+        throw new Error('Personal map generation failed', { cause: error });
     }
 }
 

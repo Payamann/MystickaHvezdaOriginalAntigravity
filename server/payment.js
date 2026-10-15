@@ -2102,19 +2102,11 @@ async function handlePersonalMapPurchase(session, stripeEventId = null) {
     const orderInput = await getOneTimeOrderInput(session.metadata?.orderId);
     const payload = orderInput?.payload || {};
     const productId = session.metadata?.productId || orderInput?.product_id || 'osobni_mapa_2026';
-    const productYear = session.metadata?.productYear;
     const customerName = orderInput?.customer_name || session.metadata?.customerName;
     const birthDate = payload.birthDate || session.metadata?.birthDate;
-    const birthTime = payload.birthTime || session.metadata?.birthTime || '';
-    const birthPlace = payload.birthPlace || session.metadata?.birthPlace || '';
     const sign = payload.sign || session.metadata?.sign;
-    const grammaticalGender = payload.grammaticalGender || session.metadata?.grammaticalGender || 'neutral';
-    const focusArea = payload.focusArea || session.metadata?.focusArea || 'other';
     const focus = payload.focus || session.metadata?.focus || '';
-    const productPeriodStart = payload.productPeriodStart || session.metadata?.productPeriodStart || '';
-    const productPeriodEnd = payload.productPeriodEnd || session.metadata?.productPeriodEnd || '';
     const customerEmail = orderInput?.customer_email || session.metadata?.email || session.customer_email || session.customer_details?.email;
-    const year = Number(productYear) || new Date().getFullYear();
     const source = session.metadata?.source || 'personal_map_checkout';
 
     if (orderInput?.status === 'fulfilled') {
@@ -2160,23 +2152,10 @@ async function handlePersonalMapPurchase(session, stripeEventId = null) {
     setImmediate(async () => {
         try {
             const { fulfillPersonalMapOrder } = await import('./services/one-time-fulfillment.js');
-            await fulfillPersonalMapOrder({
-                customerName,
-                customerEmail,
-                payload: {
-                    birthDate,
-                    birthTime,
-                    birthPlace,
-                    sign,
-                    grammaticalGender,
-                    focusArea,
-                    focus,
-                    productYear: year,
-                    productPeriodStart,
-                    productPeriodEnd
-                }
-            });
-            await markOneTimeOrderInputFulfilled(orderInput?.id);
+            await fulfillPersonalMapOrder({ orderId: orderInput.id });
+            if (!await markOneTimeOrderInputFulfilled(orderInput.id)) {
+                throw new Error('Personal map accepted by provider but fulfillment state could not be saved');
+            }
             await recordFunnelEvent('one_time_pdf_delivered', {
                 source,
                 feature: productId,

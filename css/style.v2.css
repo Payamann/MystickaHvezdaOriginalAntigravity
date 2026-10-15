@@ -1666,6 +1666,14 @@ body.page-mentor .header {
 
 }
 
+.nav__link--dropdown-toggle {
+  border: 0;
+  background: none;
+  font-family: inherit;
+  line-height: inherit;
+  cursor: pointer;
+}
+
 
 
 .nav__link::after {
@@ -2007,7 +2015,8 @@ body.page-mentor .header {
 
 @media (min-width: 993px) {
 
-  .nav__item--has-dropdown:hover .nav__dropdown {
+  .nav__list:not([data-dropdowns-ready]) .nav__item--has-dropdown:hover .nav__dropdown,
+  .nav__item--has-dropdown.is-active .nav__dropdown {
 
     opacity: 1;
 
@@ -2021,7 +2030,8 @@ body.page-mentor .header {
 
 
 
-  .nav__item--has-dropdown:hover .dropdown-icon {
+  .nav__list:not([data-dropdowns-ready]) .nav__item--has-dropdown:hover .dropdown-icon,
+  .nav__item--has-dropdown.is-active .dropdown-icon {
 
     transform: rotate(180deg);
 
@@ -15523,3 +15533,17 @@ body.page-profile .cookie-banner__actions .btn {
 @media(forced-colors:active){.mh-symbol{color:CanvasText}}
 
 .mh-symbol.mh-symbol--inline{width:18px;height:18px;margin-right:.35em;vertical-align:-3px}.status-icon>.mh-symbol{width:24px;height:24px}
+
+/* A fallback is visible context, separate from the personal interpretation. */
+.result-context-notice {
+  padding: .85rem 1rem;
+  margin: 0 0 1rem;
+  border-left: 2px solid var(--color-gold, #b99a62);
+  background: rgba(185, 154, 98, .08);
+  color: var(--color-text, #eee6d8);
+  font-size: .9rem;
+  line-height: 1.6;
+}
+
+.tarot-daily-card-result__question { color: var(--color-text, #eee6d8); font-weight: 600; line-height: 1.6; }
+.tarot-daily-card-result__question:empty { display: none; }

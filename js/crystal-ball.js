@@ -3,6 +3,8 @@
  * Uses the server AI API for mystical, contextual oracle responses.
  */
 
+import { showFallbackNotice } from './utils/reading-display.js';
+
 let questionHistory = [];
 const COOLDOWN_SECONDS = 10;
 const CRYSTAL_DAILY_LIMIT = 3;
@@ -224,6 +226,7 @@ function initCrystalBall() {
                     updateFreemiumCounter();
                 }
                 if (answerContainer) answerContainer.classList.add('visible');
+                showFallbackNotice(answerContainer, data.fallback);
                 if (answerText) await typewriterEffect(answerText, data.response);
                 window.MH_ANALYTICS?.trackAction?.('crystal_ball_answer_viewed', {
                     feature: 'kristalova_koule',
@@ -236,7 +239,8 @@ function initCrystalBall() {
                 if (isLoggedIn && window.Auth?.saveReading) {
                     const saveResult = await window.Auth.saveReading('crystal-ball', {
                         question: question.trim(),
-                        answer: data.response
+                        answer: data.response,
+                        fallback: !!data.fallback
                     });
 
                     // Store reading ID and add favorite button

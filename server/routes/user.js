@@ -163,9 +163,10 @@ router.get('/readings', authenticateToken, async (req, res) => {
         if (req.query.summary === 'true' && page === 1 && !readingTypes.length && !favoritesOnly) {
             const activity = [];
             let favorites = 0;
+            const types = new Set();
             for (let metadataOffset = 0; metadataOffset < (count || 0); metadataOffset += 1000) {
                 const metadata = await supabase.from('readings')
-                    .select('created_at,is_favorite')
+                    .select('created_at,is_favorite,type')
                     .eq('user_id', req.user.id)
                     .order('created_at', { ascending: false })
                     .order('id', { ascending: false })
@@ -174,10 +175,11 @@ router.get('/readings', authenticateToken, async (req, res) => {
                 if (!metadata.data?.length) break;
                 for (const reading of metadata.data) {
                     activity.push(reading.created_at);
+                    if (reading.type) types.add(reading.type);
                     if (reading.is_favorite) favorites++;
                 }
             }
-            summary = { total: count || 0, favorites, activity };
+            summary = { total: count || 0, favorites, activity, types: [...types] };
         }
 
         res.json({

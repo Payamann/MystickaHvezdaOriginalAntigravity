@@ -660,3 +660,18 @@ describe('abandoned checkout recovery', () => {
         });
     });
 });
+
+
+test('personal map sends the saved request unchanged with its stable provider key', async () => {
+    const { sendPersonalMapPdf, buildPersonalMapEmailPayload } = await import('../email-service.js');
+    const preparedPayload = buildPersonalMapEmailPayload({
+        to: 'map@example.com', name: 'Test', sign: 'beran', pdfBuffer: Buffer.from('saved PDF'),
+        periodStart: '2026-10-15', periodEnd: '2027-10-14'
+    });
+    sendMock.mockReset();
+    sendMock.mockResolvedValue({ data: { id: 'map-receipt' }, error: null });
+    await expect(sendPersonalMapPdf({}, { preparedPayload, idempotencyKey: 'personal-map-order-1' }))
+        .resolves.toEqual({ id: 'map-receipt' });
+    expect(sendMock).toHaveBeenCalledWith(preparedPayload, { idempotencyKey: 'personal-map-order-1' });
+    expect(preparedPayload.attachments[0].content).toBe(Buffer.from('saved PDF').toString('base64'));
+});

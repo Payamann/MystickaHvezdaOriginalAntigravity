@@ -10,6 +10,11 @@ import {
 describe('Numerology Logic', () => {
 
     describe('calculateLifePath', () => {
+        it('preserves component master numbers consistently with the standalone calculator', () => {
+            expect(calculateLifePath('1980-01-01')).toBe(11);
+            expect(calculateLifePath('1990-03-15')).toBe(1);
+            expect(calculateLifePath('2026-02-30')).toBe(0);
+        });
         it('should calculate correct life path for standard date', () => {
             // 1990-01-01 -> 1+9+9+0 + 1 + 1 = 21 -> 3? 
             // Logic: day(1) + month(1) + year(1990->19->10->1) = 3

@@ -12,11 +12,15 @@ import {
     getReadingTitle,
     loadPlanManifest,
     normalizePlanType,
-    formatPlanLabel
+    formatPlanLabel,
+    profileIconMarkup,
+    renderProfileAvatar
 } from './shared.js';
-import { loadReadings, showMoreReadings, handleFilterChange, getReadingSummary, loadJournalReadings } from './readings.js';
-import { loadFavorites } from './favorites.js';
-import { toggleAvatarPicker, selectAvatar, loadSubscriptionStatus, initSettingsForm, saveSettings, changePassword } from './settings.js';
+import { loadReadings, showMoreReadings, handleFilterChange, getReadingSummary, initReadingFilters, resetReadingsState } from './readings.js';
+import { loadProfileContext, PROFILE_CONTEXT_LIMIT } from './context.js';
+import { readJournalDraft, writeJournalDraft } from './journal-draft.js';
+import { loadFavorites, resetFavoritesState } from './favorites.js';
+import { toggleAvatarPicker, selectAvatar, loadSubscriptionStatus, initSettingsForm, initAvatarPicker, saveSettings, changePassword } from './settings.js';
 import { viewReading, closeReadingModal, toggleFavoriteModal, toggleFavorite, deleteReading } from './modal.js';
 import { verifyCheckoutResult } from './checkout-result.js';
 
@@ -33,6 +37,50 @@ let dailyGuidanceViewTracked = false;
 let activationChecklistViewTracked = false;
 let guestPreviewViewTracked = false;
 let activePaymentReturnContext = null;
+let profileState = { user: null, subscription: null, context: null };
+let profileRefreshVersion = 0;
+
+function renderProfileOverview() {
+    const { user, subscription, context } = profileState;
+    const readings = context?.readings || [];
+    renderDailyGuidance(user, readings, subscription);
+    renderActivationChecklist(user, readings, subscription);
+    updateStats(readings);
+    const status = document.getElementById('profile-context-status');
+    if (status) status.hidden = Boolean(context);
+    if (context) {
+        renderRitualMemory(user, readings, subscription);
+        renderJournalEntries(context.journals);
+    } else {
+        const journalEntries = document.getElementById('journal-entries');
+        if (journalEntries) journalEntries.innerHTML = '<p role="status">Poznámky se nepodařilo načíst.</p>';
+        const strength = document.getElementById('ritual-memory-strength');
+        const copy = document.getElementById('ritual-memory-copy');
+        if (strength) strength.textContent = 'Nedostupné podklady';
+        if (copy) copy.textContent = 'Poznámky teď nejdou načíst. Použij tlačítko Obnovit přehled.';
+        ['ritual-memory-themes', 'ritual-memory-actions'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) element.replaceChildren();
+        });
+    }
+}
+
+async function refreshProfileData({ favoriteOnly = false } = {}) {
+    if (favoriteOnly) {
+        renderProfileOverview();
+        if (document.getElementById('tab-favorites')?.classList.contains('is-active')) await loadFavorites();
+        return;
+    }
+    const version = ++profileRefreshVersion;
+    const [ , context] = await Promise.all([
+        loadReadings({ preserveFilter: true }),
+        loadProfileContext(),
+        document.getElementById('tab-favorites')?.classList.contains('is-active') ? loadFavorites() : null
+    ]);
+    if (version !== profileRefreshVersion) return;
+    profileState.context = context;
+    renderProfileOverview();
+}
 
 function callProfileAnalytics(methodName, ...args) {
     const method = window.MH_ANALYTICS?.[methodName];
@@ -293,42 +341,42 @@ const ONBOARDING_SIGN_LABELS = {
 };
 
 const DAILY_FOCUS = [
-    'Dnes se vyplatí zpomalit a pojmenovat, co od sebe opravdu potřebujete slyšet.',
-    'Dnes má největší hodnotu první konkrétní krok, ne dokonalý plán.',
-    'Dnes sledujte, kde reagujete ze zvyku a kde už můžete zvolit nový směr.',
-    'Dnes pomůže jednoduchá otázka: co mi přináší klid a co jen bere energii?',
-    'Dnes je dobré nechat si prostor na upřímný rozhovor nebo tiché rozhodnutí.',
-    'Dnes se opřete o drobný rituál, který vrátí pozornost zpátky k sobě.',
-    'Dnes si zapište jednu věc, která se opakuje. Právě tam začíná váš vzorec.'
+    'Zkus pojmenovat jednu věc, na kterou si tento týden chceš nechat čas.',
+    'Vyber si jeden malý krok, který můžeš udělat i bez dokonalého plánu.',
+    'Všimni si okamžiku, kdy reaguješ ze zvyku. Máš i jinou možnost?',
+    'Zapiš si, co ti v posledních dnech dodalo klid. Třeba se k tomu bude hodit vrátit.',
+    'Pokud odkládáš rozhovor, připrav si jednu konkrétní větu, kterou chceš říct.',
+    'Nech si pár minut bez dalšího úkolu. Poznámku můžeš dopsat později.',
+    'Vrať se k jedné starší poznámce. Co z ní ještě platí a co už vidíš jinak?'
 ];
 
 const MEMORY_THEME_META = {
     relationships: {
         label: 'Vztahy',
-        description: 'Blízkost, hranice a komunikace se vrací jako hlavní téma.',
+        description: 'Vlastní poznámka nebo zpětná vazba zmiňuje blízkost, hranice či komunikaci.',
         actionLabel: 'Prověřit partnerskou shodu',
         actionDescription: 'Navázat konkrétním vztahem místo obecného pocitu.',
         href: '/partnerska-shoda.html'
     },
     work: {
         label: 'Práce a směr',
-        description: 'Rozhodnutí, výkon nebo profesní energie se objevují opakovaně.',
+        description: 'V poznámce nebo zpětné vazbě se objevuje práce či rozhodování o směru.',
         actionLabel: 'Podívat se přes numerologii',
         actionDescription: 'Najít praktický rytmus pro další pracovní krok.',
         href: '/numerologie.html'
     },
     energy: {
         label: 'Energie',
-        description: 'Tělo, únava, klid nebo přetížení potřebují jemnější vedení.',
+        description: 'V poznámce nebo zpětné vazbě se objevuje energie, odpočinek či klid.',
         actionLabel: 'Otevřít dnešní horoskop',
         actionDescription: 'Začít krátkým denním kontextem pro dnešní režim.',
         href: '/horoskopy.html'
     },
     self: {
         label: 'Sebepoznání',
-        description: 'Opakují se otázky identity, intuice, hranic nebo vnitřní jistoty.',
+        description: 'V poznámce nebo zpětné vazbě se objevuje sebepoznání či vlastní hranice.',
         actionLabel: 'Jít do natální karty',
-        actionDescription: 'Opřít opakující se téma o osobní mapu.',
+        actionDescription: 'Podívat se na téma z dalšího úhlu.',
         href: '/natalni-karta.html'
     },
     timing: {
@@ -862,7 +910,8 @@ function getProfileSign(user) {
 }
 
 function getReadingKinds(readings) {
-    return new Set((readings || []).filter(reading => reading.type !== 'journal').map(reading => reading.type));
+    const types = getReadingSummary()?.types || (readings || []).map(reading => reading.type);
+    return new Set(types.filter(type => type !== 'journal'));
 }
 
 function buildDailyHoroscopeHref(sign, source = 'profile_daily') {
@@ -1042,9 +1091,10 @@ function getPaymentReturnDestination(sign, paymentContext) {
 }
 
 function getLastReadingLabel(readings) {
-    if (!readings?.length) return 'Zatím žádný uložený výklad';
+    const structured = (readings || []).filter(reading => reading.type !== 'journal');
+    if (!structured.length) return 'Zatím žádný uložený výklad';
 
-    const latest = [...readings].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+    const latest = [...structured].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
     const date = new Date(latest.created_at);
     return `${date.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long' })} · ${getReadingTitle(latest.type)}`;
 }
@@ -1154,7 +1204,8 @@ function buildRitualMemoryCopy(memory) {
         return 'Samotný text výkladu nestačí k osobnímu závěru. Vlastní poznámka nebo zpětná vazba pomůže zachytit, co pro tebe bylo užitečné.';
     }
 
-    return `V nedávných poznámkách nebo zpětné vazbě se objevuje téma ${memory.topTheme.label.toLowerCase()}. Připomeň si, z jaké situace vychází a co se od té doby změnilo.`;
+    const source = memory.journalCount + memory.feedbackCount === 1 ? 'V tvé poznámce nebo zpětné vazbě' : 'V nedávných poznámkách nebo zpětné vazbě';
+    return `${source} se objevuje téma ${memory.topTheme.label.toLowerCase()}. Připomeň si, z jaké situace vychází a co se od té doby změnilo.`;
 }
 
 function getMemoryMeterBucket(score, topScore) {
@@ -1299,14 +1350,14 @@ function renderDailyGuidance(user, readings, subscription) {
     planEl.textContent = formatPlanLabel(planType);
     planEl.className = `badge ${isPremium ? 'badge--premium' : 'badge--secondary'}`;
     titleEl.textContent = sign
-        ? `Dnešní směr pro znamení ${sign.name}`
-        : 'Dnešní směr čeká na doplnění profilu';
+        ? `Tvoje zkratky pro znamení ${sign.name}`
+        : 'Kam se chceš dnes podívat?';
 
     copyEl.textContent = sign
         ? `Můžeš si přečíst horoskop pro své znamení nebo otevřít kartu dne. Poslední výklad: ${getLastReadingLabel(readings)}.`
         : 'Znamení si můžeš vybrat v úvodním nastavení nebo doplnit datum narození v profilu.';
 
-    focusEl.textContent = focus;
+    focusEl.textContent = `Redakční podnět k zamyšlení: ${focus}`;
 
     const horoscopeHref = buildDailyHoroscopeHref(sign);
     const actions = [
@@ -1331,15 +1382,6 @@ function renderDailyGuidance(user, readings, subscription) {
         }
     ];
 
-    if (!isPremium) {
-        actions.push({
-            href: 'cenik.html?source=profile_daily&feature=daily_guidance',
-            label: 'Odemknout hlubší vedení',
-            description: 'Plné výklady, historie a týdenní mapa v jednom plánu.',
-            action: 'daily_upgrade'
-        });
-    }
-
     actionsEl.innerHTML = actions.map(action => `
         <a href="${action.href}" class="daily-guidance-action ${action.primary ? 'daily-guidance-action--primary' : ''}" data-daily-action="${action.action}">
             <strong>${escapeHtml(action.label)}</strong>
@@ -1357,7 +1399,7 @@ function renderDailyGuidance(user, readings, subscription) {
     }
 }
 
-function renderActivationChecklist(user, readings, subscription) {
+function renderActivationChecklist(user, readings) {
     const labelEl = document.getElementById('activation-progress-label');
     const barEl = document.getElementById('activation-progress-bar');
     const itemsEl = document.getElementById('activation-checklist-items');
@@ -1365,8 +1407,7 @@ function renderActivationChecklist(user, readings, subscription) {
 
     const kinds = getReadingKinds(readings);
     const sign = getProfileSign(user);
-    const streak = calculateStreak(readings);
-    const isPremium = isPremiumSubscription(subscription);
+    const hasJournal = (getReadingSummary()?.types || []).includes('journal') || readings.some(reading => reading.type === 'journal');
     const signupIntentDestination = kinds.size ? null : getSignupIntentDestination(sign);
     const firstReadingHref = signupIntentDestination?.href || (sign
         ? buildDailyHoroscopeHref(sign, 'profile_activation')
@@ -1390,7 +1431,7 @@ function renderActivationChecklist(user, readings, subscription) {
         {
             key: 'profile_personalized',
             title: 'Osobní profil je doplněný',
-            description: sign ? `Dnešní vedení se může opřít o znamení ${sign.name}.` : 'Doplň dobrovolné datum narození nebo vyber znamení.',
+            description: sign ? `Odkaz na horoskop už vede ke znamení ${sign.name}.` : 'Doplň dobrovolné datum narození nebo vyber znamení.',
             done: Boolean(sign),
             href: sign ? '#tab-settings' : 'onboarding.html?source=profile_activation&feature=daily_guidance',
             action: sign ? 'open_settings' : 'start_onboarding'
@@ -1405,9 +1446,9 @@ function renderActivationChecklist(user, readings, subscription) {
         },
         {
             key: 'daily_reflection',
-            title: 'Vzniká návratový rituál',
-            description: streak > 1 ? `Aktuální série: ${streak} dny.` : 'Zapiš vlastní poznámku, pokud se k ní chceš později vrátit.',
-            done: streak > 1 || kinds.has('journal'),
+            title: 'První vlastní poznámka',
+            description: hasJournal ? 'Vlastní poznámku už máš uloženou.' : 'Zapiš vlastní poznámku, pokud se k ní chceš později vrátit.',
+            done: hasJournal,
             href: '#journal-input',
             action: 'focus_journal'
         },
@@ -1428,7 +1469,7 @@ function renderActivationChecklist(user, readings, subscription) {
 
     itemsEl.innerHTML = items.map(item => `
         <a href="${item.href}" class="activation-checklist-item ${item.done ? 'activation-checklist-item--done' : ''}" data-activation-step="${item.key}" data-activation-action="${item.action || ''}" data-completed="${item.done ? 'true' : 'false'}">
-            <span class="activation-checklist-item__status">${item.done ? '✓' : '•'}</span>
+            <span class="activation-checklist-item__status" aria-hidden="true">${profileIconMarkup(item.done ? 'check' : 'bookmark')}</span>
             <span class="activation-checklist-item__body">
                 <strong>${escapeHtml(item.title)}</strong>
                 <span>${escapeHtml(item.description)}</span>
@@ -1451,7 +1492,7 @@ function focusJournalInput() {
     if (!input) return;
     document.querySelector('.profile-tab[data-tab="overview"]')?.click();
 
-    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    input.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'center' });
     setTimeout(() => input.focus(), 250);
 }
 
@@ -1652,9 +1693,10 @@ function renderJournalEntries(readings) {
     }
 
     container.innerHTML = entries.map(e => `
-        <div class="journal-entry">
+        <div class="journal-entry" data-reading-id="${escapeHtml(e.id)}">
             <span class="journal-entry__date">${new Date(e.created_at).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long' })}</span>
             <p class="journal-entry__text">${escapeHtml(e.data)}</p>
+            <button type="button" class="btn btn--glass btn--sm" data-reading-action="view" data-reading-id="${escapeHtml(e.id)}">Otevřít poznámku</button>
         </div>
     `).join('');
 }
@@ -1715,6 +1757,7 @@ function handleReadingListKeyboard(event) {
 }
 
 async function initProfile() {
+    const initVersion = ++profileRefreshVersion;
     let retries = 0;
     while (!window.Auth && retries < 20) {
         await new Promise(r => setTimeout(r, 100));
@@ -1723,12 +1766,19 @@ async function initProfile() {
 
     const user = window.Auth?.user;
     const isLoggedIn = window.Auth?.isLoggedIn();
+    if (profileState.user?.id !== user?.id || !isLoggedIn) {
+        resetReadingsState();
+        resetFavoritesState();
+        closeReadingModal();
+        profileState = { user: null, subscription: null, context: null };
+    }
 
     const loginRequired = document.getElementById('login-required');
     const dashboard = document.getElementById('profile-dashboard');
     const greeting = document.getElementById('profile-greeting');
 
     if (!isLoggedIn) {
+        profileState = { user: null, subscription: null, context: null };
         setProfileBlockVisible(loginRequired, true);
         setProfileBlockVisible(dashboard, false);
         if (greeting) greeting.textContent = 'Přihlas se a měj výklady na jednom místě';
@@ -1773,9 +1823,7 @@ async function initProfile() {
         }
 
         const avatarEl = document.getElementById('user-avatar');
-        if (avatarEl && user.avatar) {
-            avatarEl.textContent = user.avatar;
-        }
+        renderProfileAvatar(avatarEl, user.avatar);
 
         if (user.birth_date) {
             const sign = getZodiacSign(user.birth_date);
@@ -1791,24 +1839,24 @@ async function initProfile() {
 
     initTabs();
     initSettingsForm();
+    initAvatarPicker();
+    initReadingFilters();
+    const journalInput = document.getElementById('journal-input');
+    if (journalInput) journalInput.value = readJournalDraft(user?.id);
 
-    const [readings, subscription, journals] = await Promise.all([
+    const [, subscription, context] = await Promise.all([
         loadReadings(),
         loadSubscriptionStatus(),
-        loadJournalReadings()
+        loadProfileContext()
     ]);
+    if (initVersion !== profileRefreshVersion) return;
 
     const paymentReturnContext = handlePaymentReturnState(subscription, user) || activePaymentReturnContext;
     renderPremiumActivation(subscription, user, paymentReturnContext);
-    renderDailyGuidance(user, readings, subscription);
-    renderActivationChecklist(user, readings, subscription);
-    renderRitualMemory(user, readings, subscription);
-    updateStats(readings);
-    if (journals) renderJournalEntries(journals);
-    else {
-        const journalEntries = document.getElementById('journal-entries');
-        if (journalEntries) journalEntries.innerHTML = '<p role="status">Poznámky se nepodařilo načíst. Zkus stránku obnovit.</p>';
-    }
+    profileState = { user, subscription, context };
+    renderProfileOverview();
+    const scope = document.getElementById('ritual-memory-scope');
+    if (scope) scope.textContent = `Přehled vychází z posledních ${PROFILE_CONTEXT_LIMIT} výkladů a samostatně až ${PROFILE_CONTEXT_LIMIT} vlastních poznámek. Starší položky najdeš v historii.`;
     focusPendingReadingInHistory(typeof pendingReadingSavedId === 'string' ? pendingReadingSavedId : null);
 
     if (window.location.hash === '#journal-input') {
@@ -1828,6 +1876,13 @@ async function initProfile() {
         document.getElementById('readings-list')?.addEventListener('keydown', handleReadingListKeyboard);
         document.getElementById('favorites-list')?.addEventListener('click', handleReadingListInteraction);
         document.getElementById('favorites-list')?.addEventListener('keydown', handleReadingListKeyboard);
+        document.getElementById('journal-entries')?.addEventListener('click', handleReadingListInteraction);
+        document.getElementById('profile-context-retry')?.addEventListener('click', () => refreshProfileData());
+        document.getElementById('all-journal-entries')?.addEventListener('click', () => {
+            openProfileTab('history');
+            const filter = document.getElementById('readings-filter');
+            if (filter) { filter.value = 'journal'; handleFilterChange({ target: filter }); }
+        });
 
         document.getElementById('reading-modal-close')?.addEventListener('click', closeReadingModal);
         document.getElementById('modal-favorite-btn')?.addEventListener('click', toggleFavoriteModal);
@@ -1860,8 +1915,8 @@ async function initProfile() {
             const nextUser = event.detail?.user;
             if (!nextUser) return;
             if (greeting) greeting.textContent = nextUser.first_name ? `Vítej zpět, ${nextUser.first_name}` : 'Tvoje výklady na jednom místě';
-            renderDailyGuidance(nextUser, readings, subscription);
-            renderActivationChecklist(nextUser, readings, subscription);
+            profileState.user = nextUser;
+            renderProfileOverview();
             const zodiac = document.getElementById('user-zodiac');
             if (zodiac) setProfileBlockVisible(zodiac, false);
             if (nextUser.birth_date) showZodiacSignLocal(nextUser.birth_date);
@@ -1874,10 +1929,20 @@ async function initProfile() {
 
         const journalBtn = document.getElementById('journal-submit');
         if (journalBtn) {
+            document.getElementById('journal-input')?.addEventListener('input', event => {
+                writeJournalDraft(profileState.user?.id, event.target.value);
+            });
             journalBtn.addEventListener('click', async () => {
+                if (journalBtn.disabled) return;
                 const input = document.getElementById('journal-input');
+                const status = document.getElementById('journal-status');
+                const loginLink = document.getElementById('journal-login');
                 const text = input?.value.trim();
                 if (!text) return;
+                const ownerId = profileState.user?.id;
+                writeJournalDraft(ownerId, input.value);
+                if (loginLink) loginLink.hidden = true;
+                if (status) status.textContent = 'Ukládám poznámku…';
 
                 journalBtn.disabled = true;
                 journalBtn.innerHTML = '<span class="loading-spinner--sm"></span> Ukládám...';
@@ -1891,26 +1956,28 @@ async function initProfile() {
                     });
 
                     if (response.ok) {
-                        input.value = '';
+                        if (profileState.user?.id !== ownerId) return;
+                        if (input.value.trim() === text) input.value = '';
+                        writeJournalDraft(ownerId, input.value);
+                        if (status) status.textContent = 'Poznámka je uložená.';
                         window.Auth?.showToast?.('Reflexe uložena', 'Vrátíš se k ní v historii výkladů.', 'success');
                         if (window.createStardust) window.createStardust(journalBtn);
-                        const refreshedReadings = await loadReadings();
-                        updateStats(refreshedReadings);
-                        const refreshedJournals = await loadJournalReadings();
-                        if (refreshedJournals) renderJournalEntries(refreshedJournals);
-                        renderDailyGuidance(window.Auth?.user, refreshedReadings, subscription);
-                        renderActivationChecklist(window.Auth?.user, refreshedReadings, subscription);
-                        renderRitualMemory(window.Auth?.user, refreshedReadings, subscription);
+                        await refreshProfileData();
                         trackProfileEvent('profile_journal_saved', {
                             source: 'profile_dashboard'
                         });
                     } else {
                         const err = await response.json().catch(() => ({}));
-                        window.Auth?.showToast?.('Chyba', err.error || 'Vesmír momentálně neodpovídá.', 'error');
+                        if (status) status.textContent = response.status === 401
+                            ? 'Přihlášení vypršelo. Přihlas se znovu; rozpracovaná poznámka zůstává v této kartě prohlížeče.'
+                            : 'Poznámku se nepodařilo uložit. Text zůstal ve formuláři, zkus to znovu.';
+                        if (loginLink) loginLink.hidden = response.status !== 401;
+                        window.Auth?.showToast?.('Chyba', err.error || 'Poznámku se nepodařilo uložit. Text zůstal ve formuláři.', 'error');
                     }
                 } catch (e) {
                     console.error('Journal error:', e);
-                    window.Auth?.showToast?.('Chyba', 'Vesmír momentálně neodpovídá.', 'error');
+                    if (status) status.textContent = 'Poznámku se nepodařilo uložit. Text zůstal ve formuláři, zkus to znovu.';
+                    window.Auth?.showToast?.('Chyba', 'Poznámku se nepodařilo uložit. Text zůstal ve formuláři.', 'error');
                 } finally {
                     journalBtn.disabled = false;
                     journalBtn.innerHTML = 'Uložit reflexi';
@@ -1919,12 +1986,7 @@ async function initProfile() {
         }
 
         document.addEventListener('reading:updated', e => {
-            if (e.detail?.readings) {
-                updateStats(e.detail.readings);
-                renderDailyGuidance(window.Auth?.user, e.detail.readings, subscription);
-                renderActivationChecklist(window.Auth?.user, e.detail.readings, subscription);
-                renderRitualMemory(window.Auth?.user, e.detail.readings, subscription);
-            }
+            refreshProfileData({ favoriteOnly: e.detail?.reason === 'favorite' });
         });
 
         listenersAttached = true;
@@ -1936,7 +1998,7 @@ async function initProfile() {
 }
 
 window.createStardust = function(element) {
-    if (!element) return;
+    if (!element || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const rect = element.getBoundingClientRect();
     const count = 20;
@@ -1975,15 +2037,20 @@ window.toggleFavorite = (id, el) => {
 };
 
 let profileInitRunning = false;
+let profileInitQueued = false;
 
 async function safeInitProfile() {
-    if (profileInitRunning) return;
+    if (profileInitRunning) { profileInitQueued = true; ++profileRefreshVersion; return; }
     profileInitRunning = true;
 
     try {
         await initProfile();
     } finally {
         profileInitRunning = false;
+        if (profileInitQueued) {
+            profileInitQueued = false;
+            safeInitProfile();
+        }
     }
 }
 

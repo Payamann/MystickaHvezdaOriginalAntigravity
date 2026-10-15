@@ -194,8 +194,8 @@
             <li class="nav__item"><a href="index.html" class="nav__link">Domů</a></li>
 
             <li class="nav__item nav__item--has-dropdown">
-              <a href="#" class="nav__link nav__link--dropdown-toggle">Astrologie <span class="dropdown-icon">▾</span></a>
-              <ul class="nav__dropdown">
+              <button type="button" class="nav__link nav__link--dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="nav-dropdown-astrologie">Astrologie <span class="dropdown-icon" aria-hidden="true">▾</span></button>
+              <ul class="nav__dropdown" id="nav-dropdown-astrologie">
                 <li><a href="horoskopy.html" class="nav__dropdown-link">Horoskopy</a></li>
                 <li><a href="horoskop/index.html" class="nav__dropdown-link">Znamení zvěrokruhu</a></li>
                 <li><a href="natalni-karta.html" class="nav__dropdown-link">Natální karta</a></li>
@@ -209,8 +209,8 @@
             </li>
 
             <li class="nav__item nav__item--has-dropdown">
-              <a href="#" class="nav__link nav__link--dropdown-toggle">Věštění & Tarot <span class="dropdown-icon">▾</span></a>
-              <ul class="nav__dropdown">
+              <button type="button" class="nav__link nav__link--dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="nav-dropdown-tarot">Tarot a věštění <span class="dropdown-icon" aria-hidden="true">▾</span></button>
+              <ul class="nav__dropdown" id="nav-dropdown-tarot">
                 <li><a href="tarot.html" class="nav__dropdown-link">Tarot</a></li>
                 <li><a href="tarot-karta-dne.html" class="nav__dropdown-link">Tarot karta dne</a></li>
                 <li><a href="tarot-tri-karty.html" class="nav__dropdown-link">Tarot 3 karty</a></li>
@@ -220,7 +220,7 @@
                 <li><a href="tarot-vyznam-karet.html" class="nav__dropdown-link">Významy karet</a></li>
                 <li><a href="andelske-karty.html" class="nav__dropdown-link">Andělské karty</a></li>
                 <li><a href="andelska-posta.html" class="nav__dropdown-link">Andělská pošta</a></li>
-                <li><a href="runy.html" class="nav__dropdown-link">Výklad z run</a></li>
+                <li><a href="runy.html" class="nav__dropdown-link">Runy</a></li>
                 <li><a href="kristalova-koule.html" class="nav__dropdown-link">Křišťálová koule</a></li>
                 <li><a href="snar.html" class="nav__dropdown-link">Snář</a></li>
                 <li><a href="shamansko-kolo.html" class="nav__dropdown-link">Šamanské kolo</a></li>
@@ -228,8 +228,8 @@
             </li>
 
             <li class="nav__item nav__item--has-dropdown">
-              <a href="#" class="nav__link nav__link--dropdown-toggle">Čísla & Energie <span class="dropdown-icon">▾</span></a>
-              <ul class="nav__dropdown">
+              <button type="button" class="nav__link nav__link--dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="nav-dropdown-cisla">Čísla a energie <span class="dropdown-icon" aria-hidden="true">▾</span></button>
+              <ul class="nav__dropdown" id="nav-dropdown-cisla">
                 <li><a href="numerologie.html" class="nav__dropdown-link">Numerologie</a></li>
                 <li><a href="kalkulacka-cisla-osudu.html" class="nav__dropdown-link">Kalkulačka čísla osudu</a></li>
                 <li><a href="aura.html" class="nav__dropdown-link">Aura kalkulačka</a></li>
@@ -241,8 +241,8 @@
             </li>
 
             <li class="nav__item nav__item--has-dropdown">
-              <a href="#" class="nav__link nav__link--dropdown-toggle">Poznání <span class="dropdown-icon">▾</span></a>
-              <ul class="nav__dropdown">
+              <button type="button" class="nav__link nav__link--dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="nav-dropdown-poznani">Poznání <span class="dropdown-icon" aria-hidden="true">▾</span></button>
+              <ul class="nav__dropdown" id="nav-dropdown-poznani">
                 <li><a href="testy/index.html" class="nav__dropdown-link u-text-gold">Mystické testy</a></li>
                 <li><a href="blog.html" class="nav__dropdown-link">Mystický blog</a></li>
                 <li><a href="faq.html" class="nav__dropdown-link">Časté otázky</a></li>
@@ -251,8 +251,8 @@
             </li>
 
             <li class="nav__item nav__item--has-dropdown">
-              <a href="#" class="nav__link nav__link--dropdown-toggle">Premium <span class="dropdown-icon">▾</span></a>
-              <ul class="nav__dropdown">
+              <button type="button" class="nav__link nav__link--dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="nav-dropdown-sluzby">Výklady a služby <span class="dropdown-icon" aria-hidden="true">▾</span></button>
+              <ul class="nav__dropdown" id="nav-dropdown-sluzby">
                 <li><a href="osobni-mapa.html?source=homepage_nav" class="nav__dropdown-link" data-analytics-cta="homepage_premium_nav_product" data-analytics-feature="osobni_mapa_2026" data-analytics-product="osobni_mapa_2026" data-analytics-intent="one_time_purchase">Osobní mapa na 12 měsíců</a></li>
                 <li><a href="mentor.html" class="nav__dropdown-link" data-premium="true">Průvodce</a></li>
                 <li><a href="cenik.html" class="nav__dropdown-link">Ceník</a></li>
@@ -469,7 +469,8 @@
                 <span id="tarot-daily-date" class="tarot-daily-card-result__date">Karta čeká na otočení</span>
                 <h3 id="tarot-daily-card-name">Chvíle k zamyšlení</h3>
                 <p id="tarot-daily-card-meaning"></p>
-                <p id="tarot-daily-card-advice" class="tarot-daily-card-result__advice"></p>
+                <p id="tarot-daily-card-question" class="tarot-daily-card-result__question"></p>
+                            <p id="tarot-daily-card-advice" class="tarot-daily-card-result__advice"></p>
                 <div class="tarot-daily-card-result__actions">
                   <a id="tarot-daily-full-reading" href="/tarot.html?source=tarot_daily_card_widget&amp;feature=tarot&amp;intent=daily_card" class="btn btn--primary">Rozvinout výklad</a>
                   <a id="tarot-daily-card-detail" href="/tarot-vyznam-karet.html" class="btn btn--ghost">Význam karty</a>
@@ -1724,7 +1725,7 @@
 <script src="js/dist/premium-gates.js?v=20261003-single-membership" defer></script>
   <script src="js/dist/feedback-widget.js" defer></script>
 
-  <script src="js/dist/tarot-karta-dne.js" defer></script>
+  <script type="module" src="js/dist/tarot-karta-dne.js" defer></script>
 
   <script type="module" src="js/dist/platby-init.js" async></script>
 

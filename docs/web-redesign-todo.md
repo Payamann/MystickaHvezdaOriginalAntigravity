@@ -142,7 +142,9 @@ Tyto body už jsou doložené v navazovaných auditech. Nejde o nově vymyšlen�
 
 ## Nejbližší ohraničený krok
 
-**PF02/PF03: sjednotit aktuální stav profilu a rozsah vlastních poznámek.** PF01 byl 15. 10. místně opraven: 11/11 cílených regresí a skutečný profil nad syntetickou databází; [checkpoint](profile-unification-2026-10-14/pf01/README.md). Další krok má odstranit staré reference po změně záznamu a oddělit profilové podklady od první stránky historie. Rozsáhlý kosmetický přepis všech stránek není první krok.
+**Autonomní realizace, testování až na konci:** PF02–PF07/PF09–PF11, R01/R02, část R04, W01 a W08 mají rozpracované zdrojové změny v [release checkpointu](release-prep-2026-10-15/README.md). Jejich finální přijetí zatím není potvrzené; checkboxy nepředstírají proběhlé testy. Nejbližší krok: dokončit kontrolu zbylých zdrojových bodů R04 a společných vzorů W02/W03/W06, poté společný build a jedna závěrečná QA fáze.
+
+PF01 byl před touto dávkou místně ověřen: 11/11 cílených regresí a skutečný profil nad syntetickou databází; [původní checkpoint](profile-unification-2026-10-14/pf01/README.md). Nyní navazující změny vyžadují znovu dotčenou závěrečnou regresi. Produkce se neměnila.
 
 ## Co je již doloženě hotové
 

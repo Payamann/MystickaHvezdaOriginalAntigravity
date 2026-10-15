@@ -2,7 +2,15 @@
  * Settings: Avatar picker, subscription management, profile & password update
  */
 
-import { apiUrl, authHeaders, loadPlanManifest, normalizePlanType, formatPlanLabel } from './shared.js';
+import { apiUrl, authHeaders, loadPlanManifest, normalizePlanType, formatPlanLabel, PROFILE_AVATARS, profileIconMarkup, renderProfileAvatar } from './shared.js';
+
+let avatarSaving = false;
+
+export function initAvatarPicker() {
+    const grid = document.querySelector('.avatar-picker__grid');
+    if (!grid) return;
+    grid.innerHTML = PROFILE_AVATARS.map(avatar => `<button type="button" class="avatar-option" data-avatar="symbol:${avatar.symbol}" aria-label="Vybrat avatar: ${avatar.label}">${profileIconMarkup(avatar.symbol)}</button>`).join('');
+}
 
 function trackAnalytics(method, ...args) {
     try {
@@ -63,6 +71,7 @@ export function initSettingsForm() {
 }
 
 export async function saveSettings() {
+    const ownerId = window.Auth?.user?.id;
     const btn = document.getElementById('save-settings-btn');
     const settingsForm = document.querySelector('.settings-form');
     const formUx = window.MH_FORM_UX || {};
@@ -117,6 +126,7 @@ export async function saveSettings() {
         }
 
         const profileData = await profileRes.json();
+        if (ownerId !== window.Auth?.user?.id) return;
 
         let cached = {};
         try {
@@ -125,7 +135,10 @@ export async function saveSettings() {
             cached = {};
         }
 
-        Object.assign(cached, profileData.user || profileBody);
+        // Merge only fields this form changed; a concurrent avatar save owns its field.
+        Object.keys(profileBody).forEach(key => {
+            cached[key] = profileData.user && Object.hasOwn(profileData.user, key) ? profileData.user[key] : profileBody[key];
+        });
         localStorage.setItem('auth_user', JSON.stringify(cached));
         if (window.Auth) window.Auth.user = cached;
 
@@ -191,7 +204,7 @@ export function toggleAvatarPicker() {
     picker.classList.toggle('profile-block-visible', isHidden);
 
     if (isHidden) {
-        const currentAvatar = document.getElementById('user-avatar')?.textContent?.trim();
+        const currentAvatar = window.Auth?.user?.avatar;
         picker.querySelectorAll('.avatar-option').forEach(opt => {
             opt.classList.toggle('avatar-option--active', opt.dataset.avatar === currentAvatar);
         });
@@ -199,18 +212,14 @@ export function toggleAvatarPicker() {
 }
 
 export async function selectAvatar(emoji) {
+    if (avatarSaving || !PROFILE_AVATARS.some(avatar => `symbol:${avatar.symbol}` === emoji)) return;
+    avatarSaving = true;
+    const ownerId = window.Auth?.user?.id;
     const avatarEl = document.getElementById('user-avatar');
     const picker = document.getElementById('avatar-picker');
-
-    if (avatarEl) avatarEl.textContent = emoji;
-    if (picker) {
-        picker.hidden = true;
-        picker.classList.remove('profile-block-visible');
-    }
-
-    picker?.querySelectorAll('.avatar-option').forEach(opt => {
-        opt.classList.toggle('avatar-option--active', opt.dataset.avatar === emoji);
-    });
+    const options = picker?.querySelectorAll('.avatar-option') || [];
+    options.forEach(option => { option.disabled = true; });
+    avatarEl?.setAttribute('aria-busy', 'true');
 
     try {
         const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
@@ -227,6 +236,7 @@ export async function selectAvatar(emoji) {
         if (!res.ok) {
             throw new Error('Nepodařilo se uložit avatar.');
         }
+        if (ownerId !== window.Auth?.user?.id) return;
 
         let currentUser = {};
         try {
@@ -238,10 +248,17 @@ export async function selectAvatar(emoji) {
         currentUser.avatar = emoji;
         localStorage.setItem('auth_user', JSON.stringify(currentUser));
         if (window.Auth) window.Auth.user = currentUser;
-        window.Auth?.showToast?.('Avatar změněn', `Nový avatar: ${emoji}`, 'success');
+        renderProfileAvatar(avatarEl, emoji);
+        options.forEach(option => option.classList.toggle('avatar-option--active', option.dataset.avatar === emoji));
+        if (picker) { picker.hidden = true; picker.classList.remove('profile-block-visible'); }
+        window.Auth?.showToast?.('Avatar změněn', 'Nový symbol je uložený.', 'success');
     } catch (e) {
         console.error('Error saving avatar:', e);
         window.Auth?.showToast?.('Chyba', 'Nepodařilo se uložit avatar.', 'error');
+    } finally {
+        avatarSaving = false;
+        options.forEach(option => { option.disabled = false; });
+        avatarEl?.setAttribute('aria-busy', 'false');
     }
 }
 

@@ -1,0 +1,21 @@
+import practices from '../../data/tarot-daily-practice.json' with { type: 'json' };
+import descriptions from '../../data/tarot-card-hub.json' with { type: 'json' };
+
+export function getPragueDateKey(date = new Date()) {
+    const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Prague', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(date);
+    const value = type => parts.find(part => part.type === type).value;
+    return `${value('year')}-${value('month')}-${value('day')}`;
+}
+
+export function getDailyCardIndex(cardCount, date = new Date()) {
+    const key = getPragueDateKey(date);
+    let hash = 0;
+    for (let i = 0; i < key.length; i++) hash = ((hash << 5) - hash + key.charCodeAt(i)) | 0;
+    return Math.abs(hash) % cardCount;
+}
+
+export function getDailyCardPractice(name) {
+    const practice = practices[name];
+    if (!practice || !descriptions[name]) throw new Error('Daily card practice unavailable');
+    return { question: practice[0], action: practice[1], observation: descriptions[name].interpretation, meaning: descriptions[name].meaning };
+}

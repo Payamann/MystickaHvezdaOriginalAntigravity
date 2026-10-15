@@ -14,6 +14,8 @@ export const NUMBER_MEANINGS = {
 };
 
 export function reduceToSingleDigit(num, preserveMaster = true) {
+    num = Number(num);
+    if (!Number.isFinite(num) || num < 0 || !Number.isInteger(num)) return 0;
     while (num > 9) {
         if (preserveMaster && (num === 11 || num === 22 || num === 33)) {
             return num;
@@ -24,7 +26,9 @@ export function reduceToSingleDigit(num, preserveMaster = true) {
 }
 
 export function calculateLifePath(birthDate) {
-    if (!birthDate) return 0;
+    if (typeof birthDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) return 0;
+    const date = new Date(`${birthDate}T00:00:00Z`);
+    if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== birthDate) return 0;
     const [year, month, day] = birthDate.split('-').map(Number);
     if (!year || !month || !day) return 0;
 

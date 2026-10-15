@@ -1,3 +1,5 @@
+import { showFallbackNotice } from './utils/reading-display.js';
+
 (function () {
     'use strict';
 
@@ -271,6 +273,7 @@
 
                 // Fill result
                 var r = data.result;
+                showFallbackNotice(document.getElementById('pl-result'), data.fallback);
                 document.getElementById('res-era').textContent = r.era || '';
                 document.getElementById('res-identity').textContent = r.identity || '';
                 document.getElementById('res-karmic').textContent = r.karmic_lesson || '';

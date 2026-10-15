@@ -2,10 +2,15 @@
  * Favorites tab functionality
  */
 
-import { profileIconMarkup, escapeHtml, apiUrl, authHeaders, getReadingIcon, getReadingLabel } from './shared.js';
+import { profileIconMarkup, escapeHtml, apiUrl, authHeaders, getReadingIcon, getReadingLabel, getReadingPreview } from './shared.js';
 import { getReadingSummary } from './readings.js';
 
 let favoritesRequest = 0;
+
+export function resetFavoritesState() {
+    ++favoritesRequest;
+    document.getElementById('favorites-list')?.replaceChildren();
+}
 
 function renderEmptyFavorites(readingCount = 0) {
     const hasReadings = readingCount > 0;
@@ -59,6 +64,7 @@ export async function loadFavorites(page = 1, version = null) {
                         <span class="reading-item__icon" aria-hidden="true">${getReadingIcon(reading.type)}</span>
                         <div>
                             <strong>${escapeHtml(getReadingLabel(reading))}</strong>
+                            ${getReadingPreview(reading) ? `<p class="reading-item__preview">${escapeHtml(getReadingPreview(reading))}</p>` : ''}
                             <p class="reading-item__date">
                                 ${new Date(reading.created_at).toLocaleDateString('cs-CZ', {
             day: 'numeric', month: 'long', year: 'numeric'

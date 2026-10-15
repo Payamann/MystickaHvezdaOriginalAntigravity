@@ -1,5 +1,3 @@
-import { calculateSynastryScores } from './utils/synastry-logic.js';
-
 /**
  * Mystická Hvězda - Synastry Calculator (AI-Powered)
  * Uses the server AI API for detailed relationship analysis.
@@ -191,6 +189,58 @@ function normalizeServerSynastryScores(scores) {
     return Object.values(normalized).every(Number.isFinite) ? normalized : null;
 }
 
+function resetSynastryResultVisuals(resultsDiv) {
+    const scoreIds = ['total-score', 'score-emotion', 'score-comm', 'score-passion', 'score-stability'];
+    scoreIds.forEach((id) => {
+        const element = document.getElementById(id);
+        if (element) {
+            if (element.synastryAnimationTimer) clearInterval(element.synastryAnimationTimer);
+            element.synastryAnimationTimer = null;
+            element.textContent = '--';
+        }
+    });
+    ['heart-anim', 'bar-emotion', 'bar-comm', 'bar-passion', 'bar-stability'].forEach((id) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.getAnimations?.().forEach((animation) => animation.cancel());
+            element.style.transform = id === 'heart-anim' ? 'scaleY(0)' : 'scaleX(0)';
+        }
+    });
+    resultsDiv?.querySelector('.premium-lock-overlay')?.remove();
+    resultsDiv?.querySelector('.card')?.classList.remove('blur-content', 'premium-lock-host');
+    renderSynastryEngineSummary(resultsDiv, null);
+    setBlockVisible(document.getElementById('synastry-next-step'), false);
+    lastSynastryShareData = null;
+}
+
+function showSynastryCalculationError(resultsDiv, message) {
+    resetSynastryResultVisuals(resultsDiv);
+    const verdict = document.getElementById('verdict-text');
+    if (verdict) verdict.textContent = 'Výpočet se nepodařilo načíst.';
+
+    let container = document.getElementById('ai-synastry');
+    if (!container) container = createAIResultsContainer();
+    container.classList.remove('teaser-overlay-host');
+    container.querySelector('.teaser-overlay')?.remove();
+    const content = container.querySelector('.ai-content');
+    content?.classList.remove('blur-content');
+    if (content) {
+        content.innerHTML = '';
+        const text = document.createElement('p');
+        text.textContent = message;
+        const retry = document.createElement('button');
+        retry.type = 'button';
+        retry.className = 'btn btn--primary synastry-calculation-retry';
+        retry.textContent = 'Zkusit výpočet znovu';
+        retry.addEventListener('click', () => document.getElementById('synastry-form')?.requestSubmit());
+        content.append(text, retry);
+    }
+
+    setBlockVisible(container, true);
+    setBlockVisible(resultsDiv, true);
+    resultsDiv?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function optionalInputValue(id) {
     const value = document.getElementById(id)?.value?.trim();
     return value || undefined;
@@ -316,9 +366,10 @@ function applySynastryScores(scores, showDetails) {
 }
 
 async function fetchCalculatedSynastry(person1, person2) {
-    if (!window.callAPI) return null;
+    if (!window.callAPI) throw new Error('Synastry API client is unavailable.');
     const data = await window.callAPI('/synastry/calculate', { person1, person2 });
-    return data.synastry || null;
+    if (!data?.synastry) throw new Error(data?.error || 'Synastry calculation returned no result.');
+    return data.synastry;
 }
 
 function trackSynastryCalculation(scores, synastry) {
@@ -603,6 +654,8 @@ async function calculateCompatibility() {
 
     btn.textContent = 'Analyzuji hvězdy...';
     btn.disabled = true;
+    setBlockVisible(resultsDiv, false);
+    setBlockVisible(document.getElementById('synastry-next-step'), false);
 
     // Get form data
     const person1 = {
@@ -618,24 +671,32 @@ async function calculateCompatibility() {
         birthPlace: optionalInputValue('p2-place')
     };
 
-    // Calculate scores using imported logic
-    const scores = calculateSynastryScores(person1, person2);
-    const { emotion: emotionScore, communication: commScore, passion: passionScore, stability: stabilityScore, total: totalScore } = scores;
-    let displayedScores = { totalScore, emotionScore, commScore, passionScore, stabilityScore };
+    let displayedScores;
     let calculatedSynastry = null;
 
     try {
         calculatedSynastry = await fetchCalculatedSynastry(person1, person2);
         const serverScores = normalizeServerSynastryScores(calculatedSynastry?.scores);
-        if (serverScores) {
-            displayedScores = serverScores;
-            trackSynastryCalculation(displayedScores, calculatedSynastry);
-        }
+        if (!serverScores) throw new Error('Synastry calculation returned invalid scores.');
+        displayedScores = serverScores;
+        trackSynastryCalculation(displayedScores, calculatedSynastry);
     } catch (calculationError) {
-        console.warn('Synastry engine calculation fallback:', calculationError.message);
+        console.warn('Synastry engine calculation unavailable:', calculationError.message);
+        showSynastryCalculationError(
+            resultsDiv,
+            'Zadané údaje zůstaly ve formuláři. Zkontrolujte připojení a zkuste výpočet znovu.'
+        );
+        btn.textContent = originalText;
+        btn.disabled = false;
+        return;
     }
 
-    const viewerProfile = window.Auth?.isLoggedIn?.() ? await window.Auth.getProfile() : null;
+    let viewerProfile = null;
+    try {
+        viewerProfile = window.Auth?.isLoggedIn?.() ? await window.Auth.getProfile() : null;
+    } catch (profileError) {
+        console.warn('Synastry profile lookup unavailable:', profileError.message);
+    }
     const hasActiveSession = !!viewerProfile;
 
     // Show results with animation
@@ -655,7 +716,7 @@ async function calculateCompatibility() {
     }
 
     // Detailed Scores - Gated
-    const cardTitle = document.querySelector('.card__title');
+    const cardTitle = resultsDiv.querySelector('.card__title');
     const detailCard = cardTitle ? cardTitle.closest('.card') : null;
     if (!detailCard) {
         btn.textContent = originalText;
@@ -797,21 +858,31 @@ async function calculateCompatibility() {
 
     } catch (error) {
         console.error('Synastry Error:', error);
-
-        // Fallback to static verdict
-        let verdict = "";
-        if (displayedScores.totalScore > 85) verdict = "Velmi silná shoda s výraznou vzájemnou podporou.";
-        else if (displayedScores.totalScore > 70) verdict = "Velmi silný pár s harmonickými aspekty.";
-        else verdict = "Vztah s potenciálem, který vyžaduje práci.";
-        document.getElementById('verdict-text').textContent = verdict;
-
-        setBlockVisible(aiResultsDiv, true);
-        aiResultsDiv.querySelector('.ai-content').textContent =
-            'Hlubší analýza momentálně není dostupná. Zkuste to prosím později.';
+        document.getElementById('verdict-text').textContent =
+            'Skóre je vypočtené. Hlubší analýzu se nepodařilo načíst.';
+        showSynastryInterpretationError(aiResultsDiv);
     }
 
     btn.textContent = originalText;
     btn.disabled = false;
+}
+
+function showSynastryInterpretationError(container) {
+    container.classList.remove('teaser-overlay-host');
+    container.querySelector('.teaser-overlay')?.remove();
+    const content = container.querySelector('.ai-content');
+    content.classList.remove('blur-content');
+    content.innerHTML = '';
+
+    const text = document.createElement('p');
+    text.textContent = 'Vypočtené skóre zůstává zobrazené. Pro hlubší analýzu zkuste požadavek znovu.';
+    const retry = document.createElement('button');
+    retry.type = 'button';
+    retry.className = 'btn btn--primary synastry-interpretation-retry';
+    retry.textContent = 'Zkusit analýzu znovu';
+    retry.addEventListener('click', () => document.getElementById('synastry-form')?.requestSubmit());
+    content.append(text, retry);
+    setBlockVisible(container, true);
 }
 
 function createAIResultsContainer() {
@@ -891,6 +962,11 @@ function animateValue(id, start, end, duration) {
     const obj = document.getElementById(id);
     if (!obj) return;
 
+    if (obj.synastryAnimationTimer) {
+        clearInterval(obj.synastryAnimationTimer);
+        obj.synastryAnimationTimer = null;
+    }
+
     const range = end - start;
     if (range === 0) {
         obj.textContent = end + "%";
@@ -901,11 +977,12 @@ function animateValue(id, start, end, duration) {
     const increment = end > start ? 1 : -1;
     const stepTime = Math.max(1, Math.abs(Math.floor(duration / range)));
 
-    const timer = setInterval(function () {
+    obj.synastryAnimationTimer = setInterval(function () {
         current += increment;
         obj.textContent = current + "%";
         if (current === end) {
-            clearInterval(timer);
+            clearInterval(obj.synastryAnimationTimer);
+            obj.synastryAnimationTimer = null;
         }
     }, stepTime);
 }

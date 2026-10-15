@@ -9,60 +9,8 @@
  * failure — callers decide how to record/retry/alert.
  */
 
-export async function fulfillPersonalMapOrder({ customerName, customerEmail, payload = {} }) {
-    const {
-        birthDate,
-        birthTime = '',
-        birthPlace = '',
-        sign,
-        grammaticalGender = 'neutral',
-        focusArea = 'other',
-        focus,
-        productYear,
-        productPeriodStart,
-        productPeriodEnd
-    } = payload;
-    const year = Number(productYear) || new Date().getFullYear();
-
-    const { generatePersonalMapContent, renderPersonalMapPdf } = await import('./personal-map-pdf.js');
-    const { sendPersonalMapPdf } = await import('../email-service.js');
-
-    const sections = await generatePersonalMapContent({
-        name: customerName,
-        birthDate,
-        birthTime,
-        birthPlace,
-        sign,
-        focusArea,
-        focus,
-        grammaticalGender,
-        year,
-        periodStart: productPeriodStart,
-        periodEnd: productPeriodEnd
-    });
-
-    const pdfBuffer = await renderPersonalMapPdf({
-        name: customerName,
-        sign,
-        birthDate,
-        focusArea,
-        focus,
-        year,
-        periodStart: productPeriodStart,
-        periodEnd: productPeriodEnd,
-        productName: 'Osobní mapa na 12 měsíců',
-        sections
-    });
-
-    await sendPersonalMapPdf({
-        to: customerEmail,
-        name: customerName,
-        sign,
-        pdfBuffer,
-        periodStart: productPeriodStart,
-        periodEnd: productPeriodEnd
-    });
-}
+export { fulfillPersonalMapOrder } from './personal-map-fulfillment.js';
+import { fulfillPersonalMapOrder } from './personal-map-fulfillment.js';
 
 export async function fulfillRocniHoroskopOrder({ customerName, customerEmail, payload = {} }) {
     const { birthDate, sign } = payload;
@@ -82,7 +30,7 @@ export async function fulfillOneTimeOrder({ productType, customerName, customerE
         return fulfillRelationshipTarotOrder({ orderId });
     }
     if (productType === 'personal_map') {
-        return fulfillPersonalMapOrder({ customerName, customerEmail, payload });
+        return fulfillPersonalMapOrder({ orderId });
     }
     if (productType === 'rocni_horoskop') {
         return fulfillRocniHoroskopOrder({ customerName, customerEmail, payload });

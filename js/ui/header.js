@@ -48,10 +48,17 @@ export function initMobileNav() {
             item.querySelector('.nav__link--dropdown-toggle')?.setAttribute('aria-expanded', 'false');
         });
     };
+    const setDropdownOpen = (item, open) => {
+        if (!item) return;
+        closeDropdowns(open ? item : null);
+        item.classList.toggle('is-active', open);
+        item.querySelector('.nav__link--dropdown-toggle')?.setAttribute('aria-expanded', String(open));
+    };
     const setMenuOpen = (open, focusFirstLink = false) => {
         navList.classList.toggle('open', open);
         toggle.classList.toggle('active', open);
         toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute('aria-label', open ? 'Zavřít hlavní menu' : 'Otevřít hlavní menu');
         document.body.classList.toggle('nav-open', open);
 
         if (isMobileNav()) {
@@ -66,10 +73,11 @@ export function initMobileNav() {
         }
     };
     const syncNavA11y = () => {
-        if (isMobileNav() && !navList.classList.contains('open')) {
-            navList.setAttribute('aria-hidden', 'true');
+        if (isMobileNav()) {
+            navList.setAttribute('aria-hidden', String(!navList.classList.contains('open')));
             return;
         }
+        if (navList.classList.contains('open')) setMenuOpen(false);
         navList.removeAttribute('aria-hidden');
     };
 
@@ -83,10 +91,20 @@ export function initMobileNav() {
         if (!toggleLink || !dropdown) return;
 
         if (!dropdown.id) dropdown.id = `nav-dropdown-${index + 1}`;
-        toggleLink.setAttribute('role', 'button');
         toggleLink.setAttribute('aria-haspopup', 'true');
         toggleLink.setAttribute('aria-expanded', 'false');
         toggleLink.setAttribute('aria-controls', dropdown.id);
+
+        item.addEventListener('mouseenter', () => {
+            if (!isMobileNav()) setDropdownOpen(item, true);
+        });
+        item.addEventListener('mouseleave', () => {
+            if (!isMobileNav() && !item.contains(document.activeElement)) setDropdownOpen(item, false);
+        });
+        item.addEventListener('focusout', (event) => {
+            if (isMobileNav() || item.contains(event.relatedTarget)) return;
+            setDropdownOpen(item, false);
+        });
     });
 
     // Toggle menu
@@ -94,28 +112,24 @@ export function initMobileNav() {
         setMenuOpen(!navList.classList.contains('open'), true);
     });
 
-    // Dropdown toggles (accordion effect)
+    // Dropdown buttons work the same with click, Enter and Space on every viewport.
     const dropdownToggles = navList.querySelectorAll('.nav__link--dropdown-toggle');
     dropdownToggles.forEach(toggleBtn => {
         toggleBtn.addEventListener('click', (e) => {
-            // Always prevent href="#" from scrolling to top
             e.preventDefault();
-
-            // Only act like an accordion on mobile view (where dropdown is static)
-            if (window.innerWidth <= 992) {
-                const parentItem = toggleBtn.closest('.nav__item--has-dropdown');
-
-                const isOpen = parentItem.classList.contains('is-active');
-                closeDropdowns(parentItem);
-                parentItem.classList.toggle('is-active', !isOpen);
-                toggleBtn.setAttribute('aria-expanded', String(!isOpen));
-            }
+            e.stopPropagation();
+            const parentItem = toggleBtn.closest('.nav__item--has-dropdown');
+            const isOpen = parentItem?.classList.contains('is-active');
+            setDropdownOpen(parentItem, !isOpen);
         });
 
         toggleBtn.addEventListener('keydown', (e) => {
-            if (e.key !== ' ') return;
+            if (e.key === ' ' && toggleBtn.tagName !== 'BUTTON') { e.preventDefault(); toggleBtn.click(); return; }
+            if (e.key !== 'ArrowDown') return;
             e.preventDefault();
-            toggleBtn.click();
+            const parentItem = toggleBtn.closest('.nav__item--has-dropdown');
+            setDropdownOpen(parentItem, true);
+            parentItem?.querySelector('.nav__dropdown-link')?.focus({ preventScroll: true });
         });
     });
 
@@ -128,18 +142,24 @@ export function initMobileNav() {
 
     // Close menu on Escape key
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && navList.classList.contains('open')) {
+        if (e.key !== 'Escape') return;
+        const expandedDropdown = navList.querySelector('.nav__link--dropdown-toggle[aria-expanded="true"]');
+        if (isMobileNav() && navList.classList.contains('open')) {
             setMenuOpen(false);
             toggle.focus();
+        } else if (expandedDropdown) {
+            closeDropdowns();
+            expandedDropdown.focus();
         }
     });
 
     // Close menu on click outside
     document.addEventListener('click', (e) => {
-        if (!toggle.contains(e.target) && !navList.contains(e.target) && navList.classList.contains('open')) {
-            setMenuOpen(false);
-        }
+        if (toggle.contains(e.target) || navList.contains(e.target)) return;
+        closeDropdowns();
+        if (navList.classList.contains('open')) setMenuOpen(false);
     });
 
+    navList.dataset.dropdownsReady = 'true';
     window.addEventListener('resize', syncNavA11y);
 }
