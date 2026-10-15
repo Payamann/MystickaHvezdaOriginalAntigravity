@@ -84,14 +84,33 @@ Nejslabší část je Přehled: kombinuje obecný denní tip, statistiky, checkl
 - [ ] **PF09 · P3:** nahradit výběr avatarů A–L smysluplnými iniciálami nebo několika symboly z naší SVG sady. Není třeba dalších generovaných ilustrací; současná volba působí jako pracovní placeholder.
 - [ ] **PF10 · P3:** pro návrat prioritizovat „poslední výklad + vlastní poznámka“. Statistiky, denní série a checklist ponechat dobrovolné. Označení „Poslední výklad“ nyní zahrnuje i Osobní poznámku (`getLastReadingLabel`); buď rozlišit, nebo přejmenovat na „Poslední záznam“.
 
+## Další návaznosti knihovny a výkladů
+
+### Doplnění: poznat vlastní výklad a neztratit jeho obsah
+
+- [ ] **PF11 · P2 — Rozlišit jednotlivé výklady v knihovně.** V historii i oblíbených zobrazit druh tarotu (ano/ne, karta dne, více karet) a krátkou vlastní otázku nebo název karty. U poznámek krátký úryvek. V detailu zachovat původní otázku i u tarotu s polem `cards`, nikoliv pouze u větve `data.answer`.
+
+  **Podklad:** `readings.js:209–224` a `favorites.js` zobrazují zejména typ a datum. `shared.js:getReadingLabel` zpřesňuje jen horoskop; tarotové podtypy se slévají do „Tarotový výklad“. `tarot-karta-dne.js:157–171` přitom ukládá `spreadType` a jiné zdroje `tool` nebo otázku. V `modal.js:540–575` větev tarotových karet původní `data.question` nevykreslí; otázka se zobrazuje až v odlišné větvi `data.answer`. Jde o zdrojové zjištění; nebyly nově kontrolované všechny produkční historické formáty.
+
+  **Přijetí:** mezi třemi taroty ze stejného dne poznám, který hledám, bez otevření každého. Detail otázku neztratí. Používat existující data s bezpečným fallbackem, neupravovat historické otázky ani je neposílat do analytiky/URL.
+
+- [ ] **PF12 · P3 — Prověřit dobrovolný návrat ke koupenému výkladu.** Zjistit, zda zákazníci potřebují vlastní osobní výklad za 149 Kč a mapu dohledat také po přihlášení. Pokud ano, navrhnout jednoduchou sekci „Moje objednávky“ nebo bezpečný návrat k již doručenému produktu, bez druhé platby a generování.
+
+  **Podklad:** profilové moduly nyní čtou historii `readings` a stav členství; neobsahují čtení jednorázových objednávek. Produkt podle `docs/relationship-tarot-pilot.md` funguje samostatně bez registrace a doručuje se e-mailem. To není porucha doručení; jde o návrh lepší návaznosti existujících produktů.
+
+  **Přijetí případné realizace:** původní nákup a doručení zůstávají bez povinného účtu. Objednávka se zpřístupní pouze ověřenému oprávněnému příjemci, nikoliv podle e-mailu napsaného do formuláře. Profil odlišuje zaplaceno, připravuje se, odesláno a případnou chybu podle skutečných serverových dat. Nejprve posoudit přínos a existující návratovou cestu, nezakládat druhý systém objednávek.
+
 ## Ověření, která ještě nelze označit za hotová
 
 - [ ] **PV01:** dokončit modelovou matici pro prázdný účet, pouze jednu dnešní reflexi, starší poznámky mimo první stránku, více druhů výkladů, chybu avataru a detailu, přerušení během načítání. Každý případ navázat na PF01–PF07; nepouštět opakovaně celý webový audit.
 - [ ] **PV02:** v odpovídajícím testovacím prostředí ověřit skutečné členské UI pro trialing, active, cancel_pending, paused, past_due a canceled a návaznosti portálu. Dřívější serverové billing testy a ruční přístup bez Stripe ID nejsou živým potvrzením všech těchto klientských stavů. Neměnit skutečné předplatné kvůli auditu.
 - [ ] **PV03:** cíleně ověřit vypršení session při práci s rozepsanou poznámkou, návrat po přihlášení a platný e-mailový reset. Změnu reálného hesla provádí vlastník; původní A07/A08 zůstávají ve společném seznamu účtu.
+- [ ] **PV04:** pro každý skutečně ukládaný nástroj porovnat původní výsledek s uloženým detailem: otázka, vybrané karty/symboly, interpretace, praktický krok a označení případného fallbacku. Zahrnout starší datové formáty, ne pouze aktuální syntetický tarot/horoskop/journal. `modal.js:618` má nouzový JSON výpis; není zatím prokázané, které reálné formáty do něj spadají. Cílem je čitelný věrný výklad, ne technický výpis nebo nové generování odlišné odpovědi. Použít modelové podklady a existující testy; kontrola nemá vytvářet placené objednávky či e-maily.
 
 ## Pořadí realizace
 
 PF01 → společný stav PF02/PF03 → dostupnost poznámek a checklist PF04/PF05 → chybové stavy a pravdivé texty PF06/PF07 → teprve potom volitelné PF08–PF10. Ověření PV01–PV03 provádět podle zasažené větve, ne jako odklad všech drobných oprav.
+
+PF11 zařadit k filtrům PF04 a ověřit pomocí PV04. PF12 je volitelná produktová návaznost až po opravě funkčních chyb; není blokací nynějšího doručování ani důvodem rozšiřovat členství.
 
 Stav: **TODO zapsané, produktový kód v této kontrole nezměněný.** Soukromá produkční data nebyla načítaná. Snímky a záznam kontrolního pokusu jsou v [modelových podkladech](../profile-unification-2026-10-14/profile-followup/verification.json); tento konkrétní pokus změnu témat po uložení nastavení nepotvrdil, a proto není veden jako potvrzená UI závada.

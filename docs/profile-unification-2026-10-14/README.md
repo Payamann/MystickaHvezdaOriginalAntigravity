@@ -32,7 +32,7 @@ Checkpoint 15. 10. 2026. **Lokální release kandidát, bez nasazení.** Navazuj
 
 ## Další pořadí práce
 
-**Doplnění z navazující kontroly profilu:** [PF01–PF10 a potřebná ověření PV01–PV03](../page-simplification-2026-10-14/profile-followup-todo.md). Jde o zbývající návaznosti po implementaci P01–P10, ne o opakování původních opravených bodů.
+**Doplnění z navazující kontroly profilu:** [PF01–PF12 a potřebná ověření PV01–PV04](../page-simplification-2026-10-14/profile-followup-todo.md). Jde o zbývající návaznosti po implementaci P01–P10, ne o opakování původních opravených bodů.
 
 1. **Výsledkové texty a důvěra:** projít celý slovník tarotu ano/ne a čínského horoskopu. Zachycené příklady: Desítka mečů automaticky tvrdí definitivní konec situace; čínský Drak doporučuje „velké investice“. V této dávce byl opraven konkrétní přehnaný text Královny pohárů, nikoliv celý slovník. Totéž platí pro nepodložená tvrzení v bioritmech a starších blogových perexech.
 2. **V11 a zbývající V02/V14:** runtime emoji a přebytečné rozcestníky na dalších nástrojích; referenční bloky a FAQ aury/denního tarotu. Krátká užitečná vysvětlení nesbalovat automaticky.
