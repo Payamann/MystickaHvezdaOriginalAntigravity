@@ -47,6 +47,7 @@ export async function loadFavorites(page = 1, version = null) {
         if (!response.ok) throw new Error('Failed to load readings');
 
         const data = await response.json();
+        if (!data.success || !Array.isArray(data.readings)) throw new Error('Invalid favorites response');
         if (version !== favoritesRequest) return;
         const readings = data.readings || [];
         const favorites = readings;

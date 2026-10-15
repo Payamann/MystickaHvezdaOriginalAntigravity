@@ -1,3 +1,5 @@
+import { getLunarState as getMoonPhase } from './utils/lunar-state.js';
+
 /**
  * Mystická Hvězda — Lunární Rituály: Landing page logika
  * Závisí na: ritualy-content.js (window.RitualContent), moon-phase.js (ES module import)
@@ -6,30 +8,11 @@
 (function () {
     'use strict';
 
-    /* ── Jednoduchý výpočet fáze (kopie logiky z moon-phase.js, bez ES module) ── */
-    function getMoonPhase() {
-        const lp          = 2551442877; // ms v synodickém měsíci
-        const new_moon    = new Date('2026-02-17T12:01:00Z').getTime();
-        const diff        = Date.now() - new_moon;
-        let   phase       = (diff % lp) / lp;
-        if (phase < 0) phase += 1;
-
-        if (phase < 0.03) return { name: 'Novolunění',          slug: 'new-moon',        icon: '🌑' };
-        if (phase < 0.22) return { name: 'Dorůstající srpek',   slug: 'waxing-crescent', icon: '🌒' };
-        if (phase < 0.28) return { name: 'První čtvrť',         slug: 'first-quarter',   icon: '🌓' };
-        if (phase < 0.47) return { name: 'Dorůstající měsíc',   slug: 'waxing-gibbous',  icon: '🌔' };
-        if (phase < 0.53) return { name: 'Úplněk',              slug: 'full-moon',       icon: '🌕' };
-        if (phase < 0.72) return { name: 'Ubývající měsíc',     slug: 'waning-gibbous',  icon: '🌖' };
-        if (phase < 0.78) return { name: 'Poslední čtvrť',      slug: 'last-quarter',    icon: '🌗' };
-        if (phase < 0.97) return { name: 'Ubývající srpek',     slug: 'waning-crescent', icon: '🌘' };
-        return                    { name: 'Novolunění',          slug: 'new-moon',        icon: '🌑' };
-    }
-
     const RITUAL_DESC = {
         'new-moon':        'Čas pro nové začátky a setí záměrů do temnoty.',
         'waxing-crescent': 'Odvaha k prvním krokům a budování impulzu.',
         'first-quarter':   'Vůle překonat překážky a jednat rozhodně.',
-        'waxing-gibbous':  'Vyladění detailů — jste téměř na vrcholu.',
+        'waxing-gibbous':  'Vyladění jednoho rozpracovaného detailu.',
         'full-moon':       'Vrchol energie, oslava a vědomé propuštění.',
         'waning-gibbous':  'Reflexe, sdílení moudrosti a vděčnost.',
         'last-quarter':    'Hluboké čistění — prostor pro nový začátek.',

@@ -2,100 +2,100 @@
 
 const CHINESE_ANIMALS = {
     krysa: {
-        name: 'Krysa', emoji: '🐭', fixedElement: 'Voda', years: '1900,1912,1924,1936,1948,1960,1972,1984,1996,2008,2020',
-        desc: 'Krysy jsou chytré, přizpůsobivé a obratné. Mají přirozený dar pro obchod a vyjednávání. Jsou věrní přátelé, i když se navenek tváří rezervovaně.',
-        love: 'V lásce jsou nesmírně věrní a oddaní. Hledají partnera, s nímž sdílí intelektuální spojení. Ideálně Drak nebo Opice.',
-        career: 'Podnikání, finance, politika, věda — kdekoli se uplatní jejich bystrost a adaptabilita.',
-        y2026: 'Rok Koně přináší Krysám dynamiku a příležitosti k expanzi. Je to čas odvážných kroků, zvláště v kariéře. Pozor na impulzivní finanční rozhodnutí.',
-        good: ['🐲 Drak', '🐒 Opice', '🐂 Buvol'], bad: ['🐴 Kůň', '🐓 Kohout']
+        name: 'Krysa', symbol: '子', fixedElement: 'Voda', years: '1900,1912,1924,1936,1948,1960,1972,1984,1996,2008,2020',
+        desc: 'Krysa v tradiční symbolice představuje všímavost a hledání dostupných možností. Kde ti dnes pomůže dobře položená otázka?',
+        love: 'Všimni si, co si s druhým člověkem opravdu říkáte a co si jen domýšlíš. Jednu nejasnost pojmenuj přímo.',
+        career: 'Před dalším úkolem si sepiš, co už máš k dispozici. Třeba chybí jeden rozhovor, ne celý nový plán.',
+        y2026: 'V tradičním čínském zvěrokruhu se rok Koně spojuje s pohybem a samostatností. Jako Krysa můžeš tenhle motiv využít k zamyšlení: kde ti prospívá plán a kde větší pružnost?',
+        good: ['Drak', 'Opice', 'Buvol'], bad: ['Kůň', 'Kohout']
     },
     buvol: {
-        name: 'Buvol', emoji: '🐂', fixedElement: 'Země', years: '1901,1913,1925,1937,1949,1961,1973,1985,1997,2009,2021',
-        desc: 'Buvoli jsou spolehliví, pracovití a trpěliví. Dosahují cílů vytrvalostí a pečlivostí. Jsou pilíři svých komunit a rodin.',
-        love: 'V lásce jsou věrní, ale potřebují čas otevřít se. Ideálně Had nebo Kohout, kteří ocení jejich stabilitu.',
-        career: 'Zemědělství, stavebnictví, medicina, právo — vse co vyžaduje pečlivost a systematičnost.',
-        y2026: 'Rok Koně přináší Buvolům potřebu flexibility — což není jejich silná stránka. Ale ti, kteří se otevřou novým přístupům, zažijí průlom.',
-        good: ['🐍 Had', '🐓 Kohout', '🐭 Krysa'], bad: ['🐐 Koza', '🐕 Pes']
+        name: 'Buvol', symbol: '丑', fixedElement: 'Země', years: '1901,1913,1925,1937,1949,1961,1973,1985,1997,2009,2021',
+        desc: 'Buvol nabízí obraz vytrvalosti a práce, která dozrává postupně. Zvaž, co chceš držet pravidelně a co už děláš jen ze zvyku.',
+        love: 'Spolehlivost má konkrétní podobu: malou dohodu, kterou oba znáte. U jedné takové dohody si ověř vzájemné očekávání.',
+        career: 'Vyber jeden rozpracovaný úkol a dokonči jeho nejmenší užitečnou část.',
+        y2026: 'Motiv roku Koně v čínské tradici zdůrazňuje pohyb, zatímco Buvol bývá spojován s vytrvalostí. Můžeš si položit otázku, kde se vyplatí držet plán a kde připustit změnu.',
+        good: ['Had', 'Kohout', 'Krysa'], bad: ['Koza', 'Pes']
     },
     tygr: {
-        name: 'Tygr', emoji: '🐯', fixedElement: 'Dřevo', years: '1902,1914,1926,1938,1950,1962,1974,1986,1998,2010,2022',
-        desc: 'Tygři jsou odvážní, charismatičtí a přiroznení vůdci. Jsou ochotni bojovat za to, v co věří. Jejich přítomnost je neodmyslitelná.',
-        love: 'V lásce jsou vášniví a intenzivní. Hledají partnera silného ducha. Nejlepší shoda: Kůň nebo Pes.',
-        career: 'Armáda, sport, podnikání, herectví — ve všem kde je potřeba odvaha a charisma.',
-        y2026: 'Rok Koně je pro Tygry příznivý — oba sdílejí energii a touhu po svobodě. Je ideální čas na realizaci dlouholetých ambicí.',
-        good: ['🐴 Kůň', '🐕 Pes', '🐲 Drak'], bad: ['🐒 Opice', '🐂 Buvol']
+        name: 'Tygr', symbol: '寅', fixedElement: 'Dřevo', years: '1902,1914,1926,1938,1950,1962,1974,1986,1998,2010,2022',
+        desc: 'Tygr může připomenout odvahu postavit se za důležitou věc. Odvaha přitom nemusí být nejhlasitější hlas v místnosti.',
+        love: 'Pojmenuj jednu vlastní potřebu tak, aby v rozhovoru zůstal prostor i pro potřebu druhého.',
+        career: 'U záměru, který odkládáš, si urči malý pokus a bezpečnou hranici.',
+        y2026: 'Tygr i Kůň se v tradičních výkladech pojí s pohybem a nezávislostí. Ber to jako symbolický podnět k zamyšlení, jakou změnu chceš sám promyslet.',
+        good: ['Kůň', 'Pes', 'Drak'], bad: ['Opice', 'Buvol']
     },
     zajic: {
-        name: 'Zajíc', emoji: '🐰', fixedElement: 'Dřevo', years: '1903,1915,1927,1939,1951,1963,1975,1987,1999,2011,2023',
-        desc: 'Zajíci jsou klidní, empatičtí a diplomatičtí. Mají jemný smysl pro krásu a estetiku. Jsou přirozenými mírotvorci a vyhýbají se konfliktu.',
-        love: 'V lásce jsou romantiční a nežní. Hledají harmonický vztah. Nejlepší shoda: Koza nebo Prase.',
-        career: 'Umění, diplomacie, medicína, zahradnictví, psychologie — vše kde je potřeba jemnost a empatie.',
-        y2026: 'Rok Koně může Zajícům připadat příliš rychlý a hlasitý. Je důležité udržet si svůj klid a nespěchat. Příležitosti přijdou pro trpělivé.',
-        good: ['🐐 Koza', '🐷 Prase', '🐕 Pes'], bad: ['🐓 Kohout', '🐲 Drak']
+        name: 'Zajíc', symbol: '卯', fixedElement: 'Dřevo', years: '1903,1915,1927,1939,1951,1963,1975,1987,1999,2011,2023',
+        desc: 'Zajíc v symbolickém čtení otevírá téma jemnosti, klidu a citlivosti k prostředí. Klid ale nemusí znamenat vyhnout se potřebnému rozhovoru.',
+        love: 'Zkus říct jednu nepříjemnou věc laskavě a konkrétně. Zároveň si všimni, zda je pro rozhovor bezpečný prostor.',
+        career: 'Uprav jeden detail místa, kde trávíš čas, aby se ti v něm lépe soustředilo.',
+        y2026: 'Rychlý Kůň a klidnější Zajíc vytvářejí v symbolickém čtení zajímavý kontrast. Může připomenout, že vlastní tempo si můžeš zvolit podle situace.',
+        good: ['Koza', 'Prase', 'Pes'], bad: ['Kohout', 'Drak']
     },
     drak: {
-        name: 'Drak', emoji: '🐲', fixedElement: 'Země', years: '1904,1916,1928,1940,1952,1964,1976,1988,2000,2012,2024',
-        desc: 'Draci jsou nejenergetičtějším a nejcharismatičtějším ze všech čínských znamení. Mají přirozenou autoritu a velkorysost. Jsou narozeni pro velké věci.',
-        love: 'V lásce jsou vášniví a oddaní, i když někdy dominantní. Ideální partner: Krysa, Opice nebo Kůň.',
-        career: 'Politika, podnikání, umění, věda — Draci excelují tam, kde mohou být středem pozornosti.',
-        y2026: 'Rok Koně přináší Drakům dynamiku a příležitosti pro expanzi. Je to jejich rok pro velké investice a odvážné projekty. Energie je na vaší straně.',
-        good: ['🐭 Krysa', '🐒 Opice', '🐴 Kůň'], bad: ['🐕 Pes', '🐰 Zajíc']
+        name: 'Drak', symbol: '辰', fixedElement: 'Země', years: '1904,1916,1928,1940,1952,1964,1976,1988,2000,2012,2024',
+        desc: 'Drak představuje výrazný záměr a chuť něco vytvořit. Symbol může podpořit představivost; proveditelnost nápadu ověřují skutečné podmínky.',
+        love: 'Vedle vlastního velkého plánu se zeptej, jak ho prožívá druhý člověk. Odpověď nech skutečně zaznít.',
+        career: 'Převeď jeden nápad na první krok, potřebný čas a údaj, který si ještě ověříš.',
+        y2026: 'Drak a Kůň jsou v čínské tradici výrazné symboly pohybu a síly. Jejich spojení může posloužit jako podnět k úvaze, které nápady chceš převést do konkrétního plánu.',
+        good: ['Krysa', 'Opice', 'Kůň'], bad: ['Pes', 'Zajíc']
     },
     had: {
-        name: 'Had', emoji: '🐍', fixedElement: 'Oheň', years: '1905,1917,1929,1941,1953,1965,1977,1989,2001,2013,2025',
-        desc: 'Hadi jsou moudré, intuitivní a tajemné bytosti. Mají přirozený dar pro analýzu situací a vidí za povrch věcí. Jsou přitažliví svou záhadností.',
-        love: 'V lásce jsou intenzivní a věrní, ale i žárliví. Ideální: Buvol nebo Kohout — pro jejich stabilitu.',
-        career: 'Filozofie, věda, finance, astrologie, medicína — vše co vyžaduje hloubku a analytické myšlení.',
-        y2026: 'Rok Koně přináší Hadům výzvy ve formě rychlosti — Koně chvátají tam, kde Had preferuje promyšlené kroky. Buďte trpěliví a nedejte se strhnout.',
-        good: ['🐂 Buvol', '🐓 Kohout', '🐲 Drak'], bad: ['🐯 Tygr', '🐷 Prase']
+        name: 'Had', symbol: '巳', fixedElement: 'Oheň', years: '1905,1917,1929,1941,1953,1965,1977,1989,2001,2013,2025',
+        desc: 'Had může být obrazem rozvahy a pozorného pozorování. Tichý dojem stojí za zaznamenání, ale sám neprokazuje, co se děje kolem.',
+        love: 'Odděl vlastní pocit od toho, co víš z rozhovoru. U citlivé otázky pomůže ověření víc než domněnka.',
+        career: 'U jednoho rozhodnutí si dopřej čas na chybějící informaci.',
+        y2026: 'Had se v tradiční symbolice pojí s rozvahou, Kůň s pohybem. Tenhle kontrast může otevřít otázku, kdy chceš nejdřív pozorovat a kdy jednat.',
+        good: ['Buvol', 'Kohout', 'Drak'], bad: ['Tygr', 'Prase']
     },
     kun: {
-        name: 'Kůň', emoji: '🐴', fixedElement: 'Oheň', years: '1906,1918,1930,1942,1954,1966,1978,1990,2002,2014,2026',
-        desc: 'Koně jsou svobodnými dušemi — energičtí, nezávislí a charismatičtí. Milují pohyb, cestování a nové dobrodružství. Jsou přirozenými optimisty.',
-        love: 'V lásce jsou vášniví, ale potřebují svobodu. Ideální: Tygr nebo Koza, kteří jim tu svobodu dají.',
-        career: 'Sport, cestovní ruch, obchod, politika, herectví — vše kde mohou projevit svou energii a charismus.',
-        y2026: 'Rok 2026 je rok Koně — to je pro vás výjimečně příznivé! Toto je váš velký rok. Energie, příležitosti a láska jsou na vaší straně. Jednejte odvážně!',
-        good: ['🐯 Tygr', '🐐 Koza', '🐲 Drak'], bad: ['🐭 Krysa', '🐂 Buvol']
+        name: 'Kůň', symbol: '午', fixedElement: 'Oheň', years: '1906,1918,1930,1942,1954,1966,1978,1990,2002,2014,2026',
+        desc: 'Kůň v tradiční symbolice přináší motiv pohybu a samostatnosti. Nabízí otázku, kam chceš jít a co pro tu cestu potřebuješ.',
+        love: 'Promluvte si o prostoru pro sebe i pro společný čas. Vlastní potřeba volnosti nemusí být pro oba stejná.',
+        career: 'Projděte se nebo na chvíli změň prostředí a potom si zapiš jeden proveditelný další krok.',
+        y2026: 'Rok 2026 je v čínském zvěrokruhu rokem Koně. Tradiční symbolika tohoto znamení zdůrazňuje pohyb a samostatnost; můžeš ji využít jako podnět k vlastnímu zamyšlení.',
+        good: ['Tygr', 'Koza', 'Drak'], bad: ['Krysa', 'Buvol']
     },
     koza: {
-        name: 'Koza', emoji: '🐐', fixedElement: 'Země', years: '1907,1919,1931,1943,1955,1967,1979,1991,2003,2015,2027',
-        desc: 'Kozy jsou kreativní, empatické a umělecky nadané bytosti. Jsou přirozenými estetiky s hlubokým smyslem pro krásu. Potřebují harmonické prostředí.',
-        love: 'V lásce jsou romantické a idealistické. Ideální: Zajíc nebo Prase — kteří ocení jejich jemnost.',
-        career: 'Umění, móda, zahradnictví, péče o ostatní, muzika — vše kde se uplatní kreativita a smysl pro krásu.',
-        y2026: 'Rok Koně přináší Kozám velkou energii a příležitosti, ale také potřebu ukotvit se. Nesklouzněte k impulzivním rozhodnutím. Partnertví přináší stabilitu.',
-        good: ['🐰 Zajíc', '🐷 Prase', '🐴 Kůň'], bad: ['🐂 Buvol', '🐕 Pes']
+        name: 'Koza', symbol: '未', fixedElement: 'Země', years: '1907,1919,1931,1943,1955,1967,1979,1991,2003,2015,2027',
+        desc: 'Koza může otevřít téma tvořivosti, péče a příjemného prostředí. Drobné zlepšení někdy potřebuje víc pozornosti než další velký projekt.',
+        love: 'Vyjádři jednu konkrétní věc, které si na druhém vážíš, bez očekávání okamžité odpovědi.',
+        career: 'Věnuj deset minut něčemu, co tvoříš vlastníma rukama.',
+        y2026: 'Koza bývá spojována s tvořivostí, Kůň s pohybem. V symbolickém čtení se tyto motivy mohou doplnit; konkrétní rozhodnutí ale záleží na tvé situaci.',
+        good: ['Zajíc', 'Prase', 'Kůň'], bad: ['Buvol', 'Pes']
     },
     opice: {
-        name: 'Opice', emoji: '🐒', fixedElement: 'Kov', years: '1908,1920,1932,1944,1956,1968,1980,1992,2004,2016,2028',
-        desc: 'Opice jsou inteligentní, vtipné a přizpůsobivé. Jsou mistry improvizace a mají dar řešit komplikované problémy s lehkostí a humorem.',
-        love: 'V lásce jsou hravé a stimulující. Potřebují partnera, který drží krok s jejich energií. Ideální: Krysa nebo Drak.',
-        career: 'Věda, technologie, humor, obchod, marketing — ovšem tam kde mohou využít svůj bystrý intelekt.',
-        y2026: 'Rok Koně přináší Opicím příležitosti v kariéře, zvláště v technologiích a komunikaci. Finanční situace se zlepší, ale pozor na přehnaný optimismus.',
-        good: ['🐭 Krysa', '🐲 Drak', '🐯 Tygr'], bad: ['🐷 Prase', '🐍 Had']
+        name: 'Opice', symbol: '申', fixedElement: 'Kov', years: '1908,1920,1932,1944,1956,1968,1980,1992,2004,2016,2028',
+        desc: 'Opice představuje vynalézavost a pohled z jiného úhlu. Hravý nápad může odemknout možnost, kterou pak ověříš v praxi.',
+        love: 'Zkus se na jednu společnou situaci podívat z pohledu druhého. Pak si svůj odhad ověř rozhovorem.',
+        career: 'Najdi druhý způsob řešení jednoho malého problému a porovnej skutečný výsledek.',
+        y2026: 'Opice a Kůň představují v čínské symbolice odlišné způsoby pohybu a řešení situací. Můžeš si všimnout, zda ti teď víc pomáhá vynalézavost, nebo přímý postup.',
+        good: ['Krysa', 'Drak', 'Tygr'], bad: ['Prase', 'Had']
     },
     kohout: {
-        name: 'Kohout', emoji: '🐓', fixedElement: 'Kov', years: '1909,1921,1933,1945,1957,1969,1981,1993,2005,2017,2029',
-        desc: 'Kohouti jsou precizní, spolehliví a estetičtí. Mají přirozený smysl pro detail a organizaci. Jsou hrdí na svůj vzhled a výkon.',
-        love: 'V lásce jsou oddaní, ale perfekcionisticky nároční. Ideální: Buvol nebo Had, kteří ocení jejich preciznost.',
-        career: 'Armáda, medicína, účetnictví, móda, gastronomie — vše co vyžaduje precisnost a pečlivost.',
-        y2026: 'Rok Koně přináší Kohoutům potřebu flexibility — ale flexibilita není jejich nejsilnější stránka. Zaměřte se na spolupráci a diplomacii.',
-        good: ['🐂 Buvol', '🐍 Had', '🐲 Drak'], bad: ['🐰 Zajíc', '🐴 Kůň']
+        name: 'Kohout', symbol: '酉', fixedElement: 'Kov', years: '1909,1921,1933,1945,1957,1969,1981,1993,2005,2017,2029',
+        desc: 'Kohout může připomenout všímavost k detailu a srozumitelné pojmenování. Užitečná přesnost má pomáhat, ne vyžadovat dokonalost.',
+        love: 'U jedné výtky nejdřív pojmenuj, co potřebuješ. Rozhovor je snazší než seznam chyb.',
+        career: 'Vyber jeden detail, který má skutečný dopad. Ostatní může počkat.',
+        y2026: 'Kohout se v tradiční symbolice pojí s přesností, Kůň s volnějším pohybem. Jejich kontrast může být pozvánkou k úvaze, kde chceš mít jasno a kde nechat prostor změně.',
+        good: ['Buvol', 'Had', 'Drak'], bad: ['Zajíc', 'Kůň']
     },
     pes: {
-        name: 'Pes', emoji: '🐕', fixedElement: 'Země', years: '1910,1922,1934,1946,1958,1970,1982,1994,2006,2018,2030',
-        desc: 'Psi jsou věrní, upřímní a spravedliví. Jsou přirozenými ochránci a bojovníky za spravedlnost. Jejich loajalita je legendární.',
-        love: 'V lásce jsou věrní jako žádné jiné znamení. Hledají výhradně čestné a věrné partnery. Ideální: Tygr nebo Zajíc.',
-        career: 'Právo, záchranáři, armáda, sociální práce, aktivismus — vše kde se bojuje za spravedlnost.',
-        y2026: 'Rok Koně je pro Psy aktivní a plný příležitostí k sociálnímu angažmá. Je to čas bojovat za věci, na nichž záleží. Zdraví si zaslouží pozornost.',
-        good: ['🐯 Tygr', '🐰 Zajíc', '🐴 Kůň'], bad: ['🐲 Drak', '🐐 Koza']
+        name: 'Pes', symbol: '戌', fixedElement: 'Země', years: '1910,1922,1934,1946,1958,1970,1982,1994,2006,2018,2030',
+        desc: 'Pes v symbolickém čtení představuje důvěru a péči o společné dohody. Je také podnětem rozlišit podporu od přebírání cizí odpovědnosti.',
+        love: 'Všimni si jedné vzájemné dohody: je stále jasná a přijatelná pro oba?',
+        career: 'Nabídni konkrétní pomoc jen v rozsahu, který můžeš opravdu dodržet.',
+        y2026: 'Pes a Kůň se v některých tradičních výkladech pojí s pohybem a věrností. Ber to jako symbolický podnět k zamyšlení, čemu chceš věnovat svou energii.',
+        good: ['Tygr', 'Zajíc', 'Kůň'], bad: ['Drak', 'Koza']
     },
     prase: {
-        name: 'Prase', emoji: '🐷', fixedElement: 'Voda', years: '1911,1923,1935,1947,1959,1971,1983,1995,2007,2019,2031',
-        desc: 'Prasata jsou laskavá, velkorysá a upřímná. Jsou přirozenými poskytovateli a mají velké srdce. Milují komfort a sdílení radostí se svými blízkými.',
-        love: 'V lásce jsou hluboce oddaní a romantičtí. Ideální: Zajíc nebo Koza — jako romantičtí idealisté se dobře doplní.',
-        career: 'Gastronomie, umění, léčitelství, finance — zvláště v rolích kde mohou pečovat a sdílet hojnost.',
-        y2026: 'Rok Koně přináší Prasatům příležitosti v oblasti financí a rodinného života. Je to čas investovat do vztahů a do sebe. Cestování může přinést klíčové setkání.',
-        good: ['🐰 Zajíc', '🐐 Koza', '🐯 Tygr'], bad: ['🐍 Had', '🐒 Opice']
+        name: 'Prase', symbol: '亥', fixedElement: 'Voda', years: '1911,1923,1935,1947,1959,1971,1983,1995,2007,2019,2031',
+        desc: 'Prase bývá symbolem štědrosti a radosti z obyčejného pohodlí. Může připomenout péči, která počítá i s vlastními možnostmi.',
+        love: 'Zeptej se, jakou podobu podpory druhý skutečně ocení. Nemusí to být ta, kterou bys zvolil pro sebe.',
+        career: 'Dopřej si malou příjemnou věc a vědomě si na ni udělej prostor.',
+        y2026: 'Prase bývá spojováno se štědrostí, Kůň s pohybem. Jejich symboly mohou otevřít úvahu o rovnováze mezi péčí o blízké a vlastním prostorem.',
+        good: ['Zajíc', 'Koza', 'Tygr'], bad: ['Had', 'Opice']
     }
 };
 
@@ -167,6 +167,28 @@ function getElementClass(elementName) {
     }[elementName] || 'chinese-element--neutral';
 }
 
+const CHINESE_BRANCH_SYMBOLS = {
+    krysa: '子', buvol: '丑', tygr: '寅', zajic: '卯', drak: '辰', had: '巳',
+    kun: '午', koza: '未', opice: '申', kohout: '酉', pes: '戌', prase: '亥'
+};
+
+function renderChineseSymbol(host, slug) {
+    if (!host) return;
+    const symbol = CHINESE_BRANCH_SYMBOLS[slug] || '';
+    host.replaceChildren();
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 64 64');
+    svg.setAttribute('class', 'chinese-animal-symbol');
+    svg.setAttribute('aria-hidden', 'true');
+    const circle = document.createElementNS(svg.namespaceURI, 'circle');
+    circle.setAttribute('cx', '32'); circle.setAttribute('cy', '32'); circle.setAttribute('r', '29');
+    circle.setAttribute('fill', 'none'); circle.setAttribute('stroke', 'currentColor'); circle.setAttribute('stroke-width', '1.5');
+    const text = document.createElementNS(svg.namespaceURI, 'text');
+    text.setAttribute('x', '32'); text.setAttribute('y', '43'); text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('font-size', '34'); text.setAttribute('font-family', 'serif'); text.textContent = symbol;
+    svg.append(circle, text); host.appendChild(svg);
+}
+
 /**
  * Exposed to global scope for HTML inline calls (or ideally migrated later)
  */
@@ -211,12 +233,12 @@ window.showAnimal = function (slugOverride, exactYear = null) {
     const hero = document.getElementById('result-hero');
     hero.classList.add('result-hero--active');
 
-    document.getElementById('result-emoji').textContent = data.emoji;
+    renderChineseSymbol(document.getElementById('result-emoji'), data.slug);
 
     // Customization based on Element
     if (isSpecificYear && computedElement) {
         document.getElementById('result-name').textContent = `${computedElement.suffix} ${data.name}`;
-        const rawElement = `${computedElement.icon} Aktivní Živel: <strong class="${getElementClass(computedElement.name)}">${computedElement.name}</strong>`;
+        const rawElement = `Aktivní živel: <strong class="${getElementClass(computedElement.name)}">${computedElement.name}</strong>`;
         document.getElementById('result-element').innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(rawElement) : rawElement;
         document.getElementById('result-years').textContent = `Ročník: ${exactYear}`;
     } else {
@@ -248,7 +270,7 @@ window.showAnimal = function (slugOverride, exactYear = null) {
     resultSec.classList.add('show');
 
     setupChineseImageShare({
-        emoji: data.emoji,
+        symbol: data.symbol,
         name: isSpecificYear && computedElement ? `${computedElement.suffix} ${data.name}` : data.name,
         elementLabel: isSpecificYear && computedElement ? `Aktivní živel: ${computedElement.name}` : `Fixní živel: ${data.fixedElement}`,
         yearsLabel: isSpecificYear ? `Ročník: ${exactYear}` : `Roky: ${data.years}`,
@@ -258,7 +280,7 @@ window.showAnimal = function (slugOverride, exactYear = null) {
 
     // Smart scroll k precteni horoskopu
     setTimeout(() => {
-        resultSec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        resultSec.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest' });
     }, 100);
 };
 
@@ -277,8 +299,8 @@ function drawChineseZodiacImage(result) {
     ctx.font = '700 52px Cinzel, Georgia, serif';
     ctx.fillText('ČÍNSKÝ HOROSKOP', centerX, 244);
 
-    ctx.font = '190px serif';
-    ctx.fillText(result.emoji || '🐉', centerX, 500);
+    ctx.font = '150px serif';
+    ctx.fillText(result.symbol || '辰', centerX, 500);
 
     ctx.fillStyle = '#e9e3d7';
     ctx.font = '700 64px Cinzel, Georgia, serif';
@@ -420,14 +442,14 @@ window.calculateChineseSynastry = function () {
     if (!data1 || !data2 || !elem1 || !elem2) return;
 
     // Populate UI
-    document.getElementById('syn-emoji1').textContent = data1.emoji;
+    renderChineseSymbol(document.getElementById('syn-emoji1'), data1.slug);
     document.getElementById('syn-name1').textContent = `${elem1.suffix} ${data1.name}`;
 
-    document.getElementById('syn-emoji2').textContent = data2.emoji;
+    renderChineseSymbol(document.getElementById('syn-emoji2'), data2.slug);
     document.getElementById('syn-name2').textContent = `${elem2.suffix} ${data2.name}`;
 
     // Determine compatibility level
-    // using base strings to match arrays ex. "🐲 Drak"
+    // Compatibility arrays contain animal names used by the visible badges.
     const isGood = data1.good.some(str => str.includes(data2.name));
     const isBad = data1.bad.some(str => str.includes(data2.name));
 
@@ -436,17 +458,17 @@ window.calculateChineseSynastry = function () {
     titleEl.classList.remove('syn-title--good', 'syn-title--bad', 'syn-title--neutral');
 
     if (isGood) {
-        titleEl.textContent = 'Ideální partnerství ✨';
+        titleEl.textContent = 'Tradičně souladná dvojice';
         titleEl.classList.add('syn-title--good');
-        descEl.textContent = `Tato dvě znamení tvoří naprosto přirozený a prosperující pár. ${data1.name} a ${data2.name} se skvěle doplňují a jejich životní energie jdou ruku v ruce. Navíc specifická interakce vrstev "${elem1.name}" a "${elem2.name}" může toto spojení ještě více rozsvítit!`;
+        descEl.textContent = `V tradičním čínském zvěrokruhu se tato znamení řadí mezi souladné dvojice. ${data1.name} a ${data2.name} mohou posloužit jako symbolický podnět k zamyšlení nad tím, jak se vaše odlišnosti doplňují. O vztahu rozhoduje především vaše skutečná zkušenost.`;
     } else if (isBad) {
-        titleEl.textContent = 'Náročný (Karmický) vztah ⚔️';
+        titleEl.textContent = 'Tradičně opoziční dvojice';
         titleEl.classList.add('syn-title--bad');
         descEl.textContent = `V čínské astrologii jde o tzv. opoziční dvojici, která vidí svět jinýma očima. Může to být velmi vášnivé, ale vyžaduje to kompromisy. Zatímco ${data1.name} míří jedním směrem, ${data2.name} druhým. Interakce vašich živlů (${elem1.name} vs ${elem2.name}) hraje klíčovou roli v kompromisech.`;
     } else {
-        titleEl.textContent = 'Harmonické spojení 💖';
+        titleEl.textContent = 'Bez tradičního zařazení';
         titleEl.classList.add('syn-title--neutral');
-        descEl.textContent = `Tento svazek je vyvážený. Nebojujete proti sobě, ale ani nejste vyloženě slepenou dvojicí. Váš vztah se tvoří na klidných kompromisech a respektu. Právě zde hrají obrovskou roli vaše unikátní elementy (${elem1.name} & ${elem2.name}), které dávají vašemu domovu barvu.`;
+        descEl.textContent = `Podle zjednodušeného přehledu čínských znamení nejde o tradičně souladnou ani opoziční dvojici. Výsledek není hodnocením vašeho vztahu; může nabídnout jen podnět k rozhovoru o respektu a rozdílných potřebách. Živly ${elem1.name} a ${elem2.name} jsou součástí symbolického výkladu.`;
     }
 
     const res = document.getElementById('synastry-result');

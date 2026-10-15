@@ -4,13 +4,13 @@
 
 // DOM elementy — inicializujeme v DOMContentLoaded (bezpečná inicializace)
 let chatInput, sendBtn, messagesContainer, typingIndicator;
-const MENTOR_DAILY_LIMIT = 3;
+let messagePending = false;
 const MENTOR_PENDING_PROMPT_KEY = 'mentor_pending_prompt_v1';
 const MENTOR_PENDING_PROMPT_MAX_AGE_MS = 30 * 60 * 1000;
 const MENTOR_PAYMENT_REASSURANCE = 'Cena se zobraz\u00ed ve Stripe p\u0159ed potvrzen\u00edm. Zru\u0161en\u00ed najdete v profilu.';
 
 function getMentorUsageStorageKey(date = new Date()) {
-    return `mh_daily_mentor_${date.toDateString()}`;
+    return `mh_daily_mentor_${window.Auth?.user?.id || 'guest'}_${date.toDateString()}`;
 }
 
 function readMentorUsageCount(date = new Date()) {
@@ -160,13 +160,6 @@ function startMentorUpgradeFlow(source = 'mentor_inline_upsell') {
     window.location.href = buildMentorUpgradeUrl(source);
 }
 
-function trackMentorPaywallDismissed(source) {
-    window.MH_ANALYTICS?.trackAction?.('paywall_dismissed', {
-        source,
-        feature: 'mentor'
-    });
-}
-
 function runAfterComponentsLoaded(callback) {
     let hasRun = false;
     const run = () => {
@@ -182,18 +175,6 @@ function runAfterComponentsLoaded(callback) {
     window.setTimeout(run, 1200);
 }
 
-function keepMentorFree(source, overlay = null) {
-    trackMentorPaywallDismissed(source);
-    overlay?.classList.remove('limit-reached-overlay--visible');
-    messagesContainer?.classList.remove('chat-messages--blurred');
-
-    if (chatInput) {
-        chatInput.disabled = true;
-        chatInput.placeholder = 'Denní limit zdarma je vyčerpaný. Ke starším odpovědím se můžeš vrátit tady.';
-    }
-    if (sendBtn) sendBtn.disabled = true;
-}
-
 document.addEventListener('DOMContentLoaded', async () => {
     // Inicializuj DOM elementy — musí být uvnitř DOMContentLoaded
     chatInput = document.getElementById('chat-input');
@@ -206,6 +187,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (chatInput) {
         chatInput.addEventListener('input', function () {
             resizeChatInput();
+            if (messagePending) return;
 
             if (this.value.trim().length > 0) {
                 sendBtn?.removeAttribute('disabled');
@@ -320,130 +302,55 @@ async function checkGreeting() {
 }
 
 async function sendMessage() {
-    if (!chatInput || !sendBtn || !messagesContainer || !typingIndicator) return;
+    if (messagePending || !chatInput || !sendBtn || !messagesContainer || !typingIndicator) return;
     const text = chatInput.value.trim();
     if (!text) return;
-
-    // 0. Auth Check (token je HttpOnly cookie, kontrolujeme přes Auth objekt)
+    if (text.length > 2000) {
+        window.Auth?.showToast?.('Dlouhá zpráva', 'Zkrať zprávu na nejvýš 2000 znaků.', 'info');
+        return;
+    }
     if (!window.Auth?.isLoggedIn()) {
-        window.Auth?.showToast?.('Účet zdarma uloží otázku', 'Vytvořte si účet a Průvodce se vrátí přesně k této otázce.', 'info');
+        window.Auth?.showToast?.('Účet pro vlastní chat', 'Vytvoř si účet, aby ses mohl k otázce a odpovědi vrátit.', 'info');
         startMentorSignupFlow(text, 'mentor_entry_auth_gate');
-        document.addEventListener('auth:changed', () => {
-            if (window.Auth?.isLoggedIn()) window.location.reload();
-        }, { once: true });
         return;
     }
-
-    // Check usage limits for free users
-    if (!window.isPremium && checkUsageLimit()) {
-        // Limit reached logic (The "Hook")
-        addMessage(text, 'user');
-        resetChatInput();
-        chatInput.disabled = true;
-        sendBtn.disabled = true;
-
-        showTyping(true);
-
-        // Simulate thinking time then show teaser
-        setTimeout(() => {
-            showTyping(false);
-            showTeaserResponse();
-        }, 2000);
-        return;
-    }
-
-    // 1. Add User Message
-    addMessage(text, 'user');
-    resetChatInput();
-    sendBtn.setAttribute('disabled', 'true');
-
-    // Increment usage for free users
-    if (!window.isPremium) {
-        incrementUsage();
-    }
-
-    // 2. Show Typing Indicator
+    const ownerId = window.Auth.user.id;
+    const currentUser = () => ownerId === window.Auth?.user?.id;
+    messagePending = true;
+    sendBtn.disabled = true;
+    sendBtn.setAttribute('aria-busy', 'true');
     showTyping(true);
-
-    // 3. Call API
     try {
         const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+        if (!currentUser()) return;
         const response = await fetch(`${API_CONFIG.BASE_URL}/mentor/chat`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                ...(csrfToken && { 'X-CSRF-Token': csrfToken })
-            },
+            method: 'POST', credentials: 'include',
+            headers: { 'Content-Type': 'application/json', ...(csrfToken && { 'X-CSRF-Token': csrfToken }) },
             body: JSON.stringify({ message: text })
         });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error('Chat API Error:', response.status, errorData);
-            if (response.status === 402 || response.status === 403) {
-                // Subscription issue - show paywall
-                showPaywall();
-                throw new Error('Premium vyžadováno');
-            }
-            throw new Error(errorData.error || 'Chyba komunikace');
-        }
-
         const data = await response.json();
-
-        // Hide typing
-        showTyping(false);
-
-        if (data.reply) {
-            addMessage(data.reply, 'mentor');
-        } else if (data.error) {
-            addMessage(`⚠️ Chyba: ${data.error}`, 'mentor');
+        if (!currentUser()) return;
+        if (response.status === 402 || response.status === 403) {
+            showPaywall();
+            return;
         }
-
+        if (!response.ok || typeof data.reply !== 'string' || !data.reply.trim()) throw new Error('Mentor response unavailable');
+        addMessage(text, 'user');
+        addMessage(data.reply, 'mentor');
+        if (chatInput.value.trim() === text) resetChatInput();
+        if (!window.isPremium) writeMentorUsageCount(readMentorUsageCount() + 1);
     } catch (error) {
+        console.warn('Chat request failed:', error.message);
+        if (currentUser()) {
+            const notice = addMessage('Odpověď se nepodařilo načíst. Otázka zůstává v poli; můžeš ji poslat znovu.', 'mentor');
+            notice?.setAttribute('role', 'status');
+        }
+    } finally {
+        messagePending = false;
         showTyping(false);
-        console.error('Chat error:', error);
-        addMessage("Omlouvám se, hvězdné spojení bylo přerušeno. Zkus to prosím za chvíli.", 'mentor');
+        sendBtn.removeAttribute('aria-busy');
+        sendBtn.disabled = !chatInput.value.trim() || chatInput.disabled;
     }
-}
-
-function checkUsageLimit() {
-    return readMentorUsageCount() >= MENTOR_DAILY_LIMIT;
-}
-
-function incrementUsage() {
-    writeMentorUsageCount(readMentorUsageCount() + 1);
-}
-
-function showTeaserResponse() {
-    // Create a blurred teaser message
-    const div = document.createElement('div');
-    div.className = 'message message--mentor message--blurred';
-    div.innerHTML = `
-        <p>Hvězdný průvodce zachytil vzorec: ptáš se na rozhodnutí, ale odpověď začíná u hranice, kterou teď chráníš.</p>
-        <p class="blur-text">V plné odpovědi bys dostal jeden konkrétní další krok, návaznou otázku a propojení s předchozí historií chatu.</p>
-        <div class="premium-lock-overlay">
-            <div class="lock-icon"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#lock"></use></svg></div>
-            <h3>Odemknout návazný krok</h3>
-            <p>Zamčeno: konkrétní další krok k této otázce a navazující otázka pro pokračování.</p>
-            <div class="mentor-paywall__actions">
-                <a href="${buildMentorUpgradeUrl('mentor_teaser_gate')}" class="btn btn--primary btn--sm mentor-upgrade-btn">Odemknout vedení</a>
-                <button type="button" class="btn btn--ghost btn--sm mentor-paywall-dismiss-btn">Zůstat u dnešního chatu</button>
-            </div>
-            <p class="mentor-paywall__reassurance">${MENTOR_PAYMENT_REASSURANCE}</p>
-        </div>
-    `;
-    messagesContainer?.insertBefore(div, typingIndicator);
-    div.querySelector('.mentor-upgrade-btn')?.addEventListener('click', (event) => {
-        event.preventDefault();
-        startMentorUpgradeFlow('mentor_teaser_gate');
-    });
-    div.querySelector('.mentor-paywall-dismiss-btn')?.addEventListener('click', () => {
-        div.remove();
-        keepMentorFree('mentor_teaser_gate');
-        addMessage('Denní bezplatný limit je dnes vyčerpaný. Tvoje dosavadní odpovědi zůstávají v chatu a další otázku můžeš položit zítra.', 'mentor');
-    });
-    scrollToBottom();
 }
 
 function addMessage(text, type, shouldScroll = true) {
@@ -475,6 +382,7 @@ function addMessage(text, type, shouldScroll = true) {
     if (shouldScroll) {
         scrollToBottom();
     }
+    return div;
 }
 
 function showTyping(show) {
@@ -498,48 +406,23 @@ function scrollToBottom() {
 }
 
 function showPaywall() {
-    // Disable inputs
-    chatInput.disabled = true;
-    sendBtn.disabled = true;
-
-    // Show overlay or modal
-    // We'll create a simple overlay inside the chat container programmatically or use an existing one if available.
-    // Based on mentor.html lines 212-227, there is a .limit-reached-overlay but it's for "limit reached".
-    // We can reuse it or create a "Premium Only" specific one.
-
-    // Let's modify the overlay content
-    let overlay = document.querySelector('.limit-reached-overlay');
-    if (!overlay) {
-        // Create if missing (though it is in HTML)
-        overlay = document.createElement('div');
-        overlay.className = 'limit-reached-overlay';
-        document.querySelector('.chat-container').appendChild(overlay);
-    }
-
-    overlay.innerHTML = `
-        <div class="mentor-paywall">
-            <div class="mentor-paywall__icon"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#lock"></use></svg></div>
-            <h2 class="mentor-paywall__title">Denní limit zdarma je vyčerpaný</h2>
-            <p class="mentor-paywall__copy">
-                Zamčený výstup: navazující odpověď k poslední otázce, jeden konkrétní další krok a propojení s historií chatu.
-            </p>
-            <div class="mentor-paywall__actions">
-                <a href="${buildMentorUpgradeUrl('mentor_paywall_overlay')}" class="btn btn--primary mentor-paywall-upgrade-btn">Odemknout vedení</a>
-                <button type="button" class="btn btn--ghost mentor-paywall-dismiss-btn">Zůstat u dnešního chatu</button>
-            </div>
-            <p class="mentor-paywall__reassurance">${MENTOR_PAYMENT_REASSURANCE}</p>
-        </div>
-    `;
-
-    overlay.classList.add('limit-reached-overlay--visible');
-    overlay.querySelector('.mentor-paywall-upgrade-btn')?.addEventListener('click', (event) => {
-        event.preventDefault();
-        startMentorUpgradeFlow('mentor_paywall_overlay');
+    // Existing answers remain readable; no generated answer is hidden here.
+    document.querySelector('.limit-reached-overlay')?.classList.remove('limit-reached-overlay--visible');
+    messagesContainer?.classList.remove('chat-messages--blurred');
+    if (messagesContainer?.querySelector('[data-mentor-limit]')) return;
+    const notice = document.createElement('div');
+    notice.className = 'message message--mentor';
+    notice.dataset.mentorLimit = 'true';
+    notice.setAttribute('role', 'status');
+    notice.innerHTML = `
+        <h3>Další odpověď teď není dostupná</h3>
+        <p>Bezplatný účet má 3 zprávy denně. Při vyčerpaném limitu můžeš pokračovat po jeho obnovení nebo se podívat na členství. I členství podléhá provozním limitům.</p>
+        <p>K této otázce zatím nevznikla odpověď. Tvoje dosavadní zprávy zůstávají přístupné.</p>
+        <a href="${buildMentorUpgradeUrl('mentor_paywall_overlay')}" class="btn btn--glass btn--sm mentor-paywall-upgrade-btn">Podívat se na členství</a>
+        <p class="mentor-paywall__reassurance">${MENTOR_PAYMENT_REASSURANCE}</p>`;
+    notice.querySelector('a')?.addEventListener('click', event => {
+        event.preventDefault(); startMentorUpgradeFlow('mentor_paywall_overlay');
     });
-    overlay.querySelector('.mentor-paywall-dismiss-btn')?.addEventListener('click', () => {
-        keepMentorFree('mentor_paywall_overlay', overlay);
-    });
-
-    // Add blur effect to messages if any (or just cover them)
-    messagesContainer?.classList.add('chat-messages--blurred');
+    messagesContainer?.insertBefore(notice, typingIndicator);
+    scrollToBottom();
 }

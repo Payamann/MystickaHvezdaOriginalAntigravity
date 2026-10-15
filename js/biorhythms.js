@@ -165,28 +165,10 @@ function renderBiorhythmChart(birthDate) {
 }
 
 function getInterpretation(type, value) {
-    if (type === 'physical') {
-        if (value >= 80) return "Jste na vrcholu sil! Ideální čas pro sport a fyzickou námahu.";
-        if (value >= 25) return "Máte dostatek energie pro běžné i náročnější dny.";
-        if (value > -25) return "Neutrální fáze. Nenasazujte zbytečně rychlé tempo.";
-        if (value > -80) return "Cítíte únavu. Dopřejte tělu čas na regeneraci a odpočinek.";
-        return "Kritické dny. Dbejte na zdraví, hrozí absolutní vyčerpání.";
-    }
-    if (type === 'emotional') {
-        if (value >= 80) return "Skvělá nálada a emoční stabilita. Cítíte se skvěle ve společnosti.";
-        if (value >= 25) return "Jste v pohodě a pozitivně naladěni. Dobrý čas pro vztahy.";
-        if (value > -25) return "Občasné výkyvy nálad. Snažte se udržet si vnitřní klid.";
-        if (value > -80) return "Cítíte se zranitelnější. Můžete být náladoví, vyhněte se konfliktům.";
-        return "Náročné období pro psychiku. Buďte k sobě i ostatním co nejvíce laskaví.";
-    }
-    if (type === 'intellectual') {
-        if (value >= 80) return "Vaše mysl pracuje na plné obrátky! Skvělý čas na učení a těžká rozhodnutí.";
-        if (value >= 25) return "Jasná mysl a dobré soustředění na každodenní problémy.";
-        if (value > -25) return "Rutinní úkoly zvládnete, ale pro dnešek se raději vyhněte složitým konceptům.";
-        if (value > -80) return "Horší koncentrace. Dělejte věci pomaleji, pečlivěji a pište si poznámky.";
-        return "Útlum pozornosti. Nedělejte závažná rozhodnutí, mysl nyní potřebuje odpočinek.";
-    }
-    return "";
+    const region = value >= 80 ? 'blízko horního bodu' : value >= 25 ? 'v kladné části'
+        : value > -25 ? 'blízko nulové osy' : value > -80 ? 'v záporné části' : 'blízko dolního bodu';
+    const labels = { physical: 'Fyzická', emotional: 'Emoční', intellectual: 'Intelektuální' };
+    return `${labels[type] || 'Modelová'} křivka je ${region}. Jde o matematický model z data narození, ne měření dnešní kondice, nálady nebo soustředění.`;
 }
 
 function updateTodayStats(birthDate) {

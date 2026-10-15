@@ -14,39 +14,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const resultsData = {
-        indigo: {
-            title: "Indigo",
-            subtitle: "Vizionář & Intuit",
-            icon: "🔮",
-            color: "#4b0082",
-            desc: "Vaše aura září hlubokým odstínem indigo. Jste vysoce intuitivní bytost s velkým vhledem do budoucna. Vnímáte realitu za hranicí běžných smyslů.",
-            advice: "Důvěřujte své neomylné intuici. Vaším úkolem je vnášet do světa pravdu, kterou ostatní zatím jen matně tuší."
-        },
-        gold: {
-            title: "Zlatá",
-            subtitle: "Osvícená duše",
-            icon: "✨",
-            color: "#ffd700",
-            desc: "Zlatá aura značí vysokou úroveň vědomí a vnitřní moudrosti. Vyzařujete klid a lidé se ve vaší přítomnosti cítí přirozeně v bezpečí.",
-            advice: "Udržujte si svůj vnitřní střed. Vaše světlo je nakažlivé a má schopnost čistit negativní energie v celém vašem okolí."
-        },
-        green: {
-            title: "Zelená",
-            subtitle: "Přírodní Léčitel",
-            icon: "🌿",
-            color: "#228b22",
-            desc: "Zelené vyzařování je znakem harmonie a schopnosti léčit. Jste hluboce spojeni s přírodou a máte dar uklidnit jakýkoliv konflikt.",
-            advice: "Nezapomínejte pečovat i o sebe. Jako léčitel vydáváte hodně energie, kterou musíte pravidelně doplňovat tichem v lese."
-        },
-        red: {
-            title: "Červená",
-            subtitle: "Tvůrce & Bojovník",
-            icon: "🔥",
-            color: "#cc0000",
-            desc: "Vaše aura je nabitá vitalitou a vášní. Máte obrovskou schopnost dotahovat věci do konce a měnit svět kolem sebe skrze akci.",
-            advice: "Směrujte svou vášeň konstruktivně. Vaše energie je jako silný oheň – může ohřát, ale i spálit, pokud ji neovládnete."
-        }
-    };
+    "indigo": {
+        "title": "Indigo",
+        "subtitle": "Odstup a pozornost",
+        "icon": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><use href=\"/img/icons/mh-symbols.svg#eye\"></use></svg>",
+        "desc": "V kvízu převažuje motiv pozorování a vnitřního prostoru. Indigo je jeho symbolická barva; nejde o měření aury.",
+        "advice": "Odděl u jedné situace vlastní dojem od známých faktů."
+    },
+    "gold": {
+        "title": "Zlatá",
+        "subtitle": "Vyjádření a záměr",
+        "icon": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><use href=\"/img/icons/mh-symbols.svg#star\"></use></svg>",
+        "desc": "Tvoje odpovědi se přiklánějí k viditelnému projevu a iniciativě. Zlatá zde tvoří obraz tohoto motivu, ne potvrzení zvláštní energie.",
+        "advice": "Sdílej jeden nápad a nech si prostor pro odezvu."
+    },
+    "green": {
+        "title": "Zelená",
+        "subtitle": "Péče a vzájemnost",
+        "icon": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><use href=\"/img/icons/mh-symbols.svg#leaf\"></use></svg>",
+        "desc": "V odpovědích vystupuje blízkost a péče. Zelená může tento motiv připomínat; kvíz neposuzuje zdraví ani léčivé schopnosti.",
+        "advice": "Zeptej se jednoho blízkého, co by mu pomohlo, a pojmenuj i vlastní potřebu."
+    },
+    "red": {
+        "title": "Červená",
+        "subtitle": "Pohyb a rozhodnutí",
+        "icon": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><use href=\"/img/icons/mh-symbols.svg#flame\"></use></svg>",
+        "desc": "Volby v kvízu dávají prostor činnosti a přímému jednání. Červená je symbol takto popsaného přístupu, nikoliv fyzický nález.",
+        "advice": "Vyber jeden praktický úkol a bezpečný první krok."
+    }
+};
 
     function updateProgress() {
         const percent = (currentStep / totalSteps) * 100;
@@ -65,16 +61,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showLoading() {
-        steps.forEach(s => s.classList.remove('active'));
-        document.getElementById('loading-step').classList.add('active');
         setProgress(100);
-
-        setTimeout(showResult, 2500);
+        showResult();
     }
 
     function showResult() {
         const winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
         const data = resultsData[winner];
+        const tied = Object.keys(scores).filter(key => scores[key] === scores[winner]);
 
         window.lastResult = data.title;
 
@@ -82,10 +76,11 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="result-card quiz-result-card">
                 <div class="result-card__header">
                     <h4 class="result-card__title quiz-result-title">${data.title}</h4>
-                    <p class="quiz-result-kicker">Vaše dominantní záře</p>
+                    <p class="quiz-result-kicker">Symbolické shrnutí tvých odpovědí</p>
                 </div>
-                <div class="result-card__image animate-aura">${data.icon}</div>
+                <div class="result-card__image">${data.icon}</div>
                 <div class="result-card__body">
+                    ${tied.length > 1 ? `<p class="quiz-result-mixed">Více motivů má stejnou váhu: ${tied.map(key => resultsData[key].title).join(', ')}.</p>` : ''}
                     <h5 class="quiz-result-subtitle">${data.subtitle}</h5>
                     <p class="quiz-result-description">${data.desc}</p>
                 </div>
@@ -93,21 +88,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p class="quiz-result-advice">"${data.advice}"</p>
                 </div>
             </div>
-            <div class="mt-xl">
-                <h2 class="text-gradient">Vaše aura byla spatřena</h2>
-                <p>Záříte barvou <strong>${data.title}</strong>, která ovlivňuje vaše okolí i osud.</p>
-            </div>
+            <div class="mt-xl"><p>Výsledek krátkého kvízu nabízí téma k zamyšlení. Nepotvrzuje schopnosti, osobnost ani budoucnost.</p></div>
         `;
 
         document.getElementById('loading-step').classList.remove('active');
         const resultStep = document.getElementById('result-step');
         document.getElementById('result-box').innerHTML = resultHtml;
         resultStep.classList.add('active');
+        resultStep.setAttribute('tabindex', '-1');
+        resultStep.focus({ preventScroll: true });
+        resultStep.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
     }
 
     document.querySelectorAll('.option-btn').forEach(btn => {
         btn.addEventListener('click', () => {
+            if (!btn.closest('.question-step')?.classList.contains('active')) return;
             const scoreKey = btn.dataset.score;
+            if (!Object.hasOwn(scores, scoreKey)) return;
             scores[scoreKey]++;
             currentStep++;
             showStep(currentStep);
@@ -125,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     window.shareResult = () => {
-        const text = `Moje aura září barvou ${window.lastResult}! Odhal i ty svou energii na Mystické Hvězdě.`;
+        const text = `V symbolickém kvízu o auře se s mými odpověďmi propojila barva ${window.lastResult}.`;
         if (navigator.share) {
             navigator.share({
                 title: 'Moje Aura',

@@ -46,7 +46,7 @@
                 <h1 class="hero__title mb-xl">
                     <span class="text-gradient">Objavte Svoj Vesmírny Kód</span>
                 </h1>
-                <p class="hero__subtitle">Vaša natálna karta je mapa oblohy v okamihu vášho narodenia. Objavte svoj skrytý potenciál.</p>
+                <p class="hero__subtitle">Natálna karta zobrazuje vypočítané polohy planét v čase narodenia. Výsledok je astrologický výpočet na zamyslenie.</p>
             </div>
         </section>
 
@@ -54,27 +54,30 @@
             <div class="container">
                 <div class="grid grid-2 mh-inline-2df0356992">
                     <div class="card">
-                        <h2 class="section__title mb-lg">Údaje Narodenia</h2>
-                        <div id="natal-form" class="email-form">
+                        <h2 class="section__title mb-lg">Údaje narodenia</h2>
+                        <form id="natal-form" class="email-form" novalidate>
                             <div class="form-group">
                                 <label for="birth-date">Dátum narodenia</label>
-                                <input type="date" id="birth-date" class="email-form__input" required>
+                                <input type="date" id="birth-date" name="birthDate" class="email-form__input" required>
                             </div>
                             <div class="form-group">
                                 <label for="birth-time">Čas narodenia (ak poznáte)</label>
-                                <input type="time" id="birth-time" class="email-form__input">
+                                <input type="time" id="birth-time" name="birthTime" class="email-form__input">
                             </div>
                             <div class="form-group">
                                 <label for="birth-place">Miesto narodenia</label>
-                                <input type="text" id="birth-place" class="email-form__input" placeholder="Zadajte mesto..." required>
+                                <input type="text" id="birth-place" name="birthPlace" class="email-form__input" placeholder="Zadajte mesto..." required>
                             </div>
-                            <button id="calculate-natal" class="btn btn--primary btn--full mt-lg">Vypočítať Natálnu Kartu</button>
-                        </div>
+                            <button id="calculate-natal" type="submit" class="btn btn--primary btn--full mt-lg">Vypočítať Natálnu Kartu</button>
+                            <p id="locale-natal-status" role="status" aria-live="polite" aria-atomic="true"></p>
+                        </form>
                     </div>
-                    <div id="natal-result" class="text-center">
+                    <div id="natal-result" class="text-center" tabindex="-1" aria-labelledby="locale-natal-heading">
+                        <h2 id="locale-natal-heading" class="sr-only">Výsledok výpočtu</h2>
+                        <div id="locale-natal-output"></div>
                         <div class="natal-chart-container">
                             <img src="/img/atlas/tools-v1/01-astrolab.webp" alt="Natálna karta" class="mh-inline-d818421134" width="200" height="200">
-                            <p class="mh-inline-d966b0addf">Zadajte údaje pre vygenerovanie mapy</p>
+                            <p class="mh-inline-d966b0addf">Základný výpočet polôh planét a znamení sa zobrazí tu.</p>
                         </div>
                     </div>
                 </div>
@@ -84,10 +87,10 @@
         <section class="section">
             <div class="container">
                 <div class="card">
-                    <h2>Čo ti prezradí natálna karta</h2>
+                    <h2>Čo ukazuje natálna karta</h2>
                     <p>Natálna karta je mapa oblohy v presnom okamihu tvojho narodenia. Ukazuje postavenie Slnka, Mesiaca a planét v znameniach a domoch — a z toho tvoje silné stránky, opakujúce sa vzorce aj témy, ktoré sa ti v živote vracajú.</p>
                     <p>Na výpočet potrebuješ dátum, čas a miesto narodenia. Čas je dôležitý kvôli ascendentu a domom; ak ho nepoznáš presne, výklad bude všeobecnejší, ale stále užitočný.</p>
-                    <p>Výsledkom nie je tabuľka pojmov, ale zrozumiteľný rozbor: ako pôsobíš navonok, čo potrebuješ v vzťahoch, kde je tvoja prirodzená sila a na čo si dávať pozor.</p>
+                    <p>Tu dostaneš základný prehľad vypočítaných polôh planét. Úplná vizualizácia a osobný rozbor sú dostupné na českej stránke natálnej karty.</p>
                 </div>
 
                 <div>
@@ -113,12 +116,15 @@
 
                 <div class="card">
                     <h3>Pokračuj na Mystickej Hviezde</h3>
-                    <div class="related-links">
-                        <a href="horoskopy.html" class="related-chip"> Denný horoskop</a>
-                        <a href="tarot.html" class="related-chip">🎴 Tarotové výklady</a>
-                        <a href="kristalova-koule.html" class="related-chip">🔮 Krištáľová guľa</a>
-                        <a href="tarot-ano-nie.html" class="related-chip">🃏 Tarot ÁNO / NIE</a>
+                    <details>
+                        <summary>Ďalšie nástroje</summary>
+                        <div class="related-links">
+                            <a href="horoskopy.html" class="related-chip"> Denný horoskop</a>
+                            <a href="tarot.html" class="related-chip">Tarotové výklady</a>
+                            <a href="kristalova-koule.html" class="related-chip">Krištáľová guľa</a>
+                            <a href="tarot-ano-nie.html" class="related-chip">Tarot ÁNO / NIE</a>
                     </div>
+                    </details>
                 </div>
             </div>
         </section>
@@ -129,6 +135,7 @@
     <script src="../js/dist/api-config.js" defer></script>
     <script src="../js/dist/templates.js" defer></script>
     <script src="../js/dist/components.js" defer></script>
+    <script type="module" src="../js/dist/locale-natal.js"></script>
     <script type="module" src="../js/dist/main.js"></script>
 </body>
 </html>

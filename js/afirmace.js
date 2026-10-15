@@ -1,3 +1,5 @@
+import { getLunarState } from './utils/lunar-state.js';
+
 /**
  * afirmace.js — Denní afirmace generované AI (konzistentní s horoskopem)
  * Volá stejné API jako horoscope.js — výsledek je identický s afirmací v horoskopu.
@@ -25,24 +27,9 @@ function setAffirmationCardTheme(card, sign) {
     card.classList.add(`affirmation-card--${sign}`);
 }
 
-const moonPhases = [
-    { name: 'Nov — čas nových začátků',       emoji: '🌑' },
-    { name: 'Dorůstající srpek — čas plánování', emoji: '🌒' },
-    { name: 'Dorůstající čtvrť — čas akce',   emoji: '🌓' },
-    { name: 'Dorůstající měsíc — čas expanze',emoji: '🌔' },
-    { name: 'Úplněk — čas naplnění',          emoji: '🌕' },
-    { name: 'Couvající měsíc — čas vděčnosti',emoji: '🌖' },
-    { name: 'Ubývající čtvrť — čas reflexe',  emoji: '🌗' },
-    { name: 'Ubývající srpek — čas uvolnění', emoji: '🌘' },
-];
-
 function getMoonPhase() {
-    const known = new Date('2000-01-06');
-    const now   = new Date();
-    const diff  = (now - known) / (1000 * 60 * 60 * 24);
-    const cycle = 29.53;
-    const phase = ((diff % cycle) + cycle) % cycle;
-    return moonPhases[Math.min(Math.floor((phase / cycle) * 8), 7)];
+    const state = getLunarState();
+    return { name: state.name, emoji: state.icon };
 }
 
 // Jednoduché fallbacky pro případ výpadku API

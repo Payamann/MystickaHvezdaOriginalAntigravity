@@ -102,7 +102,9 @@ export async function loadReadings({ preserveFilter = false } = {}) {
 
     } catch (error) {
         if (version !== requestVersion) return allReadings;
+        readingSummary = null;
         console.error('Error loading readings:', error);
+        updatePagination(0, 0);
         if (container) {
             container.innerHTML = `
                 <div class="empty-state">

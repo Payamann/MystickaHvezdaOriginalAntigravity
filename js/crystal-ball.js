@@ -8,23 +8,32 @@ import { showFallbackNotice } from './utils/reading-display.js';
 let questionHistory = [];
 const COOLDOWN_SECONDS = 10;
 const CRYSTAL_DAILY_LIMIT = 3;
+function readStorage(key) {
+    try { return localStorage.getItem(key); } catch { return null; }
+}
+function writeStorage(key, value) {
+    try { localStorage.setItem(key, value); } catch { /* Server remains authoritative for access limits. */ }
+}
 const CRYSTAL_UI_COPY = {
     cs: {
-        cooldown: seconds => `Koule čerpá energii (${seconds}s)`,
+        cooldown: seconds => `Další otázka za ${seconds} s`,
+        loading: 'Připravuje se odpověď…',
         ask: 'Zeptat se koule',
         limitTitle: 'Limit dosažen',
         anonymousLimit: 'Dnešní ukázky zdarma jsou vyčerpané. Další odpovědi jsou součástí členství a podléhají provozním limitům.',
         questionTooLongTitle: 'Příliš dlouhá',
-        questionTooLong: 'Otázka je příliš dlouhá. Prosím, zkraťte ji.',
+        questionTooLong: 'Zkrať otázku na nejvýš 200 znaků.',
         favorite: 'Přidat do oblíbených',
         registrationTitle: 'První otázka zdarma využita',
         registrationMessage: 'Zaregistruj se zdarma a ptej se dál — účet zdarma dává 3 otázky denně.',
         memberLimit: 'Ve členství můžeš pokračovat v rámci provozních limitů.',
-        silent: 'Hvězdy mlčí...',
-        disconnected: 'Spojení přerušeno.'
+        silent: 'Odpověď se nepodařilo načíst. Zkus to znovu.',
+        disconnected: 'Spojení se přerušilo. Otázka zůstává ve formuláři, můžeš to zkusit znovu.',
+        saveFailed: 'Odpověď je dostupná tady, uložení do profilu se nepodařilo.'
     },
     sk: {
-        cooldown: seconds => `Guľa čerpá energiu (${seconds}s)`,
+        cooldown: seconds => `Ďalšia otázka o ${seconds} s`,
+        loading: 'Pripravuje sa odpoveď…',
         ask: 'Opýtať sa gule',
         limitTitle: 'Limit dosiahnutý',
         anonymousLimit: 'Dnešné ukážky zadarmo sú vyčerpané. Ďalšie odpovede sú súčasťou členstva a podliehajú prevádzkovým limitom.',
@@ -34,8 +43,25 @@ const CRYSTAL_UI_COPY = {
         registrationTitle: 'Prvá otázka zadarmo využitá',
         registrationMessage: 'Zaregistruj sa zadarmo a pýtaj sa ďalej — bezplatný účet ponúka 3 otázky denne.',
         memberLimit: 'V členstve môžeš pokračovať v rámci prevádzkových limitov.',
-        silent: 'Hviezdy mlčia...',
-        disconnected: 'Spojenie bolo prerušené.'
+        silent: 'Odpoveď sa nepodarilo načítať. Skús to znova.',
+        disconnected: 'Spojenie sa prerušilo. Otázka zostáva vo formulári, môžeš to skúsiť znova.',
+        saveFailed: 'Odpoveď je dostupná tu, uloženie do profilu sa nepodarilo.'
+    },
+    pl: {
+        cooldown: seconds => `Kolejne pytanie za ${seconds} s`,
+        loading: 'Przygotowywanie odpowiedzi…',
+        ask: 'Zapytaj kulę',
+        limitTitle: 'Limit wykorzystany',
+        anonymousLimit: 'Bezpłatne odpowiedzi na dziś zostały wykorzystane. Dalszy dostęp w ramach członkostwa podlega limitom korzystania.',
+        questionTooLongTitle: 'Zbyt długie pytanie',
+        questionTooLong: 'Skróć pytanie do maksymalnie 200 znaków.',
+        favorite: 'Dodaj do ulubionych',
+        registrationTitle: 'Pierwsze bezpłatne pytanie wykorzystane',
+        registrationMessage: 'Załóż bezpłatne konto, aby skorzystać z 3 pytań dziennie.',
+        memberLimit: 'W ramach członkostwa możesz kontynuować do limitu korzystania.',
+        silent: 'Nie udało się wczytać odpowiedzi. Spróbuj ponownie.',
+        disconnected: 'Połączenie zostało przerwane. Pytanie pozostaje w formularzu, możesz spróbować ponownie.',
+        saveFailed: 'Odpowiedź jest dostępna tutaj, ale nie udało się zapisać jej w profilu.'
     }
 };
 
@@ -44,7 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initCrystalBall() {
-    const locale = document.documentElement.lang.toLowerCase().startsWith('sk') ? 'sk' : 'cs';
+    const requestedLocale = document.documentElement.lang.toLowerCase().slice(0, 2);
+    const locale = Object.hasOwn(CRYSTAL_UI_COPY, requestedLocale) ? requestedLocale : 'cs';
     const copy = CRYSTAL_UI_COPY[locale];
     const ballContainer = document.getElementById('crystal-ball');
     // Note: 'answer' ID is now below the ball in the HTML update
@@ -56,6 +83,11 @@ function initCrystalBall() {
     const bannerUpgradeBtn = document.getElementById('crystal-banner-upgrade');
 
     if (!ballContainer) return;
+    answerContainer?.setAttribute('role', 'status');
+    if (questionInput) {
+        questionInput.maxLength = 200;
+        if (!questionInput.labels?.length) questionInput.setAttribute('aria-label', { cs: 'Tvoje otázka', sk: 'Tvoja otázka', pl: 'Twoje pytanie' }[locale]);
+    }
 
     let isThinking = false;
     let cooldownTimer = null;
@@ -75,7 +107,7 @@ function initCrystalBall() {
     }
 
     function getLocalDailyUsage() {
-        const parsed = Number.parseInt(localStorage.getItem(getDailyUsageKey()) || '0', 10);
+        const parsed = Number.parseInt(readStorage(getDailyUsageKey()) || '0', 10);
         return Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
     }
 
@@ -88,7 +120,7 @@ function initCrystalBall() {
     }
 
     function incrementLocalDailyUsage() {
-        localStorage.setItem(getDailyUsageKey(), String(getLocalDailyUsage() + 1));
+        writeStorage(getDailyUsageKey(), String(getLocalDailyUsage() + 1));
         updateFreemiumCounter();
     }
 
@@ -129,7 +161,7 @@ function initCrystalBall() {
 
     // Check availability based on last usage
     function getRemainingCooldown() {
-        const lastUsage = localStorage.getItem('crystalBall_lastUsage');
+        const lastUsage = readStorage('crystalBall_lastUsage');
         if (!lastUsage) return 0;
 
         const elapsed = (Date.now() - parseInt(lastUsage)) / 1000;
@@ -138,6 +170,10 @@ function initCrystalBall() {
 
     // Update UI based on cooldown
     function updateCooldownUI() {
+        if (isThinking) {
+            if (askBtn) { askBtn.disabled = true; askBtn.textContent = copy.loading; }
+            return;
+        }
         const remaining = getRemainingCooldown();
         if (remaining > 0) {
             if (askBtn) {
@@ -185,15 +221,18 @@ function initCrystalBall() {
         }
 
         isThinking = true;
+        updateCooldownUI();
+        askBtn?.setAttribute('aria-busy', 'true');
 
         // Reset state
         if (answerContainer) answerContainer.classList.remove('visible');
+        answerContainer?.querySelectorAll('.favorite-reading-action, [data-reading-save-error]').forEach(element => element.remove());
+        showFallbackNotice(answerContainer, false);
         if (answerText) answerText.textContent = '';
         setResetVisible(false);
 
         // Animation
-        ballContainer.classList.add('shaking');
-        if (navigator.vibrate) navigator.vibrate(200);
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) ballContainer.classList.add('shaking');
 
         try {
             const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
@@ -206,6 +245,7 @@ function initCrystalBall() {
                 },
                 body: JSON.stringify({
                     question: question.trim(),
+                    lang: locale,
                     history: questionHistory.slice(-5)
                 })
             });
@@ -215,10 +255,8 @@ function initCrystalBall() {
             ballContainer.classList.remove('shaking');
 
             // Record usage time for cooldown
-            localStorage.setItem('crystalBall_lastUsage', Date.now().toString());
-            updateCooldownUI();
-
             if (data.success) {
+                writeStorage('crystalBall_lastUsage', Date.now().toString());
                 questionHistory.push(question.trim());
                 if (!isLoggedIn) {
                     incrementLocalDailyUsage();
@@ -241,7 +279,7 @@ function initCrystalBall() {
                         question: question.trim(),
                         answer: data.response,
                         fallback: !!data.fallback
-                    });
+                    }).catch(() => null);
 
                     // Store reading ID and add favorite button
                     if (saveResult && saveResult.id) {
@@ -252,15 +290,20 @@ function initCrystalBall() {
                         favoriteBtn.className = 'text-center favorite-reading-action';
                         favoriteBtn.innerHTML = `
                             <button id="favorite-crystal-btn" class="btn btn--glass favorite-reading-action__button">
-                                <span class="favorite-icon">⭐</span> ${copy.favorite}
+                                <svg class="mh-symbol" width="24" height="24" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="/img/icons/mh-symbols.svg#bookmark"></use></svg> ${copy.favorite}
                             </button>
                         `;
                         answerContainer.appendChild(favoriteBtn);
 
                         // Attach listener
                         document.getElementById('favorite-crystal-btn').addEventListener('click', async () => {
-                            await window.toggleFavorite(window.currentCrystalReadingId, 'favorite-crystal-btn');
+                            await window.toggleFavorite?.(saveResult.id, 'favorite-crystal-btn');
                         });
+                    } else {
+                        const notice = document.createElement('p');
+                        notice.dataset.readingSaveError = 'true';
+                        notice.textContent = copy.saveFailed;
+                        answerContainer?.append(notice);
                     }
                 }
             } else {
@@ -290,20 +333,15 @@ function initCrystalBall() {
             if (answerText) answerText.textContent = copy.disconnected;
         }
 
-        // Show reset btn
-        setTimeout(() => {
-            setResetVisible(true);
-            isThinking = false;
-        }, 500);
+        setResetVisible(true);
+        isThinking = false;
+        askBtn?.removeAttribute('aria-busy');
+        updateCooldownUI();
     }
 
     async function typewriterEffect(element, text) {
-        element.textContent = '';
-        const chars = text.split('');
-        for (let i = 0; i < chars.length; i++) {
-            element.textContent += chars[i];
-            await new Promise(resolve => setTimeout(resolve, 30));
-        }
+        // A whole answer remains easy to read and available without animation.
+        element.textContent = String(text || '');
     }
 
     // Events

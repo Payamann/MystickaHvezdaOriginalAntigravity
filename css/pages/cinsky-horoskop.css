@@ -61,11 +61,25 @@
 
             display: block;
 
-            font-size: 2rem;
+            font-family: 'Noto Serif CJK SC', 'Microsoft YaHei', 'SimSun', serif;
+
+            font-size: 1.85rem;
 
             margin-bottom: 0.4rem;
 
         }
+
+        .chinese-animal-symbol {
+            display: block;
+            width: 3.5rem;
+            height: 3.5rem;
+            margin: 0 auto 0.55rem;
+            color: #d0b17c;
+        }
+
+        #result-emoji .chinese-animal-symbol { width: 5rem; height: 5rem; }
+        #syn-emoji1 .chinese-animal-symbol,
+        #syn-emoji2 .chinese-animal-symbol { width: 3.25rem; height: 3.25rem; }
 
 
 

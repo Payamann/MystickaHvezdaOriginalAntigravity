@@ -92,3 +92,9 @@ body.atlas-language-page .atlas-angel-preview img { width:100%; height:auto; dis
  body:is(.atlas-localized-yes-no,.atlas-localized-crystal) .logo__text { font-size:16px; }
  body:is(.atlas-localized-yes-no,.atlas-localized-crystal) .header__inner { gap:8px; }
 }
+/* Localized natal calculation uses the same calm, readable result surface. */
+.atlas-language-page #locale-natal-output { text-align: left; overflow-wrap: anywhere; }
+.atlas-language-page #locale-natal-output table { width: 100%; border-collapse: collapse; margin-block: 1rem; }
+.atlas-language-page #locale-natal-output th,
+.atlas-language-page #locale-natal-output td { padding: .7rem .5rem; text-align: left; border-bottom: 1px solid rgba(189, 155, 101, .2); }
+.atlas-language-page #locale-natal-output th { color: #d0b17c; }

@@ -14,35 +14,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const resultsData = {
-        power: {
-            title: "Stín Moci",
-            subtitle: "Kontrolor & Tyran",
-            icon: "🌑",
-            desc: "Váš stín se projevuje silnou potřebou dominance. Pod maskou síly se často skrývá strach z bezmoci. Máte tendenci věci lámat přes koleno.",
-            advice: "Skutečná síla spočívá v laskavosti a přijetí zranitelnosti. Zkuste druhým občas předat otěže a uvidíte, že svět se nezřítí."
-        },
-        control: {
-            title: "Stín Řádu",
-            subtitle: "Perfekcionista & Kritik",
-            icon: "🧱",
-            desc: "Váš stín vás nutí být neustále v pozoru. Bojíte se chaosu a nedostatku disciplíny. Svou kritikou často zraňujete sebe i okolí.",
-            advice: "Dovolte si dělat chyby. V nedokonalosti se skrývá lidskost a skutečná krása. Nechte věci občas jen tak plynout bez vašeho dozoru."
-        },
-        attention: {
-            title: "Stín Lesku",
-            subtitle: "Zabiják uznání",
-            icon: "🕯️",
-            desc: "Váš stín si žádá neustálý aplaus. Potřebujete být v centru dění, abyste se cítili cenní. Vaše hodnota však nezávisí na potlesku ostatních.",
-            advice: "Najděte uznání v sobě. Vaše vnitřní světlo svítí i tehdy, když se na něj nikdo nedívá. Zkuste občas zářit potichu."
-        },
-        detachment: {
-            title: "Stín Odstupu",
-            subtitle: "Ledová maska",
-            icon: "❄️",
-            desc: "Váš stín vás izoluje od hlubokých emocí. Bojíte se zranění, a proto si udržujete bezpečný odstup. Tím ale přicházíte o skutečnou blízkost.",
-            advice: "Rozpusťte ledy. Dovolte lidem, aby vás skutečně poznali – i s vašimi slabostmi. Intimita je bránou k uzdravení vaší duše."
-        }
-    };
+    "power": {
+        "title": "Téma vlivu",
+        "subtitle": "Rozhodovat a neovládat",
+        "icon": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><use href=\"/img/icons/mh-symbols.svg#balance\"></use></svg>",
+        "desc": "Odpovědi otevírají téma vlivu a prosazování. Nejde o nálepku osobnosti; můžeš se podívat na konkrétní situaci, kde chceš výsledek příliš držet.",
+        "advice": "U jednoho společného rozhodnutí nech druhému skutečnou možnost volby."
+    },
+    "control": {
+        "title": "Téma jistoty",
+        "subtitle": "Řád a pružnost",
+        "icon": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><use href=\"/img/icons/mh-symbols.svg#compass\"></use></svg>",
+        "desc": "V kvízu vystupuje potřeba předvídatelnosti. Řád může pomáhat; někdy ale stojí víc sil než nejistota, kterou má odstranit.",
+        "advice": "Rozliš jedno užitečné pravidlo od jednoho, které můžeš bezpečně uvolnit."
+    },
+    "attention": {
+        "title": "Téma uznání",
+        "subtitle": "Viditelnost a vlastní měřítko",
+        "icon": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><use href=\"/img/icons/mh-symbols.svg#star\"></use></svg>",
+        "desc": "Tvoje volby se dotýkají přijetí a uznání. Kvíz neurčuje tvou hodnotu ani závislost na druhých.",
+        "advice": "Oceň jeden vlastní výsledek podle konkrétního měřítka, ne podle počtu reakcí."
+    },
+    "detachment": {
+        "title": "Téma odstupu",
+        "subtitle": "Prostor a kontakt",
+        "icon": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><use href=\"/img/icons/mh-symbols.svg#dream\"></use></svg>",
+        "desc": "V odpovědích se objevuje odstup. Může chránit vlastní prostor; stojí za to rozlišit potřebný klid od rozhovoru, který jen odkládáš.",
+        "advice": "Vyber jeden bezpečný kontakt, který chceš udržet i při potřebě být chvíli bez společnosti."
+    }
+};
 
     function updateProgress() {
         const percent = (currentStep / totalSteps) * 100;
@@ -61,16 +61,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showLoading() {
-        steps.forEach(s => s.classList.remove('active'));
-        document.getElementById('loading-step').classList.add('active');
         setProgress(100);
-
-        setTimeout(showResult, 2500);
+        showResult();
     }
 
     function showResult() {
         const winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
         const data = resultsData[winner];
+        const tied = Object.keys(scores).filter(key => scores[key] === scores[winner]);
 
         // Store result
         window.lastResult = data.title;
@@ -79,10 +77,11 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="result-card quiz-result-card">
                 <div class="result-card__header">
                     <h4 class="result-card__title quiz-result-title">${data.title}</h4>
-                    <p class="quiz-result-kicker">Váš potlačený archetyp</p>
+                    <p class="quiz-result-kicker">Symbolické shrnutí tvých odpovědí</p>
                 </div>
-                <div class="result-card__image animate-shadow">${data.icon}</div>
+                <div class="result-card__image">${data.icon}</div>
                 <div class="result-card__body">
+                    ${tied.length > 1 ? `<p class="quiz-result-mixed">Více motivů má stejnou váhu: ${tied.map(key => resultsData[key].title).join(', ')}.</p>` : ''}
                     <h5 class="quiz-result-subtitle">${data.subtitle}</h5>
                     <p class="quiz-result-description">${data.desc}</p>
                 </div>
@@ -90,21 +89,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p class="quiz-result-advice">"${data.advice}"</p>
                 </div>
             </div>
-            <div class="mt-xl">
-                <h2 class="text-gradient">Stín byl osvětlen</h2>
-                <p>Přijetí tohoto aspektu je prvním krokem k vaší celistvosti.</p>
-            </div>
+            <div class="mt-xl"><p>Výsledek krátkého kvízu nabízí téma k zamyšlení. Nepotvrzuje schopnosti, osobnost ani budoucnost.</p></div>
         `;
 
         document.getElementById('loading-step').classList.remove('active');
         const resultStep = document.getElementById('result-step');
         document.getElementById('result-box').innerHTML = resultHtml;
         resultStep.classList.add('active');
+        resultStep.setAttribute('tabindex', '-1');
+        resultStep.focus({ preventScroll: true });
+        resultStep.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
     }
 
     document.querySelectorAll('.option-btn').forEach(btn => {
         btn.addEventListener('click', () => {
+            if (!btn.closest('.question-step')?.classList.contains('active')) return;
             const scoreKey = btn.dataset.score;
+            if (!Object.hasOwn(scores, scoreKey)) return;
             scores[scoreKey]++;
             currentStep++;
             showStep(currentStep);
@@ -122,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     window.shareResult = () => {
-        const text = `Odhalil/a jsem svůj stín: ${window.lastResult}. Poznej i ty skryté stránky svého znamení.`;
+        const text = `V symbolickém kvízu o stínové stránce znamení se s mými odpověďmi propojilo téma ${window.lastResult}.`;
         if (navigator.share) {
             navigator.share({
                 title: 'Stín mého znamení',

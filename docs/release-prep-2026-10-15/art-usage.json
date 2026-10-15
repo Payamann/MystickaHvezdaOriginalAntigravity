@@ -1,0 +1,493 @@
+{
+  "date": "2026-10-15",
+  "method": "literal references in functional/root HTML, source CSS and JS; excludes docs/dist/minified CSS; no runtime claims",
+  "scannedSourceFiles": 661,
+  "assets": [
+    {
+      "asset": "img/atlas/01-lucerna-na-rozcesti.webp",
+      "sourceBytes": 295870,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "index.html",
+        "pl/index.html",
+        "sk/index.html"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/05-studna-hvezd.webp",
+      "sourceBytes": 93550,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "index.html"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/08-seminko-mezi-kameny.webp",
+      "sourceBytes": 60762,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "index.html"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/09-nocni-zahrada.webp",
+      "sourceBytes": 89146,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "css/pages/home-atlas.css"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/10-hory-pred-svitanim.webp",
+      "sourceBytes": 30562,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "index.html"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/15-zlaty-klic.webp",
+      "sourceBytes": 88770,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "index.html"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/16-kompas-oliva.webp",
+      "sourceBytes": 88742,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "index.html"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/18-zapisnik-pero.webp",
+      "sourceBytes": 78686,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "css/pages/vztahovy-vyklad.css",
+        "index.html"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/angels-v1/abundance.webp",
+      "sourceBytes": 190400,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "css/pages/andelske-karty.css"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/angels-v1/back.webp",
+      "sourceBytes": 141578,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "css/pages/andelske-karty.css",
+        "pl/andelske-karty.html",
+        "sk/andelske-karty.html"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/angels-v1/guidance.webp",
+      "sourceBytes": 186710,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "css/pages/andelske-karty.css"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/angels-v1/healing.webp",
+      "sourceBytes": 174600,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "css/pages/andelske-karty.css"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/angels-v1/love.webp",
+      "sourceBytes": 173122,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "css/pages/andelske-karty.css"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/angels-v1/nature.webp",
+      "sourceBytes": 188826,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "css/pages/andelske-karty.css"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/angels-v1/peace.webp",
+      "sourceBytes": 156238,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "css/pages/andelske-karty.css"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/angels-v1/purpose.webp",
+      "sourceBytes": 150080,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "css/pages/andelske-karty.css"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/angels-v1/strength.webp",
+      "sourceBytes": 169196,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "css/pages/andelske-karty.css"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/atlas-bridge-v1.webp",
+      "sourceBytes": 100544,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "tarot-laska.html"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/atlas-mutuality-v1.webp",
+      "sourceBytes": 67198,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "tarot-laska.html"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/atlas-shared-path-v1.webp",
+      "sourceBytes": 130482,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "css/pages/home-atlas.css",
+        "tarot-laska.html"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/editorial-v1/11-11-morning-1200.webp",
+      "sourceBytes": 172540,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [],
+      "usageStatus": "no literal reference in scanned source; runtime use unverified",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/editorial-v1/11-11-morning-480.webp",
+      "sourceBytes": 39278,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [],
+      "usageStatus": "no literal reference in scanned source; runtime use unverified",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/editorial-v1/11-11-morning-960.webp",
+      "sourceBytes": 123534,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [],
+      "usageStatus": "no literal reference in scanned source; runtime use unverified",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/editorial-v1/partner-cups-480.webp",
+      "sourceBytes": 77904,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "partnerska-numerologie.html"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/editorial-v1/partner-cups-960.webp",
+      "sourceBytes": 209344,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "partnerska-numerologie.html"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/social-v1/01-dva-hrnky.webp",
+      "sourceBytes": 314314,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "blog.html",
+        "numerologie.html"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/social-v1/02-zahradni-branka.webp",
+      "sourceBytes": 358286,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "blog.html"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/social-v1/03-posledni-list.webp",
+      "sourceBytes": 239346,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [],
+      "usageStatus": "no literal reference in scanned source; runtime use unverified",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/social-v1/04-prvni-schody.webp",
+      "sourceBytes": 345330,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "blog.html"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/social-v1/05-kocka-u-okna.webp",
+      "sourceBytes": 299938,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "biorytmy.html",
+        "blog.html",
+        "css/atlas-art.css"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/social-v1/06-zalevani.webp",
+      "sourceBytes": 330696,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [],
+      "usageStatus": "no literal reference in scanned source; runtime use unverified",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/social-v1/07-volavka.webp",
+      "sourceBytes": 337370,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "runy.html"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/social-v1/08-zrcadlo.webp",
+      "sourceBytes": 255248,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "blog.html",
+        "css/atlas-art.css"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/social-v1/09-granatove-jablko.webp",
+      "sourceBytes": 290942,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "blog.html"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/social-v1/10-sova.webp",
+      "sourceBytes": 308818,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "aura.html"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/tools-v1/01-astrolab.webp",
+      "sourceBytes": 157698,
+      "roleDraft": "tool illustration",
+      "directReferenceFiles": [
+        "astro-mapa.html",
+        "css/atlas-art.css",
+        "o-nas.html",
+        "pl/natalni-karta.html",
+        "sk/natalni-karta.html"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/tools-v1/02-mesicni-krajina.webp",
+      "sourceBytes": 129944,
+      "roleDraft": "tool illustration",
+      "directReferenceFiles": [
+        "astro-mapa.html",
+        "blog.html",
+        "css/atlas-art.css",
+        "js/horoscope-share.js",
+        "js/share-image-canvas.js",
+        "js/tarot-ano-ne.js",
+        "mesicni-horoskop.html",
+        "pl/index.html",
+        "sk/index.html",
+        "tydenni-horoskop.html"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/tools-v1/03-numerologicky-zapisnik.webp",
+      "sourceBytes": 133484,
+      "roleDraft": "tool illustration",
+      "directReferenceFiles": [
+        "blog.html",
+        "css/atlas-art.css",
+        "o-nas.html",
+        "osobni-rok-2026.html",
+        "vyznam-data-narozeni.html"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/tools-v1/04-runove-kameny.webp",
+      "sourceBytes": 181274,
+      "roleDraft": "tool illustration",
+      "directReferenceFiles": [
+        "css/atlas-art.css"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/tools-v1/05-kristalova-koule.webp",
+      "sourceBytes": 145368,
+      "roleDraft": "tool illustration",
+      "directReferenceFiles": [
+        "kristalova-koule.html",
+        "o-nas.html",
+        "pl/index.html",
+        "pl/kristalova-koule.html",
+        "sk/index.html",
+        "sk/kristalova-koule.html"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/tools-v1/06-lesni-kruh.webp",
+      "sourceBytes": 191230,
+      "roleDraft": "tool illustration",
+      "directReferenceFiles": [
+        "astro-mapa.html",
+        "blog.html",
+        "css/atlas-art.css"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/western-zodiac-v1.webp",
+      "sourceBytes": 701618,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [
+        "css/pages/horoskopy.css"
+      ],
+      "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    }
+  ]
+}

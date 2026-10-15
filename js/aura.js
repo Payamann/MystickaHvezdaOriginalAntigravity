@@ -5,17 +5,17 @@
 
                 name: 'Červená Aura', color: '#e74c3c', glow: 'rgba(231,76,60,0.5)', keyword: 'SÍLA · VITALITA · VÁŠEŇ',
 
-                desc: 'Červená aura je nejenergetičtější a nejzákladnější ze všech. Lidé s červenou aurou jsou plní vitality, odvahy a přirozené vůdcovské síly. Jsou pevně zakotveni na zemi a milují fyzický svět.',
+                desc: 'Červená v této symbolické hře zastupuje iniciativu a pohyb. Podívej se, kam chceš dát energii a kde se hodí ubrat tempo.',
 
-                strengths: 'Přirozené vůdcovství, neúnavná energie, odhodlání, fyzická síla, odvaha čelit výzvám',
+                strengths: 'Odvaha začít, přímost, praktický krok',
 
-                challenges: 'Impulzivita, sklony ke hněvu, potíže s trpělivostí a odpočinkem',
+                challenges: 'Dát prostor i odezvě ostatních',
 
-                crystal: 'Rubín, Granát, Jasmín — pro uzemnění a kanalizaci energie',
+                crystal: 'Rubín, Granát, Jasmín',
 
-                chakra: 'Kořenová čakra (Muladhara) — bezpečí, přežití, uzemnění',
+                chakra: 'Kořenová čakra (Muladhara)',
 
-                career: 'Podnikatelé, sportovci, vojáci, chirurgové, hasiči — vše kde je potřeba energie, odvaha a schopnost jednat bez váhání.'
+                career: 'Vyber jeden úkol, který můžeš bezpečně začít v malém.'
 
             },
 
@@ -23,17 +23,17 @@
 
                 name: 'Oranžová Aura', color: '#e67e22', glow: 'rgba(230,126,34,0.5)', keyword: 'KREATIVITA · RADOST · SMYSLNOST',
 
-                desc: 'Oranžová aura září kreativitou a radostí ze života. Tito lidé jsou přirozenými umělci a baviči. Milují smyslové zážitky a mají dar přinášet radost ostatním svou přirozenou veselostí.',
+                desc: 'Oranžová nabízí obraz tvořivosti a kontaktu. Který nápad nebo setkání by běžnému dni přidaly něco živého?',
 
-                strengths: 'Kreativita, charisma, smysl pro humor, schopnost přinášet radost, emocionální inteligence',
+                strengths: 'Hravost, zvědavost, sdílení',
 
-                challenges: 'Nestálost, přílišná závislost na vnějším potvrzení, sklony k přehánění',
+                challenges: 'Neslibovat více, než je reálné dokončit',
 
-                crystal: 'Karneol, jantar, sluneční kámen — pro kreativní průtok',
+                crystal: 'Karneol, jantar, sluneční kámen',
 
-                chakra: 'Sakrální čakra (Svadhisthana) — kreativita, sexualita, emoce',
+                chakra: 'Sakrální čakra (Svadhisthana)',
 
-                career: 'Umělci, herci, designéři, event manageři, terapeuti, koučové — vše co vyžaduje kreativitu a mezilidský kontakt.'
+                career: 'Dej jednomu nápadu krátký zkušební prostor.'
 
             },
 
@@ -41,17 +41,17 @@
 
                 name: 'Žlutá Aura', color: '#f1c40f', glow: 'rgba(241,196,15,0.5)', keyword: 'INTELEKT · OPTIMISMUS · KOMUNIKACE',
 
-                desc: 'Žlutá aura je aurou myslitelů, optimistů a komunikátorů. Září jako slunce — přitahuje ostatní svou radostností a intelektuální bystrosti. Tito lidé mají přirozený dar pro učení a vyučování.',
+                desc: 'Žlutá je zde symbolem jasnosti a poznávání. Může připomenout otázku, kterou chceš lépe pochopit.',
 
-                strengths: 'Analytické myšlení, optimismus, výjimečná komunikace, zvídavost, dar pro pedagogiku',
+                strengths: 'Zájem, formulování otázek, nové souvislosti',
 
-                challenges: 'Úzkostlivá tendence k overthinkingu, potíže s dokončováním projektů, rozptýlenost',
+                challenges: 'Rozlišit ověřenou informaci od prvního dojmu',
 
-                crystal: 'Citrín, Žlutý kalcit, Topaz — pro soustředění a sebevědomí',
+                crystal: 'Citrín, Žlutý kalcit, Topaz',
 
-                chakra: 'Solární plexus (Manipura) — vůle, sebevědomí, osobní moc',
+                chakra: 'Solární plexus (Manipura)',
 
-                career: 'Učitelé, novináři, řečníci, vědci, psychologové, komentátoři — vše kde komunikace a myšlení jsou klíčem.'
+                career: 'Zjisti jeden údaj, který ti chybí k rozhodnutí.'
 
             },
 
@@ -59,17 +59,17 @@
 
                 name: 'Zelená Aura', color: '#2ecc71', glow: 'rgba(46,204,113,0.5)', keyword: 'LÉČENÍ · HARMONIE · RŮST',
 
-                desc: 'Zelená aura je barvou srdce, léčitelů a milovníků přírody. Lidé se zelenou aurou jsou přirozenými léčiteli — mají instinkt vycítit potřeby ostatních a pomáhají s bezpodmínečnou láskyplností.',
+                desc: 'Zelená v tomto portrétu připomíná péči a zázemí. Není potvrzením léčitelských schopností ani zdravotního stavu.',
 
-                strengths: 'Empatie, léčivá přítomnost, láska k přírodě, soucit, schopnost uzdravovat a obnovovat',
+                strengths: 'Ohleduplnost, péče, vztah k přírodě',
 
-                challenges: 'Tendence klást potřeby jiných na první místo, přílišná sebeobětavost, absorpce negativní energie',
+                challenges: 'Nezapomenout na vlastní hranice',
 
-                crystal: 'Malachit, Smaragd, Aventurín — pro otevření srdce',
+                crystal: 'Malachit, Smaragd, Aventurín',
 
-                chakra: 'Srdeční čakra (Anahata) — láska, soucit, uzdravování',
+                chakra: 'Srdeční čakra (Anahata)',
 
-                career: 'Lékaři, terapeuti, záchranáři, zahradníci, sociální pracovníci, veterináři — vše kde láska a péče jsou základem.'
+                career: 'Udělej jednu drobnost pro své každodenní zázemí.'
 
             },
 
@@ -77,17 +77,17 @@
 
                 name: 'Modrá Aura', color: '#3498db', glow: 'rgba(52,152,219,0.5)', keyword: 'INTUICE · KOMUNIKACE · MOUDROST',
 
-                desc: 'Modrá aura je aurou moudrosti, hluboké komunikace a duchovní intuice. Lidé s modrou aurou jsou přirozenými rádci a důvěrníky. Mají dar říct přesně to, co lidé potřebují slyšet.',
+                desc: 'Modrá otevírá téma klidné komunikace. Nejde o pevný popis osobnosti; může posloužit jako připomínka pro konkrétní rozhovor.',
 
-                strengths: 'Hluboká intuice, diplomatičnost, věrnost, schopnost naslouchat, dar pro pravdomluvnost',
+                strengths: 'Naslouchání, srozumitelnost, odstup',
 
-                challenges: 'Přílišná sebekritika, potíže s rozhodováním, tendence k melancholii',
+                challenges: 'Neschovávat důležitý požadavek do neurčitých náznaků',
 
-                crystal: 'Sodalit, Lapis lazuli, Akvamarín — pro jasnou komunikaci',
+                crystal: 'Sodalit, Lapis lazuli, Akvamarín',
 
-                chakra: 'Krční čakra (Višuddha) — komunikace, pravda, vyjadřování',
+                chakra: 'Krční čakra (Višuddha)',
 
-                career: 'Terapeuti, učitelé, duchovní vůdci, spisovatelé, hudebníci, soudci — vše kde moudrost a slovo mají váhu.'
+                career: 'Řekni jednu potřebu jednoduše a bez obviňování.'
 
             },
 
@@ -95,17 +95,17 @@
 
                 name: 'Indigová Aura', color: '#5b2d8e', glow: 'rgba(91,45,142,0.5)', keyword: 'VIZE · INTUICE · SPIRITUALITA',
 
-                desc: 'Indigová aura je vzácná a hluboce duchovní. Tito jedinci jsou vizionáři se silným šestým smyslem. Vnímají to, co ostatní nevidí, a mají přirozené spojení s vyššími rovinami vědomí.',
+                desc: 'Indigová zde představuje postřeh a obrazotvornost. Výpočet z data neprokazuje telepatii, jasnovidnost ani skryté vědění.',
 
-                strengths: 'Telepatie, jasnovidnost, hluboká moudrost, schopnost vidět za povrch věcí, vedení ducha',
+                strengths: 'Všímavost, představivost, hledání souvislostí',
 
-                challenges: 'Přílišná citlivost na okolní energie, potíže v materiálním světě, tendence k izolaci',
+                challenges: 'Ověřit vlastní domněnku u skutečného zdroje',
 
-                crystal: 'Ametyst, Tanzanit, Azurit — pro třetí oko',
+                crystal: 'Ametyst, Tanzanit, Azurit',
 
-                chakra: 'Třetí oko (Ádžná) — intuice, jasnovidnost, porozumění',
+                chakra: 'Třetí oko (Ádžná)',
 
-                career: 'Duchovní vůdci, léčitelé, astrologové, psychologové, umělci, filozofové — vše co vyžaduje hluboký vhled.'
+                career: 'Zapiš dojem a vedle něj jeden známý fakt.'
 
             },
 
@@ -113,17 +113,17 @@
 
                 name: 'Fialová Aura', color: '#9b59b6', glow: 'rgba(155,89,182,0.5)', keyword: 'MAGIE · SPIRITUALITA · TRANSFORMACE',
 
-                desc: 'Fialová aura je aurou mystiků a duchovních průzkumníků. Tito lidé jsou přirozenými šamany moderní doby — přitahuje je vše magické, tajemné a za hranicí běžné reality.',
+                desc: 'Fialová v této hře zastupuje prostor pro vlastní otázky a odstup. Nemusí se vztahovat k žádné nadpřirozené schopnosti.',
 
-                strengths: 'Spirituální hloubka, magnetická osobnost, schopnost transformace sebe i druhých, dar pro rituál',
+                strengths: 'Hloubka, tvořivý pohled, vlastní prostor',
 
-                challenges: 'Potíže se zakořeněním v každodenní realitě, přílišný idealismus, únava z pozemského života',
+                challenges: 'Vrátit se od představ k dostupným krokům',
 
-                crystal: 'Ametyst, Lepidolit, Kunzit — pro duchovní ochranu',
+                crystal: 'Ametyst, Lepidolit, Kunzit',
 
-                chakra: 'Korunní čakra (Sahasrara) — spojení s vyšším vědomím, osvícení',
+                chakra: 'Korunní čakra (Sahasrara)',
 
-                career: 'Duchovní průvodci, šamani, umělci, básníci, mystici, terapeuti — vše na pomezí viditelného a neviditelného.'
+                career: 'Nech si chvíli na jednu otázku bez dalších podnětů.'
 
             },
 
@@ -131,17 +131,17 @@
 
                 name: 'Zlatá Aura', color: '#d4af37', glow: 'rgba(212,175,55,0.5)', keyword: 'MOUDROST · HOJNOST · VEDENÍ',
 
-                desc: 'Zlatá aura je vzácná a oslnivá — aura mistrů, moudrých vůdců a osvícených duší. Tito lidé nesou světlo moudrosti a přirozeně přitahují hojnost ve všech podobách.',
+                desc: 'Zlatá je zde symbolem záměru a odpovědnosti za vlastní jednání. Nepředpovídá úspěch, bohatství ani společenské postavení.',
 
-                strengths: 'Přirozená autorita, hluboká moudrost, dar pro vedení a inspiraci, magnetismus, štědrost',
+                strengths: 'Záměr, organizace, schopnost navazovat',
 
-                challenges: 'Tlak vysokých standardů, potíže s delegováním, pocit odpovědnosti za ostatní',
+                challenges: 'Poměřovat výsledek i jeho náklady',
 
-                crystal: 'Zlatý pyrit, Tygří oko, Citrín — pro hojnost a vedení',
+                crystal: 'Zlatý pyrit, Tygří oko, Citrín',
 
-                chakra: 'Korunní a solární čakra — kombinace moudrosti a osobní moci',
+                chakra: 'Korunní a solární čakra',
 
-                career: 'Vůdci, mentoři, filosofové, duchovní učitelé, podnikatelé — kdokoli kdo inspiruje a vede ostatní k lepšímu.'
+                career: 'U jednoho cíle pojmenuj přínos i hranici, kterou nechceš překročit.'
 
             },
 
@@ -149,17 +149,17 @@
 
                 name: 'Bílá Aura', color: '#ecf0f1', glow: 'rgba(255,255,255,0.4)', keyword: 'ČISTOTA · OCHRANA · TRANSCENDENCE',
 
-                desc: 'Bílá aura je nejčistší a nejraritnější ze všech. Bývá spojována s vysoce duchovně vyvinutými jedinci, anděly vtělenými do lidské podoby nebo dušemi v pokročilé fázi duchovního vývoje.',
+                desc: 'Bílá nabízí obraz volného místa a nadhledu. Nejde o hodnocení duchovní úrovně ani čistoty člověka.',
 
-                strengths: 'Absolutní čistota záměru, přirozená ochrana světla, dar pro uzdravování na nejhlubší úrovni, nevinnost',
+                strengths: 'Nadhled, otevřenost, prostor pro změnu',
 
-                challenges: 'Přílišná citlivost na negativní energie, obtíže v konfrontaci s drsnou realitou světa',
+                challenges: 'Nepřidávat si povinnost být stále k dispozici',
 
-                crystal: 'Selenit, čirý křišťál, měsíční kámen — pro čistotu a ochranu',
+                crystal: 'Selenit, čirý křišťál, měsíční kámen',
 
-                chakra: 'Transpersonální čakry — nad fyzickým tělem, spojení s božstvím',
+                chakra: 'Transpersonální čakry',
 
-                career: 'Duchovní mistři, léčitelé, světelní pracovníci, umělci — kdokoli jehož přítomnost sama o sobě léčí a inspiruje.'
+                career: 'Uzavři jednu drobnou záležitost a chvíli nic dalšího nepřidávej.'
 
             }
 

@@ -1,14 +1,16 @@
+import { getLunarState } from './utils/lunar-state.js';
+
 // 🌕 Lunar Phase Calculation (pure JS, no external API)
 const PHASES = [
     {
-        name: 'Novolunění',
+        name: 'Novoluní',
         emoji: '🌑',
         minAge: 0,
         maxAge: 1.85,
         illumination: 0,
         tags: ['Nové začátky', 'Záměry', 'Introspekce', 'Ticho'],
-        interpretation: 'Novolunění je kosmickým resetem. Měsíc není na obloze vidět – celá jeho plocha je osvětlena ze strany, která se dívá pryč od nás. Tato tma není prázdnota, ale úrodná půda. Je to nejsilnější moment pro formulování záměrů, vizualizace a sázení semen toho, co chcete přivést do světa v průběhu nadcházejícího cyklu.',
-        advice: '🌑 Dnešní praxe: Zapište si tři věci, které si přejete vytvořit nebo přitáhnout v příštích 29 dnech. Pak je pusťte – a sledujte, jak se vesmír začne pohybovat.'
+        interpretation: 'Novoluní nabízí symbol prázdného místa a začátku. Nemusí se hned zaplnit velkým plánem. Podívej se, pro co chceš v běžném dni udělat prostor.',
+        advice: 'Vyber jeden malý záměr a napiš, podle čeho poznáš první skutečný krok.'
     },
     {
         name: 'Dorůstající srpek',
@@ -17,8 +19,8 @@ const PHASES = [
         maxAge: 6.38,
         illumination: 25,
         tags: ['Akce', 'Iniciativa', 'Víra', 'Nadšení'],
-        interpretation: 'Tenký srpek Měsíce se objevuje na večerní obloze jako první viditelný příslib. Energie tohoto období říká: Je čas začít jednat na základě záměrů, které jste zaseli při Novolunění. Ještě plné světlo nepřišlo, ale směr je jasný. Toto není čas na přemýšlení – je to čas na první kroky.',
-        advice: '🌒 Dnešní praxe: Udělejte konkrétní první krok ke svému záměru. Jakkoli malý. Každý velký projekt začíná jednou neohrabanou akcí.'
+        interpretation: 'Dorůstající srpek může připomenout křehký začátek. Po prvním nápadu obvykle pomůže malý pokus a prostor na zkušenost.',
+        advice: 'Vyzkoušej jednu část svého plánu bez požadavku na dokonalý výsledek.'
     },
     {
         name: 'První čtvrť',
@@ -27,8 +29,8 @@ const PHASES = [
         maxAge: 8.0,
         illumination: 50,
         tags: ['Překážky', 'Rozhodnutí', 'Vůle', 'Konflikt'],
-        interpretation: 'Přesně polovina Měsíce je osvětlena – symbolická rovnováha a zároveň napětí. Toto je bod, kdy se záměry střetávají s realitou. Může přijít první vnitřní nebo vnější odpor. Tyto překážky nejsou signálem k vzdání se – jsou zkouškou, zda chcete svůj cíl skutečně naplnit.',
-        advice: '🌓 Dnešní praxe: Co vás brzdí? Pojmenujte jednu konkrétní překážku a rozhodněte se, jak přes ni projdete. Rozhodnutí je mocnější než plán.'
+        interpretation: 'První čtvrť je vhodný obraz rozhodování mezi možnostmi. Lunární symbolika sama neříká, kterou cestu vybrat.',
+        advice: 'Pojmenuj jednu překážku a zjisti údaj, který ti pomůže rozhodnout.'
     },
     {
         name: 'Dorůstající měsíc',
@@ -37,8 +39,8 @@ const PHASES = [
         maxAge: 13.77,
         illumination: 75,
         tags: ['Vytrvalost', 'Zdokonalování', 'Analýza', 'Dolaďování'],
-        interpretation: 'Měsíc je téměř plný a energie narůstá s téměř hmatatelnou intenzitou. Toto je čas pečlivé práce na detailech. Záměr je živý, první momentum je vytvořeno – teď je třeba vyladit, zdokonalit a vytrvat. Příprava vrcholí.',
-        advice: '🌔 Dnešní praxe: Prostudujte, co funguje a co ne. Proveďte jednu konkrétní korekci kurzu. Mistrovství leží ve vyladění drobností.'
+        interpretation: 'Dorůstající měsíc může posloužit jako podnět k revizi rozpracovaného. Není potřeba přidávat další úkol jen kvůli fázi Měsíce.',
+        advice: 'Vrať se k jednomu detailu a uprav ho podle skutečné zpětné vazby.'
     },
     {
         name: 'Úplněk',
@@ -47,8 +49,8 @@ const PHASES = [
         maxAge: 15.77,
         illumination: 100,
         tags: ['Vrchol', 'Manifestace', 'Emoce', 'Odhalení', 'Naplnění'],
-        interpretation: 'Úplněk je posvátným momentem lunárního cyklu. Měsíc je plně osvětlen a na obloze září jako malé druhé slunce. Emoce jsou zesileny, intuice maximálně naostřena. To, co bylo zaseto, se nyní plně projevuje – dobré i špatné. Věci se vynořují na povrch. Toto je okamžik sklizně, rituálů vděčnosti a propuštění starého, co již neslouží.',
-        advice: '🌕 Dnešní praxe: Vytvořte prostor pro rituál vděčnosti. Napište si, co jste od posledního Novolunění dosáhli, a poté vědomě propusťte vše, čeho je třeba se vzdát.'
+        interpretation: 'Úplněk bývá symbolem viditelnosti a završení. Může nabídnout příležitost ohlédnout se za výsledkem; nepředpovídá zvýšené emoce ani odhalení tajemství.',
+        advice: 'Zapiš jeden konkrétní pokrok a něco, co se při něm ukázalo jinak, než byl původní plán.'
     },
     {
         name: 'Ubývající měsíc',
@@ -57,8 +59,8 @@ const PHASES = [
         maxAge: 21.15,
         illumination: 75,
         tags: ['Sdílení', 'Moudrost', 'Vděčnost', 'Odpočinek'],
-        interpretation: 'Světlo pomalu ustupuje, ale zkušenost a moudrost ze sklizně Úplňku zůstávají. Toto je čas sdílení – toho, co jste se naučili, prožili a vytvořili. Energie přirozeně volá k introverzi, k předávání vědomostí a k ocenění cesty.',
-        advice: '🌖 Dnešní praxe: Podělte se o něco, čemu jste se naučili – ať už s přítelem, v deníku, nebo na sociálních sítích. Moudrost, která není sdílena, chřadne.'
+        interpretation: 'Ubývající měsíc může připomenout ohlédnutí a sdílení zkušenosti. Zastav se u toho, co pro tebe bylo opravdu použitelné.',
+        advice: 'Vyber jednu zkušenost, kterou chceš zaznamenat pro příští podobnou situaci.'
     },
     {
         name: 'Poslední čtvrť',
@@ -67,8 +69,8 @@ const PHASES = [
         maxAge: 23.15,
         illumination: 50,
         tags: ['Propuštění', 'Čištění', 'Transformace', 'Přehodnocení'],
-        interpretation: 'Opět polovina – ale tentokrát na sestupné části cyklu. Přichází čas hlubokého úklidu: fyzického, emocionálního i mentálního. Co starého, přebytečného nebo již nepotřebného je v mém životě? Toto je energie propuštění, ne přidávání.',
-        advice: '🌗 Dnešní praxe: Vyhoďte, darujte nebo propusťte jednu věc z fyzického prostoru i z mysli. Úklid energie vytváří prostor pro nové.'
+        interpretation: 'Poslední čtvrť nabízí obraz přehodnocení. Můžeš se podívat, které závazky ještě mají smysl a kde potřebuješ jinou dohodu.',
+        advice: 'U jedné povinnosti pojmenuj její účel a možnost bezpečně upravit rozsah.'
     },
     {
         name: 'Ubývající srpek',
@@ -77,28 +79,13 @@ const PHASES = [
         maxAge: 28.5,
         illumination: 15,
         tags: ['Obnova', 'Odpočinek', 'Ticho', 'Příprava'],
-        interpretation: 'Měsíc se vrací k temnotě a cyklus se uzavírá. Toto je nejintrovertovanější fáze lunárního cyklu – čas skutečného odpočinku, regenerace a přípravy na nový začátek. Nenutit se do akce. Spát víc. Meditovat. Být v tichu.',
-        advice: '🌘 Dnešní praxe: Dovolte si dnes odpočinout bez výčitek. Spánek a ticho jsou stejně produktivní jako akce – jen jiným způsobem.'
+        interpretation: 'Ubývající srpek může být symbolickou připomínkou odpočinku a prostoru bez dalšího výkonu. Řiď se především tím, co skutečně potřebuješ.',
+        advice: 'Nech si krátkou chvíli bez nového úkolu. Poznámku nebo plán můžeš dopsat později.'
     }
 ];
 
-function getLunarAge(date) {
-    // Reference: new moon March 18, 2026 04:00 UTC (verified against SpaceWeatherLive)
-    const knownNewMoon = new Date('2026-03-18T04:00:00Z');
-    const LUNAR_CYCLE = 29.53058867;
-    const diffMs = date - knownNewMoon;
-    const diffDays = diffMs / (1000 * 60 * 60 * 24);
-    let age = diffDays % LUNAR_CYCLE;
-    if (age < 0) age += LUNAR_CYCLE;
-    return age;
-}
-
-function getPhase(age) {
-    return PHASES.find(p => age >= p.minAge && age < p.maxAge) || PHASES[0];
-}
-
 function formatDate(date) {
-    return date.toLocaleDateString('cs-CZ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    return date.toLocaleDateString('cs-CZ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Europe/Prague' });
 }
 
 function renderCycleGrid(currentPhase) {
@@ -114,34 +101,27 @@ function renderCycleGrid(currentPhase) {
     });
 }
 
-function calcIllumination(age) {
-    // Dynamic calculation based on actual lunar age
-    // Formula: (1 - cos(2π * age / cycle)) / 2
-    const LUNAR_CYCLE = 29.53058867;
-    const angle = (2 * Math.PI * age) / LUNAR_CYCLE;
-    return Math.round(((1 - Math.cos(angle)) / 2) * 100);
-}
-
 function renderPhase() {
     const now = new Date();
-    const age = getLunarAge(now);
-    const phase = getPhase(age);
-    const illumination = calcIllumination(age);
+    const state = getLunarState(now);
+    const age = state.age;
+    const phase = { ...PHASES[state.index], name: state.name, emoji: state.icon };
+    const illumination = state.illumination;
 
     document.getElementById('moonEmoji').textContent = phase.emoji;
     window.MH_MOON_ART?.render(document.getElementById('moonEmoji'), phase.emoji, phase.name);
     document.getElementById('phaseName').textContent = phase.name;
-    document.getElementById('phaseDate').textContent = formatDate(now) + ` · Věk Měsíce: ${age.toFixed(1)} dní`;
+    document.getElementById('phaseDate').textContent = formatDate(now) + ` · Orientační stáří Měsíce: ${age.toFixed(1)} dní`;
     const illuminationStep = Math.round(illumination / 5) * 5;
     document.getElementById('illuminationFill').dataset.illumination = String(illuminationStep);
-    document.getElementById('illuminationLabel').textContent = `Osvícení: ${illumination} %`;
+    document.getElementById('illuminationLabel').textContent = `Orientační osvětlení: ${illumination} %`;
 
-    document.getElementById('phaseIntroTitle').textContent = `${phase.emoji} ${phase.name}`;
+    document.getElementById('phaseIntroTitle').textContent = phase.name;
     document.getElementById('phaseTags').innerHTML = phase.tags.map(t => `<span class="tag">${t}</span>`).join('');
     document.getElementById('phaseInterpretation').textContent = phase.interpretation;
     document.getElementById('phaseAdvice').textContent = phase.advice;
 
-    document.title = `${phase.emoji} ${phase.name} – Dnešní Lunární Fáze | Mystická Hvězda`;
+    document.title = `${phase.name} – Dnešní lunární fáze | Mystická Hvězda`;
 
     renderCycleGrid(phase);
 }

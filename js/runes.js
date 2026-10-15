@@ -3,6 +3,8 @@
  * Handles rune drawing, shuffling animation, and AI interpretations.
  */
 
+import { showFallbackNotice, formatReadingHtml } from './utils/reading-display.js';
+
 let runesData = [];
 let drawnRune = null;
 const RUNES_DEEP_FEATURE = 'runy_hluboky_vyklad';
@@ -428,8 +430,12 @@ async function requestDeepReading() {
     const aiContainer = document.getElementById('ai-response-container');
     const originUpsell = document.getElementById('premium-upsell');
 
+    if (!drawnRune || !btn || !aiContainer || btn.disabled) return;
     btn.disabled = true;
-    btn.innerHTML = 'Šaman přijímá vedení... <div class="loading__spinner loading__spinner--inline"></div>';
+    btn.setAttribute('aria-busy', 'true');
+    btn.innerHTML = 'Připravuje se výklad… <div class="loading__spinner loading__spinner--inline" aria-hidden="true"></div>';
+    const error = document.getElementById('runes-deep-error');
+    error?.remove();
 
     try {
         const response = await fetch(`${apiBase()}/runes`, {
@@ -462,10 +468,8 @@ async function requestDeepReading() {
         aiContainer.hidden = false;
         aiContainer.classList.remove('runes-upgrade-preview');
         aiContainer.classList.add('mh-block-visible');
-        const div = document.createElement('div');
-        div.textContent = data.response;
-        let safeHTML = div.innerHTML.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        aiContainer.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(safeHTML) : safeHTML;
+        aiContainer.innerHTML = formatReadingHtml(data.response);
+        showFallbackNotice(aiContainer, data.fallback);
 
         const saveResult = await saveRuneReading({
             response: data.response,
@@ -477,15 +481,18 @@ async function requestDeepReading() {
             appendRuneFavoriteAction(aiContainer, saveResult.id);
         }
 
-        aiContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        aiContainer.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest' });
 
     } catch (error) {
         console.error('Deep read failed:', error);
-        alert('Nepodařilo se načíst hluboký výklad. Zkuste to prosím znovu.');
-        btn.disabled = false;
-        btn.innerHTML = 'Získat šamanský výklad (Zkusit znovu)';
+        const message = document.createElement('p');
+        message.id = 'runes-deep-error';
+        message.setAttribute('role', 'alert');
+        message.textContent = 'Výklad se nepodařilo načíst. Runa i záměr zůstávají zachované. Zkus požadavek znovu.';
+        btn.insertAdjacentElement('beforebegin', message);
     } finally {
         btn.disabled = false;
+        btn.removeAttribute('aria-busy');
         btn.innerHTML = 'Získat šamanský výklad';
     }
 }

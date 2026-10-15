@@ -1,0 +1,17 @@
+.preview-main { max-width: 1080px; padding-block: 3rem; }
+.preview-main > header, .preview-main > section { margin-bottom: 2.5rem; }
+.preview-main h1 { max-width: 20ch; }
+.preview-main h2 { margin-bottom: 1.2rem; }
+.preview-main p { max-width: 66ch; line-height: 1.75; }
+.preview-main label { display: block; margin-block: 1rem .5rem; }
+.preview-main input, .preview-main textarea { width: 100%; max-width: 100%; }
+.preview-main [aria-invalid="true"] { border-color: #d0b17c; }
+.preview-main summary { min-height: 44px; display: list-item; cursor: pointer; padding-block: .65rem; }
+.preview-main :focus-visible { outline: 2px solid #d0b17c; outline-offset: 4px; }
+.preview-main .card { padding: 1.5rem; }
+.preview-row { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; }
+.preview-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+.preview-full { grid-column: 1 / -1; }
+.preview-main .mh-symbol { color: #bd9b65; flex: 0 0 auto; }
+.preview-reading { max-width: 760px; }
+@media (max-width: 650px) { .preview-grid { grid-template-columns: minmax(0, 1fr); } .preview-main .card { padding: 1rem; } }

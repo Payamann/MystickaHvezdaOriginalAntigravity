@@ -1611,6 +1611,9 @@ body.page-profile .profile-refresh-status { margin-bottom: 1rem; padding: 1rem; 
 body.page-profile #profile-context-status[hidden],
 body.page-profile #journal-login[hidden] { display: none; }
 body.page-profile .reading-modal__actions button:disabled { opacity: .5; cursor: wait; }
+body.page-profile #reading-modal .reading-card-reference { margin-top: .8rem; text-align: left; }
+body.page-profile #reading-modal .reading-card-reference summary { min-height: 44px; cursor: pointer; color: var(--profile-gold); }
+body.page-profile #reading-modal .reading-card-reference .reading-interpretation__text { font-family: var(--font-body, Inter, sans-serif); line-height: 1.7; }
 @media (max-width: 600px) {
     body.page-profile .reading-item__inner { flex-wrap: wrap; gap: 1rem; }
     body.page-profile .reading-item__actions { width: 100%; justify-content: flex-end; }

@@ -121,6 +121,9 @@ async function loadComponent(elementId, path, basePath = '', highPriority = fals
         const temp = document.createElement('div');
         temp.innerHTML = html;
 
+        localizeSharedShell(temp);
+        html = temp.innerHTML;
+
         // Fix relative paths for images and links if we are in a subdirectory
         if (basePath && basePath !== './' && basePath !== '/') {
             // Fix images
@@ -151,6 +154,136 @@ async function loadComponent(elementId, path, basePath = '', highPriority = fals
         console.error(`Error loading component ${path}:`, error);
         element.innerHTML = `<div class="error-loading">Failed to load content.</div>`;
     }
+}
+
+// Translate only known shared-shell text nodes. The component markup, IDs,
+// classes, SVG and event hooks stay intact across the locale variants.
+function localizeSharedShell(root) {
+    const locale = document.documentElement.lang;
+    if (locale !== 'sk' && locale !== 'pl') return;
+
+    const labels = {
+        sk: {
+            'Otevřít hlavní menu': 'Otvoriť hlavné menu', 'Zavřít hlavní menu': 'Zavrieť hlavné menu',
+            'Hlavní navigace': 'Hlavná navigácia', 'Domů': 'Domov', 'Astrologie': 'Astrológia',
+            'Horoskopy': 'Horoskopy', 'Znamení zvěrokruhu': 'Znamenia zverokruhu', 'Natální karta': 'Natálna karta',
+            'Lunární fáze': 'Mesačné fázy', 'Lunární rituál': 'Mesačný rituál', 'Astro mapa': 'Astromapa',
+            'Partnerská shoda': 'Partnerská zhoda', 'Čínský horoskop': 'Čínsky horoskop', 'Minulý život': 'Minulý život',
+            'Tarot a věštění': 'Tarot a veštenie', 'Tarot': 'Tarot', 'Tarot karta dne': 'Tarotová karta dňa',
+            'Tarot 3 karty': 'Tarot 3 karty', 'Keltský kříž': 'Keltský kríž', 'Tarot na lásku': 'Tarot na lásku',
+            'Tarot ANO nebo NE': 'Tarot ÁNO alebo NIE', 'Významy karet': 'Významy kariet', 'Andělské karty': 'Anjelské karty',
+            'Andělská pošta': 'Anjelská pošta', 'Runy': 'Runy', 'Křišťálová koule': 'Krištáľová guľa', 'Snář': 'Snár',
+            'Šamanské kolo': 'Šamanské koleso', 'Čísla a energie': 'Čísla a energia', 'Numerologie': 'Numerológia',
+            'Kalkulačka čísla osudu': 'Kalkulačka čísla osudu', 'Aura kalkulačka': 'Kalkulačka aury',
+            'Denní afirmace': 'Denné afirmácie', 'Databáze jmen': 'Databáza mien', 'Biorytmy': 'Bioritmy',
+            'Ezoterický slovník': 'Ezoterický slovník', 'Poznání': 'Poznanie', 'Mystické testy': 'Mystické testy',
+            'Mystický blog': 'Mystický blog', 'Časté otázky': 'Časté otázky', 'O nás': 'O nás',
+            'Výklady a služby': 'Výklady a služby', 'Osobní mapa na 12 měsíců': 'Osobná mapa na 12 mesiacov',
+            'Průvodce': 'Sprievodca', 'Ceník': 'Cenník', 'Profil': 'Profil', 'Registrace': 'Registrácia', 'Přihlásit se': 'Prihlásiť sa',
+            'Mystická Hvězda Logo': 'Logo Mystická Hvězda', 'Moderní astrologická služba pro českou komunitu.': 'Moderná astrologická služba pre českú komunitu.',
+            'Spojujeme tisíciletou moudrost s důvěryhodnou praxí.': 'Spájame tisícročnú múdrosť s dôveryhodnou praxou.',
+            'Provozovatel služby Mystická Hvězda. Potřebuješ pomoc? Napiš nám kdykoliv na': 'Prevádzkovateľ služby Mystická Hvězda. Potrebuješ pomoc? Napíš nám kedykoľvek na',
+            'Pomohla ti tato stránka?': 'Pomohla ti táto stránka?', 'Ano': 'Áno', 'Ne': 'Nie',
+            'Věštění & Energie': 'Veštenie a energia', 'Tarot & Výklady': 'Tarot a výklady', 'Věštění z Run': 'Veštenie z rún',
+            'Křišťálová Koule': 'Krištáľová guľa', 'Šamanské Kolo': 'Šamanské koleso', 'Hvězdný Průvodce': 'Hviezdny sprievodca',
+            'Mystické Testy': 'Mystické testy', 'Mystický Blog': 'Mystický blog', 'Ezoterický Slovník': 'Ezoterický slovník',
+            'Významy tarotových karet': 'Významy tarotových kariet', 'O nás': 'O nás', 'Kontakt': 'Kontakt',
+            'Napsat podpoře': 'Napísať podpore', 'FAQ (Časté dotazy)': 'FAQ (časté otázky)', 'Jak to funguje': 'Ako to funguje',
+            'Jazykové verze': 'Jazykové verzie', 'Jazyk:': 'Jazyk:', 'Čeština': 'Čeština', 'Slovenčina': 'Slovenčina', 'Polski': 'Poľština',
+            '© 2026 Mystická Hvězda. Všechna práva vyhrazena.': '© 2026 Mystická Hvězda. Všetky práva vyhradené.',
+            'Podpora:': 'Podpora:', 'Obchodní podmínky': 'Obchodné podmienky', 'Ochrana soukromí': 'Ochrana súkromia',
+            'Cookies používáme pro chod webu a volitelnou analytiku.': 'Cookies používame na fungovanie webu a voliteľnú analytiku.',
+            'Nezbytné': 'Nevyhnutné', 'Analytické': 'Analytické', 'Marketingové': 'Marketingové',
+            'Odmítnout vše': 'Odmietnuť všetko', 'Uložit nastavení': 'Uložiť nastavenia', 'Nastavení': 'Nastavenia', 'Souhlasím se vším': 'Súhlasím so všetkým',
+            'Otevírá českou stránku': 'Otvára českú stránku'
+        },
+        pl: {
+            'Otevřít hlavní menu': 'Otwórz menu główne', 'Zavřít hlavní menu': 'Zamknij menu główne',
+            'Hlavní navigace': 'Nawigacja główna', 'Domů': 'Strona główna', 'Astrologie': 'Astrologia',
+            'Horoskopy': 'Horoskopy', 'Znamení zvěrokruhu': 'Znaki zodiaku', 'Natální karta': 'Kosmogram',
+            'Lunární fáze': 'Fazy Księżyca', 'Lunární rituál': 'Rytuał księżycowy', 'Astro mapa': 'Mapa astrologiczna',
+            'Partnerská shoda': 'Dopasowanie partnerskie', 'Čínský horoskop': 'Horoskop chiński', 'Minulý život': 'Poprzednie życie',
+            'Tarot a věštění': 'Tarot i wróżby', 'Tarot': 'Tarot', 'Tarot karta dne': 'Karta dnia', 'Tarot 3 karty': 'Tarot 3 karty',
+            'Keltský kříž': 'Krzyż celtycki', 'Tarot na lásku': 'Tarot miłosny', 'Tarot ANO nebo NE': 'Tarot TAK albo NIE',
+            'Významy karet': 'Znaczenie kart', 'Andělské karty': 'Karty anielskie', 'Andělská pošta': 'Poczta anielska',
+            'Runy': 'Runy', 'Křišťálová koule': 'Kryształowa kula', 'Snář': 'Sennik', 'Šamanské kolo': 'Koło szamańskie',
+            'Čísla a energie': 'Liczby i energia', 'Numerologie': 'Numerologia', 'Kalkulačka čísla osudu': 'Kalkulator liczby przeznaczenia',
+            'Aura kalkulačka': 'Kalkulator aury', 'Denní afirmace': 'Codzienne afirmacje', 'Databáze jmen': 'Baza imion',
+            'Biorytmy': 'Biorytmy', 'Ezoterický slovník': 'Słownik ezoteryczny', 'Poznání': 'Odkrywanie',
+            'Mystické testy': 'Testy mistyczne', 'Mystický blog': 'Blog mistyczny', 'Časté otázky': 'Częste pytania', 'O nás': 'O nas',
+            'Výklady a služby': 'Odczyty i usługi', 'Osobní mapa na 12 měsíců': 'Osobista mapa na 12 miesięcy',
+            'Průvodce': 'Przewodnik', 'Ceník': 'Cennik', 'Profil': 'Profil', 'Registrace': 'Rejestracja', 'Přihlásit se': 'Zaloguj się',
+            'Mystická Hvězda Logo': 'Logo Mystická Hvězda', 'Moderní astrologická služba pro českou komunitu.': 'Nowoczesny serwis astrologiczny dla czeskiej społeczności.',
+            'Spojujeme tisíciletou moudrost s důvěryhodnou praxí.': 'Łączymy tysiącletnią mądrość z rzetelną praktyką.',
+            'Provozovatel služby Mystická Hvězda. Potřebuješ pomoc? Napiš nám kdykoliv na': 'Serwis Mystická Hvězda. Potrzebujesz pomocy? Napisz do nas w każdej chwili:',
+            'Pomohla ti tato stránka?': 'Czy ta strona była pomocna?', 'Ano': 'Tak', 'Ne': 'Nie',
+            'Věštění & Energie': 'Wróżby i energia', 'Tarot & Výklady': 'Tarot i odczyty', 'Věštění z Run': 'Wróżby z run',
+            'Křišťálová Koule': 'Kryształowa kula', 'Šamanské Kolo': 'Koło szamańskie', 'Hvězdný Průvodce': 'Gwiezdny przewodnik',
+            'Mystické Testy': 'Testy mistyczne', 'Mystický Blog': 'Blog mistyczny', 'Ezoterický Slovník': 'Słownik ezoteryczny',
+            'Významy tarotových karet': 'Znaczenie kart tarota', 'Kontakt': 'Kontakt', 'Napsat podpoře': 'Napisz do pomocy',
+            'FAQ (Časté dotazy)': 'FAQ (częste pytania)', 'Jak to funguje': 'Jak to działa', 'Jazykové verze': 'Wersje językowe',
+            'Jazyk:': 'Język:', 'Čeština': 'Czeski', 'Slovenčina': 'Słowacki', 'Polski': 'Polski',
+            '© 2026 Mystická Hvězda. Všechna práva vyhrazena.': '© 2026 Mystická Hvězda. Wszelkie prawa zastrzeżone.',
+            'Podpora:': 'Pomoc:', 'Obchodní podmínky': 'Warunki korzystania', 'Ochrana soukromí': 'Ochrona prywatności',
+            'Cookies používáme pro chod webu a volitelnou analytiku.': 'Używamy plików cookie do działania serwisu i opcjonalnej analityki.',
+            'Nezbytné': 'Niezbędne', 'Analytické': 'Analityczne', 'Marketingové': 'Marketingowe',
+            'Odmítnout vše': 'Odrzuć wszystkie', 'Uložit nastavení': 'Zapisz ustawienia', 'Nastavení': 'Ustawienia', 'Souhlasím se vším': 'Akceptuję wszystkie',
+            'Otevírá českou stránku': 'Otwiera stronę w języku czeskim'
+        }
+    };
+    const copy = labels[locale];
+    const localTargets = {
+        '/': `/${locale}/`, '/index.html': `/${locale}/`,
+        '/horoskopy.html': `/${locale}/horoskopy.html`, '/tarot.html': `/${locale}/tarot.html`,
+        '/natalni-karta.html': `/${locale}/natalni-karta.html`, '/andelske-karty.html': `/${locale}/andelske-karty.html`,
+        '/kristalova-koule.html': `/${locale}/kristalova-koule.html`
+    };
+    if (locale === 'sk') localTargets['/tarot-ano-ne.html'] = '/sk/tarot-ano-nie.html';
+
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+        const normalized = node.nodeValue.trim().replace(/\s+/g, ' ');
+        if (!Object.prototype.hasOwnProperty.call(copy, normalized)) continue;
+        const leading = node.nodeValue.match(/^\s*/)[0];
+        const trailing = node.nodeValue.match(/\s*$/)[0];
+        node.nodeValue = `${leading}${copy[normalized]}${trailing}`;
+    }
+
+    root.querySelectorAll('a[href^="/"]').forEach((link) => {
+        const href = link.getAttribute('href');
+        if (link.hasAttribute('hreflang') || link.hasAttribute('lang') || href.startsWith('//')) return;
+        const target = localTargets[href];
+        if (target) {
+            link.setAttribute('href', target);
+            link.removeAttribute('lang');
+            link.removeAttribute('title');
+        } else {
+            link.setAttribute('hreflang', 'cs');
+            link.setAttribute('title', copy['Otevírá českou stránku']);
+        }
+    });
+
+    root.querySelectorAll('[aria-label]').forEach((element) => {
+        const label = element.getAttribute('aria-label');
+        if (copy[label]) element.setAttribute('aria-label', copy[label]);
+    });
+
+    // cookie-handler.js updates this control after the component is inserted.
+    const saveButton = root.querySelector('#cookie-save');
+    if (saveButton && !saveButton.dataset.localeObserver) {
+        saveButton.dataset.localeObserver = 'true';
+        new MutationObserver(() => {
+            const source = saveButton.textContent.trim();
+            if (copy[source]) saveButton.textContent = copy[source];
+        }).observe(saveButton, { childList: true, characterData: true, subtree: true });
+    }
+}
+
+function getSharedShellCopy(locale) {
+    if (locale === 'sk') return { open: 'Otvoriť hlavné menu', close: 'Zavrieť hlavné menu' };
+    if (locale === 'pl') return { open: 'Otwórz menu główne', close: 'Zamknij menu główne' };
+    return { open: 'Otevřít hlavní menu', close: 'Zavřít hlavní menu' };
 }
 
 /**
@@ -208,17 +341,20 @@ function initStandaloneHeader() {
         item.classList.toggle('is-active', open);
         item.querySelector('.nav__link--dropdown-toggle')?.setAttribute('aria-expanded', String(open));
     };
+    const menuCopy = getSharedShellCopy(document.documentElement.lang);
     const setMenuOpen = (open, focusFirstLink = false) => {
         navList.classList.toggle('open', open);
         toggle.classList.toggle('active', open);
         toggle.setAttribute('aria-expanded', String(open));
-        toggle.setAttribute('aria-label', open ? 'Zavřít hlavní menu' : 'Otevřít hlavní menu');
+        toggle.setAttribute('aria-label', open ? menuCopy.close : menuCopy.open);
         document.body.classList.toggle('nav-open', open);
 
         if (isMobileNav()) {
             navList.setAttribute('aria-hidden', String(!open));
+            navList.inert = !open;
         } else {
             navList.removeAttribute('aria-hidden');
+            navList.inert = false;
         }
 
         if (!open) closeDropdowns();
@@ -229,14 +365,17 @@ function initStandaloneHeader() {
     const syncNavA11y = () => {
         if (isMobileNav()) {
             navList.setAttribute('aria-hidden', String(!navList.classList.contains('open')));
+            navList.inert = !navList.classList.contains('open');
             return;
         }
         if (navList.classList.contains('open')) setMenuOpen(false);
         navList.removeAttribute('aria-hidden');
+        navList.inert = false;
     };
 
     if (!navList.id) navList.id = 'primary-navigation';
     toggle.setAttribute('aria-controls', navList.id);
+    toggle.setAttribute('aria-label', navList.classList.contains('open') ? menuCopy.close : menuCopy.open);
     syncNavA11y();
 
     dropdownItems.forEach((item, index) => {

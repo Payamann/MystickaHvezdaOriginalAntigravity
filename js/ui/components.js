@@ -56,7 +56,7 @@ export function initFAQ() {
    6. TABS
    ============================================ */
 export function initTabs() {
-    const tabs = document.querySelectorAll('.tab');
+    const tabs = document.querySelectorAll('.tab:not([data-tab-owner])');
     const tabContents = document.querySelectorAll('.tab-content');
 
     if (!tabs.length) return;

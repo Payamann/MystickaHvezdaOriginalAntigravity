@@ -66,9 +66,9 @@
         <section class="section mh-inline-b773811926">
             <div class="container">
                 <div class="tabs" role="tablist" aria-label="Výber obdobia horoskopu">
-                    <button class="tab active" data-tab="daily" role="tab" aria-selected="true">Denný</button>
-                    <button class="tab" data-tab="weekly" role="tab" aria-selected="false">Týždenný</button>
-                    <button class="tab" data-tab="monthly" role="tab" aria-selected="false">Mesačný</button>
+                    <button class="tab active" data-tab-owner="horoscope" data-tab="daily" role="tab" aria-selected="true">Denný</button>
+                    <button class="tab" data-tab-owner="horoscope" data-tab="weekly" role="tab" aria-selected="false">Týždenný</button>
+                    <button class="tab" data-tab-owner="horoscope" data-tab="monthly" role="tab" aria-selected="false">Mesačný</button>
                 </div>
 
                 <div id="mh-sign-picker" class="mh-inline-4863c31809"></div>
@@ -163,7 +163,7 @@
                                 <strong class="mh-inline-b2c3c68a82">✨ Šťastné čísla:</strong>
                                 <span id="detail-numbers">—</span>
                             </p>
-                            <a href="../natalni-karta.html" class="btn btn--primary">Získať kompletnú natálnu kartu</a>
+                            <a href="natalni-karta.html" class="btn btn--primary">Získať kompletnú natálnu kartu</a>
                         </div>
                     </div>
                     <div class="text-center mobile-hidden">
@@ -205,12 +205,15 @@
 
                 <div class="card">
                     <h3>Pokračuj na Mystickej Hviezde</h3>
-                    <div class="related-links">
-                        <a href="tarot-ano-nie.html" class="related-chip">🃏 Tarot ÁNO / NIE zadarmo</a>
-                        <a href="natalni-karta.html" class="related-chip">🌌 Natálna karta</a>
-                        <a href="tarot.html" class="related-chip">🎴 Tarotové výklady</a>
-                        <a href="andelske-karty.html" class="related-chip">🕊️ Anjelská karta dňa</a>
+                    <details>
+                        <summary>Ďalšie nástroje</summary>
+                        <div class="related-links">
+                            <a href="tarot-ano-nie.html" class="related-chip">Tarot ÁNO / NIE zadarmo</a>
+                            <a href="natalni-karta.html" class="related-chip">Natálna karta</a>
+                            <a href="tarot.html" class="related-chip">Tarotové výklady</a>
+                            <a href="andelske-karty.html" class="related-chip">Anjelská karta dňa</a>
                     </div>
+                    </details>
                 </div>
             </div>
         </section>
@@ -223,6 +226,7 @@
     <script src="../js/dist/templates.js" defer></script>
     <script src="../js/dist/components.js" defer></script>
     <script src="../js/dist/push-notifications.js" defer></script>
+    <script type="module" src="../js/dist/horoscope.js" defer></script>
     <script type="module" src="../js/dist/main.js"></script>
 </body>
 </html>

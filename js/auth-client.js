@@ -10,6 +10,14 @@
     const POST_AUTH_REDIRECT_PENDING_KEY = 'post_auth_redirect_pending';
     const SIGNUP_INTENT_KEY = 'mh_signup_intent';
     const PASSWORD_MIN_LENGTH = 8;
+    let modalReturnFocus = null;
+    function authShellCopy() {
+        const language = document.documentElement?.lang?.slice(0, 2);
+        return {
+            sk: { logout: 'Odhlásiť sa', login: 'Prihlásiť sa' },
+            pl: { logout: 'Wyloguj się', login: 'Zaloguj się' }
+        }[language] || { logout: 'Odhlásit se', login: 'Přihlásit se' };
+    }
     const CHECKOUT_METADATA_PARAM_KEYS = [
         'entry_source',
         'entry_feature',
@@ -40,7 +48,7 @@
 
     function setAuthButtonPremiumLabel(button, isPremium) {
         if (!button) return;
-        button.textContent = 'Odhlásit';
+        button.textContent = authShellCopy().logout;
         if (!isPremium) return;
 
         const badge = document.createElement('span');
@@ -266,6 +274,16 @@
             modal.dataset.modalListenersAttached = 'true';
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) this.closeModal();
+            });
+            modal.addEventListener('keydown', event => {
+                if (modal.hidden) return;
+                if (event.key === 'Escape') { event.preventDefault(); this.closeModal(); return; }
+                if (event.key !== 'Tab') return;
+                const focusable = [...modal.querySelectorAll('a[href], button, input, select, textarea, [tabindex="0"]')].filter(element => !element.disabled && !element.closest('[hidden]') && element.getClientRects().length);
+                if (!focusable.length) return;
+                const first = focusable[0], last = focusable.at(-1);
+                if (event.shiftKey && (document.activeElement === first || !modal.contains(document.activeElement))) { event.preventDefault(); last.focus(); }
+                else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
             });
         },
 
@@ -1382,7 +1400,7 @@
 
                 // Mobile
                 if (mobileAuthBtn) {
-                    mobileAuthBtn.textContent = 'Odhlásit se';
+                    mobileAuthBtn.textContent = authShellCopy().logout;
                 }
                 setHidden(mobileRegBtn, true);
                 setHidden(mobileProfileLink, false);
@@ -1392,7 +1410,7 @@
                     regBtn.href = '/prihlaseni.html?mode=register&source=header_register&feature=account';
                 }
                 if (authBtn) {
-                    authBtn.textContent = 'Přihlásit';
+                    authBtn.textContent = authShellCopy().login;
                     authBtn.href = '/prihlaseni.html?source=header_login';
                 }
                 setHidden(regBtn, false);
@@ -1403,7 +1421,7 @@
                     mobileRegBtn.href = '/prihlaseni.html?mode=register&source=mobile_menu&feature=account';
                 }
                 if (mobileAuthBtn) {
-                    mobileAuthBtn.textContent = 'Přihlásit se';
+                    mobileAuthBtn.textContent = authShellCopy().login;
                     mobileAuthBtn.href = '/prihlaseni.html?source=mobile_menu_login';
                 }
                 setHidden(mobileRegBtn, false);
@@ -1485,6 +1503,7 @@
                     e.preventDefault();
                     const form = e.target;
                     const btn = document.getElementById('auth-submit');
+                    if (btn?.disabled) return;
 
                     // Password reset mode
                     if (btn && btn.dataset.mode === 'reset') {
@@ -1570,9 +1589,20 @@
             setHidden(forgotLink, true);
             setHidden(resetFields, false);
             setHidden(registerFields, true);
+            setHidden(document.getElementById('confirm-password-field-wrapper'), true);
+            setHidden(document.getElementById('gdpr-consent-wrapper'), true);
+            setGdprRequirement(false);
+            const password = document.getElementById('auth-modal-password');
+            if (password) password.disabled = true;
+            setHidden(document.getElementById('auth-modal-status'), true);
+            document.getElementById('auth-modal-email')?.focus();
         },
 
         async resetPassword(email) {
+            const button = document.getElementById('auth-submit');
+            const status = document.getElementById('auth-modal-status');
+            if (button) button.disabled = true;
+            if (status) { status.hidden = false; status.textContent = 'Odesílá se žádost…'; }
             try {
                 const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
                 const res = await fetch(`${API_URL}/auth/forgot-password`, {
@@ -1585,13 +1615,14 @@
                     body: JSON.stringify({ email })
                 });
                 if (res.ok) {
-                    this.showToast('Email odeslán', 'Zkontrolujte svou schránku pro odkaz na obnovení hesla.', 'success');
-                    this.closeModal();
+                    if (status) status.textContent = 'Pokud je e-mail u nás vedený, přijde na něj odkaz k obnovení hesla. Zkontroluj také složku spam.';
                 } else {
-                    this.showToast('Chyba', 'Nepodařilo se odeslat email. Zkuste to prosím znovu.', 'error');
+                    if (status) status.textContent = 'Žádost se nepodařilo odeslat. E-mail zůstává ve formuláři, zkus to znovu.';
                 }
             } catch (e) {
-                this.showToast('Chyba připojení', 'Zkontrolujte připojení k internetu.', 'error');
+                if (status) status.textContent = 'Spojení se přerušilo. Zkontroluj připojení a zkus to znovu.';
+            } finally {
+                if (button) button.disabled = false;
             }
         },
 
@@ -1605,6 +1636,9 @@
 
             // If in reset mode, go back to login
             if (btn.dataset.mode === 'reset') {
+                const password = document.getElementById('auth-modal-password');
+                if (password) password.disabled = false;
+                setHidden(document.getElementById('auth-modal-status'), true);
                 delete btn.dataset.mode;
                 const pwField = document.getElementById('password-field-wrapper');
                 const forgotLink = document.getElementById('forgot-password-link');
@@ -1658,6 +1692,7 @@
 
             const modal = document.getElementById('auth-modal');
             if (modal) {
+                if (modal.hidden) modalReturnFocus = document.activeElement;
                 modal.hidden = false;
 
                 // Set correct mode
@@ -1666,6 +1701,13 @@
                 const toggleBtn = document.getElementById('auth-mode-toggle');
 
                 if (!title || !btn || !toggleBtn) return;
+                delete btn.dataset.mode;
+                const password = document.getElementById('auth-modal-password');
+                if (password) password.disabled = false;
+                setHidden(document.getElementById('password-field-wrapper'), false);
+                setHidden(document.getElementById('forgot-password-link'), false);
+                setHidden(document.getElementById('reset-password-fields'), true);
+                setHidden(document.getElementById('auth-modal-status'), true);
 
                 const fields = document.getElementById('register-fields');
                 const confirmPwField = document.getElementById('confirm-password-field-wrapper');
@@ -1688,12 +1730,17 @@
                     setHidden(gdprWrapper, true);
                     setGdprRequirement(false);
                 }
+                document.getElementById('auth-modal-email')?.focus({ preventScroll: true });
             }
         },
 
         closeModal() {
             const modal = document.getElementById('auth-modal');
-            if (modal) modal.hidden = true;
+            if (!modal || modal.hidden) return;
+            modal.hidden = true;
+            modal.querySelectorAll('input[type="password"]').forEach(input => { input.value = ''; });
+            if (modalReturnFocus?.isConnected) modalReturnFocus.focus({ preventScroll: true });
+            modalReturnFocus = null;
         },
 
         // API Wrapper for protected calls

@@ -14,35 +14,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const resultsData = {
-        sage: {
-            title: "Strážce Vědění",
-            subtitle: "Filozof & Učenec",
-            icon: "📜",
-            desc: "Vaše duše v minulosti strávila staletí v tichu knihoven a chrámů. Jste nositelem prastaré moudrosti a vaší rolí v tomto životě je uchovávat a předávat informace.",
-            advice: "Nezůstávejte jen u teorie. Vaše vědění má největší hodnotu tehdy, když ho prakticky využijete k pomoci druhým najít směr."
-        },
-        wanderer: {
-            title: "Hvězdný Poutník",
-            subtitle: "Objevitel & Svobodná duše",
-            icon: "⛵",
-            desc: "Váš karmický otisk je plný pohybu. Pravděpodobně jste byli mořeplavcem, kupcem nebo nomádem. Vaše duše nesnáší pouta a neustále hledá nové horizonty.",
-            advice: "Hledejte domov uvnitř sebe. Vaše touha po dálkách je krásná, ale nezapomeňte, že i ta nejdelší cesta začíná tam, kde právě stojíte."
-        },
-        healer: {
-            title: "Duchovní Léčitel",
-            subtitle: "Empat & Alchymista",
-            icon: "🌿",
-            desc: "Vaše minulost je spojena s bylinkami, léčením a spirituálním doprovázením. Máte vrozenou schopnost vnímat bolest druhých a instinktivně víte, jak ji zmírnit.",
-            advice: "Nezapomínejte léčit i sebe. Rozdáváte hodně energie, ale vaše vlastní nádoba se musí pravidelně doplňovat tichem a samotou v přírodě."
-        },
-        warrior: {
-            title: "Ochránce Světla",
-            subtitle: "Bojovník za spravedlnost",
-            icon: "⚔️",
-            desc: "Vaše duše nese šrámy i vyznamenání z dob, kdy jste bránili slabé a bojovali za čest. Máte v sobě pevnost, disciplínu a neochvějnou morální integritu.",
-            advice: "V tomto životě nemusíte o vše bojovat. Použijte svou vnitřní odhodlanost k budování míru a ochraně těch, kteří nemají vlastní hlas."
-        }
-    };
+    "sage": {
+        "title": "Strážce vědění",
+        "subtitle": "Učení a předávání",
+        "icon": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><use href=\"/img/icons/mh-symbols.svg#book\"></use></svg>",
+        "desc": "Tvoje odpovědi se v tomto kvízu pojí s poznáváním a předáváním zkušeností. Název je příběhový archetyp, ne důkaz minulého života.",
+        "advice": "Vyber jednu zkušenost, kterou můžeš sdílet jednoduše a bez poučování."
+    },
+    "wanderer": {
+        "title": "Poutník",
+        "subtitle": "Hledání a proměna",
+        "icon": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><use href=\"/img/icons/mh-symbols.svg#compass\"></use></svg>",
+        "desc": "V kvízu se objevuje motiv nového prostředí a vlastní cesty. Nemusí znamenat, že potřebuješ převrátit současný život.",
+        "advice": "Vyzkoušej malou změnu běžné trasy nebo postupu a všimni si rozdílu."
+    },
+    "healer": {
+        "title": "Pečující",
+        "subtitle": "Podpora s hranicemi",
+        "icon": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><use href=\"/img/icons/mh-symbols.svg#leaf\"></use></svg>",
+        "desc": "Odpovědi zdůrazňují péči o druhé. Kvíz z toho nevyvozuje léčitelskou schopnost ani povinnost někoho zachraňovat.",
+        "advice": "Nabídni jednu konkrétní pomoc v rozsahu, který zvládneš."
+    },
+    "warrior": {
+        "title": "Ochránce",
+        "subtitle": "Hranice a odpovědnost",
+        "icon": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><use href=\"/img/icons/mh-symbols.svg#balance\"></use></svg>",
+        "desc": "V tvých volbách vystupuje ochrana hodnot a zastání se druhých. Jde o motiv k zamyšlení, nikoliv popis tvého osudu.",
+        "advice": "Pojmenuj jednu hranici, kterou chceš klidně a srozumitelně hájit."
+    }
+};
 
     function updateProgress() {
         const percent = (currentStep / totalSteps) * 100;
@@ -61,16 +61,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showLoading() {
-        steps.forEach(s => s.classList.remove('active'));
-        document.getElementById('loading-step').classList.add('active');
         setProgress(100);
-
-        setTimeout(showResult, 2500);
+        showResult();
     }
 
     function showResult() {
         const winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
         const data = resultsData[winner];
+        const tied = Object.keys(scores).filter(key => scores[key] === scores[winner]);
 
         // Store result for sharing
         window.lastResult = data.title;
@@ -79,10 +77,11 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="result-card quiz-result-card">
                 <div class="result-card__header">
                     <h4 class="result-card__title quiz-result-title">${data.title}</h4>
-                    <p class="quiz-result-kicker">Váš karmický otisk</p>
+                    <p class="quiz-result-kicker">Symbolické shrnutí tvých odpovědí</p>
                 </div>
-                <div class="result-card__image animate-spiral">${data.icon}</div>
+                <div class="result-card__image">${data.icon}</div>
                 <div class="result-card__body">
+                    ${tied.length > 1 ? `<p class="quiz-result-mixed">Více motivů má stejnou váhu: ${tied.map(key => resultsData[key].title).join(', ')}.</p>` : ''}
                     <h5 class="quiz-result-subtitle">${data.subtitle}</h5>
                     <p class="quiz-result-description">${data.desc}</p>
                 </div>
@@ -90,21 +89,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p class="quiz-result-advice">"${data.advice}"</p>
                 </div>
             </div>
-            <div class="mt-xl">
-                <h2 class="text-gradient">Závoj byl odhrnut</h2>
-                <p>Vaše duše si pamatuje více, než si uvědomujete. <strong>${data.title}</strong> je součástí vašeho osudu.</p>
-            </div>
+            <div class="mt-xl"><p>Výsledek krátkého kvízu nabízí téma k zamyšlení. Nepotvrzuje schopnosti, osobnost ani budoucnost.</p></div>
         `;
 
         document.getElementById('loading-step').classList.remove('active');
         const resultStep = document.getElementById('result-step');
         document.getElementById('result-box').innerHTML = resultHtml;
         resultStep.classList.add('active');
+        resultStep.setAttribute('tabindex', '-1');
+        resultStep.focus({ preventScroll: true });
+        resultStep.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
     }
 
     document.querySelectorAll('.option-btn').forEach(btn => {
         btn.addEventListener('click', () => {
+            if (!btn.closest('.question-step')?.classList.contains('active')) return;
             const scoreKey = btn.dataset.score;
+            if (!Object.hasOwn(scores, scoreKey)) return;
             scores[scoreKey]++;
             currentStep++;
             showStep(currentStep);
@@ -122,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     window.shareResult = () => {
-        const text = `Můj karmický otisk je ${window.lastResult}! Odhal ten svůj na Mystické Hvězdě.`;
+        const text = `V symbolickém kvízu inspirovaném karmou a minulými životy se s mými odpověďmi propojil motiv ${window.lastResult}.`;
         if (navigator.share) {
             navigator.share({
                 title: 'Moje Karmické Dědictví',

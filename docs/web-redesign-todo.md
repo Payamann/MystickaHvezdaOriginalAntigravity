@@ -20,12 +20,12 @@ Tyto body už jsou doložené v navazovaných auditech. Nejde o nově vymyšlen�
 
 | ID | Stav / priorita | Úkol a vazba | Přijetí |
 |---|---|---|---|
-| R01 | Otevřené · P1 | Výpadkové větve natální karty a partnerské shody; viz funkční review | Selhání výpočtu nevytváří zdánlivou osobní mapu nebo procento odvozené ze jmen. Vstup zůstane zachovaný a uživatel dostane pravdivý stav a možnost opakovat. |
-| R02 | Otevřené · P1 | Trvale uložený výsledek a opakování doručení osobní mapy; viz funkční review | Retry používá stejný výsledek objednávky; potvrzení odeslání i neúspěch zápisu stavu se řeší výslovně. Ověřit cíleně v testovacím prostředí. |
-| R03 | Otevřené · P1/P2 | Profil: PF01–PF07, otázka a rozlišení výkladu PF11 | Detail, jeho akce, historie, deník, oblíbené a odvozené bloky pracují se stejným aktuálním stavem. |
-| R04 | Otevřené · P1/P2 | Sjednotit numerologickou metodu, lunární referenční okamžiky a pravdivé prompty; označování fallbacků | Stejný vstup má vysvětlenou a konzistentní metodu. Generický náhradní obsah se nevydává za čerstvou osobní interpretaci. |
+| R01 | Zdroj připravený · čeká QA · P1 | Výpadkové větve natální karty a partnerské shody; viz funkční review | Selhání výpočtu nevytváří zdánlivou osobní mapu nebo procento odvozené ze jmen. Vstup zůstane zachovaný a uživatel dostane pravdivý stav a možnost opakovat. |
+| R02 | Zdroj připravený · čeká QA · P1 | Trvale uložený výsledek a opakování doručení osobní mapy; viz funkční review | Retry používá stejný výsledek objednávky; potvrzení odeslání i neúspěch zápisu stavu se řeší výslovně. Ověřit cíleně v testovacím prostředí. |
+| R03 | Zdroj připravený · čeká QA · P1/P2 | Profil: PF01–PF07, otázka a rozlišení výkladu PF11 | Detail, jeho akce, historie, deník, oblíbené a odvozené bloky pracují se stejným aktuálním stavem. |
+| R04 | Zdroj připravený · čeká QA · P1/P2 | Sjednotit numerologickou metodu, lunární referenční okamžiky a pravdivé prompty; označování fallbacků | Stejný vstup má vysvětlenou a konzistentní metodu. Generický náhradní obsah se nevydává za čerstvou osobní interpretaci. |
 
-**Současný zdroj potvrzuje pokračující R01:** `js/natal-chart.js:702–718` pokračuje seedem po chybě serveru; `js/synastry.js:622–643` zachovává náhradní klientské skóre. Nejde o nové vyvolání výpadku v produkci. U plateb a ostatních enginů zůstává podrobný rozsah důkazů v původním reportu; před opravou znovu ověřit dotčenou větev.
+**Výchozí R01 je zdrojově opravený:** falešná mapa, klientské skóre a náhradní tranzitové tvrzení jsou odstraněné. Úspěch i selhání čekají na závěrečné ověření. Původní důkazy zůstávají v datovaném funkčním reportu; aktuální změny v [release checkpointu](release-prep-2026-10-15/source-batch-2.md).
 
 ## 1. Společný vzhled a orientace
 
@@ -142,7 +142,7 @@ Tyto body už jsou doložené v navazovaných auditech. Nejde o nově vymyšlen�
 
 ## Nejbližší ohraničený krok
 
-**Autonomní realizace, testování až na konci:** PF02–PF07/PF09–PF11, R01/R02, část R04, W01 a W08 mají rozpracované zdrojové změny v [release checkpointu](release-prep-2026-10-15/README.md). Jejich finální přijetí zatím není potvrzené; checkboxy nepředstírají proběhlé testy. Nejbližší krok: dokončit kontrolu zbylých zdrojových bodů R04 a společných vzorů W02/W03/W06, poté společný build a jedna závěrečná QA fáze.
+**Autonomní realizace, testování až na konci:** PF02–PF07/PF09–PF11, R01/R02, část R04, W01 a W08 mají rozpracované zdrojové změny v [release checkpointu](release-prep-2026-10-15/README.md). Jejich finální přijetí zatím není potvrzené; checkboxy nepředstírají proběhlé testy. Navazující R04/W02/W03/W06/W10/W11 jsou zdrojově zpracované v [druhé dávce](release-prep-2026-10-15/source-batch-2.md). Nejbližší krok: společný build a jedna závěrečná QA fáze, včetně výkonu, všech funkčních rodin a skutečných stavů.
 
 PF01 byl před touto dávkou místně ověřen: 11/11 cílených regresí a skutečný profil nad syntetickou databází; [původní checkpoint](profile-unification-2026-10-14/pf01/README.md). Nyní navazující změny vyžadují znovu dotčenou závěrečnou regresi. Produkce se neměnila.
 

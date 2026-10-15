@@ -619,6 +619,18 @@ function renderReadingContent(reading) {
     if (typeof data?.question === 'string' && data.question) {
         contentHtml += `<div class="reading-question"><small class="reading-question__label">Tvoje otázka</small><p class="reading-question__text">${escapeHtml(data.question)}</p></div>`;
     }
+    if (typeof data?.intention === 'string' && data.intention && data.intention !== data.question) {
+        contentHtml += `<div class="reading-question"><small class="reading-question__label">Původní záměr</small><p class="reading-question__text">${escapeHtml(data.intention)}</p></div>`;
+    }
+    if (data?.rune && typeof data.rune === 'object') {
+        contentHtml += `<section class="reading-summary-panel"><h3>${escapeHtml(data.rune.symbol || '')} ${escapeHtml(data.rune.name || 'Runa')}</h3><p>${escapeHtml(data.rune.meaning || '')}</p></section>`;
+    }
+    if (data?.card && typeof data.card === 'object' && reading.type !== 'tarot') {
+        contentHtml += `<section class="reading-summary-panel"><h3>${escapeHtml(data.card.name || 'Karta')}</h3><p>${escapeHtml(data.card.theme || '')}</p><p>${escapeHtml(data.card.message || '')}</p></section>`;
+    }
+    if (data?.totem) {
+        contentHtml += `<section class="reading-summary-panel"><h3>Původní symbol</h3>${typeof data.totem === 'object' ? renderStructuredObjectContent(data.totem) : `<p>${escapeHtml(data.totem)}</p>`}</section>`;
+    }
     if (data && typeof data === 'object') {
         if (reading.type === 'synastry') {
             contentHtml += renderSynastrySummary(data);
@@ -657,6 +669,8 @@ function renderReadingContent(reading) {
                     </div>
                     <p class="reading-tarot-card__title">${escapeHtml(card.name)}</p>
                     ${card.position ? `<small class="reading-tarot-card__position">${escapeHtml(card.position)}</small>` : ''}
+                    ${card.meaning ? `<p>${escapeHtml(card.meaning)}</p>` : ''}
+                    ${card.interpretation ? `<details class="reading-card-reference" ${!data.response && !data.interpretation ? 'open' : ''}><summary>Význam této karty</summary><div class="reading-interpretation__text">${typeof card.interpretation === 'object' ? renderStructuredObjectContent(card.interpretation) : formatReadingHtml(card.interpretation)}</div></details>` : ''}
                 </div>
             `;
         });
@@ -687,9 +701,13 @@ function renderReadingContent(reading) {
                 <span class="reading-horoscope-header__period">${escapeHtml(periodLabel)}</span>
             </div>
             <div class="reading-horoscope-text">
-                ${escapeHtml(text)}
+                ${typeof text === 'object' ? renderStructuredObjectContent(text) : formatReadingHtml(text)}
             </div>
         `;
+
+        if (data.affirmation) {
+            contentHtml += `<section class="reading-summary-panel"><h4>Podnět k zamyšlení</h4><p>${escapeHtml(data.affirmation)}</p></section>`;
+        }
 
         if (data.luckyNumbers) {
             contentHtml += `

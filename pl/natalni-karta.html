@@ -54,27 +54,30 @@
             <div class="container">
                 <div class="grid grid-2 mh-inline-95a7c43a87">
                     <div class="card">
-                        <h2 class="section__title mb-lg">Dane Urodzenia</h2>
-                        <div id="natal-form" class="email-form">
+                        <h2 class="section__title mb-lg">Dane urodzenia</h2>
+                        <form id="natal-form" class="email-form" novalidate>
                             <div class="form-group">
                                 <label for="birth-date">Data urodzenia</label>
-                                <input type="date" id="birth-date" class="email-form__input" required>
+                                <input type="date" id="birth-date" name="birthDate" class="email-form__input" required>
                             </div>
                             <div class="form-group">
                                 <label for="birth-time">Godzina urodzenia (jeśli znasz)</label>
-                                <input type="time" id="birth-time" class="email-form__input">
+                                <input type="time" id="birth-time" name="birthTime" class="email-form__input">
                             </div>
                             <div class="form-group">
                                 <label for="birth-place">Miejsce urodzenia</label>
-                                <input type="text" id="birth-place" class="email-form__input" placeholder="Wpisz miasto..." required>
+                                <input type="text" id="birth-place" name="birthPlace" class="email-form__input" placeholder="Wpisz miasto..." required>
                             </div>
-                            <button id="calculate-natal" class="btn btn--primary btn--full mt-lg">Oblicz Kosmogram</button>
-                        </div>
+                            <button id="calculate-natal" type="submit" class="btn btn--primary btn--full mt-lg">Oblicz Kosmogram</button>
+                            <p id="locale-natal-status" role="status" aria-live="polite" aria-atomic="true"></p>
+                        </form>
                     </div>
-                    <div id="natal-result" class="text-center">
+                    <div id="natal-result" class="text-center" tabindex="-1" aria-labelledby="locale-natal-heading">
+                        <h2 id="locale-natal-heading" class="sr-only">Wynik obliczenia</h2>
+                        <div id="locale-natal-output"></div>
                         <div class="natal-chart-container">
                             <img src="/img/atlas/tools-v1/01-astrolab.webp" alt="Kosmogram" class="mh-inline-ba6f49e964" width="200" height="200">
-                            <p class="mh-inline-72fcb7372d">Wprowadź dane, aby wygenerować wykres</p>
+                            <p class="mh-inline-72fcb7372d">Podstawowe obliczenie położeń planet i znaków wyświetli się tutaj.</p>
                         </div>
                     </div>
                 </div>
@@ -87,7 +90,7 @@
                     <h2>Co pokaże ci kosmogram</h2>
                     <p>Kosmogram (karta natalna) to mapa nieba w dokładnym momencie twoich narodzin. Pokazuje położenie Słońca, Księżyca i planet w znakach i domach — a z tego twoje mocne strony, powtarzające się schematy i tematy, które wracają w twoim życiu.</p>
                     <p>Do obliczenia potrzebujesz daty, godziny i miejsca urodzenia. Godzina jest ważna ze względu na ascendent i domy; jeśli nie znasz jej dokładnie, wykład będzie ogólniejszy, ale nadal wartościowy.</p>
-                    <p>Wynikiem nie jest tabela pojęć, lecz zrozumiała analiza: jak działasz na zewnątrz, czego potrzebujesz w relacjach, gdzie leży twoja naturalna siła.</p>
+                    <p>Tutaj otrzymasz podstawowe zestawienie obliczonych położeń planet. Pełna wizualizacja i interpretacja są dostępne na czeskiej stronie kosmogramu.</p>
                 </div>
 
                 <div>
@@ -113,12 +116,15 @@
 
                 <div class="card">
                     <h3>Zobacz też</h3>
-                    <div class="related-links">
-                        <a href="horoskopy.html" class="related-chip"> Horoskop dzienny</a>
-                        <a href="tarot.html" class="related-chip">🎴 Tarot online</a>
-                        <a href="kristalova-koule.html" class="related-chip">🔮 Kryształowa kula</a>
-                        <a href="andelske-karty.html" class="related-chip">🕊️ Karta anielska dnia</a>
+                    <details>
+                        <summary>Inne narzędzia</summary>
+                        <div class="related-links">
+                            <a href="horoskopy.html" class="related-chip"> Horoskop dzienny</a>
+                            <a href="tarot.html" class="related-chip">Tarot online</a>
+                            <a href="kristalova-koule.html" class="related-chip">Kryształowa kula</a>
+                            <a href="andelske-karty.html" class="related-chip">Karta anielska dnia</a>
                     </div>
+                    </details>
                 </div>
             </div>
         </section>
@@ -129,6 +135,7 @@
     <script src="../js/dist/api-config.js" defer></script>
     <script src="../js/dist/templates.js" defer></script>
     <script src="../js/dist/components.js" defer></script>
+    <script type="module" src="../js/dist/locale-natal.js"></script>
     <script type="module" src="../js/dist/main.js"></script>
 </body>
 </html>

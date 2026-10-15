@@ -1,3 +1,5 @@
+import { showFallbackNotice } from './utils/reading-display.js';
+
 (function () {
     'use strict';
 
@@ -165,6 +167,15 @@
 
     function hideError() {
         setBlockVisible('mw-error', false);
+        setBlockVisible('mw-result-status', false);
+    }
+
+    function showResultError(message) {
+        const status = document.getElementById('mw-result-status');
+        if (status) status.textContent = message;
+        setBlockVisible('mw-result-status', true);
+        setBlockVisible('mw-premium-content', false);
+        setBlockVisible('mw-premium-wall', false);
     }
 
     function getTotemByDate(dateStr) {
@@ -422,8 +433,9 @@
             const name  = document.getElementById('mw-name').value.trim();
             const birth = document.getElementById('mw-birth').value;
 
-            if (!name || name.length < 2) { showError('Zadejte své jméno (alespoň 2 znaky).'); return; }
-            if (!birth) { showError('Zadejte datum narození.'); return; }
+            if (!name || name.length < 2) { showError('Zadej své jméno (alespoň 2 znaky).'); return; }
+            if (!birth) { showError('Zadej datum narození.'); return; }
+            showFallbackNotice(document.getElementById('mw-premium-content'), false);
 
             // Show loading
             setBlockVisible('mw-form-section', false);
@@ -457,6 +469,7 @@
 
                 if (res.ok && data.success && data.result && data.result.strengths) {
                     showPremiumContent(data.result);
+                    showFallbackNotice(document.getElementById('mw-premium-content'), data.fallback);
                     if (window.Auth?.saveReading) {
                         try {
                             const saveResult = await window.Auth.saveReading('medicine-wheel', {
@@ -476,13 +489,14 @@
                     }
                 } else {
                     showPremiumWall();
+                    if (![401, 402, 403].includes(res.status)) showResultError('Doplňující výklad se nepodařilo načíst. Základní symbol podle data je dostupný. Pro další pokus se vrať k údajům tlačítkem pod výsledkem.');
                 }
 
             } catch (e) {
                 setBlockVisible('mw-loading', false);
                 // Network error – show free (local) result, premium wall
                 showFreeResult(name, totem);
-                showPremiumWall();
+                showResultError('Spojení se přerušilo. Základní symbol podle data je dostupný, doplňující výklad se nenačetl. Pro další pokus se vrať k údajům tlačítkem pod výsledkem.');
             }
 
             setupShare(name, totem);

@@ -40,6 +40,8 @@ export function initMobileNav() {
     toggle.dataset.navInitialized = 'true';
 
     const isMobileNav = () => window.matchMedia('(max-width: 992px)').matches;
+    const language = document.documentElement.lang.slice(0, 2);
+    const menuLabels = { sk: ['Zavrieť hlavné menu', 'Otvoriť hlavné menu'], pl: ['Zamknij menu główne', 'Otwórz menu główne'] }[language] || ['Zavřít hlavní menu', 'Otevřít hlavní menu'];
     const dropdownItems = Array.from(navList.querySelectorAll('.nav__item--has-dropdown'));
     const closeDropdowns = (except = null) => {
         dropdownItems.forEach((item) => {
@@ -58,13 +60,15 @@ export function initMobileNav() {
         navList.classList.toggle('open', open);
         toggle.classList.toggle('active', open);
         toggle.setAttribute('aria-expanded', String(open));
-        toggle.setAttribute('aria-label', open ? 'Zavřít hlavní menu' : 'Otevřít hlavní menu');
+        toggle.setAttribute('aria-label', menuLabels[open ? 0 : 1]);
         document.body.classList.toggle('nav-open', open);
 
         if (isMobileNav()) {
             navList.setAttribute('aria-hidden', String(!open));
+            navList.inert = !open;
         } else {
             navList.removeAttribute('aria-hidden');
+            navList.inert = false;
         }
 
         if (!open) closeDropdowns();
@@ -75,10 +79,12 @@ export function initMobileNav() {
     const syncNavA11y = () => {
         if (isMobileNav()) {
             navList.setAttribute('aria-hidden', String(!navList.classList.contains('open')));
+            navList.inert = !navList.classList.contains('open');
             return;
         }
         if (navList.classList.contains('open')) setMenuOpen(false);
         navList.removeAttribute('aria-hidden');
+        navList.inert = false;
     };
 
     if (!navList.id) navList.id = 'primary-navigation';

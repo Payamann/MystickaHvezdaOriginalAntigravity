@@ -144,7 +144,7 @@
             <div class="mw-form">
                 <div class="mw-form__icon"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#compass"></use></svg></div>
                 <h2 class="mw-form__title">Vstoupit do Šamanského Kola</h2>
-                <p class="mw-form__subtitle">Zadejte údaje a získejte symbolický rámec pro další otázku</p>
+                <p class="mw-form__subtitle">Zadej údaje a získej symbolický rámec pro další otázku</p>
 
                 <div class="form-group">
                     <label for="mw-name">Křestní jméno</label>
@@ -155,17 +155,17 @@
                     <input type="date" id="mw-birth" min="1900-01-01" max="2010-12-31">
                 </div>
 
-                <div class="mw-error" id="mw-error"></div>
+                <div class="mw-error" id="mw-error" role="alert" hidden></div>
 
                 <button id="mw-submit" class="btn btn--primary mw-submit-btn" type="button">
-                    🧭 Otevřít mé Šamanské Kolo
+                    Otevřít mé Šamanské Kolo
                 </button>
-                <p class="mw-form__disclaimer">Výsledky jsou generovány AI pro zábavu a sebereflexii</p>
+                <p class="mw-form__disclaimer">Základní symbol se určí podle data narození. Doplňující výklad vytváří AI jako podnět k zamyšlení.</p>
             </div>
         </section>
 
         <!-- ═══════════════════════════════ LOADING ═══════════════════════════════ -->
-        <div class="mw-loading" id="mw-loading">
+        <div class="mw-loading" id="mw-loading" role="status" aria-live="polite">
             <div class="mw-spinner">
                 <div class="mw-spinner__inner"></div>
             </div>
@@ -174,6 +174,7 @@
 
         <!-- ═══════════════════════════════ RESULT ═══════════════════════════════ -->
         <section class="mw-result" id="mw-result">
+            <p id="mw-result-status" class="result-context-notice" role="status" hidden></p>
 
             <!-- Medicine Wheel SVG -->
             <div class="mw-wheel-wrap">
@@ -423,6 +424,6 @@
     <script src="js/dist/secondary-pages-copy-fixes.js?v=4" defer></script>
     <script src="js/dist/nav-failsafe.js" defer></script>
     <script src="js/dist/favorites-helper.js" defer></script>
-    <script src="js/dist/shamansko-kolo.js" defer></script>
+    <script type="module" src="js/dist/shamansko-kolo.js"></script>
 </body>
 </html>

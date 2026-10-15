@@ -66,9 +66,9 @@
         <section class="section mh-inline-e461165fb1">
             <div class="container">
                 <div class="tabs" role="tablist" aria-label="Wybór okresu horoskopu">
-                    <button class="tab active" data-tab="daily" role="tab" aria-selected="true">Dzienny</button>
-                    <button class="tab" data-tab="weekly" role="tab" aria-selected="false">Tygodniowy</button>
-                    <button class="tab" data-tab="monthly" role="tab" aria-selected="false">Miesięczny</button>
+                    <button class="tab active" data-tab-owner="horoscope" data-tab="daily" role="tab" aria-selected="true">Dzienny</button>
+                    <button class="tab" data-tab-owner="horoscope" data-tab="weekly" role="tab" aria-selected="false">Tygodniowy</button>
+                    <button class="tab" data-tab-owner="horoscope" data-tab="monthly" role="tab" aria-selected="false">Miesięczny</button>
                 </div>
 
                 <div id="mh-sign-picker" class="mh-inline-f98c53612f"></div>
@@ -163,7 +163,7 @@
                                 <strong class="mh-inline-1d9fe55a78">✨ Szczęśliwe liczby:</strong>
                                 <span id="detail-numbers">—</span>
                             </p>
-                            <a href="../natalni-karta.html" class="btn btn--primary">Odbierz pełną kartę urodzeniową</a>
+                            <a href="natalni-karta.html" class="btn btn--primary">Odbierz pełną kartę urodzeniową</a>
                         </div>
                     </div>
                     <div class="text-center mobile-hidden">
@@ -205,12 +205,15 @@
 
                 <div class="card">
                     <h3>Zobacz też</h3>
-                    <div class="related-links">
-                        <a href="tarot.html" class="related-chip">🎴 Tarot online</a>
-                        <a href="natalni-karta.html" class="related-chip">🌌 Kosmogram</a>
-                        <a href="andelske-karty.html" class="related-chip">🕊️ Karta anielska dnia</a>
-                        <a href="kristalova-koule.html" class="related-chip">🔮 Kryształowa kula</a>
+                    <details>
+                        <summary>Inne narzędzia</summary>
+                        <div class="related-links">
+                            <a href="tarot.html" class="related-chip">Tarot online</a>
+                            <a href="natalni-karta.html" class="related-chip">Kosmogram</a>
+                            <a href="andelske-karty.html" class="related-chip">Karta anielska dnia</a>
+                            <a href="kristalova-koule.html" class="related-chip">Kryształowa kula</a>
                     </div>
+                    </details>
                 </div>
             </div>
         </section>
@@ -223,6 +226,7 @@
     <script src="../js/dist/templates.js" defer></script>
     <script src="../js/dist/components.js" defer></script>
     <script src="../js/dist/push-notifications.js" defer></script>
+    <script type="module" src="../js/dist/horoscope.js" defer></script>
     <script type="module" src="../js/dist/main.js"></script>
 </body>
 </html>

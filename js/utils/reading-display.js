@@ -23,7 +23,8 @@ export function showFallbackNotice(container, fallback) {
 export function formatReadingHtml(value) {
     const text = String(value || '').replace(/```(?:html)?/g, '').trim();
     if (window.DOMPurify?.sanitize) {
-        return window.DOMPurify.sanitize(text.replace(/\n/g, '<br>'), {
+        const formatted = /<\/?(?:p|h[3-5]|ul|ol|li|blockquote)\b/i.test(text) ? text : text.replace(/\n/g, '<br>');
+        return window.DOMPurify.sanitize(formatted, {
             ALLOWED_TAGS: ['h3', 'h4', 'h5', 'p', 'strong', 'b', 'em', 'i', 'ul', 'ol', 'li', 'blockquote', 'br'],
             ALLOWED_ATTR: []
         });

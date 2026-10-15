@@ -5,6 +5,9 @@
 
 (() => {
 class Templates {
+    static symbol(name) {
+        return `<svg class="mh-symbol" width="28" height="28" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="/img/icons/mh-symbols.svg#${name}"></use></svg>`;
+    }
     static animationDelayClass(step) {
         const safeStep = Math.max(0, Math.min(10, Number.parseInt(step, 10) || 0));
         return `anim-delay-step-${safeStep}`;
@@ -23,21 +26,21 @@ class Templates {
                 <div class="tarot-result-header">
                     <div class="flex-between tarot-result-header__top">
                         <div>
-                            <h3 class="tarot-result-title">${card.name.toUpperCase()}</h3>
+                            <h3 class="tarot-result-title">${this.escapeHtml(String(card.name || '').toUpperCase())}</h3>
                             <div class="tarot-result-meta">
                                 <span>${arcanaType.toUpperCase()}</span>
-                                ${positionLabel ? `<span class="text-gold tarot-result-meta__separator">•</span> <span class="text-gold">POZICE: ${positionLabel.toUpperCase()}</span>` : ''}
+                                ${positionLabel ? `<span class="text-gold tarot-result-meta__separator">•</span> <span class="text-gold">POZICE: ${this.escapeHtml(positionLabel.toUpperCase())}</span>` : ''}
                             </div>
                         </div>
-                        <div class="tarot-result-star">⭐</div>
+                        <div class="tarot-result-star">${this.symbol('star')}</div>
                     </div>
                 </div>
 
                 <!-- Interpretation Body -->
                 <div class="tarot-result-body">
                     <div class="astrologer-note">
-                        <span class="astrologer-note__icon">🔮</span>
-                        <span class="text-xs uppercase tracking-wide text-silver">INTERPRETACE OD NAŠEHO ASTROLOGA:</span>
+                        <span class="astrologer-note__icon">${this.symbol('tarot')}</span>
+                        <span class="text-xs uppercase tracking-wide text-silver">SYMBOLICKÝ VÝZNAM KARTY</span>
                     </div>
                     
                     <p class="tarot-main-text">
@@ -46,8 +49,8 @@ class Templates {
 
                     <!-- Practical Advice -->
                     <div class="tarot-practical-advice">
-                        <strong class="text-starlight">Praktická rada:</strong>
-                        <span class="tarot-practical-advice__text">${this.escapeHtml(card.meaning)}. Nebojte se udělat krok, který cítíte jako správný.</span>
+                        <strong class="text-starlight">Hlavní motiv:</strong>
+                        <span class="tarot-practical-advice__text">${this.escapeHtml(card.meaning)}</span>
                     </div>
                 </div>
             </div>
@@ -58,25 +61,25 @@ class Templates {
         return `
             <div class="tarot-summary-enhanced tarot-summary-3card fade-in-up ${this.animationDelayClass(drawnCards.length)}">
                 <div class="summary-header">
-                    <div class="summary-icon">🔮</div>
-                    <h4>Propojení vaší cesty</h4>
-                    <p class="summary-subtitle">Odkaz minulosti, síla přítomnosti, příslib budoucnosti</p>
+                    <div class="summary-icon">${this.symbol('tarot')}</div>
+                    <h4>Souvislosti tří karet</h4>
+                    <p class="summary-subtitle">Co bylo, co se děje a jaký krok může následovat</p>
                 </div>
                 <div class="summary-timeline">
                     <div class="timeline-item">
-                        <span class="timeline-emoji">📜</span>
+                        <span class="timeline-emoji">${this.symbol('book')}</span>
                         <span class="timeline-label">Minulost</span>
                         <span class="timeline-card">${this.escapeHtml(drawnCards[0]?.name || '')}</span>
                     </div>
                     <div class="timeline-connector">→</div>
                     <div class="timeline-item">
-                        <span class="timeline-emoji">⏳</span>
+                        <span class="timeline-emoji">${this.symbol('compass')}</span>
                         <span class="timeline-label">Přítomnost</span>
                         <span class="timeline-card">${this.escapeHtml(drawnCards[1]?.name || '')}</span>
                     </div>
                     <div class="timeline-connector">→</div>
                     <div class="timeline-item">
-                        <span class="timeline-emoji">✨</span>
+                        <span class="timeline-emoji">${this.symbol('star')}</span>
                         <span class="timeline-label">Budoucnost</span>
                         <span class="timeline-card">${this.escapeHtml(drawnCards[2]?.name || '')}</span>
                     </div>
@@ -96,13 +99,13 @@ class Templates {
                         <span>✦</span>
                         <span>☆</span>
                     </div>
-                    <h4>Hluboký vhled do vaší cesty</h4>
+                    <h4>Souvislosti keltského kříže</h4>
                     <p class="summary-subtitle">Komplexní analýza keltského kříže</p>
                 </div>
                 
                 <div class="celtic-grid">
                     <div class="celtic-section celtic-core">
-                        <h5>🎯 Jádro situace</h5>
+                        <h5>Jádro situace</h5>
                         <div class="celtic-cards-mini">
                             <span>${this.escapeHtml(drawnCards[0]?.name || '')}</span>
                             <span class="card-separator">×</span>
@@ -110,7 +113,7 @@ class Templates {
                         </div>
                     </div>
                     <div class="celtic-section celtic-influences">
-                        <h5>🌊 Skryté vlivy</h5>
+                        <h5>Skryté vlivy</h5>
                         <div class="celtic-cards-mini">
                             <span>${this.escapeHtml(drawnCards[2]?.name || '')}</span>
                             <span class="card-separator">&</span>
@@ -118,7 +121,7 @@ class Templates {
                         </div>
                     </div>
                     <div class="celtic-section celtic-timeline">
-                        <h5>⏳ Tok času</h5>
+                        <h5>Tok času</h5>
                         <div class="celtic-cards-mini">
                             <span>${this.escapeHtml(drawnCards[4]?.name || '')}</span>
                             <span class="card-separator">→</span>
@@ -126,7 +129,7 @@ class Templates {
                         </div>
                     </div>
                     <div class="celtic-section celtic-outcome">
-                        <h5>🏁 Cesta k výsledku</h5>
+                        <h5>Cesta k výsledku</h5>
                         <div class="celtic-cards-mini">
                             <span>${this.escapeHtml(drawnCards[6]?.name || '')}</span>
                             <span>${this.escapeHtml(drawnCards[7]?.name || '')}</span>
@@ -152,10 +155,10 @@ class Templates {
     static renderSummaryDefault(drawnCards) {
         return `
             <div class="interpretation-summary fade-in-up ${this.animationDelayClass(drawnCards.length)}">
-                <h4>✨ Cesta vaší duše</h4>
+                <h4>Souvislosti výkladu</h4>
                 <div id="ethereal-tarot-summary">
                     <p class="text-center tarot-summary-loading-text">
-                        <span class="loading-spinner"></span> Spojuji se s univerzem...
+                        <span class="loading-spinner" aria-hidden="true"></span> Připravuje se výklad…
                     </p>
                 </div>
             </div>
@@ -164,13 +167,13 @@ class Templates {
 
     static renderEtherealSummaryLoading() {
         return `
-            <div class="summary-content" id="ethereal-tarot-summary">
+            <div class="summary-content" id="ethereal-tarot-summary" role="status">
                 <div class="summary-loading">
                     <div class="loading-crystal">
-                        <span>💎</span>
+                        <span>${this.symbol('tarot')}</span>
                     </div>
-                    <p>Komunikuji s vyššími říšemi...</p>
-                    <small>Připravuji hlubokou analýzu vašich 10 karet</small>
+                    <p>Připravuje se společný výklad…</p>
+                    <small>Podle vybraných karet a tvé otázky</small>
                 </div>
             </div>
         `;
@@ -213,37 +216,37 @@ class Templates {
 
     static renderAuthModal() {
         return `
-  <div id="auth-modal" class="modal modal--auth" hidden>
+  <div id="auth-modal" class="modal modal--auth" role="dialog" aria-modal="true" aria-labelledby="auth-title" hidden>
     <div class="modal__content auth-modal__content">
-        <span class="modal__close auth-modal__close">✕</span>
+        <button type="button" class="modal__close auth-modal__close" aria-label="Zavřít přihlášení">✕</button>
         <h2 id="auth-title" class="auth-modal__title">Přihlášení</h2>
         <form id="login-form">
             <div class="auth-modal__field">
-                <label class="auth-modal__label">Email</label>
-                <input class="auth-modal__input" type="email" name="email" required autocomplete="email" inputmode="email">
+                <label class="auth-modal__label" for="auth-modal-email">E-mail</label>
+                <input class="auth-modal__input" id="auth-modal-email" type="email" name="email" required autocomplete="email" inputmode="email">
             </div>
             <div id="password-field-wrapper" class="auth-modal__field auth-modal__field--compact">
-                <label class="auth-modal__label">Heslo</label>
-                <input class="auth-modal__input" type="password" name="password" required autocomplete="current-password">
+                <label class="auth-modal__label" for="auth-modal-password">Heslo</label>
+                <input class="auth-modal__input" id="auth-modal-password" type="password" name="password" required autocomplete="current-password">
             </div>
             <div id="confirm-password-field-wrapper" class="auth-modal__field" hidden>
-                <label class="auth-modal__label">Potvrďte heslo</label>
-                <input class="auth-modal__input" type="password" name="confirm_password" minlength="8" autocomplete="new-password">
+                <label class="auth-modal__label" for="auth-modal-password-confirm">Potvrď heslo</label>
+                <input class="auth-modal__input" id="auth-modal-password-confirm" type="password" name="confirm_password" minlength="8" autocomplete="new-password">
             </div>
             <div id="forgot-password-link" class="auth-modal__forgot">
-                <a href="#" id="auth-forgot-password" class="auth-modal__muted-link">Zapomněli jste heslo?</a>
+                <a href="#" id="auth-forgot-password" class="auth-modal__muted-link">Zapomněl jsi heslo?</a>
             </div>
 
             <!-- Reset Password Fields (hidden by default) -->
             <div id="reset-password-fields" class="auth-modal__field" hidden>
-                <p class="auth-modal__help-text">Zadejte svůj email a pošleme vám odkaz pro obnovení hesla.</p>
+                <p class="auth-modal__help-text">Zadej e-mail svého účtu. Pokud je u nás vedený, přijde na něj odkaz pro obnovení hesla.</p>
             </div>
 
             <!-- Optional profile fields. Keep birth data clearly explained and non-blocking. -->
             <div id="register-fields" class="auth-modal__field" hidden>
                 <div class="auth-modal__field">
-                    <label class="auth-modal__label">Datum narození</label>
-                    <input class="auth-modal__input" type="date" name="birth_date" autocomplete="bday" aria-describedby="birth-date-privacy-note">
+                    <label class="auth-modal__label" for="auth-modal-birthdate">Datum narození</label>
+                    <input class="auth-modal__input" id="auth-modal-birthdate" type="date" name="birth_date" autocomplete="bday" aria-describedby="birth-date-privacy-note">
                     <p id="birth-date-privacy-note" class="auth-modal__help-text">Nepovinné. Datum použijeme jen pro osobní výklady a nastavení profilu; můžeš ho doplnit později u nástroje, který ho opravdu potřebuje.</p>
                 </div>
             </div>
@@ -255,6 +258,7 @@ class Templates {
                 </label>
             </div>
 
+            <p id="auth-modal-status" class="auth-modal__help-text" role="status" hidden></p>
             <button type="submit" id="auth-submit" class="btn btn--primary auth-modal__submit">Přihlásit se</button>
             <p class="auth-modal__toggle-wrap">
                 <a href="#" id="auth-mode-toggle" class="auth-modal__mode-toggle">Nemáte účet? Zaregistrujte se</a>

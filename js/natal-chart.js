@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initNatalChart();
 });
 
+let transitRequestVersion = 0;
+
 const ZODIAC_SIGNS = [
     { symbol: '♈', name: 'Beran', angle: 0 },
     { symbol: '♉', name: 'Býk', angle: 30 },
@@ -663,6 +665,7 @@ function showNatalCalculationError(message) {
         errorContainer = document.createElement('div');
         errorContainer.id = 'natal-calculation-error';
         errorContainer.className = 'natal-ai';
+        errorContainer.setAttribute('role', 'alert');
         document.getElementById('chart-results')?.insertAdjacentElement('afterend', errorContainer);
     }
 
@@ -686,7 +689,7 @@ function showNatalInterpretationError(container) {
 
     content.innerHTML = '';
     const text = document.createElement('p');
-    text.textContent = 'Vypočtená mapa zůstává zobrazená. Pro osobní výklad zkuste požadavek znovu.';
+    text.textContent = 'Vypočtená mapa zůstává zobrazená. Pro osobní výklad zkus požadavek znovu.';
     const retry = document.createElement('button');
     retry.type = 'button';
     retry.className = 'btn btn--primary natal-interpretation-retry';
@@ -704,7 +707,9 @@ async function generateNatalChart(planetsGroup) {
     const birthTime = document.getElementById('birth-time').value;
     const birthPlace = document.getElementById('birth-place').value;
 
-    btn.innerHTML = '<span class="loading-spinner"></span> Navazuji spojení s vesmírem...';
+    ++transitRequestVersion;
+    setBlockVisible(document.getElementById('transits-now'), false);
+    btn.innerHTML = '<span class="loading-spinner"></span> Počítají se polohy planet…';
     btn.classList.add('btn--processing');
     btn.disabled = true;
 
@@ -730,7 +735,7 @@ async function generateNatalChart(planetsGroup) {
             trackNatalCalculation(computedChart, { birthTime, birthPlace });
         } catch (calcError) {
             console.warn('Natal engine calculation unavailable:', calcError.message);
-            showNatalCalculationError('Zadané údaje zůstaly ve formuláři. Zkontrolujte připojení a zkuste výpočet znovu.');
+            showNatalCalculationError('Zadané údaje zůstaly ve formuláři. Zkontroluj připojení a zkus výpočet znovu.');
             btn.innerHTML = originalHTML;
             btn.disabled = false;
             btn.classList.remove('btn--processing');
@@ -755,7 +760,7 @@ async function generateNatalChart(planetsGroup) {
         }
 
         // Call AI for interpretation
-        btn.innerHTML = '<span class="loading-spinner"></span> Navazuji spojení s hvězdami...';
+        btn.innerHTML = '<span class="loading-spinner"></span> Připravuje se výklad…';
 
         // Calculate Sun Sign locally for prompt accuracy
         const birthDateObj = new Date(birthDate);
@@ -924,7 +929,7 @@ async function generateNatalChart(planetsGroup) {
             showNatalInterpretationError(aiResultsDiv);
         } else {
             setBlockVisible(document.getElementById('chart-results'), false);
-            showNatalCalculationError('Zadané údaje zůstaly ve formuláři. Zkuste výpočet znovu.');
+            showNatalCalculationError('Zadané údaje zůstaly ve formuláři. Zkus výpočet znovu.');
         }
     }
 
@@ -1036,6 +1041,7 @@ function renderTransitSnapshot(transit) {
 }
 
 async function updateTransits({ birthDate, birthTime, birthPlace, name }) {
+    const version = ++transitRequestVersion;
     const section = document.getElementById('transits-now');
     if (!section) return;
 
@@ -1056,49 +1062,27 @@ async function updateTransits({ birthDate, birthTime, birthPlace, name }) {
             throw new Error(data.error || `Transit calculation failed: ${response.status}`);
         }
 
+        if (version !== transitRequestVersion) return;
         renderTransitSnapshot(data.transit);
         return;
     } catch (transitError) {
         console.warn('Transit engine fallback:', transitError.message);
     }
 
-    // Dates
-    const now = new Date();
-    const dob = new Date(birthDate);
-
-    // Signs
-    const currentSunSign = getZodiacSign(now);
-    const natalSunSign = getZodiacSign(dob);
-
-    const currentSunIndex = ZODIAC_SIGNS.findIndex(s => s.name === currentSunSign.name);
-    const natalSunIndex = ZODIAC_SIGNS.findIndex(s => s.name === natalSunSign.name);
-
-    // Calculate Aspect (simple distance)
-    let diff = Math.abs(currentSunIndex - natalSunIndex);
-    if (diff > 6) diff = 12 - diff;
-
-    // Messages based on relationship
-    let message = '';
-    let title = `Slunce ve znamení ${currentSunSign.name}`;
-    let subtitle = `vůči vašemu ${natalSunSign.name}`;
-
-    if (diff === 0) {
-        message = `☀️ <strong>Všechno nejlepší k narozeninám!</strong> (nebo blízko nich). Slunce se vrací na své natální místo. Je to začátek vašeho nového osobního roku. Cítíte příliv energie a jasnosti. Skvělý čas pro stanovení cílů.`;
-    } else if (diff === 6) {
-        message = `⚖️ <strong>Opozice:</strong> Slunce stojí naproti vašemu znamení. Můžete pociťovat napětí ve vztazích nebo potřebu vyvážit své ego s potřebami druhých. Pozor na konflikty, ale využijte energii k ujasnění postojů.`;
-    } else if (diff === 3 || diff === 9) { // Square
-        message = `⚡ <strong>Výzva:</strong> Slunce je v kvadratuře k vašemu znamení. Toto období přináší dynamickou energii, která vás nutí k akci. Překážky jsou jen maskované příležitosti k růstu.`;
-    } else if (diff === 4 || diff === 8) { // Trine
-        message = `🌊 <strong>Flow:</strong> Slunce je v harmonickém trigonu. Věci by měly jít hladce, cítíte podporu vesmíru. Využijte tento čas pro kreativitu a odpočinek.`;
-    } else {
-        message = `Slunce aktuálně prochází znamením <strong>${currentSunSign.name}</strong>. Tato energie osvětluje jinou část vašeho života než obvykle. Vnímejte, jak se změnila atmosféra oproti minulému měsíci.`;
-    }
-
-    // Update UI
-    document.getElementById('transit-date').textContent = now.toLocaleDateString('cs-CZ');
-    document.getElementById('transit-title').textContent = title;
-    document.getElementById('transit-subtitle').textContent = subtitle;
-    document.getElementById('transit-message').textContent = message.replace(/<[^>]*>/g, '');
-
+    if (version !== transitRequestVersion) return;
+    document.getElementById('transit-date').textContent = '';
+    document.getElementById('transit-title').textContent = 'Aktuální tranzity nejsou dostupné';
+    document.getElementById('transit-subtitle').textContent = '';
+    const message = document.getElementById('transit-message');
+    message.setAttribute('role', 'status');
+    message.textContent = 'Mapa narození zůstává dostupná. Aktuální tranzity se nepodařilo načíst.';
+    const retry = document.createElement('button');
+    retry.type = 'button'; retry.className = 'btn btn--glass btn--sm';
+    retry.textContent = 'Zkusit načíst tranzity znovu';
+    retry.addEventListener('click', () => {
+        retry.disabled = true;
+        updateTransits({ birthDate, birthTime, birthPlace, name });
+    });
+    message.append(document.createElement('br'), retry);
     setBlockVisible(section, true);
 }

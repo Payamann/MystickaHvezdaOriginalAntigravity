@@ -39,6 +39,7 @@ let guestPreviewViewTracked = false;
 let activePaymentReturnContext = null;
 let profileState = { user: null, subscription: null, context: null };
 let profileRefreshVersion = 0;
+const counterFrames = new Map();
 
 function renderProfileOverview() {
     const { user, subscription, context } = profileState;
@@ -47,7 +48,7 @@ function renderProfileOverview() {
     renderActivationChecklist(user, readings, subscription);
     updateStats(readings);
     const status = document.getElementById('profile-context-status');
-    if (status) status.hidden = Boolean(context);
+    if (status) status.hidden = Boolean(context && getReadingSummary());
     if (context) {
         renderRitualMemory(user, readings, subscription);
         renderJournalEntries(context.journals);
@@ -1591,6 +1592,8 @@ function handleRitualMemoryClick(event) {
 function animateCounter(elementId, target) {
     const el = document.getElementById(elementId);
     if (!el) return;
+    cancelAnimationFrame(counterFrames.get(elementId));
+    counterFrames.delete(elementId);
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         el.textContent = target;
@@ -1607,16 +1610,25 @@ function animateCounter(elementId, target) {
         el.textContent = Math.round(target * eased);
 
         if (progress < 1) {
-            requestAnimationFrame(update);
-        }
+            counterFrames.set(elementId, requestAnimationFrame(update));
+        } else counterFrames.delete(elementId);
     }
 
-    requestAnimationFrame(update);
+    counterFrames.set(elementId, requestAnimationFrame(update));
 }
 
 function updateStats(readings) {
     const safeReadings = readings || [];
     const summary = getReadingSummary();
+    if (!summary) {
+        ['stat-total', 'stat-month', 'stat-favorites', 'stat-streak'].forEach(id => {
+            cancelAnimationFrame(counterFrames.get(id));
+            counterFrames.delete(id);
+            const element = document.getElementById(id);
+            if (element) element.textContent = '—';
+        });
+        return;
+    }
     const activity = summary?.activity?.map(created_at => ({ created_at })) || safeReadings;
     const total = summary?.total ?? safeReadings.length;
     const now = new Date();
@@ -1913,13 +1925,18 @@ async function initProfile() {
         });
         document.addEventListener('profile:updated', event => {
             const nextUser = event.detail?.user;
-            if (!nextUser) return;
+            if (!nextUser || nextUser.id !== profileState.user?.id) return;
             if (greeting) greeting.textContent = nextUser.first_name ? `Vítej zpět, ${nextUser.first_name}` : 'Tvoje výklady na jednom místě';
             profileState.user = nextUser;
             renderProfileOverview();
             const zodiac = document.getElementById('user-zodiac');
             if (zodiac) setProfileBlockVisible(zodiac, false);
             if (nextUser.birth_date) showZodiacSignLocal(nextUser.birth_date);
+        });
+        document.addEventListener('subscription:updated', event => {
+            if (event.detail?.userId !== profileState.user?.id) return;
+            profileState.subscription = event.detail.subscription;
+            renderProfileOverview();
         });
         document.getElementById('user-avatar')?.addEventListener('click', toggleAvatarPicker);
         document.getElementById('avatar-picker')?.addEventListener('click', e => {

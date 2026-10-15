@@ -109,7 +109,9 @@ function buildBirthCalculationInput(source = {}, overrides = {}) {
 
 // ─── Crystal Ball ──────────────────────────────────────────────────────────────
 
-function buildFallbackCrystalBallResponse({ question, moonPhase }) {
+function buildFallbackCrystalBallResponse({ question, moonPhase, lang = 'cs' }) {
+    if (lang === 'sk') return `Otázka: „${question}“\n\nToto je základný podnet k zamysleniu. Spíš si, čo už o situácii vieš a čo si ešte potrebuješ overiť. Vyber jeden malý krok, ktorý je v tvojich rukách; symbolická odpoveď nerozhoduje za teba.`;
+    if (lang === 'pl') return `Pytanie: „${question}”\n\nTo podstawowa wskazówka do refleksji. Zapisz, co już wiesz o sytuacji, a co wymaga sprawdzenia. Wybierz jeden mały krok, na który masz wpływ; symboliczna odpowiedź nie podejmuje decyzji za ciebie.`;
     return [
         `Křišťálová koule dnes čte otázku přes fázi Měsíce: ${moonPhase}.`,
         `Otázka zní: "${question}". Místo definitivní odpovědi hledej první konkrétní krok, který sníží napětí a vrátí ti vliv nad situací.`,
@@ -211,7 +213,7 @@ router.post('/crystal-ball', optionalPremiumCheck, aiLimiter, async (req, res) =
         } catch (aiError) {
             console.warn('Crystal Ball AI fallback used:', aiError.message);
             fallback = true;
-            response = buildFallbackCrystalBallResponse({ question, moonPhase });
+            response = buildFallbackCrystalBallResponse({ question, moonPhase, lang: responseLang });
         }
 
         // Count this anonymous free question so the next one hits the register gate.

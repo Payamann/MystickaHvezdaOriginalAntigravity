@@ -15547,3 +15547,8 @@ body.page-profile .cookie-banner__actions .btn {
 
 .tarot-daily-card-result__question { color: var(--color-text, #eee6d8); font-weight: 600; line-height: 1.6; }
 .tarot-daily-card-result__question:empty { display: none; }
+
+.quiz-result-card .result-card__image .mh-symbol { width: 88px; height: 88px; color: var(--color-gold, #bd9b65); }
+.quiz-result-description, .quiz-result-advice, .quiz-result-mixed { max-width: 62ch; margin-inline: auto; line-height: 1.75; overflow-wrap: anywhere; }
+.quiz-result-mixed { font-size: .9rem; color: var(--color-gold, #bd9b65); }
+#result-step { scroll-margin-top: 100px; }

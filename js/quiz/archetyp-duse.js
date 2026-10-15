@@ -19,42 +19,42 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const resultsData = {
-        magician: {
-            title: "Máh",
-            subtitle: "Tvůrce reality",
-            icon: "🪄",
-            desc: "Váš archetyp je postava plná potenciálu. Máte schopnost manifestovat své myšlenky do hmotné reality. Vaše vůle je vaším nejmocnějším nástrojem.",
-            advice: "Nezapomeňte, že s velkou mocí přichází zodpovědnost. Zaměřte svou energii na to, co skutečně milujete."
-        },
-        priestess: {
-            title: "Velekněžka",
-            subtitle: "Strážkyně tajemství",
-            icon: "🌒",
-            desc: "Váš archetyp je ztělesněním hluboké intuice a vnitřního vědění. Rozumíte věcem, které zůstávají ostatním skryty, a pohybujete se s lehkostí v říši snů.",
-            advice: "Důvěřujte svému vnitřnímu hlasu i tehdy, když mu logika okolního světa nerozumí. Vaše ticho je vaší silou."
-        },
-        empress: {
-            title: "Císařovna",
-            subtitle: "Matka hojnosti",
-            icon: "🌿",
-            desc: "Vaše duše promlouvá skrze tvořivost, lásku a spojení s přírodou. Jste zdrojem inspirace a péče pro všechny ve vašem okolí.",
-            advice: "Dovolte si rozkvétat. Pečujte o sebe stejně tak, jako pečujete o svět kolem sebe. Hojnost je váš přirozený stav."
-        },
-        hermit: {
-            title: "Poustevník",
-            subtitle: "Hledač pravdy",
-            icon: "💡",
-            desc: "Váš archetyp dává přednost hloubce před povrchností. Hledáte odpovědi ve svém nitru a vaše osamělá cesta vás vede k nejvyšším vrcholům moudrosti.",
-            advice: "Nebojte se své samoty. Je to prostor, kde se rodí vaše největší pravdy. Staňte se světlem pro ty, kteří ještě bloudí."
-        },
-        star: {
-            title: "Hvězda",
-            subtitle: "Maják naděje",
-            icon: "✨",
-            desc: "Vaše duše je plná světla, optimismu a duchovní čistoty. Přinášíte naději tam, kde je tma, a inspirujete ostatní k lepším zítřkům.",
-            advice: "Zůstaňte napojeni na vesmírné proudy. Vaše vize jsou důležité. Důvěřujte procesu života a nechte své světlo zářit."
-        }
-    };
+    "magician": {
+        "title": "Mág",
+        "subtitle": "Použít dostupné možnosti",
+        "icon": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><use href=\"/img/icons/mh-symbols.svg#tarot\"></use></svg>",
+        "desc": "V odpovědích vystupuje iniciativa a chuť něco vytvářet. Mág může být obrazem práce s tím, co už máš po ruce.",
+        "advice": "Vyber jeden nápad a první nástroj, kterým ho můžeš vyzkoušet."
+    },
+    "priestess": {
+        "title": "Velekněžka",
+        "subtitle": "Všímat si nejasného",
+        "icon": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><use href=\"/img/icons/mh-symbols.svg#dream\"></use></svg>",
+        "desc": "Tvoje volby v kvízu se přiklánějí k pozorování a prostoru pro vlastní dojem. Dojem může otevřít otázku; není sám důkazem.",
+        "advice": "Zapiš jeden postřeh a způsob, jak si ho ověřit."
+    },
+    "empress": {
+        "title": "Císařovna",
+        "subtitle": "Podmínky pro růst",
+        "icon": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><use href=\"/img/icons/mh-symbols.svg#flower\"></use></svg>",
+        "desc": "V kvízu se objevuje motiv péče a tvořivosti. Císařovna ho může připomenout jako každodenní činnost, ne jako povinnost starat se o všechny.",
+        "advice": "Věnuj chvíli něčemu, co chceš rozvíjet i pro sebe."
+    },
+    "hermit": {
+        "title": "Poustevník",
+        "subtitle": "Odstup a soustředění",
+        "icon": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><use href=\"/img/icons/mh-symbols.svg#compass\"></use></svg>",
+        "desc": "Odpovědi zdůrazňují tiché hledání vlastního pohledu. Poustevník nabízí obraz soustředění, nikoliv příkaz izolovat se.",
+        "advice": "Nech si deset nerušených minut na jednu vlastní otázku."
+    },
+    "star": {
+        "title": "Hvězda",
+        "subtitle": "Naděje s konkrétním základem",
+        "icon": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><use href=\"/img/icons/mh-symbols.svg#star\"></use></svg>",
+        "desc": "Ve tvých odpovědích má místo naděje a představa dalšího směru. Symbol Hvězdy se dá spojit s drobným krokem, který opravdu můžeš ovlivnit.",
+        "advice": "Připomeň si jeden doložený pokrok a navazující malý krok."
+    }
+};
 
     function updateProgress() {
         const percent = (currentStep / totalSteps) * 100;
@@ -73,16 +73,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showLoading() {
-        steps.forEach(s => s.classList.remove('active'));
-        document.getElementById('loading-step').classList.add('active');
         setProgress(100);
-
-        setTimeout(showResult, 2500);
+        showResult();
     }
 
     function showResult() {
         const winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
         const data = resultsData[winner];
+        const tied = Object.keys(scores).filter(key => scores[key] === scores[winner]);
 
         // Store result for sharing
         window.lastResult = data.title;
@@ -91,10 +89,11 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="result-card quiz-result-card">
                 <div class="result-card__header">
                     <h4 class="result-card__title">${data.title}</h4>
-                    <p class="quiz-result-kicker">Váš duchovní archetyp</p>
+                    <p class="quiz-result-kicker">Symbolické shrnutí tvých odpovědí</p>
                 </div>
-                <div class="result-card__image animate-glow">${data.icon}</div>
+                <div class="result-card__image">${data.icon}</div>
                 <div class="result-card__body">
+                    ${tied.length > 1 ? `<p class="quiz-result-mixed">Více motivů má stejnou váhu: ${tied.map(key => resultsData[key].title).join(', ')}.</p>` : ''}
                     <h5 class="quiz-result-subtitle">${data.subtitle}</h5>
                     <p class="quiz-result-description">${data.desc}</p>
                 </div>
@@ -102,22 +101,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p class="quiz-result-advice">"${data.advice}"</p>
                 </div>
             </div>
-            <div class="mt-xl">
-                <h2 class="text-gradient">Vaše cesta je osvětlena</h2>
-                <p>Tento archetyp vám ukazuje cestu v příštích měsících.</p>
-            </div>
+            <div class="mt-xl"><p>Výsledek krátkého kvízu nabízí téma k zamyšlení. Nepotvrzuje schopnosti, osobnost ani budoucnost.</p></div>
         `;
 
         document.getElementById('loading-step').classList.remove('active');
         const resultStep = document.getElementById('result-step');
         document.getElementById('result-box').innerHTML = resultHtml;
         resultStep.classList.add('active');
+        resultStep.setAttribute('tabindex', '-1');
+        resultStep.focus({ preventScroll: true });
+        resultStep.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
     }
 
     // Attach event listeners to option buttons
     document.querySelectorAll('.option-btn').forEach(btn => {
         btn.addEventListener('click', () => {
+            if (!btn.closest('.question-step')?.classList.contains('active')) return;
             const scoreKey = btn.dataset.score;
+            if (!Object.hasOwn(scores, scoreKey)) return;
             scores[scoreKey]++;
             currentStep++;
             showStep(currentStep);
@@ -135,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     window.shareResult = () => {
-        const text = `Mým tarotovým archetypem je ${window.lastResult}! Odhal ten svůj na Mystické Hvězdě.`;
+        const text = `V symbolickém kvízu se s mými odpověďmi propojila karta ${window.lastResult}. Zkus si k ní najít vlastní význam.`;
         if (navigator.share) {
             navigator.share({
                 title: 'Můj Tarotový Archetyp',

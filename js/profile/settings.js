@@ -5,6 +5,21 @@
 import { apiUrl, authHeaders, loadPlanManifest, normalizePlanType, formatPlanLabel, PROFILE_AVATARS, profileIconMarkup, renderProfileAvatar } from './shared.js';
 
 let avatarSaving = false;
+let subscriptionRequestVersion = 0;
+
+function currentUserSnapshot(ownerId) {
+    const current = { ...window.Auth?.user };
+    try {
+        const cached = JSON.parse(localStorage.getItem('auth_user') || 'null');
+        if (cached?.id === ownerId) return { ...cached, ...current };
+    } catch { /* A blocked cache must not discard the signed-in user. */ }
+    return current;
+}
+
+function storeCurrentUser(user) {
+    if (window.Auth) window.Auth.user = user;
+    try { localStorage.setItem('auth_user', JSON.stringify(user)); } catch { /* Server save already succeeded. */ }
+}
 
 export function initAvatarPicker() {
     const grid = document.querySelector('.avatar-picker__grid');
@@ -72,6 +87,7 @@ export function initSettingsForm() {
 
 export async function saveSettings() {
     const ownerId = window.Auth?.user?.id;
+    if (!ownerId) return;
     const btn = document.getElementById('save-settings-btn');
     const settingsForm = document.querySelector('.settings-form');
     const formUx = window.MH_FORM_UX || {};
@@ -88,6 +104,7 @@ export async function saveSettings() {
 
     try {
         const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+        if (ownerId !== window.Auth?.user?.id) return;
         const name = document.getElementById('settings-name')?.value.trim();
         const birthtime = document.getElementById('settings-birthtime')?.value;
         const birthplace = document.getElementById('settings-birthplace')?.value.trim();
@@ -128,19 +145,13 @@ export async function saveSettings() {
         const profileData = await profileRes.json();
         if (ownerId !== window.Auth?.user?.id) return;
 
-        let cached = {};
-        try {
-            cached = JSON.parse(localStorage.getItem('auth_user') || '{}');
-        } catch (e) {
-            cached = {};
-        }
+        const cached = currentUserSnapshot(ownerId);
 
         // Merge only fields this form changed; a concurrent avatar save owns its field.
         Object.keys(profileBody).forEach(key => {
             cached[key] = profileData.user && Object.hasOwn(profileData.user, key) ? profileData.user[key] : profileBody[key];
         });
-        localStorage.setItem('auth_user', JSON.stringify(cached));
-        if (window.Auth) window.Auth.user = cached;
+        storeCurrentUser(cached);
 
         document.dispatchEvent(new CustomEvent('profile:updated', { detail: { user: cached } }));
         window.Auth?.showToast?.('Uloženo', 'Tvoje údaje jsou uložené.', 'success');
@@ -213,8 +224,9 @@ export function toggleAvatarPicker() {
 
 export async function selectAvatar(emoji) {
     if (avatarSaving || !PROFILE_AVATARS.some(avatar => `symbol:${avatar.symbol}` === emoji)) return;
-    avatarSaving = true;
     const ownerId = window.Auth?.user?.id;
+    if (!ownerId) return;
+    avatarSaving = true;
     const avatarEl = document.getElementById('user-avatar');
     const picker = document.getElementById('avatar-picker');
     const options = picker?.querySelectorAll('.avatar-option') || [];
@@ -223,6 +235,7 @@ export async function selectAvatar(emoji) {
 
     try {
         const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+        if (ownerId !== window.Auth?.user?.id) return;
         const res = await fetch(`${apiUrl()}/auth/profile`, {
             method: 'PUT',
             credentials: 'include',
@@ -238,16 +251,10 @@ export async function selectAvatar(emoji) {
         }
         if (ownerId !== window.Auth?.user?.id) return;
 
-        let currentUser = {};
-        try {
-            currentUser = JSON.parse(localStorage.getItem('auth_user') || '{}');
-        } catch (e) {
-            currentUser = {};
-        }
-
+        const currentUser = currentUserSnapshot(ownerId);
         currentUser.avatar = emoji;
-        localStorage.setItem('auth_user', JSON.stringify(currentUser));
-        if (window.Auth) window.Auth.user = currentUser;
+        storeCurrentUser(currentUser);
+        document.dispatchEvent(new CustomEvent('profile:updated', { detail: { user: currentUser } }));
         renderProfileAvatar(avatarEl, emoji);
         options.forEach(option => option.classList.toggle('avatar-option--active', option.dataset.avatar === emoji));
         if (picker) { picker.hidden = true; picker.classList.remove('profile-block-visible'); }
@@ -263,6 +270,9 @@ export async function selectAvatar(emoji) {
 }
 
 export async function loadSubscriptionStatus() {
+    const version = ++subscriptionRequestVersion;
+    const ownerId = window.Auth?.user?.id;
+    const isCurrentRequest = () => version === subscriptionRequestVersion && ownerId === window.Auth?.user?.id;
     const container = document.getElementById('subscription-details');
     if (!container) return null;
 
@@ -277,9 +287,13 @@ export async function loadSubscriptionStatus() {
         if (!res.ok) throw new Error('Failed to load subscription');
 
         const data = await res.json();
+        if (!isCurrentRequest()) return null;
         renderSubscriptionCard(data);
+        document.dispatchEvent(new CustomEvent('subscription:updated', { detail: { userId: ownerId, subscription: data } }));
         return data;
     } catch (e) {
+        if (!isCurrentRequest()) return null;
+        document.dispatchEvent(new CustomEvent('subscription:updated', { detail: { userId: ownerId, subscription: null } }));
         console.error('Subscription status error:', e);
         container.innerHTML = `
             <div class="subscription-info">

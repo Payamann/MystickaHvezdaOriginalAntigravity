@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="cs">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,nofollow">
+    <title>Pracovní přehled prvků · Mystická Hvězda</title>
+    <link rel="stylesheet" href="/fonts/local-fonts.css">
+    <link rel="stylesheet" href="/css/style.v2.min.css">
+    <link rel="stylesheet" href="/css/atlas-web.css">
+    <link rel="stylesheet" href="/css/profile-refresh.css">
+    <link rel="stylesheet" href="components.css">
+</head>
+<body class="atlas-page page-profile">
+<main class="container preview-main" id="main-content">
+    <header>
+        <p class="section__badge">Lokální pracovní náhled</p>
+        <h1>Stejné prvky, srozumitelné stavy</h1>
+        <p>Modelové ukázky existujících tříd. Neodesílají formulář, neprovádějí platbu ani nepředstírají běžící službu. Tabulátorem lze projít fokus, tlačítka a rozbalení. Hover a mobil patří do závěrečné QA.</p>
+        <p><a href="README.md">Stav vydání</a> · <a href="design-contract.md">Pravidla vzhledu</a></p>
+    </header>
+    <section aria-labelledby="actions-heading">
+        <h2 id="actions-heading">Akce</h2>
+        <div class="preview-row">
+            <button type="button" class="btn btn--primary">Položit otázku</button>
+            <button type="button" class="btn btn--glass">Uložit poznámku</button>
+            <button type="button" class="btn btn--primary" disabled>Dočasně nedostupné</button>
+            <button type="button" class="btn btn--glass" disabled aria-busy="true">Připravuje se výklad…</button>
+        </div>
+        <p><a href="/tarot-karta-dne.html">Otevřít kartu dne →</a></p>
+    </section>
+    <section class="preview-grid" aria-labelledby="forms-heading">
+        <h2 id="forms-heading" class="preview-full">Vstup a zpětná vazba</h2>
+        <div class="card">
+            <label for="demo-question">Tvoje otázka</label>
+            <textarea id="demo-question" class="form-input" rows="3" placeholder="Co teď potřebuji pochopit?"></textarea>
+            <p id="demo-hint">Modelová otázka zůstává pouze na této stránce.</p>
+            <label for="demo-date">Datum narození · nepovinné</label>
+            <input id="demo-date" class="form-input" type="date" aria-describedby="demo-hint">
+        </div>
+        <div class="card">
+            <label for="demo-email">E-mail</label>
+            <input id="demo-email" class="form-input" type="email" value="ukazka@" aria-invalid="true" aria-describedby="demo-error">
+            <p id="demo-error">Doplň platnou e-mailovou adresu, například jmeno@example.cz.</p>
+            <p class="result-context-notice" role="status">Model chyby: výklad se nepodařilo načíst. Otázka zůstává zachovaná.</p>
+            <button type="button" class="btn btn--glass">Zkusit znovu</button>
+            <p role="status">Model úspěchu: poznámka je uložená v profilu.</p>
+        </div>
+    </section>
+    <section class="card preview-reading" aria-labelledby="reading-heading">
+        <p class="section__badge">Ukázka uspořádání výsledku</p>
+        <h2 id="reading-heading">Jedna otázka, prostor pro odpověď</h2>
+        <div class="reading-question"><small>Tvoje otázka</small><p>Čemu dát tento týden trochu víc prostoru?</p></div>
+        <p class="result-context-notice">Ukázkový text, nikoliv osobní výklad.</p>
+        <p>Malý začátek může být konkrétnější než celý nový plán. Vyber jednu věc, pro kterou dnes uvolníš deset minut. Po týdnu se podívej, jestli ti tenhle prostor opravdu pomohl.</p>
+        <details>
+            <summary>Volitelné vysvětlení symbolu</summary>
+            <p>Doplňující reference je dostupná samostatně. Celá odpověď, cena nebo podmínky služby se do ní neschovávají.</p>
+        </details>
+        <div class="preview-row"><button type="button" class="btn btn--glass">Přidat vlastní poznámku</button><a href="/profil.html">Moje uložené výklady</a></div>
+    </section>
+    <section class="preview-grid" aria-labelledby="symbols-heading">
+        <h2 id="symbols-heading" class="preview-full">Jedna kresba ikon</h2>
+        <div class="card preview-row">
+            <svg class="mh-symbol" width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="/img/icons/mh-symbols.svg#tarot"></use></svg>
+            <span>Tarot</span>
+            <svg class="mh-symbol" width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="/img/icons/mh-symbols.svg#book"></use></svg>
+            <span>Poznámky</span>
+        </div>
+        <div class="card"><p>Prázdný stav: zatím nemáš uložený výklad.</p><a class="btn btn--glass" href="/tarot-ano-ne.html">Položit první otázku</a></div>
+    </section>
+</main>
+</body>
+</html>

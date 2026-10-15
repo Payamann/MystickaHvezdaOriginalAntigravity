@@ -2,6 +2,8 @@
 
 **Pracovní kandidát. Nevydávat před závěrečným ověřením.** Pavel požádal připravovat TODO autonomně a funkční testování soustředit do jednoho průchodu na konci. V této dávce probíhá implementace a kontrola zdrojů/diffu; žádné nové testy, build, prohlížeč ani produkční změny se zatím nespouštěly. Starší úspěch 11 testů PF01 se netýká všech nynějších změn.
 
+Druhá zdrojová dávka je podrobně v [checkpointu](source-batch-2.md). Následující tabulka zachovává první dávku; aktuální závěrečné výsledky budou doplněné zvlášť.
+
 ## Rozpracovaná realizace
 
 | Oblast | Zdrojový stav | Zbývající přijetí |
@@ -14,7 +16,7 @@
 | PF07/PF10 | Redakční podnět označený pravdivě, žádná opakovanost odvozená z jedné poznámky. Poznámky v Přehledu před doplňky; statistiky dobrovolné. | Kontrola prázdného účtu, jednoho signálu a naplněného profilu. |
 | PF11/PV04 | Rozlišení tarotových podtypů a vlastní otázky/úryvku v knihovně; detail zachovává otázku i u pole karet, starší JSON řetězce a strukturované výklady. Bezpečné HTML formátování. | Parita modelových uložených formátů všech skutečných nástrojů. |
 | PV03 · část | Rozepsaná poznámka se uchovává v sessionStorage pro konkrétní účet. Při 401 viditelný návrat k přihlášení. Při změně účtu invalidace starého klientského stavu a odpovědí. | Vypršení session a návrat ve stejné kartě; platný reset hesla zůstává zvláštní ověření vlastníka. |
-| R04 · část | Malá kalkulačka, plný klient a server sdílejí numerologický výpočet, vysvětlení je sjednocené. Prompty nepřikazují zapírání AI a nadpřirozené vědění. | Cílené engine/regresní sady a modelové výstupy; lunární referenční okamžiky ještě otevřené. |
+| R04 · část | Malá kalkulačka, plný klient a server sdílejí numerologický výpočet, vysvětlení je sjednocené. Prompty nepřikazují zapírání AI a nadpřirozené vědění. | Cílené engine/regresní sady a modelové výstupy; lunární okamžiky nyní sdílí zdroj USNO, viz R04; runtime přijetí čeká. |
 | W01 · část | Homepage a společný header mají tlačítka dropdownů, shodné názvy a stav. Click/Enter/Space/šipka/Escape, návrat fokusu, mouse/keyboard CSS a staré anchor varianty. | Desktop/mobil, původní otevřená stránka a všechny původní cíle. Informační architektura se nepřestavovala hromadně. |
 | W04/W05/W06/W07 · část | SVG v profilových výsledcích, čitelné náhledy a otázka, označený fallback ve čtyřech nástrojích i historii, přístupné chyby, respektování omezeného pohybu částic profilu. | Skutečný výsledek, chyba a klávesnice na desktopu/mobilu. Ostatní nástroje podle společného TODO. |
 | W08 | Pro všech 78 karet samostatná otázka a krok, pozorovací text z existujícího kurátorovaného atlasu. Homepage a karta dne používají totožný obsah, datum Praha a původní pořadí karet. | Katalog, stejný den/reload, přechod půlnoci, návrat z registrace a export. |
@@ -22,7 +24,7 @@
 ## Zbývající práce před označením vydání za připravené
 
 - Dokončit zdrojovou kontrolu navazujících částí W02–W13 a jejich konkrétních auditních bodů; nic neoznačovat za hotové podle existence třídy nebo jediného screenshotu.
-- R04: lunární referenční okamžiky, další fallbacky a skutečné nové vzorky promptů. Změna modelu ani dat v produkční DB nebyla součástí této dávky.
+- R04: připravené lunární regrese, ověření viditelného fallbacku a skutečné nové vzorky promptů. Změna modelu ani dat v produkční DB nebyla součástí této dávky.
 - PF08: vazba poznámky na konkrétní výklad a její editace jsou volitelná rozšíření, nikoliv tvrzená hotová funkce. PF12: vlastní jednorázové objednávky v profilu nejsou přidané; nákup dál nevyžaduje účet.
 - Po skončení zdrojových úprav sestavit používané JS/CSS bundly, cache a snapshot. Aktuální `js/dist` tuto rozpracovanou dávku zatím nereprezentuje.
 - Potom jeden koordinovaný QA průchod níže; po skutečném selhání opravit příčinu a zopakovat selhanou dotčenou kontrolu. Povinné platební a přístupové kontroly se nevynechávají.

@@ -14,35 +14,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const resultsData = {
-        wolf: {
-            title: "Vlk",
-            subtitle: "Strážce Smečky",
-            icon: "🐺",
-            desc: "Váš totem je Vlk – symbol intuice, věrnosti a divoké inteligence. Jste silně propojeni se svými city a instinkty. Ceníte si společenství, ale dokážete být i silným samotářem.",
-            advice: "Důvěřujte své vnitřní moudrosti. Vaše smečka (rodina, přátelé) je vaší největší silou, ale nezapomeňte pečovat i o svou vlastní divokou podstatu."
-        },
-        eagle: {
-            title: "Orel",
-            subtitle: "Posel Nebes",
-            icon: "🦅",
-            desc: "Vaším průvodcem je Orel. Daruje vám jasné vidění a schopnost povznést se nad malichernosti. Máte vizi a odvahu létat ve výškách, kterých se jiní bojí.",
-            advice: "Neztrácejte ze zřetele detaily na zemi, zatímco hledíte do dáli. Váš nadhled je darem, který vám pomůže najít pravdu tam, kde jiní tápou."
-        },
-        deer: {
-            title: "Jelen",
-            subtitle: "Král Hvozdů",
-            icon: "🦌",
-            desc: "Jelen je vaším jemným ochráncem. Jste vysoce citliví, ušlechtilí a dokážete transformovat negativitu v tvořivou energii. Vaše přítomnost přináší klid.",
-            advice: "Vaše jemnost není slabost, ale největší síla. Chraňte svou energii před drsným světem, ale neschovávejte své světlo před těmi, kteří ho potřebují."
-        },
-        bear: {
-            title: "Medvěd",
-            subtitle: "Tichá Síla",
-            icon: "🐻",
-            desc: "Průvodce Medvěd vám dává odvahu, stabilitu a hluboké uzemnění. Jste přirozeným léčitelem a ochráncem. Víte, kdy je čas na akci a kdy na vnitřní klid.",
-            advice: "Nezapomeňte na důležitost introspekce – vašeho 'zimního spánku'. Síla, kterou čerpáte z ticha, je to, co vás činí nezlomnými v bouřích života."
-        }
-    };
+    "wolf": {
+        "title": "Vlk",
+        "subtitle": "Samostatnost a spolupráce",
+        "icon": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><use href=\"/img/icons/mh-symbols.svg#wolf\"></use></svg>",
+        "desc": "Vlk zde představuje motiv vlastní cesty i příslušnosti ke skupině. Je to symbol podle odpovědí, ne bytost, která rozhoduje za tebe.",
+        "advice": "Vyber jednu věc, na kterou stačí tvoje síly, a jednu, kde se hodí spolupráce."
+    },
+    "eagle": {
+        "title": "Orel",
+        "subtitle": "Odstup a širší pohled",
+        "icon": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><use href=\"/img/icons/mh-symbols.svg#eye\"></use></svg>",
+        "desc": "Symbol orla může pomoci odhlédnout od drobných sporů k širším souvislostem. Výsledek není předpověď.",
+        "advice": "Napiš si, jaký hlavní cíl se v aktuálním problému ztrácí za detaily."
+    },
+    "deer": {
+        "title": "Jelen",
+        "subtitle": "Všímavost a jemnost",
+        "icon": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><use href=\"/img/icons/mh-symbols.svg#leaf\"></use></svg>",
+        "desc": "Jelen v tomto kvízu zastupuje pozornost a citlivý přístup. Jemnost nemusí znamenat ustupovat z vlastních hranic.",
+        "advice": "V jednom rozhovoru spoj ohleduplný tón s jasným požadavkem."
+    },
+    "bear": {
+        "title": "Medvěd",
+        "subtitle": "Opora a odpočinek",
+        "icon": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><use href=\"/img/icons/mh-symbols.svg#compass\"></use></svg>",
+        "desc": "Medvěd tvoří obraz pevné opory a možnosti stáhnout se na chvíli do klidu. O tom, co potřebuješ, rozhoduje vlastní zkušenost.",
+        "advice": "Vytvoř si jednu dostupnou chvíli odpočinku bez dalšího výkonového úkolu."
+    }
+};
 
     function updateProgress() {
         const percent = (currentStep / totalSteps) * 100;
@@ -61,16 +61,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showLoading() {
-        steps.forEach(s => s.classList.remove('active'));
-        document.getElementById('loading-step').classList.add('active');
         setProgress(100);
-
-        setTimeout(showResult, 2500);
+        showResult();
     }
 
     function showResult() {
         const winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
         const data = resultsData[winner];
+        const tied = Object.keys(scores).filter(key => scores[key] === scores[winner]);
 
         // Set metadata for sharing
         window.lastResult = data.title;
@@ -79,10 +77,11 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="result-card quiz-result-card">
                 <div class="result-card__header">
                     <h4 class="result-card__title quiz-result-title">${data.title}</h4>
-                    <p class="quiz-result-kicker">Váš totemový průvodce</p>
+                    <p class="quiz-result-kicker">Symbolické shrnutí tvých odpovědí</p>
                 </div>
-                <div class="result-card__image animate-sway">${data.icon}</div>
+                <div class="result-card__image">${data.icon}</div>
                 <div class="result-card__body">
+                    ${tied.length > 1 ? `<p class="quiz-result-mixed">Více motivů má stejnou váhu: ${tied.map(key => resultsData[key].title).join(', ')}.</p>` : ''}
                     <h5 class="quiz-result-subtitle">${data.subtitle}</h5>
                     <p class="quiz-result-description">${data.desc}</p>
                 </div>
@@ -90,21 +89,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p class="quiz-result-advice">"${data.advice}"</p>
                 </div>
             </div>
-            <div class="mt-xl">
-                <h2 class="text-gradient">Síla přírody promlouvá</h2>
-                <p>Váš průvodce z říše zvířat <strong>${data.title}</strong> stojí nyní po vašem boku.</p>
-            </div>
+            <div class="mt-xl"><p>Výsledek krátkého kvízu nabízí téma k zamyšlení. Nepotvrzuje schopnosti, osobnost ani budoucnost.</p></div>
         `;
 
         document.getElementById('loading-step').classList.remove('active');
         const resultStep = document.getElementById('result-step');
         document.getElementById('result-box').innerHTML = resultHtml;
         resultStep.classList.add('active');
+        resultStep.setAttribute('tabindex', '-1');
+        resultStep.focus({ preventScroll: true });
+        resultStep.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
     }
 
     document.querySelectorAll('.option-btn').forEach(btn => {
         btn.addEventListener('click', () => {
+            if (!btn.closest('.question-step')?.classList.contains('active')) return;
             const scoreKey = btn.dataset.score;
+            if (!Object.hasOwn(scores, scoreKey)) return;
             scores[scoreKey]++;
             currentStep++;
             showStep(currentStep);
@@ -122,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     window.shareResult = () => {
-        const text = `Moje totemové zvíře je ${window.lastResult}! Zjisti to své na Mystické Hvězdě.`;
+        const text = `V symbolickém zvířecím kvízu se s mými odpověďmi propojilo zvíře ${window.lastResult}.`;
         if (navigator.share) {
             navigator.share({
                 title: 'Můj Totemový Průvodce',
