@@ -15,6 +15,8 @@
 
 ## Doplnění: přihlášení a účet
 
+**Navazující funkční review profilu 15. 10.:** [aktuální TODO PF01–PF10 a ověření PV01–PV03](profile-followup-todo.md). Obsahuje oddělené potvrzené modelové interakce, zdrojové závady a produktové návrhy.
+
 Navazující samostatná kontrola má 19 zaznamenaných stavů a 9 konkrétních bodů: [review účtu](account-review.md), [vizuální přehled](account-overview.html). Zahrnuje také prázdnou produkční validaci; žádný produkční auth účet, e-mail, nové heslo ani platba nebyly vytvořené. Lokální simulace nedostupného API je zvlášť označená.
 
 ## Seznam problémů podle priority
