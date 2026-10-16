@@ -128,6 +128,9 @@ Tyto body už jsou doložené v navazovaných auditech. Nejde o nově vymyšlen�
 
 ### W12 · P2 · Změřit a zlepšit skutečnou rychlost
 
+- [x] Datovaný zdrojový rozpočet sedmi vzorů a navazující konkrétní opravy: nepoužitý Three.js na natálu, menší portréty znamení, skutečný hero preload a zrušení cosmic pozadí pro Atlas. [Evidence a meze](release-prep-2026-10-15/performance-source-audit.md).
+- [x] Připojené screenshoty a browserové assety; následné zdrojové testy a build/cache/snapshot. Jde o zdrojovou zátěž, nikoli naměřené CWV.
+
 - [ ] Pořídit jeden datovaný výchozí vzorek pro homepage a zasažené vzory: přenos obrázků/fontů/CSS/JS, hlavní obsah, posuny rozložení a odezvu ovládání. Teprve podle něj odstraňovat skutečnou zátěž.
 - [ ] Prověřit rozměry náhledů, vhodné varianty obrázků, načítání pod prvním pohledem a prioritu skutečného hlavního obrázku. Nenutit lazy-loading na všechno.
 - [ ] Prověřit zbytečně načítané knihovny a staré bloky, vlastnictví bundle a font fallback. `font-display: optional` v lokálních fontech není automatická chyba; porovnat skutečné chování a české znaky před změnou.
@@ -149,6 +152,8 @@ Tyto body už jsou doložené v navazovaných auditech. Nejde o nově vymyšlen�
 PF01 byl před touto dávkou místně ověřen: 11/11 cílených regresí a skutečný profil nad syntetickou databází; [původní checkpoint](profile-unification-2026-10-14/pf01/README.md). Nyní navazující změny vyžadují znovu dotčenou závěrečnou regresi. Produkce se neměnila.
 
 ## Co je již doloženě hotové
+
+**Navazující dávka 16. 10.:** runy zachovají otázku při chybě a nově ji obnoví po návratu z přihlašovací/členské brány. Náhradní text má označení na nástroji i v uložené historii. Shoda má přístupné chyby a ověřené opakování. Horoskopy mají čitelnější desktopovou mřížku a lehčí portréty, natál o 606 kB méně přímého JS. [Aktuální lokální checkpoint a zbývající hranice](release-prep-2026-10-15/qa-results.md). Další krok: skutečný mobil/tablet posledního vzoru a živé AI vzorky; celý TODO ani vydání nejsou označené za hotové.
 
 Zůstává uzavřená předchozí dávka: základní přesun profilových záložek, serverové stránkování historie, upravená patička, dávkování blogu/atlasu, méně CTA na 78 detailech, SVG fáze Měsíce a odstranění mlhoviny z datované šablony. Detaily a omezení jsou v [implementačním reportu](profile-unification-2026-10-14/README.md). Navazující chyby mají vlastní PF/W ID; nevrací celý dřívější úkol automaticky do stavu „nic hotovo“.
 

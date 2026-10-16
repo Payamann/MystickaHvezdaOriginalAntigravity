@@ -97,16 +97,16 @@ def main():
         refs = [name for name, text in texts.items() if relative in text]
         assets.append({
             'asset': relative, 'sourceBytes': file.stat().st_size,
-            'roleDraft': 'tool illustration' if '/tools-v1/' in relative else 'editorial scene or symbolic detail',
+            'roleDraft': 'derived zodiac picker thumbnail' if relative.endswith('western-zodiac-v1-grid.webp') else 'tool illustration' if '/tools-v1/' in relative else 'editorial scene or symbolic detail',
             'directReferenceFiles': refs,
             'usageStatus': 'direct source reference found' if refs else 'no literal reference in scanned source; runtime use unverified',
             'needsNewArtwork': None, 'finalVisualReview': 'pending'
         })
     write_json('art-usage.json', {
-        'date': '2026-10-15', 'method': 'literal references in functional/root HTML, source CSS and JS; excludes docs/dist/minified CSS; no runtime claims',
+        'date': '2026-10-16', 'method': 'literal references in functional/root HTML, source CSS and JS; excludes docs/dist/minified CSS; counts physical WebP files including technical derivatives; no runtime claims',
         'scannedSourceFiles': len(texts), 'assets': assets
     })
-    print(f'Source ledger saved: {len(pages)} pages; {len(functional)} functional entries; {len(assets)} atlas artworks. Linked browser load evidence: {len(observations)} routes.')
+    print(f'Source ledger saved: {len(pages)} pages; {len(functional)} functional entries; {len(assets)} atlas WebP files including derivatives. Linked browser load evidence: {len(observations)} routes.')
 
 
 if __name__ == '__main__':

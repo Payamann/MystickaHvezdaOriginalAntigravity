@@ -1,6 +1,6 @@
 {
-  "date": "2026-10-15",
-  "method": "literal references in functional/root HTML, source CSS and JS; excludes docs/dist/minified CSS; no runtime claims",
+  "date": "2026-10-16",
+  "method": "literal references in functional/root HTML, source CSS and JS; excludes docs/dist/minified CSS; counts physical WebP files including technical derivatives; no runtime claims",
   "scannedSourceFiles": 661,
   "assets": [
     {
@@ -479,13 +479,22 @@
       "finalVisualReview": "pending"
     },
     {
-      "asset": "img/atlas/western-zodiac-v1.webp",
-      "sourceBytes": 701618,
-      "roleDraft": "editorial scene or symbolic detail",
+      "asset": "img/atlas/western-zodiac-v1-grid.webp",
+      "sourceBytes": 182496,
+      "roleDraft": "derived zodiac picker thumbnail",
       "directReferenceFiles": [
         "css/pages/horoskopy.css"
       ],
       "usageStatus": "direct source reference found",
+      "needsNewArtwork": null,
+      "finalVisualReview": "pending"
+    },
+    {
+      "asset": "img/atlas/western-zodiac-v1.webp",
+      "sourceBytes": 701618,
+      "roleDraft": "editorial scene or symbolic detail",
+      "directReferenceFiles": [],
+      "usageStatus": "no literal reference in scanned source; runtime use unverified",
       "needsNewArtwork": null,
       "finalVisualReview": "pending"
     }

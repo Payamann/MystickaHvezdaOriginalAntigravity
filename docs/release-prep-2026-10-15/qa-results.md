@@ -49,7 +49,7 @@ Skutečný produkční CAS zápis, obnovení po restartu, reálné doručení do
 ## Co zůstává v TODO
 
 - Dopsat přijetí ostatních výsledkových stavů napříč rodinami. Inventář a načtení všech URL nejsou náhradou za celý výsledek každého nástroje.
-- W12: klientský výkon/CLS/LCP zatím nemá nový důkaz. Prohlížečová automatizace neposkytla Performance API; není důvod vymýšlet skóre nebo označit lokální rychlost za produkční Core Web Vitals.
+- W12: zdrojový rozpočet a konkrétní assety mají novou evidenci níže. Klientský CLS/LCP/INP zatím nemá nové měření; prohlížeč neposkytl Performance API. Zdrojové bajty nejsou produkční Core Web Vitals.
 - Ověřit nové vzorky skutečných AI výkladů odděleně od `MOCK_AI`; testovací text není důkaz kvality živého poskytovatele.
 - PF08 a PF12 jsou volitelná následná rozšíření, nikoliv již existující editace poznámek či knihovna placených objednávek.
 - Nasazení, konkrétní vzdálené CI a následné produkční ověření čekají na samostatné vydání. V této fázi nebyl proveden push ani deploy.
@@ -64,3 +64,15 @@ Lokální mock server používá neplatné testovací klíče a syntetické úč
 - Zdrojový ledger: **917** stran, **166** funkčních vstupů s připojeným důkazem úvodního desktopového a mobilního načtení; **42** atlasových ilustrací s literálními odkazy. Ne všechny klasifikace a výtvarné role jsou finálně přijaté.
 - Levné pomocné agenty využila zdrojová kontrola a ohraničené úpravy; poslední Luna vytvořila rituální regresní test, ale skončila na usage limitu před předáním. Hlavní agent test převzal, opravil jeho synchronizaci a ověřil 4/4. Spotřeba ani úspora se číselně neodhadují.
 - Navazující locale oprava: cíleně 1/1 nový test loaderů (27 ostatních v této sadě úmyslně přeskočeno), kontrola 45 auth kontextů a lint horoskopu prošly. Předchozí checkpoint oprav je `f5d4512b`; tato navazující oprava nepředstavuje nový úplný běh 806 testů.
+
+## Navazující checkpoint · W12, chybové stavy a návrat k runě
+
+- [Zdrojový asset rozpočet před/po](performance-source-audit.md) pro sedm vzorů je opakovatelný. Natál už nenačítá nepoužívané Three.js + natal-3d: odstraněno **605 809 B zdrojového JS** z přímých importů. Skutečný 2D natální výpočet po odebrání zobrazil všech deset planet, domy i aspekty. Žádná změna výpočetního enginu.
+- Náhledy znamení používají zmenšeninu stávající ilustrace: **701 618 → 182 496 B (−74 %)**. Původní ilustrace zůstává. Čtyři desktopové kolony mají při 1280 px všech 12 karet bez vnitřního overflow; stísněné názvy jsou opravené. Po rozšíření kompaktního desktopového breakpointu má nav od profilu odstup přibližně 31 px. [Desktopový důkaz](qa-evidence/horoscope-grid-optimized-desktop.png).
+- Atlasové stránky ruší staré kořenové cosmic pozadí, horoskopy preloadují svůj skutečný hero. [Pozorované browserové assety](qa-evidence/asset-observations-w12.json) neobsahují na natálu Three/natal-3d/cosmic a na horoskopech potvrzují nový sprite a hero. Evidence nezaznamenává přenosové bajty, výkon ani produkční návštěvu.
+- Nové chybové scénáře shody, retry run a uložení náhradního výkladu do profilu jsou v [nástrojovém checkpointu](tool-results-qa.md). Návrat runy po přihlášení už obnovuje původní záměr, ne jen kámen; kontroluje datum i katalog a sám nic negeneruje.
+- Frontendové cílené sady: **14/14** (11 nových testů obnovení runy včetně oddělení účtů + 3 existující testy skóre shody). Statické CSP, SW manifest a SW runtime prošly; asset-versioning nejprve narazil čtyřikrát na sandboxové `connect EACCES`, po povolení loopbacku samostatně **6/6**. Není to nový úplný test všech funkcí. První pokusy o frontendový běh potřebovaly cestu k existující kořenové instalaci Jest a explicitní frontendový testMatch; závislosti se neinstalovaly.
+- JS build a cílený ESLint run/shody prošly. Cache nyní **`mysticka-hvezda-740a7a58a440`**, snapshot **1099** veřejných JS/CSS verzí; 907 canonical URL vygenerováno do sitemap bez změny URL sady. Atlas má **43 fyzických WebP souborů: 42 původních motivů a jednu technickou zmenšeninu**, nejde o novou ilustraci.
+- Ohraničený pomocník `gpt-6-luna` medium připravil zdrojový rozpočet, našel chybějící návrat ke kontextu a napsal 9 cílených testů; hlavní agent provedl app změny a ověřil výsledky. Číselná úspora modelů se netvrdí.
+
+**Otevřené hranice:** nové rozložení je zde doložené na desktopu. Požadovaný mobilní viewport se na testovací panel neaplikoval, proto nebyl jeho 1280px screenshot označen za mobilní a chybný název souboru byl odstraněn. Závěrečný mobil/tablet tohoto vzoru, měření runtime výkonu, otevřená starší stránka po vydání a vzorky živého AI poskytovatele stále čekají. Produkce zůstala beze změny; soukromé QA ovladače ani dočasné logy nejsou součástí vydání.

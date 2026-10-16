@@ -8,7 +8,7 @@ import { showFallbackNotice, formatReadingHtml } from './utils/reading-display.j
 let runesData = [];
 let drawnRune = null;
 const RUNES_DEEP_FEATURE = 'runy_hluboky_vyklad';
-const RUNES_PAYMENT_REASSURANCE = 'Cena se zobraz\u00ed ve Stripe p\u0159ed potvrzen\u00edm. Zru\u0161en\u00ed najdete v profilu.';
+const RUNES_PAYMENT_REASSURANCE = 'Cena se zobraz\u00ed ve Stripe p\u0159ed potvrzen\u00edm. Zru\u0161en\u00ed najde\u0161 v profilu.';
 
 function apiBase() {
     return window.API_CONFIG?.BASE_URL || '/api';
@@ -38,7 +38,7 @@ function escapeHtml(value) {
     return div.innerHTML;
 }
 
-function startRuneUpgradeFlow(source, feature, redirect = '/cenik.html') {
+function startRuneUpgradeFlow(source, feature, redirect = '/runy.html') {
     window.MH_ANALYTICS?.trackCTA?.(source, {
         plan_id: 'pruvodce',
         feature
@@ -72,7 +72,6 @@ function showRuneUpgradePreview(source = 'runes_inline_gate', intention = '') {
     aiContainer.hidden = false;
     aiContainer.classList.add('mh-block-visible', 'runes-upgrade-preview');
     aiContainer.innerHTML = `
-        <div class="runes-upgrade-preview__lock" aria-hidden="true">\uD83D\uDD12</div>
         <h4>Odemknout hlubok\u00FD v\u00FDklad runy ${escapedRuneName}</h4>
         <p>Z\u00E1kladn\u00ED poselstv\u00ED u\u017E m\u00E1\u0161. Pln\u00FD v\u00FDklad propojuje runu, tv\u016Fj z\u00E1m\u011Br a konkr\u00E9tn\u00ED dal\u0161\u00ED krok pro dne\u0161ek.</p>
         <div class="runes-upgrade-preview__sample">
@@ -80,7 +79,7 @@ function showRuneUpgradePreview(source = 'runes_inline_gate', intention = '') {
             <span>Pro z\u00E1m\u011Br \u201E${escapedIntention}\u201C by se otev\u0159el osobn\u00ED v\u00FDklad, jak energie ${escapedRuneName}${escapedRuneMeaning ? ` (${escapedRuneMeaning})` : ''} mluv\u00ED do tv\u00E9 situace.</span>
         </div>
         <div class="runes-upgrade-preview__actions">
-            <button type="button" class="btn btn--gold runes-upgrade-preview__cta">Odemknout \u0161amansk\u00FD v\u00FDklad</button>
+            <button type="button" class="btn btn--gold runes-upgrade-preview__cta">Odemknout v\u00FDklad runy</button>
             <button type="button" class="btn btn--ghost runes-upgrade-preview__free">Z\u016Fstat u runy zdarma</button>
         </div>
         <p class="runes-upgrade-preview__reassurance">${RUNES_PAYMENT_REASSURANCE}</p>
@@ -180,6 +179,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 3. Check Daily Lock
     checkDailyLock();
+    restorePendingRuneContext();
     updateRuneFreemiumBanner();
 
     // 4. Attach listeners
@@ -304,6 +304,44 @@ async function shareRune() {
     }
 }
 
+function stashPendingRuneContext(intention) {
+    try {
+        const rune = runesData.find(item => item.name === drawnRune?.name && item.symbol === drawnRune?.symbol);
+        if (!rune) return;
+        sessionStorage.setItem('pendingRuneContext', JSON.stringify({
+            date: new Date().toISOString().split('T')[0],
+            rune,
+            ownerId: window.Auth?.user?.id || null,
+            intention
+        }));
+    } catch (error) {
+        console.warn('Rune context could not be kept for the return:', error);
+    }
+}
+
+function restorePendingRuneContext() {
+    try {
+        const saved = sessionStorage.getItem('pendingRuneContext');
+        if (!saved) return;
+        sessionStorage.removeItem('pendingRuneContext');
+        const pending = JSON.parse(saved);
+        const today = new Date().toISOString().split('T')[0];
+        if (pending?.date !== today || typeof pending.intention !== 'string') return;
+        if (pending.ownerId && pending.ownerId !== window.Auth?.user?.id) return;
+        const rune = runesData.find(item => item.name === pending.rune?.name && item.symbol === pending.rune?.symbol);
+        if (!rune || (drawnRune && drawnRune.name !== rune.name)) return;
+        const input = document.getElementById('rune-intention');
+        if (!input) return;
+
+        drawnRune = rune;
+        localStorage.setItem('runeDaily', JSON.stringify({ date: today, runeData: rune }));
+        revealPreDrawnRune();
+        input.value = pending.intention;
+    } catch (error) {
+        console.warn('Rune context could not be restored:', error);
+    }
+}
+
 function checkDailyLock() {
     const today = new Date().toISOString().split('T')[0];
     const savedDataStr = localStorage.getItem('runeDaily');
@@ -418,8 +456,8 @@ function showResultData() {
 async function requestDeepReading() {
     if (!window.Auth || !window.Auth.isLoggedIn()) {
         const intention = document.getElementById('rune-intention')?.value || '';
-        sessionStorage.setItem('pendingRuneContext', JSON.stringify({ rune: drawnRune, intention }));
-        window.Auth?.showToast?.('V\u00FDklad je zam\u010Den\u00FD', 'Runa dne z\u016Fst\u00E1v\u00E1 zdarma. Pln\u00FD \u0161amansk\u00FD v\u00FDklad odemkne\u0161 a\u017E po rozhodnut\u00ED.', 'info');
+        stashPendingRuneContext(intention);
+        window.Auth?.showToast?.('V\u00FDklad je zam\u010Den\u00FD', 'Runa dne z\u016Fst\u00E1v\u00E1 zdarma. Osobn\u00ED v\u00FDklad je sou\u010D\u00E1st\u00ED \u010Dlenstv\u00ED.', 'info');
         showRuneUpgradePreview('runes_auth_gate', intention.trim());
         return;
     }
@@ -451,8 +489,8 @@ async function requestDeepReading() {
         const data = await response.json();
 
         if (response.status === 401 || response.status === 402 || response.status === 403) {
-            sessionStorage.setItem('pendingRuneContext', JSON.stringify({ rune: drawnRune, intention }));
-            window.Auth?.showToast?.('Premium vy\u017Eadov\u00E1no', '\u0160amansk\u00FD v\u00FDklad vy\u017Eaduje pr\u00E9miov\u00E9 \u010Dlenstv\u00ED Hv\u011Bzdn\u00E9ho Pr\u016Fvodce.', 'info');
+            stashPendingRuneContext(intention);
+            window.Auth?.showToast?.('\u010Clenstv\u00ED vy\u017Eadov\u00E1no', 'Osobn\u00ED v\u00FDklad runy je sou\u010D\u00E1st\u00ED \u010Dlenstv\u00ED Mystick\u00E9 Hv\u011Bzdy.', 'info');
             showRuneUpgradePreview('runes_premium_gate', intention);
             return;
         }

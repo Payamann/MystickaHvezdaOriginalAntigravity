@@ -1,0 +1,1737 @@
+{
+  "date": "2026-10-16",
+  "method": "Observed pageAssets inventory and DOM styles; no runtime byte counts or CWV metrics",
+  "natal": {
+    "assets": [
+      {
+        "id": "2abc38db15a864de",
+        "kind": "stylesheet",
+        "name": "site.min.mh-d8e93b58a227a919.css",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "link"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7218,
+            "property": "href"
+          }
+        ],
+        "url": "http://localhost:3348/css/site.min.mh-d8e93b58a227a919.css"
+      },
+      {
+        "id": "411edfb3c1acb7b9",
+        "kind": "stylesheet",
+        "name": "natalni-karta.mh-9c89cb8aa08b6aca.css",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "link"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7219,
+            "property": "href"
+          }
+        ],
+        "url": "http://localhost:3348/css/pages/natalni-karta.mh-9c89cb8aa08b6aca.css"
+      },
+      {
+        "id": "4dc5bfe4ef1a4900",
+        "kind": "script",
+        "name": "purify.min.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7226,
+            "property": "src"
+          }
+        ],
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"
+      },
+      {
+        "id": "c37f564afba6c79d",
+        "kind": "stylesheet",
+        "name": "atlas-web.mh-af7958729366cb19.css",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "link"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7233,
+            "property": "href"
+          }
+        ],
+        "url": "http://localhost:3348/css/atlas-web.mh-af7958729366cb19.css"
+      },
+      {
+        "id": "f9ba1e45b18b7d24",
+        "kind": "stylesheet",
+        "name": "atlas-remaining.mh-af6c30b5c3d4f8ea.css",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "link"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7234,
+            "property": "href"
+          }
+        ],
+        "url": "http://localhost:3348/css/atlas-remaining.mh-af6c30b5c3d4f8ea.css"
+      },
+      {
+        "id": "5e954c8fbca35a94",
+        "kind": "script",
+        "name": "analytics-init.mh-ba81ac87c9ccca73.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7227,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/analytics-init.mh-ba81ac87c9ccca73.js"
+      },
+      {
+        "id": "5afe7072ca2a7039",
+        "kind": "stylesheet",
+        "name": "atlas-art.mh-3be3a50f799e2ccb.css",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "link"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7235,
+            "property": "href"
+          }
+        ],
+        "url": "http://localhost:3348/css/atlas-art.mh-3be3a50f799e2ccb.css"
+      },
+      {
+        "id": "9b46cf12dca88962",
+        "kind": "script",
+        "name": "favorites-helper.mh-cb1bd287fcf12a9f.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7636,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/favorites-helper.mh-cb1bd287fcf12a9f.js"
+      },
+      {
+        "id": "7641fc325d6d4e58",
+        "kind": "script",
+        "name": "register-sw.mh-18c4c860ce305e16.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7638,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/register-sw.mh-18c4c860ce305e16.js"
+      },
+      {
+        "id": "0712dcb06ec9d084",
+        "kind": "script",
+        "name": "api-config.mh-b9712dc563a165e0.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7639,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/api-config.mh-b9712dc563a165e0.js"
+      },
+      {
+        "id": "a81344784fd049bc",
+        "kind": "script",
+        "name": "natal-chart.mh-b83ac91e6e4b5e5b.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7637,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/natal-chart.mh-b83ac91e6e4b5e5b.js"
+      },
+      {
+        "id": "b5a64abe0a495366",
+        "kind": "script",
+        "name": "birth-location-suggestions.mh-5f558163635f7ef8.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7640,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/birth-location-suggestions.mh-5f558163635f7ef8.js"
+      },
+      {
+        "id": "4d76bdbaf98846b1",
+        "kind": "script",
+        "name": "templates.mh-fb0b1dd0d0509287.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7641,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/templates.mh-fb0b1dd0d0509287.js"
+      },
+      {
+        "id": "2c2b715b1f85a450",
+        "kind": "script",
+        "name": "auth-client.mh-e26abf8922021997.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7642,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/auth-client.mh-e26abf8922021997.js"
+      },
+      {
+        "id": "487793f294124780",
+        "kind": "script",
+        "name": "auth-copy-fixes.mh-d953d471a723b055.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7643,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/auth-copy-fixes.mh-d953d471a723b055.js"
+      },
+      {
+        "id": "7f434e33ccb0c5b2",
+        "kind": "script",
+        "name": "landing-pages-copy-fixes.mh-1f743de2efd3f221.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7644,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/landing-pages-copy-fixes.mh-1f743de2efd3f221.js"
+      },
+      {
+        "id": "a8a01e1566e618b0",
+        "kind": "script",
+        "name": "main.mh-44afe66e57e92800.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7648,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/main.mh-44afe66e57e92800.js"
+      },
+      {
+        "id": "8b1bc775ec8116e6",
+        "kind": "script",
+        "name": "share-result.mh-6e8bde80eb74c5e9.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7645,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/share-result.mh-6e8bde80eb74c5e9.js"
+      },
+      {
+        "id": "4f607fbf9ab3d184",
+        "kind": "script",
+        "name": "exit-intent.mh-f2979a93a325fecf.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7646,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/exit-intent.mh-f2979a93a325fecf.js"
+      },
+      {
+        "id": "2415629b30590963",
+        "kind": "script",
+        "name": "components.mh-13b876fbb8677be4.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7647,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/components.mh-13b876fbb8677be4.js"
+      },
+      {
+        "id": "660a6f92a6097d74",
+        "kind": "script",
+        "name": "newsletter-popup.mh-f2979a93a325fecf.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7649,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/newsletter-popup.mh-f2979a93a325fecf.js"
+      },
+      {
+        "id": "b6c0423e459b3bf5",
+        "kind": "image",
+        "name": "01-astrolab.webp",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "css"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 7250,
+            "property": "background-image"
+          }
+        ],
+        "url": "http://localhost:3348/img/atlas/tools-v1/01-astrolab.webp"
+      },
+      {
+        "id": "d68e6e2999f78a41",
+        "kind": "font",
+        "name": "inter-latin.woff2",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "css"
+          }
+        ],
+        "url": "http://localhost:3348/fonts/inter-latin.woff2"
+      },
+      {
+        "id": "a4226f7cb922dad2",
+        "kind": "font",
+        "name": "cinzel-latin.woff2",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "css"
+          }
+        ],
+        "url": "http://localhost:3348/fonts/cinzel-latin.woff2"
+      },
+      {
+        "id": "d82626bb32b1e909",
+        "kind": "font",
+        "name": "cinzel-latin-ext.woff2",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "css"
+          }
+        ],
+        "url": "http://localhost:3348/fonts/cinzel-latin-ext.woff2"
+      },
+      {
+        "id": "68ca0e8a52d273f0",
+        "kind": "font",
+        "name": "inter-latin-ext.woff2",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "css"
+          }
+        ],
+        "url": "http://localhost:3348/fonts/inter-latin-ext.woff2"
+      },
+      {
+        "id": "64b4eb1eeaa46506",
+        "kind": "image",
+        "name": "mh-symbols.svg#chart",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "other"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7571,
+            "property": "href"
+          }
+        ],
+        "url": "http://localhost:3348/img/icons/mh-symbols.svg#chart"
+      },
+      {
+        "id": "01a5d80aa8147ebe",
+        "kind": "other",
+        "name": "config",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "fetch"
+          }
+        ],
+        "url": "http://localhost:3348/api/config"
+      },
+      {
+        "id": "56ae06f35fa5099f",
+        "kind": "other",
+        "name": "birth-locations",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "fetch"
+          }
+        ],
+        "url": "http://localhost:3348/api/birth-locations"
+      },
+      {
+        "id": "317a0b776626cffa",
+        "kind": "script",
+        "name": "analytics.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7236,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/analytics.js?v=9"
+      },
+      {
+        "id": "466144e64833b773",
+        "kind": "script",
+        "name": "feedback-widget.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7237,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/feedback-widget.js"
+      },
+      {
+        "id": "a06e1e5c4cf64611",
+        "kind": "script",
+        "name": "premium-gates.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7238,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/premium-gates.js?v=20260522-login-gate-cta"
+      },
+      {
+        "id": "0d8f4323cc501b08",
+        "kind": "other",
+        "name": "profile",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "fetch"
+          }
+        ],
+        "url": "http://localhost:3348/api/auth/profile"
+      },
+      {
+        "id": "7b5e76148dde0cc9",
+        "kind": "other",
+        "name": "header.html",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "fetch"
+          }
+        ],
+        "url": "http://localhost:3348/components/header.html?v=20261014-detail-polish-2"
+      },
+      {
+        "id": "f5a08fb983bef22e",
+        "kind": "other",
+        "name": "footer.html",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "fetch"
+          }
+        ],
+        "url": "http://localhost:3348/components/footer.html?v=20261014-svg-symbols"
+      },
+      {
+        "id": "505b243fc60c68e0",
+        "kind": "script",
+        "name": "cookie-handler.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 7239,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/cookie-handler.js?v=20260703-consent-event"
+      },
+      {
+        "id": "8250361a6b563f8e",
+        "kind": "other",
+        "name": "plans",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "fetch"
+          }
+        ],
+        "url": "http://localhost:3348/api/plans"
+      },
+      {
+        "id": "45fccc68c84d662b",
+        "kind": "image",
+        "name": "logo-3d.webp",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "img"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 6409,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/img/logo-3d.webp?v=4"
+      },
+      {
+        "id": "fe8dedcb45983226",
+        "kind": "image",
+        "name": "mh-symbols.svg#user",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "other"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 6515,
+            "property": "href"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 6523,
+            "property": "href"
+          }
+        ],
+        "url": "http://localhost:3348/img/icons/mh-symbols.svg#user"
+      }
+    ],
+    "id": "e9b42696-5c3a-44dd-8328-c1da1e0994bf",
+    "inlineSvgs": [
+      {
+        "id": "ecdea1888620d337",
+        "markup": "<svg class=\"mh-symbol mh-symbol--inline\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#user\"></use></svg>",
+        "name": "svg-1"
+      },
+      {
+        "id": "61d25e6ae803ba02",
+        "markup": "<svg class=\"mh-symbol mh-symbol--inline\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#user\"></use></svg>",
+        "name": "svg-2"
+      },
+      {
+        "id": "b9f37f241e57b5f4",
+        "markup": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"18\" cy=\"5\" r=\"3\"></circle><circle cx=\"6\" cy=\"12\" r=\"3\"></circle><circle cx=\"18\" cy=\"19\" r=\"3\"></circle><line x1=\"8.59\" y1=\"13.51\" x2=\"15.42\" y2=\"17.49\"></line><line x1=\"15.41\" y1=\"6.51\" x2=\"8.59\" y2=\"10.49\"></line></svg>",
+        "name": "svg-3"
+      },
+      {
+        "id": "8d3677f1b4021cfc",
+        "markup": "<svg id=\"natal-chart\" class=\"natal-svg\" viewBox=\"0 0 500 500\">\n\n                            <!-- Definitions for Gradients and Filters -->\n\n                            <defs>\n\n                                <filter id=\"glow-soft\" x=\"-50%\" y=\"-50%\" width=\"200%\" height=\"200%\">\n\n                                    <feGaussianBlur stdDeviation=\"4\" result=\"coloredBlur\"></feGaussianBlur>\n\n                                    <feMerge>\n\n                                        <feMergeNode in=\"coloredBlur\"></feMergeNode>\n\n                                        <feMergeNode in=\"SourceGraphic\"></feMergeNode>\n\n                                    </feMerge>\n\n                                </filter>\n\n                                <!-- Sun Gradient -->\n\n                                <radialGradient id=\"grad-sun\" cx=\"30%\" cy=\"30%\" r=\"70%\">\n\n                                    <stop offset=\"0%\" class=\"mh-inline-3ef2c0188e\"></stop>\n\n                                    <stop offset=\"50%\" class=\"mh-inline-1c14898eda\"></stop>\n\n                                    <stop offset=\"100%\" class=\"mh-inline-5a4f3214ed\"></stop>\n\n                                </radialGradient>\n\n                                <!-- Moon Gradient -->\n\n                                <radialGradient id=\"grad-moon\" cx=\"30%\" cy=\"30%\" r=\"70%\">\n\n                                    <stop offset=\"0%\" class=\"mh-inline-7acad95db7\"></stop>\n\n                                    <stop offset=\"60%\" class=\"mh-inline-60f01d9f61\"></stop>\n\n                                    <stop offset=\"100%\" class=\"mh-inline-83af41cdc9\"></stop>\n\n                                </radialGradient>\n\n                                <!-- Mercury Gradient -->\n\n                                <radialGradient id=\"grad-mercury\" cx=\"30%\" cy=\"30%\" r=\"70%\">\n\n                                    <stop offset=\"0%\" class=\"mh-inline-229cc83d76\"></stop>\n\n                                    <stop offset=\"50%\" class=\"mh-inline-7422dd850d\"></stop>\n\n                                    <stop offset=\"100%\" class=\"mh-inline-1c05e1255b\"></stop>\n\n                                </radialGradient>\n\n                                <!-- Venus Gradient -->\n\n                                <radialGradient id=\"grad-venus\" cx=\"30%\" cy=\"30%\" r=\"70%\">\n\n                                    <stop offset=\"0%\" class=\"mh-inline-0da6309e3b\"></stop>\n\n                                    <stop offset=\"50%\" class=\"mh-inline-e2943f83a6\"></stop>\n\n                                    <stop offset=\"100%\" class=\"mh-inline-5f024c93e7\"></stop>\n\n                                </radialGradient>\n\n                                <!-- Mars Gradient -->\n\n                                <radialGradient id=\"grad-mars\" cx=\"30%\" cy=\"30%\" r=\"70%\">\n\n                                    <stop offset=\"0%\" class=\"mh-inline-9f3ef889f0\"></stop>\n\n                                    <stop offset=\"50%\" class=\"mh-inline-5d862d8664\"></stop>\n\n                                    <stop offset=\"100%\" class=\"mh-inline-34eacfeb37\"></stop>\n\n                                </radialGradient>\n\n                                <!-- Jupiter Gradient -->\n\n                                <radialGradient id=\"grad-jupiter\" cx=\"30%\" cy=\"30%\" r=\"70%\">\n\n                                    <stop offset=\"0%\" class=\"mh-inline-26aadce8ee\"></stop>\n\n                                    <stop offset=\"50%\" class=\"mh-inline-c27f17ebd5\"></stop>\n\n                                    <stop offset=\"100%\" class=\"mh-inline-caa2c78f5a\"></stop>\n\n                                </radialGradient>\n\n                                <!-- Saturn Gradient -->\n\n                                <radialGradient id=\"grad-saturn\" cx=\"30%\" cy=\"30%\" r=\"70%\">\n\n                                    <stop offset=\"0%\" class=\"mh-inline-9ae719b45d\"></stop>\n\n                                    <stop offset=\"50%\" class=\"mh-inline-0a670a1814\"></stop>\n\n                                    <stop offset=\"100%\" class=\"mh-inline-0926d50310\"></stop>\n\n                                </radialGradient>\n\n                                <!-- Soul Center Gradient -->\n\n                                <radialGradient id=\"grad-soul\" cx=\"50%\" cy=\"50%\" r=\"50%\" fx=\"50%\" fy=\"50%\">\n\n                                    <stop offset=\"0%\" class=\"mh-inline-80f1bd625d\"></stop>\n\n                                    <stop offset=\"100%\" class=\"mh-inline-5e0dbaec70\"></stop>\n\n                                </radialGradient>\n\n                            </defs>\n\n                            <!-- Background Ring -->\n\n                            <circle cx=\"250\" cy=\"250\" r=\"248\" fill=\"none\" stroke=\"var(--color-mystic-gold)\" stroke-width=\"2\" opacity=\"0.6\"></circle>\n\n                            <circle cx=\"250\" cy=\"250\" r=\"195\" fill=\"none\" stroke=\"var(--color-mystic-gold)\" stroke-width=\"1\" opacity=\"0.4\"></circle>\n\n                            <!-- Signs (Static Demo) -->\n\n                            <g id=\"zodiac-ring\" transform=\"translate(250, 250)\">\n\n                                <!-- Generated by JS -->\n\n                            <line x1=\"1.1879073951729327e-14\" y1=\"-194\" x2=\"1.3226185430791415e-14\" y2=\"-216\" class=\"natal-zodiac-tick natal-zodiac-tick--sign\"></line><line x1=\"18.30270597700821\" y1=\"-209.20088659926657\" x2=\"18.825640433494158\" y2=\"-215.17805478781705\" class=\"natal-zodiac-tick\"></line><line x1=\"35.42422824405381\" y1=\"-200.90078161449043\" x2=\"37.50800637605697\" y2=\"-212.71847465063692\" class=\"natal-zodiac-tick natal-zodiac-tick--major\"></line><line x1=\"54.35199947152935\" y1=\"-202.84442352070434\" x2=\"55.90491374214448\" y2=\"-208.63997847843876\" class=\"natal-zodiac-tick\"></line><line x1=\"69.77210923843644\" y1=\"-191.6972946403253\" x2=\"73.87635095834446\" y2=\"-202.9736060897562\" class=\"natal-zodiac-tick natal-zodiac-tick--major\"></line><line x1=\"88.74983496554688\" y1=\"-190.32463527769647\" x2=\"91.28554453599108\" y2=\"-195.7624819999164\" class=\"natal-zodiac-tick\"></line><line x1=\"97.00000000000003\" y1=\"-168.0089283341811\" x2=\"108.00000000000003\" y2=\"-187.06148721743872\" class=\"natal-zodiac-tick natal-zodiac-tick--sign\"></line><line x1=\"120.4510516337197\" y1=\"-172.02192930068827\" x2=\"123.89251025182597\" y2=\"-176.93684156642223\" class=\"natal-zodiac-tick\"></line><line x1=\"131.12867237605403\" y1=\"-156.2730663962715\" x2=\"138.8421236922925\" y2=\"-165.46559971369925\" class=\"natal-zodiac-tick natal-zodiac-tick--major\"></line><line x1=\"148.49242404917499\" y1=\"-148.49242404917496\" x2=\"152.73506473629428\" y2=\"-152.73506473629425\" class=\"natal-zodiac-tick\"></line><line x1=\"156.2730663962715\" y1=\"-131.128672376054\" x2=\"165.46559971369925\" y2=\"-138.8421236922925\" class=\"natal-zodiac-tick natal-zodiac-tick--major\"></line><line x1=\"172.02192930068827\" y1=\"-120.45105163371967\" x2=\"176.93684156642223\" y2=\"-123.89251025182594\" class=\"natal-zodiac-tick\"></line><line x1=\"168.00892833418112\" y1=\"-96.99999999999999\" x2=\"187.06148721743875\" y2=\"-107.99999999999999\" class=\"natal-zodiac-tick natal-zodiac-tick--sign\"></line><line x1=\"190.32463527769647\" y1=\"-88.74983496554688\" x2=\"195.7624819999164\" y2=\"-91.28554453599108\" class=\"natal-zodiac-tick\"></line><line x1=\"191.6972946403253\" y1=\"-69.77210923843641\" x2=\"202.97360608975623\" y2=\"-73.87635095834445\" class=\"natal-zodiac-tick natal-zodiac-tick--major\"></line><line x1=\"202.84442352070434\" y1=\"-54.35199947152935\" x2=\"208.63997847843876\" y2=\"-55.90491374214448\" class=\"natal-zodiac-tick\"></line><line x1=\"200.90078161449043\" y1=\"-35.424228244053786\" x2=\"212.71847465063692\" y2=\"-37.508006376056954\" class=\"natal-zodiac-tick natal-zodiac-tick--major\"></line><line x1=\"209.20088659926657\" y1=\"-18.302705977008216\" x2=\"215.17805478781705\" y2=\"-18.825640433494165\" class=\"natal-zodiac-tick\"></line><line x1=\"194\" y1=\"0\" x2=\"216\" y2=\"0\" class=\"natal-zodiac-tick natal-zodiac-tick--sign\"></line><line x1=\"209.20088659926657\" y1=\"18.302705977008216\" x2=\"215.17805478781705\" y2=\"18.825640433494165\" class=\"natal-zodiac-tick\"></line><line x1=\"200.90078161449043\" y1=\"35.424228244053786\" x2=\"212.71847465063692\" y2=\"37.508006376056954\" class=\"natal-zodiac-tick natal-zodiac-tick--major\"></line><line x1=\"202.84442352070434\" y1=\"54.35199947152935\" x2=\"208.63997847843876\" y2=\"55.90491374214448\" class=\"natal-zodiac-tick\"></line><line x1=\"191.6972946403253\" y1=\"69.77210923843641\" x2=\"202.97360608975623\" y2=\"73.87635095834445\" class=\"natal-zodiac-tick natal-zodiac-tick--major\"></line><line x1=\"190.32463527769647\" y1=\"88.74983496554688\" x2=\"195.7624819999164\" y2=\"91.28554453599108\" class=\"natal-zodiac-tick\"></line><line x1=\"168.00892833418112\" y1=\"96.99999999999999\" x2=\"187.06148721743875\" y2=\"107.99999999999999\" class=\"natal-zodiac-tick natal-zodiac-tick--sign\"></line><line x1=\"172.02192930068827\" y1=\"120.45105163371967\" x2=\"176.93684156642223\" y2=\"123.89251025182594\" class=\"natal-zodiac-tick\"></line><line x1=\"156.2730663962715\" y1=\"131.128672376054\" x2=\"165.46559971369925\" y2=\"138.8421236922925\" class=\"natal-zodiac-tick natal-zodiac-tick--major\"></line><line x1=\"148.49242404917499\" y1=\"148.49242404917496\" x2=\"152.73506473629428\" y2=\"152.73506473629425\" class=\"natal-zodiac-tick\"></line><line x1=\"131.12867237605403\" y1=\"156.2730663962715\" x2=\"138.8421236922925\" y2=\"165.46559971369925\" class=\"natal-zodiac-tick natal-zodiac-tick--major\"></line><line x1=\"120.4510516337197\" y1=\"172.02192930068827\" x2=\"123.89251025182597\" y2=\"176.93684156642223\" class=\"natal-zodiac-tick\"></line><line x1=\"97.00000000000003\" y1=\"168.0089283341811\" x2=\"108.00000000000003\" y2=\"187.06148721743872\" class=\"natal-zodiac-tick natal-zodiac-tick--sign\"></line><line x1=\"88.74983496554688\" y1=\"190.32463527769647\" x2=\"91.28554453599108\" y2=\"195.7624819999164\" class=\"natal-zodiac-tick\"></line><line x1=\"69.77210923843644\" y1=\"191.6972946403253\" x2=\"73.87635095834446\" y2=\"202.9736060897562\" class=\"natal-zodiac-tick natal-zodiac-tick--major\"></line><line x1=\"54.35199947152935\" y1=\"202.84442352070434\" x2=\"55.90491374214448\" y2=\"208.63997847843876\" class=\"natal-zodiac-tick\"></line><line x1=\"35.42422824405381\" y1=\"200.90078161449043\" x2=\"37.50800637605697\" y2=\"212.71847465063692\" class=\"natal-zodiac-tick natal-zodiac-tick--major\"></line><line x1=\"18.30270597700821\" y1=\"209.20088659926657\" x2=\"18.825640433494158\" y2=\"215.17805478781705\" class=\"natal-zodiac-tick\"></line><line x1=\"1.1879073951729327e-14\" y1=\"194\" x2=\"1.3226185430791415e-14\" y2=\"216\" class=\"natal-zodiac-tick natal-zodiac-tick--sign\"></line><line x1=\"-18.30270597700823\" y1=\"209.20088659926657\" x2=\"-18.82564043349418\" y2=\"215.17805478781705\" class=\"natal-zodiac-tick\"></line><line x1=\"-35.42422824405378\" y1=\"200.90078161449043\" x2=\"-37.50800637605695\" y2=\"212.71847465063692\" class=\"natal-zodiac-tick natal-zodiac-tick--major\"></line><line x1=\"-54.35199947152938\" y1=\"202.84442352070434\" x2=\"-55.9049137421445\" y2=\"208.63997847843876\" class=\"natal-zodiac-tick\"></line><line x1=\"-69.77210923843641\" y1=\"191.6972946403253\" x2=\"-73.87635095834445\" y2=\"202.97360608975623\" class=\"natal-zodiac-tick natal-zodiac-tick--major\"></line><line x1=\"-88.74983496554685\" y1=\"190.3246352776965\" x2=\"-91.28554453599105\" y2=\"195.76248199991642\" class=\"natal-zodiac-tick\"></line><line x1=\"-96.99999999999996\" y1=\"168.00892833418112\" x2=\"-107.99999999999996\" y2=\"187.06148721743875\" class=\"natal-zodiac-tick natal-zodiac-tick--sign\"></line><line x1=\"-120.4510516337197\" y1=\"172.02192930068824\" x2=\"-123.89251025182597\" y2=\"176.9368415664222\" class=\"natal-zodiac-tick\"></line><line x1=\"-131.12867237605403\" y1=\"156.2730663962715\" x2=\"-138.8421236922925\" y2=\"165.46559971369925\" class=\"natal-zodiac-tick natal-zodiac-tick--major\"></line><line x1=\"-148.49242404917496\" y1=\"148.49242404917499\" x2=\"-152.73506473629425\" y2=\"152.73506473629428\" class=\"natal-zodiac-tick\"></line><line x1=\"-156.2730663962715\" y1=\"131.12867237605406\" x2=\"-165.46559971369922\" y2=\"138.84212369229252\" class=\"natal-zodiac-tick natal-zodiac-tick--major\"></line><line x1=\"-172.0219293006883\" y1=\"120.45105163371964\" x2=\"-176.93684156642226\" y2=\"123.89251025182593\" class=\"natal-zodiac-tick\"></line><line x1=\"-168.00892833418112\" y1=\"96.99999999999999\" x2=\"-187.06148721743875\" y2=\"107.99999999999999\" class=\"natal-zodiac-tick natal-zodiac-tick--sign\"></line><line x1=\"-190.32463527769647\" y1=\"88.7498349655469\" x2=\"-195.7624819999164\" y2=\"91.2855445359911\" class=\"natal-zodiac-tick\"></line><line x1=\"-191.6972946403253\" y1=\"69.77210923843646\" x2=\"-202.9736060897562\" y2=\"73.87635095834447\" class=\"natal-zodiac-tick natal-zodiac-tick--major\"></line><line x1=\"-202.8444235207043\" y1=\"54.35199947152941\" x2=\"-208.63997847843874\" y2=\"55.90491374214454\" class=\"natal-zodiac-tick\"></line><line x1=\"-200.90078161449043\" y1=\"35.42422824405378\" x2=\"-212.71847465063692\" y2=\"37.50800637605694\" class=\"natal-zodiac-tick natal-zodiac-tick--major\"></line><line x1=\"-209.20088659926657\" y1=\"18.30270597700822\" x2=\"-215.17805478781705\" y2=\"18.82564043349417\" class=\"natal-zodiac-tick\"></line><line x1=\"-194\" y1=\"2.3758147903458653e-14\" x2=\"-216\" y2=\"2.645237086158283e-14\" class=\"natal-zodiac-tick natal-zodiac-tick--sign\"></line><line x1=\"-209.20088659926657\" y1=\"-18.30270597700817\" x2=\"-215.17805478781705\" y2=\"-18.825640433494115\" class=\"natal-zodiac-tick\"></line><line x1=\"-200.90078161449043\" y1=\"-35.424228244053815\" x2=\"-212.71847465063692\" y2=\"-37.50800637605698\" class=\"natal-zodiac-tick natal-zodiac-tick--major\"></line><line x1=\"-202.84442352070434\" y1=\"-54.35199947152937\" x2=\"-208.63997847843876\" y2=\"-55.904913742144494\" class=\"natal-zodiac-tick\"></line><line x1=\"-191.6972946403253\" y1=\"-69.7721092384364\" x2=\"-202.97360608975623\" y2=\"-73.87635095834443\" class=\"natal-zodiac-tick natal-zodiac-tick--major\"></line><line x1=\"-190.3246352776965\" y1=\"-88.74983496554685\" x2=\"-195.76248199991642\" y2=\"-91.28554453599105\" class=\"natal-zodiac-tick\"></line><line x1=\"-168.0089283341811\" y1=\"-97.00000000000003\" x2=\"-187.06148721743872\" y2=\"-108.00000000000003\" class=\"natal-zodiac-tick natal-zodiac-tick--sign\"></line><line x1=\"-172.02192930068827\" y1=\"-120.4510516337197\" x2=\"-176.93684156642223\" y2=\"-123.89251025182597\" class=\"natal-zodiac-tick\"></line><line x1=\"-156.2730663962715\" y1=\"-131.128672376054\" x2=\"-165.46559971369925\" y2=\"-138.8421236922925\" class=\"natal-zodiac-tick natal-zodiac-tick--major\"></line><line x1=\"-148.492424049175\" y1=\"-148.49242404917496\" x2=\"-152.7350647362943\" y2=\"-152.73506473629425\" class=\"natal-zodiac-tick\"></line><line x1=\"-131.12867237605406\" y1=\"-156.2730663962715\" x2=\"-138.84212369229252\" y2=\"-165.46559971369922\" class=\"natal-zodiac-tick natal-zodiac-tick--major\"></line><line x1=\"-120.45105163371974\" y1=\"-172.02192930068824\" x2=\"-123.89251025182602\" y2=\"-176.93684156642217\" class=\"natal-zodiac-tick\"></line><line x1=\"-97.00000000000009\" y1=\"-168.00892833418104\" x2=\"-108.0000000000001\" y2=\"-187.0614872174387\" class=\"natal-zodiac-tick natal-zodiac-tick--sign\"></line><line x1=\"-88.74983496554682\" y1=\"-190.3246352776965\" x2=\"-91.28554453599102\" y2=\"-195.76248199991642\" class=\"natal-zodiac-tick\"></line><line x1=\"-69.77210923843639\" y1=\"-191.6972946403253\" x2=\"-73.8763509583444\" y2=\"-202.97360608975623\" class=\"natal-zodiac-tick natal-zodiac-tick--major\"></line><line x1=\"-54.35199947152933\" y1=\"-202.84442352070434\" x2=\"-55.90491374214446\" y2=\"-208.63997847843876\" class=\"natal-zodiac-tick\"></line><line x1=\"-35.424228244053786\" y1=\"-200.90078161449043\" x2=\"-37.508006376056954\" y2=\"-212.71847465063692\" class=\"natal-zodiac-tick natal-zodiac-tick--major\"></line><line x1=\"-18.302705977008234\" y1=\"-209.20088659926657\" x2=\"-18.825640433494183\" y2=\"-215.17805478781705\" class=\"natal-zodiac-tick\"></line><line x1=\"-50.46971379499156\" y1=\"-188.35553612636832\" x2=\"-64.18712318542516\" y2=\"-239.54960491968893\" stroke=\"rgba(212, 175, 55, 0.2)\" stroke-width=\"1\"></line><text x=\"1.359357947053562e-14\" y=\"-222\" text-anchor=\"middle\" dominant-baseline=\"central\" fill=\"var(--color-mystic-gold)\" font-size=\"36\" transform=\"rotate(0, 1.359357947053562e-14, -222)\">♈</text><line x1=\"50.46971379499154\" y1=\"-188.35553612636832\" x2=\"64.18712318542515\" y2=\"-239.54960491968893\" stroke=\"rgba(212, 175, 55, 0.2)\" stroke-width=\"1\"></line><text x=\"111.00000000000003\" y=\"-192.25763964014536\" text-anchor=\"middle\" dominant-baseline=\"central\" fill=\"var(--color-mystic-gold)\" font-size=\"36\" transform=\"rotate(30, 111.00000000000003, -192.25763964014536)\">♉</text><line x1=\"137.88582233137677\" y1=\"-137.88582233137674\" x2=\"175.3624817342638\" y2=\"-175.36248173426378\" stroke=\"rgba(212, 175, 55, 0.2)\" stroke-width=\"1\"></line><text x=\"192.25763964014538\" y=\"-110.99999999999999\" text-anchor=\"middle\" dominant-baseline=\"central\" fill=\"var(--color-mystic-gold)\" font-size=\"36\" transform=\"rotate(60, 192.25763964014538, -110.99999999999999)\">♊</text><line x1=\"188.35553612636832\" y1=\"-50.46971379499154\" x2=\"239.54960491968893\" y2=\"-64.18712318542515\" stroke=\"rgba(212, 175, 55, 0.2)\" stroke-width=\"1\"></line><text x=\"222\" y=\"0\" text-anchor=\"middle\" dominant-baseline=\"central\" fill=\"var(--color-mystic-gold)\" font-size=\"36\" transform=\"rotate(90, 222, 0)\">♋</text><line x1=\"188.35553612636832\" y1=\"50.46971379499154\" x2=\"239.54960491968893\" y2=\"64.18712318542515\" stroke=\"rgba(212, 175, 55, 0.2)\" stroke-width=\"1\"></line><text x=\"192.25763964014538\" y=\"110.99999999999999\" text-anchor=\"middle\" dominant-baseline=\"central\" fill=\"var(--color-mystic-gold)\" font-size=\"36\" transform=\"rotate(120, 192.25763964014538, 110.99999999999999)\">♌</text><line x1=\"137.88582233137677\" y1=\"137.88582233137674\" x2=\"175.3624817342638\" y2=\"175.36248173426378\" stroke=\"rgba(212, 175, 55, 0.2)\" stroke-width=\"1\"></line><text x=\"111.00000000000003\" y=\"192.25763964014536\" text-anchor=\"middle\" dominant-baseline=\"central\" fill=\"var(--color-mystic-gold)\" font-size=\"36\" transform=\"rotate(150, 111.00000000000003, 192.25763964014536)\">♍</text><line x1=\"50.46971379499154\" y1=\"188.35553612636832\" x2=\"64.18712318542515\" y2=\"239.54960491968893\" stroke=\"rgba(212, 175, 55, 0.2)\" stroke-width=\"1\"></line><text x=\"1.359357947053562e-14\" y=\"222\" text-anchor=\"middle\" dominant-baseline=\"central\" fill=\"var(--color-mystic-gold)\" font-size=\"36\" transform=\"rotate(180, 1.359357947053562e-14, 222)\">♎</text><line x1=\"-50.46971379499156\" y1=\"188.35553612636832\" x2=\"-64.18712318542516\" y2=\"239.54960491968893\" stroke=\"rgba(212, 175, 55, 0.2)\" stroke-width=\"1\"></line><text x=\"-110.99999999999996\" y=\"192.25763964014538\" text-anchor=\"middle\" dominant-baseline=\"central\" fill=\"var(--color-mystic-gold)\" font-size=\"36\" transform=\"rotate(210, -110.99999999999996, 192.25763964014538)\">♏</text><line x1=\"-137.88582233137674\" y1=\"137.88582233137677\" x2=\"-175.36248173426378\" y2=\"175.3624817342638\" stroke=\"rgba(212, 175, 55, 0.2)\" stroke-width=\"1\"></line><text x=\"-192.25763964014538\" y=\"110.99999999999999\" text-anchor=\"middle\" dominant-baseline=\"central\" fill=\"var(--color-mystic-gold)\" font-size=\"36\" transform=\"rotate(240, -192.25763964014538, 110.99999999999999)\">♐</text><line x1=\"-188.3555361263683\" y1=\"50.4697137949916\" x2=\"-239.5496049196889\" y2=\"64.18712318542521\" stroke=\"rgba(212, 175, 55, 0.2)\" stroke-width=\"1\"></line><text x=\"-222\" y=\"2.718715894107124e-14\" text-anchor=\"middle\" dominant-baseline=\"central\" fill=\"var(--color-mystic-gold)\" font-size=\"36\" transform=\"rotate(270, -222, 2.718715894107124e-14)\">♑</text><line x1=\"-188.35553612636832\" y1=\"-50.469713794991556\" x2=\"-239.54960491968893\" y2=\"-64.18712318542515\" stroke=\"rgba(212, 175, 55, 0.2)\" stroke-width=\"1\"></line><text x=\"-192.25763964014536\" y=\"-111.00000000000003\" text-anchor=\"middle\" dominant-baseline=\"central\" fill=\"var(--color-mystic-gold)\" font-size=\"36\" transform=\"rotate(300, -192.25763964014536, -111.00000000000003)\">♒</text><line x1=\"-137.8858223313768\" y1=\"-137.88582233137674\" x2=\"-175.36248173426384\" y2=\"-175.36248173426378\" stroke=\"rgba(212, 175, 55, 0.2)\" stroke-width=\"1\"></line><text x=\"-111.0000000000001\" y=\"-192.25763964014533\" text-anchor=\"middle\" dominant-baseline=\"central\" fill=\"var(--color-mystic-gold)\" font-size=\"36\" transform=\"rotate(330, -111.0000000000001, -192.25763964014533)\">♓</text></g>\n\n                            <g id=\"houses-layer\" transform=\"translate(250, 250)\">\n\n                                <!-- Generated by JS -->\n\n                            </g>\n\n                            <g id=\"aspects-layer\" transform=\"translate(250, 250)\">\n\n                                <!-- Generated by JS -->\n\n                            </g>\n\n                            <!-- Planets (Animated) -->\n\n                            <g id=\"planets-layer\" transform=\"translate(250, 250)\">\n\n                                <!-- Generated by JS -->\n\n                            </g>\n\n                        </svg>",
+        "name": "natal-chart"
+      },
+      {
+        "id": "0445039a05464078",
+        "markup": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#chart\"></use></svg>",
+        "name": "svg-5"
+      },
+      {
+        "id": "49f13d191851397c",
+        "markup": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#home\"></use></svg>",
+        "name": "svg-6"
+      },
+      {
+        "id": "68ed21a1e5e974f6",
+        "markup": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#cycle\"></use></svg>",
+        "name": "svg-7"
+      },
+      {
+        "id": "393a6b4881d6fe6e",
+        "markup": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#music\"></use></svg>",
+        "name": "svg-8"
+      },
+      {
+        "id": "76039974528b8353",
+        "markup": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#camera\"></use></svg>",
+        "name": "svg-9"
+      },
+      {
+        "id": "5d13b89542478553",
+        "markup": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#facebook\"></use></svg>",
+        "name": "svg-10"
+      }
+    ],
+    "pageUrl": "http://localhost:3348/natalni-karta.html",
+    "summary": {
+      "byKind": {
+        "font": 4,
+        "image": 4,
+        "other": 6,
+        "script": 20,
+        "stylesheet": 5,
+        "video": 0
+      },
+      "inlineSvgCount": 10,
+      "totalCount": 39
+    }
+  },
+  "horoscope": {
+    "assets": [
+      {
+        "id": "55599ed5d989f264",
+        "kind": "image",
+        "name": "astrology-hero.webp",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "link"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 27625,
+            "property": "href"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 27666,
+            "property": "background-image"
+          }
+        ],
+        "url": "http://localhost:3348/img/search-preview/astrology-hero.webp"
+      },
+      {
+        "id": "2abc38db15a864de",
+        "kind": "stylesheet",
+        "name": "site.min.mh-d8e93b58a227a919.css",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "link"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 27632,
+            "property": "href"
+          }
+        ],
+        "url": "http://localhost:3348/css/site.min.mh-d8e93b58a227a919.css"
+      },
+      {
+        "id": "2e898daaacfa62f6",
+        "kind": "stylesheet",
+        "name": "horoskopy.mh-4795152ffb85f67d.css",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "link"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 27633,
+            "property": "href"
+          }
+        ],
+        "url": "http://localhost:3348/css/pages/horoskopy.mh-4795152ffb85f67d.css"
+      },
+      {
+        "id": "f5b1669e0bbfeb31",
+        "kind": "stylesheet",
+        "name": "horoscope-cluster.mh-1fac002199bee3d7.css",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "link"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 27634,
+            "property": "href"
+          }
+        ],
+        "url": "http://localhost:3348/css/pages/horoscope-cluster.mh-1fac002199bee3d7.css"
+      },
+      {
+        "id": "4dc5bfe4ef1a4900",
+        "kind": "script",
+        "name": "purify.min.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 27640,
+            "property": "src"
+          }
+        ],
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js"
+      },
+      {
+        "id": "5e954c8fbca35a94",
+        "kind": "script",
+        "name": "analytics-init.mh-ba81ac87c9ccca73.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 27641,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/analytics-init.mh-ba81ac87c9ccca73.js"
+      },
+      {
+        "id": "3bced74e71a37439",
+        "kind": "stylesheet",
+        "name": "atlas-web.mh-d1fa7075b9b640f0.css",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "link"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 27647,
+            "property": "href"
+          }
+        ],
+        "url": "http://localhost:3348/css/atlas-web.mh-d1fa7075b9b640f0.css"
+      },
+      {
+        "id": "f9ba1e45b18b7d24",
+        "kind": "stylesheet",
+        "name": "atlas-remaining.mh-af6c30b5c3d4f8ea.css",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "link"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 27648,
+            "property": "href"
+          }
+        ],
+        "url": "http://localhost:3348/css/atlas-remaining.mh-af6c30b5c3d4f8ea.css"
+      },
+      {
+        "id": "6446474e7bd16ec9",
+        "kind": "script",
+        "name": "freemium-horoskopy.mh-ec2e71577520f3cd.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 27664,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/freemium-horoskopy.mh-ec2e71577520f3cd.js"
+      },
+      {
+        "id": "0712dcb06ec9d084",
+        "kind": "script",
+        "name": "api-config.mh-b9712dc563a165e0.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 28040,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/api-config.mh-b9712dc563a165e0.js"
+      },
+      {
+        "id": "4d76bdbaf98846b1",
+        "kind": "script",
+        "name": "templates.mh-fb0b1dd0d0509287.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 28041,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/templates.mh-fb0b1dd0d0509287.js"
+      },
+      {
+        "id": "2c2b715b1f85a450",
+        "kind": "script",
+        "name": "auth-client.mh-e26abf8922021997.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 28042,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/auth-client.mh-e26abf8922021997.js"
+      },
+      {
+        "id": "bcd902a3f3d3e055",
+        "kind": "script",
+        "name": "moon-phase.mh-18695038ef359b1d.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 28045,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/moon-phase.mh-18695038ef359b1d.js"
+      },
+      {
+        "id": "487793f294124780",
+        "kind": "script",
+        "name": "auth-copy-fixes.mh-d953d471a723b055.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 28043,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/auth-copy-fixes.mh-d953d471a723b055.js"
+      },
+      {
+        "id": "7f434e33ccb0c5b2",
+        "kind": "script",
+        "name": "landing-pages-copy-fixes.mh-1f743de2efd3f221.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 28044,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/landing-pages-copy-fixes.mh-1f743de2efd3f221.js"
+      },
+      {
+        "id": "9b46cf12dca88962",
+        "kind": "script",
+        "name": "favorites-helper.mh-cb1bd287fcf12a9f.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 28046,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/favorites-helper.mh-cb1bd287fcf12a9f.js"
+      },
+      {
+        "id": "c86077e8cc777fe9",
+        "kind": "script",
+        "name": "horoscope.mh-f07a840634a41075.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 28047,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/horoscope.mh-f07a840634a41075.js"
+      },
+      {
+        "id": "06732b464fedbd57",
+        "kind": "script",
+        "name": "horoscope-share.mh-bf81115398ab52c2.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 28048,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/horoscope-share.mh-bf81115398ab52c2.js"
+      },
+      {
+        "id": "7641fc325d6d4e58",
+        "kind": "script",
+        "name": "register-sw.mh-18c4c860ce305e16.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 28050,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/register-sw.mh-18c4c860ce305e16.js"
+      },
+      {
+        "id": "965d8566314cc52b",
+        "kind": "script",
+        "name": "close-banner.mh-7d23e2a49b35ae8f.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 28049,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/close-banner.mh-7d23e2a49b35ae8f.js"
+      },
+      {
+        "id": "8b1bc775ec8116e6",
+        "kind": "script",
+        "name": "share-result.mh-6e8bde80eb74c5e9.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 28051,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/share-result.mh-6e8bde80eb74c5e9.js"
+      },
+      {
+        "id": "4f607fbf9ab3d184",
+        "kind": "script",
+        "name": "exit-intent.mh-f2979a93a325fecf.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 28052,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/exit-intent.mh-f2979a93a325fecf.js"
+      },
+      {
+        "id": "2415629b30590963",
+        "kind": "script",
+        "name": "components.mh-13b876fbb8677be4.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 28053,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/components.mh-13b876fbb8677be4.js"
+      },
+      {
+        "id": "a8a01e1566e618b0",
+        "kind": "script",
+        "name": "main.mh-44afe66e57e92800.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 28054,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/main.mh-44afe66e57e92800.js"
+      },
+      {
+        "id": "660a6f92a6097d74",
+        "kind": "script",
+        "name": "newsletter-popup.mh-f2979a93a325fecf.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 28055,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/newsletter-popup.mh-f2979a93a325fecf.js"
+      },
+      {
+        "id": "be4c0bb4c1e97f44",
+        "kind": "script",
+        "name": "retention.mh-f8c6397be1ace62c.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 28056,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/retention.mh-f8c6397be1ace62c.js"
+      },
+      {
+        "id": "37994b0aae8cc8cc",
+        "kind": "script",
+        "name": "personalization.mh-09a79dcbbbec3973.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 28057,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/personalization.mh-09a79dcbbbec3973.js"
+      },
+      {
+        "id": "f317b043f8efcdfd",
+        "kind": "script",
+        "name": "horoscope-subscribe.mh-cff75a8e8fea3db5.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 28058,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/horoscope-subscribe.mh-cff75a8e8fea3db5.js"
+      },
+      {
+        "id": "775ad8a3b863703e",
+        "kind": "script",
+        "name": "push-notifications.mh-a1605483bf23fe85.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 28059,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/push-notifications.mh-a1605483bf23fe85.js"
+      },
+      {
+        "id": "c42b5d46fcaeedf0",
+        "kind": "script",
+        "name": "pwa-install.mh-9a9fd9e794952cf2.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 28060,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/pwa-install.mh-9a9fd9e794952cf2.js"
+      },
+      {
+        "id": "83036ad68f7ef5c5",
+        "kind": "image",
+        "name": "western-zodiac-v1-grid.webp",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "css"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 28336,
+            "property": "background-image"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 28336,
+            "property": "background-image"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 28342,
+            "property": "background-image"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 28342,
+            "property": "background-image"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 28348,
+            "property": "background-image"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 28348,
+            "property": "background-image"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 28354,
+            "property": "background-image"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 28354,
+            "property": "background-image"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 28360,
+            "property": "background-image"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 28360,
+            "property": "background-image"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 28366,
+            "property": "background-image"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 28366,
+            "property": "background-image"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 28372,
+            "property": "background-image"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 28372,
+            "property": "background-image"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 28378,
+            "property": "background-image"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 28378,
+            "property": "background-image"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 28384,
+            "property": "background-image"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 28384,
+            "property": "background-image"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 28390,
+            "property": "background-image"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 28390,
+            "property": "background-image"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 28396,
+            "property": "background-image"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 28396,
+            "property": "background-image"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 28402,
+            "property": "background-image"
+          },
+          {
+            "kind": "computedStyle",
+            "nodeId": 28402,
+            "property": "background-image"
+          }
+        ],
+        "url": "http://localhost:3348/img/atlas/western-zodiac-v1-grid.webp"
+      },
+      {
+        "id": "d68e6e2999f78a41",
+        "kind": "font",
+        "name": "inter-latin.woff2",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "css"
+          }
+        ],
+        "url": "http://localhost:3348/fonts/inter-latin.woff2"
+      },
+      {
+        "id": "a4226f7cb922dad2",
+        "kind": "font",
+        "name": "cinzel-latin.woff2",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "css"
+          }
+        ],
+        "url": "http://localhost:3348/fonts/cinzel-latin.woff2"
+      },
+      {
+        "id": "68ca0e8a52d273f0",
+        "kind": "font",
+        "name": "inter-latin-ext.woff2",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "css"
+          }
+        ],
+        "url": "http://localhost:3348/fonts/inter-latin-ext.woff2"
+      },
+      {
+        "id": "d82626bb32b1e909",
+        "kind": "font",
+        "name": "cinzel-latin-ext.woff2",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "css"
+          }
+        ],
+        "url": "http://localhost:3348/fonts/cinzel-latin-ext.woff2"
+      },
+      {
+        "id": "0aa85dc594254600",
+        "kind": "image",
+        "name": "mh-symbols.svg#angel",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "other"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 27931,
+            "property": "href"
+          }
+        ],
+        "url": "http://localhost:3348/img/icons/mh-symbols.svg#angel"
+      },
+      {
+        "id": "01a5d80aa8147ebe",
+        "kind": "other",
+        "name": "config",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "fetch"
+          }
+        ],
+        "url": "http://localhost:3348/api/config"
+      },
+      {
+        "id": "317a0b776626cffa",
+        "kind": "script",
+        "name": "analytics.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 27649,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/analytics.js?v=9"
+      },
+      {
+        "id": "466144e64833b773",
+        "kind": "script",
+        "name": "feedback-widget.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 27650,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/feedback-widget.js"
+      },
+      {
+        "id": "a06e1e5c4cf64611",
+        "kind": "script",
+        "name": "premium-gates.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 27651,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/premium-gates.js?v=20260522-login-gate-cta"
+      },
+      {
+        "id": "0d8f4323cc501b08",
+        "kind": "other",
+        "name": "profile",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "fetch"
+          }
+        ],
+        "url": "http://localhost:3348/api/auth/profile"
+      },
+      {
+        "id": "7b5e76148dde0cc9",
+        "kind": "other",
+        "name": "header.html",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "fetch"
+          }
+        ],
+        "url": "http://localhost:3348/components/header.html?v=20261014-detail-polish-2"
+      },
+      {
+        "id": "f5a08fb983bef22e",
+        "kind": "other",
+        "name": "footer.html",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "fetch"
+          }
+        ],
+        "url": "http://localhost:3348/components/footer.html?v=20261014-svg-symbols"
+      },
+      {
+        "id": "505b243fc60c68e0",
+        "kind": "script",
+        "name": "cookie-handler.js",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "script"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 27652,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/js/dist/cookie-handler.js?v=20260703-consent-event"
+      },
+      {
+        "id": "8250361a6b563f8e",
+        "kind": "other",
+        "name": "plans",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "fetch"
+          }
+        ],
+        "url": "http://localhost:3348/api/plans"
+      },
+      {
+        "id": "45fccc68c84d662b",
+        "kind": "image",
+        "name": "logo-3d.webp",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "img"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 26711,
+            "property": "src"
+          }
+        ],
+        "url": "http://localhost:3348/img/logo-3d.webp?v=4"
+      },
+      {
+        "id": "fe8dedcb45983226",
+        "kind": "image",
+        "name": "mh-symbols.svg#user",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "other"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 26817,
+            "property": "href"
+          },
+          {
+            "kind": "attribute",
+            "nodeId": 26825,
+            "property": "href"
+          }
+        ],
+        "url": "http://localhost:3348/img/icons/mh-symbols.svg#user"
+      },
+      {
+        "id": "8fb61b1ee39dee5c",
+        "kind": "other",
+        "name": "csrf-token",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "fetch"
+          }
+        ],
+        "url": "http://localhost:3348/api/csrf-token"
+      },
+      {
+        "id": "3e8e43457ce26a2c",
+        "kind": "image",
+        "name": "02-mesicni-krajina.webp",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "img"
+          }
+        ],
+        "url": "http://localhost:3348/img/atlas/tools-v1/02-mesicni-krajina.webp"
+      },
+      {
+        "id": "aecb0e7e2a47304e",
+        "kind": "other",
+        "name": "horoscope",
+        "sources": [
+          {
+            "kind": "resource",
+            "property": "fetch"
+          }
+        ],
+        "url": "http://localhost:3348/api/horoscope"
+      }
+    ],
+    "id": "c44a8d1a-2b5a-44bb-b594-0c0d43ad70ac",
+    "inlineSvgs": [
+      {
+        "id": "ecdea1888620d337",
+        "markup": "<svg class=\"mh-symbol mh-symbol--inline\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#user\"></use></svg>",
+        "name": "svg-1"
+      },
+      {
+        "id": "61d25e6ae803ba02",
+        "markup": "<svg class=\"mh-symbol mh-symbol--inline\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#user\"></use></svg>",
+        "name": "svg-2"
+      },
+      {
+        "id": "6d438bd6ffdc4161",
+        "markup": "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"18\" cy=\"5\" r=\"3\"></circle><circle cx=\"6\" cy=\"12\" r=\"3\"></circle><circle cx=\"18\" cy=\"19\" r=\"3\"></circle><line x1=\"8.59\" y1=\"13.51\" x2=\"15.42\" y2=\"17.49\"></line><line x1=\"15.41\" y1=\"6.51\" x2=\"8.59\" y2=\"10.49\"></line></svg>",
+        "name": "svg-3"
+      },
+      {
+        "id": "6022d7f9c7068a19",
+        "markup": "<svg class=\"hs-chevron\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"><polyline points=\"6,9 12,15 18,9\"></polyline></svg>",
+        "name": "svg-4"
+      },
+      {
+        "id": "44a645bca7ee0579",
+        "markup": "<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"#fff\"><path d=\"M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z\"></path></svg>",
+        "name": "svg-5"
+      },
+      {
+        "id": "225658a5a5841354",
+        "markup": "<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"#fff\"><path d=\"M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z\"></path></svg>",
+        "name": "svg-6"
+      },
+      {
+        "id": "558f54f7e2a1a5af",
+        "markup": "<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"9\" y=\"9\" width=\"13\" height=\"13\" rx=\"2\"></rect><path d=\"M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1\"></path></svg>",
+        "name": "svg-7"
+      },
+      {
+        "id": "13f90c056b8910a3",
+        "markup": "<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"></path><polyline points=\"7,10 12,15 17,10\"></polyline><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"></line></svg>",
+        "name": "svg-8"
+      },
+      {
+        "id": "3531c91a6a8e4602",
+        "markup": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#angel\"></use></svg>",
+        "name": "svg-9"
+      },
+      {
+        "id": "e99d75234d8ca2b4",
+        "markup": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#crystal\"></use></svg>",
+        "name": "svg-10"
+      },
+      {
+        "id": "0dd2d1ce71970526",
+        "markup": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#tarot\"></use></svg>",
+        "name": "svg-11"
+      },
+      {
+        "id": "176fd55c4392107c",
+        "markup": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#star\"></use></svg>",
+        "name": "svg-12"
+      },
+      {
+        "id": "3b76d65072086925",
+        "markup": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#chart\"></use></svg>",
+        "name": "svg-13"
+      },
+      {
+        "id": "45e88a5457d9bd1a",
+        "markup": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#partner\"></use></svg>",
+        "name": "svg-14"
+      },
+      {
+        "id": "d565c20e81627305",
+        "markup": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#numbers\"></use></svg>",
+        "name": "svg-15"
+      },
+      {
+        "id": "1cfae666913486eb",
+        "markup": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#globe\"></use></svg>",
+        "name": "svg-16"
+      },
+      {
+        "id": "e6e8546ddbfb8397",
+        "markup": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#dream\"></use></svg>",
+        "name": "svg-17"
+      },
+      {
+        "id": "b50e0de7d9b2300d",
+        "markup": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#wave\"></use></svg>",
+        "name": "svg-18"
+      },
+      {
+        "id": "6ad02c3c0ee41f3d",
+        "markup": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#rune\"></use></svg>",
+        "name": "svg-19"
+      },
+      {
+        "id": "ec5229cb07b5b002",
+        "markup": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#music\"></use></svg>",
+        "name": "svg-20"
+      },
+      {
+        "id": "aef7049f6c790e61",
+        "markup": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#camera\"></use></svg>",
+        "name": "svg-21"
+      },
+      {
+        "id": "305c67917718642d",
+        "markup": "<svg class=\"mh-symbol\" viewBox=\"0 0 48 48\" width=\"48\" height=\"48\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/img/icons/mh-symbols.svg#facebook\"></use></svg>",
+        "name": "svg-22"
+      }
+    ],
+    "pageUrl": "http://localhost:3348/horoskopy.html",
+    "summary": {
+      "byKind": {
+        "font": 4,
+        "image": 6,
+        "other": 7,
+        "script": 28,
+        "stylesheet": 5,
+        "video": 0
+      },
+      "inlineSvgCount": 22,
+      "totalCount": 50
+    }
+  }
+}

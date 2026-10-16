@@ -226,6 +226,7 @@ function showSynastryCalculationError(resultsDiv, message) {
     if (content) {
         content.innerHTML = '';
         const text = document.createElement('p');
+        text.setAttribute('role', 'alert');
         text.textContent = message;
         const retry = document.createElement('button');
         retry.type = 'button';
@@ -686,7 +687,7 @@ async function calculateCompatibility() {
         console.warn('Synastry engine calculation unavailable:', calculationError.message);
         showSynastryCalculationError(
             resultsDiv,
-            'Zadané údaje zůstaly ve formuláři. Zkontrolujte připojení a zkuste výpočet znovu.'
+            'Zadané údaje zůstaly ve formuláři. Zkontroluj připojení a zkus výpočet znovu.'
         );
         btn.textContent = originalText;
         btn.disabled = false;
@@ -853,7 +854,8 @@ function showSynastryInterpretationError(container) {
     content.innerHTML = '';
 
     const text = document.createElement('p');
-    text.textContent = 'Vypočtené skóre zůstává zobrazené. Pro hlubší analýzu zkuste požadavek znovu.';
+    text.setAttribute('role', 'alert');
+    text.textContent = 'Vypočtené skóre zůstává zobrazené. Pro hlubší analýzu zkus požadavek znovu.';
     const retry = document.createElement('button');
     retry.type = 'button';
     retry.className = 'btn btn--primary synastry-interpretation-retry';

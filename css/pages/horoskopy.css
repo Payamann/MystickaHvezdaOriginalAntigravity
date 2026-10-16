@@ -349,6 +349,10 @@ html body .mh-inline-78489344ad { font-size: 12rem; opacity: 0.1; }
 }
 
 /* Illustrated zodiac picker: same card portraits as the zodiac detail pages. */
+body[data-atlas-polish="horoskopy"] .zodiac-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .zodiac-grid .zodiac-card {
     position: relative;
     display: grid;
@@ -373,7 +377,7 @@ html body .mh-inline-78489344ad { font-size: 12rem; opacity: 0.1; }
     aspect-ratio: 1 / 2;
     border: 1px solid #bd9b65aa;
     border-radius: 3px;
-    background-image: url("/img/atlas/western-zodiac-v1.webp");
+    background-image: url("/img/atlas/western-zodiac-v1-grid.webp");
     background-repeat: no-repeat;
     background-size: 400% 300%;
     box-shadow: 0 5px 14px #030c1755;
@@ -394,6 +398,8 @@ html body .mh-inline-78489344ad { font-size: 12rem; opacity: 0.1; }
     margin: 0;
     font-size: 1rem;
     line-height: 1.25;
+    max-width: 100%;
+    overflow-wrap: anywhere;
 }
 
 .zodiac-grid .zodiac-card__dates {
@@ -420,6 +426,12 @@ html body .mh-inline-78489344ad { font-size: 12rem; opacity: 0.1; }
 .zodiac-grid .zodiac-card[href="#kozoroh"]::before { background-position: 33.333% 100%; }
 .zodiac-grid .zodiac-card[href="#vodnar"]::before { background-position: 66.667% 100%; }
 .zodiac-grid .zodiac-card[href="#ryby"]::before { background-position: 100% 100%; }
+
+@media (max-width: 900px) {
+    body[data-atlas-polish="horoskopy"] .zodiac-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
 
 @media (max-width: 560px) {
     .zodiac-grid .zodiac-card {

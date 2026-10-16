@@ -1,0 +1,4479 @@
+{
+  "method": "static HTML attributes and local CSS url()/@import closure; excludes JS-computed/dynamic/runtime requests, remote assets, browser cache and transfer encoding",
+  "pages": {
+    "index.html": {
+      "direct_local_refs": [
+        "img\\icons\\mh-favicon.svg",
+        "manifest.json",
+        "img\\icon-192.webp",
+        "css\\home.min.css",
+        "css\\home.min.css",
+        "css\\pages\\tarot-karta-dne.css",
+        "css\\tarot-atlas.css",
+        "img\\logo-3d.webp",
+        "img\\atlas\\01-lucerna-na-rozcesti.webp",
+        "img\\atlas\\15-zlaty-klic.webp",
+        "img\\atlas\\10-hory-pred-svitanim.webp",
+        "img\\atlas\\05-studna-hvezd.webp",
+        "img\\tarot-v2\\tarot_card_back.webp",
+        "img\\atlas\\16-kompas-oliva.webp",
+        "img\\atlas\\08-seminko-mezi-kameny.webp",
+        "img\\atlas\\18-zapisnik-pero.webp",
+        "img\\tarot-v2\\tarot_spravedlnost.webp",
+        "img\\tarot-v2\\tarot_milenci.webp",
+        "img\\tarot-v2\\tarot_mirnost.webp",
+        "img\\personal-map\\preview-cover-arch-v2.webp",
+        "img\\logo-3d.webp",
+        "js\\dist\\register-sw.js",
+        "js\\dist\\analytics-init.js",
+        "js\\dist\\analytics.js",
+        "js\\dist\\api-config.js",
+        "js\\dist\\sentry-init.js",
+        "js\\dist\\templates.js",
+        "js\\dist\\personalization.js",
+        "js\\dist\\auth-client.js",
+        "js\\dist\\auth-copy-fixes.js",
+        "js\\dist\\premium-gates.js",
+        "js\\dist\\feedback-widget.js",
+        "js\\dist\\tarot-karta-dne.js",
+        "js\\dist\\platby-init.js",
+        "js\\dist\\moon-phase.js",
+        "js\\dist\\main.js",
+        "js\\dist\\error-boundary.js",
+        "js\\dist\\mobile-nav.js",
+        "js\\dist\\cookie-handler.js",
+        "js\\dist\\analytics-page-init.js",
+        "js\\dist\\relationship-tarot-bridge.js",
+        "js\\dist\\index-lazy-load.js",
+        "js\\dist\\pwa-install.js"
+      ],
+      "reachable_css": [
+        "css\\home.min.css",
+        "css\\pages\\tarot-karta-dne.css",
+        "css\\tarot-atlas.css"
+      ]
+    },
+    "tarot-ano-ne.html": {
+      "direct_local_refs": [
+        "img\\icons\\mh-favicon.svg",
+        "img\\icon-192.webp",
+        "fonts\\local-fonts.css",
+        "css\\style.v2.min.css",
+        "css\\pages\\tarot-ano-ne.css",
+        "js\\dist\\analytics-init.js",
+        "js\\dist\\analytics.js",
+        "css\\pages\\relationship-tarot-bridge.css",
+        "css\\atlas-web.css",
+        "img\\tarot-v2\\tarot_milenci.webp",
+        "img\\tarot-v2\\tarot_milenci-mobile.webp",
+        "img\\tarot-v2\\tarot_milenci.webp",
+        "img\\tarot-v2\\tarot_mirnost.webp",
+        "img\\tarot-v2\\tarot_mirnost-mobile.webp",
+        "img\\tarot-v2\\tarot_mirnost.webp",
+        "js\\dist\\api-config.js",
+        "js\\dist\\templates.js",
+        "js\\dist\\auth-client.js",
+        "js\\dist\\auth-copy-fixes.js",
+        "js\\dist\\secondary-pages-copy-fixes.js",
+        "js\\dist\\components.js",
+        "js\\dist\\exit-intent.js",
+        "js\\dist\\main.js",
+        "js\\dist\\tarot-ano-ne.js",
+        "js\\dist\\relationship-tarot-bridge.js"
+      ],
+      "reachable_css": [
+        "css\\atlas-web.css",
+        "css\\pages\\relationship-tarot-bridge.css",
+        "css\\pages\\tarot-ano-ne.css",
+        "css\\style.v2.min.css",
+        "fonts\\local-fonts.css"
+      ]
+    },
+    "horoskopy.html": {
+      "direct_local_refs": [
+        "img\\bg-cosmic-hd.webp",
+        "img\\icons\\mh-favicon.svg",
+        "manifest.json",
+        "img\\icon-192.webp",
+        "css\\site.min.css",
+        "css\\pages\\horoskopy.css",
+        "css\\pages\\horoscope-cluster.css",
+        "js\\dist\\analytics-init.js",
+        "css\\atlas-web.css",
+        "css\\atlas-remaining.css",
+        "js\\dist\\freemium-horoskopy.js",
+        "js\\dist\\api-config.js",
+        "js\\dist\\templates.js",
+        "js\\dist\\auth-client.js",
+        "js\\dist\\auth-copy-fixes.js",
+        "js\\dist\\landing-pages-copy-fixes.js",
+        "js\\dist\\moon-phase.js",
+        "js\\dist\\favorites-helper.js",
+        "js\\dist\\horoscope.js",
+        "js\\dist\\horoscope-share.js",
+        "js\\dist\\close-banner.js",
+        "js\\dist\\register-sw.js",
+        "js\\dist\\share-result.js",
+        "js\\dist\\exit-intent.js",
+        "js\\dist\\components.js",
+        "js\\dist\\main.js",
+        "js\\dist\\newsletter-popup.js",
+        "js\\dist\\retention.js",
+        "js\\dist\\personalization.js",
+        "js\\dist\\horoscope-subscribe.js",
+        "js\\dist\\push-notifications.js",
+        "js\\dist\\pwa-install.js"
+      ],
+      "reachable_css": [
+        "css\\atlas-remaining.css",
+        "css\\atlas-web.css",
+        "css\\pages\\horoscope-cluster.css",
+        "css\\pages\\horoskopy.css",
+        "css\\site.min.css"
+      ]
+    },
+    "natalni-karta.html": {
+      "direct_local_refs": [
+        "img\\icons\\mh-favicon.svg",
+        "manifest.json",
+        "img\\icon-192.webp",
+        "css\\site.min.css",
+        "css\\pages\\natalni-karta.css",
+        "js\\dist\\analytics-init.js",
+        "css\\atlas-web.css",
+        "css\\atlas-remaining.css",
+        "css\\atlas-art.css",
+        "js\\dist\\favorites-helper.js",
+        "js\\dist\\three.min.js",
+        "js\\dist\\natal-3d.js",
+        "js\\dist\\natal-chart.js",
+        "js\\dist\\register-sw.js",
+        "js\\dist\\api-config.js",
+        "js\\dist\\birth-location-suggestions.js",
+        "js\\dist\\templates.js",
+        "js\\dist\\auth-client.js",
+        "js\\dist\\auth-copy-fixes.js",
+        "js\\dist\\landing-pages-copy-fixes.js",
+        "js\\dist\\share-result.js",
+        "js\\dist\\exit-intent.js",
+        "js\\dist\\components.js",
+        "js\\dist\\main.js",
+        "js\\dist\\newsletter-popup.js"
+      ],
+      "reachable_css": [
+        "css\\atlas-art.css",
+        "css\\atlas-remaining.css",
+        "css\\atlas-web.css",
+        "css\\pages\\natalni-karta.css",
+        "css\\site.min.css"
+      ]
+    },
+    "profil.html": {
+      "direct_local_refs": [
+        "img\\icons\\mh-favicon.svg",
+        "manifest.json",
+        "img\\icon-192.webp",
+        "fonts\\local-fonts.css",
+        "css\\style.v2.min.css",
+        "css\\pages\\profil.css",
+        "css\\profile-refresh.css",
+        "js\\dist\\growth-loop-client.js",
+        "js\\dist\\profile\\dashboard.js",
+        "css\\atlas-web.css",
+        "css\\atlas-remaining.css",
+        "js\\dist\\register-sw.js",
+        "js\\dist\\analytics-init.js",
+        "js\\dist\\analytics.js",
+        "js\\dist\\core.js",
+        "js\\dist\\auth-copy-fixes.js",
+        "js\\dist\\retention.js",
+        "js\\dist\\personalization.js",
+        "js\\dist\\main.js",
+        "js\\dist\\lucide-init.js",
+        "js\\dist\\nav-failsafe.js",
+        "js\\dist\\push-notifications.js",
+        "js\\dist\\pwa-install.js"
+      ],
+      "reachable_css": [
+        "css\\atlas-remaining.css",
+        "css\\atlas-web.css",
+        "css\\pages\\profil.css",
+        "css\\profile-refresh.css",
+        "css\\style.v2.min.css",
+        "fonts\\local-fonts.css"
+      ]
+    },
+    "shamansko-kolo.html": {
+      "direct_local_refs": [
+        "img\\icon-192.webp",
+        "img\\icon-192.webp",
+        "css\\style.v2.min.css",
+        "css\\pages\\shamansko-kolo.css",
+        "js\\dist\\analytics-init.js",
+        "css\\atlas-web.css",
+        "css\\atlas-remaining.css",
+        "css\\atlas-art.css",
+        "js\\dist\\api-config.js",
+        "js\\dist\\components.js",
+        "js\\dist\\templates.js",
+        "js\\dist\\auth-client.js",
+        "js\\dist\\auth-copy-fixes.js",
+        "js\\dist\\secondary-pages-copy-fixes.js",
+        "js\\dist\\nav-failsafe.js",
+        "js\\dist\\favorites-helper.js",
+        "js\\dist\\shamansko-kolo.js"
+      ],
+      "reachable_css": [
+        "css\\atlas-art.css",
+        "css\\atlas-remaining.css",
+        "css\\atlas-web.css",
+        "css\\pages\\shamansko-kolo.css",
+        "css\\style.v2.min.css"
+      ]
+    },
+    "vztahovy-vyklad.html": {
+      "direct_local_refs": [
+        "img\\icon-192.webp",
+        "fonts\\local-fonts.css",
+        "css\\pages\\vztahovy-vyklad.css",
+        "js\\dist\\analytics-init.js",
+        "js\\dist\\analytics.js",
+        "js\\dist\\vztahovy-vyklad.js",
+        "css\\atlas-web.css",
+        "img\\logo-3d.webp",
+        "img\\tarot-v2\\tarot_spravedlnost.webp",
+        "img\\tarot-v2\\tarot_mirnost.webp",
+        "img\\tarot-v2\\tarot_milenci.webp",
+        "img\\tarot-v2\\tarot_milenci.webp",
+        "img\\tarot-v2\\tarot_spravedlnost.webp",
+        "img\\tarot-v2\\tarot_mirnost.webp",
+        "img\\logo-3d.webp"
+      ],
+      "reachable_css": [
+        "css\\atlas-web.css",
+        "css\\pages\\vztahovy-vyklad.css",
+        "fonts\\local-fonts.css"
+      ]
+    }
+  },
+  "assets": [
+    {
+      "path": "css\\atlas-art.css",
+      "bytes": 5027,
+      "gzip_bytes_local_estimate": 1317,
+      "uses": [
+        {
+          "page": "natalni-karta.html",
+          "kind": "css",
+          "url": "/css/atlas-art.css?v=1",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "css",
+          "url": "/css/atlas-art.css?v=1",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "natalni-karta.html",
+        "shamansko-kolo.html"
+      ],
+      "occurrence_count": 2,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "css\\atlas-remaining.css",
+      "bytes": 10901,
+      "gzip_bytes_local_estimate": 2796,
+      "uses": [
+        {
+          "page": "horoskopy.html",
+          "kind": "css",
+          "url": "/css/atlas-remaining.css?v=1",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "css",
+          "url": "/css/atlas-remaining.css?v=1",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "css",
+          "url": "/css/atlas-remaining.css?v=1",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "css",
+          "url": "/css/atlas-remaining.css?v=1",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "natalni-karta.html",
+        "profil.html",
+        "shamansko-kolo.html"
+      ],
+      "occurrence_count": 4,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "css\\atlas-web.css",
+      "bytes": 21355,
+      "gzip_bytes_local_estimate": 4798,
+      "uses": [
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css",
+          "url": "/css/atlas-web.css?v=1",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "css",
+          "url": "/css/atlas-web.css?v=1",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "css",
+          "url": "/css/atlas-web.css?v=1",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "css",
+          "url": "/css/atlas-web.css?v=1",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "css",
+          "url": "/css/atlas-web.css?v=1",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "css",
+          "url": "/css/atlas-web.css?v=1",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "natalni-karta.html",
+        "profil.html",
+        "shamansko-kolo.html",
+        "tarot-ano-ne.html",
+        "vztahovy-vyklad.html"
+      ],
+      "occurrence_count": 6,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "css\\home.min.css",
+      "bytes": 190184,
+      "gzip_bytes_local_estimate": 33937,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "link",
+          "url": "/css/home.min.css?v=20261012-personal-map",
+          "loading": "eager/default",
+          "preload": true,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "index.html",
+          "kind": "css",
+          "url": "/css/home.min.css?v=20261012-personal-map",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "index.html"
+      ],
+      "occurrence_count": 2,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "css\\pages\\horoscope-cluster.css",
+      "bytes": 4160,
+      "gzip_bytes_local_estimate": 1056,
+      "uses": [
+        {
+          "page": "horoskopy.html",
+          "kind": "css",
+          "url": "css/pages/horoscope-cluster.css",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "css\\pages\\horoskopy.css",
+      "bytes": 14192,
+      "gzip_bytes_local_estimate": 3549,
+      "uses": [
+        {
+          "page": "horoskopy.html",
+          "kind": "css",
+          "url": "css/pages/horoskopy.css?v=20261009-zodiac-atlas",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "css\\pages\\natalni-karta.css",
+      "bytes": 15895,
+      "gzip_bytes_local_estimate": 3496,
+      "uses": [
+        {
+          "page": "natalni-karta.html",
+          "kind": "css",
+          "url": "css/pages/natalni-karta.css?v=2",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "natalni-karta.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "css\\pages\\profil.css",
+      "bytes": 1077,
+      "gzip_bytes_local_estimate": 456,
+      "uses": [
+        {
+          "page": "profil.html",
+          "kind": "css",
+          "url": "css/pages/profil.css",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "profil.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "css\\pages\\relationship-tarot-bridge.css",
+      "bytes": 4301,
+      "gzip_bytes_local_estimate": 1319,
+      "uses": [
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css",
+          "url": "/css/pages/relationship-tarot-bridge.css?v=2",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "tarot-ano-ne.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "css\\pages\\shamansko-kolo.css",
+      "bytes": 26467,
+      "gzip_bytes_local_estimate": 4633,
+      "uses": [
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "css",
+          "url": "css/pages/shamansko-kolo.css?v=2",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "shamansko-kolo.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "css\\pages\\tarot-ano-ne.css",
+      "bytes": 13233,
+      "gzip_bytes_local_estimate": 3442,
+      "uses": [
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css",
+          "url": "css/pages/tarot-ano-ne.css?v=13",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "tarot-ano-ne.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "css\\pages\\tarot-karta-dne.css",
+      "bytes": 6781,
+      "gzip_bytes_local_estimate": 1511,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "css",
+          "url": "/css/pages/tarot-karta-dne.css",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "index.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "css\\pages\\vztahovy-vyklad.css",
+      "bytes": 12340,
+      "gzip_bytes_local_estimate": 3527,
+      "uses": [
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "css",
+          "url": "/css/pages/vztahovy-vyklad.css?v=20261012-illustrated-reading",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "vztahovy-vyklad.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "css\\profile-refresh.css",
+      "bytes": 44963,
+      "gzip_bytes_local_estimate": 7069,
+      "uses": [
+        {
+          "page": "profil.html",
+          "kind": "css",
+          "url": "css/profile-refresh.css?v=20261014-profile-layout",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "profil.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "css\\site.min.css",
+      "bytes": 142882,
+      "gzip_bytes_local_estimate": 25476,
+      "uses": [
+        {
+          "page": "horoskopy.html",
+          "kind": "css",
+          "url": "css/site.min.css?v=1",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "css",
+          "url": "css/site.min.css?v=1",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "natalni-karta.html"
+      ],
+      "occurrence_count": 2,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "css\\style.v2.min.css",
+      "bytes": 139042,
+      "gzip_bytes_local_estimate": 25131,
+      "uses": [
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css",
+          "url": "css/style.v2.min.css?v=12",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "css",
+          "url": "css/style.v2.min.css?v=11",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "css",
+          "url": "css/style.v2.min.css?v=11",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "profil.html",
+        "shamansko-kolo.html",
+        "tarot-ano-ne.html"
+      ],
+      "occurrence_count": 3,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "css\\tarot-atlas.css",
+      "bytes": 4009,
+      "gzip_bytes_local_estimate": 1209,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "css",
+          "url": "/css/tarot-atlas.css?v=1",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "index.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "fonts\\cinzel-latin-ext.woff2",
+      "bytes": 14540,
+      "gzip_bytes_local_estimate": 14563,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "index.html",
+        "natalni-karta.html",
+        "profil.html",
+        "tarot-ano-ne.html",
+        "vztahovy-vyklad.html"
+      ],
+      "occurrence_count": 18,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "fonts\\cinzel-latin.woff2",
+      "bytes": 25904,
+      "gzip_bytes_local_estimate": 25932,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "css-url",
+          "url": "/fonts/cinzel-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "index.html",
+        "natalni-karta.html",
+        "profil.html",
+        "tarot-ano-ne.html",
+        "vztahovy-vyklad.html"
+      ],
+      "occurrence_count": 18,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "fonts\\inter-latin-ext.woff2",
+      "bytes": 85068,
+      "gzip_bytes_local_estimate": 85113,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin-ext.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "index.html",
+        "natalni-karta.html",
+        "profil.html",
+        "tarot-ano-ne.html",
+        "vztahovy-vyklad.html"
+      ],
+      "occurrence_count": 18,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "fonts\\inter-latin.woff2",
+      "bytes": 48256,
+      "gzip_bytes_local_estimate": 48254,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "css-url",
+          "url": "/fonts/inter-latin.woff2",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "index.html",
+        "natalni-karta.html",
+        "profil.html",
+        "tarot-ano-ne.html",
+        "vztahovy-vyklad.html"
+      ],
+      "occurrence_count": 18,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "fonts\\local-fonts.css",
+      "bytes": 4715,
+      "gzip_bytes_local_estimate": 518,
+      "uses": [
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css",
+          "url": "/fonts/local-fonts.css",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "css",
+          "url": "/fonts/local-fonts.css",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "css",
+          "url": "/fonts/local-fonts.css",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "profil.html",
+        "tarot-ano-ne.html",
+        "vztahovy-vyklad.html"
+      ],
+      "occurrence_count": 3,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "img\\atlas\\01-lucerna-na-rozcesti.webp",
+      "bytes": 295870,
+      "gzip_bytes_local_estimate": 295978,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "img",
+          "url": "/img/atlas/01-lucerna-na-rozcesti.webp",
+          "loading": "eager/default",
+          "preload": false,
+          "width": "1200",
+          "height": "800"
+        }
+      ],
+      "pages": [
+        "index.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "img\\atlas\\05-studna-hvezd.webp",
+      "bytes": 93550,
+      "gzip_bytes_local_estimate": 93598,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "img",
+          "url": "/img/atlas/05-studna-hvezd.webp",
+          "loading": "lazy",
+          "preload": false,
+          "width": "720",
+          "height": "480"
+        }
+      ],
+      "pages": [
+        "index.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "img\\atlas\\08-seminko-mezi-kameny.webp",
+      "bytes": 60762,
+      "gzip_bytes_local_estimate": 60800,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "img",
+          "url": "/img/atlas/08-seminko-mezi-kameny.webp",
+          "loading": "lazy",
+          "preload": false,
+          "width": "640",
+          "height": "427"
+        }
+      ],
+      "pages": [
+        "index.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "img\\atlas\\09-nocni-zahrada.webp",
+      "bytes": 89146,
+      "gzip_bytes_local_estimate": 89194,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "/img/atlas/09-nocni-zahrada.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "/img/atlas/09-nocni-zahrada.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "/img/atlas/09-nocni-zahrada.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "index.html"
+      ],
+      "occurrence_count": 3,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "img\\atlas\\10-hory-pred-svitanim.webp",
+      "bytes": 30562,
+      "gzip_bytes_local_estimate": 30590,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "img",
+          "url": "/img/atlas/10-hory-pred-svitanim.webp",
+          "loading": "lazy",
+          "preload": false,
+          "width": "720",
+          "height": "480"
+        }
+      ],
+      "pages": [
+        "index.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "img\\atlas\\15-zlaty-klic.webp",
+      "bytes": 88770,
+      "gzip_bytes_local_estimate": 88818,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "img",
+          "url": "/img/atlas/15-zlaty-klic.webp",
+          "loading": "lazy",
+          "preload": false,
+          "width": "720",
+          "height": "720"
+        }
+      ],
+      "pages": [
+        "index.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "img\\atlas\\16-kompas-oliva.webp",
+      "bytes": 88742,
+      "gzip_bytes_local_estimate": 88790,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "img",
+          "url": "/img/atlas/16-kompas-oliva.webp",
+          "loading": "lazy",
+          "preload": false,
+          "width": "640",
+          "height": "640"
+        }
+      ],
+      "pages": [
+        "index.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "img\\atlas\\18-zapisnik-pero.webp",
+      "bytes": 78686,
+      "gzip_bytes_local_estimate": 78729,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "img",
+          "url": "/img/atlas/18-zapisnik-pero.webp",
+          "loading": "lazy",
+          "preload": false,
+          "width": "640",
+          "height": "640"
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "css-url",
+          "url": "/img/atlas/18-zapisnik-pero.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "index.html",
+        "vztahovy-vyklad.html"
+      ],
+      "occurrence_count": 2,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "img\\atlas\\atlas-shared-path-v1.webp",
+      "bytes": 130482,
+      "gzip_bytes_local_estimate": 130540,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "/img/atlas/atlas-shared-path-v1.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "index.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "img\\atlas\\social-v1\\05-kocka-u-okna.webp",
+      "bytes": 299938,
+      "gzip_bytes_local_estimate": 300051,
+      "uses": [
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "/img/atlas/social-v1/05-kocka-u-okna.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "css-url",
+          "url": "/img/atlas/social-v1/05-kocka-u-okna.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "natalni-karta.html",
+        "shamansko-kolo.html"
+      ],
+      "occurrence_count": 2,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "img\\atlas\\social-v1\\08-zrcadlo.webp",
+      "bytes": 255248,
+      "gzip_bytes_local_estimate": 255346,
+      "uses": [
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "/img/atlas/social-v1/08-zrcadlo.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "css-url",
+          "url": "/img/atlas/social-v1/08-zrcadlo.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "natalni-karta.html",
+        "shamansko-kolo.html"
+      ],
+      "occurrence_count": 2,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "img\\atlas\\tools-v1\\01-astrolab.webp",
+      "bytes": 157698,
+      "gzip_bytes_local_estimate": 157766,
+      "uses": [
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "/img/atlas/tools-v1/01-astrolab.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "css-url",
+          "url": "/img/atlas/tools-v1/01-astrolab.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "natalni-karta.html",
+        "shamansko-kolo.html"
+      ],
+      "occurrence_count": 2,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "img\\atlas\\tools-v1\\02-mesicni-krajina.webp",
+      "bytes": 129944,
+      "gzip_bytes_local_estimate": 130002,
+      "uses": [
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "/img/atlas/tools-v1/02-mesicni-krajina.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "css-url",
+          "url": "/img/atlas/tools-v1/02-mesicni-krajina.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "natalni-karta.html",
+        "shamansko-kolo.html"
+      ],
+      "occurrence_count": 2,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "img\\atlas\\tools-v1\\03-numerologicky-zapisnik.webp",
+      "bytes": 133484,
+      "gzip_bytes_local_estimate": 133547,
+      "uses": [
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "/img/atlas/tools-v1/03-numerologicky-zapisnik.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "css-url",
+          "url": "/img/atlas/tools-v1/03-numerologicky-zapisnik.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "natalni-karta.html",
+        "shamansko-kolo.html"
+      ],
+      "occurrence_count": 2,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "img\\atlas\\tools-v1\\04-runove-kameny.webp",
+      "bytes": 181274,
+      "gzip_bytes_local_estimate": 181352,
+      "uses": [
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "/img/atlas/tools-v1/04-runove-kameny.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "css-url",
+          "url": "/img/atlas/tools-v1/04-runove-kameny.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "natalni-karta.html",
+        "shamansko-kolo.html"
+      ],
+      "occurrence_count": 2,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "img\\atlas\\tools-v1\\06-lesni-kruh.webp",
+      "bytes": 191230,
+      "gzip_bytes_local_estimate": 191308,
+      "uses": [
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "/img/atlas/tools-v1/06-lesni-kruh.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "css-url",
+          "url": "/img/atlas/tools-v1/06-lesni-kruh.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "natalni-karta.html",
+        "shamansko-kolo.html"
+      ],
+      "occurrence_count": 2,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "img\\atlas\\western-zodiac-v1.webp",
+      "bytes": 701618,
+      "gzip_bytes_local_estimate": 701851,
+      "uses": [
+        {
+          "page": "horoskopy.html",
+          "kind": "css-url",
+          "url": "/img/atlas/western-zodiac-v1.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "img\\bg-cosmic-hd.webp",
+      "bytes": 91608,
+      "gzip_bytes_local_estimate": 91656,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-hd.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-hd.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-hd.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "/img/bg-cosmic-hd.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-hd.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-hd.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-hd.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "link",
+          "url": "img/bg-cosmic-hd.webp",
+          "loading": "eager/default",
+          "preload": true,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-hd.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-hd.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-hd.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-hd.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-hd.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-hd.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-hd.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-hd.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-hd.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-hd.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-hd.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-hd.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "index.html",
+        "natalni-karta.html",
+        "profil.html",
+        "shamansko-kolo.html",
+        "tarot-ano-ne.html"
+      ],
+      "occurrence_count": 20,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "img\\bg-cosmic-mobile.webp",
+      "bytes": 56068,
+      "gzip_bytes_local_estimate": 56106,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-mobile.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-mobile.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-mobile.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "/img/bg-cosmic-mobile.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-mobile.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-mobile.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-mobile.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-mobile.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-mobile.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-mobile.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-mobile.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-mobile.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-mobile.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-mobile.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-mobile.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-mobile.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-mobile.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-mobile.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "css-url",
+          "url": "../img/bg-cosmic-mobile.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "index.html",
+        "natalni-karta.html",
+        "profil.html",
+        "shamansko-kolo.html",
+        "tarot-ano-ne.html"
+      ],
+      "occurrence_count": 19,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "img\\daily-cards\\cosmic-card-bg.webp",
+      "bytes": 119660,
+      "gzip_bytes_local_estimate": 119718,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "/img/daily-cards/cosmic-card-bg.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "index.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "img\\icon-192.webp",
+      "bytes": 3506,
+      "gzip_bytes_local_estimate": 3529,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "link",
+          "url": "img/icon-192.webp",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "link",
+          "url": "img/icon-192.webp",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "link",
+          "url": "img/icon-192.webp",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "link",
+          "url": "img/icon-192.webp",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "link",
+          "url": "img/icon-192.webp",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "link",
+          "url": "img/icon-192.webp",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "link",
+          "url": "img/icon-192.webp",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "link",
+          "url": "/img/icon-192.webp",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "index.html",
+        "natalni-karta.html",
+        "profil.html",
+        "shamansko-kolo.html",
+        "tarot-ano-ne.html",
+        "vztahovy-vyklad.html"
+      ],
+      "occurrence_count": 8,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "img\\icons\\mh-favicon.svg",
+      "bytes": 234,
+      "gzip_bytes_local_estimate": 179,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "link",
+          "url": "/img/icons/mh-favicon.svg",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "link",
+          "url": "/img/icons/mh-favicon.svg",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "link",
+          "url": "/img/icons/mh-favicon.svg",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "link",
+          "url": "/img/icons/mh-favicon.svg",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "link",
+          "url": "/img/icons/mh-favicon.svg",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "index.html",
+        "natalni-karta.html",
+        "profil.html",
+        "tarot-ano-ne.html"
+      ],
+      "occurrence_count": 5,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "img\\logo-3d.webp",
+      "bytes": 1820,
+      "gzip_bytes_local_estimate": 1843,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "img",
+          "url": "img/logo-3d.webp?v=4",
+          "loading": "eager/default",
+          "preload": false,
+          "width": "40",
+          "height": "40"
+        },
+        {
+          "page": "index.html",
+          "kind": "img",
+          "url": "img/logo-3d.webp",
+          "loading": "lazy",
+          "preload": false,
+          "width": "40",
+          "height": "40"
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "img",
+          "url": "/img/logo-3d.webp",
+          "loading": "eager/default",
+          "preload": false,
+          "width": "38",
+          "height": "38"
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "img",
+          "url": "/img/logo-3d.webp",
+          "loading": "lazy",
+          "preload": false,
+          "width": "38",
+          "height": "38"
+        }
+      ],
+      "pages": [
+        "index.html",
+        "vztahovy-vyklad.html"
+      ],
+      "occurrence_count": 4,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "img\\personal-map\\preview-cover-arch-v2.webp",
+      "bytes": 168240,
+      "gzip_bytes_local_estimate": 168313,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "img",
+          "url": "img/personal-map/preview-cover-arch-v2.webp",
+          "loading": "lazy",
+          "preload": false,
+          "width": "760",
+          "height": "1075"
+        }
+      ],
+      "pages": [
+        "index.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "img\\search-preview\\astrology-hero.webp",
+      "bytes": 248138,
+      "gzip_bytes_local_estimate": 248236,
+      "uses": [
+        {
+          "page": "horoskopy.html",
+          "kind": "css-url",
+          "url": "/img/search-preview/astrology-hero.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "img\\search-preview\\home-hero.webp",
+      "bytes": 195230,
+      "gzip_bytes_local_estimate": 195308,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "css-url",
+          "url": "/img/search-preview/home-hero.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "index.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "img\\search-preview\\tarot-cloth-hero.webp",
+      "bytes": 143890,
+      "gzip_bytes_local_estimate": 143953,
+      "uses": [
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css-url",
+          "url": "/img/search-preview/tarot-cloth-hero.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "tarot-ano-ne.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "img\\tarot-v2\\tarot_card_back.webp",
+      "bytes": 140498,
+      "gzip_bytes_local_estimate": 140561,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "img",
+          "url": "/img/tarot-v2/tarot_card_back.webp",
+          "loading": "lazy",
+          "preload": false,
+          "width": "600",
+          "height": "1000"
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "css-url",
+          "url": "/img/tarot-v2/tarot_card_back.webp",
+          "loading": "css (no lazy hint)",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "index.html",
+        "tarot-ano-ne.html"
+      ],
+      "occurrence_count": 2,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "img\\tarot-v2\\tarot_milenci-mobile.webp",
+      "bytes": 27406,
+      "gzip_bytes_local_estimate": 27434,
+      "uses": [
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "img",
+          "url": "/img/tarot-v2/tarot_milenci-mobile.webp",
+          "loading": "lazy",
+          "preload": false,
+          "width": "600",
+          "height": "1000"
+        }
+      ],
+      "pages": [
+        "tarot-ano-ne.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "img\\tarot-v2\\tarot_milenci.webp",
+      "bytes": 241644,
+      "gzip_bytes_local_estimate": 241737,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "img",
+          "url": "/img/tarot-v2/tarot_milenci.webp",
+          "loading": "lazy",
+          "preload": false,
+          "width": "600",
+          "height": "1000"
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "img",
+          "url": "/img/tarot-v2/tarot_milenci.webp",
+          "loading": "lazy",
+          "preload": false,
+          "width": "600",
+          "height": "1000"
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "img",
+          "url": "/img/tarot-v2/tarot_milenci.webp",
+          "loading": "lazy",
+          "preload": false,
+          "width": "600",
+          "height": "1000"
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "img",
+          "url": "/img/tarot-v2/tarot_milenci.webp",
+          "loading": "eager/default",
+          "preload": false,
+          "width": "600",
+          "height": "1000"
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "img",
+          "url": "/img/tarot-v2/tarot_milenci.webp",
+          "loading": "lazy",
+          "preload": false,
+          "width": "600",
+          "height": "1000"
+        }
+      ],
+      "pages": [
+        "index.html",
+        "tarot-ano-ne.html",
+        "vztahovy-vyklad.html"
+      ],
+      "occurrence_count": 5,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "img\\tarot-v2\\tarot_mirnost-mobile.webp",
+      "bytes": 23460,
+      "gzip_bytes_local_estimate": 23488,
+      "uses": [
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "img",
+          "url": "/img/tarot-v2/tarot_mirnost-mobile.webp",
+          "loading": "lazy",
+          "preload": false,
+          "width": "600",
+          "height": "1000"
+        }
+      ],
+      "pages": [
+        "tarot-ano-ne.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "img\\tarot-v2\\tarot_mirnost.webp",
+      "bytes": 221948,
+      "gzip_bytes_local_estimate": 222036,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "img",
+          "url": "/img/tarot-v2/tarot_mirnost.webp",
+          "loading": "lazy",
+          "preload": false,
+          "width": "600",
+          "height": "1000"
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "img",
+          "url": "/img/tarot-v2/tarot_mirnost.webp",
+          "loading": "lazy",
+          "preload": false,
+          "width": "600",
+          "height": "1000"
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "img",
+          "url": "/img/tarot-v2/tarot_mirnost.webp",
+          "loading": "lazy",
+          "preload": false,
+          "width": "600",
+          "height": "1000"
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "img",
+          "url": "/img/tarot-v2/tarot_mirnost.webp",
+          "loading": "eager/default",
+          "preload": false,
+          "width": "600",
+          "height": "1000"
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "img",
+          "url": "/img/tarot-v2/tarot_mirnost.webp",
+          "loading": "lazy",
+          "preload": false,
+          "width": "600",
+          "height": "1000"
+        }
+      ],
+      "pages": [
+        "index.html",
+        "tarot-ano-ne.html",
+        "vztahovy-vyklad.html"
+      ],
+      "occurrence_count": 5,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "img\\tarot-v2\\tarot_spravedlnost.webp",
+      "bytes": 187080,
+      "gzip_bytes_local_estimate": 187158,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "img",
+          "url": "/img/tarot-v2/tarot_spravedlnost.webp",
+          "loading": "lazy",
+          "preload": false,
+          "width": "600",
+          "height": "1000"
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "img",
+          "url": "/img/tarot-v2/tarot_spravedlnost.webp",
+          "loading": "eager/default",
+          "preload": false,
+          "width": "600",
+          "height": "1000"
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "img",
+          "url": "/img/tarot-v2/tarot_spravedlnost.webp",
+          "loading": "lazy",
+          "preload": false,
+          "width": "600",
+          "height": "1000"
+        }
+      ],
+      "pages": [
+        "index.html",
+        "vztahovy-vyklad.html"
+      ],
+      "occurrence_count": 3,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "js\\dist\\analytics-init.js",
+      "bytes": 1333,
+      "gzip_bytes_local_estimate": 671,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "script",
+          "url": "js/dist/analytics-init.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "script",
+          "url": "/js/dist/analytics-init.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "script",
+          "url": "/js/dist/analytics-init.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "script",
+          "url": "/js/dist/analytics-init.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "script",
+          "url": "/js/dist/analytics-init.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "script",
+          "url": "/js/dist/analytics-init.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "script",
+          "url": "/js/dist/analytics-init.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "index.html",
+        "natalni-karta.html",
+        "profil.html",
+        "shamansko-kolo.html",
+        "tarot-ano-ne.html",
+        "vztahovy-vyklad.html"
+      ],
+      "occurrence_count": 7,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "js\\dist\\analytics-page-init.js",
+      "bytes": 1543,
+      "gzip_bytes_local_estimate": 701,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "script",
+          "url": "js/dist/analytics-page-init.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "index.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\analytics.js",
+      "bytes": 11702,
+      "gzip_bytes_local_estimate": 4134,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "script",
+          "url": "js/dist/analytics.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "script",
+          "url": "/js/dist/analytics.js?v=8",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "script",
+          "url": "js/dist/analytics.js?v=6",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "script",
+          "url": "/js/dist/analytics.js?v=6",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "index.html",
+        "profil.html",
+        "tarot-ano-ne.html",
+        "vztahovy-vyklad.html"
+      ],
+      "occurrence_count": 4,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "js\\dist\\api-config.js",
+      "bytes": 1774,
+      "gzip_bytes_local_estimate": 995,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "script",
+          "url": "js/dist/api-config.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "script",
+          "url": "js/dist/api-config.js?v=5",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "script",
+          "url": "js/dist/api-config.js?v=5",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "script",
+          "url": "js/dist/api-config.js?v=5",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "script",
+          "url": "js/dist/api-config.js?v=5",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "index.html",
+        "natalni-karta.html",
+        "shamansko-kolo.html",
+        "tarot-ano-ne.html"
+      ],
+      "occurrence_count": 5,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "js\\dist\\auth-client.js",
+      "bytes": 44367,
+      "gzip_bytes_local_estimate": 11757,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "script",
+          "url": "js/dist/auth-client.js?v=20261003-single-membership",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "script",
+          "url": "js/dist/auth-client.js?v=20261003-single-membership",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "script",
+          "url": "js/dist/auth-client.js?v=20261003-single-membership",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "script",
+          "url": "js/dist/auth-client.js?v=20261003-single-membership",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "script",
+          "url": "js/dist/auth-client.js?v=20261003-single-membership",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "index.html",
+        "natalni-karta.html",
+        "shamansko-kolo.html",
+        "tarot-ano-ne.html"
+      ],
+      "occurrence_count": 5,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "js\\dist\\auth-copy-fixes.js",
+      "bytes": 326,
+      "gzip_bytes_local_estimate": 247,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "script",
+          "url": "js/dist/auth-copy-fixes.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "script",
+          "url": "js/dist/auth-copy-fixes.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "script",
+          "url": "js/dist/auth-copy-fixes.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "script",
+          "url": "js/dist/auth-copy-fixes.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "script",
+          "url": "js/dist/auth-copy-fixes.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "script",
+          "url": "js/dist/auth-copy-fixes.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "index.html",
+        "natalni-karta.html",
+        "profil.html",
+        "shamansko-kolo.html",
+        "tarot-ano-ne.html"
+      ],
+      "occurrence_count": 6,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "js\\dist\\birth-location-suggestions.js",
+      "bytes": 668,
+      "gzip_bytes_local_estimate": 437,
+      "uses": [
+        {
+          "page": "natalni-karta.html",
+          "kind": "script",
+          "url": "js/dist/birth-location-suggestions.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "natalni-karta.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\close-banner.js",
+      "bytes": 217,
+      "gzip_bytes_local_estimate": 188,
+      "uses": [
+        {
+          "page": "horoskopy.html",
+          "kind": "script",
+          "url": "/js/dist/close-banner.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\components.js",
+      "bytes": 18406,
+      "gzip_bytes_local_estimate": 5644,
+      "uses": [
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "script",
+          "url": "js/dist/components.js?v=20260522-premium-gate-cache",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "script",
+          "url": "js/dist/components.js?v=20260522-premium-gate-cache",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "script",
+          "url": "js/dist/components.js?v=20260522-premium-gate-cache",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "script",
+          "url": "js/dist/components.js?v=20260522-premium-gate-cache",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "natalni-karta.html",
+        "shamansko-kolo.html",
+        "tarot-ano-ne.html"
+      ],
+      "occurrence_count": 4,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "js\\dist\\cookie-handler.js",
+      "bytes": 3543,
+      "gzip_bytes_local_estimate": 1317,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "script",
+          "url": "js/dist/cookie-handler.js?v=20260711-optin-default",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "index.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\core.js",
+      "bytes": 78544,
+      "gzip_bytes_local_estimate": 20609,
+      "uses": [
+        {
+          "page": "profil.html",
+          "kind": "script",
+          "url": "js/dist/core.js?v=20261003-single-membership",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "profil.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\error-boundary.js",
+      "bytes": 1339,
+      "gzip_bytes_local_estimate": 621,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "script",
+          "url": "js/dist/error-boundary.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "index.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\exit-intent.js",
+      "bytes": 12,
+      "gzip_bytes_local_estimate": 32,
+      "uses": [
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "script",
+          "url": "js/dist/exit-intent.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "script",
+          "url": "js/dist/exit-intent.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "script",
+          "url": "js/dist/exit-intent.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "natalni-karta.html",
+        "tarot-ano-ne.html"
+      ],
+      "occurrence_count": 3,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "js\\dist\\favorites-helper.js",
+      "bytes": 1089,
+      "gzip_bytes_local_estimate": 602,
+      "uses": [
+        {
+          "page": "horoskopy.html",
+          "kind": "script",
+          "url": "js/dist/favorites-helper.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "script",
+          "url": "js/dist/favorites-helper.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "script",
+          "url": "js/dist/favorites-helper.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "natalni-karta.html",
+        "shamansko-kolo.html"
+      ],
+      "occurrence_count": 3,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "js\\dist\\feedback-widget.js",
+      "bytes": 1465,
+      "gzip_bytes_local_estimate": 793,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "script",
+          "url": "js/dist/feedback-widget.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "index.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\freemium-horoskopy.js",
+      "bytes": 414,
+      "gzip_bytes_local_estimate": 303,
+      "uses": [
+        {
+          "page": "horoskopy.html",
+          "kind": "script",
+          "url": "js/dist/freemium-horoskopy.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\growth-loop-client.js",
+      "bytes": 10237,
+      "gzip_bytes_local_estimate": 2864,
+      "uses": [
+        {
+          "page": "profil.html",
+          "kind": "script",
+          "url": "js/dist/growth-loop-client.js?v=1",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "profil.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\horoscope-share.js",
+      "bytes": 12575,
+      "gzip_bytes_local_estimate": 4336,
+      "uses": [
+        {
+          "page": "horoskopy.html",
+          "kind": "script",
+          "url": "js/dist/horoscope-share.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\horoscope-subscribe.js",
+      "bytes": 3127,
+      "gzip_bytes_local_estimate": 1429,
+      "uses": [
+        {
+          "page": "horoskopy.html",
+          "kind": "script",
+          "url": "js/dist/horoscope-subscribe.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\horoscope.js",
+      "bytes": 18790,
+      "gzip_bytes_local_estimate": 6741,
+      "uses": [
+        {
+          "page": "horoskopy.html",
+          "kind": "script",
+          "url": "js/dist/horoscope.js?v=20260929-horoscope-v2",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\index-lazy-load.js",
+      "bytes": 1500,
+      "gzip_bytes_local_estimate": 770,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "script",
+          "url": "js/dist/index-lazy-load.js?v=4",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "index.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\landing-pages-copy-fixes.js",
+      "bytes": 5987,
+      "gzip_bytes_local_estimate": 1786,
+      "uses": [
+        {
+          "page": "horoskopy.html",
+          "kind": "script",
+          "url": "js/dist/landing-pages-copy-fixes.js?v=6",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "script",
+          "url": "js/dist/landing-pages-copy-fixes.js?v=6",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "natalni-karta.html"
+      ],
+      "occurrence_count": 2,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "js\\dist\\lucide-init.js",
+      "bytes": 104,
+      "gzip_bytes_local_estimate": 113,
+      "uses": [
+        {
+          "page": "profil.html",
+          "kind": "script",
+          "url": "js/dist/lucide-init.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "profil.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\main.js",
+      "bytes": 16574,
+      "gzip_bytes_local_estimate": 5547,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "script",
+          "url": "js/dist/main.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "script",
+          "url": "js/dist/main.js?v=10",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "script",
+          "url": "js/dist/main.js?v=10",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "script",
+          "url": "js/dist/main.js?v=10",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "script",
+          "url": "js/dist/main.js?v=10",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "index.html",
+        "natalni-karta.html",
+        "profil.html",
+        "tarot-ano-ne.html"
+      ],
+      "occurrence_count": 5,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "js\\dist\\mobile-nav.js",
+      "bytes": 425,
+      "gzip_bytes_local_estimate": 297,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "script",
+          "url": "js/dist/mobile-nav.js?v=5",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "index.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\moon-phase.js",
+      "bytes": 7609,
+      "gzip_bytes_local_estimate": 2355,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "script",
+          "url": "js/dist/moon-phase.js?v=2",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "script",
+          "url": "js/dist/moon-phase.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "index.html"
+      ],
+      "occurrence_count": 2,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "js\\dist\\natal-3d.js",
+      "bytes": 2364,
+      "gzip_bytes_local_estimate": 1024,
+      "uses": [
+        {
+          "page": "natalni-karta.html",
+          "kind": "script",
+          "url": "js/dist/natal-3d.js?v=1",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "natalni-karta.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\natal-chart.js",
+      "bytes": 24891,
+      "gzip_bytes_local_estimate": 7925,
+      "uses": [
+        {
+          "page": "natalni-karta.html",
+          "kind": "script",
+          "url": "js/dist/natal-chart.js?v=7",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "natalni-karta.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\nav-failsafe.js",
+      "bytes": 1480,
+      "gzip_bytes_local_estimate": 549,
+      "uses": [
+        {
+          "page": "profil.html",
+          "kind": "script",
+          "url": "js/dist/nav-failsafe.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "script",
+          "url": "js/dist/nav-failsafe.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "profil.html",
+        "shamansko-kolo.html"
+      ],
+      "occurrence_count": 2,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "js\\dist\\newsletter-popup.js",
+      "bytes": 12,
+      "gzip_bytes_local_estimate": 32,
+      "uses": [
+        {
+          "page": "horoskopy.html",
+          "kind": "script",
+          "url": "js/dist/newsletter-popup.js?v=20260809-activation-guard",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "script",
+          "url": "js/dist/newsletter-popup.js?v=20260706-sign-step",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "natalni-karta.html"
+      ],
+      "occurrence_count": 2,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "js\\dist\\personalization.js",
+      "bytes": 8103,
+      "gzip_bytes_local_estimate": 2736,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "script",
+          "url": "js/dist/personalization.js?v=6",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "script",
+          "url": "js/dist/personalization.js?v=5",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "script",
+          "url": "js/dist/personalization.js?v=5",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "index.html",
+        "profil.html"
+      ],
+      "occurrence_count": 3,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "js\\dist\\platby-init.js",
+      "bytes": 2985,
+      "gzip_bytes_local_estimate": 1316,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "script",
+          "url": "js/dist/platby-init.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "index.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\premium-gates.js",
+      "bytes": 20769,
+      "gzip_bytes_local_estimate": 6153,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "script",
+          "url": "js/dist/premium-gates.js?v=20261003-single-membership",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "index.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\profile\\dashboard.js",
+      "bytes": 106391,
+      "gzip_bytes_local_estimate": 30170,
+      "uses": [
+        {
+          "page": "profil.html",
+          "kind": "script",
+          "url": "/js/dist/profile/dashboard.js?v=20261003-single-membership",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "profil.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\push-notifications.js",
+      "bytes": 2624,
+      "gzip_bytes_local_estimate": 1140,
+      "uses": [
+        {
+          "page": "horoskopy.html",
+          "kind": "script",
+          "url": "js/dist/push-notifications.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "script",
+          "url": "js/dist/push-notifications.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "profil.html"
+      ],
+      "occurrence_count": 2,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "js\\dist\\pwa-install.js",
+      "bytes": 676,
+      "gzip_bytes_local_estimate": 419,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "script",
+          "url": "js/dist/pwa-install.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "script",
+          "url": "js/dist/pwa-install.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "script",
+          "url": "js/dist/pwa-install.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "index.html",
+        "profil.html"
+      ],
+      "occurrence_count": 3,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "js\\dist\\register-sw.js",
+      "bytes": 306,
+      "gzip_bytes_local_estimate": 214,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "script",
+          "url": "/js/dist/register-sw.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "script",
+          "url": "/js/dist/register-sw.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "script",
+          "url": "/js/dist/register-sw.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "script",
+          "url": "/js/dist/register-sw.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "index.html",
+        "natalni-karta.html",
+        "profil.html"
+      ],
+      "occurrence_count": 4,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "js\\dist\\relationship-tarot-bridge.js",
+      "bytes": 4299,
+      "gzip_bytes_local_estimate": 1890,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "script",
+          "url": "js/dist/relationship-tarot-bridge.js?v=20261013-seo",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "script",
+          "url": "/js/dist/relationship-tarot-bridge.js?v=20261013-seo",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "index.html",
+        "tarot-ano-ne.html"
+      ],
+      "occurrence_count": 2,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "js\\dist\\retention.js",
+      "bytes": 8287,
+      "gzip_bytes_local_estimate": 2409,
+      "uses": [
+        {
+          "page": "horoskopy.html",
+          "kind": "script",
+          "url": "js/dist/retention.js?v=6",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "script",
+          "url": "js/dist/retention.js?v=6",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "profil.html"
+      ],
+      "occurrence_count": 2,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "js\\dist\\secondary-pages-copy-fixes.js",
+      "bytes": 25224,
+      "gzip_bytes_local_estimate": 7047,
+      "uses": [
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "script",
+          "url": "js/dist/secondary-pages-copy-fixes.js?v=4",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "script",
+          "url": "js/dist/secondary-pages-copy-fixes.js?v=4",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "shamansko-kolo.html",
+        "tarot-ano-ne.html"
+      ],
+      "occurrence_count": 2,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "js\\dist\\sentry-init.js",
+      "bytes": 1152,
+      "gzip_bytes_local_estimate": 710,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "script",
+          "url": "js/dist/sentry-init.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "index.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\shamansko-kolo.js",
+      "bytes": 11067,
+      "gzip_bytes_local_estimate": 3792,
+      "uses": [
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "script",
+          "url": "js/dist/shamansko-kolo.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "shamansko-kolo.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\share-result.js",
+      "bytes": 5047,
+      "gzip_bytes_local_estimate": 2120,
+      "uses": [
+        {
+          "page": "horoskopy.html",
+          "kind": "script",
+          "url": "js/dist/share-result.js?v=1",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "script",
+          "url": "js/dist/share-result.js?v=1",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "natalni-karta.html"
+      ],
+      "occurrence_count": 2,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "js\\dist\\tarot-ano-ne.js",
+      "bytes": 56654,
+      "gzip_bytes_local_estimate": 16306,
+      "uses": [
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "script",
+          "url": "js/dist/tarot-ano-ne.js?v=18",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "tarot-ano-ne.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\tarot-karta-dne.js",
+      "bytes": 46742,
+      "gzip_bytes_local_estimate": 13918,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "script",
+          "url": "js/dist/tarot-karta-dne.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "index.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\templates.js",
+      "bytes": 13911,
+      "gzip_bytes_local_estimate": 3228,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "script",
+          "url": "js/dist/templates.js?v=14",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "tarot-ano-ne.html",
+          "kind": "script",
+          "url": "js/dist/templates.js?v=14",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "script",
+          "url": "js/dist/templates.js?v=14",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "script",
+          "url": "js/dist/templates.js?v=14",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "shamansko-kolo.html",
+          "kind": "script",
+          "url": "js/dist/templates.js?v=14",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "index.html",
+        "natalni-karta.html",
+        "shamansko-kolo.html",
+        "tarot-ano-ne.html"
+      ],
+      "occurrence_count": 5,
+      "duplicate_across_pages": true
+    },
+    {
+      "path": "js\\dist\\three.min.js",
+      "bytes": 603445,
+      "gzip_bytes_local_estimate": 149375,
+      "uses": [
+        {
+          "page": "natalni-karta.html",
+          "kind": "script",
+          "url": "js/dist/three.min.js",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "natalni-karta.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "js\\dist\\vztahovy-vyklad.js",
+      "bytes": 9594,
+      "gzip_bytes_local_estimate": 3542,
+      "uses": [
+        {
+          "page": "vztahovy-vyklad.html",
+          "kind": "script",
+          "url": "/js/dist/vztahovy-vyklad.js?v=20261013-seo",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "vztahovy-vyklad.html"
+      ],
+      "occurrence_count": 1,
+      "duplicate_across_pages": false
+    },
+    {
+      "path": "manifest.json",
+      "bytes": 736,
+      "gzip_bytes_local_estimate": 305,
+      "uses": [
+        {
+          "page": "index.html",
+          "kind": "link",
+          "url": "manifest.json",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "horoskopy.html",
+          "kind": "link",
+          "url": "manifest.json",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "natalni-karta.html",
+          "kind": "link",
+          "url": "manifest.json",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        },
+        {
+          "page": "profil.html",
+          "kind": "link",
+          "url": "manifest.json",
+          "loading": "eager/default",
+          "preload": false,
+          "width": null,
+          "height": null
+        }
+      ],
+      "pages": [
+        "horoskopy.html",
+        "index.html",
+        "natalni-karta.html",
+        "profil.html"
+      ],
+      "occurrence_count": 4,
+      "duplicate_across_pages": true
+    }
+  ],
+  "totals": {
+    "unique_files": 104,
+    "raw_bytes_unique": 6913155,
+    "gzip_bytes_local_estimate_unique": 5510226,
+    "page_file_references": 315,
+    "raw_bytes_referenced": 17877741,
+    "gzip_bytes_local_estimate_referenced": 15518230,
+    "eager_or_default_refs": 293,
+    "lazy_refs": 22
+  }
+}
