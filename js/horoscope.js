@@ -600,8 +600,8 @@ function initHoroscope() {
             if (typeof predictionData?.prediction !== 'string' || !predictionData.prediction.trim()) throw new Error('Missing horoscope text');
             let cleanPrediction = predictionData.prediction;
             const affirmationPatterns = [
-                /(?:✨\s*)?\*\*?(?:Afirmace|Afirmacia|Afirmacja):?\*?\*?\s*[^*]*\*?/gi,
-                /(?:✨\s*)?(?:Afirmace|Afirmacia|Afirmacja):\s*.+$/gim
+                /(?:✨\s*)?\*\*?(?:Afirmace|Afirm[aá]cia|Afirmacja):?\*?\*?\s*[^*]*\*?/gi,
+                /(?:✨\s*)?(?:Afirmace|Afirm[aá]cia|Afirmacja):\s*.+$/gim
             ];
 
             for (const pattern of affirmationPatterns) {
@@ -609,7 +609,7 @@ function initHoroscope() {
                 if (match && !extractedAffirmation) {
                     extractedAffirmation = match[0]
                         .replace(/\*+/g, '')
-                        .replace(/^(?:✨\s*)?(?:Afirmace|Afirmacia|Afirmacja):?\s*/i, '')
+                        .replace(/^(?:✨\s*)?(?:Afirmace|Afirm[aá]cia|Afirmacja):?\s*/i, '')
                         .trim();
                 }
                 cleanPrediction = cleanPrediction.replace(pattern, '').trim();
@@ -620,7 +620,7 @@ function initHoroscope() {
             }
 
             if (detailWork) {
-                const affLabel = { cs: 'Afirmace', sk: 'Afirmacia', pl: 'Afirmacja' }[currentLang] || 'Afirmace';
+                const affLabel = { cs: 'Afirmace', sk: 'Afirmácia', pl: 'Afirmacja' }[currentLang] || 'Afirmace';
                 const affirmationText = predictionData.affirmation || extractedAffirmation;
                 detailWork.hidden = !affirmationText;
                 if (affirmationText) {

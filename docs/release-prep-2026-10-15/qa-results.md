@@ -37,6 +37,7 @@ Tento průchod je kontrolou načtení a rozložení všech vstupů. **Není úpl
 - Průvodce už nevolá neexistující `/mentor/greeting`. Natální texty nepředstírají tip konkrétního astrologa; odstraněné zbylé dekorativní emoji z těchto cest a čínského UI.
 - Rituální poznámky už nejsou zapisované do společného `mh_ritual_journal` v localStorage. Nové zápisy jdou do existujícího serverového deníku konkrétního přihlášeného účtu; historické společné lokální poznámky se automaticky nikomu nepřiřazují. Falešné potvrzení bez úspěšného zápisu, opakovaný dvojklik a 89% stav na hotové session jsou opravené.
 - Shoda nemá stálou smyšlenou poznámku o Saturnu ani rozmazaný karmický filler. Host má skutečný základní výpočet a jednu nabídku; člen vidí své podrobnosti bez opakovaného nákupu. Členské pokračování tarotu zachovává otázku a vede přímo na tři karty.
+- Jedenáct lokalizovaných stránek vůbec nenačítalo Auth klienta. Doplněný před společnými komponentami; zbývající dvě už mají `core.js`. Nová statická regrese kontroluje všech 13 vstupů a pořadí loaderů. Slovenský i polský horoskop po opravě rozpoznal prémiový modelový účet a otevřel denní, týdenní i měsíční výsledek. Čeština v samotném generovaném textu zde pochází z pevné testovací šablony `MOCK_AI`, nikoliv z testu živého překladu.
 - Doplňující rozcestníky jsou rozbalovací; mobilní výběr znamení má dvě čitelné kolony při 320 px. U barevného kvízu se šestá otázka již zobrazuje jen ve svém kroku; opravou byl znovu proveden průchod 1 → 6 → výsledek.
 
 ## Databáze a provoz
@@ -59,6 +60,7 @@ Lokální mock server používá neplatné testovací klíče a syntetické úč
 
 - Poslední build JS úspěšný; původní tři CSS balíky mají úspěšný build, další změny jsou v přímo načítaných CSS.
 - ESLint celého source prošel; po posledních změnách navíc cílený lint shody, tarotu, astro mapy a session. Encoding, hooks, paywall trust a sitemap prošly v této fázi. Úspěšné vzdálené CI se tím netvrdí.
-- Cache `mysticka-hvezda-82f854a7799c`; hash platí pro existující seznam SW assetů, není otiskem celého webu. Snapshot zachovává **1089** verzí veřejných assetů; validace SW vrací prázdný seznam chyb.
+- Cache `mysticka-hvezda-82f854a7799c`; hash platí pro existující seznam SW assetů, není otiskem celého webu. Snapshot zachovává **1091** verzí veřejných assetů; validace SW vrací prázdný seznam chyb.
 - Zdrojový ledger: **917** stran, **166** funkčních vstupů s připojeným důkazem úvodního desktopového a mobilního načtení; **42** atlasových ilustrací s literálními odkazy. Ne všechny klasifikace a výtvarné role jsou finálně přijaté.
 - Levné pomocné agenty využila zdrojová kontrola a ohraničené úpravy; poslední Luna vytvořila rituální regresní test, ale skončila na usage limitu před předáním. Hlavní agent test převzal, opravil jeho synchronizaci a ověřil 4/4. Spotřeba ani úspora se číselně neodhadují.
+- Navazující locale oprava: cíleně 1/1 nový test loaderů (27 ostatních v této sadě úmyslně přeskočeno), kontrola 45 auth kontextů a lint horoskopu prošly. Předchozí checkpoint oprav je `f5d4512b`; tato navazující oprava nepředstavuje nový úplný běh 806 testů.

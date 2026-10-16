@@ -21,6 +21,7 @@ Skutečný klient a API kandidáta na `localhost:3348`, syntetické účty a `MO
 | Astro mapa | 12. 5. 1990, 10:30, Praha → mapa, znamení, destinace a omezení přesnosti linií; mobil bez overflow |
 | Lunace | Fáze, cyklus a návazný rituál se načetly; nikoliv všechny časové kombinace |
 | Rituál | Výběr Býka → počáteční nálada → všech 6 kroků → závěrečná nálada → serverový deník a detail v profilu. Vynucená 401 zachovala text a retry po návratu stejného účtu uspěl |
+| Slovenský a polský horoskop | Po opravě loaderů hlavička správně ukazuje člena; Býk/Byk otevřel denní, týdenní a měsíční výsledek, lokalizované období a popisky. Testovací AI text je pevně český; živá jazyková kvalita tím ověřená není |
 
 Výsledky byly procházené při 320 px. Nativní sdílení nebylo odeslané. Nejde o všechny možné vstupy, chyby a přístupové stavy. [Další evidence](qa-results.md).
 
