@@ -560,11 +560,13 @@ function renderSynastrySummary(data) {
     if (!scores) return '';
 
     return renderMetricSummary('Skóre vztahu', [
-        { label: 'Celkem', value: `${scores.total ?? '--'} %` },
-        { label: 'Emoce', value: `${scores.emotion ?? '--'} %` },
-        { label: 'Komunikace', value: `${scores.communication ?? '--'} %` },
-        { label: 'Vášeň', value: `${scores.passion ?? '--'} %` },
-        { label: 'Stabilita', value: `${scores.stability ?? '--'} %` }
+        { label: 'Osoba 1', value: data.person1?.name },
+        { label: 'Osoba 2', value: data.person2?.name },
+        { label: 'Celkem', value: `${scores.total ?? scores.totalScore ?? '--'} %` },
+        { label: 'Emoce', value: `${scores.emotion ?? scores.emotionScore ?? '--'} %` },
+        { label: 'Komunikace', value: `${scores.communication ?? scores.commScore ?? '--'} %` },
+        { label: 'Vášeň', value: `${scores.passion ?? scores.passionScore ?? '--'} %` },
+        { label: 'Stabilita', value: `${scores.stability ?? scores.stabilityScore ?? '--'} %` }
     ]);
 }
 
@@ -637,13 +639,22 @@ function renderReadingContent(reading) {
         if (reading.type === 'synastry') {
             contentHtml += renderSynastrySummary(data);
         }
+        if (reading.type === 'numerology') {
+            contentHtml += renderMetricSummary('Vypočtená čísla', [
+                { label: 'Životní cesta', value: data.lifePath },
+                { label: 'Osud', value: data.destiny },
+                { label: 'Duše', value: data.soul },
+                { label: 'Osobnost', value: data.personality }
+            ]);
+        }
         contentHtml += renderChartSummary(data.chart || data.synastry?.person1?.chart);
         if (reading.type === 'astrocartography') {
             contentHtml += renderAstrocartographySummary(data.astrocartography);
         }
     }
 
-    function getTarotImageByName(name) {
+    function getTarotImageByName(name, image) {
+        if (typeof image === 'string' && /^\/?img\/tarot-v2\/[a-z0-9_-]+\.webp$/i.test(image)) return image;
         if (!name || typeof name !== 'string') return 'img/tarot-v2/tarot_card_back.webp';
         const normalized = name.normalize('NFD')
             .replace(/[\u0300-\u036f]/g, '')
@@ -653,13 +664,15 @@ function renderReadingContent(reading) {
         return `img/tarot-v2/tarot_${normalized}.webp`;
     }
 
+    const tarotCards = Array.isArray(data.cards) ? data.cards
+        : reading.type === 'tarot' && (data.card_name || data.cardName) ? [{ name: data.card_name || data.cardName }] : null;
     if (typeof data === 'string') {
         contentHtml += `<div class="reading-plain-text">${escapeHtml(data).replace(/\n/g, '<br>')}</div>`;
-    } else if (reading.type === 'tarot' && Array.isArray(data.cards)) {
+    } else if (reading.type === 'tarot' && tarotCards?.length) {
         contentHtml += '<div class="reading-tarot-grid">';
-        data.cards.forEach(savedCard => {
+        tarotCards.forEach(savedCard => {
             const card = typeof savedCard === 'string' ? { name: savedCard } : savedCard || {};
-            const imagePath = getTarotImageByName(card.name);
+            const imagePath = getTarotImageByName(card.name, card.image);
             contentHtml += `
                 <div class="reading-tarot-card">
                     <div class="reading-tarot-card__image-wrap">
@@ -672,13 +685,12 @@ function renderReadingContent(reading) {
                     <p class="reading-tarot-card__title">${escapeHtml(card.name)}</p>
                     ${card.position ? `<small class="reading-tarot-card__position">${escapeHtml(card.position)}</small>` : ''}
                     ${card.meaning ? `<p>${escapeHtml(card.meaning)}</p>` : ''}
-                    ${card.interpretation ? `<details class="reading-card-reference" ${!data.response && !data.interpretation ? 'open' : ''}><summary>Význam této karty</summary><div class="reading-interpretation__text">${typeof card.interpretation === 'object' ? renderStructuredObjectContent(card.interpretation) : formatReadingHtml(card.interpretation)}</div></details>` : ''}
                 </div>
             `;
         });
         contentHtml += `</div>`;
 
-        const summary = data.response || data.interpretation;
+        const summary = data.response || data.interpretation || data.answer;
         if (summary) {
             const escapedSummary = typeof summary === 'object'
                 ? renderStructuredObjectContent(summary)
@@ -692,6 +704,13 @@ function renderReadingContent(reading) {
                 </div>
             `;
         }
+        tarotCards.forEach(savedCard => {
+            if (!savedCard || typeof savedCard !== 'object' || !savedCard.interpretation) return;
+            contentHtml += `<details class="reading-card-reference" ${!summary && tarotCards.length === 1 ? 'open' : ''}>
+                <summary>Význam karty ${escapeHtml(savedCard.name)}${savedCard.position ? ` · ${escapeHtml(savedCard.position)}` : ''}</summary>
+                <div class="reading-interpretation__text">${typeof savedCard.interpretation === 'object' ? renderStructuredObjectContent(savedCard.interpretation) : formatReadingHtml(savedCard.interpretation)}</div>
+            </details>`;
+        });
     } else if (reading.type === 'horoscope' && (data.text || data.prediction)) {
         const text = data.text || data.prediction;
         const periodMap = { 'daily': 'Denní horoskop', 'weekly': 'Týdenní horoskop', 'monthly': 'Měsíční horoskop' };

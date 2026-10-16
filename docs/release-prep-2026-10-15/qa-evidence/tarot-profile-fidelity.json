@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-16",
+  "width": 1280,
+  "cards": [
+    "SEDMIČKA HOLÍ",
+    "PĚTKA HOLÍ",
+    "DEVÍTKA HOLÍ"
+  ],
+  "sameInterpretations": true,
+  "sameSummary": true,
+  "scope": "Actual client + synthetic local database; forced provider fallback; no live AI or production data"
+}

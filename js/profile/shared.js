@@ -214,10 +214,14 @@ export function getReadingLabel(reading) {
 
 export function getReadingPreview(reading) {
     const data = getReadingData(reading || {});
-    const text = reading?.type === 'journal' && typeof data === 'string' ? data
-        : typeof data?.question === 'string' ? data.question : typeof data?.intention === 'string' ? data.intention
-            : Array.isArray(data?.cards) ? data.cards.map(card => typeof card === 'string' ? card : card?.name || '').join(' · ')
-                : data?.cardName || '';
+    const cardNames = Array.isArray(data?.cards)
+        ? data.cards.map(card => typeof card === 'string' ? card : card?.name || '').filter(Boolean).join(' · ')
+        : '';
+    const text = [
+        data?.question, data?.intention, cardNames, data?.cardName,
+        data?.card_name, data?.card?.name, data?.rune?.name,
+        typeof data === 'string' ? data : ''
+    ].find(value => typeof value === 'string' && value.trim());
     return typeof text === 'string' ? text.replace(/\s+/g, ' ').trim().slice(0, 160) : '';
 }
 

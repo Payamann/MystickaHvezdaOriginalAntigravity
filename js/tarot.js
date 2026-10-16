@@ -3,6 +3,9 @@
  * Beautiful animations with instant card readings
  */
 
+import { showFallbackNotice, formatReadingHtml } from './utils/reading-display.js';
+import { savedTarotCards, tarotCardPosition } from './utils/tarot-reading-data.js';
+
 // Tarot Card Data (Loaded from JSON)
 let TAROT_CARDS = {};
 // Convert to array for backward compatibility
@@ -693,12 +696,7 @@ async function startReading(spreadType, isSoftGated = false) {
     let interpretationsHtml = drawnCards.map((card, index) => {
         if (isSoftGated && index > 0) return ''; // Skip interpretation for locked cards
 
-        let positionLabel = '';
-        if (spreadType === 'Tři karty') {
-            positionLabel = ['📜 Minulost', '⏳ Přítomnost', '🔮 Budoucnost'][index] || '';
-        } else if (spreadType === 'Celtic Cross') {
-            positionLabel = ['🎯 Situace', '⚔️ Výzva', '💫 Podvědomí', '🏛️ Základ', '🌅 Minulost', '🔮 Budoucnost', '🧘 Postoj', '🌍 Vliv okolí', '💭 Naděje/Obavy', '🏁 Výsledek'][index] || '';
-        }
+        const positionLabel = numCards > 1 ? tarotCardPosition(spreadType, index) : '';
 
         // Determine Arcana Type
         const isMajor = Object.keys(TAROT_CARDS).indexOf(card.name) < 22;
@@ -756,11 +754,7 @@ async function startReading(spreadType, isSoftGated = false) {
         // Let's save it so they have it in history (as a tease).
 
         if (window.Auth && window.Auth.saveReading) {
-            const cardsData = drawnCards.slice(0, isSoftGated ? 1 : undefined).map((card, index) => ({
-                name: card.name,
-                position: 'Jedna karta', // simplified for gated
-                meaning: card.meaning
-            }));
+            const cardsData = savedTarotCards(drawnCards.slice(0, isSoftGated ? 1 : undefined), spreadType);
 
             const saveResult = await window.Auth.saveReading('tarot', {
                 spreadType: isSoftGated ? `${spreadType} (Ukázka)` : spreadType,
@@ -797,27 +791,14 @@ async function startReading(spreadType, isSoftGated = false) {
  */
 async function generateEtherealSummary(cards, spreadType, continuationContext = null) {
     const summaryContainer = document.getElementById('ethereal-tarot-summary');
-    if (!summaryContainer) return;
+    if (!summaryContainer || summaryContainer.dataset.loading === 'true') return;
+    summaryContainer.dataset.loading = 'true';
+    summaryContainer.setAttribute('aria-busy', 'true');
 
     try {
         // Prepare card data for API
-        const cardsData = cards.map((card, index) => {
-            let positionLabel = '';
-            if (spreadType === 'Tři karty') {
-                positionLabel = ['Minulost', 'Přítomnost', 'Budoucnost'][index] || `Pozice ${index + 1}`;
-            } else if (spreadType === 'Celtic Cross') {
-                const labels = ['Situace', 'Výzva', 'Podvědomí', 'Základ', 'Minulost', 'Budoucnost', 'Postoj', 'Vliv okolí', 'Naděje/Obavy', 'Výsledek'];
-                positionLabel = labels[index] || `Pozice ${index + 1}`;
-            } else {
-                positionLabel = `Karta ${index + 1}`;
-            }
-
-            return {
-                name: card.name,
-                position: positionLabel,
-                meaning: card.meaning // Sending brief meaning to help AI context
-            };
-        });
+        const savedCards = savedTarotCards(cards, spreadType);
+        const cardsData = savedCards.map(({ name, position, meaning }) => ({ name, position, meaning }));
 
         // Detect current language
         const path = window.location.pathname;
@@ -844,18 +825,18 @@ async function generateEtherealSummary(cards, spreadType, continuationContext = 
 
         const data = await response.json();
 
-        if (data.success) {
-            const text = data.response;
-            const formattedText = text.split('\n').filter(line => line.trim().length > 0).map(line => `<p class="mb-md">${line}</p>`).join('');
-
-            summaryContainer.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(formattedText) : formattedText.replace(/<[^>]*>/g, '');
+        if (!summaryContainer.isConnected) return;
+        if (response.ok && data.success && typeof data.response === 'string') {
+            summaryContainer.innerHTML = formatReadingHtml(data.response);
+            showFallbackNotice(summaryContainer, data.fallback);
 
             // Save to history if logged in and store reading ID
             if (window.Auth && window.Auth.saveReading) {
                 const saveResult = await window.Auth.saveReading('tarot', {
                     spreadType,
-                    cards: cardsData,
+                    cards: savedCards,
                     response: data.response,
+                    fallback: !!data.fallback,
                     ...(continuationContext ? {
                         question: continuationContext.question,
                         previousAnswer: continuationContext.answerLabel,
@@ -890,10 +871,24 @@ async function generateEtherealSummary(cards, spreadType, continuationContext = 
 
     } catch (error) {
         console.error('AI Summary Error:', error);
+        if (!summaryContainer.isConnected) return;
         summaryContainer.innerHTML = `
-            <p class="text-center tarot-summary-error">
-                <em>Hvězdy jsou nyní příliš daleko... (Spojení selhalo)</em>
+            <p class="text-center tarot-summary-error" role="alert">
+                Souhrn se nepodařilo načíst. Vytažené karty i jejich významy zůstávají dostupné.
             </p>
         `;
+        const retry = document.createElement('button');
+        retry.type = 'button';
+        retry.className = 'btn btn--glass';
+        retry.textContent = 'Zkusit souhrn znovu';
+        retry.addEventListener('click', () => {
+            if (summaryContainer.dataset.loading === 'true') return;
+            retry.disabled = true;
+            void generateEtherealSummary(cards, spreadType, continuationContext);
+        });
+        summaryContainer.appendChild(retry);
+    } finally {
+        summaryContainer.dataset.loading = 'false';
+        summaryContainer.setAttribute('aria-busy', 'false');
     }
 }

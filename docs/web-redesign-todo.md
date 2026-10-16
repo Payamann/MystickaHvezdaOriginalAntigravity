@@ -67,7 +67,7 @@ Tyto body už jsou doložené v navazovaných auditech. Nejde o nově vymyšlen�
 
 ### W04 · P2 · Využití malovaných ilustrací a dokončení ikon
 
-- [ ] Udělat přiřazení stránka/sekce → konkrétní ilustrace a její role. Repo obsahuje **42 WebP souborů v `img/atlas`**; tento počet neříká, kolik jich je skutečně použito nebo nepoužito.
+- [ ] Udělat přiřazení stránka/sekce → konkrétní ilustrace a její role. `img/atlas` obsahuje **42 původních motivů a jednu technickou zmenšeninu**; počet souborů neříká, kolik jich je skutečně použito nebo nepoužito.
 - [ ] Dokončit V11: SVG pro ovládání, loading, chyby, potvrzení a výsledkové štítky, včetně JS šablon a exportů. Zvlášť vyřešit čínská zvířata, aby se barevný emoji nevracel doprostřed malované grafiky.
 - [ ] Použít decentní tematické pozadí tam, kde pomáhá kompozici; v dlouhém výkladu dát přednost klidné ploše. Zkontrolovat výřezy na mobilu, jednotnou výtvarnou teplotu a ostrý text.
 - [ ] Až po přiřazení určit skutečně chybějící motivy. Generovat cílenou sadu podle potřeby, nikoliv další zásobu obrázků bez umístění.
@@ -102,7 +102,7 @@ Tyto body už jsou doložené v navazovaných auditech. Nejde o nově vymyšlen�
 
 ### W08 · P2 · Užitečný důvod vrátit se
 
-- [ ] Dopracovat každou kartu dne: vlastní stručná otázka, pozorovatelný podnět a uskutečnitelný krok podle konkrétní karty. Navazuje na otevřený bod funkčního review.
+- [x] Každá z 78 karet dne má vlastní otázku, pozorovatelný podnět a uskutečnitelný krok v `data/tarot-daily-practice.json`. Existující regrese kontroluje všech 78 různých otázek a kroků; homepage, nástroj, uložení a PNG mají doložený společný denní výsledek. [QA](release-prep-2026-10-15/qa-results.md).
 - [ ] Volitelnou osobní reflexi a návrat k poslednímu výkladu napojit podle PF08/PF10/PF11. Při opakovaném otevření dne zachovat stejnou kartu a srozumitelné datum.
 - [ ] Nevyžadovat denní sérii, další nákup nebo opakované losování, aby člověk získal uzavřený užitečný výsledek.
 
@@ -138,7 +138,7 @@ Tyto body už jsou doložené v navazovaných auditech. Nejde o nově vymyšlen�
 
 ### W13 · P1 pro vydání · Přesné přijetí a dohledatelný stav
 
-- [ ] U každé funkční URL z inventáře vést rodinu, aktuální stav a odkaz na důkaz. Nepřepsat všech 917 souborů podle jednoho náhodného vzoru; generované obsahové rodiny kontrolovat přes jejich šablonu, výjimky a odpovídající stránky.
+- [x] Každá ze 166 funkčních URL má v [ledgeru](release-prep-2026-10-15/page-ledger.json) navrženou rodinu, aktuální stav a odkaz na důkaz počátečního načtení. Kontrola struktury 16. 10.: 166/166 úplných záznamů. Draft rodiny a úvodní načtení nejsou konečné přijetí každé funkce; to zůstává v následujícím bodu.
 - [ ] Každý změněný vzor ověřit v běžném i relevantním chybovém/prázdném stavu. Opravy platby, oprávnění a enginu mají vlastní cílenou regresi; samotná barva nepotřebuje novou sadu testů.
 - [ ] Předat místní vizuální přehled: desktop, mobil, vstup a výsledek. U známých zbývajících vad uvést stav, ne označit celé vydání za perfektní podle screenshotu.
 - [ ] Produkci měnit po výslovném pokynu k vydání; následně ověřit konkrétní commit a zasažené cesty. Tato dokumentace není nasazení.
@@ -152,6 +152,8 @@ Tyto body už jsou doložené v navazovaných auditech. Nejde o nově vymyšlen�
 PF01 byl před touto dávkou místně ověřen: 11/11 cílených regresí a skutečný profil nad syntetickou databází; [původní checkpoint](profile-unification-2026-10-14/pf01/README.md). Nyní navazující změny vyžadují znovu dotčenou závěrečnou regresi. Produkce se neměnila.
 
 ## Co je již doloženě hotové
+
+**Další dávka 16. 10. · výsledek a profil:** nové tarotové záznamy uchovávají plné původní významy, shodné ilustrace a souhrn; retry souhrnu nemění karty. Tarot, natál a shoda přenášejí fallback příznak. Numerologie v profilu ukazuje čtyři uložené hodnoty, starší formát skóre shody má správný renderer. Cíleně **45/45 testů** a skutečné lokální porovnání tarotu, natálu a numerologie. Sedm dříve otevřených profilových checkboxů je nyní podloženě uzavřeno; nejsou vykazované jako sedm nových implementací. [Evidence a hranice PV04](release-prep-2026-10-15/reading-fidelity-qa.md).
 
 **Navazující dávka 16. 10.:** runy zachovají otázku při chybě a nově ji obnoví po návratu z přihlašovací/členské brány. Náhradní text má označení na nástroji i v uložené historii. Shoda má přístupné chyby a ověřené opakování. Horoskopy mají čitelnější desktopovou mřížku a lehčí portréty, natál o 606 kB méně přímého JS. [Aktuální lokální checkpoint a zbývající hranice](release-prep-2026-10-15/qa-results.md). Další krok: skutečný mobil/tablet posledního vzoru a živé AI vzorky; celý TODO ani vydání nejsou označené za hotové.
 

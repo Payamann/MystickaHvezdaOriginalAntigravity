@@ -6,6 +6,8 @@ Zařazení do celého redesignu: [společný TODO webu](../web-redesign-todo.md)
 
 Navazuje na [původní P01–P10](profile-authenticated-review.md) a [jejich implementaci](../profile-unification-2026-10-14/README.md). Dřívější opravy zde znovu nevydáváme za otevřené závady.
 
+**Aktuální přijetí 16. 10.:** PF01, PF03–PF07, PF09 a PF11 jsou místně uzavřené podle [navazující evidence](../release-prep-2026-10-15/reading-fidelity-qa.md). Níže citované zdrojové vady jsou původní nálezy z 15. 10., nikoli popis opraveného současného kódu. PF02 zůstává částečný, PF08/PF12 volitelná rozšíření, PF10 širší návaznost. Produkce se neměnila.
+
 ## Dává profil jako produkt smysl?
 
 **Ano: jako knihovna vlastních výkladů a poznámek s jednoduchou správou účtu.** Historie jako výchozí záložka je správně. Oblíbené jsou užitečná zkratka, Nastavení přirozené místo pro osobní údaje a členství. Přehled je nyní dostupný dobrovolně a nezdržuje přístup k historii.
@@ -44,7 +46,9 @@ Nejslabší část je Přehled: kombinuje obecný denní tip, statistiky, checkl
 
 ### PF03 · P2 · Paměť a checklist nesmějí záviset na první stránce historie
 
-- [ ] Odvozené poznámky/feedback načítat v určeném a srozumitelném rozsahu, nezávisle na právě načtené historii. Propojit zvlášť načtené poznámky s pamětí; případné omezení uvést pravdivě.
+- [x] Odvozené poznámky/feedback načítat v určeném a srozumitelném rozsahu, nezávisle na právě načtené historii. Propojit zvlášť načtené poznámky s pamětí; případné omezení uvést pravdivě.
+
+**Přijaté:** `context.js` načítá zvlášť až 100 výkladů a 100 poznámek; limit je viditelný v UI. Regrese `profile-context.test.js` s 250 záznamy pokrývá poznámky za první stranou historie; navazující běh prošel.
 
 **Důkaz: zdroj + modelový prohlížeč.** `dashboard.js:1795–1807` načte `readings` a `journals` zvlášť. Paměti a checklistu předá jen první stránku `readings`; `journals` slouží pouze seznamu pěti poznámek. Model měl 10 starších poznámek mimo prvních 20 položek: seznam je ukázal, paměť je nezahrnula. Po první nové reflexi zůstal štítek „Zatím málo podkladů“, přestože už existovalo 11 poznámek. Souhrnné statistiky celého účtu tím dotčené nejsou.
 
@@ -52,7 +56,9 @@ Nejslabší část je Přehled: kombinuje obecný denní tip, statistiky, checkl
 
 ### PF04 · P2 · Doplnit filtry a přístup ke starším poznámkám
 
-- [ ] Nabídnout filtr Poznámky a všechny skutečně ukládané nástroje; aliasy sjednotit v jedné mapě. Zachovat možnost projít všechny starší položky.
+- [x] Nabídnout filtr Poznámky a všechny skutečně ukládané nástroje; aliasy sjednotit v jedné mapě. Zachovat možnost projít všechny starší položky.
+
+**Přijaté:** společná `READING_FILTERS`, serverové stránkování a tlačítko všech poznámek. Dřívější browserová QA doložila filtr starších poznámek; současná regrese potvrzuje aliasy a mapu kategorií.
 
 **Důkaz: zdroj + UI.** `profil.html:151–159` má šest kategorií nástrojů. Server v `server/routes/user.js:27–44` podporuje i runy, andělské karty, astro-mapu, minulý život, journal a další. Tyto záznamy nezmizely, ale jsou dostupné jen přes „Vše“. Přehled nabízí pouze posledních pět poznámek (`dashboard.js:1641–1659`) a není zde odkaz „Všechny poznámky“.
 
@@ -60,7 +66,9 @@ Nejslabší část je Přehled: kombinuje obecný denní tip, statistiky, checkl
 
 ### PF05 · P2 · Opravit dokončení kroku s vlastní reflexí
 
-- [ ] V checklistu zjišťovat existenci journalu přímo, nespoléhat na seznam typů, ze kterého jsou journaly odstraněné.
+- [x] V checklistu zjišťovat existenci journalu přímo, nespoléhat na seznam typů, ze kterého jsou journaly odstraněné.
+
+**Přijaté 16. 10.:** prázdný modelový účet před první reflexí nesplněný, po jediném skutečném lokálním zápisu splněný; 1/5 → 2/5. [Důkaz](../release-prep-2026-10-15/qa-evidence/first-reflection-checklist.png).
 
 **Důkaz: zdroj.** `getReadingKinds` v `dashboard.js:864` journal výslovně vyřazuje; `dashboard.js:1410` přesto používá `kinds.has('journal')`. Člověk s jednou dnešní reflexí bez vícedenní série tento krok nesplní. Model s vícedenní historií tuto větev maskuje.
 
@@ -68,7 +76,9 @@ Nejslabší část je Přehled: kombinuje obecný denní tip, statistiky, checkl
 
 ### PF06 · P2 · Vracet avatar při selhání uložení
 
-- [ ] Při chybě PUT obnovit původní avatar a výběr, případně změnu zobrazit až po úspěchu. Během ukládání zabránit soupeřícím změnám.
+- [x] Při chybě PUT obnovit původní avatar a výběr, případně změnu zobrazit až po úspěchu. Během ukládání zabránit soupeřícím změnám.
+
+**Přijaté:** změna až po úspěšném PUT a blokace soupeřících voleb; předchozí cílený browserový PUT 500 ponechal původní symbol a retry uspěl. Viz [QA](../release-prep-2026-10-15/qa-results.md).
 
 **Důkaz: zdroj.** `js/profile/settings.js:201–245` mění DOM před požadavkem; catch pouze ukáže chybu. Úspěšné uložení B a reload v modelovém účtu fungovaly. Chybová větev nebyla v prohlížeči simulovaná.
 
@@ -76,7 +86,9 @@ Nejslabší část je Přehled: kombinuje obecný denní tip, statistiky, checkl
 
 ### PF07 · P2 · Zpřesnit, co je opravdu osobní a opakované
 
-- [ ] Denní obecný tip označit jako redakční inspiraci, nebo jej skutečně napojit na daný uložený horoskop. U témat z jedné poznámky nepoužívat „opakovaně“ a nenaznačovat osobní vzorec.
+- [x] Denní obecný tip označit jako redakční inspiraci, nebo jej skutečně napojit na daný uložený horoskop. U témat z jedné poznámky nepoužívat „opakovaně“ a nenaznačovat osobní vzorec.
+
+**Přijaté 16. 10.:** skutečný přehled říká „Redakční podnět k zamyšlení“. Po jediné reflexi uvádí „V tvé poznámce nebo zpětné vazbě se objevuje téma…“, bez tvrzení opakovaného vzorce.
 
 **Důkaz: zdroj + UI.** `DAILY_FOCUS` v `dashboard.js:295–303` jsou jen sedm vět vybíraných dnem v týdnu. Nejde o horoskop znamení ani vyhodnocení historie. `MEMORY_THEME_META` přesto popisuje práci jako téma objevující se „opakovaně“ i po jedné reflexi s pracovním klíčovým slovem; modelové zobrazení to potvrdilo. Hlavní text paměti je již opatrnější z minulé opravy, zbývají její popisy témat.
 
@@ -85,14 +97,14 @@ Nejslabší část je Přehled: kombinuje obecný denní tip, statistiky, checkl
 ## Menší produktové a designové úkoly
 
 - [ ] **PF08 · P3:** zvážit samostatně dostupný Deník nebo aspoň jasný vstup „Moje poznámky“ v Přehledu. Poznámka by měla jít připojit ke konkrétnímu výkladu; nyní formulář ukládá pouze `{type:'journal', data:text}` bez vazby. Editace vlastní poznámky nyní není implementovaná — je to návrh rozšíření, ne nefunkční tlačítko.
-- [ ] **PF09 · P3:** nahradit výběr avatarů A–L smysluplnými iniciálami nebo několika symboly z naší SVG sady. Není třeba dalších generovaných ilustrací; současná volba působí jako pracovní placeholder.
+- [x] **PF09 · P3:** A–L nahradilo šest pojmenovaných symbolů ze společné SVG sady (`PROFILE_AVATARS`); předchozí lokální uložení a reload i následná chyba/retry jsou v QA checkpointu.
 - [ ] **PF10 · P3:** pro návrat prioritizovat „poslední výklad + vlastní poznámka“. Statistiky, denní série a checklist ponechat dobrovolné. Označení „Poslední výklad“ nyní zahrnuje i Osobní poznámku (`getLastReadingLabel`); buď rozlišit, nebo přejmenovat na „Poslední záznam“.
 
 ## Další návaznosti knihovny a výkladů
 
 ### Doplnění: poznat vlastní výklad a neztratit jeho obsah
 
-- [ ] **PF11 · P2 — Rozlišit jednotlivé výklady v knihovně.** V historii i oblíbených zobrazit druh tarotu (ano/ne, karta dne, více karet) a krátkou vlastní otázku nebo název karty. U poznámek krátký úryvek. V detailu zachovat původní otázku i u tarotu s polem `cards`, nikoliv pouze u větve `data.answer`.
+- [x] **PF11 · P2 — Rozlišit jednotlivé výklady v knihovně.** Historie i oblíbené používají společné podtypy a náhledy. Detail zachovává otázku, karty i uložené plné významy; prázdná otázka nezakryje název. [Modelové a skutečné lokální porovnání](../release-prep-2026-10-15/reading-fidelity-qa.md).
 
   **Podklad:** `readings.js:209–224` a `favorites.js` zobrazují zejména typ a datum. `shared.js:getReadingLabel` zpřesňuje jen horoskop; tarotové podtypy se slévají do „Tarotový výklad“. `tarot-karta-dne.js:157–171` přitom ukládá `spreadType` a jiné zdroje `tool` nebo otázku. V `modal.js:540–575` větev tarotových karet původní `data.question` nevykreslí; otázka se zobrazuje až v odlišné větvi `data.answer`. Jde o zdrojové zjištění; nebyly nově kontrolované všechny produkční historické formáty.
 
@@ -117,4 +129,4 @@ PF01 → společný stav PF02/PF03 → dostupnost poznámek a checklist PF04/PF0
 
 PF11 zařadit k filtrům PF04 a ověřit pomocí PV04. PF12 je volitelná produktová návaznost až po opravě funkčních chyb; není blokací nynějšího doručování ani důvodem rozšiřovat členství.
 
-Stav: **PF01 místně hotovo; ostatní PF/PV zůstávají otevřené podle svých checkboxů. Bez nového nasazení.** Soukromá produkční data nebyla načítaná. Snímky a záznam původního kontrolního pokusu jsou v [modelových podkladech](../profile-unification-2026-10-14/profile-followup/verification.json); tento konkrétní pokus změnu témat po uložení nastavení nepotvrdil, a proto není veden jako potvrzená UI závada.
+Stav: **PF01, PF03–PF07, PF09 a PF11 místně přijaté; ostatní PF/PV podle otevřených bodů. Bez nasazení.** PV04 má přijatou matici současných producentů a uvedených starších formátů v novém checkpointu; neurčené starší zákaznické formáty nebyly čtené. Soukromá produkční data nebyla načítaná. Snímky původního kontrolního pokusu zůstávají v [modelových podkladech](../profile-unification-2026-10-14/profile-followup/verification.json).

@@ -3,6 +3,8 @@
  * Uses the server AI API for detailed relationship analysis.
  */
 
+import { showFallbackNotice } from './utils/reading-display.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     initSynastry();
 });
@@ -814,6 +816,7 @@ async function calculateCompatibility() {
                 if (overlay) overlay.remove();
 
                 await typewriterEffect(contentDiv, data.response);
+                showFallbackNotice(contentDiv, data.fallback);
 
                 // Save to history if logged in
                 if (window.Auth && window.Auth.saveReading && !data.isTeaser) {
@@ -823,7 +826,8 @@ async function calculateCompatibility() {
                             person2,
                             interpretation: data.response,
                             scores: displayedScores,
-                            synastry: data.synastry || calculatedSynastry
+                            synastry: data.synastry || calculatedSynastry,
+                            fallback: !!data.fallback
                         });
                         appendSynastryFavoriteAction(aiResultsDiv, saveResult?.id);
                     } catch (e) {

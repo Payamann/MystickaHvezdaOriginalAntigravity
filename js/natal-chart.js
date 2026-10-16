@@ -3,6 +3,8 @@
  * Uses the server AI API for personalized life narrative generation.
  */
 
+import { showFallbackNotice } from './utils/reading-display.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     if (window.MH_DEBUG) console.debug('Natal Chart JS loaded');
     initNatalChart();
@@ -887,6 +889,8 @@ async function generateNatalChart(planetsGroup) {
                 });
             }
 
+            showFallbackNotice(contentDiv, data.fallback);
+
             // Save to history if logged in and add favorite button
             if (!data.isTeaser && window.Auth && window.Auth.saveReading) {
                 const saveResult = await window.Auth.saveReading('natal-chart', {
@@ -895,7 +899,8 @@ async function generateNatalChart(planetsGroup) {
                     birthTime,
                     birthPlace,
                     interpretation: data.response,
-                    chart: data.chart || computedChart
+                    chart: data.chart || computedChart,
+                    fallback: !!data.fallback
                 });
 
                 // Store reading ID and add favorite button

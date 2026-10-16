@@ -76,3 +76,7 @@ Lokální mock server používá neplatné testovací klíče a syntetické úč
 - Ohraničený pomocník `gpt-6-luna` medium připravil zdrojový rozpočet, našel chybějící návrat ke kontextu a napsal 9 cílených testů; hlavní agent provedl app změny a ověřil výsledky. Číselná úspora modelů se netvrdí.
 
 **Otevřené hranice:** nové rozložení je zde doložené na desktopu. Požadovaný mobilní viewport se na testovací panel neaplikoval, proto nebyl jeho 1280px screenshot označen za mobilní a chybný název souboru byl odstraněn. Závěrečný mobil/tablet tohoto vzoru, měření runtime výkonu, otevřená starší stránka po vydání a vzorky živého AI poskytovatele stále čekají. Produkce zůstala beze změny; soukromé QA ovladače ani dočasné logy nejsou součástí vydání.
+
+## Navazující checkpoint · zachování výsledků PV04
+
+[Přesný rozsah, opravy a evidence](reading-fidelity-qa.md): nové tarotové zápisy zachovávají i plné významy; retry používá stejný rozklad. Fallback je přenášený u tarotu, natálu a shody; numerologie má v detailu uložená čísla. Historický formát skóre a pojmenování karet má odpovídající renderer. **45/45 cílených testů**, skutečný browserový návrat tarotu/natálu/numerologie a první reflexe prázdného účtu. Živé AI vzorky, nové mobilní přijetí a produkční provoz tím nejsou pokryté. Výsledek na stránce i v uloženém detailu používá stejný text; nové generování pro porovnání se neprovádělo.

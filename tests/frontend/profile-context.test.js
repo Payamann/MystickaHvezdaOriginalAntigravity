@@ -69,6 +69,13 @@ test('journal drafts are scoped to a single account and removed after successful
     expect(readJournalDraft('user-a')).toBe('');
 });
 
+test('empty questions do not hide the saved card or rune in history previews', () => {
+    expect(getReadingPreview({ type: 'tarot', data: { question: '', cards: [{ name: 'Hvězda' }] } })).toBe('Hvězda');
+    expect(getReadingPreview({ type: 'tarot', data: { question: '  ', card_name: 'Slunce' } })).toBe('Slunce');
+    expect(getReadingPreview({ type: 'runes', data: { intention: '', rune: { name: 'Gebo' } } })).toBe('Gebo');
+    expect(getReadingPreview({ type: 'angel-card', data: { card: { name: 'Hranice' } } })).toBe('Hranice');
+});
+
 test('blocked browser storage does not throw or prevent writing in the live form', () => {
     globalThis.sessionStorage = { getItem() { throw new Error('blocked'); }, setItem() { throw new Error('blocked'); } };
     expect(() => writeJournalDraft('user-a', 'text')).not.toThrow();
