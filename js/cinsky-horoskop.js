@@ -372,7 +372,7 @@ function setupChineseImageShare(result) {
         button.id = 'chinese-share-image-btn';
         button.type = 'button';
         button.className = 'btn btn--ghost mt-md';
-        button.textContent = '✨ Uložit obrázek znamení';
+        button.textContent = 'Uložit obrázek znamení';
         button.addEventListener('click', onChineseImageShareClick);
         host.appendChild(button);
     }

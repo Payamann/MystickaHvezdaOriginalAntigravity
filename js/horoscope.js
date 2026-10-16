@@ -600,8 +600,8 @@ function initHoroscope() {
             if (typeof predictionData?.prediction !== 'string' || !predictionData.prediction.trim()) throw new Error('Missing horoscope text');
             let cleanPrediction = predictionData.prediction;
             const affirmationPatterns = [
-                /\*\*?(?:Afirmace|Afirmacia|Afirmacja):?\*?\*?\s*[^*]*\*?/gi,
-                /(?:Afirmace|Afirmacia|Afirmacja):\s*.+$/gim
+                /(?:✨\s*)?\*\*?(?:Afirmace|Afirmacia|Afirmacja):?\*?\*?\s*[^*]*\*?/gi,
+                /(?:✨\s*)?(?:Afirmace|Afirmacia|Afirmacja):\s*.+$/gim
             ];
 
             for (const pattern of affirmationPatterns) {
@@ -609,7 +609,7 @@ function initHoroscope() {
                 if (match && !extractedAffirmation) {
                     extractedAffirmation = match[0]
                         .replace(/\*+/g, '')
-                        .replace(/^(?:Afirmace|Afirmacia|Afirmacja):?\s*/i, '')
+                        .replace(/^(?:✨\s*)?(?:Afirmace|Afirmacia|Afirmacja):?\s*/i, '')
                         .trim();
                 }
                 cleanPrediction = cleanPrediction.replace(pattern, '').trim();
@@ -624,7 +624,7 @@ function initHoroscope() {
                 const affirmationText = predictionData.affirmation || extractedAffirmation;
                 detailWork.hidden = !affirmationText;
                 if (affirmationText) {
-                    const rawHtml = `<strong class="horoscope-affirmation-label">&#10024; ${affLabel}:</strong> ${affirmationText}`;
+                    const rawHtml = `<strong class="horoscope-affirmation-label">${affLabel}:</strong> ${affirmationText}`;
                     const sanitized = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(rawHtml) : rawHtml.replace(/<[^>]*>/g, '');
                     detailWork.innerHTML = sanitized;
                 } else {

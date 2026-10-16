@@ -493,6 +493,6 @@ async function requestDeepReading() {
     } finally {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
-        btn.innerHTML = 'Získat šamanský výklad';
+        btn.textContent = 'Získat symbolický výklad';
     }
 }

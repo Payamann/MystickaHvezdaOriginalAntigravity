@@ -98,3 +98,10 @@ body.atlas-language-page .atlas-angel-preview img { width:100%; height:auto; dis
 .atlas-language-page #locale-natal-output th,
 .atlas-language-page #locale-natal-output td { padding: .7rem .5rem; text-align: left; border-bottom: 1px solid rgba(189, 155, 101, .2); }
 .atlas-language-page #locale-natal-output th { color: #d0b17c; }
+.atlas-language-page #natal-form { display: grid; gap: 1rem; text-align: left; }
+.atlas-language-page #natal-form .form-group { display: grid; gap: .5rem; margin: 0; }
+.atlas-language-page #natal-form input { width: 100%; min-width: 0; box-sizing: border-box; color-scheme: dark; }
+.atlas-language-page #natal-result .natal-chart-container { position: relative; padding: 1.25rem; }
+.atlas-language-page #natal-result .natal-chart-container img { width: 100%; max-width: 280px; height: auto; opacity: .65; filter: none; }
+.atlas-language-page #natal-result .natal-chart-container p { position: static; transform: none; margin: .75rem 0 0; }
+.atlas-language-page #locale-natal-output:not(:empty) + .natal-chart-container { display: none; }

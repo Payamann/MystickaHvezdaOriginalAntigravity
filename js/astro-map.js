@@ -49,6 +49,17 @@ function formatPrecisionLabel(precision) {
     return labels[precision] || precision || '--';
 }
 
+function formatAstroEngineNote(note) {
+    const rawNote = String(note || '').trim();
+    if (!rawNote) {
+        return 'Doporučení jsou symbolická a slouží jako podpůrná vrstva pro úvahu o místě.';
+    }
+    if (/MC\/IC.*low-precision.*ASC\/DSC.*nejsou přesné/i.test(rawNote)) {
+        return 'MC/IC meridiány jsou orientační výpočetní vrstva s omezenou přesností. Přesné ASC/DSC křivky mapa zatím neobsahuje.';
+    }
+    return rawNote;
+}
+
 // Intention select for personalized results
 const INTENTIONS = {
     'obecny': 'Obecná analýza',
@@ -121,7 +132,7 @@ function showAstroMapUpgradeGate() {
     const source = 'astro_map_exclusive_gate';
     showError(`
         <div class="text-center">
-            <h3>🔭 Součást členství</h3>
+            <h3>Součást členství</h3>
             <p class="mb-lg">Astrokartografie je součástí členství Mystické Hvězdy. Podmínky najdeš v ceníku.</p>
             <a href="${buildAstroMapPricingUrl(source)}" class="btn btn--primary astro-map-upgrade-btn">Prohlédnout členství</a>
         </div>
@@ -472,7 +483,7 @@ function renderAstroEngineSummary(astrocartography, chart) {
     const intention = astrocartography?.intention?.label || 'obecný směr';
     const precision = chart?.engine?.precision || astrocartography?.precision || null;
     const location = chart?.location?.name || astrocartography?.location?.name || 'místo nerozpoznáno';
-    const note = astrocartography?.engine?.note || 'Doporučení jsou symbolická a slouží jako podpůrná relokační vrstva.';
+    const note = formatAstroEngineNote(astrocartography?.engine?.note);
 
     if (!recommendations.length && !chartSummary.sunSign) {
         return '';
@@ -500,7 +511,7 @@ function renderAstroEngineSummary(astrocartography, chart) {
         <div class="astro-engine-summary">
             <div class="astro-engine-summary__header">
                 <div>
-                    <span class="eyebrow">Serverový astro engine</span>
+                    <span class="eyebrow">Vypočteno z narození</span>
                     <h4>Top místa pro ${escapeHtml(intention)}</h4>
                 </div>
                 <div class="astro-engine-summary__pill">${escapeHtml(astrocartography?.engine?.version || chart?.engine?.version || 'astro-engine')}</div>
@@ -547,7 +558,7 @@ function displayResults(response, astrocartography = null, chart = null) {
 
         resultsContainer.innerHTML = `
             <div class="astro-result-card" data-animate>
-                <h3 class="result-title">🗺️ Vaše symbolická astro mapa</h3>
+                <h3 class="result-title">Tvoje symbolická astro mapa</h3>
                 ${engineSummary}
                 <div class="result-content">
                     ${formattedContent}

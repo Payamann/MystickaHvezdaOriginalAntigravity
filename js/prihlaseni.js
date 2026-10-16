@@ -1069,10 +1069,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const submitBtn = forgotPasswordForm.querySelector('button[type="submit"]');
         const originalText = submitBtn?.textContent;
 
-        if (!submitBtn) {
+        if (!submitBtn || submitBtn.disabled) {
             return;
         }
 
+        const recoveryStatus = document.getElementById('recovery-request-status');
+        if (recoveryStatus) recoveryStatus.hidden = true;
         submitBtn.textContent = 'Odesílám...';
         submitBtn.disabled = true;
 
@@ -1090,11 +1092,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json().catch(() => null);
 
             if (response.ok && data?.success) {
-                window.trackEvent?.('password_reset_requested', {
-                    source: 'forgot_password_form'
-                });
-                window.Auth?.showToast?.('E-mail odeslán', data.message, 'success');
-                backToLoginBtn?.click();
+                if (recoveryStatus) {
+                    recoveryStatus.textContent = 'Pokud je e-mail u nás vedený, přijde na něj odkaz k obnovení hesla. Zkontroluj také složku spam. Na této stránce se pak můžeš vrátit k přihlášení.';
+                    recoveryStatus.hidden = false;
+                    if (!forgotPasswordForm.hidden) recoveryStatus.focus();
+                }
+                try { window.trackEvent?.('password_reset_requested', { source: 'forgot_password_form' }); } catch { /* Telemetry must not hide the acknowledgement. */ }
             } else {
                 throw new Error(data?.error || 'Nepodařilo se odeslat e-mail s obnovou hesla.');
             }

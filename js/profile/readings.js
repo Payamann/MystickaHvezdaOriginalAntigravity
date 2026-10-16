@@ -239,8 +239,8 @@ export function renderReadings() {
                 <div class="reading-item__actions">
                     <button class="btn btn--sm btn--glass" data-reading-action="favorite" data-reading-id="${escapeHtml(reading.id)}"
                         title="${reading.is_favorite ? 'Odebrat z oblíbených' : 'Přidat do oblíbených'}"
-                        aria-label="${reading.is_favorite ? 'Odebrat z oblíbených' : 'Přidat do oblíbených'}">
-                        ${reading.is_favorite ? '★' : '☆'}
+                        aria-label="${reading.is_favorite ? 'Odebrat z oblíbených' : 'Přidat do oblíbených'}" aria-pressed="${Boolean(reading.is_favorite)}">
+                        ${profileIconMarkup('bookmark')}
                     </button>
                     <button class="btn btn--sm btn--glass" data-reading-action="view" data-reading-id="${escapeHtml(reading.id)}" aria-label="Zobrazit detail">Zobrazit</button>
                 </div>

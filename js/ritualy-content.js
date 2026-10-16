@@ -15,7 +15,7 @@
                     uzavreniVeta: 'Mars stojí za tebou. Jdeš vpřed.',
                     journalQ: 'Kde byla dnes moje reakce okamžitá a správná — bez přílišného přemýšlení?' },
 
-        byk:      { name: 'Byk',      emoji: '♉', element: 'Země',   barva: '#27ae60',
+        byk:      { name: 'Býk',      emoji: '♉', element: 'Země',   barva: '#27ae60',
                     focus: 'svou stabilitu a propojení s přírodou',
                     vizObraz: 'hluboké kořeny stromu, které drží pevně v zemi bez ohledu na vítr',
                     mantraSlovo: 'stabilitě', ruler: 'Venuše',

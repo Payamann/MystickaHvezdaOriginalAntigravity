@@ -179,20 +179,6 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
         return y + Math.min(lines.length, maxLines) * lineHeight;
     }
 
-    function drawSeededStars(ctx, seed, width, height) {
-        for (let i = 0; i < 220; i += 1) {
-            const rawX = (Math.sin(seed + i * 12.9898) * 43758.5453) % 1;
-            const rawY = (Math.sin(seed + i * 78.233) * 24634.6345) % 1;
-            const x = Math.abs(rawX) * width;
-            const y = Math.abs(rawY) * height * 0.74;
-            const radius = i % 10 === 0 ? 2.4 : 1.2;
-            ctx.fillStyle = i % 7 === 0 ? 'rgba(230,195,80,0.76)' : 'rgba(235,240,255,0.72)';
-            ctx.beginPath();
-            ctx.arc(x, y, radius, 0, Math.PI * 2);
-            ctx.fill();
-        }
-    }
-
     function loadCanvasImage(src) {
         return new Promise((resolve, reject) => {
             const image = new Image();
@@ -217,36 +203,30 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
         canvas.height = 1350;
         const ctx = canvas.getContext('2d');
         const centerX = canvas.width / 2;
-        const seed = (card.dateKey || getLocalDateKey()).split('').reduce((sum, char) => sum + char.charCodeAt(0), 0)
-            + String(card.name || '').length * 31;
-
         const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        gradient.addColorStop(0, '#151039');
-        gradient.addColorStop(0.46, '#070716');
-        gradient.addColorStop(1, '#050510');
+        gradient.addColorStop(0, '#132b3c');
+        gradient.addColorStop(0.46, '#0b1929');
+        gradient.addColorStop(1, '#081420');
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        drawSeededStars(ctx, seed, canvas.width, canvas.height);
-
-        ctx.strokeStyle = 'rgba(212,175,55,0.84)';
-        ctx.lineWidth = 5;
-        ctx.strokeRect(54, 54, canvas.width - 108, canvas.height - 108);
-        ctx.strokeStyle = 'rgba(212,175,55,0.34)';
+        ctx.strokeStyle = 'rgba(208,177,124,0.36)';
         ctx.lineWidth = 2;
-        ctx.strokeRect(78, 78, canvas.width - 156, canvas.height - 156);
+        ctx.strokeRect(54, 54, canvas.width - 108, canvas.height - 108);
 
         ctx.textAlign = 'center';
-        ctx.fillStyle = '#d4af37';
+        ctx.fillStyle = '#d0b17c';
         ctx.font = '600 42px Inter, Arial, sans-serif';
         ctx.fillText('Mystická Hvězda', centerX, 142);
 
-        ctx.fillStyle = '#f1d06b';
+        ctx.fillStyle = '#f1eadc';
         ctx.font = '700 48px Cinzel, Georgia, serif';
         ctx.fillText('TAROT KARTA DNE', centerX, 224);
 
         ctx.fillStyle = 'rgba(255,255,255,0.72)';
         ctx.font = '500 30px Inter, Arial, sans-serif';
-        ctx.fillText(card.dateKey || getLocalDateKey(), centerX, 272);
+        const dateKey = card.dateKey || getLocalDateKey();
+        const displayDate = new Date(`${dateKey}T12:00:00Z`).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Prague' });
+        ctx.fillText(displayDate, centerX, 272);
 
         let cardImage = null;
         try {
@@ -256,11 +236,6 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
         }
 
         const cardBox = { x: 362, y: 330, width: 356, height: 520 };
-        ctx.fillStyle = 'rgba(212,175,55,0.12)';
-        ctx.fillRect(cardBox.x - 18, cardBox.y - 18, cardBox.width + 36, cardBox.height + 36);
-        ctx.strokeStyle = 'rgba(212,175,55,0.58)';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(cardBox.x - 18, cardBox.y - 18, cardBox.width + 36, cardBox.height + 36);
         if (cardImage) {
             drawImageContain(ctx, cardImage, cardBox.x, cardBox.y, cardBox.width, cardBox.height);
         } else {
@@ -280,7 +255,7 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
         drawCenteredLines(ctx, wrapCanvasText(ctx, dailyAdvice(card), 840), centerX, y + 54, 36, 3);
         ctx.fillStyle = 'rgba(238,230,216,0.76)';
         ctx.font = '500 24px Inter, Arial, sans-serif';
-        ctx.fillText('mystickahvezda.cz/tarot-karta-dne.html', centerX, 1310);
+        ctx.fillText('mystickahvezda.cz/tarot-karta-dne.html', centerX, 1270);
 
         return canvas;
     }
@@ -300,6 +275,7 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
                 const outcome = await window.MH_SHARE_IMAGE.shareOrDownload({
                     canvas,
                     fileName,
+                    preferDownload: true,
                     shareTitle: `Tarot karta dne: ${card.name}`,
                     shareText: `Moje tarot karta dne je ${card.name}. Vytáhni si tu svoji na mystickahvezda.cz`,
                     eventBase: 'tarot_daily_card_image',
@@ -307,10 +283,10 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
                         source: SOURCE,
                         feature: FEATURE,
                         card: card.name,
-                        date_key: getLocalDateKey()
+                        date_key: card.dateKey || getLocalDateKey()
                     }
                 });
-                saveButton.textContent = outcome === 'shared' ? 'Sdíleno' : 'Obrázek uložen';
+                saveButton.textContent = outcome === 'shared' ? 'Sdíleno' : outcome === 'cancelled' ? previousText : 'Obrázek uložen';
             } else {
                 const link = document.createElement('a');
                 link.download = fileName;

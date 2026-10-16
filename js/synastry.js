@@ -203,7 +203,6 @@ function resetSynastryResultVisuals(resultsDiv) {
         const element = document.getElementById(id);
         if (element) {
             element.getAnimations?.().forEach((animation) => animation.cancel());
-            element.style.transform = id === 'heart-anim' ? 'scaleY(0)' : 'scaleX(0)';
         }
     });
     resultsDiv?.querySelector('.premium-lock-overlay')?.remove();
@@ -399,6 +398,9 @@ function revealSynastryNextStep(scores, synastry, isPremium) {
     const score = Number.isFinite(scores?.totalScore) ? `${scores.totalScore}%` : '--';
     const scoreElement = document.getElementById('synastry-next-score');
     if (scoreElement) scoreElement.textContent = score;
+    const title = document.getElementById('synastry-next-step-title');
+    if (title) title.textContent = isPremium ? 'Kam můžeš pokračovat' : 'Podrobnější pohled na společná témata';
+    section.querySelectorAll('[data-synastry-upgrade]').forEach((link) => { link.hidden = Boolean(isPremium); });
 
     setBlockVisible(section, true);
     trackPersonalMapOfferView(scores);
@@ -526,7 +528,7 @@ function setupSynastryImageShare(person1, person2, scores) {
         button.id = 'synastry-share-image-btn';
         button.type = 'button';
         button.className = 'btn btn--ghost mt-md';
-        button.textContent = '✨ Uložit obrázek shody';
+        button.textContent = 'Uložit obrázek shody';
         button.addEventListener('click', onSynastryImageShareClick);
         host.appendChild(button);
     }
@@ -733,6 +735,7 @@ async function calculateCompatibility() {
     detailCard.classList.remove('blur-content');
 
     if (isPremium) {
+        setBlockVisible(detailCard, true);
         // Show Real Data
         animateValue('score-emotion', 0, displayedScores.emotionScore, 1500);
         animateValue('score-comm', 0, displayedScores.commScore, 1700);
@@ -744,35 +747,10 @@ async function calculateCompatibility() {
         animateScale(document.getElementById('bar-passion'), 'scaleX', displayedScores.passionScore / 100);
         animateScale(document.getElementById('bar-stability'), 'scaleX', displayedScores.stabilityScore / 100);
     } else {
-        // Soft Gate - Obscure Details
-        document.getElementById('score-emotion').textContent = '🔒';
-        document.getElementById('score-comm').textContent = '🔒';
-        document.getElementById('score-passion').textContent = '🔒';
-        document.getElementById('score-stability').textContent = '🔒';
-
-        animateScale(document.getElementById('bar-emotion'), 'scaleX', 0);
-        animateScale(document.getElementById('bar-comm'), 'scaleX', 0);
-        animateScale(document.getElementById('bar-passion'), 'scaleX', 0);
-        animateScale(document.getElementById('bar-stability'), 'scaleX', 0);
-
-        // Add Overlay
-        detailCard.classList.add('premium-lock-host');
-
-        const overlay = document.createElement('div');
-        overlay.className = 'premium-lock-overlay';
-        overlay.innerHTML = `
-            <div class="lock-icon">🔒</div>
-            <h3 class="synastry-lock-title">Detailní rozbor</h3>
-            <p class="synastry-lock-copy">Emoce, komunikace a vášeň jsou dostupné pouze pro Hvězdné Průvodce.</p>
-            <button class="btn btn--primary btn--sm mt-md synastry-upgrade-btn">${getSynastryUpgradeLabel('detail')}</button>
-            ${getSynastryPaymentReassuranceHtml()}
-        `;
-        detailCard.appendChild(overlay);
-
-        overlay.querySelector('.synastry-upgrade-btn').addEventListener('click', () => {
-            startSynastryUpgradeFlow('synastry_detail_lock');
-        });
+        // Unavailable details are omitted; never render invented or blurred values.
+        setBlockVisible(detailCard, false);
     }
+
 
 
 
@@ -786,7 +764,7 @@ async function calculateCompatibility() {
     if (!hasActiveSession) {
         document.getElementById('total-score').textContent = `${displayedScores.totalScore}%`;
         document.getElementById('verdict-text').textContent =
-            `Celková kompatibilita ${displayedScores.totalScore}% - `;
+            `Souhrn astrologického modelu: ${displayedScores.totalScore} %.`;
         setBlockVisible(aiResultsDiv, true);
         renderTeaser(aiResultsDiv, displayedScores.totalScore);
         btn.textContent = originalText;
@@ -817,7 +795,7 @@ async function calculateCompatibility() {
 
             // Update verdict
             document.getElementById('verdict-text').textContent =
-                `Celková kompatibilita ${displayedScores.totalScore}% - `;
+                `Souhrn astrologického modelu: ${displayedScores.totalScore} %.`;
 
             // Show AI interpretation
             setBlockVisible(aiResultsDiv, true);
@@ -891,7 +869,7 @@ function createAIResultsContainer() {
     container.className = 'synastry-ai';
     container.innerHTML = `
         <h4 class="synastry-ai__title">
-            💕 Hluboká analýza vašeho vztahu
+            Podrobnější výklad vztahu
         </h4>
         <div class="ai-content synastry-ai__content"></div>
     `;
@@ -916,46 +894,15 @@ async function typewriterEffect(element, text) {
 }
 
 function renderTeaser(container, totalScore = null) {
-    const contentDiv = container.querySelector('.ai-content');
-    const scoreLabel = typeof totalScore === 'number'
-        ? `${totalScore}%`
-        : (document.getElementById('total-score')?.textContent || 'vaši');
-
-    // 1. Add Blur
-    contentDiv.classList.add('blur-content');
-
-    // 2. Set Dummy Text for visual bulk
-    contentDiv.innerHTML = `
-        <p>Váš vztah vykazuje silné karmické propojení, které se projevuje zejména v oblasti emocí. Hvězdy naznačují, že jste se nepotkali náhodou.</p>
-        <p>Ačkoliv je vaše komunikace dynamická, existují zde aspekty, na které si musíte dát pozor. Saturn ve vašem horoskopu vytváří...</p>
-        <p>Pro dlouhodobou stabilitu je klíčové pochopit...</p>
-        <br><br><br>
-    `;
-
-    // 3. Add Overlay Button
-    // Check if overlay already exists
-    if (!container.querySelector('.teaser-overlay')) {
-        const overlay = document.createElement('div');
-        overlay.className = 'teaser-overlay';
-        overlay.innerHTML = `
-            <div class="synastry-teaser-card">
-                <h3 class="synastry-teaser-card__title">Odemkněte tajemství vašeho vztahu</h3>
-                <p class="synastry-teaser-card__copy">Zjistěte, proč máte ${document.getElementById('total-score').textContent} shodu a co vás čeká.</p>
-                <a href="${buildSynastryUpgradeUrl('synastry_teaser_overlay')}" class="btn btn--primary synastry-upgrade-btn">${getSynastryUpgradeLabel('teaser')}</a>
-                ${getSynastryPaymentReassuranceHtml()}
-            </div>
-        `;
-        container.classList.add('teaser-overlay-host');
-        container.appendChild(overlay);
-        const teaserCopy = overlay.querySelector('p');
-        if (teaserCopy) {
-            teaserCopy.textContent = `Zjistěte, proč máte ${scoreLabel} shodu a co vás čeká.`;
-        }
-        overlay.querySelector('.synastry-upgrade-btn')?.addEventListener('click', (event) => {
-            event.preventDefault();
-            startSynastryUpgradeFlow('synastry_teaser_overlay');
-        });
-    }
+    container.classList.remove('teaser-overlay-host');
+    container.querySelector('.teaser-overlay')?.remove();
+    const content = container.querySelector('.ai-content');
+    content.classList.remove('blur-content');
+    content.innerHTML = '';
+    const note = document.createElement('p');
+    const score = Number.isFinite(totalScore) ? ` (${totalScore} %)` : '';
+    note.textContent = `Základní astrologický výpočet${score} je hotový. Podrobnější slovní výklad je součástí členství; pokračování najdeš níže.`;
+    content.append(note);
 }
 
 function animateValue(id, start, end, duration) {

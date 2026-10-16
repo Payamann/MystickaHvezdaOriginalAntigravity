@@ -242,7 +242,7 @@ const customGateRequired = [
         snippets: [
             'MENTOR_PAYMENT_REASSURANCE',
             'mentor-paywall__reassurance',
-            'mentor_teaser_gate',
+            'response.status === 402 || response.status === 403',
             'mentor_paywall_overlay'
         ]
     },

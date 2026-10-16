@@ -1256,7 +1256,9 @@ body.page-profile #main-content > .hero--mini { min-height:0; padding:104px 0 20
 body.page-profile #main-content > .hero--mini .hero__title { margin:0 0 8px; }
 body.page-profile #main-content > .hero--mini .hero__subtitle { margin:0; max-width:none; text-align:left; font-size:1rem; }
 body.page-profile #main-content > .section:not(.hero) { padding-top:16px; }
-body.page-profile #profile-dashboard .profile-user-email { font-family:var(--font-body, Inter, sans-serif); font-size:1rem; text-transform:none; letter-spacing:0; overflow-wrap:anywhere; }
+body.page-profile #profile-dashboard .profile-user-email { font-family:var(--font-body, Inter, sans-serif); font-size:1rem; text-transform:none; letter-spacing:0; overflow-wrap:anywhere; background:none; -webkit-text-fill-color:currentColor; }
+body.page-profile #profile-dashboard .profile-user-plan { display:flex; flex-wrap:wrap; align-items:center; gap:0.4rem; background:none; border:0; border-radius:0; padding:0; box-shadow:none; color:var(--profile-muted); }
+body.page-profile #profile-dashboard .profile-user-plan .badge { border-radius:6px; text-transform:none; letter-spacing:0; font-weight:500; text-align:left; }
 body.page-profile #profile-dashboard .badge--premium { background:rgba(208,177,124,.12); color:#d0b17c; border:1px solid rgba(208,177,124,.3); box-shadow:none; }
 body.page-profile #profile-dashboard {
     --profile-surface: rgba(11, 25, 41, 0.92);
@@ -1611,6 +1613,9 @@ body.page-profile .profile-refresh-status { margin-bottom: 1rem; padding: 1rem; 
 body.page-profile #profile-context-status[hidden],
 body.page-profile #journal-login[hidden] { display: none; }
 body.page-profile .reading-modal__actions button:disabled { opacity: .5; cursor: wait; }
+body.page-profile [data-reading-action="favorite"] .mh-symbol,
+body.page-profile #modal-favorite-btn .mh-symbol { width: 1.2rem; height: 1.2rem; vertical-align: middle; }
+body.page-profile [aria-pressed="true"] .mh-symbol { fill: rgba(189, 155, 101, .25); }
 body.page-profile #reading-modal .reading-card-reference { margin-top: .8rem; text-align: left; }
 body.page-profile #reading-modal .reading-card-reference summary { min-height: 44px; cursor: pointer; color: var(--profile-gold); }
 body.page-profile #reading-modal .reading-card-reference .reading-interpretation__text { font-family: var(--font-body, Inter, sans-serif); line-height: 1.7; }

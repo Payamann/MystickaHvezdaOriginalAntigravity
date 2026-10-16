@@ -55,6 +55,17 @@ def main():
     functional = {item['path'] for item in json.loads((BASELINE / 'functional-pages.json').read_text(encoding='utf-8'))}
     issues = {item['path']: item['issueIds'] for item in json.loads((BASELINE / 'review-ledger.json').read_text(encoding='utf-8'))}
     pages = []
+    observations = {}
+    for viewport in ('desktop', 'mobile'):
+        report = OUTPUT / 'qa-evidence' / f'browser-{viewport}.json'
+        if report.is_file():
+            for observation in json.loads(report.read_text(encoding='utf-8')):
+                observations.setdefault(observation['path'], {})[viewport] = {
+                    'evidence': f'qa-evidence/browser-{viewport}.json',
+                    'viewport': observation['width'],
+                    'documentWidth': observation['scroll'],
+                    'scope': 'initial route load and DOM layout; not every tool interaction'
+                }
     for item in inventory:
         url = item['URL']
         file = ROOT / url.lstrip('/')
@@ -66,11 +77,12 @@ def main():
             'previousCategory': item['category'], 'functionalEntry': url in functional,
             'previousIssues': issues.get(url, []), 'stylesheets': parser.paths,
             'sourceExists': file.is_file(), 'state': 'awaiting-final-review',
+            'browserLoadEvidence': observations.get(url),
             'evidenceBaseline': '../page-simplification-2026-10-14/README.md',
             'assignmentMethod': 'source-path rule; validate exceptions in final review'
         })
     OUTPUT.mkdir(parents=True, exist_ok=True)
-    write_json('page-ledger.json', {'date': '2026-10-15', 'method': 'existing complete source inventory; not runtime QA', 'pages': pages})
+    write_json('page-ledger.json', {'date': '2026-10-16', 'method': 'complete source inventory plus linked initial-load observations where available; not exhaustive functional acceptance', 'pages': pages})
 
     # Deliberately exclude documentation and generated JS/CSS bundles. A missing
     # literal reference cannot rule out a dynamically constructed runtime path.
@@ -94,7 +106,7 @@ def main():
         'date': '2026-10-15', 'method': 'literal references in functional/root HTML, source CSS and JS; excludes docs/dist/minified CSS; no runtime claims',
         'scannedSourceFiles': len(texts), 'assets': assets
     })
-    print(f'Source ledger saved: {len(pages)} pages; {len(functional)} functional entries; {len(assets)} atlas artworks. Runtime review pending.')
+    print(f'Source ledger saved: {len(pages)} pages; {len(functional)} functional entries; {len(assets)} atlas artworks. Linked browser load evidence: {len(observations)} routes.')
 
 
 if __name__ == '__main__':

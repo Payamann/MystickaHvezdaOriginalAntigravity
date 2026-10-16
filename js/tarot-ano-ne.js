@@ -800,7 +800,17 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
         }
 
         nextStep.dataset.answerKey = answerKey;
-        setBlockVisible(nextStep, true);
+        setBlockVisible(nextStep, !window.Auth?.isLoggedIn?.());
+        const memberContinuation = document.querySelector('[data-relationship-legacy]');
+        if (memberContinuation && window.Auth?.isPremium?.()) {
+            const link = memberContinuation.querySelector('[data-tarot-yes-no-upgrade]');
+            if (link) {
+                link.textContent = 'Pokračovat třemi kartami';
+                link.href = buildTarotYesNoResumeUrl(TAROT_YES_NO_RESULT_SOURCE);
+            }
+            const paymentCopy = memberContinuation.querySelector('.tarot-result-upgrade-bridge__action small');
+            if (paymentCopy) paymentCopy.hidden = true;
+        }
 
         const metadata = getResultMetadata(answerKey, ans, question);
         // The yes/no answer remains complete and free. The paid path is a small,

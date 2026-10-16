@@ -1,5 +1,5 @@
-import practices from '../../data/tarot-daily-practice.json' with { type: 'json' };
-import descriptions from '../../data/tarot-card-hub.json' with { type: 'json' };
+import practices from '../../data/generated/tarot-daily-practice.js';
+import descriptions from '../../data/generated/tarot-card-hub.js';
 
 export function getPragueDateKey(date = new Date()) {
     const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Prague', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(date);

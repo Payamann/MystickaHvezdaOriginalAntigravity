@@ -104,7 +104,7 @@ describe('CTR sprint static SEO pages', () => {
     const html = await readPage('partnerska-shoda.html');
 
     expect(html).toContain('id="synastry-priority-links"');
-    expect(html).toContain('Nejhledanější dvojice');
+    expect(html).toContain('Vybrané dvojice znamení');
     [
       ['partnerska-shoda/sagittarius-pisces.html', 'Střelec a Ryby ve vztahu'],
       ['partnerska-shoda/aquarius-taurus.html', 'Vodnář a Býk ve vztahu'],
@@ -127,7 +127,7 @@ describe('CTR sprint static SEO pages', () => {
     });
 
     expect(html).toContain('id="synastry-scorpio-cluster"');
-    expect(html).toContain('Štír se v dotazech často píše i jako Skorpion');
+    expect(html).toContain('Štír se někdy píše i jako Skorpion');
     expect(html).toContain('partnerska-shoda/aries-taurus.html');
     expect(html).toContain('partnerska-shoda/leo-scorpio.html');
     expect(html).not.toContain('href="kompatibilita/');
@@ -206,7 +206,7 @@ describe('CTR sprint static SEO pages', () => {
     expect(html).toContain('Královna pohárů spojuje citlivost, empatii a pozornost k vlastním hranicím');
     expect(html).toContain('Královna pohárů obráceně');
     expect(html).toContain('Příklad výkladu karty Královna pohárů');
-    expect(html).toContain('/tarot.html?source=tarot_card_detail_next_step');
+    expect(html).toContain('/tarot.html?source=tarot_card_detail&amp;card=Kr%C3%A1lovna%20poh%C3%A1r%C5%AF');
     // Most na denní horoskop e-mailem — sběr kontaktu na 78 stránkách clusteru
     expect(html).toContain('data-analytics-source="tarot_card_detail"');
     expect(html).toContain('horoscope-subscribe-btn');

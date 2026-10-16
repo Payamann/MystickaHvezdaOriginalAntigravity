@@ -2,6 +2,7 @@ import { copyFile, mkdir, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as esbuild from 'esbuild';
+import { buildSharedToolData } from './build-shared-tool-data.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -11,6 +12,7 @@ const outDir = path.join(jsDir, 'dist');
 
 const passthroughFiles = new Set(['three.min.js']);
 const skippedDirs = new Set(['dist', 'vendor']);
+await buildSharedToolData();
 
 async function collectEntries(dir = jsDir) {
     const entries = [];

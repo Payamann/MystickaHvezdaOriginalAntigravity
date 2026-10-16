@@ -29,25 +29,15 @@
             height: 44px;
             min-width: 44px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--color-mystic-gold), #9b59b6);
+            background: #102638;
+            color: #bd9b65;
+            border: 1px solid #bd9b6555;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.3rem;
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+            box-shadow: none;
             position: relative;
-        }
-
-        .mentor-avatar::after {
-            content: "";
-            position: absolute;
-            bottom: 2px;
-            right: 2px;
-            width: 10px;
-            height: 10px;
-            background: #4caf50;
-            border: 2px solid #0a0a1a;
-            border-radius: 50%;
         }
 
         .chat-messages {

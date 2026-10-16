@@ -432,6 +432,16 @@ html body .mh-inline-78489344ad { font-size: 12rem; opacity: 0.1; }
     .zodiac-grid .zodiac-card::before { width: 48px; }
 }
 
+body.atlas-page .horoscope-reference-section { padding-block: 0.5rem; }
+@media (max-width: 560px) {
+    body[data-atlas-polish="horoskopy"] .zodiac-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
+    body[data-atlas-polish="horoskopy"] .zodiac-grid .zodiac-card { grid-template-columns: 36px minmax(0, 1fr); min-height: 108px; gap: .3rem .4rem; padding: .55rem; }
+    body[data-atlas-polish="horoskopy"] .zodiac-grid .zodiac-card::before { width: 36px; }
+    body[data-atlas-polish="horoskopy"] .zodiac-card__name { font-size: .9rem; overflow-wrap: anywhere; }
+    body[data-atlas-polish="horoskopy"] .zodiac-card__dates { font-size: .65rem; }
+    body[data-atlas-polish="horoskopy"] .zodiac-card__badge { position:static; inset:auto; transform:none; grid-column:1 / -1; justify-self:start; max-width:100%; white-space:normal; border-radius:4px; font-size:.6rem; }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .zodiac-grid .zodiac-card { transition: none; }
 }

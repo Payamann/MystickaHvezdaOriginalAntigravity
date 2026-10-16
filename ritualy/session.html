@@ -46,12 +46,13 @@
         <div class="screen active" id="screen-checkin-before">
             <p class="checkin-title">Jak se nyní cítíš?</p>
             <p class="checkin-sub">Před začátkem rituálu</p>
+            <p>1 únava · 2 neutrálně · 3 klid · 4 dobře · 5 skvěle</p>
             <div class="emoji-row" role="group" aria-label="Výběr nálady před rituálem">
-                <button class="emoji-btn" data-mood="1" aria-label="Unavený/á">😔</button>
-                <button class="emoji-btn" data-mood="2" aria-label="Neutrální">😐</button>
-                <button class="emoji-btn" data-mood="3" aria-label="Klidný/á">😌</button>
-                <button class="emoji-btn" data-mood="4" aria-label="Dobrý/á">🌟</button>
-                <button class="emoji-btn" data-mood="5" aria-label="Skvělý/á">✨</button>
+                <button class="emoji-btn" data-mood="1" aria-label="Unavený/á">1</button>
+                <button class="emoji-btn" data-mood="2" aria-label="Neutrální">2</button>
+                <button class="emoji-btn" data-mood="3" aria-label="Klidný/á">3</button>
+                <button class="emoji-btn" data-mood="4" aria-label="Dobrý/á">4</button>
+                <button class="emoji-btn" data-mood="5" aria-label="Skvělý/á">5</button>
             </div>
         </div>
 
@@ -71,7 +72,7 @@
             <p class="step-subtext" id="step-subtext"></p>
 
             <button class="btn-next" id="btn-next" aria-label="Pokračovat na další krok">
-                Jsem připraven/a ›
+                Pokračovat ›
             </button>
         </div>
 
@@ -79,12 +80,13 @@
         <div class="screen" id="screen-checkin-after">
             <p class="checkin-title">Jak se cítíš nyní?</p>
             <p class="checkin-sub">Po dokončení rituálu</p>
+            <p>1 únava · 2 neutrálně · 3 klid · 4 dobře · 5 skvěle</p>
             <div class="emoji-row" role="group" aria-label="Výběr nálady po rituálu">
-                <button class="emoji-btn" data-mood="1" aria-label="Unavený/á">😔</button>
-                <button class="emoji-btn" data-mood="2" aria-label="Neutrální">😐</button>
-                <button class="emoji-btn" data-mood="3" aria-label="Klidný/á">😌</button>
-                <button class="emoji-btn" data-mood="4" aria-label="Dobrý/á">🌟</button>
-                <button class="emoji-btn" data-mood="5" aria-label="Skvělý/á">✨</button>
+                <button class="emoji-btn" data-mood="1" aria-label="Unavený/á">1</button>
+                <button class="emoji-btn" data-mood="2" aria-label="Neutrální">2</button>
+                <button class="emoji-btn" data-mood="3" aria-label="Klidný/á">3</button>
+                <button class="emoji-btn" data-mood="4" aria-label="Dobrý/á">4</button>
+                <button class="emoji-btn" data-mood="5" aria-label="Skvělý/á">5</button>
             </div>
         </div>
 
@@ -100,17 +102,17 @@
             <!-- Streak -->
             <div class="streak-badge" id="streak-badge">
                 <div class="streak-number" id="streak-number">1</div>
-                <div class="streak-label" id="streak-label">rituál v řadě 🔥</div>
+                <div class="streak-label" id="streak-label">rituál v řadě</div>
             </div>
 
             <!-- Journaling -->
             <div class="journal-section" id="journal-section">
-                <h3>✍ Zápisky z rituálu</h3>
+                <h3>Zápisky z rituálu</h3>
                 <div id="journal-prompts-list"></div>
                 <textarea
                     class="journal-textarea"
                     id="journal-notes"
-                    placeholder="Napište své myšlenky, pocity nebo odpovědi na otázky výše…"
+                    placeholder="Napiš své myšlenky nebo odpověď na otázku výše…"
                     rows="4"
                     maxlength="2000"
                 ></textarea>
@@ -120,9 +122,9 @@
 
             <!-- Crosslinks -->
             <div class="crosslinks">
-                <a href="../tarot.html" class="crosslink-btn">🔮 Tarotový výklad</a>
-                <a href="../lunace.html" class="crosslink-btn">🌙 Lunární fáze</a>
-                <a href="../andelska-posta.html" class="crosslink-btn">💌 Andělská Pošta</a>
+                <a href="../tarot.html" class="crosslink-btn">Tarotový výklad</a>
+                <a href="../lunace.html" class="crosslink-btn">Lunární fáze</a>
+                <a href="../andelska-posta.html" class="crosslink-btn">Andělská pošta</a>
             </div>
 
             <a href="index.html" class="mh-inline-0959972fab">← Zpět na rituály</a>

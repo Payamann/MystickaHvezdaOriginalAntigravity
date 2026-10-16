@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     window.shareResult = () => {
-        const text = `V symbolickém kvízu o auře se s mými odpověďmi propojila barva ${window.lastResult}.`;
+        const text = `V symbolickém kvízu se s mými odpověďmi propojil barevný motiv ${window.lastResult}.`;
         if (navigator.share) {
             navigator.share({
                 title: 'Moje Aura',

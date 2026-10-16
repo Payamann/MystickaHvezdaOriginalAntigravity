@@ -1,6 +1,6 @@
 # Příprava vydání · 15. 10. 2026
 
-**Pracovní kandidát. Nevydávat před závěrečným ověřením.** Pavel požádal připravovat TODO autonomně a funkční testování soustředit do jednoho průchodu na konci. V této dávce probíhá implementace a kontrola zdrojů/diffu; žádné nové testy, build, prohlížeč ani produkční změny se zatím nespouštěly. Starší úspěch 11 testů PF01 se netýká všech nynějších změn.
+**Pracovní kandidát. Závěrečná QA fáze probíhá, produkce beze změny.** Aktuální doložené výsledky z 15.–16. října jsou v [QA checkpointu](qa-results.md). Následující seznam zachovává plán zdrojových dávek a nepředstavuje automaticky splněné přijetí. Starší úspěch PF01 se nevydává za ověření všech pozdějších změn.
 
 Druhá zdrojová dávka je podrobně v [checkpointu](source-batch-2.md). Následující tabulka zachovává první dávku; aktuální závěrečné výsledky budou doplněné zvlášť.
 

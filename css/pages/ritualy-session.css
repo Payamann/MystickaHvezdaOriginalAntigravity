@@ -358,7 +358,7 @@
             text-align: center; font-size: 0.85rem;
             color: #2ed573; display: none;
         }
-        .journal-saved-msg--visible { display: block !important; }
+        .journal-saved-msg--visible:not([hidden]) { display: block !important; }
         .mood-shift--visible { display: inline-flex !important; }
         .ritual-breath-visible { display: block !important; }
         .journal-premium-gate {
@@ -406,7 +406,7 @@ html body .mh-inline-9aead1b566 { display:none; }
 html body .mh-inline-5f069ec654 { color:var(--muted);font-size:0.95rem;margin-bottom:0.5rem; }
 html body .mh-inline-0959972fab { display:block;margin-top:2rem;font-size:0.82rem;color:var(--muted);text-decoration:none; }
 
-/* V10: calm full-session surface; mood emojis, flame colors and status states stay intact. */
+/* Calm full-session surface; mood choices and status states remain readable. */
 body.atlas-page {
     --bg: #0b1929;
     --white: rgba(247, 240, 223, 0.9);
@@ -439,3 +439,10 @@ body.atlas-page .journal-premium-gate {
     background: rgba(11, 25, 41, 0.76);
     border-color: rgba(201, 169, 110, 0.32);
 }
+body.atlas-page .btn-save-journal {
+    background: #bd9b65;
+    color: #0b1929;
+    border-radius: 6px;
+}
+body.atlas-page .btn-save-journal:disabled { opacity: 0.65; cursor: default; }
+body.atlas-page .journal-saved-msg[role="alert"] { color: #efbbb0; }

@@ -886,17 +886,6 @@ function isPremiumSubscription(sub) {
     return planType !== 'free' && activeStatuses.includes(sub?.status || 'active');
 }
 
-function getSavedOnboardingSign() {
-    try {
-        const saved = localStorage.getItem('mh_zodiac');
-        return saved && ONBOARDING_SIGN_LABELS[saved]
-            ? { ...ONBOARDING_SIGN_LABELS[saved], slug: saved }
-            : null;
-    } catch (e) {
-        return null;
-    }
-}
-
 function getProfileSign(user) {
     if (user?.birth_date) {
         const sign = getZodiacSign(user.birth_date) || getZodiacSignLocal(user.birth_date);
@@ -907,7 +896,9 @@ function getProfileSign(user) {
         }
     }
 
-    return getSavedOnboardingSign();
+    // A browser-wide preference may belong to another account. Only the
+    // signed-in profile's birth date identifies its own zodiac sign.
+    return null;
 }
 
 function getReadingKinds(readings) {
@@ -1356,7 +1347,7 @@ function renderDailyGuidance(user, readings, subscription) {
 
     copyEl.textContent = sign
         ? `Můžeš si přečíst horoskop pro své znamení nebo otevřít kartu dne. Poslední výklad: ${getLastReadingLabel(readings)}.`
-        : 'Znamení si můžeš vybrat v úvodním nastavení nebo doplnit datum narození v profilu.';
+        : 'Vyber si znamení na stránce horoskopů nebo doplň datum narození v nastavení profilu.';
 
     focusEl.textContent = `Redakční podnět k zamyšlení: ${focus}`;
 

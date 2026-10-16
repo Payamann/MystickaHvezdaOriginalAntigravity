@@ -5,7 +5,8 @@ const updateFavoriteSummary = jest.fn();
 jest.unstable_mockModule('../../js/profile/shared.js', () => ({
     escapeHtml: value => String(value ?? ''), apiUrl: () => '/api', authHeaders: () => ({}),
     authHeadersWithCsrf: async () => ({}), getReadingIcon: () => '', getReadingLabel: () => 'Poznámka',
-    getReadingData: reading => reading.data
+    getReadingData: reading => reading.data,
+    profileIconMarkup: name => `<svg data-icon="${name}"></svg>`
 }));
 jest.unstable_mockModule('../../js/profile/readings.js', () => ({
     getAllReadings: () => [], updateReading: jest.fn(), renderReadings: jest.fn(),
@@ -153,7 +154,7 @@ test('pending favorite blocks duplicate mutation and cannot change another detai
     await viewReading('B');
     mutation.resolve(favoriteResponse(true));
     await saving;
-    expect(nodes['modal-favorite-btn'].textContent).toContain('Přidat');
+    expect(nodes['modal-favorite-btn'].attrs['aria-pressed']).toBe('false');
     expectActionsDisabled(false);
     expect(updateFavoriteSummary).toHaveBeenCalledWith(false, true);
 });
@@ -163,7 +164,7 @@ test('failed favorite reenables actions for the same loaded detail', async () =>
     await viewReading('A');
     await toggleFavoriteModal();
     expectActionsDisabled(false);
-    expect(nodes['modal-favorite-btn'].textContent).toContain('Přidat');
+    expect(nodes['modal-favorite-btn'].attrs['aria-pressed']).toBe('false');
 });
 
 test('reopening the same record waits for its mutation before requesting a fresh detail', async () => {
@@ -180,7 +181,7 @@ test('reopening the same record waits for its mutation before requesting a fresh
     await saving;
     await reopening;
     expect(fetch).toHaveBeenCalledTimes(3);
-    expect(nodes['modal-favorite-btn'].textContent).toContain('V oblíbených');
+    expect(nodes['modal-favorite-btn'].attrs['aria-pressed']).toBe('true');
     expectActionsDisabled(false);
 });
 

@@ -152,11 +152,19 @@
         });
     }
 
-    function downloadCanvas(canvas, fileName) {
+    async function downloadCanvas(canvas, fileName) {
+        const file = await canvasToPngFile(canvas, fileName);
+        const url = URL.createObjectURL(file);
         const link = document.createElement('a');
         link.download = fileName;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
+        link.href = url;
+        document.body.appendChild(link);
+        try {
+            link.click();
+        } finally {
+            link.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 60000);
+        }
     }
 
     function track(eventName, metadata) {
@@ -170,7 +178,12 @@
      * `${eventBase}_saved` through MH_ANALYTICS.
      * Returns 'shared' | 'cancelled' | 'downloaded'.
      */
-    async function shareOrDownload({ canvas, fileName, shareTitle, shareText, eventBase, metadata = {} }) {
+    async function shareOrDownload({ canvas, fileName, shareTitle, shareText, eventBase, metadata = {}, preferDownload = false }) {
+        if (preferDownload) {
+            await downloadCanvas(canvas, fileName);
+            track(`${eventBase}_saved`, { ...metadata, share_target: 'download', format: 'png' });
+            return 'downloaded';
+        }
         let file = null;
         try {
             file = await canvasToPngFile(canvas, fileName);
@@ -195,13 +208,13 @@
                     track(`${eventBase}_share_cancelled`, metadata);
                     return 'cancelled';
                 }
-                downloadCanvas(canvas, fileName);
+                await downloadCanvas(canvas, fileName);
                 track(`${eventBase}_saved`, { ...metadata, share_target: 'download_fallback', format: 'png' });
                 return 'downloaded';
             }
         }
 
-        downloadCanvas(canvas, fileName);
+        await downloadCanvas(canvas, fileName);
         track(`${eventBase}_saved`, { ...metadata, share_target: 'download', format: 'png' });
         return 'downloaded';
     }

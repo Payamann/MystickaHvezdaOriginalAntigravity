@@ -86,7 +86,7 @@ import { getLunarState as getMoonPhase } from './utils/lunar-state.js';
         const btn = document.querySelector(`.zodiac-btn[data-sign="${sign}"]`);
         if (!btn) return;
         btn.classList.add('zodiac-btn--preferred');
-        btn.title = 'Vaše uložené znamení';
+        btn.title = 'Tvé uložené znamení';
     }
 
     /* ── Zobrazení rituálu ────────────────────────────────────────── */

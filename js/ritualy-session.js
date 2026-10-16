@@ -14,17 +14,19 @@
         COMPLETION: 'screen-completion',
     };
 
-    const MOOD_LABELS = { 1: '😔', 2: '😐', 3: '😌', 4: '🌟', 5: '✨' };
+    const MOOD_LABELS = { 1: 'Únava', 2: 'Neutrálně', 3: 'Klid', 4: 'Dobře', 5: 'Skvěle' };
     const STREAK_KEY  = 'mh_ritual_streak';
     const BEST_KEY    = 'mh_ritual_best_streak';
     const DATE_KEY    = 'mh_ritual_last_date';
-    const JOURNAL_KEY = 'mh_ritual_journal';
 
     /* ── Stav ─────────────────────────────────────────────────────── */
     let ritual       = null;
     let currentStep  = 0;   // 0-based index do ritual.kroky
     let moodBefore   = null;
     let moodAfter    = null;
+    let journalSavePending = false;
+    let journalOwnerId = null;
+    let savedJournalText = null;
 
     /* ── Pomocné ──────────────────────────────────────────────────── */
     function getTodayStr() {
@@ -66,7 +68,7 @@
 
     function updateProgress(stepIdx) {
         // stepIdx = -1 (before), 0-5 (steps), 6 (after), 7 (completion)
-        const total = 9; // before + 6 steps + after + done
+        const total = 8; // Eight transitions from initial check-in to completion.
         const pct   = Math.round(((stepIdx + 1) / total) * 100);
         const bar   = document.getElementById('progress-bar');
         if (bar) {
@@ -104,19 +106,19 @@
             cycle++;
             // Nádech (4s)
             circle.className = 'breath-guide inhale';
-            label.textContent  = 'Nadechněte se…';
+            label.textContent  = 'Nadechni se…';
             counter.textContent = cycle;
 
             setTimeout(() => {
                 // Zadržet (4s)
                 circle.className   = 'breath-guide hold';
-                label.textContent  = 'Zadržte…';
+                label.textContent  = 'Na chvíli zadrž…';
             }, 4000);
 
             setTimeout(() => {
                 // Výdech (6s)
                 circle.className   = 'breath-guide exhale';
-                label.textContent  = 'Vydechněte pomalu…';
+                label.textContent  = 'Pomalu vydechni…';
             }, 8000);
 
             setTimeout(() => {
@@ -230,8 +232,7 @@
         const lblEl   = document.getElementById('streak-label');
         if (numEl) numEl.textContent = streak;
         if (lblEl) {
-            const icon = streak >= 30 ? '🌟' : streak >= 7 ? '⭐' : '🔥';
-            lblEl.textContent = `${streak === 1 ? 'rituál dnes' : streak < 5 ? 'rituály v řadě' : 'rituálů v řadě'} ${icon}`;
+            lblEl.textContent = streak === 1 ? 'rituál dnes' : streak < 5 ? 'rituály v řadě' : 'rituálů v řadě';
         }
 
         // Journal prompts
@@ -256,41 +257,64 @@
             : false;
 
         if (isPremium) {
-            actionEl.innerHTML = `<button class="btn-save-journal" id="btn-save-journal">Uložit zápisky ✦</button>`;
+            journalOwnerId = window.Auth?.user?.id || null;
+            actionEl.innerHTML = `<p>Zápis se uloží do deníku tvého profilu.</p><button class="btn-save-journal" id="btn-save-journal">Uložit do deníku</button>`;
             document.getElementById('btn-save-journal').addEventListener('click', saveJournal);
+            document.getElementById('journal-notes')?.addEventListener('input', () => {
+                const button = document.getElementById('btn-save-journal');
+                if (button && !journalSavePending) button.disabled = false;
+                const status = document.getElementById('journal-saved');
+                if (status) status.hidden = true;
+            });
         } else {
             actionEl.innerHTML = `
                 <div class="journal-premium-gate">
                     Uložení zápisků je součástí
                     <a href="../cenik.html">Premium</a>.
-                    Zápisky si nyní zkopírujte ručně.
+                    Zápisky si zatím můžeš zkopírovat. Přihlášení a členství můžeš otevřít později.
                 </div>`;
         }
     }
 
-    function saveJournal() {
+    async function saveJournal() {
         const notes    = document.getElementById('journal-notes');
         const savedMsg = document.getElementById('journal-saved');
-        if (!notes) return;
-
-        const entry = {
-            date:        getTodayStr(),
-            phase:       ritual.phaseSlug,
-            sign:        ritual.signSlug,
-            moodBefore:  moodBefore,
-            moodAfter:   moodAfter,
-            notes:       notes.value.trim(),
+        const button = document.getElementById('btn-save-journal');
+        if (!notes || journalSavePending) return;
+        const text = notes.value.trim();
+        const showStatus = (message, error = false) => {
+            if (!savedMsg) return;
+            savedMsg.textContent = message;
+            savedMsg.setAttribute('role', error ? 'alert' : 'status');
+            savedMsg.hidden = false;
+            savedMsg.classList.add('journal-saved-msg--visible');
         };
-
+        if (!text) { showStatus('Nejdřív napiš krátkou poznámku.', true); return; }
+        if (savedJournalText === text) { showStatus('Tento zápis už je uložený v deníku.'); return; }
+        journalSavePending = true;
+        if (button) { button.disabled = true; button.setAttribute('aria-busy', 'true'); }
         try {
-            const existing = JSON.parse(tryLS(JOURNAL_KEY) || '[]');
-            existing.unshift(entry);
-            setLS(JOURNAL_KEY, JSON.stringify(existing.slice(0, 50))); // max 50 záznamů
-            if (savedMsg) {
-                savedMsg.hidden = false;
-                savedMsg.classList.add('journal-saved-msg--visible');
+            await window.Auth?.refreshSession?.();
+            const profile = await window.Auth?.getProfile?.();
+            if (!journalOwnerId || profile?.id !== journalOwnerId || window.Auth?.user?.id !== journalOwnerId) {
+                throw new Error('Journal account changed or expired');
             }
-        } catch (e) { /* ignore */ }
+            const content = `${ritual.nazev}\n${getTodayStr()}\nNálada: ${MOOD_LABELS[moodBefore]} → ${MOOD_LABELS[moodAfter]}\n\n${text}`;
+            const saved = await window.Auth.saveReading('journal', content);
+            if (window.Auth?.user?.id !== journalOwnerId) throw new Error('Journal account changed');
+            if (!saved?.id) throw new Error('Journal save not confirmed');
+            savedJournalText = text;
+            showStatus('Zápisky jsou uložené v deníku tvého profilu.');
+        } catch (error) {
+            console.warn('[Ritual] Journal save not confirmed:', error.message);
+            showStatus('Uložení se nepodařilo potvrdit. Text zůstává tady. Zkontroluj přihlášení a zkus to znovu.', true);
+        } finally {
+            journalSavePending = false;
+            if (button) {
+                button.disabled = savedJournalText === notes.value.trim();
+                button.removeAttribute('aria-busy');
+            }
+        }
     }
 
     /* ── INICIALIZACE ────────────────────────────────────────────── */

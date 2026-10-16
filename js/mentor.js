@@ -266,38 +266,9 @@ async function loadHistory() {
                 scrollToBottom();
             }
 
-            // Always check if we should greet (e.g. if >12h since last msg, backend decides)
-            // We call this regardless of history length to catch "return" visitors
-            checkGreeting();
-
         }
     } catch (e) {
         console.warn('Failed to load history', e);
-    }
-}
-
-async function checkGreeting() {
-    // Basic frontend check to avoid spamming the API on every reload if we KNOW we just chatted?
-    // Actually, backend comparison is better. API call is cheap.
-
-    try {
-        const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
-        const response = await fetch(`${API_CONFIG.BASE_URL}/mentor/greeting`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                ...(csrfToken && { 'X-CSRF-Token': csrfToken })
-            }
-        });
-
-        const data = await response.json();
-        if (data.success && data.greeting) {
-            // Add the greeting!
-            addMessage(data.greeting, 'mentor', true);
-        }
-    } catch (e) {
-        // Silent fail
-        if (window.MH_DEBUG) console.debug('No greeting today.');
     }
 }
 

@@ -231,9 +231,9 @@ import { showFallbackNotice } from './utils/reading-display.js';
             var place = payload.place;
             var gender = payload.gender;
 
-            if (!name || name.length < 2) { showError('Zadejte své jméno.'); return; }
-            if (!birth) { showError('Zadejte datum narození.'); return; }
-            if (!gender) { showError('Vyberte formu výkladu.'); return; }
+            if (!name || name.length < 2) { showError('Zadej své jméno.'); return; }
+            if (!birth) { showError('Zadej datum narození.'); return; }
+            if (!gender) { showError('Vyber formu výkladu.'); return; }
 
             if (!hasPremiumAccess()) {
                 sessionStorage.setItem('pendingPastLifeContext', JSON.stringify(payload));
@@ -267,7 +267,7 @@ import { showFallbackNotice } from './utils/reading-display.js';
 
                 if (!res.ok || !data.success) {
                     setBlockVisible(document.getElementById('form-section'), true);
-                    showError(data.error || 'Chyba serveru. Zkuste to prosím znovu.');
+                    showError(data.error || 'Chyba serveru. Zkus to prosím znovu.');
                     return;
                 }
 
@@ -309,7 +309,7 @@ import { showFallbackNotice } from './utils/reading-display.js';
             } catch (e) {
                 setBlockVisible(document.getElementById('pl-loading'), false);
                 setBlockVisible(document.getElementById('form-section'), true);
-                showError('Chyba připojení. Zkuste to prosím znovu.');
+                showError('Chyba připojení. Zkus to prosím znovu.');
             }
         });
 
@@ -324,10 +324,10 @@ import { showFallbackNotice } from './utils/reading-display.js';
     function setupShare(name, r) {
         var pageUrl = 'https://www.mystickahvezda.cz/minuly-zivot.html';
         var firstName = name.split(' ')[0];
-        var shareText = '\uD83D\uDD2E ' + firstName + ' má symbolický vhled minulého života: ' +
+        var shareText = firstName + ' má symbolický vhled minulého života: ' +
             (r.era ? 'V \u00E9\u0159e \u201E' + r.era + '\u201C ' : '') +
             (r.identity ? r.identity.substring(0, 60) + (r.identity.length > 60 ? '\u2026' : '') + '. ' : '') +
-            'Vytvo\u0159 si vlastn\u00ED sebereflexn\u00ED v\u00FDklad \u2935\uFE0F';
+            'Vytvo\u0159 si vlastn\u00ED sebereflexn\u00ED v\u00FDklad.';
 
         // Facebook
         var fbBtn = document.getElementById('share-fb');
@@ -433,7 +433,7 @@ import { showFallbackNotice } from './utils/reading-display.js';
             imageBtn.className = 'share-btn share-btn--copy';
             buttonsBar.appendChild(imageBtn);
         }
-        imageBtn.textContent = '\u2728 Ulo\u017Eit obr\u00E1zek';
+        imageBtn.textContent = 'Ulo\u017Eit obr\u00E1zek';
 
         imageBtn.onclick = function () {
             imageBtn.disabled = true;
@@ -460,7 +460,7 @@ import { showFallbackNotice } from './utils/reading-display.js';
                 })
                 .then(function () {
                     imageBtn.disabled = false;
-                    imageBtn.textContent = '\u2728 Ulo\u017Eit obr\u00E1zek';
+                    imageBtn.textContent = 'Ulo\u017Eit obr\u00E1zek';
                 });
         };
     }

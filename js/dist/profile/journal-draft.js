@@ -1,0 +1,1 @@
+var t="mh_profile_journal_draft:";function n(r){if(!r)return"";try{return sessionStorage.getItem(t+r)||""}catch{return""}}function o(r,e){if(r)try{e?sessionStorage.setItem(t+r,String(e).slice(0,5e4)):sessionStorage.removeItem(t+r)}catch{}}export{n as readJournalDraft,o as writeJournalDraft};

@@ -20,12 +20,12 @@ Tyto body už jsou doložené v navazovaných auditech. Nejde o nově vymyšlen�
 
 | ID | Stav / priorita | Úkol a vazba | Přijetí |
 |---|---|---|---|
-| R01 | Zdroj připravený · čeká QA · P1 | Výpadkové větve natální karty a partnerské shody; viz funkční review | Selhání výpočtu nevytváří zdánlivou osobní mapu nebo procento odvozené ze jmen. Vstup zůstane zachovaný a uživatel dostane pravdivý stav a možnost opakovat. |
-| R02 | Zdroj připravený · čeká QA · P1 | Trvale uložený výsledek a opakování doručení osobní mapy; viz funkční review | Retry používá stejný výsledek objednávky; potvrzení odeslání i neúspěch zápisu stavu se řeší výslovně. Ověřit cíleně v testovacím prostředí. |
-| R03 | Zdroj připravený · čeká QA · P1/P2 | Profil: PF01–PF07, otázka a rozlišení výkladu PF11 | Detail, jeho akce, historie, deník, oblíbené a odvozené bloky pracují se stejným aktuálním stavem. |
-| R04 | Zdroj připravený · čeká QA · P1/P2 | Sjednotit numerologickou metodu, lunární referenční okamžiky a pravdivé prompty; označování fallbacků | Stejný vstup má vysvětlenou a konzistentní metodu. Generický náhradní obsah se nevydává za čerstvou osobní interpretaci. |
+| R01 | Cílené regrese + natální retry v browseru; přijetí pokračuje · P1 | Výpadkové větve natální karty a partnerské shody; viz funkční review | Selhání výpočtu nevytváří zdánlivou osobní mapu nebo procento odvozené ze jmen. Vstup zůstane zachovaný a uživatel dostane pravdivý stav a možnost opakovat. |
+| R02 | Regrese a DB metadata ověřené; živé doručení/CAS čeká · P1 | Trvale uložený výsledek a opakování doručení osobní mapy; viz funkční review | Retry používá stejný výsledek objednávky; potvrzení odeslání i neúspěch zápisu stavu se řeší výslovně. Ověřit cíleně v testovacím prostředí. |
+| R03 | Unit + syntetický profil v browseru; částečně přijaté · P1/P2 | Profil: PF01–PF07, otázka a rozlišení výkladu PF11 | Detail, jeho akce, historie, deník, oblíbené a odvozené bloky pracují se stejným aktuálním stavem. |
+| R04 | Metody/unit + modelové výsledky ověřené; živá AI čeká · P1/P2 | Sjednotit numerologickou metodu, lunární referenční okamžiky a pravdivé prompty; označování fallbacků | Stejný vstup má vysvětlenou a konzistentní metodu. Generický náhradní obsah se nevydává za čerstvou osobní interpretaci. |
 
-**Výchozí R01 je zdrojově opravený:** falešná mapa, klientské skóre a náhradní tranzitové tvrzení jsou odstraněné. Úspěch i selhání čekají na závěrečné ověření. Původní důkazy zůstávají v datovaném funkčním reportu; aktuální změny v [release checkpointu](release-prep-2026-10-15/source-batch-2.md).
+**Výchozí R01 je zdrojově opravený:** falešná mapa, klientské skóre a náhradní tranzitové tvrzení jsou odstraněné. Český i slovenský natál prošel skutečným lokálním výpočtem a chybou/retry, shoda členskou a hostovskou variantou. Podrobný rozsah a neověřené stavy jsou v [QA checkpointu](release-prep-2026-10-15/qa-results.md).
 
 ## 1. Společný vzhled a orientace
 
@@ -142,7 +142,9 @@ Tyto body už jsou doložené v navazovaných auditech. Nejde o nově vymyšlen�
 
 ## Nejbližší ohraničený krok
 
-**Autonomní realizace, testování až na konci:** PF02–PF07/PF09–PF11, R01/R02, část R04, W01 a W08 mají rozpracované zdrojové změny v [release checkpointu](release-prep-2026-10-15/README.md). Jejich finální přijetí zatím není potvrzené; checkboxy nepředstírají proběhlé testy. Navazující R04/W02/W03/W06/W10/W11 jsou zdrojově zpracované v [druhé dávce](release-prep-2026-10-15/source-batch-2.md). Nejbližší krok: společný build a jedna závěrečná QA fáze, včetně výkonu, všech funkčních rodin a skutečných stavů.
+**Checkpoint 16. 10. 2026:** probíhá závěrečná QA fáze; [výsledky a zbývající přijetí](release-prep-2026-10-15/qa-results.md). Doložené je načtení všech 166 funkčních vstupů na desktopu/mobilu, serverové a frontendové regrese a konkrétní interakce profilu, natálu, obnovy přístupu a denního PNG. Celý seznam není dokončený jen podle těchto úspěchů. Další ohraničený krok jsou zbývající výsledkové stavy nástrojů a důkaz výkonu, potom závěrečné předání vydání. Produkce se nezměnila.
+
+**Autonomní realizace přešla do jedné závěrečné QA fáze.** Doložené výsledky, opravy i hranice jsou v [QA checkpointu](release-prep-2026-10-15/qa-results.md), jednotlivé nástroje v [cestách výsledků](release-prep-2026-10-15/tool-results-qa.md). Načtení všech 166 funkčních URL při dvou šířkách je doložené; všech sedm kvízů a hlavní výsledkové rodiny navíc prošly interakcí. Nově rituální zápisky skutečně navazují do serverového deníku profilu, včetně chyby a retry. Nejbližší krok: zbývající lokalizované výsledky a přístupové/chybové výjimky, W12 výkon a uzavření přijímacího seznamu; následně konkrétní vydání. Checkboxy celého seznamu se neodškrtávají hromadně podle několika úspěšných scénářů.
 
 PF01 byl před touto dávkou místně ověřen: 11/11 cílených regresí a skutečný profil nad syntetickou databází; [původní checkpoint](profile-unification-2026-10-14/pf01/README.md). Nyní navazující změny vyžadují znovu dotčenou závěrečnou regresi. Produkce se neměnila.
 

@@ -22,6 +22,44 @@
     const C_GOLD_DIM  = 'rgba(189,155,101,0.08)';
     const C_WHITE     = '#e9e3d7';
     const C_WHITE_DIM = '#c0c8ca';
+    const SHARE_COPY = {
+        cs: {
+            affirmation: 'Afirmace',
+            previewAria: 'Horoskop – obrázek ke sdílení',
+            shareTitle: 'Sdílet horoskop',
+            shareButton: 'Sdílet horoskop',
+            native: 'Instagram / TikTok / WhatsApp',
+            copyLink: 'Kopírovat odkaz',
+            download: 'Uložit obrázek',
+            copied: 'Odkaz zkopírován!'
+        },
+        sk: {
+            affirmation: 'Afirmácia',
+            previewAria: 'Horoskop – obrázok na zdieľanie',
+            shareTitle: 'Zdieľať horoskop',
+            shareButton: 'Zdieľať horoskop',
+            native: 'Instagram / TikTok / WhatsApp',
+            copyLink: 'Kopírovať odkaz',
+            download: 'Uložiť obrázok',
+            copied: 'Odkaz skopírovaný!'
+        },
+        pl: {
+            affirmation: 'Afirmacja',
+            previewAria: 'Horoskop – obraz do udostępnienia',
+            shareTitle: 'Udostępnij horoskop',
+            shareButton: 'Udostępnij horoskop',
+            native: 'Instagram / TikTok / WhatsApp',
+            copyLink: 'Kopiuj link',
+            download: 'Zapisz obraz',
+            copied: 'Link skopiowany!'
+        }
+    };
+
+    function getShareCopy() {
+        const language = (document.documentElement.lang || 'cs').toLowerCase().slice(0, 2);
+        return SHARE_COPY[language] || SHARE_COPY.cs;
+    }
+
     let artworkPromise;
     function loadArtwork() {
         if (!artworkPromise) artworkPromise = new Promise(resolve => {
@@ -79,6 +117,7 @@
 
     // ─── Hlavní generátor canvas karty ──────────────────────────────────────
     async function generateHoroscopeCard(signSymbol, signName, dateStr, predictionText, affirmationText, period = 'daily') {
+        const copy = getShareCopy();
         const [artwork] = await Promise.all([loadArtwork(), document.fonts?.ready]);
         const canvas = document.createElement('canvas');
         canvas.width  = CARD_W;
@@ -209,7 +248,7 @@
             ctx.font = '500 30px Inter, sans-serif';
             ctx.fillStyle = C_GOLD;
             ctx.textAlign = 'left';
-            ctx.fillText('Afirmace', textX, affY);
+            ctx.fillText(copy.affirmation, textX, affY);
 
             ctx.font = 'italic 34px Inter, sans-serif';
             ctx.fillStyle = C_WHITE_DIM;
@@ -285,6 +324,7 @@
 
     // ─── Vytvoř share panel ──────────────────────────────────────────────────
     function createSharePanel(canvas, signName, signSymbol, canonicalUrl, shareUrlWithUTM) {
+        const copy = getShareCopy();
         const existing = document.getElementById('horoscope-share-panel');
         if (existing) existing.remove();
 
@@ -299,7 +339,7 @@
         pCtx.drawImage(canvas, 0, 0);
         previewCanvas.className = 'hs-preview-canvas';
         previewCanvas.setAttribute('role', 'img');
-        previewCanvas.setAttribute('aria-label', `Horoskop ${signName} – obrázek ke sdílení`);
+        previewCanvas.setAttribute('aria-label', `${copy.previewAria} ${signName}`);
 
         // Share URL — UTM + anchor (pro clipboard)
         const shareUrl = shareUrlWithUTM || canonicalUrl;
@@ -310,12 +350,12 @@
 
         panel.innerHTML = `
             <div class="hs-inner">
-                <p class="hs-title">✨ Sdílet horoskop ${signSymbol} ${signName}</p>
+                <p class="hs-title">${copy.shareTitle} ${signSymbol} ${signName}</p>
                 <div class="hs-preview-wrap"></div>
                 <div class="hs-main-btn-wrap">
                     <button class="hs-btn hs-btn--primary" id="hs-share-btn">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                        Sdílet horoskop
+                        ${copy.shareButton}
                         <svg class="hs-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6,9 12,15 18,9"/></svg>
                     </button>
                 </div>
@@ -323,8 +363,8 @@
                     <div class="hs-options-inner">
                         ${canShareFiles ? `
                         <button class="hs-opt" id="hs-native-btn">
-                            <span class="hs-opt-icon">📲</span>
-                            <span>Instagram / TikTok / WhatsApp</span>
+                            <span class="hs-opt-icon" aria-hidden="true">↗</span>
+                            <span>${copy.native}</span>
                         </button>` : ''}
                         <a class="hs-opt" href="${fbUrl}" target="_blank" rel="noopener">
                             <span class="hs-opt-icon hs-opt-icon--facebook">
@@ -342,17 +382,17 @@
                             <span class="hs-opt-icon">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                             </span>
-                            <span>Kopírovat odkaz</span>
+                            <span>${copy.copyLink}</span>
                         </button>
                         <a class="hs-opt" id="hs-download-btn">
                             <span class="hs-opt-icon">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                             </span>
-                            <span>Uložit obrázek</span>
+                            <span>${copy.download}</span>
                         </a>
                     </div>
                 </div>
-                <div class="hs-toast" id="hs-toast" role="status" aria-live="polite">✅ Odkaz zkopírován!</div>
+                <div class="hs-toast" id="hs-toast" role="status" aria-live="polite">${copy.copied}</div>
             </div>
         `;
 
@@ -424,7 +464,7 @@
             const dateStr     = document.getElementById('detail-date')?.innerText?.trim();
             const prediction  = document.getElementById('detail-text')?.innerText?.trim();
             const affirmation = document.getElementById('detail-work')?.innerText
-                ?.replace(/^✨\s*(?:Afirmace|Afirmacia|Afirmacja):\s*/i, '').trim();
+                ?.replace(/^(?:✨\s*)?(?:Afirmace|Afirmacia|Afirmacja):\s*/i, '').trim();
             const period = document.querySelector('[data-tab].active')?.dataset.tab || 'daily';
 
             // Přeskočit pokud není vybrané znamení nebo text je placeholder / příliš krátký

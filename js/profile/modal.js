@@ -2,7 +2,7 @@
  * Modal logic for viewing reading details
  */
 
-import { escapeHtml, apiUrl, authHeaders, authHeadersWithCsrf, getReadingIcon, getReadingLabel, getReadingData } from './shared.js';
+import { escapeHtml, apiUrl, authHeaders, authHeadersWithCsrf, getReadingIcon, getReadingLabel, getReadingData, profileIconMarkup } from './shared.js';
 import { getAllReadings, updateReading, renderReadings, updateFavoriteSummary } from './readings.js';
 import { formatReadingHtml, getFallbackMessage } from '../utils/reading-display.js';
 
@@ -169,7 +169,8 @@ export async function toggleFavorite(id, buttonEl = null) {
         updateFavoriteSummary(!data.is_favorite, data.is_favorite);
 
         if (buttonEl) {
-            buttonEl.textContent = data.is_favorite ? '★' : '☆';
+            buttonEl.innerHTML = profileIconMarkup('bookmark');
+            buttonEl.setAttribute('aria-pressed', String(data.is_favorite));
             buttonEl.title = data.is_favorite ? 'Odebrat z oblíbených' : 'Přidat do oblíbených';
             buttonEl.setAttribute('aria-label', data.is_favorite ? 'Odebrat z oblíbených' : 'Přidat do oblíbených');
         }
@@ -255,7 +256,8 @@ function updateModalActions() {
 function updateFavoriteButton() {
     const btn = document.getElementById('modal-favorite-btn');
     if (btn) {
-        btn.textContent = currentReadingIsFavorite ? '★ V oblíbených' : '☆ Přidat do oblíbených';
+        btn.innerHTML = `${profileIconMarkup('bookmark')} ${currentReadingIsFavorite ? 'V oblíbených' : 'Přidat do oblíbených'}`;
+        btn.setAttribute('aria-pressed', String(currentReadingIsFavorite));
         btn.setAttribute('aria-label', currentReadingIsFavorite ? 'Odebrat z oblíbených' : 'Přidat do oblíbených');
     }
 }

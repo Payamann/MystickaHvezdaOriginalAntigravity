@@ -595,7 +595,7 @@ async function startReading(spreadType, isSoftGated = false) {
     // Build initial layout (cards face down)
     resultsContainer.innerHTML = `
         <div class="text-center">
-            <h3 class="mb-lg tarot-results__title">✨ Vaše vylosované karty ✨</h3>
+            <h3 class="mb-lg tarot-results__title">Tvé vylosované karty</h3>
             ${resumeContextHtml}
             <div class="tarot-spread grid ${gridClass} tarot-results__spread">
                 ${drawnCards.map((card, index) => {
@@ -776,7 +776,7 @@ async function startReading(spreadType, isSoftGated = false) {
                 favoriteBtn.className = 'text-center favorite-reading-action';
                 favoriteBtn.innerHTML = `
                     <button id="favorite-tarot-btn" class="btn btn--glass favorite-reading-action__button">
-                        <span class="favorite-icon">⭐</span> Přidat do oblíbených
+                        <span class="favorite-icon">☆</span> Přidat do oblíbených
                     </button>
                 `;
                 interpretationsContainer.appendChild(favoriteBtn);
@@ -872,7 +872,7 @@ async function generateEtherealSummary(cards, spreadType, continuationContext = 
                     favoriteBtn.className = 'text-center favorite-reading-action';
                     favoriteBtn.innerHTML = `
                         <button id="favorite-tarot-btn" class="btn btn--glass favorite-reading-action__button">
-                            <span class="favorite-icon">⭐</span> Přidat do oblíbených
+                            <span class="favorite-icon">☆</span> Přidat do oblíbených
                         </button>
                     `;
                     summaryContainer.parentElement.appendChild(favoriteBtn);

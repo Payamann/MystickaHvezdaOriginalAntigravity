@@ -26,8 +26,8 @@ const ZODIAC_SIGNS = [
 ];
 
 const PLANETS = [
-    { id: 'sun', symbol: '☀️', name: 'Slunce', color: '#FFD700', img: 'img/planets/sun.webp', size: 60, desc: 'Vaše základní podstata a ego.' },
-    { id: 'moon', symbol: '🌙', name: 'Měsíc', color: '#C0C0C0', img: 'img/planets/moon.webp', size: 40, desc: 'Emoce, intuice a vnitřní svět.' },
+    { id: 'sun', symbol: '☉', name: 'Slunce', color: '#FFD700', img: 'img/planets/sun.webp', size: 60, desc: 'Vaše základní podstata a ego.' },
+    { id: 'moon', symbol: '☽', name: 'Měsíc', color: '#C0C0C0', img: 'img/planets/moon.webp', size: 40, desc: 'Emoce, intuice a vnitřní svět.' },
     { id: 'mercury', symbol: '☿️', name: 'Merkur', color: '#B0C4DE', img: 'img/planets/mercury.webp', size: 30, desc: 'Komunikace a myšlení.' },
     { id: 'venus', symbol: '♀️', name: 'Venuše', color: '#FFB6C1', img: 'img/planets/venus.webp', size: 35, desc: 'Láska, krása a hodnoty.' },
     { id: 'mars', symbol: '♂️', name: 'Mars', color: '#FF4500', img: 'img/planets/mars.webp', size: 32, desc: 'Energie, akce a touha.' },
@@ -875,7 +875,7 @@ async function generateNatalChart(planetsGroup) {
                 teaserMsg.className = 'teaser-overlay';
                 teaserMsg.innerHTML = `
                     <div class="teaser-content">
-                        <p>✨ Chcete odemknout celý výklad své natální mapy?</p>
+                        <p>Chceš podrobnější výklad své natální mapy?</p>
                         <a href="${buildNatalUpgradeUrl('natal_teaser_gate')}" class="btn btn--premium natal-teaser-upgrade-btn">Pokračovat s Premium</a>
                         <p class="natal-teaser-reassurance">${NATAL_PAYMENT_REASSURANCE}</p>
                     </div>
@@ -945,7 +945,7 @@ function createAIResultsContainer() {
     container.className = 'natal-ai';
     container.innerHTML = `
         <h4 class="natal-ai__title">
-            ✨ Váš osobní hvězdný příběh
+            Výklad k vypočtené mapě
         </h4>
         <div class="ai-content natal-ai__content"></div>
         <aside class="natal-personal-map-next" aria-label="Navazující výklad na 12 měsíců">

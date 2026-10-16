@@ -1,4 +1,4 @@
-import reference from '../../data/moon-primary-phases.json' with { type: 'json' };
+import reference from '../../data/generated/moon-primary-phases.js';
 
 const DAY_MS = 86400000;
 const MEAN_CYCLE_DAYS = 29.53058867;
