@@ -6,7 +6,7 @@ Zařazení do celého redesignu: [společný TODO webu](../web-redesign-todo.md)
 
 Navazuje na [původní P01–P10](profile-authenticated-review.md) a [jejich implementaci](../profile-unification-2026-10-14/README.md). Dřívější opravy zde znovu nevydáváme za otevřené závady.
 
-**Aktuální přijetí 16. 10.:** PF01, PF03–PF07, PF09 a PF11 jsou místně uzavřené podle [navazující evidence](../release-prep-2026-10-15/reading-fidelity-qa.md). Níže citované zdrojové vady jsou původní nálezy z 15. 10., nikoli popis opraveného současného kódu. PF02 zůstává částečný, PF08/PF12 volitelná rozšíření, PF10 širší návaznost. Produkce se neměnila.
+**Aktuální přijetí 17. 10.:** PF01–PF07 a PF09–PF11 jsou místně uzavřené podle [evidence výsledků](../release-prep-2026-10-15/reading-fidelity-qa.md) a [obnovy profilu a návratu](../release-prep-2026-10-15/profile-refresh-return-qa.md). Níže citované zdrojové vady jsou původní nálezy z 15. 10., nikoli popis opraveného současného kódu. PF08/PF12 zůstávají volitelná rozšíření; poslední mobilní přijetí a uvedené PV hranice jsou otevřené. Produkce se neměnila.
 
 ## Dává profil jako produkt smysl?
 
@@ -37,8 +37,10 @@ Nejslabší část je Přehled: kombinuje obecný denní tip, statistiky, checkl
 
 ### PF02 · P2 · Sjednotit obnovování stavu po změně záznamu
 
-- [ ] Po smazání obnovit i poslední poznámky a aktivní oblíbené, nejen historii a statistiky.
-- [ ] Udržovat aktuální stav výkladů pro denní blok a checklist i po uložení osobních údajů.
+- [x] Po smazání obnovit i poslední poznámky a aktivní oblíbené, nejen historii a statistiky.
+- [x] Udržovat aktuální stav výkladů pro denní blok a checklist i po uložení osobních údajů.
+
+**Přijetí 17. 10.:** cílená regrese úplné obnovy ověřuje nahrazení původní poznámky ve vykresleném HTML a reload aktivních oblíbených; souběžná změna hvězdičky nepřepíše nový stav ani nezruší nový kontext. Browser doložil zachování prvního výkladu a poznámky po nastavení i obě změny oblíbeného stavu. Mazání se testovalo modelovou odpovědí, nikoli smazáním zákaznického řádku. [Rozsah a důkazy](../release-prep-2026-10-15/profile-refresh-return-qa.md).
 
 **Důkaz: zdroj.** `modal.js:131–152` po DELETE zavolá historii; listener `dashboard.js:1921–1928` neobnovuje journal panel. Smazaná poznámka tak v jeho DOM zůstane do reloadu. Zároveň `profile:updated` v `dashboard.js:1859–1868` používá původní `readings` z inicializace, ačkoli zápis nebo feedback načtou jiné pole. V testovaném naplněném účtu změna nastavení nepřepsala paměť; ta v tomto listeneru vůbec není.
 
@@ -98,7 +100,7 @@ Nejslabší část je Přehled: kombinuje obecný denní tip, statistiky, checkl
 
 - [ ] **PF08 · P3:** zvážit samostatně dostupný Deník nebo aspoň jasný vstup „Moje poznámky“ v Přehledu. Poznámka by měla jít připojit ke konkrétnímu výkladu; nyní formulář ukládá pouze `{type:'journal', data:text}` bez vazby. Editace vlastní poznámky nyní není implementovaná — je to návrh rozšíření, ne nefunkční tlačítko.
 - [x] **PF09 · P3:** A–L nahradilo šest pojmenovaných symbolů ze společné SVG sady (`PROFILE_AVATARS`); předchozí lokální uložení a reload i následná chyba/retry jsou v QA checkpointu.
-- [ ] **PF10 · P3:** pro návrat prioritizovat „poslední výklad + vlastní poznámka“. Statistiky, denní série a checklist ponechat dobrovolné. Označení „Poslední výklad“ nyní zahrnuje i Osobní poznámku (`getLastReadingLabel`); buď rozlišit, nebo přejmenovat na „Poslední záznam“.
+- [x] **PF10 · P3:** vlastní poznámka je první v Přehledu, následuje primární návrat k nejnovějšímu uloženému výkladu; journal se z výběru vylučuje. Podtyp, datum a náhled pomáhají poznat záznam. Statistiky, checklist a témata jsou rozbalovací, zavřené panely se zbytečně nenatahují. Funkční a desktopové přijetí: [checkpoint 17. 10.](../release-prep-2026-10-15/profile-refresh-return-qa.md); závěrečný mobil zůstává ve W07/W13.
 
 ## Další návaznosti knihovny a výkladů
 
@@ -129,4 +131,4 @@ PF01 → společný stav PF02/PF03 → dostupnost poznámek a checklist PF04/PF0
 
 PF11 zařadit k filtrům PF04 a ověřit pomocí PV04. PF12 je volitelná produktová návaznost až po opravě funkčních chyb; není blokací nynějšího doručování ani důvodem rozšiřovat členství.
 
-Stav: **PF01, PF03–PF07, PF09 a PF11 místně přijaté; ostatní PF/PV podle otevřených bodů. Bez nasazení.** PV04 má přijatou matici současných producentů a uvedených starších formátů v novém checkpointu; neurčené starší zákaznické formáty nebyly čtené. Soukromá produkční data nebyla načítaná. Snímky původního kontrolního pokusu zůstávají v [modelových podkladech](../profile-unification-2026-10-14/profile-followup/verification.json).
+Stav: **PF01–PF07 a PF09–PF11 místně přijaté; PF08/PF12 a PV podle otevřených bodů. Bez nasazení.** PV04 má přijatou matici současných producentů a uvedených starších formátů; neurčené starší zákaznické formáty nebyly čtené. Soukromá produkční data nebyla načítaná. Snímky původního kontrolního pokusu zůstávají v [modelových podkladech](../profile-unification-2026-10-14/profile-followup/verification.json).

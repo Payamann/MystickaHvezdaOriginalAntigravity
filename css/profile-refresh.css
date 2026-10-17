@@ -3,9 +3,14 @@
 /* Stats Cards Enhancements */
 .profile-return-grid {
     display: grid;
+    align-items: start;
     grid-template-columns: minmax(0, 1.22fr) minmax(300px, 0.78fr);
     gap: 1.1rem;
     margin-bottom: 1.35rem;
+}
+
+.profile-return-grid > .card {
+    height: auto;
 }
 
 .daily-guidance-card,
@@ -67,6 +72,11 @@
 
 .daily-guidance-action {
     display: block;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    min-width: 0;
+    overflow-wrap: anywhere;
     padding: 0.9rem 1rem;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--radius-md);

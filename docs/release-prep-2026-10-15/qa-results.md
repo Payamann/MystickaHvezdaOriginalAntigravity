@@ -79,4 +79,6 @@ Lokální mock server používá neplatné testovací klíče a syntetické úč
 
 ## Navazující checkpoint · zachování výsledků PV04
 
+Následný stav 17. 10.: [PF02/PF10 — obnova profilu a přímý návrat](profile-refresh-return-qa.md) uzavírá aktuální stav historie/poznámek po změnách a návrat k původnímu výkladu. **29/29** cílených profilových testů, skutečná lokální cesta oblíbených a desktopová kontrola kompaktních zavřených panelů. Nová cache `mysticka-hvezda-c917eee9ca6a`, snapshot 1120, SW **5/5**. Produkce a otevřené mobilní/členské hranice se tím nemění.
+
 [Přesný rozsah, opravy a evidence](reading-fidelity-qa.md): nové tarotové zápisy zachovávají i plné významy; retry používá stejný rozklad. Fallback je přenášený u tarotu, natálu a shody; numerologie má v detailu uložená čísla. Historický formát skóre a pojmenování karet má odpovídající renderer. **45/45 cílených testů**, skutečný browserový návrat tarotu/natálu/numerologie a první reflexe prázdného účtu. Živé AI vzorky, nové mobilní přijetí a produkční provoz tím nejsou pokryté. Výsledek na stránce i v uloženém detailu používá stejný text; nové generování pro porovnání se neprovádělo.

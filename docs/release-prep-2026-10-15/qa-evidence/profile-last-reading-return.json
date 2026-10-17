@@ -1,0 +1,21 @@
+{
+  "actions": [
+    {
+      "action": "last_reading",
+      "text": "Otevřít uložený výklad\n            Devítka pohárů"
+    },
+    {
+      "action": "daily_horoscope",
+      "text": "Otevřít dnešní horoskop\n            Nejrychlejší vstup do dnešního směru."
+    },
+    {
+      "action": "daily_tarot",
+      "text": "Otevřít kartu dne\n            Jeden symbol k zamyšlení pro dnešní den."
+    }
+  ],
+  "closedChecklistHeight": 85.5999984741211,
+  "date": "2026-10-17",
+  "horizontalOverflow": false,
+  "title": "Tvůj poslední výklad",
+  "width": 1280
+}

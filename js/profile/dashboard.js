@@ -9,7 +9,8 @@ import {
     authHeadersWithCsrf,
     getZodiacSign,
     getZodiacIconName,
-    getReadingTitle,
+    getReadingLabel,
+    getReadingPreview,
     loadPlanManifest,
     normalizePlanType,
     formatPlanLabel,
@@ -68,8 +69,11 @@ function renderProfileOverview() {
 
 async function refreshProfileData({ favoriteOnly = false } = {}) {
     if (favoriteOnly) {
+        await Promise.all([
+            loadReadings({ preserveFilter: true }),
+            document.getElementById('tab-favorites')?.classList.contains('is-active') ? loadFavorites() : null
+        ]);
         renderProfileOverview();
-        if (document.getElementById('tab-favorites')?.classList.contains('is-active')) await loadFavorites();
         return;
     }
     const version = ++profileRefreshVersion;
@@ -1082,13 +1086,10 @@ function getPaymentReturnDestination(sign, paymentContext) {
     };
 }
 
-function getLastReadingLabel(readings) {
-    const structured = (readings || []).filter(reading => reading.type !== 'journal');
-    if (!structured.length) return 'Zatím žádný uložený výklad';
-
-    const latest = [...structured].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
-    const date = new Date(latest.created_at);
-    return `${date.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long' })} · ${getReadingTitle(latest.type)}`;
+function getLatestSavedReading(readings) {
+    return (readings || [])
+        .filter(reading => reading.id && reading.type !== 'journal' && getValidReadingDate(reading))
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0] || null;
 }
 
 function getValidReadingDate(reading) {
@@ -1337,16 +1338,19 @@ function renderDailyGuidance(user, readings, subscription) {
     const readingKinds = getReadingKinds(readings);
     const dateLabel = now.toLocaleDateString('cs-CZ', { weekday: 'long', day: 'numeric', month: 'long' });
     const focus = DAILY_FOCUS[now.getDay()];
+    const latest = getLatestSavedReading(readings);
 
     dateEl.textContent = dateLabel;
     planEl.textContent = formatPlanLabel(planType);
     planEl.className = `badge ${isPremium ? 'badge--premium' : 'badge--secondary'}`;
-    titleEl.textContent = sign
+    titleEl.textContent = latest ? 'Tvůj poslední výklad' : sign
         ? `Tvoje zkratky pro znamení ${sign.name}`
         : 'Kam se chceš dnes podívat?';
 
-    copyEl.textContent = sign
-        ? `Můžeš si přečíst horoskop pro své znamení nebo otevřít kartu dne. Poslední výklad: ${getLastReadingLabel(readings)}.`
+    copyEl.textContent = latest
+        ? `${getValidReadingDate(latest).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long' })} · ${getReadingLabel(latest)}`
+        : sign
+        ? 'Můžeš si přečíst horoskop pro své znamení nebo otevřít kartu dne.'
         : 'Vyber si znamení na stránce horoskopů nebo doplň datum narození v nastavení profilu.';
 
     focusEl.textContent = `Redakční podnět k zamyšlení: ${focus}`;
@@ -1358,7 +1362,7 @@ function renderDailyGuidance(user, readings, subscription) {
             label: 'Otevřít dnešní horoskop',
             description: sign ? `Denní vedení pro ${sign.name}.` : 'Nejrychlejší vstup do dnešního směru.',
             action: 'daily_horoscope',
-            primary: true
+            primary: !latest
         },
         {
             href: 'tarot-karta-dne.html?source=profile_daily&feature=tarot',
@@ -1374,11 +1378,22 @@ function renderDailyGuidance(user, readings, subscription) {
         }
     ];
 
+    if (latest) {
+        actions.pop();
+        actions.unshift({
+            readingId: latest.id,
+            label: 'Otevřít uložený výklad',
+            description: getReadingPreview(latest) || 'Vrať se k původnímu výsledku a jeho souvislostem.',
+            action: 'last_reading',
+            primary: true
+        });
+    }
+
     actionsEl.innerHTML = actions.map(action => `
-        <a href="${action.href}" class="daily-guidance-action ${action.primary ? 'daily-guidance-action--primary' : ''}" data-daily-action="${action.action}">
+        <${action.readingId ? 'button type="button"' : 'a'} ${action.readingId ? `data-reading-id="${escapeHtml(action.readingId)}"` : `href="${action.href}"`} class="daily-guidance-action ${action.primary ? 'daily-guidance-action--primary' : ''}" data-daily-action="${action.action}">
             <strong>${escapeHtml(action.label)}</strong>
             <span>${escapeHtml(action.description)}</span>
-        </a>
+        </${action.readingId ? 'button' : 'a'}>
     `).join('');
 
     if (!dailyGuidanceViewTracked) {
@@ -1501,7 +1516,10 @@ function handleDailyGuidanceClick(event) {
         ...getProfileCtaContextFromHref(destination)
     });
 
-    if (action === 'daily_journal') {
+    if (action === 'last_reading') {
+        event.preventDefault();
+        if (link.dataset.readingId) viewReading(link.dataset.readingId);
+    } else if (action === 'daily_journal') {
         event.preventDefault();
         focusJournalInput();
     }
