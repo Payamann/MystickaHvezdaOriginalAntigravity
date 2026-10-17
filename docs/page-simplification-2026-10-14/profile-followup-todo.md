@@ -120,7 +120,7 @@ Nejslabší část je Přehled: kombinuje obecný denní tip, statistiky, checkl
 
 ## Ověření, která ještě nelze označit za hotová
 
-- [ ] **PV01:** dokončit modelovou matici pro prázdný účet, pouze jednu dnešní reflexi, starší poznámky mimo první stránku, více druhů výkladů, chybu avataru a detailu, přerušení během načítání. Každý případ navázat na PF01–PF07; nepouštět opakovaně celý webový audit.
+- [x] **PV01:** modelová matice má důkaz pro prázdný účet, jednu dnešní reflexi, starší poznámky mimo první stránku, více druhů výkladů, chybu avataru/detailu a přerušení načítání. [Souhrn všech případů a nové mobilní přijetí 17. 10.](../release-prep-2026-10-15/profile-auth-mobile-qa.md). Rozlišuje skutečný browser od řízené regrese modalu; nejde o všechny kombinace účtu ani celý webový audit.
 - [ ] **PV02:** v odpovídajícím testovacím prostředí ověřit skutečné členské UI pro trialing, active, cancel_pending, paused, past_due a canceled a návaznosti portálu. Dřívější serverové billing testy a ruční přístup bez Stripe ID nejsou živým potvrzením všech těchto klientských stavů. Neměnit skutečné předplatné kvůli auditu.
 
   **17. 10. — lokální klientská matice přijatá:** všech šest stavů, ruční přístup i free se zachovaným platebním zákazníkem prošly ve skutečném klientu nad modelovým payloadem. Faktury po zrušení jsou opět dostupné; štítky respektují aktuální status. Modelový portál prošel 503 → retry → lokální cílová stránka. **29/29** cílených frontendových kontrol. Skutečná testovací Stripe session/webhook a jejich synchronizace stále čekají, PV02 proto zůstává otevřený. [Evidence a opravy](../release-prep-2026-10-15/profile-membership-qa.md).

@@ -1,5 +1,7 @@
 # Závěrečná QA fáze · 15.–16. října 2026
 
+Aktuální doplnění 17. 10.: [mobilní profil/přihlášení a uzavření PV01](profile-auth-mobile-qa.md). Nová evidence 320/390 px, nastavení tabletu 768 px; jediná app změna je odstranění vnořeného rolování a zvětšení feedback tlačítek na mobilu. Cache `mysticka-hvezda-24ca976bd767`, snapshot 1126, SW **5/5**. Neuzavírá zbytek W07, živé Stripe/AI ani platný reset.
+
 Lokální kandidát ve větvi `codex/organic-growth-20261013`, navazující na `4e15cc6b`. Produkce nebyla změněna. Toto je důkazní checkpoint; není to prohlášení, že celý společný TODO je dokončený.
 
 ## Automatické kontroly

@@ -1595,6 +1595,15 @@ body.page-profile #reading-modal .reading-lucky-numbers__label {
         padding: 1.1rem;
         padding-top: 3.6rem;
     }
+
+    body.page-profile #reading-modal .reading-detail__body {
+        max-height: none;
+        overflow: visible;
+    }
+
+    body.page-profile #reading-modal .reading-feedback__chip {
+        min-height: 44px;
+    }
 }
 
 /* Profile library and honest asynchronous states, 2026-10-15. */

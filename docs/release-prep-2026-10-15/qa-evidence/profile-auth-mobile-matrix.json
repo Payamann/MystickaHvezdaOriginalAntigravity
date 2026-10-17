@@ -1,0 +1,255 @@
+{
+  "date": "2026-10-17",
+  "environment": "local client and synthetic Supabase, no production account",
+  "measurements": [
+    {
+      "view": "settings",
+      "documentWidth": 382,
+      "height": 844,
+      "inputs": [
+        {
+          "height": 50,
+          "id": "subscribe-push-btn",
+          "width": 315
+        },
+        {
+          "height": 46,
+          "id": "settings-name",
+          "width": 315
+        },
+        {
+          "height": 46,
+          "id": "settings-birthdate",
+          "width": 315
+        },
+        {
+          "height": 48,
+          "id": "settings-birthtime",
+          "width": 315
+        },
+        {
+          "height": 46,
+          "id": "settings-birthplace",
+          "width": 315
+        },
+        {
+          "height": 46,
+          "id": "settings-email",
+          "width": 315
+        },
+        {
+          "height": 46,
+          "id": "settings-current-password",
+          "width": 282
+        },
+        {
+          "height": 46,
+          "id": "settings-password",
+          "width": 282
+        },
+        {
+          "height": 46,
+          "id": "settings-password-confirm",
+          "width": 282
+        },
+        {
+          "height": 50,
+          "id": "change-password-btn",
+          "width": 140
+        },
+        {
+          "height": 50,
+          "id": "save-settings-btn",
+          "width": 315
+        },
+        {
+          "height": 50,
+          "id": "sub-cancel-btn",
+          "width": 315
+        },
+        {
+          "height": 50,
+          "id": "sub-portal-btn",
+          "width": 315
+        }
+      ],
+      "width": 390
+    },
+    {
+      "view": "overview-empty",
+      "checklistClosed": true,
+      "documentWidth": 382,
+      "gridWidth": 350.3999938964844,
+      "width": 390
+    },
+    {
+      "view": "reading-modal",
+      "body": "\n        \n            X\n            \n        \n            \n            Tarotový výklad\n            1",
+      "close": {
+        "bottom": 72.80000114440918,
+        "height": 44,
+        "left": 301.6000061035156,
+        "right": 345.6000061035156,
+        "top": 28.80000114440918,
+        "width": 44,
+        "x": 301.6000061035156,
+        "y": 28.80000114440918
+      },
+      "dialogWidth": 350.3999938964844,
+      "documentWidth": 382,
+      "focus": "reading-modal-close",
+      "width": 390
+    },
+    {
+      "view": "history",
+      "documentWidth": 312,
+      "filterWidth": 244.8000030517578,
+      "loadMoreHeight": 50.400001525878906,
+      "width": 320
+    },
+    {
+      "view": "journal-filter",
+      "documentWidth": 312,
+      "records": 10,
+      "selected": "journal",
+      "width": 320
+    },
+    {
+      "view": "favorites",
+      "documentWidth": 312,
+      "visibleRecords": 20,
+      "width": 320
+    },
+    {
+      "view": "overview-with-history",
+      "checklistHeight": 87.67500305175781,
+      "documentWidth": 312,
+      "lastReading": "Otevřít uložený výklad\n            Modelová otázka k zamyšlení",
+      "width": 320
+    },
+    {
+      "view": "reading-modal-after",
+      "bodyMaxHeight": "none",
+      "bodyOverflow": "visible",
+      "documentWidth": 312,
+      "minFeedbackHeight": 44,
+      "width": 320
+    },
+    {
+      "view": "settings",
+      "documentWidth": 312,
+      "inputs": [
+        {
+          "height": 46,
+          "id": "settings-name",
+          "width": 245
+        },
+        {
+          "height": 46,
+          "id": "settings-birthdate",
+          "width": 245
+        },
+        {
+          "height": 48,
+          "id": "settings-birthtime",
+          "width": 245
+        },
+        {
+          "height": 46,
+          "id": "settings-birthplace",
+          "width": 245
+        },
+        {
+          "height": 46,
+          "id": "settings-email",
+          "width": 245
+        },
+        {
+          "height": 46,
+          "id": "settings-current-password",
+          "width": 211
+        },
+        {
+          "height": 46,
+          "id": "settings-password",
+          "width": 211
+        },
+        {
+          "height": 46,
+          "id": "settings-password-confirm",
+          "width": 211
+        }
+      ],
+      "width": 320
+    },
+    {
+      "view": "settings-tablet",
+      "documentWidth": 760,
+      "settingsRowWidth": 692.7999877929688,
+      "width": 768
+    },
+    {
+      "view": "login-error",
+      "controls": [
+        {
+          "height": 44,
+          "id": "email",
+          "width": 214
+        },
+        {
+          "height": 48,
+          "id": "password",
+          "width": 214
+        },
+        {
+          "height": 44,
+          "id": "",
+          "width": 70
+        },
+        {
+          "height": 0,
+          "id": "gdpr-consent",
+          "width": 0
+        },
+        {
+          "height": 44,
+          "id": "auth-submit",
+          "width": 214
+        }
+      ],
+      "documentWidth": 312,
+      "width": 320
+    },
+    {
+      "view": "registration-form-only",
+      "consentLabelHeight": 48.86249923706055,
+      "consentRequired": true,
+      "documentWidth": 312,
+      "passwordAutocomplete": "new-password",
+      "width": 320
+    },
+    {
+      "view": "recovery-form-only",
+      "documentWidth": 312,
+      "emailWidth": 214.40000915527344,
+      "visible": true,
+      "width": 320
+    }
+  ],
+  "loginError": {
+    "documentWidth": 382,
+    "emailPreserved": false,
+    "error": "Nesprávné přihlášení nebo neověřený email.",
+    "live": "assertive",
+    "role": "alert",
+    "submitEnabled": true,
+    "width": 390
+  },
+  "keyboard": {
+    "mobileMenuEscapeReturnsFocus": true,
+    "modalShiftTabWrapsToLastControl": true,
+    "modalTabWrapsToClose": true,
+    "modalEscapeRestoresHistoryTrigger": true
+  },
+  "bounds": "Profile states at listed widths; tablet settings only. No actual password reset or email delivery."
+}

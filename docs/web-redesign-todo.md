@@ -22,7 +22,7 @@ Tyto body už jsou doložené v navazovaných auditech. Nejde o nově vymyšlen�
 |---|---|---|---|
 | R01 | Cílené regrese + natální retry v browseru; přijetí pokračuje · P1 | Výpadkové větve natální karty a partnerské shody; viz funkční review | Selhání výpočtu nevytváří zdánlivou osobní mapu nebo procento odvozené ze jmen. Vstup zůstane zachovaný a uživatel dostane pravdivý stav a možnost opakovat. |
 | R02 | Regrese a DB metadata ověřené; živé doručení/CAS čeká · P1 | Trvale uložený výsledek a opakování doručení osobní mapy; viz funkční review | Retry používá stejný výsledek objednávky; potvrzení odeslání i neúspěch zápisu stavu se řeší výslovně. Ověřit cíleně v testovacím prostředí. |
-| R03 | PF01–PF07/PF11 místně přijaté; finální mobil a PV hranice čekají · P1/P2 | Profil: PF01–PF07, otázka a rozlišení výkladu PF11 | Detail, jeho akce, historie, deník, oblíbené a odvozené bloky pracují se stejným aktuálním stavem. [Checkpoint 17. 10.](release-prep-2026-10-15/profile-refresh-return-qa.md) |
+| R03 | PF01–PF07/PF11 a PV01 místně přijaté; PV02/PV03 čekají · P1/P2 | Profil: PF01–PF07, otázka a rozlišení výkladu PF11 | Detail, jeho akce, historie, deník, oblíbené a odvozené bloky pracují se stejným aktuálním stavem. [Mobilní přijetí a matice 17. 10.](release-prep-2026-10-15/profile-auth-mobile-qa.md) |
 | R04 | Metody/unit + modelové výsledky ověřené; živá AI čeká · P1/P2 | Sjednotit numerologickou metodu, lunární referenční okamžiky a pravdivé prompty; označování fallbacků | Stejný vstup má vysvětlenou a konzistentní metodu. Generický náhradní obsah se nevydává za čerstvou osobní interpretaci. |
 
 **Výchozí R01 je zdrojově opravený:** falešná mapa, klientské skóre a náhradní tranzitové tvrzení jsou odstraněné. Český i slovenský natál prošel skutečným lokálním výpočtem a chybou/retry, shoda členskou a hostovskou variantou. Podrobný rozsah a neověřené stavy jsou v [QA checkpointu](release-prep-2026-10-15/qa-results.md).
@@ -93,6 +93,8 @@ Tyto body už jsou doložené v navazovaných auditech. Nejde o nově vymyšlen�
 **Podklad:** `js/error-boundary.js` řeší jen velmi malý/prázdný `main`; existence globálního panelu nezaručuje ošetření dílčího API výpadku. Kvízy např. `js/quiz/archetyp-duse.js` používají pevné čekání 2500 ms a HTML loading nemá společné status semantics. Při implementaci prověřit aktuální konkrétní větev a zachovat poctivé vyhodnocení kvízu.
 
 ### W07 · P2 · Mobil, klávesnice a klidný pohyb
+
+**Dílčí přijetí 17. 10.:** profil/přihlášení prošly uvedenými stavy při 320/390 px, nastavení navíc při 768 px. Detail má jediné mobilní rolování a 44px zpětnou vazbu; menu a modal vracejí fokus. [Přesná matice, snímky a hranice](release-prep-2026-10-15/profile-auth-mobile-qa.md). Ostatní rodiny stránek a zvětšený text stále patří do W07/W13.
 
 - [ ] Ověřit mobilní menu, formuláře, výsledek, modal, patičku a cookie lištu při 320/390 px a rozumném zvětšení textu; tablet a desktop podle breakpointů konkrétního vzoru.
 - [ ] Přibližně 44px dotykové plochy, viditelný fokus a popisky ikon; obsah nesmí zakrývat pevná hlavička nebo lišty.
