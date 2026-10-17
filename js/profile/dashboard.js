@@ -45,6 +45,12 @@ const counterFrames = new Map();
 function renderProfileOverview() {
     const { user, subscription, context } = profileState;
     const readings = context?.readings || [];
+    const access = getProfileAccessBadge(subscription);
+    const accessEl = document.getElementById('user-plan');
+    if (accessEl) {
+        accessEl.textContent = access.label;
+        accessEl.className = `badge ${access.className}`;
+    }
     renderDailyGuidance(user, readings, subscription);
     renderActivationChecklist(user, readings, subscription);
     updateStats(readings);
@@ -890,6 +896,16 @@ function isPremiumSubscription(sub) {
     return planType !== 'free' && activeStatuses.includes(sub?.status || 'active');
 }
 
+function getProfileAccessBadge(subscription) {
+    const className = 'badge--secondary';
+    if (!subscription) return { label: 'Stav není ověřený', className };
+    if (subscription.status === 'paused') return { label: 'Přístup pozastavený', className };
+    if (['past_due', 'unpaid', 'incomplete'].includes(subscription.status)) return { label: 'Čeká na platbu', className };
+    if (isPremiumSubscription(subscription)) return { label: formatPlanLabel(normalizePlanType(subscription.planType)), className: 'badge--premium' };
+    if (['active', 'trialing', 'cancel_pending', 'canceled', 'cancelled', 'incomplete_expired'].includes(subscription.status)) return { label: formatPlanLabel('free'), className };
+    return { label: 'Stav není ověřený', className };
+}
+
 function getProfileSign(user) {
     if (user?.birth_date) {
         const sign = getZodiacSign(user.birth_date) || getZodiacSignLocal(user.birth_date);
@@ -1223,7 +1239,6 @@ function renderRitualMemory(user, readings, subscription) {
 
     const memory = collectRitualMemorySignals(readings);
     const planType = normalizePlanType(subscription?.planType || user?.subscription_status);
-    const isPremium = isPremiumSubscription(subscription) || ['premium_monthly', 'exclusive_monthly', 'vip_majestrat'].includes(planType);
     const topScore = memory.topTheme?.score || 1;
 
     titleEl.textContent = memory.topTheme
@@ -1334,15 +1349,15 @@ function renderDailyGuidance(user, readings, subscription) {
     const now = new Date();
     const sign = getProfileSign(user);
     const planType = normalizePlanType(subscription?.planType || user?.subscription_status);
-    const isPremium = isPremiumSubscription(subscription) || ['premium_monthly', 'exclusive_monthly', 'vip_majestrat'].includes(planType);
+    const access = getProfileAccessBadge(subscription);
     const readingKinds = getReadingKinds(readings);
     const dateLabel = now.toLocaleDateString('cs-CZ', { weekday: 'long', day: 'numeric', month: 'long' });
     const focus = DAILY_FOCUS[now.getDay()];
     const latest = getLatestSavedReading(readings);
 
     dateEl.textContent = dateLabel;
-    planEl.textContent = formatPlanLabel(planType);
-    planEl.className = `badge ${isPremium ? 'badge--premium' : 'badge--secondary'}`;
+    planEl.textContent = access.label;
+    planEl.className = `badge ${access.className}`;
     titleEl.textContent = latest ? 'Tvůj poslední výklad' : sign
         ? `Tvoje zkratky pro znamení ${sign.name}`
         : 'Kam se chceš dnes podívat?';
@@ -1827,20 +1842,9 @@ async function initProfile() {
         const emailEl = document.getElementById('user-email');
         if (emailEl) emailEl.textContent = user.email;
 
-        const rawPlan = user.subscription_status || user.subscriptions?.plan_type || 'free';
-        const plan = normalizePlanType(rawPlan);
-        const planClass = plan === 'free' ? 'badge--secondary' : 'badge--premium';
-        const planLabel = formatPlanLabel(plan);
-
         const badgesContainer = document.getElementById('user-badges');
         if (badgesContainer) {
-            badgesContainer.innerHTML = `<span id="user-plan" class="badge ${planClass}">${planLabel}</span>`;
-        }
-
-        const planEl = document.getElementById('user-plan');
-        if (planEl) {
-            planEl.textContent = planLabel;
-            planEl.className = `badge ${planClass}`;
+            badgesContainer.innerHTML = '<span id="user-plan" class="badge badge--secondary">Ověřuji přístup…</span>';
         }
 
         const avatarEl = document.getElementById('user-avatar');

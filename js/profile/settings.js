@@ -318,20 +318,25 @@ function renderSubscriptionCard(sub) {
     const statusLabels = {
         active: { text: 'Aktivní', class: 'badge--success' },
         trialing: { text: 'Zkušební období', class: 'badge--info' },
-        cancel_pending: { text: 'Zrušeno na konci období', class: 'badge--warning' },
+        cancel_pending: { text: 'Končí na konci období', class: 'badge--warning' },
         past_due: { text: 'Platba selhala', class: 'badge--danger' },
         unpaid: { text: 'Platba není uhrazena', class: 'badge--danger' },
         incomplete: { text: 'Platbu je potřeba dokončit', class: 'badge--danger' },
         paused: { text: 'Pozastaveno', class: 'badge--warning' },
-        cancelled: { text: 'Zrušeno', class: 'badge--danger' }
+        cancelled: { text: 'Zrušeno', class: 'badge--danger' },
+        canceled: { text: 'Zrušeno', class: 'badge--danger' },
+        incomplete_expired: { text: 'Platba nebyla dokončena', class: 'badge--secondary' }
     };
 
     const planName = formatPlanLabel(normalizedPlanType, { freeSuffix: true });
-    const statusInfo = statusLabels[sub.status] || { text: sub.status, class: '' };
+    const statusInfo = Object.hasOwn(statusLabels, sub.status)
+        ? statusLabels[sub.status]
+        : { text: 'Neznámý stav', class: 'badge--secondary' };
     const isPremium = normalizedPlanType !== 'free';
     const canManagePayments = sub.canManagePayments === true;
     const hasBillingSubscription = typeof sub.hasBillingSubscription === 'boolean' ? sub.hasBillingSubscription : null;
-    const periodEnd = sub.currentPeriodEnd ? new Date(sub.currentPeriodEnd) : null;
+    const rawPeriodEnd = sub.currentPeriodEnd ? new Date(sub.currentPeriodEnd) : null;
+    const periodEnd = rawPeriodEnd && !Number.isNaN(rawPeriodEnd.getTime()) ? rawPeriodEnd : null;
     const periodEndStr = periodEnd ? periodEnd.toLocaleDateString('cs-CZ', {
         day: 'numeric', month: 'long', year: 'numeric'
     }) : null;
@@ -352,7 +357,7 @@ function renderSubscriptionCard(sub) {
 
     if (sub.status === 'trialing' && periodEnd) {
         const daysRemaining = Math.max(0, Math.ceil((periodEnd - new Date()) / 86400000));
-        const dayWord = daysRemaining === 1 ? 'den' : (daysRemaining >= 2 && daysRemaining <= 4) ? 'dny' : 'dni';
+        const dayWord = daysRemaining === 1 ? 'den' : (daysRemaining >= 2 && daysRemaining <= 4) ? 'dny' : 'dnů';
         html += `<div class="trial-countdown">
             <span class="trial-countdown__main">Zkušební období: zbývá <strong>${daysRemaining}</strong> ${dayWord}</span>
             <span class="trial-countdown__date">Končí: ${periodEndStr}</span>
@@ -369,11 +374,9 @@ function renderSubscriptionCard(sub) {
     } else if (isPremium && hasBillingSubscription === false) {
         html += '<p class="subscription-period">Přístup je přidělený samostatně. Není u něj nastavená automatická platba.</p>';
         if (periodEnd && periodEnd.getFullYear() < 2090) html += `<p class="subscription-period">Platnost přístupu: <strong>${periodEndStr}</strong></p>`;
-    } else if (isPremium && periodEndStr) {
+    } else if (isPremium && periodEndStr && sub.status !== 'trialing') {
         const label = sub.status === 'cancel_pending'
             ? 'Přístup končí'
-            : sub.status === 'trialing'
-            ? 'Zkušební období končí'
             : hasBillingSubscription ? 'Konec aktuálního platebního období' : 'Platnost přístupu';
         html += `<p class="subscription-period">${label}: <strong>${periodEndStr}</strong></p>`;
     }
@@ -386,18 +389,18 @@ function renderSubscriptionCard(sub) {
         if (needsPaymentUpdate && canManagePayments) {
             html += '<button id="sub-payment-update-btn" type="button" class="btn btn--primary btn--sm">Aktualizovat kartu</button>';
             if (sub.canCancel) {
-                html += '<button id="sub-cancel-btn" data-cancel-immediate="true" class="btn btn--sm btn--glass">Zrušit a zastavit další pokusy</button>';
+                html += '<button id="sub-cancel-btn" type="button" data-cancel-immediate="true" class="btn btn--sm btn--glass">Zrušit a zastavit další pokusy</button>';
             }
         } else if (isPaused && sub.canResume === true) {
             html += '<button id="sub-resume-btn" type="button" class="btn btn--primary btn--sm">Obnovit předplatné</button>';
         } else if (sub.canCancel && sub.status !== 'cancel_pending') {
-            html += '<button id="sub-cancel-btn" class="btn btn--sm btn--glass">Zrušit předplatné</button>';
+            html += '<button id="sub-cancel-btn" type="button" class="btn btn--sm btn--glass">Zrušit předplatné</button>';
         }
         if (sub.status === 'cancel_pending' && hasBillingSubscription) {
-            html += '<button id="sub-reactivate-btn" class="btn btn--sm btn--primary">Obnovit předplatné</button>';
+            html += '<button id="sub-reactivate-btn" type="button" class="btn btn--sm btn--primary">Obnovit předplatné</button>';
         }
-        if (canManagePayments) html += `<button id="sub-portal-btn" class="btn btn--sm btn--glass">${hasBillingSubscription ? 'Správa plateb' : 'Platební údaje a faktury'}</button>`;
     }
+    if (canManagePayments) html += `<button id="sub-portal-btn" type="button" class="btn btn--sm btn--glass">${isPremium && hasBillingSubscription ? 'Správa plateb' : 'Platební údaje a faktury'}</button>`;
 
     html += '</div></div>';
     container.innerHTML = html;
@@ -434,6 +437,7 @@ async function cancelSubscription({ skipRetention = false } = {}) {
     }
 
     const btn = document.getElementById('sub-cancel-btn');
+    const originalLabel = btn?.textContent;
     if (btn) {
         btn.disabled = true;
         btn.textContent = 'Ruším...';
@@ -461,7 +465,7 @@ async function cancelSubscription({ skipRetention = false } = {}) {
         window.Auth?.showToast?.('Chyba', e.message || 'Nepodařilo se zrušit předplatné.', 'error');
         if (btn) {
             btn.disabled = false;
-            btn.textContent = 'Zrušit předplatné';
+            btn.textContent = originalLabel;
         }
     }
 }

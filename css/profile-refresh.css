@@ -517,9 +517,14 @@
 .trial-countdown {
     margin: 12px 0;
     padding: 12px 16px;
-    border: 1px solid rgba(52, 152, 219, 0.3);
+    border: 1px solid rgba(208, 177, 124, 0.3);
     border-radius: 8px;
-    background: rgba(52, 152, 219, 0.15);
+    background: rgba(208, 177, 124, 0.08);
+}
+
+body.page-profile .subscription-card .badge--info {
+    color: var(--profile-gold, #d0b17c);
+    background: rgba(208, 177, 124, 0.12);
 }
 
 .trial-countdown__main {

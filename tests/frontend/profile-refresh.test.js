@@ -60,7 +60,7 @@ function createDashboardHarness() {
         'profile-context-status', 'journal-entries', 'ritual-memory-strength',
         'ritual-memory-copy', 'ritual-memory-themes', 'ritual-memory-actions',
         'daily-guidance-title', 'daily-guidance-date', 'daily-guidance-plan',
-        'daily-guidance-copy', 'daily-guidance-focus', 'daily-guidance-actions'
+        'daily-guidance-copy', 'daily-guidance-focus', 'daily-guidance-actions', 'user-plan'
     ];
     const nodes = Object.fromEntries(ids.map(id => [id, makeElement()]));
     nodes['tab-favorites'].classList.add('is-active');
@@ -277,4 +277,28 @@ test('journal-only daily guidance does not invent a last-reading link', () => {
     expect(markup).not.toContain('data-daily-action="last_reading"');
     expect(markup).toContain('Otevřít dnešní horoskop');
     expect(markup).toContain('Otevřít kartu dne');
+});
+
+test.each([
+    ['active', 'premium_monthly', true],
+    ['trialing', 'premium_monthly', true],
+    ['cancel_pending', 'premium_monthly', true],
+    ['paused', 'Přístup pozastavený', false],
+    ['past_due', 'Čeká na platbu', false],
+    ['canceled', 'free', false],
+    ['cancelled', 'free', false],
+    ['unexpected', 'Stav není ověřený', false],
+    [null, 'Stav není ověřený', false]
+])('verified %s status controls both access badges despite cached premium plan', (status, label, premium) => {
+    const user = { id: 'synthetic-user', subscription_status: 'premium_monthly' };
+    const subscription = status ? { planType: 'premium_monthly', status } : null;
+    const hook = dashboard.context.__profileTest;
+    hook.setState({ user, subscription, context: { readings: [], journals: [] } });
+    hook.renderProfileOverview();
+    hook.renderDailyGuidance(user, [], subscription);
+
+    for (const id of ['user-plan', 'daily-guidance-plan']) {
+        expect(dashboard.nodes[id].textContent).toBe(label);
+        expect(dashboard.nodes[id].className.includes('badge--premium')).toBe(premium);
+    }
 });

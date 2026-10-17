@@ -84,6 +84,8 @@ Tyto body už jsou doložené v navazovaných auditech. Nejde o nově vymyšlen�
 
 ### W06 · P2 · Jeden srozumitelný jazyk formulářů a stavů
 
+**Dílčí přijetí 17. 10.:** profil má sjednocené štítky přístupu, pravdivý text ukončení a zkušebního období a dostupné faktury i po zrušení členství. [Lokální členská matice a hranice PV02](release-prep-2026-10-15/profile-membership-qa.md). Neuzavírá další formuláře ani celou oblast W06.
+
 - [ ] Doplnit u každého asynchronního nástroje stavy prázdný/vyplněný/načítání/výsledek/chyba/opakování. Chyba zachová vstupy, odstraní zavádějící starý výsledek a řekne, co jde udělat.
 - [ ] Ověřit popisky, vysvětlení nepovinných údajů, autocomplete, Enter a fokus. Chyba má být i u pole nebo výsledku, nejen v krátkém toastu.
 - [ ] Zpřesnit čekání a chyby: žádné nepravdivé „naši mágové již pracují“. Rychlý lokální výsledek nebrzdit předstíraným výpočtem.

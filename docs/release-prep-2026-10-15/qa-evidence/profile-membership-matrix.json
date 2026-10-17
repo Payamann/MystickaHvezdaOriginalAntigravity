@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-17",
+  "environment": "local synthetic status payloads, real client; no Stripe connection or billing mutation",
+  "width": 1280,
+  "states": [
+    {
+      "state": "active",
+      "text": "Členství Mystické Hvězdy\nAktivní\n\nKonec aktuálního platebního období: 22. října 2026\n\nZrušit předplatné\nSpráva plateb",
+      "access": "Členství Mystické Hvězdy"
+    },
+    {
+      "state": "trialing",
+      "text": "Členství Mystické Hvězdy\nZkušební období\nZkušební období: zbývá 5 dnů\nKončí: 22. října 2026\nZrušit předplatné\nSpráva plateb",
+      "access": "Členství Mystické Hvězdy"
+    },
+    {
+      "state": "cancel_pending",
+      "text": "Členství Mystické Hvězdy\nKončí na konci období\n\nPřístup končí: 22. října 2026\n\nObnovit předplatné\nSpráva plateb",
+      "access": "Členství Mystické Hvězdy"
+    },
+    {
+      "state": "paused",
+      "text": "Členství Mystické Hvězdy\nPozastaveno\n\nPředplatné je pozastavené. Do 22. října 2026 se nic neúčtuje a prémiový přístup je pozastavený. Obnovit ho můžeš kdykoliv.\n\nObnovit předplatné\nSpráva plateb",
+      "access": "Přístup pozastavený"
+    },
+    {
+      "state": "past_due",
+      "text": "Členství Mystické Hvězdy\nPlatba selhala\n\nČlenství čeká na opravu platby. Aktualizuj platební metodu a Stripe se pokusí platbu bezpečně dokončit.\n\nAktualizovat kartu\nZrušit a zastavit další pokusy\nSpráva plateb",
+      "access": "Čeká na platbu"
+    },
+    {
+      "state": "canceled",
+      "text": "Poutník (zdarma)\nZrušeno\nProhlédnout členství\nPlatební údaje a faktury",
+      "access": "Poutník"
+    },
+    {
+      "state": "manual",
+      "text": "Členství Mystické Hvězdy\nAktivní\n\nPřístup je přidělený samostatně. Není u něj nastavená automatická platba.\n\nPlatnost přístupu: 22. října 2026",
+      "access": "Členství Mystické Hvězdy"
+    },
+    {
+      "state": "free",
+      "text": "Poutník (zdarma)\nAktivní\nProhlédnout členství\nPlatební údaje a faktury",
+      "access": "Poutník"
+    }
+  ],
+  "portal": {
+    "firstAttempt": "model HTTP 503, error shown, button enabled again",
+    "secondAttempt": "local /__preview/portal reached",
+    "externalStripeSessionCreated": false
+  }
+}
