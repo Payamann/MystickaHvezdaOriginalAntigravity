@@ -30,7 +30,7 @@ async function visit(directory, includeHtml) {
 
         const filePath = path.join(directory, entry.name);
         // This audit stores unversioned manifest keys, not URLs to rewrite.
-        if (filePath === path.join(rootDir, 'scripts', 'audit-site-structure.mjs')) continue;
+        if (['audit-site-structure.mjs', 'production-critical-assets-smoke.mjs'].some(name => filePath === path.join(rootDir, 'scripts', name))) continue;
         const original = await fs.readFile(filePath, 'utf8');
         const updated = original.replace(assetPattern, (_match, assetPath, assetName) => `${assetPath}?v=${versions[assetName]}`);
         if (updated === original) continue;

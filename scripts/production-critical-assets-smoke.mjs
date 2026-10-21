@@ -4,7 +4,7 @@ import { assetHash } from '../server/utils/asset-versioning.js';
 const PRODUCTION_BASE_URL = 'https://www.mystickahvezda.cz';
 const DEFAULT_LOCAL_BASE_URL = `http://localhost:${process.env.PLAYWRIGHT_PORT || '3001'}`;
 const REQUIRED_AUTH_ASSET_VERSIONS = new Map([
-    ...['/js/dist/auth-client.js?v=20261020-02-register-password-policy '/js/dist/core.js?v=20261021-footer-support-locale => [asset,
+    ...['/js/dist/auth-client.js', '/js/dist/core.js'].map(asset => [asset,
         assetHash(fs.readFileSync(fileURLToPath(new URL(`..${asset}`, import.meta.url))))])
 ]);
 const REQUIRED_AUTH_CLIENT_MARKERS = [
