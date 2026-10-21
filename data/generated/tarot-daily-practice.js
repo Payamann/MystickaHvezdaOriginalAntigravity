@@ -65,11 +65,11 @@ export default {
     "Všimni si jednoho automatického nutkání a před reakcí si nech prostor zvolit jiný postup."
   ],
   "Věž": [
-    "Který předpoklad potřebuje ověřit?",
+    "Který předpoklad si potřebuješ ověřit?",
     "Přezkoumej jednu domněnku a najdi pevný fakt, o který se můžeš opřít. Nemusíš nic bořit."
   ],
   "Hvězda": [
-    "Co ti dává obyčejnou, doložitelnou naději?",
+    "O co se můžeš opřít právě teď?",
     "Připomeň si jednu věc, která se v poslední době podařila, a navazující malý krok."
   ],
   "Luna": [
@@ -101,12 +101,12 @@ export default {
     "Zkontroluj, co už je odeslané, a domluv konkrétní termín dalšího kontaktu."
   ],
   "Čtyřka holí": [
-    "Co můžete společně oslavit?",
+    "Co stojí za to společně oslavit?",
     "Připomeň lidem kolem sebe jeden společný pokrok, i když celý projekt ještě nekončí."
   ],
   "Pětka holí": [
     "Je spor o cíl, nebo jen o postup?",
-    "Při neshodě nejprve pojmenujte společný cíl a teprve pak porovnejte různé cesty."
+    "Při neshodě nejprve pojmenuj společný cíl a teprve pak porovnej různé cesty."
   ],
   "Šestka holí": [
     "Který pokrok zůstává bez povšimnutí?",
@@ -150,7 +150,7 @@ export default {
   ],
   "Dvojka pohárů": [
     "Je prostor pro oba pohledy?",
-    "V jednom rozhovoru se nejprve zeptej na potřebu druhého a pak pojmenuj svoji."
+    "V jednom rozhovoru se nejprve zeptej na potřebu druhého a pak pojmenuj svou."
   ],
   "Trojka pohárů": [
     "S kým chceš sdílet něco obyčejně hezkého?",
@@ -201,7 +201,7 @@ export default {
     "Řekni, co prožíváš, jednou větou bez obviňování a navrhni konkrétní další krok."
   ],
   "Eso mečů": [
-    "Co potřebuje přesně pojmenovat?",
+    "Jakou otázku potřebuješ jasně formulovat?",
     "Napiš hlavní otázku bez vedlejších příběhů a zjisti, jaký údaj ti chybí k odpovědi."
   ],
   "Dvojka mečů": [
@@ -209,7 +209,7 @@ export default {
     "Pojmenuj, jakou informaci potřebuješ pro další krok a kde ji můžeš získat."
   ],
   "Trojka mečů": [
-    "Co potřebuje uznání místo rychlé náplasti?",
+    "Co potřebuješ uznat místo rychlé náplasti?",
     "Dovol si pojmenovat zklamání a pro dnešek si vyber jednu laskavou, praktickou oporu."
   ],
   "Čtyřka mečů": [
@@ -265,8 +265,8 @@ export default {
     "Srovnej dvě dnešní priority a jednu méně důležitou činnost přesuň nebo zruš."
   ],
   "Trojka pentáklů": [
-    "Čí dovednost může doplnit tvoji?",
-    "U společného úkolu si vyjasněte, kdo co připraví a podle čeho poznáte hotový výsledek."
+    "Čí dovednost může doplnit tu tvou?",
+    "U společného úkolu si s ostatními ujasni, kdo co připraví a jak poznat hotový výsledek."
   ],
   "Čtyřka pentáklů": [
     "Co chráníš rozumně a co už svíráš příliš?",
@@ -278,7 +278,7 @@ export default {
   ],
   "Šestka pentáklů": [
     "Je dávání a přijímání srozumitelné oběma stranám?",
-    "Při nabídce pomoci si vyjasněte její rozsah a podmínky místo tichých očekávání."
+    "Při nabídce pomoci si s druhou stranou ujasni její rozsah a podmínky místo tichých očekávání."
   ],
   "Sedmička pentáklů": [
     "Co už roste a co potřebuje upravit?",

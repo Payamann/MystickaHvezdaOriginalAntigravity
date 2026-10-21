@@ -8,6 +8,19 @@
 import { test, expect } from '@playwright/test';
 import { BASE_URL, waitForPageReady, getCsrfToken, MOBILE_VIEWPORT } from './helpers.js';
 
+async function activateMentorTestSession(page) {
+    await page.evaluate(() => {
+        const user = { id: 'e2e-mentor-user', email: 'mentor-e2e@example.com', subscription_status: 'free' };
+        Object.assign(window.Auth, {
+            user,
+            isLoggedIn: () => true,
+            isPremium: () => false,
+            getProfile: async () => user
+        });
+        document.dispatchEvent(new Event('auth:changed'));
+    });
+}
+
 // ═══════════════════════════════════════════════════════════
 // MENTOR — Hvězdný průvodce (AI Chat)
 // ═══════════════════════════════════════════════════════════
@@ -44,6 +57,13 @@ test.describe('Mentor — Hvězdný průvodce', () => {
 
     test('h1 je viditelný', async ({ page }) => {
         await expect(page.locator('h1').first()).toBeVisible();
+    });
+
+    test('hero popisuje automatický průvodce přirozeně a bez slibu výsledku', async ({ page }) => {
+        const subtitle = page.locator('.hero__subtitle').first();
+        await expect(subtitle).toContainText('Polož otázku o vztazích, práci nebo dalším směru.');
+        await expect(subtitle).toContainText('podle situace, kterou popíšeš.');
+        await expect(subtitle).not.toContainText(/Zeptejte se|vám pomůže najít klid/);
     });
 
     test('chat-container nebo chat UI existuje', async ({ page }) => {
@@ -86,6 +106,162 @@ test.describe('Mentor — Hvězdný průvodce', () => {
         await expect(page.locator('#send-btn')).toBeEnabled();
     });
 
+    test('předchozí historie se načte před odesláním nové otázky', async ({ page }) => {
+        let releaseHistory;
+        const historyGate = new Promise(resolve => {
+            releaseHistory = resolve;
+        });
+
+        await page.route('**/api/mentor/history', async route => {
+            await historyGate;
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    success: true,
+                    history: [
+                        { role: 'user', content: 'Starší otázka' },
+                        { role: 'mentor', content: 'Starší odpověď' }
+                    ]
+                })
+            });
+        });
+        await page.route('**/api/mentor/chat', route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ reply: 'Nová odpověď' })
+        }));
+
+        await page.reload();
+        await activateMentorTestSession(page);
+        await expect(page.locator('#mentor-history-status')).toBeVisible();
+        await expect(page.locator('#mentor-history-status')).toHaveText('Načítám předchozí konverzaci…');
+        await page.locator('#chat-input').fill('Nová otázka');
+        await expect(page.locator('#send-btn')).toBeDisabled();
+
+        releaseHistory();
+        await expect(page.locator('#mentor-history-status')).toBeHidden();
+        await expect(page.locator('#send-btn')).toBeEnabled();
+        await page.locator('#send-btn').click();
+        await expect(page.locator('#chat-messages .message').last()).toHaveText('Nová odpověď');
+
+        const messages = await page.locator('#chat-messages .message').allTextContents();
+        expect(messages).toEqual(['Starší otázka', 'Starší odpověď', 'Nová otázka', 'Nová odpověď']);
+    });
+
+    test('chyba při načítání historie zachová vstup a dovolí pokračovat', async ({ page }) => {
+        await page.route('**/api/mentor/history', route => route.fulfill({
+            status: 503,
+            contentType: 'application/json',
+            body: JSON.stringify({ success: false })
+        }));
+        await page.route('**/api/mentor/chat', route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ reply: 'Můžeš pokračovat.' })
+        }));
+
+        await page.reload();
+        await activateMentorTestSession(page);
+        const input = page.locator('#chat-input');
+        const sendButton = page.locator('#send-btn');
+        await expect(page.locator('#mentor-history-status')).toContainText('Novou otázku můžeš poslat i tak.');
+        await input.fill('Moje nová otázka zůstane zachovaná');
+        await expect(sendButton).toBeEnabled();
+        await sendButton.click();
+        await expect(page.locator('#chat-messages .message').last()).toHaveText('Můžeš pokračovat.');
+    });
+
+    test('po změně účtu se opožděná historie předchozího účtu nezobrazí', async ({ page }) => {
+        let releaseOldHistory;
+        const oldHistoryGate = new Promise(resolve => {
+            releaseOldHistory = resolve;
+        });
+        let historyRequestCount = 0;
+
+        await page.route('**/api/auth/profile', route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ success: true, user: { id: 'e2e-mentor-user', subscription_status: 'free' } })
+        }));
+        await page.route('**/api/mentor/history', async route => {
+            historyRequestCount += 1;
+            if (historyRequestCount === 1) {
+                await oldHistoryGate;
+                await route.fulfill({
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify({ success: true, history: [{ role: 'mentor', content: 'Soukromá historie účtu A' }] })
+                }).catch(() => {});
+                return;
+            }
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true, history: [{ role: 'mentor', content: 'Historie účtu B' }] })
+            });
+        });
+
+        await page.reload();
+        await activateMentorTestSession(page);
+        await expect(page.locator('#mentor-history-status')).toHaveText('Načítám předchozí konverzaci…');
+        await page.evaluate(() => {
+            window.Auth.user = { id: 'e2e-mentor-user-b', email: 'mentor-b@example.com', subscription_status: 'free' };
+            localStorage.setItem('auth_user', JSON.stringify(window.Auth.user));
+            document.dispatchEvent(new Event('auth:changed'));
+        });
+
+        await expect(page.locator('#chat-messages')).toContainText('Historie účtu B');
+        releaseOldHistory();
+        await expect(page.locator('#chat-messages')).not.toContainText('Soukromá historie účtu A');
+        expect(historyRequestCount).toBe(2);
+    });
+
+    test('opožděná odpověď chatu se po změně účtu nevykreslí', async ({ page }) => {
+        let releaseOldReply;
+        const oldReplyGate = new Promise(resolve => {
+            releaseOldReply = resolve;
+        });
+
+        await page.route('**/api/auth/profile', route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ success: true, user: { id: 'e2e-mentor-user', subscription_status: 'free' } })
+        }));
+        await page.route('**/api/mentor/history', route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ success: true, history: [] })
+        }));
+        await page.route('**/api/mentor/chat', async route => {
+            await oldReplyGate;
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ reply: 'Odpověď patří účtu A' })
+            }).catch(() => {});
+        });
+
+        await page.reload();
+        await activateMentorTestSession(page);
+        await page.evaluate(() => { window.getCSRFToken = async () => 'mentor-session-test-token'; });
+        await page.locator('#chat-input').fill('Otázka účtu A');
+        await expect(page.locator('#send-btn')).toBeEnabled();
+        await page.locator('#send-btn').click();
+        await expect(page.locator('#typing-indicator')).toBeVisible();
+        await page.evaluate(() => {
+            window.Auth.user = { id: 'e2e-mentor-user-b', email: 'mentor-b@example.com', subscription_status: 'free' };
+            localStorage.setItem('auth_user', JSON.stringify(window.Auth.user));
+            document.dispatchEvent(new Event('auth:changed'));
+        });
+
+        await expect(page.locator('#chat-input')).toHaveValue('');
+        await expect(page.locator('#typing-indicator')).toBeHidden();
+        releaseOldReply();
+        await expect(page.locator('#chat-messages')).not.toContainText('Otázka účtu A');
+        await expect(page.locator('#chat-messages')).not.toContainText('Odpověď patří účtu A');
+    });
+
     test('odhlaseny navstevnik vidi hodnotu pred registraci a prompt se ulozi bez planu', async ({ page }) => {
         await page.context().clearCookies();
         await page.goto('/mentor.html?source=e2e_mentor_value_first');
@@ -112,21 +288,38 @@ test.describe('Mentor — Hvězdný průvodce', () => {
         expect(pendingPrompt.source).toBe('mentor_entry_auth_gate');
     });
 
-    test('premium gate copy v bundle komunikuje konkrétní hodnotu a únik bez checkout tlaku', async ({ page }) => {
+    test('mentor bundle uses the server quota and does not keep a client-side daily counter', async ({ page }) => {
         const response = await page.request.get('/js/dist/mentor.js');
         expect(response.status()).toBe(200);
         const source = await response.text();
 
-        expect(source).toContain('mh_daily_mentor_');
-        expect(source).toContain('jeden konkr\\xE9tn\\xED dal\\u0161\\xED krok');
-        expect(source).toContain('Odemknout veden\\xED');
-        expect(source).toContain('Z\\u016Fstat u dne\\u0161n\\xEDho chatu');
-        expect(source).toContain('paywall_dismissed');
-        expect(source).toContain('Denn\\xED limit zdarma je vy\\u010Derpan\\xFD');
+        expect(source).toContain('/mentor/chat');
+        expect(source).not.toContain('mh_daily_mentor_');
+        expect(source).toContain('historySaved');
+        expect(source).toContain('mentor-paywall-upgrade-btn');
         expect(source).not.toContain('Lorem ipsum');
-        expect(source).not.toContain('Pouze pro Premium');
-        expect(source).not.toContain('moudrosti hv');
-        expect(source).not.toContain('neomezen\\xFD p');
+    });
+
+    test('mentor treats a 403 authorization error as an error, not as a quota paywall', async ({ page }) => {
+        await page.route('**/api/mentor/history', route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ success: true, history: [] })
+        }));
+        await page.route('**/api/mentor/chat', route => route.fulfill({
+            status: 403,
+            contentType: 'application/json',
+            body: JSON.stringify({ error: 'Požadavek se nepodařilo ověřit.' })
+        }));
+        await activateMentorTestSession(page);
+        await page.evaluate(() => { window.getCSRFToken = async () => 'mentor-test-csrf'; });
+        await page.locator('#chat-input').fill('Zachovej otázku při chybě ověření.');
+        await expect(page.locator('#send-btn')).toBeEnabled();
+        await page.locator('#send-btn').click();
+
+        await expect(page.locator('#chat-messages')).toContainText('Požadavek se nepodařilo ověřit.');
+        await expect(page.locator('[data-mentor-limit]')).toHaveCount(0);
+        await expect(page.locator('#chat-input')).toHaveValue('Zachovej otázku při chybě ověření.');
     });
 
     // API test
@@ -205,6 +398,43 @@ test.describe('Šamanské kolo', () => {
     test('#mw-result-content nebo result container existuje', async ({ page }) => {
         const result = page.locator('#mw-result-content, .mw-result-section, .mw-result').first();
         await expect(result).toBeAttached();
+    });
+
+    test('neaktivní kompas používá sdílené SVG místo platformního emoji', async ({ page }) => {
+        await expect(page.locator('#mw-center-compass use')).toHaveAttribute('href', '/img/icons/mh-symbols.svg#compass');
+        await expect(page.locator('#mw-center-emoji')).toHaveAttribute('display', 'none');
+    });
+
+    test('ovládací ikony sdílení používají společný SVG sprite', async ({ page }) => {
+        await expect(page.locator('#share-native use')).toHaveAttribute('href', '/img/icons/mh-symbols.svg#share');
+        await expect(page.locator('#share-fb use')).toHaveAttribute('href', '/img/icons/mh-symbols.svg#facebook');
+        await expect(page.locator('#share-copy use')).toHaveAttribute('href', '/img/icons/mh-symbols.svg#copy');
+    });
+
+    test('sdílení totemu nepoužívá systémové emoji ani jméno z formuláře', async ({ page }) => {
+        await page.route('**/api/csrf-token', route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ csrfToken: 'shaman-share-test-token' })
+        }));
+        await page.route('**/api/medicine-wheel', route => route.fulfill({
+            status: 402,
+            contentType: 'application/json',
+            body: JSON.stringify({ error: 'Premium access required' })
+        }));
+
+        await page.locator('#mw-name').fill('Jana Nováková');
+        await page.locator('#mw-birth').fill('1988-09-21');
+        await page.locator('#mw-submit').click();
+        await expect(page.locator('#mw-result')).toHaveClass(/visible/);
+
+        const quote = await page.locator('#share-fb').evaluate(element =>
+            new URL(element.href).searchParams.get('quote')
+        );
+        expect(quote).toContain('Symbolický měsíční totem:');
+        expect(quote).toContain('světová strana:');
+        expect(quote).not.toContain('Jana');
+        expect(quote).not.toMatch(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u);
     });
 
     test('premium gate nebo result container existuje v DOM', async ({ page }) => {

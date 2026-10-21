@@ -7,6 +7,30 @@ window.Premium = {
     _plansById: new Map(),
     _featurePlanMap: {},
 
+    _createSymbolIcon(symbolId, className = '') {
+        const allowedSymbols = ['check', 'compass', 'gem', 'lock', 'star'];
+        if (!allowedSymbols.includes(symbolId)) return null;
+
+        const namespace = 'http://www.w3.org/2000/svg';
+        const icon = document.createElementNS(namespace, 'svg');
+        icon.setAttribute('class', `mh-symbol premium-symbol${className ? ` ${className}` : ''}`);
+        icon.setAttribute('viewBox', '0 0 48 48');
+        icon.setAttribute('width', '24');
+        icon.setAttribute('height', '24');
+        icon.setAttribute('fill', 'none');
+        icon.setAttribute('stroke', 'currentColor');
+        icon.setAttribute('stroke-width', '1.8');
+        icon.setAttribute('stroke-linecap', 'round');
+        icon.setAttribute('stroke-linejoin', 'round');
+        icon.setAttribute('aria-hidden', 'true');
+        icon.setAttribute('focusable', 'false');
+
+        const use = document.createElementNS(namespace, 'use');
+        use.setAttribute('href', `/img/icons/mh-symbols.svg#${symbolId}`);
+        icon.appendChild(use);
+        return icon;
+    },
+
     _escapeHTML(str) {
         const div = document.createElement('div');
         div.textContent = str;
@@ -15,6 +39,24 @@ window.Premium = {
 
     _hasLoginCookie() {
         return document.cookie.split(';').some((part) => part.trim() === 'logged_in=1');
+    },
+
+    getSafeLocalRedirect(value, fallback = '/cenik.html') {
+        if (typeof value !== 'string') return fallback;
+        const redirect = value.trim();
+        if (!redirect || !redirect.startsWith('/') || redirect.startsWith('//')
+            || redirect.includes('\\') || /[\u0000-\u001F\u007F]/.test(redirect)) {
+            return fallback;
+        }
+
+        try {
+            const target = new URL(redirect, window.location.origin);
+            return target.origin === window.location.origin
+                ? `${target.pathname}${target.search}${target.hash}`
+                : fallback;
+        } catch {
+            return fallback;
+        }
     },
 
     async checkStatus() {
@@ -84,14 +126,13 @@ window.Premium = {
         const plan = this._plansById.get(planId);
         if (!plan) return fallbackLabel;
 
-        const icon = planId === 'pruvodce' ? '\u{1F52D}' : '\u2728';
         const name = this.readablePlanName(plan.name);
         let suffix = '';
         if (plan.interval === 'month') suffix = '/m\u011bs\u00edc';
         if (plan.interval === 'year') suffix = '/rok';
 
         if (!name || !plan.priceLabel) return fallbackLabel;
-        return `${icon} Odemknout ${name} - ${plan.priceLabel}${suffix}`;
+        return `Odemknout ${name} - ${plan.priceLabel}${suffix}`;
     },
 
     getPlanTrialDays(planId) {
@@ -122,8 +163,8 @@ window.Premium = {
 
     getTrialCtaLabel(planId, fallbackLabel) {
         const trialDays = this.getPlanTrialDays(planId);
-        if (trialDays > 0) return `\ud83c\udf1f Vyzkou\u0161et ${trialDays} dn\u00ed zdarma`;
-        return this.getPlanCtaLabel(planId, fallbackLabel || '\ud83c\udf1f Odemknout Hv\u011bzdn\u00e9ho Pr\u016fvodce');
+        if (trialDays > 0) return `Vyzkou\u0161et ${trialDays} dn\u00ed zdarma`;
+        return this.getPlanCtaLabel(planId, fallbackLabel || 'Odemknout Hv\u011bzdn\u00e9ho Pr\u016fvodce');
     },
 
     getFeaturePlanId(featureName, fallbackPlanId = 'pruvodce') {
@@ -144,11 +185,7 @@ window.Premium = {
     buildCheckoutAuthUrl(planId, context = {}) {
         const source = context.source || 'premium_gate';
         const feature = context.feature || null;
-        const redirect = typeof context.redirect === 'string'
-            && context.redirect.startsWith('/')
-            && !context.redirect.startsWith('//')
-            ? context.redirect
-            : '/cenik.html';
+        const redirect = this.getSafeLocalRedirect(context.redirect);
         const authMode = context.authMode === 'login' ? 'login' : 'register';
         const metadata = this.buildCheckoutMetadata(source, feature, context.metadata);
         const authUrl = new URL('/prihlaseni.html', window.location.origin);
@@ -184,11 +221,7 @@ window.Premium = {
         try {
             const source = context.source || 'premium_gate';
             const feature = context.feature || null;
-            const redirect = typeof context.redirect === 'string'
-                && context.redirect.startsWith('/')
-                && !context.redirect.startsWith('//')
-                ? context.redirect
-                : '/cenik.html';
+            const redirect = this.getSafeLocalRedirect(context.redirect);
             const authMode = context.authMode === 'login' ? 'login' : 'register';
             const metadata = this.buildCheckoutMetadata(source, feature, context.metadata);
 
@@ -287,15 +320,14 @@ window.Premium = {
     createOverlay({ icon, title, message, benefits, ctaLabel, footer, badgeLabel = '' }) {
         const overlay = document.createElement('div');
         overlay.className = 'paywall-overlay';
+        const iconId = ['compass', 'gem', 'star'].includes(icon) ? icon : 'gem';
         overlay.innerHTML = `
             <div class="paywall-content">
-                <div class="paywall-icon">${this._escapeHTML(icon)}</div>
+                <div class="paywall-icon" aria-hidden="true"></div>
                 ${badgeLabel ? `<div class="paywall-trial-badge">${this._escapeHTML(badgeLabel)}</div>` : ''}
                 <h3 class="paywall-title">${this._escapeHTML(title)}</h3>
                 <p class="paywall-message">${this._escapeHTML(message)}</p>
-                <div class="paywall-benefits">
-                    ${(benefits || []).map((item) => `<div class="benefit-item">${this._escapeHTML(item)}</div>`).join('')}
-                </div>
+                <div class="paywall-benefits"></div>
                 <div class="paywall-actions">
                     <button class="btn btn--primary paywall-upgrade">${this._escapeHTML(ctaLabel)}</button>
                     <button class="btn btn--ghost paywall-close">Teď ne</button>
@@ -303,6 +335,18 @@ window.Premium = {
                 <p class="paywall-footer">${this._escapeHTML(footer)}</p>
             </div>
         `;
+
+        overlay.querySelector('.paywall-icon').appendChild(this._createSymbolIcon(iconId));
+        const benefitsContainer = overlay.querySelector('.paywall-benefits');
+        (benefits || []).forEach((item) => {
+            const benefit = document.createElement('div');
+            benefit.className = 'benefit-item';
+            benefit.appendChild(this._createSymbolIcon('check', 'paywall-benefit-icon'));
+            const text = document.createElement('span');
+            text.textContent = String(item).replace(/^\s*✓\s*/, '');
+            benefit.appendChild(text);
+            benefitsContainer.appendChild(benefit);
+        });
 
         document.body.appendChild(overlay);
         return overlay;
@@ -397,7 +441,7 @@ window.Premium = {
                 title: 'Astrokartografie a místa, která vás volají',
                 message: 'Členství zahrnuje astrologickou mapu míst a jejich symbolický výklad.',
                 planId: 'pruvodce',
-                ctaLabel: this.getPlanCtaLabel('pruvodce', '🔭 Odemknout členství'),
+                ctaLabel: this.getPlanCtaLabel('pruvodce', 'Odemknout členství'),
                 footer: this.getPlanFooter('pruvodce'),
                 benefits: ['✓ Hvězdná mapa míst', '✓ Linie pro vztahy, práci a růst', '✓ Pokročilé interpretace', '✓ Roční kontext a hlubší analýzy']
             },
@@ -424,11 +468,11 @@ window.Premium = {
         this.trackPaywallHit(featureName, 'inline_paywall', planId);
 
         const overlay = this.createOverlay({
-            icon: planId === 'pruvodce' ? '🔭' : '✨',
+            icon: planId === 'pruvodce' ? 'compass' : 'gem',
             title: config.title,
             message: displayMessage,
             benefits: config.benefits,
-            ctaLabel: this.getPlanCtaLabel(planId, config.ctaLabel || '🌟 Odemknout Hvězdného Průvodce'),
+            ctaLabel: this.getPlanCtaLabel(planId, config.ctaLabel || 'Odemknout Hvězdného Průvodce'),
             footer: this.getPlanFooter(planId, config.footer)
         });
 
@@ -443,7 +487,7 @@ window.Premium = {
         this.trackPaywallHit(featureName, 'exclusive_paywall', 'pruvodce');
 
         const overlay = this.createOverlay({
-            icon: '🔭',
+            icon: 'compass',
             title: 'Členství Mystické Hvězdy',
             message: 'Tato funkce je součástí členství Mystické Hvězdy.',
             benefits: [
@@ -452,7 +496,7 @@ window.Premium = {
                 '✓ Exkluzivní lunární rituály',
                 '✓ Návazné odpovědi Hvězdného Průvodce'
             ],
-            ctaLabel: this.getPlanCtaLabel('pruvodce', '🔭 Odemknout členství'),
+            ctaLabel: this.getPlanCtaLabel('pruvodce', 'Odemknout členství'),
             footer: this.getPlanFooter('pruvodce')
         });
 
@@ -464,7 +508,7 @@ window.Premium = {
     },
 
     showLoginGate(container, message = null, featureName = null, source = 'inline_login_gate') {
-        const defaultMsg = '⭐ Vytvořte účet a pokračujte k odemčení plného osobního výkladu';
+        const defaultMsg = 'Vytvořte účet a pokračujte k odemčení plného osobního výkladu';
         const safeMsg = this._escapeHTML(message || defaultMsg);
         const planId = this.getFeaturePlanId(featureName, 'pruvodce');
         this.trackPaywallHit(featureName, source, planId, 'login_gate_viewed');
@@ -492,7 +536,8 @@ window.Premium = {
     markAsPremium(element) {
         const badge = document.createElement('span');
         badge.className = 'premium-badge';
-        badge.textContent = '💎 Premium';
+        badge.appendChild(this._createSymbolIcon('gem', 'premium-badge__icon'));
+        badge.appendChild(document.createTextNode(' Premium'));
         badge.title = 'Tato funkce vyžaduje Premium předplatné';
 
         element.classList.add('premium-badge-host');
@@ -505,10 +550,11 @@ window.Premium = {
         const lockOverlay = document.createElement('div');
         lockOverlay.className = 'premium-lock-overlay';
         lockOverlay.innerHTML = `
-            <div class="lock-icon">🔒</div>
+            <div class="lock-icon" aria-hidden="true"></div>
             <p class="lock-text">Premium obsah</p>
             <button class="btn btn--sm btn--gold unlock-btn">Odemknout</button>
         `;
+        lockOverlay.querySelector('.lock-icon').appendChild(this._createSymbolIcon('lock', 'premium-lock-icon'));
 
         container.appendChild(lockOverlay);
 
@@ -574,12 +620,12 @@ window.Premium = {
         const selectedBenefits = benefits[featureName] || benefits.default;
 
         const overlay = this.createOverlay({
-            icon: '✨',
+            icon: 'star',
             badgeLabel: this.getPlanTrialBadge(planId),
             title: 'Hvězdný Průvodce',
             message: featureMessages[featureName] || 'Tato funkce je součástí Hvězdného Průvodce.',
             benefits: selectedBenefits,
-            ctaLabel: this.getTrialCtaLabel(planId, '🌟 Odemknout Hvězdného Průvodce'),
+            ctaLabel: this.getTrialCtaLabel(planId, 'Odemknout Hvězdného Průvodce'),
             footer: this.getPlanFooter(planId)
         });
 
@@ -601,7 +647,12 @@ window.Premium = {
             document.querySelectorAll('[data-premium="true"]').forEach((element) => {
                 const badge = document.createElement('span');
                 badge.className = 'nav-premium-badge';
-                badge.textContent = '💎';
+                badge.title = 'Součást členství';
+                badge.appendChild(this._createSymbolIcon('gem', 'nav-premium-icon'));
+                const label = document.createElement('span');
+                label.className = 'sr-only';
+                label.textContent = 'Členství';
+                badge.appendChild(label);
                 element.appendChild(badge);
             });
         }

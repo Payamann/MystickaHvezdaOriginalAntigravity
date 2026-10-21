@@ -2,6 +2,10 @@
  * Shared utility functions for profile modules
  */
 
+export function getProfileScrollBehavior() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+}
+
 // Helper: Escape HTML to prevent XSS
 export function escapeHtml(text) {
     if (!text) return '';
@@ -144,7 +148,7 @@ export function getReadingIcon(type) {
         'tarot': 'tarot', 'oracle': 'eye'
     };
     const iconName = icons[type] || 'star';
-    return profileIconMarkup(iconName);
+    return profileIconMarkup(iconName, 'reading-type-icon');
 }
 
 // Get title for reading type
@@ -270,20 +274,12 @@ export function getZodiacSign(dateStr) {
     ) || signs[0];
 }
 
-// Get Lucide icon name for zodiac symbol
-export function getZodiacIconName(symbol) {
-    const map = {
-        '♈': 'ram', '♉': 'mountain', '♊': 'users', '♋': 'crab',
-        '♌': 'lion', '♍': 'leaf', '♎': 'scale', '♏': 'bug',
-        '♐': 'send', '♑': 'mountain', '♒': 'droplets', '♓': 'fish'
-    };
-    // Note: Lucide doesn't have all zodiac signs directly, using closest analogs
-    return map[symbol] || 'sparkles';
-}
-
 // Decorative UI markup only. Never interpolate user text into an SVG URL.
-export function profileIconMarkup(name) {
- const allowed = new Set(['book', 'bookmark', 'warning', 'angel', 'globe', 'crystal', 'star', 'chart', 'pen', 'compass', 'numbers', 'hourglass', 'rune', 'partner', 'tarot', 'eye', 'dream', 'leaf', 'flower', 'user', 'check']);
+export function profileIconMarkup(name, variant = '') {
+ const allowed = new Set(['book', 'bookmark', 'warning', 'angel', 'globe', 'crystal', 'star', 'chart', 'pen', 'compass', 'numbers', 'hourglass', 'rune', 'partner', 'tarot', 'eye', 'dream', 'leaf', 'flower', 'user', 'check', 'logout']);
+ const variants = new Set(['', 'reading-type-icon']);
  if (!allowed.has(name)) throw new Error('Unknown profile UI icon');
- return '<svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#' + name + '"></use></svg>';
+ if (!variants.has(variant)) throw new Error('Unknown profile UI icon variant');
+ const classes = variant ? `mh-symbol ${variant}` : 'mh-symbol';
+ return '<svg class="' + classes + '" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#' + name + '"></use></svg>';
 }

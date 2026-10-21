@@ -35,7 +35,7 @@ import { getPragueHour, isAfterDailyHoroscopeSendWindow, isAfterDailyPushSendWin
 import { initializeDataRetentionJob } from './jobs/data-retention.js';
 import { initializeOneTimeOrderReconciliationJob } from './jobs/one-time-order-reconciliation.js';
 import schedule from 'node-schedule';
-import { globalLimiter, staticLimiter, sensitiveLimiter } from './middleware.js';
+import { globalLimiter, staticLimiter } from './middleware.js';
 import {
     setBaseContentSecurityPolicy,
     setHtmlContentSecurityPolicy,
@@ -664,7 +664,7 @@ if (!isProductionRuntime()) {
 // Handles /horoskop/:sign/:date and /horoskop/sitemap-horoscopes.xml
 app.use('/horoskop', horoscopePagesRoutes);
 
-// OG injection pro horoskopy.html — ?znak=beran → správný og:image pro Facebook scraper
+// OG injection for Czech, Slovak and Polish horoscope share links.
 const HOROSCOPE_SIGNS = {
     beran:    { name: 'Beran',    symbol: '♈' },
     byk:      { name: 'Býk',      symbol: '♉' },
@@ -680,27 +680,90 @@ const HOROSCOPE_SIGNS = {
     ryby:     { name: 'Ryby',     symbol: '♓' },
 };
 
-app.get('/horoskopy.html', (req, res, next) => {
-    const znak = req.query.znak?.toLowerCase();
-    if (!znak || !HOROSCOPE_SIGNS[znak]) return next();
+const HOROSCOPE_LOCALIZED_SLUGS = {
+    cs: Object.fromEntries(Object.keys(HOROSCOPE_SIGNS).map(slug => [slug, slug])),
+    sk: {
+        baran: 'beran', byk: 'byk', blizenci: 'blizenci', rak: 'rak', lev: 'lev', panna: 'panna',
+        vahy: 'vahy', skorpion: 'stir', strelec: 'strelec', kozorozec: 'kozoroh', vodnar: 'vodnar', ryby: 'ryby',
+    },
+    pl: {
+        baran: 'beran', byk: 'byk', bliznieta: 'blizenci', rak: 'rak', lew: 'lev', panna: 'panna',
+        waga: 'vahy', skorpion: 'stir', strzelec: 'strelec', koziorozec: 'kozoroh', wodnik: 'vodnar', ryby: 'ryby',
+    },
+};
 
-    const sign = HOROSCOPE_SIGNS[znak];
-    const appUrl = process.env.APP_URL || 'https://www.mystickahvezda.cz';
-    const ogImage = `${appUrl}/img/og/horoskop-${znak}.jpg`;
-    const ogTitle = `Horoskop ${sign.symbol} ${sign.name} — Mystická Hvězda`;
-    const ogDesc  = `Přečti si dnešní horoskop pro ${sign.name}. Co ti hvězdy přináší dnes?`;
-    const ogUrl   = `${appUrl}/horoskopy.html?znak=${znak}#${znak}`;
+const HOROSCOPE_LOCALIZED_NAMES = {
+    cs: Object.fromEntries(Object.entries(HOROSCOPE_SIGNS).map(([slug, sign]) => [slug, sign.name])),
+    sk: {
+        beran: 'Baran', byk: 'Býk', blizenci: 'Blíženci', rak: 'Rak', lev: 'Lev', panna: 'Panna',
+        vahy: 'Váhy', stir: 'Škorpión', strelec: 'Strelec', kozoroh: 'Kozorožec', vodnar: 'Vodnár', ryby: 'Ryby',
+    },
+    pl: {
+        beran: 'Baran', byk: 'Byk', blizenci: 'Bliźnięta', rak: 'Rak', lev: 'Lew', panna: 'Panna',
+        vahy: 'Waga', stir: 'Skorpion', strelec: 'Strzelec', kozoroh: 'Koziorożec', vodnar: 'Wodnik', ryby: 'Ryby',
+    },
+};
 
-    const htmlPath = path.join(rootDir, 'horoskopy.html');
-    let html;
-    try {
-        html = fs.readFileSync(htmlPath, 'utf-8');
-    } catch {
-        return next();
-    }
+const HOROSCOPE_SHARE_PAGES = {
+    cs: {
+        route: '/horoskopy.html', file: 'horoskopy.html', locale: 'cs_CZ',
+        periods: { daily: 'Denní horoskop', weekly: 'Týdenní horoskop', monthly: 'Měsíční horoskop' },
+        description: {
+            daily: name => `Denní horoskop pro ${name} — krátký symbolický podnět k zamyšlení.`,
+            weekly: name => `Týdenní horoskop pro ${name} — symbolický přehled jako podnět k zamyšlení.`,
+            monthly: name => `Měsíční horoskop pro ${name} — symbolický přehled jako podnět k zamyšlení.`,
+        },
+    },
+    sk: {
+        route: '/sk/horoskopy.html', file: 'sk/horoskopy.html', locale: 'sk_SK',
+        periods: { daily: 'Denný horoskop', weekly: 'Týždenný horoskop', monthly: 'Mesačný horoskop' },
+        description: {
+            daily: name => `Denný horoskop pre ${name} — krátky symbolický podnet na zamyslenie.`,
+            weekly: name => `Týždenný horoskop pre ${name} — symbolický prehľad ako podnet na zamyslenie.`,
+            monthly: name => `Mesačný horoskop pre ${name} — symbolický prehľad ako podnet na zamyslenie.`,
+        },
+    },
+    pl: {
+        route: '/pl/horoskopy.html', file: 'pl/horoskopy.html', locale: 'pl_PL',
+        periods: { daily: 'Horoskop dzienny', weekly: 'Horoskop tygodniowy', monthly: 'Horoskop miesięczny' },
+        description: {
+            daily: name => `Horoskop dzienny dla znaku ${name} — krótki, symboliczny punkt wyjścia do refleksji.`,
+            weekly: name => `Horoskop tygodniowy dla znaku ${name} — symboliczny przegląd do refleksji.`,
+            monthly: name => `Horoskop miesięczny dla znaku ${name} — symboliczny przegląd do refleksji.`,
+        },
+    },
+};
 
-    // Nahraď / přidej OG tagy specifické pro znamení
-    const ogInject = `
+function createHoroscopeSharePreviewHandler(language) {
+    const page = HOROSCOPE_SHARE_PAGES[language];
+
+    return (req, res, next) => {
+        const localSlug = typeof req.query.znak === 'string' ? req.query.znak.toLowerCase() : '';
+        const canonicalSlug = HOROSCOPE_LOCALIZED_SLUGS[language][localSlug];
+        if (!canonicalSlug || !HOROSCOPE_SIGNS[canonicalSlug]) return next();
+
+        const period = typeof req.query.period === 'string' && ['weekly', 'monthly'].includes(req.query.period)
+            ? req.query.period
+            : 'daily';
+        const sign = HOROSCOPE_SIGNS[canonicalSlug];
+        const localizedName = HOROSCOPE_LOCALIZED_NAMES[language][canonicalSlug];
+        const appUrl = (process.env.APP_URL || 'https://www.mystickahvezda.cz').replace(/\/$/, '');
+        const ogImage = `${appUrl}/img/og/horoskop-${canonicalSlug}.jpg`;
+        const ogTitle = `${page.periods[period]} ${sign.symbol} ${localizedName} — Mystická Hvězda`;
+        const ogDesc = page.description[period](localizedName);
+        const ogUrl = `${appUrl}${page.route}?znak=${encodeURIComponent(localSlug)}${period === 'daily' ? '' : `&period=${period}`}`;
+
+        let html;
+        try {
+            html = fs.readFileSync(path.join(rootDir, page.file), 'utf-8');
+        } catch {
+            return next();
+        }
+
+        const ogInject = `
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="Mystická Hvězda">
+    <meta property="og:locale" content="${page.locale}">
     <meta property="og:title" content="${ogTitle}">
     <meta property="og:description" content="${ogDesc}">
     <meta property="og:image" content="${ogImage}">
@@ -709,26 +772,26 @@ app.get('/horoskopy.html', (req, res, next) => {
     <meta property="og:image:alt" content="${ogTitle}">
     <meta property="og:url" content="${ogUrl}">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="${ogImage}">`;
+    <meta name="twitter:title" content="${ogTitle}">
+    <meta name="twitter:description" content="${ogDesc}">
+    <meta name="twitter:image" content="${ogImage}">
+    <meta name="twitter:image:alt" content="${ogTitle}">`;
 
-    // Přidej před </head> (nahradí případné existující OG tagy pro image/title/desc)
-    const replaced = html
-        .replace(/<meta property="og:image"[^>]*>/gi, '')
-        .replace(/<meta property="og:image:width"[^>]*>/gi, '')
-        .replace(/<meta property="og:image:height"[^>]*>/gi, '')
-        .replace(/<meta property="og:image:alt"[^>]*>/gi, '')
-        .replace(/<meta property="og:title"[^>]*>/gi, '')
-        .replace(/<meta property="og:description"[^>]*>/gi, '')
-        .replace(/<meta property="og:url"[^>]*>/gi, '')
-        .replace(/<meta name="twitter:card"[^>]*>/gi, '')
-        .replace(/<meta name="twitter:image"[^>]*>/gi, '')
-        .replace('</head>', ogInject + '\n</head>');
+        const replaced = html
+            .replace(/<meta property="og:(?:type|site_name|locale|image(?::(?:width|height|alt))?|title|description|url)"[^>]*>/gi, '')
+            .replace(/<meta name="twitter:(?:card|title|description|image(?::alt)?)"[^>]*>/gi, '')
+            .replace('</head>', `${ogInject}\n</head>`);
 
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.setHeader('Cache-Control', getPublicHtmlCacheControl());
-    setHtmlContentSecurityPolicy(res, replaced);
-    res.send(assetVersioning.html(replaced, req.path));
-});
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.setHeader('Cache-Control', getPublicHtmlCacheControl());
+        setHtmlContentSecurityPolicy(res, replaced);
+        res.send(assetVersioning.html(replaced, req.path));
+    };
+}
+
+for (const language of Object.keys(HOROSCOPE_SHARE_PAGES)) {
+    app.get(HOROSCOPE_SHARE_PAGES[language].route, createHoroscopeSharePreviewHandler(language));
+}
 
 // Support for /jmena/:name (redirects to /jmena/?jmeno=Name)
 app.get('/jmena/:name', (req, res, next) => {
@@ -926,8 +989,8 @@ app.use('/fonts', express.static(path.join(rootDir, 'fonts'), {
 }));
 
 
-// Apply sensitive operation limiter to password reset (stricter than authLimiter)
-app.use('/api/auth/reset-password', sensitiveLimiter);
+// Auth routes own the recovery and password-reset limits, including their
+// stable error codes. A second generic limiter would mask those responses.
 app.use('/api/auth', authRoutes);
 app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/contact', contactRoutes);

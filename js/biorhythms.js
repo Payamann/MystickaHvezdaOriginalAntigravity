@@ -10,10 +10,51 @@ const CYCLES = {
     intellectual: 33
 };
 
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+function getTodayIsoDatePrague(date = new Date()) {
+    const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Europe/Prague',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).formatToParts(date);
+    const dateParts = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return `${dateParts.year}-${dateParts.month}-${dateParts.day}`;
+}
+
+function getTodayPragueDate(date = new Date()) {
+    return parseLocalDate(getTodayIsoDatePrague(date));
+}
+
+function localCalendarDayNumber(date) {
+    const day = new Date(0);
+    day.setUTCHours(0, 0, 0, 0);
+    day.setUTCFullYear(date.getFullYear(), date.getMonth(), date.getDate());
+    return day.getTime() / MS_PER_DAY;
+}
+
+function parseLocalDate(value) {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+    if (!match) return null;
+
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    const dayOfMonth = Number(match[3]);
+    const date = new Date(0);
+    date.setHours(0, 0, 0, 0);
+    date.setFullYear(year, month - 1, dayOfMonth);
+
+    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== dayOfMonth) {
+        return null;
+    }
+
+    return date;
+}
+
 // Calculate biorhythm values for a specific date
 function getBiorhythmValue(birthDate, targetDate, cycleLength) {
-    const diffTime = Math.abs(targetDate - birthDate);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const diffDays = localCalendarDayNumber(targetDate) - localCalendarDayNumber(birthDate);
     return Math.sin((2 * Math.PI * diffDays) / cycleLength) * 100;
 }
 
@@ -26,8 +67,39 @@ function calculateBiorhythmsForDate(birthDate, targetDate) {
 }
 
 let bioChart = null;
+let chartJsLoadPromise = null;
+let biorhythmRenderVersion = 0;
 
-function renderBiorhythmChart(birthDate) {
+function loadChartJs() {
+    if (window.Chart) return Promise.resolve();
+    if (chartJsLoadPromise) return chartJsLoadPromise;
+
+    chartJsLoadPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = new URL('/js/vendor/chart.js', document.baseURI).href;
+        script.async = true;
+        script.onload = () => {
+            if (window.Chart) {
+                resolve();
+                return;
+            }
+            script.remove();
+            reject(new Error('Chart.js loaded without exposing Chart.'));
+        };
+        script.onerror = () => {
+            script.remove();
+            reject(new Error('Chart.js failed to load.'));
+        };
+        document.head.appendChild(script);
+    }).catch((error) => {
+        chartJsLoadPromise = null;
+        throw error;
+    });
+
+    return chartJsLoadPromise;
+}
+
+function drawBiorhythmChart(birthDate, today = getTodayPragueDate()) {
     const ctx = document.getElementById('bio-canvas');
     if (!ctx) return;
 
@@ -35,9 +107,6 @@ function renderBiorhythmChart(birthDate) {
         console.error('Chart.js is not loaded.');
         return;
     }
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
 
     const labels = [];
     const dataPhysical = [];
@@ -120,7 +189,7 @@ function renderBiorhythmChart(birthDate) {
                     displayColors: true,
                     callbacks: {
                         label: function (context) {
-                            return `${context.dataset.label}: ${Math.round(context.raw)}%`;
+                            return `${context.dataset.label}: ${Math.round(context.raw)} bodů modelové křivky`;
                         }
                     }
                 }
@@ -147,7 +216,7 @@ function renderBiorhythmChart(birthDate) {
                         color: '#a0a0b0',
                         stepSize: 50,
                         callback: function (value) {
-                            return value + '%';
+                            return value;
                         }
                     }
                 }
@@ -160,8 +229,32 @@ function renderBiorhythmChart(birthDate) {
     }
     bioChart = new Chart(ctx, config);
 
-    // Update today's stats UI
-    updateTodayStats(birthDate);
+    return true;
+}
+
+async function renderBiorhythmChart(birthDate) {
+    const renderVersion = ++biorhythmRenderVersion;
+    const today = getTodayPragueDate();
+    updateTodayStats(birthDate, today);
+    const resultStatus = document.getElementById('bio-result-status');
+    if (resultStatus) resultStatus.textContent = 'Číselný přehled biorytmů pro dnešní den je připraven.';
+    const status = document.getElementById('bio-chart-status');
+    if (status) status.textContent = 'Načítám graf…';
+
+    try {
+        await loadChartJs();
+        if (renderVersion !== biorhythmRenderVersion) return false;
+        drawBiorhythmChart(birthDate, today);
+        if (renderVersion === biorhythmRenderVersion && status) status.textContent = '';
+        return true;
+    } catch (error) {
+        if (renderVersion !== biorhythmRenderVersion) return false;
+        console.warn('Biorhythm chart could not be loaded.', error);
+        if (status) {
+            status.textContent = 'Graf se nepodařilo načíst. Číselný přehled zůstává k dispozici; zkus formulář odeslat znovu.';
+        }
+        return false;
+    }
 }
 
 function getInterpretation(type, value) {
@@ -171,52 +264,92 @@ function getInterpretation(type, value) {
     return `${labels[type] || 'Modelová'} křivka je ${region}. Jde o matematický model z data narození, ne měření dnešní kondice, nálady nebo soustředění.`;
 }
 
-function updateTodayStats(birthDate) {
-    const vals = calculateBiorhythmsForDate(birthDate, new Date());
+function updateTodayStats(birthDate, today) {
+    const vals = calculateBiorhythmsForDate(birthDate, today);
     const statsContainer = document.getElementById('bio-stats-container');
 
     if (!statsContainer) return;
 
+    const physicalValue = Math.round(vals.physical);
+    const emotionalValue = Math.round(vals.emotional);
+    const intellectualValue = Math.round(vals.intellectual);
     statsContainer.innerHTML = `
         <div class="bio-stat-card">
             <div class="bio-stat-label">Fyzický</div>
-            <div class="bio-stat-value bio-stat-value--physical">${Math.round(vals.physical)}%</div>
+            <div class="bio-stat-value bio-stat-value--physical">${physicalValue}<span class="sr-only"> bodů modelové křivky</span></div>
             <p class="bio-stat-description">${getInterpretation('physical', vals.physical)}</p>
         </div>
         <div class="bio-stat-card">
             <div class="bio-stat-label">Emoční</div>
-            <div class="bio-stat-value bio-stat-value--emotional">${Math.round(vals.emotional)}%</div>
+            <div class="bio-stat-value bio-stat-value--emotional">${emotionalValue}<span class="sr-only"> bodů modelové křivky</span></div>
             <p class="bio-stat-description">${getInterpretation('emotional', vals.emotional)}</p>
         </div>
         <div class="bio-stat-card">
             <div class="bio-stat-label">Intelektuální</div>
-            <div class="bio-stat-value bio-stat-value--intellectual">${Math.round(vals.intellectual)}%</div>
+            <div class="bio-stat-value bio-stat-value--intellectual">${intellectualValue}<span class="sr-only"> bodů modelové křivky</span></div>
             <p class="bio-stat-description">${getInterpretation('intellectual', vals.intellectual)}</p>
         </div>
     `;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const today = new Date().toISOString().split('T')[0];
-    const birthdateInput = document.getElementById('birthdate');
-    if (birthdateInput) {
-        birthdateInput.max = today;
+function clearBiorhythmResult() {
+    biorhythmRenderVersion += 1;
+    if (bioChart) {
+        bioChart.destroy();
+        bioChart = null;
     }
 
+    const resultsSection = document.getElementById('biorhythm-results');
+    if (resultsSection) {
+        resultsSection.hidden = true;
+        resultsSection.classList.remove('mh-block-visible');
+    }
+
+    document.getElementById('bio-stats-container')?.replaceChildren();
+    const resultStatus = document.getElementById('bio-result-status');
+    if (resultStatus) resultStatus.textContent = '';
+    const status = document.getElementById('bio-chart-status');
+    if (status) status.textContent = '';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const birthdateInput = document.getElementById('birthdate');
     const form = document.getElementById('biorhythm-form');
+    if (birthdateInput) {
+        const syncBirthDateMaximum = () => {
+            birthdateInput.max = getTodayIsoDatePrague();
+        };
+        const handleBirthDateChange = () => {
+            syncBirthDateMaximum();
+            clearBiorhythmResult();
+        };
+        syncBirthDateMaximum();
+        birthdateInput.addEventListener('focus', syncBirthDateMaximum);
+        birthdateInput.addEventListener('input', clearBiorhythmResult);
+        birthdateInput.addEventListener('change', handleBirthDateChange);
+        form?.addEventListener('pointerdown', syncBirthDateMaximum);
+        form?.addEventListener('keydown', syncBirthDateMaximum);
+        window.addEventListener('focus', syncBirthDateMaximum);
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') syncBirthDateMaximum();
+        });
+    }
+
     if (form) {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
+            if (birthdateInput) birthdateInput.max = getTodayIsoDatePrague();
             const dateVal = birthdateInput.value;
-            if (dateVal) {
+            const birthDate = parseLocalDate(dateVal);
+            if (birthDate) {
                 const resultsSection = document.getElementById('biorhythm-results');
                 resultsSection.hidden = false;
                 resultsSection.classList.add('mh-block-visible');
 
                 // Smooth scroll to results
-                resultsSection.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                resultsSection.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'end' });
 
-                renderBiorhythmChart(new Date(dateVal));
+                renderBiorhythmChart(birthDate);
             }
         });
     }

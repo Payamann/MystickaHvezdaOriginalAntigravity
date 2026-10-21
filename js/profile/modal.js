@@ -2,7 +2,7 @@
  * Modal logic for viewing reading details
  */
 
-import { escapeHtml, apiUrl, authHeaders, authHeadersWithCsrf, getReadingIcon, getReadingLabel, getReadingData, profileIconMarkup } from './shared.js';
+import { escapeHtml, apiUrl, authHeaders, authHeadersWithCsrf, getReadingIcon, getReadingLabel, getReadingData, profileIconMarkup, getProfileScrollBehavior } from './shared.js';
 import { getAllReadings, updateReading, renderReadings, updateFavoriteSummary } from './readings.js';
 import { formatReadingHtml, getFallbackMessage } from '../utils/reading-display.js';
 
@@ -17,6 +17,7 @@ let previousFocus = null;
 let activeModal = null;
 let focusTrapHandler = null;
 const readingMutations = new Map();
+const INTERNAL_READING_DETAIL_KEYS = new Set(['fallback', 'source', 'dateKey', 'spreadType', 'tool', 'continuedFrom', 'previousAnswer']);
 
 function readingMutationKey(id) { return `${window.Auth?.user?.id || ''}:${id}`; }
 
@@ -151,6 +152,7 @@ export async function toggleFavoriteModal() {
 
 export async function toggleFavorite(id, buttonEl = null) {
     const ownerId = window.Auth?.user?.id;
+    if (!window.Auth?.isLoggedIn?.() || typeof ownerId !== 'string' || !ownerId) return;
     const mutation = beginReadingMutation(id);
     if (!mutation) return;
     if (buttonEl) buttonEl.disabled = true;
@@ -158,7 +160,8 @@ export async function toggleFavorite(id, buttonEl = null) {
         const response = await fetch(`${apiUrl()}/user/readings/${encodeURIComponent(id)}/favorite`, {
             method: 'PATCH',
             credentials: 'include',
-            headers: await authHeadersWithCsrf()
+            headers: await authHeadersWithCsrf(true),
+            body: JSON.stringify({ expectedUserId: ownerId })
         });
 
         if (!response.ok) throw new Error('Failed to toggle favorite');
@@ -212,12 +215,19 @@ export async function deleteReading() {
     if (!mutation) return;
     modalActionPending = true;
     const ownerId = window.Auth?.user?.id;
+    if (typeof ownerId !== 'string' || !ownerId) {
+        finishReadingMutation(mutation);
+        modalActionPending = false;
+        updateModalActions();
+        return;
+    }
     updateModalActions();
     try {
         const response = await fetch(`${apiUrl()}/user/readings/${encodeURIComponent(id)}`, {
             method: 'DELETE',
             credentials: 'include',
-            headers: await authHeadersWithCsrf()
+            headers: await authHeadersWithCsrf(true),
+            body: JSON.stringify({ expectedUserId: ownerId })
         });
 
         if (!response.ok) throw new Error('Failed to delete reading');
@@ -346,6 +356,8 @@ function setReadingFeedbackStatus(panel, message, state = 'neutral') {
 
 async function saveProfileReadingFeedback(readingId, payload, panel, trigger) {
     if (!readingId) return null;
+    const ownerId = window.Auth?.user?.id;
+    if (!window.Auth?.isLoggedIn?.() || typeof ownerId !== 'string' || !ownerId) return null;
 
     if (trigger) trigger.disabled = true;
     setReadingFeedbackStatus(panel, 'Ukládám zpětnou vazbu...', 'pending');
@@ -357,7 +369,7 @@ async function saveProfileReadingFeedback(readingId, payload, panel, trigger) {
                 ...payload,
                 feature: 'profile_history',
                 source: 'profile_reading_modal'
-            });
+            }, ownerId);
         } else {
             const response = await fetch(`${apiUrl()}/user/readings/${encodeURIComponent(readingId)}/feedback`, {
                 method: 'PATCH',
@@ -366,12 +378,15 @@ async function saveProfileReadingFeedback(readingId, payload, panel, trigger) {
                 body: JSON.stringify({
                     ...payload,
                     feature: 'profile_history',
-                    source: 'profile_reading_modal'
+                    source: 'profile_reading_modal',
+                    expectedUserId: ownerId
                 })
             });
             result = await response.json().catch(() => null);
             if (!response.ok) result = null;
         }
+
+        if (!window.Auth?.isLoggedIn?.() || window.Auth?.user?.id !== ownerId) return null;
 
         if (!result?.success) {
             setReadingFeedbackStatus(panel, 'Nepodařilo se uložit. Zkus to znovu.', 'error');
@@ -439,7 +454,7 @@ function focusJournalFromModal() {
     if (!input) return;
 
     window.history.replaceState(null, '', '#journal-input');
-    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    input.scrollIntoView({ behavior: getProfileScrollBehavior(), block: 'center' });
     setTimeout(() => input.focus(), 250);
 }
 
@@ -488,6 +503,9 @@ function formatStructuredFieldLabel(key) {
         era: 'Období',
         identity: 'Identita',
         karmic_lesson: 'Karmická lekce',
+        practicalStep: 'Praktický krok',
+        practical_step: 'Praktický krok',
+        action: 'Praktický krok',
         gifts: 'Dary',
         patterns: 'Vzorce',
         mission: 'Mise',
@@ -497,24 +515,40 @@ function formatStructuredFieldLabel(key) {
     };
 
     return labels[key] || String(key)
+        .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
         .replace(/_/g, ' ')
         .replace(/^\w/, (char) => char.toUpperCase());
 }
 
-function renderStructuredObjectContent(content) {
+function renderStructuredObjectContent(content, depth = 0) {
     if (!content || typeof content !== 'object') return '';
 
+    if (depth > 4) {
+        return `<p class="reading-structured-field__value">${escapeHtml(JSON.stringify(content))}</p>`;
+    }
+
+    if (Array.isArray(content)) {
+        const items = content
+            .filter((value) => value !== null && value !== undefined && value !== '')
+            .map((value) => `<li>${value && typeof value === 'object'
+                ? renderStructuredObjectContent(value, depth + 1)
+                : escapeHtml(String(value)).replace(/\n/g, '<br>')}</li>`)
+            .join('');
+        return items ? `<ul class="reading-structured-list">${items}</ul>` : '';
+    }
+
     return Object.entries(content)
-        .filter(([, value]) => value !== null && value !== undefined && value !== '')
+        .filter(([key, value]) => value !== null && value !== undefined && value !== ''
+            && !(depth === 0 && INTERNAL_READING_DETAIL_KEYS.has(key)))
         .map(([key, value]) => {
-            const displayValue = typeof value === 'object'
-                ? JSON.stringify(value, null, 2)
-                : String(value);
+            const displayValue = value && typeof value === 'object'
+                ? renderStructuredObjectContent(value, depth + 1)
+                : `<p class="reading-structured-field__value">${escapeHtml(String(value)).replace(/\n/g, '<br>')}</p>`;
 
             return `
                 <section class="reading-structured-field">
                     <h4 class="reading-structured-field__label">${escapeHtml(formatStructuredFieldLabel(key))}</h4>
-                    <p class="reading-structured-field__value">${escapeHtml(displayValue).replace(/\n/g, '<br>')}</p>
+                    ${displayValue}
                 </section>
             `;
         })
@@ -620,6 +654,21 @@ function renderReadingContent(reading) {
 
     const data = getReadingData(reading) || {};
     if (data?.fallback) contentHtml += `<p class="result-context-notice">${escapeHtml(getFallbackMessage())}</p>`;
+    const visibleNarrative = reading.type === 'tarot'
+        ? data?.response || data?.interpretation || data?.answer
+        : reading.type === 'horoscope'
+            ? data?.text || data?.prediction || data?.answer || data?.interpretation || data?.response || data?.result
+            : data?.answer || data?.interpretation || data?.response || data?.text || data?.result;
+    const practicalStep = [data?.practicalStep, data?.practical_step, data?.action]
+        .find((value) => typeof value === 'string' && value.trim())
+        || (visibleNarrative ? [data?.result?.practicalStep, data?.result?.practical_step, data?.result?.action]
+            .find((value) => typeof value === 'string' && value.trim()) : null);
+    const displayedText = typeof visibleNarrative === 'string'
+        ? visibleNarrative
+        : visibleNarrative && typeof visibleNarrative === 'object' ? JSON.stringify(visibleNarrative) : '';
+    if (practicalStep && !displayedText.includes(practicalStep.trim())) {
+        contentHtml += `<section class="reading-summary-panel"><h3 class="reading-summary-panel__title">Praktický krok</h3><div class="reading-structured-field__value">${formatReadingHtml(practicalStep)}</div></section>`;
+    }
     if (typeof data?.question === 'string' && data.question) {
         contentHtml += `<div class="reading-question"><small class="reading-question__label">Tvoje otázka</small><p class="reading-question__text">${escapeHtml(data.question)}</p></div>`;
     }
@@ -739,9 +788,12 @@ function renderReadingContent(reading) {
             `;
         }
     } else if (data.answer) {
+        const answerHtml = typeof data.answer === 'string'
+            ? formatReadingHtml(data.answer)
+            : renderStructuredObjectContent(data.answer);
         contentHtml += `
             <div class="reading-answer">
-                ${escapeHtml(data.answer)}
+                ${answerHtml}
             </div>
         `;
     } else if (data.interpretation || data.response || data.text || data.result) {
@@ -754,7 +806,10 @@ function renderReadingContent(reading) {
             contentHtml += `<div class="reading-structured">${renderStructuredObjectContent(content)}</div>`;
         }
     } else {
-        contentHtml += `<pre class="reading-json">${escapeHtml(JSON.stringify(data, null, 2))}</pre>`;
+        const structured = renderStructuredObjectContent(data);
+        contentHtml += structured
+            ? `<div class="reading-structured">${structured}</div>`
+            : '<p class="reading-formatted-content reading-detail__empty">Tento výklad už nemá uložený čitelný obsah.</p>';
     }
 
     contentHtml += `</div>`;

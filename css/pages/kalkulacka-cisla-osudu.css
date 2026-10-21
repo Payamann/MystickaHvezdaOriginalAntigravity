@@ -191,6 +191,10 @@
             margin-top: 2rem;
         }
 
+        .life-number-intent-grid--result-visible {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
         .life-number-intent-card {
             min-height: 190px;
             padding: 1.25rem;
@@ -266,6 +270,8 @@ html body .mh-inline-392353889f { width:100%;font-size:1rem; }
 html body .mh-inline-68f1dcf006 { color:#f87171;font-size:0.85rem;text-align:center;margin-top:0.75rem;min-height:1.2em; }
 html body .mh-inline-c3c6b0e32b { display:none;text-align:center;margin-top:2rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,0.08); }
 html body .mh-inline-df42b1ec49 { font-size:0.8rem;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase; }
+html body #calc-result-heading { margin:0; }
+html body #calc-result-heading:focus { outline:2px solid #ebc066;outline-offset:4px;border-radius:2px; }
 html body .mh-inline-befada9df0 { font-size:0.82rem;padding:0.5rem 1rem; }
 html body .mh-inline-bc8a40ecda { margin-top:2rem;padding:1.5rem;background:rgba(155,89,182,0.1);border:1px solid rgba(155,89,182,0.2);border-radius:16px; }
 html body .mh-inline-0dc7c34752 { font-size:0.9rem; }
@@ -421,4 +427,20 @@ html body .mh-inline-9b240aa668 { color:rgba(255,255,255,0.7);line-height:1.8;ma
     body.page-life-number.cookie-banner-active .mh-inline-4ec9742dd9 {
         margin-top: 12rem;
     }
+}
+
+body.page-life-number .date-inputs input[aria-invalid="true"] {
+    border-color: rgba(245, 158, 158, 0.82);
+    box-shadow: 0 0 0 1px rgba(245, 158, 158, 0.18);
+}
+
+body.page-life-number #calc-error:not(:empty) {
+    margin: 0.75rem 0 0;
+    padding: 0.65rem 0.8rem;
+    border-left: 2px solid #e8a2a2;
+    background: rgba(120, 18, 34, 0.22);
+    color: #ffd4d4;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    text-align: left;
 }

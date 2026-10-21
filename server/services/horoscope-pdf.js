@@ -3,7 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { chromium } from '@playwright/test';
 import { callClaude } from './claude.js';
-import { ROLE_PREAMBLE } from '../config/prompts.js';
+import { HOROSCOPE_VOICE_CONTRACTS } from '../config/prompts.js';
 import { getChromiumLaunchOptions } from './chromium-launch.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -22,25 +22,27 @@ const SIGN_GLYPHS = {
     strelec: '♐', kozoroh: '♑', vodnar: '♒', ryby: '♓'
 };
 
+export function isValidHoroscopeSign(sign) {
+    return Object.prototype.hasOwnProperty.call(SIGN_NAMES, sign);
+}
+
 const SECTIONS = [
     { key: 'osobnost', title: 'Osobnost & Duše', icon: '✦' },
     { key: 'laska', title: 'Láska & Vztahy', icon: '♥' },
     { key: 'kariera', title: 'Kariéra & Finance', icon: '◆' },
     { key: 'rust', title: 'Osobní Růst', icon: '✦' },
     { key: 'mesice', title: 'Klíčové Měsíce', icon: '◐' },
-    { key: 'slovo', title: `Slovo pro ${new Date().getFullYear()}`, icon: '✧' },
+    { key: 'slovo', title: 'Slovo pro', icon: '✧' },
 ];
 
 /**
  * Calls Claude to generate 6-section personalized horoscope.
  * Returns an object with section keys → text.
  */
-export async function generateHoroscopeContent({ name, birthDate, sign }) {
+export async function generateHoroscopeContent({ name, birthDate, sign, year = new Date().getFullYear() }) {
     const safeInputName = String(name || 'Tazatel').substring(0, 100);
     const signName = SIGN_NAMES[sign] || sign;
-    const year = new Date().getFullYear();
-
-    const systemPrompt = `${ROLE_PREAMBLE}Jsi Mystická Hvězda — prémiová česká astroložka. Píšeš personalizovaný roční horoskop pro konkrétního člověka. Tón: vřelý, přímý, poetický ale konkrétní. Nikdy obecný. Píšeš v češtině, tykáš. Žádné anglicismy.`;
+    const systemPrompt = `${HOROSCOPE_VOICE_CONTRACTS.cs}U ročního výkladu vztahuj symboliku k období roku ${year}, nikoli jen k dnešku. Jsi hlas automaticky vytvářeného produktu Mystická Hvězda. Píšeš osobní roční astrologický výklad jako podnět k zamyšlení. Tón je vřelý, přímý, poetický a konkrétní, bez obecných kosmických frází.`;
 
     const userPrompt = `Napiš mi personalizovaný Roční Horoskop na míru ${year} pro:
 Jméno: ${safeInputName}
@@ -49,13 +51,15 @@ Znamení: ${signName}
 
 Horoskop musí mít přesně 6 sekcí. Každou sekci začni řádkem SEKCE:[klíč] a text sekce piš rovnou za ním (bez nadpisu). Klíče sekcí jsou přesně: osobnost, laska, kariera, rust, mesice, slovo
 
+Výklad je symbolický rámec, ne ověřená informace ani jistá předpověď. Vycházej jen z dodaného znamení a data narození; nevymýšlej planetární aspekty, tranzity ani výpočty, které nejsou v zadání. Nepředpovídej konkrétní události, city jiné osoby ani jistý pracovní či finanční výsledek. Nedávej zdravotní, právní ani finanční doporučení. Piš jako možnosti k zamyšlení a respektuj svobodnou volbu čtenáře.
+
 Pravidla pro každou sekci:
-- osobnost: 120–150 slov. Popiš duši, silné stránky a vnitřní svět. Propoj s datem narození.
-- laska: 120–150 slov. Konkrétní vztahová energie roku ${year}. Co přijde, co opatrovat.
-- kariera: 120–150 slov. Finanční a kariérní výhled. Kdy riskovat, kdy šetřit.
-- rust: 100–120 slov. Nejdůležitější lekce a transformace roku.
-- mesice: Vypiš 4–5 konkrétních měsíců roku ${year} s krátkým popisem energie (1–2 věty každý).
-- slovo: 80–100 slov. Závěrečné povzbuzení — osobní, poetické, silné. Nes ${safeInputName} jako jednotlivce.
+- osobnost: 120–150 slov. Nabídni možná témata silných stránek a vnitřního světa; datum ani znamení nevydávej za důkaz osobnostních rysů.
+- laska: 120–150 slov. Zaměř se na komunikaci, potřeby a hranice ve vztazích. Nepiš, co konkrétně přijde nebo co cítí druhý člověk.
+- kariera: 120–150 slov. Nabídni témata pracovních hodnot, dovedností a plánování. Nedoporučuj, kdy riskovat, šetřit nebo investovat.
+- rust: 100–120 slov. Nabídni jedno téma k sebereflexi, ne jistou lekci nebo transformaci.
+- mesice: Vypiš 4–5 měsíců roku ${year} s krátkým symbolickým tématem k zamyšlení (1–2 věty každý); nepředpovídej události.
+- slovo: 80–100 slov. Závěrečné povzbuzení a jeden bezpečný praktický krok bez příslibu výsledku. Jméno ${safeInputName} použij přirozeně, ne v každé sekci.
 
 Piš výhradně v češtině. Nepiš nadpisy sekcí, jen SEKCE:[klíč] a pak text.`;
 
@@ -78,10 +82,9 @@ function parseSections(raw) {
 /**
  * Renders the horoscope HTML and converts to PDF buffer via Playwright.
  */
-export async function renderPdf({ name, sign, birthDate, sections }) {
+export async function renderPdf({ name, sign, birthDate, sections, year = new Date().getFullYear() }) {
     const signName = SIGN_NAMES[sign] || sign;
     const glyph = SIGN_GLYPHS[sign] || '✦';
-    const year = new Date().getFullYear();
     const birthFormatted = new Date(birthDate).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric' });
 
     const html = buildHtml({ name, signName, glyph, year, birthFormatted, sections });
@@ -110,12 +113,13 @@ function escapeHtml(value) {
         .replace(/'/g, '&#39;');
 }
 
-export function buildHtml({ name, signName, glyph, year, birthFormatted, sections }) {
+export function buildHtml({ name, signName, glyph, year = new Date().getFullYear(), birthFormatted, sections }) {
     const safeName = escapeHtml(name);
     const safeSignName = escapeHtml(signName);
     const safeBirthFormatted = escapeHtml(birthFormatted);
 
     const sectionHtml = SECTIONS.map(({ key, title, icon }) => {
+        const sectionTitle = key === 'slovo' ? `${title} ${year}` : title;
         const text = escapeHtml(sections[key] || '');
         const isMonths = key === 'mesice';
         const formattedText = isMonths
@@ -126,7 +130,7 @@ export function buildHtml({ name, signName, glyph, year, birthFormatted, section
         <div class="section">
             <div class="section-header">
                 <span class="section-icon">${icon}</span>
-                <h2 class="section-title">${title}</h2>
+                <h2 class="section-title">${sectionTitle}</h2>
                 <span class="section-icon">${icon}</span>
             </div>
             <div class="section-divider"></div>
@@ -144,7 +148,7 @@ export function buildHtml({ name, signName, glyph, year, birthFormatted, section
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    background: #06061a;
+    background: #0b1929;
     color: #e8e0d0;
     font-family: 'Crimson Text', Georgia, serif;
     font-size: 13.5pt;
@@ -155,7 +159,7 @@ export function buildHtml({ name, signName, glyph, year, birthFormatted, section
   .cover {
     width: 210mm;
     height: 297mm;
-    background: radial-gradient(ellipse at 50% 30%, #1a1050 0%, #0a0820 50%, #06061a 100%);
+    background: radial-gradient(ellipse at 50% 30%, #173348 0%, #102638 50%, #0b1929 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -170,23 +174,23 @@ export function buildHtml({ name, signName, glyph, year, birthFormatted, section
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(circle at 20% 20%, rgba(212,175,55,0.06) 0%, transparent 50%),
-      radial-gradient(circle at 80% 80%, rgba(139,90,180,0.08) 0%, transparent 50%);
+      radial-gradient(circle at 20% 20%, rgba(208,177,124,0.06) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(91,132,151,0.08) 0%, transparent 50%);
   }
 
   .cover-ornament-top {
     font-family: 'Cinzel', serif;
     font-size: 11pt;
     letter-spacing: 6px;
-    color: rgba(212,175,55,0.5);
+    color: rgba(208,177,124,0.5);
     text-transform: uppercase;
     margin-bottom: 48px;
   }
 
   .cover-glyph {
     font-size: 88pt;
-    color: #d4af37;
-    text-shadow: 0 0 60px rgba(212,175,55,0.4), 0 0 120px rgba(212,175,55,0.15);
+    color: #d0b17c;
+    text-shadow: 0 0 60px rgba(208,177,124,0.4), 0 0 120px rgba(208,177,124,0.15);
     line-height: 1;
     margin-bottom: 32px;
   }
@@ -195,7 +199,7 @@ export function buildHtml({ name, signName, glyph, year, birthFormatted, section
     font-family: 'Cinzel', serif;
     font-size: 11pt;
     letter-spacing: 5px;
-    color: rgba(212,175,55,0.65);
+    color: rgba(208,177,124,0.65);
     text-transform: uppercase;
     margin-bottom: 56px;
   }
@@ -214,7 +218,7 @@ export function buildHtml({ name, signName, glyph, year, birthFormatted, section
   .cover-year {
     font-family: 'Cinzel', serif;
     font-size: 18pt;
-    color: #d4af37;
+    color: #d0b17c;
     letter-spacing: 8px;
     margin-bottom: 64px;
   }
@@ -222,7 +226,7 @@ export function buildHtml({ name, signName, glyph, year, birthFormatted, section
   .cover-divider {
     width: 180px;
     height: 1px;
-    background: linear-gradient(to right, transparent, #d4af37, transparent);
+    background: linear-gradient(to right, transparent, #d0b17c, transparent);
     margin-bottom: 40px;
   }
 
@@ -237,7 +241,7 @@ export function buildHtml({ name, signName, glyph, year, birthFormatted, section
 
   .cover-sign {
     font-size: 12pt;
-    color: rgba(212,175,55,0.7);
+    color: rgba(208,177,124,0.7);
     letter-spacing: 2px;
     font-style: italic;
   }
@@ -253,7 +257,7 @@ export function buildHtml({ name, signName, glyph, year, birthFormatted, section
     position: absolute;
     bottom: 36px;
     font-size: 8.5pt;
-    color: rgba(212,175,55,0.3);
+    color: rgba(208,177,124,0.3);
     letter-spacing: 3px;
     text-transform: uppercase;
     font-family: 'Cinzel', serif;
@@ -270,20 +274,20 @@ export function buildHtml({ name, signName, glyph, year, birthFormatted, section
     justify-content: space-between;
     margin-bottom: 10mm;
     padding-bottom: 4mm;
-    border-bottom: 1px solid rgba(212,175,55,0.2);
+    border-bottom: 1px solid rgba(208,177,124,0.2);
   }
 
   .page-header-name {
     font-family: 'Cinzel', serif;
     font-size: 8pt;
     letter-spacing: 3px;
-    color: rgba(212,175,55,0.6);
+    color: rgba(208,177,124,0.6);
     text-transform: uppercase;
   }
 
   .page-header-glyph {
     font-size: 14pt;
-    color: rgba(212,175,55,0.4);
+    color: rgba(208,177,124,0.4);
   }
 
   .section {
@@ -299,7 +303,7 @@ export function buildHtml({ name, signName, glyph, year, birthFormatted, section
   }
 
   .section-icon {
-    color: #d4af37;
+    color: #d0b17c;
     font-size: 10pt;
     opacity: 0.7;
   }
@@ -308,7 +312,7 @@ export function buildHtml({ name, signName, glyph, year, birthFormatted, section
     font-family: 'Cinzel', serif;
     font-size: 13pt;
     font-weight: 600;
-    color: #d4af37;
+    color: #d0b17c;
     letter-spacing: 2px;
     text-transform: uppercase;
     flex: 1;
@@ -317,7 +321,7 @@ export function buildHtml({ name, signName, glyph, year, birthFormatted, section
 
   .section-divider {
     height: 1px;
-    background: linear-gradient(to right, transparent, rgba(212,175,55,0.4), transparent);
+    background: linear-gradient(to right, transparent, rgba(208,177,124,0.4), transparent);
     margin-bottom: 5mm;
   }
 
@@ -337,7 +341,7 @@ export function buildHtml({ name, signName, glyph, year, birthFormatted, section
   .month-label {
     font-family: 'Cinzel', serif;
     font-size: 9.5pt;
-    color: #d4af37;
+    color: #d0b17c;
     letter-spacing: 1px;
     min-width: 80px;
     padding-top: 2px;

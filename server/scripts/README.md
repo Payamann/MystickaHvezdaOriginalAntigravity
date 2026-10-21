@@ -10,6 +10,15 @@ This folder contains backend maintenance and operational helper scripts.
 - Content generators such as `generate-blog.js`, `generate-dictionary.js`, and
   `generate-zodiac-pages.js` write project files. Review their diffs before
   keeping generated output.
+- `generate-blog.js` stops when published Supabase content is unavailable or
+  empty. The `--use-dummy-data` option is only for an explicit local preview and
+  is disabled when `NODE_ENV=production` or `RAILWAY_ENVIRONMENT_NAME` is set.
+  Published posts must also have unique, filesystem-safe slugs before output is
+  created.
+- `generate-dictionary.js` validates that its local dataset is non-empty, has
+  unique safe slugs, and includes required text before creating or writing output.
+  Run `npm run dictionary:check` to compare expected pages and indexes without
+  writing; this check is included in `check:content-generators`.
 - Deterministic asset generators such as `create-pwa-icons.js` and
   `generate-manual-svgs.js` may rewrite checked-in images; review diffs before
   keeping output.

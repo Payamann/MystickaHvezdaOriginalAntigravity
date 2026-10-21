@@ -21,17 +21,26 @@ import { supabase } from '../db-supabase.js';
 import { trackPaywallHit } from '../middleware.js';
 import { getPlanById, getRequiredPlanForFeature } from '../config/constants.js';
 import { isProductionRuntime } from '../config/runtime.js';
+import { finishUserDailyQuotaReservation, reserveUserDailyQuota } from '../services/user-daily-quota.js';
+import { getTodayIsoDate } from '../../js/utils/numerology-logic.js';
 
 export const router = express.Router();
 
-// Anonymous crystal-ball allowance: N free questions (default 1), then register.
-// Server-authoritative httpOnly counter — unlike the old client-side localStorage
-// limit it cannot be edited from page JS. Clearing the cookie resets it (same class
-// as clearing localStorage); the hourly IP rate limiter is the hard abuse backstop.
+// Anonymous crystal-ball gate is a soft signup prompt, not a hard usage quota.
+// HttpOnly hides the counter from page JS, but clearing it or racing requests can
+// reset/bypass it. AI cost controls must not rely on this cookie.
 const ANON_CRYSTAL_BALL_COOKIE = 'mh_cb_free_uses';
-const ANON_CRYSTAL_BALL_FREE_LIMIT = Math.max(
-    0,
-    Number.parseInt(process.env.CRYSTAL_BALL_ANON_FREE_LIMIT, 10) || 1
+
+export function parseAnonymousCrystalBallFreeLimit(rawValue) {
+    const value = String(rawValue ?? '').trim();
+    if (!/^-?\d+$/.test(value)) return 1;
+
+    const parsed = Number(value);
+    return Number.isSafeInteger(parsed) ? Math.max(0, parsed) : 1;
+}
+
+const ANON_CRYSTAL_BALL_FREE_LIMIT = parseAnonymousCrystalBallFreeLimit(
+    process.env.CRYSTAL_BALL_ANON_FREE_LIMIT
 );
 
 const DEFAULT_UPSELL_PLAN_ID = 'pruvodce';
@@ -88,6 +97,15 @@ function isValidIsoDate(value) {
     return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
+function getBirthDateValidationError(value) {
+    if (typeof value !== 'string' || !value) return 'Datum narození je povinné.';
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || !isValidIsoDate(value)) {
+        return 'Zadej platné datum narození.';
+    }
+    if (value > getTodayIsoDate()) return 'Datum narození nemůže být v budoucnosti.';
+    return null;
+}
+
 function optionalString(value, maxLength) {
     if (value == null) return undefined;
     return String(value).substring(0, maxLength);
@@ -120,6 +138,7 @@ function buildFallbackCrystalBallResponse({ question, moonPhase, lang = 'cs' }) 
 }
 
 router.post('/crystal-ball', optionalPremiumCheck, aiLimiter, async (req, res) => {
+    let quotaReservationId = null;
     try {
         const { question, history = [], lang = 'cs' } = req.body;
 
@@ -137,19 +156,14 @@ router.post('/crystal-ball', optionalPremiumCheck, aiLimiter, async (req, res) =
         let isAnonymousFreeCall = false;
         if (!req.isPremium) {
             if (req.user?.id) {
-                // Free logged-in users: 3 questions per day (counted from saved readings).
+                // Free logged-in users: reserve one of three questions atomically before generation.
                 try {
-                    const today = new Date().toISOString().split('T')[0];
-                    const { count, error: countError } = await supabase
-                        .from('readings')
-                        .select('id', { count: 'exact', head: true })
-                        .eq('user_id', req.user.id)
-                        .eq('type', 'crystal-ball')
-                        .gte('created_at', `${today}T00:00:00`);
+                    const reservation = await reserveUserDailyQuota({
+                        userId: req.user.id,
+                        feature: 'crystal_ball'
+                    });
 
-                    if (countError) throw countError;
-
-                    if (count >= 3) {
+                    if (!reservation.allowed) {
                         trackPaywallHit(req.user?.id, 'crystal_ball_unlimited').catch(() => {});
                         // SOFT WALL: Show upgrade offer instead of hard block
                         return res.status(402).json({
@@ -170,8 +184,19 @@ router.post('/crystal-ball', optionalPremiumCheck, aiLimiter, async (req, res) =
                             })
                         });
                     }
+                    quotaReservationId = reservation.reservationId;
                 } catch (limitError) {
-                    console.warn('Crystal Ball limit check failed:', limitError);
+                    console.warn('Crystal Ball quota reservation failed:', limitError);
+                    const limitCheckMessages = {
+                        cs: 'Denní limit se teď nepodařilo ověřit. Zkus to prosím za chvíli znovu.',
+                        sk: 'Denný limit sa teraz nepodarilo overiť. Skús to, prosím, o chvíľu znova.',
+                        pl: 'Nie udało się teraz sprawdzić limitu dziennego. Spróbuj ponownie za chwilę.'
+                    };
+                    return res.status(503).json({
+                        success: false,
+                        error: limitCheckMessages[lang] || limitCheckMessages.cs,
+                        code: 'LIMIT_CHECK_UNAVAILABLE'
+                    });
                 }
             } else {
                 // Anonymous visitors: N free questions (default 1), then register a free account.
@@ -216,6 +241,17 @@ router.post('/crystal-ball', optionalPremiumCheck, aiLimiter, async (req, res) =
             response = buildFallbackCrystalBallResponse({ question, moonPhase, lang: responseLang });
         }
 
+        if (quotaReservationId) {
+            const reservationId = quotaReservationId;
+            quotaReservationId = null;
+            try {
+                await finishUserDailyQuotaReservation(reservationId, 'commit');
+            } catch (settleError) {
+                // The counter already includes this successful answer; preserve the fail-closed limit.
+                console.error('Crystal Ball quota commit failed:', settleError);
+            }
+        }
+
         // Count this anonymous free question so the next one hits the register gate.
         if (isAnonymousFreeCall) {
             const priorUses = Number.parseInt(req.cookies?.[ANON_CRYSTAL_BALL_COOKIE], 10) || 0;
@@ -230,6 +266,18 @@ router.post('/crystal-ball', optionalPremiumCheck, aiLimiter, async (req, res) =
 
         res.json({ success: true, response, fallback });
     } catch (error) {
+        if (quotaReservationId) {
+            const reservationId = quotaReservationId;
+            for (let attempt = 1; attempt <= 2; attempt += 1) {
+                try {
+                    await finishUserDailyQuotaReservation(reservationId, 'release');
+                    quotaReservationId = null;
+                    break;
+                } catch (releaseError) {
+                    console.error(`Crystal Ball quota release attempt ${attempt} failed:`, releaseError);
+                }
+            }
+        }
         console.error('Crystal Ball Error:', error);
         res.status(500).json({ success: false, error: 'Křišťálová koule je zahalena mlhou...' });
     }
@@ -450,10 +498,8 @@ router.post('/tarot-summary', authenticateToken, requirePremiumSoft, aiLimiter, 
 router.get('/natal-chart/calculate', (req, res) => {
     try {
         const { birthDate } = req.query;
-
-        if (!birthDate || typeof birthDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(birthDate) || !isValidIsoDate(birthDate)) {
-            return res.status(400).json({ success: false, error: 'Datum narození je povinné.' });
-        }
+        const birthDateError = getBirthDateValidationError(birthDate);
+        if (birthDateError) return res.status(400).json({ success: false, error: birthDateError });
 
         const chartInput = buildBirthCalculationInput(req.query);
         const chart = calculateNatalChart(chartInput);
@@ -467,10 +513,8 @@ router.get('/natal-chart/calculate', (req, res) => {
 router.get('/transits/current', (req, res) => {
     try {
         const { birthDate } = req.query;
-
-        if (!birthDate || typeof birthDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(birthDate) || !isValidIsoDate(birthDate)) {
-            return res.status(400).json({ success: false, error: 'Datum narození je povinné.' });
-        }
+        const birthDateError = getBirthDateValidationError(birthDate);
+        if (birthDateError) return res.status(400).json({ success: false, error: birthDateError });
 
         const chartInput = buildBirthCalculationInput(req.query);
         const transit = calculateTransitSnapshot(chartInput);
@@ -520,10 +564,8 @@ function buildFallbackNatalChartResponse({ safeName, chart }) {
 router.post('/natal-chart', optionalPremiumCheck, aiLimiter, async (req, res) => {
     try {
         const { birthDate, birthTime, birthPlace, name } = req.body;
-
-        if (!birthDate || typeof birthDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(birthDate) || !isValidIsoDate(birthDate)) {
-            return res.status(400).json({ success: false, error: 'Datum narození je povinné.' });
-        }
+        const birthDateError = getBirthDateValidationError(birthDate);
+        if (birthDateError) return res.status(400).json({ success: false, error: birthDateError });
 
         const chartInput = buildBirthCalculationInput(req.body);
         const chart = calculateNatalChart(chartInput);
@@ -588,8 +630,8 @@ router.post('/synastry/calculate', (req, res) => {
         const safeName2 = String(person2?.name || 'Osoba B').substring(0, 100);
         const safeDate2 = String(person2?.birthDate || '').substring(0, 30);
 
-        if (!isValidIsoDate(safeDate1) || !isValidIsoDate(safeDate2)) {
-            return res.status(400).json({ success: false, error: 'Zadejte platná data obou osob.' });
+        if (getBirthDateValidationError(safeDate1) || getBirthDateValidationError(safeDate2)) {
+            return res.status(400).json({ success: false, error: 'Zadejte platná data obou osob; datum narození nemůže být v budoucnosti.' });
         }
 
         const synastry = calculateSynastryChart(
@@ -628,8 +670,8 @@ router.post('/synastry', authenticateToken, requirePremiumSoft, aiLimiter, async
         const safeName2 = String(person2?.name || '').substring(0, 100);
         const safeDate2 = String(person2?.birthDate || '').substring(0, 30);
 
-        if (!safeName1 || !safeName2 || !isValidIsoDate(safeDate1) || !isValidIsoDate(safeDate2)) {
-            return res.status(400).json({ success: false, error: 'Zadejte platná data obou osob.' });
+        if (!safeName1 || !safeName2 || getBirthDateValidationError(safeDate1) || getBirthDateValidationError(safeDate2)) {
+            return res.status(400).json({ success: false, error: 'Zadejte platná data obou osob; datum narození nemůže být v budoucnosti.' });
         }
 
         const synastry = calculateSynastryChart(
@@ -709,10 +751,8 @@ function buildFallbackAstrocartographyResponse({ safeName, safeIntention, astroc
 router.post('/astrocartography', authenticateToken, requireFeature('astrocartography'), aiLimiter, async (req, res) => {
     try {
         const { birthDate, birthTime, birthPlace, name, intention = 'obecný' } = req.body;
-
-        if (!birthDate || typeof birthDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(birthDate) || !isValidIsoDate(birthDate)) {
-            return res.status(400).json({ success: false, error: 'Datum narození je povinné.' });
-        }
+        const birthDateError = getBirthDateValidationError(birthDate);
+        if (birthDateError) return res.status(400).json({ success: false, error: birthDateError });
 
         const chartInput = buildBirthCalculationInput(req.body);
         const chart = calculateNatalChart(chartInput);

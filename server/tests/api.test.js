@@ -651,16 +651,16 @@ describe('API Endpoint Tests', () => {
             try {
                 const csrfToken = await getCsrfToken();
                 const statuses = [];
-                const runId = Date.now();
+                const signs = ['Beran', 'Býk', 'Blíženci', 'Rak', 'Lev', 'Panna', 'Váhy', 'Štír', 'Střelec', 'Kozoroh', 'Vodnář', 'Ryby'];
 
-                for (let i = 0; i < 12; i += 1) {
+                for (const sign of signs) {
                     const res = await request(app)
                         .post('/api/horoscope')
                         .set('x-csrf-token', csrfToken)
                         .send({
-                            sign: 'Beran',
+                            sign,
                             period: 'daily',
-                            context: [`${String.fromCharCode(65 + i)}-${runId}`]
+                            context: [`rate-limit-${sign}`]
                         })
                         .timeout({ response: 4000, deadline: 6000 });
 
@@ -817,6 +817,51 @@ describe('API Endpoint Tests', () => {
                 .set('x-csrf-token', csrfToken);
 
             expect(res.status).toBe(401);
+        });
+    });
+
+    describe('Account-bound profile and billing mutations', () => {
+        const requests = [
+            { method: 'put', path: '/api/auth/profile', body: { first_name: 'Pavel' } },
+            { method: 'put', path: '/api/user/password', body: { currentPassword: 'current', password: 'newpassword', password_confirm: 'newpassword' } },
+            { method: 'post', path: '/api/payment/cancel', body: {} },
+            { method: 'post', path: '/api/payment/reactivate', body: {} },
+            { method: 'post', path: '/api/payment/portal', body: {} },
+            { method: 'post', path: '/api/payment/subscription/pause', body: { pauseDays: 30 } },
+            { method: 'post', path: '/api/payment/subscription/resume', body: {} },
+            { method: 'post', path: '/api/payment/subscription/apply-discount', body: { couponCode: 'STAY25' } },
+            { method: 'post', path: '/api/payment/retention/feedback', body: { type: 'churn', reason: 'other' } },
+            { method: 'post', path: '/api/payment/email/send', body: { template: 'discount_applied' } }
+        ];
+
+        test.each(requests)('$method $path rejects an account switch before mutation', async ({ method, path, body }) => {
+            const csrfToken = await getCsrfToken();
+            const ownerId = `account-bound-${path.replace(/[^a-z0-9]/gi, '-').slice(0, 48)}`;
+            const token = createUserToken({ id: ownerId });
+            const res = await request(app)[method](path)
+                .set('Cookie', `auth_token=${token}`)
+                .set('x-csrf-token', csrfToken)
+                .send({ ...body, expectedUserId: 'different-account' });
+
+            expect(res.status).toBe(409);
+            expect(res.body).toMatchObject({ success: false });
+        });
+
+        const requestsWithoutBinding = requests.filter(({ path, body }) =>
+            path !== '/api/payment/email/send' || body.template !== 'subscription_paused'
+        );
+
+        test.each(requestsWithoutBinding)('$method $path rejects clients without an account binding', async ({ method, path, body }) => {
+            const csrfToken = await getCsrfToken();
+            const ownerId = `unbound-account-${path.replace(/[^a-z0-9]/gi, '-').slice(0, 48)}`;
+            const token = createUserToken({ id: ownerId });
+            const res = await request(app)[method](path)
+                .set('Cookie', `auth_token=${token}`)
+                .set('x-csrf-token', csrfToken)
+                .send(body);
+
+            expect(res.status).toBe(409);
+            expect(res.body).toMatchObject({ success: false });
         });
     });
 
@@ -996,12 +1041,12 @@ describe('API Endpoint Tests', () => {
             process.env.MOCK_AI_FORCE_ERROR = 'true';
 
             try {
-                const today = getPragueTodayStr();
+                const missingDate = shiftIsoDate(getPragueTodayStr(), 1);
                 const first = await request(app)
-                    .get(`/horoskop/rak/${today}`)
+                    .get(`/horoskop/rak/${missingDate}`)
                     .expect(200);
                 const second = await request(app)
-                    .get(`/horoskop/rak/${today}`)
+                    .get(`/horoskop/rak/${missingDate}`)
                     .expect(200);
 
                 expect(first.text).not.toContain('Testovaci AI odpoved');

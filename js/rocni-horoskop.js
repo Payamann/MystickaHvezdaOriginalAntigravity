@@ -5,6 +5,8 @@ const ANNUAL_HOROSCOPE_PRODUCT = {
     price: 199,
     currency: 'CZK'
 };
+let annualVerificationInProgress = false;
+let verifiedAnnualPurchaseSessionId = null;
 
 function getAnnualContext() {
     const params = new URLSearchParams(window.location.search);
@@ -94,6 +96,95 @@ function trackAnnualProductView() {
     trackAnnualEvent('one_time_product_viewed');
 }
 
+function showAnnualPaymentVerificationMessage(title, message, { retry = false } = {}) {
+    const banner = document.getElementById('bannerVerification');
+    const titleElement = document.getElementById('verificationTitle');
+    const messageElement = document.getElementById('verificationMessage');
+    const retryButton = document.getElementById('retryVerification');
+    if (titleElement) titleElement.textContent = title;
+    if (messageElement) messageElement.textContent = message;
+    if (retryButton) retryButton.hidden = !retry;
+    banner?.classList.add('visible');
+}
+
+async function verifyAnnualPayment(sessionId) {
+    if (annualVerificationInProgress || !sessionId) return;
+    annualVerificationInProgress = true;
+    const retryButton = document.getElementById('retryVerification');
+    if (retryButton) {
+        retryButton.disabled = true;
+        retryButton.textContent = 'Ověřujeme…';
+    }
+    showAnnualPaymentVerificationMessage('Ověřujeme platbu', 'Stav objednávky kontrolujeme přímo u Stripe. Do potvrzení prosím nevytvářej další platbu.');
+
+    try {
+        const url = new URL('/api/rocni-horoskop/checkout-result', window.location.origin);
+        url.searchParams.set('session_id', sessionId);
+        const response = await fetch(url.toString(), { credentials: 'same-origin', cache: 'no-store' });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || data.success !== true) throw new Error(data.error || 'Platbu se nepodařilo ověřit.');
+
+        const result = data.result || {};
+        if (result.product_id !== ANNUAL_HOROSCOPE_PRODUCT.id) throw new Error('Tato objednávka nepatří k ročnímu horoskopu.');
+
+        if (result.status === 'paid') {
+            document.getElementById('bannerVerification')?.classList.remove('visible');
+            document.getElementById('bannerSuccess')?.classList.add('visible');
+            trackAnnualAnalytics('trackPaymentResult', 'success', {
+                product_id: ANNUAL_HOROSCOPE_PRODUCT.id,
+                product_type: ANNUAL_HOROSCOPE_PRODUCT.type,
+                transaction_id: result.transaction_id || undefined,
+                source: getAnnualContext().source,
+                feature: getAnnualContext().feature
+            });
+            if (verifiedAnnualPurchaseSessionId !== sessionId) {
+                verifiedAnnualPurchaseSessionId = sessionId;
+                trackAnnualAnalytics(
+                    'trackPurchaseCompleted',
+                    ANNUAL_HOROSCOPE_PRODUCT.id,
+                    result.value,
+                    result.currency,
+                    {
+                        product_type: ANNUAL_HOROSCOPE_PRODUCT.type,
+                        product_name: ANNUAL_HOROSCOPE_PRODUCT.name,
+                        transaction_id: result.transaction_id || undefined,
+                        source: getAnnualContext().source,
+                        feature: getAnnualContext().feature
+                    }
+                );
+            }
+            return;
+        }
+
+        if (result.status === 'pending') {
+            showAnnualPaymentVerificationMessage(
+                'Platba se ještě potvrzuje',
+                'Stripe zatím nepotvrdil dokončení platby. Za chvíli můžeš stav ověřit znovu; novou objednávku nezakládej.',
+                { retry: true }
+            );
+            return;
+        }
+
+        showAnnualPaymentVerificationMessage(
+            'Platbu se nepodařilo potvrdit',
+            'Stripe zatím nepotvrdil zaplacenou objednávku. Pokud jsi platbu dokončil, napiš nám přes Kontakt a stav ověříme.',
+            { retry: true }
+        );
+    } catch (error) {
+        showAnnualPaymentVerificationMessage(
+            'Platbu teď nemůžeme ověřit',
+            'Stav objednávky se nepodařilo načíst. Pokud jsi platbu dokončil, zkus ověření za chvíli znovu.',
+            { retry: true }
+        );
+    } finally {
+        annualVerificationInProgress = false;
+        if (retryButton) {
+            retryButton.disabled = false;
+            retryButton.textContent = 'Ověřit znovu';
+        }
+    }
+}
+
 function handleAnnualPaymentStatus() {
     const params = new URLSearchParams(window.location.search);
     const status = params.get('status');
@@ -101,34 +192,22 @@ function handleAnnualPaymentStatus() {
     const context = getAnnualContext();
 
     if (status === 'success') {
-        document.getElementById('bannerSuccess')?.classList.add('visible');
-
-        const formSection = document.getElementById('form');
-        const sampleSection = document.querySelector('.sample-section');
-        if (formSection) formSection.hidden = true;
-        if (sampleSection) sampleSection.hidden = true;
-
-        trackAnnualAnalytics('trackPaymentResult', 'success', {
-            product_id: ANNUAL_HOROSCOPE_PRODUCT.id,
-            product_type: ANNUAL_HOROSCOPE_PRODUCT.type,
-            session_id: sessionId,
-            source: context.source,
-            feature: context.feature
+        document.querySelectorAll(
+            '.hero, .trust-strip, .annual-product-bridge, .sections-row, .sample-section, .form-section, .faq-section'
+        ).forEach((section) => {
+            section.hidden = true;
         });
-        trackAnnualAnalytics(
-            'trackPurchaseCompleted',
-            ANNUAL_HOROSCOPE_PRODUCT.id,
-            ANNUAL_HOROSCOPE_PRODUCT.price,
-            ANNUAL_HOROSCOPE_PRODUCT.currency,
-            {
-                product_type: ANNUAL_HOROSCOPE_PRODUCT.type,
-                product_name: ANNUAL_HOROSCOPE_PRODUCT.name,
-                transaction_id: sessionId || undefined,
-                source: context.source,
-                feature: context.feature
-            }
-        );
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        const retryButton = document.getElementById('retryVerification');
+        retryButton?.addEventListener('click', () => { void verifyAnnualPayment(sessionId); });
+        if (sessionId) {
+            void verifyAnnualPayment(sessionId);
+        } else {
+            showAnnualPaymentVerificationMessage(
+                'Platbu se nepodařilo ověřit',
+                'Chybí identifikátor objednávky. Pokud jsi platbu dokončil, napiš nám přes Kontakt.'
+            );
+        }
+        window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
     } else if (status === 'cancel') {
         document.getElementById('bannerCancel')?.classList.add('visible');
         trackAnnualAnalytics('trackPaymentResult', 'cancel', {
@@ -159,7 +238,7 @@ function bindAnnualScrollButtons() {
             const offset = Math.max(88, navBottom + 16);
             window.scrollTo({
                 top: Math.max(0, targetTop - offset),
-                behavior: 'smooth'
+                behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
             });
         });
     });
@@ -278,7 +357,9 @@ function bindAnnualOrderForm() {
 }
 
 function initAnnualHoroscopePage() {
-    trackAnnualProductView();
+    if (new URLSearchParams(window.location.search).get('status') !== 'success') {
+        trackAnnualProductView();
+    }
     handleAnnualPaymentStatus();
     bindAnnualScrollButtons();
     bindAnnualUpgradeLinks();

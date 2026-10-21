@@ -152,3 +152,51 @@ test('failed blob conversion propagates and does not create a download or saved 
     expect(document.body.appendChild).not.toHaveBeenCalled();
     expect(analytics.trackAction).not.toHaveBeenCalledWith('preview_saved', expect.anything());
 });
+
+test('marks text omitted by a line limit with an ellipsis that fits the supplied width', () => {
+    const ctx = {
+        fillText: jest.fn(),
+        measureText: jest.fn(text => ({ width: Array.from(text).length * 10 }))
+    };
+
+    const endY = window.MH_SHARE_IMAGE.drawCenteredLines(
+        ctx,
+        ['first', 'second', 'third'],
+        540,
+        100,
+        40,
+        2,
+        60
+    );
+
+    expect(ctx.fillText.mock.calls).toEqual([
+        ['first', 540, 100],
+        ['secon…', 540, 140]
+    ]);
+    expect(endY).toBe(180);
+});
+
+test('wraps long unbroken text and ellipsizes a visible line that exceeds its width', () => {
+    const ctx = {
+        fillText: jest.fn(),
+        measureText: jest.fn(text => ({ width: Array.from(text).length * 10 }))
+    };
+    const wrapped = window.MH_SHARE_IMAGE.wrapText(ctx, 'unbrokenwordthatexceedsthewidth', 60);
+
+    expect(wrapped.length).toBeGreaterThan(1);
+    expect(wrapped.every(line => ctx.measureText(line).width <= 60)).toBe(true);
+
+    window.MH_SHARE_IMAGE.drawCenteredLines(
+        ctx,
+        ['unbrokenwordthatexceedsthewidth', 'fits', 'anotherlongunbrokenline'],
+        540,
+        100,
+        40,
+        3,
+        60
+    );
+
+    const drawnLines = ctx.fillText.mock.calls.map(([line]) => line);
+    expect(drawnLines).toEqual(['unbro…', 'fits', 'anoth…']);
+    expect(drawnLines.every(line => ctx.measureText(line).width <= 60)).toBe(true);
+});

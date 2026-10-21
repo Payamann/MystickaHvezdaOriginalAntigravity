@@ -5,7 +5,10 @@ import request from 'supertest';
 jest.unstable_mockModule('../server/db-supabase.js', () => ({
     supabase: {
         from: jest.fn(),
-        auth: { admin: { updateUserById: jest.fn() } }
+        auth: {
+            admin: { updateUserById: jest.fn() },
+            signInWithPassword: jest.fn()
+        }
     }
 }));
 
@@ -56,7 +59,7 @@ describe('User Data APIs', () => {
         it('should save a reading', async () => {
             const res = await request(app)
                 .post('/api/user/readings')
-                .send({ type: 'tarot', data: { cards: [] } });
+                .send({ type: 'tarot', data: { cards: [] }, expectedUserId: 'test-user-id' });
 
             expect(res.status).toBe(200);
             expect(res.body.success).toBe(true);
@@ -74,7 +77,9 @@ describe('User Data APIs', () => {
 
     describe('DELETE /api/user/readings/:id', () => {
         it('should delete a reading', async () => {
-            const res = await request(app).delete('/api/user/readings/1');
+            const res = await request(app)
+                .delete('/api/user/readings/1')
+                .send({ expectedUserId: 'test-user-id' });
             expect(res.status).toBe(200);
             expect(res.body.success).toBe(true);
         });
@@ -83,10 +88,16 @@ describe('User Data APIs', () => {
     describe('PUT /api/user/password', () => {
         it('should change password via admin api', async () => {
             supabase.auth.admin.updateUserById.mockResolvedValue({ error: null });
+            supabase.auth.signInWithPassword.mockResolvedValue({ error: null });
 
             const res = await request(app)
                 .put('/api/user/password')
-                .send({ password: 'newpassword123' });
+                .send({
+                    currentPassword: 'current-password',
+                    password: 'newpassword123',
+                    password_confirm: 'newpassword123',
+                    expectedUserId: 'test-user-id'
+                });
 
             expect(res.status).toBe(200);
             expect(supabase.auth.admin.updateUserById).toHaveBeenCalledWith('test-user-id', { password: 'newpassword123' });

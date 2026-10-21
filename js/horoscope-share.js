@@ -25,39 +25,94 @@
     const SHARE_COPY = {
         cs: {
             affirmation: 'Afirmace',
+            cardPeriod: { daily: 'DENNÍ HOROSKOP', weekly: 'TÝDENNÍ HOROSKOP', monthly: 'MĚSÍČNÍ HOROSKOP' },
             previewAria: 'Horoskop – obrázek ke sdílení',
             shareTitle: 'Sdílet horoskop',
             shareButton: 'Sdílet horoskop',
             native: 'Instagram / TikTok / WhatsApp',
             copyLink: 'Kopírovat odkaz',
             download: 'Uložit obrázek',
-            copied: 'Odkaz zkopírován!'
+            copied: 'Odkaz zkopírován!',
+            sharePeriod: {
+                daily: 'Můj dnešní horoskop pro',
+                weekly: 'Můj týdenní horoskop pro',
+                monthly: 'Můj měsíční horoskop pro'
+            }
         },
         sk: {
             affirmation: 'Afirmácia',
+            cardPeriod: { daily: 'DENNÝ HOROSKOP', weekly: 'TÝŽDENNÝ HOROSKOP', monthly: 'MESAČNÝ HOROSKOP' },
             previewAria: 'Horoskop – obrázok na zdieľanie',
             shareTitle: 'Zdieľať horoskop',
             shareButton: 'Zdieľať horoskop',
             native: 'Instagram / TikTok / WhatsApp',
             copyLink: 'Kopírovať odkaz',
             download: 'Uložiť obrázok',
-            copied: 'Odkaz skopírovaný!'
+            copied: 'Odkaz skopírovaný!',
+            sharePeriod: {
+                daily: 'Môj dnešný horoskop pre',
+                weekly: 'Môj týždenný horoskop pre',
+                monthly: 'Môj mesačný horoskop pre'
+            }
         },
         pl: {
             affirmation: 'Afirmacja',
+            cardPeriod: { daily: 'HOROSKOP DZIENNY', weekly: 'HOROSKOP TYGODNIOWY', monthly: 'HOROSKOP MIESIĘCZNY' },
             previewAria: 'Horoskop – obraz do udostępnienia',
             shareTitle: 'Udostępnij horoskop',
             shareButton: 'Udostępnij horoskop',
             native: 'Instagram / TikTok / WhatsApp',
             copyLink: 'Kopiuj link',
             download: 'Zapisz obraz',
-            copied: 'Link skopiowany!'
+            copied: 'Link skopiowany!',
+            sharePeriod: {
+                daily: 'Mój dzisiejszy horoskop dla',
+                weekly: 'Mój tygodniowy horoskop dla',
+                monthly: 'Mój miesięczny horoskop dla'
+            }
         }
     };
 
     function getShareCopy() {
         const language = (document.documentElement.lang || 'cs').toLowerCase().slice(0, 2);
         return SHARE_COPY[language] || SHARE_COPY.cs;
+    }
+
+    function getShareLanguage() {
+        const language = (document.documentElement.lang || 'cs').toLowerCase().slice(0, 2);
+        return SHARE_COPY[language] ? language : 'cs';
+    }
+
+    const SIGN_IMAGE_SLUGS = {
+        '♈': 'beran', '♉': 'byk', '♊': 'blizenci', '♋': 'rak',
+        '♌': 'lev', '♍': 'panna', '♎': 'vahy', '♏': 'stir',
+        '♐': 'strelec', '♑': 'kozoroh', '♒': 'vodnar', '♓': 'ryby',
+    };
+
+    function getShareSignSlugs(signSymbol, signName) {
+        const symbol = signSymbol.replace(/[\uFE0E\uFE0F]/g, '');
+        const localSlug = document.querySelector('.zodiac-card.active')
+            ?.getAttribute('href')?.replace(/^#/, '');
+        const imageSlug = SIGN_IMAGE_SLUGS[symbol]
+            || signName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
+        return { localSlug: localSlug || imageSlug, imageSlug };
+    }
+
+    function buildHoroscopeShareUrls(localSlug, period) {
+        const language = getShareLanguage();
+        const pagePath = language === 'sk' ? '/sk/horoskopy.html'
+            : language === 'pl' ? '/pl/horoskopy.html'
+                : '/horoskopy.html';
+        const canonicalUrl = new URL(pagePath, BASE_URL);
+        canonicalUrl.searchParams.set('znak', localSlug);
+        if (period !== 'daily') canonicalUrl.searchParams.set('period', period);
+
+        const shareUrl = new URL(canonicalUrl);
+        shareUrl.searchParams.set('utm_source', 'social');
+        shareUrl.searchParams.set('utm_medium', 'share');
+        shareUrl.searchParams.set('utm_campaign', 'horoscope');
+        shareUrl.hash = localSlug;
+        return { canonical: canonicalUrl.toString(), share: shareUrl.toString() };
     }
 
     let artworkPromise;
@@ -69,22 +124,6 @@
             image.src = '/img/atlas/tools-v1/02-mesicni-krajina.webp';
         });
         return artworkPromise;
-    }
-
-    // ─── Vygeneruj hvězdičky náhodně ─────────────────────────────────────────
-    function drawStars(ctx, w, h, count = 120) {
-        ctx.save();
-        for (let i = 0; i < count; i++) {
-            const x = Math.random() * w;
-            const y = Math.random() * h * 0.75;
-            const r = Math.random() * 1.5 + 0.3;
-            const alpha = Math.random() * 0.6 + 0.2;
-            ctx.beginPath();
-            ctx.arc(x, y, r, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(255,255,255,${alpha})`;
-            ctx.fill();
-        }
-        ctx.restore();
     }
 
     // ─── Wrap textu na canvas ────────────────────────────────────────────────
@@ -176,7 +215,7 @@
         ctx.letterSpacing = '6px';
         ctx.fillStyle = C_GOLD;
         ctx.textAlign = 'center';
-        ctx.fillText(({ daily: 'DENNÍ HOROSKOP', weekly: 'TÝDENNÍ HOROSKOP', monthly: 'MĚSÍČNÍ HOROSKOP' })[period] || 'HOROSKOP', CARD_W / 2, badgeY);
+        ctx.fillText(copy.cardPeriod[period] || copy.cardPeriod.daily, CARD_W / 2, badgeY);
         ctx.letterSpacing = '0px';
 
         // Tenká zlatá linka pod badge
@@ -266,19 +305,11 @@
         ctx.lineWidth = 1;
         ctx.stroke();
 
-        // Hvězdička
-        ctx.font = '32px serif';
-        ctx.textAlign = 'center';
-        ctx.fillStyle = C_GOLD;
-        ctx.fillText('★', CARD_W / 2 - 220, brandY);
-
+        // Decentní textová značka bez závislosti na dostupnosti znakového fontu.
         ctx.font = '500 32px Cinzel, Georgia, serif';
         ctx.fillStyle = C_GOLD;
         ctx.textAlign = 'center';
         ctx.fillText('mystickahvezda.cz', CARD_W / 2, brandY);
-
-        ctx.font = '32px serif';
-        ctx.fillText('★', CARD_W / 2 + 220, brandY);
 
         return canvas;
     }
@@ -299,7 +330,7 @@
     }
 
     // ─── Aktualizace OG meta tagů pro Facebook ──────────────────────────────
-    function updateOGMeta(signName, predictionText, canonicalUrl, slug) {
+    function updateOGMeta(signName, predictionText, canonicalUrl, slug, period) {
         const setMeta = (prop, val) => {
             let el = document.querySelector(`meta[property="${prop}"]`);
             if (!el) {
@@ -309,7 +340,14 @@
             }
             el.setAttribute('content', val);
         };
-        const title = `Horoskop ${signName} — ${new Date().toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long' })} | Mystická Hvězda`;
+        const language = (document.documentElement.lang || 'cs').toLowerCase().slice(0, 2);
+        const locale = { cs: 'cs-CZ', sk: 'sk-SK', pl: 'pl-PL' }[language] || 'cs-CZ';
+        const periodTitle = {
+            cs: { daily: 'Denní horoskop', weekly: 'Týdenní horoskop', monthly: 'Měsíční horoskop' },
+            sk: { daily: 'Denný horoskop', weekly: 'Týždenný horoskop', monthly: 'Mesačný horoskop' },
+            pl: { daily: 'Horoskop dzienny', weekly: 'Horoskop tygodniowy', monthly: 'Horoskop miesięczny' },
+        }[language];
+        const title = `${periodTitle[period] || periodTitle.daily} · ${signName} | Mystická Hvězda`;
         const desc  = predictionText.slice(0, 200).trimEnd() + (predictionText.length > 200 ? '…' : '');
         setMeta('og:title',       title);
         setMeta('og:description', desc);
@@ -323,7 +361,7 @@
     }
 
     // ─── Vytvoř share panel ──────────────────────────────────────────────────
-    function createSharePanel(canvas, signName, signSymbol, canonicalUrl, shareUrlWithUTM) {
+    function createSharePanel(canvas, signName, signSymbol, canonicalUrl, shareUrlWithUTM, period) {
         const copy = getShareCopy();
         const existing = document.getElementById('horoscope-share-panel');
         if (existing) existing.remove();
@@ -345,7 +383,8 @@
         const shareUrl = shareUrlWithUTM || canonicalUrl;
 
         const fbUrl  = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(canonicalUrl)}`;
-        const waUrl  = `https://wa.me/?text=${encodeURIComponent(`${signSymbol} Můj dnešní horoskop pro ${signName}: ${shareUrl}`)}`;
+        const shareMessage = `${signSymbol} ${copy.sharePeriod[period] || copy.sharePeriod.daily} ${signName}: ${shareUrl}`;
+        const waUrl  = `https://wa.me/?text=${encodeURIComponent(shareMessage)}`;
         const canShareFiles = !!(navigator.canShare && navigator.canShare({ files: [new File([''], 'test.jpg', { type: 'image/jpeg' })] }));
 
         panel.innerHTML = `
@@ -353,17 +392,19 @@
                 <p class="hs-title">${copy.shareTitle} ${signSymbol} ${signName}</p>
                 <div class="hs-preview-wrap"></div>
                 <div class="hs-main-btn-wrap">
-                    <button class="hs-btn hs-btn--primary" id="hs-share-btn">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                    <button class="hs-btn hs-btn--primary" id="hs-share-btn" aria-expanded="false" aria-controls="hs-options">
+                        <svg width="18" height="18" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#share"></use></svg>
                         ${copy.shareButton}
                         <svg class="hs-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6,9 12,15 18,9"/></svg>
                     </button>
                 </div>
-                <div class="hs-options" id="hs-options" aria-hidden="true">
+                <div class="hs-options" id="hs-options" aria-hidden="true" inert>
                     <div class="hs-options-inner">
                         ${canShareFiles ? `
                         <button class="hs-opt" id="hs-native-btn">
-                            <span class="hs-opt-icon" aria-hidden="true">↗</span>
+                            <span class="hs-opt-icon" aria-hidden="true">
+                                <svg width="18" height="18" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" focusable="false"><use href="/img/icons/mh-symbols.svg#share"></use></svg>
+                            </span>
                             <span>${copy.native}</span>
                         </button>` : ''}
                         <a class="hs-opt" href="${fbUrl}" target="_blank" rel="noopener">
@@ -405,6 +446,8 @@
         shareBtn.addEventListener('click', () => {
             const open = optionsEl.classList.toggle('hs-options--open');
             optionsEl.setAttribute('aria-hidden', String(!open));
+            optionsEl.inert = !open;
+            shareBtn.setAttribute('aria-expanded', String(open));
             shareBtn.classList.toggle('hs-share-btn--open', open);
         });
 
@@ -416,7 +459,7 @@
                 const res  = await fetch(dataUrl);
                 const blob = await res.blob();
                 const file = new File([blob], filename, { type: 'image/jpeg' });
-                await navigator.share({ files: [file], title: `Horoskop ${signName} — Mystická Hvězda`, text: `${signSymbol} Můj dnešní horoskop: ${shareUrl}` });
+                await navigator.share({ files: [file], title: `Horoskop ${signName} — Mystická Hvězda`, text: shareMessage });
             } catch (e) { /* uživatel zrušil nebo nepodporováno */ }
         });
 
@@ -453,25 +496,28 @@
         const detailSection = document.getElementById('horoscope-detail-section');
         if (!detailSection) return;
 
-        // Placeholder text který se zobrazuje před výběrem znamení
-        const PLACEHOLDER = 'Klikněte na kartičku';
-
         let lastSign = null;
 
         async function tryRenderPanel() {
+            // Do not create a share card for the initial prompt, a loading state,
+            // a paywall or an error message. horoscope.js marks only real results loaded.
+            if (detailSection.dataset.loaded !== 'true') {
+                lastSign = null;
+                document.getElementById('horoscope-share-panel')?.remove();
+                return;
+            }
+
             const signName    = document.getElementById('detail-name')?.innerText?.trim();
             const signSymbol  = document.getElementById('detail-symbol')?.innerText?.trim();
             const dateStr     = document.getElementById('detail-date')?.innerText?.trim();
             const prediction  = document.getElementById('detail-text')?.innerText?.trim();
             const affirmation = document.getElementById('detail-work')?.innerText
                 ?.replace(/^(?:✨\s*)?(?:Afirmace|Afirmacia|Afirmacja):\s*/i, '').trim();
-            const period = document.querySelector('[data-tab].active')?.dataset.tab || 'daily';
+            const activePeriod = document.querySelector('[data-tab].active')?.dataset.tab;
+            const period = ['daily', 'weekly', 'monthly'].includes(activePeriod) ? activePeriod : 'daily';
 
-            // Přeskočit pokud není vybrané znamení nebo text je placeholder / příliš krátký
-            if (!signName || signName === 'Zvěrokruh') return;
-            if (!prediction || prediction.startsWith(PLACEHOLDER) || prediction.length < 40) return;
-            // Přeskočit chybové hlášení
-            if (prediction.includes('Zkuste se ztišit')) return;
+            // A successful reading must still contain enough copy to make a useful card.
+            if (!signName || !signSymbol || !prediction || prediction.length < 40) return;
 
             // Nespouštět znovu pokud se nic nezměnilo
             const renderKey = JSON.stringify([signName, signSymbol, dateStr, prediction, affirmation, period]);
@@ -479,20 +525,17 @@
             lastSign = renderKey;
 
             // Canonical URL se slugem znamení
-            const slug = signName.toLowerCase()
-                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-                .replace(/\s+/g, '-');
-            // Canonical URL bez hash fragmentu (FB crawler nevidí JS, hash by nefungoval)
-            // Canonical s ?znak= pro server-side OG injection (FB scraper dostane správný og:image)
-            const canonical = `${BASE_URL}/horoskopy.html?znak=${encodeURIComponent(slug)}`;
-            // Share URL s UTM + anchor — pro kopírování odkazu
-            const shareUrlWithUTM = `${BASE_URL}/horoskopy.html?znak=${encodeURIComponent(slug)}&utm_source=social&utm_medium=share&utm_campaign=horoscope#${slug}`;
+            const { localSlug, imageSlug } = getShareSignSlugs(signSymbol, signName);
+            // The URL keeps the visitor on the language they chose; the OG image
+            // uses the shared zodiac artwork identified by its canonical sign slug.
+            const { canonical, share } = buildHoroscopeShareUrls(localSlug, period);
 
             // Aktualizuj OG meta
-            updateOGMeta(signName, prediction, canonical, slug);
+            updateOGMeta(signName, prediction, canonical, imageSlug, period);
 
             // Vygeneruj canvas kartu
             const canvas = await generateHoroscopeCard(signSymbol, signName, dateStr || '', prediction, affirmation || '', period);
+            if (lastSign !== renderKey || detailSection.dataset.loaded !== 'true' || !detailSection.isConnected) return;
             // An older image load must not overwrite a more recently selected sign.
             if (lastSign !== renderKey || !detailSection.isConnected) return;
 
@@ -500,7 +543,7 @@
             const contentContainer = detailSection.querySelector('.horoscope-content');
             if (!contentContainer) return;
 
-            const panel = createSharePanel(canvas, signName, signSymbol, canonical, shareUrlWithUTM);
+            const panel = createSharePanel(canvas, signName, signSymbol, canonical, share, period);
 
             // Odstraň starý panel pokud existuje
             const old = contentContainer.querySelector('#horoscope-share-panel');

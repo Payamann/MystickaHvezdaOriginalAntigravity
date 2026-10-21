@@ -8,21 +8,20 @@ import {
     authHeaders,
     authHeadersWithCsrf,
     getZodiacSign,
-    getZodiacIconName,
     getReadingLabel,
     getReadingPreview,
     loadPlanManifest,
     normalizePlanType,
     formatPlanLabel,
     profileIconMarkup,
-    renderProfileAvatar
+    renderProfileAvatar,
+    getProfileScrollBehavior
 } from './shared.js';
 import { loadReadings, showMoreReadings, handleFilterChange, getReadingSummary, initReadingFilters, resetReadingsState } from './readings.js';
 import { loadProfileContext, PROFILE_CONTEXT_LIMIT } from './context.js';
 import { readJournalDraft, writeJournalDraft } from './journal-draft.js';
 import { loadFavorites, resetFavoritesState } from './favorites.js';
-import { toggleAvatarPicker, selectAvatar, loadSubscriptionStatus, initSettingsForm, initAvatarPicker, saveSettings, changePassword } from './settings.js';
-import { viewReading, closeReadingModal, toggleFavoriteModal, toggleFavorite, deleteReading } from './modal.js';
+import { toggleAvatarPicker, selectAvatar, loadSubscriptionStatus, resetSubscriptionStatus, resetProfileSettingsSave, resetProfilePasswordChange, resetProfileAvatarSave, initSettingsForm, initAvatarPicker, saveSettings, changePassword } from './settings.js';
 import { verifyCheckoutResult } from './checkout-result.js';
 
 const PREMIUM_ACTIVATION_KEY = 'mh_premium_activation_seen';
@@ -31,6 +30,7 @@ const SIGNUP_INTENT_MAX_AGE_MS = 14 * 24 * 60 * 60 * 1000;
 const PENDING_READING_KEY = 'mh_pending_reading';
 const PENDING_READING_FOCUS_KEY = 'mh_pending_reading_focus';
 const PENDING_READING_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+const READING_REQUEST_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const TAROT_YES_NO_UPGRADE_CONTEXT_KEY = 'mh_tarot_yes_no_upgrade_context';
 const TAROT_YES_NO_UPGRADE_CONTEXT_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 let ritualMemoryViewTracked = false;
@@ -41,6 +41,34 @@ let activePaymentReturnContext = null;
 let profileState = { user: null, subscription: null, context: null };
 let profileRefreshVersion = 0;
 const counterFrames = new Map();
+let profileModalModulePromise = null;
+
+function loadProfileModal() {
+    if (!profileModalModulePromise) {
+        profileModalModulePromise = import('./modal.js').catch(error => {
+            profileModalModulePromise = null;
+            throw error;
+        });
+    }
+    return profileModalModulePromise;
+}
+
+function preloadProfileModal() {
+    void loadProfileModal().catch(() => {});
+}
+
+async function callProfileModal(method, ...args) {
+    try {
+        const module = await loadProfileModal();
+        const action = module[method];
+        if (typeof action !== 'function') return undefined;
+        return await action(...args);
+    } catch (error) {
+        console.error('[Profile] Could not load reading detail:', error?.message || error);
+        window.Auth?.showToast?.('Chyba', 'Detail výkladu se nepodařilo otevřít. Zkus to prosím znovu.', 'error');
+        return undefined;
+    }
+}
 
 function renderProfileOverview() {
     const { user, subscription, context } = profileState;
@@ -122,6 +150,46 @@ function trackProfileCta(source, payload = {}) {
     callProfileAnalytics('trackCTA', source, payload);
 }
 
+function createProfileReadingRequestId() {
+    if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+
+    const bytes = new Uint8Array(16);
+    if (window.crypto?.getRandomValues) {
+        window.crypto.getRandomValues(bytes);
+    } else {
+        for (let index = 0; index < bytes.length; index += 1) bytes[index] = Math.floor(Math.random() * 256);
+    }
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    const hex = Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+
+function ensurePendingProfileReadingRequestId(pending, userId) {
+    let changed = false;
+    if (!READING_REQUEST_ID_PATTERN.test(pending.requestId || '')) {
+        pending.requestId = createProfileReadingRequestId();
+        changed = true;
+    }
+    if (pending.userId !== userId) {
+        pending.userId = userId;
+        changed = true;
+    }
+    if (!changed) return true;
+
+    const serialized = JSON.stringify(pending);
+    for (const storageName of ['localStorage', 'sessionStorage']) {
+        try {
+            window[storageName].setItem(PENDING_READING_KEY, serialized);
+            return true;
+        } catch (error) {
+            console.warn(`[Profile] Could not persist pending reading request ID to ${storageName}:`, error?.message || error);
+        }
+    }
+
+    return false;
+}
+
 function trackConfirmedPurchase(product, value, currency, context, attemptsLeft = 12) {
     if (typeof window.MH_ANALYTICS?.trackPurchaseCompleted !== 'function') {
         if (attemptsLeft > 0) window.setTimeout(() => trackConfirmedPurchase(product, value, currency, context, attemptsLeft - 1), 250);
@@ -158,33 +226,49 @@ async function trackProfileFunnelEvent(eventName, { source = 'profile', feature 
 }
 
 function readPendingProfileReading() {
-    try {
-        const raw = localStorage.getItem(PENDING_READING_KEY);
-        if (!raw) return null;
-
-        const pending = JSON.parse(raw);
-        if (!pending || typeof pending !== 'object') {
-            localStorage.removeItem(PENDING_READING_KEY);
-            return null;
-        }
-
-        if (Date.now() - Number(pending.createdAt || 0) > PENDING_READING_MAX_AGE_MS) {
-            localStorage.removeItem(PENDING_READING_KEY);
-            return null;
-        }
-
-        if (typeof pending.type !== 'string' || pending.data === undefined || pending.data === null) {
-            localStorage.removeItem(PENDING_READING_KEY);
-            return null;
-        }
-
-        return pending;
-    } catch (error) {
-        console.warn('[Profile] Could not read pending reading:', error?.message || error);
+    for (const storageName of ['localStorage', 'sessionStorage']) {
+        let storage;
         try {
-            localStorage.removeItem(PENDING_READING_KEY);
-        } catch {}
-        return null;
+            storage = window[storageName];
+            const raw = storage.getItem(PENDING_READING_KEY);
+            if (!raw) continue;
+
+            const pending = JSON.parse(raw);
+            const age = Date.now() - Number(pending?.createdAt || 0);
+            const valid = pending && typeof pending === 'object'
+                && Number.isFinite(age) && age >= 0 && age <= PENDING_READING_MAX_AGE_MS
+                && typeof pending.type === 'string'
+                && pending.data !== undefined && pending.data !== null;
+            if (valid) return pending;
+
+            storage.removeItem(PENDING_READING_KEY);
+        } catch (error) {
+            console.warn(`[Profile] Could not read pending reading from ${storageName}:`, error?.message || error);
+        }
+    }
+
+    return null;
+}
+
+function clearPendingProfileReading(expectedPending) {
+    if (!expectedPending?.requestId) return;
+
+    for (const storageName of ['localStorage', 'sessionStorage']) {
+        try {
+            const storage = window[storageName];
+            const raw = storage.getItem(PENDING_READING_KEY);
+            if (!raw) continue;
+
+            const current = JSON.parse(raw);
+            const matchesRequest = current?.requestId
+                ? current.requestId === expectedPending.requestId
+                : current?.type === expectedPending.type
+                    && Number(current?.createdAt) === Number(expectedPending.createdAt)
+                    && JSON.stringify(current?.data) === JSON.stringify(expectedPending.data);
+            if (matchesRequest) storage.removeItem(PENDING_READING_KEY);
+        } catch (error) {
+            console.warn(`[Profile] Could not clear pending reading from ${storageName}:`, error?.message || error);
+        }
     }
 }
 
@@ -214,9 +298,30 @@ function readTarotYesNoUpgradeContext() {
     }
 }
 
-async function savePendingProfileReading() {
+async function savePendingProfileReading(userId) {
     const pending = readPendingProfileReading();
     if (!pending) return false;
+
+    if (!userId) {
+        window.Auth?.showToast?.('Výklad zatím čeká', 'Nepodařilo se ověřit účet. Obnov profil a zkus to znovu.', 'error');
+        return false;
+    }
+    if (pending.userId && pending.userId !== userId) {
+        window.Auth?.showToast?.(
+            'Výklad zůstal u původního účtu',
+            'Přihlas se k účtu, pro který byl připravený. Do tohoto deníku jsme ho neuložili.',
+            'error'
+        );
+        return false;
+    }
+    if (!ensurePendingProfileReadingRequestId(pending, userId)) {
+        window.Auth?.showToast?.(
+            'Výklad zatím čeká',
+            'Povol úložiště pro tento web a obnov profil. Výklad zatím zůstane uložený v prohlížeči.',
+            'error'
+        );
+        return false;
+    }
 
     const readingData = pending.data && typeof pending.data === 'object' && !Array.isArray(pending.data)
         ? {
@@ -227,13 +332,28 @@ async function savePendingProfileReading() {
         : pending.data;
 
     try {
+        const headers = await authHeadersWithCsrf(true);
+        // A token/CSRF lookup can yield while the user signs out or switches
+        // accounts. Recheck locally before sending; the server also compares
+        // expectedUserId against the authenticated request owner.
+        if (window.Auth?.user?.id !== userId || !window.Auth?.isLoggedIn?.()) {
+            window.Auth?.showToast?.(
+                'Výklad zůstal u původního účtu',
+                'Účet se během ukládání změnil. Výklad zůstal v tomto prohlížeči.',
+                'error'
+            );
+            return false;
+        }
+
         const response = await fetch(`${apiUrl()}/user/readings`, {
             method: 'POST',
             credentials: 'include',
-            headers: await authHeadersWithCsrf(true),
+            headers,
             body: JSON.stringify({
                 type: pending.type,
-                data: readingData
+                data: readingData,
+                requestId: pending.requestId,
+                expectedUserId: userId
             })
         });
 
@@ -242,7 +362,16 @@ async function savePendingProfileReading() {
             throw new Error(payload?.error || 'Pending reading save failed');
         }
 
-        localStorage.removeItem(PENDING_READING_KEY);
+        // The server has already confirmed the idempotent save for the owner
+        // sent in expectedUserId. If another account became active while the
+        // response was pending, clear only this completed request and avoid
+        // showing its private reading ID or success notice in the new profile.
+        if (window.Auth?.user?.id !== userId || !window.Auth?.isLoggedIn?.()) {
+            clearPendingProfileReading(pending);
+            return false;
+        }
+
+        clearPendingProfileReading(pending);
         const savedReadingId = payload.id || payload.reading?.id || null;
         if (savedReadingId) {
             try {
@@ -278,6 +407,19 @@ async function savePendingProfileReading() {
             feature: pending.feature || pending.type,
             reading_type: pending.type
         });
+        if (window.Auth?.user?.id === userId && window.Auth?.isLoggedIn?.()) {
+            window.Auth?.showToast?.(
+                'Výklad zatím čeká',
+                'Uložení se nepodařilo potvrdit. Výklad zůstal v tomto prohlížeči; obnov stránku a zkusíme ho do deníku přidat znovu.',
+                'error'
+            );
+        } else {
+            window.Auth?.showToast?.(
+                'Výklad zůstal u původního účtu',
+                'Účet se během ukládání změnil. Výklad zůstal v tomto prohlížeči.',
+                'error'
+            );
+        }
         return false;
     }
 }
@@ -543,6 +685,19 @@ function setProfileBlockVisible(element, visible) {
     element.classList.toggle('profile-block-visible', visible);
 }
 
+function showJournalSessionRecovery() {
+    const note = document.getElementById('profile-session-expired-note');
+    const loginLink = document.getElementById('profile-login-btn');
+    if (note) {
+        note.textContent = 'Přihlášení vypršelo. Rozepsaná poznámka zůstala v této kartě prohlížeče; po přihlášení se vrátíš přímo k ní.';
+        note.hidden = false;
+        note.focus({ preventScroll: true });
+    }
+    if (loginLink) {
+        loginLink.href = '/prihlaseni.html?source=profile_session_expired&feature=profile_history&redirect=%2Fprofil.html%23journal-input';
+    }
+}
+
 function initTabs() {
     const tabs = document.querySelectorAll('.tab[data-tab], .profile-tab[data-tab]');
     const contents = document.querySelectorAll('.tab-content');
@@ -596,7 +751,7 @@ function initTabs() {
 function openProfileTab(tabId) {
     const tab = document.querySelector(`.profile-tab[data-tab="${tabId}"]`);
     tab?.click();
-    document.getElementById(`tab-${tabId}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById(`tab-${tabId}`)?.scrollIntoView({ behavior: getProfileScrollBehavior(), block: 'start' });
 }
 
 function focusPendingReadingInHistory(explicitReadingId = null) {
@@ -624,7 +779,7 @@ function focusPendingReadingInHistory(explicitReadingId = null) {
 
     openProfileTab('history');
     card.classList.add('reading-item--just-saved');
-    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    card.scrollIntoView({ behavior: getProfileScrollBehavior(), block: 'center' });
     sessionStorage.removeItem(PENDING_READING_FOCUS_KEY);
     trackProfileEvent('profile_pending_reading_focused', {
         source: focus.source || 'pending_reading',
@@ -660,6 +815,7 @@ function handlePaymentReturnState(subscription, user) {
 
     const paymentContext = {
         state: paymentState === 'success' ? 'pending' : paymentState,
+        ownerId: user?.id || null,
         planId: params.get('plan') || null,
         sessionId: params.get('session_id') || null,
         source: params.get('source') || null,
@@ -694,8 +850,6 @@ function handlePaymentReturnState(subscription, user) {
         // Do not block dashboard rendering while Stripe verifies the return.
         void verifyCheckoutResult(sessionId, { baseUrl: apiUrl(), headers: authHeaders() }).then(result => {
             if (!result || result.status === 'pending') return;
-            paymentContext.state = 'success';
-            paymentContext.planId = result.product_id || paymentContext.planId;
             if (result.status === 'paid') {
                 trackConfirmedPurchase(result.product_id, result.value, result.currency, {
                     verified: true,
@@ -713,6 +867,9 @@ function handlePaymentReturnState(subscription, user) {
             } else {
                 trackProfileEvent('subscription_trial_confirmed', { plan_id: result.product_id, source, feature });
             }
+            if (!user?.id || window.Auth?.isLoggedIn?.() !== true || window.Auth?.user?.id !== user.id) return;
+            paymentContext.state = 'success';
+            paymentContext.planId = result.product_id || paymentContext.planId;
             renderPremiumActivation(subscription, user, paymentContext);
             window.Auth?.showToast?.(
                 result.status === 'paid' ? 'Platba potvrzena' : 'Zkušební období potvrzeno',
@@ -722,7 +879,7 @@ function handlePaymentReturnState(subscription, user) {
         }).catch(() => { /* Verification is optional to viewing the account, never to claiming revenue. */ });
         openProfileTab('settings');
         setTimeout(() => {
-            document.getElementById('subscription-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document.getElementById('subscription-card')?.scrollIntoView({ behavior: getProfileScrollBehavior(), block: 'start' });
         }, 150);
         window.Auth?.showToast?.(
             'Ověřujeme výsledek objednávky',
@@ -803,7 +960,7 @@ function renderPremiumActivation(sub, user, paymentContext = null) {
     setProfileBlockVisible(card, true);
     if (shouldForceShow) {
         setTimeout(() => {
-            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            card.scrollIntoView({ behavior: getProfileScrollBehavior(), block: 'center' });
         }, 200);
     }
 
@@ -1177,6 +1334,7 @@ function collectRitualMemorySignals(readings, now = new Date()) {
     const todayJournal = journals.some(reading => isSameLocalDay(getValidReadingDate(reading), now));
     const totalSignals = journals.length + feedbackEntries.length;
     const strengthLabel = totalSignals >= 2 ? 'Tvoje poznámky' : 'Zatím málo podkladů';
+    const strengthDisplayLabel = totalSignals >= 2 ? 'Více podkladů' : strengthLabel;
 
     return {
         totalReadings: safeReadings.length,
@@ -1189,7 +1347,8 @@ function collectRitualMemorySignals(readings, now = new Date()) {
         lastReading: [...structuredReadings].sort(sortByDateDesc)[0] || null,
         lastJournal: [...journals].sort(sortByDateDesc)[0] || null,
         lastFeedback: feedbackEntries.sort((a, b) => sortByDateDesc(a.reading, b.reading))[0] || null,
-        strengthLabel
+        strengthLabel,
+        strengthDisplayLabel
     };
 }
 
@@ -1242,9 +1401,9 @@ function renderRitualMemory(user, readings, subscription) {
     const topScore = memory.topTheme?.score || 1;
 
     titleEl.textContent = memory.topTheme
-        ? `Téma tvých poznámek: ${memory.topTheme.label}`
-        : 'Tvoje poznámky v souvislostech';
-    strengthEl.textContent = memory.strengthLabel;
+        ? `Téma z tvých podkladů: ${memory.topTheme.label}`
+        : 'Tvoje podklady v souvislostech';
+    strengthEl.textContent = memory.strengthDisplayLabel;
     strengthEl.className = `badge ${memory.strengthLabel === 'Silná stopa' ? 'badge--premium' : 'badge--secondary'}`;
     copyEl.textContent = buildRitualMemoryCopy(memory);
 
@@ -1514,7 +1673,7 @@ function focusJournalInput() {
     if (!input) return;
     document.querySelector('.profile-tab[data-tab="overview"]')?.click();
 
-    input.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'center' });
+    input.scrollIntoView({ behavior: getProfileScrollBehavior(), block: 'center' });
     setTimeout(() => input.focus(), 250);
 }
 
@@ -1533,7 +1692,7 @@ function handleDailyGuidanceClick(event) {
 
     if (action === 'last_reading') {
         event.preventDefault();
-        if (link.dataset.readingId) viewReading(link.dataset.readingId);
+        if (link.dataset.readingId) void callProfileModal('viewReading', link.dataset.readingId);
     } else if (action === 'daily_journal') {
         event.preventDefault();
         focusJournalInput();
@@ -1559,7 +1718,7 @@ function handleActivationChecklistClick(event) {
     if (action === 'open_settings') {
         event.preventDefault();
         openProfileTab('settings');
-        document.getElementById('settings-name')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        document.getElementById('settings-name')?.scrollIntoView({ behavior: getProfileScrollBehavior(), block: 'center' });
         return;
     }
 
@@ -1583,7 +1742,7 @@ function handleActivationChecklistClick(event) {
 
     if (action === 'daily_guidance') {
         event.preventDefault();
-        document.getElementById('daily-guidance-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        document.getElementById('daily-guidance-card')?.scrollIntoView({ behavior: getProfileScrollBehavior(), block: 'center' });
     }
 }
 
@@ -1768,16 +1927,16 @@ async function handleReadingListInteraction(event) {
         if (!id) return;
 
         if (actionButton.dataset.readingAction === 'favorite') {
-            await toggleFavorite(id, actionButton);
+            await callProfileModal('toggleFavorite', id, actionButton);
         } else if (actionButton.dataset.readingAction === 'view') {
-            await viewReading(id);
+            await callProfileModal('viewReading', id);
         }
         return;
     }
 
     const card = event.target.closest('[data-reading-id]');
     if (card && event.currentTarget.contains(card)) {
-        await viewReading(card.dataset.readingId);
+        await callProfileModal('viewReading', card.dataset.readingId);
     }
 }
 
@@ -1789,7 +1948,7 @@ function handleReadingListKeyboard(event) {
     if (!card || !event.currentTarget.contains(card)) return;
 
     event.preventDefault();
-    viewReading(card.dataset.readingId);
+    void callProfileModal('viewReading', card.dataset.readingId);
 }
 
 async function initProfile() {
@@ -1802,10 +1961,27 @@ async function initProfile() {
 
     const user = window.Auth?.user;
     const isLoggedIn = window.Auth?.isLoggedIn();
+    const previousUserId = profileState.user?.id || null;
+    const nextUserId = isLoggedIn ? user?.id || null : null;
+    if (previousUserId !== nextUserId) {
+        resetSubscriptionStatus({ loading: Boolean(nextUserId) });
+        resetProfileSettingsSave();
+        resetProfilePasswordChange();
+        resetProfileAvatarSave();
+        const journalInput = document.getElementById('journal-input');
+        if (previousUserId && journalInput) {
+            writeJournalDraft(previousUserId, journalInput.value);
+        }
+        if (journalInput) journalInput.value = '';
+        const journalStatus = document.getElementById('journal-status');
+        if (journalStatus) journalStatus.textContent = '';
+        const journalLogin = document.getElementById('journal-login');
+        if (journalLogin) journalLogin.hidden = true;
+    }
     if (profileState.user?.id !== user?.id || !isLoggedIn) {
         resetReadingsState();
         resetFavoritesState();
-        closeReadingModal();
+        if (profileModalModulePromise) void callProfileModal('closeReadingModal');
         profileState = { user: null, subscription: null, context: null };
     }
 
@@ -1825,16 +2001,13 @@ async function initProfile() {
                 feature: 'profile_history'
             });
         }
-        if (window.lucide) {
-            window.lucide.createIcons();
-        }
         return;
     }
 
     setProfileBlockVisible(loginRequired, false);
     setProfileBlockVisible(dashboard, true);
     await loadPlanManifest();
-    const pendingReadingSavedId = await savePendingProfileReading();
+    const pendingReadingSavedId = await savePendingProfileReading(user?.id);
 
     if (user) {
         if (greeting) greeting.textContent = user.first_name ? `Vítej zpět, ${user.first_name}` : 'Tvoje výklady na jednom místě';
@@ -1855,7 +2028,7 @@ async function initProfile() {
             const zodiacEl = document.getElementById('user-zodiac');
             if (zodiacEl && sign) {
                 setProfileBlockVisible(zodiacEl, true);
-                zodiacEl.innerHTML = `<i class="profile-zodiac-icon" data-lucide="${getZodiacIconName(sign.symbol)}"></i> ${sign.name}`;
+                zodiacEl.innerHTML = `<span class="profile-zodiac-icon" aria-hidden="true">${sign.symbol}</span> ${sign.name}`;
             } else {
                 showZodiacSignLocal(user.birth_date);
             }
@@ -1876,7 +2049,9 @@ async function initProfile() {
     ]);
     if (initVersion !== profileRefreshVersion) return;
 
-    const paymentReturnContext = handlePaymentReturnState(subscription, user) || activePaymentReturnContext;
+    const paymentReturnContext = handlePaymentReturnState(subscription, user)
+        || (activePaymentReturnContext?.ownerId === user?.id ? activePaymentReturnContext : null);
+    if (activePaymentReturnContext?.ownerId !== user?.id) activePaymentReturnContext = null;
     renderPremiumActivation(subscription, user, paymentReturnContext);
     profileState = { user, subscription, context };
     renderProfileOverview();
@@ -1902,6 +2077,19 @@ async function initProfile() {
         document.getElementById('favorites-list')?.addEventListener('click', handleReadingListInteraction);
         document.getElementById('favorites-list')?.addEventListener('keydown', handleReadingListKeyboard);
         document.getElementById('journal-entries')?.addEventListener('click', handleReadingListInteraction);
+        [
+            document.getElementById('readings-list'),
+            document.getElementById('favorites-list'),
+            document.getElementById('journal-entries'),
+            document.getElementById('daily-guidance-card')
+        ].filter(Boolean).forEach(container => {
+            container.addEventListener('pointerover', event => {
+                if (event.target.closest('[data-reading-id], [data-daily-action="last_reading"]')) preloadProfileModal();
+            }, { passive: true });
+            container.addEventListener('focusin', event => {
+                if (event.target.closest('[data-reading-id], [data-daily-action="last_reading"]')) preloadProfileModal();
+            });
+        });
         document.getElementById('profile-context-retry')?.addEventListener('click', () => refreshProfileData());
         document.getElementById('all-journal-entries')?.addEventListener('click', () => {
             openProfileTab('history');
@@ -1909,18 +2097,18 @@ async function initProfile() {
             if (filter) { filter.value = 'journal'; handleFilterChange({ target: filter }); }
         });
 
-        document.getElementById('reading-modal-close')?.addEventListener('click', closeReadingModal);
-        document.getElementById('modal-favorite-btn')?.addEventListener('click', toggleFavoriteModal);
-        document.getElementById('modal-delete-btn')?.addEventListener('click', deleteReading);
+        document.getElementById('reading-modal-close')?.addEventListener('click', () => void callProfileModal('closeReadingModal'));
+        document.getElementById('modal-favorite-btn')?.addEventListener('click', () => void callProfileModal('toggleFavoriteModal'));
+        document.getElementById('modal-delete-btn')?.addEventListener('click', () => void callProfileModal('deleteReading'));
 
         document.getElementById('reading-modal')?.addEventListener('click', e => {
-            if (e.target.id === 'reading-modal') closeReadingModal();
+            if (e.target.id === 'reading-modal') void callProfileModal('closeReadingModal');
         });
 
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape') {
                 const modal = document.getElementById('reading-modal');
-                if (modal && !modal.hidden) closeReadingModal();
+                if (modal && !modal.hidden) void callProfileModal('closeReadingModal');
 
                 const picker = document.getElementById('avatar-picker');
                 if (picker && !picker.hidden) {
@@ -1930,8 +2118,14 @@ async function initProfile() {
             }
         });
 
-        document.getElementById('save-settings-btn')?.addEventListener('click', saveSettings);
-        document.getElementById('change-password-btn')?.addEventListener('click', changePassword);
+        document.querySelector('.settings-form')?.addEventListener('submit', event => {
+            event.preventDefault();
+            void saveSettings();
+        });
+        document.querySelector('.settings-password-fields')?.addEventListener('submit', event => {
+            event.preventDefault();
+            void changePassword();
+        });
         window.addEventListener('hashchange', () => {
             if (window.location.hash === '#journal-input') focusJournalInput();
             else if (['#tab-history', '#tab-favorites', '#tab-settings', '#tab-overview'].includes(window.location.hash)) openProfileTab(window.location.hash.slice(5));
@@ -1978,11 +2172,28 @@ async function initProfile() {
                 journalBtn.innerHTML = '<span class="loading-spinner--sm"></span> Ukládám...';
 
                 try {
+                    const headers = await authHeadersWithCsrf(true);
+                    const sessionActive = window.Auth?.isLoggedIn?.() === true;
+                    const ownerStillActive = sessionActive
+                        && profileState.user?.id === ownerId
+                        && window.Auth?.user?.id === ownerId;
+                    if (!ownerStillActive) {
+                        if (!sessionActive) {
+                            window.Auth?.clearStaleSession?.();
+                            showJournalSessionRecovery();
+                        }
+                        if (status) status.textContent = sessionActive
+                            ? 'Účet se během ukládání změnil. Poznámka se do profilu neodeslala; místní koncept zůstal u původního účtu.'
+                            : 'Přihlášení vypršelo. Přihlas se znovu; rozepsaná poznámka se obnoví po návratu.';
+                        if (loginLink) loginLink.hidden = sessionActive;
+                        return;
+                    }
+
                     const response = await fetch(`${apiUrl()}/user/readings`, {
                         method: 'POST',
                         credentials: 'include',
-                        headers: await authHeadersWithCsrf(true),
-                        body: JSON.stringify({ type: 'journal', data: text })
+                        headers,
+                        body: JSON.stringify({ type: 'journal', data: text, expectedUserId: ownerId })
                     });
 
                     if (response.ok) {
@@ -2002,7 +2213,12 @@ async function initProfile() {
                             ? 'Přihlášení vypršelo. Přihlas se znovu; rozpracovaná poznámka zůstává v této kartě prohlížeče.'
                             : 'Poznámku se nepodařilo uložit. Text zůstal ve formuláři, zkus to znovu.';
                         if (loginLink) loginLink.hidden = response.status !== 401;
-                        window.Auth?.showToast?.('Chyba', err.error || 'Poznámku se nepodařilo uložit. Text zůstal ve formuláři.', 'error');
+                        if (response.status === 401) {
+                            window.Auth?.clearStaleSession?.();
+                            showJournalSessionRecovery();
+                        } else {
+                            window.Auth?.showToast?.('Chyba', err.error || 'Poznámku se nepodařilo uložit. Text zůstal ve formuláři.', 'error');
+                        }
                     }
                 } catch (e) {
                     console.error('Journal error:', e);
@@ -2022,9 +2238,6 @@ async function initProfile() {
         listenersAttached = true;
     }
 
-    if (window.lucide) {
-        window.lucide.createIcons();
-    }
 }
 
 window.createStardust = function(element) {
@@ -2061,9 +2274,9 @@ window.createStardust = function(element) {
     }
 };
 
-window.viewReading = viewReading;
+window.viewReading = id => callProfileModal('viewReading', id);
 window.toggleFavorite = (id, el) => {
-    import('./modal.js').then(m => m.toggleFavorite(id, el));
+    void callProfileModal('toggleFavorite', id, el);
 };
 
 let profileInitRunning = false;
@@ -2087,4 +2300,7 @@ async function safeInitProfile() {
 document.addEventListener('DOMContentLoaded', () => {
     safeInitProfile();
     document.addEventListener('auth:changed', () => safeInitProfile());
+    window.addEventListener('storage', event => {
+        if (event.key === 'auth_user') safeInitProfile();
+    });
 });

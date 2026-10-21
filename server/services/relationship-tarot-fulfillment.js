@@ -20,10 +20,10 @@ return async function fulfillRelationshipTarotOrder({ orderId }) {
         // prevents another send when only the final fulfillment write failed.
         if (order.email_id) return;
         let reading = order.payload.reading;
-        if (reading) parseRelationshipReading(reading, { strictLanguage: false });
+        if (reading) reading = parseRelationshipReading(reading, { strictLanguage: false });
         else {
             reading = await generate(order.payload);
-            parseRelationshipReading(reading);
+            reading = parseRelationshipReading(reading);
             const { data, error } = await db.from('one_time_order_inputs')
                 .update({ payload: { ...order.payload, reading }, updated_at: new Date().toISOString() })
                 .eq('id', orderId).eq('updated_at', order.updated_at).select('id').maybeSingle();
@@ -32,7 +32,7 @@ return async function fulfillRelationshipTarotOrder({ orderId }) {
                 // Another worker won the optimistic write. All deliveries must use
                 // that same saved content so the provider idempotency key matches.
                 reading = (await getOrder(orderId))?.payload?.reading;
-                parseRelationshipReading(reading, { strictLanguage: false });
+                reading = parseRelationshipReading(reading, { strictLanguage: false });
             }
         }
         const result = await send({ to: order.customer_email, template: 'relationship_tarot', data: { ...order.payload, reading } }, { idempotencyKey: `relationship-tarot-${orderId}` });

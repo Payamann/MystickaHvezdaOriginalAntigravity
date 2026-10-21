@@ -41,10 +41,10 @@
          při prvním vykreslení → titulek se pozdě nepřerenderuje (zbytkový CLS na cold loadu). -->
     <link rel="preload" href="/fonts/cinzel-latin-ext.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/fonts/inter-latin-ext.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="css/site.min.css?v=1">
-    <link rel="stylesheet" href="css/pages/cenik.css?v=20261003-membership-design">
+    <link rel="stylesheet" href="css/site.min.css?v=20261018-release-candidate">
+    <link rel="stylesheet" href="css/pages/cenik.css?v=20261020-01-membership-atlas-fallback">
     <script defer src="https://js.stripe.com/v3/"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lucide@1.13.0/dist/umd/lucide.min.js" integrity="sha384-EHKCF1r0kkLgXLXtUe79iQzyUeZou+h3FZLoZWdcIAyctVNKMHqqy5wqYWQFUq6k" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@1.13.0/dist/umd/lucide.min.js" integrity="sha384-EHKCF1r0kkLgXLXtUe79iQzyUeZou+h3FZLoZWdcIAyctVNKMHqqy5wqYWQFUq6k" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
 
     <link rel="alternate" hreflang="cs" href="https://www.mystickahvezda.cz/cenik.html">
     <link rel="alternate" hreflang="x-default" href="https://www.mystickahvezda.cz/cenik.html">
@@ -56,8 +56,8 @@
 <meta property="og:image:alt" content="Členství Mystické Hvězdy za 199 Kč měsíčně">
 <meta name="twitter:image:alt" content="Členství Mystické Hvězdy za 199 Kč měsíčně">
 
-    <link rel="stylesheet" href="/css/atlas-web.css?v=1">
-    <link rel="stylesheet" href="/css/atlas-remaining.css?v=1">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
+    <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261020-01-remaining-surface-polish">
     <link rel="stylesheet" href="/css/pages/membership-card.css?v=20261003-1">
 </head>
 
@@ -84,7 +84,7 @@
                 <div class="pricing-grid pricing-grid--single">
                     <article class="card card--pricing card--pricing-primary featured membership-card">
                         <div class="membership-card__art" aria-hidden="true">
-                            <img src="img/tarot-v2/tarot_hvezda.webp" alt="" width="600" height="1000" loading="lazy" decoding="async">
+                            <img src="img/tarot-v2/tarot_hvezda.webp" srcset="img/tarot-v2/tarot_hvezda-240.webp 240w, img/tarot-v2/tarot_hvezda-360.webp 360w, img/tarot-v2/tarot_hvezda-480.webp 480w, img/tarot-v2/tarot_hvezda.webp 600w" sizes="192px" alt="" width="600" height="1000" loading="lazy" decoding="async">
                         </div>
                         <div class="membership-card__content">
                         <div class="membership-card__heading">
@@ -158,10 +158,10 @@
             <div class="container text-center">
                 <div class="section__header"><span class="section__badge">Bez nejasností</span><h2 class="section__title">Než členství aktivuješ</h2></div>
                 <div class="mh-inline-fcfa6c58cb">
-                    <div class="faq-item"><button class="faq-question">Co se stane po 7 dnech? <span class="faq-icon">+</span></button><div class="faq-answer"><p>Pokud členství předtím nezrušíš, Stripe strhne 199 Kč za další měsíc. Přesnou částku vždy vidíš před potvrzením.</p></div></div>
-                    <div class="faq-item"><button class="faq-question">Jak členství zruším? <span class="faq-icon">+</span></button><div class="faq-answer"><p>Kdykoliv ve svém profilu. Přístup ti zůstane do konce zaplaceného období.</p></div></div>
-                    <div class="faq-item"><button class="faq-question">Potřebuji kartu už při registraci? <span class="faq-icon">+</span></button><div class="faq-answer"><p>Ne. Účet zdarma založíš bez karty. Kartu potřebuješ až k aktivaci 7denního zkušebního období členství.</p></div></div>
-                    <div class="faq-item"><button class="faq-question">Jaký je rozdíl mezi členstvím a vztahovým výkladem? <span class="faq-icon">+</span></button><div class="faq-answer"><p>Členství odemyká opakované používání členských nástrojů a historii. Osobní vztahový výklad stojí jednorázově 149 Kč a přijde e-mailem bez účtu a předplatného.</p></div></div>
+                    <div class="faq-item"><button type="button" class="faq-question">Co se stane po 7 dnech? <span class="faq-icon">+</span></button><div class="faq-answer"><p>Pokud členství předtím nezrušíš, Stripe strhne 199 Kč za další měsíc. Přesnou částku vždy vidíš před potvrzením.</p></div></div>
+                    <div class="faq-item"><button type="button" class="faq-question">Jak členství zruším? <span class="faq-icon">+</span></button><div class="faq-answer"><p>Kdykoliv ve svém profilu. Přístup ti zůstane do konce zaplaceného období.</p></div></div>
+                    <div class="faq-item"><button type="button" class="faq-question">Potřebuji kartu už při registraci? <span class="faq-icon">+</span></button><div class="faq-answer"><p>Ne. Účet zdarma založíš bez karty. Kartu potřebuješ až k aktivaci 7denního zkušebního období členství.</p></div></div>
+                    <div class="faq-item"><button type="button" class="faq-question">Jaký je rozdíl mezi členstvím a vztahovým výkladem? <span class="faq-icon">+</span></button><div class="faq-answer"><p>Členství odemyká opakované používání členských nástrojů a historii. Osobní vztahový výklad stojí jednorázově 149 Kč a přijde e-mailem bez účtu a předplatného.</p></div></div>
                 </div>
             </div>
         </section>
@@ -171,11 +171,12 @@
 
     <script src="js/dist/analytics.js?v=6" defer></script>
     <script src="js/dist/api-config.js?v=5" defer></script>
-    <script src="js/dist/auth-client.js?v=20261003-single-membership" defer></script>
+    <script src="js/dist/auth-client.js?v=20261020-02-register-password-policy" defer></script>
     <script src="js/dist/auth-copy-fixes.js" defer></script>
-    <script src="js/dist/templates.js?v=14" defer></script>
-    <script src="js/dist/components.js?v=20260522-premium-gate-cache" defer></script>
-    <script type="module" src="js/dist/main.js?v=12"></script>
-    <script src="js/dist/cenik.js?v=20261003-single-membership" defer></script>
+    <script src="js/dist/templates.js?v=20261021-celtic-footer-star-svg" defer></script>
+    <script src="js/dist/components.js?v=20261021-footer-support-locale" defer></script>
+    <script type="module" src="js/dist/main.js?v=20261018-status-icons"></script>
+    <script src="js/dist/cenik.js?v=20261018-reduced-motion-scroll" defer></script>
+    <script src="js/dist/lucide-init.js" defer></script>
 </body>
 </html>

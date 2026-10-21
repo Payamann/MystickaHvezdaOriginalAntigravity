@@ -8,9 +8,9 @@
     <meta name="description" content="Odpovězte na 7 otázek a zjistěte, se kterým živlem propojuje vaše volby symbolický kvíz.">
     <title>Živlová rovnováha | Mystická Hvězda</title>
     <link rel="stylesheet" href="/fonts/local-fonts.css">
-    <link rel="stylesheet" href="../css/style.v2.min.css?v=9">
-    <link rel="stylesheet" href="../css/pages/testy-zivlova-rovnovaha.css">
-    <link rel="stylesheet" href="../css/testy.css?v=2">
+    <link rel="stylesheet" href="../css/style.v2.min.css?v=20261018-release-candidate">
+    <link rel="stylesheet" href="../css/pages/testy-zivlova-rovnovaha.css?v=20261018-direct-result">
+    <link rel="stylesheet" href="../css/testy.css?v=20261021-question-focus">
 
     <!-- SEO & Open Graph -->
     <link rel="canonical" href="https://www.mystickahvezda.cz/testy/zivlova-rovnovaha.html">
@@ -26,14 +26,15 @@
 <meta property="og:image:alt" content="Živlová rovnováha | Mystická Hvězda">
 <meta name="twitter:image:alt" content="Živlová rovnováha | Mystická Hvězda">
 
-    <link rel="stylesheet" href="/css/atlas-web.css?v=1">
-    <link rel="stylesheet" href="/css/atlas-remaining.css?v=1">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
+    <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261020-01-remaining-surface-polish">
 </head>
 <body class="atlas-page atlas-remaining-page">
+    <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
 
     <div id="header-placeholder"></div>
 
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
         <section class="section section--hero">
             <div class="container text-center">
                 <span class="section__badge">Symbolický kvíz</span>
@@ -48,12 +49,12 @@
             <div class="container">
                 <div class="quiz-container" id="quiz-box">
                     <div class="quiz-progress">
-                        <div class="quiz-progress__bar" id="progress-bar"></div>
+                        <div class="quiz-progress__bar" id="progress-bar" role="progressbar" aria-label="Průběh kvízu" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
                     </div>
 
                     <!-- STEP 1 -->
                     <div class="question-step active" data-step="1">
-                        <h3>Co vás v životě nejvíce motivuje k pohybu vpřed?</h3>
+                        <h3 tabindex="-1">Co vás v životě nejvíce motivuje k pohybu vpřed?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="fire">Silná vášeň, touha něco dokázat a vyhrát.</button>
                             <button class="option-btn" data-score="water">Hluboké city, vztahy a touha někomu pomoci.</button>
@@ -64,7 +65,7 @@
 
                     <!-- STEP 2 -->
                     <div class="question-step" data-step="2">
-                        <h3>Jak se nejčastěji projevuje vaše kreativita?</h3>
+                        <h3 tabindex="-1">Jak se nejčastěji projevuje vaše kreativita?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="fire">Výbušným nadšením, rychlým startem a energií.</button>
                             <button class="option-btn" data-score="water">Snovou inspirací, hudbou nebo hlubokým prožíváním.</button>
@@ -75,7 +76,7 @@
 
                     <!-- STEP 3 -->
                     <div class="question-step" data-step="3">
-                        <h3>Které barvy ve vás vyvolávají největší pocit síly?</h3>
+                        <h3 tabindex="-1">Které barvy ve vás vyvolávají největší pocit síly?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="fire">Zářivá červená, oranžová a barva zlata.</button>
                             <button class="option-btn" data-score="water">Hluboká modrá, tyrkysová a stříbřitá.</button>
@@ -86,7 +87,7 @@
 
                     <!-- STEP 4 -->
                     <div class="question-step" data-step="4">
-                        <h3>Jak obvykle řešíte konflikty?</h3>
+                        <h3 tabindex="-1">Jak obvykle řešíte konflikty?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="fire">Přímo a energicky. Chci věci vyjasnit okamžitě.</button>
                             <button class="option-btn" data-score="water">Emocionálně. Čekám, až se vlna citů uklidní a pak odpouštím.</button>
@@ -97,7 +98,7 @@
 
                     <!-- STEP 5 -->
                     <div class="question-step" data-step="5">
-                        <h3>Co pro vás znamená ideální odpočinek?</h3>
+                        <h3 tabindex="-1">Co pro vás znamená ideální odpočinek?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="fire">Sport, tanec nebo jakákoliv aktivita plná adrenalinu.</button>
                             <button class="option-btn" data-score="water">Teplá koupel, blízkost vody nebo tiché snění.</button>
@@ -108,7 +109,7 @@
 
                     <!-- STEP 6 -->
                     <div class="question-step" data-step="6">
-                        <h3>Která z těchto vlastností je vám nejvlastnější?</h3>
+                        <h3 tabindex="-1">Která z těchto vlastností je vám nejvlastnější?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="fire">Odvaha jít do rizika a charisma.</button>
                             <button class="option-btn" data-score="water">Hluboká empatie a schopnost léčit slovem.</button>
@@ -119,21 +120,12 @@
 
                     <!-- STEP 7 -->
                     <div class="question-step" data-step="7">
-                        <h3>Představte si, že jste živel. Čím byste chtěli být?</h3>
+                        <h3 tabindex="-1">Představte si, že jste živel. Čím byste chtěli být?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="fire">Nezkrotným plamenem v krbu nebo sluncem.</button>
                             <button class="option-btn" data-score="water">Tichým horským jezerem nebo širým oceánem.</button>
                             <button class="option-btn" data-score="air">Svěžím horským větrem nebo bouřkovým mrakem.</button>
                             <button class="option-btn" data-score="earth">Pevnou skálou nebo prastarým, mohutným stromem.</button>
-                        </div>
-                    </div>
-
-                    <!-- LOADING -->
-                    <div class="question-step" id="loading-step">
-                        <div class="text-center">
-                            <div class="loader-elemental"></div>
-                            <h3 class="mt-xl">Skládáme vaše odpovědi...</h3>
-                            <p class="color-silver-mist">Připravujeme symbolický výsledek.</p>
                         </div>
                     </div>
 
@@ -156,9 +148,9 @@
     <div id="footer-placeholder"></div>
 
     <script src="../js/dist/api-config.js?v=5" defer></script>
-    <script src="../js/dist/components.js?v=20260522-premium-gate-cache" defer></script>
-    <script type="module" src="../js/dist/main.js?v=11"></script>
+    <script src="../js/dist/components.js?v=20261021-footer-support-locale" defer></script>
+    <script type="module" src="../js/dist/main.js?v=20261018-status-icons"></script>
 
-    <script src="/js/dist/quiz/zivlova-rovnovaha.js?v=1" defer></script>
+    <script src="/js/dist/quiz/zivlova-rovnovaha.js?v=20261021-quiz-progress-focus" defer></script>
 </body>
 </html>

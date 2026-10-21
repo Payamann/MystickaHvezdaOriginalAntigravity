@@ -154,7 +154,7 @@ function initHoroscopeHighlight() {
             if (window.location.hash === `#${sign}`) {
                 // Použij requestAnimationFrame pro smooth scroll po repaintu
                 requestAnimationFrame(() => {
-                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    card.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
                 });
             }
         } else {
@@ -202,7 +202,7 @@ function renderSignPickerHTML(picker) {
                 </button>
                 <button class="sign-picker__change-btn"
                     data-action="toggle-expanded"
-                    title="Změnit znamení">✎ Změnit</button>
+                    title="Změnit znamení"><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#pen"></use></svg> Změnit</button>
             </div>
             <div id="sign-picker-expanded" class="sign-picker__expanded" role="region" aria-label="Výběr znamení">
                 ${Object.entries(SIGNS_CZ).map(([key, s]) => `
@@ -295,125 +295,6 @@ function toggleExpandedView(picker) {
     }
 }
 
-/**
- * RETENTION: Daily Streak Gamification
- * Tracks user's consecutive days visiting & reading horoscope
- */
-const MH_STREAK = {
-    STORAGE_KEY_STREAK: 'mh_horoscope_streak',
-    STORAGE_KEY_LAST_DATE: 'mh_last_horoscope_date',
-    STORAGE_KEY_BEST_STREAK: 'mh_best_horoscope_streak',
-
-    /**
-     * Get current streak (consecutive days)
-     */
-    getStreak() {
-        return parseInt(localStorage.getItem(this.STORAGE_KEY_STREAK) || '0');
-    },
-
-    /**
-     * Get best streak ever achieved
-     */
-    getBestStreak() {
-        return parseInt(localStorage.getItem(this.STORAGE_KEY_BEST_STREAK) || '0');
-    },
-
-    /**
-     * Increment streak (call when user views horoscope)
-     */
-    incrementStreak() {
-        try {
-            const today = new Date().toDateString();
-            const lastDate = localStorage.getItem(this.STORAGE_KEY_LAST_DATE);
-
-            // If they already visited today, don't increment again
-            if (lastDate === today) {
-                return this.getStreak();
-            }
-
-            // Check if they visited yesterday (streak continues)
-            const yesterday = new Date(Date.now() - 86400000).toDateString();
-            const streakBroken = lastDate !== yesterday && lastDate !== null;
-
-            if (streakBroken) {
-                // Reset streak if they missed a day
-                localStorage.setItem(this.STORAGE_KEY_STREAK, '1');
-            } else {
-                // Increment streak
-                const currentStreak = this.getStreak();
-                const newStreak = currentStreak + 1;
-                localStorage.setItem(this.STORAGE_KEY_STREAK, newStreak);
-
-                // Update best streak if new record
-                const bestStreak = this.getBestStreak();
-                if (newStreak > bestStreak) {
-                    localStorage.setItem(this.STORAGE_KEY_BEST_STREAK, newStreak);
-                }
-            }
-
-            // Update last visit date
-            localStorage.setItem(this.STORAGE_KEY_LAST_DATE, today);
-
-            return this.getStreak();
-        } catch (e) {
-            console.warn('Streak tracking failed:', e);
-            return 0;
-        }
-    },
-
-    /**
-     * Reset streak (called when user cancels subscription or explicitly resets)
-     */
-    resetStreak() {
-        localStorage.removeItem(this.STORAGE_KEY_LAST_DATE);
-        // Don't reset current streak immediately, just last date
-    },
-
-    /**
-     * Display streak badge in UI
-     */
-    displayStreak() {
-        const streak = this.getStreak();
-        if (streak < 1) return; // Don't show if no streak
-
-        // Create or update streak badge
-        let badge = document.getElementById('mh-streak-badge');
-        if (!badge) {
-            badge = document.createElement('div');
-            badge.id = 'mh-streak-badge';
-            badge.className = 'mh-streak-badge';
-            document.body.insertBefore(badge, document.body.firstChild);
-        }
-
-        // Fire emoji animation based on milestone
-        let emoji = '🔥';
-        let milestone = false;
-        if (streak % 30 === 0) {
-            emoji = '🌟';
-            milestone = true;
-        } else if (streak % 7 === 0) {
-            emoji = '⭐';
-            milestone = true;
-        }
-
-        badge.innerHTML = `${emoji} ${streak} day streak!`;
-        badge.className = 'mh-streak-badge' + (milestone ? ' mh-streak-badge--milestone' : '');
-
-        // Animation
-        badge.classList.remove('mh-streak-badge--bounce', 'mh-streak-badge--hiding');
-        void badge.offsetWidth;
-        badge.classList.add('mh-streak-badge--bounce');
-
-        // Hide after 5 seconds
-        setTimeout(() => {
-            badge.classList.add('mh-streak-badge--hiding');
-        }, 5000);
-    }
-};
-
-// Make globally available for testing
-window.MH_STREAK = MH_STREAK;
-
 function initPersonalizationRuntime() {
     initIndexGreeting();
     document.addEventListener('auth:changed', () => {
@@ -434,15 +315,6 @@ function initPersonalizationRuntime() {
         initHoroscopeHighlight();
     }
 
-    // Also track streak on index page when user views their personalized greeting
-    const greeting = document.getElementById('personalized-greeting');
-    if (greeting) {
-        // Lighter tracking: only increment if they actually clicked the greeting
-        greeting.addEventListener('click', () => {
-            if (!greeting.classList.contains('personalized-greeting--visible')) return;
-            MH_STREAK.incrementStreak();
-        });
-    }
 }
 
 // Auto-init based on current page

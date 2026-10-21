@@ -151,10 +151,19 @@ async function showNatalPaywall(page) {
 async function showMentorPaywall(page) {
     await page.goto('/mentor.html?source=paywall_smoke&utm_source=e2e');
     await waitForPageReady(page);
+    await page.route('**/api/mentor/history', route => route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true, history: [] })
+    }));
+    await page.route('**/api/mentor/chat', route => route.fulfill({
+        status: 402,
+        contentType: 'application/json',
+        body: JSON.stringify({ error: 'Dnešní bezplatný limit je vyčerpaný.' })
+    }));
     await page.evaluate(() => {
-        const todayKey = `mh_daily_mentor_${new Date().toDateString()}`;
-        localStorage.setItem(todayKey, '3');
         window.Auth = {
+            user: { id: 'paywall-smoke-mentor', subscription_status: 'free' },
             isLoggedIn: () => true,
             isPremium: () => false,
             showToast: () => {},
@@ -167,8 +176,10 @@ async function showMentorPaywall(page) {
             trackAction: () => {},
             trackCTA: () => {}
         };
+        document.dispatchEvent(new Event('auth:changed'));
     });
     await page.locator('#chat-input').fill('Co mam dnes udelat jako dalsi krok?');
+    await expect(page.locator('#send-btn')).toBeEnabled();
     await page.locator('#send-btn').click();
 }
 
@@ -222,8 +233,8 @@ test.describe('Custom paywall visual smoke', () => {
             await preparePage(page, viewport);
             await showMentorPaywall(page);
             await expectPaywallSurface(page, {
-                surface: '.premium-lock-overlay',
-                cta: '.mentor-upgrade-btn',
+                surface: '.message[data-mentor-limit]',
+                cta: '.mentor-paywall-upgrade-btn',
                 reassurance: '.mentor-paywall__reassurance'
             });
         });

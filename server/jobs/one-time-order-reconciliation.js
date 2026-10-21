@@ -39,9 +39,8 @@ function positiveIntFromEnv(envKey, fallback) {
     return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 }
 
-// 20 minutes matches the delivery-time expectation already set on
-// osobni-mapa.html ("Pokud nedorazí do 20 minut...") — long enough that a
-// normal in-flight webhook fulfillment has certainly finished by then.
+// Internal retry grace for in-flight webhook fulfillment; this is not a
+// customer-facing delivery-time promise. Keep it configurable for operations.
 // Env overrides follow the data-retention.js convention so ops can tune
 // without a code change.
 const GRACE_PERIOD_MS = positiveIntFromEnv('ONE_TIME_RECONCILIATION_GRACE_MINUTES', 20) * 60 * 1000;
@@ -179,9 +178,11 @@ export async function reconcileStuckOneTimeOrders({
                 await fulfillFn({
                     orderId: order.id,
                     productType: order.product_type,
+                    productId: order.product_id,
                     customerName: order.customer_name,
                     customerEmail: order.customer_email,
-                    payload: order.payload || {}
+                    payload: order.payload || {},
+                    createdAt: order.created_at
                 });
                 if (!await markFulfilledFn(order.id)) throw new Error('Could not confirm order fulfillment');
                 recovered++;

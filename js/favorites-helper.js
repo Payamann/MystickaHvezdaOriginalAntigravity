@@ -5,48 +5,77 @@
  */
 async function toggleFavorite(readingId, buttonId) {
     const btn = document.getElementById(buttonId);
-    if (!btn || !readingId) return;
+    if (!btn || !readingId || btn.disabled) return;
+    const ownerId = window.Auth?.user?.id;
+    if (!window.Auth?.isLoggedIn?.() || typeof ownerId !== 'string' || !ownerId) return;
+
+    btn.disabled = true;
+    btn.setAttribute('aria-busy', 'true');
 
     try {
         const apiUrl = window.API_CONFIG?.BASE_URL || '/api';
         const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
-        const response = await fetch(`${apiUrl}/user/readings/${readingId}/favorite`, {
+        if (!window.Auth?.isLoggedIn?.() || window.Auth?.user?.id !== ownerId) return;
+
+        const response = await fetch(`${apiUrl}/user/readings/${encodeURIComponent(readingId)}/favorite`, {
             method: 'PATCH',
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 ...(csrfToken && { 'X-CSRF-Token': csrfToken })
-            }
+            },
+            body: JSON.stringify({ expectedUserId: ownerId })
         });
 
         if (!response.ok) throw new Error('Failed to toggle favorite');
 
         const data = await response.json();
+        if (!window.Auth?.isLoggedIn?.() || window.Auth?.user?.id !== ownerId) return;
         const isFavorite = data.is_favorite;
+        if (typeof isFavorite !== 'boolean') throw new Error('Favorite response is invalid');
 
         // Update button
-        const icon = btn.querySelector('.favorite-icon');
+        const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        icon.setAttribute('class', 'mh-symbol mh-symbol--inline favorite-icon');
+        icon.setAttribute('viewBox', '0 0 48 48');
+        icon.setAttribute('width', '18');
+        icon.setAttribute('height', '18');
+        icon.setAttribute('fill', 'none');
+        icon.setAttribute('stroke', 'currentColor');
+        icon.setAttribute('stroke-width', '1.8');
+        icon.setAttribute('stroke-linecap', 'round');
+        icon.setAttribute('stroke-linejoin', 'round');
+        icon.setAttribute('aria-hidden', 'true');
+        icon.setAttribute('focusable', 'false');
+        const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+        use.setAttribute('href', '/img/icons/mh-symbols.svg#star');
+        icon.appendChild(use);
+
         if (isFavorite) {
-            icon.textContent = '⭐';
-            btn.innerHTML = `<span class="favorite-icon">⭐</span> Oblíbené`;
+            btn.replaceChildren(icon, document.createTextNode('Oblíbené'));
             btn.classList.remove('btn--glass');
             btn.classList.add('btn--primary');
         } else {
-            icon.textContent = '☆';
-            btn.innerHTML = `<span class="favorite-icon">☆</span> Přidat do oblíbených`;
+            btn.replaceChildren(icon, document.createTextNode('Přidat do oblíbených'));
             btn.classList.remove('btn--primary');
             btn.classList.add('btn--glass');
         }
+        btn.setAttribute('aria-pressed', String(isFavorite));
 
         // Toast notification
         if (window.showToast) {
-            window.showToast(isFavorite ? '⭐ Přidáno do oblíbených' : 'Odebráno z oblíbených');
+            window.showToast(isFavorite ? 'Přidáno do oblíbených' : 'Odebráno z oblíbených');
         }
 
     } catch (error) {
         console.error('Error toggling favorite:', error);
         if (window.showToast) {
-            window.showToast('❌ Nepodařilo se uložit', 'error');
+            window.showToast('Nepodařilo se uložit oblíbenou položku', 'error');
+        }
+    } finally {
+        if (btn.isConnected) {
+            btn.disabled = false;
+            btn.removeAttribute('aria-busy');
         }
     }
 }

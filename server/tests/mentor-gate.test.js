@@ -111,6 +111,70 @@ describe('Mentor free limit and premium gate behavior', () => {
         expect(hits).toHaveLength(1);
     });
 
+    test('concurrent free requests cannot exceed three daily mentor replies', async () => {
+        const csrfToken = await getCsrfToken();
+        const userId = `mentor-concurrent-${Date.now()}`;
+        const token = makeToken({ userId });
+
+        const responses = await Promise.all(Array.from({ length: 4 }, (_, index) => request(app)
+            .post('/api/mentor/chat')
+            .set('x-csrf-token', csrfToken)
+            .set('Cookie', `auth_token=${token}`)
+            .send({ message: `Souběžná otázka ${index + 1}` })));
+
+        expect(responses.filter(response => response.status === 200)).toHaveLength(3);
+        expect(responses.filter(response => response.status === 402)).toHaveLength(1);
+        expect((await getMentorMessages(userId)).filter(message => message.role === 'user')).toHaveLength(3);
+    });
+
+    test('saved user and mentor turns remain ordered when their timestamps match', async () => {
+        const csrfToken = await getCsrfToken();
+        const userId = `mentor-history-order-${Date.now()}`;
+        const token = makeToken({ userId });
+
+        await request(app)
+            .post('/api/mentor/chat')
+            .set('x-csrf-token', csrfToken)
+            .set('Cookie', `auth_token=${token}`)
+            .send({ message: 'Zachovej pořadí i při stejném čase.' })
+            .expect(200);
+
+        const history = await request(app)
+            .get('/api/mentor/history')
+            .set('Cookie', `auth_token=${token}`)
+            .expect(200);
+
+        expect(history.body.history.map(message => message.role)).toEqual(['user', 'mentor']);
+    });
+
+    test('failed mentor generation releases the reserved free use', async () => {
+        const csrfToken = await getCsrfToken();
+        const userId = `mentor-retry-${Date.now()}`;
+        const token = makeToken({ userId });
+        const previousForceError = process.env.MOCK_AI_FORCE_ERROR;
+
+        process.env.MOCK_AI_FORCE_ERROR = 'true';
+        try {
+            await request(app)
+                .post('/api/mentor/chat')
+                .set('x-csrf-token', csrfToken)
+                .set('Cookie', `auth_token=${token}`)
+                .send({ message: 'První pokus se nepovede.' })
+                .expect(500);
+        } finally {
+            if (previousForceError === undefined) delete process.env.MOCK_AI_FORCE_ERROR;
+            else process.env.MOCK_AI_FORCE_ERROR = previousForceError;
+        }
+
+        const retry = await request(app)
+            .post('/api/mentor/chat')
+            .set('x-csrf-token', csrfToken)
+            .set('Cookie', `auth_token=${token}`)
+            .send({ message: 'Zkusím to znovu.' });
+
+        expect(retry.status).toBe(200);
+    });
+
     test('premium user bypasses the free daily message limit', async () => {
         const csrfToken = await getCsrfToken();
         const userId = `mentor-premium-${Date.now()}`;

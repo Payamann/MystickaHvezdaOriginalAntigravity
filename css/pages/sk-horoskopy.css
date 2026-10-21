@@ -1,4 +1,55 @@
 /* Migrated from sk/horoskopy.html static style attributes. */
+.horoscope-membership-note {
+    max-width: 900px;
+    margin: 0 auto 1.25rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(179, 149, 94, 0.28);
+    border-radius: 12px;
+    background: rgba(16, 38, 56, 0.72);
+    color: #c3c9cb;
+    text-align: center;
+    line-height: 1.6;
+}
+
+.horoscope-membership-note a {
+    color: #d0b17c;
+    font-weight: 600;
+}
+
+.horoscope-journal-context-option:not([hidden]) {
+    display: grid;
+    gap: 0.35rem;
+    margin: 1rem 0;
+    padding: 0.85rem 1rem;
+    border: 1px solid rgba(179, 149, 94, 0.32);
+    border-radius: 12px;
+    background: rgba(16, 38, 56, 0.72);
+}
+
+.horoscope-journal-context-option__label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    color: var(--color-starlight, #e9e3d7);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.horoscope-journal-context-option__label input {
+    flex: 0 0 auto;
+    width: 1rem;
+    height: 1rem;
+    margin: 0.2rem 0 0;
+    accent-color: var(--color-mystic-gold, #d0b17c);
+}
+
+.horoscope-journal-context-option__help {
+    margin: 0 0 0 1.7rem;
+    color: #c3c9cb;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
 html body .mh-inline-8d0e463c5c { min-height: 60vh; }
 html body .mh-inline-a9a05d2e44 { margin-top: 1.5rem; }
 html body .mh-inline-7ed92a65b9 { min-width: 250px; }

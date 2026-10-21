@@ -32,7 +32,6 @@ import { getLunarState as getMoonPhase } from './utils/lunar-state.js';
         const iconEl = document.getElementById('ritual-moon-icon');
         const nameEl = document.getElementById('ritual-moon-name');
         const descEl = document.getElementById('ritual-moon-desc');
-        if (iconEl) iconEl.textContent = currentPhase.icon;
         window.MH_MOON_ART?.render(iconEl, currentPhase.icon, currentPhase.name);
         if (nameEl) nameEl.textContent = currentPhase.name;
         if (descEl) descEl.textContent = RITUAL_DESC[currentPhase.slug] || '';
@@ -57,29 +56,8 @@ import { getLunarState as getMoonPhase } from './utils/lunar-state.js';
             btn.addEventListener('click', () => showRitual(btn.dataset.sign));
         });
 
-        // Gate: "Vstoupit do rituálu" vyžaduje Hvězdný Průvodce+
-        const enterBtn = document.getElementById('btn-enter-ritual');
-        if (enterBtn) {
-            enterBtn.addEventListener('click', (e) => {
-                // Gate: requires Průvodce (premium) plan
-                if (!window.Auth || !window.Auth.isLoggedIn()) {
-                    e.preventDefault();
-                    window.Premium?.showLoginGate(
-                        document.querySelector('.ritual-result') || document.body,
-                        '🌙 Vytvořte účet a pokračujte k odemčení lunárních rituálů',
-                        'rituals',
-                        'rituals_auth_gate'
-                    );
-                    return;
-                }
-                if (!window.Auth.isPremium()) {
-                    e.preventDefault();
-                    window.Premium?.showTrialPaywall('rituals');
-                    return;
-                }
-                // Premium user — proceed to session normally
-            });
-        }
+        // The six-step session is the free ritual promised on this page.
+        // Only saving its notes to the profile requires membership.
     }
 
     function markPreferredSign(sign) {
@@ -99,14 +77,26 @@ import { getLunarState as getMoonPhase } from './utils/lunar-state.js';
         const ritual = window.RitualContent.getRitual(currentPhase.slug, signSlug);
 
         // Aktivní tlačítko
-        document.querySelectorAll('.zodiac-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.zodiac-btn').forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-pressed', 'false');
+        });
         const activeBtn = document.querySelector(`.zodiac-btn[data-sign="${signSlug}"]`);
-        if (activeBtn) activeBtn.classList.add('active');
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+            activeBtn.setAttribute('aria-pressed', 'true');
+        }
 
         // Naplnit kartu
         const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-        setEl('rc-badge',    `${currentPhase.icon} ${currentPhase.name}`);
+        const phaseBadge = document.getElementById('rc-badge');
+        if (phaseBadge) {
+            const icon = phaseBadge.querySelector('[data-moon-icon]');
+            const label = phaseBadge.querySelector('[data-moon-label]');
+            if (icon) window.MH_MOON_ART?.render(icon, currentPhase.icon, currentPhase.name);
+            if (label) label.textContent = currentPhase.name;
+        }
         setEl('rc-sign-emoji', ritual.signEmoji);
         setEl('rc-sign-name',  ritual.signName.toUpperCase());
         setEl('rc-title',      ritual.nazev);
@@ -125,7 +115,7 @@ import { getLunarState as getMoonPhase } from './utils/lunar-state.js';
         const card = document.getElementById('ritual-card');
         if (card) {
             card.classList.add('show');
-            card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            card.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest' });
         }
 
         // Uložit do localStorage
@@ -140,8 +130,16 @@ import { getLunarState as getMoonPhase } from './utils/lunar-state.js';
         items.forEach((item, i) => {
             const li = document.createElement('li');
             li.dataset.idx = i;
+            li.setAttribute('role', 'checkbox');
+            li.setAttribute('tabindex', '0');
+            li.setAttribute('aria-checked', 'false');
             li.textContent = item;
             li.addEventListener('click', () => toggleCheck(li, i));
+            li.addEventListener('keydown', (event) => {
+                if (event.key !== ' ' && event.key !== 'Enter') return;
+                event.preventDefault();
+                toggleCheck(li, i);
+            });
             list.appendChild(li);
         });
     }
@@ -154,6 +152,7 @@ import { getLunarState as getMoonPhase } from './utils/lunar-state.js';
             checkedItems.add(idx);
             li.classList.add('checked');
         }
+        li.setAttribute('aria-checked', String(checkedItems.has(idx)));
         updateCTA();
     }
 
@@ -173,7 +172,7 @@ import { getLunarState as getMoonPhase } from './utils/lunar-state.js';
         } else if (checked < total) {
             hint.textContent = `${checked} z ${total} připraveno`;
         } else {
-            hint.textContent = 'Vše připraveno — jste připraveni vstoupit ✦';
+            hint.textContent = 'Vše připraveno — jste připraveni vstoupit.';
         }
     }
 

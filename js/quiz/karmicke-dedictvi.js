@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function setProgress(percent) {
         const rounded = Math.max(0, Math.min(100, Math.round(percent / 5) * 5));
+        progressBar.setAttribute("aria-valuenow", String(rounded));
+        progressBar.setAttribute("aria-valuetext", `${rounded}% dokončeno`);
         progressBar.classList.forEach((className) => {
             if (className.startsWith('progress-width-')) progressBar.classList.remove(className);
         });
@@ -45,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
 };
 
     function updateProgress() {
-        const percent = (currentStep / totalSteps) * 100;
+        const percent = ((currentStep - 1) / totalSteps) * 100;
         setProgress(percent);
     }
 
@@ -55,15 +57,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (nextStep) {
             nextStep.classList.add('active');
             updateProgress();
+            const heading = nextStep.querySelector('h3');
+            heading?.focus({ preventScroll: true });
+            heading?.scrollIntoView({
+                behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+                block: 'start'
+            });
         } else {
-            showLoading();
+            setProgress(100);
+            showResult();
         }
     }
 
-    function showLoading() {
-        setProgress(100);
-        showResult();
-    }
 
     function showResult() {
         const winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
@@ -92,7 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="mt-xl"><p>Výsledek krátkého kvízu nabízí téma k zamyšlení. Nepotvrzuje schopnosti, osobnost ani budoucnost.</p></div>
         `;
 
-        document.getElementById('loading-step').classList.remove('active');
         const resultStep = document.getElementById('result-step');
         document.getElementById('result-box').innerHTML = resultHtml;
         resultStep.classList.add('active');

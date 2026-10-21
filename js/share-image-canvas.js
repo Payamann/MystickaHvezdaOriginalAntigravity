@@ -15,6 +15,15 @@
     const COLOR_GOLD = '#d0b17c';
     const COLOR_CREAM = '#e9e3d7';
     let paintedBackground = null;
+    const graphemeSegmenter = typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function'
+        ? new Intl.Segmenter(undefined, { granularity: 'grapheme' })
+        : null;
+
+    function splitGraphemes(text) {
+        return graphemeSegmenter
+            ? Array.from(graphemeSegmenter.segment(text), part => part.segment)
+            : Array.from(text);
+    }
 
     // Keep drawBrandBackground synchronous for legacy callers. The local
     // artwork is warmed in the background and the renderer falls back to a
@@ -43,7 +52,23 @@
                 current = test;
             } else {
                 if (current) lines.push(current);
-                current = word;
+                if (ctx.measureText(word).width <= maxWidth) {
+                    current = word;
+                    return;
+                }
+
+                const segments = splitGraphemes(word);
+                let chunk = '';
+                segments.forEach((segment) => {
+                    const next = `${chunk}${segment}`;
+                    if (chunk && ctx.measureText(next).width > maxWidth) {
+                        lines.push(chunk);
+                        chunk = segment;
+                    } else {
+                        chunk = next;
+                    }
+                });
+                current = chunk;
             }
         });
 
@@ -51,11 +76,29 @@
         return lines;
     }
 
-    function drawCenteredLines(ctx, lines, centerX, startY, lineHeight, maxLines = lines.length) {
-        lines.slice(0, maxLines).forEach((line, index) => {
+    function ellipsizeLine(ctx, line, maxWidth) {
+        const characters = splitGraphemes(String(line || '').trimEnd());
+        while (characters.length > 0 && ctx.measureText(`${characters.join('')}…`).width > maxWidth) {
+            characters.pop();
+        }
+        return `${characters.join('').trimEnd()}…`;
+    }
+
+    function drawCenteredLines(ctx, lines, centerX, startY, lineHeight, maxLines = lines.length, maxWidth = Infinity) {
+        const visibleLines = lines.slice(0, maxLines);
+        if (visibleLines.length > 0 && Number.isFinite(maxWidth) && maxWidth > 0) {
+            const hasOmittedLines = lines.length > visibleLines.length;
+            const lastIndex = visibleLines.length - 1;
+            visibleLines.forEach((line, index) => {
+                if (ctx.measureText(line).width > maxWidth || (hasOmittedLines && index === lastIndex)) {
+                    visibleLines[index] = ellipsizeLine(ctx, line, maxWidth);
+                }
+            });
+        }
+        visibleLines.forEach((line, index) => {
             ctx.fillText(line, centerX, startY + index * lineHeight);
         });
-        return startY + Math.min(lines.length, maxLines) * lineHeight;
+        return startY + visibleLines.length * lineHeight;
     }
 
     function loadImage(src) {
@@ -88,8 +131,9 @@
     }
 
     // Painted navy surface + restrained gold frame + brand header. The seed
-    // argument remains accepted because existing tools pass it.
-    function drawBrandBackground(ctx, canvas, seed = 7) {
+    // argument remains accepted because existing tools pass it. Cards that
+    // already place artwork or a heading at the top may hide the shared header.
+    function drawBrandBackground(ctx, canvas, seed = 7, options = {}) {
         const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
         gradient.addColorStop(0, COLOR_NAVY);
         gradient.addColorStop(0.52, '#102638');
@@ -117,10 +161,12 @@
         ctx.lineWidth = 2;
         ctx.strokeRect(54, 54, canvas.width - 108, canvas.height - 108);
 
-        ctx.textAlign = 'center';
-        ctx.fillStyle = COLOR_GOLD;
-        ctx.font = '600 38px Inter, Arial, sans-serif';
-        ctx.fillText('Mystická Hvězda', canvas.width / 2, 130);
+        if (options.showHeader !== false) {
+            ctx.textAlign = 'center';
+            ctx.fillStyle = COLOR_GOLD;
+            ctx.font = '600 38px Inter, Arial, sans-serif';
+            ctx.fillText('Mystická Hvězda', canvas.width / 2, 130);
+        }
     }
 
     function drawFooter(ctx, canvas, pageUrl, ctaText) {

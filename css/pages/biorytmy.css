@@ -264,3 +264,11 @@ html body .mh-inline-3e3f9127cb { margin-top: var(--space-xl); background: rgba(
 html body .mh-inline-f5dad90286 { border-color: rgba(255,255,255,0.1); margin-bottom: var(--space-xl); }
 html body .mh-inline-2b886153c4 { color: var(--color-mystic-gold); margin-bottom: 1rem; }
 html body .mh-inline-da6f3fb3d8 { margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--color-silver-mist); }
+
+.bio-model-note {
+    max-width: 70ch;
+    margin: 0 auto var(--space-sm);
+    color: var(--color-silver-mist);
+    font-size: var(--text-sm);
+    line-height: 1.6;
+}

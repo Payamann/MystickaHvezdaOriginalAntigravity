@@ -226,7 +226,7 @@ function buildRelatedCardLinks(relatedCards) {
         .map(([relatedName, relatedCard]) => {
             const relatedGroup = groupLabels[getCardGroup(relatedName)] || 'Tarot';
             return `<a class="tarot-related-card" href="/${escapeHtml(detailHref(relatedName))}">
-                        <img src="${escapeHtml(rootAssetPath(relatedCard.image))}" alt="" width="66" height="110" loading="lazy" decoding="async">
+                        <img src="${escapeHtml(rootAssetPath(relatedCard.image))}" alt="" width="66" height="110" loading="lazy" decoding="async" srcset="${escapeHtml(`${rootAssetPath(relatedCard.image.replace(/\.webp$/i, '-240.webp'))} 240w, ${rootAssetPath(relatedCard.image.replace(/\.webp$/i, '-360.webp'))} 360w, ${rootAssetPath(relatedCard.image)} 600w`)}" sizes="66px">
                         <span>${escapeHtml(relatedGroup)}</span>
                         <strong>${escapeHtml(relatedName)}</strong>
                         <small>${escapeHtml(getEditorialTheme(relatedName, relatedCard))}</small>
@@ -235,17 +235,31 @@ function buildRelatedCardLinks(relatedCards) {
         .join('\n                    ');
 }
 
+function responsiveCardImageAttributes(image) {
+    const source = String(image || '');
+    if (!/^img\/tarot-v2\/tarot_[^/]+\.webp$/i.test(source)) return '';
+
+    const base = source.slice(0, -'.webp'.length);
+    const candidates = [240, 360]
+        .filter((width) => fs.existsSync(path.join(rootDir, base + '-' + width + '.webp')))
+        .map((width) => base + '-' + width + '.webp ' + width + 'w');
+    if (!candidates.length) return '';
+    candidates.push(source + ' 600w');
+    return ' srcset="' + escapeHtml(candidates.join(', ')) + '" sizes="(max-width: 560px) 170px, 108px"';
+}
+
 function buildCard(name, card) {
     const group = getCardGroup(name);
     const groupLabel = groupLabels[group] || 'Tarot';
     const image = card.image || 'img/tarot/tarot_placeholder.webp';
+    const responsiveImageAttrs = responsiveCardImageAttributes(image);
     const meaning = getEditorialTheme(name, card);
     const interpretation = getFirstSentence(seoOverrides[name]?.hubSummary || card.interpretation || '');
     const detail = detailHref(name);
 
     return `                    <article class="tarot-meaning-card" data-group="${escapeHtml(group)}" data-card="${escapeHtml(name)}">
                         <div class="tarot-meaning-card__image">
-                            <img loading="lazy" src="${escapeHtml(image)}" alt="${escapeHtml(name)} tarot karta" width="180" height="300">
+                            <img loading="lazy" src="${escapeHtml(image)}"${responsiveImageAttrs} alt="${escapeHtml(name)} tarot karta" width="180" height="300">
                         </div>
                         <div class="tarot-meaning-card__body">
                             <div class="tarot-meaning-card__meta">${escapeHtml(groupLabel)}</div>
@@ -390,9 +404,9 @@ function buildDetailPage(name, card, relatedCards = []) {
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/img/icon-192.webp">
     <link rel="stylesheet" href="/fonts/local-fonts.css">
-    <link rel="stylesheet" href="/css/style.v2.min.css?v=12">
+    <link rel="stylesheet" href="/css/style.v2.min.css?v=20261018-release-candidate">
     <link rel="stylesheet" href="/css/pages/tarot-meaning-hub.css">
-    <link rel="stylesheet" href="/css/atlas-web.css?v=1">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
     <script type="application/ld+json">
 ${jsonLd([articleSchema, breadcrumbSchema, faqSchema])}
     </script>
@@ -406,7 +420,7 @@ ${jsonLd([articleSchema, breadcrumbSchema, faqSchema])}
     <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
     <div id="header-placeholder"></div>
 
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
         <section class="section section--hero tarot-card-detail-hero">
             <div class="container tarot-card-detail-hero__inner">
                 <div class="tarot-card-detail-hero__copy">
@@ -414,15 +428,14 @@ ${jsonLd([articleSchema, breadcrumbSchema, faqSchema])}
                         <a href="/">Domů</a> &raquo; <a href="/tarot-vyznam-karet.html">Význam tarotových karet</a> &raquo; ${escapeHtml(name)}
                     </nav>
                     <span class="section__badge">${escapeHtml(groupLabel)}</span>
-                    <h1 class="section__title">${escapeHtml(name)} tarot význam</h1>
+                    <h1 class="section__title">${escapeHtml(name)} v tarotu: význam karty</h1>
                     <p class="section__text hero__subtitle">${escapeHtml(meaning)}</p>
                     <div class="tarot-card-detail-actions">
                             <a href="/tarot.html?source=tarot_card_detail&amp;card=${encodedName}" class="btn btn--primary">Otevřít tarotový výklad</a>
-                        <a href="/tarot-vyznam-karet.html?source=tarot_card_detail&amp;card=${encodedName}" class="btn btn--ghost">Zpět na všech 78 karet</a>
                     </div>
                 </div>
                 <div class="tarot-card-detail-hero__image">
-                    <img src="${escapeHtml(rootAssetPath(image))}" alt="${escapeHtml(name)} tarot karta" width="300" height="500">
+                    <img src="${escapeHtml(rootAssetPath(image))}" srcset="${escapeHtml(`${rootAssetPath(image.replace(/\.webp$/i, '-240.webp'))} 240w, ${rootAssetPath(image.replace(/\.webp$/i, '-360.webp'))} 360w, ${rootAssetPath(image.replace(/\.webp$/i, '-480.webp'))} 480w, ${rootAssetPath(image)} 600w`)}" sizes="(max-width: 328px) 70vw, (max-width: 860px) 230px, 300px" alt="${escapeHtml(name)} tarot karta" width="300" height="500">
                 </div>
             </div>
         </section>
@@ -452,7 +465,6 @@ ${jsonLd([articleSchema, breadcrumbSchema, faqSchema])}
                     <h2>Rychlý přehled</h2>
                     <dl>
                         <div><dt>Arkánum</dt><dd>${escapeHtml(groupLabel)}</dd></div>
-                        <div><dt>Hlavní téma</dt><dd>${escapeHtml(meaning)}</dd></div>
                         <div><dt>Otázka pro tebe</dt><dd>${escapeHtml(seo.question || 'Kde se toto téma ukazuje právě teď?')}</dd></div>
                     </dl>
                 </aside>
@@ -490,139 +502,146 @@ ${jsonLd([articleSchema, breadcrumbSchema, faqSchema])}
                     <summary>Jak kartu ${escapeHtml(name)} použít v online výkladu?</summary>
                     <p>Začni jasnou otázkou a nech kartu zasadit do kontextu. Online výklad ti pomůže propojit symbol s konkrétní situací.</p>
                 </details>${reversedFaq}
-                <div class="tarot-meaning-hero__actions">
-                    <a href="/tarot.html?source=tarot_card_detail_bottom&amp;card=${encodedName}" class="btn btn--primary">Otevřít tarotový výklad</a>
-                    <a href="/tarot-vyznam-karet.html" class="btn btn--ghost">Prohlédnout všechny karty</a>
-                </div>
-
-                <!-- Most na denní horoskop e-mailem. Čtenář významu karty už o symboliku
-                     zájem má; ranní horoskop je nízkoprahové pokračování bez zakládání účtu. -->
-                <details class="mh-email-bridge feature-reference" data-analytics-source="tarot_card_detail">
-                    <summary class="feature-reference__summary">Denní horoskop e-mailem</summary>
-                    <p class="mh-email-bridge__text">
-                        Význam karty ${escapeHtml(name)} máš. Denní horoskop pro tvoje znamení ti může chodit každé ráno e-mailem — zdarma a bez zakládání účtu.
-                    </p>
-                    <div class="mh-email-bridge__form">
-                        <input id="horoscope-email-input" type="email" autocomplete="email"
-                            aria-label="E-mailová adresa pro odběr denního horoskopu" placeholder="tvuj@email.cz"
-                            class="mh-email-bridge__input">
-                        <select id="horoscope-sign-select" aria-label="Vyber své znamení"
-                            class="mh-email-bridge__select">
-                            <option value="">— Vyber své znamení —</option>
-                            <option value="Beran">♈ Beran (21.3–20.4)</option>
-                            <option value="Býk">♉ Býk (21.4–20.5)</option>
-                            <option value="Blíženci">♊ Blíženci (21.5–21.6)</option>
-                            <option value="Rak">♋ Rak (22.6–22.7)</option>
-                            <option value="Lev">♌ Lev (23.7–22.8)</option>
-                            <option value="Panna">♍ Panna (23.8–22.9)</option>
-                            <option value="Váhy">♎ Váhy (23.9–22.10)</option>
-                            <option value="Štír">♏ Štír (23.10–21.11)</option>
-                            <option value="Střelec">♐ Střelec (22.11–21.12)</option>
-                            <option value="Kozoroh">♑ Kozoroh (22.12–19.1)</option>
-                            <option value="Vodnář">♒ Vodnář (20.1–18.2)</option>
-                            <option value="Ryby">♓ Ryby (19.2–20.3)</option>
-                        </select>
-                        <button id="horoscope-subscribe-btn" type="button"
-                            class="btn btn--primary mh-email-bridge__btn"> Chci ranní horoskop</button>
-                    </div>
-                    <p id="horoscope-subscribed-msg" class="mh-email-bridge__done" hidden>
-                        Odběr denního horoskopu je nastavený.
-                    </p>
-                    <p class="mh-email-bridge__note">
-                        Každé ráno, zdarma. Odhlásit se můžeš kdykoliv jedním klikem.
-                    </p>
-                </details>
             </div>
         </section>
     </main>
 
     <div id="footer-placeholder"></div>
-    <script src="/js/dist/core.js?v=20261003-single-membership" defer></script>
-    <script src="/js/dist/horoscope-subscribe.js?v=2" defer></script>
+    <script src="/js/dist/core.js?v=20261021-footer-support-locale" defer></script>
     <script type="module" src="/js/dist/main.js?v=10"></script>
 </body>
 </html>
 `;
 }
 
+function isCurrent(filePath, content) {
+    return fs.existsSync(filePath) && fs.readFileSync(filePath, 'utf8') === content;
+}
+
 function writeIfChanged(filePath, content) {
-    if (fs.existsSync(filePath) && fs.readFileSync(filePath, 'utf8') === content) {
-        return false;
-    }
+    if (isCurrent(filePath, content)) return false;
 
     fs.writeFileSync(filePath, content, 'utf8');
     return true;
 }
 
-function generateDetailPages(cards) {
-    fs.mkdirSync(detailDir, { recursive: true });
+function generateDetailPages(cards, { checkOnly = false, prune = false } = {}) {
+    if (!checkOnly) fs.mkdirSync(detailDir, { recursive: true });
     const entries = Object.entries(cards);
     const desiredFiles = new Set();
+    const staleFiles = [];
+    const extraFiles = [];
     let changed = 0;
 
     for (const [index, [name, card]] of entries.entries()) {
         const fileName = detailFileName(name);
         desiredFiles.add(fileName);
         const filePath = path.join(detailDir, fileName);
-        if (writeIfChanged(filePath, buildDetailPage(name, card, getRelatedCards(entries, index)))) changed += 1;
-    }
-
-    for (const entry of fs.readdirSync(detailDir, { withFileTypes: true })) {
-        if (entry.isFile() && entry.name.endsWith('.html') && !desiredFiles.has(entry.name)) {
-            fs.unlinkSync(path.join(detailDir, entry.name));
+        const expected = buildDetailPage(name, card, getRelatedCards(entries, index));
+        if (checkOnly) {
+            if (!fs.existsSync(filePath) || fs.readFileSync(filePath, 'utf8') !== expected) {
+                staleFiles.push(filePath);
+            }
+        } else if (writeIfChanged(filePath, expected)) {
             changed += 1;
         }
     }
 
-    return { total: desiredFiles.size, changed };
+    if (fs.existsSync(detailDir)) {
+        for (const entry of fs.readdirSync(detailDir, { withFileTypes: true })) {
+            if (entry.isFile() && entry.name.endsWith('.html') && !desiredFiles.has(entry.name)) {
+                const filePath = path.join(detailDir, entry.name);
+                if (checkOnly) {
+                    extraFiles.push(filePath);
+                } else if (prune) {
+                    fs.unlinkSync(filePath);
+                    changed += 1;
+                }
+            }
+        }
+    }
+
+    return { total: desiredFiles.size, changed, staleFiles, extraFiles };
 }
 
-const cards = JSON.parse(fs.readFileSync(cardsPath, 'utf8'));
-const hubCards = Object.fromEntries(Object.entries(cards).map(([name, card]) => [name, {
-    image: card.image || 'img/tarot-v2/tarot_card_back.webp',
-    meaning: getEditorialTheme(name, card),
-    interpretation: getFirstSentence(seoOverrides[name]?.hubSummary || card.interpretation || '')
-}]));
-writeIfChanged(path.join(rootDir, 'data', 'tarot-card-hub.json'), JSON.stringify(hubCards, null, 2) + '\n');
-const generatedCards = Object.entries(cards)
-    .slice(0, 12)
-    .map(([name, card]) => buildCard(name, card))
-    .join('\n');
-
-const page = fs.readFileSync(pagePath, 'utf8');
-const cardsMarkerPattern = /<!-- TAROT_MEANING_CARDS_START -->[\s\S]*?<!-- TAROT_MEANING_CARDS_END -->/;
-const countPattern = /<div id="tarot-card-count" class="tarot-meaning-count" aria-live="polite">.*?<\/div>/;
-
-if (!cardsMarkerPattern.test(page) || !countPattern.test(page)) {
-    throw new Error('tarot-vyznam-karet.html is missing generation markers.');
-}
-
-// Idempotent migration of the maintained hub alongside generated details.
 function applyAtlasShell(html) {
     let next = html.replace(/<body(?: class="([^"]*)")?>/, (_, classes = '') =>
         `<body class="${[...new Set([...classes.split(/\s+/).filter(Boolean), 'atlas-page'])].join(' ')}">`);
     next = next.replace(/\s*<div class="stars" aria-hidden="true"><\/div>/g, '');
-    if (!next.includes('href="/css/atlas-web.css?v=1"')) {
-        next = next.replace('</head>', '    <link rel="stylesheet" href="/css/atlas-web.css?v=1">\n</head>');
+    if (!next.includes('href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas"')) {
+        next = next.replace('</head>', '    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">\n</head>');
     }
     return next;
 }
-const nextPage = applyAtlasShell(page)
-    .replace(
-        cardsMarkerPattern,
-        `<!-- TAROT_MEANING_CARDS_START -->\n${generatedCards}\n                    <!-- TAROT_MEANING_CARDS_END -->`
-    )
-    .replace(
-        countPattern,
-        `<div id="tarot-card-count" class="tarot-meaning-count" aria-live="polite">${Math.min(12, Object.keys(cards).length)} z ${Object.keys(cards).length} karet</div>`
-    );
 
-if (nextPage === page) {
-    console.log(`Static tarot card entries already up to date in ${path.relative(rootDir, pagePath)}`);
-} else {
-    fs.writeFileSync(pagePath, nextPage, 'utf8');
-    console.log(`Generated ${Math.min(12, Object.keys(cards).length)} initial cards of ${Object.keys(cards).length} in ${path.relative(rootDir, pagePath)}`);
+function main() {
+    const checkOnly = process.argv.includes('--check');
+    const prune = process.argv.includes('--prune');
+    if (checkOnly && prune) throw new Error('Use --check or --prune, not both.');
+
+    const cards = JSON.parse(fs.readFileSync(cardsPath, 'utf8'));
+    if (!cards || typeof cards !== 'object' || Array.isArray(cards) || !Object.keys(cards).length) {
+        throw new Error('data/tarot-cards.json must contain a non-empty card object.');
+    }
+
+    const hubCards = Object.fromEntries(Object.entries(cards).map(([name, card]) => [name, {
+        image: card.image || 'img/tarot-v2/tarot_card_back.webp',
+        meaning: getEditorialTheme(name, card),
+        interpretation: getFirstSentence(seoOverrides[name]?.hubSummary || card.interpretation || '')
+    }]));
+    const hubDataPath = path.join(rootDir, 'data', 'tarot-card-hub.json');
+    const expectedHubData = `${JSON.stringify(hubCards, null, 2)}\n`;
+    const generatedCards = Object.entries(cards)
+        .slice(0, 12)
+        .map(([name, card]) => buildCard(name, card))
+        .join('\n');
+
+    const page = fs.readFileSync(pagePath, 'utf8');
+    const cardsMarkerPattern = /<!-- TAROT_MEANING_CARDS_START -->[\s\S]*?<!-- TAROT_MEANING_CARDS_END -->/;
+    const countPattern = /<div id="tarot-card-count" class="tarot-meaning-count" aria-live="polite">.*?<\/div>/;
+
+    if (!cardsMarkerPattern.test(page) || !countPattern.test(page)) {
+        throw new Error('tarot-vyznam-karet.html is missing generation markers.');
+    }
+
+    const nextPage = applyAtlasShell(page)
+        .replace(
+            cardsMarkerPattern,
+            `<!-- TAROT_MEANING_CARDS_START -->\n${generatedCards}\n                    <!-- TAROT_MEANING_CARDS_END -->`
+        )
+        .replace(
+            countPattern,
+            `<div id="tarot-card-count" class="tarot-meaning-count" aria-live="polite">${Math.min(12, Object.keys(cards).length)} z ${Object.keys(cards).length} karet</div>`
+        );
+
+    const detailResult = generateDetailPages(cards, { checkOnly, prune });
+    if (checkOnly) {
+        const staleFiles = [...detailResult.staleFiles];
+        if (!isCurrent(hubDataPath, expectedHubData)) staleFiles.push(hubDataPath);
+        if (nextPage !== page) staleFiles.push(pagePath);
+
+        if (staleFiles.length || detailResult.extraFiles.length) {
+            const stalePreview = staleFiles.slice(0, 15).map((filePath) => path.relative(rootDir, filePath));
+            const extraPreview = detailResult.extraFiles.slice(0, 15).map((filePath) => path.relative(rootDir, filePath));
+            const summary = [
+                `${staleFiles.length} generated file(s) need updates${stalePreview.length ? `: ${stalePreview.join(', ')}` : ''}`,
+                `${detailResult.extraFiles.length} unrecognized HTML file(s) are preserved${extraPreview.length ? `: ${extraPreview.join(', ')}` : ''}`
+            ].join('; ');
+            console.error(`[tarot] Check failed: ${summary}. No files written.`);
+            process.exitCode = 1;
+            return;
+        }
+
+        console.log(`[tarot] Check passed: ${detailResult.total} detail pages, hub and card data are current; no files written.`);
+        return;
+    }
+
+    const hubDataUpdated = writeIfChanged(hubDataPath, expectedHubData);
+    const pageUpdated = writeIfChanged(pagePath, nextPage);
+    if (pageUpdated) {
+        console.log(`Generated ${Math.min(12, Object.keys(cards).length)} initial cards of ${Object.keys(cards).length} in ${path.relative(rootDir, pagePath)}`);
+    }
+    console.log(`[tarot] Updated ${detailResult.changed} of ${detailResult.total} detail pages${prune ? ' and pruned reviewed extra pages' : '; extra HTML files were preserved'}; hub ${pageUpdated ? 'updated' : 'unchanged'}, card data ${hubDataUpdated ? 'updated' : 'unchanged'}.`);
 }
 
-const detailResult = generateDetailPages(cards);
-console.log(`Generated ${detailResult.total} tarot card detail page(s); changed ${detailResult.changed}.`);
+main();

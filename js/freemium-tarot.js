@@ -1,41 +1,23 @@
-
-(function() {
-
-    const today = new Date().toDateString();
-
-    const storageKey = 'mh_daily_tarot_' + today;
-
-    const DAILY_LIMIT = 1;
-
-    const used = parseInt(localStorage.getItem(storageKey) || '0');
-
-    const remaining = Math.max(0, DAILY_LIMIT - used);
-
-
-
+(function () {
     const banner = document.getElementById('freemium-banner');
 
-    const countEl = document.getElementById('freemium-count');
+    function render() {
+        if (!banner) return;
 
-
-
-    // Zobrazit jen nepřihlášeným nebo free uživatelům
-
-    document.addEventListener('DOMContentLoaded', () => {
-
-        const auth = window.Auth;
-
-        if (!auth || !auth.isPremium()) {
-
-            if (countEl) countEl.textContent = remaining + ' / ' + DAILY_LIMIT;
-
-            if (banner) {
-                banner.hidden = false;
-                banner.classList.add('mh-block-visible');
-            }
-
+        if (window.Auth?.isPremium?.()) {
+            banner.hidden = true;
+            banner.classList.remove('mh-block-visible');
+            return;
         }
 
-    });
+        banner.hidden = false;
+        banner.classList.add('mh-block-visible');
+    }
 
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', render, { once: true });
+    } else {
+        render();
+    }
+    window.addEventListener('auth:changed', render);
 })();

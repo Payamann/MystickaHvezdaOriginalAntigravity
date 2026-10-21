@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { supabase } from '../db-supabase.js';
 
 const VALID_PRODUCT_TYPES = new Set(['rocni_horoskop', 'personal_map', 'relationship_tarot']);
@@ -45,6 +45,7 @@ export function sanitizeOneTimePurchaseMetadata(metadata = {}) {
 }
 
 export async function createOneTimeOrderInput({
+    id,
     productType,
     productId,
     customerEmail,
@@ -55,9 +56,9 @@ export async function createOneTimeOrderInput({
         throw new Error('Invalid one-time product type.');
     }
 
-    const id = randomUUID();
+    const orderId = cleanString(id, 80) || randomUUID();
     const record = {
-        id,
+        id: orderId,
         product_type: productType,
         product_id: cleanString(productId, 120),
         customer_email: cleanString(customerEmail, 254).toLowerCase(),
@@ -78,7 +79,186 @@ export async function createOneTimeOrderInput({
         .single();
 
     if (error) throw error;
-    return data || { id };
+    return data || { id: orderId };
+}
+
+function stableOrderIdForFlow(productType, productId, flowId) {
+    const hex = createHash('sha256')
+        .update(`one-time-order:${productType}:${productId}:${flowId}`)
+        .digest('hex')
+        .slice(0, 32)
+        .split('');
+    hex[12] = '5';
+    hex[16] = '89ab'[Number.parseInt(hex[16], 16) & 0x3];
+    const value = hex.join('');
+    return `${value.slice(0, 8)}-${value.slice(8, 12)}-${value.slice(12, 16)}-${value.slice(16, 20)}-${value.slice(20)}`;
+}
+
+function assertMatchingFlowOrder(order, { productType, productId, customerEmail, customerName, flowId, requestHash }) {
+    const matches = order
+        && order.product_type === productType
+        && order.product_id === cleanString(productId, 120)
+        && order.customer_email === cleanString(customerEmail, 254).toLowerCase()
+        && order.customer_name === cleanString(customerName, 120)
+        && order.payload?.flowId === flowId
+        && order.payload?.checkoutInputHash === requestHash;
+
+    if (!matches) {
+        throw Object.assign(new Error('Checkout flow was already used with different order details.'), {
+            code: 'PERSONAL_MAP_FLOW_CONFLICT'
+        });
+    }
+
+    return order;
+}
+
+async function findOneTimeOrderByFlow(productType, productId, flowId, conflictCode) {
+    const { data, error } = await supabase
+        .from('one_time_order_inputs')
+        .select('id, product_type, product_id, customer_email, customer_name, payload, status, stripe_session_id, fulfilled_at, updated_at, email_id, email_sent_at')
+        .eq('product_type', productType)
+        .eq('product_id', productId)
+        .eq('payload->>flowId', flowId)
+        .limit(2);
+
+    if (error) throw error;
+    if (data?.length > 1) {
+        throw Object.assign(new Error('One-time checkout flow has multiple legacy orders and cannot be resumed safely.'), {
+            code: conflictCode
+        });
+    }
+    return data?.[0] || null;
+}
+
+/**
+ * Reuses one private order row for retries of the same personal-map checkout.
+ * The stable row ID also gives Stripe a stable idempotency key, including
+ * when the first HTTP response was lost after Stripe created its session.
+ */
+export async function createIdempotentPersonalMapOrderInput({
+    flowId,
+    requestHash,
+    productType,
+    productId,
+    customerEmail,
+    customerName,
+    payload
+}) {
+    const cleanFlowId = cleanString(flowId, 100);
+    const cleanRequestHash = cleanString(requestHash, 64).toLowerCase();
+    if (productType !== 'personal_map'
+        || !cleanString(productId, 120)
+        || !/^[a-zA-Z0-9_-]{12,100}$/.test(cleanFlowId)
+        || !/^[a-f0-9]{64}$/.test(cleanRequestHash)) {
+        throw new Error('Invalid personal-map checkout idempotency data.');
+    }
+
+    const input = { productType, productId, customerEmail, customerName, flowId: cleanFlowId, requestHash: cleanRequestHash };
+    const id = stableOrderIdForFlow(productType, cleanString(productId, 120), cleanFlowId);
+    const existing = await getOneTimeOrderInput(id);
+    if (existing) return assertMatchingFlowOrder(existing, input);
+
+    // Older deployments may have random order IDs but the same client flow ID.
+    const legacyOrder = await findOneTimeOrderByFlow(productType, cleanString(productId, 120), cleanFlowId, 'PERSONAL_MAP_FLOW_CONFLICT');
+    if (legacyOrder) return assertMatchingFlowOrder(legacyOrder, input);
+
+    try {
+        const inserted = await createOneTimeOrderInput({
+            id,
+            productType,
+            productId,
+            customerEmail,
+            customerName,
+            payload: {
+                ...payload,
+                flowId: cleanFlowId,
+                checkoutInputHash: cleanRequestHash
+            }
+        });
+        const order = await getOneTimeOrderInput(inserted.id);
+        if (!order) throw new Error('Could not read back the created one-time order.');
+        return assertMatchingFlowOrder(order, input);
+    } catch (error) {
+        if (error?.code !== '23505') throw error;
+        const racedOrder = await getOneTimeOrderInput(id);
+        if (!racedOrder) throw error;
+        return assertMatchingFlowOrder(racedOrder, input);
+    }
+}
+
+function assertMatchingRelationshipTarotFlowOrder(order, { customerEmail, flowId, productId, requestHash }) {
+    const matches = order
+        && order.product_type === 'relationship_tarot'
+        && order.product_id === cleanString(productId, 120)
+        && order.customer_email === cleanString(customerEmail, 254).toLowerCase()
+        && order.payload?.flowId === flowId
+        && order.payload?.checkoutInputHash === requestHash;
+
+    if (!matches) {
+        throw Object.assign(new Error('Relationship tarot checkout flow was already used with different order details.'), {
+            code: 'RELATIONSHIP_TAROT_FLOW_CONFLICT'
+        });
+    }
+
+    return order;
+}
+
+/**
+ * Reuses one private relationship-reading order for retries of the same flow.
+ * The stable row ID also provides a stable Stripe idempotency key after a lost
+ * response, while the input hash prevents one flow from being reused for new
+ * customer details.
+ */
+export async function createIdempotentRelationshipTarotOrderInput({
+    flowId,
+    requestHash,
+    productType,
+    productId,
+    customerEmail,
+    customerName,
+    payload
+}) {
+    const cleanFlowId = cleanString(flowId, 100);
+    const cleanRequestHash = cleanString(requestHash, 64).toLowerCase();
+    if (productType !== 'relationship_tarot'
+        || cleanString(productId, 120) !== 'relationship_tarot'
+        || !/^[a-zA-Z0-9_-]{16,80}$/.test(cleanFlowId)
+        || !/^[a-f0-9]{64}$/.test(cleanRequestHash)) {
+        throw new Error('Invalid relationship-tarot checkout idempotency data.');
+    }
+
+    const input = { productId, customerEmail, flowId: cleanFlowId, requestHash: cleanRequestHash };
+    const id = stableOrderIdForFlow(productType, cleanString(productId, 120), cleanFlowId);
+    const existing = await getOneTimeOrderInput(id);
+    if (existing) return assertMatchingRelationshipTarotFlowOrder(existing, input);
+
+    // Older deployments used random order IDs and only stored flowId in the
+    // JSON payload. Find those in-flight attempts before creating a new row.
+    const legacyOrder = await findOneTimeOrderByFlow(productType, cleanString(productId, 120), cleanFlowId, 'RELATIONSHIP_TAROT_FLOW_CONFLICT');
+    if (legacyOrder) return assertMatchingRelationshipTarotFlowOrder(legacyOrder, input);
+
+    try {
+        const inserted = await createOneTimeOrderInput({
+            id,
+            productType,
+            productId,
+            customerEmail,
+            customerName,
+            payload: {
+                ...payload,
+                flowId: cleanFlowId,
+                checkoutInputHash: cleanRequestHash
+            }
+        });
+        const order = await getOneTimeOrderInput(inserted.id);
+        if (!order) throw new Error('Could not read back the created relationship-tarot order.');
+        return assertMatchingRelationshipTarotFlowOrder(order, input);
+    } catch (error) {
+        if (error?.code !== '23505') throw error;
+        const racedOrder = await getOneTimeOrderInput(id);
+        if (!racedOrder) throw error;
+        return assertMatchingRelationshipTarotFlowOrder(racedOrder, input);
+    }
 }
 
 export async function attachStripeSessionToOrderInput(orderId, stripeSessionId) {
@@ -116,6 +296,35 @@ export async function getOneTimeOrderInput(orderId) {
     }
 
     return data || null;
+}
+
+export async function listRecentLegacyOneTimeOrderInputs({ productType, productId, customerEmail, createdAfter } = {}) {
+    const email = cleanString(customerEmail, 254).toLowerCase();
+    if (productType !== 'personal_map' || !cleanString(productId, 120)
+        || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)
+        || !Number.isFinite(Date.parse(createdAfter || ''))) {
+        throw new Error('Invalid legacy one-time order lookup.');
+    }
+
+    const { data, error } = await supabase
+        .from('one_time_order_inputs')
+        .select('id, product_type, product_id, customer_email, customer_name, payload, status, stripe_session_id, created_at, updated_at')
+        .eq('product_type', productType)
+        .eq('product_id', cleanString(productId, 120))
+        .eq('customer_email', email)
+        .gte('created_at', createdAfter)
+        .is('payload->>flowId', null)
+        .neq('status', 'expired')
+        .order('created_at', { ascending: false })
+        .limit(21);
+
+    if (error) throw error;
+    if (data?.length > 20) {
+        throw Object.assign(new Error('Too many recent legacy checkout attempts to resolve safely.'), {
+            code: 'PERSONAL_MAP_LEGACY_ORDER_AMBIGUOUS'
+        });
+    }
+    return data || [];
 }
 
 export async function markOneTimeOrderInputPaid(orderId) {

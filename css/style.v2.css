@@ -12716,7 +12716,7 @@ a.card.card--interactive-hover:hover {
   padding: 0.75rem 1.5rem;
   border: 1px solid rgba(212, 175, 55, 0.4);
   border-radius: 50px;
-  background: rgba(20, 15, 40, 0.95);
+  background: rgba(12, 31, 47, 0.97);
   color: white;
   font-size: 0.9rem;
   transform: translateX(-50%);
@@ -12845,11 +12845,11 @@ a.card.card--interactive-hover:hover {
 
   padding: 2rem;
 
-  border: 1px solid rgba(155, 89, 182, 0.3);
+  border: 1px solid rgba(189, 155, 101, 0.28);
 
   border-radius: 15px;
 
-  background: #1a0a2e;
+  background: #102638;
 
 }
 
@@ -12956,6 +12956,20 @@ a.card.card--interactive-hover:hover {
   font-size: 0.9rem;
 
   line-height: 1.5;
+
+}
+
+.auth-modal__status--error {
+
+  padding: 0.65rem 0.75rem;
+
+  border: 1px solid rgba(255, 145, 145, 0.32);
+
+  border-radius: 0.6rem;
+
+  background: rgba(120, 30, 42, 0.2);
+
+  color: #ffd0d0;
 
 }
 
@@ -13341,6 +13355,11 @@ a.card.card--interactive-hover:hover {
 
 }
 
+.paywall-icon > .premium-symbol {
+  width: 48px;
+  height: 48px;
+}
+
 .paywall-title {
 
   color: var(--color-mystic-gold);
@@ -13369,8 +13388,19 @@ a.card.card--interactive-hover:hover {
 
 .benefit-item {
 
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
   color: rgba(255, 255, 255, 0.8);
 
+}
+
+.paywall-benefit-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  margin-top: 0.12rem;
+  color: var(--color-mystic-gold-light);
 }
 
 .paywall-actions {
@@ -13407,15 +13437,17 @@ a.card.card--interactive-hover:hover {
 
   border-radius: 20px;
 
-  background: linear-gradient(135deg, #f9d423, #ff4e50);
+  border: 1px solid rgba(189, 155, 101, 0.48);
 
-  color: #000;
+  background: rgba(189, 155, 101, 0.14);
+
+  color: #f0d7a0;
 
   font-size: 0.75rem;
 
-  font-weight: 800;
+  font-weight: 700;
 
-  letter-spacing: 1px;
+  letter-spacing: 0.04em;
 
 }
 
@@ -13466,6 +13498,38 @@ a.card.card--interactive-hover:hover {
 
   position: relative;
 
+}
+
+.premium-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--color-mystic-gold-light);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.premium-badge__icon {
+  width: 16px;
+  height: 16px;
+}
+
+.nav-premium-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-inline-start: 0.2rem;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.nav-premium-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.premium-lock-icon {
+  width: 32px;
+  height: 32px;
 }
 
 
@@ -14002,96 +14066,6 @@ body.page-mentor .cookie-banner__actions .btn {
 
 /* ============================================
 
-   STREAK BADGE - Retention Gamification
-
-   ============================================ */
-
-#mh-streak-badge {
-
-  position: fixed;
-
-  top: 20px;
-
-  right: 20px;
-
-  background: linear-gradient(135deg, #ff6b35, #ffd700);
-
-  color: white;
-
-  padding: 12px 20px;
-
-  border-radius: 20px;
-
-  font-weight: bold;
-
-  font-size: var(--text-base);
-
-  z-index: 1000;
-
-  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
-
-  opacity: 1;
-
-  transition: opacity var(--transition-base);
-
-}
-
-
-
-.mh-streak-badge--milestone {
-
-  background: linear-gradient(135deg, #ffd700, #9d4edd);
-
-  box-shadow: 0 4px 20px rgba(157, 78, 221, 0.4);
-
-}
-
-.mh-streak-badge--bounce {
-
-  animation: mh-streak-bounce 0.5s ease-in-out;
-
-}
-
-.mh-streak-badge--hiding {
-
-  opacity: 0;
-
-  transition: opacity 0.3s ease-out;
-
-}
-
-
-
-@keyframes mh-streak-bounce {
-
-  0% {
-
-    transform: scale(0.8);
-
-    opacity: 0;
-
-  }
-
-  50% {
-
-    transform: scale(1.1);
-
-  }
-
-  100% {
-
-    transform: scale(1);
-
-    opacity: 1;
-
-  }
-
-}
-
-
-
-/* ============================================
-
    RETENTION: Cancellation Modal & Pause Flow
 
    ============================================ */
@@ -14176,9 +14150,9 @@ body.page-mentor .cookie-banner__actions .btn {
 
 .retention-modal {
 
-  background: linear-gradient(135deg, #1a0a2e 0%, #0f0520 100%);
+  background: linear-gradient(155deg, rgba(19, 43, 59, 0.98), rgba(8, 24, 39, 0.99));
 
-  border: 1px solid rgba(235, 192, 102, 0.2);
+  border: 1px solid rgba(189, 155, 101, 0.32);
 
   border-radius: var(--radius-xl);
 
@@ -14234,6 +14208,10 @@ body.page-mentor .cookie-banner__actions .btn {
 
 .retention-modal__title {
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
   font-family: var(--font-heading);
 
   font-size: var(--text-2xl);
@@ -14242,6 +14220,13 @@ body.page-mentor .cookie-banner__actions .btn {
 
   color: var(--color-mystic-gold);
 
+}
+
+.retention-modal__title > .retention-icon {
+  width: 25px;
+  height: 25px;
+  color: var(--color-mystic-gold-light);
+  flex: 0 0 25px;
 }
 
 
@@ -14330,10 +14315,20 @@ body.page-mentor .cookie-banner__actions .btn {
 
 .retention-form__label {
 
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   font-weight: 500;
 
   color: rgba(255, 255, 255, 0.9);
 
+}
+
+.retention-form__label > .retention-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  color: var(--color-mystic-gold-light);
 }
 
 
@@ -14428,10 +14423,20 @@ body.page-mentor .cookie-banner__actions .btn {
 
 .retention-offer h3 {
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
   color: var(--color-mystic-gold);
 
   margin-bottom: var(--space-md);
 
+}
+
+.retention-offer h3 > .retention-icon {
+  width: 23px;
+  height: 23px;
+  color: var(--color-mystic-gold-light);
 }
 
 
@@ -14496,7 +14501,11 @@ body.page-mentor .cookie-banner__actions .btn {
 
   left: 20px;
 
-  background: rgba(76, 201, 240, 0.9);
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: rgba(12, 31, 47, 0.97);
+  border: 1px solid rgba(189, 155, 101, 0.42);
 
   color: white;
 
@@ -14518,7 +14527,7 @@ body.page-mentor .cookie-banner__actions .btn {
 
 .retention-toast--success {
 
-  background: rgba(76, 175, 80, 0.9);
+  border-color: rgba(126, 194, 149, 0.48);
 
 }
 
@@ -14526,7 +14535,7 @@ body.page-mentor .cookie-banner__actions .btn {
 
 .retention-toast--error {
 
-  background: rgba(244, 67, 54, 0.9);
+  border-color: rgba(235, 137, 137, 0.55);
 
 }
 
@@ -14534,9 +14543,20 @@ body.page-mentor .cookie-banner__actions .btn {
 
 .retention-toast--info {
 
-  background: rgba(33, 150, 243, 0.9);
+  border-color: rgba(132, 181, 214, 0.48);
 
 }
+
+.retention-toast__icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  color: var(--color-mystic-gold-light);
+}
+
+.retention-toast--success .retention-toast__icon { color: #9bd8a9; }
+.retention-toast--error .retention-toast__icon { color: #ffb4b4; }
+.retention-toast--info .retention-toast__icon { color: #b8d9ee; }
 
 .retention-toast--closing {
 

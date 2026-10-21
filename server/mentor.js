@@ -8,13 +8,16 @@ import {
     buildCompactReadingContext
 } from './services/mentor-context.js';
 import { SYSTEM_PROMPTS } from './config/prompts.js';
+import { finishUserDailyQuotaReservation, reserveUserDailyQuota } from './services/user-daily-quota.js';
 import xss from 'xss';
 
 const router = express.Router();
 
 router.post('/chat', authenticateToken, requirePremiumSoft, async (req, res) => {
+    let quotaReservationId = null;
     try {
         const { message } = req.body;
+        const includeReadingContext = req.body?.includeReadingContext === true;
         const userId = req.user.id;
 
         if (!message || typeof message !== 'string') {
@@ -25,22 +28,27 @@ router.post('/chat', authenticateToken, requirePremiumSoft, async (req, res) => 
         }
 
         if (!req.isPremium) {
-            const today = new Date().toISOString().split('T')[0];
-            const { count: messageCount = 0, error: countError } = await supabase
-                .from('mentor_messages')
-                .select('id', { count: 'exact', head: true })
-                .eq('user_id', userId)
-                .eq('role', 'user')
-                .gte('created_at', `${today}T00:00:00`);
-
-            if (countError) {
-                console.error('Mentor message count error:', countError);
-            } else if (messageCount >= 3) {
-                trackPaywallHit(userId, 'mentor_unlimited').catch(() => {});
-                return res.status(402).json({
-                    error: 'Dnešní 3 bezplatné zprávy jsou vyčerpané. Ve členství můžeš pokračovat; i členské výklady podléhají provozním limitům.',
-                    code: 'PREMIUM_REQUIRED',
-                    feature: 'mentor_unlimited'
+            try {
+                const reservation = await reserveUserDailyQuota({ userId, feature: 'mentor' });
+                if (!reservation.allowed) {
+                    trackPaywallHit(userId, 'mentor_unlimited').catch(() => {});
+                    return res.status(402).json({
+                        error: 'Dnešní 3 bezplatné zprávy jsou vyčerpané. Ve členství můžeš pokračovat; i členské výklady podléhají provozním limitům.',
+                        code: 'PREMIUM_REQUIRED',
+                        feature: 'mentor_unlimited'
+                    });
+                }
+                quotaReservationId = reservation.reservationId;
+            } catch (limitError) {
+                console.error('Mentor quota reservation unavailable:', limitError);
+                const limitCheckMessages = {
+                    cs: 'Denní limit se teď nepodařilo ověřit. Zkus to prosím za chvíli znovu.',
+                    sk: 'Denný limit sa teraz nepodarilo overiť. Skús to, prosím, o chvíľu znova.',
+                    pl: 'Nie udało się teraz sprawdzić limitu dziennego. Spróbuj ponownie za chwilę.'
+                };
+                return res.status(503).json({
+                    error: limitCheckMessages[req.body?.lang] || limitCheckMessages.cs,
+                    code: 'LIMIT_CHECK_UNAVAILABLE'
                 });
             }
         }
@@ -80,6 +88,7 @@ router.post('/chat', authenticateToken, requirePremiumSoft, async (req, res) => 
                 .select('role, content')
                 .eq('user_id', userId)
                 .order('created_at', { ascending: false })
+                .order('id', { ascending: false })
                 .limit(12);
 
             if (messages) {
@@ -91,57 +100,92 @@ router.post('/chat', authenticateToken, requirePremiumSoft, async (req, res) => 
             console.warn('[Mentor] Could not fetch chat history', error);
         }
 
-        let appContext = '';
-        try {
-            const { data: readings } = await supabase
-                .from('readings')
-                .select('type, created_at, data')
-                .eq('user_id', userId)
-                .order('created_at', { ascending: false })
-                .limit(3);
+        const appContext = { currentMoonPhase: calculateMoonPhase() };
+        if (historySummary) appContext.olderConversationSummary = historySummary;
+        if (includeReadingContext) {
+            try {
+                const { data: readings } = await supabase
+                    .from('readings')
+                    .select('type, created_at, data')
+                    .eq('user_id', userId)
+                    .neq('type', 'journal')
+                    .order('created_at', { ascending: false })
+                    .limit(3);
 
-            const contextParts = [`Aktuální fáze Měsíce: ${calculateMoonPhase()}`];
-            const readingContext = buildCompactReadingContext(readings || []);
-            if (readingContext) contextParts.push(`Nedávné výklady:\n${readingContext}`);
-            if (historySummary) contextParts.push(`Souhrn starší konverzace:\n${historySummary}`);
-            appContext = contextParts.join('\n\n');
-        } catch (error) {
-            console.warn('[Mentor] Could not fetch reading context', error);
-            if (historySummary) {
-                appContext = `Souhrn starší konverzace:\n${historySummary}`;
+                const readingContext = buildCompactReadingContext(readings || []);
+                if (readingContext) appContext.recentReadingContext = readingContext;
+            } catch (error) {
+                console.warn('[Mentor] Could not fetch reading context', error);
             }
         }
 
-        try {
-            await supabase.from('mentor_messages').insert({
-                user_id: userId,
-                role: 'user',
-                content: sanitizedMessage
-            });
-        } catch {
-            // A temporary history write failure must not block the answer.
-        }
-
         console.log('[Mentor] Calling Claude API with compact context...');
-        const responseText = await callClaude(
-            SYSTEM_PROMPTS.mentor,
-            [...history, { role: 'user', content: sanitizedMessage }],
-            { userContext, appContext },
-            { feature: 'mentor' }
-        );
-
+        let responseText;
         try {
-            await supabase.from('mentor_messages').insert({
-                user_id: userId,
-                role: 'mentor',
-                content: responseText
-            });
-        } catch {
-            // A temporary history write failure must not hide a valid answer.
+            responseText = await callClaude(
+                SYSTEM_PROMPTS.mentor,
+                [...history, { role: 'user', content: sanitizedMessage }],
+                { userContext, appContext },
+                { feature: 'mentor' }
+            );
+            if (typeof responseText !== 'string' || !responseText.trim()) {
+                throw new Error('Mentor returned an empty response.');
+            }
+        } catch (generationError) {
+            if (quotaReservationId) {
+                const reservationId = quotaReservationId;
+                try {
+                    await finishUserDailyQuotaReservation(reservationId, 'release');
+                    quotaReservationId = null;
+                } catch (releaseError) {
+                    console.error('[Mentor] Could not release failed response quota:', releaseError);
+                }
+            }
+            throw generationError;
         }
 
-        res.json({ success: true, reply: responseText });
+        if (quotaReservationId) {
+            const reservationId = quotaReservationId;
+            quotaReservationId = null;
+            try {
+                await finishUserDailyQuotaReservation(reservationId, 'commit');
+            } catch (settleError) {
+                // The counter already includes this successful reply; preserve the fail-closed limit.
+                console.error('[Mentor] Could not commit response quota:', settleError);
+            }
+        }
+
+        let historySaved = true;
+        try {
+            const { error: saveConversationError } = await supabase.from('mentor_messages').insert([
+                {
+                    user_id: userId,
+                    role: 'user',
+                    content: sanitizedMessage
+                },
+                {
+                    user_id: userId,
+                    role: 'mentor',
+                    content: responseText
+                }
+            ]);
+            if (saveConversationError) throw saveConversationError;
+        } catch (saveError) {
+            historySaved = false;
+            console.error('[Mentor] Could not save the completed conversation:', saveError);
+        }
+
+        res.json({ success: true, reply: responseText, historySaved });
     } catch (error) {
+        if (quotaReservationId) {
+            const reservationId = quotaReservationId;
+            try {
+                await finishUserDailyQuotaReservation(reservationId, 'release');
+                quotaReservationId = null;
+            } catch (releaseError) {
+                console.error('[Mentor] Could not release request quota:', releaseError);
+            }
+        }
         console.error('Mentor Chat API Critical Error:', error);
         res.status(500).json({ error: 'Spojení s mentorem se nezdařilo.' });
     }
@@ -155,6 +199,7 @@ router.get('/history', authenticateToken, requirePremiumSoft, async (req, res) =
             .select('role, content, created_at')
             .eq('user_id', userId)
             .order('created_at', { ascending: false })
+            .order('id', { ascending: false })
             .limit(50);
 
         if (error) throw error;

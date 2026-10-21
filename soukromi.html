@@ -44,7 +44,7 @@
 
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="stylesheet" href="/fonts/local-fonts.css">
-    <link rel="stylesheet" href="css/style.v2.min.css?v=11">
+    <link rel="stylesheet" href="css/style.v2.min.css?v=20261018-release-candidate">
     <link rel="stylesheet" href="css/pages/soukromi.css">
 
     <link rel="canonical" href="https://www.mystickahvezda.cz/soukromi.html">
@@ -71,8 +71,8 @@
 <meta property="og:image:alt" content="Ochrana soukromí | Mystická Hvězda">
 <meta name="twitter:image:alt" content="Ochrana soukromí | Mystická Hvězda">
 
-    <link rel="stylesheet" href="/css/atlas-web.css?v=1">
-    <link rel="stylesheet" href="/css/atlas-remaining.css?v=1">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
+    <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261020-01-remaining-surface-polish">
 </head>
 
 <body class="atlas-page atlas-remaining-page">
@@ -155,6 +155,12 @@
 
                             <li>Jméno nebo přezdívka</li>
 
+                            <li>Zprávy, které posíláte Hvězdnému průvodci, jeho odpovědi a omezenou historii konverzace, kterou používáme pro návaznost.</li>
+
+                            <li>Souhrny uložených výkladů. Hvězdný průvodce je může využít jen tehdy, když zapnete příslušnou volbu.</li>
+
+                            <li>Texty uložené v osobním deníku. Pokud u horoskopu zapnete volbu pro zohlednění deníku, připojíme k požadavku nejvýše tři nejnovější zápisy; pokud horoskop vytváříme nově, předáme je také poskytovateli AI.</li>
+
                             <li>Technické a analytické údaje, například navštívená stránka, typ události, anonymní ID klienta, zpětná vazba Ano/Ne a chybová hlášení bez hesel a tokenů.</li>
 
                             <li>Údaje z jednorázových objednávek, například rok produktu, vybraný výklad, datum narození, čas narození, místo narození a zvolený fokus výkladu, pokud je pro objednaný výstup zadáte.</li>
@@ -178,6 +184,12 @@
                         <ul class="u-list-disc-muted">
 
                             <li>Generování personalizovaných horoskopů a tarotových výkladů</li>
+
+                            <li>Odpověď Hvězdného průvodce a návaznost na předchozí zprávy v chatu.</li>
+
+                            <li>Zohlednění souhrnů uložených výkladů v Hvězdném průvodci pouze při zapnuté volbě.</li>
+
+                            <li>Zohlednění témat z osobního deníku v horoskopu, pouze pokud zapnete příslušnou volbu.</li>
 
                             <li>Zasílání objednaných notifikací</li>
 
@@ -204,6 +216,18 @@
                         <p>
 
                             Pro provoz služby využíváme pouze nezbytné zpracovatele: databázovou a autentizační infrastrukturu, platební bránu Stripe, e-mailové doručování, analytiku po udělení souhlasu a poskytovatele AI modelů pro generování osobních výkladů. Těmto službám předáváme jen údaje potřebné pro konkrétní účel.
+
+                        </p>
+
+                        <p>
+
+                            Zápisy z deníku se standardně k horoskopu nepřipojují. Pokud zapnete uvedenou volbu, předáme nejvýše tři nejnovější zápisy našemu serveru; poskytovateli AI je odešleme jen tehdy, když se horoskop vytváří nově. Výsledný horoskop se může uložit do cache služby, samotné zápisy se do ní jako text neukládají. Před každým dalším načtením můžete volbu vypnout.
+
+                        </p>
+
+                        <p>
+
+                            Při použití Hvězdného průvodce předáváme poskytovateli AI vaši zprávu, omezenou historii chatu a případně jméno a datum narození uložené v profilu. Pokud zapnete volbu „Zohlednit moje uložené výklady“, přidáme také souhrny nejvýše tří nejnovějších výkladů; plný text osobního deníku se do tohoto kontextu nezařazuje. Zprávy i odpovědi průvodce ukládáme do historie vašeho chatu.
 
                         </p>
 
@@ -273,15 +297,15 @@
 
     <script src="js/dist/api-config.js?v=5" defer></script>
 
-    <script src="js/dist/templates.js?v=14" defer></script>
+    <script src="js/dist/templates.js?v=20261021-celtic-footer-star-svg" defer></script>
 
-    <script src="js/dist/auth-client.js?v=20261003-single-membership" defer></script>
+    <script src="js/dist/auth-client.js?v=20261020-02-register-password-policy" defer></script>
 <script src="js/dist/auth-copy-fixes.js" defer></script>
-    <script src="js/dist/secondary-pages-copy-fixes.js?v=4" defer></script>
+    <script src="js/dist/secondary-pages-copy-fixes.js?v=20261018-honest-astro-copy" defer></script>
 
-    <script src="js/dist/components.js?v=20260522-premium-gate-cache" defer></script>
+    <script src="js/dist/components.js?v=20261021-footer-support-locale" defer></script>
 
-    <script type="module" src="js/dist/main.js?v=10"></script>
+    <script type="module" src="js/dist/main.js?v=20261018-status-icons"></script>
 
 </body>
 

@@ -91,8 +91,6 @@ export async function loadFavorites(page = 1, version = null) {
                 if (more.isConnected) more.disabled = false;
             });
         }
-        window.lucide?.createIcons?.();
-
     } catch (error) {
         console.error('Error loading favorites:', error);
         if (version !== favoritesRequest) return;

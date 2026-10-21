@@ -5,10 +5,10 @@
 .relationship-offer {
   padding: 30px;
   margin: 24px auto;
-  border: 1px solid #b898584d;
-  border-radius: 18px;
-  background: radial-gradient(ellipse at 0 0,#54305540,transparent 70%),#14101f;
-  color: #f4edf7;
+  border: 1px solid #b3955e55;
+  border-radius: 5px;
+  background: #102638;
+  color: #e9e3d7;
   text-align: left;
   max-width: 900px;
   box-sizing: border-box
@@ -25,33 +25,33 @@
 .relationship-offer h2 {
   font: 400 25px/1.4 'Cinzel',Georgia,serif;
   margin: 0 0 13px;
-  color: #f3e5c9
+  color: #e9e3d7
 }
 .relationship-offer p {
   font: 14px/1.8 'Inter',Arial,sans-serif;
   margin: 0 0 18px;
-  color: #c8bad6
+  color: #c3c9cb
 }
 .relationship-offer .relationship-eyebrow {
   font-size: 9px;
   letter-spacing: 1.8px;
   font-weight: 600;
-  color: #e9c572;
+  color: #d0b17c;
   margin-bottom: 10px
 }
 .relationship-offer .relationship-offer__context {
   padding: 10px 13px;
   margin: 0 0 16px;
-  border-left: 2px solid #dcb968;
-  border-radius: 0 7px 7px 0;
-  background: #ffffff0a;
-  color: #e8deed;
+  border-left: 2px solid #bd9b65;
+  border-radius: 0 3px 3px 0;
+  background: #0b1929;
+  color: #e9e3d7;
   line-height: 1.55
 }
 .relationship-offer__context span {
   display: block;
   margin-bottom: 2px;
-  color: #ab9bb9;
+  color: #c3c9cb;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: .06em;
@@ -63,13 +63,13 @@
 .relationship-offer__preview {
   margin: 0 0 19px;
   padding: 15px;
-  border: 1px solid #ffffff12;
-  border-radius: 10px;
-  background: #08051052
+  border: 1px solid #b3955e44;
+  border-radius: 4px;
+  background: #0b1929
 }
 .relationship-offer .relationship-offer__preview-label {
   margin: 0 0 9px;
-  color: #e9c572;
+  color: #d0b17c;
   font: 600 9px/1.4 'Inter',Arial,sans-serif;
   letter-spacing: 1.5px
 }
@@ -84,20 +84,20 @@
   display: grid;
   gap: 2px;
   padding-left: 13px;
-  border-left: 1px solid #dcb9688c
+  border-left: 1px solid #bd9b6588
 }
 .relationship-offer__preview-list span {
-  color: #ab9bb9;
+  color: #c3c9cb;
   font: 600 9px/1.4 'Inter',Arial,sans-serif;
   letter-spacing: 1px
 }
 .relationship-offer__preview-list strong {
-  color: #ede5f1;
+  color: #e9e3d7;
   font: 400 13px/1.5 'Inter',Arial,sans-serif
 }
 .relationship-offer .relationship-offer__preview-note {
   margin: 11px 0 0;
-  color: #ab9bb9;
+  color: #c3c9cb;
   font-size: 11px;
   line-height: 1.55
 }
@@ -105,27 +105,27 @@
   display: block;
   margin-top: 12px;
   font: 11px/1.7 'Inter',Arial,sans-serif;
-  color: #b7a7c5
+  color: #c3c9cb
 }
 .relationship-offer a {
   display: inline-flex;
   align-items: center;
   gap: 25px;
-  border: 1px solid #edce89;
-  border-radius: 8px;
+  border: 1px solid #bd9b65;
+  border-radius: 3px;
   padding: 13px 19px;
-  background: linear-gradient(110deg,#edce87,#d7ad54);
-  color: #201725;
+  background: #bd9b65;
+  color: #142032;
   text-decoration: none;
   font: 600 13px/1.5 'Inter',Arial,sans-serif;
   transition: background .2s,box-shadow .2s
 }
 .relationship-offer a:hover {
-  background: #f4d99a;
-  box-shadow: 0 5px 25px #edce871a
+  background: #d0b17c;
+  box-shadow: none
 }
 .relationship-offer a:focus-visible {
-  outline: 3px solid #f6dfa3;
+  outline: 3px solid #d0b17c;
   outline-offset: 5px
 }
 .relationship-offer__art {
@@ -138,8 +138,8 @@
   width: 82px;
   height: 140px;
   object-fit: contain;
-  border-radius: 6px;
-  box-shadow: 0 10px 20px #0006;
+  border-radius: 3px;
+  box-shadow: 0 10px 20px #030c1766;
   transform: rotate(-12deg)
 }
 .relationship-offer__art img+img {
@@ -154,7 +154,7 @@
   .relationship-offer {
     padding: 23px 20px;
     margin: 16px auto;
-    border-radius: 15px
+    border-radius: 5px
   }
   .relationship-offer--illustrated {
     grid-template-columns: 1fr;

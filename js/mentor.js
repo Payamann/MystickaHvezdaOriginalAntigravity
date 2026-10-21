@@ -3,29 +3,81 @@
  */
 
 // DOM elementy — inicializujeme v DOMContentLoaded (bezpečná inicializace)
-let chatInput, sendBtn, messagesContainer, typingIndicator;
+let chatInput, sendBtn, messagesContainer, typingIndicator, readingConsentOption, readingConsentInput;
 let messagePending = false;
+let historyLoading = false;
+let mentorSessionId = null;
+let mentorSessionInitialized = false;
+let mentorSessionGeneration = 0;
+let mentorHistoryController = null;
+let mentorChatController = null;
+let mentorWelcomeTemplate = null;
 const MENTOR_PENDING_PROMPT_KEY = 'mentor_pending_prompt_v1';
 const MENTOR_PENDING_PROMPT_MAX_AGE_MS = 30 * 60 * 1000;
 const MENTOR_PAYMENT_REASSURANCE = 'Cena se zobraz\u00ed ve Stripe p\u0159ed potvrzen\u00edm. Zru\u0161en\u00ed najdete v profilu.';
 
-function getMentorUsageStorageKey(date = new Date()) {
-    return `mh_daily_mentor_${window.Auth?.user?.id || 'guest'}_${date.toDateString()}`;
+function getMentorSessionId() {
+    if (!window.Auth?.isLoggedIn?.()) return null;
+    const id = window.Auth?.user?.id;
+    return typeof id === 'string' && id ? id : null;
 }
 
-function readMentorUsageCount(date = new Date()) {
-    try {
-        return Math.max(0, Number.parseInt(localStorage.getItem(getMentorUsageStorageKey(date)) || '0', 10) || 0);
-    } catch {
-        return 0;
+function isMentorSessionCurrent(sessionId, generation) {
+    return generation === mentorSessionGeneration
+        && sessionId === mentorSessionId
+        && sessionId === getMentorSessionId();
+}
+
+function clearMentorConversation() {
+    messagesContainer?.querySelectorAll('.message').forEach(message => message.remove());
+    if (mentorWelcomeTemplate && messagesContainer) {
+        messagesContainer.insertBefore(mentorWelcomeTemplate.cloneNode(true), typingIndicator);
     }
+    document.querySelector('.limit-reached-overlay')?.classList.remove('limit-reached-overlay--visible');
+    messagesContainer?.classList.remove('chat-messages--blurred');
+    showTyping(false);
 }
 
-function writeMentorUsageCount(count, date = new Date()) {
-    try {
-        localStorage.setItem(getMentorUsageStorageKey(date), String(Math.max(0, count)));
-    } catch {
-        // Storage can fail in strict privacy modes; server-side quota still protects the limit.
+function clearPendingMentorPrompt() {
+    try { sessionStorage.removeItem(MENTOR_PENDING_PROMPT_KEY); } catch {}
+}
+
+function syncMentorSession() {
+    const nextSessionId = getMentorSessionId();
+    if (readingConsentOption) readingConsentOption.hidden = !nextSessionId;
+    if (!nextSessionId && readingConsentInput) readingConsentInput.checked = false;
+    if (!mentorSessionInitialized) {
+        mentorSessionInitialized = true;
+        mentorSessionId = nextSessionId;
+        if (nextSessionId) void loadMentorSession(nextSessionId, { restorePendingPrompt: true });
+        return;
+    }
+    if (nextSessionId === mentorSessionId) return;
+
+    const previousSessionId = mentorSessionId;
+    mentorSessionId = nextSessionId;
+    if (readingConsentInput) readingConsentInput.checked = false;
+    mentorSessionGeneration += 1;
+    mentorHistoryController?.abort();
+    mentorChatController?.abort();
+    mentorHistoryController = null;
+    mentorChatController = null;
+    messagePending = false;
+    historyLoading = false;
+    window.isPremium = false;
+    clearMentorConversation();
+    messagesContainer?.removeAttribute('aria-busy');
+    sendBtn?.removeAttribute('aria-busy');
+
+    if (previousSessionId) {
+        clearPendingMentorPrompt();
+        resetChatInput();
+    }
+
+    if (nextSessionId) {
+        void loadMentorSession(nextSessionId, { restorePendingPrompt: !previousSessionId });
+    } else if (sendBtn) {
+        sendBtn.disabled = !chatInput?.value.trim() || Boolean(chatInput?.disabled);
     }
 }
 
@@ -48,7 +100,7 @@ function fillMentorPrompt(prompt, promptType = 'unknown') {
     resizeChatInput();
     sendBtn?.removeAttribute('disabled');
     chatInput.focus();
-    chatInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    chatInput.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
     window.MH_ANALYTICS?.trackCTA?.('mentor_prompt_starter', {
         feature: 'mentor',
         prompt_type: promptType
@@ -118,7 +170,7 @@ function restorePendingMentorPrompt() {
     resizeChatInput();
     sendBtn?.removeAttribute('disabled');
     chatInput.focus();
-    chatInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    chatInput.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
 
     try { sessionStorage.removeItem(MENTOR_PENDING_PROMPT_KEY); } catch {}
     window.MH_ANALYTICS?.trackAction?.('mentor_prompt_restored_after_signup', {
@@ -181,13 +233,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     sendBtn = document.getElementById('send-btn');
     messagesContainer = document.getElementById('chat-messages');
     typingIndicator = document.getElementById('typing-indicator');
+    mentorWelcomeTemplate = messagesContainer?.querySelector('.message--mentor')?.cloneNode(true) || null;
+    readingConsentOption = document.getElementById('mentor-reading-consent-option');
+    readingConsentInput = document.getElementById('mentor-reading-consent');
     setupMentorPromptStarters();
 
     // Připoj event listenery až po inicializaci DOM
     if (chatInput) {
         chatInput.addEventListener('input', function () {
             resizeChatInput();
-            if (messagePending) return;
+            if (messagePending || historyLoading) return;
 
             if (this.value.trim().length > 0) {
                 sendBtn?.removeAttribute('disabled');
@@ -204,76 +259,102 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
     if (sendBtn) sendBtn.addEventListener('click', sendMessage);
-    // Wait for auth-client to initialize (if needed) but we can check token directly.
-    // Odhlášený návštěvník má nejdřív vidět hodnotu: starter otázky a chat input.
-    // Registrace se spouští až při odeslání otázky, kdy prompt uložíme pro návrat.
-    if (!window.Auth?.isLoggedIn()) {
-        document.addEventListener('auth:changed', () => {
-            if (window.Auth?.isLoggedIn()) window.location.reload();
-        }, { once: true });
+    document.addEventListener('auth:changed', syncMentorSession);
+    window.addEventListener('storage', event => {
+        if (event.key === 'auth_user') syncMentorSession();
+    });
+
+    mentorSessionId = getMentorSessionId();
+    mentorSessionInitialized = true;
+    if (readingConsentOption) readingConsentOption.hidden = !mentorSessionId;
+    if (!mentorSessionId) {
+        if (readingConsentInput) readingConsentInput.checked = false;
         window.isPremium = false;
         return;
     }
 
-    // Check Premium Status
+    await loadMentorSession(mentorSessionId, { restorePendingPrompt: true });
+});
+
+async function loadMentorSession(sessionId, { restorePendingPrompt = false } = {}) {
+    const generation = mentorSessionGeneration;
+    mentorHistoryController?.abort();
+    const controller = new AbortController();
+    mentorHistoryController = controller;
+    historyLoading = true;
+    sendBtn?.setAttribute('disabled', 'true');
+    sendBtn?.setAttribute('aria-busy', 'true');
+    messagesContainer?.setAttribute('aria-busy', 'true');
+    const historyStatus = document.createElement('div');
+    historyStatus.id = 'mentor-history-status';
+    historyStatus.className = 'message message--mentor';
+    historyStatus.setAttribute('role', 'status');
+    historyStatus.setAttribute('aria-live', 'polite');
+    historyStatus.textContent = 'Načítám předchozí konverzaci…';
+    messagesContainer?.insertBefore(historyStatus, typingIndicator);
+
     try {
         const userProfile = await window.Auth.getProfile();
-        // Allow everyone to enter, but use the shared Auth helper for plan status.
+        if (!isMentorSessionCurrent(sessionId, generation)) return;
         window.isPremium = Boolean(userProfile && window.Auth?.isPremium?.());
-
-        // Initialize usage tracking for free users
-        if (!window.isPremium) {
-            initUsageTracking();
-        }
-
-        // Load History for everyone (if any)
-        loadHistory();
-        restorePendingMentorPrompt();
-
     } catch (error) {
+        if (!isMentorSessionCurrent(sessionId, generation)) return;
         console.error('Failed to verify subscription:', error);
     }
 
-    // Auto-focus input
+    // Load the signed-in user's history before allowing a new message.
+    const historyLoaded = await loadHistory(sessionId, generation, controller.signal);
+    if (!isMentorSessionCurrent(sessionId, generation)) return;
+    if (!historyLoaded && historyStatus.isConnected) {
+        historyStatus.textContent = 'Předchozí konverzaci se nepodařilo načíst. Novou otázku můžeš poslat i tak.';
+    } else {
+        historyStatus.remove();
+    }
+    historyLoading = false;
+    messagesContainer?.removeAttribute('aria-busy');
+    sendBtn?.removeAttribute('aria-busy');
+    if (sendBtn) sendBtn.disabled = !chatInput?.value.trim() || Boolean(chatInput?.disabled);
+    if (restorePendingPrompt) restorePendingMentorPrompt();
     chatInput?.focus();
-});
-
-function initUsageTracking() {
-    writeMentorUsageCount(readMentorUsageCount());
 }
 
-async function loadHistory() {
+async function loadHistory(sessionId, generation, signal) {
     try {
         const response = await fetch(`${API_CONFIG.BASE_URL}/mentor/history`, {
-            credentials: 'include'
+            credentials: 'include',
+            signal
         });
+        if (!isMentorSessionCurrent(sessionId, generation)) return false;
+        if (!response.ok) throw new Error(`History request failed (${response.status})`);
 
         const data = await response.json();
-        if (data.success && data.history) {
+        if (!isMentorSessionCurrent(sessionId, generation)) return false;
+        if (data.success && Array.isArray(data.history)) {
             // Remove the default welcome message if we have history?
             // Or keep it as a header? Let's keep it for now or maybe clear container.
             // Actually, if we have history, it might feel weird to have the default greeting at top.
             // Let's remove default greeting if we have history.
             if (data.history.length > 0) {
-                const welcomeMsg = messagesContainer.querySelector('.message--mentor');
-                if (welcomeMsg && welcomeMsg.innerText.includes('Vítej, poutníku')) {
-                    welcomeMsg.remove();
-                }
+                messagesContainer.querySelector('[data-mentor-welcome]')?.remove();
 
                 data.history.forEach(msg => {
                     addMessage(msg.content, msg.role, false); // false = do not scroll yet
                 });
                 scrollToBottom();
             }
-
+            return true;
         }
+        throw new Error('Invalid mentor history response');
     } catch (e) {
-        console.warn('Failed to load history', e);
+        if (e.name !== 'AbortError' && isMentorSessionCurrent(sessionId, generation)) {
+            console.warn('Failed to load history', e);
+        }
+        return false;
     }
 }
 
 async function sendMessage() {
-    if (messagePending || !chatInput || !sendBtn || !messagesContainer || !typingIndicator) return;
+    if (messagePending || historyLoading || !chatInput || !sendBtn || !messagesContainer || !typingIndicator) return;
     const text = chatInput.value.trim();
     if (!text) return;
     if (text.length > 2000) {
@@ -286,41 +367,61 @@ async function sendMessage() {
         return;
     }
     const ownerId = window.Auth.user.id;
-    const currentUser = () => ownerId === window.Auth?.user?.id;
+    const generation = mentorSessionGeneration;
+    const currentUser = () => isMentorSessionCurrent(ownerId, generation);
+    const controller = new AbortController();
+    mentorChatController = controller;
     messagePending = true;
     sendBtn.disabled = true;
     sendBtn.setAttribute('aria-busy', 'true');
     showTyping(true);
+    let failureMessage = 'Odpověď se nepodařilo načíst. Otázka zůstává v poli; můžeš ji poslat znovu.';
     try {
         const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
         if (!currentUser()) return;
         const response = await fetch(`${API_CONFIG.BASE_URL}/mentor/chat`, {
             method: 'POST', credentials: 'include',
             headers: { 'Content-Type': 'application/json', ...(csrfToken && { 'X-CSRF-Token': csrfToken }) },
-            body: JSON.stringify({ message: text })
+            body: JSON.stringify({
+                message: text,
+                lang: document.documentElement.lang || 'cs',
+                includeReadingContext: readingConsentInput?.checked === true
+            }),
+            signal: controller.signal
         });
-        const data = await response.json();
         if (!currentUser()) return;
-        if (response.status === 402 || response.status === 403) {
+        const data = await response.json().catch(() => ({}));
+        if (!currentUser()) return;
+        if (response.status === 402) {
             showPaywall();
             return;
         }
-        if (!response.ok || typeof data.reply !== 'string' || !data.reply.trim()) throw new Error('Mentor response unavailable');
+        if (!response.ok) {
+            if (typeof data.error === 'string' && data.error.trim()) failureMessage = data.error.trim().slice(0, 300);
+            throw new Error('Mentor response unavailable');
+        }
+        if (typeof data.reply !== 'string' || !data.reply.trim()) throw new Error('Mentor response unavailable');
         addMessage(text, 'user');
         addMessage(data.reply, 'mentor');
         if (chatInput.value.trim() === text) resetChatInput();
-        if (!window.isPremium) writeMentorUsageCount(readMentorUsageCount() + 1);
+        if (data.historySaved === false) {
+            const notice = addMessage('Odpověď je hotová, ale konverzaci se nepodařilo uložit. Před zavřením stránky si ji prosím zkopíruj.', 'mentor');
+            notice?.setAttribute('role', 'status');
+        }
     } catch (error) {
-        console.warn('Chat request failed:', error.message);
+        if (error.name !== 'AbortError' && currentUser()) console.warn('Chat request failed:', error.message);
         if (currentUser()) {
-            const notice = addMessage('Odpověď se nepodařilo načíst. Otázka zůstává v poli; můžeš ji poslat znovu.', 'mentor');
+            const notice = addMessage(failureMessage, 'mentor');
             notice?.setAttribute('role', 'status');
         }
     } finally {
-        messagePending = false;
-        showTyping(false);
-        sendBtn.removeAttribute('aria-busy');
-        sendBtn.disabled = !chatInput.value.trim() || chatInput.disabled;
+        if (currentUser()) {
+            messagePending = false;
+            mentorChatController = null;
+            showTyping(false);
+            sendBtn.removeAttribute('aria-busy');
+            sendBtn.disabled = !chatInput.value.trim() || chatInput.disabled;
+        }
     }
 }
 

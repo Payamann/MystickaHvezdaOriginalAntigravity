@@ -4,6 +4,7 @@
  */
 
 import { showFallbackNotice } from './utils/reading-display.js';
+import { getTodayIsoDate } from './utils/numerology-logic.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     if (window.MH_DEBUG) console.debug('Natal Chart JS loaded');
@@ -11,6 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 let transitRequestVersion = 0;
+let natalProfileAutofillInProgress = false;
+let natalFormInputRevision = 0;
+
+function refreshNatalBirthDateMaximum() {
+    const birthDateInput = document.getElementById('birth-date');
+    if (birthDateInput) birthDateInput.max = getTodayIsoDate();
+}
 
 const ZODIAC_SIGNS = [
     { symbol: '♈', name: 'Beran', angle: 0 },
@@ -102,6 +110,35 @@ function setBlockVisible(element, visible) {
     element.classList.toggle('mh-block-visible', visible);
 }
 
+function setNatalStatus(message) {
+    const status = document.getElementById('natal-status');
+    if (status) status.textContent = message;
+}
+
+function clearNatalResultAfterInputChange(event) {
+    if (event?.target?.id === 'use-profile-natal') return;
+    if (event) natalFormInputRevision += 1;
+    if (natalChartGenerationInProgress) return;
+
+    const chartResults = document.getElementById('chart-results');
+    const transitResults = document.getElementById('transits-now');
+    const aiResults = document.getElementById('ai-interpretation');
+    const calculationError = document.getElementById('natal-calculation-error');
+    const hasVisibleOutput = [chartResults, transitResults, aiResults, calculationError]
+        .some((element) => element && !element.hidden);
+    if (!hasVisibleOutput) return;
+
+    document.getElementById('planets-layer')?.replaceChildren();
+    clearNatalComputedLayers();
+    ++transitRequestVersion;
+    window.currentNatalChartReadingId = null;
+    setBlockVisible(chartResults, false);
+    setBlockVisible(transitResults, false);
+    aiResults?.remove();
+    setBlockVisible(calculationError, false);
+    setNatalStatus('Údaje se změnily. Spusť výpočet znovu, aby mapa odpovídala aktuálnímu zadání.');
+}
+
 function setFlexVisible(element, visible) {
     if (!element) return;
     element.hidden = !visible;
@@ -113,6 +150,17 @@ function initNatalChart() {
     const planetsGroup = document.getElementById('planets-layer');
     const form = document.getElementById('natal-form');
 
+    refreshNatalBirthDateMaximum();
+    if (form) {
+        form.addEventListener('focusin', refreshNatalBirthDateMaximum);
+        form.addEventListener('pointerdown', refreshNatalBirthDateMaximum, true);
+        form.addEventListener('keydown', refreshNatalBirthDateMaximum, true);
+    }
+    window.addEventListener('focus', refreshNatalBirthDateMaximum);
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) refreshNatalBirthDateMaximum();
+    });
+
     if (!zodiacGroup || !planetsGroup) {
         console.error('SVG elements not found!');
         return;
@@ -123,6 +171,8 @@ function initNatalChart() {
 
     // Handle Form Submit
     if (form) {
+        form.addEventListener('input', clearNatalResultAfterInputChange);
+        form.addEventListener('change', clearNatalResultAfterInputChange);
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             await generateNatalChart(planetsGroup);
@@ -132,6 +182,8 @@ function initNatalChart() {
     // Handle "Use my profile" checkbox
     const useProfileCheckbox = document.getElementById('use-profile-natal');
     if (useProfileCheckbox) {
+        let profileAutofillRequestId = 0;
+
         // Toggle visibility based on auth
         const wrapper = useProfileCheckbox.closest('.checkbox-wrapper');
         if (wrapper) {
@@ -143,6 +195,8 @@ function initNatalChart() {
         }
 
         useProfileCheckbox.addEventListener('change', async (e) => {
+            const requestId = ++profileAutofillRequestId;
+            natalProfileAutofillInProgress = false;
             if (e.target.checked) {
                 // Auth token is stored in an HttpOnly cookie; use the public auth state helper.
                 if (!window.Auth?.isLoggedIn?.()) {
@@ -155,9 +209,21 @@ function initNatalChart() {
                     return;
                 }
 
+                clearNatalResultAfterInputChange();
+                natalProfileAutofillInProgress = true;
+                setNatalStatus('Načítám údaje z profilu.');
+                const inputRevision = natalFormInputRevision;
+
                 try {
                     // Fetch fresh data from server using centralized method
                     const user = await window.Auth.getProfile();
+
+                    if (requestId !== profileAutofillRequestId || !e.target.checked) return;
+                    if (inputRevision !== natalFormInputRevision) {
+                        setNatalStatus('Údaje se během načítání změnily. Zkontroluj je a spusť výpočet s aktuálními hodnotami.');
+                        e.target.checked = false;
+                        return;
+                    }
 
                     if (!user) {
                         throw new Error('Nepodařilo se načíst profil.');
@@ -185,11 +251,18 @@ function initNatalChart() {
                     }
 
                     if (user.birth_place) document.getElementById('birth-place').value = user.birth_place;
+                    setNatalStatus('Údaje z profilu jsou připravené. Zkontroluj je a spusť výpočet.');
 
                 } catch (error) {
+                    if (requestId !== profileAutofillRequestId || !e.target.checked) return;
                     console.error('Autofill Error:', error);
                     window.Auth?.showToast?.('Chyba', 'Nepodařilo se stáhnout data z profilu.', 'error');
+                    setNatalStatus('Údaje z profilu se nepodařilo načíst. Vyplň je ručně nebo zkus načtení znovu.');
                     e.target.checked = false;
+                } finally {
+                    if (requestId === profileAutofillRequestId) {
+                        natalProfileAutofillInProgress = false;
+                    }
                 }
             }
         });
@@ -682,7 +755,36 @@ function showNatalCalculationError(message) {
         document.getElementById('natal-form')?.requestSubmit();
     });
     setBlockVisible(errorContainer, true);
-    errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    errorContainer.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+}
+
+function hasSameNatalRequestSession(requestSession) {
+    const isLoggedIn = Boolean(window.Auth?.isLoggedIn?.());
+    if (isLoggedIn !== requestSession?.isLoggedIn) return false;
+    if (!isLoggedIn) return true;
+
+    return typeof requestSession.userId === 'string'
+        && requestSession.userId.length > 0
+        && window.Auth?.user?.id === requestSession.userId;
+}
+
+function discardNatalResultAfterSessionChange({ planetsGroup, aiResultsDiv, btn, originalHTML }) {
+    planetsGroup?.replaceChildren();
+    clearNatalComputedLayers();
+    ++transitRequestVersion;
+    window.currentNatalChartReadingId = null;
+    setBlockVisible(document.getElementById('chart-results'), false);
+    setBlockVisible(document.getElementById('transits-now'), false);
+    setBlockVisible(aiResultsDiv, false);
+    setNatalStatus('');
+
+    if (btn) {
+        btn.innerHTML = originalHTML;
+        btn.classList.remove('btn--processing');
+        btn.disabled = false;
+    }
+
+    showNatalCalculationError('Účet se během výpočtu změnil, proto jsem výsledek skryl. Zkontroluj údaje a spusť výpočet znovu.');
 }
 
 function showNatalInterpretationError(container) {
@@ -701,7 +803,42 @@ function showNatalInterpretationError(container) {
     setBlockVisible(container, true);
 }
 
+let natalChartGenerationInProgress = false;
+
 async function generateNatalChart(planetsGroup) {
+    if (natalChartGenerationInProgress) return;
+    if (natalProfileAutofillInProgress) {
+        setNatalStatus('Načítají se údaje z profilu. Počkej chvíli a spusť výpočet znovu.');
+        return;
+    }
+    natalChartGenerationInProgress = true;
+    const isLoggedIn = Boolean(window.Auth?.isLoggedIn?.());
+    const readingOwnerId = isLoggedIn ? window.Auth.user?.id : null;
+    const requestSession = { isLoggedIn, userId: readingOwnerId };
+
+    const form = document.getElementById('natal-form');
+    const formControls = [...new Set([
+        ...(form?.querySelectorAll('input, select, textarea, button') || []),
+        document.getElementById('use-profile-natal')
+    ].filter(Boolean))];
+    const previouslyDisabled = formControls.map((control) => control.disabled);
+    const previousBusy = form?.getAttribute('aria-busy');
+    formControls.forEach((control) => { control.disabled = true; });
+    form?.setAttribute('aria-busy', 'true');
+
+    try {
+        await performNatalChartGeneration(planetsGroup, readingOwnerId, requestSession);
+    } finally {
+        natalChartGenerationInProgress = false;
+        if (previousBusy === null || previousBusy === undefined) form?.removeAttribute('aria-busy');
+        else form?.setAttribute('aria-busy', previousBusy);
+        formControls.forEach((control, index) => {
+            control.disabled = previouslyDisabled[index];
+        });
+    }
+}
+
+async function performNatalChartGeneration(planetsGroup, readingOwnerId = null, requestSession = { isLoggedIn: false, userId: null }) {
     const btn = document.querySelector('#natal-form button');
     const originalHTML = btn.innerHTML; // Capture full HTML (icons etc.)
     const name = document.getElementById('name').value;
@@ -709,6 +846,7 @@ async function generateNatalChart(planetsGroup) {
     const birthTime = document.getElementById('birth-time').value;
     const birthPlace = document.getElementById('birth-place').value;
 
+    setNatalStatus('Počítám polohy planet pro tvoji mapu.');
     ++transitRequestVersion;
     setBlockVisible(document.getElementById('transits-now'), false);
     btn.innerHTML = '<span class="loading-spinner"></span> Počítají se polohy planet…';
@@ -734,9 +872,14 @@ async function generateNatalChart(planetsGroup) {
             if (!hasRequiredNatalPlanetPositions(computedChart)) {
                 throw new Error('Natal calculation returned incomplete planetary positions.');
             }
+            if (!hasSameNatalRequestSession(requestSession)) {
+                discardNatalResultAfterSessionChange({ planetsGroup, aiResultsDiv, btn, originalHTML });
+                return;
+            }
             trackNatalCalculation(computedChart, { birthTime, birthPlace });
         } catch (calcError) {
             console.warn('Natal engine calculation unavailable:', calcError.message);
+            setNatalStatus('');
             showNatalCalculationError('Zadané údaje zůstaly ve formuláři. Zkontroluj připojení a zkus výpočet znovu.');
             btn.innerHTML = originalHTML;
             btn.disabled = false;
@@ -756,6 +899,7 @@ async function generateNatalChart(planetsGroup) {
             throw new Error('Natal calculation could not be displayed.');
         }
         setBlockVisible(document.getElementById('chart-results'), true);
+        setNatalStatus('Základní mapa je připravená.');
 
         if (!aiResultsDiv) {
             aiResultsDiv = createAIResultsContainer();
@@ -764,16 +908,13 @@ async function generateNatalChart(planetsGroup) {
         // Call AI for interpretation
         btn.innerHTML = '<span class="loading-spinner"></span> Připravuje se výklad…';
 
-        // Calculate Sun Sign locally for prompt accuracy
-        const birthDateObj = new Date(birthDate);
-        const localSunSign = getZodiacSign(birthDateObj)?.name || '';
-
         // Login required for AI interpretation (chart graphic stays public)
         if (!window.Auth || !window.Auth.isLoggedIn()) {
             btn.innerHTML = originalHTML;
             btn.disabled = false;
             btn.classList.remove('btn--processing');
             setBlockVisible(aiResultsDiv, true);
+            setNatalStatus('Základní mapa je připravená. Pro osobní slovní výklad se přihlas.');
             const contentDiv = aiResultsDiv.querySelector('.ai-content');
             if (window.Premium) {
                 window.Premium.showLoginGate(
@@ -791,6 +932,7 @@ async function generateNatalChart(planetsGroup) {
             btn.innerHTML = originalHTML;
             btn.disabled = false;
             btn.classList.remove('btn--processing');
+            setNatalStatus('Základní mapa je připravená. Osobní slovní výklad otevře nabídka členství.');
             if (window.Premium?.showTrialPaywall) {
                 window.Premium.showTrialPaywall('natalni_interpretace');
             }
@@ -798,13 +940,18 @@ async function generateNatalChart(planetsGroup) {
         }
 
         // Call API via centralized helper
+        setNatalStatus('Připravuji osobní slovní výklad.');
         const data = await window.callAPI('/natal-chart', {
             birthDate,
             birthTime,
             birthPlace,
-            name,
-            sunSign: localSunSign // Send to AI for consistency
+            name
         });
+
+        if (!hasSameNatalRequestSession(requestSession)) {
+            discardNatalResultAfterSessionChange({ planetsGroup, aiResultsDiv, btn, originalHTML });
+            return;
+        }
 
         if (data.success || data.response) {
             const finalChart = data.chart || computedChart;
@@ -890,18 +1037,31 @@ async function generateNatalChart(planetsGroup) {
             }
 
             showFallbackNotice(contentDiv, data.fallback);
+            setNatalStatus(data.fallback
+                ? 'Základní mapa i stručný výklad jsou připravené.'
+                : 'Základní mapa i osobní výklad jsou připravené.');
 
             // Save to history if logged in and add favorite button
             if (!data.isTeaser && window.Auth && window.Auth.saveReading) {
-                const saveResult = await window.Auth.saveReading('natal-chart', {
-                    name,
-                    birthDate,
-                    birthTime,
-                    birthPlace,
-                    interpretation: data.response,
-                    chart: data.chart || computedChart,
-                    fallback: !!data.fallback
-                });
+                let saveResult = null;
+                try {
+                    saveResult = await window.Auth.saveReading('natal-chart', {
+                        name,
+                        birthDate,
+                        birthTime,
+                        birthPlace,
+                        interpretation: data.response,
+                        chart: data.chart || computedChart,
+                        fallback: !!data.fallback
+                    }, readingOwnerId);
+                } catch (saveError) {
+                    console.warn('Natal chart history save failed:', saveError.message);
+                }
+
+                if (!hasSameNatalRequestSession(requestSession)) {
+                    discardNatalResultAfterSessionChange({ planetsGroup, aiResultsDiv, btn, originalHTML });
+                    return;
+                }
 
                 // Store reading ID and add favorite button
                 if (saveResult && saveResult.id) {
@@ -912,7 +1072,7 @@ async function generateNatalChart(planetsGroup) {
                     favoriteBtn.className = 'text-center favorite-reading-action';
                     favoriteBtn.innerHTML = `
                         <button id="favorite-natal-btn" class="btn btn--glass favorite-reading-action__button">
-                            <span class="favorite-icon">⭐</span> Přidat do oblíbených
+                            <svg class="mh-symbol mh-symbol--inline favorite-icon" viewBox="0 0 48 48" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg> Přidat do oblíbených
                         </button>
                     `;
                     contentDiv.appendChild(favoriteBtn);
@@ -921,6 +1081,13 @@ async function generateNatalChart(planetsGroup) {
                     document.getElementById('favorite-natal-btn').addEventListener('click', async () => {
                         await toggleFavorite(window.currentNatalChartReadingId, 'favorite-natal-btn');
                     });
+                } else {
+                    const saveNotice = document.createElement('p');
+                    saveNotice.className = 'result-context-notice';
+                    saveNotice.setAttribute('role', 'status');
+                    saveNotice.textContent = 'Výklad je hotový, ale nepodařilo se ho uložit do profilu.';
+                    contentDiv.appendChild(saveNotice);
+                    setNatalStatus('Osobní výklad je hotový, ale nepodařilo se ho uložit do profilu.');
                 }
             }
 
@@ -931,8 +1098,10 @@ async function generateNatalChart(planetsGroup) {
     } catch (error) {
         console.error('Natal Chart Error:', error);
         if (aiResultsDiv) {
+            setNatalStatus('Základní mapa je připravená, osobní výklad se nepodařilo načíst.');
             showNatalInterpretationError(aiResultsDiv);
         } else {
+            setNatalStatus('');
             setBlockVisible(document.getElementById('chart-results'), false);
             showNatalCalculationError('Zadané údaje zůstaly ve formuláři. Zkus výpočet znovu.');
         }
@@ -941,7 +1110,7 @@ async function generateNatalChart(planetsGroup) {
     btn.innerHTML = originalHTML; // Restore full HTML
     btn.disabled = false;
     btn.classList.remove('btn--processing');
-    document.getElementById('chart-results').scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('chart-results').scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
 }
 
 function createAIResultsContainer() {
@@ -1001,35 +1170,8 @@ async function typewriterEffect(element, htmlContent) {
     element.classList.add('content-fade-enter-active');
 
     // Scroll into view if needed
-    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    element.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
 }
-
-/**
- * Calculates the Zodiac sign based on date.
- * @param {Date} date 
- * @returns {Object} Zodiac sign object from ZODIAC_SIGNS
- */
-function getZodiacSign(date) {
-    const day = date.getDate();
-    const month = date.getMonth() + 1; // 0-indexed
-
-    // Boundaries aligned with data/zodiac-matrix.json
-    if ((month == 1 && day <= 20) || (month == 12 && day >= 22)) return ZODIAC_SIGNS.find(s => s.name === 'Kozoroh');
-    if ((month == 1 && day >= 21) || (month == 2 && day <= 20)) return ZODIAC_SIGNS.find(s => s.name === 'Vodnář');
-    if ((month == 2 && day >= 21) || (month == 3 && day <= 20)) return ZODIAC_SIGNS.find(s => s.name === 'Ryby');
-    if ((month == 3 && day >= 21) || (month == 4 && day <= 20)) return ZODIAC_SIGNS.find(s => s.name === 'Beran');
-    if ((month == 4 && day >= 21) || (month == 5 && day <= 21)) return ZODIAC_SIGNS.find(s => s.name === 'Býk');
-    if ((month == 5 && day >= 22) || (month == 6 && day <= 21)) return ZODIAC_SIGNS.find(s => s.name === 'Blíženci');
-    if ((month == 6 && day >= 22) || (month == 7 && day <= 22)) return ZODIAC_SIGNS.find(s => s.name === 'Rak');
-    if ((month == 7 && day >= 23) || (month == 8 && day <= 22)) return ZODIAC_SIGNS.find(s => s.name === 'Lev');
-    if ((month == 8 && day >= 23) || (month == 9 && day <= 22)) return ZODIAC_SIGNS.find(s => s.name === 'Panna');
-    if ((month == 9 && day >= 23) || (month == 10 && day <= 23)) return ZODIAC_SIGNS.find(s => s.name === 'Váhy');
-    if ((month == 10 && day >= 24) || (month == 11 && day <= 22)) return ZODIAC_SIGNS.find(s => s.name === 'Štír');
-    if ((month == 11 && day >= 23) || (month == 12 && day <= 21)) return ZODIAC_SIGNS.find(s => s.name === 'Střelec');
-
-    return ZODIAC_SIGNS[0]; // Fallback
-}
-
 
 function renderTransitSnapshot(transit) {
     const section = document.getElementById('transits-now');

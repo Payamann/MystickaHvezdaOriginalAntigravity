@@ -251,4 +251,71 @@ describe('Auth edge cases', () => {
         expect(res.status).toBe(401);
         expect(res.body.error).toBeDefined();
     });
+
+    test('recovery token validation returns only its validity state', async () => {
+        const valid = await request(app)
+            .get('/api/auth/reset-password/validate')
+            .set('Authorization', 'Bearer test-reset-token')
+            .set('X-Forwarded-For', authIp('recovery-validate-valid'));
+
+        expect(valid.status).toBe(200);
+        expect(valid.body).toEqual({ valid: true });
+
+        const expired = await request(app)
+            .get('/api/auth/reset-password/validate')
+            .set('Authorization', 'Bearer invalid-reset-token')
+            .set('X-Forwarded-For', authIp('recovery-validate-expired'));
+
+        expect(expired.status).toBe(401);
+        expect(expired.body).toEqual({ valid: false });
+    });
+
+    test('reset password verifies the bearer before updating its authenticated user', async () => {
+        const csrfToken = await getCsrfToken();
+        const res = await request(app)
+            .post('/api/auth/reset-password')
+            .set('x-csrf-token', csrfToken)
+            .set('Authorization', 'Bearer test-reset-token')
+            .set('X-Forwarded-For', authIp('reset-valid-token'))
+            .send({ password: 'NewPassword123!' });
+
+        expect(res.status).toBe(200);
+        expect(res.body).toMatchObject({ success: true });
+    });
+
+    test('reset password rejects an invalid bearer token before any admin update', async () => {
+        const csrfToken = await getCsrfToken();
+        const res = await request(app)
+            .post('/api/auth/reset-password')
+            .set('x-csrf-token', csrfToken)
+            .set('Authorization', 'Bearer invalid-reset-token')
+            .set('X-Forwarded-For', authIp('reset-invalid-token'))
+            .send({ password: 'NewPassword123!' });
+
+        expect(res.status).toBe(401);
+        expect(res.body.error).toMatch(/neplatný nebo vypršel/i);
+    });
+
+    test('reset password limits repeated requests from one network', async () => {
+        const csrfToken = await getCsrfToken();
+        const forwardedIp = authIp('reset-rate-limit');
+
+        for (let attempt = 0; attempt < 10; attempt += 1) {
+            const res = await request(app)
+                .post('/api/auth/reset-password')
+                .set('x-csrf-token', csrfToken)
+                .set('X-Forwarded-For', forwardedIp)
+                .send({ password: 'NewPassword123!' });
+            expect(res.status).toBe(401);
+        }
+
+        const limited = await request(app)
+            .post('/api/auth/reset-password')
+            .set('x-csrf-token', csrfToken)
+            .set('X-Forwarded-For', forwardedIp)
+            .send({ password: 'NewPassword123!' });
+
+        expect(limited.status).toBe(429);
+        expect(limited.body.code).toBe('PASSWORD_RESET_RATE_LIMITED');
+    });
 });

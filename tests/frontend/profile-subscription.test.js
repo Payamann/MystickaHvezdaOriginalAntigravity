@@ -48,6 +48,7 @@ function createButton(id, attributes, markup) {
 function createSession() {
     const nodes = new Map();
     const container = {
+        attrs: {}, setAttribute(name, value) { this.attrs[name] = value; }, removeAttribute(name) { delete this.attrs[name]; },
         _innerHTML: 'Loading subscription…',
         get innerHTML() { return this._innerHTML; },
         set innerHTML(markup) {
@@ -186,7 +187,7 @@ test('late status response from a previous account is ignored', async () => {
     oldResponse.resolve(jsonResponse({ ...premium, status: 'active' }));
     await pending;
 
-    expect(session.container.innerHTML).toBe('Loading subscription…');
+    expect(session.container.innerHTML).toContain('Načítám stav členství…');
     expect(session.document.dispatchEvent).not.toHaveBeenCalled();
 });
 
@@ -194,7 +195,7 @@ test('billing portal sends its default flow and payment-method flow, restoring t
     await renderStatus({ ...premium, status: 'active' });
     fetch.mockResolvedValueOnce(jsonResponse({ url: 'https://billing.example/session' }));
     await session.nodes.get('sub-portal-btn').click();
-    expect(JSON.parse(fetch.mock.calls[1][1].body)).toEqual({});
+    expect(JSON.parse(fetch.mock.calls[1][1].body)).toEqual({ expectedUserId: 'user-a' });
     expect(fetch.mock.calls[1][0]).toBe('/api/payment/portal');
     expect(fetch.mock.calls[1][1]).toMatchObject({
         method: 'POST', credentials: 'include', headers: { 'X-CSRF-Token': 'synthetic-csrf' }
@@ -206,7 +207,10 @@ test('billing portal sends its default flow and payment-method flow, restoring t
     fetch.mockResolvedValueOnce(jsonResponse({ error: 'Portal is unavailable' }, false));
     const updateButton = session.nodes.get('sub-payment-update-btn');
     await updateButton.click();
-    expect(JSON.parse(fetch.mock.calls.at(-1)[1].body)).toEqual({ flow: 'payment_method_update' });
+    expect(JSON.parse(fetch.mock.calls.at(-1)[1].body)).toEqual({
+        flow: 'payment_method_update',
+        expectedUserId: 'user-a'
+    });
     expect(updateButton.disabled).toBe(false);
     expect(updateButton.textContent).toBe('Aktualizovat kartu');
     expect(session.window.Auth.showToast).toHaveBeenCalledWith('Chyba', 'Portal is unavailable', 'error');

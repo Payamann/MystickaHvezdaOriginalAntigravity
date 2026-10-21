@@ -4,8 +4,9 @@
  * from data/dreams.json, plus a static link hub inside snar.html between
  * the SNAR-LINKS markers so crawlers can reach every page.
  *
- * Usage: node scripts/generate-snar-pages.mjs
- * Idempotent: re-running overwrites generated pages in place.
+ * Usage: node scripts/generate-snar-pages.mjs [--check]
+ * --check compares generated output without writing to the site.
+ * Normal runs only write files whose contents actually changed.
  */
 import fs from 'fs';
 import path from 'path';
@@ -22,6 +23,26 @@ const OUTPUT_DIR = path.join(ROOT, 'snar');
 const HUB_PATH = path.join(ROOT, 'snar.html');
 const CANONICAL_ORIGIN = 'https://www.mystickahvezda.cz';
 const LASTMOD = '2026-07-11';
+const ATLAS_WEB_VERSION = '20261020-02-mobile-hero-padding-dedup';
+const MAIN_JS_VERSION = '20261018-status-icons';
+
+// Dream links use only a small number of literal, relevant icons from the
+// shared brand sprite. All other links stay text-only instead of falling
+// back to platform-dependent emoji from the source data.
+const HUB_LINK_PRESENTATION = {
+    hvezdy: { label: 'Hvězdy / Noční obloha' },
+    mesic: {
+        label: 'Měsíc',
+        icon: '<svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#dream"></use></svg>'
+    },
+    tma: {
+        label: 'Tma',
+        icon: '<svg class="mh-moon-art" viewBox="0 0 120 120" width="120" height="120" aria-hidden="true" focusable="false"><use href="/img/icons/moon-phases.svg#moon-0"></use></svg>'
+    },
+    buh: { label: 'Bůh / Vyšší bytost' },
+    'hvezdny-prach': { label: 'Hvězdný prach / Třpyt' },
+    zvon: { label: 'Zvon / Zvonění' }
+};
 
 function slugify(value) {
     return String(value)
@@ -39,6 +60,14 @@ function escapeHtml(value) {
         .replace(/"/g, '&quot;');
 }
 
+function normalizeLineEndings(value) {
+    return String(value).replace(/\r\n?/g, '\n');
+}
+
+function sameGeneratedContent(current, expected) {
+    return normalizeLineEndings(current) === normalizeLineEndings(expected);
+}
+
 function lowerKeyword(keyword) {
     const value = String(keyword || '').trim();
     return value.charAt(0).toLocaleLowerCase('cs') + value.slice(1);
@@ -52,9 +81,7 @@ function buildDescription(dream) {
 function buildQuestions(dream) {
     const keyword = lowerKeyword(dream.keyword);
     return [
-        `Jakou emoci ve mně symbol „${keyword}“ ve snu vyvolal — klid, napětí, touhu, nebo strach?`,
-        `Kde se v mém bdělém životě právě teď objevuje téma, které mi „${keyword}“ může zrcadlit?`,
-        `Co by se změnilo, kdybych poselství tohoto snu vzal vážně jen na jeden den?`
+        `Co ti symbol „${keyword}“ připomíná a jaký pocit ve snu zůstal?`
     ];
 }
 
@@ -67,33 +94,25 @@ function pickRelated(index, dreams) {
     return related;
 }
 
+function renderDreamChip(dream, href) {
+    const override = HUB_LINK_PRESENTATION[dream.id];
+    const label = escapeHtml(override?.label || dream.keyword);
+    return `<a href="${href}" class="related-chip">${override?.icon || ''}${label}</a>`;
+}
+
 function renderPage(dream, index, dreams, seoContent) {
     const slug = slugify(dream.id);
     const pageUrl = `${CANONICAL_ORIGIN}/snar/${slug}.html`;
     const keyword = escapeHtml(dream.keyword);
-    const description = escapeHtml(buildDescription(dream));
     const related = pickRelated(index, dreams);
     const questions = buildQuestions(dream);
     const longContent = seoContent[dream.id] || null;
+    const rawDescription = longContent?.metaDescription || buildDescription(dream);
+    const description = escapeHtml(rawDescription);
+    const imageAlt = escapeHtml(`Sen o: ${dream.keyword} — výklad snu | Snář Mystická Hvězda`);
 
-    const faqEntries = [
-        {
-            question: `Co znamená sen o: ${lowerKeyword(dream.keyword)}?`,
-            answer: dream.description
-        },
-        ...(longContent ? [
-            {
-                question: `Jak symbol „${lowerKeyword(dream.keyword)}“ vykládá psychologie snů?`,
-                answer: longContent.psychological
-            },
-            {
-                question: `Kdy je sen o: ${lowerKeyword(dream.keyword)} varováním?`,
-                answer: longContent.warning
-            }
-        ] : [])
-    ];
-
-    const faqLd = JSON.stringify({
+    const faqEntries = Array.isArray(longContent?.faq) ? longContent.faq : [];
+    const faqLd = faqEntries.length ? `<script type="application/ld+json">${JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'FAQPage',
         mainEntity: faqEntries.map(({ question, answer }) => ({
@@ -101,30 +120,32 @@ function renderPage(dream, index, dreams, seoContent) {
             name: question,
             acceptedAnswer: { '@type': 'Answer', text: answer }
         }))
-    }, null, 2);
+    }, null, 2)}</script>` : '';
 
     const longBlocks = longContent ? `
-                <div class="card">
-                    <h2>Psychologický pohled</h2>
-                    <p>${escapeHtml(longContent.psychological)}</p>
-                </div>
+                <details class="dream-interpretations">
+                    <summary>Další možné souvislosti</summary>
+                    <div class="dream-interpretations__content">
+                        <section>
+                            <h2>${escapeHtml(longContent.psychologicalHeading || 'Možný osobní úhel')}</h2>
+                            <p>${escapeHtml(longContent.psychological)}</p>
+                        </section>
+                        <section>
+                            <h2>Symbolika v příbězích a tradicích</h2>
+                            <p>${escapeHtml(longContent.spiritual)}</p>
+                        </section>
+                        <section>
+                            <h2>Různé podoby snu</h2>
+                            <p>${escapeHtml(longContent.variants)}</p>
+                        </section>
+                        <section>
+                            <h2>Kdy zpozornět</h2>
+                            <p>${escapeHtml(longContent.warning)}</p>
+                        </section>
+                    </div>
+                </details>` : '';
 
-                <div class="card">
-                    <h2>Duchovní a mystický výklad</h2>
-                    <p>${escapeHtml(longContent.spiritual)}</p>
-                </div>
-
-                <div class="card">
-                    <h2>Nejčastější podoby snu</h2>
-                    <p>${escapeHtml(longContent.variants)}</p>
-                </div>
-
-                <div class="card">
-                    <h2>Kdy zpozornět</h2>
-                    <p>${escapeHtml(longContent.warning)}</p>
-                </div>` : '';
-
-    const faqBlock = longContent ? `
+    const faqBlock = faqEntries.length ? `
                 <div class="card">
                     <h2>Časté otázky</h2>
                     ${faqEntries.map(({ question, answer }) => `<h3>${escapeHtml(question)}</h3>
@@ -135,9 +156,9 @@ function renderPage(dream, index, dreams, seoContent) {
         '@context': 'https://schema.org',
         '@type': 'Article',
         headline: `Sen o: ${dream.keyword} — výklad snu`,
-        description: buildDescription(dream),
+        description: rawDescription,
         url: pageUrl,
-        dateModified: LASTMOD,
+        dateModified: longContent?.dateModified || LASTMOD,
         inLanguage: 'cs',
         author: { '@type': 'Organization', name: 'Mystická Hvězda' }
     }, null, 2);
@@ -173,42 +194,44 @@ function renderPage(dream, index, dreams, seoContent) {
 
     <script type="application/ld+json">${jsonLd}</script>
     <script type="application/ld+json">${breadcrumbLd}</script>
-    <script type="application/ld+json">${faqLd}</script>
-    <link rel="stylesheet" href="/fonts/local-fonts.css">
-    <link rel="stylesheet" href="../css/style.v2.min.css?v=11">
+${faqLd ? `    ${faqLd}\n` : ''}    <link rel="stylesheet" href="/fonts/local-fonts.css">
+    <link rel="stylesheet" href="../css/style.v2.min.css?v=20261018-release-candidate">
 <script src="/js/dist/analytics-init.js" defer></script>
-    <link rel="stylesheet" href="/css/atlas-web.css?v=1">
-    <link rel="stylesheet" href="/css/atlas-content.css?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="${CANONICAL_ORIGIN}/img/search-preview/dreams.webp">
+<meta property="og:image:alt" content="${imageAlt}">
+<meta name="twitter:image:alt" content="${imageAlt}">
+
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
+    <link rel="stylesheet" href="/css/atlas-content.css?v=2">
 </head>
 <body class="atlas-page atlas-content-page atlas-content-detail">
     <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
     <div id="header-placeholder"></div>
 
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
         <section class="section">
             <div class="container">
                 <span class="section__badge">Snář</span>
-                <h1 class="section__title">${dream.emoji ? `${dream.emoji} ` : ''}Sen o: <span class="text-gradient">${keyword}</span></h1>
+                <h1 class="section__title">Sen o: <span class="text-gradient">${keyword}</span></h1>
 
                 <div class="card">
                     <h2>Výklad snu</h2>
                     <p>${escapeHtml(dream.description)}</p>
                 </div>
-
 ${longBlocks}
 
                 <div class="card">
                     <h2>Otázky k zamyšlení</h2>
-                    <p>Symbol má vždy osobní vrstvu. Než výklad přijmeš, polož si tři otázky:</p>
+                    <p>Výklad ber jako jednu z možností a vztáhni ho k vlastní zkušenosti:</p>
                     <ul>
                         ${questions.map((question) => `<li>${escapeHtml(question)}</li>`).join('\n                        ')}
                     </ul>
                     <p>
-                        Sen se vyplatí zapsat co nejdřív po probuzení — detaily mizí během minut.
-                        Klíčová je emoce, se kterou ses probudil, ne jen samotný symbol.
+                        Pokud si chceš sen uchovat, poznamenej si jeho děj a pocit, který v tobě zůstal.
                     </p>
                 </div>
-
 ${faqBlock}
 
                 <div class="card">
@@ -222,7 +245,7 @@ ${faqBlock}
                 <div class="card">
                     <h3>Související symboly</h3>
                     <div class="related-links">
-                        ${related.map((other) => `<a href="${slugify(other.id)}.html" class="related-chip">${other.emoji ? `${other.emoji} ` : ''}${escapeHtml(other.keyword)}</a>`).join('\n                        ')}
+                        ${related.map((other) => renderDreamChip(other, `${slugify(other.id)}.html`)).join('\n                        ')}
                     </div>
                     <p><a href="../snar.html">← Celý snář Mystické Hvězdy</a></p>
                 </div>
@@ -232,20 +255,20 @@ ${faqBlock}
 
     <div id="footer-placeholder"></div>
 
-    <script src="../js/dist/core.js?v=1" defer></script>
-    <script type="module" src="../js/dist/main.js?v=10"></script>
+    <script src="../js/dist/core.js?v=20261021-footer-support-locale" defer></script>${'\n\n    '}
+    <script type="module" src="../js/dist/main.js?v=${MAIN_JS_VERSION}"></script>
 </body>
 </html>
 `;
 }
 
-function updateHubLinks(dreams) {
+function renderHubLinks(dreams) {
     const startMarker = '<!-- SNAR-LINKS:START -->';
     const endMarker = '<!-- SNAR-LINKS:END -->';
     let html = fs.readFileSync(HUB_PATH, 'utf8');
 
     const links = dreams
-        .map((dream) => `<a href="snar/${slugify(dream.id)}.html" class="related-chip">${dream.emoji ? `${dream.emoji} ` : ''}${escapeHtml(dream.keyword)}</a>`)
+        .map((dream) => renderDreamChip(dream, `snar/${slugify(dream.id)}.html`))
         .join('\n                        ');
 
     const section = `${startMarker}
@@ -268,11 +291,14 @@ function updateHubLinks(dreams) {
         html = html.replace(anchor, `${section}\n\n    ${anchor}`);
     }
 
-    fs.writeFileSync(HUB_PATH, html, 'utf8');
+    return html;
 }
 
 function main() {
+    const checkOnly = process.argv.includes('--check');
     const dreams = JSON.parse(fs.readFileSync(DATA_PATH, 'utf8'));
+    if (!Array.isArray(dreams)) throw new Error('data/dreams.json must be an array.');
+
     const seoContent = fs.existsSync(SEO_CONTENT_PATH)
         ? JSON.parse(fs.readFileSync(SEO_CONTENT_PATH, 'utf8'))
         : {};
@@ -280,12 +306,13 @@ function main() {
     if (missingContent) {
         console.warn(`[snar] ${missingContent} symbol(s) still without long-form content (base template used).`);
     }
-    if (!Array.isArray(dreams)) throw new Error('data/dreams.json must be an array.');
-
-    fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
     const seenSlugs = new Map();
-    let written = 0;
+    const staleFiles = [];
+    let updated = 0;
+    let generated = 0;
+
+    if (!checkOnly) fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
     dreams.forEach((dream, index) => {
         const slug = slugify(dream.id);
@@ -299,12 +326,45 @@ function main() {
         }
         seenSlugs.set(slug, dream.id);
 
-        fs.writeFileSync(path.join(OUTPUT_DIR, `${slug}.html`), renderPage(dream, index, dreams, seoContent), 'utf8');
-        written++;
+        const outputPath = path.join(OUTPUT_DIR, `${slug}.html`);
+        const expected = renderPage(dream, index, dreams, seoContent);
+        generated++;
+
+        if (checkOnly) {
+            if (!fs.existsSync(outputPath) || !sameGeneratedContent(fs.readFileSync(outputPath, 'utf8'), expected)) {
+                staleFiles.push(path.relative(ROOT, outputPath));
+            }
+        } else if (!fs.existsSync(outputPath) || !sameGeneratedContent(fs.readFileSync(outputPath, 'utf8'), expected)) {
+            fs.writeFileSync(outputPath, expected, 'utf8');
+            updated++;
+        }
     });
 
-    updateHubLinks(dreams.filter((dream) => seenSlugs.get(slugify(dream.id)) === dream.id));
-    console.log(`[snar] Generated ${written} dream pages + link hub in snar.html.`);
+    const expectedHub = renderHubLinks(dreams.filter((dream) => seenSlugs.get(slugify(dream.id)) === dream.id));
+    if (checkOnly) {
+        if (!fs.existsSync(HUB_PATH) || !sameGeneratedContent(fs.readFileSync(HUB_PATH, 'utf8'), expectedHub)) {
+            staleFiles.push(path.relative(ROOT, HUB_PATH));
+        }
+
+        if (staleFiles.length) {
+            const preview = staleFiles.slice(0, 20).join(', ');
+            const remaining = staleFiles.length > 20 ? ` and ${staleFiles.length - 20} more` : '';
+            console.error(`[snar] Check failed: ${staleFiles.length} generated file(s) need updates: ${preview}${remaining}`);
+            process.exitCode = 1;
+            return;
+        }
+
+        console.log(`[snar] Check passed: ${generated} dream pages and link hub are current; no files written.`);
+        return;
+    }
+
+    let hubUpdated = false;
+    if (!fs.existsSync(HUB_PATH) || !sameGeneratedContent(fs.readFileSync(HUB_PATH, 'utf8'), expectedHub)) {
+        fs.writeFileSync(HUB_PATH, expectedHub, 'utf8');
+        hubUpdated = true;
+    }
+
+    console.log(`[snar] Updated ${updated} of ${generated} dream pages; link hub ${hubUpdated ? 'updated' : 'unchanged'}.`);
 }
 
 main();

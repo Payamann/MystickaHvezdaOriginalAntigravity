@@ -73,6 +73,16 @@
   display: block;
 }
 
+.question-step h3 {
+  scroll-margin-block-start: 100px;
+}
+
+.question-step h3:focus-visible {
+  outline: 2px solid #bd9b65;
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
 .options-list {
   display: grid;
   gap: 0.85rem;

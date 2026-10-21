@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import app from '../index.js';
@@ -73,6 +74,48 @@ describe('Push notification API', () => {
 
         expect(res.status).toBe(400);
         expect(res.body.success).toBe(false);
+    });
+
+    test('database errors do not report push subscription changes as successful', async () => {
+        const csrfToken = await getCsrfToken();
+        const originalFrom = supabase.from.bind(supabase);
+        const fromSpy = jest.spyOn(supabase, 'from').mockImplementation((table) => {
+            const query = originalFrom(table);
+            if (table !== 'push_subscriptions') return query;
+
+            query.upsert = async () => ({ data: null, error: { message: 'Database unavailable' } });
+            query.delete = () => ({
+                eq: async () => ({ data: null, error: { message: 'Database unavailable' } })
+            });
+            return query;
+        });
+        const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+        try {
+            const subscribeRes = await request(app)
+                .post('/api/push/subscribe')
+                .set('x-csrf-token', csrfToken)
+                .send({
+                    subscription: {
+                        endpoint: `https://push.example.test/failing-${Date.now()}`,
+                        keys: { p256dh: 'test-p256dh', auth: 'test-auth' }
+                    }
+                });
+
+            expect(subscribeRes.status).toBe(500);
+            expect(subscribeRes.body.success).toBe(false);
+
+            const unsubscribeRes = await request(app)
+                .post('/api/push/unsubscribe')
+                .set('x-csrf-token', csrfToken)
+                .send({ endpoint: 'https://push.example.test/failing-unsubscribe' });
+
+            expect(unsubscribeRes.status).toBe(500);
+            expect(unsubscribeRes.body.success).toBe(false);
+        } finally {
+            fromSpy.mockRestore();
+            errorSpy.mockRestore();
+        }
     });
 
     test('can subscribe and unsubscribe a browser push endpoint', async () => {

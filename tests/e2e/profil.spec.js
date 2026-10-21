@@ -126,6 +126,35 @@ test.describe('Profil stránka', () => {
     });
 
     test('avatar možnosti existují', async ({ page }) => {
+        let user = {
+            id: 'avatar-test-user',
+            email: 'avatar-test@example.com',
+            first_name: 'Pavel',
+            subscription_status: 'free'
+        };
+        await page.context().addCookies([{ name: 'logged_in', value: '1', url: BASE_URL }]);
+        await page.addInitScript((authUser) => {
+            localStorage.setItem('auth_user', JSON.stringify(authUser));
+        }, user);
+        await page.route('**/api/auth/profile', route => route.fulfill({
+            status: 200, contentType: 'application/json',
+            body: JSON.stringify({ success: true, user })
+        }));
+        await page.route('**/api/plans', route => route.fulfill({
+            status: 200, contentType: 'application/json',
+            body: JSON.stringify({ success: true, plans: [], featurePlanMap: {} })
+        }));
+        await page.route(/\/api\/user\/readings(?:\?.*)?$/, route => route.fulfill({
+            status: 200, contentType: 'application/json',
+            body: JSON.stringify({ success: true, readings: [], pagination: { page: 1, total: 0, totalPages: 1 } })
+        }));
+        await page.route('**/api/payment/subscription/status', route => route.fulfill({
+            status: 200, contentType: 'application/json',
+            body: JSON.stringify({ planType: 'free', status: 'active', canCancel: false })
+        }));
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+
         const avatars = page.locator('.avatar-option, [data-avatar]');
         const count = await avatars.count();
         expect(count).toBeGreaterThanOrEqual(1);
@@ -166,7 +195,7 @@ test.describe('Profil aktivace', () => {
                 status: 'paid', product_id: 'pruvodce', value: 149, currency: 'CZK', transaction_id: 'in_verified'
             } })
         }));
-        const user = {
+        let user = {
             id: 'profile-user-1',
             email: 'profil-activation@example.com',
             first_name: 'Pavel',
@@ -175,6 +204,8 @@ test.describe('Profil aktivace', () => {
             ...(options.user || {})
         };
         const readings = [...(options.readings || [])];
+        const readingSaveRequests = [];
+        const readingsByRequestId = new Map();
         const subscription = options.subscription || { planType: 'free', status: 'active', canCancel: false };
 
         await page.context().addCookies([{
@@ -237,9 +268,36 @@ test.describe('Profil aktivace', () => {
                 body: JSON.stringify(reading ? { success: true, reading } : { success: false, error: 'Not found' })
             });
         });
-        await page.route('**/api/user/readings', async (route) => {
+        await page.route(/\/api\/user\/readings(?:\?.*)?$/, async (route) => {
             if (route.request().method() === 'POST') {
                 const payload = route.request().postDataJSON();
+                if (payload.type === 'journal' && options.journalResponseStatus) {
+                    await route.fulfill({
+                        status: options.journalResponseStatus,
+                        contentType: 'application/json',
+                        body: JSON.stringify({ success: false, error: 'Session expired' })
+                    });
+                    return;
+                }
+                readingSaveRequests.push(payload.requestId || null);
+                if (options.failPendingReadingSave && payload.type === 'tarot') {
+                    await route.fulfill({
+                        status: 503,
+                        contentType: 'application/json',
+                        body: JSON.stringify({ success: false, error: 'Reading save temporarily unavailable' })
+                    });
+                    return;
+                }
+                const existing = payload.requestId ? readingsByRequestId.get(payload.requestId) : null;
+                if (existing) {
+                    await route.fulfill({
+                        status: 200,
+                        contentType: 'application/json',
+                        body: JSON.stringify({ success: true, reading: existing, id: existing.id, idempotent: true })
+                    });
+                    return;
+                }
+
                 const reading = {
                     id: `reading-${readings.length + 1}`,
                     type: payload.type,
@@ -247,6 +305,19 @@ test.describe('Profil aktivace', () => {
                     created_at: new Date().toISOString()
                 };
                 readings.unshift(reading);
+                if (payload.requestId) readingsByRequestId.set(payload.requestId, reading);
+                if (options.replacementPendingReading && readingSaveRequests.length === 1) {
+                    await page.evaluate((replacement) => {
+                        localStorage.setItem('mh_pending_reading', JSON.stringify(replacement));
+                    }, options.replacementPendingReading);
+                }
+                if (options.dropFirstReadingSaveResponse && payload.requestId && readingSaveRequests.length === 1) {
+                    await route.abort();
+                    return;
+                }
+                if (typeof options.readingSaveResponseGate === 'function') {
+                    await options.readingSaveResponseGate();
+                }
                 await route.fulfill({
                     status: 200,
                     contentType: 'application/json',
@@ -255,10 +326,25 @@ test.describe('Profil aktivace', () => {
                 return;
             }
 
+            const requestUrl = new URL(route.request().url());
+            const types = requestUrl.searchParams.get('type')?.split(',').filter(Boolean) || null;
+            const filteredReadings = readings.filter(reading => {
+                if (requestUrl.searchParams.get('favorites') === 'true' && !reading.is_favorite) return false;
+                return !types || types.includes(reading.type);
+            });
+            const page = Number(requestUrl.searchParams.get('page') || 1);
+            const limit = Number(requestUrl.searchParams.get('limit') || 20);
             await route.fulfill({
                 status: 200,
                 contentType: 'application/json',
-                body: JSON.stringify({ success: true, readings })
+                body: JSON.stringify({
+                    success: true,
+                    readings: filteredReadings.slice((page - 1) * limit, page * limit),
+                    pagination: { page, total: filteredReadings.length, totalPages: Math.max(1, Math.ceil(filteredReadings.length / limit)) },
+                    ...(requestUrl.searchParams.get('summary') === 'true' ? {
+                        summary: { total: readings.length, favorites: readings.filter(reading => reading.is_favorite).length }
+                    } : {})
+                })
             });
         });
         await page.route('**/api/payment/subscription/status', async (route) => {
@@ -268,7 +354,202 @@ test.describe('Profil aktivace', () => {
                 body: JSON.stringify(subscription)
             });
         });
+        return {
+            readings,
+            readingSaveRequests,
+            setServerUser(nextUser) { user = nextUser; }
+        };
     }
+
+    test('paginace historie nového účtu nečeká na starý nedokončený požadavek', async ({ page }) => {
+        let activeAccount = 'profile-user-1';
+        let oldPageStarted;
+        let newPageStarted;
+        let finishOldPage;
+        let releaseOldPage;
+        let releaseNewPage;
+        const oldPageStartedPromise = new Promise(resolve => { oldPageStarted = resolve; });
+        const newPageStartedPromise = new Promise(resolve => { newPageStarted = resolve; });
+        const oldPageFinishedPromise = new Promise(resolve => { finishOldPage = resolve; });
+        const oldPageGate = new Promise(resolve => { releaseOldPage = resolve; });
+        const newPageGate = new Promise(resolve => { releaseNewPage = resolve; });
+        let newPageRequests = 0;
+        const makeReadings = account => Array.from({ length: 40 }, (_, index) => ({
+            id: `${account}-reading-${index + 1}`,
+            type: 'tarot',
+            created_at: new Date(Date.UTC(2026, 9, 17, 12, 0, 0) - index * 1000).toISOString(),
+            is_favorite: false,
+            data: { question: `Otázka ${index + 1}`, cards: ['Hvězda'], interpretation: 'Krátký testovací výklad.' }
+        }));
+        const accountReadings = {
+            'profile-user-1': makeReadings('profile-user-1'),
+            'profile-user-2': makeReadings('profile-user-2')
+        };
+        const { readings, setServerUser } = await mockLoggedInProfile(page, { readings: accountReadings['profile-user-1'] });
+
+        await page.route(/\/api\/user\/readings\?/, async route => {
+            const url = new URL(route.request().url());
+            // The profile-context loader also paginates typed history queries.
+            // Keep those background requests independent from this test's
+            // deliberately stalled, unfiltered history page requests.
+            if (url.searchParams.has('type')) {
+                const requestedType = url.searchParams.get('type');
+                const contextTypes = requestedType.split(',');
+                const contextReadings = accountReadings[activeAccount].filter(reading => contextTypes.includes(reading.type));
+                await route.fulfill({
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify({
+                        success: true,
+                        readings: contextReadings.slice(0, 20),
+                        pagination: { page: 1, total: contextReadings.length, totalPages: 1 },
+                        summary: { total: contextReadings.length, favorites: 0 }
+                    })
+                });
+                return;
+            }
+            const requestPage = Number(url.searchParams.get('page') || '1');
+            const requestAccount = activeAccount;
+            if (requestPage === 2 && requestAccount === 'profile-user-1') {
+                oldPageStarted();
+                await oldPageGate;
+                try {
+                    await route.fulfill({
+                        status: 200,
+                        contentType: 'application/json',
+                        body: JSON.stringify({
+                            success: true,
+                            readings: accountReadings[requestAccount].slice(20, 40),
+                            pagination: { page: 2, total: 40, totalPages: 2 }
+                        })
+                    });
+                } finally {
+                    finishOldPage();
+                }
+                return;
+            }
+            if (requestPage === 2 && requestAccount === 'profile-user-2') {
+                newPageRequests += 1;
+                newPageStarted();
+                await newPageGate;
+            }
+            const start = (requestPage - 1) * 20;
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    success: true,
+                    readings: accountReadings[requestAccount].slice(start, start + 20),
+                    pagination: { page: requestPage, total: 40, totalPages: 2 },
+                    summary: { total: 40, favorites: 0 }
+                })
+            });
+        });
+
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+        await expect(page.locator('#readings-list .reading-item')).toHaveCount(10);
+        await page.locator('#readings-load-more').click();
+        await expect(page.locator('#readings-list .reading-item')).toHaveCount(20);
+        await page.locator('#readings-load-more').click();
+        await oldPageStartedPromise;
+
+        activeAccount = 'profile-user-2';
+        setServerUser({ id: 'profile-user-2', email: 'druhy-ucet@example.com', first_name: 'Pavel', subscription_status: 'free' });
+        await page.evaluate(() => {
+            const nextUser = { ...window.Auth.user, id: 'profile-user-2', email: 'druhy-ucet@example.com' };
+            localStorage.setItem('auth_user', JSON.stringify(nextUser));
+            window.dispatchEvent(new StorageEvent('storage', {
+                key: 'auth_user',
+                newValue: JSON.stringify(nextUser)
+            }));
+        });
+        await expect(page.locator('#readings-list .reading-item')).toHaveCount(10);
+        await page.locator('#readings-load-more').click();
+        await expect(page.locator('#readings-list .reading-item')).toHaveCount(20);
+        await page.locator('#readings-load-more').click();
+        await newPageStartedPromise;
+        expect(newPageRequests).toBe(1);
+        await expect(page.locator('#readings-load-more')).toBeDisabled();
+
+        releaseOldPage();
+        await oldPageFinishedPromise;
+        await expect(page.locator('#readings-load-more')).toBeDisabled();
+
+        releaseNewPage();
+        await expect(page.locator('#readings-list .reading-item')).toHaveCount(30);
+        await page.locator('#readings-load-more').click();
+        await expect(page.locator('#readings-list .reading-item')).toHaveCount(40);
+        expect(readings).toHaveLength(40);
+    });
+
+    test('změna filtru uvolní historii při čekající zastaralé stránce', async ({ page }) => {
+        let releaseStalePage;
+        let stalePageStarted;
+        const stalePageGate = new Promise(resolve => { releaseStalePage = resolve; });
+        const stalePageStartedPromise = new Promise(resolve => { stalePageStarted = resolve; });
+        let pageTwoRequests = 0;
+        const readings = Array.from({ length: 40 }, (_, index) => ({
+            id: `filter-reading-${index + 1}`,
+            type: 'tarot',
+            created_at: new Date(Date.UTC(2026, 9, 17, 12, 0, 0) - index * 1000).toISOString(),
+            is_favorite: false,
+            data: { question: `Otázka ${index + 1}`, cards: ['Hvězda'], interpretation: 'Krátký testovací výklad.' }
+        }));
+        await mockLoggedInProfile(page, { readings });
+
+        await page.route('**/api/user/readings?*', async route => {
+            const url = new URL(route.request().url());
+            const requestPage = Number(url.searchParams.get('page') || '1');
+            const limit = Number(url.searchParams.get('limit') || '20');
+            if (limit !== 20) {
+                await route.fulfill({
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify({ success: true, readings, pagination: { page: 1, total: 40, totalPages: 1 } })
+                });
+                return;
+            }
+            if (requestPage === 2) {
+                pageTwoRequests += 1;
+                if (pageTwoRequests === 1) {
+                    stalePageStarted();
+                    await stalePageGate;
+                }
+            }
+            const start = (requestPage - 1) * 20;
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    success: true,
+                    readings: readings.slice(start, start + 20),
+                    pagination: { page: requestPage, total: 40, totalPages: 2 },
+                    summary: { total: 40, favorites: 0 }
+                })
+            });
+        });
+
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+        await expect(page.locator('#readings-list .reading-item')).toHaveCount(10);
+        await page.locator('#readings-load-more').click();
+        await expect(page.locator('#readings-list .reading-item')).toHaveCount(20);
+        await page.locator('#readings-load-more').click();
+        await stalePageStartedPromise;
+
+        await page.locator('#readings-filter').selectOption('tarot');
+        await expect(page.locator('#readings-list .reading-item')).toHaveCount(10);
+        await expect(page.locator('#readings-load-more')).toBeEnabled();
+        await page.locator('#readings-load-more').click();
+        await expect(page.locator('#readings-list .reading-item')).toHaveCount(20);
+        await page.locator('#readings-load-more').click();
+        await expect.poll(() => pageTwoRequests).toBe(2);
+        await expect(page.locator('#readings-list .reading-item')).toHaveCount(30);
+
+        releaseStalePage();
+        await expect(page.locator('#readings-list .reading-item')).toHaveCount(30);
+    });
 
     test('prvni akce navazuje na ulozene znameni a ma meritelny kontext', async ({ page }) => {
         await mockLoggedInProfile(page);
@@ -423,6 +704,45 @@ test.describe('Profil aktivace', () => {
         });
     }
 
+    test('pozdní ověření Checkoutu nezobrazí aktivaci předchozího účtu', async ({ page }) => {
+        let releaseVerification;
+        let verificationStarted;
+        const verificationGate = new Promise(resolve => { releaseVerification = resolve; });
+        const verificationStartedPromise = new Promise(resolve => { verificationStarted = resolve; });
+        const profile = await mockLoggedInProfile(page, {
+            user: { subscription_status: 'premium_monthly' },
+            subscription: { planType: 'pruvodce', status: 'active', canCancel: true }
+        });
+        await page.route('**/api/payment/checkout-result?*', async route => {
+            verificationStarted();
+            await verificationGate;
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true, result: {
+                    status: 'paid', product_id: 'pruvodce', transaction_id: 'in_delayed', value: 199, currency: 'CZK'
+                } })
+            });
+        });
+
+        await page.goto('/profil.html?payment=success&plan=pruvodce&session_id=cs_test_delayed');
+        await waitForPageReady(page);
+        await verificationStartedPromise;
+
+        profile.setServerUser({ id: 'profile-user-2', email: 'druhy-ucet@example.com', first_name: 'Pavel', subscription_status: 'free' });
+        await page.evaluate(() => {
+            const nextUser = { ...window.Auth.user, id: 'profile-user-2', email: 'druhy-ucet@example.com', subscription_status: 'free' };
+            window.Auth.user = nextUser;
+            localStorage.setItem('auth_user', JSON.stringify(nextUser));
+            document.dispatchEvent(new Event('auth:changed'));
+        });
+        await expect(page.locator('#user-email')).toHaveText('druhy-ucet@example.com');
+        releaseVerification();
+
+        await expect(page.locator('#premium-activation-card')).toBeHidden();
+        await expect(page.locator('.toast__title')).not.toContainText('Platba potvrzena');
+    });
+
     const paymentReturnCases = [
         ['tarot_multi_card', 'tarot.html'],
         ['numerologie_vyklad', 'numerologie.html'],
@@ -552,7 +872,9 @@ test.describe('Profil aktivace', () => {
                 status: 'past_due',
                 canCancel: true,
                 canResume: false,
-                needsPaymentUpdate: true
+                needsPaymentUpdate: true,
+                canManagePayments: true,
+                hasBillingSubscription: true
             }
         });
 
@@ -583,7 +905,10 @@ test.describe('Profil aktivace', () => {
             page.locator('#sub-payment-update-btn').click()
         ]);
 
-        expect(portalPayload).toEqual({ flow: 'payment_method_update' });
+        expect(portalPayload).toEqual({
+            flow: 'payment_method_update',
+            expectedUserId: 'profile-user-1'
+        });
     });
 
     test('pozastavene predplatne lze obnovit primo z profilu', async ({ page }) => {
@@ -624,7 +949,7 @@ test.describe('Profil aktivace', () => {
             page.locator('#sub-resume-btn').click()
         ]);
 
-        expect(resumeRequest.postDataJSON()).toEqual({});
+        expect(resumeRequest.postDataJSON()).toEqual({ expectedUserId: 'profile-user-1' });
     });
 
     test('prazdny profil drzi symbolicky zamer minuleho zivota', async ({ page }) => {
@@ -776,7 +1101,212 @@ test.describe('Profil aktivace', () => {
         await expect(savedCard).toBeVisible();
         await expect(savedCard).toHaveClass(/reading-item--just-saved/);
         await expect(page.locator('#tab-btn-history')).toHaveAttribute('aria-selected', 'true');
-        await expect(page.locator('.profile-history-next-step')).toContainText('Další krok po uložení');
+        await expect(savedCard).toContainText('Mám se dnes ozvat?');
+    });
+
+    test('pri chybe importu zustane vyklad v prohlizeci a profil vysvetli opakovani', async ({ page }) => {
+        const { readings, readingSaveRequests } = await mockLoggedInProfile(page, { failPendingReadingSave: true });
+        await page.addInitScript(() => {
+            localStorage.setItem('mh_pending_reading', JSON.stringify({
+                type: 'tarot',
+                source: 'tarot_yes_no_save_journal',
+                feature: 'tarot_yes_no',
+                createdAt: Date.now(),
+                data: {
+                    tool: 'tarot_yes_no',
+                    question: 'Mám tomu dát ještě chvíli?',
+                    answer: 'NEJASNÉ: Nech si prostor na další informace.'
+                }
+            }));
+        });
+
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+
+        const pending = await page.evaluate(() => JSON.parse(localStorage.getItem('mh_pending_reading') || 'null'));
+        expect(pending).toEqual(expect.objectContaining({
+            type: 'tarot',
+            userId: 'profile-user-1'
+        }));
+        expect(pending.requestId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+        expect(readingSaveRequests).toHaveLength(1);
+        expect(readings).toHaveLength(0);
+        await expect(page.locator('.toast-container')).toContainText('Uložení se nepodařilo potvrdit');
+        await expect(page.locator('.toast-container')).toContainText('Výklad zůstal v tomto prohlížeči');
+    });
+
+    test('pending tarot ano/ne ze session storage se po prihlaseni ulozi', async ({ page }) => {
+        await mockLoggedInProfile(page);
+        await page.addInitScript(() => {
+            sessionStorage.setItem('mh_pending_reading', JSON.stringify({
+                type: 'tarot',
+                source: 'tarot_yes_no_save_journal',
+                feature: 'tarot_yes_no',
+                createdAt: Date.now(),
+                data: {
+                    tool: 'tarot_yes_no',
+                    source: 'tarot_yes_no_result',
+                    question: 'Mám si nechat víc času?',
+                    answer: 'ANO: Dej prostor vlastnímu tempu.',
+                    result_label: 'ANO',
+                    result_key: 'yes',
+                    result_text: 'Dej prostor vlastnímu tempu.'
+                }
+            }));
+        });
+
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+
+        await expect.poll(() => page.evaluate(() => sessionStorage.getItem('mh_pending_reading'))).toBeNull();
+        const savedCard = page.locator('#readings-list .reading-item[data-reading-id="reading-1"]');
+        await expect(savedCard).toBeVisible();
+        await expect(savedCard).toHaveClass(/reading-item--just-saved/);
+    });
+
+    test('opakování po ztracené odpovědi uloží čekající výklad jen jednou', async ({ page }) => {
+        const { readings, readingSaveRequests } = await mockLoggedInProfile(page, { dropFirstReadingSaveResponse: true });
+        await page.addInitScript(() => {
+            if (localStorage.getItem('mh_e2e_pending_reading_seeded') === '1') return;
+            localStorage.setItem('mh_e2e_pending_reading_seeded', '1');
+            localStorage.setItem('mh_pending_reading', JSON.stringify({
+                type: 'tarot',
+                source: 'tarot_yes_no_save_journal',
+                feature: 'tarot_yes_no',
+                createdAt: Date.now(),
+                data: {
+                    tool: 'tarot_yes_no',
+                    question: 'Mám to zkusit ještě jednou?',
+                    answer: 'ANO: Zkus jeden klidný krok.'
+                }
+            }));
+        });
+
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+        await expect.poll(() => readingSaveRequests.length).toBeGreaterThanOrEqual(1);
+        const firstRequestId = readingSaveRequests[0];
+        expect(firstRequestId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+
+        await page.reload();
+        await waitForPageReady(page);
+
+        // A failed or repeated attempt must retain the idempotency key.
+        await expect.poll(() => readingSaveRequests.length).toBeGreaterThanOrEqual(2);
+        await expect.poll(() => page.evaluate(() => localStorage.getItem('mh_pending_reading'))).toBeNull();
+        expect(readingSaveRequests.length).toBeGreaterThanOrEqual(2);
+        expect(readingSaveRequests.every(requestId => requestId === firstRequestId)).toBe(true);
+        expect(readings).toHaveLength(1);
+    });
+
+    test('čekající výklad svázaný s jiným účtem se do aktuálního profilu neodešle', async ({ page }) => {
+        const { readings, readingSaveRequests } = await mockLoggedInProfile(page);
+        const originalRequestId = '3c512066-5daf-4f30-9d63-08c755235bb2';
+        await page.addInitScript((requestId) => {
+            localStorage.setItem('mh_pending_reading', JSON.stringify({
+                type: 'tarot',
+                source: 'tarot_yes_no_save_journal',
+                feature: 'tarot_yes_no',
+                createdAt: Date.now(),
+                requestId,
+                userId: 'profile-user-original',
+                data: { tool: 'tarot_yes_no', question: 'Otázka původního účtu', answer: 'ANO' }
+            }));
+        }, originalRequestId);
+
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+
+        await expect.poll(() => readingSaveRequests.length).toBe(0);
+        await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('mh_pending_reading') || 'null')?.userId))
+            .toBe('profile-user-original');
+        expect(readings).toHaveLength(0);
+        await expect(page.locator('.toast-container')).toContainText('původního účtu');
+    });
+
+    test('potvrzeni cekajiciho vykladu se neukaze po prepnuti na jiny ucet', async ({ page }) => {
+        let saveStarted;
+        let releaseSave;
+        const saveStartedPromise = new Promise(resolve => { saveStarted = resolve; });
+        const saveGate = new Promise(resolve => { releaseSave = resolve; });
+        const { readingSaveRequests, setServerUser } = await mockLoggedInProfile(page, {
+            readingSaveResponseGate: async () => {
+                saveStarted();
+                await saveGate;
+            }
+        });
+        await page.addInitScript(() => {
+            localStorage.setItem('mh_pending_reading', JSON.stringify({
+                type: 'tarot',
+                source: 'tarot_yes_no_save_journal',
+                feature: 'tarot_yes_no',
+                createdAt: Date.now(),
+                requestId: '04d42c7a-0e3d-46a4-868a-0fd5d76a91d7',
+                userId: 'profile-user-1',
+                data: { tool: 'tarot_yes_no', question: 'Otázka účtu A', answer: 'ANO' }
+            }));
+        });
+
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+        await saveStartedPromise;
+        setServerUser({ id: 'profile-user-2', email: 'druhy-ucet@example.com', first_name: 'Pavel', subscription_status: 'free' });
+        await page.evaluate(() => {
+            const nextUser = {
+                ...window.Auth.user,
+                id: 'profile-user-2',
+                email: 'druhy-ucet@example.com'
+            };
+            window.Auth.user = nextUser;
+            localStorage.setItem('auth_user', JSON.stringify(nextUser));
+            window.dispatchEvent(new StorageEvent('storage', {
+                key: 'auth_user',
+                newValue: JSON.stringify(nextUser)
+            }));
+            document.dispatchEvent(new Event('auth:changed'));
+        });
+        await expect.poll(() => page.evaluate(() => window.Auth?.user?.id)).toBe('profile-user-2');
+        const remoteProfile = await page.evaluate(async () => fetch('/api/auth/profile', { credentials: 'include' }).then(response => response.json()));
+        expect(remoteProfile.user.id).toBe('profile-user-2');
+
+        releaseSave();
+
+        await expect.poll(() => page.evaluate(() => localStorage.getItem('mh_pending_reading'))).toBeNull();
+        expect(readingSaveRequests).toEqual(['04d42c7a-0e3d-46a4-868a-0fd5d76a91d7']);
+        const toastText = (await page.locator('.toast-container').allTextContents()).join(' ');
+        expect(toastText).not.toContain('Výklad uložen');
+    });
+
+    test('odpověď staršího uložení nesmaže novější čekající výklad z jiné karty', async ({ page }) => {
+        const replacementPendingReading = {
+            type: 'tarot',
+            source: 'tarot_yes_no_save_journal',
+            feature: 'tarot_yes_no',
+            createdAt: Date.now(),
+            requestId: '1e95f6cf-5a41-4639-971c-e0f50a10b6c2',
+            userId: 'profile-user-1',
+            data: { tool: 'tarot_yes_no', question: 'Novější otázka', answer: 'NE' }
+        };
+        const { readings, readingSaveRequests } = await mockLoggedInProfile(page, { replacementPendingReading });
+        await page.addInitScript(() => {
+            localStorage.setItem('mh_pending_reading', JSON.stringify({
+                type: 'tarot',
+                source: 'tarot_yes_no_save_journal',
+                feature: 'tarot_yes_no',
+                createdAt: Date.now() - 1000,
+                requestId: '3c512066-5daf-4f30-9d63-08c755235bb2',
+                userId: 'profile-user-1',
+                data: { tool: 'tarot_yes_no', question: 'Starší otázka', answer: 'ANO' }
+            }));
+        });
+
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+
+        await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('mh_pending_reading') || 'null')?.requestId))
+            .toBe(replacementPendingReading.requestId);
+        expect(readingSaveRequests).toHaveLength(1);
+        expect(readings).toHaveLength(1);
     });
 
     test('prazdne oblibene bez vykladu vedou k meritelne prvni akci', async ({ page }) => {
@@ -788,7 +1318,7 @@ test.describe('Profil aktivace', () => {
 
         const favorites = page.locator('#favorites-list .empty-state');
         await expect(favorites).toContainText('první návrat');
-        await expect(favorites).toContainText('nejsou sbírka hvězdiček');
+        await expect(favorites).toContainText('Po prvním výkladu si můžeš uložit do oblíbených');
 
         const tarotHref = await favorites.locator('a[href*="tarot.html"]').getAttribute('href');
         const horoscopeHref = await favorites.locator('a[href*="horoskopy.html"]').getAttribute('href');
@@ -821,7 +1351,8 @@ test.describe('Profil aktivace', () => {
         await page.locator('#tab-btn-favorites').click();
 
         const favorites = page.locator('#favorites-list .empty-state');
-        await expect(favorites).toContainText('Najdi v historii výklad');
+        await expect(favorites).toContainText('Vyber si první výklad pro návrat');
+        await expect(favorites).toContainText('Označ si v historii výklad');
 
         await favorites.locator('[data-profile-tab-target="history"]').click();
 
@@ -871,10 +1402,12 @@ test.describe('Profil aktivace', () => {
 
         await page.goto('/profil.html');
         await waitForPageReady(page);
+        await page.locator('#tab-btn-overview').click();
 
         await expect(page.locator('#ritual-memory-card')).toBeVisible();
+        await page.locator('#ritual-memory-card > summary').click();
         await expect(page.locator('#ritual-memory-title')).toContainText('Vztahy');
-        await expect(page.locator('#ritual-memory-strength')).toContainText('Silná stopa');
+        await expect(page.locator('#ritual-memory-strength')).toContainText('Více podkladů');
         await expect(page.locator('[data-memory-theme="relationships"]').first()).toContainText('Vztahy');
 
         const themeHref = await page.locator('[data-memory-action="memory_theme"]').getAttribute('href');
@@ -932,7 +1465,9 @@ test.describe('Profil aktivace', () => {
         await expect(page.locator('.reading-feedback')).toBeVisible();
 
         await page.locator('[data-feedback-focus="relationships"]').click();
-        await expect(page.locator('.reading-feedback__status')).toContainText('Paměť profilu');
+        await expect(page.locator('.reading-feedback__status')).toContainText('Zpětná vazba je uložená.');
+        await page.locator('#reading-modal-close').click();
+        await page.locator('#tab-btn-overview').click();
         await expect(page.locator('#ritual-memory-title')).toContainText('Vztahy');
 
         await expect.poll(async () => page.evaluate(() => window.__profileEvents
@@ -948,9 +1483,16 @@ test.describe('Profil aktivace', () => {
 
     test('vecerni reflexe ulozi journal a oznaci navratovy ritual', async ({ page }) => {
         await mockLoggedInProfile(page);
+        let journalPayload = null;
+        page.on('request', request => {
+            if (request.method() !== 'POST' || !new URL(request.url()).pathname.endsWith('/api/user/readings')) return;
+            const payload = request.postDataJSON();
+            if (payload?.type === 'journal') journalPayload = payload;
+        });
 
         await page.goto('/profil.html');
         await waitForPageReady(page);
+        await page.locator('#tab-btn-overview').click();
 
         await page.evaluate(() => {
             window.__profileEvents = [];
@@ -966,6 +1508,7 @@ test.describe('Profil aktivace', () => {
         await expect(page.locator('#journal-submit')).toHaveText('Uložit reflexi');
         await expect(page.locator('#journal-entries')).toContainText('Dnes si odnasim jeden jasny krok.');
         await expect(page.locator('[data-activation-step="daily_reflection"]')).toHaveAttribute('data-completed', 'true');
+        expect(journalPayload?.expectedUserId).toBe('profile-user-1');
 
         const events = await page.evaluate(() => window.__profileEvents);
         expect(events).toEqual(expect.arrayContaining([
@@ -974,6 +1517,253 @@ test.describe('Profil aktivace', () => {
                 payload: expect.objectContaining({ source: 'profile_dashboard' })
             })
         ]));
+    });
+
+    test('rozepsaná reflexe se neodešle pod jiný účet při změně účtu během CSRF', async ({ page }) => {
+        const profile = await mockLoggedInProfile(page);
+        let csrfStarted;
+        let releaseCsrf;
+        const csrfStartedPromise = new Promise(resolve => { csrfStarted = resolve; });
+        const csrfGate = new Promise(resolve => { releaseCsrf = resolve; });
+        let journalPosts = 0;
+
+        await page.route('**/api/csrf-token', async route => {
+            csrfStarted();
+            await csrfGate;
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ csrfToken: 'journal-account-switch-token' })
+            });
+        });
+        page.on('request', request => {
+            if (request.method() === 'POST' && new URL(request.url()).pathname.endsWith('/api/user/readings')) {
+                const payload = request.postDataJSON();
+                if (payload?.type === 'journal') journalPosts += 1;
+            }
+        });
+
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+        await page.locator('#tab-btn-overview').click();
+        await page.locator('#journal-input').fill('Soukromá poznámka původního účtu.');
+        await page.locator('#journal-submit').click();
+        await csrfStartedPromise;
+
+        profile.setServerUser({ id: 'profile-user-2', email: 'druhy-ucet@example.com', first_name: 'Pavel', subscription_status: 'free' });
+        await page.evaluate(() => {
+            sessionStorage.setItem('mh_profile_journal_draft:profile-user-2', 'Poznámka druhého účtu.');
+            const nextUser = { ...window.Auth.user, id: 'profile-user-2', email: 'druhy-ucet@example.com' };
+            window.Auth.user = nextUser;
+            localStorage.setItem('auth_user', JSON.stringify(nextUser));
+            document.dispatchEvent(new Event('auth:changed'));
+        });
+        await expect(page.locator('#user-email')).toHaveText('druhy-ucet@example.com');
+        await expect(page.locator('#journal-input')).toHaveValue('Poznámka druhého účtu.');
+        releaseCsrf();
+
+        await expect(page.locator('#journal-status')).toContainText('Účet se během ukládání změnil');
+        expect(journalPosts).toBe(0);
+        expect(await page.evaluate(() => sessionStorage.getItem('mh_profile_journal_draft:profile-user-1')))
+            .toBe('Soukromá poznámka původního účtu.');
+    });
+
+    test('relace chybějící před uložením zachová reflexi a nabídne návrat k přihlášení', async ({ page }) => {
+        await mockLoggedInProfile(page);
+        let journalPosts = 0;
+        page.on('request', request => {
+            if (request.method() === 'POST' && new URL(request.url()).pathname.endsWith('/api/user/readings')) {
+                const payload = request.postDataJSON();
+                if (payload?.type === 'journal') journalPosts += 1;
+            }
+        });
+
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+        await page.locator('#tab-btn-overview').click();
+        await page.evaluate(() => {
+            window.getCSRFToken = async () => 'expired-session-test-csrf';
+            document.cookie = 'logged_in=; Max-Age=0; path=/';
+        });
+        await page.locator('#journal-input').fill('Poznámka při vypršené relaci.');
+        await page.locator('#journal-submit').click();
+
+        await expect(page.locator('#profile-session-expired-note')).toContainText('Rozepsaná poznámka zůstala');
+        await expect(page.locator('#profile-session-expired-note')).toBeFocused();
+        await expect(page.locator('#profile-login-btn')).toBeVisible();
+        await expect(page.locator('#profile-login-btn')).toHaveAttribute('href', /redirect=%2Fprofil.html%23journal-input/);
+        expect(journalPosts).toBe(0);
+        expect(await page.evaluate(() => sessionStorage.getItem('mh_profile_journal_draft:profile-user-1')))
+            .toBe('Poznámka při vypršené relaci.');
+    });
+
+    test('serverem odmítnutá relace se vyčistí a zachová rozepsanou reflexi', async ({ page }) => {
+        await mockLoggedInProfile(page, { journalResponseStatus: 401 });
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+        await page.locator('#tab-btn-overview').click();
+        await page.locator('#journal-input').fill('Poznámka po serverovém vypršení relace.');
+        await page.locator('#journal-submit').click();
+
+        await expect(page.locator('#profile-session-expired-note')).toContainText('Rozepsaná poznámka zůstala');
+        await expect(page.locator('#profile-session-expired-note')).toBeFocused();
+        await expect(page.locator('#profile-login-btn')).toHaveAttribute('href', /redirect=%2Fprofil.html%23journal-input/);
+        expect(await page.evaluate(() => document.cookie.split(';').some(cookie => cookie.trim() === 'logged_in=1')))
+            .toBe(false);
+        expect(await page.evaluate(() => sessionStorage.getItem('mh_profile_journal_draft:profile-user-1')))
+            .toBe('Poznámka po serverovém vypršení relace.');
+    });
+
+    test('nastavení profilu se neodešle pod jiný účet při změně účtu během CSRF', async ({ page }) => {
+        await mockLoggedInProfile(page);
+        let activeUser = {
+            id: 'profile-user-1',
+            email: 'profil-activation@example.com',
+            first_name: 'Pavel',
+            birth_date: '1990-08-10',
+            subscription_status: 'free'
+        };
+        let profileUpdates = 0;
+        await page.route('**/api/auth/profile', async route => {
+            if (route.request().method() === 'PUT') {
+                profileUpdates += 1;
+                await route.fulfill({ status: 409, contentType: 'application/json', body: JSON.stringify({ error: 'Unexpected write' }) });
+                return;
+            }
+            await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true, user: activeUser }) });
+        });
+
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+        await page.locator('#tab-btn-settings').click();
+        await page.evaluate(() => {
+            window.__testCsrfCalls = 0;
+            window.getCSRFToken = () => {
+                window.__testCsrfCalls += 1;
+                return new Promise(resolve => { window.__releaseProfileCsrf = resolve; });
+            };
+        });
+        await page.locator('#settings-name').fill('Poznámka k původnímu profilu');
+        await page.locator('#save-settings-btn').click();
+        await expect.poll(() => page.evaluate(() => window.__testCsrfCalls)).toBe(1);
+
+        activeUser = { ...activeUser, id: 'profile-user-2', email: 'druhy-ucet@example.com', first_name: 'Anna' };
+        await page.evaluate(nextUser => {
+            window.Auth.user = nextUser;
+            localStorage.setItem('auth_user', JSON.stringify(nextUser));
+            document.dispatchEvent(new Event('auth:changed'));
+        }, activeUser);
+        await expect(page.locator('#user-email')).toHaveText('druhy-ucet@example.com');
+        await page.evaluate(() => window.__releaseProfileCsrf('test-csrf-token'));
+
+        await expect.poll(() => profileUpdates).toBe(0);
+    });
+
+    test('datum narození v nastavení lze načíst, uložit i odebrat', async ({ page }) => {
+        await mockLoggedInProfile(page);
+        let profileUser = {
+            id: 'profile-user-1',
+            email: 'profil-activation@example.com',
+            first_name: 'Pavel',
+            birth_date: '1990-08-10',
+            subscription_status: 'free'
+        };
+        const profileWrites = [];
+
+        await page.route('**/api/csrf-token', route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ csrfToken: 'profile-settings-test-token' })
+        }));
+        await page.route('**/api/auth/profile', async route => {
+            if (route.request().method() === 'PUT') {
+                const payload = route.request().postDataJSON();
+                profileWrites.push(payload);
+                const { expectedUserId, ...updates } = payload;
+                expect(expectedUserId).toBe(profileUser.id);
+                profileUser = { ...profileUser, ...updates };
+            }
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true, user: profileUser })
+            });
+        });
+
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+        await expect(page.locator('#readings-list')).not.toContainText('Načítám historii...');
+        await page.locator('#tab-btn-settings').click();
+
+        const birthdate = page.locator('#settings-birthdate');
+        await expect(birthdate).toHaveValue('1990-08-10');
+        await expect(birthdate).not.toHaveAttribute('required', '');
+        await birthdate.fill('1991-01-02');
+        // Leave the native date control before scrolling to submit on touch devices.
+        await page.locator('label[for="settings-birthplace"]').click();
+        await page.locator('#save-settings-btn').click();
+        await expect.poll(() => profileWrites.length).toBe(1);
+        expect(profileWrites[0].birth_date).toBe('1991-01-02');
+        await expect(birthdate).toHaveValue('1991-01-02');
+
+        await birthdate.fill('');
+        await page.locator('label[for="settings-birthplace"]').click();
+        await page.locator('#save-settings-btn').click();
+        await expect.poll(() => profileWrites.length).toBe(2);
+        expect(profileWrites[1].birth_date).toBeNull();
+        await expect(birthdate).toHaveValue('');
+    });
+
+    test('retenční dialog nezruší členství jiného účtu po přepnutí profilu', async ({ page }) => {
+        await mockLoggedInProfile(page, { subscription: {
+            planType: 'pruvodce', status: 'active', canCancel: true,
+            canManagePayments: true, hasBillingSubscription: true
+        } });
+        let activeUser = {
+            id: 'profile-user-1',
+            email: 'profil-activation@example.com',
+            first_name: 'Pavel',
+            birth_date: '1990-08-10',
+            subscription_status: 'premium_monthly'
+        };
+        await page.route('**/api/auth/profile', route => route.fulfill({
+            status: 200, contentType: 'application/json',
+            body: JSON.stringify({ success: true, user: activeUser })
+        }));
+        const mutationRequests = [];
+        page.on('request', request => {
+            if (request.method() === 'POST' && /\/api\/payment\/(?:cancel|retention\/feedback)/.test(new URL(request.url()).pathname)) {
+                mutationRequests.push(request.url());
+            }
+        });
+
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+        await page.locator('#tab-btn-settings').click();
+        await page.evaluate(() => {
+            window.__testCsrfCalls = 0;
+            window.getCSRFToken = () => {
+                window.__testCsrfCalls += 1;
+                return new Promise(resolve => { window.__releaseProfileCsrf = resolve; });
+            };
+        });
+        await page.locator('#sub-cancel-btn').click();
+        await expect(page.locator('.retention-modal-overlay')).toBeVisible();
+
+        activeUser = { ...activeUser, id: 'profile-user-2', email: 'druhy-ucet@example.com', first_name: 'Anna' };
+        await page.evaluate(nextUser => {
+            window.Auth.user = nextUser;
+            localStorage.setItem('auth_user', JSON.stringify(nextUser));
+            document.dispatchEvent(new Event('auth:changed'));
+        }, activeUser);
+        await expect(page.locator('#user-email')).toHaveText('druhy-ucet@example.com');
+
+        await page.locator('input[name="reason"][value="found_better"]').check();
+        await page.locator('[data-retention-action="offer"]').click();
+        await expect.poll(() => page.evaluate(() => window.__testCsrfCalls)).toBe(1);
+        await page.evaluate(() => window.__releaseProfileCsrf('test-csrf-token'));
+        await expect(page.locator('.retention-modal-overlay')).toHaveCount(0);
+        expect(mutationRequests).toEqual([]);
     });
 
     test('prichod z vykladu s journal hashem rovnou zaměří reflexi', async ({ page }) => {

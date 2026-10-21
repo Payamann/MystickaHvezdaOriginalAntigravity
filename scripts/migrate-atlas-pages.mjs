@@ -11,8 +11,8 @@ for (const page of pages) {
       : `<body${attrs} class="atlas-page">`;
   });
   after = after.replace(/\s*<div class="stars" aria-hidden="true"><\/div>/g, '');
-  if (!after.includes('/css/atlas-web.css')) {
-    after = after.replace('</head>', '    <link rel="stylesheet" href="/css/atlas-web.css?v=1">\n</head>');
+  if (!after.includes('/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas')) {
+    after = after.replace('</head>', '    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">\n</head>');
   }
   if (page === 'vztahovy-vyklad.html') {
     after = after.replace('class="atlas-page"', 'class="atlas-page atlas-reading-order"');

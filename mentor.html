@@ -12,19 +12,19 @@
 
     <title>Hvězdný průvodce | Osobní otázky a výklad | Mystická Hvězda</title>
     <meta name="description"
-        content="Položte otázku Hvězdnému průvodci a získejte symbolický výklad pro vztahy, směr, rozhodování nebo aktuální situaci v kontextu vašeho znamení.">
+        content="Polož otázku Hvězdnému průvodci a získej automatický symbolický pohled na vztahy, práci, směr nebo situaci, kterou právě řešíš.">
 
     <meta property="og:type" content="website">
     <meta property="og:title" content="Hvězdný průvodce | Mystická Hvězda">
     <meta property="og:description"
-        content="Položte otázku a získejte symbolický výklad pro vztahy, směr, rozhodování nebo aktuální situaci.">
+        content="Polož otázku a získej automatický symbolický pohled na vztahy, práci, směr nebo situaci, kterou právě řešíš.">
     <meta property="og:url" content="https://www.mystickahvezda.cz/mentor.html">
     <meta property="og:image" content="https://www.mystickahvezda.cz/img/search-preview/other.webp">
     <meta property="og:locale" content="cs_CZ">
     <link rel="stylesheet" href="/fonts/local-fonts.css">
-    <link rel="stylesheet" href="css/style.v2.min.css?v=11">
-    <link rel="stylesheet" href="css/pages/mentor.css?v=4">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" integrity="sha384-XQqX/4yiUGu+oyr87jvWzRuqBUK/adrY0DunhL+tID9m/9dwSpV8h9Fk/Sg6ifVQ" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="css/style.v2.min.css?v=20261018-release-candidate">
+    <link rel="stylesheet" href="css/pages/mentor.css?v=20261019-chat-atlas-palette">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" integrity="sha384-XQqX/4yiUGu+oyr87jvWzRuqBUK/adrY0DunhL+tID9m/9dwSpV8h9Fk/Sg6ifVQ" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
     <link rel="canonical" href="https://www.mystickahvezda.cz/mentor.html">
     <script type="application/ld+json">
     {
@@ -50,8 +50,8 @@
 <meta property="og:image:alt" content="Hvězdný průvodce | Osobní otázky a výklad | Mystická Hvězda">
 <meta name="twitter:image:alt" content="Hvězdný průvodce | Osobní otázky a výklad | Mystická Hvězda">
 
-    <link rel="stylesheet" href="/css/atlas-web.css?v=1">
-    <link rel="stylesheet" href="/css/atlas-remaining.css?v=1">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
+    <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261020-01-remaining-surface-polish">
 </head>
 
 <body class="page-mentor atlas-page atlas-remaining-page">
@@ -61,16 +61,16 @@
 
     <div id="freemium-banner"
         class="mh-inline-58aab8fec6">
-        <span id="freemium-banner-text">✨ Dnes zbývá: <strong id="freemium-count">...</strong> výkladů zdarma</span>
+        <span id="freemium-banner-text"><svg class="mh-symbol mh-symbol--inline" width="18" height="18" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg><span id="freemium-copy">Po registraci můžeš poslat až 3 zprávy denně zdarma.</span></span>
         &nbsp;•&nbsp;
-        <a href="/cenik.html?plan=pruvodce&source=mentor_freemium_banner&feature=mentor" class="mh-inline-f2bbe2bdc8">💎 Získat Premium ›</a>
+        <a href="/cenik.html?plan=pruvodce&source=mentor_freemium_banner&feature=mentor" class="mh-inline-f2bbe2bdc8"><svg class="mh-symbol mh-symbol--inline" width="18" height="18" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#gem"></use></svg>Prohlédnout členství ›</a>
         &nbsp;
         <button data-action="closeBanner"
-            class="mh-inline-0ebce6e218" aria-label="Zavřít premium upozornění">×</button>
+            class="mh-inline-0ebce6e218" aria-label="Zavřít premium upozornění"><svg class="mh-symbol mh-symbol--inline" width="18" height="18" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#close"></use></svg></button>
     </div>
 
     <script src="/js/dist/close-banner.js" defer></script>
-    <script src="js/dist/freemium-mentor.js" defer></script>
+    <script src="js/dist/freemium-mentor.js?v=20261018-truthful-limits" defer></script>
 
     <main id="main-content" class="section hero--mini mh-inline-526306ef21" tabindex="-1">
         <div class="container">
@@ -124,9 +124,8 @@
                 </div>
 
                 <div class="chat-messages" id="chat-messages">
-                    <div class="message message--mentor">
-                        Vítej, poutníku. Jsem tady, abych ti pomohl pojmenovat, co se děje, a nabídnout další směr. Na
-                        co se chceš dnes zeptat?
+                    <div class="message message--mentor" data-mentor-welcome>
+                        Napiš, co teď řešíš. Průvodce nabídne symbolický pohled, který ti může pomoct ujasnit si další krok.
                     </div>
 
                     <div class="typing-indicator" id="typing-indicator">
@@ -141,8 +140,15 @@
                         placeholder="Napiš svou otázku…" aria-label="Tvoje otázka pro Průvodce" maxlength="2000" rows="1"></textarea>
 
                     <button id="send-btn" class="send-btn" aria-label="Odeslat otázku" disabled>
-                        ✦
+                        <svg class="mh-symbol" width="22" height="22" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg?v=20261019-send-icon#send"></use></svg>
                     </button>
+                </div>
+                <div class="mentor-reading-consent" id="mentor-reading-consent-option" hidden>
+                    <label for="mentor-reading-consent">
+                        <input type="checkbox" id="mentor-reading-consent" aria-describedby="mentor-reading-consent-help">
+                        <span>Zohlednit moje uložené výklady</span>
+                    </label>
+                    <p id="mentor-reading-consent-help">Při zprávách odeslaných se zapnutou volbou může Průvodce využít souhrny až tří nejnovějších výkladů. Mohou obsahovat datum, uloženou otázku ke Křišťálové kouli, názvy tarotových karet, numerologické hodnoty nebo znamení a období horoskopu. Souhrny odešleme poskytovateli AI; plný text deníku se neposílá.</p>
                 </div>
             </div>
         </div>
@@ -151,16 +157,16 @@
 
     <div id="footer-placeholder"></div>
 
-    <script type="module" src="js/dist/mentor.js?v=3"></script>
+    <script type="module" src="js/dist/mentor.js?v=20261019-reading-context-bundle"></script>
     <script src="js/dist/api-config.js?v=5" defer></script>
-    <script src="js/dist/templates.js?v=14" defer></script>
-    <script src="js/dist/auth-client.js?v=20261003-single-membership" defer></script>
+    <script src="js/dist/templates.js?v=20261021-celtic-footer-star-svg" defer></script>
+    <script src="js/dist/auth-client.js?v=20261020-02-register-password-policy" defer></script>
     <script src="js/dist/auth-copy-fixes.js" defer></script>
-    <script src="js/dist/tool-pages-copy-fixes.js?v=3" defer></script>
-    <script src="js/dist/share-result.js?v=1" defer></script>
+    <script src="js/dist/tool-pages-copy-fixes.js?v=20261018-numerology-copy" defer></script>
+    <script src="js/dist/share-result.js?v=20261017-icons" defer></script>
     <script src="js/dist/exit-intent.js" defer></script>
-    <script src="js/dist/components.js?v=20260522-premium-gate-cache" defer></script>
-    <script type="module" src="js/dist/main.js?v=11"></script>
+    <script src="js/dist/components.js?v=20261021-footer-support-locale" defer></script>
+    <script type="module" src="js/dist/main.js?v=20261018-status-icons"></script>
 </body>
 
 </html>

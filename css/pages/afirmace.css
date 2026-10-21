@@ -17,21 +17,21 @@
 
         .zodiac-btn {
 
-            background: rgba(255, 255, 255, 0.04);
+            background: #102638;
 
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(179, 149, 94, 0.27);
 
-            border-radius: 14px;
+            border-radius: 5px;
 
             padding: 0.9rem 0.5rem;
 
             cursor: pointer;
 
-            transition: color 0.25s, background-color 0.25s, border-color 0.25s, transform 0.25s, opacity 0.25s, box-shadow 0.25s;
+            transition: color 0.2s, background-color 0.2s, border-color 0.2s;
 
             text-align: center;
 
-            color: rgba(255, 255, 255, 0.75);
+            color: #c3c9cb;
 
             font-size: 0.82rem;
 
@@ -45,13 +45,12 @@
 
         .zodiac-btn.active {
 
-            background: rgba(155, 89, 182, 0.15);
+            background: rgba(179, 149, 94, 0.12);
 
-            border-color: rgba(155, 89, 182, 0.5);
+            border-color: rgba(179, 149, 94, 0.62);
 
-            color: white;
+            color: #e9e3d7;
 
-            transform: translateY(-2px);
 
         }
 
@@ -140,7 +139,11 @@
 
         .moon-badge {
 
-            display: inline-block;
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 0.4rem;
 
             padding: 0.3rem 0.85rem;
 
@@ -155,6 +158,26 @@
             font-size: 0.8rem;
 
             margin-bottom: 1.25rem;
+
+        }
+
+        .moon-badge__icon {
+
+            display: inline-flex;
+
+            width: 1rem;
+
+            height: 1rem;
+
+            flex: 0 0 auto;
+
+        }
+
+        .moon-badge__icon .mh-moon-art {
+
+            width: 100%;
+
+            height: 100%;
 
         }
 
@@ -194,6 +217,8 @@ html body .mh-inline-c41fbcc356 { font-size:3.5rem;margin-bottom:0.5rem; }
 html body .mh-inline-b3210be4ad { font-family:'Cinzel',serif;color:#d4af37;font-size:0.95rem;letter-spacing:2px;margin-bottom:1rem; }
 html body .mh-inline-5d4d7ad749 { font-size:0.88rem;padding:0.6rem 1.25rem; }
 html body .mh-inline-6aabc89df3 { color:#2ed573;font-size:0.85rem;margin-top:0.75rem;display:none; }
+html body .affirmation-action-status.affirmation-action-status--error { color:#ffb4b4; }
+html body .affirmation-action-status.affirmation-action-status--error .mh-symbol { display:none; }
 
 /* Migrated from afirmace.html remaining static style attributes. */
 html body .mh-inline-e00b42d954 { margin-top:1.5rem;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap; }

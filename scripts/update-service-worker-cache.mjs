@@ -73,10 +73,37 @@ function normalizeAssetContent(asset, content) {
 }
 
 const source = await readFile(serviceWorkerPath, 'utf8');
-const assets = extractStaticAssets(source);
+const profileDashboardBundle = await readFile(
+    path.join(rootDir, 'js', 'dist', 'profile', 'dashboard.js'),
+    'utf8'
+);
+const profileChunkAssets = [...profileDashboardBundle.matchAll(
+    /(?:\bfrom\s*|\bimport\s*\(\s*)["']\.\/(chunks\/[^"']+\.js)["']/g
+)]
+    .map((match) => `/js/dist/profile/${match[1]}`)
+    .filter((asset, index, assets) => assets.indexOf(asset) === index)
+    .sort();
+
+const sourceWithoutOldProfileChunks = source.replace(
+    /^\s*'\/js\/dist\/profile\/chunks\/[^']+\.js',\r?\n/gm,
+    ''
+);
+const profileChunkEntries = profileChunkAssets.map((asset) => `    '${asset}',\n`).join('');
+const nextManifestSource = sourceWithoutOldProfileChunks.replace(
+    /(    '\/js\/dist\/profile\/dashboard\.js',\r?\n)/,
+    `$1${profileChunkEntries}`
+);
+const missingProfileChunkAssets = profileChunkAssets.filter(
+    (asset) => !nextManifestSource.includes(`'${asset}'`)
+);
+if (!nextManifestSource.includes("'/js/dist/profile/dashboard.js',") || missingProfileChunkAssets.length > 0) {
+    throw new Error('Could not locate profile dashboard entry in service-worker.js');
+}
+
+const assets = extractStaticAssets(nextManifestSource);
 validateStaticAssets(assets);
 const cacheName = await buildCacheName(assets);
-const nextSource = source.replace(
+const nextSource = nextManifestSource.replace(
     /const CACHE_NAME = 'mysticka-hvezda-[^']+';/,
     `const CACHE_NAME = '${cacheName}';`
 );

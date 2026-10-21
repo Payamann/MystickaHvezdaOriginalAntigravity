@@ -1,11 +1,8 @@
 import practices from '../../data/generated/tarot-daily-practice.js';
 import descriptions from '../../data/generated/tarot-card-hub.js';
+import { getPragueDateKey } from './prague-date.js';
 
-export function getPragueDateKey(date = new Date()) {
-    const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Prague', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(date);
-    const value = type => parts.find(part => part.type === type).value;
-    return `${value('year')}-${value('month')}-${value('day')}`;
-}
+export { getPragueDateKey };
 
 export function getDailyCardIndex(cardCount, date = new Date()) {
     const key = getPragueDateKey(date);

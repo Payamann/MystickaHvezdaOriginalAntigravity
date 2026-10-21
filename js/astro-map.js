@@ -10,7 +10,143 @@ const API_URL = window.API_CONFIG?.BASE_URL || '/api';
 const form = document.getElementById('astro-form');
 const resultsContainer = document.getElementById('astro-results');
 const loadingIndicator = document.getElementById('astro-loading');
+const astroMapStatus = document.getElementById('astro-status');
 const mapContainer = document.querySelector('.map-container');
+let astroMapRequestInProgress = false;
+let activeAstroMapRequest = null;
+let activeAstroMapProfileAutofill = null;
+let astroMapProfileDataSession = null;
+let displayedAstroMapSession = null;
+let astroMapFormInputRevision = 0;
+
+function getTodayIsoDatePrague() {
+    const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Europe/Prague',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).formatToParts(new Date());
+    const dateParts = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return `${dateParts.year}-${dateParts.month}-${dateParts.day}`;
+}
+
+function refreshAstroMapBirthDateMaximum() {
+    const birthDateInput = document.getElementById('astro-date');
+    if (birthDateInput) birthDateInput.max = getTodayIsoDatePrague();
+}
+
+function captureAstroMapSession() {
+    const isLoggedIn = Boolean(window.Auth?.isLoggedIn?.());
+    return {
+        isLoggedIn,
+        userId: isLoggedIn ? window.Auth?.user?.id : null
+    };
+}
+
+function hasSameAstroMapSession(session) {
+    const current = captureAstroMapSession();
+    if (current.isLoggedIn !== session?.isLoggedIn) return false;
+    if (!current.isLoggedIn) return true;
+
+    return typeof session.userId === 'string'
+        && session.userId.length > 0
+        && current.userId === session.userId;
+}
+
+function clearAstroMapPersonalInputs() {
+    ['astro-name', 'astro-date', 'astro-time', 'astro-place'].forEach((id) => {
+        const input = document.getElementById(id);
+        if (input) input.value = '';
+    });
+    const useProfile = document.getElementById('use-profile-astro');
+    if (useProfile) useProfile.checked = false;
+    astroMapProfileDataSession = null;
+}
+
+function clearAstroMapResultVisuals() {
+    displayedAstroMapSession = null;
+    hideLoading();
+    clearAngularLines();
+    document.querySelectorAll('.city-marker').forEach((marker) => marker.remove());
+    setMapTooltip('', false);
+    document.getElementById('favorite-astrocartography-action')?.remove();
+    if (resultsContainer) {
+        resultsContainer.innerHTML = '';
+        setBlockVisible(resultsContainer, false);
+    }
+}
+
+function clearAstroMapResultAfterInputChange(event) {
+    if (event?.target?.id === 'use-profile-astro') return;
+    if (event) astroMapFormInputRevision += 1;
+    if (astroMapRequestInProgress || !resultsContainer?.classList.contains('mh-block-visible')) return;
+
+    clearAstroMapResultVisuals();
+    setAstroMapStatus('Údaje se změnily. Spusť nový výpočet, aby mapa odpovídala aktuálnímu zadání.');
+}
+
+function invalidateAstroMapProfileAutofillAfterSessionChange() {
+    const request = activeAstroMapProfileAutofill;
+    if (request && !hasSameAstroMapSession(request.session)) {
+        request.cancelled = true;
+        activeAstroMapProfileAutofill = null;
+        clearAstroMapPersonalInputs();
+        return;
+    }
+    if (astroMapProfileDataSession && !hasSameAstroMapSession(astroMapProfileDataSession)) {
+        clearAstroMapPersonalInputs();
+    }
+}
+
+function invalidateAstroMapRequestAfterSessionChange(request = activeAstroMapRequest) {
+    if (!request || request.cancelled || hasSameAstroMapSession(request.session)) return false;
+
+    request.cancelled = true;
+    clearAstroMapPersonalInputs();
+    clearAstroMapResultVisuals();
+    showError('Účet se během výpočtu změnil. Zadané údaje jsme odstranili; spusť nový výpočet.');
+    releaseAstroMapRequestForm(request);
+    return false;
+}
+
+function releaseAstroMapRequestForm(request) {
+    if (!request || request.uiReleased || activeAstroMapRequest !== request) return;
+
+    request.uiReleased = true;
+    astroMapRequestInProgress = false;
+    activeAstroMapRequest = null;
+    if (request.previousBusy === null || request.previousBusy === undefined) {
+        request.form?.removeAttribute('aria-busy');
+    } else {
+        request.form?.setAttribute('aria-busy', request.previousBusy);
+    }
+    request.formControls?.forEach((control, index) => {
+        control.disabled = request.previouslyDisabled[index];
+    });
+}
+
+function handleAstroMapSessionChange() {
+    invalidateAstroMapProfileAutofillAfterSessionChange();
+    invalidateAstroMapRequestAfterSessionChange();
+
+    if (displayedAstroMapSession && !hasSameAstroMapSession(displayedAstroMapSession)) {
+        clearAstroMapPersonalInputs();
+        clearAstroMapResultVisuals();
+        showError('Účet se změnil. Předchozí výsledek jsme skryli a zadané údaje odstranili.');
+    }
+}
+
+function isCurrentAstroMapRequest(request) {
+    if (!request || request.cancelled || activeAstroMapRequest !== request) return false;
+    if (hasSameAstroMapSession(request.session)) return true;
+    invalidateAstroMapRequestAfterSessionChange(request);
+    return false;
+}
+
+document.addEventListener('auth:changed', handleAstroMapSessionChange);
+window.addEventListener('storage', (event) => {
+    if (event.key === 'auth_user') handleAstroMapSessionChange();
+});
 
 function buildAstroMapPricingUrl(source) {
     const pricingUrl = new URL('/cenik.html', window.location.origin);
@@ -136,7 +272,7 @@ function showAstroMapUpgradeGate() {
             <p class="mb-lg">Astrokartografie je součástí členství Mystické Hvězdy. Podmínky najdeš v ceníku.</p>
             <a href="${buildAstroMapPricingUrl(source)}" class="btn btn--primary astro-map-upgrade-btn">Prohlédnout členství</a>
         </div>
-    `);
+    `, { trustedMarkup: true });
 
     resultsContainer
         ?.querySelector('.astro-map-upgrade-btn')
@@ -152,6 +288,17 @@ function showAstroMapUpgradeGate() {
 function init() {
     if (!form) return;
 
+    refreshAstroMapBirthDateMaximum();
+    form.addEventListener('focusin', refreshAstroMapBirthDateMaximum);
+    form.addEventListener('pointerdown', refreshAstroMapBirthDateMaximum, true);
+    form.addEventListener('keydown', refreshAstroMapBirthDateMaximum, true);
+    window.addEventListener('focus', refreshAstroMapBirthDateMaximum);
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) refreshAstroMapBirthDateMaximum();
+    });
+
+    form.addEventListener('input', clearAstroMapResultAfterInputChange);
+    form.addEventListener('change', clearAstroMapResultAfterInputChange);
     form.addEventListener('submit', handleFormSubmit);
 
     // Add hover effects to existing lines
@@ -171,63 +318,91 @@ function init() {
         }
 
         useProfileCheckbox.addEventListener('change', async (e) => {
-            if (e.target.checked) {
-                if (!window.Auth?.isLoggedIn?.()) {
-                    if (window.Auth?.showToast) {
-                        window.Auth.showToast('Info', 'Pro použití profilu se prosím přihlaste.', 'info');
-                    } else {
-                        alert('Pro použití profilu se prosím přihlaste.');
-                    }
+            const previousRequest = activeAstroMapProfileAutofill;
+            if (previousRequest) {
+                previousRequest.cancelled = true;
+                activeAstroMapProfileAutofill = null;
+            }
+
+            if (!e.target.checked) return;
+
+            if (!window.Auth?.isLoggedIn?.()) {
+                if (window.Auth?.showToast) {
+                    window.Auth.showToast('Info', 'Pro použití údajů z profilu se nejdřív přihlas.', 'info');
+                } else {
+                    alert('Pro použití údajů z profilu se nejdřív přihlas.');
+                }
+                e.target.checked = false;
+                return;
+            }
+
+            clearAstroMapResultAfterInputChange();
+
+            const request = {
+                session: captureAstroMapSession(),
+                cancelled: false
+            };
+            activeAstroMapProfileAutofill = request;
+            const inputRevision = astroMapFormInputRevision;
+
+            try {
+                const user = await window.Auth.getProfile();
+                if (request.cancelled || activeAstroMapProfileAutofill !== request || !e.target.checked) return;
+                if (!hasSameAstroMapSession(request.session)) {
+                    invalidateAstroMapProfileAutofillAfterSessionChange();
+                    return;
+                }
+                if (inputRevision !== astroMapFormInputRevision) {
+                    setAstroMapStatus('Údaje se během načítání změnily. Zkontroluj je a spusť výpočet s aktuálními hodnotami.');
                     e.target.checked = false;
                     return;
                 }
+                if (!user) throw new Error('Nepodařilo se načíst profil.');
 
-                try {
-                    const user = await window.Auth.getProfile();
+                if (user.first_name) {
+                    const nameInput = document.getElementById('astro-name');
+                    if (nameInput) nameInput.value = user.first_name;
+                }
 
-                    if (!user) {
-                        throw new Error('Nepodařilo se načíst profil.');
-                    }
-
-
-                    if (user.first_name) {
-                        const nameInput = document.getElementById('astro-name');
-                        if (nameInput) nameInput.value = user.first_name;
-                    }
-
-                    if (user.birth_date) {
-                        const dateInput = document.getElementById('astro-date');
-                        if (dateInput) {
-                            try {
-                                const d = new Date(user.birth_date);
-                                if (!isNaN(d.getTime())) {
-                                    dateInput.value = d.toISOString().split('T')[0];
-                                } else {
-                                    dateInput.value = user.birth_date;
-                                }
-                            } catch (err) {
-                                console.warn('Error formatting birth_date:', err);
-                            }
+                if (user.birth_date) {
+                    const dateInput = document.getElementById('astro-date');
+                    if (dateInput) {
+                        try {
+                            const d = new Date(user.birth_date);
+                            dateInput.value = !isNaN(d.getTime())
+                                ? d.toISOString().split('T')[0]
+                                : user.birth_date;
+                        } catch (err) {
+                            console.warn('Error formatting birth_date:', err);
                         }
                     }
+                }
 
-                    if (user.birth_time) {
-                        const timeInput = document.getElementById('astro-time');
-                        if (timeInput) {
-                            const t = user.birth_time.toString();
-                            timeInput.value = t.length > 5 ? t.substring(0, 5) : t;
-                        }
+                if (user.birth_time) {
+                    const timeInput = document.getElementById('astro-time');
+                    if (timeInput) {
+                        const time = user.birth_time.toString();
+                        timeInput.value = time.length > 5 ? time.substring(0, 5) : time;
                     }
+                }
 
-                    if (user.birth_place) {
-                        const placeInput = document.getElementById('astro-place');
-                        if (placeInput) placeInput.value = user.birth_place;
-                    }
+                if (user.birth_place) {
+                    const placeInput = document.getElementById('astro-place');
+                    if (placeInput) placeInput.value = user.birth_place;
+                }
 
-                } catch (error) {
-                    console.error('Autofill Error:', error);
-                    window.Auth?.showToast?.('Chyba', 'Nepodařilo se stáhnout data z profilu.', 'error');
-                    e.target.checked = false;
+                astroMapProfileDataSession = request.session;
+            } catch (error) {
+                if (request.cancelled || !hasSameAstroMapSession(request.session)) {
+                    invalidateAstroMapProfileAutofillAfterSessionChange();
+                    return;
+                }
+                console.error('Autofill Error:', error);
+                window.Auth?.showToast?.('Chyba', 'Nepodařilo se stáhnout data z profilu.', 'error');
+                e.target.checked = false;
+            } finally {
+                if (activeAstroMapProfileAutofill === request) {
+                    activeAstroMapProfileAutofill = null;
                 }
             }
         });
@@ -239,6 +414,11 @@ function init() {
  */
 async function handleFormSubmit(e) {
     e.preventDefault();
+    if (astroMapRequestInProgress) return;
+    if (activeAstroMapProfileAutofill) {
+        showError('Počkej, až se údaje z profilu načtou, potom spusť výpočet.');
+        return;
+    }
 
     // PREMIUM CHECK
     // Astro Cartography is Premium Only feature
@@ -258,6 +438,10 @@ async function handleFormSubmit(e) {
         return;
     }
 
+    const requestSession = captureAstroMapSession();
+    const readingOwnerId = requestSession.userId;
+    if (typeof readingOwnerId !== 'string' || !readingOwnerId) return;
+
     const name = document.getElementById('astro-name')?.value;
     const birthDate = document.getElementById('astro-date')?.value;
     const birthTime = document.getElementById('astro-time')?.value;
@@ -265,15 +449,31 @@ async function handleFormSubmit(e) {
     const intention = document.getElementById('astro-intention')?.value || 'obecny';
 
     if (!birthDate || !birthTime || !birthPlace) {
-        showError('Prosím vyplňte všechny povinné údaje.');
+        showError('Vyplň všechna povinná pole.');
         return;
     }
 
-    // Show loading state
-    showLoading();
-    clearAngularLines();
+    astroMapRequestInProgress = true;
+    const request = {
+        session: requestSession,
+        cancelled: false,
+        form,
+        formControls: [...new Set([
+            ...form.querySelectorAll('input, select, textarea, button'),
+            document.getElementById('use-profile-astro')
+        ].filter(Boolean))],
+        previousBusy: form.getAttribute('aria-busy'),
+        uiReleased: false
+    };
+    activeAstroMapRequest = request;
+    request.previouslyDisabled = request.formControls.map((control) => control.disabled);
+    request.formControls.forEach((control) => { control.disabled = true; });
+    form.setAttribute('aria-busy', 'true');
 
     try {
+        // Show loading state
+        showLoading();
+
         const data = await window.callAPI('/astrocartography', {
             name,
             birthDate,
@@ -282,11 +482,16 @@ async function handleFormSubmit(e) {
             intention: INTENTIONS[intention] || intention
         });
 
+        if (!isCurrentAstroMapRequest(request)) return;
+
         if (data.success) {
+            displayedAstroMapSession = request.session;
             displayResults(data.response, data.astrocartography, data.chart);
             drawAngularLines(data.astrocartography?.angularLines);
+            setAstroMapStatus('Mapa je připravená. Výsledek je zobrazen pod formulářem.');
             if (window.Auth?.saveReading) {
                 try {
+                    if (!isCurrentAstroMapRequest(request)) return;
                     const saveResult = await window.Auth.saveReading('astrocartography', {
                         name,
                         birthDate,
@@ -297,15 +502,21 @@ async function handleFormSubmit(e) {
                         chart: data.chart,
                         astrocartography: data.astrocartography,
                         fallback: !!data.fallback
-                    });
+                    }, readingOwnerId);
 
+                    if (!isCurrentAstroMapRequest(request)) return;
                     if (saveResult?.id) {
                         appendAstroFavoriteAction(resultsContainer, saveResult.id);
+                    } else {
+                        showAstroSaveFailure();
                     }
                 } catch (saveError) {
+                    if (!isCurrentAstroMapRequest(request)) return;
                     console.warn('Astrocartography save failed:', saveError.message);
+                    showAstroSaveFailure();
                 }
             }
+            if (!isCurrentAstroMapRequest(request)) return;
             highlightCitiesFromResponse(data.response, data.astrocartography?.recommendations);
             window.MH_ANALYTICS?.trackEvent?.('astrocartography_calculated', {
                 engine_version: data.astrocartography?.engine?.version || data.chart?.engine?.version || null,
@@ -318,11 +529,16 @@ async function handleFormSubmit(e) {
                 top_recommendation_score: data.astrocartography?.recommendations?.[0]?.score ?? null
             });
         } else {
+            displayedAstroMapSession = null;
             showError(data.error || 'Něco se pokazilo...');
         }
     } catch (error) {
+        if (!isCurrentAstroMapRequest(request)) return;
         console.error('Astrocartography Error:', error);
+        displayedAstroMapSession = null;
         showError(error.message || 'Nepodařilo se spojit s hvězdným serverem. Zkuste to později.');
+    } finally {
+        releaseAstroMapRequestForm(request);
     }
 }
 
@@ -330,7 +546,13 @@ async function handleFormSubmit(e) {
  * Show loading indicator
  */
 function showLoading() {
+    displayedAstroMapSession = null;
+    setAstroMapStatus('Připravuji mapu a její symbolický výklad.');
     setFlexVisible(loadingIndicator, true);
+    clearAngularLines();
+    document.querySelectorAll('.city-marker').forEach((marker) => marker.remove());
+    setMapTooltip('', false);
+    document.getElementById('favorite-astrocartography-action')?.remove();
     if (resultsContainer) {
         resultsContainer.innerHTML = '';
         setBlockVisible(resultsContainer, false);
@@ -442,8 +664,8 @@ function appendAstroFavoriteAction(container, readingId) {
     action.id = 'favorite-astrocartography-action';
     action.className = 'text-center favorite-reading-action mt-md';
     action.innerHTML = `
-        <button id="favorite-astrocartography-btn" class="btn btn--glass favorite-reading-action__button">
-            <span class="favorite-icon">☆</span> Přidat do oblíbených
+        <button id="favorite-astrocartography-btn" type="button" aria-pressed="false" class="btn btn--glass favorite-reading-action__button">
+            <svg class="mh-symbol mh-symbol--inline favorite-icon" viewBox="0 0 48 48" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg> Přidat do oblíbených
         </button>
     `;
     container.appendChild(action);
@@ -558,7 +780,7 @@ function displayResults(response, astrocartography = null, chart = null) {
 
         resultsContainer.innerHTML = `
             <div class="astro-result-card" data-animate>
-                <h3 class="result-title">Tvoje symbolická astro mapa</h3>
+                <h3 class="result-title" tabindex="-1">Tvoje symbolická astro mapa</h3>
                 ${engineSummary}
                 <div class="result-content">
                     ${formattedContent}
@@ -566,24 +788,31 @@ function displayResults(response, astrocartography = null, chart = null) {
             </div>
         `;
         setBlockVisible(resultsContainer, true);
-        resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        resultsContainer.querySelector('.result-title')?.focus({ preventScroll: true });
+        resultsContainer.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
     }
 }
 
 /**
  * Show error message
  */
-function showError(message) {
+function showError(message, { trustedMarkup = false } = {}) {
+    displayedAstroMapSession = null;
+    setAstroMapStatus(trustedMarkup
+        ? 'Astrokartografie je součástí členství. Informace a odkaz na ceník jsou zobrazené pod formulářem.'
+        : message);
     hideLoading();
     clearAngularLines();
+    document.querySelectorAll('.city-marker').forEach((marker) => marker.remove());
+    setMapTooltip('', false);
+    document.getElementById('favorite-astrocartography-action')?.remove();
 
     if (resultsContainer) {
         resultsContainer.textContent = '';
         const errorDiv = document.createElement('div');
         errorDiv.className = 'astro-error';
-        // If message is a safe HTML string from our code (premium gate), allow it
-        // Otherwise use textContent for user-facing strings
-        if (message.includes('class="btn')) {
+        // Only the locally constructed membership gate may supply markup.
+        if (trustedMarkup) {
             errorDiv.innerHTML = `<span class="error-icon"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#warning"></use></svg></span>${message}`;
         } else {
             const icon = document.createElement('span');
@@ -596,6 +825,21 @@ function showError(message) {
         resultsContainer.appendChild(errorDiv);
         setBlockVisible(resultsContainer, true);
     }
+}
+
+function setAstroMapStatus(message) {
+    if (astroMapStatus) astroMapStatus.textContent = String(message || '');
+}
+
+function showAstroSaveFailure() {
+    setAstroMapStatus('Mapa je připravená, ale nepodařilo se ji uložit do profilu.');
+    if (!resultsContainer || resultsContainer.querySelector('[data-reading-save-error]')) return;
+
+    const notice = document.createElement('p');
+    notice.className = 'result-context-notice';
+    notice.dataset.readingSaveError = 'true';
+    notice.textContent = 'Mapa zůstává na stránce, ale nepodařilo se ji uložit do profilu.';
+    resultsContainer.appendChild(notice);
 }
 
 /**

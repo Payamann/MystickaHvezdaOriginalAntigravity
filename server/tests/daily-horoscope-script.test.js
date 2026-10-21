@@ -18,8 +18,9 @@ describe('daily horoscope email script', () => {
 
         const out = formatHoroscopeForEmail(raw);
         expect(out).toContain('Dnes se ti vyplatí zpomalit.');
-        expect(out).toContain('✨ Afirmace: Volím klidný krok.');
-        expect(out).toContain('🔢 Čísla štěstí: 3, 7, 11, 22');
+        expect(out).toContain('Afirmace: Volím klidný krok.');
+        expect(out).toContain('Čísla štěstí: 3, 7, 11, 22');
+        expect(out).not.toMatch(/[✨🔢]/u);
         expect(out).not.toContain('{');
     });
 

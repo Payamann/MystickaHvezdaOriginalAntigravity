@@ -72,9 +72,11 @@ describe('🔒 Security Tests', () => {
         });
 
         test('Birth date validation: Future date rejected', () => {
-            const futureDate = new Date();
-            futureDate.setFullYear(futureDate.getFullYear() + 1);
-            expect(() => validateBirthDate(futureDate.toISOString())).toThrow();
+            expect(() => validateBirthDate('2026-10-21', '2026-10-20')).toThrow('Birth date cannot be in the future');
+        });
+
+        test('Birth date validation: Prague current date accepted', () => {
+            expect(validateBirthDate('2026-10-20', '2026-10-20')).toBe('2026-10-20');
         });
 
         test('Birth date validation: Valid date-only value accepted', () => {
@@ -461,12 +463,14 @@ describe('Retired annual horoscope routing', () => {
         expect(res.headers.location).toBe('/osobni-mapa.html?source=annual_horoscope_retired');
     });
 
-    test('already-paid Stripe confirmations keep their historical success page', async () => {
+    test('historical Stripe return serves a page that waits for payment verification', async () => {
         const res = await request(app)
             .get('/rocni-horoskop.html?status=success&session_id=cs_test_existing_order')
             .expect(200);
 
         expect(res.text).toContain('id="bannerSuccess"');
+        expect(res.text).toContain('id="bannerVerification"');
+        expect(res.text).not.toMatch(/id="bannerSuccess" class="status-banner visible"/);
         expect(res.text).toContain('<meta name="robots" content="noindex, follow">');
     });
 });

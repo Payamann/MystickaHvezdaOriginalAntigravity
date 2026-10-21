@@ -10,14 +10,14 @@
     <meta name="robots" content="noindex, nofollow">
     <link rel="icon" type="image/svg+xml" href="/img/icons/mh-favicon.svg">
     <link rel="stylesheet" href="/fonts/local-fonts.css">
-    <link rel="stylesheet" href="css/style.v2.min.css?v=11">
-    <link rel="stylesheet" href="css/pages/prihlaseni.css?v=20261014-detail-polish">
+    <link rel="stylesheet" href="css/style.v2.min.css?v=20261018-release-candidate">
+    <link rel="stylesheet" href="css/pages/prihlaseni.css?v=20261017-auth-safety">
 <meta property="og:image" content="https://www.mystickahvezda.cz/img/search-preview/other.webp">
     <link rel="canonical" href="https://www.mystickahvezda.cz/prihlaseni.html">
     <script src="/js/dist/analytics-init.js" defer></script>
 
-    <link rel="stylesheet" href="/css/atlas-web.css?v=1">
-    <link rel="stylesheet" href="/css/atlas-remaining.css?v=1">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
+    <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261020-01-remaining-surface-polish">
 </head>
 
 <body class="page-login atlas-page atlas-remaining-page">
@@ -68,7 +68,7 @@
                     </div>
                 </div>
 
-                <form id="login-form">
+                <form id="login-form" method="post" action="/prihlaseni.html">
                     <div class="form-group">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" id="email" name="email" class="form-input" placeholder="vas@email.cz" required autocomplete="email" spellcheck="false">
@@ -98,7 +98,7 @@
                     <button id="forgot-password-link" class="btn btn--text mh-inline-afc08e5b30">Zapomenuté heslo?</button>
                 </div>
 
-                <form id="forgot-password-form" class="mh-inline-59ce1fef8d">
+                <form id="forgot-password-form" class="mh-inline-59ce1fef8d" method="post" action="/prihlaseni.html">
                     <div class="form-group">
                         <label for="forgot-email" class="form-label">Email</label>
                         <input type="email" id="forgot-email" name="email" class="form-input" placeholder="vas@email.cz" required autocomplete="email" spellcheck="false">
@@ -108,23 +108,25 @@
                     <button type="button" id="back-to-login" class="btn btn--text mh-inline-05ea2d974d">Zpět na přihlášení</button>
                 </form>
 
-                <form id="reset-password-form" class="mh-inline-59ce1fef8d">
+                <form id="reset-password-form" class="mh-inline-59ce1fef8d" method="post" action="/prihlaseni.html">
                     <div class="form-group">
                         <label for="new-password" class="form-label">Nové heslo</label>
                         <div class="password-input-wrap">
-                            <input type="password" id="new-password" name="password" class="form-input" placeholder="********" required minlength="8" autocomplete="new-password">
+                            <input type="password" id="new-password" name="password" class="form-input" placeholder="********" required minlength="8" maxlength="128" autocomplete="new-password">
                             <button type="button" class="password-toggle" data-password-toggle="new-password" aria-label="Zobrazit nové heslo" aria-pressed="false">Zobrazit</button>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="confirm-password" class="form-label">Potvrď heslo</label>
                         <div class="password-input-wrap">
-                            <input type="password" id="confirm-password" name="confirm_password" class="form-input" placeholder="********" required minlength="8" autocomplete="new-password">
+                            <input type="password" id="confirm-password" name="confirm_password" class="form-input" placeholder="********" required minlength="8" maxlength="128" autocomplete="new-password">
                             <button type="button" class="password-toggle" data-password-toggle="confirm-password" aria-label="Zobrazit potvrzení nového hesla" aria-pressed="false">Zobrazit</button>
                         </div>
                     </div>
                     <button type="submit" class="btn btn--primary btn--glow mh-inline-c0b8a97c16">Nastavit nové heslo</button>
                 </form>
+                <p id="recovery-validation-status" class="form-help-text" role="status" tabindex="-1" hidden></p>
+                <p id="reset-password-status" class="form-success-summary" role="status" tabindex="-1" hidden></p>
 
                 <div class="mh-inline-68221bb3c6">
                     <button id="auth-mode-toggle" class="btn btn--text u-text-gold">Nemáš účet? Vytvoř si ho zdarma →</button>
@@ -154,11 +156,11 @@
 
     <script src="js/dist/analytics.js?v=5" defer></script>
     <script src="js/dist/growth-loop-client.js?v=1" defer></script>
-    <script src="js/dist/prihlaseni.js?v=20261003-single-membership" defer></script>
-    <script src="js/dist/core.js?v=20261003-single-membership" defer></script>
+    <script src="js/dist/prihlaseni.js?v=20261019-recovery-token-validation" defer></script>
+    <script src="js/dist/core.js?v=20261021-footer-support-locale" defer></script>
 
     <script src="js/dist/auth-copy-fixes.js" defer></script>
     
-    <script type="module" src="js/dist/main.js?v=10"></script>
+    <script type="module" src="js/dist/main.js?v=20261018-status-icons"></script>
 </body>
 </html>

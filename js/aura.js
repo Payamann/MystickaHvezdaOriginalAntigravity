@@ -3,7 +3,7 @@
 
             1: {
 
-                name: 'Červená Aura', color: '#e74c3c', glow: 'rgba(231,76,60,0.5)', keyword: 'SÍLA · VITALITA · VÁŠEŇ',
+                name: 'Červená Aura', color: '#e74c3c', glow: 'rgba(231,76,60,0.5)', keyword: 'INICIATIVA · POHYB · PŘÍMOST',
 
                 desc: 'Červená v této symbolické hře zastupuje iniciativu a pohyb. Podívej se, kam chceš dát energii a kde se hodí ubrat tempo.',
 
@@ -11,7 +11,7 @@
 
                 challenges: 'Dát prostor i odezvě ostatních',
 
-                crystal: 'Rubín, Granát, Jasmín',
+                crystal: 'Rubín, granát',
 
                 chakra: 'Kořenová čakra (Muladhara)',
 
@@ -21,7 +21,7 @@
 
             2: {
 
-                name: 'Oranžová Aura', color: '#e67e22', glow: 'rgba(230,126,34,0.5)', keyword: 'KREATIVITA · RADOST · SMYSLNOST',
+                name: 'Oranžová Aura', color: '#e67e22', glow: 'rgba(230,126,34,0.5)', keyword: 'TVORBA · KONTAKT · HRAVOST',
 
                 desc: 'Oranžová nabízí obraz tvořivosti a kontaktu. Který nápad nebo setkání by běžnému dni přidaly něco živého?',
 
@@ -39,7 +39,7 @@
 
             3: {
 
-                name: 'Žlutá Aura', color: '#f1c40f', glow: 'rgba(241,196,15,0.5)', keyword: 'INTELEKT · OPTIMISMUS · KOMUNIKACE',
+                name: 'Žlutá Aura', color: '#f1c40f', glow: 'rgba(241,196,15,0.5)', keyword: 'JASNOST · ZVĚDAVOST · OTÁZKY',
 
                 desc: 'Žlutá je zde symbolem jasnosti a poznávání. Může připomenout otázku, kterou chceš lépe pochopit.',
 
@@ -57,7 +57,7 @@
 
             4: {
 
-                name: 'Zelená Aura', color: '#2ecc71', glow: 'rgba(46,204,113,0.5)', keyword: 'LÉČENÍ · HARMONIE · RŮST',
+                name: 'Zelená Aura', color: '#2ecc71', glow: 'rgba(46,204,113,0.5)', keyword: 'PÉČE · SOUCIT · ZÁZEMÍ',
 
                 desc: 'Zelená v tomto portrétu připomíná péči a zázemí. Není potvrzením léčitelských schopností ani zdravotního stavu.',
 
@@ -75,7 +75,7 @@
 
             5: {
 
-                name: 'Modrá Aura', color: '#3498db', glow: 'rgba(52,152,219,0.5)', keyword: 'INTUICE · KOMUNIKACE · MOUDROST',
+                name: 'Modrá Aura', color: '#3498db', glow: 'rgba(52,152,219,0.5)', keyword: 'KLID · KOMUNIKACE · NASLOUCHÁNÍ',
 
                 desc: 'Modrá otevírá téma klidné komunikace. Nejde o pevný popis osobnosti; může posloužit jako připomínka pro konkrétní rozhovor.',
 
@@ -93,7 +93,7 @@
 
             6: {
 
-                name: 'Indigová Aura', color: '#5b2d8e', glow: 'rgba(91,45,142,0.5)', keyword: 'VIZE · INTUICE · SPIRITUALITA',
+                name: 'Indigová Aura', color: '#5b2d8e', glow: 'rgba(91,45,142,0.5)', keyword: 'POSTŘEH · OBRAZOTVORNOST',
 
                 desc: 'Indigová zde představuje postřeh a obrazotvornost. Výpočet z data neprokazuje telepatii, jasnovidnost ani skryté vědění.',
 
@@ -111,7 +111,7 @@
 
             7: {
 
-                name: 'Fialová Aura', color: '#9b59b6', glow: 'rgba(155,89,182,0.5)', keyword: 'MAGIE · SPIRITUALITA · TRANSFORMACE',
+                name: 'Fialová Aura', color: '#9b59b6', glow: 'rgba(155,89,182,0.5)', keyword: 'OTÁZKY · ODSTUP · PROSTOR',
 
                 desc: 'Fialová v této hře zastupuje prostor pro vlastní otázky a odstup. Nemusí se vztahovat k žádné nadpřirozené schopnosti.',
 
@@ -129,7 +129,7 @@
 
             8: {
 
-                name: 'Zlatá Aura', color: '#d4af37', glow: 'rgba(212,175,55,0.5)', keyword: 'MOUDROST · HOJNOST · VEDENÍ',
+                name: 'Zlatá Aura', color: '#d4af37', glow: 'rgba(212,175,55,0.5)', keyword: 'ZÁMĚR · ODPOVĚDNOST',
 
                 desc: 'Zlatá je zde symbolem záměru a odpovědnosti za vlastní jednání. Nepředpovídá úspěch, bohatství ani společenské postavení.',
 
@@ -147,7 +147,7 @@
 
             9: {
 
-                name: 'Bílá Aura', color: '#ecf0f1', glow: 'rgba(255,255,255,0.4)', keyword: 'ČISTOTA · OCHRANA · TRANSCENDENCE',
+                name: 'Bílá Aura', color: '#ecf0f1', glow: 'rgba(255,255,255,0.4)', keyword: 'NADHLED · OTEVŘENOST',
 
                 desc: 'Bílá nabízí obraz volného místa a nadhledu. Nejde o hodnocení duchovní úrovně ani čistoty člověka.',
 
@@ -167,19 +167,89 @@
 
 
 
+        const birthDateInput = document.getElementById('birth-date');
+        const birthDateError = document.getElementById('birth-date-error');
+        const auraStatus = document.getElementById('aura-status');
+
+        function getPragueTodayIsoDate(date = new Date()) {
+            const parts = new Intl.DateTimeFormat('en-CA', {
+                timeZone: 'Europe/Prague',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            }).formatToParts(date);
+            const dateParts = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+            return `${dateParts.year}-${dateParts.month}-${dateParts.day}`;
+        }
+
+        function refreshAuraBirthDateMaximum() {
+            birthDateInput.max = getPragueTodayIsoDate();
+        }
+
+        refreshAuraBirthDateMaximum();
+        birthDateInput.addEventListener('focus', refreshAuraBirthDateMaximum);
+        window.addEventListener('focus', refreshAuraBirthDateMaximum);
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) refreshAuraBirthDateMaximum();
+        });
+
+        function clearAuraResult() {
+            const orb = document.getElementById('aura-orb');
+            const result = document.getElementById('aura-result');
+            const title = document.getElementById('aura-title');
+
+            if (orb) orb.className = 'aura-orb';
+            result?.classList.remove('show');
+            if (auraStatus) auraStatus.textContent = '';
+            title?.classList.remove('aura-title', ...Array.from({ length: 9 }, (_, index) => `aura-title--${index + 1}`));
+
+            [
+                'aura-title', 'aura-keyword', 'aura-desc', 'aura-strengths',
+                'aura-challenges', 'aura-crystal', 'aura-chakra', 'aura-career'
+            ].forEach((id) => {
+                const field = document.getElementById(id);
+                if (field) field.textContent = '';
+            });
+        }
+
+        function clearAuraValidation() {
+            birthDateInput.classList.remove('birth-input--invalid');
+            birthDateInput.setAttribute('aria-invalid', 'false');
+            if (birthDateError) {
+                birthDateError.textContent = '';
+                birthDateError.hidden = true;
+            }
+        }
+
         function calculateAura() {
 
-            const dateInput = document.getElementById('birth-date').value;
+            const dateInput = birthDateInput.value;
 
             if (!dateInput) {
-
-                document.getElementById('birth-date').classList.add('birth-input--invalid');
-
+                clearAuraResult();
+                birthDateInput.classList.add('birth-input--invalid');
+                birthDateInput.setAttribute('aria-invalid', 'true');
+                if (birthDateError) {
+                    birthDateError.textContent = 'Nejdřív vyber datum narození.';
+                    birthDateError.hidden = false;
+                }
+                birthDateInput.focus();
                 return;
-
             }
 
-            document.getElementById('birth-date').classList.remove('birth-input--invalid');
+            if (dateInput > getPragueTodayIsoDate()) {
+                clearAuraResult();
+                birthDateInput.classList.add('birth-input--invalid');
+                birthDateInput.setAttribute('aria-invalid', 'true');
+                if (birthDateError) {
+                    birthDateError.textContent = 'Datum narození nemůže být v budoucnosti.';
+                    birthDateError.hidden = false;
+                }
+                birthDateInput.focus();
+                return;
+            }
+
+            clearAuraValidation();
 
 
 
@@ -239,29 +309,43 @@
             const result = document.getElementById('aura-result');
 
             result.classList.add('show');
+            if (auraStatus) auraStatus.textContent = `Hotovo. Symbolický portrét: ${aura.name}.`;
 
-            orb.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            orb.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
 
         }
 
 
 
-        document.getElementById('btn-aura-calc').addEventListener('click', calculateAura);
+        document.getElementById('btn-aura-calc').addEventListener('click', () => {
+            refreshAuraBirthDateMaximum();
+            calculateAura();
+        });
+
+        birthDateInput.addEventListener('input', () => {
+            clearAuraValidation();
+            clearAuraResult();
+        });
+
+        birthDateInput.addEventListener('change', () => {
+            clearAuraValidation();
+            clearAuraResult();
+        });
 
         document.getElementById('btn-aura-reset').addEventListener('click', () => {
 
-            document.getElementById('birth-date').value = '';
-            document.getElementById('birth-date').classList.remove('birth-input--invalid');
-
-            document.getElementById('aura-orb').className = 'aura-orb';
-
-            document.getElementById('aura-result').className = 'aura-result';
-            document.getElementById('aura-title').classList.remove('aura-title', ...Array.from({ length: 9 }, (_, index) => `aura-title--${index + 1}`));
+            birthDateInput.value = '';
+            clearAuraValidation();
+            clearAuraResult();
+            birthDateInput.focus();
 
         });
 
         document.getElementById('birth-date').addEventListener('keydown', e => {
 
-            if (e.key === 'Enter') calculateAura();
+            if (e.key === 'Enter') {
+                refreshAuraBirthDateMaximum();
+                calculateAura();
+            }
 
         });

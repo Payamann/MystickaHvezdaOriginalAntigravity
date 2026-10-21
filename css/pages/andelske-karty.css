@@ -23,6 +23,26 @@
 
         }
 
+        .angel-card-container[aria-disabled="true"] {
+            cursor: wait;
+            opacity: 0.78;
+        }
+
+        .angel-card-load-state {
+            max-width: 30rem;
+            margin: 1rem auto 0;
+            text-align: center;
+        }
+
+        .angel-card-load-state p {
+            margin: 0 0 0.75rem;
+        }
+
+        .angel-card-load-state button[aria-disabled="true"] {
+            cursor: wait;
+            opacity: 0.75;
+        }
+
 
 
         .angel-card-inner {
@@ -86,6 +106,12 @@
         .angel-card-front {
 
             background-image: url('/img/atlas/angels-v1/back.webp');
+
+            background-image: image-set(
+                url('/img/atlas/angels-v1/back-240.webp') 1x,
+                url('/img/atlas/angels-v1/back-480.webp') 2x,
+                url('/img/atlas/angels-v1/back.webp') 3x
+            );
 
             background-size: cover;
 
@@ -295,7 +321,7 @@
 
         .message-box::before {
 
-            content: """;
+            content: "“";
 
             position: absolute;
 
@@ -319,7 +345,7 @@
 
         .message-box::after {
 
-            content: """;
+            content: "”";
 
             position: absolute;
 
@@ -393,6 +419,14 @@
 
             text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
 
+        }
+
+        .angel-card-storage-note {
+            margin: -0.75rem auto 1.5rem;
+            max-width: 38rem;
+            color: var(--color-text-muted, rgba(255, 255, 255, 0.72));
+            font-size: 0.95rem;
+            line-height: 1.55;
         }
 
 
@@ -701,40 +735,65 @@ html body .mh-block-visible {
     transition: none;
 }
 
+@media (prefers-reduced-motion: reduce) {
+    .angel-card-inner,
+    #angel-results {
+        transition: none !important;
+    }
+
+    .glow-effect {
+        animation: none !important;
+    }
+
+    #angel-results,
+    #angel-results.animate-in {
+        opacity: 1;
+        transform: none;
+    }
+}
+
 .angel-card-container--drawn {
     cursor: default;
 }
 
 .angel-card-back--abundance {
     background-image: url('/img/atlas/angels-v1/abundance.webp');
+    background-image: image-set(url('/img/atlas/angels-v1/abundance-360.webp') 1x, url('/img/atlas/angels-v1/abundance.webp') 2x);
 }
 
 .angel-card-back--guidance {
     background-image: url('/img/atlas/angels-v1/guidance.webp');
+    background-image: image-set(url('/img/atlas/angels-v1/guidance-360.webp') 1x, url('/img/atlas/angels-v1/guidance.webp') 2x);
 }
 
 .angel-card-back--healing {
     background-image: url('/img/atlas/angels-v1/healing.webp');
+    background-image: image-set(url('/img/atlas/angels-v1/healing-360.webp') 1x, url('/img/atlas/angels-v1/healing.webp') 2x);
 }
 
 .angel-card-back--love {
     background-image: url('/img/atlas/angels-v1/love.webp');
+    background-image: image-set(url('/img/atlas/angels-v1/love-360.webp') 1x, url('/img/atlas/angels-v1/love.webp') 2x);
 }
 
 .angel-card-back--nature {
     background-image: url('/img/atlas/angels-v1/nature.webp');
+    background-image: image-set(url('/img/atlas/angels-v1/nature-360.webp') 1x, url('/img/atlas/angels-v1/nature.webp') 2x);
 }
 
 .angel-card-back--peace {
     background-image: url('/img/atlas/angels-v1/peace.webp');
+    background-image: image-set(url('/img/atlas/angels-v1/peace-360.webp') 1x, url('/img/atlas/angels-v1/peace.webp') 2x);
 }
 
 .angel-card-back--purpose {
     background-image: url('/img/atlas/angels-v1/purpose.webp');
+    background-image: image-set(url('/img/atlas/angels-v1/purpose-360.webp') 1x, url('/img/atlas/angels-v1/purpose.webp') 2x);
 }
 
 .angel-card-back--strength {
     background-image: url('/img/atlas/angels-v1/strength.webp');
+    background-image: image-set(url('/img/atlas/angels-v1/strength-360.webp') 1x, url('/img/atlas/angels-v1/strength.webp') 2x);
 }
 
 .angel-card-back--daily {
@@ -744,8 +803,14 @@ html body .mh-block-visible {
 
 .angel-card-sparkle {
     margin-bottom: 1rem;
-    font-size: 3rem;
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+    line-height: 0;
+}
+
+.angel-card-sparkle > .mh-symbol {
+    width: 48px;
+    height: 48px;
+    color: var(--color-mystic-gold);
+    filter: drop-shadow(0 0 10px rgba(208, 177, 124, 0.35));
 }
 
 .angel-intro-text--hidden {

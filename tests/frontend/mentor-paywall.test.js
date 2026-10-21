@@ -22,6 +22,6 @@ describe('Mentor paywall copy contract', () => {
         expect(source).toContain('Tvoje dosavadní zprávy zůstávají přístupné.');
         expect(source).not.toContain("classList.add('chat-messages--blurred')");
         expect(source).not.toContain('checkUsageLimit()');
-        expect(source).toContain("response.status === 402 || response.status === 403");
+        expect(source).toContain('response.status === 402');
     });
 });

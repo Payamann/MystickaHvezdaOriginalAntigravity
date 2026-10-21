@@ -159,7 +159,7 @@ export async function buildRelationshipReadingAttachments({ cards }) {
 
 export function buildRelationshipReadingHtml({ question, cards, reading }, { inlineImages = false } = {}) {
     const e = escapeReadingText;
-    parseRelationshipReading(reading, { strictLanguage: false });
+    const normalizedReading = parseRelationshipReading(reading, { strictLanguage: false });
     const paragraphStyle = 'margin:0;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:27px;color:#35404b;word-wrap:break-word;overflow-wrap:anywhere;';
     const labelStyle = 'margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:18px;font-weight:bold;letter-spacing:2px;color:#79613a;';
     const headingStyle = 'margin:7px 0 16px;font-family:Georgia,Times,serif;font-size:25px;line-height:32px;font-weight:normal;color:#172b3a;';
@@ -177,9 +177,9 @@ export function buildRelationshipReadingHtml({ question, cards, reading }, { inl
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
             <td width="42" valign="top" style="padding:0 12px 0 0;font-family:Georgia,Times,serif;font-size:30px;line-height:39px;color:#987447;">${numerals[i]}</td>
             <td><p style="${labelStyle}">${e(card.position)}</p><h2 style="${headingStyle}margin-bottom:0;">${e(card.name)}</h2></td>
-        </tr></table><p style="${paragraphStyle}margin-top:17px;">${e(reading.cards[i])}</p>
+        </tr></table><p style="${paragraphStyle}margin-top:17px;">${e(normalizedReading.cards[i])}</p>
     </td></tr>`).join('');
-    const questions = reading.questions.map((text, i) => `<tr>
+    const questions = normalizedReading.questions.map((text, i) => `<tr>
         <td width="30" valign="top" style="padding:13px 8px 13px 0;border-bottom:1px solid #e2d6bf;font-family:Georgia,Times,serif;font-size:22px;line-height:26px;color:#987447;">${i + 1}.</td>
         <td style="padding:13px 0;border-bottom:1px solid #e2d6bf;"><p style="${paragraphStyle}">${e(text)}</p></td>
     </tr>`).join('');
@@ -204,15 +204,15 @@ export function buildRelationshipReadingHtml({ question, cards, reading }, { inl
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="table-layout:fixed;"><tr><td bgcolor="#fffdf8" style="padding:20px 21px;background-color:#fffdf8;border-left:3px solid #bd9b65;">
             <p style="${labelStyle}">TVOJE OTÁZKA</p><p style="margin:11px 0 0;font-family:Georgia,Times,serif;font-size:18px;line-height:29px;color:#253744;word-wrap:break-word;overflow-wrap:anywhere;">${e(question)}</p>
         </td></tr></table>
-        <p style="${paragraphStyle}margin-top:24px;">${e(reading.introduction)}</p>
+        <p style="${paragraphStyle}margin-top:24px;">${e(normalizedReading.introduction)}</p>
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:6px;">${cardSections}</table>
         <p style="${labelStyle}margin-top:29px;">SPOLEČNÉ TÉMA</p>
         <h2 style="${headingStyle}">Jak spolu karty souvisejí</h2>
-        <p style="${paragraphStyle}">${e(reading.connection)}</p>
+        <p style="${paragraphStyle}">${e(normalizedReading.connection)}</p>
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:28px;"><tr><td bgcolor="#102638" style="padding:25px 23px;background-color:#102638;border-top:2px solid #bd9b65;border-radius:0 0 8px 8px;">
             <p style="${labelStyle}color:#e0c28d;">Z VÝKLADU DO ŽIVOTA</p>
             <h2 style="${headingStyle}color:#fff4df;margin-bottom:15px;">Jeden malý krok pro tebe</h2>
-            <p style="${paragraphStyle}color:#e9e8df;">${e(reading.nextStep)}</p>
+            <p style="${paragraphStyle}color:#e9e8df;">${e(normalizedReading.nextStep)}</p>
         </td></tr></table>
         <p style="${labelStyle}margin-top:30px;">CHVÍLE K ZAMYŠLENÍ</p>
         <h2 style="${headingStyle}margin-bottom:5px;">Co si chceš odnést dál?</h2>

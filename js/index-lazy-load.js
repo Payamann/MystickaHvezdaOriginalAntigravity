@@ -82,6 +82,15 @@
         });
     }
 
+    function syncHeroTrustStrip() {
+        const trustStrip = document.querySelector('.hero__trust-strip');
+        if (!trustStrip) return;
+        trustStrip.hidden = window.Auth?.isLoggedIn?.() === true;
+    }
+
+    document.addEventListener('auth:changed', syncHeroTrustStrip);
+    syncHeroTrustStrip();
+
     if (document.readyState === 'complete') {
         scheduleLoad();
     } else {

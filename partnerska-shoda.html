@@ -108,14 +108,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
 
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="css/site.min.css?v=1">
+    <link rel="stylesheet" href="css/site.min.css?v=20261018-release-candidate">
     <link rel="stylesheet" href="css/pages/partnerska-shoda.css?v=3">
 <link rel="alternate" hreflang="cs" href="https://www.mystickahvezda.cz/partnerska-shoda.html">
 
     <link rel="canonical" href="https://www.mystickahvezda.cz/partnerska-shoda.html">
 
-  <!-- DOMPurify for XSS protection (must load synchronously before other scripts use it) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" integrity="sha384-XQqX/4yiUGu+oyr87jvWzRuqBUK/adrY0DunhL+tID9m/9dwSpV8h9Fk/Sg6ifVQ" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link rel="alternate" hreflang="x-default" href="https://www.mystickahvezda.cz/partnerska-shoda.html">    <script src="/js/dist/analytics-init.js" defer></script>
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -123,8 +121,8 @@
 <meta property="og:image:alt" content="Partnerská shoda znamení online | Mystická Hvězda">
 <meta name="twitter:image:alt" content="Partnerská shoda znamení online | Mystická Hvězda">
 
-    <link rel="stylesheet" href="/css/atlas-web.css?v=1">
-    <link rel="stylesheet" href="/css/atlas-astro.css?v=1">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
+    <link rel="stylesheet" href="/css/atlas-astro.css?v=20261020-01-western-zodiac-image-cards">
 </head>
 
 <body class="page-compatibility atlas-page atlas-astro-page">
@@ -205,7 +203,7 @@
 
                                         for="p1-name">Jméno</label>
 
-                                    <input type="text" id="p1-name" class="email-form__input w-full" required>
+                                    <input type="text" id="p1-name" class="email-form__input w-full" autocomplete="name" required>
 
                                 </div>
 
@@ -215,7 +213,7 @@
 
                                         narození</label>
 
-                                    <input type="date" id="p1-date" class="email-form__input w-full" required>
+                                    <input type="date" id="p1-date" class="email-form__input w-full" autocomplete="bday" required>
 
                                 </div>
 
@@ -259,7 +257,7 @@
 
                                         for="p2-name">Jméno</label>
 
-                                    <input type="text" id="p2-name" class="email-form__input w-full" required>
+                                    <input type="text" id="p2-name" class="email-form__input w-full" autocomplete="off" required>
 
                                 </div>
 
@@ -269,7 +267,7 @@
 
                                         narození</label>
 
-                                    <input type="date" id="p2-date" class="email-form__input w-full" required>
+                                    <input type="date" id="p2-date" class="email-form__input w-full" autocomplete="off" required>
 
                                 </div>
 
@@ -405,6 +403,8 @@
                         </a>
                     </div>
                 </details>
+
+                <p id="synastry-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
 
                 <!-- RESULTS -->
 
@@ -616,16 +616,6 @@
                     <strong>Beran a Beran ve vztahu</strong>
                     <em>Dynamika dvou ohnivých znamení a prostor pro přesnější výpočet.</em>
                 </a>
-                <a href="partnerska-shoda/scorpio-cancer.html" class="synastry-intent-card" data-analytics-cta="synastry_priority_scorpio_cancer" data-analytics-feature="compatibility">
-                    <span>Vodní dvojice</span>
-                    <strong>Štír a Rak ve vztahu</strong>
-                    <em>Emoce, důvěra a bezpečí v kombinaci dvou vodních znamení.</em>
-                </a>
-                <a href="partnerska-shoda/leo-scorpio.html" class="synastry-intent-card" data-analytics-cta="synastry_priority_leo_scorpio" data-analytics-feature="compatibility">
-                    <span>Ohnivá a vodní dvojice</span>
-                    <strong>Lev a Štír ve vztahu</strong>
-                    <em>Silná chemie, kontrola, žárlivost a potřeba uznání v jednom konkrétním rozboru.</em>
-                </a>
                 <a href="partnerska-shoda/aries-virgo.html" class="synastry-intent-card" data-analytics-cta="synastry_priority_aries_virgo" data-analytics-feature="compatibility">
                     <span>Kontrast tempa</span>
                     <strong>Beran a Panna ve vztahu</strong>
@@ -635,11 +625,6 @@
                     <span>Náročná dvojice</span>
                     <strong>Rak a Vodnář ve vztahu</strong>
                     <em>Citová jistota versus svoboda a odstup, které potřebují praktický překlad.</em>
-                </a>
-                <a href="partnerska-shoda/scorpio-pisces.html" class="synastry-intent-card" data-analytics-cta="synastry_priority_scorpio_pisces" data-analytics-feature="compatibility">
-                    <span>Vodní shoda</span>
-                    <strong>Štír a Ryby ve vztahu</strong>
-                    <em>Intuice, hloubka a hranice v jedné z nejsilnějších citových kombinací.</em>
                 </a>
                 <a href="partnerska-shoda/gemini-sagittarius.html" class="synastry-intent-card" data-analytics-cta="synastry_priority_gemini_sagittarius" data-analytics-feature="compatibility">
                     <span>Osa svobody</span>
@@ -870,11 +855,11 @@
 
     <div id="footer-placeholder"></div>
 
-    <script src="js/dist/favorites-helper.js" defer></script>
+    <script src="js/dist/favorites-helper.js?v=20261018-favorite-controls" defer></script>
 
-    <script src="js/dist/share-image-canvas.js" defer></script>
+    <script src="js/dist/share-image-canvas.js?v=20261018-export-ellipsis" defer></script>
 
-    <script type="module" src="js/dist/synastry.js?v=4"></script>
+    <script type="module" src="js/dist/synastry.js?v=20261021-instant-result"></script>
 
     <!-- Service Worker Registration -->
 
@@ -883,19 +868,19 @@
     <script src="js/dist/api-config.js?v=5" defer></script>
     <script src="js/dist/birth-location-suggestions.js" defer></script>
 
-    <script src="js/dist/templates.js?v=14" defer></script>
+    <script src="js/dist/templates.js?v=20261021-celtic-footer-star-svg" defer></script>
 
-<script src="js/dist/auth-client.js?v=20261003-single-membership" defer></script>
+<script src="js/dist/auth-client.js?v=20261020-02-register-password-policy" defer></script>
 <script src="js/dist/auth-copy-fixes.js" defer></script>
-<script src="js/dist/tool-pages-copy-fixes.js?v=3" defer></script>
+<script src="js/dist/tool-pages-copy-fixes.js?v=20261018-numerology-copy" defer></script>
 
-<script src="js/dist/share-result.js?v=1" defer></script>
+<script src="js/dist/share-result.js?v=20261017-icons" defer></script>
 
     <script src="js/dist/exit-intent.js" defer></script>
 
-    <script src="js/dist/components.js?v=20260522-premium-gate-cache" defer></script>
+    <script src="js/dist/components.js?v=20261021-footer-support-locale" defer></script>
 
-    <script type="module" src="js/dist/main.js?v=10"></script>
+    <script type="module" src="js/dist/main.js?v=20261018-status-icons"></script>
 
 </body>
 

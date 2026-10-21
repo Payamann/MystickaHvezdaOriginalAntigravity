@@ -25,9 +25,9 @@
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/img/icon-192.webp">
     <link rel="stylesheet" href="/fonts/local-fonts.css">
-    <link rel="stylesheet" href="/css/style.v2.min.css?v=12">
+    <link rel="stylesheet" href="/css/style.v2.min.css?v=20261018-release-candidate">
     <link rel="stylesheet" href="/css/pages/tarot-meaning-hub.css">
-    <link rel="stylesheet" href="/css/atlas-web.css?v=1">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
     <script type="application/ld+json">
 [
         {
@@ -133,7 +133,7 @@
     <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
     <div id="header-placeholder"></div>
 
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
         <section class="section section--hero tarot-card-detail-hero">
             <div class="container tarot-card-detail-hero__inner">
                 <div class="tarot-card-detail-hero__copy">
@@ -141,15 +141,14 @@
                         <a href="/">Domů</a> &raquo; <a href="/tarot-vyznam-karet.html">Význam tarotových karet</a> &raquo; Královna mečů
                     </nav>
                     <span class="section__badge">Meče</span>
-                    <h1 class="section__title">Královna mečů tarot význam</h1>
+                    <h1 class="section__title">Královna mečů v tarotu: význam karty</h1>
                     <p class="section__text hero__subtitle">Jasná hranice v rozhovoru</p>
                     <div class="tarot-card-detail-actions">
                             <a href="/tarot.html?source=tarot_card_detail&amp;card=Kr%C3%A1lovna%20me%C4%8D%C5%AF" class="btn btn--primary">Otevřít tarotový výklad</a>
-                        <a href="/tarot-vyznam-karet.html?source=tarot_card_detail&amp;card=Kr%C3%A1lovna%20me%C4%8D%C5%AF" class="btn btn--ghost">Zpět na všech 78 karet</a>
                     </div>
                 </div>
                 <div class="tarot-card-detail-hero__image">
-                    <img src="/img/tarot-v2/tarot_kralovna_mecu.webp" alt="Královna mečů tarot karta" width="300" height="500">
+                    <img src="/img/tarot-v2/tarot_kralovna_mecu.webp" srcset="/img/tarot-v2/tarot_kralovna_mecu-240.webp 240w, /img/tarot-v2/tarot_kralovna_mecu-360.webp 360w, /img/tarot-v2/tarot_kralovna_mecu-480.webp 480w, /img/tarot-v2/tarot_kralovna_mecu.webp 600w" sizes="(max-width: 328px) 70vw, (max-width: 860px) 230px, 300px" alt="Královna mečů tarot karta" width="300" height="500">
                 </div>
             </div>
         </section>
@@ -188,7 +187,6 @@
                     <h2>Rychlý přehled</h2>
                     <dl>
                         <div><dt>Arkánum</dt><dd>Meče</dd></div>
-                        <div><dt>Hlavní téma</dt><dd>Jasná hranice v rozhovoru</dd></div>
                         <div><dt>Otázka pro tebe</dt><dd>Jak svou potřebu řeknu konkrétně a bez útoku?</dd></div>
                     </dl>
                 </aside>
@@ -204,19 +202,19 @@
                 </div>
                 <div class="tarot-related-card-grid">
                     <a class="tarot-related-card" href="/tarot-vyznam/rytir-mecu.html">
-                        <img src="/img/tarot-v2/tarot_rytir_mecu.webp" alt="" width="66" height="110" loading="lazy" decoding="async">
+                        <img src="/img/tarot-v2/tarot_rytir_mecu.webp" alt="" width="66" height="110" loading="lazy" decoding="async" srcset="/img/tarot-v2/tarot_rytir_mecu-240.webp 240w, /img/tarot-v2/tarot_rytir_mecu-360.webp 360w, /img/tarot-v2/tarot_rytir_mecu.webp 600w" sizes="66px">
                         <span>Meče</span>
                         <strong>Rytíř mečů</strong>
                         <small>Rychlost s rozvahou</small>
                     </a>
                     <a class="tarot-related-card" href="/tarot-vyznam/kral-mecu.html">
-                        <img src="/img/tarot-v2/tarot_kral_mecu.webp" alt="" width="66" height="110" loading="lazy" decoding="async">
+                        <img src="/img/tarot-v2/tarot_kral_mecu.webp" alt="" width="66" height="110" loading="lazy" decoding="async" srcset="/img/tarot-v2/tarot_kral_mecu-240.webp 240w, /img/tarot-v2/tarot_kral_mecu-360.webp 360w, /img/tarot-v2/tarot_kral_mecu.webp 600w" sizes="66px">
                         <span>Meče</span>
                         <strong>Král mečů</strong>
                         <small>Rozhodnutí podle kritérií</small>
                     </a>
                     <a class="tarot-related-card" href="/tarot-vyznam/eso-mecu.html">
-                        <img src="/img/tarot-v2/tarot_eso_mecu.webp" alt="" width="66" height="110" loading="lazy" decoding="async">
+                        <img src="/img/tarot-v2/tarot_eso_mecu.webp" alt="" width="66" height="110" loading="lazy" decoding="async" srcset="/img/tarot-v2/tarot_eso_mecu-240.webp 240w, /img/tarot-v2/tarot_eso_mecu-360.webp 360w, /img/tarot-v2/tarot_eso_mecu.webp 600w" sizes="66px">
                         <span>Meče</span>
                         <strong>Eso mečů</strong>
                         <small>Jasnost a přesná otázka</small>
@@ -247,55 +245,12 @@
                     <summary>Co znamená Královna mečů obráceně?</summary>
                     <p>Obrácená Královna může připomenout tvrdé hodnocení, nevyřčenou hranici nebo řeč, která uzavírá rozhovor. Zkus zpřesnit potřebu bez nálepkování sebe či druhého.</p>
                 </details>
-                <div class="tarot-meaning-hero__actions">
-                    <a href="/tarot.html?source=tarot_card_detail_bottom&amp;card=Kr%C3%A1lovna%20me%C4%8D%C5%AF" class="btn btn--primary">Otevřít tarotový výklad</a>
-                    <a href="/tarot-vyznam-karet.html" class="btn btn--ghost">Prohlédnout všechny karty</a>
-                </div>
-
-                <!-- Most na denní horoskop e-mailem. Čtenář významu karty už o symboliku
-                     zájem má; ranní horoskop je nízkoprahové pokračování bez zakládání účtu. -->
-                <details class="mh-email-bridge feature-reference" data-analytics-source="tarot_card_detail">
-                    <summary class="feature-reference__summary">Denní horoskop e-mailem</summary>
-                    <p class="mh-email-bridge__text">
-                        Význam karty Královna mečů máš. Denní horoskop pro tvoje znamení ti může chodit každé ráno e-mailem — zdarma a bez zakládání účtu.
-                    </p>
-                    <div class="mh-email-bridge__form">
-                        <input id="horoscope-email-input" type="email" autocomplete="email"
-                            aria-label="E-mailová adresa pro odběr denního horoskopu" placeholder="tvuj@email.cz"
-                            class="mh-email-bridge__input">
-                        <select id="horoscope-sign-select" aria-label="Vyber své znamení"
-                            class="mh-email-bridge__select">
-                            <option value="">— Vyber své znamení —</option>
-                            <option value="Beran">♈ Beran (21.3–20.4)</option>
-                            <option value="Býk">♉ Býk (21.4–20.5)</option>
-                            <option value="Blíženci">♊ Blíženci (21.5–21.6)</option>
-                            <option value="Rak">♋ Rak (22.6–22.7)</option>
-                            <option value="Lev">♌ Lev (23.7–22.8)</option>
-                            <option value="Panna">♍ Panna (23.8–22.9)</option>
-                            <option value="Váhy">♎ Váhy (23.9–22.10)</option>
-                            <option value="Štír">♏ Štír (23.10–21.11)</option>
-                            <option value="Střelec">♐ Střelec (22.11–21.12)</option>
-                            <option value="Kozoroh">♑ Kozoroh (22.12–19.1)</option>
-                            <option value="Vodnář">♒ Vodnář (20.1–18.2)</option>
-                            <option value="Ryby">♓ Ryby (19.2–20.3)</option>
-                        </select>
-                        <button id="horoscope-subscribe-btn" type="button"
-                            class="btn btn--primary mh-email-bridge__btn"> Chci ranní horoskop</button>
-                    </div>
-                    <p id="horoscope-subscribed-msg" class="mh-email-bridge__done" hidden>
-                        Odběr denního horoskopu je nastavený.
-                    </p>
-                    <p class="mh-email-bridge__note">
-                        Každé ráno, zdarma. Odhlásit se můžeš kdykoliv jedním klikem.
-                    </p>
-                </details>
             </div>
         </section>
     </main>
 
     <div id="footer-placeholder"></div>
-    <script src="/js/dist/core.js?v=20261003-single-membership" defer></script>
-    <script src="/js/dist/horoscope-subscribe.js?v=2" defer></script>
+    <script src="/js/dist/core.js?v=20261021-footer-support-locale" defer></script>
     <script type="module" src="/js/dist/main.js?v=10"></script>
 </body>
 </html>

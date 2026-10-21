@@ -66,7 +66,7 @@
 
     if (!window.Premium && !document.querySelector('script[src*="premium-gates.js"]')) {
         const pg = document.createElement('script');
-        pg.src = basePath + 'js/dist/premium-gates.js?v=20260522-login-gate-cta';
+        pg.src = basePath + 'js/dist/premium-gates.js?v=20261018-paywall-svg';
         pg.defer = true;
         document.head.appendChild(pg);
     }
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Use high priority for header as it affects LCP/CLS
     await Promise.all([
         loadComponent('header-placeholder', `${basePath}components/header.html?v=20261014-detail-polish-2`, basePath, true),
-        loadComponent('footer-placeholder', `${basePath}components/footer.html?v=20261014-svg-symbols`, basePath, false)
+        loadComponent('footer-placeholder', `${basePath}components/footer.html?v=20261020-footer-contact-dedupe`, basePath, false)
     ]);
 
     // STANDALONE: Init hamburger menu + header scroll (no module dependency)
@@ -164,6 +164,12 @@ function localizeSharedShell(root) {
 
     const labels = {
         sk: {
+            'Natální Karta': 'Natálna karta',
+            'Partnerská Shoda': 'Partnerská zhoda',
+            'Lunární Fáze': 'Mesačné fázy',
+            'Astro Mapa': 'Astromapa',
+            'Čínský Horoskop': 'Čínsky horoskop',
+            'Andělské Karty': 'Anjelské karty',
             'Otevřít hlavní menu': 'Otvoriť hlavné menu', 'Zavřít hlavní menu': 'Zavrieť hlavné menu',
             'Hlavní navigace': 'Hlavná navigácia', 'Domů': 'Domov', 'Astrologie': 'Astrológia',
             'Horoskopy': 'Horoskopy', 'Znamení zvěrokruhu': 'Znamenia zverokruhu', 'Natální karta': 'Natálna karta',
@@ -174,7 +180,7 @@ function localizeSharedShell(root) {
             'Tarot ANO nebo NE': 'Tarot ÁNO alebo NIE', 'Významy karet': 'Významy kariet', 'Andělské karty': 'Anjelské karty',
             'Andělská pošta': 'Anjelská pošta', 'Runy': 'Runy', 'Křišťálová koule': 'Krištáľová guľa', 'Snář': 'Snár',
             'Šamanské kolo': 'Šamanské koleso', 'Čísla a energie': 'Čísla a energia', 'Numerologie': 'Numerológia',
-            'Kalkulačka čísla osudu': 'Kalkulačka čísla osudu', 'Aura kalkulačka': 'Kalkulačka aury',
+            'Kalkulačka životní cesty': 'Kalkulačka životnej cesty', 'Aura kalkulačka': 'Kalkulačka aury',
             'Denní afirmace': 'Denné afirmácie', 'Databáze jmen': 'Databáza mien', 'Biorytmy': 'Bioritmy',
             'Ezoterický slovník': 'Ezoterický slovník', 'Poznání': 'Poznanie', 'Mystické testy': 'Mystické testy',
             'Mystický blog': 'Mystický blog', 'Časté otázky': 'Časté otázky', 'O nás': 'O nás',
@@ -184,6 +190,7 @@ function localizeSharedShell(root) {
             'Moderní astrologická služba pro českou komunitu. Spojujeme tisíciletou moudrost s důvěryhodnou praxí.': 'Moderná astrologická služba pre českú komunitu. Spájame tisícročnú múdrosť s dôveryhodnou praxou.',
             'Spojujeme tisíciletou moudrost s důvěryhodnou praxí.': 'Spájame tisícročnú múdrosť s dôveryhodnou praxou.',
             'Provozovatel služby Mystická Hvězda. Potřebuješ pomoc? Napiš nám kdykoliv na': 'Prevádzkovateľ služby Mystická Hvězda. Potrebuješ pomoc? Napíš nám kedykoľvek na',
+            'Provozovatel služby Mystická Hvězda. Podpora:': 'Prevádzkovateľ služby Mystická Hvězda. Podpora:',
             'Pomohla ti tato stránka?': 'Pomohla ti táto stránka?', 'Ano': 'Áno', 'Ne': 'Nie',
             'Věštění & Energie': 'Veštenie a energia', 'Tarot & Výklady': 'Tarot a výklady', 'Věštění z Run': 'Veštenie z rún',
             'Křišťálová Koule': 'Krištáľová guľa', 'Šamanské Kolo': 'Šamanské koleso', 'Hvězdný Průvodce': 'Hviezdny sprievodca',
@@ -199,6 +206,12 @@ function localizeSharedShell(root) {
             'Otevírá českou stránku': 'Otvára českú stránku'
         },
         pl: {
+            'Natální Karta': 'Kosmogram',
+            'Partnerská Shoda': 'Dopasowanie partnerskie',
+            'Lunární Fáze': 'Fazy Księżyca',
+            'Astro Mapa': 'Mapa astrologiczna',
+            'Čínský Horoskop': 'Horoskop chiński',
+            'Andělské Karty': 'Karty anielskie',
             'Otevřít hlavní menu': 'Otwórz menu główne', 'Zavřít hlavní menu': 'Zamknij menu główne',
             'Hlavní navigace': 'Nawigacja główna', 'Domů': 'Strona główna', 'Astrologie': 'Astrologia',
             'Horoskopy': 'Horoskopy', 'Znamení zvěrokruhu': 'Znaki zodiaku', 'Natální karta': 'Kosmogram',
@@ -208,7 +221,7 @@ function localizeSharedShell(root) {
             'Keltský kříž': 'Krzyż celtycki', 'Tarot na lásku': 'Tarot miłosny', 'Tarot ANO nebo NE': 'Tarot TAK albo NIE',
             'Významy karet': 'Znaczenie kart', 'Andělské karty': 'Karty anielskie', 'Andělská pošta': 'Poczta anielska',
             'Runy': 'Runy', 'Křišťálová koule': 'Kryształowa kula', 'Snář': 'Sennik', 'Šamanské kolo': 'Koło szamańskie',
-            'Čísla a energie': 'Liczby i energia', 'Numerologie': 'Numerologia', 'Kalkulačka čísla osudu': 'Kalkulator liczby przeznaczenia',
+            'Čísla a energie': 'Liczby i energia', 'Numerologie': 'Numerologia', 'Kalkulačka životní cesty': 'Kalkulator drogi życia',
             'Aura kalkulačka': 'Kalkulator aury', 'Denní afirmace': 'Codzienne afirmacje', 'Databáze jmen': 'Baza imion',
             'Biorytmy': 'Biorytmy', 'Ezoterický slovník': 'Słownik ezoteryczny', 'Poznání': 'Odkrywanie',
             'Mystické testy': 'Testy mistyczne', 'Mystický blog': 'Blog mistyczny', 'Časté otázky': 'Częste pytania', 'O nás': 'O nas',
@@ -218,6 +231,7 @@ function localizeSharedShell(root) {
             'Moderní astrologická služba pro českou komunitu. Spojujeme tisíciletou moudrost s důvěryhodnou praxí.': 'Nowoczesny serwis astrologiczny dla czeskiej społeczności. Łączymy tysiącletnią mądrość z rzetelną praktyką.',
             'Spojujeme tisíciletou moudrost s důvěryhodnou praxí.': 'Łączymy tysiącletnią mądrość z rzetelną praktyką.',
             'Provozovatel služby Mystická Hvězda. Potřebuješ pomoc? Napiš nám kdykoliv na': 'Serwis Mystická Hvězda. Potrzebujesz pomocy? Napisz do nas w każdej chwili:',
+            'Provozovatel služby Mystická Hvězda. Podpora:': 'Serwis Mystická Hvězda. Wsparcie:',
             'Pomohla ti tato stránka?': 'Czy ta strona była pomocna?', 'Ano': 'Tak', 'Ne': 'Nie',
             'Věštění & Energie': 'Wróżby i energia', 'Tarot & Výklady': 'Tarot i odczyty', 'Věštění z Run': 'Wróżby z run',
             'Křišťálová Koule': 'Kryształowa kula', 'Šamanské Kolo': 'Koło szamańskie', 'Hvězdný Průvodce': 'Gwiezdny przewodnik',
@@ -269,6 +283,10 @@ function localizeSharedShell(root) {
     root.querySelectorAll('[aria-label]').forEach((element) => {
         const label = element.getAttribute('aria-label');
         if (copy[label]) element.setAttribute('aria-label', copy[label]);
+    });
+    root.querySelectorAll('[alt]').forEach((element) => {
+        const alt = element.getAttribute('alt');
+        if (copy[alt]) element.setAttribute('alt', copy[alt]);
     });
 
     // cookie-handler.js updates this control after the component is inserted.

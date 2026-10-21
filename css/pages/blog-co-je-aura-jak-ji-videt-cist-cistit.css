@@ -5,14 +5,14 @@
         .blog-content p { margin-bottom:1.4rem; }
         .blog-content ul, .blog-content ol { margin:0 0 1.4rem 1.5rem; }
         .blog-content li { margin-bottom:0.5rem; }
-        .blog-content blockquote { border-left:4px solid #9b59b6; padding:1rem 1.5rem; margin:2rem 0; background:rgba(155,89,182,0.08); border-radius:0 12px 12px 0; font-style:italic; color:rgba(255,255,255,0.9); }
+        .blog-content blockquote { border-left:4px solid #c5a365; padding:1rem 1.5rem; margin:2rem 0; background:rgba(197,163,101,0.08); border-radius:0 12px 12px 0; font-style:italic; color:rgba(255,255,255,0.9); }
         .blog-content strong { color:#fff; }
         .highlight-box { background:rgba(212,175,55,0.07); border:1px solid rgba(212,175,55,0.2); border-radius:14px; padding:1.5rem 2rem; margin:2rem 0; }
         .highlight-box h3 { color:#ebc066; margin-top:0; font-family:'Cinzel',serif; }
         .breadcrumb { color:rgba(255,255,255,0.35); font-size:0.82rem; margin-bottom:1.5rem; }
         .breadcrumb a { color:rgba(235,192,102,0.6); text-decoration:none; }
         .author-box { margin-top:3rem; padding:1.5rem 2rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:16px; display:flex; align-items:center; gap:1.5rem; }
-        .author-avatar { width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,#9b59b6,#d4af37); display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0; }
+        .author-avatar { width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,#16364b,#c5a365); display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0; }
         @media(max-width:640px){.author-box{flex-direction:column;text-align:center}}
 
 /* Migrated from blog/co-je-aura-jak-ji-videt-cist-cistit.html static style attributes. */
@@ -22,17 +22,17 @@ html body .mh-inline-c610be8d53 { justify-content: flex-start; }
 html body .mh-inline-89e3ce2feb { color: var(--color-mystic-gold); }
 html body .mh-inline-8c0b831d2b { padding-top: 1rem; }
 html body .mh-inline-2fa62abab6 { max-width: 800px; }
-html body .mh-inline-8cb6a20f16 { color: #ebc066; }
 html body .mh-inline-b1e7a68cf5 { margin: 0 0 0.5rem 0; color: var(--color-mystic-gold); }
 html body .mh-inline-2d24472c9e { margin: 0; font-size: 0.9rem; color: var(--color-text-mutated); }
-html body .mh-inline-777b587c40 { margin: 3rem 0 2rem; padding: 2rem; background: linear-gradient(135deg, rgba(155,89,182,0.15), rgba(212,175,55,0.08)); border: 1px solid rgba(212,175,55,0.3); border-radius: 20px; text-align: center; }
-html body .mh-inline-8d7c06b8f3 { font-size: 2rem; margin-bottom: 0.75rem; }
-html body .mh-inline-7339157b53 { font-family: 'Cinzel', serif; color: #d4af37; font-size: 1.3rem; margin-bottom: 0.75rem; }
-html body .mh-inline-e540b5621a { color: rgba(255,255,255,0.7); line-height: 1.7; margin-bottom: 1.5rem; max-width: 480px; margin-left: auto; margin-right: auto; }
-html body .mh-inline-3b6c22ed39 { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-html body .mh-inline-b3ff196bd7 { display: inline-block; padding: 0.75rem 1.75rem; background: linear-gradient(135deg, #9b59b6, #6c3483); border-radius: 50px; color: white; text-decoration: none; font-weight: 600; font-size: 0.95rem; }
-html body .mh-inline-3384d2754b { display: inline-block; padding: 0.75rem 1.75rem; background: transparent; border: 1px solid rgba(212,175,55,0.5); border-radius: 50px; color: #d4af37; text-decoration: none; font-size: 0.95rem; }
-html body .mh-inline-2dde95d616 { color: rgba(255,255,255,0.3); font-size: 0.8rem; margin-top: 0.75rem; }
 html body .mh-inline-5fe7e92ee1 { margin: 2rem 0 3rem; }
 html body .mh-inline-5c88c5e02d { font-family: 'Cinzel', serif; color: #d4af37; font-size: 1.1rem; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(212,175,25,0.2); }
 html body .mh-inline-319e6ee336 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+
+.aura-article-callout { max-width:800px; margin:0 auto 2.5rem; padding:1.5rem 1.75rem; border:1px solid rgba(197,163,101,.36); border-radius:18px; background:linear-gradient(135deg,rgba(19,43,60,.96),rgba(24,48,63,.92)); box-shadow:0 18px 42px rgba(3,14,24,.18); }
+.aura-article-callout__eyebrow { margin:0 0 .45rem; color:#c5a365; font-size:.78rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; }
+.aura-article-callout h2 { margin:.15rem 0 .65rem; color:#f4ead6; font-family:'Cinzel',serif; font-size:1.45rem; }
+.aura-article-callout p:not(.aura-article-callout__eyebrow) { max-width:44rem; margin:0 0 1rem; color:rgba(255,255,255,.8); line-height:1.65; }
+.aura-article-callout a { display:inline-flex; align-items:center; gap:.45rem; min-height:44px; padding:.7rem 1.15rem; border-radius:999px; background:#c5a365; color:#102434; font-weight:700; text-decoration:none; }
+.aura-article-callout a:hover { background:#d6b779; }
+.aura-article-callout a:focus-visible { outline:3px solid #f4ead6; outline-offset:3px; }
+@media(max-width:640px) { .aura-article-callout { margin-right:1rem; margin-left:1rem; padding:1.2rem; } .aura-article-callout h2 { font-size:1.25rem; } }

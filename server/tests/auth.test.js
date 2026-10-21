@@ -8,7 +8,7 @@ import request from 'supertest';
 import app from '../index.js';
 import jwt from 'jsonwebtoken';
 import { supabase } from '../db-supabase.js';
-import { ensureDefaultSubscriptionForUser, getAuthSubscriptionState } from '../auth.js';
+import { ensureDefaultSubscriptionForUser, getAuthSubscriptionState, sanitizeLocalRedirectTarget } from '../auth.js';
 
 const REQUIRED_LEGAL_ACCEPTANCE = {
     terms_accepted: true,
@@ -110,6 +110,40 @@ describe('🔐 Auth Endpoint Tests', () => {
                 plan_type: 'free',
                 status: 'active'
             });
+        });
+    });
+
+    describe('Same-origin auth redirects', () => {
+        test('keeps a valid local path and its navigation context', () => {
+            expect(sanitizeLocalRedirectTarget('/cenik.html?source=onboarding#plans'))
+                .toBe('/cenik.html?source=onboarding#plans');
+        });
+
+        test.each([
+            '//evil.example/path',
+            '/\\evil.example/path',
+            'https://evil.example/path',
+            '/\n//evil.example/path'
+        ])('rejects unsafe redirect %p', (redirect) => {
+            expect(sanitizeLocalRedirectTarget(redirect, '/profil.html')).toBe('/profil.html');
+        });
+    });
+
+    describe('Reset password input validation', () => {
+        test.each([
+            ['short', /alespoň 8 znaků/],
+            ['x'.repeat(129), /maximálně 128 znaků/],
+            ['password', /příliš časté/]
+        ])('returns 400 for invalid password input', async (password, errorPattern) => {
+            const csrfToken = await getCsrfToken();
+            const res = await request(app)
+                .post('/api/auth/reset-password')
+                .set('x-csrf-token', csrfToken)
+                .set('Authorization', 'Bearer test-reset-token')
+                .send({ password })
+                .expect(400);
+
+            expect(res.body.error).toMatch(errorPattern);
         });
     });
 

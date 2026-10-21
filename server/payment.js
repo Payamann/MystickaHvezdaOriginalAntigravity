@@ -28,6 +28,7 @@ import { sendOperationalAlert } from './services/alerts.js';
 import { REQUIRED_STRIPE_WEBHOOK_EVENTS } from './config/stripe-webhooks.js';
 import { createCheckoutResultRouter } from './routes/checkout-result.js';
 import { isPaidRelationshipSession } from './services/relationship-tarot.js';
+import { resolveAnnualHoroscopeYear } from './services/annual-horoscope-year.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -53,6 +54,14 @@ const stripe = new Stripe(stripeSecretKey);
 const APP_URL = process.env.APP_URL || 'http://localhost:3001';
 const router = express.Router();
 router.use(createCheckoutResultRouter({ stripeClient: stripe }));
+
+function rejectExpectedUserMismatch(req, res, { allowMissing = false } = {}) {
+    const expectedUserId = req.body?.expectedUserId;
+    if (allowMissing && expectedUserId === undefined) return false;
+    if (typeof expectedUserId === 'string' && expectedUserId === req.user?.id) return false;
+    res.status(409).json({ success: false, error: 'Účet se změnil nebo je stránka zastaralá. Obnov profil a zkus to znovu.' });
+    return true;
+}
 
 import {
     DEFAULT_PREMIUM_PLAN_TYPE,
@@ -1477,6 +1486,7 @@ export async function cancelFailedSubscriptionImmediately({
 
 router.post('/cancel', authenticateToken, async (req, res) => {
     try {
+        if (rejectExpectedUserMismatch(req, res)) return;
         const { data: subscription, error: subscriptionError } = await supabase
             .from('subscriptions')
             .select('stripe_subscription_id, status, current_period_end')
@@ -1574,6 +1584,7 @@ export async function reactivatePendingCancellation({
 
 router.post('/reactivate', authenticateToken, async (req, res) => {
     try {
+        if (rejectExpectedUserMismatch(req, res)) return;
         const { data: subscription, error: subscriptionError } = await supabase
             .from('subscriptions')
             .select('stripe_subscription_id, status')
@@ -1625,6 +1636,7 @@ router.post('/reactivate', authenticateToken, async (req, res) => {
 // ============================================
 router.post('/portal', authenticateToken, async (req, res) => {
     try {
+        if (rejectExpectedUserMismatch(req, res)) return;
         const requestedFlow = req.body?.flow || null;
         if (requestedFlow && !['payment_method_update', 'subscription_cancel'].includes(requestedFlow)) {
             return res.status(400).json({ error: 'Neplatný typ správy plateb.' });
@@ -2005,7 +2017,12 @@ async function handleRocniHoroskopPurchase(session, stripeEventId = null) {
     const orderInput = await getOneTimeOrderInput(session.metadata?.orderId);
     const payload = orderInput?.payload || {};
     const productId = session.metadata?.productId || orderInput?.product_id || 'rocni_horoskop_2026';
-    const productYear = session.metadata?.productYear || new Date().getFullYear();
+    const productYear = resolveAnnualHoroscopeYear({
+        productId,
+        productYear: session.metadata?.productYear,
+        payloadYear: payload.productYear,
+        createdAt: orderInput?.created_at
+    });
     const source = session.metadata?.source || 'annual_horoscope_checkout';
     const customerName = orderInput?.customer_name || session.metadata?.customerName;
     const birthDate = payload.birthDate || session.metadata?.birthDate;
@@ -2029,8 +2046,7 @@ async function handleRocniHoroskopPurchase(session, stripeEventId = null) {
     }
 
     if (!customerName || !birthDate || !sign || !customerEmail) {
-        console.error('[HOROSKOP] Missing metadata in checkout session:', session.id);
-        return;
+        throw new Error('[HOROSKOP] Paid annual horoscope checkout is missing required fulfillment data.');
     }
 
     console.log(`[HOROSKOP] Generating PDF for paid session ${session.id} (${sign})`);
@@ -2058,7 +2074,14 @@ async function handleRocniHoroskopPurchase(session, stripeEventId = null) {
     setImmediate(async () => {
         try {
             const { fulfillRocniHoroskopOrder } = await import('./services/one-time-fulfillment.js');
-            await fulfillRocniHoroskopOrder({ customerName, customerEmail, payload: { birthDate, sign } });
+            await fulfillRocniHoroskopOrder({
+                customerName,
+                customerEmail,
+                payload: { birthDate, sign, productYear },
+                productId,
+                productYear,
+                createdAt: orderInput?.created_at
+            });
             await markOneTimeOrderInputFulfilled(orderInput?.id);
             await recordFunnelEvent('one_time_pdf_delivered', {
                 source,
@@ -2784,6 +2807,7 @@ async function handleTrialWillEnd(subscription) {
  */
 router.post('/retention/feedback', authenticateToken, async (req, res) => {
     try {
+        if (rejectExpectedUserMismatch(req, res)) return;
         const userId = req.user.id;
         const { type, reason, feedback } = req.body;
 
@@ -2911,6 +2935,7 @@ export async function resumeSubscriptionCollection({
 
 router.post('/subscription/pause', authenticateToken, async (req, res) => {
     try {
+        if (rejectExpectedUserMismatch(req, res)) return;
         const userId = req.user.id;
         let { pauseDays = 30 } = req.body;
 
@@ -2984,6 +3009,7 @@ router.post('/subscription/pause', authenticateToken, async (req, res) => {
 
 router.post('/subscription/resume', authenticateToken, async (req, res) => {
     try {
+        if (rejectExpectedUserMismatch(req, res)) return;
         const userId = req.user.id;
         const { data: sub, error: subError } = await supabase
             .from('subscriptions')
@@ -3042,6 +3068,7 @@ async function getOrCreateRetentionCoupon(couponCode) {
 
 router.post('/subscription/apply-discount', authenticateToken, async (req, res) => {
     try {
+        if (rejectExpectedUserMismatch(req, res)) return;
         const userId = req.user.id;
         const { couponCode } = req.body;
 
@@ -3142,12 +3169,17 @@ router.post('/subscription/apply-discount', authenticateToken, async (req, res) 
  */
 router.post('/email/send', authenticateToken, async (req, res) => {
     try {
-        const userId = req.user.id;
-        const { template, data } = req.body;
+        const { template, data } = req.body || {};
 
         if (!template) {
             return res.status(400).json({ error: 'template required' });
         }
+
+        // Older clients send this duplicate notification after pause. It is an
+        // idempotent acknowledgement with no side effects, so it can omit the
+        // account binding. All other email sends require it.
+        if (rejectExpectedUserMismatch(req, res, { allowMissing: template === 'subscription_paused' })) return;
+        const userId = req.user.id;
 
         // The pause endpoint already sends this transactional email after both Stripe and
         // the local state are updated. Older clients still call /email/send afterwards.

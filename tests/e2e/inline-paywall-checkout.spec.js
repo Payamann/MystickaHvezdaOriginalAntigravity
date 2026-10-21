@@ -553,7 +553,7 @@ test.describe('Inline paywall checkout handoff', () => {
         expect(await page.evaluate(() => sessionStorage.getItem('pending_plan'))).toBeNull();
     });
 
-    test('mentor teaser gate starts checkout with entry context for logged-in free user', async ({ page }) => {
+    test('mentor quota paywall starts checkout with entry context for logged-in free user', async ({ page }) => {
         const state = await setupCheckoutRoutes(page, {
             userId: 'mentor-teaser-user',
             email: 'mentor-teaser@example.com',
@@ -564,39 +564,50 @@ test.describe('Inline paywall checkout handoff', () => {
         await page.goto('/mentor.html?source=e2e_mentor_teaser');
         await waitForPageReady(page);
         await expect.poll(() => page.evaluate(() => typeof window.Auth?.startPlanCheckout)).toBe('function');
+        await page.route('**/api/mentor/history', route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ success: true, history: [] })
+        }));
+        await page.route('**/api/mentor/chat', route => route.fulfill({
+            status: 402,
+            contentType: 'application/json',
+            body: JSON.stringify({ error: 'Dnešní bezplatný limit je vyčerpaný.' })
+        }));
         await page.evaluate(() => {
             localStorage.clear();
             sessionStorage.clear();
-            const todayKey = `mh_daily_mentor_${new Date().toDateString()}`;
-            localStorage.setItem(todayKey, '3');
             Object.assign(window.Auth, {
                 isLoggedIn: () => true,
                 isPremium: () => false,
                 getProfile: async () => ({ subscription_status: 'free' }),
                 showToast: () => {}
             });
+            window.Auth.user = { id: 'mentor-teaser-user', email: 'mentor-teaser@example.com', subscription_status: 'free' };
             window.isPremium = false;
             window.MH_ANALYTICS = {
                 trackAction: () => {},
                 trackCTA: () => {},
                 trackCheckoutStarted: () => {}
             };
+            document.dispatchEvent(new Event('auth:changed'));
         });
 
         await page.locator('#chat-input').fill('Co mam dnes udelat jako dalsi krok?');
+        await expect(page.locator('#send-btn')).toBeEnabled();
         await page.locator('#send-btn').click();
 
-        const mentorGate = page.locator('.premium-lock-overlay');
+        const mentorGate = page.locator('.message[data-mentor-limit]');
         await expect(mentorGate).toBeVisible({ timeout: 5000 });
         await expect(mentorGate).toContainText(/krok|odpov/i);
 
         await Promise.all([
             waitForPath(page, '/profil.html'),
-            mentorGate.locator('.mentor-upgrade-btn').click(),
+            mentorGate.locator('.mentor-paywall-upgrade-btn').click(),
         ]);
 
         expectDirectCheckoutState(state, {
-            source: 'mentor_teaser_gate',
+            source: 'mentor_paywall_overlay',
             feature: 'mentor'
         });
     });

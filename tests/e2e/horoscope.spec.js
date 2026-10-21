@@ -272,6 +272,79 @@ test.describe('Horoskopy', () => {
         await expect(page.locator('body')).toBeVisible();
     });
 
+    test('po změně účtu se smaže už zobrazený horoskop a jeho akce', async ({ page }) => {
+        await page.evaluate(() => {
+            window.callAPI = async () => ({
+                success: true,
+                response: { prediction: 'Soukromý podnět účtu A.', affirmation: 'Vrátím se k sobě.', luckyNumbers: [2, 8] }
+            });
+            window.Auth.saveReading = async () => ({ id: 'horoscope-reading-owner-a' });
+        });
+
+        await page.locator('.zodiac-card', { hasText: 'Beran' }).first().click();
+        await expect(page.locator('#detail-text')).toContainText('Soukromý podnět účtu A.');
+        await expect(page.locator('.favorite-reading-action, .horoscope-feedback')).toHaveCount(2);
+
+        await page.evaluate(() => {
+            window.Auth.user = { id: 'e2e-user-b', email: 'user-b@example.com', role: 'user', subscription_status: 'free' };
+            localStorage.setItem('auth_user', JSON.stringify(window.Auth.user));
+            document.dispatchEvent(new Event('auth:changed'));
+        });
+
+        await expect(page.locator('.zodiac-card.active')).toHaveCount(0);
+        await expect(page.locator('#detail-name')).toHaveText('Zvěrokruh');
+        await expect(page.locator('#detail-text')).toHaveText('Vyber své znamení a přečti si dnešní podnět k zamyšlení.');
+        await expect(page.locator('.favorite-reading-action, .horoscope-feedback')).toHaveCount(0);
+        await expect.poll(() => page.evaluate(() => window.currentHoroscopeReadingId)).toBeNull();
+    });
+
+    test('pozdní horoskop původního účtu se po přepnutí nevykreslí', async ({ page }) => {
+        await page.evaluate(() => {
+            window.__resolvePendingHoroscope = null;
+            window.callAPI = () => new Promise(resolve => { window.__resolvePendingHoroscope = resolve; });
+            window.Auth.saveReading = async () => ({ id: 'horoscope-reading-stale' });
+        });
+
+        await page.locator('.zodiac-card', { hasText: 'Beran' }).first().click();
+        await expect(page.locator('.horoscope-loading')).toBeVisible();
+        await page.evaluate(() => {
+            window.Auth.user = { id: 'e2e-user-b', email: 'user-b@example.com', role: 'user', subscription_status: 'free' };
+            localStorage.setItem('auth_user', JSON.stringify(window.Auth.user));
+            document.dispatchEvent(new Event('auth:changed'));
+        });
+        await expect(page.locator('#detail-text')).toHaveText('Vyber své znamení a přečti si dnešní podnět k zamyšlení.');
+
+        await page.evaluate(() => window.__resolvePendingHoroscope({
+            success: true,
+            response: { prediction: 'Pozdní obsah účtu A.', affirmation: 'Nezobrazit starý výklad.', luckyNumbers: [1] }
+        }));
+        await expect(page.locator('#detail-text')).not.toContainText('Pozdní obsah účtu A.');
+        await expect(page.locator('.favorite-reading-action, .horoscope-feedback')).toHaveCount(0);
+    });
+
+    test('neúspěšné uložení do profilu nesmaže zobrazený horoskop', async ({ page }) => {
+        await page.evaluate(() => {
+            window.callAPI = async () => ({
+                success: true,
+                response: { prediction: 'Dnešní podnět zůstane čitelný.', affirmation: 'Mám čas vybrat si další krok.', luckyNumbers: [4, 9] }
+            });
+            window.Auth = {
+                ...(window.Auth || {}),
+                user: { id: 'horoscope-save-failure-owner' },
+                isLoggedIn: () => true,
+                saveReading: async () => null
+            };
+        });
+
+        await page.locator('.zodiac-card', { hasText: 'Beran' }).first().click();
+
+        await expect(page.locator('#detail-text')).toContainText('Dnešní podnět zůstane čitelný.');
+        await expect(page.locator('[data-horoscope-save-error]'))
+            .toHaveText('Horoskop zůstává zobrazený, ale nepodařilo se ho uložit do profilu.');
+        await expect(page.locator('[data-horoscope-save-error]')).toHaveAttribute('role', 'status');
+        await expect(page.locator('.favorite-reading-action')).toHaveCount(0);
+    });
+
     test('logged-in daily horoscope renders feedback strip and submits payload', async ({ page }) => {
         await page.context().addCookies([{
             name: 'logged_in',
@@ -420,16 +493,18 @@ test.describe('Horoskopy', () => {
                     });
                 }
                 if (url.endsWith('/api/horoscope')) {
-                    return new Response(JSON.stringify({
-                        success: true,
-                        response: {
-                            prediction: 'Dnes se drž jednoho konkrétního kroku.',
-                            affirmation: 'Důvěřuji svému směru.',
-                            luckyNumbers: [3, 7, 12]
-                        }
-                    }), {
-                        status: 200,
-                        headers: { 'Content-Type': 'application/json' }
+                    return new Promise(resolve => {
+                        window.__releaseHoroscopeActivation = () => resolve(new Response(JSON.stringify({
+                            success: true,
+                            response: {
+                                prediction: 'Dnes se drž jednoho konkrétního kroku.',
+                                affirmation: 'Důvěřuji svému směru.',
+                                luckyNumbers: [3, 7, 12]
+                            }
+                        }), {
+                            status: 200,
+                            headers: { 'Content-Type': 'application/json' }
+                        }));
                     });
                 }
                 return originalFetch(input, init);
@@ -441,6 +516,10 @@ test.describe('Horoskopy', () => {
 
         const activation = page.locator('#horoscope-activation-welcome');
         await expect(activation).toBeVisible();
+        await expect(activation).toHaveAttribute('data-state', 'loading');
+        await expect(page.locator('#horoscope-activation-title')).toHaveText('Načítám horoskop pro znamení: Lev');
+        await expect.poll(() => page.evaluate(() => typeof window.__releaseHoroscopeActivation)).toBe('function');
+        await page.evaluate(() => window.__releaseHoroscopeActivation());
         await expect(activation).toHaveAttribute('data-state', 'complete');
         await expect(page.locator('#horoscope-activation-title')).toContainText('Lev');
         await expect(page.locator('#horoscope-activation-copy')).toContainText('Zítra');

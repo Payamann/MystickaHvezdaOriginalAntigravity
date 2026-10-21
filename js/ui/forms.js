@@ -1,6 +1,24 @@
 /* ============================================
    8. EMAIL FORM (Demo handling with validation)
    ============================================ */
+function setEmailButtonStatus(button, symbolName, label) {
+    const iconMarkup = window.Templates?.symbol?.(symbolName);
+    const labelNode = document.createElement('span');
+    labelNode.textContent = label;
+
+    button.replaceChildren();
+    if (iconMarkup) {
+        const iconHost = document.createElement('span');
+        iconHost.innerHTML = iconMarkup;
+        const icon = iconHost.firstElementChild;
+        if (icon) {
+            icon.classList.add('mh-symbol--inline');
+            icon.setAttribute('focusable', 'false');
+            button.appendChild(icon);
+        }
+    }
+    button.appendChild(labelNode);
+}
 export function initEmailForms() {
     const emailForms = document.querySelectorAll('.email-form');
 
@@ -29,7 +47,8 @@ export function initEmailForms() {
             input.setAttribute('aria-invalid', 'false');
 
             // UI Loading State
-            button.textContent = '⏳ Odesílám...';
+            setEmailButtonStatus(button, 'hourglass', 'Odesílám...');
+            button.setAttribute('aria-busy', 'true');
             button.disabled = true;
             input.disabled = true;
 
@@ -49,7 +68,8 @@ export function initEmailForms() {
 
                 if (data.success) {
                     // Success State
-                    button.textContent = '✓ Odesláno!';
+                    setEmailButtonStatus(button, 'check', 'Odesláno!');
+                    button.setAttribute('aria-busy', 'false');
                     button.classList.add('btn--success');
 
                     // Announce to SR
@@ -77,7 +97,8 @@ export function initEmailForms() {
                 console.error('Newsletter Error:', error);
 
                 // Show error locally
-                button.textContent = '❌ Chyba';
+                setEmailButtonStatus(button, 'error', 'Chyba');
+                button.setAttribute('aria-busy', 'false');
                 button.classList.add('btn--error'); // Ensure this class exists or is okay
 
                 // Reset after delay

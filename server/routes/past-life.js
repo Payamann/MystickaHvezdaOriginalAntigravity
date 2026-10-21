@@ -5,6 +5,7 @@
  */
 import express from 'express';
 import crypto from 'crypto';
+import { getTodayIsoDate } from '../../js/utils/numerology-logic.js';
 import { aiLimiter, authenticateToken, requireFeature } from '../middleware.js';
 import { callClaude } from '../services/claude.js';
 import { supabase } from '../db-supabase.js';
@@ -12,6 +13,7 @@ import { CZECH_READING_VOICE_CONTRACT } from '../config/prompts.js';
 import { assertCzechReadingVoice } from '../services/reading-quality.js';
 
 export const router = express.Router();
+const MIN_BIRTH_DATE = '1900-01-01';
 
 function isValidIsoDate(value) {
     const date = new Date(`${value}T00:00:00Z`);
@@ -116,6 +118,12 @@ router.post('/', authenticateToken, requireFeature('past_life'), aiLimiter, asyn
         }
         if (!birthDate || !/^\d{4}-\d{2}-\d{2}$/.test(birthDate) || !isValidIsoDate(birthDate)) {
             return res.status(400).json({ success: false, error: 'Zadejte datum narození.' });
+        }
+        if (birthDate < MIN_BIRTH_DATE) {
+            return res.status(400).json({ success: false, error: 'Datum narození musí být 1. 1. 1900 nebo pozdější.' });
+        }
+        if (birthDate > getTodayIsoDate()) {
+            return res.status(400).json({ success: false, error: 'Datum narození nemůže být v budoucnosti.' });
         }
         if (!gender || !['muz', 'zena', 'neutral'].includes(gender)) {
             return res.status(400).json({ success: false, error: 'Vyberte formu výkladu.' });

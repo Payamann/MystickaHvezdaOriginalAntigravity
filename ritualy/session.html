@@ -9,32 +9,32 @@
     <meta name="description" content="Vedená lunární meditace — 6 kroků pro propojení s energií Měsíce.">
     <meta name="robots" content="noindex, follow">
         <link rel="stylesheet" href="/fonts/local-fonts.css">
-        <link rel="stylesheet" href="../css/pages/ritualy-session.css">
+        <link rel="stylesheet" href="../css/pages/ritualy-session.css?v=20261018-journal-status-icon">
 <link rel="canonical" href="https://www.mystickahvezda.cz/ritualy/">
 
     <!-- Fonts -->
 
 <!-- DOMPurify -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" integrity="sha384-XQqX/4yiUGu+oyr87jvWzRuqBUK/adrY0DunhL+tID9m/9dwSpV8h9Fk/Sg6ifVQ" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" integrity="sha384-XQqX/4yiUGu+oyr87jvWzRuqBUK/adrY0DunhL+tID9m/9dwSpV8h9Fk/Sg6ifVQ" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
     <script src="/js/dist/analytics-init.js" defer></script>
     <script src="/js/dist/analytics.js?v=9" defer></script>
 
-    <link rel="stylesheet" href="/css/atlas-web.css?v=1">
-    <link rel="stylesheet" href="/css/atlas-remaining.css?v=1">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
+    <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261020-01-remaining-surface-polish">
 </head>
 <body class="atlas-page atlas-remaining-page">
+    <a href="#session-main" class="skip-link">Přeskočit na obsah</a>
     <div class="session-overlay" aria-hidden="true"></div>
-    <div class="stars-bg" aria-hidden="true"></div>
     <div class="progress-bar" id="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
 
     <!-- Header strip -->
     <header class="session-header">
         <a href="index.html">← Zpět na rituály</a>
         <span class="session-step-counter" id="step-counter" aria-live="polite">Příprava</span>
-        <span class="session-ritual-name" id="header-ritual-name"></span>
+        <h1 class="session-ritual-name" id="header-ritual-name">Lunární rituál</h1>
     </header>
 
-    <main class="session-main" id="session-main" aria-live="polite">
+    <main class="session-main" id="session-main" tabindex="-1">
 
         <!-- ── SVÍČKA (vždy přítomná) ───────────────────── -->
         <div class="candle-wrap" aria-hidden="true">
@@ -44,7 +44,7 @@
 
         <!-- ══ SCREEN: BEFORE CHECK-IN ════════════════════ -->
         <div class="screen active" id="screen-checkin-before">
-            <p class="checkin-title">Jak se nyní cítíš?</p>
+            <h2 class="checkin-title">Jak se nyní cítíš?</h2>
             <p class="checkin-sub">Před začátkem rituálu</p>
             <p>1 únava · 2 neutrálně · 3 klid · 4 dobře · 5 skvěle</p>
             <div class="emoji-row" role="group" aria-label="Výběr nálady před rituálem">
@@ -67,7 +67,7 @@
             </div>
 
             <div class="step-label" id="step-label">Krok 1 / 6</div>
-            <h2 class="step-title" id="step-title">Uzemění</h2>
+            <h2 class="step-title" id="step-title" tabindex="-1" data-screen-heading>Uzemění</h2>
             <div class="step-text" id="step-text"></div>
             <p class="step-subtext" id="step-subtext"></p>
 
@@ -78,7 +78,7 @@
 
         <!-- ══ SCREEN: AFTER CHECK-IN ══════════════════════ -->
         <div class="screen" id="screen-checkin-after">
-            <p class="checkin-title">Jak se cítíš nyní?</p>
+            <h2 class="checkin-title" data-screen-heading tabindex="-1">Jak se cítíš nyní?</h2>
             <p class="checkin-sub">Po dokončení rituálu</p>
             <p>1 únava · 2 neutrálně · 3 klid · 4 dobře · 5 skvěle</p>
             <div class="emoji-row" role="group" aria-label="Výběr nálady po rituálu">
@@ -93,7 +93,7 @@
         <!-- ══ SCREEN: COMPLETION ══════════════════════════ -->
         <div class="screen" id="screen-completion">
             <div class="completion-icon"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg></div>
-            <h2 class="completion-title">Rituál dokončen</h2>
+            <h2 class="completion-title" data-screen-heading tabindex="-1">Rituál dokončen</h2>
             <p class="mh-inline-5f069ec654" id="completion-subtitle"></p>
 
             <!-- Posun nálady -->
@@ -112,12 +112,13 @@
                 <textarea
                     class="journal-textarea"
                     id="journal-notes"
+                    aria-label="Tvoje zápisky z rituálu"
                     placeholder="Napiš své myšlenky nebo odpověď na otázku výše…"
                     rows="4"
                     maxlength="2000"
                 ></textarea>
                 <div id="journal-action"></div>
-                <p class="journal-saved-msg" id="journal-saved">✓ Zápisky uloženy</p>
+                <p class="journal-saved-msg" id="journal-saved"><svg class="mh-symbol journal-saved-msg__icon" viewBox="0 0 48 48" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" data-journal-saved-icon><use href="/img/icons/mh-symbols.svg#check"></use></svg><span data-journal-saved-text>Zápisky uloženy</span></p>
             </div>
 
             <!-- Crosslinks -->
@@ -133,9 +134,9 @@
     </main>
 
     <script src="../js/dist/api-config.js?v=5"></script>
-    <script src="../js/dist/templates.js"></script>
-    <script src="../js/dist/auth-client.js?v=20261003-single-membership"></script>
+    <script src="../js/dist/templates.js?v=20261021-celtic-footer-star-svg"></script>
+    <script src="../js/dist/auth-client.js?v=20261020-02-register-password-policy"></script>
     <script src="../js/dist/ritualy-content.js?v=2"></script>
-    <script src="../js/dist/ritualy-session.js"></script>
+    <script src="../js/dist/ritualy-session.js?v=20261019-reduced-motion-breath"></script>
 </body>
 </html>

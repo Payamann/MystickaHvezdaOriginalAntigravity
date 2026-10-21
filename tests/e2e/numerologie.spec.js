@@ -56,6 +56,7 @@ test.describe('Numerologie', () => {
         await expect(nameInput).toBeVisible();
         expect(await nameInput.getAttribute('required')).toBeDefined();
         expect(await nameInput.getAttribute('type')).toBe('text');
+        await expect(nameInput).toHaveAttribute('autocomplete', 'name');
     });
 
     test('pole pro datum (#num-date) je viditelné', async ({ page }) => {
@@ -63,6 +64,7 @@ test.describe('Numerologie', () => {
         await expect(dateInput).toBeVisible();
         expect(await dateInput.getAttribute('required')).toBeDefined();
         expect(await dateInput.getAttribute('type')).toBe('date');
+        await expect(dateInput).toHaveAttribute('autocomplete', 'bday');
     });
 
     test('pole pro čas (#num-time) existuje (volitelné)', async ({ page }) => {
@@ -149,10 +151,174 @@ test.describe('Numerologie', () => {
         await expect(page.locator('#card-lifepath .number-value')).toHaveText(/\d+/);
         await expect(page.locator('#card-destiny .number-value')).toHaveText(/\d+/);
         await expect(page.locator('#num-interpretation .numerology-premium-shell')).toBeVisible();
+        await expect(page.locator('.numerology-calculator-card .card__title')).toHaveText('Vypočítej svá čísla');
+        await expect(page.locator('#num-interpretation')).toContainText('Tvoje čísla');
+        await expect(page.locator('#num-interpretation')).toContainText('Základní čísla už máš.');
+        await expect(page.locator('#num-interpretation')).not.toContainText(/Vaše čísla|už máte/);
         await expect(page.locator('.numerology-upgrade-btn')).toContainText('Odemknout');
         expect(page.url()).toContain('/numerologie.html');
         expect(page.url()).not.toContain('/prihlaseni.html');
         expect(page.url()).not.toContain('/cenik.html');
+    });
+
+    test('premium výklad uloží výsledek pod účet aktivní při odeslání', async ({ page }) => {
+        let releaseApiResponse;
+        const apiResponseGate = new Promise(resolve => {
+            releaseApiResponse = resolve;
+        });
+        await page.route('**/api/numerology', async route => {
+            await apiResponseGate;
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ response: 'Krátký symbolický výklad.', fallback: false })
+            });
+        });
+        await page.evaluate(() => {
+            window.getCSRFToken = async () => 'e2e-csrf-token';
+            window.__numerologyReadingSaves = [];
+            window.Auth = {
+                isLoggedIn: () => true,
+                isPremium: () => true,
+                user: { id: 'numerology-owner-at-submit' },
+                saveReading: async (type, data, ownerId) => {
+                    window.__numerologyReadingSaves.push({ type, data, ownerId });
+                    return { id: 'e2e-numerology-reading' };
+                }
+            };
+        });
+
+        await page.locator('#num-name').fill('Jana Nováková');
+        await page.locator('#num-date').fill('1990-06-15');
+        const responsePromise = page.waitForResponse(response => response.url().includes('/api/numerology'));
+        await page.locator('#numerology-form button[type="submit"]').click();
+        await expect(page.locator('#num-interpretation .interpretation-loading')).toBeVisible();
+        await expect(page.locator('#num-status')).toHaveText('Připravuji symbolický výklad čtyř čísel.');
+        releaseApiResponse();
+        await responsePromise;
+
+        await expect(page.locator('#num-status')).toHaveText('Výklad je hotový. Je zobrazený pod vypočtenými čísly.');
+        await expect.poll(() => page.evaluate(() => window.__numerologyReadingSaves.length)).toBe(1);
+        const saved = await page.evaluate(() => window.__numerologyReadingSaves[0]);
+        expect(saved.type).toBe('numerology');
+        expect(saved.ownerId).toBe('numerology-owner-at-submit');
+        expect(saved.data).toMatchObject({ name: 'Jana Nováková', birthDate: '1990-06-15' });
+    });
+
+    test('chyba uložení do profilu nepřekryje hotový numerologický výklad', async ({ page }) => {
+        await page.route('**/api/numerology', route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ response: 'Tento hotový výklad zůstane viditelný.', fallback: false })
+        }));
+        await page.evaluate(() => {
+            window.getCSRFToken = async () => 'e2e-csrf-token';
+            window.Auth = {
+                isLoggedIn: () => true,
+                isPremium: () => true,
+                user: { id: 'numerology-save-failure-owner' },
+                saveReading: async () => {
+                    throw new Error('profile storage unavailable');
+                }
+            };
+        });
+
+        await page.locator('#num-name').fill('Jana Nováková');
+        await page.locator('#num-date').fill('1990-06-15');
+        await page.locator('#numerology-form button[type="submit"]').click();
+
+        await expect(page.locator('#num-interpretation')).toContainText('Tento hotový výklad zůstane viditelný.');
+        await expect(page.locator('#num-interpretation [data-numerology-save-error]'))
+            .toHaveText('Výklad je hotový, ale nepodařilo se ho uložit do profilu. Zůstává zobrazený tady.');
+        await expect(page.locator('#num-status'))
+            .toHaveText('Výklad je hotový, ale nepodařilo se ho uložit do profilu. Zůstává zobrazený tady.');
+        await expect(page.locator('#num-interpretation .error-message')).toHaveCount(0);
+    });
+
+    test('opožděná numerologie se po změně účtu vyčistí a neuloží', async ({ page }) => {
+        await page.evaluate(() => {
+            window.getCSRFToken = async () => 'e2e-csrf-token';
+            window.__numerologyFetchCount = 0;
+            window.__numerologyReadingSaves = [];
+            window.Auth = {
+                ...(window.Auth || {}),
+                user: { id: 'numerology-owner-before' },
+                isLoggedIn: () => true,
+                isPremium: () => true,
+                saveReading: async (...args) => {
+                    window.__numerologyReadingSaves.push(args);
+                    return { id: 'stale-numerology-reading' };
+                }
+            };
+            const nativeFetch = window.fetch.bind(window);
+            window.fetch = async (input, options) => {
+                if (String(input).includes('/numerology')) {
+                    window.__numerologyFetchCount += 1;
+                    return new Promise(resolve => {
+                        window.__releaseNumerologyResponse = () => resolve({
+                            ok: true,
+                            status: 200,
+                            json: async () => ({ response: 'SOUKROMÝ STARÝ NUMEROLOGICKÝ VÝKLAD' })
+                        });
+                    });
+                }
+                return nativeFetch(input, options);
+            };
+        });
+
+        await page.locator('#num-name').fill('Jana Účet A');
+        await page.locator('#num-date').fill('1990-06-15');
+        await page.locator('#numerology-form button[type="submit"]').click();
+        await expect(page.locator('#num-interpretation .interpretation-loading')).toBeVisible();
+        await expect.poll(() => page.evaluate(() => window.__numerologyFetchCount)).toBe(1);
+
+        await page.evaluate(() => {
+            window.Auth.user = { id: 'numerology-owner-after' };
+            document.dispatchEvent(new Event('auth:changed'));
+            const cycles = document.getElementById('daily-cycles');
+            cycles.hidden = false;
+            for (const [id, value] of [['val-py', '2026'], ['val-pm', '10'], ['val-pd', '18']]) {
+                document.getElementById(id).textContent = value;
+            }
+        });
+        await expect(page.locator('#num-name')).toHaveValue('');
+        await expect(page.locator('#num-date')).toHaveValue('');
+        await expect(page.locator('#numerology-results')).toBeHidden();
+        await expect(page.locator('#daily-cycles')).toBeHidden();
+        for (const id of ['#val-py', '#val-pm', '#val-pd']) {
+            await expect(page.locator(id)).toBeEmpty();
+        }
+
+        await page.evaluate(() => window.__releaseNumerologyResponse());
+        await expect(page.locator('#num-interpretation')).not.toContainText('SOUKROMÝ STARÝ NUMEROLOGICKÝ VÝKLAD');
+        expect(await page.evaluate(() => window.__numerologyReadingSaves.length)).toBe(0);
+    });
+
+    test('profilové datum se po přepnutí účtu nedoplní ze starého profilu', async ({ page }) => {
+        await page.evaluate(() => {
+            let releaseProfile;
+            window.__numerologyProfilePromise = new Promise(resolve => {
+                releaseProfile = resolve;
+            });
+            window.__releaseNumerologyProfile = () => releaseProfile({ birth_date: '1988-02-03' });
+            window.Auth = {
+                ...(window.Auth || {}),
+                user: { id: 'numerology-profile-before' },
+                isLoggedIn: () => true,
+                getProfile: () => window.__numerologyProfilePromise
+            };
+            document.dispatchEvent(new Event('auth:changed'));
+        });
+
+        await page.locator('#use-profile-num').check();
+        await page.evaluate(() => {
+            window.Auth.user = { id: 'numerology-profile-after' };
+            document.dispatchEvent(new Event('auth:changed'));
+        });
+        await page.evaluate(() => window.__releaseNumerologyProfile());
+
+        await expect(page.locator('#num-date')).toHaveValue('');
+        await expect(page.locator('#use-profile-num')).not.toBeChecked();
     });
 
     test('vysledek nabidne jednorazovou Osobni mapu a zmeri zobrazeni i klik', async ({ page }) => {

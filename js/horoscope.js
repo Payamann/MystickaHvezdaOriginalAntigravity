@@ -29,6 +29,30 @@ function buildHoroscopeUpgradeUrl(period) {
     return `${pricingUrl.pathname}${pricingUrl.search}`;
 }
 
+const HOROSCOPE_FEEDBACK_COPY = {
+    cs: {
+        eyebrow: 'Další krok', prompt: 'Jak na tebe tenhle vhled působí?',
+        resonanceLabel: 'Zpětná vazba k výkladu', fits: 'Sedí', neutral: 'Ještě nevím', miss: 'Netrefilo se',
+        focusLabel: 'Téma pro navazující vhled', relationships: 'Vztahy', work: 'Práce', energy: 'Energie',
+        journal: 'Zapsat reflexi', weekly: 'Odemknout týdenní souvislost',
+        saving: 'Ukládám zpětnou vazbu...', error: 'Nepodařilo se uložit. Zkus to znovu.', success: 'Uloženo do profilu. Díky za zpětnou vazbu.'
+    },
+    sk: {
+        eyebrow: 'Ďalší krok', prompt: 'Ako na teba tento vhľad pôsobí?',
+        resonanceLabel: 'Spätná väzba k výkladu', fits: 'Sedí mi', neutral: 'Ešte neviem', miss: 'Netrafilo sa',
+        focusLabel: 'Téma pre ďalší vhľad', relationships: 'Vzťahy', work: 'Práca', energy: 'Energia',
+        journal: 'Zapísať reflexiu (profil v češtine)', weekly: 'Odomknúť týždenný kontext (v češtine)',
+        saving: 'Ukladám spätnú väzbu...', error: 'Nepodarilo sa uložiť. Skús to znovu.', success: 'Uložené v profile. Vďaka za spätnú väzbu.'
+    },
+    pl: {
+        eyebrow: 'Kolejny krok', prompt: 'Jak odbierasz ten wgląd?',
+        resonanceLabel: 'Twoja opinia o odczycie', fits: 'Pasuje mi', neutral: 'Jeszcze nie wiem', miss: 'Nie pasuje mi',
+        focusLabel: 'Temat kolejnego wglądu', relationships: 'Relacje', work: 'Praca', energy: 'Energia',
+        journal: 'Zapisz refleksję (profil po czesku)', weekly: 'Odblokuj tygodniowy kontekst (po czesku)',
+        saving: 'Zapisuję opinię...', error: 'Nie udało się zapisać. Spróbuj ponownie.', success: 'Zapisano w profilu. Dzięki za opinię.'
+    }
+};
+
 function startHoroscopeUpgradeFlow(period, reason) {
     const feature = `${period}_horoscope`;
     const metadata = {
@@ -108,32 +132,35 @@ function setHoroscopeFeedbackStatus(strip, message, state = 'neutral') {
     status.dataset.state = state;
 }
 
-async function saveHoroscopeFeedback(readingId, payload, strip, trigger) {
+async function saveHoroscopeFeedback(readingId, payload, strip, trigger, copy = HOROSCOPE_FEEDBACK_COPY.cs) {
     if (!readingId || !window.Auth?.saveReadingFeedback) return null;
+    const ownerId = window.Auth?.user?.id;
+    if (!window.Auth?.isLoggedIn?.() || typeof ownerId !== 'string' || !ownerId) return null;
 
     if (trigger) trigger.disabled = true;
-    setHoroscopeFeedbackStatus(strip, 'Ukládám zpětnou vazbu...', 'pending');
+    setHoroscopeFeedbackStatus(strip, copy.saving, 'pending');
 
     const result = await window.Auth.saveReadingFeedback(readingId, {
         ...payload,
         feature: 'daily_guidance',
         source: 'horoscope_feedback_strip'
-    });
+    }, ownerId);
 
     if (trigger) trigger.disabled = false;
 
     if (!result?.success) {
-        setHoroscopeFeedbackStatus(strip, 'Nepodařilo se uložit. Zkus to znovu.', 'error');
+        setHoroscopeFeedbackStatus(strip, copy.error, 'error');
         return null;
     }
 
-    setHoroscopeFeedbackStatus(strip, 'Uloženo. Další vhledy se díky tomu můžou lépe zaměřit.', 'success');
+    setHoroscopeFeedbackStatus(strip, copy.success, 'success');
     return result;
 }
 
-function renderHoroscopeFeedbackAction(container, readingId, period) {
+function renderHoroscopeFeedbackAction(container, readingId, period, language = 'cs') {
     if (!container || !readingId) return;
 
+    const copy = HOROSCOPE_FEEDBACK_COPY[language] || HOROSCOPE_FEEDBACK_COPY.cs;
     container.querySelector('.horoscope-feedback')?.remove();
 
     const showWeeklyUpgrade = !window.Auth?.isPremium?.();
@@ -141,22 +168,22 @@ function renderHoroscopeFeedbackAction(container, readingId, period) {
     wrapper.className = 'horoscope-feedback';
     wrapper.innerHTML = `
         <div class="horoscope-feedback__header">
-            <span class="horoscope-feedback__eyebrow">Další krok</span>
-            <strong>Co s tebou tenhle vhled udělal?</strong>
+            <span class="horoscope-feedback__eyebrow">${copy.eyebrow}</span>
+            <strong>${copy.prompt}</strong>
         </div>
-        <div class="horoscope-feedback__chips" aria-label="Zpětná vazba k výkladu">
-            <button type="button" class="horoscope-feedback__chip" data-resonance="fits">Sedí</button>
-            <button type="button" class="horoscope-feedback__chip" data-resonance="neutral">Ještě nevím</button>
-            <button type="button" class="horoscope-feedback__chip" data-resonance="miss">Netrefilo se</button>
+        <div class="horoscope-feedback__chips" aria-label="${copy.resonanceLabel}">
+            <button type="button" class="horoscope-feedback__chip" data-resonance="fits">${copy.fits}</button>
+            <button type="button" class="horoscope-feedback__chip" data-resonance="neutral">${copy.neutral}</button>
+            <button type="button" class="horoscope-feedback__chip" data-resonance="miss">${copy.miss}</button>
         </div>
-        <div class="horoscope-feedback__chips" aria-label="Téma pro navazující vhled">
-            <button type="button" class="horoscope-feedback__chip" data-focus="relationships">Vztahy</button>
-            <button type="button" class="horoscope-feedback__chip" data-focus="work">Práce</button>
-            <button type="button" class="horoscope-feedback__chip" data-focus="energy">Energie</button>
+        <div class="horoscope-feedback__chips" aria-label="${copy.focusLabel}">
+            <button type="button" class="horoscope-feedback__chip" data-focus="relationships">${copy.relationships}</button>
+            <button type="button" class="horoscope-feedback__chip" data-focus="work">${copy.work}</button>
+            <button type="button" class="horoscope-feedback__chip" data-focus="energy">${copy.energy}</button>
         </div>
         <div class="horoscope-feedback__actions">
-            <a class="btn btn--glass btn--sm" href="/profil.html#journal-input" data-next-action="journal">Zapsat reflexi</a>
-            ${showWeeklyUpgrade ? '<button type="button" class="btn btn--secondary btn--sm" data-next-action="premium">Odemknout týdenní souvislost</button>' : ''}
+            <a class="btn btn--glass btn--sm" href="/profil.html#journal-input" data-next-action="journal">${copy.journal}</a>
+            ${showWeeklyUpgrade ? `<button type="button" class="btn btn--secondary btn--sm" data-next-action="premium">${copy.weekly}</button>` : ''}
         </div>
         <p class="horoscope-feedback__status" aria-live="polite"></p>
     `;
@@ -182,18 +209,18 @@ function renderHoroscopeFeedbackAction(container, readingId, period) {
 
         if (nextActionEl?.tagName === 'A') {
             event.preventDefault();
-            await saveHoroscopeFeedback(readingId, payload, wrapper, null);
+            await saveHoroscopeFeedback(readingId, payload, wrapper, null, copy);
             window.location.href = nextActionEl.getAttribute('href');
             return;
         }
 
         if (payload.nextAction === 'premium') {
-            await saveHoroscopeFeedback(readingId, payload, wrapper, clickedEl);
+            await saveHoroscopeFeedback(readingId, payload, wrapper, clickedEl, copy);
             startHoroscopeUpgradeFlow('weekly', period === 'daily' ? 'feedback_weekly_context' : 'feedback_premium_context');
             return;
         }
 
-        await saveHoroscopeFeedback(readingId, payload, wrapper, clickedEl);
+        await saveHoroscopeFeedback(readingId, payload, wrapper, clickedEl, copy);
     });
 
     container.appendChild(wrapper);
@@ -201,19 +228,19 @@ function renderHoroscopeFeedbackAction(container, readingId, period) {
 
 function buildHoroscopeUpsell(period) {
     const isWeekly = period === 'weekly';
-    const title = isWeekly ? 'Odemknete tydenni vyhled' : 'Odemknete mesicni vyhled';
+    const title = isWeekly ? 'Týdenní výklad v souvislostech' : 'Měsíční výklad v souvislostech';
     const copy = isWeekly
-        ? 'Tydenni horoskop spojuje jednotlive dny do jednoho smeru a ukaze, kde ma smysl pridat a kde ubrat.'
-        : 'Mesicni horoskop dava sirsi kontext a pomuze vam cist delsi cyklus misto jedine dnesni nalady.';
+        ? 'Propojí témata jednotlivých dnů a nabídne podnět, kde přidat a kde ubrat.'
+        : 'Nabídne širší kontext a pomůže ti číst delší cyklus, ne jen dnešní náladu.';
 
     return `
         <div class="card glass-card horoscope-upsell">
-            <div class="horoscope-upsell__eyebrow">Premium odemkne vic</div>
+            <div class="horoscope-upsell__eyebrow">Navazující výklad v členství</div>
             <h3 class="horoscope-upsell__title">${title}</h3>
             <p class="horoscope-upsell__copy">${copy}</p>
             <div class="horoscope-upsell__actions">
-                <button type="button" class="btn btn--primary horoscope-upsell-btn" data-plan="pruvodce" data-source="horoscope_inline_upsell" data-feature="${period}_horoscope">Odemknout Hvezdneho Pruvodce</button>
-                <a href="${buildHoroscopeUpgradeUrl(period)}" class="btn btn--glass">Nejdriv si projit plany</a>
+                <button type="button" class="btn btn--primary horoscope-upsell-btn" data-plan="pruvodce" data-source="horoscope_inline_upsell" data-feature="${period}_horoscope">Odemknout Hvězdného průvodce</button>
+                <a href="${buildHoroscopeUpgradeUrl(period)}" class="btn btn--glass">Podívat se na členství</a>
             </div>
         </div>
     `;
@@ -245,10 +272,20 @@ function initHoroscope() {
     let currentPeriod = 'daily';
     let selectionVersion = 0;
     const pageLanguage = ['cs', 'sk', 'pl'].includes(document.documentElement.lang.slice(0, 2)) ? document.documentElement.lang.slice(0, 2) : 'cs';
+    const journalContextOption = document.getElementById('horoscope-journal-context-option');
+    const journalContextCheckbox = document.getElementById('use-horoscope-journal-context');
+    const syncJournalContextOption = (resetConsent = false) => {
+        const signedIn = Boolean(window.Auth?.isLoggedIn?.());
+        const periodSupportsContext = pageLanguage !== 'cs' || currentPeriod !== 'daily';
+        const hasPeriodAccess = currentPeriod === 'daily' || Boolean(window.Auth?.isPremium?.());
+        const available = signedIn && periodSupportsContext && hasPeriodAccess;
+        if (journalContextOption) journalContextOption.hidden = !available;
+        if (journalContextCheckbox && (!available || resetConsent)) journalContextCheckbox.checked = false;
+    };
     const uiCopy = {
-        cs: { loading: 'Načítá se horoskop…', error: 'Horoskop se nepodařilo načíst. Zkus znovu vybrat znamení.', limit: 'Pro dnešek je limit vyčerpaný. Další dostupnost najdeš ve svém účtu.', favorite: 'Přidat do oblíbených', retry: 'Zkusit znovu', offer: 'Tento typ horoskopu je součástí členství. Nabídka a správa účtu se otevřou v češtině.', membership: 'Podívat se na členství' },
-        sk: { loading: 'Načítava sa horoskop…', error: 'Horoskop sa nepodarilo načítať. Skús znovu vybrať znamenie.', limit: 'Dnešný limit je vyčerpaný. Ďalšiu dostupnosť nájdeš vo svojom účte.', favorite: 'Pridať medzi obľúbené', retry: 'Skúsiť znovu', offer: 'Tento typ horoskopu je súčasťou členstva. Ponuka a správa účtu sa otvoria v češtine.', membership: 'Pozrieť členstvo' },
-        pl: { loading: 'Wczytywanie horoskopu…', error: 'Nie udało się wczytać horoskopu. Wybierz znak ponownie.', limit: 'Dzisiejszy limit został wykorzystany. Dalszą dostępność znajdziesz na swoim koncie.', favorite: 'Dodaj do ulubionych', retry: 'Spróbuj ponownie', offer: 'Ten rodzaj horoskopu jest częścią członkostwa. Oferta i obsługa konta otworzą się po czesku.', membership: 'Zobacz członkostwo' }
+        cs: { loading: 'Načítá se horoskop…', error: 'Horoskop se nepodařilo načíst. Zkus znovu vybrat znamení.', saveError: 'Horoskop zůstává zobrazený, ale nepodařilo se ho uložit do profilu.', limit: 'Pro dnešek je limit vyčerpaný. Další dostupnost najdeš ve svém účtu.', favorite: 'Přidat do oblíbených', retry: 'Zkusit znovu', offer: 'Tento typ horoskopu je součástí členství. Nabídka a správa účtu se otevřou v češtině.', membership: 'Podívat se na členství' },
+        sk: { loading: 'Načítava sa horoskop…', error: 'Horoskop sa nepodarilo načítať. Skús znovu vybrať znamenie.', saveError: 'Horoskop zostáva zobrazený, ale nepodarilo sa ho uložiť do profilu.', limit: 'Dnešný limit je vyčerpaný. Ďalšiu dostupnosť nájdeš vo svojom účte.', favorite: 'Pridať medzi obľúbené', retry: 'Skúsiť znovu', offer: 'Tento typ horoskopu je súčasťou členstva. Ponuka a správa účtu sa otvoria v češtine.', membership: 'Pozrieť členstvo' },
+        pl: { loading: 'Wczytywanie horoskopu…', error: 'Nie udało się wczytać horoskopu. Wybierz znak ponownie.', saveError: 'Horoskop pozostaje widoczny, ale nie udało się zapisać go w profilu.', limit: 'Dzisiejszy limit został wykorzystany. Dalszą dostępność znajdziesz na swoim koncie.', favorite: 'Dodaj do ulubionych', retry: 'Spróbuj ponownie', offer: 'Ten rodzaj horoskopu jest częścią członkostwa. Oferta i obsługa konta otworzą się po czesku.', membership: 'Zobacz członkostwo' }
     }[pageLanguage];
     let activationResultTracked = false;
     let activationOfferTracked = false;
@@ -359,6 +396,12 @@ function initHoroscope() {
     const detailWork = document.getElementById('detail-work');
     const detailRelationships = document.getElementById('detail-relationships');
     const detailNumbers = document.getElementById('detail-numbers');
+    const initialHoroscopeDetail = {
+        name: detailName?.textContent || '',
+        symbol: detailSymbol?.textContent || '',
+        date: detailDate?.textContent || '',
+        text: detailText?.textContent || ''
+    };
     const sectionBadge = document.querySelector('.horoscope-wrapper .section__badge');
     const periodLabels = {
         cs: { daily: 'Denní horoskop', weekly: 'Týdenní horoskop', monthly: 'Měsíční horoskop' },
@@ -368,6 +411,7 @@ function initHoroscope() {
 
     const setActivePeriod = (period) => {
         currentPeriod = normalizeHoroscopePeriod(period) || 'daily';
+        syncJournalContextOption();
         tabs.forEach((item) => {
             const isActive = item.dataset.tab === currentPeriod;
             item.classList.toggle('active', isActive);
@@ -379,6 +423,8 @@ function initHoroscope() {
             sectionBadge.textContent = periodLabels[currentPeriod] || 'Denni horoskop';
         }
     };
+
+    syncJournalContextOption();
 
     const contentContainer = document.querySelector('.horoscope-content');
     document.getElementById('horoscope-loading')?.remove();
@@ -406,9 +452,14 @@ function initHoroscope() {
         if (!activationPanel) return;
         activationPanel.hidden = false;
         activationPanel.dataset.state = 'loading';
-        if (activationTitle) activationTitle.textContent = `Připravuji první osobní horoskop — ${signName}`;
+        const loadingTitle = {
+            cs: `Načítám horoskop pro znamení: ${signName}`,
+            sk: `Načítavam horoskop pre znamenie: ${signName}`,
+            pl: `Wczytuję horoskop dla znaku: ${signName}`
+        }[pageLanguage];
+        if (activationTitle) activationTitle.textContent = loadingTitle;
         if (activationCopy) {
-            activationCopy.textContent = 'Účet je hotový. Nic dalšího nenastavujete — výsledek se zobrazí rovnou tady.';
+            activationCopy.textContent = 'Účet je hotový. Nic dalšího nastavovat nemusíš — výsledek se zobrazí rovnou tady.';
         }
     };
 
@@ -418,7 +469,7 @@ function initHoroscope() {
         activationPanel.dataset.state = 'complete';
         if (activationTitle) activationTitle.textContent = `Dnešní horoskop je připravený — ${signName}`;
         if (activationCopy) {
-            activationCopy.textContent = 'Přečtěte si ho níže. Zítra se vaše znamení otevře automaticky, takže ho nemusíte vybírat znovu.';
+            activationCopy.textContent = 'Přečti si ho níže. Zítra se tvoje znamení zobrazí automaticky, takže ho nemusíš vybírat znovu.';
         }
 
         showActivationOffer(signName);
@@ -441,14 +492,14 @@ function initHoroscope() {
         ++selectionVersion;
         loadingState.classList.add('hidden');
         contentContainer?.classList.remove('hidden');
-        contentContainer?.querySelectorAll('.favorite-reading-action, .horoscope-feedback, [data-horoscope-retry]').forEach(element => element.remove());
+        contentContainer?.querySelectorAll('.favorite-reading-action, .horoscope-feedback, [data-horoscope-retry], [data-horoscope-save-error]').forEach(element => element.remove());
         showFallbackNotice(contentContainer, false);
 
         const reasonText = reason === 'auth'
             ? '<p class="horoscope-upsell-reason">Pro tento horoskop je potřeba přihlášení a odpovídající členství.</p>'
             : '';
 
-        detailText.innerHTML = pageLanguage === 'cs' ? `${reasonText}${buildHoroscopeUpsell(period)}` : `<p>${uiCopy.offer}</p><a class="btn btn--primary" href="${buildHoroscopeUpgradeUrl(period)}" lang="cs">${uiCopy.membership}</a>`;
+        detailText.innerHTML = pageLanguage === 'cs' ? `${reasonText}${buildHoroscopeUpsell(period)}` : `<p>${uiCopy.offer}</p><a class="btn btn--primary" href="${buildHoroscopeUpgradeUrl(period)}">${uiCopy.membership}</a>`;
         if (detailWork) {
             detailWork.innerHTML = '';
             detailWork.hidden = true;
@@ -466,7 +517,7 @@ function initHoroscope() {
 
         if (detailSection) {
             detailSection.dataset.loaded = 'false';
-            detailSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            detailSection.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
         }
     };
 
@@ -516,7 +567,7 @@ function initHoroscope() {
         card.classList.add('active');
 
         if (!skipScroll) {
-            detailSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            detailSection?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
         }
 
         const signName = card.querySelector('.zodiac-card__name').innerText;
@@ -548,18 +599,25 @@ function initHoroscope() {
 
         try {
             let context = [];
+            const includeJournalContext = Boolean(
+                journalContextCheckbox?.checked &&
+                window.Auth?.isLoggedIn?.() &&
+                (pageLanguage !== 'cs' || selectedPeriod !== 'daily')
+            );
             try {
-                if (window.Auth && window.Auth.isLoggedIn() && !(currentLang === 'cs' && selectedPeriod === 'daily')) {
+                if (includeJournalContext) {
                     const journalRes = await fetch(`${window.API_CONFIG?.BASE_URL || '/api'}/user/readings?type=journal&limit=3`, {
                         credentials: 'include'
                     });
                     if (!journalRes.ok) throw new Error(`Journal fetch failed: ${journalRes.status}`);
                     const journalData = await journalRes.json();
-                    context = (journalData.readings || [])
-                        .filter((reading) => reading.type === 'journal')
-                        .slice(0, 3)
-                        .map(reading => typeof reading.data === 'string' ? reading.data : reading.data?.text || '')
-                        .filter(Boolean);
+                    if (journalContextCheckbox?.checked && window.Auth?.isLoggedIn?.()) {
+                        context = (journalData.readings || [])
+                            .filter((reading) => reading.type === 'journal')
+                            .slice(0, 3)
+                            .map(reading => typeof reading.data === 'string' ? reading.data : reading.data?.text || '')
+                            .filter(Boolean);
+                    }
                 }
             } catch (error) {
                 console.warn('Failed to fetch journal context:', error);
@@ -569,7 +627,8 @@ function initHoroscope() {
             const data = await window.callAPI('/horoscope', {
                 sign: signName,
                 period: selectedPeriod,
-                context,
+                context: includeJournalContext && journalContextCheckbox?.checked ? context : [],
+                contextConsent: Boolean(includeJournalContext && journalContextCheckbox?.checked),
                 lang: currentLang
             });
             if (!isCurrent()) return;
@@ -658,7 +717,7 @@ function initHoroscope() {
                     affirmation: predictionData.affirmation || extractedAffirmation,
                     luckyNumbers: predictionData.luckyNumbers || null,
                     fallback: !!data.fallback
-                }).catch(() => null);
+                }, ownerId).catch(() => null);
                 if (!isCurrent()) return;
 
                 if (saveResult && saveResult.id) {
@@ -681,7 +740,14 @@ function initHoroscope() {
                         });
                     }
 
-                    if (currentLang === 'cs') renderHoroscopeFeedbackAction(contentContainer, saveResult.id, selectedPeriod);
+                    renderHoroscopeFeedbackAction(contentContainer, saveResult.id, selectedPeriod, currentLang);
+                } else {
+                    const saveNotice = document.createElement('p');
+                    saveNotice.dataset.horoscopeSaveError = 'true';
+                    saveNotice.className = 'result-context-notice';
+                    saveNotice.setAttribute('role', 'status');
+                    saveNotice.textContent = uiCopy.saveError;
+                    detailText?.insertAdjacentElement('afterend', saveNotice);
                 }
             }
         } catch (error) {
@@ -708,6 +774,47 @@ function initHoroscope() {
             }
         }
     };
+
+    const getHoroscopeSessionOwnerId = () => {
+        if (!window.Auth?.isLoggedIn?.()) return null;
+        const id = window.Auth?.user?.id;
+        return typeof id === 'string' && id ? id : null;
+    };
+    let observedHoroscopeOwnerId = getHoroscopeSessionOwnerId();
+    const clearHoroscopeForSessionChange = () => {
+        const nextOwnerId = getHoroscopeSessionOwnerId();
+        if (nextOwnerId === observedHoroscopeOwnerId) {
+            syncJournalContextOption();
+            return;
+        }
+        observedHoroscopeOwnerId = nextOwnerId;
+        syncJournalContextOption(true);
+        selectionVersion += 1;
+        zodiacCards.forEach(card => card.classList.remove('active'));
+        setActivePeriod('daily');
+        if (detailName) detailName.textContent = initialHoroscopeDetail.name;
+        if (detailSymbol) detailSymbol.textContent = initialHoroscopeDetail.symbol;
+        if (detailDate) detailDate.textContent = initialHoroscopeDetail.date;
+        if (detailText) detailText.textContent = initialHoroscopeDetail.text;
+        if (detailWork) { detailWork.textContent = ''; detailWork.hidden = true; }
+        if (detailRelationships) detailRelationships.hidden = true;
+        if (detailNumbers) {
+            detailNumbers.textContent = '—';
+            detailNumbers.parentElement.hidden = true;
+        }
+        detailSection && (detailSection.dataset.loaded = 'false');
+        contentContainer?.querySelectorAll('.favorite-reading-action, .horoscope-feedback, [data-horoscope-retry], [data-horoscope-save-error]').forEach(element => element.remove());
+        showFallbackNotice(contentContainer, false);
+        contentContainer?.classList.remove('hidden');
+        loadingState.classList.add('hidden');
+        window.currentHoroscopeReadingId = null;
+        if (activationOffer) activationOffer.hidden = true;
+        if (natalCta) natalCta.hidden = false;
+    };
+    document.addEventListener('auth:changed', clearHoroscopeForSessionChange);
+    window.addEventListener('storage', event => {
+        if (event.key === 'auth_user') clearHoroscopeForSessionChange();
+    });
 
     zodiacCards.forEach((card) => {
         card.addEventListener('click', async (event) => {

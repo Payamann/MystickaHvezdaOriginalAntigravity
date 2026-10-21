@@ -3,7 +3,9 @@
  * Validates user input before database operations to prevent SQL injection and XSS attacks
  */
 
-export function validateBirthDate(date) {
+import { getTodayIsoDate } from '../../js/utils/numerology-logic.js';
+
+export function validateBirthDate(date, today = getTodayIsoDate()) {
   if (!date) {
     throw new Error('Birth date is required');
   }
@@ -19,8 +21,8 @@ export function validateBirthDate(date) {
     throw new Error('Invalid date format');
   }
 
-  // Must be in past
-  if (parsed > new Date()) {
+  // Use the same Prague calendar day as the astrology tools and browser UI.
+  if (date > today) {
     throw new Error('Birth date cannot be in the future');
   }
 

@@ -25,10 +25,8 @@
             }
 
             function showDreamOfDay(d) {
-                const e = document.getElementById('dod-emoji');
                 const k = document.getElementById('dod-keyword');
                 const desc = document.getElementById('dod-desc');
-                if (e) e.textContent = d.emoji || '✨';
                 if (k) k.textContent = d.keyword;
                 if (desc) desc.textContent = d.description;
             }

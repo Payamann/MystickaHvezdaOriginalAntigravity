@@ -217,7 +217,8 @@
 
             border-radius: 50%;
 
-            background: var(--color-primary);
+            background: #0b1929;
+            border: 1px solid rgba(189, 155, 101, 0.33);
 
             display: flex;
 
@@ -230,6 +231,16 @@
             color: white;
 
             flex-shrink: 0;
+
+        }
+
+        .author-avatar .mh-symbol {
+
+            width: 2rem;
+
+            height: 2rem;
+
+            color: var(--color-mystic-gold);
 
         }
 
@@ -298,75 +309,22 @@
     </script>
 
     <script src="/js/dist/analytics-init.js" defer></script>
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
+    <link rel="stylesheet" href="/css/atlas-blog.css?v=20261018-author-avatar">
 </head>
 
 
 
-<body>
+<body class="atlas-page atlas-blog">
 
-    <div class="stars" aria-hidden="true"></div>
+    <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
 
 
-
-    <header class="header">
-
-        <div class="container">
-
-            <div class="header__inner">
-
-                <a href="../index.html" class="logo">
-
-                    <span style="margin-left: 10px;">Mystická<span class="text-gradient">Hvězda</span></span>
-
-                </a>
-
-                <nav class="nav">
-
-                    <button class="nav__toggle" aria-label="Menu">
-
-                        <span></span><span></span><span></span>
-
-                    </button>
-
-                    <ul class="nav__list">
-
-                        <li><a href="../index.html" class="nav__link">Domů</a></li>
-
-                        <li><a href="../slovnik.html" class="nav__link">Slovník</a></li>
-
-                        <li><a href="../blog.html" class="nav__link active">Blog</a></li>
-
-                        <li><a href="../horoskopy.html" class="nav__link">Horoskopy</a></li>
-
-                        <li><a href="../tarot.html" class="nav__link">Tarot</a></li>
-
-                        <li><a href="../natalni-karta.html" class="nav__link">Natální Karta</a></li>
-
-                        <li><a href="../numerologie.html" class="nav__link">Numerologie</a></li>
-
-                    </ul>
-
-                    <div class="auth-buttons" style="display: flex; gap: 0.5rem; align-items: center;">
-
-                        <a href="#" id="auth-register-btn" class="btn btn--secondary"
-
-                            style="margin-left: 1rem; font-size: 0.9em; padding: 0.5rem 1rem;">Registrace</a>
-
-                        <a href="#" id="auth-btn" class="btn btn--primary">Přihlásit</a>
-
-                    </div>
-
-                </nav>
-
-            </div>
-
-        </div>
-
-    </header>
+    <div id="header-placeholder"></div>
 
 
 
-    <main>
+    <main id="main-content" tabindex="-1">
 
         <section class="blog-header">
 
@@ -422,11 +380,7 @@
 
                     <div class="author-box">
 
-                        <div class="author-avatar">
-
-                            👤
-
-                        </div>
+                        <div class="author-avatar"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg></div>
 
                         <div>
 
@@ -434,9 +388,7 @@
 
                             <p style="margin: 0; font-size: 0.9rem; color: var(--color-text-mutated);">
 
-                                Zajímají nás hvězdy, karty a osud. Každý náš článek provází hluboké znalosti starých
-
-                                mystických věd a jejich propojení do reálného života.
+                                Články připravuje tým Mystická Hvězda. Duchovní a esoterická témata představujeme jako tradice a náměty k zamyšlení.
 
                             </p>
 
@@ -479,7 +431,7 @@
 
 
 
-    <script src="../js/dist/core.js?v=1" defer></script>
+    <script src="../js/dist/core.js?v=20261021-footer-support-locale" defer></script>
 
     <script type="module" src="../js/main.js"></script>
 

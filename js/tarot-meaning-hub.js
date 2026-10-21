@@ -89,6 +89,13 @@
         return normalize(`${card.name} ${card.groupLabel} ${card.meaning} ${card.interpretation}`);
     }
 
+    function responsiveCardImageAttributes(imageSrc) {
+        const source = String(imageSrc || '');
+        if (!/^img\/tarot-v2\/tarot_[^/]+\.webp$/i.test(source)) return '';
+        const base = source.slice(0, -'.webp'.length);
+        return ` srcset="${escapeHtml(`${base}-240.webp 240w, ${base}-360.webp 360w, ${source} 600w`)}" sizes="(max-width: 560px) 170px, 108px"`;
+    }
+
     function buildCard(card) {
         const detail = detailHref(card.name);
         const isSelected = card.name === selectedCardName;
@@ -96,7 +103,7 @@
         return `
             <article class="tarot-meaning-card${isSelected ? ' is-selected' : ''}" data-group="${escapeHtml(card.group)}" data-card="${escapeHtml(card.name)}"${isSelected ? ' tabindex="-1" aria-current="true"' : ''}>
                 <div class="tarot-meaning-card__image">
-                    <img loading="lazy" src="${escapeHtml(card.image)}" alt="${escapeHtml(card.name)} tarot karta" width="180" height="300">
+                    <img loading="lazy" src="${escapeHtml(card.image)}" alt="${escapeHtml(card.name)} tarot karta" width="180" height="300"${responsiveCardImageAttributes(card.image)}>
                 </div>
                 <div class="tarot-meaning-card__body">
                     <div class="tarot-meaning-card__meta">${escapeHtml(card.groupLabel)}</div>
@@ -187,7 +194,7 @@
                 const selectedElement = Array.from(grid.querySelectorAll('[data-card]'))
                     .find((entry) => entry.dataset.card === selectedCard.name);
                 selectedElement?.focus({ preventScroll: true });
-                selectedElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                selectedElement?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
             });
         }
     }

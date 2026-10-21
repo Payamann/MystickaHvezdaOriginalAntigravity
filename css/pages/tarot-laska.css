@@ -3,14 +3,10 @@
     padding-bottom: 2rem;
 }
 
-.page-tarot-love .stars {
-    background-image: radial-gradient(ellipse at 70% 15%, rgba(89, 52, 98, 0.19), transparent 48%), linear-gradient(#080b1d, #090b1b);
-}
-
 .page-tarot-love .love-tarot-hero {
     background:
         linear-gradient(90deg, rgba(5, 8, 22, 0.9), rgba(7, 9, 27, 0.67) 53%, rgba(8, 9, 27, 0.45)),
-        url('/img/search-preview/tarot-cloth-hero.webp') center / cover no-repeat;
+        url('/img/search-preview/tarot-cloth-hero-optimized.webp') center / cover no-repeat;
     border-bottom: 1px solid rgba(221, 182, 122, 0.2);
 }
 
@@ -258,6 +254,12 @@
 }
 
 @media (max-width: 720px) {
+    .page-tarot-love .love-tarot-hero {
+        background-image:
+            linear-gradient(90deg, rgba(5, 8, 22, 0.9), rgba(7, 9, 27, 0.67) 53%, rgba(8, 9, 27, 0.45)),
+            image-set(url('/img/search-preview/tarot-cloth-hero-mobile-800.webp') 1x, url('/img/search-preview/tarot-cloth-hero-optimized.webp') 2x);
+    }
+
     .love-tarot-hero {
         padding-top: 4rem;
     }

@@ -27,6 +27,8 @@
     let journalSavePending = false;
     let journalOwnerId = null;
     let savedJournalText = null;
+    let observedJournalOwnerId = null;
+    let journalSessionGeneration = 0;
 
     /* ── Pomocné ──────────────────────────────────────────────────── */
     function getTodayStr() {
@@ -56,6 +58,60 @@
         try { localStorage.setItem(key, val); } catch (e) { /* ignore */ }
     }
 
+    function setJournalStatusMessage(status, message, error = false) {
+        if (!status) return;
+        const text = status.querySelector?.('[data-journal-saved-text]');
+        if (text) text.textContent = message;
+        else status.textContent = message;
+
+        const icon = status.querySelector?.('[data-journal-saved-icon] use');
+        if (icon) icon.setAttribute('href', `/img/icons/mh-symbols.svg#${error ? 'warning' : 'check'}`);
+    }
+
+    function getJournalSessionOwnerId() {
+        if (!window.Auth?.isLoggedIn?.()) return null;
+        const id = window.Auth?.user?.id;
+        return typeof id === 'string' && id ? id : null;
+    }
+
+    function syncJournalSession() {
+        const nextOwnerId = getJournalSessionOwnerId();
+        if (nextOwnerId === observedJournalOwnerId) return;
+        observedJournalOwnerId = nextOwnerId;
+        journalSessionGeneration += 1;
+        journalSavePending = false;
+        journalOwnerId = null;
+        savedJournalText = null;
+
+        const notes = document.getElementById('journal-notes');
+        if (notes) { notes.value = ''; notes.disabled = false; }
+        const status = document.getElementById('journal-saved');
+        if (status) {
+            status.hidden = true;
+            setJournalStatusMessage(status, '');
+            status.removeAttribute('role');
+            status.classList.remove('journal-saved-msg--visible');
+        }
+        const button = document.getElementById('btn-save-journal');
+        button?.removeAttribute('aria-busy');
+        if (button) button.disabled = true;
+
+        const completionScreen = document.getElementById(SCREENS.COMPLETION);
+        if (completionScreen?.classList.contains('active')) renderJournalAction();
+
+        const beforeScreen = document.getElementById(SCREENS.BEFORE);
+        const alreadyAtStart = beforeScreen?.classList.contains('active');
+        if (!alreadyAtStart) {
+            moodBefore = null;
+            moodAfter = null;
+            currentStep = 0;
+            showScreen(SCREENS.BEFORE);
+            updateProgress(-1);
+            const counter = document.getElementById('step-counter');
+            if (counter) counter.textContent = 'Příprava';
+        }
+    }
+
     /* ── Screen management ───────────────────────────────────────── */
     function showScreen(id) {
         Object.values(SCREENS).forEach(s => {
@@ -64,6 +120,16 @@
         });
         const target = document.getElementById(id);
         if (target) target.classList.add('active');
+    }
+
+    function focusScreenHeading(screenId) {
+        const screen = document.getElementById(screenId);
+        const heading = screen?.querySelector('[data-screen-heading]');
+        if (!screen || !heading) return;
+
+        window.requestAnimationFrame(() => {
+            if (screen.classList.contains('active')) heading.focus();
+        });
     }
 
     function updateProgress(stepIdx) {
@@ -90,6 +156,14 @@
         container.hidden = false;
         container.classList.add('ritual-breath-visible');
         btnNext.hidden = true; // schovat, dokud nedokončí dech
+
+        if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+            circle.className = 'breath-guide';
+            label.textContent = 'Pokud chceš, zkus tři pohodlné nádechy vlastním tempem.';
+            counter.textContent = '';
+            btnNext.hidden = false;
+            return;
+        }
 
         let cycle = 0;
         const CYCLES = 3;
@@ -151,7 +225,9 @@
             const parts = krok.text.split('\n\n');
             const intro = parts[0] || '';
             const mantraRaw = parts[1] || krok.text;
-            const cleanMantra = DOMPurify ? DOMPurify.sanitize(mantraRaw, {ALLOWED_TAGS: []}) : mantraRaw;
+            const cleanMantra = window.DOMPurify?.sanitize
+                ? window.DOMPurify.sanitize(mantraRaw, {ALLOWED_TAGS: []})
+                : String(mantraRaw).replace(/<[^>]*>/g, '');
             if (textEl) {
                 textEl.innerHTML = '';
                 if (intro) {
@@ -185,6 +261,7 @@
             const btnNext = document.getElementById('btn-next');
             if (btnNext) btnNext.hidden = false;
         }
+        focusScreenHeading(SCREENS.STEP);
     }
 
     /* ── STREAK ──────────────────────────────────────────────────── */
@@ -212,7 +289,7 @@
         showScreen(SCREENS.COMPLETION);
         updateProgress(7);
         const counter = document.getElementById('step-counter');
-        if (counter) counter.textContent = 'Hotovo ✦';
+        if (counter) counter.textContent = 'Hotovo';
 
         // Subtitle
         const sub = document.getElementById('completion-subtitle');
@@ -245,6 +322,7 @@
 
         // Journal save (Premium gate)
         renderJournalAction();
+        focusScreenHeading(SCREENS.COMPLETION);
     }
 
     function renderJournalAction() {
@@ -260,13 +338,18 @@
             journalOwnerId = window.Auth?.user?.id || null;
             actionEl.innerHTML = `<p>Zápis se uloží do deníku tvého profilu.</p><button class="btn-save-journal" id="btn-save-journal">Uložit do deníku</button>`;
             document.getElementById('btn-save-journal').addEventListener('click', saveJournal);
-            document.getElementById('journal-notes')?.addEventListener('input', () => {
+            const notes = document.getElementById('journal-notes');
+            if (notes && notes.dataset.journalInputBound !== 'true') {
+                notes.dataset.journalInputBound = 'true';
+                notes.addEventListener('input', () => {
                 const button = document.getElementById('btn-save-journal');
                 if (button && !journalSavePending) button.disabled = false;
                 const status = document.getElementById('journal-saved');
                 if (status) status.hidden = true;
-            });
+                });
+            }
         } else {
+            journalOwnerId = null;
             actionEl.innerHTML = `
                 <div class="journal-premium-gate">
                     Uložení zápisků je součástí
@@ -281,10 +364,17 @@
         const savedMsg = document.getElementById('journal-saved');
         const button = document.getElementById('btn-save-journal');
         if (!notes || journalSavePending) return;
+        const sessionGeneration = journalSessionGeneration;
+        const ownerId = journalOwnerId;
+        const isCurrentSession = () => sessionGeneration === journalSessionGeneration
+            && ownerId === journalOwnerId
+            && Boolean(ownerId)
+            && getJournalSessionOwnerId() === ownerId;
         const text = notes.value.trim();
         const showStatus = (message, error = false) => {
+            if (!isCurrentSession()) return;
             if (!savedMsg) return;
-            savedMsg.textContent = message;
+            setJournalStatusMessage(savedMsg, message, error);
             savedMsg.setAttribute('role', error ? 'alert' : 'status');
             savedMsg.hidden = false;
             savedMsg.classList.add('journal-saved-msg--visible');
@@ -295,13 +385,14 @@
         if (button) { button.disabled = true; button.setAttribute('aria-busy', 'true'); }
         try {
             await window.Auth?.refreshSession?.();
+            if (!isCurrentSession()) throw new Error('Journal account changed or expired');
             const profile = await window.Auth?.getProfile?.();
-            if (!journalOwnerId || profile?.id !== journalOwnerId || window.Auth?.user?.id !== journalOwnerId) {
+            if (!isCurrentSession() || profile?.id !== ownerId) {
                 throw new Error('Journal account changed or expired');
             }
             const content = `${ritual.nazev}\n${getTodayStr()}\nNálada: ${MOOD_LABELS[moodBefore]} → ${MOOD_LABELS[moodAfter]}\n\n${text}`;
-            const saved = await window.Auth.saveReading('journal', content);
-            if (window.Auth?.user?.id !== journalOwnerId) throw new Error('Journal account changed');
+            const saved = await window.Auth.saveReading('journal', content, ownerId);
+            if (!isCurrentSession()) throw new Error('Journal account changed');
             if (!saved?.id) throw new Error('Journal save not confirmed');
             savedJournalText = text;
             showStatus('Zápisky jsou uložené v deníku tvého profilu.');
@@ -309,8 +400,8 @@
             console.warn('[Ritual] Journal save not confirmed:', error.message);
             showStatus('Uložení se nepodařilo potvrdit. Text zůstává tady. Zkontroluj přihlášení a zkus to znovu.', true);
         } finally {
-            journalSavePending = false;
-            if (button) {
+            if (sessionGeneration === journalSessionGeneration) journalSavePending = false;
+            if (button?.isConnected && isCurrentSession()) {
                 button.disabled = savedJournalText === notes.value.trim();
                 button.removeAttribute('aria-busy');
             }
@@ -326,6 +417,11 @@
 
         const { phase, sign } = parseParams();
         ritual = window.RitualContent.getRitual(phase, sign);
+        observedJournalOwnerId = getJournalSessionOwnerId();
+        document.addEventListener('auth:changed', syncJournalSession);
+        window.addEventListener('storage', event => {
+            if (event.key === 'auth_user') syncJournalSession();
+        });
 
         // Header
         const headerName = document.getElementById('header-ritual-name');
@@ -358,6 +454,7 @@
                     updateProgress(6);
                     const counter = document.getElementById('step-counter');
                     if (counter) counter.textContent = 'Reflexe';
+                    focusScreenHeading(SCREENS.AFTER);
                 }
             });
         }

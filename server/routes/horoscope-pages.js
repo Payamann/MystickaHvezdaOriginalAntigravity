@@ -277,10 +277,9 @@ router.get('/:sign/:date', async (req, res, next) => {
 </head>
 <body class="atlas-page atlas-astro-page atlas-astro-page--dated">
   <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
-  <div class="stars" aria-hidden="true"></div>
   <div id="header-placeholder"></div>
 
-  <main id="main-content">
+  <main id="main-content" tabindex="-1">
 
     <!-- HERO -->
     <section class="section section--hero horoscope-day-hero atlas-art-hero atlas-art-astrolab">

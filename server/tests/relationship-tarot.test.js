@@ -16,13 +16,32 @@ const proof = 'a'.repeat(64);
 const paidSession = { id: 'cs_test_relationship', mode: 'payment', status: 'complete', payment_status: 'paid', currency: 'czk', amount_total: 14900,
     metadata: { productId: 'relationship_tarot', productType: 'relationship_tarot', orderId: 'order-1', returnProofHash: pdfProofHash(proof) } };
 
-function setup({ enabled = true, attachResult = true, telemetryFails = false, getDeliveryStatus = jest.fn(async () => ({ deliveryState: 'provider_accepted', orderRef: 'order-1' })) } = {}) {
-    const stripe = { checkout: { sessions: { create: jest.fn(async () => ({ id: paidSession.id, url: 'https://checkout.stripe.com/c/pay/test' })), retrieve: jest.fn(async () => paidSession), expire: jest.fn(async () => ({})) } } };
-    const createOrder = jest.fn(async () => ({ id: 'order-1' }));
+function setup({ enabled = true, attachResult = true, telemetryFails = false, getOrder = jest.fn(async () => ({ id: 'order-1', stripe_session_id: null })), getDeliveryStatus = jest.fn(async () => ({ deliveryState: 'provider_accepted', orderRef: 'order-1' })) } = {}) {
+    const stripe = { checkout: { sessions: {
+        create: jest.fn(async payload => ({
+            id: paidSession.id,
+            url: 'https://checkout.stripe.com/c/pay/test',
+            status: 'open',
+            mode: payload.mode,
+            metadata: payload.metadata,
+            amount_total: payload.line_items[0].price_data.unit_amount,
+            currency: payload.line_items[0].price_data.currency
+        })),
+        retrieve: jest.fn(async () => paidSession),
+        expire: jest.fn(async () => ({}))
+    } } };
+    const createOrder = jest.fn(async input => ({
+        id: 'order-1',
+        product_type: input.productType,
+        product_id: input.productId,
+        customer_email: input.customerEmail,
+        status: 'checkout_created',
+        payload: { ...input.payload, flowId: input.flowId, checkoutInputHash: input.requestHash }
+    }));
     const attach = jest.fn(async () => attachResult);
     const track = jest.fn(async () => { if (telemetryFails) throw new Error('telemetry unavailable'); });
-    const app = express().use(express.json(), cookieParser(), createRelationshipTarotRouter({ getStripe: () => stripe, enabled: () => enabled, createOrder, attach, track, getDeliveryStatus }));
-    return { app, stripe, createOrder, attach, track, getDeliveryStatus };
+    const app = express().use(express.json(), cookieParser(), createRelationshipTarotRouter({ getStripe: () => stripe, enabled: () => enabled, createOrder, attach, getOrder, track, getDeliveryStatus }));
+    return { app, stripe, createOrder, attach, track, getOrder, getDeliveryStatus };
 }
 
 describe('Relationship tarot checkout', () => {
@@ -37,6 +56,20 @@ describe('Relationship tarot checkout', () => {
         await request(app).post('/checkout').send({ ...orderInput, ...patch }).expect(400);
         expect(createOrder).not.toHaveBeenCalled();
     });
+    test('requires a stable flow ID before creating a payable order', async () => {
+        const { app, createOrder, stripe } = setup();
+        await request(app).post('/checkout').send({ ...orderInput, flowId: undefined }).expect(400);
+        expect(createOrder).not.toHaveBeenCalled();
+        expect(stripe.checkout.sessions.create).not.toHaveBeenCalled();
+    });
+    test('a flow reused with changed order details fails closed without another checkout', async () => {
+        const { app, createOrder, stripe } = setup();
+        createOrder.mockRejectedValueOnce(Object.assign(new Error('Different order details.'), { code: 'RELATIONSHIP_TAROT_FLOW_CONFLICT' }));
+        const response = await request(app).post('/checkout').send(orderInput).expect(409);
+        expect(response.body.code).toBe('checkout_flow_conflict');
+        expect(stripe.checkout.sessions.create).not.toHaveBeenCalled();
+        expect(JSON.stringify(response.body)).not.toContain(orderInput.question);
+    });
     test('price is server-owned; question is stored privately and not sent to Stripe or telemetry', async () => {
         const { app, createOrder, stripe, track } = setup({ telemetryFails: true });
         const response = await request(app).post('/checkout').send({ ...orderInput, price: 1, productId: 'personal_map' }).expect(200);
@@ -49,7 +82,7 @@ describe('Relationship tarot checkout', () => {
         expect(JSON.stringify(track.mock.calls)).not.toContain(orderInput.email);
         expect(JSON.stringify(track.mock.calls)).not.toContain(orderInput.question);
         expect(createOrder.mock.calls[0][0].payload.question).toBe(orderInput.question);
-        expect(createOrder.mock.calls[0][0].payload.flowId).toBe(orderInput.flowId);
+        expect(createOrder.mock.calls[0][0].flowId).toBe(orderInput.flowId);
         expect(track.mock.calls.find(([eventName]) => eventName === 'checkout_session_created')[1].metadata.flow_id).toBe(orderInput.flowId);
         expect(options.idempotencyKey).toBe('relationship-checkout-order-1');
         expect(response.headers['set-cookie'][0]).toContain('HttpOnly');
@@ -60,6 +93,43 @@ describe('Relationship tarot checkout', () => {
         const response = await request(app).post('/checkout').send(orderInput).expect(502);
         expect(response.body.url).toBeUndefined();
         expect(stripe.checkout.sessions.expire).toHaveBeenCalledWith(paidSession.id);
+    });
+    test('checkout retry reuses an existing open Stripe session and saved proof', async () => {
+        const savedProof = 'b'.repeat(64);
+        const savedOrder = {
+            id: 'order-1',
+            product_type: 'relationship_tarot',
+            product_id: 'relationship_tarot',
+            customer_email: orderInput.email,
+            status: 'checkout_created',
+            stripe_session_id: 'cs_saved_relationship',
+            payload: { checkoutReturnProof: savedProof, source: orderInput.source, flowId: orderInput.flowId }
+        };
+        const session = {
+            id: 'cs_saved_relationship',
+            url: 'https://checkout.stripe.com/c/pay/saved',
+            status: 'open',
+            mode: 'payment',
+            amount_total: 14900,
+            currency: 'czk',
+            metadata: {
+                productType: 'relationship_tarot',
+                productId: 'relationship_tarot',
+                orderId: 'order-1',
+                returnProofHash: pdfProofHash(savedProof)
+            }
+        };
+        const { app, createOrder, stripe, attach } = setup();
+        createOrder.mockResolvedValueOnce(savedOrder);
+        stripe.checkout.sessions.retrieve.mockResolvedValueOnce(session);
+
+        const response = await request(app).post('/checkout').send(orderInput).expect(200);
+
+        expect(response.body.url).toBe(session.url);
+        expect(stripe.checkout.sessions.retrieve).toHaveBeenCalledWith('cs_saved_relationship', {}, { timeout: 5000, maxNetworkRetries: 0 });
+        expect(stripe.checkout.sessions.create).not.toHaveBeenCalled();
+        expect(attach).not.toHaveBeenCalled();
+        expect(response.headers['set-cookie'][0]).toContain('Path=/api/vztahovy-vyklad');
     });
     test('return requires a valid browser proof and a matching paid product', async () => {
         const { app, stripe, getDeliveryStatus } = setup();

@@ -9,10 +9,56 @@ const __dirname = path.dirname(__filename);
 const ROOT = path.resolve(__dirname, '../../');
 const OUTPUT_DIR = path.join(ROOT, 'horoskop');
 const SITEMAP_ENTRIES_PATH = path.join(ROOT, 'data/zodiac-sitemap.json');
+const ZODIAC_ASSET_VERSIONS = Object.freeze({
+    authClient: '20261020-02-register-password-policy',
+    components: '20261021-footer-support-locale',
+    main: '20261018-status-icons'
+});
 
-if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+function isCurrent(filePath, expected) {
+    if (!fs.existsSync(filePath)) return false;
+    const normalizeTerminalNewline = (value) => value.replace(/\r\n/g, '\n').replace(/\n$/, '');
+    return normalizeTerminalNewline(fs.readFileSync(filePath, 'utf8')) === normalizeTerminalNewline(expected);
+}
+
+function writeIfChanged(filePath, expected) {
+    if (isCurrent(filePath, expected)) return false;
+    fs.writeFileSync(filePath, expected, 'utf8');
+    return true;
+}
+
+function firstLineDifference(filePath, expected) {
+    if (!fs.existsSync(filePath)) {
+        return {
+            differences: 1,
+            examples: [{ line: 1, current: '(file missing)', expected: expected.split(/\r?\n/, 1)[0]?.trim().slice(0, 180) || '(blank)' }]
+        };
+    }
+    const currentLines = fs.readFileSync(filePath, 'utf8').split(/\r?\n/);
+    const expectedLines = expected.split(/\r?\n/);
+    const max = Math.max(currentLines.length, expectedLines.length);
+    const preview = (value) => value === undefined ? '(missing)' : value.trim().slice(0, 180) || '(blank)';
+    const examples = [];
+    let differences = 0;
+    for (let index = 0; index < max; index++) {
+        if (currentLines[index] !== expectedLines[index]) {
+            differences++;
+            if (examples.length < 12) examples.push({
+                line: index + 1,
+                current: preview(currentLines[index]),
+                expected: preview(expectedLines[index])
+            });
+        }
+    }
+    return differences ? { differences, examples } : null;
+}
 
 function buildPage(sign) {
+    const seo = sign.seo || {};
+    const pageTitle = seo.title || `${sign.name} znamení (${sign.en}): vlastnosti, láska a kompatibilita`;
+    const pageDescription = seo.description || `${sign.name} znamení česky: období ${sign.dates}, vlastnosti, láska, silné stránky, slabiny a kompatibilita. Navazuje na osobní horoskop.`;
+    const ogTitle = seo.og_title || `${sign.name} znamení (${sign.en}): vlastnosti a láska`;
+    const ogDescription = seo.og_description || `${sign.name} znamení: období, povaha, láska, silné stránky, slabiny a kompatibilita s dalšími znameními.`;
     const strengthsList = sign.strengths.map(s => `<li>${s}</li>`).join('\n                    ');
     const weaknessesList = sign.weaknesses.map(w => `<li>${w}</li>`).join('\n                    ');
     const compatList = sign.compatible_signs.map(c => `
@@ -46,18 +92,19 @@ function buildPage(sign) {
         ]
     }, null, 2);
 
-    return atlasShell(`<!DOCTYPE html>
+    const html = atlasShell(`<!DOCTYPE html>
 <html lang="cs">
 <head>
+<link rel="icon" type="image/svg+xml" href="/img/icons/mh-favicon.svg">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>${sign.name} znamení (${sign.en}): vlastnosti, láska a kompatibilita</title>
-    <meta name="description" content="${sign.name} znamení česky: období ${sign.dates}, vlastnosti, láska, silné stránky, slabiny a kompatibilita. Navazuje na osobní horoskop.">
+    <title>${pageTitle}</title>
+    <meta name="description" content="${pageDescription}">
     <meta name="robots" content="index, follow">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="${sign.name} znamení (${sign.en}): vlastnosti a láska">
-    <meta property="og:description" content="${sign.name} znamení: období, povaha, láska, silné stránky, slabiny a kompatibilita s dalšími znameními.">
+    <meta property="og:title" content="${ogTitle}">
+    <meta property="og:description" content="${ogDescription}">
     <meta property="og:type" content="article">
     <meta property="og:image" content="https://www.mystickahvezda.cz/img/search-preview/horoscopes.webp">
     <meta property="og:url" content="https://www.mystickahvezda.cz/horoskop/${sign.slug}.html">
@@ -69,41 +116,24 @@ function buildPage(sign) {
     <link rel="stylesheet" href="../css/pages/horoskop-znameni.css">
 
     <script type="application/ld+json">${faqSchema}</script>
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.mystickahvezda.cz/img/search-preview/horoscopes.webp">
+<meta property="og:image:alt" content="${pageTitle}">
+<meta name="twitter:image:alt" content="${pageTitle}">
 </head>
 <body>
-    <div class="stars" aria-hidden="true"></div>
-    <header class="header">
-        <div class="container">
-            <div class="header__inner">
-                <a href="../index.html" class="logo">
-                    <span class="sign-logo-text">Mystická<span class="text-gradient">Hvězda</span></span>
-                </a>
-                <nav class="nav">
-                    <button class="nav__toggle" aria-label="Menu"><span></span><span></span><span></span></button>
-                    <ul class="nav__list">
-                        <li><a href="../index.html" class="nav__link">Domů</a></li>
-                        <li><a href="../horoskopy.html" class="nav__link active">Horoskopy</a></li>
-                        <li><a href="../blog.html" class="nav__link">Blog</a></li>
-                        <li><a href="../slovnik.html" class="nav__link">Slovník</a></li>
-                        <li><a href="../natalni-karta.html" class="nav__link">Natální Karta</a></li>
-                        <li><a href="../tarot.html" class="nav__link">Tarot</a></li>
-                    </ul>
-                    <div class="auth-buttons sign-auth-buttons">
-                        <a href="#" id="auth-register-btn" class="btn btn--secondary sign-register-btn">Registrace</a>
-                        <a href="#" id="auth-btn" class="btn btn--primary">Přihlásit</a>
-                    </div>
-                </nav>
-            </div>
-        </div>
-    </header>
+    <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
+    <div id="header-placeholder"></div>
 
-    <main>
+    <main id="main-content" tabindex="-1">
         <section class="sign-hero">
             <div class="container">
                 <div class="bread"><a href="../index.html">Domů</a> &raquo; <a href="../horoskopy.html">Horoskopy</a> &raquo; ${sign.name}</div>
-                <span class="sign-emoji">${sign.emoji.replace(/[\uFE0E\uFE0F]/g, '')}︎</span>
+                <span class="sign-emoji" data-zodiac-sign="${sign.slug}" aria-hidden="true">${sign.emoji.replace(/[\uFE0E\uFE0F]/g, '')}︎</span>
                 <h1 class="hero__title">${sign.name} <span class="text-gradient">(${sign.en})</span></h1>
-                <p class="sign-dates">📅 ${sign.dates}</p>
+                <p class="sign-dates"> ${sign.dates}</p>
 
                 <div class="sign-answer-box">
                     <strong class="sign-answer-label">Rychlá odpověď:</strong>
@@ -136,17 +166,17 @@ function buildPage(sign) {
 
                     <div class="traits-grid">
                         <div class="traits-card strengths">
-                            <h3>✅ Silné stránky</h3>
+                            <h3>Silné stránky</h3>
                             <ul>${strengthsList}</ul>
                         </div>
                         <div class="traits-card weaknesses">
-                            <h3>⚠️ Slabé stránky</h3>
+                            <h3>Slabé stránky</h3>
                             <ul>${weaknessesList}</ul>
                         </div>
                     </div>
 
                     <div class="sign-panel">
-                        <h2 class="sign-section-title">💞 Partnerská kompatibilita</h2>
+                        <h2 class="sign-section-title">Partnerská kompatibilita</h2>
                         <p class="sign-muted">Znamení, se kterými ${sign.name} přirozeně rezonuje:</p>
                         <div>${compatList}</div>
                         <div class="sign-center-action">
@@ -155,7 +185,7 @@ function buildPage(sign) {
                     </div>
 
                     <div class="sign-panel">
-                        <h2 class="sign-section-title">🔢 Šťastná čísla</h2>
+                        <h2 class="sign-section-title">Šťastná čísla</h2>
                         <div class="sign-number-grid">${luckyNums}</div>
                     </div>
 
@@ -167,7 +197,7 @@ function buildPage(sign) {
 
                     <!-- FAQ Section -->
                     <div class="sign-faq">
-                        <h2 class="sign-section-title">❓ Nejčastější otázky o ${sign.name}</h2>
+                        <h2 class="sign-section-title">Nejčastější otázky o ${sign.name}</h2>
                         <div class="sign-faq-list">
                             <details class="sign-faq-item">
                                 <summary class="sign-faq-summary">Kdy se rodí ${sign.name}?</summary>
@@ -192,38 +222,74 @@ function buildPage(sign) {
         <div class="container">
             <div class="footer__bottom">
                 <p>© 2026 Mystická Hvězda. Všechna práva vyhrazena.</p>
+
+                <p class="footer__support-line">Podpora: <a href="mailto:support@mystickahvezda.cz">support@mystickahvezda.cz</a></p>
             </div>
         </div>
     </footer>
 
     <script src="../js/dist/api-config.js" defer></script>
-    <script src="../js/dist/auth-client.js?v=20260522-recovery-flush" defer></script>
-    <script src="../js/dist/components.js" defer></script>
-    <script type="module" src="../js/dist/main.js"></script>
+    <script src="../js/dist/auth-client.js?v=${ZODIAC_ASSET_VERSIONS.authClient}" defer></script>
+    <script src="../js/dist/components.js?v=${ZODIAC_ASSET_VERSIONS.components}" defer></script>
+    <script type="module" src="../js/dist/main.js?v=${ZODIAC_ASSET_VERSIONS.main}"></script>
 </body>
-</html>`, 'atlas-astro-page', 'atlas-astro.css');
+</html>`, 'atlas-astro-page', 'atlas-astro.css', '20261020-01-western-zodiac-image-cards');
+    return html;
 }
 
-const sitemapEntries = [];
+function main() {
+    const checkOnly = process.argv.includes('--check');
+    if (!Array.isArray(ZODIAC_SIGNS) || ZODIAC_SIGNS.length === 0) {
+        throw new Error('Zodiac data must contain a non-empty array of signs.');
+    }
+    if (!checkOnly && !fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
-for (const sign of ZODIAC_SIGNS) {
-    const html = buildPage(sign);
-    const outPath = path.join(OUTPUT_DIR, `${sign.slug}.html`);
-    fs.writeFileSync(outPath, html, 'utf8');
-    console.log(`✅ Vygenerováno: /horoskop/${sign.slug}.html`);
+    const expectedFiles = new Map();
+    const sitemapEntries = [];
+    const seenSlugs = new Set();
 
-    if (sign.slug === 'vodnar') {
-        const legacyHtml = html.replace(
-            '<meta name="robots" content="index, follow">',
-            '<meta name="robots" content="noindex, follow">'
-        );
-        fs.writeFileSync(path.join(OUTPUT_DIR, 'vodnár.html'), legacyHtml, 'utf8');
-        console.log('✅ Vygenerováno: /horoskop/vodnár.html (legacy noindex)');
+    for (const sign of ZODIAC_SIGNS) {
+        if (!sign.slug || seenSlugs.has(sign.slug)) {
+            throw new Error(`Missing or duplicate zodiac slug: ${sign.slug || '(empty)'}`);
+        }
+        seenSlugs.add(sign.slug);
+
+        const html = buildPage(sign);
+        expectedFiles.set(path.join(OUTPUT_DIR, `${sign.slug}.html`), html);
+
+        sitemapEntries.push({ url: `/horoskop/${sign.slug}.html`, changefreq: 'weekly', priority: '0.8' });
     }
 
-    sitemapEntries.push({ url: `/horoskop/${sign.slug}.html`, changefreq: 'weekly', priority: '0.8' });
+    expectedFiles.set(SITEMAP_ENTRIES_PATH, JSON.stringify(sitemapEntries, null, 2));
+
+    if (checkOnly) {
+        const staleFiles = [...expectedFiles.keys()].filter((filePath) => !isCurrent(filePath, expectedFiles.get(filePath)));
+        if (staleFiles.length) {
+            const preview = staleFiles.slice(0, 20).map((filePath) => path.relative(ROOT, filePath)).join(', ');
+            const remaining = staleFiles.length > 20 ? ` and ${staleFiles.length - 20} more` : '';
+            console.error(`[zodiac] Check failed: ${staleFiles.length} generated file(s) need updates: ${preview}${remaining}`);
+            for (const filePath of staleFiles.slice(0, 3)) {
+                const difference = firstLineDifference(filePath, expectedFiles.get(filePath));
+                if (difference) {
+                    console.error(`[zodiac] ${path.relative(ROOT, filePath)} has ${difference.differences} differing lines`);
+                    for (const example of difference.examples) {
+                        console.error(`[zodiac] line ${example.line}: current=${example.current} | expected=${example.expected}`);
+                    }
+                }
+            }
+            process.exitCode = 1;
+            return;
+        }
+
+        console.log(`[zodiac] Check passed: ${ZODIAC_SIGNS.length} sign pages and sitemap are current; no files written.`);
+        return;
+    }
+
+    let updated = 0;
+    for (const [filePath, expected] of expectedFiles) {
+        if (writeIfChanged(filePath, expected)) updated++;
+    }
+    console.log(`[zodiac] Updated ${updated} generated file(s) across ${ZODIAC_SIGNS.length} sign pages and sitemap.`);
 }
 
-fs.writeFileSync(SITEMAP_ENTRIES_PATH, JSON.stringify(sitemapEntries, null, 2), 'utf8');
-console.log(`\n🗺️  Sitemap data uložena: data/zodiac-sitemap.json`);
-console.log(`🎉 Vygenerováno ${ZODIAC_SIGNS.length} stránek znamení!`);
+main();

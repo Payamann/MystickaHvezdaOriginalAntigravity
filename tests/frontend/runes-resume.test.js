@@ -3,7 +3,7 @@ import path from 'node:path';
 import vm from 'node:vm';
 
 const source = fs.readFileSync(path.resolve(process.cwd(), 'js/runes.js'), 'utf8')
-    .replace(/^import\s+\{[^}]+\}\s+from\s+['"]\.\/utils\/reading-display\.js['"];?\s*/m, '');
+    .replace(/^import\s+[\s\S]*?;\s*$/gm, '');
 
 const FEHU = {
     name: 'Fehu', symbol: 'ᚠ', meaning: 'Katalogový význam', description: 'Katalogový popis', element: 'fire'
@@ -64,7 +64,8 @@ function createSession({ pending = null, drawn = null, sessionStorageThrows = fa
     };
     const context = vm.createContext({
         document,
-        window: {},
+        window: { addEventListener() {}, removeEventListener() {}, matchMedia: () => ({ matches: true }) },
+        getPragueDateKey: () => new Date().toISOString().slice(0, 10),
         sessionStorage: storage,
         localStorage,
         fetch: async () => ({ ok: true, json: async () => [FEHU, URUZ] }),

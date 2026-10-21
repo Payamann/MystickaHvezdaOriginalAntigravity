@@ -20,7 +20,7 @@
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="🌙 Lunární Rituál | Mystická Hvězda">
+    <meta name="twitter:title" content="Lunární rituál | Mystická Hvězda">
     <meta name="twitter:description" content="Rituál pro dnešní fázi Měsíce, personalizovaný podle vašeho znamení.">
     <meta name="twitter:image" content="https://www.mystickahvezda.cz/img/search-preview/home.webp">
 
@@ -51,7 +51,7 @@
                 "name": "Musím se přihlásit nebo platit?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Celý rituál — všech 6 kroků — je zdarma a bez registrace. Premium uživatelé mohou navíc ukládat zápisky z rituálu a sledovat svůj streak."
+                    "text": "Všech šest kroků lunárního rituálu je zdarma a bez registrace. Uložení zápisků do profilu vyžaduje přihlášení s členstvím; poznámku si můžeš také zkopírovat."
                 }
             },
             {
@@ -68,33 +68,31 @@
 
     <!-- Fonts -->
     <link rel="stylesheet" href="/fonts/local-fonts.css">
-    <link rel="stylesheet" href="../css/style.v2.min.css?v=11">
-    <link rel="stylesheet" href="../css/pages/ritualy-index.css">
-<!-- DOMPurify -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" integrity="sha384-XQqX/4yiUGu+oyr87jvWzRuqBUK/adrY0DunhL+tID9m/9dwSpV8h9Fk/Sg6ifVQ" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="../css/style.v2.min.css?v=20261018-release-candidate">
+    <link rel="stylesheet" href="../css/pages/ritualy-index.css?v=20261018-atlas-ritual-a11y">
     <script src="/js/dist/analytics-init.js" defer></script>
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Lunární Rituál dnes | Personalizovaný podle vašeho znamení | Mystická Hvězda">
 <meta name="twitter:image:alt" content="Lunární Rituál dnes | Personalizovaný podle vašeho znamení | Mystická Hvězda">
 
-    <link rel="stylesheet" href="/css/atlas-web.css?v=1">
-    <link rel="stylesheet" href="/css/atlas-remaining.css?v=1">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
+    <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261020-01-remaining-surface-polish">
 </head>
 <body class="atlas-page atlas-remaining-page">
     <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
 
     <div id="header-placeholder"></div>
 
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
 
         <!-- ── HERO ─────────────────────────────────────────── -->
         <section class="ritual-moon-hero">
             <div class="container">
-                <span class="section__badge">🌙 Lunární Rituál</span>
+                <span class="section__badge"><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg?v=20261018#dream"></use></svg>Lunární rituál</span>
                 <h1 class="section__title mh-inline-a73f71da83">Dnešní <span class="text-gradient">Rituál</span></h1>
 
-                <div id="ritual-moon-icon" class="ritual-moon-emoji" aria-label="Fáze měsíce">🌕</div>
+                <div id="ritual-moon-icon" class="ritual-moon-emoji" aria-label="Fáze měsíce"></div>
                 <div id="ritual-moon-name" class="ritual-moon-name">Načítám…</div>
                 <p id="ritual-moon-desc" class="ritual-moon-desc"></p>
             </div>
@@ -108,23 +106,26 @@
                 </div>
 
                 <div class="zodiac-grid" role="group" aria-label="Výběr znamení zvěrokruhu">
-                    <button class="zodiac-btn" data-sign="beran"    aria-label="Beran"><span>♈</span>Beran</button>
-                    <button class="zodiac-btn" data-sign="byk"      aria-label="Býk"><span>♉</span>Býk</button>
-                    <button class="zodiac-btn" data-sign="blizenci" aria-label="Blíženci"><span>♊</span>Blíženci</button>
-                    <button class="zodiac-btn" data-sign="rak"      aria-label="Rak"><span>♋</span>Rak</button>
-                    <button class="zodiac-btn" data-sign="lev"      aria-label="Lev"><span>♌</span>Lev</button>
-                    <button class="zodiac-btn" data-sign="panna"    aria-label="Panna"><span>♍</span>Panna</button>
-                    <button class="zodiac-btn" data-sign="vahy"     aria-label="Váhy"><span>♎</span>Váhy</button>
-                    <button class="zodiac-btn" data-sign="stir"     aria-label="Štír"><span>♏</span>Štír</button>
-                    <button class="zodiac-btn" data-sign="strelec"  aria-label="Střelec"><span>♐</span>Střelec</button>
-                    <button class="zodiac-btn" data-sign="kozoroh"  aria-label="Kozoroh"><span>♑</span>Kozoroh</button>
-                    <button class="zodiac-btn" data-sign="vodnar"   aria-label="Vodnář"><span>♒</span>Vodnář</button>
-                    <button class="zodiac-btn" data-sign="ryby"     aria-label="Ryby"><span>♓</span>Ryby</button>
+                    <button class="zodiac-btn" data-sign="beran"    aria-label="Beran" aria-pressed="false"><span>♈</span>Beran</button>
+                    <button class="zodiac-btn" data-sign="byk"      aria-label="Býk" aria-pressed="false"><span>♉</span>Býk</button>
+                    <button class="zodiac-btn" data-sign="blizenci" aria-label="Blíženci" aria-pressed="false"><span>♊</span>Blíženci</button>
+                    <button class="zodiac-btn" data-sign="rak"      aria-label="Rak" aria-pressed="false"><span>♋</span>Rak</button>
+                    <button class="zodiac-btn" data-sign="lev"      aria-label="Lev" aria-pressed="false"><span>♌</span>Lev</button>
+                    <button class="zodiac-btn" data-sign="panna"    aria-label="Panna" aria-pressed="false"><span>♍</span>Panna</button>
+                    <button class="zodiac-btn" data-sign="vahy"     aria-label="Váhy" aria-pressed="false"><span>♎</span>Váhy</button>
+                    <button class="zodiac-btn" data-sign="stir"     aria-label="Štír" aria-pressed="false"><span>♏</span>Štír</button>
+                    <button class="zodiac-btn" data-sign="strelec"  aria-label="Střelec" aria-pressed="false"><span>♐</span>Střelec</button>
+                    <button class="zodiac-btn" data-sign="kozoroh"  aria-label="Kozoroh" aria-pressed="false"><span>♑</span>Kozoroh</button>
+                    <button class="zodiac-btn" data-sign="vodnar"   aria-label="Vodnář" aria-pressed="false"><span>♒</span>Vodnář</button>
+                    <button class="zodiac-btn" data-sign="ryby"     aria-label="Ryby" aria-pressed="false"><span>♓</span>Ryby</button>
                 </div>
 
                 <!-- ── RITUÁLNÍ KARTA ──────────────────────── -->
                 <div class="ritual-card" id="ritual-card" role="region" aria-label="Váš rituál">
-                    <div class="ritual-card__badge" id="rc-badge">🌕 Fáze Měsíce</div>
+                    <div class="ritual-card__badge" id="rc-badge">
+                        <span class="ritual-card__badge-icon" data-moon-icon aria-hidden="true"></span>
+                        <span data-moon-label>Fáze Měsíce</span>
+                    </div>
                     <div id="rc-sign-emoji" class="mh-inline-b570706c89"></div>
                     <div id="rc-sign-name" class="mh-inline-8a6a9d71d5"></div>
 
@@ -132,9 +133,9 @@
                     <p class="ritual-card__popis" id="rc-popis"></p>
 
                     <div class="ritual-card__meta">
-                        <span>⏱ <span id="rc-duration">10 minut</span></span>
-                        <span>🜄 Živel: <span id="rc-element">Oheň</span></span>
-                        <span>✦ <span id="rc-ruler">Mars</span></span>
+                        <span><svg class="mh-symbol" viewBox="0 0 48 48" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#hourglass"></use></svg><span id="rc-duration">10 minut</span></span>
+                        <span><svg class="mh-symbol" viewBox="0 0 48 48" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#energy"></use></svg>Živel: <span id="rc-element">Oheň</span></span>
+                        <span><svg class="mh-symbol" viewBox="0 0 48 48" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg><span id="rc-ruler">Mars</span></span>
                     </div>
 
                     <!-- Přípravný checklist -->
@@ -143,7 +144,7 @@
 
                     <p id="checklist-hint" class="mh-inline-4c9fe3124a">Odklikněte vše — nebo rovnou vstupte</p>
 
-                    <a id="btn-enter-ritual" class="btn-enter-ritual" href="#" role="button">
+                    <a id="btn-enter-ritual" class="btn-enter-ritual" href="session.html">
                         Vstoupit do seance ✦
                     </a>
                 </div>
@@ -175,7 +176,7 @@
 
                     <details class="faq-item">
                         <summary>Musím se přihlásit nebo platit?</summary>
-                        <p>Celý rituál — všech 6 kroků — je zdarma a bez registrace. Přihlášení není vyžadováno. Premium uživatelé mohou navíc ukládat zápisky z rituálu a sledovat svůj denní streak.</p>
+                        <p>Všech šest kroků lunárního rituálu je zdarma a bez registrace. Uložení zápisků do profilu vyžaduje přihlášení s členstvím; poznámku si můžeš také zkopírovat.</p>
                     </details>
 
                     <details class="faq-item">
@@ -190,13 +191,13 @@
 
     <div id="footer-placeholder"></div>
 
-    <script src="../js/dist/core.js?v=20261003-single-membership" defer></script>
+    <script src="../js/dist/core.js?v=20261021-footer-support-locale" defer></script>
 
     
     <script src="../js/dist/exit-intent.js" defer></script>
-    <script type="module" src="../js/dist/main.js?v=10"></script>
+    <script type="module" src="../js/dist/main.js?v=20261018-status-icons"></script>
     <script src="../js/dist/ritualy-content.js?v=2" defer></script>
-    <script src="../js/dist/moon-art.js" defer></script>
-    <script type="module" src="../js/dist/ritualy.js" defer></script>
+    <script src="../js/dist/moon-art.js?v=20261020-moon-art-safe-fallback" defer></script>
+    <script type="module" src="../js/dist/ritualy.js?v=20261018-ready-status-copy" defer></script>
 </body>
 </html>

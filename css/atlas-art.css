@@ -88,6 +88,13 @@ body.atlas-page #main-content .atlas-art-interlude img {
   object-position: center 48%;
 }
 @media (max-width: 700px) {
+  .atlas-art-astrolab { --atlas-art-image: image-set(url('/img/atlas/tools-v1/01-astrolab-mobile-800.webp') 1x, url('/img/atlas/tools-v1/01-astrolab.webp') 2x); }
+  .atlas-art-notebook { --atlas-art-image: image-set(url('/img/atlas/tools-v1/03-numerologicky-zapisnik-800.webp') 1x, url('/img/atlas/tools-v1/03-numerologicky-zapisnik.webp') 2x); }
+  .atlas-art-moon { --atlas-art-image: image-set(url('/img/atlas/tools-v1/02-mesicni-krajina-800.webp') 1x, url('/img/atlas/tools-v1/02-mesicni-krajina.webp') 2x); }
+  .atlas-art-runes { --atlas-art-image: image-set(url('/img/atlas/tools-v1/04-runove-kameny-800.webp') 1x, url('/img/atlas/tools-v1/04-runove-kameny.webp') 2x); }
+  .atlas-art-forest { --atlas-art-image: image-set(url('/img/atlas/tools-v1/06-lesni-kruh-mobile-800.webp') 1x, url('/img/atlas/tools-v1/06-lesni-kruh.webp') 2x); }
+  .atlas-art-mirror { --atlas-art-image: image-set(url('/img/atlas/social-v1/08-zrcadlo-800.webp') 1x, url('/img/atlas/social-v1/08-zrcadlo.webp') 2x); }
+  .atlas-art-rest { --atlas-art-image: image-set(url('/img/atlas/social-v1/05-kocka-u-okna-800.webp') 1x, url('/img/atlas/social-v1/05-kocka-u-okna.webp') 2x); }
   body.atlas-page #main-content .atlas-art-crystal { padding-top:96px; padding-bottom:36px; }
   body.atlas-page #main-content .atlas-art-hero:is(.atlas-art-astrolab,.atlas-art-notebook,.atlas-art-forest,.atlas-art-mirror,.atlas-art-rest) {
     min-height: 0;

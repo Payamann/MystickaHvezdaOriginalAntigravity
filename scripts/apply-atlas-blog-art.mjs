@@ -122,13 +122,47 @@ const placeholders = new Set([
   '<img class="mh-inline-a8af1d35fe">',
 ]);
 
+function responsiveImageAttrs(assetPath, width, isCard) {
+  const source = `../${assetPath}`;
+  const candidateWidths = isCard && assetPath.startsWith('img/tarot-v2/')
+    ? [240, 360, 480]
+    : /img\/atlas\/(?:tools-v1|social-v1)\//.test(assetPath) ? [480, 800] : [];
+  const candidates = candidateWidths
+    .filter((candidateWidth) => fs.existsSync(path.join(ROOT, assetPath.replace(/\.webp$/, `-${candidateWidth}.webp`))))
+    .map((candidateWidth) => `../${assetPath.replace(/\.webp$/, `-${candidateWidth}.webp`)} ${candidateWidth}w`);
+
+  if (candidates.length === 0) return '';
+  candidates.push(`${source} ${width}w`);
+  const sizes = isCard
+    ? '(max-width: 392px) calc(100vw - 32px), 360px'
+    : '(max-width: 720px) calc(100vw - 2rem), 960px';
+  return ` srcset="${candidates.join(', ')}" sizes="${sizes}"`;
+}
+
 function articleTag(assetPath, width, height, alt, isCard) {
   const cardClass = isCard ? ' atlas-blog-art--card' : '';
-  return `<img src="../${assetPath}" alt="${alt}" width="${width}" height="${height}" loading="lazy" decoding="async" class="blog-featured-image atlas-blog-art${cardClass}">`;
+  const responsiveAttrs = responsiveImageAttrs(assetPath, width, isCard);
+  return `<img src="../${assetPath}"${responsiveAttrs} alt="${alt}" width="${width}" height="${height}" loading="lazy" decoding="async" class="blog-featured-image atlas-blog-art${cardClass}">`;
 }
 
 function replaceArticleImage(html, replacement, slug) {
   if (html.includes(replacement)) return html;
+
+  // Existing editorial images may already use the mapped artwork but predate its responsive variants.
+  const replacementSource = replacement.match(/\bsrc="([^"]+)"/)?.[1];
+  const responsiveAttrs = replacement.match(/\s(srcset="[^"]+"\s+sizes="[^"]+")/)?.[1];
+  if (replacementSource && responsiveAttrs) {
+    let foundMappedImage = false;
+    const responsiveHtml = html.replace(/<img\b[^>]*>/gi, (tag) => {
+      if (foundMappedImage) return tag;
+      const currentSource = tag.match(/\bsrc="([^"]+)"/)?.[1];
+      if (currentSource !== replacementSource) return tag;
+      foundMappedImage = true;
+      if (/\bsrcset\s*=/.test(tag)) return tag;
+      return tag.replace("src=\"" + replacementSource + "\"", "src=\"" + replacementSource + "\" " + responsiveAttrs);
+    });
+    if (foundMappedImage) return responsiveHtml;
+  }
 
   let matched = false;
   const next = html.replace(/<img\b[^>]*>/gi, (tag) => {

@@ -1,3 +1,20 @@
+function getSafeLocalRedirect(value, fallback = null) {
+    if (typeof value !== 'string') return fallback;
+    const redirect = value.trim();
+    if (!redirect || !redirect.startsWith('/') || redirect.startsWith('//')
+        || redirect.includes('\\') || /[\u0000-\u001F\u007F]/.test(redirect)) {
+        return fallback;
+    }
+
+    try {
+        const target = new URL(redirect, window.location.origin);
+        if (target.origin !== window.location.origin) return fallback;
+        return `${target.pathname}${target.search}${target.hash}`;
+    } catch {
+        return fallback;
+    }
+}
+
 function hasStoredAuthRedirect() {
     try {
         return Boolean(sessionStorage.getItem('pending_plan')
@@ -6,6 +23,34 @@ function hasStoredAuthRedirect() {
     } catch {
         return false;
     }
+}
+
+const PASSWORD_RESET_RETURN_KEY = 'mh_password_reset_return';
+
+function storePasswordResetReturnTarget(target) {
+    try {
+        if (getSafeLocalRedirect(target) === '/profil.html#journal-input') {
+            localStorage.setItem(PASSWORD_RESET_RETURN_KEY, JSON.stringify({
+                target: '/profil.html#journal-input',
+                savedAt: Date.now()
+            }));
+        } else {
+            localStorage.removeItem(PASSWORD_RESET_RETURN_KEY);
+        }
+    } catch { /* Password reset remains available when storage is disabled. */ }
+}
+
+function consumePasswordResetReturnTarget() {
+    try {
+        const raw = localStorage.getItem(PASSWORD_RESET_RETURN_KEY);
+        localStorage.removeItem(PASSWORD_RESET_RETURN_KEY);
+        const saved = JSON.parse(raw || 'null');
+        const age = Date.now() - Number(saved?.savedAt);
+        if (saved?.target === '/profil.html#journal-input' && age >= 0 && age <= 24 * 60 * 60 * 1000) {
+            return saved.target;
+        }
+    } catch { /* Fall back to the profile landing page. */ }
+    return '/profil.html';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -394,6 +439,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const authSubmitBtn = document.getElementById('auth-submit');
     const toggleBtn = document.getElementById('auth-mode-toggle');
     const socialProofEl = document.getElementById('login-social-proof');
+    const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
     const passwordHelp = document.getElementById('password-help');
     const registerFields = document.getElementById('register-fields');
@@ -424,7 +470,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const isResetMode = urlParams.get('reset') === 'true';
     const hash = window.location.hash;
     let isRegisterMode = urlParams.get('mode') === 'register' || urlParams.get('registrace') === '1';
-    const redirectTarget = urlParams.get('redirect') || '/profil.html';
+    let authRequestPending = false;
+    let forgotPasswordPending = false;
+    let resetPasswordPending = false;
+    const redirectTarget = getSafeLocalRedirect(urlParams.get('redirect'), '/profil.html');
     const hasExplicitCheckoutContext = urlParams.has('plan') || urlParams.has('feature') || urlParams.has('source');
     const pendingPlan = !hasExplicitCheckoutContext
         ? (window.Auth?.getPendingCheckoutPlan?.() || sessionStorage.getItem('pending_plan') || null)
@@ -489,7 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (field) {
             getFormUx().setFieldError?.(field, message);
             field.focus({ preventScroll: true });
-            field.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            field.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest' });
         }
         window.Auth?.showToast?.('Chyba', message, 'error');
     };
@@ -514,8 +563,67 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!element.hasAttribute('tabindex')) element.setAttribute('tabindex', '-1');
         requestAnimationFrame(() => {
             element.focus({ preventScroll: true });
-            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            element.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
         });
+    };
+
+    const clearRecoveryFragment = () => {
+        window.history.replaceState(
+            window.history.state,
+            '',
+            `${window.location.pathname}${window.location.search}`
+        );
+    };
+
+    const showRecoveryRequestForm = (message) => {
+        clearRecoveryFragment();
+        setBlockVisible(loginForm, false);
+        setBlockVisible(resetPasswordForm, false);
+        resetPasswordForm?.querySelectorAll('input[type="password"]').forEach((field) => { field.value = ''; });
+        setBlockVisible(forgotPasswordForm, true);
+        setBlockVisible(forgotPasswordLink, false);
+        setBlockVisible(authModeWrapper, false);
+        const validationStatus = document.getElementById('recovery-validation-status');
+        if (validationStatus) validationStatus.hidden = true;
+        if (loginHeader) loginHeader.textContent = 'Obnova hesla';
+        if (loginSubtitle) loginSubtitle.textContent = 'Pošleme ti nový odkaz pro nastavení hesla.';
+        getFormUx().setFormSummary?.(forgotPasswordForm, message);
+        focusAndReveal(forgotPasswordForm?.querySelector('input'));
+    };
+
+    const verifyRecoveryLink = async (token) => {
+        const validationStatus = document.getElementById('recovery-validation-status');
+        if (validationStatus) {
+            validationStatus.textContent = 'Ověřuji odkaz pro obnovu hesla…';
+            validationStatus.hidden = false;
+        }
+
+        try {
+            const response = await fetch('/api/auth/reset-password/validate', {
+                method: 'GET',
+                headers: { Authorization: `Bearer ${token}` },
+                cache: 'no-store'
+            });
+            const data = await response.json().catch(() => null);
+
+            if (response.ok && data?.valid === true) {
+                if (validationStatus) validationStatus.hidden = true;
+                setBlockVisible(resetPasswordForm, true);
+                if (loginHeader) loginHeader.textContent = 'Obnovení hesla';
+                if (loginSubtitle) loginSubtitle.textContent = 'Zadej nové heslo a vrať se zpět do svého účtu.';
+                focusAndReveal(document.getElementById('new-password'));
+                return;
+            }
+
+            if (response.status === 401) {
+                showRecoveryRequestForm('Odkaz pro obnovu už není platný. Zadej e-mail a vyžádej si nový.');
+                return;
+            }
+
+            showRecoveryRequestForm('Odkaz se teď nepodařilo ověřit. Zkus to znovu později, případně požádej o nový.');
+        } catch {
+            showRecoveryRequestForm('Odkaz se teď nepodařilo ověřit. Zkontroluj připojení a zkus obnovit stránku nebo požádej o nový.');
+        }
     };
 
     // Sdílená hláška: použije ji i nativní validace přes setCustomValidity, aby GDPR
@@ -548,11 +656,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return true;
     };
 
-    const getSafeRedirectTarget = () => (
-        redirectTarget.startsWith('/') && !redirectTarget.startsWith('//')
-            ? redirectTarget
-            : '/profil.html'
-    );
+    const getSafeRedirectTarget = () => redirectTarget;
 
     const buildCheckoutAuthStepPayload = (eventName, step, extraMetadata = {}) => {
         if (!requestedPlan) return null;
@@ -897,17 +1001,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const hashParams = new URLSearchParams(hash.startsWith('#') ? hash.slice(1) : hash);
     const recoveryError = hashParams.get('error_code') || hashParams.get('error_description') || hashParams.get('error');
     const accessToken = hashParams.get('access_token');
-    const hasValidRecoveryInput = isResetMode && Boolean(accessToken) && !recoveryError;
+    const hasRecoveryToken = isResetMode && Boolean(accessToken) && !recoveryError;
 
-    if (hasValidRecoveryInput) {
+    if (hasRecoveryToken) {
         setBlockVisible(loginForm, false);
         setBlockVisible(forgotPasswordForm, false);
-        setBlockVisible(resetPasswordForm, true);
+        setBlockVisible(resetPasswordForm, false);
         setBlockVisible(forgotPasswordLink, false);
         setBlockVisible(authModeWrapper, false);
         if (loginHeader) loginHeader.textContent = 'Obnovení hesla';
-        if (loginSubtitle) loginSubtitle.textContent = 'Zadej nové heslo a vrať se zpět do svého účtu.';
+        if (loginSubtitle) loginSubtitle.textContent = 'Kontroluji platnost odkazu pro obnovu hesla.';
+        void verifyRecoveryLink(accessToken);
     } else if (isResetMode) {
+        if (window.location.hash) {
+            window.history.replaceState(
+                window.history.state,
+                '',
+                `${window.location.pathname}${window.location.search}`
+            );
+        }
         setBlockVisible(loginForm, false);
         setBlockVisible(resetPasswordForm, false);
         setBlockVisible(forgotPasswordForm, true);
@@ -939,6 +1051,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loginForm?.addEventListener('submit', async (event) => {
         event.preventDefault();
+        if (authRequestPending || authSubmitBtn?.disabled) return;
         ensureAuthFormStarted('submit_attempt');
 
         const email = document.getElementById('email')?.value?.trim();
@@ -964,7 +1077,12 @@ document.addEventListener('DOMContentLoaded', () => {
             isRegisterMode ? 'register_form_submitted' : 'login_form_submitted'
         );
 
+        authRequestPending = true;
+        loginForm.setAttribute('aria-busy', 'true');
         authSubmitBtn.disabled = true;
+        const authFields = [emailInput, passwordInput, gdprConsent].filter(Boolean);
+        const authFieldDisabledStates = authFields.map((field) => field.disabled);
+        authFields.forEach((field) => { field.disabled = true; });
         const originalText = authSubmitBtn.textContent;
         const submittedMode = isRegisterMode ? 'register' : 'login';
         authSubmitBtn.textContent = isRegisterMode ? 'Registruji...' : 'Přihlašuji...';
@@ -998,7 +1116,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             'Tento e-mail může být spojený s existujícím účtem. Přepnuli jsme tě na přihlášení — zadej heslo, nebo použij obnovu hesla.'
                         );
                         passwordInput?.focus({ preventScroll: true });
-                        passwordInput?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        passwordInput?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
                         trackAuthView('registration_recovery');
                         return;
                     }
@@ -1038,6 +1156,9 @@ document.addEventListener('DOMContentLoaded', () => {
             getFormUx().setFormSummary?.(loginForm, message);
             window.Auth.showToast?.('Chyba', message, 'error');
         } finally {
+            authRequestPending = false;
+            loginForm.removeAttribute('aria-busy');
+            authFields.forEach((field, index) => { field.disabled = authFieldDisabledStates[index]; });
             authSubmitBtn.disabled = false;
             if ((isRegisterMode ? 'register' : 'login') === submittedMode) {
                 authSubmitBtn.textContent = originalText;
@@ -1047,7 +1168,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    forgotPasswordLink?.addEventListener('click', () => {
+    forgotPasswordLink?.addEventListener('click', (event) => {
+        if (authRequestPending) {
+            event.preventDefault();
+            return;
+        }
         setBlockVisible(loginForm, false);
         setBlockVisible(forgotPasswordForm, true);
         setBlockVisible(forgotPasswordLink, false);
@@ -1066,19 +1191,23 @@ document.addEventListener('DOMContentLoaded', () => {
     forgotPasswordForm?.addEventListener('submit', async (event) => {
         event.preventDefault();
         const email = document.getElementById('forgot-email')?.value;
+        const emailInput = document.getElementById('forgot-email');
         const submitBtn = forgotPasswordForm.querySelector('button[type="submit"]');
         const originalText = submitBtn?.textContent;
 
-        if (!submitBtn || submitBtn.disabled) {
-            return;
-        }
+        if (!submitBtn || forgotPasswordPending || submitBtn.disabled) return;
 
         const recoveryStatus = document.getElementById('recovery-request-status');
+        const emailWasDisabled = emailInput?.disabled === true;
         if (recoveryStatus) recoveryStatus.hidden = true;
+        forgotPasswordPending = true;
+        forgotPasswordForm.setAttribute('aria-busy', 'true');
+        if (emailInput) emailInput.disabled = true;
         submitBtn.textContent = 'Odesílám...';
         submitBtn.disabled = true;
 
         try {
+            storePasswordResetReturnTarget(null);
             const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
             const response = await fetch('/api/auth/forgot-password', {
                 method: 'POST',
@@ -1092,8 +1221,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json().catch(() => null);
 
             if (response.ok && data?.success) {
+                storePasswordResetReturnTarget(redirectTarget);
                 if (recoveryStatus) {
-                    recoveryStatus.textContent = 'Pokud je e-mail u nás vedený, přijde na něj odkaz k obnovení hesla. Zkontroluj také složku spam. Na této stránce se pak můžeš vrátit k přihlášení.';
+                    recoveryStatus.textContent = 'Pokud je účet s tímto e-mailem vedený, může na něj přijít odkaz k obnovení hesla. Zkontroluj i spam; pokud odkaz nedorazí, můžeš žádost zopakovat. Na této stránce se pak můžeš vrátit k přihlášení.';
                     recoveryStatus.hidden = false;
                     if (!forgotPasswordForm.hidden) recoveryStatus.focus();
                 }
@@ -1106,6 +1236,9 @@ document.addEventListener('DOMContentLoaded', () => {
             getFormUx().setFormSummary?.(forgotPasswordForm, message);
             window.Auth?.showToast?.('Chyba', message, 'error');
         } finally {
+            forgotPasswordPending = false;
+            forgotPasswordForm.removeAttribute('aria-busy');
+            if (emailInput) emailInput.disabled = emailWasDisabled;
             submitBtn.textContent = originalText || 'Odeslat odkaz pro obnovu';
             submitBtn.disabled = false;
         }
@@ -1113,6 +1246,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     resetPasswordForm?.addEventListener('submit', async (event) => {
         event.preventDefault();
+        const submitBtn = resetPasswordForm.querySelector('button[type="submit"]');
+        if (!submitBtn || resetPasswordPending || submitBtn.disabled) return;
+
         const newPassword = document.getElementById('new-password')?.value;
         const confirmPassword = document.getElementById('confirm-password')?.value;
 
@@ -1125,13 +1261,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const submitBtn = resetPasswordForm.querySelector('button[type="submit"]');
         const originalText = submitBtn?.textContent;
-
-        if (!submitBtn) {
-            return;
-        }
-
+        const resetFields = [
+            document.getElementById('new-password'),
+            document.getElementById('confirm-password')
+        ].filter(Boolean);
+        const resetFieldDisabledStates = resetFields.map((field) => field.disabled);
+        resetPasswordPending = true;
+        resetPasswordForm.setAttribute('aria-busy', 'true');
+        resetFields.forEach((field) => { field.disabled = true; });
         submitBtn.textContent = 'Ukládám...';
         submitBtn.disabled = true;
 
@@ -1154,12 +1292,34 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json().catch(() => null);
 
             if (response.ok && data?.success) {
+                // The recovery token is no longer needed after the server confirms
+                // the password change. Remove it from the browser's address bar.
+                window.history.replaceState(
+                    window.history.state,
+                    '',
+                    `${window.location.pathname}${window.location.search}`
+                );
                 window.trackEvent?.('password_reset_completed', {
                     source: 'reset_password_form'
                 });
-                window.Auth?.showToast?.('Hotovo', 'Heslo bylo změněno. Teď se můžeš přihlásit.', 'success');
-                window.location.href = '/prihlaseni.html';
+                const resetStatus = document.getElementById('reset-password-status');
+                if (resetStatus) {
+                    const loginLink = document.createElement('a');
+                    loginLink.href = `/prihlaseni.html?redirect=${encodeURIComponent(consumePasswordResetReturnTarget())}`;
+                    loginLink.textContent = 'Přihlásit se';
+                    resetStatus.textContent = 'Heslo bylo změněno. Teď se můžeš ';
+                    resetStatus.append(loginLink, '.');
+                    resetStatus.hidden = false;
+                    resetPasswordForm.hidden = true;
+                    resetStatus.focus();
+                } else {
+                    window.Auth?.showToast?.('Hotovo', 'Heslo bylo změněno. Teď se můžeš přihlásit.', 'success');
+                }
             } else {
+                if (response.status === 401) {
+                    showRecoveryRequestForm('Odkaz pro obnovu už není platný. Zadej e-mail a vyžádej si nový.');
+                    return;
+                }
                 throw new Error(data?.error || 'Nepodařilo se změnit heslo.');
             }
         } catch (error) {
@@ -1167,6 +1327,9 @@ document.addEventListener('DOMContentLoaded', () => {
             getFormUx().setFormSummary?.(resetPasswordForm, message);
             window.Auth?.showToast?.('Chyba', message, 'error');
         } finally {
+            resetPasswordPending = false;
+            resetPasswordForm.removeAttribute('aria-busy');
+            resetFields.forEach((field, index) => { field.disabled = resetFieldDisabledStates[index]; });
             submitBtn.textContent = originalText || 'Nastavit nové heslo';
             submitBtn.disabled = false;
         }
@@ -1178,7 +1341,11 @@ document.addEventListener('DOMContentLoaded', () => {
         window.history.replaceState(window.history.state, '', `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);
     }
 
-    toggleBtn?.addEventListener('click', () => {
+    toggleBtn?.addEventListener('click', (event) => {
+        if (authRequestPending) {
+            event.preventDefault();
+            return;
+        }
         clearAuthErrors();
         isRegisterMode = !isRegisterMode;
         syncAuthModeInUrl();
@@ -1187,7 +1354,11 @@ document.addEventListener('DOMContentLoaded', () => {
         trackAuthView('toggle');
     });
 
-    checkoutExistingAccount?.addEventListener('click', () => {
+    checkoutExistingAccount?.addEventListener('click', (event) => {
+        if (authRequestPending) {
+            event.preventDefault();
+            return;
+        }
         isRegisterMode = false;
         syncAuthModeInUrl();
         applyMode();
@@ -1201,8 +1372,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const redirect = urlParams.get('redirect');
-            if (redirect && redirect.startsWith('/') && !redirect.startsWith('//')) {
+            const redirect = getSafeLocalRedirect(urlParams.get('redirect'));
+            if (redirect) {
                 window.location.href = redirect;
             } else {
                 window.location.href = '/profil.html';
@@ -1224,11 +1395,7 @@ document.addEventListener('auth:changed', () => {
         }
 
         const urlParams = new URLSearchParams(window.location.search);
-        let redirect = urlParams.get('redirect') || '/profil.html';
-
-        if (!redirect.startsWith('/') || redirect.startsWith('//')) {
-            redirect = '/profil.html';
-        }
+        const redirect = getSafeLocalRedirect(urlParams.get('redirect'), '/profil.html');
 
         if (!redirect.includes('prihlaseni')) {
             window.location.href = redirect;

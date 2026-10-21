@@ -8,7 +8,7 @@ const cards = [
     { name: 'Slunce', meaning: 'Vidět jasně', interpretation: 'Původní význam Slunce.', image: 'img/tarot-v2/tarot_slunce.webp' },
     { name: 'Mág', meaning: 'Použít dostupné možnosti', interpretation: 'Původní význam Mága.', image: 'img/tarot-v2/tarot_mag.webp' }
 ];
-const source = fs.readFileSync(new URL('../../js/tarot.js', import.meta.url), 'utf8').replace(/^import .*;\r?$/gm, '');
+const source = fs.readFileSync(new URL('../../js/tarot.js', import.meta.url), 'utf8').replace(/^import\s+[\s\S]*?;\s*$/gm, '');
 
 function summaryHarness() {
     const children = [];
@@ -16,26 +16,30 @@ function summaryHarness() {
         dataset: {}, attrs: {}, innerHTML: '', isConnected: true,
         setAttribute(key, value) { this.attrs[key] = value; },
         appendChild(child) { children.push(child); },
-        parentElement: { classList: { add() {} } }
+        parentElement: { classList: { add() {} }, querySelectorAll() { return []; }, appendChild(child) { children.push(child); } }
     };
     const fetch = jest.fn();
-    const saveReading = jest.fn(async () => null);
+    const saveReading = jest.fn(async () => ({ id: 'reading-test' }));
     const showFallbackNotice = jest.fn();
     const context = vm.createContext({
         document: {
+            body: { classList: { add() {}, remove() {} } },
             addEventListener() {},
+            querySelector() { return null; },
             getElementById: id => id === 'ethereal-tarot-summary' ? container : null,
             createElement() {
-                return { addEventListener(_type, callback) { this.click = callback; } };
+                return { dataset: {}, addEventListener(_type, callback) { this.click = callback; }, setAttribute() {}, insertAdjacentElement() {}, querySelector() { return { addEventListener() {} }; } };
             }
         },
-        window: { location: { pathname: '/tarot.html' }, Auth: { saveReading } },
-        fetch, savedTarotCards, tarotCardPosition, showFallbackNotice,
+        window: { location: { pathname: '/tarot.html' }, Auth: { saveReading }, addEventListener() {}, removeEventListener() {} },
+        localStorage: { getItem() { return null; }, removeItem() {}, setItem() {} },
+        fetch, AbortController, savedTarotCards, tarotCardPosition, showFallbackNotice,
         formatReadingHtml: text => text,
         console: { error() {}, warn() {}, debug() {} },
         URLSearchParams, URL, setTimeout, clearTimeout
     });
-    vm.runInContext(source, context);
+    vm.runInContext(`${source}\n;globalThis.__prepareTarotReading = () => { tarotReadingGeneration = 1; displayedTarotReadingSession = { isLoggedIn: false }; activeTarotReadingSession = { isLoggedIn: false }; observedTarotReadingSession = captureTarotReadingSession(); tarotReadingSessionInitialized = true; };`, context);
+    vm.runInContext('__prepareTarotReading()', context);
     return { container, children, fetch, saveReading, showFallbackNotice, context };
 }
 

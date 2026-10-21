@@ -108,8 +108,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
 
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="css/site.min.css?v=1">
-    <link rel="stylesheet" href="css/pages/tarot.css?v=4">
+    <link rel="stylesheet" href="css/site.min.css?v=20261018-release-candidate">
+    <link rel="stylesheet" href="css/pages/tarot.css?v=20261021-question-wrap">
 
     <link rel="canonical" href="https://www.mystickahvezda.cz/tarot.html">
 
@@ -189,17 +189,17 @@
 
     </script>
 
-  <!-- DOMPurify for XSS protection (must load synchronously before other scripts use it) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" integrity="sha384-XQqX/4yiUGu+oyr87jvWzRuqBUK/adrY0DunhL+tID9m/9dwSpV8h9Fk/Sg6ifVQ" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <!-- DOMPurify sanitizes generated result markup after user interaction. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" integrity="sha384-XQqX/4yiUGu+oyr87jvWzRuqBUK/adrY0DunhL+tID9m/9dwSpV8h9Fk/Sg6ifVQ" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
     <script src="/js/dist/analytics-init.js" defer></script>
     <script src="/js/dist/analytics.js?v=8" defer></script>
-    <link rel="stylesheet" href="/css/pages/relationship-tarot-bridge.css?v=2">
+    <link rel="stylesheet" href="/css/pages/relationship-tarot-bridge.css?v=3">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:image" content="https://www.mystickahvezda.cz/img/search-preview/tarot.webp">
 <meta property="og:image:alt" content="Tarot online: výklad z 78 karet | Mystická Hvězda">
 <meta name="twitter:image:alt" content="Tarot online: výklad z 78 karet | Mystická Hvězda">
-    <link rel="stylesheet" href="/css/atlas-web.css?v=1">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
 </head>
 
 <body class="page-tarot atlas-page">
@@ -222,13 +222,13 @@
 
         &nbsp;
 
-        <button data-action="closeBanner" class="mh-inline-3b742ab049" aria-label="Zavřít premium upozornění">×</button>
+        <button data-action="closeBanner" class="mh-inline-3b742ab049" aria-label="Zavřít upozornění o členství"><svg class="mh-symbol mh-symbol--inline" width="18" height="18" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#close"></use></svg></button>
 
     </div>
 
     <script src="/js/dist/close-banner.js" defer></script>
 
-    <script src="js/dist/freemium-tarot.js" defer></script>
+    <script src="js/dist/freemium-tarot.js?v=20261018-truthful-limits" defer></script>
 
     <main id="main-content" tabindex="-1">
 
@@ -260,9 +260,9 @@
 
                         <div class="t-spread-card">
 
-                            <div class="t-spread-icon atlas-spread-art" aria-hidden="true"><img loading="lazy" src="/img/tarot-v2/tarot_card_back.webp" alt="" width="60" height="100"></div>
+                            <div class="t-spread-icon atlas-spread-art" aria-hidden="true"><img loading="lazy" src="/img/tarot-v2/tarot_card_back.webp" srcset="/img/tarot-v2/tarot_card_back-mobile.webp 240w, /img/tarot-v2/tarot_card_back-mobile-480.webp 480w, /img/tarot-v2/tarot_card_back.webp 600w" sizes="60px" alt="" width="60" height="100"></div>
 
-                            <h3 class="t-spread-title">Jedna Karta</h3>
+                            <h3 class="t-spread-title">Jedna karta</h3>
 
                             <p class="t-spread-desc">
 
@@ -282,9 +282,9 @@
 
                         <div class="t-spread-card featured">
 
-                            <div class="t-spread-icon atlas-spread-art" aria-hidden="true"><img loading="lazy" src="/img/tarot-v2/tarot_card_back.webp" alt="" width="60" height="100"><img loading="lazy" src="/img/tarot-v2/tarot_card_back.webp" alt="" width="60" height="100"><img loading="lazy" src="/img/tarot-v2/tarot_card_back.webp" alt="" width="60" height="100"></div>
+                            <div class="t-spread-icon atlas-spread-art" aria-hidden="true"><img loading="lazy" src="/img/tarot-v2/tarot_card_back.webp" srcset="/img/tarot-v2/tarot_card_back-mobile.webp 240w, /img/tarot-v2/tarot_card_back-mobile-480.webp 480w, /img/tarot-v2/tarot_card_back.webp 600w" sizes="60px" alt="" width="60" height="100"><img loading="lazy" src="/img/tarot-v2/tarot_card_back.webp" srcset="/img/tarot-v2/tarot_card_back-mobile.webp 240w, /img/tarot-v2/tarot_card_back-mobile-480.webp 480w, /img/tarot-v2/tarot_card_back.webp 600w" sizes="60px" alt="" width="60" height="100"><img loading="lazy" src="/img/tarot-v2/tarot_card_back.webp" srcset="/img/tarot-v2/tarot_card_back-mobile.webp 240w, /img/tarot-v2/tarot_card_back-mobile-480.webp 480w, /img/tarot-v2/tarot_card_back.webp 600w" sizes="60px" alt="" width="60" height="100"></div>
 
-                            <h3 class="t-spread-title">Tři Karty</h3>
+                            <h3 class="t-spread-title">Tři karty</h3>
 
                             <p class="t-spread-desc">
 
@@ -292,7 +292,7 @@
 
                             </p>
 
-                            <div class="t-spread-price text-gold">Premium</div>
+                            <div class="t-spread-price text-gold">Členství</div>
 
                             <button class="btn btn--primary btn--full spread-trigger"
 
@@ -304,9 +304,9 @@
 
                         <div class="t-spread-card">
 
-                            <div class="t-spread-icon atlas-spread-art" aria-hidden="true"><img loading="lazy" src="/img/tarot-v2/tarot_card_back.webp" alt="" width="60" height="100"><img loading="lazy" src="/img/tarot-v2/tarot_card_back.webp" alt="" width="60" height="100"><img loading="lazy" src="/img/tarot-v2/tarot_card_back.webp" alt="" width="60" height="100"></div>
+                            <div class="t-spread-icon atlas-spread-art" aria-hidden="true"><img loading="lazy" src="/img/tarot-v2/tarot_card_back.webp" srcset="/img/tarot-v2/tarot_card_back-mobile.webp 240w, /img/tarot-v2/tarot_card_back-mobile-480.webp 480w, /img/tarot-v2/tarot_card_back.webp 600w" sizes="60px" alt="" width="60" height="100"><img loading="lazy" src="/img/tarot-v2/tarot_card_back.webp" srcset="/img/tarot-v2/tarot_card_back-mobile.webp 240w, /img/tarot-v2/tarot_card_back-mobile-480.webp 480w, /img/tarot-v2/tarot_card_back.webp 600w" sizes="60px" alt="" width="60" height="100"><img loading="lazy" src="/img/tarot-v2/tarot_card_back.webp" srcset="/img/tarot-v2/tarot_card_back-mobile.webp 240w, /img/tarot-v2/tarot_card_back-mobile-480.webp 480w, /img/tarot-v2/tarot_card_back.webp 600w" sizes="60px" alt="" width="60" height="100"></div>
 
-                            <h3 class="t-spread-title">Keltský Kříž</h3>
+                            <h3 class="t-spread-title">Keltský kříž</h3>
 
                             <p class="t-spread-desc">
 
@@ -336,6 +336,9 @@
 
             <div class="container">
 
+                <details class="feature-reference">
+                    <summary class="feature-reference__summary">Ukázka výkladu karty Hvězda</summary>
+
                 <div class="section__header" data-animate>
 
                     <span class="section__badge">Ukázka výkladu</span>
@@ -358,7 +361,7 @@
 
                         </div>
 
-                        <div class="mh-inline-4665ff48a5">⭐</div>
+                        <div class="tarot-sample__symbol"><svg class="mh-symbol" width="64" height="64" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg></div>
                     </div>
 
                     <h4 class="mb-md u-text-starlight">Ukázková symbolická interpretace:</h4>
@@ -367,7 +370,7 @@
 
                         Hvězda může v pozici Budoucnosti otevřít téma naděje, obnovy a klidnějšího pohledu.
 
-                        Vedle karty Minulosti vybízí k otázce, co už nemusíte nést dál a kde si můžete vytvořit
+                        Vedle karty Minulosti vybízí k otázce, co už nemusíš nést dál a kde si můžeš vytvořit
 
                         více prostoru pro jasnější rozhodnutí.
 
@@ -375,11 +378,11 @@
 
                     <p class="mb-lg">
 
-                        <strong class="u-text-starlight">V kontextu vaší otázky o kariéře:</strong>
+                        <strong class="u-text-starlight">V kontextu otázky o práci:</strong>
 
-                        Hvězda může připomenout směr, který je pro vás důležitý, i když výsledek zatím není jasný.
+                        Hvězda může připomenout směr, který je pro tebe důležitý, i když výsledek zatím není jasný.
 
-                        Zkuste oddělit vlastní přání od konkrétních možností, které máte právě teď.
+                        Zkus oddělit vlastní přání od konkrétních možností, které máš právě teď.
 
                     </p>
 
@@ -387,7 +390,7 @@
 
                         <strong class="u-text-starlight">Praktická rada:</strong>
 
-                        Sepište si jeden cíl, nejistotu, která vás brzdí, a nejmenší krok, který můžete udělat
+                        Sepiš si jeden cíl, nejistotu, která tě brzdí, a nejmenší krok, který můžeš udělat
 
                         bez čekání na další znamení.
 
@@ -403,6 +406,8 @@
                     </div>
                     <a href="tarot-vyznam-karet.html?source=tarot_page_bridge" class="btn btn--ghost">Význam karet</a>
                 </div>
+
+                </details>
 
             </div>
 
@@ -465,19 +470,19 @@
 
                 <div class="tarot-deck">
                     <div class="tarot-card">
-                        <img loading="lazy" src="img/tarot-v2/tarot_card_back.webp" alt="Rub tarotové karty" width="150" height="250"
+                        <img loading="lazy" src="img/tarot-v2/tarot_card_back.webp" srcset="img/tarot-v2/tarot_card_back-mobile.webp 240w, img/tarot-v2/tarot_card_back-mobile-480.webp 480w, img/tarot-v2/tarot_card_back.webp 600w" sizes="150px" alt="Rub tarotové karty" width="150" height="250"
                             class="mh-inline-79cc1ae746">
                     </div>
                     <div class="tarot-card">
-                        <img loading="lazy" src="img/tarot-v2/tarot_card_back.webp" alt="Rub tarotové karty" width="150" height="250"
+                        <img loading="lazy" src="img/tarot-v2/tarot_card_back.webp" srcset="img/tarot-v2/tarot_card_back-mobile.webp 240w, img/tarot-v2/tarot_card_back-mobile-480.webp 480w, img/tarot-v2/tarot_card_back.webp 600w" sizes="150px" alt="Rub tarotové karty" width="150" height="250"
                             class="mh-inline-79cc1ae746">
                     </div>
                     <div class="tarot-card">
-                        <img loading="lazy" src="img/tarot-v2/tarot_card_back.webp" alt="Rub tarotové karty" width="150" height="250"
+                        <img loading="lazy" src="img/tarot-v2/tarot_card_back.webp" srcset="img/tarot-v2/tarot_card_back-mobile.webp 240w, img/tarot-v2/tarot_card_back-mobile-480.webp 480w, img/tarot-v2/tarot_card_back.webp 600w" sizes="150px" alt="Rub tarotové karty" width="150" height="250"
                             class="mh-inline-79cc1ae746">
                     </div>
                     <div class="tarot-card">
-                        <img loading="lazy" src="img/tarot-v2/tarot_card_back.webp" alt="Rub tarotové karty" width="150" height="250"
+                        <img loading="lazy" src="img/tarot-v2/tarot_card_back.webp" srcset="img/tarot-v2/tarot_card_back-mobile.webp 240w, img/tarot-v2/tarot_card_back-mobile-480.webp 480w, img/tarot-v2/tarot_card_back.webp 600w" sizes="150px" alt="Rub tarotové karty" width="150" height="250"
                             class="mh-inline-79cc1ae746">
                     </div>
                 </div>
@@ -485,6 +490,8 @@
             </div>
 
         </section>
+
+        <p id="tarot-reading-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
 
     
 
@@ -513,9 +520,9 @@
 
     <div id="footer-placeholder"></div>
 
-    <script src="js/dist/favorites-helper.js" defer></script>
+    <script src="js/dist/favorites-helper.js?v=20261018-favorite-controls" defer></script>
 
-    <script src="js/dist/tarot.js?v=20261003-single-membership" defer></script>
+    <script src="js/dist/tarot.js?v=20261019-deck-load-retry" defer></script>
 
     <!-- Service Worker Registration -->
 
@@ -523,29 +530,29 @@
 
     <script src="js/dist/api-config.js?v=5" defer></script>
 
-    <script src="js/dist/templates.js?v=14" defer></script>
+    <script src="js/dist/templates.js?v=20261021-celtic-footer-star-svg" defer></script>
 
-<script src="js/dist/auth-client.js?v=20261003-single-membership" defer></script>
+<script src="js/dist/auth-client.js?v=20261020-02-register-password-policy" defer></script>
 <script src="js/dist/auth-copy-fixes.js" defer></script>
-<script src="js/dist/tool-pages-copy-fixes.js?v=3" defer></script>
+<script src="js/dist/tool-pages-copy-fixes.js?v=20261018-numerology-copy" defer></script>
 
-<script src="js/dist/share-result.js?v=2" defer></script>
+<script src="js/dist/share-result.js?v=20261017-icons" defer></script>
 
         
 
     <script src="js/dist/exit-intent.js" defer></script>
 
-    <script src="js/dist/components.js?v=20260522-premium-gate-cache" defer></script>
+    <script src="js/dist/components.js?v=20261021-footer-support-locale" defer></script>
 
-    <script src="js/dist/retention.js?v=6" defer></script>
+    <script src="js/dist/retention.js?v=20261018-retention-close" defer></script>
 
-    <script type="module" src="js/dist/personalization.js?v=5"></script>
+    <script type="module" src="js/dist/personalization.js?v=20261018-sign-picker-pen"></script>
 
-    <script type="module" src="js/dist/main.js?v=10"></script>
+    <script type="module" src="js/dist/main.js?v=20261018-status-icons"></script>
 
     <script src="js/dist/newsletter-popup.js?v=20260706-sign-step" defer></script>
 
-    <script src="js/dist/push-notifications.js" defer></script>
+<script src="js/dist/push-notifications.js?v=20261021-subscription-state" defer></script>
 
     <script src="js/dist/pwa-install.js" defer></script>
 
@@ -558,11 +565,11 @@
         <p class="relationship-eyebrow">OSOBNÍ VZTAHOVÝ VÝKLAD</p>
         <h2 id="relationship-single-offer-title">Chceš se zastavit u své vztahové otázky?</h2>
         <p>Jedna karta otevřela téma. Osobní výklad tří karet naváže přímo na situaci, kterou popíšeš.</p>
-        <a href="/vztahovy-vyklad.html?source=tarot_single_card_result">Rozvinout výklad · 149 Kč <span aria-hidden="true">↗</span></a>
+        <a href="/vztahovy-vyklad.html?source=tarot_single_card_result">Pokračovat k výkladu tří karet · 149 Kč <span aria-hidden="true">↗</span></a>
         <small>Tři karty k tvé otázce do e-mailu. Jednorázově, bez členství.</small>
     </div>
 </aside></template>
-    <script src="/js/dist/relationship-tarot-bridge.js?v=20261013-seo" defer></script>
+    <script src="/js/dist/relationship-tarot-bridge.js?v=20261018-intent-context" defer></script>
 </body>
 
 </html>

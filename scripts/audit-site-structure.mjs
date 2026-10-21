@@ -50,8 +50,13 @@ const publicSourceExtensions = new Set([
     '.yaml',
     '.yml'
 ]);
+// Keep these release-critical versions aligned with refresh-auth-asset-versions.mjs.
 const criticalAssetVersions = new Map([
-    ['js/dist/auth-client.js', '20261003-single-membership']
+    ['js/dist/core.js', '20261021-footer-support-locale'],
+    ['js/dist/components.js', '20261021-footer-support-locale'],
+    ['js/dist/auth-client.js', '20261020-02-register-password-policy'],
+    ['js/dist/templates.js', '20261021-celtic-footer-star-svg'],
+    ['js/dist/horoscope.js', '20261020-journal-context-consent']
 ]);
 const nonCanonicalOrigin = siteOrigin.replace('https://www.', 'https://');
 const allowedNonCanonicalOriginLines = new Map([

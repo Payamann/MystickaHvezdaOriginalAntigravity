@@ -5,7 +5,17 @@
     function render(element, icon, label = 'Fáze Měsíce') {
         if (!element) return;
         const phase = icons.indexOf(icon);
-        if (phase < 0) { element.textContent = icon || ''; return; }
+        if (phase < 0) {
+            element.replaceChildren();
+            if (element.getAttribute('aria-hidden') === 'true') {
+                element.removeAttribute('role');
+                element.removeAttribute('aria-label');
+            } else {
+                element.setAttribute('role', 'img');
+                element.setAttribute('aria-label', label || 'Fáze Měsíce');
+            }
+            return;
+        }
         const svg = document.createElementNS(namespace, 'svg');
         svg.setAttribute('viewBox', '0 0 120 120');
         svg.setAttribute('class', 'mh-moon-art');
@@ -17,8 +27,13 @@
         use.setAttribute('href', `/img/icons/moon-phases.svg#moon-${phase}`);
         svg.append(use);
         element.replaceChildren(svg);
-        element.setAttribute('role', 'img');
-        element.setAttribute('aria-label', label);
+        if (element.getAttribute('aria-hidden') === 'true') {
+            element.removeAttribute('role');
+            element.removeAttribute('aria-label');
+        } else {
+            element.setAttribute('role', 'img');
+            element.setAttribute('aria-label', label);
+        }
     }
     window.MH_MOON_ART = { render };
 })();

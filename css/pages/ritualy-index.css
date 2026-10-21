@@ -21,12 +21,12 @@
         }
         .zodiac-btn:hover,
         .zodiac-btn.active {
-            background: rgba(212,175,55,0.12);
-            border-color: rgba(212,175,55,0.5);
+            background: rgba(189,155,101,0.12);
+            border-color: rgba(189,155,101,0.5);
             color: white;
             transform: translateY(-2px);
         }
-        .zodiac-btn--preferred { outline: 2px solid rgba(212,175,55,0.4); }
+        .zodiac-btn--preferred { outline: 2px solid rgba(189,155,101,0.4); }
         .zodiac-btn span { display: block; font-size: 1.8rem; margin-bottom: 0.3rem; }
 
         /* ── RITUAL CARD ─────────────────────────────────── */
@@ -35,8 +35,8 @@
             margin: 2rem auto 0;
             padding: 2.5rem 2rem;
             border-radius: 24px;
-            border: 1px solid rgba(212,175,55,0.3);
-            background: linear-gradient(135deg, rgba(30,10,60,0.9), rgba(45,15,85,0.7));
+            border: 1px solid rgba(189,155,101,0.35);
+            background: #102638;
             display: none;
             animation: popIn 0.4s cubic-bezier(0.4,0,0.2,1);
         }
@@ -47,19 +47,31 @@
         }
 
         .ritual-card__badge {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
             padding: 0.3rem 0.85rem;
             border-radius: 50px;
-            background: rgba(212,175,55,0.1);
-            border: 1px solid rgba(212,175,55,0.25);
-            color: #d4af37;
+            background: rgba(189,155,101,0.1);
+            border: 1px solid rgba(189,155,101,0.25);
+            color: #bd9b65;
             font-size: 0.8rem;
             margin-bottom: 1.25rem;
+        }
+        .ritual-card__badge-icon {
+            display: inline-flex;
+            width: 1rem;
+            height: 1rem;
+            flex: 0 0 auto;
+        }
+        .ritual-card__badge-icon .mh-moon-art {
+            width: 100%;
+            height: 100%;
         }
         .ritual-card__title {
             font-family: 'Cinzel', serif;
             font-size: clamp(1.2rem, 3vw, 1.6rem);
-            color: white;
+            color: #e9e3d7;
             margin: 0.5rem 0 1rem;
         }
         .ritual-card__popis {
@@ -92,6 +104,8 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
+            min-height: 44px;
+            box-sizing: border-box;
             padding: 0.6rem 0;
             border-bottom: 1px solid rgba(255,255,255,0.06);
             color: rgba(255,255,255,0.75);
@@ -101,8 +115,9 @@
         }
         .prep-list li:last-child { border-bottom: none; }
         .prep-list li:hover { color: white; }
-        .prep-list li.checked { color: rgba(255,255,255,0.4); }
-        .prep-list li.checked::before { content: '✓'; color: #d4af37; font-weight: 700; }
+        .prep-list li:focus-visible { outline: 2px solid #d0b17c; outline-offset: 2px; border-radius: 3px; }
+        .prep-list li.checked { color: #9ba8ad; }
+        .prep-list li.checked::before { content: '✓'; color: #bd9b65; font-weight: 700; }
         .prep-list li:not(.checked)::before { content: '○'; color: rgba(255,255,255,0.3); }
 
         /* ── CTA BUTTON ──────────────────────────────────── */
@@ -110,8 +125,8 @@
             display: block;
             width: 100%;
             padding: 1.1rem 2rem;
-            background: linear-gradient(135deg, #d4af37, #c9a227);
-            color: #0a0a1a;
+            background: linear-gradient(135deg, #c5a36e, #bd9b65);
+            color: #142032;
             border: none;
             border-radius: 50px;
             font-family: 'Cinzel', serif;
@@ -120,13 +135,13 @@
             letter-spacing: 1px;
             cursor: pointer;
             transition: color 0.3s cubic-bezier(0.175,0.885,0.32,1.275), background-color 0.3s cubic-bezier(0.175,0.885,0.32,1.275), border-color 0.3s cubic-bezier(0.175,0.885,0.32,1.275), transform 0.3s cubic-bezier(0.175,0.885,0.32,1.275), opacity 0.3s cubic-bezier(0.175,0.885,0.32,1.275), box-shadow 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
-            box-shadow: 0 8px 24px rgba(212,175,55,0.25);
+            box-shadow: 0 8px 24px rgba(189,155,101,0.2);
             text-decoration: none;
             text-align: center;
         }
         .btn-enter-ritual:hover {
             transform: translateY(-3px);
-            box-shadow: 0 12px 32px rgba(212,175,55,0.4);
+            box-shadow: 0 12px 32px rgba(189,155,101,0.3);
         }
         .btn-enter-ritual:disabled,
         .btn-enter-ritual.locked {
@@ -146,17 +161,17 @@
             font-size: 6rem;
             line-height: 1;
             animation: moonPulse 4s ease-in-out infinite;
-            filter: drop-shadow(0 0 24px rgba(212,175,55,0.35));
+            filter: drop-shadow(0 0 24px rgba(189,155,101,0.25));
             display: block;
             margin-bottom: 0.75rem;
         }
         @keyframes moonPulse {
-            0%,100% { filter: drop-shadow(0 0 20px rgba(212,175,55,0.3)); }
-            50%      { filter: drop-shadow(0 0 44px rgba(212,175,55,0.6)); transform: scale(1.04); }
+            0%,100% { filter: drop-shadow(0 0 20px rgba(189,155,101,0.2)); }
+            50%      { filter: drop-shadow(0 0 36px rgba(189,155,101,0.4)); transform: scale(1.04); }
         }
         .ritual-moon-name {
             font-family: 'Cinzel', serif;
-            color: #d4af37;
+            color: #bd9b65;
             font-size: 1.1rem;
             letter-spacing: 4px;
             text-transform: uppercase;
@@ -185,7 +200,7 @@
         }
         .faq-item summary::after {
             content: '+';
-            color: #d4af37;
+            color: #bd9b65;
             font-size: 1.4rem;
             transition: transform 0.3s;
             flex-shrink: 0;
@@ -210,11 +225,11 @@ html body .mh-inline-23f1a8c35c { padding-top:1.5rem; }
 html body .mh-inline-6000cef532 { text-align:center; }
 html body .mh-inline-98b1b7f9a0 { margin-bottom:0.5rem; }
 html body .mh-inline-b570706c89 { font-size:3rem;margin-bottom:0.4rem; }
-html body .mh-inline-8a6a9d71d5 { font-family:'Cinzel',serif;color:#d4af37;font-size:0.9rem;letter-spacing:2px;margin-bottom:0.5rem; }
+html body .mh-inline-8a6a9d71d5 { font-family:'Cinzel',serif;color:#bd9b65;font-size:0.9rem;letter-spacing:2px;margin-bottom:0.5rem; }
 html body .mh-inline-bcdee5f198 { font-size:0.8rem;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.35);margin-bottom:0.75rem; }
 html body .mh-inline-4c9fe3124a { font-size:0.82rem;color:rgba(255,255,255,0.35);text-align:center;margin-bottom:1rem; }
 html body .mh-inline-c19c551164 { display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;margin-top:2.5rem; }
 html body .mh-inline-402bd952a6 { font-size:0.88rem; }
 html body .mh-inline-b35a5de833 { padding-top:1rem; }
 html body .mh-inline-16dc7b520f { max-width:720px;margin:0 auto; }
-html body .mh-inline-983d098c66 { text-align:center;font-family:'Cinzel',serif;color:#d4af37;margin-bottom:1.5rem; }
+html body .mh-inline-983d098c66 { text-align:center;font-family:'Cinzel',serif;color:#bd9b65;margin-bottom:1.5rem; }

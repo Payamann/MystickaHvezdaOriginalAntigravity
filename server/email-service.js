@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { isProductionRuntime } from './config/runtime.js';
 import { buildPersonalMapPeriod } from './services/personal-map-period.js';
+import { resolveAnnualHoroscopeYear } from './services/annual-horoscope-year.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Tests deliberately exercise the missing-key behavior. Loading a developer's
@@ -462,7 +463,7 @@ function getBaseTemplate(content, title = 'Mystická Hvězda', previewText = '')
 
   return `
     <!DOCTYPE html>
-    <html lang="cs">
+    <html lang="cs" dir="ltr">
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -472,8 +473,8 @@ function getBaseTemplate(content, title = 'Mystická Hvězda', previewText = '')
           
           body {
             margin: 0; padding: 0;
-            background-color: #0a0a1a;
-            color: #ffffff;
+            background-color: #0b1929;
+            color: #e9e3d7;
             font-family: 'Inter', sans-serif;
             -webkit-font-smoothing: antialiased;
           }
@@ -481,25 +482,26 @@ function getBaseTemplate(content, title = 'Mystická Hvězda', previewText = '')
           .wrapper {
             width: 100%;
             table-layout: fixed;
-            background-color: #0a0a1a;
+            background-color: #0b1929;
             padding-bottom: 40px;
           }
           
           .main {
-            background-color: #0f0f2d;
+            background-color: #102638;
             margin: 0 auto;
             width: 100%;
             max-width: 600px;
             border-spacing: 0;
             font-family: 'Inter', sans-serif;
-            color: #ffffff;
-            border: 1px solid rgba(212, 175, 55, 0.1);
+            color: #e9e3d7;
+            border: 1px solid #314655;
           }
           
           .header {
             padding: 40px 20px;
             text-align: center;
-            background: linear-gradient(to bottom, #16163a, #0f0f2d);
+            background-color: #132b3c;
+            background: linear-gradient(to bottom, #173348, #102638);
           }
           
           .logo-text {
@@ -507,7 +509,7 @@ function getBaseTemplate(content, title = 'Mystická Hvězda', previewText = '')
             font-size: 28px;
             font-weight: 700;
             letter-spacing: 2px;
-            color: #d4af37;
+            color: #d0b17c;
             text-decoration: none;
             margin: 0;
           }
@@ -521,7 +523,7 @@ function getBaseTemplate(content, title = 'Mystická Hvězda', previewText = '')
           .h1 {
             font-family: 'Cinzel', serif;
             font-size: 24px;
-            color: #d4af37;
+            color: #d0b17c;
             margin-top: 0;
             margin-bottom: 20px;
             text-align: center;
@@ -533,14 +535,15 @@ function getBaseTemplate(content, title = 'Mystická Hvězda', previewText = '')
           }
           
           .btn {
-            background: linear-gradient(135deg, #d4af37, #f1c40f);
-            color: #000000 !important;
+            background-color: #bd9b65;
+            background: #bd9b65;
+            color: #102638 !important;
             padding: 14px 30px;
             border-radius: 8px;
             text-decoration: none;
             font-weight: 700;
             display: inline-block;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            box-shadow: 0 4px 15px rgba(189, 155, 101, 0.24);
             text-transform: uppercase;
             font-size: 14px;
             letter-spacing: 1px;
@@ -549,21 +552,21 @@ function getBaseTemplate(content, title = 'Mystická Hvězda', previewText = '')
           .footer {
             padding: 30px;
             text-align: center;
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.5);
-            border-top: 1px solid rgba(212, 175, 55, 0.1);
+            font-size: 14px;
+            color: #c0c8ca;
+            border-top: 1px solid #314655;
           }
           
-          .footer a { color: #d4af37; text-decoration: none; }
+          .footer a { color: #d0b17c; text-decoration: none; }
           
           .highlight {
-            color: #d4af37;
+            color: #d0b17c;
             font-weight: 600;
           }
           
           .feature-item {
-            background: rgba(212, 175, 55, 0.05);
-            border-left: 3px solid #d4af37;
+            background-color: #152d3f;
+            border-left: 3px solid #bd9b65;
             padding: 15px;
             margin: 15px 0;
             border-radius: 0 4px 4px 0;
@@ -575,14 +578,14 @@ function getBaseTemplate(content, title = 'Mystická Hvězda', previewText = '')
         </style>
       </head>
       <body>
-        <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;line-height:1px;">
+        <div lang="cs" dir="ltr" style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;line-height:1px;">
           ${preheader}
         </div>
-        <center class="wrapper">
-          <table class="main">
+        <center class="wrapper" lang="cs" dir="ltr">
+          <table class="main" role="presentation" bgcolor="#102638">
             <tr>
-              <td class="header">
-                <h1 class="logo-text">MYSTICKÁ HVĚZDA</h1>
+              <td class="header" bgcolor="#132b3c">
+                <p class="logo-text">MYSTICKÁ HVĚZDA</p>
               </td>
             </tr>
             <tr>
@@ -625,11 +628,11 @@ export const EMAIL_TEMPLATES = {
       <div class="feature-item">
         <strong>Máš nyní neomezený přístup k:</strong>
         <ul style="margin-top: 10px; padding-left: 20px;">
-          <li>📖 Neomezeným tarotovým výkladům</li>
-          <li>⭐ Detailním osobním horoskopům</li>
-          <li>✨ Osobnímu průvodci pro konkrétní otázky</li>
-          <li>🗺️ Natalním kartám a astromapě</li>
-          <li>🔢 Numerologickým cyklům a uložené historii</li>
+          <li>Neomezeným tarotovým výkladům</li>
+          <li>Detailním osobním horoskopům</li>
+          <li>Osobnímu průvodci pro konkrétní otázky</li>
+          <li>Natálním kartám a astromapě</li>
+          <li>Numerologickým cyklům a uložené historii</li>
         </ul>
       </div>
 
@@ -658,7 +661,7 @@ export const EMAIL_TEMPLATES = {
 
         ${featureNames.map(f => `
           <div class="feature-item">
-            <strong>✨ ${escapeHtml(f)}</strong>
+            <strong>${escapeHtml(f)}</strong>
           </div>
         `).join('')}
 
@@ -733,7 +736,7 @@ export const EMAIL_TEMPLATES = {
         </div>
         <p style="font-size: 14px; text-align: center; opacity: 0.82;">
           Pokud už chceš hlubší historii a pravidelný návrat, můžeš se podívat i na
-          <a href="${escapeHtml(upgradeUrl)}" style="color:#d4af37;">Hvězdného průvodce</a>.
+          <a href="${escapeHtml(upgradeUrl)}" style="color:#d0b17c;">Hvězdného průvodce</a>.
         </p>
       `, 'Osobní vzorec')
     }
@@ -762,7 +765,7 @@ export const EMAIL_TEMPLATES = {
   },
 
   subscription_paused: {
-    subject: '⏸️ Tvé předplatné je pozastaveno',
+    subject: 'Tvé předplatné je pozastaveno',
     getHtml: (data) => getBaseTemplate(`
       <h1 class="h1">Předplatné pozastaveno</h1>
       <p>Tvé předplatné jsme úspěšně pozastavili na <span class="highlight">${data.daysUntilResume || 30} dní</span>.</p>
@@ -829,7 +832,7 @@ export const EMAIL_TEMPLATES = {
       <h1 class="h1">Sleva na předplatné je připravená</h1>
       <div style="text-align: center; margin-bottom: 30px;">
         <p>Pokud se chceš k výkladům vracet pravidelně, můžeš využít zvýhodněné první období:</p>
-        <div style="font-size: 48px; color: #d4af37; font-weight: 700; margin: 20px 0;">
+        <div style="font-size: 48px; color: #d0b17c; font-weight: 700; margin: 20px 0;">
           ${data.discount || 25}% SLEVA
         </div>
         <p>na tvé předplatné po dobu <span class="highlight">${data.months || 3} měsíců</span>.</p>
@@ -851,10 +854,10 @@ export const EMAIL_TEMPLATES = {
       <div class="feature-item">
         <strong>S plánem Hvězdný Průvodce získáš:</strong>
         <ul style="margin-top: 10px; padding-left: 20px;">
-          <li>✨ <strong>Neomezené</strong> tarotové výklady</li>
-          <li>📅 Týdenní a měsíční horoskopy</li>
+          <li><strong>Neomezené</strong> tarotové výklady</li>
+          <li>Týdenní a měsíční horoskopy</li>
           <li><strong>Hvězdný průvodce:</strong> osobní odpovědi na konkrétní otázky</li>
-          <li>🔢 Numerologické cykly a uloženou historii</li>
+          <li>Numerologické cykly a uloženou historii</li>
         </ul>
       </div>
 
@@ -873,7 +876,7 @@ export const EMAIL_TEMPLATES = {
         <div style="font-size: 32px; color: #ff6b6b; font-weight: 700; margin: 15px 0;">
           199 Kč → 149 Kč
         </div>
-        <p><strong>🎁 25% SLEVA na první 3 měsíce</strong></p>
+        <p><strong>25% SLEVA na první 3 měsíce</strong></p>
       </div>
 
       <p style="text-align: center;">Pokud chceš pokračovat v pravidelných výkladech, teď je levnější první období.</p>
@@ -892,7 +895,7 @@ export const EMAIL_TEMPLATES = {
       
       <div style="background: rgba(52,152,219,0.1); border: 2px solid #3498db; padding: 25px; border-radius: 12px; text-align: center; margin: 25px 0;">
         <p style="text-transform: uppercase; letter-spacing: 1px; font-size: 13px; color: #3498db; margin-bottom: 10px;">Speciální nabídka pro návrat</p>
-        <div style="font-size: 36px; color: #d4af37; font-weight: 700;">30% SLEVA</div>
+        <div style="font-size: 36px; color: #d0b17c; font-weight: 700;">30% SLEVA</div>
         <p>na tvé první 3 měsíce Premium</p>
       </div>
 
@@ -905,7 +908,7 @@ export const EMAIL_TEMPLATES = {
   },
 
   feature_weekly: {
-    subject: 'Nový týden, nová cesta k objevování ✨',
+    subject: 'Nový týden, nová cesta k objevování',
     getHtml: (data) => {
       const featureUrl = toAbsoluteUrl(data.feature_url || '/profil.html') || toAbsoluteUrl('/profil.html');
       const benefits = Array.isArray(data.benefits)
@@ -915,7 +918,7 @@ export const EMAIL_TEMPLATES = {
       return getBaseTemplate(`
         <h1 class="h1">Téma týdne</h1>
         <div class="feature-item">
-          <h2 style="color: #d4af37; margin-top: 0; font-family: 'Cinzel', serif;">${escapeInlineText(data.feature_title, 'Astrokartografie')}</h2>
+          <h2 style="color: #d0b17c; margin-top: 0; font-family: 'Cinzel', serif;">${escapeInlineText(data.feature_title, 'Astrokartografie')}</h2>
           <p>${escapeInlineText(data.feature_description, 'Podívej se, které téma se tento týden vyplatí otevřít a jaký první krok z něj udělat.')}</p>
 
           ${benefits.length ? `
@@ -937,22 +940,22 @@ export const EMAIL_TEMPLATES = {
     subject: (data) => `[Kontakt] ${data.subject} — od ${data.name}`,
     getHtml: (data) => getBaseTemplate(`
       <h1 class="h1">Nová zpráva z webu</h1>
-      <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(212,175,55,0.2); padding: 20px; border-radius: 8px;">
+      <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(208,177,124,0.2); padding: 20px; border-radius: 8px;">
         <table style="width: 100%; border-collapse: collapse; color: #ffffff;">
           <tr>
-            <td style="padding: 10px; border-bottom: 1px solid rgba(212,175,55,0.1); color: #d4af37; width: 100px;">Od:</td>
-            <td style="padding: 10px; border-bottom: 1px solid rgba(212,175,55,0.1);">${data.name}</td>
+            <td style="padding: 10px; border-bottom: 1px solid rgba(208,177,124,0.1); color: #d0b17c; width: 100px;">Od:</td>
+            <td style="padding: 10px; border-bottom: 1px solid rgba(208,177,124,0.1);">${data.name}</td>
           </tr>
           <tr>
-            <td style="padding: 10px; border-bottom: 1px solid rgba(212,175,55,0.1); color: #d4af37;">E-mail:</td>
-            <td style="padding: 10px; border-bottom: 1px solid rgba(212,175,55,0.1);"><a href="mailto:${data.email}" style="color: #ffffff;">${data.email}</a></td>
+            <td style="padding: 10px; border-bottom: 1px solid rgba(208,177,124,0.1); color: #d0b17c;">E-mail:</td>
+            <td style="padding: 10px; border-bottom: 1px solid rgba(208,177,124,0.1);"><a href="mailto:${data.email}" style="color: #ffffff;">${data.email}</a></td>
           </tr>
           <tr>
-            <td style="padding: 10px; border-bottom: 1px solid rgba(212,175,55,0.1); color: #d4af37;">Předmět:</td>
-            <td style="padding: 10px; border-bottom: 1px solid rgba(212,175,55,0.1);">${data.subject}</td>
+            <td style="padding: 10px; border-bottom: 1px solid rgba(208,177,124,0.1); color: #d0b17c;">Předmět:</td>
+            <td style="padding: 10px; border-bottom: 1px solid rgba(208,177,124,0.1);">${data.subject}</td>
           </tr>
           <tr>
-            <td style="padding: 10px; color: #d4af37; vertical-align: top;">Zpráva:</td>
+            <td style="padding: 10px; color: #d0b17c; vertical-align: top;">Zpráva:</td>
             <td style="padding: 10px; line-height: 1.5;">${data.message}</td>
           </tr>
         </table>
@@ -961,7 +964,7 @@ export const EMAIL_TEMPLATES = {
   },
 
   trial_ending_reminder: {
-    subject: 'Vaše zkušební období končí za 2 dny ⏳',
+    subject: 'Vaše zkušební období končí za 2 dny',
     getHtml: (data) => getBaseTemplate(`
       <h1 class="h1">Zkušební období brzy končí</h1>
       <p>Vaše zkušební období u Mystické Hvězdy končí za <span class="highlight">${data.daysRemaining || 2} dny</span>.</p>
@@ -969,10 +972,10 @@ export const EMAIL_TEMPLATES = {
       <p>Během zkušebního období jste měli přístup k:</p>
       <div class="feature-item">
         <ul style="margin-top: 10px; padding-left: 20px;">
-          <li>📖 Neomezeným tarotovým výkladům</li>
-          <li>⭐ Detailním osobním horoskopům</li>
-          <li>✨ Duchovnímu průvodci</li>
-          <li>🗺️ Natálním kartám</li>
+          <li>Neomezeným tarotovým výkladům</li>
+          <li>Detailním osobním horoskopům</li>
+          <li>Duchovnímu průvodci</li>
+          <li>Natálním kartám</li>
         </ul>
       </div>
 
@@ -985,7 +988,7 @@ export const EMAIL_TEMPLATES = {
   },
 
   trial_ended: {
-    subject: 'Tvé členství je aktivní ✨',
+    subject: 'Tvé členství je aktivní',
     getHtml: (data) => getBaseTemplate(`
       <h1 class="h1">Vítej v aktivním členství</h1>
       <p>Členství <span class="highlight">Hvězdný Průvodce</span> je nyní aktivní. Vyber si jednu věc, kterou chceš dnes pro sebe otevřít.</p>
@@ -995,10 +998,10 @@ export const EMAIL_TEMPLATES = {
       <div class="feature-item">
         <strong>Co máte k dispozici:</strong>
         <ul style="margin-top: 10px; padding-left: 20px;">
-          <li>📖 Neomezené tarotové výklady</li>
-          <li>⭐ Týdenní a měsíční horoskopy</li>
-          <li>✨ Duchovní průvodce pro hluboké otázky</li>
-          <li>🗺️ Natální karty s interpretací</li>
+          <li>Neomezené tarotové výklady</li>
+          <li>Týdenní a měsíční horoskopy</li>
+          <li>Duchovní průvodce pro hluboké otázky</li>
+          <li>Natální karty s interpretací</li>
         </ul>
       </div>
 
@@ -1522,7 +1525,7 @@ export async function sendAnnualHoroscopeLifecycleSequence({
   name,
   sign,
   productId = 'rocni_horoskop_2026',
-  year = new Date().getFullYear(),
+  year,
   source = 'annual_horoscope_checkout',
   stripeSessionId = null,
   delays = {}
@@ -1533,12 +1536,13 @@ export async function sendAnnualHoroscopeLifecycleSequence({
 
   try {
     const { scheduleEmailLater } = await import('./jobs/email-queue.js');
+    const resolvedYear = resolveAnnualHoroscopeYear({ productId, productYear: year });
     const baseData = {
       orderId,
       name,
       sign,
       productId,
-      year,
+      year: resolvedYear,
       source,
       stripeSessionId
     };
@@ -1584,7 +1588,7 @@ EMAIL_TEMPLATES.horoscope_subscription_confirm = {
     const todaysHoroscope = data.horoscope_text
       ? `
     <p style="margin-top:1.5rem;"><strong>A tady je tvůj dnešní horoskop:</strong></p>
-    <div style="background:rgba(212,175,55,0.07);border-left:3px solid #d4af37;padding:20px 25px;border-radius:0 8px 8px 0;margin:15px 0;line-height:1.7;">
+    <div style="background:rgba(208,177,124,0.07);border-left:3px solid #d0b17c;padding:20px 25px;border-radius:0 8px 8px 0;margin:15px 0;line-height:1.7;">
       ${formatTextContent(data.horoscope_text)}
     </div>`
       : '';
@@ -1598,14 +1602,14 @@ EMAIL_TEMPLATES.horoscope_subscription_confirm = {
       <a href="${horoscopeUrl}" class="btn">Otevřít dnešní horoskop &rarr;</a>
     </div>
     <p style="font-size:13px;opacity:0.6;text-align:center;margin-top:2rem;">
-      Pokud si nepřeješ dostávat denní horoskop, můžeš se <a href="${unsubscribeUrl}" style="color:#d4af37;">kdykoli odhlásit</a>.
+      Pokud si nepřeješ dostávat denní horoskop, můžeš se <a href="${unsubscribeUrl}" style="color:#d0b17c;">kdykoli odhlásit</a>.
     </p>
   `, 'Odběr denního horoskopu', `Potvrzení odběru denního horoskopu pro znamení ${data.sign}.`);
   }
 };
 
 EMAIL_TEMPLATES.newsletter_welcome = {
-  subject: 'Vítej u Mystické Hvězdy ✨',
+  subject: 'Vítej u Mystické Hvězdy',
   getHtml: (data) => {
     const tarotUrl = toAbsoluteUrl('/tarot-ano-ne.html?source=newsletter_welcome&feature=tarot_ano_ne&utm_source=email&utm_campaign=newsletter_welcome');
     const horoscopeUrl = toAbsoluteUrl('/horoskopy.html?source=newsletter_welcome&feature=horoskop_denni&utm_source=email&utm_campaign=newsletter_welcome');
@@ -1619,15 +1623,15 @@ EMAIL_TEMPLATES.newsletter_welcome = {
     <p>Nejlepší začátek je jeden malý výklad ještě dnes:</p>
 
     <div class="feature-item">
-      <strong>🔮 Tarot ANO / NE</strong><br>
+        <strong>Tarot ANO / NE</strong><br>
       Polož konkrétní otázku a vytáhni jednu kartu s jasnou odpovědí.
     </div>
     <div class="feature-item">
-      <strong>⭐ Denní horoskop</strong><br>
+        <strong>Denní horoskop</strong><br>
       Krátké vedení pro tvoje znamení na dnešek.
     </div>
     <div class="feature-item">
-      <strong>🃏 Tarot karta dne</strong><br>
+      <strong>Tarot karta dne</strong><br>
       Jeden symbol, který ti dnes stojí za pozornost.
     </div>
 
@@ -1636,20 +1640,20 @@ EMAIL_TEMPLATES.newsletter_welcome = {
     </div>
 
     <p style="font-size:14px;text-align:center;opacity:0.8;">
-      Nebo otevři <a href="${horoscopeUrl}" style="color:#d4af37;">dnešní horoskop</a> či
-      <a href="${dailyCardUrl}" style="color:#d4af37;">kartu dne</a>.
+      Nebo otevři <a href="${horoscopeUrl}" style="color:#d0b17c;">dnešní horoskop</a> či
+      <a href="${dailyCardUrl}" style="color:#d0b17c;">kartu dne</a>.
     </p>
 
     <p style="font-size:12px;opacity:0.5;text-align:center;margin-top:2rem;">
       Dostáváš tento email, protože ses přihlásil k odběru novinek Mystické Hvězdy.<br>
-      <a href="${unsubscribeUrl}" style="color:#d4af37;">Odhlásit se z odběru</a>
+      <a href="${unsubscribeUrl}" style="color:#d0b17c;">Odhlásit se z odběru</a>
     </p>
   `, 'Vítej u Mystické Hvězdy', 'Přihlášení k newsletteru proběhlo. Začni jedním malým výkladem ještě dnes.');
   }
 };
 
 EMAIL_TEMPLATES.newsletter_weekly_digest = {
-  subject: (data) => `${data.practice_title || 'Hvězdný týden'} ✨ ${data.date_label || ''}`.trim(),
+  subject: (data) => [data.practice_title || 'Hvězdný týden', data.date_label].filter(Boolean).join(' · '),
   getHtml: (data) => {
     const moonPhase = data.moon_phase ? escapeHtml(data.moon_phase) : '';
     const blogUrl = data.blog_url ? toAbsoluteUrl(data.blog_url) : '';
@@ -1666,12 +1670,12 @@ EMAIL_TEMPLATES.newsletter_weekly_digest = {
 
     ${moonPhase ? `
     <div class="feature-item">
-      <strong>🌙 Měsíc tento týden</strong><br>
+      <strong>Měsíc tento týden</strong><br>
       ${moonPhase}
     </div>` : ''}
 
     ${data.practice_title ? `
-    <div style="background:rgba(212,175,55,0.08);border-left:3px solid #d4af37;padding:20px 24px;border-radius:0 8px 8px 0;margin:25px 0;">
+    <div style="background:rgba(208,177,124,0.08);border-left:3px solid #d0b17c;padding:20px 24px;border-radius:0 8px 8px 0;margin:25px 0;">
       <strong>Malá praxe na tento týden: ${escapeHtml(data.practice_title)}</strong>
       ${practiceSteps.length ? `<ol style="margin:12px 0 0;padding-left:22px;line-height:1.75;">${practiceSteps.map((step) => `<li>${escapeHtml(step)}</li>`).join('')}</ol>` : ''}
       ${data.reflection_question ? `<p style="margin:14px 0 0;"><strong>Otázka pro tebe:</strong> ${escapeHtml(data.reflection_question)}</p>` : ''}
@@ -1679,13 +1683,13 @@ EMAIL_TEMPLATES.newsletter_weekly_digest = {
 
     ${data.blog_title && blogUrl ? `
     <div class="feature-item">
-      <strong>📖 Vybráno z blogu</strong><br>
-      <a href="${blogUrl}" style="color:#d4af37;">${escapeHtml(data.blog_title)}</a><br>
+      <strong>Vybráno z blogu</strong><br>
+      <a href="${blogUrl}" style="color:#d0b17c;">${escapeHtml(data.blog_title)}</a><br>
       ${data.blog_description ? `<span style="opacity:0.8;">${escapeHtml(data.blog_description)}</span>` : ''}
     </div>` : ''}
 
     <div class="feature-item">
-      <strong>✨ Tip týdne: ${escapeHtml(data.tip_title || '')}</strong><br>
+      <strong>Tip týdne: ${escapeHtml(data.tip_title || '')}</strong><br>
       ${escapeHtml(data.tip_text || '')}
     </div>
 
@@ -1694,15 +1698,15 @@ EMAIL_TEMPLATES.newsletter_weekly_digest = {
     </div>
 
     ${data.premium_title && premiumUrl ? `
-    <div style="background:rgba(212,175,55,0.07);border:1px solid rgba(212,175,55,0.25);border-radius:8px;padding:16px 20px;margin:25px 0;">
-      <strong>💫 Prémiový výklad: <a href="${premiumUrl}" style="color:#d4af37;">${escapeHtml(data.premium_title)}</a></strong><br>
+    <div style="background:rgba(208,177,124,0.07);border:1px solid rgba(208,177,124,0.25);border-radius:8px;padding:16px 20px;margin:25px 0;">
+      <strong>Prémiový výklad: <a href="${premiumUrl}" style="color:#d0b17c;">${escapeHtml(data.premium_title)}</a></strong><br>
       <span style="opacity:0.85;">${escapeHtml(data.premium_text || '')}</span><br>
       <span style="font-size:13px;opacity:0.6;">${escapeHtml(data.premium_price || '')}</span>
     </div>` : ''}
 
     <p style="font-size:12px;opacity:0.5;text-align:center;margin-top:2rem;">
       Dostáváš tento email, protože ses přihlásil k odběru novinek Mystické Hvězdy.<br>
-      <a href="${unsubscribeUrl}" style="color:#d4af37;">Odhlásit se z odběru</a>
+      <a href="${unsubscribeUrl}" style="color:#d0b17c;">Odhlásit se z odběru</a>
     </p>
   `, data.practice_title || 'Hvězdný týden', data.reflection_question || `Jedna praktická myšlenka a jeden nástroj pro tento týden.`);
   }
@@ -1722,7 +1726,7 @@ EMAIL_TEMPLATES.daily_horoscope = {
     <h1 class="h1">Horoskop pro ${sign}</h1>
     <p style="text-align:center;opacity:0.7;margin-top:-10px;">${date}</p>
 
-    <div style="background:rgba(212,175,55,0.07);border-left:3px solid #d4af37;padding:20px 25px;border-radius:0 8px 8px 0;margin:25px 0;line-height:1.8;font-size:16px;">
+    <div style="background:rgba(208,177,124,0.07);border-left:3px solid #d0b17c;padding:20px 25px;border-radius:0 8px 8px 0;margin:25px 0;line-height:1.8;font-size:16px;">
       ${formatTextContent(data.horoscope_text)}
     </div>
 
@@ -1732,7 +1736,7 @@ EMAIL_TEMPLATES.daily_horoscope = {
 
     <p style="font-size:12px;opacity:0.5;text-align:center;margin-top:2rem;">
       Dostáváš tento email protože jsi přihlášen k odběru denního horoskopu Mystické Hvězdy.<br>
-      <a href="${unsubscribeUrl}" style="color:#d4af37;">Odhlásit se z odběru</a>
+      <a href="${unsubscribeUrl}" style="color:#d0b17c;">Odhlásit se z odběru</a>
     </p>
   `, `Denní horoskop: ${data.sign}`, `Krátké ranní vedení pro znamení ${data.sign}. Otevři, co dnes podpořit a co nechat být.`);
   }
@@ -1767,7 +1771,7 @@ EMAIL_TEMPLATES.personal_map_reflection_day1 = {
 
     <p style="font-size:13px;opacity:0.62;text-align:center;margin-top:2rem;">
       Tohle je navazující e-mail k nákupu Osobní mapy. K produktu se můžeš vrátit také tady:
-      <a href="${mapUrl}" style="color:#d4af37;">Osobní mapa</a>.
+      <a href="${mapUrl}" style="color:#d0b17c;">Osobní mapa</a>.
     </p>
   `, 'První krok s Osobní mapou', 'Vyber jednu větu z mapy a převeď ji do jednoho malého kroku na dnešek.');
   }
@@ -1800,7 +1804,7 @@ EMAIL_TEMPLATES.personal_map_pruvodce_day3 = {
 
     <p style="font-size:13px;opacity:0.62;text-align:center;margin-top:2rem;">
       Chceš zatím zůstat u volného obsahu? Otevři si
-      <a href="${horoscopeUrl}" style="color:#d4af37;">dnešní horoskop</a>.
+      <a href="${horoscopeUrl}" style="color:#d0b17c;">dnešní horoskop</a>.
     </p>
   `, 'Navázat na Osobní mapu', 'Osobní mapa ti dala směr. Průvodce ti pomůže vracet se k němu každý den.');
   }
@@ -1868,7 +1872,7 @@ EMAIL_TEMPLATES.annual_horoscope_pruvodce_day3 = {
 
     <p style="font-size:13px;opacity:0.62;text-align:center;margin-top:2rem;">
       Chceš zatím zůstat u volného obsahu? Otevři si
-      <a href="${horoscopeUrl}" style="color:#d4af37;">dnešní horoskop</a>.
+      <a href="${horoscopeUrl}" style="color:#d0b17c;">dnešní horoskop</a>.
     </p>
   `, 'Navázat na Roční horoskop', 'Roční horoskop ti dal směr. Průvodce ti pomůže vracet se k němu v běžných dnech.');
   }
@@ -1883,7 +1887,7 @@ const SIGN_NAMES_EMAIL = {
 /**
  * Sends a personalized Roční Horoskop PDF as an email attachment.
  */
-export async function sendHoroscopePdf({ to, name, sign, pdfBuffer }) {
+export async function sendHoroscopePdf({ to, name, sign, pdfBuffer, year = new Date().getFullYear() }) {
   const client = getResend();
   if (!client) {
     // Paid order: a silent return here would mark the order fulfilled
@@ -1893,21 +1897,19 @@ export async function sendHoroscopePdf({ to, name, sign, pdfBuffer }) {
 
   const signName = SIGN_NAMES_EMAIL[sign] || sign;
   const safeName = formatEmailName(name, 'Ahoj');
-  const year = new Date().getFullYear();
-
   const html = getBaseTemplate(`
     <div style="text-align:center;padding:20px 0 10px;">
-      <p style="font-family:'Cinzel',serif;font-size:18px;color:#d4af37;letter-spacing:2px;margin:0 0 6px;">Tvůj horoskop je tady ✦</p>
+      <p style="font-family:'Cinzel',serif;font-size:18px;color:#d0b17c;letter-spacing:2px;margin:0 0 6px;">Tvůj horoskop je tady ✦</p>
       <p style="font-size:15px;color:rgba(255,255,255,0.8);margin:0;">Ahoj ${safeName},</p>
     </div>
     <div style="padding:20px 0;">
-      <p>Právě ti posílám tvůj <strong style="color:#d4af37;">Roční Horoskop na míru ${year}</strong> — personalizovaný výklad speciálně pro tebe jako ${signName}.</p>
+      <p>Právě ti posílám tvůj <strong style="color:#d0b17c;">Roční Horoskop na míru ${year}</strong> — personalizovaný výklad speciálně pro tebe jako ${signName}.</p>
       <p style="margin-top:12px;">Najdeš ho v příloze tohoto e-mailu jako PDF. Doporučuji ho otevřít v klidu, udělat si čaj a číst pomalu — každá sekce je psaná přímo pro tebe.</p>
-      <div style="background:rgba(212,175,55,0.07);border-left:3px solid #d4af37;padding:16px 20px;margin:24px 0;border-radius:0 6px 6px 0;">
+      <div style="background:rgba(208,177,124,0.07);border-left:3px solid #d0b17c;padding:16px 20px;margin:24px 0;border-radius:0 6px 6px 0;">
         <p style="margin:0;font-size:14px;color:rgba(255,255,255,0.7);">Horoskop obsahuje: osobnostní profil, výhled pro lásku a vztahy, kariéru a finance, osobní růst, klíčové měsíce roku a závěrečné slovo.</p>
       </div>
       <p>Pokud máš jakékoli otázky, odpověz na tento e-mail.</p>
-      <p style="margin-top:16px;color:rgba(255,255,255,0.6);font-size:13px;">S láskou ze hvězd,<br><span style="color:#d4af37;font-family:'Cinzel',serif;">Mystická Hvězda</span></p>
+      <p style="margin-top:16px;color:rgba(255,255,255,0.6);font-size:13px;">S láskou ze hvězd,<br><span style="color:#d0b17c;font-family:'Cinzel',serif;">Mystická Hvězda</span></p>
     </div>
   `, `Tvůj Roční Horoskop ${year} je tady`);
 
@@ -1942,18 +1944,18 @@ export function buildPersonalMapEmailPayload({ to, name, sign, pdfBuffer, period
 
   const html = getBaseTemplate(`
     <div style="text-align:center;padding:20px 0 10px;">
-      <p style="font-family:'Cinzel',serif;font-size:18px;color:#d4af37;letter-spacing:2px;margin:0 0 6px;">Tvoje osobní mapa je tady ✦</p>
+      <p style="font-family:'Cinzel',serif;font-size:18px;color:#d0b17c;letter-spacing:2px;margin:0 0 6px;">Tvoje osobní mapa je tady ✦</p>
       <p style="font-size:15px;color:rgba(255,255,255,0.8);margin:0;">Ahoj ${safeName},</p>
     </div>
     <div style="padding:20px 0;">
-      <p>Právě ti posílám tvou <strong style="color:#d4af37;">Osobní mapu na 12 měsíců</strong> — prémiový výklad vytvořený pro tvoje znamení ${signName} a téma, se kterým teď přicházíš.</p>
+      <p>Právě ti posílám tvou <strong style="color:#d0b17c;">Osobní mapu na 12 měsíců</strong> — prémiový výklad vytvořený pro tvoje znamení ${signName} a téma, se kterým teď přicházíš.</p>
       <p style="margin-top:12px;color:rgba(255,255,255,0.72);">Období mapy: <strong>${period.label}</strong>.</p>
-      <p style="margin-top:12px;">Najdeš ji v příloze jako PDF. Doporučuji ji otevřít v klidu a číst pomalu. Některé části možná nebudou působit důležitě hned, ale vrátí se ve chvíli, kdy se v běžném dni objeví přesně ten signál, o kterém mapa mluví.</p>
-      <div style="background:rgba(212,175,55,0.07);border-left:3px solid #d4af37;padding:16px 20px;margin:24px 0;border-radius:0 6px 6px 0;">
-        <p style="margin:0;font-size:14px;color:rgba(255,255,255,0.7);">Mapa obsahuje: hvězdný podpis, osobní mantru, hlavní téma celých 12 měsíců, vztahy, práci a peníze, orientační milníky napříč obdobím, konkrétní kroky, rituál a otázky k zápisu.</p>
+      <p style="margin-top:12px;">Najdeš ji v příloze jako PDF. Můžeš ji číst po částech a poznamenat si, co ti právě dává smysl. Ber ji jako nabídku pohledu, ne hotovou odpověď; k textu se vrať jen tehdy, když ti to bude užitečné.</p>
+      <div style="background:rgba(208,177,124,0.07);border-left:3px solid #d0b17c;padding:16px 20px;margin:24px 0;border-radius:0 6px 6px 0;">
+        <p style="margin:0;font-size:14px;color:rgba(255,255,255,0.7);">Mapa obsahuje: hvězdný podpis, osobní mantru, hlavní téma celých 12 měsíců, vztahy, práci a peníze, pět orientačních bodů v průběhu období, konkrétní kroky, rituál a otázky k zápisu.</p>
       </div>
       <p>Pokud máš jakékoli otázky, odpověz na tento e-mail.</p>
-      <p style="margin-top:16px;color:rgba(255,255,255,0.6);font-size:13px;">S láskou ze hvězd,<br><span style="color:#d4af37;font-family:'Cinzel',serif;">Mystická Hvězda</span></p>
+      <p style="margin-top:16px;color:rgba(255,255,255,0.6);font-size:13px;">S láskou ze hvězd,<br><span style="color:#d0b17c;font-family:'Cinzel',serif;">Mystická Hvězda</span></p>
     </div>
   `, `Tvoje Osobní mapa na 12 měsíců je tady`);
 

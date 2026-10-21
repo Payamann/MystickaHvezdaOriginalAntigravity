@@ -12,7 +12,8 @@ body.atlas-astro-page .compatibility-content p { text-align:left; }
 body.atlas-astro-page .compatibility-content .mh-inline-41de93a0b7 { background:#0b1929; border:1px solid #bd9b6555; border-radius:5px; }
 body.atlas-astro-page .compatibility-score { color:#d0b17c; background:none; -webkit-text-fill-color:currentColor; text-shadow:none; font-weight:400; }
 body.atlas-astro-page .hub-hero { padding-top:128px; padding-bottom:36px; }
-body.atlas-astro-page :is(.sign-card,.hub-cta,.sign-cta) { background:#102638; border:1px solid #b3955e44; border-radius:5px; box-shadow:none; }
+body.atlas-astro-page :is(.sign-card,.hub-cta,.sign-cta,.sign-cta-panel) { background:#102638; border:1px solid #b3955e44; border-radius:5px; box-shadow:none; }
+body.atlas-astro-page .sign-number { background:#0b1929; border-color:#b3955e66; color:#e9e3d7; }
 body.atlas-astro-page :is(.hub-title,.sign-card__name) { color:#e9e3d7; font-weight:400; }
 body.atlas-astro-page .hub-subtitle { color:#c3c9cb; }
 body.atlas-astro-page .compatibility-meter-container { background:#0b1929; border:1px solid #b3955e44; }
@@ -22,6 +23,24 @@ body.atlas-astro-page :is(.mh-inline-8ecfdbba6f,.mh-inline-9100924a4e) { backgro
 body.atlas-astro-page :is(.related-chip,.link-card,.sign-compat-tag) { color:#d0b17c; background:#102638; border-color:#b3955e55; border-radius:3px; }
 body.atlas-astro-page .related-chip { min-height:44px; display:inline-flex; align-items:center; }
 body.atlas-astro-page .sign-emoji { animation:none; color:#d0b17c; }
+body.atlas-astro-page .sign-emoji[data-zodiac-sign] {
+ display:block; width:88px; height:176px; margin:0 auto 1.25rem; border:1px solid #bd9b6580; border-radius:4px;
+ background-size:cover; background-position:center; background-repeat:no-repeat;
+ font-size:0; line-height:0;
+}
+/* Detail pages request only the card they show; the horoscope hub keeps the full grid sprite. */
+body.atlas-astro-page .sign-emoji[data-zodiac-sign="beran"] { background-image:url('/img/atlas/western-zodiac-v1/beran.webp'); }
+body.atlas-astro-page .sign-emoji[data-zodiac-sign="byk"] { background-image:url('/img/atlas/western-zodiac-v1/byk.webp'); }
+body.atlas-astro-page .sign-emoji[data-zodiac-sign="blizenci"] { background-image:url('/img/atlas/western-zodiac-v1/blizenci.webp'); }
+body.atlas-astro-page .sign-emoji[data-zodiac-sign="rak"] { background-image:url('/img/atlas/western-zodiac-v1/rak.webp'); }
+body.atlas-astro-page .sign-emoji[data-zodiac-sign="lev"] { background-image:url('/img/atlas/western-zodiac-v1/lev.webp'); }
+body.atlas-astro-page .sign-emoji[data-zodiac-sign="panna"] { background-image:url('/img/atlas/western-zodiac-v1/panna.webp'); }
+body.atlas-astro-page .sign-emoji[data-zodiac-sign="vahy"] { background-image:url('/img/atlas/western-zodiac-v1/vahy.webp'); }
+body.atlas-astro-page .sign-emoji[data-zodiac-sign="stir"] { background-image:url('/img/atlas/western-zodiac-v1/stir.webp'); }
+body.atlas-astro-page .sign-emoji[data-zodiac-sign="strelec"] { background-image:url('/img/atlas/western-zodiac-v1/strelec.webp'); }
+body.atlas-astro-page .sign-emoji[data-zodiac-sign="kozoroh"] { background-image:url('/img/atlas/western-zodiac-v1/kozoroh.webp'); }
+body.atlas-astro-page .sign-emoji[data-zodiac-sign="vodnar"] { background-image:url('/img/atlas/western-zodiac-v1/vodnar.webp'); }
+body.atlas-astro-page .sign-emoji[data-zodiac-sign="ryby"] { background-image:url('/img/atlas/western-zodiac-v1/ryby.webp'); }
 body.atlas-astro-page :is(.sign-emoji,.sign-card__emoji,.zodiac-group-title .icon) { font-family:Georgia,'Segoe UI Symbol',serif; font-variant-emoji:text; color:#d0b17c; }
 body.atlas-astro-page .date-inputs input { border-radius:3px; }
 body.atlas-astro-page .calc-card h2 { color:#e9e3d7; font-weight:400; }
@@ -44,12 +63,8 @@ body.atlas-astro-page .date-inputs > * { min-width:0; }
  body.atlas-astro-page .header__inner > .nav { position:static; margin-left:auto; display:flex; flex:0 0 44px; width:44px; height:44px; }
  body.atlas-astro-page .nav__toggle { position:static; margin:0; }
  body.atlas-astro-page .sign-hero h1 { font-size:clamp(30px,8vw,42px); }
+ body.atlas-astro-page .sign-emoji[data-zodiac-sign] { width:72px; height:144px; }
 }
-body.atlas-astro-page #horoscope-share-panel { background: #102638; border: 1px solid #bd9b6538; box-shadow: none; border-radius: 5px; }
-body.atlas-astro-page .hs-title { color: #e9e3d7; }
-body.atlas-astro-page .hs-preview-canvas { width: min(100%, 270px); height: auto; border: 1px solid #bd9b6555; border-radius: 4px; box-shadow: 0 12px 30px #030c1744; }
-body.atlas-astro-page .hs-btn--primary { background: #bd9b65; color: #142032; box-shadow: none; }
-body.atlas-astro-page .hs-btn--primary:hover { background: #d0b17c; box-shadow: none; }
 /* Zodiac glyphs follow the illustrated palette, not platform colour emoji. */
 body.atlas-astro-page { font-variant-emoji: text; }
 body.atlas-astro-page :is(.horoscope-day-symbol,.zodiac-card__symbol) { font-family: 'Segoe UI Symbol',Georgia,serif; font-variant-emoji: text; color: #d0b17c; }

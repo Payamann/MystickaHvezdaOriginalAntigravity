@@ -24,7 +24,9 @@ describe('DOMPurify fallback safety', () => {
 
     test('js/tarot.js strips tags when DOMPurify is unavailable', () => {
         const source = readSource('js/tarot.js');
-        expect(source).toContain("DOMPurify.sanitize(formattedText) : formattedText.replace(/<[^>]*>/g, '')");
+        const helper = readSource('js/utils/reading-display.js');
+        expect(source).toContain('formatReadingHtml(data.response)');
+        expect(helper).toContain('element.textContent = text.replace(/<[^>]*>/g, \'\')');
     });
 
     test('js/natal-chart.js strips tags when DOMPurify is unavailable', () => {

@@ -18,8 +18,10 @@ body.page-tarot-daily .btn--primary,.home-tarot-daily .btn--primary { background
 body.page-tarot-daily :is(.btn--secondary,.btn--ghost) { background:transparent; border:1px solid #bd9b6566; color:#e9e3d7; }
 body.page-tarot-daily :is(a,button,input,select):focus-visible,.home-tarot-daily :is(a,button):focus-visible { outline:2px solid #d0b17c; outline-offset:4px; }
 body.page-tarot-daily .tarot-daily-trust span { border:0; background:none; padding:0 12px 0 0; }
-body.page-tarot-daily :is(.tarot-daily-tool__panel,.tarot-daily-card-result,.tarot-daily-primer__card,.tarot-daily-steps article,.tarot-daily-intent-card,.tarot-daily-faq__grid article,.mh-email-bridge) { background:#102638; border-color:#bd9b6544; border-radius:4px; box-shadow:none; }
+body.page-tarot-daily :is(.tarot-daily-tool__panel,.tarot-daily-card-result,.tarot-daily-primer__card,.tarot-daily-steps article,.tarot-daily-intent-card,.mh-email-bridge) { background:#102638; border-color:#bd9b6544; border-radius:4px; box-shadow:none; }
+body.page-tarot-daily .tarot-daily-faq__grid > details { background:#102638; border-color:#bd9b6544; border-radius:4px; box-shadow:none; }
 body.page-tarot-daily .tarot-daily-card-result__advice { border-color:#bd9b65; background:#bd9b650d; }
+body.page-tarot-daily #header-placeholder { min-height:0; }
 .home-tarot-daily { background:#102638; color:#e9e3d7; padding:36px; border:1px solid #bd9b6544; border-radius:4px; margin-top:40px; }
 .home-tarot-daily .tarot-daily-tool__panel { padding:0; background:none; border:0; box-shadow:none; }
 .home-tarot-daily .tarot-daily-tool__copy .section__title { font-weight:400; font-size:clamp(26px,3vw,38px); text-align:left; color:#e9e3d7; }
@@ -42,3 +44,5 @@ body.page-tarot-daily .tarot-daily-card-result__advice { border-color:#bd9b65; b
  body.page-tarot-daily .section { padding-bottom:40px; }
  .home-tarot-daily { padding:24px 18px; }
 }
+/* Keep tarot card edges and reference panels consistent with the square Atlas surfaces. */
+body.page-tarot-daily :is(.tarot-daily-visual img,.tarot-daily-card-result__image img,details.feature-reference) { border-radius:4px; }

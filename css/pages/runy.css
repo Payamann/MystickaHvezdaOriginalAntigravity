@@ -298,13 +298,19 @@
             height: 1rem;
         }
 
+.rune-data-error {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+    color: var(--color-silver-mist);
+}
+
 /* Migrated from runy.html static style attributes. */
 html body .mh-inline-00a0652841 { display:none; background: linear-gradient(90deg, rgba(212,175,55,0.1), rgba(155,89,182,0.1)); border-bottom: 1px solid rgba(212,175,55,0.2); padding: 0.65rem 1rem; text-align: center; font-size: 0.88rem; color: rgba(255,255,255,0.8); }
 html body .mh-inline-588f3944ff { color: #d4af37; font-weight: 600; }
 html body .mh-inline-76ca24d04a { background:none;border:none;color:rgba(255,255,255,0.3);cursor:pointer;font-size:1rem;vertical-align:middle; }
 html body .mh-inline-b746b39236 { background: rgba(212,175,55,0.1); color: var(--color-mystic-gold); border: 1px solid var(--color-mystic-gold); }
-html body .mh-inline-3c007d0dc3 { display: none; }
-html body .mh-inline-24291699b8 { color: var(--color-silver-mist); }
 html body .mh-inline-367b3e8abe { font-family: var(--font-heading); color: var(--color-starlight); font-size: 2rem; margin-bottom: 0.5rem; }
 html body .mh-inline-dce3b80927 { color: var(--color-mystic-gold); font-size: 1.1rem; margin-bottom: 1.5rem; font-style: italic; }
 html body .mh-inline-66e05d31f2 { color: var(--color-silver-mist); line-height: 1.6; }
@@ -506,5 +512,15 @@ html body .mh-inline-ea59635151 { color: var(--color-starlight); margin: 2rem 0 
 
     body.page-runes.cookie-banner-active .runes-hero {
         margin-bottom: 8rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rune-stone,
+    .rune-stone.hidden,
+    .rune-stone.shuffling {
+        animation: none !important;
+        transition: none !important;
+        filter: none;
     }
 }

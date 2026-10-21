@@ -109,6 +109,12 @@ const passwordResetLimiter = createAuthLimiter({
     code: 'PASSWORD_RESET_RATE_LIMITED',
 });
 
+const passwordRecoveryCheckLimiter = createAuthLimiter({
+    max: 20,
+    error: 'Příliš mnoho kontrol odkazu pro obnovu hesla. Zkuste to za hodinu.',
+    code: 'PASSWORD_RECOVERY_CHECK_RATE_LIMITED',
+});
+
 // Rate limiting for token refresh to prevent abuse
 const sensitiveLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
@@ -122,6 +128,24 @@ const sensitiveLimiter = rateLimit({
 
 const IS_PRODUCTION = isProductionRuntime();
 const APP_URL = process.env.APP_URL || 'http://localhost:3001';
+
+export function sanitizeLocalRedirectTarget(value, fallback = '') {
+    if (typeof value !== 'string') return fallback;
+    const redirect = value.trim();
+    if (!redirect || !redirect.startsWith('/') || redirect.startsWith('//')
+        || redirect.includes('\\') || /[\u0000-\u001F\u007F]/.test(redirect)) {
+        return fallback;
+    }
+
+    try {
+        const appOrigin = new URL(APP_URL).origin;
+        const target = new URL(redirect, appOrigin);
+        if (target.origin !== appOrigin) return fallback;
+        return `${target.pathname}${target.search}${target.hash}`;
+    } catch {
+        return fallback;
+    }
+}
 
 const logDebug = (msg) => {
     if (IS_PRODUCTION) return; // Skip debug logging in production
@@ -160,9 +184,8 @@ function getRegisterReferrerContext(req) {
         if (entrySource) metadata.entry_source = entrySource;
         if (entryFeature) metadata.entry_feature = entryFeature;
         if (plan) metadata.plan = plan;
-        if (redirect && redirect.startsWith('/') && !redirect.startsWith('//')) {
-            metadata.redirect = redirect;
-        }
+        const safeRedirect = sanitizeLocalRedirectTarget(redirect);
+        if (safeRedirect) metadata.redirect = safeRedirect;
 
         return { feature, metadata };
     } catch {
@@ -756,7 +779,7 @@ router.post('/forgot-password', passwordResetLimiter, async (req, res) => {
         const validatedEmail = validateEmail(email);
 
         const { error } = await supabase.auth.resetPasswordForEmail(validatedEmail, {
-            redirectTo: `${APP_URL}/prihlaseni.html?reset=true`
+            redirectTo: new URL('/prihlaseni.html?reset=true', APP_URL).toString()
         });
 
         if (error) {
@@ -777,8 +800,39 @@ router.post('/forgot-password', passwordResetLimiter, async (req, res) => {
     }
 });
 
+// Validate a recovery link before showing the password form. Never return the
+// account identity; the client only needs to know whether the bearer is usable.
+router.get('/reset-password/validate', passwordRecoveryCheckLimiter, async (req, res) => {
+    res.setHeader('Cache-Control', 'no-store, private');
+    const authHeader = req.headers['authorization'];
+    const token = /^Bearer\s+(.+)$/i.exec(String(authHeader || ''))?.[1]?.trim();
+
+    if (!token) {
+        return res.status(401).json({ valid: false });
+    }
+
+    try {
+        const { data, error } = await supabase.auth.getUser(token);
+        const userId = data?.user?.id;
+
+        if (!error && typeof userId === 'string' && userId) {
+            return res.json({ valid: true });
+        }
+
+        if (!error || [401, 403].includes(Number(error.status))) {
+            return res.status(401).json({ valid: false });
+        }
+
+        console.error('Password recovery link validation unavailable:', error.message || 'Auth provider error');
+        return res.status(503).json({ error: 'Odkaz pro obnovu se teď nepodařilo ověřit.' });
+    } catch (error) {
+        console.error('Password recovery link validation failed:', error?.message || error);
+        return res.status(503).json({ error: 'Odkaz pro obnovu se teď nepodařilo ověřit.' });
+    }
+});
+
 // Reset Password - update password with reset token
-router.post('/reset-password', async (req, res) => {
+router.post('/reset-password', passwordResetLimiter, async (req, res) => {
     const { password } = req.body;
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -787,15 +841,26 @@ router.post('/reset-password', async (req, res) => {
         return res.status(401).json({ error: 'Chybí autorizační token.' });
     }
 
+    let validatedPassword;
     try {
-        // Validate password
-        const validatedPassword = validatePassword(password);
+        validatedPassword = validatePassword(password);
+    } catch (validationError) {
+        return res.status(400).json({ error: validationError.message });
+    }
 
-        // Update password using Supabase Auth
-        const { data, error } = await supabase.auth.updateUser(
-            { password: validatedPassword },
-            { accessToken: token }
-        );
+    try {
+        // Verify the recovery bearer with Supabase Auth, then use the verified
+        // user ID for the privileged update. The shared service-role client has
+        // no user session, so auth.updateUser() cannot authenticate this token.
+        const { data: verified, error: verifyError } = await supabase.auth.getUser(token);
+        const userId = verified?.user?.id;
+        if (verifyError || typeof userId !== 'string' || !userId) {
+            return res.status(401).json({ error: 'Odkaz pro obnovení hesla je neplatný nebo vypršel.' });
+        }
+
+        const { error } = await supabase.auth.admin.updateUserById(userId, {
+            password: validatedPassword
+        });
 
         if (error) {
             console.error('Reset password error:', error);
@@ -858,13 +923,26 @@ router.put('/profile', authenticateToken, async (req, res) => {
     try {
         const user = req.user;
 
+        if (typeof req.body?.expectedUserId !== 'string' || req.body.expectedUserId !== user.id) {
+            return res.status(409).json({ success: false, error: 'Účet se změnil nebo je stránka zastaralá. Obnov profil a zkus to znovu.' });
+        }
+
         const { first_name, birth_date, birth_time, birth_place, avatar } = req.body;
 
         // Validate optional fields if provided
         const updateData = {};
 
         if (first_name !== undefined && first_name !== null) {
-            updateData.first_name = validateName(first_name);
+            try {
+                updateData.first_name = validateName(first_name);
+            } catch (validationError) {
+                const message = validationError.message === 'Name contains only invalid characters'
+                    ? 'Jméno obsahuje znaky, které nelze použít.'
+                    : validationError.message.startsWith('Name too long')
+                        ? 'Jméno může mít nejvýše 100 znaků.'
+                        : 'Jméno se nepodařilo uložit. Zkontroluj jeho podobu.';
+                return res.status(400).json({ error: message });
+            }
         }
 
         if (birth_date !== undefined) {
@@ -936,9 +1014,7 @@ router.post('/onboarding/complete', authenticateToken, async (req, res) => {
         }
 
         const safePlan = typeof plan === 'string' ? plan.slice(0, 80) : '';
-        const safeRedirect = typeof redirect === 'string' && redirect.startsWith('/') && !redirect.startsWith('//')
-            ? redirect.slice(0, 240)
-            : '';
+        const safeRedirect = sanitizeLocalRedirectTarget(redirect).slice(0, 240);
         const safeDestination = typeof destination === 'string' ? destination.slice(0, 240) : '';
         const safeFlow = flow === 'quick' ? 'quick' : 'guided';
 

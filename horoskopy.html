@@ -85,7 +85,8 @@
     </script>
     <link rel="preconnect" href="https://js.stripe.com">
     <link rel="dns-prefetch" href="https://js.stripe.com">
-    <link rel="preload" as="image" href="/img/search-preview/astrology-hero.webp">
+    <link rel="preload" as="image" imagesrcset="/img/search-preview/astrology-hero-mobile-800.webp 1x, /img/search-preview/astrology-hero.webp 2x" media="(max-width: 600px)">
+    <link rel="preload" as="image" href="/img/search-preview/astrology-hero.webp" media="(min-width: 601px)">
     <title>Horoskop na dnes pro 12 znamení | Mystická Hvězda</title>
 
     <!-- Favicon -->
@@ -101,9 +102,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
 
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="css/site.min.css?v=1">
-    <link rel="stylesheet" href="css/pages/horoskopy.css?v=20261009-zodiac-atlas">
-    <link rel="stylesheet" href="css/pages/horoscope-cluster.css">
+    <link rel="stylesheet" href="css/site.min.css?v=20261018-release-candidate">
+<link rel="stylesheet" href="css/pages/horoskopy.css?v=20261020-02-remove-generic-tool-list">
+    <link rel="stylesheet" href="css/pages/horoscope-cluster.css?v=20261019-journal-context-opt-in">
 
     <link rel="canonical" href="https://www.mystickahvezda.cz/horoskopy.html">
 
@@ -123,8 +124,8 @@
 <meta property="og:image:alt" content="Horoskop na dnes pro 12 znamení | Mystická Hvězda">
 <meta name="twitter:image:alt" content="Horoskop na dnes pro 12 znamení | Mystická Hvězda">
 
-    <link rel="stylesheet" href="/css/atlas-web.css?v=1">
-    <link rel="stylesheet" href="/css/atlas-remaining.css?v=1">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
+    <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261020-01-remaining-surface-polish">
 </head>
 
 <body class="atlas-page atlas-remaining-page" data-atlas-polish="horoskopy">
@@ -137,7 +138,7 @@
 
     <div id="header-placeholder"></div>
 
-    <script src="js/dist/freemium-horoskopy.js" defer></script>
+    <script src="js/dist/freemium-horoskopy.js?v=20261018-truthful-limits" defer></script>
 
     <main id="main-content" tabindex="-1">
 
@@ -167,11 +168,11 @@
 
         <!-- Keep the allowance beside the picker, outside the fixed header. -->
         <div id="freemium-banner" class="mh-inline-c7ca2aadf5">
-            <span id="freemium-banner-text">Dnes zbývá: <strong id="freemium-count">...</strong> výkladů zdarma</span>
+            <span id="freemium-banner-text">Denní horoskop je zdarma. Týdenní a měsíční horoskopy patří do členství.</span>
             &nbsp;•&nbsp;
             <a href="/cenik.html?plan=pruvodce&source=horoscope_freemium_banner&feature=weekly_horoscope" class="mh-inline-ab7a727fdb"> Prohlédnout členství →</a>
             &nbsp;
-            <button data-action="closeBanner" class="mh-inline-71ff7bdda8" aria-label="Zavřít upozornění o členství">×</button>
+            <button data-action="closeBanner" class="mh-inline-71ff7bdda8" aria-label="Zavřít upozornění o členství"><svg class="mh-symbol mh-symbol--inline" width="18" height="18" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#close"></use></svg></button>
         </div>
 
         <!-- TABS -->
@@ -188,6 +189,14 @@
 
                     <button class="tab" data-tab-owner="horoscope" data-tab="monthly" role="tab" aria-selected="false">Měsíční</button>
 
+                </div>
+
+                <div id="horoscope-journal-context-option" class="horoscope-journal-context-option" hidden>
+                    <label class="horoscope-journal-context-option__label" for="use-horoscope-journal-context">
+                        <input type="checkbox" id="use-horoscope-journal-context" aria-describedby="horoscope-journal-context-help">
+                        <span class="horoscope-journal-context-option__title">Zohlednit zápisy z mého deníku</span>
+                    </label>
+                    <p class="horoscope-journal-context-option__help" id="horoscope-journal-context-help">Po zapnutí připojíme k požadavku až tři nejnovější zápisy, aby horoskop mohl zohlednit jejich témata. Při vytvoření nového horoskopu je předáme také poskytovateli AI. Bez zaškrtnutí se nepoužijí.</p>
                 </div>
 
                 <!-- ZODIAC GRID -->
@@ -380,7 +389,7 @@
                     <summary class="feature-reference__summary">Týdenní, měsíční a další výklady</summary>
                 <div class="section__header" data-animate>
                     <span class="section__badge">Horoskopické průvodce</span>
-                    <h2 class="section__title">Vyberte si správný časový horizont</h2>
+                    <h2 class="section__title">Vyber si časový horizont</h2>
                     <p class="section__text">Denní, týdenní a měsíční výklad pomohou rozlišit náladu dne od opakujícího se tématu. Pro jednu konkrétní otázku a delší horizont navazuje Osobní mapa.</p>
                 </div>
                 <div class="horoscope-cluster-link-grid" data-animate>
@@ -427,28 +436,28 @@
                 <div id="horoscope-subscribe-form" class="mh-inline-1054d3c93f">
                     <div class="mh-inline-822870aaa4">
                         <p class="mh-inline-ab30c465af">Denní horoskop emailem — zdarma</p>
-                        <input id="horoscope-email-input" type="email" aria-label="Emailová adresa pro odběr denního horoskopu" placeholder="váš@email.cz"
+        <input id="horoscope-email-input" type="email" autocomplete="email" aria-label="Emailová adresa pro odběr denního horoskopu" placeholder="jmeno@email.cz"
                             class="mh-inline-1aaa6a5561">
-                        <select id="horoscope-sign-select" aria-label="Vyberte své znamení"
+                        <select id="horoscope-sign-select" aria-label="Vyber své znamení"
                             class="mh-inline-93bca9f516">
-                            <option value="">— Vyberte své znamení —</option>
-                            <option value="Beran">♈ Beran (21.3–20.4)</option>
-                            <option value="Býk">♉ Býk (21.4–20.5)</option>
-                            <option value="Blíženci">♊ Blíženci (21.5–21.6)</option>
-                            <option value="Rak">♋ Rak (22.6–22.7)</option>
-                            <option value="Lev">♌ Lev (23.7–22.8)</option>
-                            <option value="Panna">♍ Panna (23.8–22.9)</option>
-                            <option value="Váhy">♎ Váhy (23.9–22.10)</option>
-                            <option value="Štír">♏ Štír (23.10–21.11)</option>
-                            <option value="Střelec">♐ Střelec (22.11–21.12)</option>
-                            <option value="Kozoroh">♑ Kozoroh (22.12–19.1)</option>
-                            <option value="Vodnář">♒ Vodnář (20.1–18.2)</option>
-                            <option value="Ryby">♓ Ryby (19.2–20.3)</option>
+                            <option value="">— Vyber své znamení —</option>
+                            <option value="Beran">♈︎ Beran (21.3.–19.4.)</option>
+                            <option value="Býk">♉︎ Býk (20.4.–20.5.)</option>
+                            <option value="Blíženci">♊︎ Blíženci (21.5.–20.6.)</option>
+                            <option value="Rak">♋︎ Rak (21.6.–22.7.)</option>
+                            <option value="Lev">♌︎ Lev (23.7.–22.8.)</option>
+                            <option value="Panna">♍︎ Panna (23.8.–22.9.)</option>
+                            <option value="Váhy">♎︎ Váhy (23.9.–22.10.)</option>
+                            <option value="Štír">♏︎ Štír (23.10.–21.11.)</option>
+                            <option value="Střelec">♐︎ Střelec (22.11.–21.12.)</option>
+                            <option value="Kozoroh">♑︎ Kozoroh (22.12.–19.1.)</option>
+                            <option value="Vodnář">♒︎ Vodnář (20.1.–18.2.)</option>
+                            <option value="Ryby">♓︎ Ryby (19.2.–20.3.)</option>
                         </select>
-                        <button id="horoscope-subscribe-btn" class="btn btn--primary u-w-full">
+                        <button id="horoscope-subscribe-btn" type="button" class="btn btn--primary u-w-full">
                              Přihlásit k odběru
                         </button>
-                        <p id="horoscope-subscribed-msg" class="mh-inline-03c5c01d1c">✅ Odběr aktivní — těšte se ráno na email!</p>
+                        <p id="horoscope-subscribed-msg" class="mh-inline-03c5c01d1c"><svg class="mh-symbol mh-symbol--inline" width="18" height="18" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#check"></use></svg><span>Odběr aktivní — těšte se ráno na email!</span></p>
                         <p class="mh-inline-6bd7cf3a19">
                             Každé ráno. Zdarma. Odhlásit se lze kdykoliv.
                         </p>
@@ -471,10 +480,10 @@
                             role="status" aria-live="polite" hidden>
                             <span class="horoscope-activation-welcome__kicker">Účet je připravený</span>
                             <strong class="horoscope-activation-welcome__title" id="horoscope-activation-title">
-                                Připravuji první osobní horoskop
+                                Načítám horoskop pro vybrané znamení…
                             </strong>
                             <p class="horoscope-activation-welcome__copy" id="horoscope-activation-copy">
-                                Nic dalšího nemusíte nastavovat. Výsledek se zobrazí rovnou tady.
+                                Nic dalšího nemusíš nastavovat. Výsledek se zobrazí rovnou tady.
                             </p>
                         </div>
 
@@ -537,10 +546,10 @@
                                 aria-labelledby="horoscope-activation-offer-title" hidden>
                                 <span class="horoscope-activation-offer__kicker">Navázat na dnešní vhled</span>
                                 <h3 class="horoscope-activation-offer__title" id="horoscope-activation-offer-title">
-                                    Jeden horoskop ukáže dnešek. Průvodce drží souvislosti.
+                                    Jeden horoskop ukáže dnešek. V členství můžeš sledovat souvislosti.
                                 </h3>
                                 <p class="horoscope-activation-offer__copy">
-                                    Získejte plné výklady a osobní vedení, ke kterému se můžete každý den vracet.
+                                    Získej plné výklady a osobní vedení, ke kterému se můžeš každý den vracet.
                                 </p>
                                 <ul class="horoscope-activation-offer__benefits">
                                     <li>Plné výklady a denní vedení bez čekání</li>
@@ -559,8 +568,8 @@
                                     </button>
                                 </div>
                                 <p class="horoscope-activation-offer__terms">
-                                    K aktivaci je potřeba karta. Dnes 0 Kč; po 7 dnech 199 Kč měsíčně,
-                                    pokud členství před koncem zkušební doby nezrušíte.
+                                    Prvních 7 dní je za 0 Kč. Potřebuješ platební kartu; potom se členství
+                                    obnoví za 199 Kč měsíčně, pokud ho do konce zkušební doby nezrušíš.
                                 </p>
                             </aside>
 
@@ -588,137 +597,6 @@
 
     
 
-    <!-- CROSS-LINKING SEKCE -->
-
-    <section class="section cross-linking-section">
-
-        <div class="container cross-linking-container">
-                <details class="feature-reference">
-                    <summary class="feature-reference__summary">Další nástroje</summary>
-
-            <h3 class="cross-linking-title">Pokračujte ve své duchovní cestě</h3>
-
-            <div class="cross-linking-grid">
-
-                <a href="andelske-karty.html" class="card cross-link-card">
-
-                    <div class="cross-link-card__icon"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#angel"></use></svg></div>
-
-                    <div class="cross-link-card__title">Andělská Karta</div>
-
-                    <div class="cross-link-card__text">Poselství na dnešní den</div>
-
-                </a>
-
-                <a href="kristalova-koule.html" class="card cross-link-card">
-
-                    <div class="cross-link-card__icon"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#crystal"></use></svg></div>
-
-                    <div class="cross-link-card__title">Křišťálová koule</div>
-
-                    <div class="cross-link-card__text">Zeptejte se na cokoli</div>
-
-                </a>
-
-                <a href="tarot.html" class="card cross-link-card">
-
-                    <div class="cross-link-card__icon"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#tarot"></use></svg></div>
-
-                    <div class="cross-link-card__title">Tarotový výklad</div>
-
-                    <div class="cross-link-card__text">Hloubkový vhled</div>
-
-                </a>
-
-                
-
-                <a href="mentor.html" class="card cross-link-card">
-
-                    <div class="cross-link-card__icon"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg></div>
-
-                    <div class="cross-link-card__title">Hvězdný Průvodce</div>
-
-                    <div class="cross-link-card__text">AI duchovní mentor</div>
-
-                </a>
-
-                <a href="natalni-karta.html" class="card cross-link-card">
-
-                    <div class="cross-link-card__icon"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#chart"></use></svg></div>
-
-                    <div class="cross-link-card__title">Natální karta</div>
-
-                    <div class="cross-link-card__text">Váš vesmírný otisk</div>
-
-                </a>
-
-                <a href="partnerska-shoda.html" class="card cross-link-card">
-
-                    <div class="cross-link-card__icon"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#partner"></use></svg></div>
-
-                    <div class="cross-link-card__title">Partnerská shoda</div>
-
-                    <div class="cross-link-card__text">Synastrie vztahů</div>
-
-                </a>
-
-                <a href="numerologie.html" class="card cross-link-card">
-
-                    <div class="cross-link-card__icon"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#numbers"></use></svg></div>
-
-                    <div class="cross-link-card__title">Numerologie</div>
-
-                    <div class="cross-link-card__text">Rozbor čísel</div>
-
-                </a>
-
-                <a href="astro-mapa.html" class="card cross-link-card">
-
-                    <div class="cross-link-card__icon"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#globe"></use></svg></div>
-
-                    <div class="cross-link-card__title">Astro-mapa</div>
-
-                    <div class="cross-link-card__text">Zóny síly ve světě</div>
-
-                </a>
-
-                <a href="snar.html" class="card cross-link-card">
-
-                    <div class="cross-link-card__icon"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#dream"></use></svg></div>
-
-                    <div class="cross-link-card__title">Lexikon snů</div>
-
-                    <div class="cross-link-card__text">Analýza vašeho snu</div>
-
-                </a>
-
-                <a href="biorytmy.html" class="card cross-link-card">
-
-                    <div class="cross-link-card__icon"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#wave"></use></svg></div>
-
-                    <div class="cross-link-card__title">Biorytmy</div>
-
-                    <div class="cross-link-card__text">Dnešní křivky energie</div>
-
-                </a>
-
-                <a href="runy.html" class="card cross-link-card">
-
-                    <div class="cross-link-card__icon"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#rune"></use></svg></div>
-
-                    <div class="cross-link-card__title">Věštění z Run</div>
-
-                    <div class="cross-link-card__text">Severská moudrost</div>
-
-                </a>
-
-            </div>
-
-            </details>
-        </div>
-
-    </section>
-
     </main>
 
     <!-- FOOTER (loaded dynamically) -->
@@ -726,38 +604,38 @@
     <div id="footer-placeholder"></div>
 
     <script src="js/dist/api-config.js?v=5" defer></script>
-    <script src="js/dist/templates.js?v=14" defer></script>
-    <script src="js/dist/auth-client.js?v=20261003-single-membership" defer></script>
+    <script src="js/dist/templates.js?v=20261021-celtic-footer-star-svg" defer></script>
+    <script src="js/dist/auth-client.js?v=20261020-02-register-password-policy" defer></script>
 <script src="js/dist/auth-copy-fixes.js" defer></script>
     <script src="js/dist/landing-pages-copy-fixes.js?v=6" defer></script>
     <script type="module" src="js/dist/moon-phase.js"></script>
-    <script src="js/dist/favorites-helper.js" defer></script>
-    <script type="module" src="js/dist/horoscope.js?v=20260929-horoscope-v2" defer></script>
-    <script src="js/dist/horoscope-share.js" defer></script>
+    <script src="js/dist/favorites-helper.js?v=20261018-favorite-controls" defer></script>
+    <script type="module" src="js/dist/horoscope.js?v=20261020-journal-context-consent" defer></script>
+    <script src="js/dist/horoscope-share.js?v=20261020-native-share-svg" defer></script>
 
     <script src="/js/dist/close-banner.js" defer></script>
 
     <script src="/js/dist/register-sw.js" defer></script>
 
-        <script src="js/dist/share-result.js?v=1" defer></script>
+        <script src="js/dist/share-result.js?v=20261017-icons" defer></script>
 
         
 
     <script src="js/dist/exit-intent.js" defer></script>
 
-    <script src="js/dist/components.js?v=20260522-premium-gate-cache" defer></script>
+    <script src="js/dist/components.js?v=20261021-footer-support-locale" defer></script>
 
-    <script type="module" src="js/dist/main.js?v=10"></script>
+    <script type="module" src="js/dist/main.js?v=20261018-status-icons"></script>
 
     <script src="js/dist/newsletter-popup.js?v=20260809-activation-guard" defer></script>
 
-    <script src="js/dist/retention.js?v=6" defer></script>
+    <script src="js/dist/retention.js?v=20261018-retention-close" defer></script>
 
-  <script type="module" src="js/dist/personalization.js?v=5"></script>
+  <script type="module" src="js/dist/personalization.js?v=20261018-sign-picker-pen"></script>
 
-<script src="js/dist/horoscope-subscribe.js" defer></script>
+<script src="js/dist/horoscope-subscribe.js?v=20261018-success-svg" defer></script>
 
-<script src="js/dist/push-notifications.js" defer></script>
+<script src="js/dist/push-notifications.js?v=20261021-subscription-state" defer></script>
 
 <script src="js/dist/pwa-install.js" defer></script>
 

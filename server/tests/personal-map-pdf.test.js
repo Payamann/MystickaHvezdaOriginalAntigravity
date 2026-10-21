@@ -93,7 +93,8 @@ describe('personal map PDF service', () => {
             focusArea: 'relationships'
         });
 
-        expect(prompt.system).toContain('česká autorka');
+        expect(prompt.system).toContain('Tykáš a píšeš přirozeně, klidně a konkrétně');
+        expect(prompt.system).not.toContain('česká autorka');
         expect(prompt.user).toContain('Osobní mapa');
         expect(prompt.user).toContain('Jana');
         expect(prompt.user).toContain('Vrať pouze validní JSON bez markdownu');
@@ -101,7 +102,7 @@ describe('personal map PDF service', () => {
         expect(prompt.user).toContain('"actionPlan"');
         expect(prompt.user).toContain('8. srpna 2026');
         expect(prompt.user).toContain('červenec 2027');
-        expect(prompt.user).toContain('Vrať přesně 5 orientačních milníků');
+        expect(prompt.user).toContain('Vrať přesně 5 orientačních bodů k zamyšlení');
         expect(prompt.user).toContain('Celý výklad platí pro celé období');
     });
 
@@ -117,7 +118,7 @@ describe('personal map PDF service', () => {
         expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;');
         expect(html).toContain('láska &lt;img src=x onerror=alert(1)&gt;');
         expect(html).toContain('8. srpna 2026 - 7. srpna 2027');
-        expect(html).toContain('Milníky osobního roku');
+        expect(html).toContain('Orientační body období');
         expect(html).toContain('mapa platí pro všech 12 navazujících měsíců');
         expect(html).not.toContain('<script>alert(1)</script>');
         expect(html).not.toContain('<img src=x onerror=alert(1)>');
@@ -131,7 +132,7 @@ describe('personal map PDF service', () => {
         // New value-adding sections must actually render, not just pad the count.
         expect(html).toContain('Co tě nese, i když je těžko');
         expect(html).toContain('Kratší věta, jasnější ne');
-        expect(html).toContain('Kde ztrácíš sílu a co tě vrací');
+        expect(html).toContain('Všímej si toho, co ti prospívá');
         expect(html).toContain('Místo pro tvoje poznámky');
     });
 

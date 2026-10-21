@@ -32,12 +32,13 @@ describe('Potvrzeni odberu horoskopu', () => {
         const html = EMAIL_TEMPLATES.horoscope_subscription_confirm.getHtml({
             sign: 'Beran',
             token: 'tok123',
-            horoscope_text: 'Dnes zpomal.\n\n✨ Afirmace: Volím klid.'
+            horoscope_text: 'Dnes zpomal.\n\nAfirmace: Volím klid.'
         });
 
         expect(html).toContain('A tady je tvůj dnešní horoskop');
         expect(html).toContain('Dnes zpomal.');
         expect(html).toContain('Volím klid.');
+        expect(html).not.toMatch(/[✨🔢]/u);
         // návrat na web musí být měřitelný
         expect(html).toContain('utm_campaign=horoscope_confirm');
         expect(html).toContain('source=horoscope_subscription_confirm');
@@ -453,7 +454,7 @@ describe('Email service deliverability payload', () => {
             name: 'Jana',
             sign: 'lev',
             productId: 'rocni_horoskop_2026',
-            year: '2026',
+            year: 2026,
             source: 'annual_horoscope_checkout',
             stripeSessionId: 'cs_test_annual_lifecycle',
             delays: {
@@ -497,7 +498,7 @@ describe('Email service deliverability payload', () => {
         expect(firstPayload).toMatchObject({
             orderId: 'order-annual-sequence-test',
             productId: 'rocni_horoskop_2026',
-            year: '2026',
+            year: 2026,
             source: 'annual_horoscope_checkout',
             stripeSessionId: 'cs_test_annual_lifecycle'
         });

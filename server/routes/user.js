@@ -43,6 +43,7 @@ const VALID_READING_TYPES = new Set([
     'tarot'
 ]);
 const MAX_READING_DATA_LENGTH = 50000;
+const UUID_V4_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const VALID_FEEDBACK_RESONANCE = new Set(['fits', 'neutral', 'miss']);
 const VALID_FEEDBACK_FOCUS = new Set(['relationships', 'work', 'energy', 'self', 'timing']);
 const VALID_FEEDBACK_NEXT_ACTION = new Set(['journal', 'weekly', 'premium', 'another_reading', 'none']);
@@ -202,11 +203,22 @@ router.get('/readings', authenticateToken, async (req, res) => {
 // Save a new reading
 router.post('/readings', authenticateToken, async (req, res) => {
     try {
-        const { type, data: readingData } = req.body;
+        const { type, data: readingData, requestId, expectedUserId } = req.body;
         const cleanType = typeof type === 'string' ? type.trim() : '';
 
         if (!cleanType || readingData === undefined || readingData === null) {
             return res.status(400).json({ error: 'Type and data are required.' });
+        }
+
+        if (requestId !== undefined && (typeof requestId !== 'string' || !UUID_V4_PATTERN.test(requestId))) {
+            return res.status(400).json({ error: 'Invalid reading request ID.' });
+        }
+
+        // Bind the asynchronous client save to the account that initiated it.
+        // This is only a consistency check; req.user remains the authority for
+        // the owner written to the database.
+        if (typeof expectedUserId !== 'string' || expectedUserId !== req.user.id) {
+            return res.status(409).json({ success: false, error: 'Reading belongs to a different account.' });
         }
 
         // Validate type against allowlist
@@ -225,11 +237,32 @@ router.post('/readings', authenticateToken, async (req, res) => {
             ? await getExistingValueReadingCount(req.user.id)
             : null;
 
+        const readingToInsert = {
+            user_id: req.user.id,
+            type: cleanType,
+            data: validatedData,
+            ...(requestId ? { id: requestId } : {})
+        };
         const { data, error } = await supabase
             .from('readings')
-            .insert({ user_id: req.user.id, type: cleanType, data: validatedData })
+            .insert(readingToInsert)
             .select()
             .single();
+
+        if (error?.code === '23505' && requestId) {
+            const { data: existing, error: lookupError } = await supabase
+                .from('readings')
+                .select('*')
+                .eq('id', requestId)
+                .maybeSingle();
+
+            if (lookupError) throw lookupError;
+            if (!existing || existing.user_id !== req.user.id || existing.type !== cleanType) {
+                return res.status(409).json({ success: false, error: 'Reading request ID is already in use.' });
+            }
+
+            return res.json({ success: true, reading: existing, id: existing.id, idempotent: true });
+        }
 
         if (error) throw error;
 
@@ -292,6 +325,10 @@ router.get('/readings/:id', authenticateToken, async (req, res) => {
 // Save lightweight feedback on a reading without creating a separate table
 router.patch('/readings/:id/feedback', authenticateToken, async (req, res) => {
     try {
+        if (typeof req.body?.expectedUserId !== 'string' || req.body.expectedUserId !== req.user.id) {
+            return res.status(409).json({ success: false, error: 'Reading belongs to a different account.' });
+        }
+
         let feedback;
         try {
             feedback = normalizeReadingFeedback(req.body || {});
@@ -366,6 +403,10 @@ router.patch('/readings/:id/feedback', authenticateToken, async (req, res) => {
 // Toggle reading favorite status
 router.patch('/readings/:id/favorite', authenticateToken, async (req, res) => {
     try {
+        if (typeof req.body?.expectedUserId !== 'string' || req.body.expectedUserId !== req.user.id) {
+            return res.status(409).json({ success: false, error: 'Reading belongs to a different account.' });
+        }
+
         const { data: current, error: fetchError } = await supabase
             .from('readings')
             .select('is_favorite')
@@ -373,6 +414,9 @@ router.patch('/readings/:id/favorite', authenticateToken, async (req, res) => {
             .eq('user_id', req.user.id)
             .single();
 
+        if (fetchError?.code === 'PGRST116') {
+            return res.status(404).json({ success: false, error: 'Výklad nenalezen.' });
+        }
         if (fetchError) throw fetchError;
         if (!current) return res.status(404).json({ success: false, error: 'Výklad nenalezen.' });
 
@@ -395,6 +439,10 @@ router.patch('/readings/:id/favorite', authenticateToken, async (req, res) => {
 // Delete a reading
 router.delete('/readings/:id', authenticateToken, async (req, res) => {
     try {
+        if (typeof req.body?.expectedUserId !== 'string' || req.body.expectedUserId !== req.user.id) {
+            return res.status(409).json({ success: false, error: 'Reading belongs to a different account.' });
+        }
+
         const { error } = await supabase
             .from('readings')
             .delete()
@@ -412,7 +460,11 @@ router.delete('/readings/:id', authenticateToken, async (req, res) => {
 // Change user password
 router.put('/password', sensitiveOpLimiter, authenticateToken, async (req, res) => {
     try {
-        const { currentPassword, password, password_confirm } = req.body;
+        const { currentPassword, password, password_confirm, expectedUserId } = req.body;
+
+        if (typeof expectedUserId !== 'string' || expectedUserId !== req.user.id) {
+            return res.status(409).json({ success: false, error: 'Účet se změnil nebo je stránka zastaralá. Obnov profil a zkus to znovu.' });
+        }
 
         // Validate currentPassword is provided
         if (!currentPassword || typeof currentPassword !== 'string') {

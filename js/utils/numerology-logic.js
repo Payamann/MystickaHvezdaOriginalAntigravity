@@ -1,17 +1,35 @@
 export const NUMBER_MEANINGS = {
-    1: { title: 'Vůdce', short: 'Nezávislost a odvaha' },
-    2: { title: 'Mírotvůrce', short: 'Harmonie a spolupráce' },
-    3: { title: 'Tvůrce', short: 'Kreativita a vyjádření' },
-    4: { title: 'Stavitel', short: 'Stabilita a organizace' },
-    5: { title: 'Dobrodruh', short: 'Svoboda a změna' },
-    6: { title: 'Pečovatel', short: 'Láska a odpovědnost' },
-    7: { title: 'Hledač', short: 'Moudrost a duchovnost' },
-    8: { title: 'Velmoc', short: 'Síla a úspěch' },
-    9: { title: 'Humanista', short: 'Soucit a odpuštění' },
-    11: { title: 'Osvícený', short: 'Intuice a inspirace' },
-    22: { title: 'Mistr stavitel', short: 'Vize a realizace' },
-    33: { title: 'Mistr učitel', short: 'Duchovní vedení' }
+    1: { title: 'Samostatnost', short: 'Začátek a vlastní směr' },
+    2: { title: 'Spolupráce', short: 'Naslouchání a dohoda' },
+    3: { title: 'Tvořivost', short: 'Vyjádření a nápady' },
+    4: { title: 'Pevný základ', short: 'Řád a vytrvalost' },
+    5: { title: 'Prostor pro změnu', short: 'Zvídavost a nové zkušenosti' },
+    6: { title: 'Péče a hranice', short: 'Blízkost a odpovědnost' },
+    7: { title: 'Prostor pro otázky', short: 'Pozornost a poznávání' },
+    8: { title: 'Směr a odpovědnost', short: 'Zdroje a rozhodování' },
+    9: { title: 'Dokončení', short: 'Nadhled a uzavření' },
+    11: { title: 'Citlivost a inspirace', short: 'Podnět a uzemnění' },
+    22: { title: 'Od nápadu k základu', short: 'Vize a proveditelný plán' },
+    33: { title: 'Péče s mírou', short: 'Podpora a hranice' }
 };
+
+export function getTodayIsoDate(date = new Date()) {
+    const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Europe/Prague',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).formatToParts(date);
+    const dateParts = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+    return `${dateParts.year}-${dateParts.month}-${dateParts.day}`;
+}
+
+export function isValidBirthDate(birthDate, today = getTodayIsoDate()) {
+    if (typeof birthDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) return false;
+    const date = new Date(`${birthDate}T00:00:00Z`);
+    if (Number(birthDate.slice(0, 4)) < 1 || Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== birthDate) return false;
+    return birthDate <= today;
+}
 
 export function reduceToSingleDigit(num, preserveMaster = true) {
     num = Number(num);
@@ -25,10 +43,8 @@ export function reduceToSingleDigit(num, preserveMaster = true) {
     return num;
 }
 
-export function calculateLifePath(birthDate) {
-    if (typeof birthDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) return 0;
-    const date = new Date(`${birthDate}T00:00:00Z`);
-    if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== birthDate) return 0;
+export function calculateLifePath(birthDate, today = getTodayIsoDate()) {
+    if (!isValidBirthDate(birthDate, today)) return 0;
     const [year, month, day] = birthDate.split('-').map(Number);
     if (!year || !month || !day) return 0;
 
@@ -85,14 +101,12 @@ export function calculatePersonality(name) {
 
 
 export function calculatePersonalCycles(birthDate, targetDate = new Date()) {
-    if (!birthDate) return null;
+    if (!isValidBirthDate(birthDate)) return null;
     const [bYear, bMonth, bDay] = birthDate.split('-').map(Number);
     if (!bMonth || !bDay) return null;
 
-    // Current date components
-    const currentYear = targetDate.getFullYear();
-    const currentMonth = targetDate.getMonth() + 1;
-    const currentDay = targetDate.getDate();
+    // Use the same Czech calendar date as the input limit and server validation.
+    const [currentYear, currentMonth, currentDay] = getTodayIsoDate(targetDate).split('-').map(Number);
 
     // Personal Year: Day + Month + Current Year
     // reduced to 1-9 (or 11, 22)

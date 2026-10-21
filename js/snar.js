@@ -73,9 +73,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             const card = document.createElement('article');
             card.className = 'dict-card';
             card.id = 'symbol-' + item.id;
-            const emojiStr = item.emoji ? `${item.emoji} ` : '';
-            card.innerHTML = `<h3 class="dict-keyword">${emojiStr}${item.keyword}</h3>
-                              <p class="dict-desc">${item.description}</p>`;
+            const heading = document.createElement('h3');
+            heading.className = 'dict-keyword';
+            heading.textContent = item.keyword;
+            const description = document.createElement('p');
+            description.className = 'dict-desc';
+            description.textContent = item.description;
+            card.append(heading, description);
             dictGrid.appendChild(card);
         });
 
@@ -178,7 +182,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     // Scroll to search area or grid
                     const target = document.querySelector('.search-section') || dictGrid;
                     if (target) {
-                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        target.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
                     }
                 }
             };

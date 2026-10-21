@@ -39,6 +39,11 @@ html body .mh-inline-1095a37166 { opacity: 0.8; }
     opacity: 1;
 }
 
+.astro-result-card .result-title:focus {
+    outline: 2px solid var(--color-mystic-gold);
+    outline-offset: 4px;
+}
+
 .city-marker {
     position: absolute;
     z-index: 4;

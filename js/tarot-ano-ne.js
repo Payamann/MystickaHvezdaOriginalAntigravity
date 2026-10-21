@@ -5,7 +5,7 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
  */
 (function () {
     // Verdikt, vysvětlení (proč) a konkrétní další krok pro každou ze 78 karet.
-    // Jména karet odpovídají klíčům v data/tarot-cards.json (obrázek, emoji).
+    // Jména karet odpovídají klíčům v data/tarot-cards.json (obrázek).
     const CARD_DIRECTIONS = {
     "Blázen": "ano",
     "Mág": "ano",
@@ -92,9 +92,9 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
     }));
 
     const VERDICT_META = {
-        ano: { label: 'ANO', emoji: '✅', class: 'ano' },
-        ne: { label: 'NE', emoji: '🚨', class: 'ne' },
-        nejasne: { label: 'NEJASNÉ', emoji: '🔮', class: 'mozna' }
+        ano: { label: 'ANO', class: 'ano' },
+        ne: { label: 'NE', class: 'ne' },
+        nejasne: { label: 'NEJASNÉ', class: 'mozna' }
     };
 
     const CARD_DATA_URL = 'data/tarot-cards.json?v=20261007-deck-v2';
@@ -103,23 +103,56 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
     function applyCardImageFallback(image) {
         image.onerror = () => {
             image.onerror = null;
+            image.removeAttribute('srcset');
+            image.removeAttribute('sizes');
             image.src = FALLBACK_CARD_IMAGE;
         };
+    }
+
+    function applyResponsiveCardSources(image, source, sizes) {
+        const path = String(source || '');
+        const match = path.match(/^(\/?img\/tarot-v2\/tarot_[a-z0-9_-]+)\.webp$/i);
+        if (!match) return;
+        image.srcset = `${match[1]}-240.webp 240w, ${match[1]}-360.webp 360w, ${path} 600w`;
+        image.sizes = sizes;
     }
 
     let cardPool = [];
     let cardDataLoaded = false;
     let used = false;
     let lastResult = null;
+    let pendingResultTimeout = null;
+    let resultGeneration = 0;
     let savedReadingId = null;
+    let readingSaveInFlight = false;
     let firstValueTracked = false;
 
     const TAROT_YES_NO_FEATURE = 'tarot_multi_card';
-    const TAROT_YES_NO_PLAN_ID = 'pruvodce';
     const TAROT_YES_NO_RESULT_SOURCE = 'tarot_yes_no_result';
     const TAROT_YES_NO_TOOL = 'tarot_yes_no';
     const PENDING_READING_STORAGE_KEY = 'mh_pending_reading';
     const TAROT_YES_NO_UPGRADE_CONTEXT_KEY = 'mh_tarot_yes_no_upgrade_context';
+
+    function createTarotReadingRequestId() {
+        if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+
+        const bytes = new Uint8Array(16);
+        if (window.crypto?.getRandomValues) {
+            window.crypto.getRandomValues(bytes);
+        } else {
+            for (let index = 0; index < bytes.length; index += 1) bytes[index] = Math.floor(Math.random() * 256);
+        }
+        bytes[6] = (bytes[6] & 0x0f) | 0x40;
+        bytes[8] = (bytes[8] & 0x3f) | 0x80;
+        const hex = Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+        return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+    }
+
+    function getTarotReadingRequestId(result = lastResult) {
+        if (!result) return null;
+        if (!result.saveRequestId) result.saveRequestId = createTarotReadingRequestId();
+        return result.saveRequestId;
+    }
 
     // Karty, u kterých v CARD_VERDICTS chybí odpovídající záznam v data/tarot-cards.json,
     // se prostě přeskočí z losovacího poolu (obranné programování pro budoucí změny datasetu).
@@ -138,8 +171,7 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
                     verdict: info.verdict,
                     proc: info.proc,
                     krok: info.krok,
-                    image: data[name].image || FALLBACK_CARD_IMAGE,
-                    emoji: data[name].emoji || '🃏'
+                    image: data[name].image || FALLBACK_CARD_IMAGE
                 }));
         } catch (error) {
             console.warn('[Tarot ANO/NE] Nepodařilo se načíst kartotéku, používám nouzový výběr:', error.message);
@@ -148,16 +180,6 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
 
         cardDataLoaded = true;
         return cardPool;
-    }
-
-    function buildTarotYesNoUpgradeUrl(source = TAROT_YES_NO_RESULT_SOURCE) {
-        const pricingUrl = new URL('/cenik.html', window.location.origin);
-        pricingUrl.searchParams.set('plan', TAROT_YES_NO_PLAN_ID);
-        pricingUrl.searchParams.set('source', source);
-        pricingUrl.searchParams.set('feature', TAROT_YES_NO_FEATURE);
-        pricingUrl.searchParams.set('entry_source', source);
-        pricingUrl.searchParams.set('entry_feature', TAROT_YES_NO_FEATURE);
-        return `${pricingUrl.pathname}${pricingUrl.search}`;
     }
 
     function buildTarotYesNoResumeUrl(source = TAROT_YES_NO_RESULT_SOURCE) {
@@ -173,7 +195,7 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
         return `${tarotUrl.pathname}${tarotUrl.search}`;
     }
 
-    async function trackTarotYesNoFunnelEvent(eventName, source, metadata = {}, feature = TAROT_YES_NO_FEATURE, planId = TAROT_YES_NO_PLAN_ID) {
+    async function trackTarotYesNoFunnelEvent(eventName, source, metadata = {}, feature = TAROT_YES_NO_FEATURE, planId = null) {
         try {
             const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
             if (!csrfToken) return;
@@ -228,54 +250,15 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
         }
     }
 
-    function startTarotYesNoUpgradeFlow(source = TAROT_YES_NO_RESULT_SOURCE) {
-        const requestedCard = lastResult?.cardName || null;
-        const checkoutMetadata = {
-            entry_source: source,
-            entry_feature: TAROT_YES_NO_FEATURE,
-            ...(requestedCard ? { requested_card: requestedCard } : {})
-        };
+    function continueTarotYesNoAsMember(source = TAROT_YES_NO_RESULT_SOURCE) {
+        if (!lastResult || !window.Auth?.isLoggedIn?.() || !window.Auth?.isPremium?.()) return;
 
-        const contextStored = storeTarotYesNoUpgradeContext(lastResult, source);
+        storeTarotYesNoUpgradeContext(lastResult, source);
         storePendingTarotYesNoReading(lastResult, {
             source,
             feature: TAROT_YES_NO_FEATURE
         });
-
-        try {
-            window.MH_ANALYTICS?.trackCTA?.(source, {
-                plan_id: TAROT_YES_NO_PLAN_ID,
-                feature: TAROT_YES_NO_FEATURE,
-                has_preserved_question: contextStored,
-                ...checkoutMetadata
-            });
-        } catch (error) {
-            console.warn('[Tarot ANO/NE] Upgrade analytics unavailable:', error.message);
-        }
-
-        void trackTarotYesNoFunnelEvent('paywall_cta_clicked', source, {
-            destination: window.Auth?.isPremium?.() ? '/tarot.html' : '/cenik.html',
-            has_preserved_question: contextStored,
-            ...(requestedCard ? { requested_card: requestedCard } : {})
-        });
-
-        if (window.Auth?.isLoggedIn?.() && window.Auth?.isPremium?.()) {
-            window.location.href = buildTarotYesNoResumeUrl(source);
-            return;
-        }
-
-        if (window.Auth?.startPlanCheckout) {
-            window.Auth.startPlanCheckout(TAROT_YES_NO_PLAN_ID, {
-                source,
-                feature: TAROT_YES_NO_FEATURE,
-                metadata: checkoutMetadata,
-                redirect: '/cenik.html',
-                authMode: window.Auth?.isLoggedIn?.() ? 'login' : 'register'
-            });
-            return;
-        }
-
-        window.location.href = buildTarotYesNoUpgradeUrl(source);
+        window.location.href = buildTarotYesNoResumeUrl(source);
     }
 
     function setBlockVisible(element, visible) {
@@ -358,7 +341,7 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
             result_text: result.text,
             card_id: result.cardId,
             card_name: result.cardName,
-            saved_at: new Date().toISOString()
+            saved_at: result.savedAt || new Date().toISOString()
         };
     }
 
@@ -367,13 +350,24 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
         if (!readingData) return false;
 
         try {
-            localStorage.setItem(PENDING_READING_STORAGE_KEY, JSON.stringify({
+            const userId = window.Auth?.isLoggedIn?.() ? window.Auth?.user?.id || null : null;
+            const serialized = JSON.stringify({
                 type: 'tarot',
                 data: readingData,
+                requestId: getTarotReadingRequestId(result),
+                userId,
                 source: options.source || 'tarot_yes_no_save_journal',
                 feature: options.feature || TAROT_YES_NO_TOOL,
                 createdAt: Date.now()
-            }));
+            });
+
+            try {
+                localStorage.setItem(PENDING_READING_STORAGE_KEY, serialized);
+                return true;
+            } catch {
+                sessionStorage.setItem(PENDING_READING_STORAGE_KEY, serialized);
+            }
+
             return true;
         } catch (error) {
             console.warn('[Tarot ANO/NE] Could not store pending reading:', error.message);
@@ -381,13 +375,23 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
         }
     }
 
-    async function postTarotYesNoReading(result = lastResult) {
+    function createTarotAccountChangedError() {
+        const error = new Error('Authenticated account changed before reading save.');
+        error.code = 'ACCOUNT_CHANGED';
+        return error;
+    }
+
+    async function postTarotYesNoReading(result = lastResult, expectedUserId) {
         const readingData = buildTarotYesNoReadingData(result);
         if (!readingData) throw new Error('Missing tarot result');
+        if (typeof expectedUserId !== 'string' || !expectedUserId) throw createTarotAccountChangedError();
 
         const headers = { 'Content-Type': 'application/json' };
         const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
         if (csrfToken) headers['X-CSRF-Token'] = csrfToken;
+        if (window.Auth?.user?.id !== expectedUserId || !window.Auth?.isLoggedIn?.()) {
+            throw createTarotAccountChangedError();
+        }
 
         const response = await fetch(`${window.API_CONFIG?.BASE_URL || '/api'}/user/readings`, {
             method: 'POST',
@@ -395,11 +399,16 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
             headers,
             body: JSON.stringify({
                 type: 'tarot',
-                data: readingData
+                data: readingData,
+                requestId: getTarotReadingRequestId(result),
+                expectedUserId
             })
         });
 
         const payload = await response.json().catch(() => ({}));
+        if (response.status === 409 && payload?.error === 'Reading belongs to a different account.') {
+            throw createTarotAccountChangedError();
+        }
         if (!response.ok || !payload?.success) {
             throw new Error(payload?.error || 'Reading save failed');
         }
@@ -409,54 +418,103 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
 
     async function saveTarotYesNoReading() {
         const button = document.getElementById('btn-save-reading');
-        if (!lastResult || !button) return;
-
-        const metadata = {
-            ...getResultMetadata(lastResult.answerKey, lastResult, lastResult.question),
-            save_target: 'profile_journal'
-        };
-
-        trackTarotYesNoEvent('save_click', metadata);
-        await trackTarotYesNoFunnelEvent('reading_save_clicked', 'tarot_yes_no_save_journal', metadata, TAROT_YES_NO_TOOL, null);
+        const readingToSave = lastResult;
+        if (!readingToSave || !button || readingSaveInFlight) return;
 
         if (savedReadingId) {
             window.Auth?.showToast?.('Už uloženo', 'Tenhle výklad už je v deníku.', 'success');
             return;
         }
 
-        if (!window.Auth?.isLoggedIn?.()) {
-            storePendingTarotYesNoReading(lastResult);
-            trackTarotYesNoEvent('login_click', {
-                ...metadata,
-                auth_mode: 'register',
-                reason: 'save_reading'
-            });
-            window.location.href = 'prihlaseni.html?mode=register&source=tarot_yes_no_save_journal&feature=tarot_yes_no&redirect=/profil.html';
-            return;
-        }
+        const loggedInAtClick = Boolean(window.Auth?.isLoggedIn?.());
+        const userIdAtClick = loggedInAtClick ? window.Auth?.user?.id || null : null;
 
+        const metadata = {
+            ...getResultMetadata(readingToSave.answerKey, readingToSave, readingToSave.question),
+            save_target: 'profile_journal'
+        };
+        readingSaveInFlight = true;
         const originalText = button.textContent;
+        const resetButton = document.getElementById('btn-reset');
+        const resetWasDisabled = Boolean(resetButton?.disabled);
+        let redirecting = false;
         button.disabled = true;
+        button.setAttribute('aria-busy', 'true');
         button.textContent = 'Ukládám...';
+        if (resetButton) resetButton.disabled = true;
 
         try {
-            const payload = await postTarotYesNoReading(lastResult);
+            try {
+                trackTarotYesNoEvent('save_click', metadata);
+            } catch (analyticsError) {
+                console.warn('[Tarot ANO/NE] Save-click analytics unavailable:', analyticsError.message);
+            }
+            await trackTarotYesNoFunnelEvent('reading_save_clicked', 'tarot_yes_no_save_journal', metadata, TAROT_YES_NO_TOOL, null);
+
+            const loggedInNow = Boolean(window.Auth?.isLoggedIn?.());
+            const userIdNow = window.Auth?.user?.id || null;
+            if (loggedInNow !== loggedInAtClick
+                || (loggedInAtClick && (!userIdAtClick || userIdNow !== userIdAtClick))) {
+                window.Auth?.showToast?.(
+                    'Přihlášení se změnilo',
+                    'Výklad zůstal otevřený. Ověř účet a potom uložení zkus znovu.',
+                    'error'
+                );
+                return;
+            }
+
+            if (!loggedInAtClick) {
+                if (!storePendingTarotYesNoReading(readingToSave)) {
+                    window.Auth?.showToast?.(
+                        'Výklad zůstává otevřený',
+                        'Pro uložení do profilu povol úložiště pro tento web a zkus to znovu.',
+                        'error'
+                    );
+                    return;
+                }
+                try {
+                    trackTarotYesNoEvent('login_click', {
+                        ...metadata,
+                        auth_mode: 'register',
+                        reason: 'save_reading'
+                    });
+                } catch (analyticsError) {
+                    console.warn('[Tarot ANO/NE] Login-click analytics unavailable:', analyticsError.message);
+                }
+                redirecting = true;
+                window.location.href = 'prihlaseni.html?mode=register&source=tarot_yes_no_save_journal&feature=tarot_yes_no&redirect=/profil.html';
+                return;
+            }
+
+            const payload = await postTarotYesNoReading(readingToSave, userIdAtClick);
             savedReadingId = payload.id || payload.reading?.id || true;
             button.textContent = 'Uloženo v deníku';
             window.Auth?.showToast?.('Výklad uložen', 'Najdeš ho v profilu v historii výkladů.', 'success');
-            trackTarotYesNoEvent('reading_saved', {
-                ...metadata,
-                reading_id: payload.id || payload.reading?.id || null
-            });
+            try {
+                trackTarotYesNoEvent('reading_saved', {
+                    ...metadata,
+                    reading_id: payload.id || payload.reading?.id || null
+                });
+            } catch (analyticsError) {
+                console.warn('[Tarot ANO/NE] Saved-reading analytics unavailable:', analyticsError.message);
+            }
             void trackTarotYesNoFunnelEvent('reading_saved', 'tarot_yes_no_save_journal', {
                 ...metadata,
                 reading_id: payload.id || payload.reading?.id || null
             }, TAROT_YES_NO_TOOL, null);
         } catch (error) {
             console.warn('[Tarot ANO/NE] Could not save reading:', error.message);
-            button.disabled = false;
-            button.textContent = originalText;
-            window.Auth?.showToast?.('Nepodařilo se uložit', 'Zkus to prosím znovu za chvíli.', 'error');
+            if (error?.code === 'ACCOUNT_CHANGED') {
+                window.Auth?.showToast?.('Přihlášení se změnilo', 'Výklad zůstal otevřený. Ověř účet a potom uložení zkus znovu.', 'error');
+            } else {
+                window.Auth?.showToast?.('Nepodařilo se uložit', 'Zkus to prosím znovu za chvíli.', 'error');
+            }
+        } finally {
+            readingSaveInFlight = false;
+            button.removeAttribute('aria-busy');
+            button.disabled = Boolean(savedReadingId) || redirecting;
+            if (!savedReadingId && !redirecting) button.textContent = originalText;
+            if (resetButton) resetButton.disabled = resetWasDisabled;
         }
     }
 
@@ -743,7 +801,7 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
                     await navigator.share({
                         files: [file],
                         title: 'Tarot ANO / NE',
-                        text: `Karty mi na moji otázku odpověděly ${lastResult.label}. Zeptej se taky na mystickahvezda.cz`
+                        text: `Můj symbolický výsledek z jedné tarotové karty: ${lastResult.label}. Je to podnět k zamyšlení, ne jistá odpověď. Zkus si vlastní tah na mystickahvezda.cz.`
                     });
                     window.MH_ANALYTICS?.trackAction?.('tarot_yes_no_result_image_shared', {
                         ...baseMetadata,
@@ -789,28 +847,17 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
     function revealTarotYesNoNextStep(answerKey, ans, question) {
         const nextStep = document.getElementById('tarot-yes-no-next-step');
         const answerBadge = document.getElementById('tarot-yes-no-next-answer');
-        const upgradeAnswer = document.getElementById('tarot-result-upgrade-answer');
         if (!nextStep) return;
 
         if (answerBadge) {
             answerBadge.textContent = ans.label.toLowerCase();
         }
-        if (upgradeAnswer) {
-            upgradeAnswer.textContent = ans.label;
-        }
-
         nextStep.dataset.answerKey = answerKey;
         setBlockVisible(nextStep, !window.Auth?.isLoggedIn?.());
-        const memberContinuation = document.querySelector('[data-relationship-legacy]');
-        if (memberContinuation && window.Auth?.isPremium?.()) {
-            const link = memberContinuation.querySelector('[data-tarot-yes-no-upgrade]');
-            if (link) {
-                link.textContent = 'Pokračovat třemi kartami';
-                link.href = buildTarotYesNoResumeUrl(TAROT_YES_NO_RESULT_SOURCE);
-            }
-            const paymentCopy = memberContinuation.querySelector('.tarot-result-upgrade-bridge__action small');
-            if (paymentCopy) paymentCopy.hidden = true;
-        }
+        setBlockVisible(
+            document.querySelector('[data-tarot-member-continuation]'),
+            Boolean(window.Auth?.isLoggedIn?.() && window.Auth?.isPremium?.())
+        );
 
         const metadata = getResultMetadata(answerKey, ans, question);
         // The yes/no answer remains complete and free. The paid path is a small,
@@ -821,21 +868,15 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
             feature: TAROT_YES_NO_FEATURE,
             source: TAROT_YES_NO_RESULT_SOURCE
         });
-        if (!document.querySelector('[data-relationship-legacy]')?.hidden) window.MH_ANALYTICS?.trackAction?.('tarot_yes_no_upgrade_bridge_viewed', {
-            ...metadata,
-            feature: TAROT_YES_NO_FEATURE,
-            source: TAROT_YES_NO_RESULT_SOURCE,
-            plan_id: TAROT_YES_NO_PLAN_ID
-        });
     }
 
     function bindTarotYesNoBridgeLinks() {
-        document.querySelectorAll('[data-tarot-yes-no-upgrade]').forEach((link) => {
+        document.querySelectorAll('[data-tarot-yes-no-member-continuation]').forEach((link) => {
             if (link.dataset.tarotYesNoBound === 'true') return;
             link.dataset.tarotYesNoBound = 'true';
             link.addEventListener('click', (event) => {
                 event.preventDefault();
-                startTarotYesNoUpgradeFlow(link.dataset.tarotYesNoUpgrade || TAROT_YES_NO_RESULT_SOURCE);
+                continueTarotYesNoAsMember(link.dataset.tarotYesNoMemberContinuation || TAROT_YES_NO_RESULT_SOURCE);
             });
         });
 
@@ -896,8 +937,7 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
             verdict: info.verdict,
             proc: info.proc,
             krok: info.krok,
-            image: FALLBACK_CARD_IMAGE,
-            emoji: '🃏'
+            image: FALLBACK_CARD_IMAGE
         };
     }
 
@@ -933,6 +973,8 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
         if (questionError) questionError.hidden = true;
 
         used = true;
+        inputEl.readOnly = true;
+        const drawGeneration = ++resultGeneration;
         savedReadingId = null;
         trackTarotYesNoEvent('reading_start', {
             source: 'tarot_yes_no_card_pick',
@@ -950,13 +992,15 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
 
         await loadCardPool();
 
+        // Uživatel mohl výklad během načítání kartotéky resetovat.
+        if (drawGeneration !== resultGeneration || !used) return;
+
         // Vyhodnocení - losujeme skutečnou kartu ze 78 karet
         const drawnCard = pickCard();
         const meta = VERDICT_META[drawnCard.verdict] || VERDICT_META.nejasne;
         const key = drawnCard.verdict;
         const ans = {
             label: meta.label,
-            emoji: meta.emoji,
             class: meta.class,
             cardId: drawnCard.name,
             cardName: drawnCard.name
@@ -970,13 +1014,16 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
             question: q,
             cardId: drawnCard.name,
             cardName: drawnCard.name,
+            saveRequestId: createTarotReadingRequestId(),
+            savedAt: new Date().toISOString(),
             image: drawnCard.image,
             krok: drawnCard.krok
         };
+        const resultForDraw = lastResult;
         window.__lastTarotYesNoShareResult = lastResult;
         document.dispatchEvent(new CustomEvent('mh:tarot-yes-no-context-changed'));
 
-        // Vložení resultu na Front (Přední líc karty) - skutečná karta místo jen emoji
+        // Přední líc karty ukáže skutečnou ilustraci a štítek výsledku.
         const front = card.querySelector('.card-front');
         front.classList.add(ans.class);
         front.innerHTML = '';
@@ -984,8 +1031,12 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
         const cardImage = document.createElement('img');
         cardImage.className = 'card-front-image';
         applyCardImageFallback(cardImage);
+        applyResponsiveCardSources(cardImage, drawnCard.image, '(max-width: 492px) 64px, (max-width: 861px) 13vw, 112px');
         cardImage.src = drawnCard.image;
         cardImage.alt = drawnCard.name;
+        cardImage.width = 600;
+        cardImage.height = 1000;
+        cardImage.decoding = 'async';
         cardImage.loading = 'lazy';
         front.appendChild(cardImage);
 
@@ -1003,10 +1054,14 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
         card.classList.add('flipped');
 
         // Mírné zpoždění na otočku a zobrazení panelu s textem
-        setTimeout(() => {
+        pendingResultTimeout = setTimeout(() => {
+            pendingResultTimeout = null;
+            if (drawGeneration !== resultGeneration || lastResult !== resultForDraw) return;
+
             const resultImage = document.getElementById('result-card-image');
             if (resultImage) {
                 applyCardImageFallback(resultImage);
+                applyResponsiveCardSources(resultImage, drawnCard.image, '(max-width: 600px) 78px, 155px');
                 resultImage.src = drawnCard.image;
                 resultImage.alt = `Tarotová karta: ${drawnCard.name}`;
                 resultImage.hidden = false;
@@ -1015,13 +1070,12 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
                 if (!resultImage.complete) {
                     resultImage.addEventListener('load', () => {
                         const shownPanel = document.getElementById('result-panel');
-                        if (shownPanel?.classList.contains('show')) {
+                        if (drawGeneration === resultGeneration && lastResult === resultForDraw && shownPanel?.classList.contains('show')) {
                             scrollTarotResultIntoView(shownPanel, 'auto');
                         }
                     }, { once: true });
                 }
             }
-            document.getElementById('result-emoji').textContent = ans.emoji;
             document.getElementById('result-card-name').textContent = drawnCard.name;
             document.getElementById('result-title').textContent = ans.label;
             const resultTitle = document.getElementById('result-title');
@@ -1046,17 +1100,28 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
             trackTarotYesNoFirstValue(key, ans, q);
             revealTarotYesNoNextStep(key, ans, q);
             scrollTarotResultIntoView(panel);
-            setTimeout(() => scrollTarotResultIntoView(panel), 320);
+            setTimeout(() => {
+                if (drawGeneration === resultGeneration && lastResult === resultForDraw && panel.classList.contains('show')) {
+                    scrollTarotResultIntoView(panel);
+                }
+            }, 320);
         }, 800);
     }
 
     function resetCards() {
+        if (readingSaveInFlight) return;
+        if (pendingResultTimeout !== null) {
+            clearTimeout(pendingResultTimeout);
+            pendingResultTimeout = null;
+        }
+        resultGeneration += 1;
         used = false;
         lastResult = null;
         savedReadingId = null;
         window.__lastTarotYesNoShareResult = null;
         document.dispatchEvent(new CustomEvent('mh:tarot-yes-no-context-changed'));
         document.getElementById('question-input').value = '';
+        document.getElementById('question-input').readOnly = false;
         const saveReadingButton = document.getElementById('btn-save-reading');
         if (saveReadingButton) {
             saveReadingButton.disabled = false;
@@ -1070,6 +1135,8 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
         const resultImage = document.getElementById('result-card-image');
         if (resultImage) {
             resultImage.hidden = true;
+            resultImage.removeAttribute('srcset');
+            resultImage.removeAttribute('sizes');
             resultImage.src = '';
         }
         const resultQuestion = document.getElementById('result-question');

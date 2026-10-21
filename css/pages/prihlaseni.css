@@ -506,3 +506,7 @@ body.page-login .login-card .form-input { scroll-margin-top: 6rem; }
 @media(min-width:1000px){body.auth-register-mode .login-icon{margin-left:0}}
 @media(max-width:999px){body.auth-register-mode .login-icon{display:none}}
 
+.form-success-summary{margin:1rem 0 0;padding:.9rem 1rem;border:1px solid rgba(136,210,162,.34);border-radius:var(--radius-md,12px);background:rgba(44,112,75,.2);color:#e2f3e7;line-height:1.55}
+.form-success-summary a{color:#f2d58d;font-weight:700;text-underline-offset:.18em}
+.form-success-summary[hidden]{display:none}
+

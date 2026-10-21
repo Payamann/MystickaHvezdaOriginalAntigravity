@@ -318,8 +318,8 @@
 .stat-card:hover {
     transform: translateY(-5px);
     border-color: rgba(212, 175, 55, 0.4);
-    box-shadow: 0 10px 30px rgba(157, 78, 221, 0.2);
-    background: rgba(26, 10, 46, 0.6);
+    box-shadow: 0 10px 30px rgba(79, 132, 151, 0.16);
+    background: rgba(18, 43, 62, 0.72);
 }
 
 .stat-icon-wrapper {
@@ -539,10 +539,14 @@ body.page-profile .subscription-card .badge--info {
 }
 
 .profile-zodiac-icon {
-    width: 14px;
-    height: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1rem;
     margin-right: 4px;
-    vertical-align: middle;
+    color: var(--color-mystic-gold);
+    font-size: 0.95rem;
+    line-height: 1;
 }
 
 .tab-content.is-active {
@@ -720,17 +724,23 @@ body.page-profile .subscription-card .badge--info {
 }
 
 .reading-question__text {
+    max-width: 68ch;
     margin: 0;
     font-family: var(--font-heading);
     font-size: 1.1rem;
     font-style: italic;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
     opacity: 0.9;
 }
 
 .reading-formatted-content,
 .reading-plain-text {
+    max-width: 72ch;
+    margin-inline: auto;
     color: var(--color-starlight);
     line-height: 1.7;
+    overflow-wrap: anywhere;
 }
 
 .reading-structured {
@@ -920,15 +930,11 @@ body.page-profile .subscription-card .badge--info {
     box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
 }
 
-/* Lucide Icon Styling */
+/* Local profile SVG symbols */
 .reading-type-icon {
     width: 24px;
     height: 24px;
     color: var(--color-mystic-gold);
-}
-
-.btn i[data-lucide] {
-    vertical-align: middle;
 }
 
 /* Stardust Animation */
@@ -1438,7 +1444,8 @@ body.page-profile #profile-dashboard .settings-field-hint {
     line-height: 1.45;
 }
 
-body.page-profile #profile-dashboard .settings-form .form-input {
+body.page-profile #profile-dashboard .settings-form .form-input,
+body.page-profile #profile-dashboard .settings-password-fields .form-input {
     width: 100%;
     min-height: 46px;
     border-color: rgba(208, 177, 124, 0.26);
@@ -1446,7 +1453,8 @@ body.page-profile #profile-dashboard .settings-form .form-input {
     color: var(--profile-cream);
 }
 
-body.page-profile #profile-dashboard .settings-form .form-input:focus-visible {
+body.page-profile #profile-dashboard .settings-form .form-input:focus-visible,
+body.page-profile #profile-dashboard .settings-password-fields .form-input:focus-visible {
     border-color: var(--profile-gold);
     outline-color: var(--profile-gold);
     box-shadow: 0 0 0 3px rgba(208, 177, 124, 0.12);
@@ -1484,6 +1492,10 @@ body.page-profile #profile-dashboard .settings-password-fields {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1rem;
     padding: 0 1rem 1rem;
+}
+
+body.page-profile #profile-dashboard .settings-password-fields > .form-error-summary {
+    grid-column: 1 / -1;
 }
 
 body.page-profile #profile-dashboard #change-password-btn {
@@ -1622,6 +1634,8 @@ body.page-profile .reading-item__preview {
 }
 body.page-profile .reading-item__icon .mh-symbol,
 body.page-profile .reading-detail__icon .mh-symbol { width: 2rem; height: 2rem; }
+body.page-profile .reading-item__icon .mh-symbol.reading-type-icon { width: 24px; height: 24px; }
+body.page-profile .reading-detail__icon .mh-symbol.reading-type-icon { width: 2rem; height: 2rem; }
 body.page-profile .activation-checklist-item__status .mh-symbol { width: 1.25rem; height: 1.25rem; }
 body.page-profile .avatar-option { min-width: 44px; min-height: 44px; }
 body.page-profile .avatar-option .mh-symbol { width: 1.8rem; height: 1.8rem; pointer-events: none; }

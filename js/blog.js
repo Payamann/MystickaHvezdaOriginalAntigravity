@@ -7,10 +7,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     const loadMoreButton = document.getElementById('blog-load-more');
     const loadStatus = document.getElementById('blog-load-status');
 
-    const PAGE_SIZE = 12;
+    const PAGE_SIZE = 8;
     let allPosts = [];
     let currentGridPosts = [];
     let visibleCount = PAGE_SIZE;
+    const staticFeaturedMarkup = featuredContainer.innerHTML;
+    const staticGridMarkup = container.innerHTML;
+    const staticFilterMarkup = filterContainer.innerHTML;
+    const staticGridTitle = gridTitle.textContent;
+
+    function responsiveAtlasImageAttributes(imageSrc, displaySize) {
+        const source = String(imageSrc || '').split(/[?#]/, 1)[0];
+        const isEditorial = /(?:^|\/)img\/atlas\/editorial-v1\/[^/]+\.webp$/i.test(source);
+        const isTarot = /(?:^|\/)img\/tarot-v2\/tarot_[^/]+\.webp$/i.test(source);
+        if (isTarot) {
+            const base = source.slice(0, -'.webp'.length);
+            return ` srcset="${base}-240.webp 240w, ${base}-360.webp 360w, ${source} 600w" sizes="${displaySize}"`;
+        }
+        if (!isEditorial && !/(?:^|\/)img\/atlas\/(?:social|tools)-v1\/[^/]+\.webp$/i.test(source)) return '';
+
+        const base = isEditorial
+            ? source.replace(/-1200\.webp$/i, '')
+            : source.slice(0, -'.webp'.length);
+        const candidates = isEditorial
+            ? `${base}-480.webp 480w, ${base}-960.webp 960w, ${source} 1200w`
+            : `${base}-480.webp 480w, ${base}-800.webp 800w, ${source} ${source.includes('social-v1/') ? 1080 : 1200}w`;
+        return ` srcset="${candidates}" sizes="${displaySize}"`;
+    }
 
     document.addEventListener('error', (event) => {
         const image = event.target;
@@ -25,12 +48,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const response = await fetch('/data/blog-index.json?v=atlas-art-v1', { cache: 'no-cache' });
         if (!response.ok) throw new Error('Data index nebyl nalezen');
         allPosts = await response.json();
+        if (!Array.isArray(allPosts) || allPosts.length === 0) throw new Error('Seznam článků je prázdný');
 
         container.innerHTML = '';
-
-        if (allPosts.length === 0) {
-            throw new Error("Žádné články");
-        }
 
         const categories = new Set();
         allPosts.forEach(p => { if (p.category) categories.add(p.category); });
@@ -47,9 +67,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     } catch (err) {
         console.error(err);
-        container.innerHTML = '<div class="no-results">Zatím nebyly publikovány žádné články.</div>';
-        featuredContainer.hidden = true;
-        gridTitle.hidden = true;
+        featuredContainer.innerHTML = staticFeaturedMarkup;
+        featuredContainer.hidden = false;
+        container.innerHTML = staticGridMarkup;
+        filterContainer.innerHTML = staticFilterMarkup;
+        gridTitle.textContent = staticGridTitle;
+        gridTitle.hidden = false;
+        loadMoreButton?.setAttribute('hidden', '');
+
+        const fallbackMessage = document.createElement('p');
+        fallbackMessage.className = 'no-results';
+        fallbackMessage.setAttribute('role', 'status');
+        fallbackMessage.textContent = 'Aktuální seznam článků se nepodařilo načíst. Níže najdeš dostupné články.';
+        container.prepend(fallbackMessage);
     }
 
     filterContainer.addEventListener('click', (e) => {
@@ -114,7 +144,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         featuredContainer.innerHTML = `
             <a href="blog/${post.slug}.html" class="featured-post">
                 <div class="featured-post__image-wrapper">
-                    <img src="${imageSrc}" alt="" role="presentation" class="featured-post__image" width="640" height="360" loading="eager" fetchpriority="high">
+                    <img src="${imageSrc}" alt="" role="presentation" class="featured-post__image" width="640" height="360" loading="eager" fetchpriority="high"${responsiveAtlasImageAttributes(imageSrc, '(max-width: 720px) 88vw, 640px')}>
                 </div>
                 <div class="featured-post__content">
                     <div class="featured-post__meta">
@@ -126,7 +156,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <p class="featured-post__desc">${post.short_description || ''}</p>
                     <div class="featured-post__meta featured-post__meta--footer">
                         <span class="btn-read-more">Číst článek <span>›</span></span>
-                        <span>📖 ${readTime}</span>
+                        <span><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#book"></use></svg>${readTime}</span>
                     </div>
                 </div>
             </a>
@@ -155,7 +185,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             el.className = 'blog-card';
             el.innerHTML = `
                 <div class="blog-card-image-wrapper">
-                    <img src="${imageSrc}" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                    <img src="${imageSrc}" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy"${responsiveAtlasImageAttributes(imageSrc, '(max-width: 720px) 88vw, 320px')}>
                 </div>
                 <div class="blog-card-content">
                     <div class="blog-meta-small">
@@ -164,8 +194,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div class="blog-title">${post.title}</div>
                     <div class="blog-desc">${post.short_description || ''}</div>
                     <div class="blog-footer">
-                        <span>📅 ${date}</span>
-                        <span>📖 ${readTime}</span>
+                        <span><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#calendar"></use></svg>${date}</span>
+                        ${readTime ? '<span><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#book"></use></svg>' + readTime + '</span>' : ''}
                     </div>
                 </div>
             `;

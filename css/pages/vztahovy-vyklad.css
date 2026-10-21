@@ -92,9 +92,9 @@ p { margin: 0 0 20px; }
   box-shadow: 0 0 110px #874ecc18;
 }
 .orbit::before { content: ''; position: absolute; inset: 24px; border: 1px solid #c9a75e20; border-radius: 50%; }
-.orbit::after {
-  content: '✦'; position: absolute; top: 2px; left: 62px; color: var(--gold);
-  font-size: 20px; text-shadow: 0 0 20px #e9c572;
+.orbit__star {
+  position: absolute; top: 2px; left: 62px; color: var(--gold);
+  filter: drop-shadow(0 0 6px rgba(233, 197, 114, .6));
 }
 .card {
   position: absolute; width: 175px; height: auto; aspect-ratio: 3/5; object-fit: contain;

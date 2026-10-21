@@ -3,6 +3,12 @@ const ZODIAC_SIGNS = [
         slug: 'beran',
         name: 'Beran',
         en: 'Aries',
+        seo: {
+            title: 'Aries znamení česky: Beran, datum, povaha a láska',
+            description: 'Aries znamení je česky Beran. Zjisti datum 21. 3. - 19. 4., povahu, silné stránky, lásku a kompatibilitu prvního ohnivého znamení zvěrokruhu v jednom přehledu.',
+            og_title: 'Aries znamení česky: Beran, datum, povaha a láska',
+            og_description: 'Aries je česky Beran. Přehled období, povahy, lásky, silných stránek a kompatibility prvního ohnivého znamení.'
+        },
         emoji: '♈',
         symbol: 'Beran',
         element: 'Oheň',

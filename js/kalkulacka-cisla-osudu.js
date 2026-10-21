@@ -119,28 +119,84 @@ const NUMBERS = {
         }
 
         let currentNumber = null;
+        let copyStatusTimer = null;
 
+        const dayInput = document.getElementById('inp-day');
+        const monthInput = document.getElementById('inp-month');
+        const yearInput = document.getElementById('inp-year');
+        const dateInputs = [dayInput, monthInput, yearInput];
+        const errorMessage = document.getElementById('calc-error');
+        const resultContainer = document.getElementById('calc-result');
+        const resultHeading = document.getElementById('calc-result-heading');
+        const resultStatus = document.getElementById('calc-result-status');
+        const numerologyIntentCard = document.querySelector('[data-life-number-intent="numerology"]');
+        const lifeNumberIntentGrid = document.querySelector('.life-number-intent-grid');
+        yearInput.max = String(new Date().getFullYear());
+
+        function clearLifeNumberResult() {
+            currentNumber = null;
+            resultContainer.hidden = true;
+            if (resultStatus) resultStatus.textContent = '';
+            if (numerologyIntentCard) numerologyIntentCard.hidden = false;
+            if (lifeNumberIntentGrid) lifeNumberIntentGrid.classList.remove('life-number-intent-grid--result-visible');
+            resultContainer.classList.remove('mh-block-visible');
+            document.getElementById('res-number').textContent = '';
+            document.getElementById('res-name').textContent = '';
+            document.getElementById('res-traits').replaceChildren();
+            document.getElementById('res-text').textContent = '';
+        }
+
+        function clearLifeNumberError() {
+            errorMessage.textContent = '';
+            dateInputs.forEach(input => input.removeAttribute('aria-invalid'));
+        }
+
+        dateInputs.forEach(input => {
+            input.addEventListener('input', () => {
+                clearLifeNumberError();
+                clearLifeNumberResult();
+            });
+            input.addEventListener('change', () => {
+                clearLifeNumberError();
+                clearLifeNumberResult();
+            });
+        });
 
 
         document.getElementById('calc-btn').addEventListener('click', () => {
 
-            const day = parseInt(document.getElementById('inp-day').value);
+            const day = Number(dayInput.value);
 
-            const month = parseInt(document.getElementById('inp-month').value);
+            const month = Number(monthInput.value);
 
-            const year = parseInt(document.getElementById('inp-year').value);
+            const year = Number(yearInput.value);
 
-            const err = document.getElementById('calc-error');
-
-            err.textContent = '';
+            clearLifeNumberError();
+            clearLifeNumberResult();
 
 
 
             const currentYear = new Date().getFullYear();
+            const today = new Date();
 
-            if (!day || !month || !year || day < 1 || day > 31 || month < 1 || month > 12 || year < 1900 || year > currentYear) {
+            const date = new Date(Date.UTC(year, month - 1, day));
+            const hasValidDate = Number.isInteger(day) && Number.isInteger(month) && Number.isInteger(year)
+                && date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
+            const isFutureDate = hasValidDate
+                && Date.UTC(year, month - 1, day) > Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
 
-                err.textContent = 'Zadejte prosím platné datum narození.';
+            if (!hasValidDate || day < 1 || day > 31 || month < 1 || month > 12 || year < 1900 || year > currentYear || isFutureDate) {
+
+                const invalidInput = !Number.isInteger(day) || day < 1 || day > 31
+                    ? dayInput
+                    : !Number.isInteger(month) || month < 1 || month > 12
+                        ? monthInput
+                        : !Number.isInteger(year) || year < 1900 || year > currentYear || isFutureDate
+                            ? yearInput
+                            : dayInput;
+                invalidInput.setAttribute('aria-invalid', 'true');
+                errorMessage.textContent = 'Zkontroluj den, měsíc a rok. Zadej skutečné datum narození, které není v budoucnosti.';
+                invalidInput.focus();
 
                 return;
 
@@ -162,13 +218,16 @@ const NUMBERS = {
 
             document.getElementById('res-text').textContent = data.text;
 
-            const result = document.getElementById('calc-result');
+            resultContainer.hidden = false;
+            if (numerologyIntentCard) numerologyIntentCard.hidden = true;
+            if (lifeNumberIntentGrid) lifeNumberIntentGrid.classList.add('life-number-intent-grid--result-visible');
 
-            result.hidden = false;
+            resultContainer.classList.add('mh-block-visible');
 
-            result.classList.add('mh-block-visible');
+            if (resultStatus) resultStatus.textContent = `Výsledek připraven: životní číslo ${currentNumber}, ${data.name}.`;
+            resultHeading?.focus({ preventScroll: true });
 
-            result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            resultContainer.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest' });
 
 
 
@@ -200,11 +259,8 @@ const NUMBERS = {
 
         // Event delegation for share buttons
         document.addEventListener('click', (e) => {
-            const action = e.target.getAttribute('data-action');
-            if (action === 'shareResult') {
-                const platform = e.target.getAttribute('data-platform');
-                shareResult(platform);
-            }
+            const button = e.target.closest('[data-action="shareResult"]');
+            if (button) shareResult(button.getAttribute('data-platform'));
         });
 
         function openShareWindow(url) {
@@ -212,13 +268,36 @@ const NUMBERS = {
             if (opened) opened.opener = null;
         }
 
-        function shareResult(platform) {
+        function setCopyButtonState(symbolId, label, announcement) {
+            const btn = document.getElementById('copy-btn');
+            const status = document.getElementById('copy-status');
+            if (!btn) return;
+
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('class', 'mh-symbol mh-symbol--inline');
+            svg.setAttribute('viewBox', '0 0 48 48');
+            svg.setAttribute('fill', 'none');
+            svg.setAttribute('stroke', 'currentColor');
+            svg.setAttribute('stroke-width', '1.8');
+            svg.setAttribute('stroke-linecap', 'round');
+            svg.setAttribute('stroke-linejoin', 'round');
+            svg.setAttribute('aria-hidden', 'true');
+            svg.setAttribute('focusable', 'false');
+
+            const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+            use.setAttribute('href', `/img/icons/mh-symbols.svg?v=20261018#${symbolId}`);
+            svg.appendChild(use);
+            btn.replaceChildren(svg, document.createTextNode(label));
+            if (status) status.textContent = announcement;
+        }
+
+        async function shareResult(platform) {
 
             if (!currentNumber) return;
 
             const data = NUMBERS[currentNumber];
 
-            const text = `Moje Číslo Osudu je ${currentNumber} – ${data.name}! Zjistěte vaše na Mystické Hvězdě 🌟`;
+            const text = `Moje číslo životní cesty je ${currentNumber} – ${data.name}. Spočítej si svoje na Mystické Hvězdě.`;
 
             const url = 'https://www.mystickahvezda.cz/kalkulacka-cisla-osudu.html';
 
@@ -234,15 +313,16 @@ const NUMBERS = {
 
             } else if (platform === 'copy') {
 
-                navigator.clipboard.writeText(`${text} ${url}`).then(() => {
+                window.clearTimeout(copyStatusTimer);
+                try {
+                    if (!navigator.clipboard?.writeText) throw new Error('Clipboard API unavailable');
+                    await navigator.clipboard.writeText(`${text} ${url}`);
+                    setCopyButtonState('check', 'Zkopírováno!', 'Odkaz byl zkopírován.');
+                } catch {
+                    setCopyButtonState('error', 'Nelze kopírovat', 'Kopírování se nezdařilo. Zkus adresu zkopírovat ručně.');
+                }
 
-                    const btn = document.getElementById('copy-btn');
-
-                    btn.textContent = '✅ Zkopírováno!';
-
-                    setTimeout(() => btn.textContent = '📋 Kopírovat', 2000);
-
-                });
+                copyStatusTimer = window.setTimeout(() => setCopyButtonState('copy', 'Kopírovat', ''), 2500);
 
             }
 

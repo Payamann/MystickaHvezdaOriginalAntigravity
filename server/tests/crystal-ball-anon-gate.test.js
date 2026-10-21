@@ -1,13 +1,27 @@
 /**
  * Anonymous crystal-ball allowance. Business rule: a visitor gets 1 free question
  * (CRYSTAL_BALL_ANON_FREE_LIMIT), then must register. Regression guard for the
- * exploratory-testing finding where the daily limit only applied to logged-in
- * users (`if (!req.isPremium && req.user?.id)`), leaving anonymous callers capped
- * only by the hourly IP rate limiter. Enforcement is a server-set httpOnly cookie
- * counter (server/routes/oracle.js); an agent carries it across requests.
+ * exploratory-testing finding where the registration gate only applied to
+ * logged-in users. The anonymous httpOnly cookie is a soft gate, not a hard quota:
+ * visitors can clear it, so cost controls must be independent of this counter.
  */
 import request from 'supertest';
 import app from '../index.js';
+import { parseAnonymousCrystalBallFreeLimit } from '../routes/oracle.js';
+
+describe('Crystal ball anonymous free-limit configuration', () => {
+    test.each([
+        ['0', 0],
+        ['2', 2],
+        ['-1', 0],
+        [undefined, 1],
+        ['', 1],
+        ['invalid', 1],
+        ['9007199254740992', 1]
+    ])('parses %s as %i', (rawValue, expected) => {
+        expect(parseAnonymousCrystalBallFreeLimit(rawValue)).toBe(expected);
+    });
+});
 
 describe('Crystal ball anonymous free-question gate', () => {
     async function getCsrf(agent) {

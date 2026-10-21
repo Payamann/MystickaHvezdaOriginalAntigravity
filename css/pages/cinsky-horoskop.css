@@ -348,3 +348,5 @@ html body .mh-inline-a3cd1c1280 { display:grid; grid-template-columns:1fr 1fr; g
 html body .mh-inline-4ed11ed228 { text-align:center; flex:1; }
 html body .mh-inline-507e25c2d7 { font-size:2rem; opacity:0.5; }
 html body .mh-inline-fb7d31145b { text-align:center; margin-top:1.5rem; }
+html body #result-name:focus,
+html body #syn-title:focus { outline:2px solid var(--color-mystic-gold); outline-offset:4px; }

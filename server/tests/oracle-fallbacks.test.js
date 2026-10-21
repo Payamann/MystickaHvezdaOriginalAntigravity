@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals';
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import app from '../index.js';
@@ -105,6 +106,66 @@ describe('Oracle AI fallbacks', () => {
         expect(res.body.success).toBe(true);
         expect(res.body.fallback).toBe(true);
         expect(res.body.response).toEqual(expect.stringContaining('Should I change direction?'));
+    });
+
+    test('authenticated free crystal-ball requests enforce the atomic daily cap', async () => {
+        const csrfToken = await getCsrfToken();
+        const userId = `oracle-quota-${Date.now()}`;
+        const token = createPremiumToken({ id: userId, isPremium: false, subscription_status: 'free' });
+
+        const responses = await Promise.all(Array.from({ length: 4 }, (_, index) => request(app)
+            .post('/api/crystal-ball')
+            .set('x-csrf-token', csrfToken)
+            .set('Cookie', `auth_token=${token}`)
+            .send({ question: `Free question ${index + 1}` })));
+
+        expect(responses.filter(response => response.status === 200)).toHaveLength(3);
+        expect(responses.filter(response => response.status === 402)).toHaveLength(1);
+        expect(responses.find(response => response.status === 402).body.code).toBe('LIMIT_REACHED');
+        expect(responses.filter(response => response.status === 200).every(response => response.body.fallback)).toBe(true);
+    });
+
+    test('authenticated free crystal-ball preserves already-used quota from today', async () => {
+        const csrfToken = await getCsrfToken();
+        const userId = `oracle-quota-backfill-${Date.now()}`;
+        const token = createPremiumToken({ id: userId, isPremium: false, subscription_status: 'free' });
+        const today = new Date().toISOString().slice(0, 10);
+
+        await supabase.from('readings').insert(Array.from({ length: 3 }, (_, index) => ({
+            user_id: userId,
+            type: 'crystal-ball',
+            created_at: `${today}T${String(index + 8).padStart(2, '0')}:00:00.000Z`
+        })));
+
+        await request(app)
+            .post('/api/crystal-ball')
+            .set('x-csrf-token', csrfToken)
+            .set('Cookie', `auth_token=${token}`)
+            .send({ question: 'Is the prior usage included?' })
+            .expect(402);
+    });
+
+    test('authenticated free crystal-ball fails closed when quota storage is unavailable', async () => {
+        const csrfToken = await getCsrfToken();
+        const userId = `oracle-quota-error-${Date.now()}`;
+        const token = createPremiumToken({ id: userId, isPremium: false, subscription_status: 'free' });
+        const rpcSpy = jest.spyOn(supabase, 'rpc').mockResolvedValueOnce({
+            data: null,
+            error: new Error('Quota storage unavailable')
+        });
+
+        try {
+            const response = await request(app)
+                .post('/api/crystal-ball')
+                .set('x-csrf-token', csrfToken)
+                .set('Cookie', `auth_token=${token}`)
+                .send({ question: 'Will you fail safely?' });
+
+            expect(response.status).toBe(503);
+            expect(response.body.code).toBe('LIMIT_CHECK_UNAVAILABLE');
+        } finally {
+            rpcSpy.mockRestore();
+        }
     });
 
     test('POST /api/dream returns fallback when AI fails', async () => {

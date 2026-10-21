@@ -137,7 +137,7 @@
 
             font-size: 0.8rem;
 
-            color: rgba(255, 255, 255, 0.3);
+            color: #aebbc2;
 
         }
 
@@ -159,13 +159,25 @@
 
         .heart-btn {
 
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 0.35rem;
+
+            min-width: 44px;
+
+            min-height: 44px;
+
             background: none;
 
             border: none;
 
             cursor: pointer;
 
-            color: rgba(255, 255, 255, 0.3);
+            color: #aebbc2;
 
             font-size: 1rem;
 
@@ -181,7 +193,23 @@
 
         .heart-btn:hover {
 
-            color: #e74c3c;
+            color: #d99a92;
+
+        }
+
+        .heart-btn:focus-visible {
+
+            outline: 2px solid #d0b17c;
+
+            outline-offset: 2px;
+
+        }
+
+        .heart-btn:disabled {
+
+            cursor: wait;
+
+            opacity: 0.72;
 
         }
 
@@ -199,7 +227,13 @@
 
         .heart-btn.liked {
 
-            color: #e74c3c;
+            color: #d99a92;
+
+        }
+
+        .heart-btn.liked .mh-symbol {
+
+            fill: currentColor;
 
         }
 
@@ -221,6 +255,13 @@
 
         }
 
+        @media (prefers-reduced-motion: reduce) {
+            .message-card,
+            .heart-btn--pop {
+                animation: none !important;
+            }
+        }
+
 
 
         .category-tag {
@@ -233,11 +274,11 @@
 
             font-size: 0.75rem;
 
-            background: rgba(155, 89, 182, 0.15);
+            background: rgba(208, 177, 124, 0.12);
 
-            border: 1px solid rgba(155, 89, 182, 0.25);
+            border: 1px solid rgba(208, 177, 124, 0.28);
 
-            color: rgba(155, 89, 182, 0.8);
+            color: #d0b17c;
 
             margin-right: 0.3rem;
 
@@ -305,7 +346,7 @@
 
         #submit-msg.submit-message--error {
 
-            color: #e74c3c;
+            color: #d99a92;
 
         }
 
@@ -313,14 +354,14 @@
 
         #submit-msg.submit-message--success {
 
-            color: #2ed573;
+            color: #a8c5a1;
 
         }
 
 /* Migrated from andelska-posta.html static style attributes. */
 html body .mh-inline-fe157fd9e5 { padding-top:5rem;text-align:center; }
 html body .mh-inline-ed21604022 { display:block;color:rgba(255,255,255,0.5);font-size:0.82rem;margin-bottom:0.4rem; }
-html body .mh-inline-f423340941 { display:none;color:#2ed573;font-size:0.88rem;margin-top:0.75rem;text-align:center; }
+html body .mh-inline-f423340941 { display:none;color:#a8c5a1;font-size:0.88rem;margin-top:0.75rem;text-align:center; }
 html body .mh-inline-30d4d9591a { font-family:'Cinzel',serif;color:#d4af37;font-size:1.2rem;margin-bottom:1.5rem;text-align:center; }
 
 /* Migrated from andelska-posta.html remaining static style attributes. */

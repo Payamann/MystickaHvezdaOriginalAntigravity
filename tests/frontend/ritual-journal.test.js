@@ -9,7 +9,7 @@ function makeElement(id = '') {
     const listeners = {};
     const classes = new Set();
     return {
-        id, hidden: false, disabled: false, value: '', textContent: '', innerHTML: '', dataset: {}, attrs: {},
+        id, hidden: false, disabled: false, value: '', textContent: '', innerHTML: '', dataset: {}, attrs: {}, isConnected: true,
         classList: {
             add: value => classes.add(value),
             remove: value => classes.delete(value),
@@ -19,6 +19,7 @@ function makeElement(id = '') {
         click() { return listeners.click?.(); },
         setAttribute(name, value) { this.attrs[name] = value; },
         removeAttribute(name) { delete this.attrs[name]; }
+        ,querySelector() { return null; }
     };
 }
 
@@ -28,13 +29,14 @@ function deferred() {
     return { promise, resolve };
 }
 
-function createSession({ profileId = 'user-1', currentUserId = profileId, saveReading = async () => ({ id: 'reading-1' }) } = {}) {
+function createSession({ profileId = 'user-1', currentUserId = profileId, saveReading = async () => ({ id: 'reading-1' }), withBreathGuide = false, reducedMotion = false } = {}) {
     const ids = [
         'screen-checkin-before', 'screen-step', 'screen-checkin-after', 'screen-completion', 'progress-bar',
         'step-counter', 'header-ritual-name', 'btn-next', 'step-label', 'step-title', 'step-text',
         'step-subtext', 'completion-subtitle', 'mood-shift', 'streak-number', 'streak-label',
         'journal-prompts-list', 'journal-action', 'journal-notes', 'journal-saved', 'btn-save-journal'
     ];
+    if (withBreathGuide) ids.push('breath-container', 'breath-circle', 'breath-label', 'breath-counter');
     const nodes = Object.fromEntries(ids.map(id => [id, makeElement(id)]));
     nodes['journal-notes'].value = '  Moje reflexe  ';
     const beforeMood = makeElement('mood-before');
@@ -44,10 +46,12 @@ function createSession({ profileId = 'user-1', currentUserId = profileId, saveRe
     const localStorage = new Map();
     const Auth = {
         user: { id: currentUserId },
+        isLoggedIn: () => Boolean(Auth.user?.id),
         isPremium: () => true,
         getProfile: async () => ({ id: profileId }),
         saveReading
     };
+    const documentListeners = {};
     const document = {
         readyState: 'complete',
         getElementById: id => nodes[id] || null,
@@ -55,10 +59,13 @@ function createSession({ profileId = 'user-1', currentUserId = profileId, saveRe
             ? [beforeMood]
             : selector === '#screen-checkin-after .emoji-btn' ? [afterMood] : [],
         createElement: () => makeElement(),
-        addEventListener() {}
+        addEventListener(type, handler) { documentListeners[type] = handler; },
+        dispatchEvent(event) { documentListeners[event.type]?.(event); }
     };
     const window = {
+        addEventListener() {}, removeEventListener() {},
         location: { search: '' },
+        matchMedia: query => ({ matches: reducedMotion && query === '(prefers-reduced-motion: reduce)' }),
         Auth,
         RitualContent: {
             getRitual: () => ({
@@ -68,8 +75,10 @@ function createSession({ profileId = 'user-1', currentUserId = profileId, saveRe
             })
         }
     };
+    const scheduledTimeouts = [];
     vm.runInNewContext(source, {
         window, document, console: { warn() {} }, URLSearchParams,
+        setTimeout: (callback, delay) => scheduledTimeouts.push({ callback, delay }),
         localStorage: {
             getItem: key => localStorage.get(key) ?? null,
             setItem: (key, value) => localStorage.set(key, String(value))
@@ -80,8 +89,20 @@ function createSession({ profileId = 'user-1', currentUserId = profileId, saveRe
     beforeMood.click();
     nodes['btn-next'].click();
     afterMood.click();
-    return { nodes, Auth };
+    return { nodes, Auth, document, scheduledTimeouts };
 }
+
+test('reduced motion leaves the breathing prompt optional and unlocks continue immediately', () => {
+    const { nodes, scheduledTimeouts } = createSession({ withBreathGuide: true, reducedMotion: true });
+
+    expect(nodes['breath-container'].hidden).toBe(false);
+    expect(nodes['breath-container'].classList.contains('ritual-breath-visible')).toBe(true);
+    expect(nodes['breath-circle'].className).toBe('breath-guide');
+    expect(nodes['breath-label'].textContent).toBe('Pokud chceš, zkus tři pohodlné nádechy vlastním tempem.');
+    expect(nodes['breath-counter'].textContent).toBe('');
+    expect(nodes['btn-next'].hidden).toBe(false);
+    expect(scheduledTimeouts).toHaveLength(0);
+});
 
 test('confirmed reading id shows success and saves the after-session mood', async () => {
     const saveReading = jest.fn(async () => ({ id: 'reading-42' }));
@@ -145,4 +166,56 @@ test('profile mismatch after fetching profile prevents saving', async () => {
     expect(nodes['journal-notes'].value).toBe('  Moje reflexe  ');
     expect(nodes['journal-saved'].textContent).toContain('Text zůstává tady.');
     expect(nodes['btn-save-journal'].disabled).toBe(false);
+});
+
+test('changing accounts clears the previous account ritual journal', () => {
+    const { nodes, Auth, document } = createSession();
+
+    Auth.user = { id: 'user-2' };
+    document.dispatchEvent({ type: 'auth:changed' });
+
+    expect(nodes['journal-notes'].value).toBe('');
+    expect(nodes['journal-saved'].hidden).toBe(true);
+    expect(nodes['screen-checkin-before'].classList.contains('active')).toBe(true);
+});
+
+test('a pending journal save cannot update the interface after an account switch', async () => {
+    const saving = deferred();
+    const started = deferred();
+    const saveReading = jest.fn(() => { started.resolve(); return saving.promise; });
+    const { nodes, Auth, document } = createSession({ saveReading });
+
+    const save = nodes['btn-save-journal'].click();
+    await started.promise;
+    Auth.user = { id: 'user-2' };
+    document.dispatchEvent({ type: 'auth:changed' });
+    expect(nodes['journal-notes'].value).toBe('');
+
+    saving.resolve({ id: 'reading-old-account' });
+    await save;
+
+    expect(nodes['journal-saved'].hidden).toBe(true);
+    expect(nodes['journal-notes'].value).toBe('');
+});
+
+test('journal status keeps the shared icon while its message and state change', async () => {
+    const saveReading = jest.fn().mockResolvedValueOnce(null).mockResolvedValueOnce({ id: 'reading-45' });
+    const { nodes } = createSession({ saveReading });
+    const message = makeElement('journal-saved-text');
+    const iconUse = makeElement('journal-saved-icon-use');
+    nodes['journal-saved'].querySelector = selector => {
+        if (selector === '[data-journal-saved-text]') return message;
+        if (selector === '[data-journal-saved-icon] use') return iconUse;
+        return null;
+    };
+
+    await nodes['btn-save-journal'].click();
+    expect(message.textContent).toContain('Text zůstává tady.');
+    expect(iconUse.attrs.href).toBe('/img/icons/mh-symbols.svg#warning');
+    expect(nodes['journal-saved'].attrs.role).toBe('alert');
+
+    await nodes['btn-save-journal'].click();
+    expect(message.textContent).toBe('Zápisky jsou uložené v deníku tvého profilu.');
+    expect(iconUse.attrs.href).toBe('/img/icons/mh-symbols.svg#check');
+    expect(nodes['journal-saved'].attrs.role).toBe('status');
 });

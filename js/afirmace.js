@@ -21,6 +21,8 @@ const signs = {
 };
 
 const affirmationSignClasses = Object.keys(signs).map(sign => `affirmation-card--${sign}`);
+let affirmationRequestId = 0;
+let copyStatusTimer = 0;
 
 function setAffirmationCardTheme(card, sign) {
     card.classList.remove(...affirmationSignClasses);
@@ -30,6 +32,21 @@ function setAffirmationCardTheme(card, sign) {
 function getMoonPhase() {
     const state = getLunarState();
     return { name: state.name, emoji: state.icon };
+}
+
+function renderMoonBadge(moon) {
+    const badge = document.getElementById('moon-badge');
+    if (!badge) return;
+
+    const icon = badge.querySelector('[data-moon-icon]');
+    const label = badge.querySelector('[data-moon-label]');
+    if (icon) window.MH_MOON_ART?.render(icon, moon.emoji, moon.name);
+    if (label) label.textContent = moon.name;
+}
+
+function setAffirmationStatus(message) {
+    const status = document.getElementById('affirmation-status');
+    if (status) status.textContent = message;
 }
 
 // Jednoduché fallbacky pro případ výpadku API
@@ -51,6 +68,7 @@ const fallbackAffirmations = {
 window.showAffirmation = async function (sign) {
     const signData = signs[sign];
     if (!signData) return;
+    const requestId = ++affirmationRequestId;
 
     // Aktivní tlačítko
     document.querySelectorAll('.zodiac-btn').forEach(b => b.classList.remove('active'));
@@ -61,7 +79,7 @@ window.showAffirmation = async function (sign) {
     if (horoskopLink) horoskopLink.href = `horoskopy.html#${sign}`;
 
     const moon = getMoonPhase();
-    document.getElementById('moon-badge').innerHTML = `${moon.emoji} ${moon.name}`;
+    renderMoonBadge(moon);
     document.getElementById('sign-emoji').textContent = signData.emoji;
     document.getElementById('sign-name').textContent = signData.name.toUpperCase();
 
@@ -69,10 +87,11 @@ window.showAffirmation = async function (sign) {
     setAffirmationCardTheme(card, sign);
 
     // Zobraz kartu s loading textem
-    document.getElementById('affirmation-text').textContent = '✨ Naladění na energii vašeho znamení…';
+    setAffirmationStatus(`Připravuji dnešní afirmaci pro znamení ${signData.name}.`);
+    document.getElementById('affirmation-text').textContent = 'Připravuju dnešní afirmaci…';
     document.getElementById('affirmation-sub').textContent = '';
     card.classList.add('show');
-    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    card.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest' });
 
     // Session cache — vyhne se opakovaným API voláním
     const cacheKey = `mh_aff_${sign}_${new Date().toDateString()}`;
@@ -82,6 +101,7 @@ window.showAffirmation = async function (sign) {
             const { text } = JSON.parse(cached);
             document.getElementById('affirmation-text').textContent = `"${text}"`;
             document.getElementById('affirmation-sub').textContent = moon.name;
+            setAffirmationStatus(`Afirmace pro znamení ${signData.name} je připravená.`);
             try { localStorage.setItem('mh_last_affirmation_sign', sign); } catch (e) { }
             return;
         }
@@ -94,46 +114,91 @@ window.showAffirmation = async function (sign) {
         const affirmation = parsed?.affirmation;
         if (!affirmation) throw new Error('No affirmation in response');
 
+        // Cache the completed answer, but never let an older request replace the
+        // result for a sign selected more recently.
+        try { sessionStorage.setItem(cacheKey, JSON.stringify({ text: affirmation })); } catch (e) { }
+        if (requestId !== affirmationRequestId) return;
+
         document.getElementById('affirmation-text').textContent = `"${affirmation}"`;
         document.getElementById('affirmation-sub').textContent = moon.name;
-
-        try { sessionStorage.setItem(cacheKey, JSON.stringify({ text: affirmation })); } catch (e) { }
+        setAffirmationStatus(`Afirmace pro znamení ${signData.name} je připravená.`);
 
     } catch (err) {
+        if (requestId !== affirmationRequestId) return;
         console.warn('[Afirmace] API fallback:', err.message);
         const text = fallbackAffirmations[sign] || 'Jsem v souladu se svou nejhlubší pravdou.';
         document.getElementById('affirmation-text').textContent = `"${text}"`;
         document.getElementById('affirmation-sub').textContent = moon.name;
+        setAffirmationStatus(`Služba je teď nedostupná. Zobrazuji připravenou náhradní afirmaci pro znamení ${signData.name}.`);
     }
 
+    if (requestId !== affirmationRequestId) return;
     try { localStorage.setItem('mh_last_affirmation_sign', sign); } catch (e) { }
 };
 
-function copyAffirmation() {
+async function copyAffirmation() {
     const raw = document.getElementById('affirmation-text').textContent;
     const text = raw.replace(/^"|"$/g, '').trim();
-    navigator.clipboard.writeText(text + ' — Mystická Hvězda').then(() => {
-        const el = document.getElementById('copy-confirm');
-        el.hidden = false;
-        el.classList.add('mh-block-visible');
-        setTimeout(() => {
-            el.hidden = true;
-            el.classList.remove('mh-block-visible');
-        }, 2000);
-    });
+    clearAffirmationActionStatus();
+    let copied = false;
+
+    try {
+        if (!navigator.clipboard?.writeText) throw new Error('Clipboard API is unavailable');
+        await navigator.clipboard.writeText(text + ' — Mystická Hvězda');
+        copied = true;
+    } catch {
+        copied = false;
+    }
+
+    showAffirmationActionStatus(copied
+        ? 'Zkopírováno!'
+        : 'Kopírování se nepodařilo. Označ text afirmace a zkopíruj ho ručně.', !copied, copied ? 2000 : 0);
 }
 
-function shareAffirmation() {
+function clearAffirmationActionStatus() {
+    clearTimeout(copyStatusTimer);
+    const el = document.getElementById('affirmation-action-status');
+    el.hidden = true;
+    el.classList.remove('mh-block-visible', 'affirmation-action-status--error');
+}
+
+function showAffirmationActionStatus(text, isError = false, dismissAfter = 0) {
+    const el = document.getElementById('affirmation-action-status');
+    const message = document.getElementById('affirmation-action-message');
+    el.classList.toggle('affirmation-action-status--error', isError);
+    el.hidden = false;
+    el.classList.add('mh-block-visible');
+    message.textContent = text;
+
+    if (dismissAfter > 0) {
+        copyStatusTimer = window.setTimeout(() => {
+            el.hidden = true;
+            el.classList.remove('mh-block-visible');
+        }, dismissAfter);
+    }
+}
+
+async function shareAffirmation() {
     const raw = document.getElementById('affirmation-text').textContent;
     const text = raw.replace(/^"|"$/g, '').trim();
+    clearAffirmationActionStatus();
+
     if (navigator.share) {
-        navigator.share({ title: 'Moje dnešní afirmace', text, url: 'https://www.mystickahvezda.cz/afirmace.html' });
+        try {
+            await navigator.share({ title: 'Moje dnešní afirmace', text, url: 'https://www.mystickahvezda.cz/afirmace.html' });
+        } catch (error) {
+            // Dismissing the native share sheet is an expected user action.
+            if (error?.name !== 'AbortError') {
+                showAffirmationActionStatus('Sdílení se nepodařilo. Afirmaci můžeš zkopírovat tlačítkem „Kopírovat“.', true);
+            }
+        }
     } else {
-        copyAffirmation();
+        await copyAffirmation();
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    renderMoonBadge(getMoonPhase());
     document.querySelectorAll('.zodiac-btn[data-sign]').forEach(btn => {
         btn.addEventListener('click', () => showAffirmation(btn.dataset.sign));
     });

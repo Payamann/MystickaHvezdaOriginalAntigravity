@@ -3,6 +3,7 @@ import { jest } from '@jest/globals';
 const originals = Object.fromEntries(['fetch', 'document', 'window', 'confirm', 'CustomEvent'].map(key => [key, globalThis[key]]));
 const updateFavoriteSummary = jest.fn();
 jest.unstable_mockModule('../../js/profile/shared.js', () => ({
+    getProfileScrollBehavior: () => 'auto',
     escapeHtml: value => String(value ?? ''), apiUrl: () => '/api', authHeaders: () => ({}),
     authHeadersWithCsrf: async () => ({}), getReadingIcon: () => '', getReadingLabel: () => 'Poznámka',
     getReadingData: reading => reading.data,
@@ -56,7 +57,7 @@ beforeEach(() => {
     };
     nodes['reading-modal'].querySelector = selector => selector === '.modal__close' ? nodes['reading-modal-close'] : null;
     nodes['reading-modal'].querySelectorAll = () => [nodes['reading-modal-close'], nodes['modal-favorite-btn'], nodes['modal-delete-btn']].filter(node => !node.disabled);
-    globalThis.window = { Auth: { showToast: jest.fn() } };
+    globalThis.window = { Auth: { user: { id: 'profile-user-id' }, isLoggedIn: () => true, showToast: jest.fn() } };
     globalThis.confirm = jest.fn(() => true);
     globalThis.CustomEvent = class { constructor(type, options) { this.type = type; this.detail = options.detail; } };
     globalThis.fetch = jest.fn();
@@ -194,7 +195,10 @@ test('delete captures A, blocks duplicates, and its completion cannot close B', 
     expectActionsDisabled(true);
     await deleteReading();
     expect(confirm).toHaveBeenCalledTimes(1);
-    expect(fetch.mock.calls[1]).toEqual(['/api/user/readings/A', expect.objectContaining({ method: 'DELETE' })]);
+    expect(fetch.mock.calls[1]).toEqual(['/api/user/readings/A', expect.objectContaining({
+        method: 'DELETE',
+        body: JSON.stringify({ expectedUserId: 'profile-user-id' })
+    })]);
     await viewReading('B');
     mutation.resolve({ ok: true });
     await deleting;

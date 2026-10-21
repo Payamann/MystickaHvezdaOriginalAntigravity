@@ -44,6 +44,7 @@ test.describe('Admin Stripe webhook health', () => {
                 failures: { recoveredInvoices: 1, withoutObservedPayment: 0 }
             } }, topSources: [], topFeatures: [], topPlans: [], daily: [], recentEvents: []
         });
+        await expect(page.locator('h1 use')).toHaveAttribute('href', '/img/icons/mh-symbols.svg#settings');
         const summary = page.locator('#funnel-summary');
         await expect(summary).toContainText('Zaznamenané platby CZK');
         await expect(summary).toContainText('bez úplné historie nerozlišeno');

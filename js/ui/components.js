@@ -143,7 +143,8 @@ export function initCarousel() {
         const gap = parseFloat(getComputedStyle(track).gap) || 0;
         // Scroll by (slideWidth + gap) * currentIndex without writing inline styles.
         const amountToMove = (slideWidth + gap) * currentIndex;
-        container.scrollTo({ left: amountToMove, behavior: 'smooth' });
+        const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+        container.scrollTo({ left: amountToMove, behavior });
     };
 
     const handleNext = () => {

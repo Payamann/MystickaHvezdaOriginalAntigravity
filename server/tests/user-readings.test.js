@@ -1,5 +1,6 @@
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
+import { randomUUID } from 'node:crypto';
 import app from '../index.js';
 import {
     calculateAstrocartographyInsights,
@@ -35,6 +36,7 @@ describe('User readings route', () => {
             .set('Cookie', `auth_token=${token}`)
             .send({
                 type: 'natal-chart',
+                expectedUserId: 'reading-history-test-user',
                 data: {
                     name: 'Test User',
                     chart: {
@@ -53,6 +55,77 @@ describe('User readings route', () => {
             user_id: 'reading-history-test-user'
         }));
         expect(res.body.reading.data.chart.sun.sign).toBe('Beran');
+    });
+
+    test('retries a reading request with the same UUID without creating a duplicate', async () => {
+        const csrfToken = await getCsrfToken();
+        const userId = randomUUID();
+        const token = createUserToken({ id: userId });
+        const requestId = randomUUID();
+        const body = {
+            type: 'tarot',
+            requestId,
+            expectedUserId: userId,
+            data: {
+                tool: 'tarot_yes_no',
+                question: 'Mám počkat do zítřka?',
+                answer: 'ANO: Dej rozhodnutí chvíli prostoru.'
+            }
+        };
+        const sendReading = () => request(app)
+            .post('/api/user/readings')
+            .set('x-csrf-token', csrfToken)
+            .set('Cookie', `auth_token=${token}`)
+            .send(body);
+
+        const first = await sendReading().expect(200);
+        const retry = await sendReading().expect(200);
+
+        expect(first.body.id).toBe(requestId);
+        expect(retry.body.id).toBe(first.body.id);
+        expect(retry.body.idempotent).toBe(true);
+    });
+
+    test('rejects a pending reading bound to a different authenticated account', async () => {
+        const csrfToken = await getCsrfToken();
+        const token = createUserToken({ id: 'reading-account-binding-current-user' });
+
+        const res = await request(app)
+            .post('/api/user/readings')
+            .set('x-csrf-token', csrfToken)
+            .set('Cookie', `auth_token=${token}`)
+            .send({
+                type: 'tarot',
+                requestId: randomUUID(),
+                expectedUserId: 'reading-account-binding-original-user',
+                data: { tool: 'tarot_yes_no', answer: 'Výsledek zůstal v původním účtu.' }
+            })
+            .expect(409);
+
+        expect(res.body).toEqual(expect.objectContaining({
+            success: false,
+            error: 'Reading belongs to a different account.'
+        }));
+    });
+
+    test('rejects a reading save without an account binding before database writes', async () => {
+        const csrfToken = await getCsrfToken();
+        const token = createUserToken();
+
+        const res = await request(app)
+            .post('/api/user/readings')
+            .set('x-csrf-token', csrfToken)
+            .set('Cookie', `auth_token=${token}`)
+            .send({
+                type: 'tarot',
+                data: { tool: 'tarot_yes_no', answer: 'Výsledek bez určeného vlastníka.' }
+            })
+            .expect(409);
+
+        expect(res.body).toEqual(expect.objectContaining({
+            success: false,
+            error: 'Reading belongs to a different account.'
+        }));
     });
 
     test('saves realistic astro engine artifacts from frontend readings', async () => {
@@ -79,6 +152,7 @@ describe('User readings route', () => {
         const payloads = [
             {
                 type: 'natal-chart',
+                expectedUserId: 'reading-history-astro-artifact-user',
                 data: {
                     ...person,
                     interpretation: 'Strukturovany natalni vyklad.',
@@ -87,6 +161,7 @@ describe('User readings route', () => {
             },
             {
                 type: 'synastry',
+                expectedUserId: 'reading-history-astro-artifact-user',
                 data: {
                     person1: person,
                     person2: partner,
@@ -97,6 +172,7 @@ describe('User readings route', () => {
             },
             {
                 type: 'astrocartography',
+                expectedUserId: 'reading-history-astro-artifact-user',
                 data: {
                     ...person,
                     intention: 'laska',
@@ -130,6 +206,7 @@ describe('User readings route', () => {
             .set('Cookie', `auth_token=${token}`)
             .send({
                 type: 'tarot',
+                expectedUserId: 'reading-history-large-test-user',
                 data: { response: 'x'.repeat(51000) }
             })
             .expect(400);
@@ -148,6 +225,7 @@ describe('User readings route', () => {
             .set('Cookie', `auth_token=${token}`)
             .send({
                 type: 'horoscope',
+                expectedUserId: userId,
                 data: {
                     sign: 'Beran',
                     period: 'daily',
@@ -184,6 +262,7 @@ describe('User readings route', () => {
             .set('Cookie', `auth_token=${token}`)
             .send({
                 type: 'journal',
+                expectedUserId: userId,
                 data: 'Prvni vecerni reflexe pred vykladem.'
             })
             .expect(200);
@@ -194,6 +273,7 @@ describe('User readings route', () => {
             .set('Cookie', `auth_token=${token}`)
             .send({
                 type: 'horoscope',
+                expectedUserId: userId,
                 data: {
                     sign: 'Beran',
                     period: 'daily',
@@ -208,6 +288,7 @@ describe('User readings route', () => {
             .set('Cookie', `auth_token=${token}`)
             .send({
                 type: 'tarot',
+                expectedUserId: userId,
                 data: {
                     question: 'Co dal?',
                     response: 'Druhy vyklad uz nema byt prvni hodnota.'
@@ -239,6 +320,7 @@ describe('User readings route', () => {
             .set('Cookie', `auth_token=${token}`)
             .send({
                 type: 'tarot',
+                expectedUserId: userId,
                 data: {
                     question: 'Co potrebuji vedet?',
                     response: 'Karta ukazuje konkretni dalsi krok.'
@@ -251,6 +333,7 @@ describe('User readings route', () => {
             .set('x-csrf-token', csrfToken)
             .set('Cookie', `auth_token=${token}`)
             .send({
+                expectedUserId: userId,
                 resonance: 'fits',
                 focus: 'relationships',
                 nextAction: 'journal',
@@ -279,6 +362,36 @@ describe('User readings route', () => {
         }));
     });
 
+    test.each([
+        ['feedback', 'patch', '/feedback'],
+        ['favorite', 'patch', '/favorite'],
+        ['delete', 'delete', '']
+    ])('%s mutation rejects a missing or stale account binding before touching a reading', async (_name, method, suffix) => {
+        const csrfToken = await getCsrfToken();
+        const userId = randomUUID();
+        const token = createUserToken({ id: userId });
+        const path = `/api/user/readings/${randomUUID()}${suffix}`;
+
+        for (const expectedUserId of [undefined, randomUUID()]) {
+            const req = method === 'delete' ? request(app).delete(path) : request(app).patch(path);
+            req.set('x-csrf-token', csrfToken).set('Cookie', `auth_token=${token}`);
+            await req.send(expectedUserId ? { expectedUserId } : {}).expect(409);
+        }
+    });
+
+    test('favorite returns not found for a reading outside the account instead of an internal error', async () => {
+        const csrfToken = await getCsrfToken();
+        const userId = randomUUID();
+        const token = createUserToken({ id: userId });
+
+        await request(app)
+            .patch(`/api/user/readings/${randomUUID()}/favorite`)
+            .set('x-csrf-token', csrfToken)
+            .set('Cookie', `auth_token=${token}`)
+            .send({ expectedUserId: userId })
+            .expect(404);
+    });
+
     test('rejects invalid reading feedback values', async () => {
         const csrfToken = await getCsrfToken();
         const userId = `reading-feedback-invalid-${Date.now()}`;
@@ -290,6 +403,7 @@ describe('User readings route', () => {
             .set('Cookie', `auth_token=${token}`)
             .send({
                 type: 'horoscope',
+                expectedUserId: userId,
                 data: { sign: 'Ryby', prediction: 'Test.' }
             })
             .expect(200);
@@ -299,6 +413,7 @@ describe('User readings route', () => {
             .set('x-csrf-token', csrfToken)
             .set('Cookie', `auth_token=${token}`)
             .send({
+                expectedUserId: userId,
                 resonance: 'perfect_magic'
             })
             .expect(400);

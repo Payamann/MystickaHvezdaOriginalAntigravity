@@ -1,7 +1,10 @@
+import { getTodayIsoDate } from './utils/numerology-logic.js';
+
 const COPY = {
     sk: {
         loading: 'Počítam polohy planét…',
         invalidDate: 'Zadajte platný dátum narodenia.',
+        futureDate: 'Dátum narodenia nemôže byť v budúcnosti.',
         missingPlace: 'Zadajte miesto narodenia.',
         error: 'Výpočet sa nepodarilo načítať. Vaše údaje zostali vo formulári; skúste to znova.',
         title: 'Vypočítané polohy planét',
@@ -14,6 +17,7 @@ const COPY = {
     pl: {
         loading: 'Obliczam położenia planet…',
         invalidDate: 'Wpisz prawidłową datę urodzenia.',
+        futureDate: 'Data urodzenia nie może przypadać w przyszłości.',
         missingPlace: 'Wpisz miejsce urodzenia.',
         error: 'Nie udało się pobrać obliczenia. Dane pozostały w formularzu; spróbuj ponownie.',
         title: 'Obliczone położenia planet',
@@ -51,10 +55,33 @@ function initLocaleNatal() {
     const result = document.getElementById('natal-result');
     if (!form || !status || !output || !result) return;
 
+    const birthDateInput = form.elements.birthDate;
+    function refreshLocaleNatalBirthDateMaximum() {
+        birthDateInput.max = getTodayIsoDate();
+    }
+
+    refreshLocaleNatalBirthDateMaximum();
+    form.addEventListener('focusin', refreshLocaleNatalBirthDateMaximum);
+    form.addEventListener('pointerdown', refreshLocaleNatalBirthDateMaximum, true);
+    form.addEventListener('keydown', refreshLocaleNatalBirthDateMaximum, true);
+    window.addEventListener('focus', refreshLocaleNatalBirthDateMaximum);
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) refreshLocaleNatalBirthDateMaximum();
+    });
+
     let activeController = null;
     let requestId = 0;
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
+        refreshLocaleNatalBirthDateMaximum();
+        const thisRequest = ++requestId;
+        activeController?.abort();
+        activeController = null;
+        const button = form.querySelector('[type="submit"]');
+        button.disabled = false;
+        button.removeAttribute('aria-busy');
+        output.replaceChildren();
+
         const birthDate = form.elements.birthDate.value;
         const birthTime = form.elements.birthTime.value;
         const birthPlace = form.elements.birthPlace.value.trim();
@@ -64,20 +91,21 @@ function initLocaleNatal() {
             form.elements.birthDate.focus();
             return;
         }
+        if (birthDate > getTodayIsoDate()) {
+            status.textContent = copy.futureDate;
+            form.elements.birthDate.focus();
+            return;
+        }
         if (!birthPlace) {
             status.textContent = copy.missingPlace;
             form.elements.birthPlace.focus();
             return;
         }
 
-        activeController?.abort();
         activeController = new AbortController();
-        const thisRequest = ++requestId;
-        const button = form.querySelector('[type="submit"]');
         button.disabled = true;
         button.setAttribute('aria-busy', 'true');
         status.textContent = copy.loading;
-        output.replaceChildren();
         try {
             const params = new URLSearchParams({ birthDate, birthTime, birthPlace });
             const apiBase = window.API_CONFIG?.BASE_URL || '/api';

@@ -63,6 +63,17 @@
         context.hidden = false;
     }
     renderContinuation();
+    form.question.addEventListener('input', () => {
+        if (!continuation || form.question.value === continuation.question) return;
+        continuation = null;
+        const context = document.getElementById('continuation-context');
+        const image = document.getElementById('continuation-card-image');
+        context.hidden = true;
+        image.hidden = true;
+        image.removeAttribute('src');
+        image.alt = '';
+        document.querySelectorAll('[data-reading-cta-label]').forEach(label => { label.textContent = 'Chci svůj výklad'; });
+    });
     function csrf() {
         if (!csrfPromise) csrfPromise = fetch('/api/csrf-token', { credentials: 'same-origin' }).then(async response => {
             if (!response.ok) throw new Error('csrf');
@@ -105,23 +116,46 @@
     form.addEventListener('submit', async event => {
         event.preventDefault();
         if (!enabled || button.disabled || !form.reportValidity()) return;
+        const checkoutPayload = {
+            email: form.email.value.trim(),
+            question: form.question.value.trim(),
+            consent: document.getElementById('consent').checked,
+            source,
+            flowId
+        };
+        const controls = Array.from(form.querySelectorAll('input, textarea, select, button'));
+        const previousDisabledStates = controls.map(control => control.disabled);
         button.disabled = true;
+        controls.forEach(control => { control.disabled = true; });
         error.textContent = '';
-        try { sessionStorage.setItem(draftKey, JSON.stringify({ ...continuation, question: form.question.value, email: form.email.value, flowId, at: Date.now() })); } catch { /* Preserve in the DOM when storage is unavailable. */ }
+        try { sessionStorage.setItem(draftKey, JSON.stringify({ ...continuation, question: checkoutPayload.question, email: checkoutPayload.email, flowId, at: Date.now() })); } catch { /* Preserve in the DOM when storage is unavailable. */ }
         track('one_time_form_submitted', { funnel_step: 'form_submit' });
         try {
             const response = await fetch('/api/vztahovy-vyklad/checkout', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': await csrf() },
-                body: JSON.stringify({ email: form.email.value.trim(), question: form.question.value.trim(), consent: document.getElementById('consent').checked, source, flowId }) });
+                body: JSON.stringify(checkoutPayload) });
             if (response.status === 403) csrfPromise = null;
             const result = await response.json().catch(() => ({ error: 'Platbu se nepodařilo otevřít. Zkus to za chvíli.' }));
-            if (!response.ok) throw new Error(result.error || 'Platbu se nepodařilo otevřít.');
+            if (!response.ok) {
+                const failure = new Error(result.error || 'Platbu se nepodařilo otevřít.');
+                failure.code = result.code;
+                throw failure;
+            }
             const url = new URL(result.url);
             if (url.protocol !== 'https:' || url.hostname !== 'checkout.stripe.com') throw new Error('Platební odkaz se nepodařilo ověřit.');
             location.assign(url.href);
         } catch (failure) {
             error.textContent = failure.message === 'csrf' ? 'Platbu se nepodařilo připravit. Zkus to znovu.' : failure.message;
-            button.disabled = false;
-            track('one_time_checkout_failed', { funnel_step: 'checkout_create' });
+            controls.forEach((control, index) => { control.disabled = previousDisabledStates[index]; });
+            if (failure.code === 'checkout_session_expired') {
+                flowId = createFlowId();
+                try {
+                    sessionStorage.setItem(flowKey, flowId);
+                    sessionStorage.setItem(draftKey, JSON.stringify({ ...continuation, question: checkoutPayload.question, email: checkoutPayload.email, flowId, at: Date.now() }));
+                } catch { /* The visible form remains available for a fresh attempt. */ }
+            } else if (['checkout_already_completed', 'checkout_payment_pending', 'checkout_session_unavailable', 'checkout_flow_conflict'].includes(failure.code)) {
+                button.disabled = true;
+            }
+            track('one_time_checkout_failed', { funnel_step: 'checkout_create', flow_id: checkoutPayload.flowId });
         }
     });
     let paymentTracked = false;

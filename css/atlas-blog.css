@@ -69,6 +69,7 @@ body.atlas-blog .atlas-table-scroll .master-table { min-width:600px; width:100%;
 body.atlas-blog .master-table :is(th,td) { text-align:left; }
 body.atlas-blog .master-table th { background:#bd9b6522; color:#d0b17c; }
 body.atlas-blog .author-avatar { background:#0b1929; border:1px solid #bd9b6555; }
+body.atlas-blog .author-avatar .mh-symbol { display:block; width:1.5rem; height:1.5rem; color:#d0b17c; }
 body.atlas-blog .blog-content { max-width: 72ch; color: var(--atlas-ink); }
 body.atlas-blog .blog-content :is(p, li) { color: var(--atlas-muted); line-height: 1.85; }
 body.atlas-blog .blog-content p { text-align:left; }

@@ -107,23 +107,55 @@ router.post('/', postLimiter, async (req, res) => {
 // POST /api/angel-post/:id/like — přidat srdíčko
 router.post('/:id/like', likeLimiter, async (req, res) => {
     try {
-        const { id } = req.params;
-        if (!id || isNaN(parseInt(id))) return res.status(400).json({ error: 'Invalid ID' });
+        const id = Number(req.params.id);
+        if (!Number.isSafeInteger(id) || id <= 0) {
+            return res.status(400).json({ success: false, error: 'Vzkaz nebyl nalezen.' });
+        }
 
-        const { error } = await supabase.rpc('increment_angel_likes', { msg_id: parseInt(id) });
+        const { data: message, error: messageError } = await supabase
+            .from('angel_messages')
+            .select('id')
+            .eq('id', id)
+            .eq('approved', true)
+            .maybeSingle();
+
+        if (messageError) throw messageError;
+        if (!message) {
+            return res.status(404).json({ success: false, error: 'Vzkaz už není dostupný.' });
+        }
+
+        const { error } = await supabase.rpc('increment_angel_likes', { msg_id: id });
 
         if (error) {
             // Fallback: manual increment if RPC not available
-            const { data } = await supabase.from('angel_messages').select('likes').eq('id', id).single();
-            if (data) {
-                await supabase.from('angel_messages').update({ likes: (data.likes || 0) + 1 }).eq('id', id);
+            const { data, error: lookupError } = await supabase
+                .from('angel_messages')
+                .select('likes')
+                .eq('id', id)
+                .eq('approved', true)
+                .maybeSingle();
+            if (lookupError) throw lookupError;
+            if (!data) {
+                return res.status(404).json({ success: false, error: 'Vzkaz už není dostupný.' });
+            }
+
+            const { data: updatedMessage, error: updateError } = await supabase
+                .from('angel_messages')
+                .update({ likes: (data.likes || 0) + 1 })
+                .eq('id', id)
+                .eq('approved', true)
+                .select('id')
+                .maybeSingle();
+            if (updateError) throw updateError;
+            if (!updatedMessage) {
+                return res.status(404).json({ success: false, error: 'Vzkaz už není dostupný.' });
             }
         }
 
-        res.json({ success: true });
+        return res.json({ success: true });
     } catch (err) {
         console.error('[angel-post] LIKE error:', err.message);
-        res.json({ success: true }); // Silent fail — like is non-critical
+        return res.status(503).json({ success: false, error: 'Srdíčko se nepodařilo uložit. Zkus to prosím znovu.' });
     }
 });
 

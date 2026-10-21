@@ -1,97 +1,152 @@
-const W=540,H=675,S=0.5;
-const c=document.getElementById('c');
-const ctx=c.getContext('2d');
+const WIDTH = 540;
+const HEIGHT = 675;
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
 
-// BG gradient
-const bg=ctx.createLinearGradient(0,0,0,H);
-bg.addColorStop(0,'#050510'); bg.addColorStop(0.5,'#0b0418'); bg.addColorStop(1,'#0d0620');
-ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
-
-// Nebula
-const n1=ctx.createRadialGradient(W*.3,H*.25,0,W*.3,H*.25,W*.55);
-n1.addColorStop(0,'rgba(90,40,160,0.45)'); n1.addColorStop(1,'transparent');
-ctx.fillStyle=n1; ctx.fillRect(0,0,W,H);
-const n2=ctx.createRadialGradient(W*.75,H*.45,0,W*.75,H*.45,W*.45);
-n2.addColorStop(0,'rgba(50,20,100,0.35)'); n2.addColorStop(1,'transparent');
-ctx.fillStyle=n2; ctx.fillRect(0,0,W,H);
-
-// Stars
-for(let i=0;i<140;i++){
-  ctx.beginPath();
-  ctx.arc(Math.random()*W,Math.random()*H*.75,Math.random()*0.75+0.15,0,Math.PI*2);
-  ctx.fillStyle=`rgba(255,255,255,${Math.random()*.6+.2})`;
-  ctx.fill();
+function drawImageCover(image, x, y, width, height) {
+    const scale = Math.max(width / image.naturalWidth, height / image.naturalHeight);
+    const drawWidth = image.naturalWidth * scale;
+    const drawHeight = image.naturalHeight * scale;
+    ctx.drawImage(image, x + (width - drawWidth) / 2, y + (height - drawHeight) / 2, drawWidth, drawHeight);
 }
 
-// Gold circle
-const cx=W/2,cy=210,cr=105;
-const cg=ctx.createRadialGradient(cx,cy,30,cx,cy,cr);
-cg.addColorStop(0,'rgba(235,192,102,0.18)'); cg.addColorStop(.6,'rgba(235,192,102,0.06)'); cg.addColorStop(1,'transparent');
-ctx.fillStyle=cg; ctx.beginPath(); ctx.arc(cx,cy,cr,0,Math.PI*2); ctx.fill();
-ctx.beginPath(); ctx.arc(cx,cy,cr-5,0,Math.PI*2);
-ctx.strokeStyle='rgba(235,192,102,0.25)'; ctx.lineWidth=0.75; ctx.stroke();
+function drawBackground(landscape) {
+    const gradient = ctx.createLinearGradient(0, 0, 0, HEIGHT);
+    gradient.addColorStop(0, '#0b1929');
+    gradient.addColorStop(0.52, '#102638');
+    gradient.addColorStop(1, '#07121f');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-// Badge
-ctx.font='500 17px sans-serif'; ctx.letterSpacing='3px';
-ctx.fillStyle='#ebc066'; ctx.textAlign='center';
-ctx.fillText('DENNÍ HOROSKOP',W/2,50);
-ctx.letterSpacing='0px';
-ctx.beginPath(); ctx.moveTo(W/2-80,68); ctx.lineTo(W/2+80,68);
-ctx.strokeStyle='rgba(235,192,102,0.4)'; ctx.lineWidth=0.5; ctx.stroke();
+    if (landscape?.naturalWidth) {
+        const artHeight = 330;
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(0, 0, WIDTH, artHeight);
+        ctx.clip();
+        drawImageCover(landscape, 0, 0, WIDTH, artHeight);
+        const veil = ctx.createLinearGradient(0, 0, 0, artHeight);
+        veil.addColorStop(0, 'rgba(11,25,41,0.86)');
+        veil.addColorStop(0.5, 'rgba(11,25,41,0.35)');
+        veil.addColorStop(1, '#102638');
+        ctx.fillStyle = veil;
+        ctx.fillRect(0, 0, WIDTH, artHeight);
+        ctx.restore();
+    }
 
-// Date
-ctx.font='300 15px sans-serif'; ctx.fillStyle='rgba(255,255,255,0.75)';
-ctx.fillText('Dnes • středa 9. dubna 2026',W/2,88);
-
-// Zodiac symbol
-ctx.font='90px serif'; ctx.fillText('♈',W/2,240);
-
-// Sign name
-ctx.font='bold 44px Georgia,serif'; ctx.fillStyle='#ebc066';
-ctx.fillText('BERAN',W/2,340);
-
-// Divider
-ctx.beginPath(); ctx.moveTo(W/2-75,355); ctx.lineTo(W/2+75,355);
-ctx.strokeStyle='rgba(235,192,102,0.5)'; ctx.lineWidth=0.75; ctx.stroke();
-ctx.save(); ctx.translate(W/2,355); ctx.rotate(Math.PI/4);
-ctx.fillStyle='#ebc066'; ctx.fillRect(-2.5,-2.5,5,5); ctx.restore();
-
-// Prediction text
-function wrapText(text,x,y,maxW,lh,maxL){
-  const words=text.split(' '); let line='', drawn=0;
-  for(let n=0;n<words.length;n++){
-    const t=line+words[n]+' ';
-    if(ctx.measureText(t).width>maxW&&n>0){
-      if(drawn>=maxL-1){ctx.fillText(line.trim()+'…',x,y);return;}
-      ctx.fillText(line.trim(),x,y); line=words[n]+' '; y+=lh; drawn++;
-    } else line=t;
-  }
-  if(line.trim()) ctx.fillText(line.trim(),x,y);
+    ctx.strokeStyle = 'rgba(208,177,124,0.5)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(27, 27, WIDTH - 54, HEIGHT - 54);
 }
-ctx.font='400 19px sans-serif'; ctx.fillStyle='#ffffff'; ctx.textAlign='left';
-wrapText('Dnes je pro tebe den plný energie a nových začátků. Mars, tvůj vládce, ti dává sílu překonat jakékoli překážky. Nezapomínej naslouchat svému srdci — intuice tě povede správným směrem.',45,400,W-90,29,5);
 
-// Affirmation box
-ctx.fillStyle='rgba(235,192,102,0.12)';
-ctx.beginPath(); const ax=45,ay=555,aw=W-90,ah=65,ar=8;
-ctx.moveTo(ax+ar,ay); ctx.lineTo(ax+aw-ar,ay);
-ctx.quadraticCurveTo(ax+aw,ay,ax+aw,ay+ar);
-ctx.lineTo(ax+aw,ay+ah-ar); ctx.quadraticCurveTo(ax+aw,ay+ah,ax+aw-ar,ay+ah);
-ctx.lineTo(ax+ar,ay+ah); ctx.quadraticCurveTo(ax,ay+ah,ax,ay+ah-ar);
-ctx.lineTo(ax,ay+ar); ctx.quadraticCurveTo(ax,ay,ax+ar,ay); ctx.closePath(); ctx.fill();
-ctx.strokeStyle='rgba(235,192,102,0.3)'; ctx.lineWidth=0.5; ctx.stroke();
+function wrapText(text, maxWidth) {
+    const lines = [];
+    let line = '';
+    String(text).split(/\s+/).filter(Boolean).forEach((word) => {
+        const nextLine = line ? `${line} ${word}` : word;
+        if (ctx.measureText(nextLine).width <= maxWidth || !line) {
+            line = nextLine;
+        } else {
+            lines.push(line);
+            line = word;
+        }
+    });
+    if (line) lines.push(line);
+    return lines;
+}
 
-ctx.font='500 15px sans-serif'; ctx.fillStyle='#ebc066'; ctx.textAlign='left';
-ctx.fillText('✨ Afirmace',ax+10,ay+22);
-ctx.font='italic 17px sans-serif'; ctx.fillStyle='rgba(255,255,255,0.75)';
-ctx.fillText('"Jsem silný a odvážný v každém okamžiku."',ax+10,ay+47);
+function drawPreview(landscape = null) {
+    drawBackground(landscape);
 
-// Branding
-ctx.beginPath(); ctx.moveTo(45,H-40); ctx.lineTo(W-45,H-40);
-ctx.strokeStyle='rgba(235,192,102,0.2)'; ctx.lineWidth=0.5; ctx.stroke();
-ctx.font='16px serif'; ctx.fillStyle='#ebc066'; ctx.textAlign='center';
-ctx.fillText('★',W/2-110,H-18);
-ctx.font='500 16px Georgia,serif';
-ctx.fillText('mystickahvezda.cz',W/2,H-18);
-ctx.font='16px serif';
-ctx.fillText('★',W/2+110,H-18);
+    const centerX = WIDTH / 2;
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#d0b17c';
+    ctx.font = '600 15px Inter, Arial, sans-serif';
+    ctx.letterSpacing = '1.5px';
+    ctx.fillText('UKÁZKOVÝ DENNÍ HOROSKOP', centerX, 54);
+    ctx.letterSpacing = '0px';
+
+    ctx.fillStyle = 'rgba(233,227,215,0.78)';
+    ctx.font = '400 14px Inter, Arial, sans-serif';
+    ctx.fillText('Symbolický podnět pro Berana', centerX, 82);
+
+    const circleY = 210;
+    const circleRadius = 104;
+    const circle = ctx.createRadialGradient(centerX, circleY, 25, centerX, circleY, circleRadius);
+    circle.addColorStop(0, 'rgba(208,177,124,0.16)');
+    circle.addColorStop(0.65, 'rgba(208,177,124,0.05)');
+    circle.addColorStop(1, 'rgba(208,177,124,0)');
+    ctx.fillStyle = circle;
+    ctx.beginPath();
+    ctx.arc(centerX, circleY, circleRadius, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(centerX, circleY, circleRadius - 5, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(208,177,124,0.4)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.fillStyle = '#e9e3d7';
+    ctx.font = '90px serif';
+    ctx.fillText('♈', centerX, 241);
+
+    ctx.fillStyle = '#d0b17c';
+    ctx.font = '600 34px Cinzel, Georgia, serif';
+    ctx.fillText('BERAN', centerX, 328);
+
+    ctx.beginPath();
+    ctx.moveTo(centerX - 60, 345);
+    ctx.lineTo(centerX + 60, 345);
+    ctx.strokeStyle = 'rgba(208,177,124,0.5)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#e9e3d7';
+    ctx.font = '400 16px Inter, Arial, sans-serif';
+    const prediction = 'Zkus si vybrat jednu věc, které chceš dnes věnovat pozornost. Když se objeví něco nečekaného, ujasni si, co máš skutečně ve svých rukou.';
+    const lines = wrapText(prediction, WIDTH - 90);
+    lines.slice(0, 5).forEach((line, index) => {
+        const visibleLine = index === 4 && lines.length > 5 ? `${line.slice(0, -1)}…` : line;
+        ctx.fillText(visibleLine, 45, 386 + index * 24);
+    });
+
+    const boxX = 45;
+    const boxY = 525;
+    const boxWidth = WIDTH - 90;
+    const boxHeight = 78;
+    ctx.fillStyle = 'rgba(208,177,124,0.08)';
+    ctx.strokeStyle = 'rgba(208,177,124,0.32)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.roundRect(boxX, boxY, boxWidth, boxHeight, 7);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#d0b17c';
+    ctx.font = '500 14px Inter, Arial, sans-serif';
+    ctx.fillText('Afirmace', boxX + 12, boxY + 26);
+    ctx.fillStyle = 'rgba(233,227,215,0.85)';
+    ctx.font = 'italic 15px Inter, Arial, sans-serif';
+    ctx.fillText('„Všímám si toho, co mohu ovlivnit.“', boxX + 12, boxY + 54);
+
+    ctx.beginPath();
+    ctx.moveTo(45, HEIGHT - 43);
+    ctx.lineTo(WIDTH - 45, HEIGHT - 43);
+    ctx.strokeStyle = 'rgba(208,177,124,0.24)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#d0b17c';
+    ctx.font = '500 14px Cinzel, Georgia, serif';
+    ctx.fillText('Mystická Hvězda', centerX, HEIGHT - 20);
+}
+
+drawPreview();
+
+const landscape = new Image();
+landscape.decoding = 'async';
+landscape.onload = () => drawPreview(landscape);
+landscape.src = '/img/atlas/tools-v1/02-mesicni-krajina.webp';

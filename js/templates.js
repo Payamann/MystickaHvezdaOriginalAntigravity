@@ -95,9 +95,9 @@ class Templates {
             <div class="tarot-summary-enhanced tarot-summary-celtic fade-in-up ${this.animationDelayClass(drawnCards.length)}">
                 <div class="celtic-header">
                     <div class="celtic-cross-icon">
-                        <span>☆</span>
-                        <span>✦</span>
-                        <span>☆</span>
+                        <svg width="24" height="24" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg>
+                        <svg width="24" height="24" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg>
+                        <svg width="24" height="24" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg>
                     </div>
                     <h4>Souvislosti keltského kříže</h4>
                     <p class="summary-subtitle">Komplexní analýza keltského kříže</p>
@@ -144,9 +144,9 @@ class Templates {
                 ${this.renderEtherealSummaryLoading()}
                 
                 <div class="celtic-footer">
-                    <span>✧</span>
+                    <span aria-hidden="true"><svg width="14" height="14" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg></span>
                     <span>Keltský kříž – nejkomplexnější tarotový výklad</span>
-                    <span>✧</span>
+                    <span aria-hidden="true"><svg width="14" height="14" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg></span>
                 </div>
             </div>
         `;
@@ -167,7 +167,7 @@ class Templates {
 
     static renderEtherealSummaryLoading() {
         return `
-            <div class="summary-content" id="ethereal-tarot-summary" role="status">
+            <div class="summary-content" id="ethereal-tarot-summary">
                 <div class="summary-loading">
                     <div class="loading-crystal">
                         <span>${this.symbol('tarot')}</span>
@@ -214,54 +214,218 @@ class Templates {
         });
     }
 
-    static renderAuthModal() {
+    static authCopy() {
+        const language = document.documentElement?.lang?.slice(0, 2);
+        const copy = {
+            sk: {
+                close: 'Zavrieť prihlásenie',
+                loginTitle: 'Prihlásenie',
+                registerTitle: 'Registrácia',
+                resetTitle: 'Obnovenie hesla',
+                password: 'Heslo',
+                confirmPassword: 'Potvrď heslo',
+                passwordPolicy: 'Zvoľ si heslo s dĺžkou 8 až 128 znakov. Niektoré bežné heslá nie sú povolené.',
+                forgotPassword: 'Zabudnuté heslo?',
+                resetHelp: 'Zadaj e-mail svojho účtu. Ak ho u nás evidujeme, môže ti prísť odkaz na obnovenie hesla.',
+                resetSending: 'Odosiela sa žiadosť…',
+                resetSent: 'Ak je tento e-mail u nás zaregistrovaný, môže naň prísť odkaz na obnovenie hesla. Skontroluj aj spam; ak odkaz nepríde, môžeš požiadať znova.',
+                resetFailed: 'Žiadosť sa nepodarilo odoslať. E-mail zostal vo formulári. Skús to znova.',
+                connectionInterrupted: 'Spojenie sa prerušilo. Skontroluj pripojenie a skús to znova.',
+                birthDate: 'Dátum narodenia',
+                birthDateNote: 'Voliteľné. Dátum použijeme iba pri osobných výkladoch a nastavení profilu. Môžeš ho doplniť neskôr pri nástroji, ktorý ho potrebuje.',
+                consentHtml: 'Súhlasím s <a href="/podminky.html" target="_blank" rel="noopener">obchodnými podmienkami (v češtine)</a> a potvrdzujem oboznámenie sa so <a href="/soukromi.html" target="_blank" rel="noopener">zásadami ochrany osobných údajov (v češtine)</a>.',
+                submitLogin: 'Prihlásiť sa',
+                submitRegister: 'Zaregistrovať sa',
+                submitReset: 'Odoslať odkaz',
+                toggleLogin: 'Nemáš účet? Zaregistruj sa',
+                toggleRegister: 'Už máš účet? Prihlás sa',
+                toggleReset: 'Späť na prihlásenie',
+                errorTitle: 'Chyba',
+                registrationErrorTitle: 'Registrácia sa nepodarila',
+                loginErrorTitle: 'Prihlásenie sa nepodarilo',
+                registrationNetworkError: 'Registráciu sa teraz nepodarilo dokončiť. Skús to znova o chvíľu.',
+                loginNetworkError: 'Prihlásenie sa teraz nepodarilo. Skús to znova o chvíľu.',
+                authFinalizationError: 'Server požiadavku prijal, ale stránke sa nepodarilo dokončiť ďalší krok. Obnov stránku a skontroluj e-mail alebo stav účtu.',
+                registrationFailed: 'Registrácia sa nepodarila. Skontroluj zadané údaje a skús to znova.',
+                loginFailed: 'Prihlásenie sa nepodarilo. Skontroluj e-mail a heslo.',
+                registrationRecovery: 'Účet už možno existuje. Prihlás sa alebo si obnov heslo.',
+                registrationRateLimited: 'Z tohto pripojenia prebehlo príliš veľa registrácií. Skús to znova neskôr.',
+                loginRateLimited: 'Príliš veľa neúspešných pokusov o prihlásenie. Skús to znova neskôr.',
+                resetRateLimited: 'Odoslal sa príliš veľký počet žiadostí o obnovenie hesla. Skús to znova neskôr.',
+                passwordMin: 'Heslo musí mať aspoň {length} znakov.',
+                passwordTooLong: 'Heslo môže mať najviac 128 znakov.',
+                passwordCommon: 'Toto heslo sa používa príliš často. Zvoľ si iné.',
+                passwordMismatch: 'Heslá sa nezhodujú.',
+                consentRequiredTitle: 'Vyžaduje sa súhlas',
+                consentRequired: 'Na vytvorenie účtu prijmi obchodné podmienky a potvrď oboznámenie sa so zásadami ochrany osobných údajov.',
+                verificationTitle: 'Overenie e-mailu',
+                verificationMessage: 'Na dokončenie registrácie potvrď svoju e-mailovú adresu.',
+                welcomeTitle: 'Vitaj!',
+                registrationSuccess: 'Registrácia prebehla úspešne.',
+                loginSuccessTitle: 'Vitaj späť',
+                loginSuccess: 'Prihlásenie prebehlo úspešne.',
+                verifiedTitle: 'Overené!',
+                verifiedMessage: 'Tvoj e-mail bol úspešne overený. Teraz sa môžeš prihlásiť.',
+                invalidLink: 'Odkaz je neplatný alebo jeho platnosť vypršala.',
+                expiredLink: 'Platnosť odkazu na overenie vypršala. Skús to znova.'
+            },
+            pl: {
+                close: 'Zamknij logowanie',
+                loginTitle: 'Logowanie',
+                registerTitle: 'Rejestracja',
+                resetTitle: 'Resetowanie hasła',
+                password: 'Hasło',
+                confirmPassword: 'Potwierdź hasło',
+                passwordPolicy: 'Wybierz hasło o długości od 8 do 128 znaków. Niektóre popularne hasła są niedozwolone.',
+                forgotPassword: 'Nie pamiętasz hasła?',
+                resetHelp: 'Wpisz adres e-mail swojego konta. Jeśli jest u nas zarejestrowany, możesz otrzymać link do zmiany hasła.',
+                resetSending: 'Wysyłanie prośby…',
+                resetSent: 'Jeśli konto z tym adresem e-mail jest u nas zarejestrowane, możesz otrzymać link do zmiany hasła. Sprawdź też spam; jeśli link nie dotrze, możesz ponowić prośbę.',
+                resetFailed: 'Nie udało się wysłać prośby. Adres e-mail pozostał w formularzu. Spróbuj ponownie.',
+                connectionInterrupted: 'Połączenie zostało przerwane. Sprawdź internet i spróbuj ponownie.',
+                birthDate: 'Data urodzenia',
+                birthDateNote: 'Opcjonalnie. Użyjemy tej daty tylko do spersonalizowanych interpretacji i ustawień profilu. Możesz dodać ją później przy narzędziu, które jej potrzebuje.',
+                consentHtml: 'Akceptuję <a href="/podminky.html" target="_blank" rel="noopener">regulamin (w języku czeskim)</a> i potwierdzam zapoznanie się z <a href="/soukromi.html" target="_blank" rel="noopener">polityką prywatności (w języku czeskim)</a>.',
+                submitLogin: 'Zaloguj się',
+                submitRegister: 'Zarejestruj się',
+                submitReset: 'Wyślij link',
+                toggleLogin: 'Nie masz konta? Zarejestruj się',
+                toggleRegister: 'Masz już konto? Zaloguj się',
+                toggleReset: 'Wróć do logowania',
+                errorTitle: 'Błąd',
+                registrationErrorTitle: 'Rejestracja nie powiodła się',
+                loginErrorTitle: 'Logowanie nie powiodło się',
+                registrationNetworkError: 'Nie udało się teraz dokończyć rejestracji. Spróbuj ponownie za chwilę.',
+                loginNetworkError: 'Nie udało się teraz zalogować. Spróbuj ponownie za chwilę.',
+                authFinalizationError: 'Serwer przyjął żądanie, ale strona nie mogła dokończyć kolejnego kroku. Odśwież stronę i sprawdź e-mail lub stan konta.',
+                registrationFailed: 'Rejestracja nie powiodła się. Sprawdź wpisane dane i spróbuj ponownie.',
+                loginFailed: 'Logowanie nie powiodło się. Sprawdź adres e-mail i hasło.',
+                registrationRecovery: 'Konto może już istnieć. Zaloguj się lub zresetuj hasło.',
+                registrationRateLimited: 'Z tego połączenia wykonano zbyt wiele rejestracji. Spróbuj ponownie później.',
+                loginRateLimited: 'Zbyt wiele nieudanych prób logowania. Spróbuj ponownie później.',
+                resetRateLimited: 'Wysłano zbyt wiele próśb o zmianę hasła. Spróbuj ponownie później.',
+                passwordMin: 'Hasło musi mieć co najmniej {length} znaków.',
+                passwordTooLong: 'Hasło może mieć maksymalnie 128 znaków.',
+                passwordCommon: 'To hasło jest zbyt często używane. Wybierz inne.',
+                passwordMismatch: 'Hasła nie są takie same.',
+                consentRequiredTitle: 'Wymagana zgoda',
+                consentRequired: 'Aby utworzyć konto, zaakceptuj regulamin i potwierdź zapoznanie się z polityką prywatności.',
+                verificationTitle: 'Potwierdzenie adresu e-mail',
+                verificationMessage: 'Aby dokończyć rejestrację, potwierdź swój adres e-mail.',
+                welcomeTitle: 'Witaj!',
+                registrationSuccess: 'Rejestracja przebiegła pomyślnie.',
+                loginSuccessTitle: 'Witaj ponownie',
+                loginSuccess: 'Logowanie przebiegło pomyślnie.',
+                verifiedTitle: 'Potwierdzono!',
+                verifiedMessage: 'Twój adres e-mail został potwierdzony. Możesz się teraz zalogować.',
+                invalidLink: 'Link jest nieprawidłowy lub wygasł.',
+                expiredLink: 'Link potwierdzający wygasł. Spróbuj ponownie.'
+            }
+        };
+
+        return copy[language] || {
+            close: 'Zavřít přihlášení',
+            loginTitle: 'Přihlášení',
+            registerTitle: 'Registrace',
+            resetTitle: 'Obnovení hesla',
+            password: 'Heslo',
+            confirmPassword: 'Potvrď heslo',
+            passwordPolicy: 'Zvol heslo dlouhé 8 až 128 znaků. Některá běžná hesla nejsou povolena.',
+            forgotPassword: 'Zapomněl jsi heslo?',
+            resetHelp: 'Zadej e-mail svého účtu. Pokud je u nás vedený, může na něj přijít odkaz pro obnovení hesla.',
+            resetSending: 'Odesílá se žádost…',
+            resetSent: 'Pokud je účet s tímto e-mailem vedený, může na něj přijít odkaz k obnovení hesla. Zkontroluj i spam; pokud odkaz nedorazí, můžeš žádost zopakovat.',
+            resetFailed: 'Žádost se nepodařilo odeslat. E-mail zůstává ve formuláři, zkus to znovu.',
+            connectionInterrupted: 'Spojení se přerušilo. Zkontroluj připojení a zkus to znovu.',
+            birthDate: 'Datum narození',
+            birthDateNote: 'Nepovinné. Datum použijeme jen pro osobní výklady a nastavení profilu; můžeš ho doplnit později u nástroje, který ho opravdu potřebuje.',
+            consentHtml: 'Souhlasím s <a href="/podminky.html" target="_blank" rel="noopener">obchodními podmínkami</a> a potvrzuji seznámení se <a href="/soukromi.html" target="_blank" rel="noopener">zásadami soukromí</a>.',
+            submitLogin: 'Přihlásit se',
+            submitRegister: 'Zaregistrovat',
+            submitReset: 'Odeslat odkaz',
+            toggleLogin: 'Nemáte účet? Zaregistrujte se',
+            toggleRegister: 'Již máte účet? Přihlaste se',
+            toggleReset: 'Zpět na přihlášení',
+            errorTitle: 'Chyba',
+            registrationErrorTitle: 'Chyba registrace',
+            loginErrorTitle: 'Chyba přihlášení',
+            registrationNetworkError: 'Registraci se teď nepodařilo dokončit. Zkus to znovu za chvíli.',
+            loginNetworkError: 'Přihlášení se teď nepodařilo. Zkus to znovu za chvíli.',
+            authFinalizationError: 'Server požadavek přijal, ale stránce se nepodařilo dokončit další krok. Obnov stránku a zkontroluj e-mail nebo stav účtu.',
+            registrationFailed: 'Registrace se nepodařila. Zkontroluj zadané údaje a zkus to znovu.',
+            loginFailed: 'Přihlášení se nepodařilo. Zkontroluj e-mail a heslo.',
+            registrationRecovery: 'Účet už možná existuje. Přihlas se nebo si obnov heslo.',
+            registrationRateLimited: 'Z tohoto připojení proběhlo příliš mnoho registrací. Zkus to znovu později.',
+            loginRateLimited: 'Příliš mnoho neúspěšných pokusů o přihlášení. Zkus to znovu později.',
+            resetRateLimited: 'Odeslalo se příliš mnoho žádostí o obnovení hesla. Zkus to znovu později.',
+            passwordMin: 'Heslo musí mít alespoň {length} znaků.',
+            passwordTooLong: 'Heslo může mít nejvýše 128 znaků.',
+            passwordCommon: 'Toto heslo je příliš časté. Zvol jiné.',
+            passwordMismatch: 'Hesla se neshodují.',
+            consentRequiredTitle: 'Souhlas je potřeba',
+            consentRequired: 'Pro vytvoření účtu přijmi obchodní podmínky a potvrď seznámení se zásadami soukromí.',
+            verificationTitle: 'Ověření e-mailu',
+            verificationMessage: 'Pro dokončení registrace potvrď svou e-mailovou adresu.',
+            welcomeTitle: 'Vítej!',
+            registrationSuccess: 'Registrace proběhla úspěšně.',
+            loginSuccessTitle: 'Vítej zpět',
+            loginSuccess: 'Přihlášení proběhlo úspěšně.',
+            verifiedTitle: 'Ověřeno!',
+            verifiedMessage: 'Tvůj e-mail byl úspěšně ověřen. Nyní se můžeš přihlásit.',
+            invalidLink: 'Odkaz je neplatný nebo vypršel.',
+            expiredLink: 'Odkaz pro ověření vypršel. Zkus to znovu.'
+        };
+    }
+
+    static renderAuthModal(copy = Templates.authCopy()) {
         return `
   <div id="auth-modal" class="modal modal--auth" role="dialog" aria-modal="true" aria-labelledby="auth-title" hidden>
     <div class="modal__content auth-modal__content">
-        <button type="button" class="modal__close auth-modal__close" aria-label="Zavřít přihlášení">✕</button>
-        <h2 id="auth-title" class="auth-modal__title">Přihlášení</h2>
+        <button type="button" class="modal__close auth-modal__close" aria-label="${copy.close}"><svg class="mh-symbol mh-symbol--inline" width="18" height="18" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#close"></use></svg></button>
+        <h2 id="auth-title" class="auth-modal__title">${copy.loginTitle}</h2>
         <form id="login-form">
             <div class="auth-modal__field">
                 <label class="auth-modal__label" for="auth-modal-email">E-mail</label>
                 <input class="auth-modal__input" id="auth-modal-email" type="email" name="email" required autocomplete="email" inputmode="email">
             </div>
             <div id="password-field-wrapper" class="auth-modal__field auth-modal__field--compact">
-                <label class="auth-modal__label" for="auth-modal-password">Heslo</label>
+                <label class="auth-modal__label" for="auth-modal-password">${copy.password}</label>
                 <input class="auth-modal__input" id="auth-modal-password" type="password" name="password" required autocomplete="current-password">
+                <p id="auth-password-policy" class="auth-modal__help-text" hidden>${copy.passwordPolicy}</p>
             </div>
             <div id="confirm-password-field-wrapper" class="auth-modal__field" hidden>
-                <label class="auth-modal__label" for="auth-modal-password-confirm">Potvrď heslo</label>
-                <input class="auth-modal__input" id="auth-modal-password-confirm" type="password" name="confirm_password" minlength="8" autocomplete="new-password">
+                <label class="auth-modal__label" for="auth-modal-password-confirm">${copy.confirmPassword}</label>
+                <input class="auth-modal__input" id="auth-modal-password-confirm" type="password" name="confirm_password" autocomplete="new-password">
             </div>
             <div id="forgot-password-link" class="auth-modal__forgot">
-                <a href="#" id="auth-forgot-password" class="auth-modal__muted-link">Zapomněl jsi heslo?</a>
+                <a href="#" id="auth-forgot-password" class="auth-modal__muted-link">${copy.forgotPassword}</a>
             </div>
 
             <!-- Reset Password Fields (hidden by default) -->
             <div id="reset-password-fields" class="auth-modal__field" hidden>
-                <p class="auth-modal__help-text">Zadej e-mail svého účtu. Pokud je u nás vedený, přijde na něj odkaz pro obnovení hesla.</p>
+                <p class="auth-modal__help-text">${copy.resetHelp}</p>
             </div>
 
             <!-- Optional profile fields. Keep birth data clearly explained and non-blocking. -->
             <div id="register-fields" class="auth-modal__field" hidden>
                 <div class="auth-modal__field">
-                    <label class="auth-modal__label" for="auth-modal-birthdate">Datum narození</label>
+                    <label class="auth-modal__label" for="auth-modal-birthdate">${copy.birthDate}</label>
                     <input class="auth-modal__input" id="auth-modal-birthdate" type="date" name="birth_date" autocomplete="bday" aria-describedby="birth-date-privacy-note">
-                    <p id="birth-date-privacy-note" class="auth-modal__help-text">Nepovinné. Datum použijeme jen pro osobní výklady a nastavení profilu; můžeš ho doplnit později u nástroje, který ho opravdu potřebuje.</p>
+                    <p id="birth-date-privacy-note" class="auth-modal__help-text">${copy.birthDateNote}</p>
                 </div>
             </div>
 
             <div id="gdpr-consent-wrapper" class="auth-modal__field" hidden>
                 <label class="checkbox-label">
                     <input type="checkbox" id="gdpr-consent" name="gdpr_consent">
-                    <span>Souhlasím s <a href="/podminky.html" target="_blank" rel="noopener">obchodními podmínkami</a> a potvrzuji seznámení se <a href="/soukromi.html" target="_blank" rel="noopener">zásadami soukromí</a>.</span>
+                <span>${copy.consentHtml}</span>
                 </label>
             </div>
 
             <p id="auth-modal-status" class="auth-modal__help-text" role="status" hidden></p>
-            <button type="submit" id="auth-submit" class="btn btn--primary auth-modal__submit">Přihlásit se</button>
+            <button type="submit" id="auth-submit" class="btn btn--primary auth-modal__submit" data-mode="login">${copy.submitLogin}</button>
             <p class="auth-modal__toggle-wrap">
-                <a href="#" id="auth-mode-toggle" class="auth-modal__mode-toggle">Nemáte účet? Zaregistrujte se</a>
+                <a href="#" id="auth-mode-toggle" class="auth-modal__mode-toggle">${copy.toggleLogin}</a>
             </p>
         </form>
     </div>

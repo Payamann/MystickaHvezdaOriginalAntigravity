@@ -112,6 +112,7 @@ test.describe('Natální karta', () => {
         await page.fill('#birth-place', 'Praha');
         await page.locator('#natal-form button[type="submit"]').click();
 
+        await expect(page.locator('#natal-status')).toContainText('Základní mapa');
         await expect(page.locator('#chart-results')).toBeVisible();
         await expect(page.locator('#res-sun')).toContainText('Kozoroh');
         await expect(page.locator('#res-moon')).not.toHaveText('--');
@@ -130,6 +131,64 @@ test.describe('Natální karta', () => {
         await expect(page.locator('.natal-personal-map-next')).toBeVisible();
         await expect(page.locator('.natal-personal-map-next')).toContainText('12 navazujících měsíců');
         await expect(page.locator('[data-personal-map-next]')).toHaveAttribute('href', /source=natal_chart_result/);
+    });
+
+    test('klient neposílá do AI duplicitní odhad slunečního znamení', async ({ browser }) => {
+        const context = await browser.newContext({
+            baseURL: process.env.PLAYWRIGHT_BASE_URL,
+            locale: 'cs-CZ',
+            timezoneId: 'America/Los_Angeles'
+        });
+
+        try {
+            const page = await context.newPage();
+            const planetIds = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto'];
+            await context.route('**/api/natal-chart/calculate**', route => route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    success: true,
+                    chart: {
+                        planets: Object.fromEntries(planetIds.map(id => [id, {
+                            longitude: 0,
+                            sign: { name: id === 'sun' ? 'Vodnář' : 'Kozoroh' },
+                            degreeText: '0°'
+                        }])),
+                        houses: { available: false, reason: 'Testovací výpočet bez domů.' },
+                        input: { birthTime: '12:00' }
+                    }
+                })
+            }));
+
+            await page.goto('/natalni-karta.html');
+            await waitForPageReady(page);
+            await page.evaluate(() => {
+                window.updateTransits = () => {};
+                window.Auth = {
+                    user: { id: 'natal-calendar-date-test' },
+                    isLoggedIn: () => true,
+                    isPremium: () => true,
+                    saveReading: async () => ({ id: 'natal-calendar-date-reading' }),
+                    sendServerFunnelEvent: async () => {}
+                };
+                window.callAPI = async (_path, payload) => {
+                    window.__natalRequestPayload = payload;
+                    return { success: true, response: 'Testovací výklad.' };
+                };
+            });
+
+            await page.fill('#name', 'Test');
+            await page.fill('#birth-date', '1990-01-21');
+            await page.fill('#birth-time', '12:00');
+            await page.fill('#birth-place', 'Praha');
+            await page.locator('#natal-form button[type="submit"]').click();
+
+            await expect.poll(() => page.evaluate(() => window.__natalRequestPayload?.birthDate)).toBe('1990-01-21');
+            const requestPayload = await page.evaluate(() => window.__natalRequestPayload);
+            expect(requestPayload).not.toHaveProperty('sunSign');
+        } finally {
+            await context.close();
+        }
     });
 
     test('premium teaser slibuje konkrétní výklad, ne úplný osud', async ({ page }) => {
@@ -159,6 +218,74 @@ test.describe('Natální karta', () => {
         await expect(teaser).not.toContainText('úplný osud');
     });
 
+    test('hotový osobní výklad zůstane viditelný při chybě uložení do profilu', async ({ page }) => {
+        await page.evaluate(() => {
+            window.Auth = {
+                isLoggedIn: () => true,
+                isPremium: () => true,
+                user: { id: 'natal-save-failure-user' },
+                saveReading: async () => { throw new Error('history unavailable'); },
+                sendServerFunnelEvent: async () => {}
+            };
+            window.callAPI = async () => ({
+                success: true,
+                response: 'Výklad zůstává viditelný po chybě uložení.'
+            });
+        });
+
+        await page.fill('#name', 'Test');
+        await page.fill('#birth-date', '1990-01-01');
+        await page.fill('#birth-time', '12:00');
+        await page.fill('#birth-place', 'Praha');
+        await page.locator('#natal-form button[type="submit"]').click();
+
+        await expect(page.locator('.ai-content')).toContainText('Výklad zůstává viditelný po chybě uložení.');
+        await expect(page.locator('.ai-content .result-context-notice')).toBeVisible();
+        await expect(page.locator('#natal-status')).toContainText('nepodařilo uložit do profilu');
+        await expect(page.locator('.natal-interpretation-retry')).toHaveCount(0);
+        await expect(page.locator('#natal-form button[type="submit"]')).toBeEnabled();
+    });
+
+    test('po změně účtu během výkladu skryje výsledek původní relace', async ({ page }) => {
+        await page.evaluate(() => {
+            window.Auth = {
+                isLoggedIn: () => true,
+                isPremium: () => true,
+                user: { id: 'natal-owner-before-request' },
+                saveReading: async () => ({ id: 'unexpected-reading' })
+            };
+            window.__natalApiStarted = false;
+            window.__releaseNatalApi = null;
+            window.callAPI = async () => new Promise(resolve => {
+                window.__natalApiStarted = true;
+                window.__releaseNatalApi = () => resolve({
+                    success: true,
+                    response: 'Výklad původního účtu se nesmí zobrazit.'
+                });
+            });
+        });
+
+        await page.fill('#name', 'Test');
+        await page.fill('#birth-date', '1990-01-01');
+        await page.fill('#birth-time', '12:00');
+        await page.fill('#birth-place', 'Praha');
+        await page.locator('#natal-form button[type="submit"]').click();
+        await expect(page.locator('#chart-results')).toBeVisible();
+        await expect.poll(() => page.evaluate(() => window.__natalApiStarted)).toBe(true);
+
+        await page.evaluate(() => {
+            window.Auth.user.id = 'natal-owner-after-request';
+            window.__releaseNatalApi?.();
+        });
+
+        await expect(page.locator('#chart-results')).toBeHidden();
+        await expect(page.locator('#transits-now')).toBeHidden();
+        await expect(page.locator('#natal-status')).toHaveText('');
+        await expect(page.locator('#natal-calculation-error')).toContainText('Účet se během výpočtu změnil');
+        await expect(page.locator('#ai-interpretation')).not.toContainText('Výklad původního účtu');
+        await expect(page.locator('#natal-form button[type="submit"]')).toBeEnabled();
+    });
+
     test('žádný horizontální scroll na mobilu', async ({ page }) => {
         await page.setViewportSize(MOBILE_VIEWPORT);
         await page.goto('/natalni-karta.html');
@@ -168,6 +295,64 @@ test.describe('Natální karta', () => {
         );
         expect(overflow).toBe(false);
     });
+});
+
+test.describe('Lokalizovaný natální výpočet SK/PL', () => {
+    const localizedPages = [
+        { path: '/sk/natalni-karta.html', error: 'Zadajte platný dátum narodenia.' },
+        { path: '/pl/natalni-karta.html', error: 'Wpisz prawidłową datę urodzenia.' }
+    ];
+
+    for (const localizedPage of localizedPages) {
+        test(`neplatný nový vstup odstraní opožděný výsledek (${localizedPage.path})`, async ({ page }) => {
+            await page.goto(localizedPage.path);
+            await waitForPageReady(page);
+
+            await page.evaluate(() => {
+                const nativeFetch = window.fetch.bind(window);
+                window.fetch = (input, init) => {
+                    if (!String(input).includes('/natal-chart/calculate')) return nativeFetch(input, init);
+                    const planetIds = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto'];
+                    const chart = {
+                        planets: Object.fromEntries(planetIds.map((id) => [id, {
+                            longitude: 0,
+                            sign: { name: 'Aries' },
+                            degreeText: '0°'
+                        }])),
+                        houses: { available: false },
+                        input: { birthTime: '' }
+                    };
+                    return new Promise((resolve) => {
+                        window.__resolveLocaleNatalRequest = () => resolve({
+                            ok: true,
+                            json: async () => ({ success: true, chart })
+                        });
+                    });
+                };
+            });
+
+            await page.locator('#natal-form [name="birthDate"]').fill('1990-01-01');
+            await page.locator('#natal-form [name="birthPlace"]').fill('Praha');
+            await page.locator('#natal-form').evaluate((form) => {
+                form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+            });
+            await expect(page.locator('#locale-natal-status')).toContainText(/Počítam|Obliczam/);
+
+            await page.locator('#natal-form [name="birthDate"]').fill('');
+            await page.locator('#natal-form').evaluate((form) => {
+                form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+            });
+
+            await expect(page.locator('#locale-natal-status')).toHaveText(localizedPage.error);
+            await expect(page.locator('#locale-natal-output')).toBeEmpty();
+            await expect(page.locator('#natal-form [type="submit"]')).toBeEnabled();
+            await expect(page.locator('#natal-form [type="submit"]')).not.toHaveAttribute('aria-busy', 'true');
+
+            await page.evaluate(() => window.__resolveLocaleNatalRequest?.());
+            await expect(page.locator('#locale-natal-status')).toHaveText(localizedPage.error);
+            await expect(page.locator('#locale-natal-output')).toBeEmpty();
+        });
+    }
 });
 
 // ═══════════════════════════════════════════════════════════
@@ -233,6 +418,10 @@ test.describe('Partnerská shoda', () => {
         await expect(page.locator('#p1-place')).toHaveAttribute('list', 'birth-place-suggestions');
         await expect(page.locator('#p2-place')).toHaveAttribute('list', 'birth-place-suggestions');
         await expect(page.locator('#birth-place-suggestions option[value="Varšava"]')).toBeAttached();
+        await expect(page.locator('#p1-name')).toHaveAttribute('autocomplete', 'name');
+        await expect(page.locator('#p1-date')).toHaveAttribute('autocomplete', 'bday');
+        await expect(page.locator('#p2-name')).toHaveAttribute('autocomplete', 'off');
+        await expect(page.locator('#p2-date')).toHaveAttribute('autocomplete', 'off');
 
         await page.fill('#p1-name', 'Anna');
         await page.fill('#p1-date', '1990-01-01');
@@ -252,6 +441,182 @@ test.describe('Partnerská shoda', () => {
         await expect(page.locator('#total-score')).toContainText('%');
     });
 
+    test('opožděné předvyplnění nepropíše údaje předchozího účtu', async ({ page }) => {
+        await page.evaluate(() => {
+            window.__synastryProfileStarted = false;
+            window.__synastryProfileFinished = false;
+            window.__synastryProfilePromise = new Promise((resolve) => {
+                window.__releaseSynastryProfile = resolve;
+            });
+            window.Auth = {
+                ...window.Auth,
+                user: { id: 'synastry-profile-before' },
+                isLoggedIn: () => true,
+                getProfile: async () => {
+                    window.__synastryProfileStarted = true;
+                    const profile = await window.__synastryProfilePromise;
+                    window.__synastryProfileFinished = true;
+                    return profile;
+                }
+            };
+            document.dispatchEvent(new Event('auth:changed'));
+        });
+
+        await page.locator('#use-profile-p1').evaluate((checkbox) => {
+            checkbox.checked = true;
+            checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+        await page.waitForFunction(() => window.__synastryProfileStarted === true);
+
+        await page.evaluate(() => {
+            window.Auth.user.id = 'synastry-profile-after';
+            document.dispatchEvent(new Event('auth:changed'));
+            window.__releaseSynastryProfile({
+                first_name: 'Anna',
+                birth_date: '1990-01-01',
+                birth_time: '12:00:00',
+                birth_place: 'Praha'
+            });
+        });
+        await page.waitForFunction(() => window.__synastryProfileFinished === true);
+
+        await expect(page.locator('#use-profile-p1')).not.toBeChecked();
+        await expect(page.locator('#p1-name')).toHaveValue('');
+        await expect(page.locator('#p1-date')).toHaveValue('');
+        await expect(page.locator('#p1-time')).toHaveValue('');
+        await expect(page.locator('#p1-place')).toHaveValue('');
+    });
+
+    test('po změně účtu odstraní i dříve načtené údaje z profilu', async ({ page }) => {
+        await page.evaluate(() => {
+            window.Auth = {
+                ...window.Auth,
+                user: { id: 'synastry-profile-data-before' },
+                isLoggedIn: () => true,
+                getProfile: async () => ({
+                    first_name: 'Anna',
+                    birth_date: '1990-01-01',
+                    birth_time: '12:00:00',
+                    birth_place: 'Praha'
+                })
+            };
+            document.dispatchEvent(new Event('auth:changed'));
+        });
+
+        await page.locator('#use-profile-p1').evaluate((checkbox) => {
+            checkbox.checked = true;
+            checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+
+        await expect(page.locator('#p1-name')).toHaveValue('Anna');
+        await expect(page.locator('#p1-date')).toHaveValue('1990-01-01');
+        await expect(page.locator('#p1-time')).toHaveValue('12:00');
+        await expect(page.locator('#p1-place')).toHaveValue('Praha');
+
+        await page.evaluate(() => {
+            window.Auth.user.id = 'synastry-profile-data-after';
+            document.dispatchEvent(new Event('auth:changed'));
+        });
+
+        await expect(page.locator('#use-profile-p1')).not.toBeChecked();
+        await expect(page.locator('#p1-name')).toHaveValue('');
+        await expect(page.locator('#p1-date')).toHaveValue('');
+        await expect(page.locator('#p1-time')).toHaveValue('');
+        await expect(page.locator('#p1-place')).toHaveValue('');
+    });
+
+    test('po změně účtu skryje čekající výklad a smaže osobní údaje', async ({ page }) => {
+        await page.evaluate(() => {
+            window.__synastrySaveCalls = 0;
+            window.__synastryAiStarted = false;
+            window.__synastryAiResponse = new Promise((resolve) => {
+                window.__releaseSynastryAi = resolve;
+            });
+            window.Auth = {
+                ...window.Auth,
+                user: { id: 'synastry-owner-before' },
+                isLoggedIn: () => true,
+                isPremium: () => true,
+                getProfile: async () => ({ id: 'synastry-owner-before' }),
+                fetchProtected: async () => {
+                    window.__synastryAiStarted = true;
+                    return window.__synastryAiResponse;
+                },
+                saveReading: async () => {
+                    window.__synastrySaveCalls += 1;
+                    return { id: 'synastry-reading-before' };
+                }
+            };
+        });
+
+        await page.fill('#p1-name', 'Anna');
+        await page.fill('#p1-date', '1990-01-01');
+        await page.fill('#p1-time', '12:00');
+        await page.fill('#p1-place', 'Praha');
+        await page.fill('#p2-name', 'Pavel');
+        await page.fill('#p2-date', '1992-07-15');
+        await page.fill('#p2-time', '08:30');
+        await page.fill('#p2-place', 'Brno');
+        await page.locator('#synastry-form button[type="submit"]').click();
+        await page.waitForFunction(() => window.__synastryAiStarted === true);
+        await expect(page.locator('#synastry-status')).toHaveText('Skóre je hotové. Připravuji hlubší slovní analýzu.');
+
+        await page.evaluate(() => {
+            window.Auth.user.id = 'synastry-owner-after';
+            document.dispatchEvent(new Event('auth:changed'));
+            window.__releaseSynastryAi({
+                json: async () => ({ success: true, response: 'SOUKROMÝ STARÝ VÝKLAD' })
+            });
+        });
+
+        await expect(page.locator('#synastry-results [role="alert"]'))
+            .toContainText('Účet se během výpočtu změnil');
+        await expect(page.locator('#synastry-status')).toBeEmpty();
+        await expect(page.locator('#total-score')).toHaveText('--');
+        await expect(page.locator('#ai-synastry .ai-content')).not.toContainText('SOUKROMÝ STARÝ VÝKLAD');
+        await expect(page.locator('#favorite-synastry-action')).toHaveCount(0);
+        await expect(page.locator('#p1-name')).toHaveValue('');
+        await expect(page.locator('#p1-date')).toHaveValue('');
+        await expect(page.locator('#p1-time')).toHaveValue('');
+        await expect(page.locator('#p1-place')).toHaveValue('');
+        await expect(page.locator('#p2-name')).toHaveValue('');
+        await expect(page.locator('#p2-date')).toHaveValue('');
+        await expect(page.locator('#p2-time')).toHaveValue('');
+        await expect(page.locator('#p2-place')).toHaveValue('');
+        await expect(page.locator('#synastry-form button[type="submit"]')).toBeEnabled();
+        expect(await page.evaluate(() => window.__synastrySaveCalls)).toBe(0);
+    });
+
+    test('neulozeny detailni vyklad shody zustane viditelny a vysvetli problem s historii', async ({ page }) => {
+        await page.emulateMedia({ reducedMotion: 'reduce' });
+        await page.evaluate(() => {
+            window.Auth = {
+                ...window.Auth,
+                user: { id: 'synastry-save-failure-owner' },
+                isLoggedIn: () => true,
+                isPremium: () => true,
+                fetchProtected: async () => ({
+                    ok: true,
+                    json: async () => ({ success: true, response: 'Výklad popisuje rozdílné tempo komunikace.' })
+                }),
+                saveReading: async () => null
+            };
+            document.dispatchEvent(new Event('auth:changed'));
+        });
+
+        await page.fill('#p1-name', 'Anna');
+        await page.fill('#p1-date', '1990-01-01');
+        await page.fill('#p2-name', 'Pavel');
+        await page.fill('#p2-date', '1992-07-15');
+        await page.locator('#synastry-form button[type="submit"]').click();
+
+        await expect(page.locator('#ai-synastry .ai-content'))
+            .toContainText('Výklad popisuje rozdílné tempo komunikace.');
+        await expect(page.locator('#ai-synastry [data-reading-save-error]'))
+            .toContainText('nepodařilo se ho uložit do profilu');
+        await expect(page.locator('#favorite-synastry-action')).toHaveCount(0);
+    });
+
     test('po vypoctu zobrazi navazujici vztahovy bridge s premium kontextem', async ({ page }) => {
         await page.fill('#p1-name', 'Anna');
         await page.fill('#p1-date', '1990-01-01');
@@ -261,6 +626,8 @@ test.describe('Partnerská shoda', () => {
         await page.locator('#synastry-form button[type="submit"]').click();
 
         await expect(page.locator('#synastry-results')).toBeVisible();
+        await expect(page.locator('#synastry-status'))
+            .toHaveText('Základní výpočet shody je hotový. Souhrn je zobrazený pod formulářem.');
         await expect(page.locator('#synastry-next-step')).toBeVisible();
         await expect(page.locator('.synastry-next-card')).toHaveCount(4);
         await expect(page.locator('#synastry-next-score')).toContainText('%');
@@ -504,6 +871,61 @@ test.describe('Čínský horoskop', () => {
         await expect(page.locator('.result-section, #result-section').first()).toBeAttached();
     });
 
+    test('neplatný rok skryje předchozí výsledek a umožní nový výpočet', async ({ page }) => {
+        const yearInput = page.locator('#birth-year');
+        const result = page.locator('#result-section');
+        const error = page.locator('#birth-year-error');
+
+        await yearInput.fill('1990');
+        await page.locator('#btn-calculate').click();
+        await expect(result).toBeVisible();
+        await expect(page.locator('#result-years')).toHaveText('Ročník: 1990');
+
+        await yearInput.fill('');
+        await page.locator('#btn-calculate').click();
+        await expect(result).toBeHidden();
+        await expect(yearInput).toHaveAttribute('aria-invalid', 'true');
+        await expect(error).toBeVisible();
+        await expect(error).toHaveText('Zadej rok narození.');
+
+        await yearInput.fill('2000.5');
+        await page.locator('#btn-calculate').click();
+        await expect(result).toBeHidden();
+        await expect(error).toHaveText('Zadej celý rok od 1900 do 2100.');
+
+        await yearInput.fill('1991');
+        await page.locator('#btn-calculate').click();
+        await expect(result).toBeVisible();
+        await expect(page.locator('#result-years')).toHaveText('Ročník: 1991');
+        await expect(yearInput).toHaveAttribute('aria-invalid', 'false');
+        await expect(error).toBeHidden();
+    });
+
+    test('neplatný rok skryje předchozí partnerskou shodu a umožní nový výpočet', async ({ page }) => {
+        const year1 = page.locator('#synastry-year1');
+        const year2 = page.locator('#synastry-year2');
+        const result = page.locator('#synastry-result');
+        const year2Error = page.locator('#synastry-year2-error');
+
+        await year1.fill('1986');
+        await year2.fill('1990');
+        await page.locator('#btn-synastry').click();
+        await expect(result).toBeVisible();
+
+        await year2.fill('');
+        await page.locator('#btn-synastry').click();
+        await expect(result).toBeHidden();
+        await expect(year2).toHaveAttribute('aria-invalid', 'true');
+        await expect(year2Error).toBeVisible();
+        await expect(year2Error).toHaveText('Zadej rok narození partnera.');
+
+        await year2.fill('1991');
+        await page.locator('#btn-synastry').click();
+        await expect(result).toBeVisible();
+        await expect(year2).toHaveAttribute('aria-invalid', 'false');
+        await expect(year2Error).toBeHidden();
+    });
+
     test('JSON-LD nebo strukturovaná data existují', async ({ page }) => {
         const ldJson = page.locator('script[type="application/ld+json"]');
         expect(await ldJson.count()).toBeGreaterThanOrEqual(1);
@@ -572,6 +994,39 @@ test.describe('Biorytmy', () => {
             const val = await dateInput.inputValue();
             expect(val).toBe('1990-06-15');
         }
+    });
+
+    test('dnešní datum je den nula a souhrn odpovídá bodu dne v grafu', async ({ page }) => {
+        await page.addInitScript(() => {
+            window.Chart = class {
+                constructor(_canvas, config) {
+                    window.__biorhythmChartConfig = config;
+                }
+
+                destroy() {}
+            };
+        });
+        await page.reload();
+        await waitForPageReady(page);
+
+        const today = await page.evaluate(() => {
+            const date = new Date();
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        });
+
+        await expect(page.locator('#birthdate')).toHaveAttribute('max', today);
+        await page.locator('#birthdate').fill(today);
+        await page.locator('#biorhythm-form button[type="submit"]').click();
+
+        await expect(page.locator('#bio-stats-container .bio-stat-value')).toHaveText([
+            '0 bodů modelové křivky',
+            '0 bodů modelové křivky',
+            '0 bodů modelové křivky'
+        ]);
+        await expect.poll(() => page.evaluate(() => Boolean(window.__biorhythmChartConfig))).toBe(true);
+
+        const todayValues = await page.evaluate(() => window.__biorhythmChartConfig.data.datasets.map((dataset) => dataset.data[7]));
+        expect(todayValues).toEqual([0, 0, 0]);
     });
 
     test('žádný horizontální scroll na mobilu', async ({ page }) => {

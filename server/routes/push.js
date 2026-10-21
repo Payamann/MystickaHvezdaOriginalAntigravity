@@ -42,12 +42,13 @@ router.post('/subscribe', pushLimiter, async (req, res) => {
     const userId = getPushUserId(req);
 
     try {
-        await supabase.from('push_subscriptions').upsert({
+        const { error } = await supabase.from('push_subscriptions').upsert({
             endpoint: subscription.endpoint,
             subscription_json: JSON.stringify(subscription),
             user_id: userId,
             created_at: new Date().toISOString()
         }, { onConflict: 'endpoint' });
+        if (error) throw error;
 
         res.json({ success: true, message: 'Přihlášeno k Push notifikacím.' });
     } catch (err) {
@@ -65,10 +66,11 @@ router.post('/unsubscribe', pushLimiter, async (req, res) => {
     }
 
     try {
-        await supabase
+        const { error } = await supabase
             .from('push_subscriptions')
             .delete()
             .eq('endpoint', endpoint);
+        if (error) throw error;
 
         res.json({ success: true, message: 'Odběr push notifikací byl zrušen.' });
     } catch (err) {
@@ -79,7 +81,7 @@ router.post('/unsubscribe', pushLimiter, async (req, res) => {
 
 // POST /send-test — send test notification to all subscribers (admin only)
 router.post('/send-test', authenticateToken, requireAdmin, async (req, res) => {
-    const { title = '🌙 Mystická Hvězda', body, url = '/' } = req.body;
+    const { title = 'Mystická Hvězda', body, url = '/' } = req.body;
 
     try {
         // Check if web-push is available

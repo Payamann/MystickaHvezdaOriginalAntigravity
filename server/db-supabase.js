@@ -19,12 +19,30 @@ const USE_MOCK_SUPABASE = process.env.MOCK_SUPABASE === 'true' || process.env.NO
 function createMockSupabaseClient() {
     const users = new Map();
     const tables = new Map();
+    const dailyQuotaCounters = new Map();
+    const dailyQuotaReservations = new Map();
     const now = () => new Date().toISOString();
 
     const tableRows = (table) => {
         if (!tables.has(table)) tables.set(table, []);
         return tables.get(table);
     };
+
+    function quotaBucketKey(userId, usageDate, feature) {
+        return `${userId}:${usageDate}:${feature}`;
+    }
+
+    function legacyQuotaUsage(userId, usageDate, feature) {
+        const sourceTable = feature === 'mentor' ? 'mentor_messages' : 'readings';
+        const rows = tableRows(sourceTable);
+        return rows.filter(row => {
+            const createdAt = new Date(row.created_at || '');
+            return row.user_id === userId
+                && !Number.isNaN(createdAt.getTime())
+                && createdAt.toISOString().slice(0, 10) === usageDate
+                && (feature === 'mentor' ? row.role === 'user' : row.type === 'crystal-ball');
+        }).length;
+    }
 
     function stableEmailHash(email) {
         return [...String(email).toLowerCase()].reduce(
@@ -104,6 +122,11 @@ function createMockSupabaseClient() {
             return this;
         }
 
+        is(column, value) {
+            this.filters.push({ op: 'is', column, value });
+            return this;
+        }
+
         gt(column, value) {
             this.filters.push({ op: 'gt', column, value });
             return this;
@@ -164,6 +187,15 @@ function createMockSupabaseClient() {
         result() {
             if (this.operation === 'insert' || this.operation === 'upsert') {
                 const inserted = this.rowsFromPayload();
+                if (this.table === 'readings' && this.operation === 'insert') {
+                    const existingIds = new Set(tableRows(this.table).map(row => row.id));
+                    for (const row of inserted) {
+                        if (existingIds.has(row.id)) {
+                            return { data: null, error: { code: '23505', message: 'duplicate key value violates readings primary key' } };
+                        }
+                        existingIds.add(row.id);
+                    }
+                }
                 tableRows(this.table).push(...inserted);
                 return this.formatData(inserted);
             }
@@ -186,8 +218,13 @@ function createMockSupabaseClient() {
 
         rowsFromPayload() {
             const payloadRows = Array.isArray(this.payload) ? this.payload : [this.payload];
-            return payloadRows.map(source => ({
-                id: source?.id || `mock-${this.table}-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+            const highestMentorMessageId = this.table === 'mentor_messages'
+                ? Math.max(0, ...tableRows(this.table).map(row => Number(row.id) || 0))
+                : 0;
+            return payloadRows.map((source, index) => ({
+                id: source?.id || (this.table === 'mentor_messages'
+                    ? highestMentorMessageId + index + 1
+                    : `mock-${this.table}-${Date.now()}-${Math.random().toString(16).slice(2)}`),
                 created_at: source?.created_at || now(),
                 ...(source || {})
             }));
@@ -206,8 +243,14 @@ function createMockSupabaseClient() {
                 rows = rows.filter(row => this.matchesFilter(row, filter));
             }
 
-            for (const order of this.orders) {
-                rows.sort((a, b) => this.compareRows(a, b, order));
+            if (this.orders.length > 0) {
+                rows.sort((a, b) => {
+                    for (const order of this.orders) {
+                        const comparison = this.compareRows(a, b, order);
+                        if (comparison !== 0) return comparison;
+                    }
+                    return 0;
+                });
             }
 
             if (this.rangeBounds) {
@@ -237,10 +280,12 @@ function createMockSupabaseClient() {
         }
 
         matchesFilter(row, filter) {
-            const value = row?.[filter.column];
+            const [column, jsonKey] = String(filter.column).split('->>');
+            const value = jsonKey ? row?.[column]?.[jsonKey] : row?.[column];
 
             if (filter.op === 'eq') return value === filter.value;
             if (filter.op === 'neq') return value !== filter.value;
+            if (filter.op === 'is') return filter.value === null ? value === null || value === undefined : value === filter.value;
             if (filter.op === 'in') return Array.isArray(filter.value) && filter.value.includes(value);
             if (filter.op === 'gt') return value > filter.value;
             if (filter.op === 'gte') return value >= filter.value;
@@ -273,8 +318,43 @@ function createMockSupabaseClient() {
         from(table) {
             return new MockQuery(table);
         },
-        rpc() {
-            return Promise.resolve({ data: null, error: null });
+        async rpc(name, args = {}) {
+            if (name === 'reserve_user_daily_quota') {
+                const { p_user_id: userId, p_date_key: usageDate, p_feature: feature, p_limit: limit } = args;
+                const bucketKey = quotaBucketKey(userId, usageDate, feature);
+                if (!dailyQuotaCounters.has(bucketKey)) {
+                    dailyQuotaCounters.set(bucketKey, legacyQuotaUsage(userId, usageDate, feature));
+                }
+
+                const usedBefore = dailyQuotaCounters.get(bucketKey) || 0;
+                if (!Number.isInteger(limit) || usedBefore >= limit) {
+                    return {
+                        data: [{ allowed: false, reservation_id: null, used: usedBefore, remaining: 0 }],
+                        error: null
+                    };
+                }
+
+                const reservationId = `mock-quota-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+                const used = usedBefore + 1;
+                dailyQuotaCounters.set(bucketKey, used);
+                dailyQuotaReservations.set(reservationId, { bucketKey });
+                return {
+                    data: [{ allowed: true, reservation_id: reservationId, used, remaining: Math.max(0, limit - used) }],
+                    error: null
+                };
+            }
+
+            if (name === 'commit_user_daily_quota' || name === 'release_user_daily_quota') {
+                const reservation = dailyQuotaReservations.get(args.p_reservation_id);
+                if (!reservation) return { data: false, error: null };
+                dailyQuotaReservations.delete(args.p_reservation_id);
+                if (name === 'release_user_daily_quota') {
+                    dailyQuotaCounters.set(reservation.bucketKey, Math.max(0, (dailyQuotaCounters.get(reservation.bucketKey) || 0) - 1));
+                }
+                return { data: true, error: null };
+            }
+
+            return { data: null, error: null };
         },
         auth: {
             async signUp({ email, password, options = {} }) {
@@ -298,8 +378,14 @@ function createMockSupabaseClient() {
             async resetPasswordForEmail() {
                 return { data: {}, error: null };
             },
-            async updateUser(payload) {
-                return { data: { user: { id: 'test-user', ...payload } }, error: null };
+            async getUser(token) {
+                if (!['mock-access-token', 'test-reset-token'].includes(token)) {
+                    return { data: { user: null }, error: { message: 'Invalid token', status: 401 } };
+                }
+                return { data: { user: { id: 'test-user', email: 'test@example.com' } }, error: null };
+            },
+            async updateUser() {
+                return { data: { user: null }, error: { message: 'Auth session missing', status: 401 } };
             },
             admin: {
                 async createUser({ email, password, user_metadata = {}, email_confirm = false }) {

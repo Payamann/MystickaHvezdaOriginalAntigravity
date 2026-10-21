@@ -4,58 +4,58 @@
 (function () {
     const answers = {
         ano: {
-            label: 'ÁNO', emoji: '✅', class: 'ano',
+            label: 'ÁNO', symbol: 'check', class: 'ano',
             texts: [
-                'Hviezdy hovoria jasne — áno, je to správna cesta. Dôveruj svojmu instinktu.',
-                'Karty naznačujú pozitívny výsledok. Konaj s dôverou.',
-                'Energia je priaznivá. Toto je správny čas pre tvoj zámer.',
-                'Vesmír ti dáva zelenú. Tvoja intuícia ťa vedie správne.',
-                'Áno — ale pamätaj, že kroky sú v rukách tvojej slobodnej vôle.',
-                'Výsledok bude pozitívny, ak budeš konať úprimne a odvážne.',
-                'Karty vidia priaznivú cestu. Máš vnútornú silu to dokázať.',
-                'Áno. Priprav sa prijať to, o čo si žiadal.',
-                'Tarot súhlasí. Tvoje srdce pozná odpoveď.',
-                'Áno — a skoré kroky túto šancu posilnia.',
+                'Výsledok sa prikláňa k áno. Čo na tejto možnosti považuješ za najdôležitejšie?',
+                'Áno je jeden z náhodne zvolených smerov. Pred krokom si over aj jeho podmienky.',
+                'Kladný smer môže byť začiatkom úvahy. Ktorý malý krok ti pomôže zistiť, či ti táto možnosť sedí?',
+                'Tento výsledok nie je zárukou. Rozhodnutie opri o to, čo vieš a čo môžeš ovplyvniť.',
+                'Ak sa s áno stotožňuješ, pomenuj si dôvod. Čo ťa na tejto možnosti priťahuje?',
+                'Kladný výsledok nehovorí, čo sa stane. Čo potrebuješ ešte preveriť?',
+                'Skús si predstaviť prvý uskutočniteľný krok. Vieš ho urobiť bez neprimeraného rizika?',
+                'Tento smer môže otvoriť otázku: čo potrebuješ, aby si sa rozhodol s väčším pokojom?',
+                'Možnosť stojí za preskúmanie. Ktorá informácia by ti pomohla rozhodnúť sa?',
+                'Skôr než povieš áno, skontroluj, či ti vyhovujú aj záväzky, ktoré s ním prichádzajú.',
             ]
         },
         skor_ano: {
-            label: 'SKÔR ÁNO', emoji: '🌟', class: 'mozna',
+            label: 'SKÔR ÁNO', symbol: 'star', class: 'mozna',
             texts: [
-                'Znamenia ukazujú skôr pozitívny výsledok, ale záleží na tvojich ďalších krokoch.',
-                'Pravdepodobne áno — hoci cesta nemusí byť priamočiara.',
-                'Šanca je na tvojej strane, ale buď trpezlivý.',
-                'Karty vidia nádej. Veci sa vyvíjajú správnym smerom.',
-                'Skôr áno, ak si zachováš jasnú myseľ a otvorenosť.',
+                'Výsledok sa prikláňa skôr k áno. Ktorú podmienku si ešte potrebuješ vyjasniť?',
+                'Je tu priestor preskúmať túto možnosť bez unáhleného záväzku.',
+                'Skôr áno neznamená istý výsledok. Začni tým, čo si vieš bezpečne overiť.',
+                'Všímaj si, čo ťa vedie k áno a čo v tebe vyvoláva pochybnosti; oboje je užitočný signál.',
+                'Možno sa prikláňaš k súhlasu, ale potrebuješ čas alebo viac informácií. Čo ti chýba?',
             ]
         },
         nejasne: {
-            label: 'NEJASNÉ', emoji: '🔮', class: 'mozna',
+            label: 'NEJASNÉ', symbol: 'crystal', class: 'mozna',
             texts: [
-                'Budúcnosť je zatiaľ otvorená. Otázka možno ešte nie je zrelá.',
-                'Karty vidia hmlu. Skús sa opýtať znovu inak alebo inokedy.',
-                'Energie sú nevyvážené. Počkaj a potom sa znova opýtaj.',
-                'Odpoveď ešte nie je pevná — záleží na mnohých faktoroch.',
-                'Výsledok závisí od tvojich najbližších rozhodnutí.',
+                'Pomôcka nezvolila jasný smer. Čo si potrebuješ o situácii ešte zistiť?',
+                'Nejasný výsledok nie je dôvod pýtať sa znova a znova. Skús pomenovať, čo ti bráni rozhodnúť sa.',
+                'Viac možností zostáva otvorených. Ak môžeš, dopraj si čas a over dôležité fakty.',
+                'Možno je otázka príliš široká. Skús ju rozdeliť na jeden konkrétny krok.',
+                'Tento výsledok nič nepredpovedá. Pomôže ti spísať, čo vieš a čo zatiaľ nevieš?',
             ]
         },
         skor_nie: {
-            label: 'SKÔR NIE', emoji: '⚠️', class: 'ne',
+            label: 'SKÔR NIE', symbol: 'warning', class: 'ne',
             texts: [
-                'Karty varujú pred touto cestou. Zváž alternatívy.',
-                'Skôr nie — ale nie je to definitívne. Okolnosti sa môžu zmeniť.',
-                'Energia nie je priaznivá pre tento zámer v tejto chvíli.',
-                'Tarot odporúča opatrnosť a prehodnotenie situácie.',
-                'Možno nie je vhodný čas. Opýtaj sa, čo ťa brzdí.',
+                'Pomôcka sa prikláňa skôr k nie. Ktoré riziko alebo podmienku chceš ešte preveriť?',
+                'Skôr nie môže byť podnetom spomaliť; neznamená, že je cesta definitívne uzavretá.',
+                'Čo ti na tejto možnosti nesedí? Pomenovanie dôvodu môže pomôcť viac než samotný výsledok.',
+                'Pred ďalším krokom si over okolnosti, ktoré by z rozhodnutia mohli urobiť väčší záväzok.',
+                'Výsledok naznačuje opatrnosť, nie predpoveď neúspechu. Akú inú možnosť máš?',
             ]
         },
         nie: {
-            label: 'NIE', emoji: '🚨', class: 'ne',
+            label: 'NIE', symbol: 'error', class: 'ne',
             texts: [
-                'Karty jasne varujú. Táto cesta nie je pre teba to pravé.',
-                'Nie — ale každá zatvorená brána vedie k iným možnostiam.',
-                'Tarot vidí prekážky. Prijmi túto odpoveď ako vedenie, nie ako trest.',
-                'Tento zámer neprinesie dobré ovocie. Hľadaj inú cestu.',
-                'Nie. Tvoja intuícia ti možno hovorí to isté.',
+                'Výsledok sa prikláňa k nie, no nerozhoduje za teba. Čo by pre teba na tejto ceste bolo najťažšie?',
+                'Táto odpoveď môže pripomenúť, aby si si najprv vyjasnil riziká a vlastné hranice.',
+                'Neber výsledok ako rozsudok. Ktorá iná cesta by lepšie zodpovedala tomu, čo potrebuješ?',
+                'Ak aj ty cítiš skôr nie, skús pomenovať dôvod: je to prekážka, málo informácií alebo tlak?',
+                'Pred odmietnutím aj súhlasom si môžeš overiť, čo sa dá zmeniť a čo nie.',
             ]
         }
     };
@@ -71,7 +71,10 @@
 
     let used = false;
     let lastResult = null;
+    let pendingResultTimeout = null;
+    let resultGeneration = 0;
     let savedReadingId = null;
+    let readingSaveInFlight = false;
     let firstValueTracked = false;
 
     const TAROT_YES_NO_FEATURE = 'tarot_multi_card';
@@ -80,6 +83,46 @@
     const TAROT_YES_NO_TOOL = 'tarot_yes_no_sk';
     const PENDING_READING_STORAGE_KEY = 'mh_pending_reading';
     const TAROT_YES_NO_UPGRADE_CONTEXT_KEY = 'mh_tarot_yes_no_upgrade_context';
+
+    function createTarotAnswerSymbol(symbolId) {
+        const svgNamespace = 'http://www.w3.org/2000/svg';
+        const svg = document.createElementNS(svgNamespace, 'svg');
+        svg.setAttribute('class', 'mh-symbol tarot-yes-no-answer-symbol');
+        svg.setAttribute('viewBox', '0 0 48 48');
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('stroke', 'currentColor');
+        svg.setAttribute('stroke-width', '1.8');
+        svg.setAttribute('stroke-linecap', 'round');
+        svg.setAttribute('stroke-linejoin', 'round');
+        svg.setAttribute('aria-hidden', 'true');
+        svg.setAttribute('focusable', 'false');
+
+        const use = document.createElementNS(svgNamespace, 'use');
+        use.setAttribute('href', `/img/icons/mh-symbols.svg#${symbolId}`);
+        svg.append(use);
+        return svg;
+    }
+
+    function createTarotReadingRequestId() {
+        if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+
+        const bytes = new Uint8Array(16);
+        if (window.crypto?.getRandomValues) {
+            window.crypto.getRandomValues(bytes);
+        } else {
+            for (let index = 0; index < bytes.length; index += 1) bytes[index] = Math.floor(Math.random() * 256);
+        }
+        bytes[6] = (bytes[6] & 0x0f) | 0x40;
+        bytes[8] = (bytes[8] & 0x3f) | 0x80;
+        const hex = Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+        return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+    }
+
+    function getTarotReadingRequestId(result = lastResult) {
+        if (!result) return null;
+        if (!result.saveRequestId) result.saveRequestId = createTarotReadingRequestId();
+        return result.saveRequestId;
+    }
 
     function buildTarotYesNoUpgradeUrl(source = TAROT_YES_NO_RESULT_SOURCE) {
         const pricingUrl = new URL('/cenik.html', window.location.origin);
@@ -218,7 +261,7 @@
         return Math.max(0, viewportHeight - Math.min(rect.top, restingTop) + 16);
     }
 
-    function scrollTarotResultIntoView(panel, behavior = 'smooth') {
+    function scrollTarotResultIntoView(panel, behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth') {
         if (!panel) return;
 
         const viewportHeight = window.visualViewport?.height || window.innerHeight;
@@ -275,7 +318,7 @@
             result_label: result.label,
             result_key: result.answerKey,
             result_text: result.text,
-            saved_at: new Date().toISOString()
+            saved_at: result.savedAt || new Date().toISOString()
         };
     }
 
@@ -284,13 +327,24 @@
         if (!readingData) return false;
 
         try {
-            localStorage.setItem(PENDING_READING_STORAGE_KEY, JSON.stringify({
+            const userId = window.Auth?.isLoggedIn?.() ? window.Auth?.user?.id || null : null;
+            const serialized = JSON.stringify({
                 type: 'tarot',
                 data: readingData,
+                requestId: getTarotReadingRequestId(result),
+                userId,
                 source: options.source || 'tarot_yes_no_save_journal_sk',
                 feature: options.feature || TAROT_YES_NO_TOOL,
                 createdAt: Date.now()
-            }));
+            });
+
+            try {
+                localStorage.setItem(PENDING_READING_STORAGE_KEY, serialized);
+                return true;
+            } catch {
+                sessionStorage.setItem(PENDING_READING_STORAGE_KEY, serialized);
+            }
+
             return true;
         } catch (error) {
             console.warn('[Tarot ANO/NIE SK] Could not store pending reading:', error.message);
@@ -298,13 +352,23 @@
         }
     }
 
-    async function postTarotYesNoReading(result = lastResult) {
+    function createTarotAccountChangedError() {
+        const error = new Error('Authenticated account changed before reading save.');
+        error.code = 'ACCOUNT_CHANGED';
+        return error;
+    }
+
+    async function postTarotYesNoReading(result = lastResult, expectedUserId) {
         const readingData = buildTarotYesNoReadingData(result);
         if (!readingData) throw new Error('Missing tarot result');
+        if (typeof expectedUserId !== 'string' || !expectedUserId) throw createTarotAccountChangedError();
 
         const headers = { 'Content-Type': 'application/json' };
         const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
         if (csrfToken) headers['X-CSRF-Token'] = csrfToken;
+        if (window.Auth?.user?.id !== expectedUserId || !window.Auth?.isLoggedIn?.()) {
+            throw createTarotAccountChangedError();
+        }
 
         const response = await fetch(`${window.API_CONFIG?.BASE_URL || '/api'}/user/readings`, {
             method: 'POST',
@@ -312,11 +376,16 @@
             headers,
             body: JSON.stringify({
                 type: 'tarot',
-                data: readingData
+                data: readingData,
+                requestId: getTarotReadingRequestId(result),
+                expectedUserId
             })
         });
 
         const payload = await response.json().catch(() => ({}));
+        if (response.status === 409 && payload?.error === 'Reading belongs to a different account.') {
+            throw createTarotAccountChangedError();
+        }
         if (!response.ok || !payload?.success) {
             throw new Error(payload?.error || 'Reading save failed');
         }
@@ -326,54 +395,103 @@
 
     async function saveTarotYesNoReading() {
         const button = document.getElementById('btn-save-reading');
-        if (!lastResult || !button) return;
-
-        const metadata = {
-            ...getResultMetadata(lastResult.answerKey, lastResult, lastResult.question),
-            save_target: 'profile_journal'
-        };
-
-        trackTarotYesNoEvent('save_click', metadata);
-        await trackTarotYesNoFunnelEvent('reading_save_clicked', 'tarot_yes_no_save_journal_sk', metadata, TAROT_YES_NO_TOOL, null);
+        const readingToSave = lastResult;
+        if (!readingToSave || !button || readingSaveInFlight) return;
 
         if (savedReadingId) {
             window.Auth?.showToast?.('Už uložené', 'Tento výklad už je v denníku.', 'success');
             return;
         }
 
-        if (!window.Auth?.isLoggedIn?.()) {
-            storePendingTarotYesNoReading(lastResult);
-            trackTarotYesNoEvent('login_click', {
-                ...metadata,
-                auth_mode: 'register',
-                reason: 'save_reading'
-            });
-            window.location.href = '/prihlaseni.html?mode=register&source=tarot_yes_no_save_journal_sk&feature=tarot_yes_no&redirect=/profil.html';
-            return;
-        }
+        const loggedInAtClick = Boolean(window.Auth?.isLoggedIn?.());
+        const userIdAtClick = loggedInAtClick ? window.Auth?.user?.id || null : null;
 
+        const metadata = {
+            ...getResultMetadata(readingToSave.answerKey, readingToSave, readingToSave.question),
+            save_target: 'profile_journal'
+        };
+        readingSaveInFlight = true;
         const originalText = button.textContent;
+        const resetButton = document.getElementById('btn-reset');
+        const resetWasDisabled = Boolean(resetButton?.disabled);
+        let redirecting = false;
         button.disabled = true;
+        button.setAttribute('aria-busy', 'true');
         button.textContent = 'Ukladám...';
+        if (resetButton) resetButton.disabled = true;
 
         try {
-            const payload = await postTarotYesNoReading(lastResult);
+            try {
+                trackTarotYesNoEvent('save_click', metadata);
+            } catch (analyticsError) {
+                console.warn('[Tarot ANO/NIE SK] Save-click analytics unavailable:', analyticsError.message);
+            }
+            await trackTarotYesNoFunnelEvent('reading_save_clicked', 'tarot_yes_no_save_journal_sk', metadata, TAROT_YES_NO_TOOL, null);
+
+            const loggedInNow = Boolean(window.Auth?.isLoggedIn?.());
+            const userIdNow = window.Auth?.user?.id || null;
+            if (loggedInNow !== loggedInAtClick
+                || (loggedInAtClick && (!userIdAtClick || userIdNow !== userIdAtClick))) {
+                window.Auth?.showToast?.(
+                    'Prihlásenie sa zmenilo',
+                    'Výsledok zostal otvorený. Over účet a potom uloženie skús znova.',
+                    'error'
+                );
+                return;
+            }
+
+            if (!loggedInAtClick) {
+                if (!storePendingTarotYesNoReading(readingToSave)) {
+                    window.Auth?.showToast?.(
+                        'Výklad zostáva otvorený',
+                        'Ak ho chceš uložiť do profilu, povoľ úložisko pre túto stránku a skús to znova.',
+                        'error'
+                    );
+                    return;
+                }
+                try {
+                    trackTarotYesNoEvent('login_click', {
+                        ...metadata,
+                        auth_mode: 'register',
+                        reason: 'save_reading'
+                    });
+                } catch (analyticsError) {
+                    console.warn('[Tarot ANO/NIE SK] Login-click analytics unavailable:', analyticsError.message);
+                }
+                redirecting = true;
+                window.location.href = '/prihlaseni.html?mode=register&source=tarot_yes_no_save_journal_sk&feature=tarot_yes_no&redirect=/profil.html';
+                return;
+            }
+
+            const payload = await postTarotYesNoReading(readingToSave, userIdAtClick);
             savedReadingId = payload.id || payload.reading?.id || true;
             button.textContent = 'Uložené v denníku';
             window.Auth?.showToast?.('Výklad uložený', 'Nájdeš ho v profile v histórii výkladov.', 'success');
-            trackTarotYesNoEvent('reading_saved', {
-                ...metadata,
-                reading_id: payload.id || payload.reading?.id || null
-            });
+            try {
+                trackTarotYesNoEvent('reading_saved', {
+                    ...metadata,
+                    reading_id: payload.id || payload.reading?.id || null
+                });
+            } catch (analyticsError) {
+                console.warn('[Tarot ANO/NIE SK] Saved-reading analytics unavailable:', analyticsError.message);
+            }
             void trackTarotYesNoFunnelEvent('reading_saved', 'tarot_yes_no_save_journal_sk', {
                 ...metadata,
                 reading_id: payload.id || payload.reading?.id || null
             }, TAROT_YES_NO_TOOL, null);
         } catch (error) {
             console.warn('[Tarot ANO/NIE SK] Could not save reading:', error.message);
-            button.disabled = false;
-            button.textContent = originalText;
-            window.Auth?.showToast?.('Nepodarilo sa uložiť', 'Skús to prosím znova o chvíľu.', 'error');
+            if (error?.code === 'ACCOUNT_CHANGED') {
+                window.Auth?.showToast?.('Prihlásenie sa zmenilo', 'Výsledok zostal otvorený. Over účet a potom uloženie skús znova.', 'error');
+            } else {
+                window.Auth?.showToast?.('Nepodarilo sa uložiť', 'Skús to prosím znova o chvíľu.', 'error');
+            }
+        } finally {
+            readingSaveInFlight = false;
+            button.removeAttribute('aria-busy');
+            button.disabled = Boolean(savedReadingId) || redirecting;
+            if (!savedReadingId && !redirecting) button.textContent = originalText;
+            if (resetButton) resetButton.disabled = resetWasDisabled;
         }
     }
 
@@ -419,11 +537,24 @@
         return lines;
     }
 
-    function drawCenteredLines(ctx, lines, centerX, startY, lineHeight, maxLines = lines.length) {
-        lines.slice(0, maxLines).forEach((line, index) => {
+    function ellipsizeCanvasLine(ctx, line, maxWidth) {
+        const characters = Array.from(String(line || '').trimEnd());
+        while (characters.length > 0 && ctx.measureText(`${characters.join('')}…`).width > maxWidth) {
+            characters.pop();
+        }
+        return `${characters.join('').trimEnd()}…`;
+    }
+
+    function drawCenteredLines(ctx, lines, centerX, startY, lineHeight, maxLines = lines.length, maxWidth = Infinity) {
+        const visibleLines = lines.slice(0, maxLines);
+        if (lines.length > visibleLines.length && visibleLines.length > 0 && Number.isFinite(maxWidth) && maxWidth > 0) {
+            const lastIndex = visibleLines.length - 1;
+            visibleLines[lastIndex] = ellipsizeCanvasLine(ctx, visibleLines[lastIndex], maxWidth);
+        }
+        visibleLines.forEach((line, index) => {
             ctx.fillText(line, centerX, startY + index * lineHeight);
         });
-        return startY + Math.min(lines.length, maxLines) * lineHeight;
+        return startY + visibleLines.length * lineHeight;
     }
 
     function drawTarotYesNoResultCard(result) {
@@ -433,83 +564,74 @@
         const ctx = canvas.getContext('2d');
         const centerX = canvas.width / 2;
 
-        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        gradient.addColorStop(0, '#141038');
-        gradient.addColorStop(0.48, '#070716');
-        gradient.addColorStop(1, '#050510');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        const seed = result.answerKey.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0) + result.question.length;
-        for (let i = 0; i < 220; i += 1) {
-            const x = (Math.sin(seed + i * 12.9898) * 43758.5453) % 1;
-            const y = (Math.sin(seed + i * 78.233) * 24634.6345) % 1;
-            const px = Math.abs(x) * canvas.width;
-            const py = Math.abs(y) * canvas.height * 0.72;
-            const r = i % 9 === 0 ? 2.3 : 1.2;
-            ctx.fillStyle = i % 7 === 0 ? 'rgba(230,195,80,0.75)' : 'rgba(235,240,255,0.72)';
-            ctx.beginPath();
-            ctx.arc(px, py, r, 0, Math.PI * 2);
-            ctx.fill();
+        const shareImage = window.MH_SHARE_IMAGE;
+        if (typeof shareImage?.drawBrandBackground === 'function') {
+            shareImage.drawBrandBackground(ctx, canvas);
+        } else {
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#0b1929');
+            gradient.addColorStop(0.52, '#102638');
+            gradient.addColorStop(1, '#07121f');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = 'rgba(208,177,124,0.5)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(54, 54, canvas.width - 108, canvas.height - 108);
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#d0b17c';
+            ctx.font = '600 38px Inter, Arial, sans-serif';
+            ctx.fillText('Mystická Hviezda', centerX, 130);
         }
 
-        ctx.strokeStyle = 'rgba(212,175,55,0.84)';
-        ctx.lineWidth = 5;
-        ctx.strokeRect(54, 54, canvas.width - 108, canvas.height - 108);
-        ctx.strokeStyle = 'rgba(212,175,55,0.34)';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(78, 78, canvas.width - 156, canvas.height - 156);
-
-        ctx.textAlign = 'center';
-        ctx.fillStyle = '#d4af37';
-        ctx.font = '600 42px Inter, Arial, sans-serif';
-        ctx.fillText('Mystická Hviezda', centerX, 145);
-
-        ctx.fillStyle = 'rgba(212,175,55,0.18)';
+        ctx.fillStyle = 'rgba(208,177,124,0.12)';
         ctx.beginPath();
         ctx.arc(centerX, 360, 190, 0, Math.PI * 2);
         ctx.fill();
-        ctx.strokeStyle = 'rgba(212,175,55,0.78)';
+        ctx.strokeStyle = 'rgba(208,177,124,0.58)';
         ctx.lineWidth = 4;
         ctx.beginPath();
         ctx.arc(centerX, 360, 160, 0, Math.PI * 2);
         ctx.stroke();
 
-        ctx.fillStyle = '#f1d06b';
+        ctx.fillStyle = '#d0b17c';
         ctx.font = '700 48px Cinzel, Georgia, serif';
         ctx.fillText('TAROT ÁNO/NIE', centerX, 280);
 
-        ctx.fillStyle = result.answerClass === 'ne' ? '#ff9ea8' : (result.answerClass === 'ano' ? '#b9f3c2' : '#f1d06b');
+        ctx.fillStyle = '#d0b17c';
         ctx.font = '700 92px Cinzel, Georgia, serif';
         ctx.fillText(result.label, centerX, 405);
 
+        ctx.fillStyle = '#c0c8ca';
+        ctx.font = '500 28px Inter, Arial, sans-serif';
+        ctx.fillText('Náhodne zvolený smer · nie je to predpoveď', centerX, 478);
+
         let y = 575;
         if (result.question) {
-            ctx.fillStyle = 'rgba(255,255,255,0.72)';
+            ctx.fillStyle = '#c0c8ca';
             ctx.font = '500 34px Inter, Arial, sans-serif';
             ctx.fillText('Otázka', centerX, y);
             y += 52;
 
-            ctx.fillStyle = '#ffffff';
+            ctx.fillStyle = '#e9e3d7';
             ctx.font = '600 38px Inter, Arial, sans-serif';
             const questionLines = wrapCanvasText(ctx, result.question, 820);
-            y = drawCenteredLines(ctx, questionLines, centerX, y, 50, 3) + 28;
+            y = drawCenteredLines(ctx, questionLines, centerX, y, 50, 3, 820) + 28;
         }
 
-        ctx.fillStyle = 'rgba(212,175,55,0.86)';
+        ctx.fillStyle = 'rgba(208,177,124,0.86)';
         ctx.fillRect(170, y, 740, 3);
         y += 70;
 
-        ctx.fillStyle = '#f6f1ff';
+        ctx.fillStyle = '#e9e3d7';
         ctx.font = '500 42px Inter, Arial, sans-serif';
         const resultLines = wrapCanvasText(ctx, result.text, 820);
-        y = drawCenteredLines(ctx, resultLines, centerX, y, 56, 6);
+        y = drawCenteredLines(ctx, resultLines, centerX, y, 56, 6, 820);
 
-        ctx.fillStyle = 'rgba(255,255,255,0.78)';
+        ctx.fillStyle = '#e9e3d7';
         ctx.font = '500 32px Inter, Arial, sans-serif';
         ctx.fillText('mystickahvezda.cz/sk/tarot-ano-nie.html', centerX, 1215);
 
-        ctx.fillStyle = 'rgba(212,175,55,0.9)';
+        ctx.fillStyle = '#d0b17c';
         ctx.font = '600 28px Inter, Arial, sans-serif';
         ctx.fillText('Ulož si výsledok alebo ho pošli niekomu, kto sa pýta rovnako.', centerX, 1254);
 
@@ -724,6 +846,7 @@
         inputEl.classList.remove('shake');
 
         used = true;
+        const drawGeneration = ++resultGeneration;
         savedReadingId = null;
         trackTarotYesNoEvent('reading_start', {
             source: 'tarot_yes_no_card_pick_sk',
@@ -743,18 +866,33 @@
             answerClass: ans.class,
             label: ans.label,
             text,
-            question: q
+            question: q,
+            saveRequestId: createTarotReadingRequestId(),
+            savedAt: new Date().toISOString()
         };
+        const resultForDraw = lastResult;
         window.__lastTarotYesNoShareResult = lastResult;
 
         const front = card.querySelector('.card-front');
         front.classList.add(ans.class);
-        front.innerHTML = `<span class="card-emoji">${ans.emoji}</span><span class="answer-label">${ans.label}</span>`;
+        const answerIcon = document.createElement('span');
+        answerIcon.className = 'card-answer-symbol';
+        answerIcon.append(createTarotAnswerSymbol(ans.symbol));
+        const answerLabel = document.createElement('span');
+        answerLabel.className = 'answer-label';
+        answerLabel.textContent = ans.label;
+        front.replaceChildren(answerIcon, answerLabel);
 
         card.classList.add('flipped');
 
-        setTimeout(() => {
-            document.getElementById('result-emoji').textContent = ans.emoji;
+        pendingResultTimeout = setTimeout(() => {
+            pendingResultTimeout = null;
+            if (drawGeneration !== resultGeneration || lastResult !== resultForDraw || !used) return;
+
+            const resultSymbol = document.getElementById('result-symbol');
+            resultSymbol.className = `tarot-result-symbol tarot-result-symbol--${ans.class === 'ano' ? 'yes' : (ans.class === 'ne' ? 'no' : 'maybe')}`;
+            resultSymbol.setAttribute('aria-hidden', 'true');
+            resultSymbol.replaceChildren(createTarotAnswerSymbol(ans.symbol));
             document.getElementById('result-title').textContent = ans.label;
             const resultTitle = document.getElementById('result-title');
             resultTitle.classList.remove('result-title--yes', 'result-title--no', 'result-title--maybe');
@@ -769,11 +907,22 @@
             trackTarotYesNoFirstValue(key, ans, q);
             revealTarotYesNoNextStep(key, ans, q);
             scrollTarotResultIntoView(panel);
-            setTimeout(() => scrollTarotResultIntoView(panel), 320);
+            setTimeout(() => {
+                if (drawGeneration === resultGeneration && lastResult === resultForDraw && panel.classList.contains('show')) {
+                    scrollTarotResultIntoView(panel);
+                }
+            }, 320);
         }, 800);
     }
 
     function resetCards() {
+        if (readingSaveInFlight) return;
+        if (pendingResultTimeout !== null) {
+            clearTimeout(pendingResultTimeout);
+            pendingResultTimeout = null;
+        }
+        resultGeneration += 1;
+        const resetGeneration = resultGeneration;
         used = false;
         lastResult = null;
         savedReadingId = null;
@@ -796,7 +945,9 @@
         });
 
         setTimeout(() => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (resultGeneration === resetGeneration && !used) {
+                window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+            }
         }, 150);
     }
 
@@ -828,7 +979,7 @@
 
         if (btnSaveResultImage) {
             if (deviceSupportsFileShare()) {
-                btnSaveResultImage.textContent = '✨ Zdieľať výsledok';
+                btnSaveResultImage.textContent = 'Zdieľať výsledok';
             }
             btnSaveResultImage.addEventListener('click', saveTarotYesNoResultImage);
         }

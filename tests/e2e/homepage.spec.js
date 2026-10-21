@@ -128,6 +128,18 @@ test.describe('Homepage', () => {
         await expect(loggedInCta).toBeVisible();
         await expect(page.locator('#hero-cta-container')).toBeHidden();
         await expect(loggedInCta.locator('a', { hasText: 'Otevřít dnešní rituál' })).toHaveAttribute('href', 'profil.html#daily-guidance-card');
+
+        await expect(page.locator('#auth-btn')).toHaveText(/Odhlásit se/);
+        await expect(page.locator('#auth-register-btn')).toBeHidden();
+        await expect(page.locator('#profile-link')).toBeVisible();
+
+        await page.setViewportSize(MOBILE_VIEWPORT);
+        const navToggle = page.locator('.nav__toggle');
+        await navToggle.click();
+        await expect(navToggle).toHaveAttribute('aria-expanded', 'true');
+        await expect(page.locator('#mobile-auth-btn')).toHaveText(/Odhlásit se/);
+        await expect(page.locator('#mobile-auth-register-btn')).toBeHidden();
+        await expect(page.locator('#mobile-profile-link')).toBeVisible();
     });
 
     test('hero rozcestnik ma vlastni analyticky signal', async ({ page }) => {
@@ -408,7 +420,7 @@ test.describe('Homepage', () => {
         await expect(page.locator('#hero-explore-link')).toHaveAttribute('href', '#rychly-start');
         await expect(page.locator('[data-analytics-cta="homepage_quick_decision"]')).toHaveAttribute('href', /tarot-ano-ne\.html/);
         await expect(page.locator('[data-analytics-cta="homepage_quick_daily"]')).toHaveAttribute('href', /horoskopy\.html/);
-        await expect(page.locator('[data-analytics-cta="homepage_quick_dream"]')).toHaveAttribute('href', /snar\.html/);
+        await expect(page.locator('[data-analytics-cta="homepage_quick_tarot_daily"]')).toHaveAttribute('href', /tarot-karta-dne\.html/);
 
         await expect(page.locator('.hero__daily-preview')).toHaveCount(0);
     });
@@ -473,6 +485,31 @@ test.describe('Homepage', () => {
     test('stránka obsahuje navigační odkaz na tarot kartu dne', async ({ page }) => {
         const link = page.locator('.nav__dropdown-link[href*="tarot-karta-dne.html"]').first();
         await expect(link).toContainText('Tarot karta dne');
+    });
+
+    test('sdílená hlavička podporuje otevření dropdownu klávesnicí a vrací fokus při Escape', async ({ page }) => {
+        await page.goto('/horoskopy.html');
+        await waitForPageReady(page);
+
+        const dropdownToggle = page.locator('.nav__link--dropdown-toggle').first();
+        const firstDropdownLink = page.locator('.nav__item--has-dropdown').first().locator('.nav__dropdown-link').first();
+        await expect.poll(() => page.locator('.nav__list').getAttribute('data-dropdowns-ready')).toBe('true');
+
+        await dropdownToggle.focus();
+        await page.keyboard.press('ArrowDown');
+        await expect(dropdownToggle).toHaveAttribute('aria-expanded', 'true');
+        await expect(firstDropdownLink).toBeVisible();
+        await expect(firstDropdownLink).toBeFocused();
+
+        await page.keyboard.press('Escape');
+        await expect(dropdownToggle).toHaveAttribute('aria-expanded', 'false');
+        await expect(dropdownToggle).toBeFocused();
+
+        await page.keyboard.press('Space');
+        await expect(dropdownToggle).toHaveAttribute('aria-expanded', 'true');
+        await page.keyboard.press('Escape');
+        await expect(dropdownToggle).toHaveAttribute('aria-expanded', 'false');
+        await expect(dropdownToggle).toBeFocused();
     });
 
     test('spodní CTA vrací návštěvníka k odpovědi zdarma s měřicím kontextem', async ({ page }) => {
@@ -682,148 +719,36 @@ test.describe('Homepage', () => {
         await expect(page.locator('[data-plan="vip-majestrat"]')).toHaveCount(0);
     });
 
-    test('karta dne vede do andelskych karet a sdileni funguje i bez Web Share API', async ({ page }) => {
-        await page.evaluate(() => {
-            const now = new Date();
-            const today = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
-            localStorage.setItem('mh_kdd_date', today);
-            localStorage.setItem('mh_kdd_index', '27');
-            localStorage.removeItem('mh_kdd_last_flip_date');
-        });
+    test('homepage otočí tarot kartu dne a naváže odkazy na stejnou kartu', async ({ page }) => {
+        const revealButton = page.locator('#tarot-daily-reveal');
+        const result = page.locator('#tarot-daily-card-result');
+        const cardImage = page.locator('#tarot-daily-card-image');
 
-        await page.reload();
-        await waitForPageReady(page);
+        await expect(page.locator('#denni-karta')).toBeVisible();
+        await expect(page.locator('#kdd-card, #kdd-share-btn, #kdd-message')).toHaveCount(0);
+        await expect(result).toHaveAttribute('data-state', 'waiting');
+        await expect(revealButton).toBeEnabled();
+        await revealButton.scrollIntoViewIfNeeded();
+        await revealButton.click();
 
-        const card = page.locator('#kdd-card');
-        await card.scrollIntoViewIfNeeded();
-        await card.click();
+        await expect(result).toHaveAttribute('data-state', 'revealed');
+        const cardName = (await page.locator('#tarot-daily-card-name').textContent())?.trim();
+        expect(cardName).toBeTruthy();
+        await expect(cardImage).toHaveAttribute('alt', `Tarot karta dne: ${cardName}`);
+        await expect(revealButton).toHaveText('Zobrazit znovu dnešní kartu');
 
-        await expect(page.locator('#kdd-message')).toBeVisible();
-        await expect(page.locator('#kdd-name')).toHaveText('Hravost');
+        const fullReading = new URL(await page.locator('#tarot-daily-full-reading').getAttribute('href'), BASE_URL);
+        expect(fullReading.pathname).toBe('/tarot.html');
+        expect(fullReading.searchParams.get('source')).toBe('tarot_daily_card_widget');
+        expect(fullReading.searchParams.get('feature')).toBe('tarot');
+        expect(fullReading.searchParams.get('intent')).toBe('daily_card');
+        expect(fullReading.searchParams.get('card')).toBe(cardName);
 
-        const detailHref = await page.locator('#kdd-lexicon-link').getAttribute('href');
-        await expect(page.locator('#kdd-lexicon-link')).toHaveText(/Andělské karty/);
-        await expect(card).toHaveAttribute('aria-label', /Otevřít denní symbol Hravost v Andělských kartách/);
-        expect(detailHref).toContain('andelske-karty.html');
-        expect(detailHref).toContain('source=homepage_daily_card_detail');
-        expect(detailHref).toContain('feature=daily_angel_card');
-        expect(detailHref).toContain('daily_card=hravost');
-        expect(detailHref).not.toContain('tarot');
+        const detail = new URL(await page.locator('#tarot-daily-card-detail').getAttribute('href'), BASE_URL);
+        expect(detail.pathname).toMatch(/^\/tarot-vyznam\/.+\.html$/);
+        expect(detail.searchParams.get('source')).toBe('tarot_daily_card_widget');
 
-        const fullReadingHref = await page.locator('#kdd-full-reading-link').getAttribute('href');
-        expect(fullReadingHref).toContain('andelske-karty.html');
-        expect(fullReadingHref).toContain('source=homepage_daily_card_full_reading');
-        expect(fullReadingHref).toContain('feature=andelske_karty_hluboky_vhled');
-        expect(fullReadingHref).toContain('daily_card=hravost');
-        expect(fullReadingHref).not.toContain('tarot');
-
-        await page.evaluate(() => {
-            Object.defineProperty(navigator, 'share', {
-                configurable: true,
-                value: undefined
-            });
-            Object.defineProperty(navigator, 'clipboard', {
-                configurable: true,
-                value: {
-                    writeText: async (text) => {
-                        window.__dailyCardShareText = text;
-                    }
-                }
-            });
-        });
-
-        await page.locator('#kdd-share-btn').click();
-
-        await expect.poll(() => page.evaluate(() => window.__dailyCardShareText || '')).toContain('Hravost');
-        await expect.poll(() => page.evaluate(() => window.__dailyCardShareText || '')).toContain('andelske-karty.html');
-
-        await card.click();
-        await expect(page).toHaveURL(/andelske-karty\.html\?source=homepage_daily_card_card_click/);
-        await expect(page).toHaveURL(/daily_card=hravost/);
-    });
-
-    test('sdileni karty dne ma textarea fallback pri nedostupne clipboard API', async ({ page }) => {
-        await page.evaluate(() => {
-            const now = new Date();
-            const today = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
-            localStorage.setItem('mh_kdd_date', today);
-            localStorage.setItem('mh_kdd_index', '27');
-            localStorage.removeItem('mh_kdd_last_flip_date');
-        });
-
-        await page.reload();
-        await waitForPageReady(page);
-
-        const card = page.locator('#kdd-card');
-        await card.scrollIntoViewIfNeeded();
-        await card.click();
-        await expect(page.locator('#kdd-message')).toBeVisible();
-
-        await page.evaluate(() => {
-            Object.defineProperty(navigator, 'share', {
-                configurable: true,
-                value: undefined
-            });
-            Object.defineProperty(navigator, 'clipboard', {
-                configurable: true,
-                value: {
-                    writeText: async () => {
-                        throw new Error('clipboard denied');
-                    }
-                }
-            });
-            document.execCommand = (command) => {
-                if (command !== 'copy') return false;
-                window.__dailyCardFallbackText = document.activeElement?.value || '';
-                return true;
-            };
-        });
-
-        await page.locator('#kdd-share-btn').click();
-
-        await expect(page.locator('#kdd-share-btn')).toContainText('Zkopírováno');
-        await expect.poll(() => page.evaluate(() => window.__dailyCardFallbackText || '')).toContain('Hravost');
-        await expect.poll(() => page.evaluate(() => window.__dailyCardFallbackText || '')).toContain('andelske-karty.html');
-    });
-
-    test('sdileni karty dne ukaze rucni odkaz kdyz automaticke kopirovani selze', async ({ page }) => {
-        await page.evaluate(() => {
-            const now = new Date();
-            const today = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
-            localStorage.setItem('mh_kdd_date', today);
-            localStorage.setItem('mh_kdd_index', '27');
-            localStorage.removeItem('mh_kdd_last_flip_date');
-        });
-
-        await page.reload();
-        await waitForPageReady(page);
-
-        const card = page.locator('#kdd-card');
-        await card.scrollIntoViewIfNeeded();
-        await card.click();
-        await expect(page.locator('#kdd-message')).toBeVisible();
-
-        await page.evaluate(() => {
-            Object.defineProperty(navigator, 'share', {
-                configurable: true,
-                value: undefined
-            });
-            Object.defineProperty(navigator, 'clipboard', {
-                configurable: true,
-                value: {
-                    writeText: async () => {
-                        throw new Error('clipboard denied');
-                    }
-                }
-            });
-            document.execCommand = () => false;
-        });
-
-        await page.locator('#kdd-share-btn').click();
-
-        await expect(page.locator('#kdd-share-btn')).toContainText('Odkaz připraven');
-        await expect(page.locator('.kdd-share-fallback')).toBeVisible();
-        await expect(page.locator('.kdd-share-fallback input')).toHaveValue(/andelske-karty\.html/);
+        await expect(page.locator('a[href="/tarot-karta-dne.html?source=homepage_daily_tarot"]')).toBeVisible();
     });
 
     test('skip-link pro přístupnost existuje', async ({ page }) => {

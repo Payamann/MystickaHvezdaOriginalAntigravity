@@ -8,8 +8,25 @@
     };
     const DRAFT_KEY = 'mh_personal_map_order_draft';
     const FLOW_KEY = 'mh_personal_map_order_flow_id';
+    const FLOW_CREATED_AT_KEY = 'mh_personal_map_order_flow_created_at';
+    const FLOW_SUBMITTED_KEY = 'mh_personal_map_order_flow_submitted';
     const LEGACY_DRAFT_KEY = 'mh_personal_map_last_order';
     const DRAFT_MAX_AGE_MS = 3 * 60 * 60 * 1000;
+    const FLOW_MAX_AGE_MS = 25 * 60 * 60 * 1000;
+    let volatileOrderFlowId = null;
+    let volatileOrderFlowCreatedAt = 0;
+    let volatileOrderFlowSubmitted = false;
+
+    function getPragueDateKey(date = new Date()) {
+        const parts = new Intl.DateTimeFormat('en-CA', {
+            timeZone: 'Europe/Prague',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        }).formatToParts(date);
+        const value = type => parts.find(part => part.type === type).value;
+        return `${value('year')}-${value('month')}-${value('day')}`;
+    }
     const SIGN_LABELS = {
         beran: 'Beran',
         byk: 'Býk',
@@ -49,15 +66,65 @@
     }
 
     function getOrderFlowId() {
+        const now = Date.now();
+        if (volatileOrderFlowId
+            && (!volatileOrderFlowSubmitted || (now - volatileOrderFlowCreatedAt >= 0 && now - volatileOrderFlowCreatedAt <= FLOW_MAX_AGE_MS))) {
+            return volatileOrderFlowId;
+        }
+        if (volatileOrderFlowId) clearOrderFlowId();
+
         try {
             const existing = window.sessionStorage?.getItem?.(FLOW_KEY);
-            if (existing) return existing;
-            const created = `pm_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
-            window.sessionStorage?.setItem?.(FLOW_KEY, created);
-            return created;
+            if (/^pm_[a-zA-Z0-9_-]{12,100}$/.test(existing || '')) {
+                const submitted = window.sessionStorage?.getItem?.(FLOW_SUBMITTED_KEY) === '1';
+                const createdAt = Number(window.sessionStorage?.getItem?.(FLOW_CREATED_AT_KEY));
+                const age = now - createdAt;
+                if (!submitted || (Number.isFinite(createdAt) && age >= 0 && age <= FLOW_MAX_AGE_MS)) {
+                    volatileOrderFlowId = existing;
+                    volatileOrderFlowCreatedAt = Number.isFinite(createdAt) ? createdAt : now;
+                    volatileOrderFlowSubmitted = submitted;
+                    return existing;
+                }
+            }
         } catch {
-            return null;
+            // Keep a stable in-memory id when storage is blocked by privacy settings.
         }
+
+        const uuid = window.crypto?.randomUUID?.().replace(/-/g, '');
+        const created = `pm_${uuid || `${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}_${Math.random().toString(36).slice(2)}`}`;
+        volatileOrderFlowId = created;
+        volatileOrderFlowCreatedAt = now;
+        volatileOrderFlowSubmitted = false;
+        try {
+            window.sessionStorage?.setItem?.(FLOW_KEY, created);
+            window.sessionStorage?.setItem?.(FLOW_CREATED_AT_KEY, String(now));
+            window.sessionStorage?.removeItem?.(FLOW_SUBMITTED_KEY);
+        } catch { /* Checkout still works when session storage is unavailable. */ }
+        return created;
+    }
+
+    function markOrderFlowSubmitted() {
+        const flowId = getOrderFlowId();
+        if (volatileOrderFlowSubmitted) return flowId;
+
+        volatileOrderFlowCreatedAt = Date.now();
+        volatileOrderFlowSubmitted = true;
+        try {
+            window.sessionStorage?.setItem?.(FLOW_CREATED_AT_KEY, String(volatileOrderFlowCreatedAt));
+            window.sessionStorage?.setItem?.(FLOW_SUBMITTED_KEY, '1');
+        } catch { /* The in-memory flow stays stable for retries in this tab. */ }
+        return flowId;
+    }
+
+    function clearOrderFlowId() {
+        volatileOrderFlowId = null;
+        volatileOrderFlowCreatedAt = 0;
+        volatileOrderFlowSubmitted = false;
+        try {
+            window.sessionStorage?.removeItem?.(FLOW_KEY);
+            window.sessionStorage?.removeItem?.(FLOW_CREATED_AT_KEY);
+            window.sessionStorage?.removeItem?.(FLOW_SUBMITTED_KEY);
+        } catch { /* Storage is optional. */ }
     }
 
     function trackAnalytics(methodName, ...args) {
@@ -216,7 +283,7 @@
                 upsell_feature: 'premium_membership',
                 upsell_plan: 'pruvodce'
             });
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
         }
 
         if (status === 'cancel') {
@@ -256,7 +323,7 @@
                 }
 
                 if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    target.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
                 }
             });
         });
@@ -303,7 +370,8 @@
             focusArea: String(formData.get('focusArea') || ''),
             grammaticalGender: String(formData.get('grammaticalGender') || 'neutral'),
             focus: String(formData.get('focus') || '').trim(),
-            source: attribution.source
+            source: attribution.source,
+            flowId: getOrderFlowId()
         };
     }
 
@@ -342,9 +410,9 @@
     }
 
     function clearOrderDraft() {
+        clearOrderFlowId();
         try {
             window.sessionStorage?.removeItem?.(DRAFT_KEY);
-            window.sessionStorage?.removeItem?.(FLOW_KEY);
             window.localStorage?.removeItem?.(LEGACY_DRAFT_KEY);
         } catch {
             // Storage can be unavailable in privacy modes; checkout must still work.
@@ -368,8 +436,12 @@
         try {
             // Always remove the legacy persistent copy, even when no session draft exists.
             window.localStorage?.removeItem?.(LEGACY_DRAFT_KEY);
-            const saved = JSON.parse(window.sessionStorage?.getItem?.(DRAFT_KEY) || 'null');
-            if (!saved?.payload || Date.now() - Number(saved.createdAt || 0) > DRAFT_MAX_AGE_MS) {
+            const rawDraft = window.sessionStorage?.getItem?.(DRAFT_KEY);
+            if (!rawDraft) return false;
+            const saved = JSON.parse(rawDraft);
+            const createdAt = Number(saved?.createdAt);
+            const draftAge = Date.now() - createdAt;
+            if (!saved?.payload || !Number.isFinite(createdAt) || draftAge < 0 || draftAge > DRAFT_MAX_AGE_MS) {
                 window.sessionStorage?.removeItem?.(DRAFT_KEY);
                 return false;
             }
@@ -488,19 +560,33 @@
 
         if (!form || !submitButton || !errorBox) return;
 
+        const refreshBirthDateMaximum = () => {
+            if (birthDate) birthDate.max = getPragueDateKey();
+        };
         if (birthDate) {
-            birthDate.max = new Date().toISOString().slice(0, 10);
+            refreshBirthDateMaximum();
             birthDate.addEventListener('change', () => updateZodiacSign(birthDate, sign, signPreview));
             birthDate.addEventListener('input', () => updateZodiacSign(birthDate, sign, signPreview));
+            birthDate.addEventListener('change', refreshBirthDateMaximum);
+            form.addEventListener('focusin', refreshBirthDateMaximum);
+            form.addEventListener('pointerdown', refreshBirthDateMaximum);
+            form.addEventListener('keydown', refreshBirthDateMaximum);
+            window.addEventListener('focus', refreshBirthDateMaximum);
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') refreshBirthDateMaximum();
+            });
         }
 
         initFormStartedTracking(form);
         initValidationTracking(form);
         const restoredDraft = restoreOrderDraft(form, birthDate, sign, signPreview);
         if (!restoredDraft) applySuggestedFocusArea(form);
+        let checkoutInProgress = false;
 
         form.addEventListener('submit', async (event) => {
             event.preventDefault();
+            refreshBirthDateMaximum();
+            if (checkoutInProgress) return;
             hideError(errorBox);
             updateZodiacSign(birthDate, sign, signPreview);
 
@@ -510,10 +596,16 @@
                 return;
             }
 
+            markOrderFlowSubmitted();
+            const payload = collectPayload(form);
+            checkoutInProgress = true;
+            form.setAttribute('aria-busy', 'true');
+            const formControls = Array.from(form.querySelectorAll('input, select, textarea, button'));
+            const previousDisabledStates = formControls.map((control) => control.disabled);
+            formControls.forEach((control) => { control.disabled = true; });
             setButtonLoading(submitButton, true);
 
             try {
-                const payload = collectPayload(form);
                 trackEvent('one_time_form_submitted', {
                     focus_area: payload.focusArea,
                     grammatical_gender: payload.grammaticalGender
@@ -541,7 +633,10 @@
                 const data = await response.json().catch(() => ({}));
 
                 if (!response.ok) {
-                    throw new Error(data.error || 'Platbu se nepodařilo spustit. Zkus to prosím znovu.');
+                    const checkoutError = new Error(data.error || 'Platbu se nepodařilo spustit. Zkus to prosím znovu.');
+                    checkoutError.status = response.status;
+                    checkoutError.code = data.code;
+                    throw checkoutError;
                 }
 
                 const checkoutUrl = getSafeCheckoutUrl(data.url);
@@ -553,8 +648,19 @@
                 trackEvent('one_time_checkout_failed', {
                     error_message: error.message
                 });
+                if (error.status === 409 && error.code === 'checkout_session_expired') {
+                    clearOrderFlowId();
+                }
                 showError(errorBox, error.message);
+                checkoutInProgress = false;
+                form.removeAttribute('aria-busy');
                 setButtonLoading(submitButton, false);
+                formControls.forEach((control, index) => {
+                    control.disabled = previousDisabledStates[index];
+                });
+                if (error.status === 409 && error.code === 'personal_map_flow_conflict') {
+                    submitButton.disabled = true;
+                }
             }
         });
     }

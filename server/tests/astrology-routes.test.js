@@ -86,6 +86,78 @@ describe('Astro calculation routes', () => {
         expect(res.body.success).toBe(false);
     });
 
+    test('GET /api/natal-chart/calculate rejects a future birth date', async () => {
+        const res = await request(app)
+            .get('/api/natal-chart/calculate')
+            .query({ birthDate: '9999-12-31' })
+            .expect(400);
+
+        expect(res.body.error).toBe('Datum narození nemůže být v budoucnosti.');
+    });
+
+    test('GET /api/transits/current rejects a future birth date', async () => {
+        const res = await request(app)
+            .get('/api/transits/current')
+            .query({ birthDate: '9999-12-31' })
+            .expect(400);
+
+        expect(res.body.error).toBe('Datum narození nemůže být v budoucnosti.');
+    });
+
+    test('POST /api/natal-chart rejects a future birth date before plan gating', async () => {
+        const csrfToken = await getCsrfToken();
+        const res = await request(app)
+            .post('/api/natal-chart')
+            .set('x-csrf-token', csrfToken)
+            .send({ birthDate: '9999-12-31', birthTime: '12:00', birthPlace: 'Praha', name: 'Test' })
+            .expect(400);
+
+        expect(res.body.error).toBe('Datum narození nemůže být v budoucnosti.');
+    });
+
+    test('POST /api/synastry/calculate rejects a future birth date for either person', async () => {
+        const csrfToken = await getCsrfToken();
+        const res = await request(app)
+            .post('/api/synastry/calculate')
+            .set('x-csrf-token', csrfToken)
+            .send({
+                person1: { name: 'A', birthDate: '1990-01-01' },
+                person2: { name: 'B', birthDate: '9999-12-31' }
+            })
+            .expect(400);
+
+        expect(res.body.error).toContain('datum narození nemůže být v budoucnosti');
+    });
+
+    test('POST /api/synastry rejects a future birth date before premium generation', async () => {
+        const csrfToken = await getCsrfToken();
+        const token = createExclusiveToken();
+        const res = await request(app)
+            .post('/api/synastry')
+            .set('x-csrf-token', csrfToken)
+            .set('Cookie', `auth_token=${token}`)
+            .send({
+                person1: { name: 'Anna', birthDate: '1990-01-01' },
+                person2: { name: 'Pavel', birthDate: '9999-12-31' }
+            })
+            .expect(400);
+
+        expect(res.body.error).toContain('datum narození nemůže být v budoucnosti');
+    });
+
+    test('POST /api/astrocartography rejects a future birth date before calculation', async () => {
+        const csrfToken = await getCsrfToken();
+        const token = createExclusiveToken();
+        const res = await request(app)
+            .post('/api/astrocartography')
+            .set('x-csrf-token', csrfToken)
+            .set('Cookie', `auth_token=${token}`)
+            .send({ birthDate: '9999-12-31', birthTime: '12:00', birthPlace: 'Praha', name: 'Test' })
+            .expect(400);
+
+        expect(res.body.error).toBe('Datum narození nemůže být v budoucnosti.');
+    });
+
     test('POST /api/natal-chart returns premium fallback when AI fails', async () => {
         const originalForceError = process.env.MOCK_AI_FORCE_ERROR;
         process.env.MOCK_AI_FORCE_ERROR = 'true';

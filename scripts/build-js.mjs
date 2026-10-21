@@ -53,11 +53,12 @@ await Promise.all(
 
 const moduleEntries = [];
 const classicEntries = [];
+const profileDashboardEntry = path.join(jsDir, 'profile', 'dashboard.js');
 
 for (const entry of entries) {
     const source = await readFile(entry, 'utf8');
     if (/\b(?:import|export)\b/.test(source)) {
-        moduleEntries.push(entry);
+        if (entry !== profileDashboardEntry) moduleEntries.push(entry);
     } else {
         classicEntries.push(entry);
     }
@@ -89,11 +90,30 @@ if (moduleEntries.length > 0) {
     });
 }
 
+// The profile's reading-detail modal is used only after a visitor opens a
+// saved reading. Split this entry so the modal and its renderer can be fetched
+// on demand while keeping the existing dashboard URL stable.
+if (entries.includes(profileDashboardEntry)) {
+    await esbuild.build({
+        entryPoints: [profileDashboardEntry],
+        outdir: path.join(outDir, 'profile'),
+        outbase: path.join(jsDir, 'profile'),
+        entryNames: '[name]',
+        chunkNames: 'chunks/[name]-[hash]',
+        minify: true,
+        bundle: true,
+        splitting: true,
+        format: 'esm',
+        platform: 'browser',
+        logLevel: 'info'
+    });
+}
+
 // Core bundle: the four shared classic scripts every content page loads
 // (api-config -> templates -> auth-client -> components, in dependency
 // order). Concatenating the already-minified dist outputs keeps behaviour
 // identical to four sequential deferred scripts while cutting three
-// requests per page. Pages reference /js/dist/core.js.
+// requests per page. Keep the core version in sync with refresh-auth-asset-versions.mjs.
 const CORE_BUNDLE_FILES = ['api-config.js', 'templates.js', 'auth-client.js', 'components.js'];
 const { writeFile } = await import('node:fs/promises');
 

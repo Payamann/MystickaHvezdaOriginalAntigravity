@@ -25,6 +25,7 @@ for (const failure of ['storage', 'quota', 'null']) {
         await page.goto('/onboarding.html');
         await page.locator('.zodiac-btn[data-sign="beran"]').click();
         await expect(page.locator('#quick-finish-onboarding-btn')).toBeEnabled();
+        await expect(page.locator('#quick-finish-onboarding-btn use')).toHaveAttribute('href', '/img/icons/mh-symbols.svg#star');
         await page.locator('#quick-finish-onboarding-btn').click();
         await expect(page).toHaveURL(/horoskopy\.html.*sign=beran/);
     });
@@ -45,6 +46,7 @@ for (const failure of ['throw', 'reject', 'hang', 'csrf']) {
         await page.locator('#step-1 [data-action="goStep"][data-step="2"]').click();
         await page.locator('.zodiac-btn[data-sign="beran"]').click();
         await page.locator('#btn-step2').click();
+        await expect(page.locator('#finish-onboarding-btn use')).toHaveAttribute('href', '/img/icons/mh-symbols.svg#star');
         await page.locator('#finish-onboarding-btn').click();
         await expect(page).toHaveURL(/horoskopy\.html.*sign=beran/, { timeout: 6000 });
     });

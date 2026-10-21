@@ -22,5 +22,12 @@ function collect(dir) {
 }
 for (const folder of ['js', 'css', 'fonts']) collect(path.join(root, folder));
 history.assets = Object.fromEntries(Object.entries(history.assets).sort(([a], [b]) => a.localeCompare(b)));
-fs.writeFileSync(output, JSON.stringify(history, null, 2) + '\n');
+const temporaryOutput = `${output}.${process.pid}.tmp`;
+try {
+    fs.writeFileSync(temporaryOutput, JSON.stringify(history, null, 2) + '\n');
+    fs.renameSync(temporaryOutput, output);
+} catch (error) {
+    try { fs.unlinkSync(temporaryOutput); } catch { /* Keep the original archive intact. */ }
+    throw error;
+}
 console.log(`[assets] Retained ${Object.keys(history.assets).length} public asset versions`);

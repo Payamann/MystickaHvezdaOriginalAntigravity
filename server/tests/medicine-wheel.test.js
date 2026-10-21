@@ -62,6 +62,19 @@ describe('Medicine wheel route', () => {
         expect(res.body.result.message).toMatch(/\b(?:drž se|Dnes si zvol)\b/iu);
     });
 
+    test('rejects a future birth date before generating the reading', async () => {
+        const csrfToken = await getCsrfToken();
+        const token = createPremiumToken();
+        const res = await request(app)
+            .post('/api/medicine-wheel')
+            .set('x-csrf-token', csrfToken)
+            .set('Cookie', `auth_token=${token}`)
+            .send({ name: 'Test User', birthDate: '9999-12-31', totem: 'Vlk' })
+            .expect(400);
+
+        expect(res.body.error).toMatch(/datum narození nemůže být v budoucnosti/i);
+    });
+
     test('returns symbolic fallback when AI call fails', async () => {
         const originalForceError = process.env.MOCK_AI_FORCE_ERROR;
         process.env.MOCK_AI_FORCE_ERROR = 'true';

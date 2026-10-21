@@ -13,7 +13,7 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: radial-gradient(ellipse at 50% 0%, rgba(139, 90, 180, 0.3) 0%, transparent 70%);
+            background: radial-gradient(ellipse at 50% 0%, rgba(79, 132, 151, 0.24) 0%, transparent 70%);
         }
         .past-life-form-section {
             max-width: 560px;
@@ -81,7 +81,7 @@
 
         .past-life-intent-card--primary {
             border-color: rgba(212,175,55,0.58);
-            background: linear-gradient(135deg, rgba(212,175,55,0.14), rgba(139,90,180,0.12));
+            background: linear-gradient(135deg, rgba(212,175,55,0.12), rgba(79,132,151,0.1));
         }
 
         .past-life-intent-card span {
@@ -126,6 +126,14 @@
             margin-bottom: 1.25rem;
         }
         .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 0.4rem;
+        }
+        .past-life-form-label {
             display: block;
             font-size: 0.8rem;
             text-transform: uppercase;
@@ -188,7 +196,7 @@
         .result-era-banner {
             text-align: center;
             padding: 2rem 1.5rem;
-            background: linear-gradient(135deg, rgba(139,90,180,0.2), rgba(212,175,55,0.1));
+            background: linear-gradient(135deg, rgba(79,132,151,0.12), rgba(212,175,55,0.1));
             border: 1px solid rgba(212,175,55,0.3);
             border-radius: 20px;
             margin-bottom: 1.5rem;
@@ -254,14 +262,10 @@
             color: rgba(255,255,255,0.9);
             font-style: italic;
         }
-        .result-message::before {
-            content: '✨ ';
-        }
-
         .premium-wall {
             text-align: center;
             padding: 1.35rem 1.25rem;
-            background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(139,90,180,0.08));
+            background: linear-gradient(135deg, rgba(79,132,151,0.08), rgba(212,175,55,0.06));
             border: 1px solid rgba(212,175,55,0.2);
             border-radius: 20px;
             max-width: 560px;
@@ -325,8 +329,8 @@
         .share-btn--x   { border-color: rgba(255,255,255,0.2); }
         .share-btn--copy { border-color: rgba(212,175,55,0.3); }
         .share-btn--copy:hover { background: rgba(212,175,55,0.1); border-color: rgba(212,175,55,0.6); color: var(--color-mystic-gold); }
-        .share-btn--native { border-color: rgba(157,78,221,0.4); }
-        .share-btn--native:hover { background: rgba(157,78,221,0.15); border-color: rgba(157,78,221,0.7); }
+        .share-btn--native { border-color: rgba(212,175,55,0.3); }
+        .share-btn--native:hover { background: rgba(212,175,55,0.1); border-color: rgba(212,175,55,0.6); color: var(--color-mystic-gold); }
         .share-btn--copy.copied { border-color: rgba(80,200,120,0.6); color: #6ee7a0; background: rgba(80,200,120,0.1); }
 
 /* Migrated from minuly-zivot.html static style attributes. */
@@ -414,8 +418,8 @@ html body .mh-inline-5d5d1926b8 { text-align:center; margin-top:2rem; }
     border: 1px solid rgba(212,175,55,0.34);
     border-radius: 20px;
     background:
-        radial-gradient(circle at top left, rgba(212,175,55,0.16), transparent 36%),
-        linear-gradient(135deg, rgba(18, 14, 30, 0.96), rgba(45, 29, 60, 0.9));
+        radial-gradient(circle at top left, rgba(212,175,55,0.12), transparent 36%),
+        linear-gradient(135deg, rgba(18, 38, 56, 0.96), rgba(11, 25, 41, 0.92));
     color: rgba(255,255,255,0.78);
     box-shadow: 0 18px 48px rgba(0,0,0,0.24);
 }

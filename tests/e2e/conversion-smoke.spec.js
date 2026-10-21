@@ -82,6 +82,13 @@ test.describe('Conversion smoke', () => {
 
                 await expect(dropdownToggle).toHaveAttribute('aria-expanded', 'true');
                 await expectNoHorizontalOverflow(page);
+
+                await page.keyboard.press('Escape');
+                await expect(dropdownToggle).toHaveAttribute('aria-expanded', 'false');
+                await expect(page.locator('.nav__toggle')).toHaveAttribute('aria-expanded', 'false');
+                await expect(page.locator('.nav__list')).toHaveAttribute('aria-hidden', 'true');
+                await expect(page.locator('.nav__toggle')).toBeFocused();
+                await expect.poll(() => page.evaluate(() => document.body.classList.contains('nav-open'))).toBe(false);
             });
 
             await test.step('register form blocks too-short password without calling register', async () => {

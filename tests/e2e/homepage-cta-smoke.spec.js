@@ -109,7 +109,7 @@ test.describe('Homepage CTA smoke', () => {
 
             const quickDecision = page.locator('[data-analytics-cta="homepage_quick_decision"]');
             const quickDaily = page.locator('[data-analytics-cta="homepage_quick_daily"]');
-            const quickDream = page.locator('[data-analytics-cta="homepage_quick_dream"]');
+            const quickTarotDaily = page.locator('[data-analytics-cta="homepage_quick_tarot_daily"]');
 
             expectQuery(await quickDecision.getAttribute('href'), {
                 source: 'homepage_quick_decision',
@@ -121,9 +121,9 @@ test.describe('Homepage CTA smoke', () => {
                 feature: 'horoskopy',
                 variant: 'audience_intent_v1'
             });
-            expectQuery(await quickDream.getAttribute('href'), {
-                source: 'homepage_quick_dream',
-                feature: 'dream_dictionary',
+            expectQuery(await quickTarotDaily.getAttribute('href'), {
+                source: 'homepage_quick_tarot_daily',
+                feature: 'tarot',
                 variant: 'audience_intent_v1'
             });
 

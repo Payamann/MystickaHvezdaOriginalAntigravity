@@ -64,6 +64,13 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
         }
     }
 
+    function setDailyShareStatus(message) {
+        const status = document.getElementById('tarot-daily-share-status');
+        if (!status) return;
+        status.textContent = message;
+        status.hidden = !message;
+    }
+
     async function trackFirstDailyValue() {
         const metadata = {
             source: SOURCE,
@@ -126,6 +133,21 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
         return getDailyCardPractice(card.name).action;
     }
 
+    function formatDateKey(dateKey) {
+        const parsedDate = new Date(`${dateKey || ''}T12:00:00Z`);
+        const validDateKey = /^\d{4}-\d{2}-\d{2}$/.test(dateKey || '')
+            && Number.isFinite(parsedDate.getTime())
+            && parsedDate.toISOString().slice(0, 10) === dateKey
+            ? dateKey
+            : getLocalDateKey();
+        return new Intl.DateTimeFormat('cs-CZ', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+            timeZone: 'Europe/Prague'
+        }).format(new Date(`${validDateKey}T12:00:00Z`));
+    }
+
     function isProfileSaveReturn() {
         const params = new URLSearchParams(window.location.search);
         return params.get('source') === PROFILE_SAVE_RETURN_SOURCE
@@ -172,11 +194,28 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
         return lines;
     }
 
-    function drawCenteredLines(ctx, lines, x, y, lineHeight, maxLines = lines.length) {
-        lines.slice(0, maxLines).forEach((line, index) => {
+    function ellipsizeCanvasLine(ctx, line, maxWidth) {
+        const characters = Array.from(String(line || '').trimEnd());
+        while (characters.length > 0 && ctx.measureText(`${characters.join('')}…`).width > maxWidth) {
+            characters.pop();
+        }
+        return `${characters.join('').trimEnd()}…`;
+    }
+
+    function drawCenteredLines(ctx, lines, x, y, lineHeight, maxLines = lines.length, maxWidth = Infinity) {
+        const visibleLines = lines.slice(0, maxLines);
+        if (visibleLines.length > 0 && Number.isFinite(maxWidth) && maxWidth > 0) {
+            const lastIndex = visibleLines.length - 1;
+            const omittedLines = lines.length > visibleLines.length;
+            const lastLineOverflows = ctx.measureText(visibleLines[lastIndex]).width > maxWidth;
+            if (omittedLines || lastLineOverflows) {
+                visibleLines[lastIndex] = ellipsizeCanvasLine(ctx, visibleLines[lastIndex], maxWidth);
+            }
+        }
+        visibleLines.forEach((line, index) => {
             ctx.fillText(line, x, y + index * lineHeight);
         });
-        return y + Math.min(lines.length, maxLines) * lineHeight;
+        return y + visibleLines.length * lineHeight;
     }
 
     function loadCanvasImage(src) {
@@ -203,29 +242,37 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
         canvas.height = 1350;
         const ctx = canvas.getContext('2d');
         const centerX = canvas.width / 2;
-        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        gradient.addColorStop(0, '#132b3c');
-        gradient.addColorStop(0.46, '#0b1929');
-        gradient.addColorStop(1, '#081420');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.strokeStyle = 'rgba(208,177,124,0.36)';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(54, 54, canvas.width - 108, canvas.height - 108);
+        const shareImage = window.MH_SHARE_IMAGE;
+        if (shareImage?.drawBrandBackground) {
+            shareImage.drawBrandBackground(ctx, canvas);
+        } else {
+            // Keep export available if the shared helper did not load.
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#132b3c');
+            gradient.addColorStop(0.46, '#0b1929');
+            gradient.addColorStop(1, '#081420');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = 'rgba(208,177,124,0.36)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(54, 54, canvas.width - 108, canvas.height - 108);
+
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#d0b17c';
+            ctx.font = '600 42px Inter, Arial, sans-serif';
+            ctx.fillText('Mystická Hvězda', centerX, 142);
+        }
 
         ctx.textAlign = 'center';
-        ctx.fillStyle = '#d0b17c';
-        ctx.font = '600 42px Inter, Arial, sans-serif';
-        ctx.fillText('Mystická Hvězda', centerX, 142);
 
-        ctx.fillStyle = '#f1eadc';
+        ctx.fillStyle = '#e9e3d7';
         ctx.font = '700 48px Cinzel, Georgia, serif';
         ctx.fillText('TAROT KARTA DNE', centerX, 224);
 
-        ctx.fillStyle = 'rgba(255,255,255,0.72)';
+        ctx.fillStyle = '#c0c8ca';
         ctx.font = '500 30px Inter, Arial, sans-serif';
         const dateKey = card.dateKey || getLocalDateKey();
-        const displayDate = new Date(`${dateKey}T12:00:00Z`).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Prague' });
+        const displayDate = formatDateKey(dateKey);
         ctx.fillText(displayDate, centerX, 272);
 
         let cardImage = null;
@@ -243,17 +290,17 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
             ctx.fillRect(cardBox.x, cardBox.y, cardBox.width, cardBox.height);
         }
 
-        ctx.fillStyle = '#eee6d8';
+        ctx.fillStyle = '#e9e3d7';
         ctx.font = '700 50px Cinzel, Georgia, serif';
-        let y = drawCenteredLines(ctx, wrapCanvasText(ctx, card.name, 840), centerX, 900, 58, 2);
+        let y = drawCenteredLines(ctx, wrapCanvasText(ctx, card.name, 840), centerX, 900, 58, 2, 840);
         ctx.font = '500 30px Inter, Arial, sans-serif';
-        y = drawCenteredLines(ctx, wrapCanvasText(ctx, card.meaning, 840), centerX, y + 14, 38, 2);
-        ctx.fillStyle = 'rgba(185,154,98,0.88)';
+        y = drawCenteredLines(ctx, wrapCanvasText(ctx, card.meaning, 840), centerX, y + 14, 38, 2, 840);
+        ctx.fillStyle = 'rgba(208,177,124,0.88)';
         ctx.fillRect(180, y + 12, 720, 2);
-        ctx.fillStyle = '#eee6d8';
+        ctx.fillStyle = '#e9e3d7';
         ctx.font = '500 28px Inter, Arial, sans-serif';
-        drawCenteredLines(ctx, wrapCanvasText(ctx, dailyAdvice(card), 840), centerX, y + 54, 36, 3);
-        ctx.fillStyle = 'rgba(238,230,216,0.76)';
+        drawCenteredLines(ctx, wrapCanvasText(ctx, dailyAdvice(card), 840), centerX, y + 54, 36, 3, 840);
+        ctx.fillStyle = 'rgba(192,200,202,0.76)';
         ctx.font = '500 24px Inter, Arial, sans-serif';
         ctx.fillText('mystickahvezda.cz/tarot-karta-dne.html', centerX, 1270);
 
@@ -316,29 +363,39 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
     function setupShareButton(shareButton, cardName, card) {
         if (!shareButton) return;
 
+        setDailyShareStatus('');
         shareButton.hidden = false;
         shareButton.onclick = async () => {
             const text = `Moje tarot karta dne: ${cardName}. ${card.meaning || ''}`.trim();
             const shareUrl = new URL(window.location.href);
             shareUrl.hash = 'denni-karta';
+            const wasDisabled = shareButton.disabled;
+            shareButton.disabled = true;
+            shareButton.setAttribute('aria-busy', 'true');
 
             try {
-                if (navigator.share) {
+                if (typeof navigator.share === 'function') {
                     await navigator.share({
                         title: `Tarot karta dne: ${cardName}`,
                         text,
                         url: shareUrl.toString()
                     });
-                } else if (navigator.clipboard?.writeText) {
+                    trackDailyCard('tarot_daily_card_shared', cardName, { share_method: 'native' });
+                } else if (typeof navigator.clipboard?.writeText === 'function') {
                     await navigator.clipboard.writeText(`${text} ${shareUrl}`);
-                    shareButton.textContent = 'Zkopírováno';
-                    setTimeout(() => { shareButton.textContent = 'Sdílet kartu'; }, 1800);
+                    setDailyShareStatus('Text karty a odkaz jsou zkopírované do schránky.');
+                    trackDailyCard('tarot_daily_card_shared', cardName, { share_method: 'clipboard' });
+                } else {
+                    setDailyShareStatus('Tento prohlížeč neumí sdílet ani kopírovat. Můžeš zkopírovat adresu stránky z adresního řádku.');
                 }
-                trackDailyCard('tarot_daily_card_shared', cardName);
             } catch (error) {
                 if (error.name !== 'AbortError') {
                     console.warn('[Tarot karta dne] Share failed:', error.message);
+                    setDailyShareStatus('Sdílení se nepodařilo. Zkus to prosím znovu.');
                 }
+            } finally {
+                shareButton.disabled = wasDisabled;
+                shareButton.removeAttribute('aria-busy');
             }
         };
     }
@@ -376,13 +433,16 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
             return false;
         }
 
+        const readingOwnerId = auth.user?.id;
+        if (typeof readingOwnerId !== 'string' || !readingOwnerId) return false;
+
         const previousText = profileButton.textContent;
         profileButton.dataset.saving = 'true';
         profileButton.disabled = true;
         profileButton.textContent = isAutoSave ? 'Dokončuji uložení...' : 'Ukládám...';
 
         try {
-            const savedReading = await auth.saveReading('tarot', buildProfileReadingPayload(card));
+            const savedReading = await auth.saveReading('tarot', buildProfileReadingPayload(card), readingOwnerId);
             if (!savedReading) {
                 profileButton.textContent = 'Zkusit znovu';
                 trackDailyCard('tarot_daily_card_profile_save_failed', card.name, {
@@ -445,9 +505,10 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
         elements.result.dataset.state = 'revealed';
         const horoscopeBridge = document.querySelector('.mh-email-bridge[data-analytics-source="tarot_daily_card_result"]');
         if (horoscopeBridge) horoscopeBridge.hidden = false;
+        elements.image.removeAttribute('srcset');
         elements.image.src = card.image || 'img/tarot-v2/tarot_card_back.webp';
         elements.image.alt = `Tarot karta dne: ${card.name}`;
-        elements.date.textContent = `Karta pro ${card.dateKey || getLocalDateKey()}`;
+        elements.date.textContent = `Karta pro ${formatDateKey(card.dateKey || getLocalDateKey())}`;
         elements.name.textContent = card.name;
         const practice = getDailyCardPractice(card.name);
         elements.meaning.textContent = practice.observation;

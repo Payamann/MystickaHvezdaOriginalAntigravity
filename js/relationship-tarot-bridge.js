@@ -2,9 +2,20 @@
     if (!document.querySelector('[data-relationship-offer], #tarot-relationship-offer')) return;
     const initialized = new WeakSet();
     const flowKey = 'mh_relationship_flow_id';
+    const relationshipIntents = new Set([
+        'love_yes_no',
+        'love_feelings',
+        'relationship_return',
+        'relationship_future',
+        'relationship_yes_no'
+    ]);
     let memoryFlowId = '';
     let productAvailable = false;
     let csrfPromise;
+    function hasRelationshipIntent() {
+        const intent = new URLSearchParams(window.location.search).get('intent');
+        return relationshipIntents.has(String(intent || '').trim().toLowerCase());
+    }
     function validFlowId(value) {
         return typeof value === 'string' && /^[a-z0-9_-]{16,80}$/i.test(value);
     }
@@ -119,8 +130,13 @@
     }
     function revealOffers() {
         if (!productAvailable) return;
-        document.querySelectorAll('[data-relationship-legacy]').forEach(el => { el.hidden = true; });
+        const yesNoRelationshipOffer = document.querySelector('[data-relationship-offer="tarot_yes_no_result"]');
+        const showYesNoRelationshipOffer = Boolean(yesNoRelationshipOffer && hasRelationshipIntent());
+        if (showYesNoRelationshipOffer) {
+            document.querySelectorAll('[data-relationship-legacy]').forEach(el => { el.hidden = true; });
+        }
         document.querySelectorAll('[data-relationship-offer]').forEach(offer => {
+            if (offer === yesNoRelationshipOffer && !showYesNoRelationshipOffer) return;
             updateOfferContext(offer);
             if (initialized.has(offer)) return;
             initialized.add(offer);

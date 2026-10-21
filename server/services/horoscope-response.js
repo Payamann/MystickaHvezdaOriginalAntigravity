@@ -21,11 +21,11 @@ export function formatHoroscopeForEmail(raw) {
     const parts = [String(parsed.prediction).trim()];
 
     if (parsed.affirmation) {
-        parts.push(`✨ Afirmace: ${String(parsed.affirmation).trim()}`);
+        parts.push(`Afirmace: ${String(parsed.affirmation).trim()}`);
     }
 
     if (Array.isArray(parsed.luckyNumbers) && parsed.luckyNumbers.length) {
-        parts.push(`🔢 Čísla štěstí: ${parsed.luckyNumbers.join(', ')}`);
+        parts.push(`Čísla štěstí: ${parsed.luckyNumbers.join(', ')}`);
     }
 
     return parts.join('\n\n');

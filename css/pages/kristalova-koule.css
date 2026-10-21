@@ -43,7 +43,7 @@
 
             z-index: 2;
 
-            filter: drop-shadow(0 0 30px rgba(157, 78, 221, 0.4));
+            filter: drop-shadow(0 0 30px rgba(79, 132, 151, 0.28));
 
             transition: filter 0.3s ease;
 
@@ -55,7 +55,7 @@
 
             transform: scale(1.02);
 
-            filter: drop-shadow(0 0 50px rgba(157, 78, 221, 0.6));
+            filter: drop-shadow(0 0 50px rgba(79, 132, 151, 0.38));
 
         }
 
@@ -75,7 +75,7 @@
 
             height: 60%;
 
-            background: radial-gradient(circle, rgba(157, 78, 221, 0.6) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(79, 132, 151, 0.42) 0%, transparent 70%);
 
             border-radius: 50%;
 
@@ -193,7 +193,7 @@
 
             background: rgba(10, 17, 40, 0.6);
 
-            border: 1px solid rgba(157, 78, 221, 0.3);
+            border: 1px solid rgba(208, 177, 124, 0.3);
 
             display: flex;
 
@@ -221,7 +221,7 @@
 
             transform: translateY(0);
 
-            box-shadow: 0 0 30px rgba(157, 78, 221, 0.2);
+            box-shadow: 0 0 30px rgba(79, 132, 151, 0.18);
 
         }
 

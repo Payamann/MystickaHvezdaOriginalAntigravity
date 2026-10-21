@@ -14,12 +14,14 @@ jest.unstable_mockModule('../../js/profile/shared.js', () => ({
     getReadingLabel: reading => reading.type,
     getReadingPreview: reading => reading?.data?.question || '',
     READING_FILTERS: [{ value: 'all', label: 'Vše' }]
+    ,getProfileScrollBehavior: () => 'auto'
 }));
 
 const readings = await import('../../js/profile/readings.js');
 const originalGlobals = Object.fromEntries(['document', 'window', 'fetch'].map(key => [key, globalThis[key]]));
 const dashboardSource = fs.readFileSync(path.resolve(process.cwd(), 'js/profile/dashboard.js'), 'utf8')
-    .replace(/^import\s+[\s\S]*?;\s*$/gm, '');
+    .replace(/^import\s+[\s\S]*?;\s*$/gm, '')
+    .replaceAll("import('./modal.js')", 'Promise.resolve(window.__PROFILE_MODAL__)');
 
 function deferred() {
     let resolve;
@@ -50,7 +52,8 @@ function makeElement() {
             remove: name => classes.delete(name),
             toggle: (name, force) => force ? classes.add(name) : classes.delete(name)
         },
-        replaceChildren() { this.innerHTML = ''; }
+        replaceChildren() { this.innerHTML = ''; },
+        removeAttribute(name) { delete this.attrs?.[name]; }
     };
 }
 
@@ -73,13 +76,20 @@ function createDashboardHarness() {
         querySelectorAll() { return []; },
         createElement() { return makeElement(); }
     };
+    const noop = () => {};
     const window = {
         Auth: { user: { id: 'synthetic-user' }, isLoggedIn: () => true },
+        __PROFILE_MODAL__: {
+            viewReading: (...args) => globalThis.__viewReading(...args),
+            closeReadingModal: noop,
+            toggleFavoriteModal: noop,
+            toggleFavorite: noop,
+            deleteReading: noop
+        },
         MH_ANALYTICS: { trackEvent: jest.fn(), trackCTA: jest.fn() },
         matchMedia: () => ({ matches: true }),
         location: { hash: '', origin: 'https://local.invalid' }
     };
-    const noop = () => {};
     const context = vm.createContext({
         document, window, console,
         CustomEvent: class { constructor(type, options = {}) { this.type = type; this.detail = options.detail; } },
@@ -226,7 +236,7 @@ test('failed context refresh renders unavailable state instead of stale or empty
     expect(dashboard.nodes['ritual-memory-copy'].textContent).toContain('Obnovit přehled');
 });
 
-test('daily guidance links to the newest dated saved reading and opens that exact record', () => {
+test('daily guidance links to the newest dated saved reading and opens that exact record', async () => {
     const readingId = 'reading"><img src=x onerror=alert(1)>';
     const privateQuestion = 'Question <img src=x onerror=alert(1)>';
     const readings = [
@@ -258,6 +268,7 @@ test('daily guidance links to the newest dated saved reading and opens that exac
         target: { closest: selector => selector === '[data-daily-action]' ? link : null },
         preventDefault() { prevented = true; }
     });
+    await new Promise(resolve => setTimeout(resolve, 0));
 
     expect(prevented).toBe(true);
     expect(globalThis.__viewReading).toHaveBeenCalledWith(readingId);

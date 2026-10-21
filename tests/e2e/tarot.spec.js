@@ -37,6 +37,36 @@ test.describe('Tarot', () => {
         await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', 'Tarot online: výklad z 78 karet | Mystická Hvězda');
     });
 
+    test('denní limit ukázky se obnovuje podle pražského dne před půlnocí UTC', async ({ page }) => {
+        await page.clock.install({ time: new Date('2026-10-17T22:30:00.000Z') });
+        await page.addInitScript(() => {
+            localStorage.setItem('tarot_free_usage', JSON.stringify({ date: '2026-10-18', count: 1 }));
+        });
+        await page.reload();
+        await waitForPageReady(page);
+        await page.route('**/api/payment/funnel-event', route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ success: true })
+        }));
+
+        await page.evaluate(() => {
+            window.__tarotBoundaryCheckout = false;
+            window.Auth = {
+                isLoggedIn: () => true,
+                isPremium: () => false,
+                showToast: title => { window.__tarotBoundaryToast = title; },
+                startPlanCheckout: async () => { window.__tarotBoundaryCheckout = true; }
+            };
+        });
+        await page.locator('[data-spread-type="Tři karty"]').first().click();
+
+        await expect.poll(() => page.evaluate(() => window.__tarotBoundaryCheckout)).toBe(true);
+        await expect.poll(() => page.evaluate(() => window.__tarotBoundaryToast)).toBe('Limit vyčerpán');
+        await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('tarot_free_usage') || '{}').date)).toBe('2026-10-18');
+        await expect(page.locator('#tarot-results')).toHaveClass(/hidden/);
+    });
+
     test('h1 je viditelný', async ({ page }) => {
         const h1 = page.locator('h1').first();
         await expect(h1).toBeVisible();
@@ -148,11 +178,154 @@ test.describe('Tarot', () => {
         const trigger = page.locator('[data-spread-type="Jedna karta"]').first();
         await expect(trigger).toBeVisible();
         await trigger.click();
+        await expect(page.locator('#tarot-reading-status')).toHaveText('Míchám karty pro výklad.');
 
         await expect(page.locator('#tarot-results')).toBeVisible({ timeout: 9000 });
         await expect(page.locator('#tarot-results .tarot-flip-card')).toHaveCount(1);
         await expect(page.locator('#interpretations-container')).toContainText('INTERPRETACE', { timeout: 9000 });
         await expect(page.locator('.tarot-practical-advice')).toBeVisible();
+        await expect(page.locator('#tarot-reading-status')).toHaveText('Výklad jedné karty je připravený.');
+    });
+
+    test('rozpracovaný tarotový tah se po přepnutí účtu nevykreslí', async ({ page }) => {
+        await page.evaluate(() => {
+            window.Auth = {
+                ...(window.Auth || {}),
+                user: { id: 'tarot-owner-before' },
+                isLoggedIn: () => true,
+                saveReading: async (...args) => {
+                    window.__tarotReadingSaves.push(args);
+                    return { id: 'stale-tarot-reading' };
+                }
+            };
+            window.__tarotReadingSaves = [];
+            document.dispatchEvent(new Event('auth:changed'));
+        });
+
+        const trigger = page.locator('[data-spread-type="Jedna karta"]').first();
+        await trigger.click();
+        await expect(trigger).toBeDisabled();
+        await page.evaluate(() => {
+            window.Auth.user = { id: 'tarot-owner-after' };
+            document.dispatchEvent(new Event('auth:changed'));
+        });
+
+        await expect(trigger).toBeEnabled({ timeout: 7000 });
+        await expect(page.locator('#tarot-results')).toBeHidden();
+        expect(await page.evaluate(() => window.__tarotReadingSaves.length)).toBe(0);
+    });
+
+    test('hotový osobní tarotový výsledek zmizí po přepnutí účtu', async ({ page }) => {
+        await page.emulateMedia({ reducedMotion: 'reduce' });
+        await page.evaluate(() => {
+            window.Auth = {
+                ...(window.Auth || {}),
+                user: { id: 'tarot-display-owner-before' },
+                isLoggedIn: () => true,
+                saveReading: async () => ({ id: 'displayed-tarot-reading' })
+            };
+            document.dispatchEvent(new Event('auth:changed'));
+        });
+
+        await page.locator('[data-spread-type="Jedna karta"]').first().click();
+        await expect(page.locator('#interpretations-container')).toContainText('INTERPRETACE', { timeout: 7000 });
+        await expect(page.locator('#favorite-tarot-btn')).toBeVisible();
+
+        await page.evaluate(() => {
+            window.Auth.user = { id: 'tarot-display-owner-after' };
+            document.dispatchEvent(new Event('auth:changed'));
+        });
+
+        await expect(page.locator('#tarot-results')).toBeHidden();
+        await expect(page.locator('#tarot-results')).toBeEmpty();
+        await expect(page.locator('#favorite-tarot-btn')).toHaveCount(0);
+        expect(await page.evaluate(() => window.currentTarotReadingId)).toBeNull();
+    });
+
+    test('opožděný souhrn tří karet se po přepnutí účtu nezobrazí ani neuloží', async ({ page }) => {
+        await page.emulateMedia({ reducedMotion: 'reduce' });
+        await page.evaluate(() => {
+            window.getCSRFToken = async () => 'e2e-tarot-csrf';
+            window.__tarotSummaryFetchCount = 0;
+            window.__tarotReadingSaves = [];
+            window.Auth = {
+                ...(window.Auth || {}),
+                user: { id: 'tarot-summary-owner-before' },
+                isLoggedIn: () => true,
+                isPremium: () => true,
+                saveReading: async (...args) => {
+                    window.__tarotReadingSaves.push(args);
+                    return { id: 'stale-tarot-summary-reading' };
+                }
+            };
+            document.dispatchEvent(new Event('auth:changed'));
+            const nativeFetch = window.fetch.bind(window);
+            window.fetch = async (input, options) => {
+                if (String(input).includes('/tarot-summary')) {
+                    window.__tarotSummaryFetchCount += 1;
+                    return new Promise(resolve => {
+                        window.__releaseTarotSummary = () => resolve(new Response(JSON.stringify({
+                            success: true,
+                            response: 'STARÝ SOUKROMÝ SOUHRN TAROTU',
+                            fallback: false
+                        }), { status: 200, headers: { 'Content-Type': 'application/json' } }));
+                    });
+                }
+                return nativeFetch(input, options);
+            };
+        });
+
+        await page.locator('[data-spread-type="Tři karty"]').first().click();
+        await expect(page.locator('#tarot-results .tarot-flip-card')).toHaveCount(3);
+        await expect.poll(() => page.evaluate(() => window.__tarotSummaryFetchCount)).toBe(1);
+
+        await page.evaluate(() => {
+            window.Auth.user = { id: 'tarot-summary-owner-after' };
+            document.dispatchEvent(new Event('auth:changed'));
+        });
+        await page.evaluate(() => window.__releaseTarotSummary());
+
+        await expect(page.locator('#tarot-results')).toBeHidden();
+        await expect(page.locator('#tarot-results')).toBeEmpty();
+        await expect(page.locator('#favorite-tarot-btn')).toHaveCount(0);
+        expect(await page.evaluate(() => window.__tarotReadingSaves.length)).toBe(0);
+    });
+
+    test('selhání uložení zachová hotový společný výklad', async ({ page }) => {
+        await page.emulateMedia({ reducedMotion: 'reduce' });
+        await page.evaluate(() => {
+            window.getCSRFToken = async () => 'e2e-tarot-csrf';
+            window.Auth = {
+                ...(window.Auth || {}),
+                user: { id: 'tarot-save-failure-owner' },
+                isLoggedIn: () => true,
+                isPremium: () => true,
+                saveReading: async () => null
+            };
+            document.dispatchEvent(new Event('auth:changed'));
+            const nativeFetch = window.fetch.bind(window);
+            window.fetch = async (input, options) => {
+                if (String(input).includes('/tarot-summary')) {
+                    return new Response(JSON.stringify({
+                        success: true,
+                        response: 'SOUHRN ZŮSTANE ČITELNÝ I PO SELHÁNÍ ULOŽENÍ.',
+                        fallback: false
+                    }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+                }
+                return nativeFetch(input, options);
+            };
+        });
+
+        await page.locator('[data-spread-type="Tři karty"]').first().click();
+
+        await expect(page.locator('#ethereal-tarot-summary'))
+            .toContainText('SOUHRN ZŮSTANE ČITELNÝ I PO SELHÁNÍ ULOŽENÍ.', { timeout: 9000 });
+        await expect(page.locator('.tarot-reading-save-error'))
+            .toContainText('Výklad zůstává dostupný tady');
+        await expect(page.locator('.tarot-summary-error')).toHaveCount(0);
+        await expect(page.locator('#tarot-reading-status'))
+            .toHaveText('Společný výklad je připravený.');
+        await expect(page.locator('#ethereal-tarot-summary')).not.toHaveAttribute('role', 'status');
     });
 
     test('card parametr použije konkrétní kartu pro výklad jedné karty', async ({ page }) => {
@@ -703,10 +876,190 @@ test.describe('Tarot Ano/Ne', () => {
             source: 'tarot_yes_no_result',
             feature: 'tarot_yes_no'
         }));
+        expect(pendingReading.requestId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
         expect(pendingReading.data).toEqual(expect.objectContaining({
             question: 'Mám dnes udělat první krok?',
             result_label: expect.any(String)
         }));
+        expect(pendingReading.userId).toBeNull();
+    });
+
+    test('cekujici tarotovy vyklad zachova ucet, pod kterym byl nabidnut', async ({ page }) => {
+        await page.goto('/tarot-ano-ne.html');
+        await waitForPageReady(page);
+        await page.fill('#question-input', 'Mám si dát čas na rozmyšlenou?');
+        await page.locator('.tarot-card').first().click();
+        await expect(page.locator('#result-panel')).toHaveClass(/show/, { timeout: 2500 });
+
+        await page.evaluate(() => {
+            window.Auth.user = { id: 'profile-user-original' };
+            window.Auth.isLoggedIn = () => true;
+        });
+
+        const saveLink = page.locator('#tarot-yes-no-next-step [data-tarot-yes-no-register]').first();
+        await Promise.all([
+            page.waitForURL(url => url.pathname === '/prihlaseni.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
+            saveLink.click()
+        ]);
+
+        const pendingReading = await page.evaluate(() => JSON.parse(localStorage.getItem('mh_pending_reading') || 'null'));
+        expect(pendingReading.userId).toBe('profile-user-original');
+        expect(pendingReading.data).toEqual(expect.objectContaining({
+            question: 'Mám si dát čas na rozmyšlenou?'
+        }));
+    });
+
+    test('ulozeni ano/ne prejde na session storage, kdyz local storage neni dostupne', async ({ page }) => {
+        await page.goto('/tarot-ano-ne.html');
+        await waitForPageReady(page);
+        await page.fill('#question-input', 'Mám si nechat víc času?');
+        await page.locator('.tarot-card').first().click();
+        await expect(page.locator('#result-panel')).toHaveClass(/show/);
+
+        await page.evaluate(() => {
+            const originalSetItem = Storage.prototype.setItem;
+            Storage.prototype.setItem = function (key, value) {
+                if (this === window.localStorage && key === 'mh_pending_reading') {
+                    throw new Error('local storage unavailable');
+                }
+                return originalSetItem.call(this, key, value);
+            };
+            window.Auth = window.Auth || {};
+            window.Auth.isLoggedIn = () => false;
+        });
+
+        await Promise.all([
+            page.waitForURL(url => url.pathname === '/prihlaseni.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
+            page.locator('#btn-save-reading').click()
+        ]);
+
+        const pendingReading = await page.evaluate(() => JSON.parse(sessionStorage.getItem('mh_pending_reading') || 'null'));
+        expect(pendingReading).toEqual(expect.objectContaining({
+            type: 'tarot',
+            source: 'tarot_yes_no_save_journal',
+            feature: 'tarot_yes_no'
+        }));
+        expect(pendingReading.requestId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+        expect(pendingReading.data).toEqual(expect.objectContaining({ question: 'Mám si nechat víc času?' }));
+    });
+
+    test('kdyz jsou obe uloziste nedostupna, vysledek zustane pred registraci', async ({ page }) => {
+        await page.goto('/tarot-ano-ne.html');
+        await waitForPageReady(page);
+        await page.fill('#question-input', 'Mám s odpovědí počkat?');
+        await page.locator('.tarot-card').first().click();
+        await expect(page.locator('#result-panel')).toHaveClass(/show/);
+
+        await page.evaluate(() => {
+            const originalSetItem = Storage.prototype.setItem;
+            Storage.prototype.setItem = function (key, value) {
+                if (key === 'mh_pending_reading') throw new Error('storage unavailable');
+                return originalSetItem.call(this, key, value);
+            };
+            window.Auth = window.Auth || {};
+            window.Auth.isLoggedIn = () => false;
+        });
+
+        await page.locator('#btn-save-reading').click();
+
+        await expect(page).toHaveURL(/tarot-ano-ne\.html/);
+        await expect(page.locator('#result-panel')).toHaveClass(/show/);
+        await expect(page.locator('#result-question')).toContainText('Mám s odpovědí počkat?');
+    });
+
+    test('ulozeni vykladu zamkne tlacitko pred pomalou analytikou', async ({ page }) => {
+        let signalFunnelStart;
+        let releaseFunnel;
+        const funnelStarted = new Promise(resolve => { signalFunnelStart = resolve; });
+        const funnelGate = new Promise(resolve => { releaseFunnel = resolve; });
+        let saveRequestCount = 0;
+        let postedRequestId = null;
+        let postedExpectedUserId = null;
+
+        await page.goto('/tarot-ano-ne.html');
+        await waitForPageReady(page);
+        await page.fill('#question-input', 'Mám si nechat víc času?');
+        await page.locator('.tarot-card').first().click();
+        await expect(page.locator('#result-panel')).toHaveClass(/show/);
+
+        await page.evaluate(() => {
+            window.getCSRFToken = async () => 'test-token';
+            window.Auth = window.Auth || {};
+            window.Auth.user = { id: 'tarot-save-user-1' };
+            window.Auth.isLoggedIn = () => true;
+        });
+        await page.route('**/api/payment/funnel-event', async route => {
+            const payload = route.request().postDataJSON();
+            if (payload.eventName === 'reading_save_clicked') {
+                signalFunnelStart();
+                await funnelGate;
+            }
+            await route.fulfill({ status: 200, contentType: 'application/json', body: '{"success":true}' });
+        });
+        await page.route('**/api/user/readings', async route => {
+            if (route.request().method() === 'POST') {
+                saveRequestCount++;
+                const payload = route.request().postDataJSON();
+                postedRequestId = payload.requestId || null;
+                postedExpectedUserId = payload.expectedUserId || null;
+                await route.fulfill({ status: 200, contentType: 'application/json', body: '{"success":true,"id":"reading-save-1"}' });
+                return;
+            }
+            await route.fulfill({ status: 200, contentType: 'application/json', body: '{"success":true,"readings":[]}' });
+        });
+
+        const saveButton = page.locator('#btn-save-reading');
+        await saveButton.click();
+        await funnelStarted;
+        await expect(saveButton).toBeDisabled();
+        await expect(saveButton).toHaveAttribute('aria-busy', 'true');
+        const resetButton = page.locator('#btn-reset');
+        await expect(resetButton).toBeDisabled();
+        await page.evaluate(() => document.getElementById('btn-save-reading')?.click());
+        await page.evaluate(() => document.getElementById('btn-reset')?.click());
+        await expect(page.locator('#result-question')).toContainText('Mám si nechat víc času?');
+        releaseFunnel();
+
+        await expect(saveButton).toHaveText('Uloženo v deníku');
+        expect(saveRequestCount).toBe(1);
+        expect(postedRequestId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+        expect(postedExpectedUserId).toBe('tarot-save-user-1');
+    });
+
+    test('tarotove ulozenie sa zastavi, ked sa ucet zmeni pocas nacitania CSRF', async ({ page }) => {
+        let saveRequestCount = 0;
+
+        await page.goto('/tarot-ano-ne.html');
+        await waitForPageReady(page);
+        await page.fill('#question-input', 'Mám nechat rozhodnutí chvíli dozrát?');
+        await page.locator('.tarot-card').first().click();
+        await expect(page.locator('#result-panel')).toHaveClass(/show/);
+        await page.evaluate(() => {
+            window.Auth = window.Auth || {};
+            window.Auth.user = { id: 'tarot-save-account-a' };
+            window.Auth.isLoggedIn = () => true;
+            window.__csrfCalls = 0;
+            window.getCSRFToken = async () => {
+                window.__csrfCalls += 1;
+                if (window.__csrfCalls === 2) window.Auth.user = { id: 'tarot-save-account-b' };
+                return 'test-token';
+            };
+        });
+        await page.route('**/api/payment/funnel-event', route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: '{"success":true}'
+        }));
+        await page.route('**/api/user/readings', async route => {
+            if (route.request().method() === 'POST') saveRequestCount += 1;
+            await route.fulfill({ status: 200, contentType: 'application/json', body: '{"success":true,"readings":[]}' });
+        });
+
+        await page.locator('#btn-save-reading').click();
+
+        await expect(page.locator('.toast-container')).toContainText('Přihlášení se změnilo');
+        await expect(page.locator('#result-panel')).toHaveClass(/show/);
+        expect(saveRequestCount).toBe(0);
     });
 
     test('pokračování přežije výpadek analytiky i úložiště otázky', async ({ page }) => {

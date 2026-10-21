@@ -58,42 +58,20 @@
 <meta property="og:image:alt" content="Rak znamení (Cancer): vlastnosti, láska a kompatibilita">
 <meta name="twitter:image:alt" content="Rak znamení (Cancer): vlastnosti, láska a kompatibilita">
 
-    <link rel="stylesheet" href="/css/atlas-web.css?v=1">
-    <link rel="stylesheet" href="/css/atlas-astro.css?v=1">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
+    <link rel="stylesheet" href="/css/atlas-astro.css?v=20261020-01-western-zodiac-image-cards">
 </head>
 <body class="atlas-page atlas-astro-page">
-    <header class="header">
-        <div class="container">
-            <div class="header__inner">
-                <a href="../index.html" class="logo">
-                    <span class="sign-logo-text">Mystická<span class="text-gradient">Hvězda</span></span>
-                </a>
-                <nav class="nav">
-                    <button class="nav__toggle" aria-label="Menu"><span></span><span></span><span></span></button>
-                    <ul class="nav__list">
-                        <li><a href="../index.html" class="nav__link">Domů</a></li>
-                        <li><a href="../horoskopy.html" class="nav__link active">Horoskopy</a></li>
-                        <li><a href="../blog.html" class="nav__link">Blog</a></li>
-                        <li><a href="../slovnik.html" class="nav__link">Slovník</a></li>
-                        <li><a href="../natalni-karta.html" class="nav__link">Natální Karta</a></li>
-                        <li><a href="../tarot.html" class="nav__link">Tarot</a></li>
-                    </ul>
-                    <div class="auth-buttons sign-auth-buttons">
-                        <a href="#" id="auth-register-btn" class="btn btn--secondary sign-register-btn">Registrace</a>
-                        <a href="#" id="auth-btn" class="btn btn--primary">Přihlásit</a>
-                    </div>
-                </nav>
-            </div>
-        </div>
-    </header>
+    <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
+    <div id="header-placeholder"></div>
 
-    <main>
+    <main id="main-content" tabindex="-1">
         <section class="sign-hero">
             <div class="container">
                 <div class="bread"><a href="../index.html">Domů</a> &raquo; <a href="../horoskopy.html">Horoskopy</a> &raquo; Rak</div>
-                <span class="sign-emoji">♋︎</span>
+                <span class="sign-emoji" data-zodiac-sign="rak" aria-hidden="true">♋︎</span>
                 <h1 class="hero__title">Rak <span class="text-gradient">(Cancer)</span></h1>
-                <p class="sign-dates">📅 21. června – 22. července</p>
+                <p class="sign-dates"> 21. června – 22. července</p>
 
                 <div class="sign-answer-box">
                     <strong class="sign-answer-label">Rychlá odpověď:</strong>
@@ -130,7 +108,7 @@
 
                     <div class="traits-grid">
                         <div class="traits-card strengths">
-                            <h3>✅ Silné stránky</h3>
+                            <h3>Silné stránky</h3>
                             <ul><li>Empatie</li>
                     <li>Intuice</li>
                     <li>Loajalita</li>
@@ -138,7 +116,7 @@
                     <li>Hluboké emoce</li></ul>
                         </div>
                         <div class="traits-card weaknesses">
-                            <h3>⚠️ Slabé stránky</h3>
+                            <h3>Slabé stránky</h3>
                             <ul><li>Přecitlivělost</li>
                     <li>Nálady</li>
                     <li>Uzavřenost</li>
@@ -147,7 +125,7 @@
                     </div>
 
                     <div class="sign-panel">
-                        <h2 class="sign-section-title">💞 Partnerská kompatibilita</h2>
+                        <h2 class="sign-section-title">Partnerská kompatibilita</h2>
                         <p class="sign-muted">Znamení, se kterými Rak přirozeně rezonuje:</p>
                         <div>
         <span class="sign-chip">Štír</span>
@@ -160,7 +138,7 @@
                     </div>
 
                     <div class="sign-panel">
-                        <h2 class="sign-section-title">🔢 Šťastná čísla</h2>
+                        <h2 class="sign-section-title">Šťastná čísla</h2>
                         <div class="sign-number-grid"><span class="sign-number">2</span> <span class="sign-number">3</span> <span class="sign-number">15</span> <span class="sign-number">20</span></div>
                     </div>
 
@@ -172,7 +150,7 @@
 
                     <!-- FAQ Section -->
                     <div class="sign-faq">
-                        <h2 class="sign-section-title">❓ Nejčastější otázky o Rak</h2>
+                        <h2 class="sign-section-title">Nejčastější otázky o Rak</h2>
                         <div class="sign-faq-list">
                             <details class="sign-faq-item">
                                 <summary class="sign-faq-summary">Kdy se rodí Rak?</summary>
@@ -204,8 +182,8 @@
     </footer>
 
     <script src="../js/dist/api-config.js" defer></script>
-    <script src="../js/dist/auth-client.js?v=20261003-single-membership" defer></script>
-    <script src="../js/dist/components.js" defer></script>
-    <script type="module" src="../js/dist/main.js"></script>
+    <script src="../js/dist/auth-client.js?v=20261020-02-register-password-policy" defer></script>
+    <script src="../js/dist/components.js?v=20261021-footer-support-locale" defer></script>
+    <script type="module" src="../js/dist/main.js?v=20261018-status-icons"></script>
 </body>
 </html>

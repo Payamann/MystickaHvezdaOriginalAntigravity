@@ -65,9 +65,9 @@
         .tech-section {
             margin-top: 6rem;
             padding: 4rem;
-            background: rgba(157, 78, 221, 0.05);
+            background: rgba(79, 132, 151, 0.06);
             border-radius: var(--radius-xl);
-            border: 1px solid rgba(157, 78, 221, 0.1);
+            border: 1px solid rgba(208, 177, 124, 0.16);
             text-align: center;
         }
 

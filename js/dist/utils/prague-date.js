@@ -1,0 +1,1 @@
+function o(t=new Date){let a=new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/Prague",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(t),e=n=>a.find(r=>r.type===n).value;return`${e("year")}-${e("month")}-${e("day")}`}export{o as getPragueDateKey};

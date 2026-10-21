@@ -45,7 +45,7 @@ export function buildDailyPushPayload(now = new Date()) {
     });
 
     return {
-        title: '🌙 Tvůj denní horoskop je připraven',
+        title: 'Tvůj denní horoskop je připraven',
         body: `Podívej se, co ti hvězdy přinášejí – ${dateLabel}.`,
         url: '/horoskopy.html?utm_source=push&utm_medium=notification&utm_campaign=daily_horoscope',
         icon: '/img/icon-192.webp'

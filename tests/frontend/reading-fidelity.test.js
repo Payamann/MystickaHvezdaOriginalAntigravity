@@ -10,6 +10,7 @@ function escapeHtml(value) {
 }
 
 jest.unstable_mockModule('../../js/profile/shared.js', () => ({
+    getProfileScrollBehavior: () => 'auto',
     escapeHtml,
     apiUrl: () => '/api',
     authHeaders: () => ({}),
@@ -149,6 +150,54 @@ test('crystal reading preserves question and answer', async () => {
     expect(html).toContain('Tvoje otázka');
     expect(html).toContain('Co si všimnout?');
     expect(html).toContain('Zpomal a pojmenuj fakt.');
+    noRawJson(html);
+});
+
+test.each(['practicalStep', 'practical_step', 'action'])('separate %s is shown as a practical step', async key => {
+    const html = await open('crystal-ball', {
+        answer: 'Všimni si, co se opakuje.',
+        [key]: 'Zapiš si jednu konkrétní otázku.'
+    });
+    expect(html).toContain('Praktický krok');
+    expect(html).toContain('Zapiš si jednu konkrétní otázku.');
+    expect(html).toContain('Všimni si, co se opakuje.');
+    noRawJson(html);
+});
+
+test('nested practical step is not repeated when the answer already contains it', async () => {
+    const step = 'Ověř jednu drobnost v praxi.';
+    const html = await open('crystal-ball', {
+        answer: `Nejdřív si všimni vzorce.\n\nKonkrétní krok: ${step}`,
+        result: { practical_step: step }
+    });
+    expect(html).toContain('Konkrétní krok: Ověř jednu drobnost v praxi.');
+    expect(html.match(/Ověř jednu drobnost v praxi\./g)).toHaveLength(1);
+});
+
+test('nested practical step remains visible next to a separate answer', async () => {
+    const html = await open('crystal-ball', {
+        answer: 'Všimni si, co se opakuje.',
+        result: { practical_step: 'Ověř jednu drobnost v praxi.' }
+    });
+    expect(html).toContain('Praktický krok');
+    expect(html).toContain('Ověř jednu drobnost v praxi.');
+    expect(html).toContain('Všimni si, co se opakuje.');
+});
+
+test('multiline generic answer preserves paragraph breaks', async () => {
+    const html = await open('crystal-ball', { answer: 'První věta.\n\nDruhý odstavec.' });
+    expect(html).toContain('První věta.<br><br>Druhý odstavec.');
+    noRawJson(html);
+});
+
+test('unknown nested legacy fields render as readable labeled content instead of a JSON dump', async () => {
+    const html = await open('legacy-tool', {
+        původni_payload: { focus: 'Vztahy', next_step: ['Zpomal', 'Zeptej se přímo'] }
+    });
+    expect(html).toContain('Původni payload');
+    expect(html).toContain('Vztahy');
+    expect(html).toContain('Zpomal');
+    expect(html).not.toContain('<pre');
     noRawJson(html);
 });
 

@@ -3,9 +3,111 @@
  */
 
 import { apiUrl, authHeaders, loadPlanManifest, normalizePlanType, formatPlanLabel, PROFILE_AVATARS, profileIconMarkup, renderProfileAvatar } from './shared.js';
+import { getTodayIsoDate } from '../utils/numerology-logic.js';
 
 let avatarSaving = false;
+let avatarSaveRequestVersion = 0;
 let subscriptionRequestVersion = 0;
+let profileSaveInProgress = false;
+let profileSaveRequestVersion = 0;
+let passwordChangeInProgress = false;
+let passwordChangeRequestVersion = 0;
+let passwordChangeAccountVersion = 0;
+let profileBirthDateRefreshListenersBound = false;
+
+function showSubscriptionLoading() {
+    const container = document.getElementById('subscription-details');
+    if (!container) return;
+    container.setAttribute('aria-busy', 'true');
+    container.innerHTML = `
+        <div class="subscription-info" role="status">
+            <div class="subscription-plan">
+                <span class="subscription-plan__name">Načítám stav členství…</span>
+            </div>
+        </div>
+    `;
+}
+
+export function resetSubscriptionStatus({ loading = false } = {}) {
+    subscriptionRequestVersion++;
+    const container = document.getElementById('subscription-details');
+    if (!container) return;
+    if (loading) {
+        showSubscriptionLoading();
+        return;
+    }
+    container.replaceChildren();
+    container.removeAttribute('aria-busy');
+}
+
+export function resetProfileSettingsSave() {
+    profileSaveRequestVersion++;
+    profileSaveInProgress = false;
+    const button = document.getElementById('save-settings-btn');
+    if (button) {
+        button.disabled = false;
+        button.textContent = 'Uložit změny';
+    }
+    const form = document.querySelector('.settings-form');
+    const formUx = window.MH_FORM_UX || {};
+    formUx.clearFormSummary?.(form);
+    ['settings-name', 'settings-birthdate', 'settings-birthtime', 'settings-birthplace'].forEach(id => {
+        formUx.clearFieldError?.(document.getElementById(id));
+    });
+}
+
+export function resetProfilePasswordChange() {
+    passwordChangeRequestVersion++;
+    passwordChangeAccountVersion++;
+    passwordChangeInProgress = false;
+    const form = document.querySelector('.settings-password-fields');
+    const ux = window.MH_FORM_UX || {};
+    ux.clearFormSummary?.(form);
+    ['settings-current-password', 'settings-password', 'settings-password-confirm'].forEach(id => {
+        const field = document.getElementById(id);
+        if (field) field.value = '';
+        ux.clearFieldError?.(field);
+    });
+    const button = document.getElementById('change-password-btn');
+    if (button) {
+        button.disabled = false;
+        button.textContent = 'Změnit heslo';
+    }
+}
+
+export function resetProfileAvatarSave() {
+    avatarSaveRequestVersion++;
+    avatarSaving = false;
+    const picker = document.getElementById('avatar-picker');
+    picker?.querySelectorAll('.avatar-option').forEach(option => { option.disabled = false; });
+    if (picker) {
+        picker.hidden = true;
+        picker.classList.remove('profile-block-visible');
+    }
+    document.getElementById('user-avatar')?.setAttribute('aria-busy', 'false');
+}
+
+function refreshProfileBirthDateMaximum() {
+    const birthdateEl = document.getElementById('settings-birthdate');
+    if (birthdateEl) birthdateEl.max = getTodayIsoDate();
+}
+
+function bindProfileBirthDateMaximumRefresh() {
+    const birthdateEl = document.getElementById('settings-birthdate');
+    const settingsForm = document.querySelector('.settings-form');
+    refreshProfileBirthDateMaximum();
+    if (!birthdateEl || profileBirthDateRefreshListenersBound) return;
+
+    settingsForm?.addEventListener('focusin', refreshProfileBirthDateMaximum);
+    settingsForm?.addEventListener('pointerdown', refreshProfileBirthDateMaximum);
+    settingsForm?.addEventListener('keydown', refreshProfileBirthDateMaximum);
+    birthdateEl.addEventListener('change', refreshProfileBirthDateMaximum);
+    window.addEventListener('focus', refreshProfileBirthDateMaximum);
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') refreshProfileBirthDateMaximum();
+    });
+    profileBirthDateRefreshListenersBound = true;
+}
 
 function currentUserSnapshot(ownerId) {
     const current = { ...window.Auth?.user };
@@ -19,6 +121,21 @@ function currentUserSnapshot(ownerId) {
 function storeCurrentUser(user) {
     if (window.Auth) window.Auth.user = user;
     try { localStorage.setItem('auth_user', JSON.stringify(user)); } catch { /* Server save already succeeded. */ }
+}
+
+function assertCurrentOwner(ownerId) {
+    if (!ownerId || ownerId !== window.Auth?.user?.id) {
+        throw new Error('Účet se během operace změnil. Obnov profil a zkus to znovu.');
+    }
+}
+
+async function ownerMutationHeaders(ownerId) {
+    const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+    assertCurrentOwner(ownerId);
+    return {
+        ...authHeaders(true),
+        ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+    };
 }
 
 export function initAvatarPicker() {
@@ -79,15 +196,17 @@ export function initSettingsForm() {
     if (birthtimeEl) birthtimeEl.value = user.birth_time || '';
     if (birthdateEl) {
         birthdateEl.value = user.birth_date?.slice(0, 10) || '';
-        const now = new Date();
-        birthdateEl.max = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     }
+    bindProfileBirthDateMaximumRefresh();
     if (birthplaceEl) birthplaceEl.value = user.birth_place || '';
 }
 
 export async function saveSettings() {
     const ownerId = window.Auth?.user?.id;
-    if (!ownerId) return;
+    if (!ownerId || profileSaveInProgress) return;
+    const requestVersion = ++profileSaveRequestVersion;
+    const isCurrentSave = () => requestVersion === profileSaveRequestVersion && ownerId === window.Auth?.user?.id;
+    refreshProfileBirthDateMaximum();
     const btn = document.getElementById('save-settings-btn');
     const settingsForm = document.querySelector('.settings-form');
     const formUx = window.MH_FORM_UX || {};
@@ -97,6 +216,7 @@ export async function saveSettings() {
         formUx.clearFieldError?.(document.getElementById(id));
     });
 
+    profileSaveInProgress = true;
     if (btn) {
         btn.disabled = true;
         btn.textContent = 'Ukládám...';
@@ -104,7 +224,7 @@ export async function saveSettings() {
 
     try {
         const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
-        if (ownerId !== window.Auth?.user?.id) return;
+        assertCurrentOwner(ownerId);
         const name = document.getElementById('settings-name')?.value.trim();
         const birthtime = document.getElementById('settings-birthtime')?.value;
         const birthplace = document.getElementById('settings-birthplace')?.value.trim();
@@ -126,6 +246,7 @@ export async function saveSettings() {
         if (birthdateEl) profileBody.birth_date = birthdateEl.value || null;
         if (birthtime !== undefined) profileBody.birth_time = birthtime || null;
         if (birthplace !== undefined) profileBody.birth_place = birthplace;
+        profileBody.expectedUserId = ownerId;
 
         const profileRes = await fetch(`${apiUrl()}/auth/profile`, {
             method: 'PUT',
@@ -143,12 +264,12 @@ export async function saveSettings() {
         }
 
         const profileData = await profileRes.json();
-        if (ownerId !== window.Auth?.user?.id) return;
+        assertCurrentOwner(ownerId);
 
         const cached = currentUserSnapshot(ownerId);
 
         // Merge only fields this form changed; a concurrent avatar save owns its field.
-        Object.keys(profileBody).forEach(key => {
+        Object.keys(profileBody).filter(key => key !== 'expectedUserId').forEach(key => {
             cached[key] = profileData.user && Object.hasOwn(profileData.user, key) ? profileData.user[key] : profileBody[key];
         });
         storeCurrentUser(cached);
@@ -156,18 +277,31 @@ export async function saveSettings() {
         document.dispatchEvent(new CustomEvent('profile:updated', { detail: { user: cached } }));
         window.Auth?.showToast?.('Uloženo', 'Tvoje údaje jsou uložené.', 'success');
     } catch (e) {
+        if (!isCurrentSave()) return;
         console.error('Settings save error:', e);
+        if (e.message?.startsWith('Jméno')) {
+            const nameField = document.getElementById('settings-name');
+            formUx.setFieldError?.(nameField, e.message);
+            nameField?.focus({ preventScroll: true });
+        }
         formUx.setFormSummary?.(settingsForm, e.message || 'Nepodařilo se uložit nastavení.');
         window.Auth?.showToast?.('Chyba', e.message || 'Nepodařilo se uložit nastavení.', 'error');
     } finally {
-        if (btn) {
-            btn.disabled = false;
-            btn.textContent = 'Uložit změny';
+        if (requestVersion === profileSaveRequestVersion) {
+            profileSaveInProgress = false;
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = 'Uložit změny';
+            }
         }
     }
 }
 
 export async function changePassword() {
+    const ownerId = window.Auth?.user?.id;
+    if (!ownerId || passwordChangeInProgress) return;
+    const requestVersion = ++passwordChangeRequestVersion;
+    const isCurrentChange = () => requestVersion === passwordChangeRequestVersion && ownerId === window.Auth?.user?.id;
     const btn = document.getElementById('change-password-btn');
     const form = document.querySelector('.settings-password-fields');
     const ux = window.MH_FORM_UX || {};
@@ -185,25 +319,38 @@ export async function changePassword() {
             fields[invalid[0]]?.focus();
             throw new Error(invalid[1]);
         }
+        passwordChangeInProgress = true;
         if (btn) { btn.disabled = true; btn.textContent = 'Měním heslo…'; }
         const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+        assertCurrentOwner(ownerId);
         const response = await fetch(`${apiUrl()}/user/password`, {
             method: 'PUT', credentials: 'include',
             headers: { ...authHeaders(true), ...(csrfToken && { 'X-CSRF-Token': csrfToken }) },
-            body: JSON.stringify({ currentPassword, password, password_confirm })
+            body: JSON.stringify({ currentPassword, password, password_confirm, expectedUserId: ownerId })
         });
+        assertCurrentOwner(ownerId);
         if (!response.ok) {
             const data = await response.json().catch(() => ({}));
             throw new Error(data.error || 'Nepodařilo se změnit heslo.');
         }
+        if (!isCurrentChange()) return;
         fields.forEach(field => { if (field) field.value = ''; });
         window.Auth?.showToast?.('Heslo změněno', 'Přihlas se znovu svým novým heslem.', 'success');
-        setTimeout(() => window.Auth?.logout?.(), 2000);
+        const accountVersion = passwordChangeAccountVersion;
+        setTimeout(() => {
+            if (accountVersion === passwordChangeAccountVersion && ownerId === window.Auth?.user?.id) {
+                window.Auth?.logout?.();
+            }
+        }, 2000);
     } catch (error) {
+        if (!isCurrentChange()) return;
         ux.setFormSummary?.(form, error.message);
         window.Auth?.showToast?.('Změna hesla', error.message, 'error');
     } finally {
-        if (btn) { btn.disabled = false; btn.textContent = 'Změnit heslo'; }
+        if (requestVersion === passwordChangeRequestVersion) {
+            passwordChangeInProgress = false;
+            if (btn) { btn.disabled = false; btn.textContent = 'Změnit heslo'; }
+        }
     }
 }
 
@@ -226,6 +373,8 @@ export async function selectAvatar(emoji) {
     if (avatarSaving || !PROFILE_AVATARS.some(avatar => `symbol:${avatar.symbol}` === emoji)) return;
     const ownerId = window.Auth?.user?.id;
     if (!ownerId) return;
+    const requestVersion = ++avatarSaveRequestVersion;
+    const isCurrentSave = () => requestVersion === avatarSaveRequestVersion && ownerId === window.Auth?.user?.id;
     avatarSaving = true;
     const avatarEl = document.getElementById('user-avatar');
     const picker = document.getElementById('avatar-picker');
@@ -235,7 +384,7 @@ export async function selectAvatar(emoji) {
 
     try {
         const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
-        if (ownerId !== window.Auth?.user?.id) return;
+        if (!isCurrentSave()) return;
         const res = await fetch(`${apiUrl()}/auth/profile`, {
             method: 'PUT',
             credentials: 'include',
@@ -243,13 +392,13 @@ export async function selectAvatar(emoji) {
                 ...authHeaders(true),
                 ...(csrfToken && { 'X-CSRF-Token': csrfToken })
             },
-            body: JSON.stringify({ avatar: emoji })
+            body: JSON.stringify({ avatar: emoji, expectedUserId: ownerId })
         });
 
         if (!res.ok) {
             throw new Error('Nepodařilo se uložit avatar.');
         }
-        if (ownerId !== window.Auth?.user?.id) return;
+        if (!isCurrentSave()) return;
 
         const currentUser = currentUserSnapshot(ownerId);
         currentUser.avatar = emoji;
@@ -260,12 +409,15 @@ export async function selectAvatar(emoji) {
         if (picker) { picker.hidden = true; picker.classList.remove('profile-block-visible'); }
         window.Auth?.showToast?.('Avatar změněn', 'Nový symbol je uložený.', 'success');
     } catch (e) {
+        if (!isCurrentSave()) return;
         console.error('Error saving avatar:', e);
         window.Auth?.showToast?.('Chyba', 'Nepodařilo se uložit avatar.', 'error');
     } finally {
-        avatarSaving = false;
-        options.forEach(option => { option.disabled = false; });
-        avatarEl?.setAttribute('aria-busy', 'false');
+        if (requestVersion === avatarSaveRequestVersion) {
+            avatarSaving = false;
+            options.forEach(option => { option.disabled = false; });
+            avatarEl?.setAttribute('aria-busy', 'false');
+        }
     }
 }
 
@@ -275,6 +427,7 @@ export async function loadSubscriptionStatus() {
     const isCurrentRequest = () => version === subscriptionRequestVersion && ownerId === window.Auth?.user?.id;
     const container = document.getElementById('subscription-details');
     if (!container) return null;
+    showSubscriptionLoading();
 
     try {
         await loadPlanManifest();
@@ -288,7 +441,7 @@ export async function loadSubscriptionStatus() {
 
         const data = await res.json();
         if (!isCurrentRequest()) return null;
-        renderSubscriptionCard(data);
+        renderSubscriptionCard(data, ownerId);
         document.dispatchEvent(new CustomEvent('subscription:updated', { detail: { userId: ownerId, subscription: data } }));
         return data;
     } catch (e) {
@@ -306,13 +459,15 @@ export async function loadSubscriptionStatus() {
             </div>
         `;
         document.getElementById('sub-retry-btn')?.addEventListener('click', loadSubscriptionStatus);
+        container.removeAttribute('aria-busy');
         return null;
     }
 }
 
-function renderSubscriptionCard(sub) {
+function renderSubscriptionCard(sub, ownerId = window.Auth?.user?.id) {
     const container = document.getElementById('subscription-details');
     if (!container) return;
+    container.removeAttribute('aria-busy');
     const normalizedPlanType = normalizePlanType(sub.planType);
 
     const statusLabels = {
@@ -408,29 +563,33 @@ function renderSubscriptionCard(sub) {
     document.getElementById('sub-upgrade-btn')?.addEventListener('click', () => {
         startProfileUpgradeCheckout('profile_subscription_card');
     });
-    document.getElementById('sub-cancel-btn')?.addEventListener('click', cancelSubscription);
-    document.getElementById('sub-reactivate-btn')?.addEventListener('click', reactivateSubscription);
-    document.getElementById('sub-resume-btn')?.addEventListener('click', resumePausedSubscription);
+    document.getElementById('sub-cancel-btn')?.addEventListener('click', () => cancelSubscription({ expectedOwnerId: ownerId }));
+    document.getElementById('sub-reactivate-btn')?.addEventListener('click', () => reactivateSubscription(ownerId));
+    document.getElementById('sub-resume-btn')?.addEventListener('click', () => resumePausedSubscription(ownerId));
     document.getElementById('sub-payment-update-btn')?.addEventListener('click', () => {
-        openStripePortal('payment_method_update', 'sub-payment-update-btn');
+        openStripePortal('payment_method_update', 'sub-payment-update-btn', ownerId);
     });
-    document.getElementById('sub-portal-btn')?.addEventListener('click', () => openStripePortal());
+    document.getElementById('sub-portal-btn')?.addEventListener('click', () => openStripePortal(null, 'sub-portal-btn', ownerId));
 }
 
-async function cancelSubscription({ skipRetention = false } = {}) {
+async function cancelSubscription({ skipRetention = false, expectedOwnerId = null } = {}) {
+    if (!expectedOwnerId || expectedOwnerId !== window.Auth?.user?.id) {
+        window.Auth?.showToast?.('Správa členství', 'Účet se změnil. Obnov profil a zkus to znovu.', 'error');
+        return;
+    }
     const immediate = document.getElementById('sub-cancel-btn')?.dataset.cancelImmediate === 'true';
     if (!immediate && !skipRetention && window.MH_RETENTION?.showCancellationModal) {
         trackAnalytics('trackSubscriptionAction', 'cancel_flow_opened', {
             source: 'profile_settings'
         });
-        window.MH_RETENTION.showCancellationModal(() => cancelSubscription({ skipRetention: true }));
+        window.MH_RETENTION.showCancellationModal(() => cancelSubscription({ skipRetention: true, expectedOwnerId }));
         return;
     }
 
     if (!skipRetention) {
         const confirmed = confirm(immediate
-            ? 'Opravdu chcete členství ihned zrušit a zastavit další pokusy o platbu?'
-            : 'Opravdu chcete zrušit předplatné? Přístup vám zůstane do konce aktuálního období.');
+            ? 'Opravdu chceš členství ihned zrušit a zastavit další pokusy o platbu?'
+            : 'Opravdu chceš zrušit předplatné? Přístup ti zůstane do konce aktuálního období.');
         if (!confirmed) {
             return;
         }
@@ -444,17 +603,16 @@ async function cancelSubscription({ skipRetention = false } = {}) {
     }
 
     try {
-        const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+        const headers = await ownerMutationHeaders(expectedOwnerId);
         const res = await fetch(`${apiUrl()}/payment/cancel`, {
             method: 'POST',
             credentials: 'include',
-            headers: {
-                ...authHeaders(true),
-                ...(csrfToken && { 'X-CSRF-Token': csrfToken })
-            }
+            headers,
+            body: JSON.stringify({ expectedUserId: expectedOwnerId })
         });
 
         const data = await res.json();
+        assertCurrentOwner(expectedOwnerId);
         if (!res.ok) throw new Error(data.error || 'Cancel failed');
         trackAnalytics('trackSubscriptionAction', 'cancel_requested', { source: 'profile_settings', plan_type: 'premium' });
 
@@ -470,7 +628,8 @@ async function cancelSubscription({ skipRetention = false } = {}) {
     }
 }
 
-async function reactivateSubscription() {
+async function reactivateSubscription(ownerId = window.Auth?.user?.id) {
+    if (!ownerId) return;
     const btn = document.getElementById('sub-reactivate-btn');
     if (btn) {
         btn.disabled = true;
@@ -478,17 +637,16 @@ async function reactivateSubscription() {
     }
 
     try {
-        const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+        const headers = await ownerMutationHeaders(ownerId);
         const res = await fetch(`${apiUrl()}/payment/reactivate`, {
             method: 'POST',
             credentials: 'include',
-            headers: {
-                ...authHeaders(true),
-                ...(csrfToken && { 'X-CSRF-Token': csrfToken })
-            }
+            headers,
+            body: JSON.stringify({ expectedUserId: ownerId })
         });
 
         const data = await res.json();
+        assertCurrentOwner(ownerId);
         if (!res.ok) throw new Error(data.error || 'Reactivate failed');
         trackAnalytics('trackSubscriptionAction', 'reactivated', { source: 'profile_settings' });
 
@@ -504,7 +662,8 @@ async function reactivateSubscription() {
     }
 }
 
-async function resumePausedSubscription() {
+async function resumePausedSubscription(ownerId = window.Auth?.user?.id) {
+    if (!ownerId) return;
     const btn = document.getElementById('sub-resume-btn');
     if (btn) {
         btn.disabled = true;
@@ -512,18 +671,16 @@ async function resumePausedSubscription() {
     }
 
     try {
-        const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+        const headers = await ownerMutationHeaders(ownerId);
         const res = await fetch(`${apiUrl()}/payment/subscription/resume`, {
             method: 'POST',
             credentials: 'include',
-            headers: {
-                ...authHeaders(true),
-                ...(csrfToken && { 'X-CSRF-Token': csrfToken })
-            },
-            body: JSON.stringify({})
+            headers,
+            body: JSON.stringify({ expectedUserId: ownerId })
         });
 
         const data = await res.json();
+        assertCurrentOwner(ownerId);
         if (!res.ok) throw new Error(data.error || 'Resume failed');
         trackAnalytics('trackSubscriptionAction', 'pause_resumed', { source: 'profile_settings' });
         window.Auth?.showToast?.('Obnoveno', 'Předplatné je znovu aktivní.', 'success');
@@ -538,7 +695,8 @@ async function resumePausedSubscription() {
     }
 }
 
-async function openStripePortal(flow = null, buttonId = 'sub-portal-btn') {
+async function openStripePortal(flow = null, buttonId = 'sub-portal-btn', ownerId = window.Auth?.user?.id) {
+    if (!ownerId) return;
     const btn = document.getElementById(buttonId);
     const originalLabel = btn?.textContent || (flow === 'payment_method_update' ? 'Aktualizovat kartu' : 'Správa plateb');
     if (btn) {
@@ -547,18 +705,16 @@ async function openStripePortal(flow = null, buttonId = 'sub-portal-btn') {
     }
 
     try {
-        const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+        const headers = await ownerMutationHeaders(ownerId);
         const res = await fetch(`${apiUrl()}/payment/portal`, {
             method: 'POST',
             credentials: 'include',
-            headers: {
-                ...authHeaders(true),
-                ...(csrfToken && { 'X-CSRF-Token': csrfToken })
-            },
-            body: JSON.stringify(flow ? { flow } : {})
+            headers,
+            body: JSON.stringify({ ...(flow ? { flow } : {}), expectedUserId: ownerId })
         });
 
         const data = await res.json();
+        assertCurrentOwner(ownerId);
         if (!res.ok) throw new Error(data.error || 'Portal failed');
 
         if (data.url) {

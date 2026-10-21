@@ -92,7 +92,7 @@ function renderCycleGrid(currentPhase) {
     const grid = document.getElementById('lunarCycleGrid');
     grid.innerHTML = PHASES.map(p => `
         <div class="cycle-item ${p.name === currentPhase.name ? 'active' : ''}">
-            <span class="cycle-emoji" data-moon-phase="${p.emoji}">${p.emoji}</span>
+            <span class="cycle-emoji" data-moon-phase="${p.emoji}" aria-hidden="true"></span>
             <div class="cycle-name">${p.name}</div>
         </div>
     `).join('');
@@ -108,7 +108,6 @@ function renderPhase() {
     const phase = { ...PHASES[state.index], name: state.name, emoji: state.icon };
     const illumination = state.illumination;
 
-    document.getElementById('moonEmoji').textContent = phase.emoji;
     window.MH_MOON_ART?.render(document.getElementById('moonEmoji'), phase.emoji, phase.name);
     document.getElementById('phaseName').textContent = phase.name;
     document.getElementById('phaseDate').textContent = formatDate(now) + ` · Orientační stáří Měsíce: ${age.toFixed(1)} dní`;

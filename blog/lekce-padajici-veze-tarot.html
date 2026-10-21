@@ -36,7 +36,7 @@
 
     <!-- Fonts & Styles -->
     <link rel="stylesheet" href="/fonts/local-fonts.css">
-    <link rel="stylesheet" href="../css/style.v2.min.css?v=4">
+    <link rel="stylesheet" href="../css/style.v2.min.css?v=20261018-release-candidate">
     <link rel="stylesheet" href="../css/pages/blog-lekce-padajici-veze-tarot.css">
 <!-- Structured Data -->
 
@@ -81,18 +81,19 @@
 <meta property="og:image:alt" content="Věž (XVI) v tarotu: co dělat, když se změní plán">
 <meta name="twitter:image:alt" content="Věž (XVI) v tarotu: co dělat, když se změní plán">
 
-    <link rel="stylesheet" href="/css/atlas-web.css?v=1">
-    <link rel="stylesheet" href="/css/atlas-blog.css?v=1">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
+    <link rel="stylesheet" href="/css/atlas-blog.css?v=20261018-author-avatar">
 </head>
 
 
 <body class="atlas-page atlas-blog">
+    <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
 
 
     <div id="header-placeholder"></div>
 
 
-    <main id="main-content">
+    <main id="main-content" tabindex="-1">
 
         <section class="blog-header">
 
@@ -131,7 +132,7 @@
 
             <div class="container mh-inline-c3b4fe5f9e">
 
-                <img src="../img/tarot-v2/tarot_vez.webp" alt="Tarotová karta Věž" width="600" height="1000" loading="lazy" decoding="async" class="blog-featured-image atlas-blog-art atlas-blog-art--card">
+                <img src="../img/tarot-v2/tarot_vez.webp" srcset="../img/tarot-v2/tarot_vez-240.webp 240w, ../img/tarot-v2/tarot_vez-360.webp 360w, ../img/tarot-v2/tarot_vez-480.webp 480w, ../img/tarot-v2/tarot_vez.webp 600w" sizes="(max-width: 392px) calc(100vw - 32px), 360px" alt="Tarotová karta Věž" width="600" height="1000" loading="lazy" decoding="async" class="blog-featured-image atlas-blog-art atlas-blog-art--card">
 
 
                 <div class="blog-content" data-animate>
@@ -152,7 +153,7 @@
                     <p><strong>Praktický krok:</strong> Ověř jednu změněnou podmínku a uprav nejbližší část plánu.</p>
                     <p><strong>Tarotové ano/ne:</strong> Jaký předpoklad už neplatí a které varianty zůstávají proveditelné?</p>
                     <div class="highlight-box tarot-meaning-internal-link"><h3>Pokračuj podle své otázky</h3><p>Podívej se také na <a href="../tarot-vyznam/vez.html">podrobný význam karty Věž</a> nebo na <a href="../tarot-vyznam-karet.html">přehled všech tarotových karet</a>.</p></div>
-                    <div class="author-box"><div class="author-avatar">🌙</div><div><h4>Mystická Hvězda</h4><p>Redakční průvodce tarotem. Modelová situace v článku je ilustrativní, nejde o zkušenost zákazníka.</p></div></div>
+                    <div class="author-box"><div class="author-avatar"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg></div><div><h4>Mystická Hvězda</h4><p>Redakční průvodce tarotem. Modelová situace v článku je ilustrativní, nejde o zkušenost zákazníka.</p></div></div>
                 </div>
 
             </div>
@@ -177,11 +178,7 @@
 
                     <div class="author-box">
 
-                        <div class="author-avatar">
-
-                            🌙
-
-                        </div>
+                        <div class="author-avatar"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg></div>
 
                         <div>
 
@@ -189,9 +186,7 @@
 
                             <p class="mh-inline-2848600f18">
 
-                                Zajímají nás hvězdy, karty a osud. Každý náš článek provází hluboké znalosti starých
-
-                                mystických věd a jejich propojení do reálného života.
+                                Články připravuje tým Mystická Hvězda. Duchovní a esoterická témata představujeme jako tradice a náměty k zamyšlení.
 
                             </p>
 
@@ -212,10 +207,10 @@
     <aside class="blog-cluster-links" aria-labelledby="blog-cluster-links-title">
         <h3 id="blog-cluster-links-title">Prozkoumej k tématu</h3>
         <div class="related-links">
-                    <a href="/tarot-ano-ne.html?source=blog_cluster_link" class="related-chip">🃏 Tarot ANO / NE zdarma</a>
-                    <a href="/tarot-vyznam-karet.html?source=blog_cluster_link" class="related-chip">🎴 Významy všech 78 karet</a>
-                    <a href="/tarot-karta-dne.html?source=blog_cluster_link" class="related-chip"> Tarot karta dne</a>
-                    <a href="/tarot.html?source=blog_cluster_link" class="related-chip">🔮 Tarotové výklady</a>
+                    <a href="/tarot-ano-ne.html?source=blog_cluster_link" class="related-chip"><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#tarot"></use></svg>Tarot ANO / NE zdarma</a>
+                    <a href="/tarot-vyznam-karet.html?source=blog_cluster_link" class="related-chip"><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#tarot"></use></svg>Významy všech 78 karet</a>
+                    <a href="/tarot-karta-dne.html?source=blog_cluster_link" class="related-chip"><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#tarot"></use></svg>Tarot karta dne</a>
+                    <a href="/tarot.html?source=blog_cluster_link" class="related-chip"><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#tarot"></use></svg>Tarotové výklady</a>
         </div>
     </aside>
     <!-- BLOG-CLUSTER-LINKS:END -->
@@ -224,7 +219,7 @@
 
     <div id="related-posts-section" class="mh-inline-059e18a1f0">
 
-        <h3 class="mh-inline-1ec687128d">📚 Čtěte také</h3>
+        <h3 class="mh-inline-1ec687128d"><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#book"></use></svg>Čtěte také</h3>
 
         <div id="related-posts-grid" class="mh-inline-209d23c864"></div>
 
@@ -235,14 +230,14 @@
 
     <div id="footer-placeholder"></div>
 
-    <script src="../js/dist/core.js?v=20261003-single-membership" defer></script>
+    <script src="../js/dist/core.js?v=20261021-footer-support-locale" defer></script>
 
 
 
         <script src="../js/dist/blog-enhancements.js" defer></script>
 
 
-    <script type="module" src="../js/dist/main.js?v=10"></script>
+    <script type="module" src="../js/dist/main.js?v=20261018-status-icons"></script>
 
     <script src="../js/dist/newsletter-popup.js?v=20260706-sign-step" defer></script>
 

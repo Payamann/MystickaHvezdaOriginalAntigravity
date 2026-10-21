@@ -38,8 +38,8 @@
             to   { opacity: 1; transform: translateY(0); }
         }
         @keyframes glowPulse {
-            0%,100% { box-shadow: 0 0 20px rgba(139,90,180,0.2), 0 0 40px rgba(139,90,180,0.05); }
-            50%      { box-shadow: 0 0 30px rgba(139,90,180,0.4), 0 0 60px rgba(139,90,180,0.15); }
+            0%,100% { box-shadow: 0 0 20px rgba(79,132,151,0.16), 0 0 40px rgba(79,132,151,0.04); }
+            50%      { box-shadow: 0 0 30px rgba(79,132,151,0.3), 0 0 60px rgba(79,132,151,0.1); }
         }
         @keyframes shimmer {
             from { background-position: -200% center; }
@@ -64,8 +64,8 @@
             position: absolute;
             inset: 0;
             background:
-                radial-gradient(ellipse at 50% 50%, rgba(10,6,30,0.72) 0%, rgba(10,6,30,0.45) 60%, transparent 100%),
-                radial-gradient(ellipse at 50% -10%, rgba(120,80,180,0.25) 0%, transparent 65%);
+                radial-gradient(ellipse at 50% 50%, rgba(7,20,32,0.76) 0%, rgba(7,20,32,0.5) 60%, transparent 100%),
+                radial-gradient(ellipse at 50% -10%, rgba(79,132,151,0.2) 0%, transparent 65%);
         }
         /* Faint large watermark wheel */
         .mw-hero::after {
@@ -76,11 +76,11 @@
             width: min(600px, 120vw);
             height: min(600px, 120vw);
             border-radius: 50%;
-            border: 1px solid rgba(139,90,180,0.08);
+            border: 1px solid rgba(208,177,124,0.08);
             box-shadow:
-                0 0 0 40px rgba(139,90,180,0.03),
-                0 0 0 80px rgba(139,90,180,0.02),
-                0 0 0 120px rgba(139,90,180,0.01);
+                0 0 0 40px rgba(208,177,124,0.025),
+                0 0 0 80px rgba(208,177,124,0.018),
+                0 0 0 120px rgba(208,177,124,0.01);
             pointer-events: none;
         }
         .mw-hero__content {
@@ -111,7 +111,7 @@
             text-shadow: 0 2px 20px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.5);
         }
         .mw-hero__title-gradient {
-            background: linear-gradient(135deg, #D4AF37 0%, #8B5AB4 40%, #D4AF37 80%);
+            background: linear-gradient(135deg, #d0b17c 0%, #f1e4c9 40%, #d0b17c 80%);
             background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -134,6 +134,7 @@
             pointer-events: none;
             animation: featherFloat 4s ease-in-out infinite;
         }
+        .mw-feather > .mh-symbol { width:30px;height:30px;color:#d0b17c; }
         .mw-feather:nth-child(1) { top: 15%; left: 8%;  animation-delay: 0s;    animation-duration: 4.5s; }
         .mw-feather:nth-child(2) { top: 25%; right: 7%; animation-delay: 1s;    animation-duration: 3.8s; }
         .mw-feather:nth-child(3) { top: 60%; left: 5%;  animation-delay: 2s;    animation-duration: 5s; }
@@ -159,9 +160,10 @@
             font-size: 0.75rem;
             border: 1px solid;
         }
+        .mw-dir-pill > .mh-symbol { width:16px;height:16px;color:currentColor; }
         .mw-dir-pill--east  { background: rgba(212,175,55,0.1);  border-color: rgba(212,175,55,0.3);  color: #D4AF37; }
         .mw-dir-pill--south { background: rgba(92,158,74,0.1);   border-color: rgba(92,158,74,0.3);   color: #7DBF5A; }
-        .mw-dir-pill--west  { background: rgba(139,90,180,0.1);  border-color: rgba(139,90,180,0.3);  color: #8B5AB4; }
+        .mw-dir-pill--west  { background: rgba(79,132,151,0.12); border-color: rgba(79,132,151,0.38); color: #8dbac3; }
         .mw-dir-pill--north { background: rgba(168,200,216,0.1); border-color: rgba(168,200,216,0.3); color: #A8C8D8; }
 
         /* ============================================================
@@ -296,7 +298,7 @@
         }
         .mw-form__subtitle {
             text-align: center;
-            color: rgba(255,255,255,0.38);
+            color: var(--color-silver-mist, #c3c9cb);
             font-size: 0.85rem;
             margin-bottom: 2rem;
         }
@@ -305,10 +307,10 @@
         }
         .form-group label {
             display: block;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: rgba(255,255,255,0.45);
+            letter-spacing: 1.2px;
+            color: var(--color-silver-mist, #c3c9cb);
             margin-bottom: 0.5rem;
         }
         .form-group input {
@@ -344,8 +346,9 @@
         }
         .mw-form__disclaimer {
             text-align: center;
-            font-size: 0.68rem;
-            color: rgba(255,255,255,0.22);
+            font-size: 0.82rem;
+            line-height: 1.55;
+            color: var(--color-silver-mist, #c3c9cb);
             margin-top: 0.85rem;
         }
 
@@ -364,7 +367,7 @@
             border: 5px solid transparent;
             border-top-color: #D4AF37;
             border-right-color: #7DBF5A;
-            border-bottom-color: #8B5AB4;
+            border-bottom-color: #4f8497;
             border-left-color: #A8C8D8;
             animation: mwSpin 1.4s linear infinite;
             margin: 0 auto 1.5rem;
@@ -374,7 +377,7 @@
             height: 44px;
             border-radius: 50%;
             border: 3px solid transparent;
-            border-top-color: rgba(139,90,180,0.4);
+            border-top-color: rgba(79,132,151,0.4);
             border-bottom-color: rgba(168,200,216,0.4);
             animation: mwSpin 1s linear infinite reverse;
             margin: 9px auto 0;
@@ -406,12 +409,13 @@
         .mw-compass-svg {
             width: clamp(260px, 60vw, 340px);
             height: clamp(260px, 60vw, 340px);
-            filter: drop-shadow(0 0 45px rgba(139,90,180,0.35))
+            filter: drop-shadow(0 0 45px rgba(79,132,151,0.24))
                     drop-shadow(0 0 18px rgba(212,175,55,0.18))
                     drop-shadow(0 12px 28px rgba(0,0,0,0.6));
             overflow: visible;
             display: block;
         }
+        .mw-compass-center-icon { color: #d0b17c; }
         /* Base compass points — inactive slightly dimmed for contrast */
         .mw-wheel__segment {
             transition: filter 0.5s ease;
@@ -484,7 +488,7 @@
         .mw-totem-banner {
             text-align: center;
             padding: 2.5rem 2rem;
-            background: linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(157,78,221,0.06) 50%, rgba(212,175,55,0.04) 100%);
+            background: linear-gradient(135deg, rgba(79,132,151,0.08) 0%, rgba(212,175,55,0.06) 50%, rgba(212,175,55,0.04) 100%);
             border: 1px solid rgba(212,175,55,0.3);
             border-radius: 24px;
             margin-bottom: 1.5rem;
@@ -513,12 +517,20 @@
             color: rgba(255,255,255,0.35);
             margin-bottom: 1rem;
         }
-        .mw-totem-banner__emoji {
-            font-size: clamp(3.5rem, 10vw, 5.5rem);
-            display: block;
-            margin-bottom: 0.75rem;
+        .mw-totem-banner__icon {
+            width: clamp(3.5rem, 10vw, 5.5rem);
+            height: clamp(3.5rem, 10vw, 5.5rem);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.75rem;
             animation: totemReveal 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
             filter: drop-shadow(0 4px 20px rgba(212,175,55,0.35));
+            color: #d0b17c;
+        }
+        .mw-totem-banner__icon .mh-symbol {
+            width: 100%;
+            height: 100%;
         }
         .mw-totem-banner__name {
             font-size: clamp(1.8rem, 5vw, 2.6rem);
@@ -576,7 +588,7 @@
         .mw-card--wide { grid-column: 1 / -1; }
         .mw-card--east  { border-color: rgba(212,175,55,0.2); }
         .mw-card--south { border-color: rgba(92,158,74,0.2);  }
-        .mw-card--west  { border-color: rgba(139,90,180,0.2); }
+        .mw-card--west  { border-color: rgba(79,132,151,0.28); }
         .mw-card--north { border-color: rgba(168,200,216,0.2);}
         .mw-card__icon {
             font-size: 1.75rem;
@@ -610,8 +622,8 @@
             grid-column: 1 / -1;
             text-align: center;
             padding: 3rem 2rem;
-            background: linear-gradient(135deg, rgba(139,90,180,0.06), rgba(212,175,55,0.04));
-            border: 1px solid rgba(139,90,180,0.2);
+            background: linear-gradient(135deg, rgba(79,132,151,0.08), rgba(212,175,55,0.04));
+            border: 1px solid rgba(208,177,124,0.22);
             border-radius: 20px;
             position: relative;
             overflow: hidden;
@@ -621,12 +633,20 @@
             position: absolute;
             top: 0; left: 0; right: 0;
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(139,90,180,0.6), transparent);
+            background: linear-gradient(90deg, transparent, rgba(208,177,124,0.55), transparent);
         }
         .mw-premium-wall__lock {
-            font-size: 2.5rem;
-            margin-bottom: 0.75rem;
-            filter: drop-shadow(0 4px 12px rgba(139,90,180,0.3));
+            display: grid;
+            place-items: center;
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 0.75rem;
+            color: var(--color-mystic-gold, #d0b17c);
+            filter: drop-shadow(0 4px 12px rgba(208,177,124,0.2));
+        }
+        .mw-premium-wall__lock .mh-symbol {
+            width: 40px;
+            height: 40px;
         }
         .mw-premium-wall__title {
             font-family: var(--font-heading);
@@ -646,13 +666,20 @@
             margin-left: auto;
             margin-right: auto;
         }
+        .mw-premium-wall__terms {
+            color: rgba(255,255,255,0.58);
+            font-size: 0.78rem;
+            line-height: 1.5;
+            margin: 0.75rem auto 0;
+            max-width: 380px;
+        }
 
         /* ── Message ── */
         .mw-message {
             text-align: center;
             padding: 2rem 2rem;
-            background: linear-gradient(135deg, rgba(139,90,180,0.08), rgba(92,158,74,0.04));
-            border: 1px solid rgba(139,90,180,0.2);
+            background: linear-gradient(135deg, rgba(79,132,151,0.08), rgba(92,158,74,0.04));
+            border: 1px solid rgba(208,177,124,0.2);
             border-radius: 18px;
             margin-top: 1rem;
             font-size: 1.05rem;
@@ -667,7 +694,7 @@
             top: -0.5rem; left: 1.5rem;
             font-size: 4rem;
             font-family: Georgia, serif;
-            color: rgba(139,90,180,0.25);
+            color: rgba(208,177,124,0.3);
             line-height: 1;
         }
 
@@ -687,7 +714,7 @@
             content: '';
             flex: 1;
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(139,90,180,0.25), transparent);
+            background: linear-gradient(90deg, transparent, rgba(208,177,124,0.24), transparent);
         }
 
         /* ── Share bar ── */
@@ -711,6 +738,8 @@
         .share-btn {
             display: inline-flex;
             align-items: center;
+            min-height: 44px;
+            box-sizing: border-box;
             gap: 0.45rem;
             padding: 0.6rem 1.15rem;
             border-radius: 50px;
@@ -725,11 +754,12 @@
         }
         .share-btn:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.2); color: #fff; }
         .share-btn--fb:hover   { background: rgba(24,119,242,0.15); border-color: rgba(24,119,242,0.5); }
-        .share-btn--copy       { border-color: rgba(139,90,180,0.3); }
-        .share-btn--copy:hover { background: rgba(139,90,180,0.12); border-color: rgba(139,90,180,0.6); color: #8B5AB4; }
+        .share-btn--copy       { border-color: rgba(208,177,124,0.3); }
+        .share-btn--copy:hover { background: rgba(208,177,124,0.1); border-color: rgba(208,177,124,0.58); color: #e1cba5; }
         .share-btn--native     { border-color: rgba(92,158,74,0.3); }
         .share-btn--native:hover { background: rgba(92,158,74,0.15); border-color: rgba(92,158,74,0.6); }
         .share-btn--copy.copied { border-color: rgba(80,200,120,0.5); color: #6ee7a0; background: rgba(80,200,120,0.08); }
+        .share-btn--copy.copy-failed { border-color: rgba(255,120,120,0.55); color: #ffc1c1; background: rgba(255,90,90,0.08); }
 
 /* Migrated from shamansko-kolo.html static style attributes. */
 html body .mh-inline-c674023472 { transition: color 0.5s, background-color 0.5s, border-color 0.5s, transform 0.5s, opacity 0.5s, box-shadow 0.5s; }
@@ -743,4 +773,19 @@ html body .mh-inline-1c0d81b4ab { text-align:center; margin-top:2.5rem; }
     position: fixed;
     top: -9999px;
     left: -9999px;
+}
+
+
+/* Keep the main wheel action visible; tuck secondary journeys behind a disclosure. */
+body.page-shaman-wheel .mw-intent-section .mw-intent-grid--primary {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 760px;
+    margin-inline: auto;
+}
+body.page-shaman-wheel .mw-intent-section details.mw-intent-more {
+    max-width: 760px;
+    margin-inline: auto;
+}
+body.page-shaman-wheel .mw-intent-section details.mw-intent-more .mw-intent-grid {
+    margin-top: var(--space-md);
 }

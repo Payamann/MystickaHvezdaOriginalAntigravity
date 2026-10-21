@@ -15,6 +15,7 @@ let serverPages = 0;
 let readingSummary = null;
 let requestVersion = 0;
 let loadingMore = false;
+let loadingMoreVersion = 0;
 const PAGE_SIZE = 10;
 let emptyHistoryViewTracked = false;
 
@@ -29,6 +30,8 @@ export function getReadingSummary() { return readingSummary; }
 
 export function resetReadingsState() {
     ++requestVersion;
+    invalidateLoadingMore();
+    loadingMore = false;
     allReadings = [];
     visibleReadings = [];
     readingSummary = null;
@@ -81,6 +84,7 @@ export function updateReading(id, updates) {
 export async function loadReadings({ preserveFilter = false } = {}) {
     const container = document.getElementById('readings-list');
     const version = ++requestVersion;
+    invalidateLoadingMore();
 
     try {
         if (!preserveFilter) currentFilter = 'all';
@@ -122,6 +126,7 @@ export async function loadReadings({ preserveFilter = false } = {}) {
 export async function handleFilterChange(e) {
     currentFilter = e.target.value;
     const version = ++requestVersion;
+    invalidateLoadingMore();
     const container = document.getElementById('readings-list');
     if (container) container.innerHTML = '<p class="profile-loading" role="status">Načítání…</p>';
     updatePagination(0, 0);
@@ -155,7 +160,7 @@ function renderActivationHero() {
 
     return `
         <div class="card glass-card profile-activation-hero">
-            <div class="profile-activation-hero__icon" aria-hidden="true">✦</div>
+            <div class="profile-activation-hero__icon" aria-hidden="true"><svg class="mh-symbol" viewBox="0 0 48 48" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg></div>
             <h4 class="profile-activation-hero__title">Tvůj deník čeká na první výklad</h4>
             <p class="profile-activation-hero__lead">Výklady se ukládají sem, takže se k nim kdykoliv vrátíš a příště na ně navážeš dalším krokem.</p>
             <div class="profile-activation-hero__grid">
@@ -249,12 +254,12 @@ export function renderReadings() {
     `).join('')}`;
 
     updatePagination(toShow.length, serverTotal);
-    window.lucide?.createIcons?.();
 }
 
 export async function showMoreReadings() {
     if (loadingMore) return;
     const version = requestVersion;
+    const loadMoreVersion = ++loadingMoreVersion;
     const button = document.getElementById('readings-load-more');
     loadingMore = true;
     if (button) { button.disabled = true; button.textContent = 'Načítání…'; }
@@ -269,9 +274,19 @@ export async function showMoreReadings() {
     } catch {
         if (version === requestVersion && button) button.textContent = 'Načtení selhalo · zkusit znovu';
     } finally {
-        loadingMore = false;
-        if (button) button.disabled = false;
+        if (loadMoreVersion === loadingMoreVersion) {
+            loadingMore = false;
+            if (version === requestVersion) {
+                document.getElementById('readings-load-more')?.removeAttribute('disabled');
+            }
+        }
     }
+}
+
+function invalidateLoadingMore() {
+    loadingMoreVersion += 1;
+    loadingMore = false;
+    document.getElementById('readings-load-more')?.removeAttribute('disabled');
 }
 
 function updatePagination(shown, total) {
