@@ -21,7 +21,7 @@ test('sample, images, legal links and mobile layout are usable before purchase',
     await page.goto('/vztahovy-vyklad.html');
     await expect(page.locator('#availability')).toContainText('zatím nejsou spuštěné');
     await expect(page.locator('#checkout-button')).toBeDisabled();
-    await expect(page.locator('.lead')).toContainText('podle tvé otázky z nich automaticky připraví výklad');
+    await expect(page.locator('.disclosure')).toContainText('Výklad vzniká automaticky');
     await expect(page.locator('#objednavka')).toContainText('automaticky připraví výklad a pošle ti ho e-mailem');
     await expect(page.locator('#ukazka')).toContainText('Modelové zadání');
     const heroCards = page.locator('.hero-art .card');
@@ -191,6 +191,8 @@ test('yes/no free result leads to the one-time relationship offer without a memb
     await expect(page.locator('[data-relationship-legacy]')).toHaveCount(0);
     await expect(page.locator('#result-text')).not.toBeEmpty();
     await expect(offer.locator('[data-relationship-question]')).toContainText(question);
+    await offer.locator('summary').click();
+    await expect(offer.locator('.relationship-offer__preview')).toBeVisible();
     await expect(offer.locator('.relationship-offer__preview')).toContainText('UKÁZKA PODOBY VÝKLADU');
     await expect(offer.locator('.relationship-offer__preview-list')).toContainText('Blízkost, ve které může zaznít i nesouhlas.');
     await expect(offer.locator('.relationship-offer__preview-note')).toContainText('Modelový příklad pro otázku o opakovaných hádkách.');
@@ -370,4 +372,25 @@ test('single-card start flag never auto-starts a paid spread', async ({ page }) 
     await expect(page.locator('#tarot-results')).toBeHidden();
     await expect(page.locator('.t-spread-card.featured [data-spread-type="Tři karty"]')).toBeVisible();
     expect(new URL(page.url()).pathname).toBe('/tarot.html');
+});
+
+test('direct yes/no visitors can explicitly choose a relationship offer and keep their free result', async ({ page }, testInfo) => {
+    await prepare(page, true);
+    await page.goto('/tarot-ano-ne.html');
+    await page.locator('#question-input').fill('Jak otevřít rozhovor o tom, co potřebuji ve vztahu?');
+    await page.locator('#relationship-intent').check();
+    await page.locator('.tarot-card').first().click();
+    await expect(page.locator('#result-text')).not.toBeEmpty();
+    const offer = page.locator('[data-relationship-offer="tarot_yes_no_result"]');
+    await expect(offer).toBeVisible();
+    await offer.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: testInfo.outputPath('relationship-offer.png') });
+    await page.locator('#relationship-intent').uncheck();
+    await expect(offer).toBeHidden();
+    await expect(page.locator('#result-text')).not.toBeEmpty();
+    await page.locator('#relationship-intent').check();
+    await expect(offer).toBeVisible();
+    await offer.locator('a').click();
+    await expect(page.locator('#question')).toHaveValue('Jak otevřít rozhovor o tom, co potřebuji ve vztahu?');
+    await expect(page.locator('#checkout-button')).toBeEnabled();
 });

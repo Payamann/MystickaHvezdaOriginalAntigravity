@@ -29,7 +29,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" integrity="sha384-XQqX/4yiUGu+oyr87jvWzRuqBUK/adrY0DunhL+tID9m/9dwSpV8h9Fk/Sg6ifVQ" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
     <script src="/js/dist/analytics-init.js" defer></script>
     <script src="/js/dist/analytics.js?v=8" defer></script>
-    <link rel="stylesheet" href="/css/pages/relationship-tarot-bridge.css?v=2">
+    <link rel="stylesheet" href="/css/pages/relationship-tarot-bridge.css?v=20261024-offer">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -57,6 +57,7 @@
                     <label for="question-input"><span>01</span> Na co se chceš zeptat?</label>
                     <input type="text" id="question-input" class="question-input" placeholder="Třeba: Mám se dnes ozvat?" maxlength="200" aria-describedby="question-hint question-error">
                     <p id="question-hint">Jedna konkrétní otázka, na kterou hledáš ano, nebo ne.</p>
+                    <label class="relationship-intent-choice" for="relationship-intent"><input id="relationship-intent" type="checkbox"><span>Řeším vztahovou otázku <small>Po výsledku můžeš prozkoumat i osobní výklad za 149 Kč. Volba je nepovinná.</small></span></label>
                     <p id="question-error" class="question-error" role="status" hidden>Nejdřív napiš svou otázku. Pak vyber kartu.</p>
                 </div>
                 <p class="yes-no-pick-label"><span>02</span> Zhluboka se nadechni a vyber jednu kartu.</p>
@@ -101,8 +102,13 @@
     </div>
     <div class="relationship-offer__copy">
         <p class="relationship-eyebrow">OSOBNÍ VZTAHOVÝ VÝKLAD</p>
-        <h2 id="relationship-offer-title">Jedna karta dala směr. Teď můžeš zjistit, co s tím.</h2>
+        <h2 id="relationship-offer-title">Chceš svou vztahovou otázku rozvinout?</h2>
         <p class="relationship-offer__context" data-relationship-question hidden><span>Výklad naváže na otázku:</span> <q></q></p>
+        <p class="relationship-offer__value">Tři nové karty propojené s tvým zadáním, souvislý výklad a jeden praktický další krok. Celý text dostaneš e-mailem.</p>
+        <a href="/vztahovy-vyklad.html?source=tarot_yes_no_result">Pokračovat se stejnou otázkou · 149 Kč <span aria-hidden="true">↗</span></a>
+        <p class="relationship-offer__terms">149 Kč jednorázově · bez registrace a předplatného</p>
+        <details class="relationship-offer__sample">
+            <summary>Jak takový výklad vypadá?</summary>
         <section class="relationship-offer__preview" aria-label="Ukázka toho, co osobní výklad obsahuje">
             <p class="relationship-offer__preview-label">UKÁZKA PODOBY VÝKLADU</p>
             <ol class="relationship-offer__preview-list">
@@ -112,8 +118,8 @@
             </ol>
             <p class="relationship-offer__preview-note">Modelový příklad pro otázku o opakovaných hádkách. Pro tvoji otázku se vylosují vlastní tři karty.</p>
         </section>
-        <a href="/vztahovy-vyklad.html?source=tarot_yes_no_result">Pokračovat se stejnou otázkou · 149 Kč <span aria-hidden="true">↗</span></a>
-        <small>Nejdřív si prohlédneš ukázku výkladu. Tvůj výklad vznikne automaticky podle otázky a tří náhodně vybraných karet. Jednorázově 149 Kč, bez členství.</small>
+        </details>
+        <small>Nejdřív si prohlédneš ukázku výkladu a zadání. Tvůj výklad vznikne automaticky podle otázky a tří náhodně vybraných karet. K platbě přejdeš až po vyplnění formuláře.</small>
     </div>
 </aside>
                 <aside class="tarot-member-continuation" data-tarot-member-continuation hidden aria-labelledby="tarot-member-continuation-title">
@@ -198,6 +204,6 @@
     <script type="module" src="js/dist/main.js?v=10"></script>
     <script src="js/dist/share-image-canvas.js?v=2" defer></script>
     <script src="js/dist/tarot-ano-ne.js?v=20261023-reliability" defer></script>
-    <script src="/js/dist/relationship-tarot-bridge.js?v=20261023-reliability" defer></script>
+    <script src="/js/dist/relationship-tarot-bridge.js?v=20261024-offer" defer></script>
 </body>
 </html>

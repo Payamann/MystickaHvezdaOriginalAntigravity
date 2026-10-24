@@ -216,3 +216,10 @@ footer nav { display: flex; gap: 24px; font-size: 12px; color: var(--muted); }
   html { scroll-behavior: auto; }
   .button { transition: none; }
 }
+
+
+.sample-action { max-width: 800px; margin: 28px auto 0; }
+.sample-action .button { max-width: 420px; }
+@media (max-width: 600px) {
+  .sample-action .button { max-width: none; }
+}

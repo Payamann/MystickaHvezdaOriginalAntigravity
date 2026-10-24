@@ -14,7 +14,8 @@
     let csrfPromise;
     function hasRelationshipIntent() {
         const intent = new URLSearchParams(window.location.search).get('intent');
-        return relationshipIntents.has(String(intent || '').trim().toLowerCase());
+        const choice = document.getElementById('relationship-intent');
+        return choice ? choice.checked : relationshipIntents.has(String(intent || '').trim().toLowerCase());
     }
     function validFlowId(value) {
         return typeof value === 'string' && /^[a-z0-9_-]{16,80}$/i.test(value);
@@ -136,7 +137,11 @@
             document.querySelectorAll('[data-relationship-legacy]').forEach(el => { el.hidden = true; });
         }
         document.querySelectorAll('[data-relationship-offer]').forEach(offer => {
-            if (offer === yesNoRelationshipOffer && !showYesNoRelationshipOffer) return;
+            if (offer === yesNoRelationshipOffer && !showYesNoRelationshipOffer) {
+                offer.hidden = true;
+                return;
+            }
+            offer.hidden = false;
             updateOfferContext(offer);
             if (initialized.has(offer)) return;
             initialized.add(offer);
@@ -155,6 +160,11 @@
                 observer.observe(offer);
             }
         });
+    }
+    const intentChoice = document.getElementById('relationship-intent');
+    if (intentChoice) {
+        intentChoice.checked = relationshipIntents.has(String(new URLSearchParams(window.location.search).get('intent') || '').trim().toLowerCase());
+        intentChoice.addEventListener('change', revealOffers);
     }
     document.addEventListener('mh:relationship-offers-ready', revealOffers);
     document.addEventListener('mh:tarot-yes-no-context-changed', revealOffers);
