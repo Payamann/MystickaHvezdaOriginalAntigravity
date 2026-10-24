@@ -2003,11 +2003,17 @@ body.page-mentor .header {
 
 
 
+/* Keep long navigation lists usable in short desktop viewports. */
+@media (min-width: 993px) {
+  .nav__dropdown { max-height: calc(100dvh - 110px); overflow-y: auto; overscroll-behavior: contain; }
+}
+
 /* Desktop Hover Interaction */
 
 @media (min-width: 993px) {
 
-  .nav__item--has-dropdown:hover .nav__dropdown {
+  .nav__item--has-dropdown:hover .nav__dropdown,
+  .nav__item--has-dropdown.is-active .nav__dropdown {
 
     opacity: 1;
 

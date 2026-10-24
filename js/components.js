@@ -180,6 +180,11 @@ function localizeSharedShell(placeholder, elementId, locale) {
     const config = LOCALIZED_SHELL[locale];
     if (!config) return;
 
+
+    const headerLabelAliases = {'Tarot a výklady': 'Věštění & Tarot', 'Čísla a energie': 'Čísla & Energie', 'Natální karta': 'Natální Karta', 'Lunární kalendář': 'Lunární Fáze', 'Lunární rituály': 'Lunární Rituál', 'Astro mapa': 'Astro Mapa', 'Partnerská shoda': 'Partnerská Shoda', 'Čínský horoskop': 'Čínský Horoskop', 'Minulý život': 'Minulý Život', 'Andělské karty': 'Andělské Karty', 'Andělská pošta': 'Andělská Pošta', 'Runy': 'Věštění z Run', 'Křišťálová koule': 'Křišťálová Koule', 'Snář': 'Lexikon Snů (Snář)', 'Šamanské kolo': 'Šamanské Kolo', 'Výpočet aury': 'Aura Kalkulačka', 'Denní afirmace': 'Denní Afirmace', 'Významy jmen': 'Databáze Jmen', 'Slovník pojmů': 'Ezoterický Slovník', 'Testy': 'Mystické Testy', 'Blog': 'Mystický Blog', 'Tarot ano/ne': 'Tarot ANO nebo NE'};
+    Object.entries(headerLabelAliases).forEach(([label, original]) => {
+        if (config.labels[original]) config.labels[label] = config.labels[original];
+    });
     if (elementId === 'header-placeholder') {
         const toggle = placeholder.querySelector('.nav__toggle');
         if (toggle) toggle.setAttribute('aria-label', config.text.menu);
@@ -192,12 +197,9 @@ function localizeSharedShell(placeholder, elementId, locale) {
             image.alt = '';
         });
 
-        const categoryLabels = [
-            config.labels['Astrologie'], config.labels['Věštění & Tarot'], config.labels['Čísla & Energie'],
-            config.labels['Poznání'], config.labels['Členství']
-        ];
-        placeholder.querySelectorAll('.nav__link--dropdown-toggle').forEach((link, index) => {
-            setLocalizedText(link, categoryLabels[index] || link.textContent.trim());
+        placeholder.querySelectorAll('.nav__link--dropdown-toggle').forEach((link) => {
+            const label = link.childNodes[0]?.textContent.trim();
+            if (config.labels[label]) setLocalizedText(link, config.labels[label]);
         });
     } else if (elementId === 'footer-placeholder') {
         const setText = (selector, value) => {
@@ -281,7 +283,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Load header and footer in parallel for faster initial paint
     // Use high priority for header as it affects LCP/CLS
     await Promise.all([
-        loadComponent('header-placeholder', `${basePath}components/header.html?v=20261022-localized-shell-polish-1`, basePath, true),
+        loadComponent('header-placeholder', `${basePath}components/header.html?v=20261024-clear-navigation-1`, basePath, true),
         loadComponent('footer-placeholder', `${basePath}components/footer.html?v=20261022-localized-shell-polish-1`, basePath, false)
     ]);
 
@@ -500,16 +502,22 @@ function initStandaloneHeader() {
 
     // Close menu when clicking outside
     document.addEventListener('click', (e) => {
-        if (!header.contains(e.target) && navList.classList.contains('open')) {
-            setMenuOpen(false);
+        if (!header.contains(e.target)) {
+            closeDropdowns();
+            if (navList.classList.contains('open')) setMenuOpen(false);
         }
     });
 
     // Close menu on Escape key
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && navList.classList.contains('open')) {
+        if (e.key !== 'Escape') return;
+        const activeDropdown = dropdownItems.find(item => item.classList.contains('is-active'));
+        if (navList.classList.contains('open')) {
             setMenuOpen(false);
             toggle.focus();
+        } else if (activeDropdown) {
+            closeDropdowns();
+            activeDropdown.querySelector('.nav__link--dropdown-toggle')?.focus();
         }
     });
 
