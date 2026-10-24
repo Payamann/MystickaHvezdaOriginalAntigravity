@@ -19,3 +19,6 @@ Stav: lokálně připraveno na větvi codex/todo-production-20261024, nad produk
 - Build JS/CSS, archivace assetů a git diff --check úspěšné.
 
 Platební logika, přístupová oprávnění a ceny nebyly měněny. Produkce vyžaduje samostatné vydání.
+
+## Oprava při vydání
+CI 559420c4: 88 serverových sad prošlo, catalog-focus odhalil ztracený source=homepage_nav při sjednocení headeru. Parametr obnoven na homepage; příslušný test nyní očekává absolutní URL. Homepage a sdílený header se záměrně liší tímto měřicím parametrem.
