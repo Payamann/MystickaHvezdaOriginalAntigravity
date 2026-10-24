@@ -547,16 +547,16 @@ test.describe('Tarot zdarma', () => {
         await page.goto('/tarot-zdarma.html');
         await waitForPageReady(page);
 
-        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /jednu kartu zdarma/);
+        await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /jedné tarotové karty zdarma/);
         await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /bez registrace/);
-        await expect(page.locator('script[src*="secondary-pages-copy-fixes"]')).toHaveAttribute('src', /\/secondary-pages-copy-fixes\.mh-[a-f0-9]{16}\.js$/);
-        await expect(page.locator('.section__text').first()).toContainText('ne slib pevné budoucnosti');
+        await expect(page.locator('script[src*="secondary-pages-copy-fixes"]')).toHaveCount(0);
+        await expect(page.locator('.section__text').first()).toContainText('Celý vícekartový výklad je součástí členství');
         await expect(page.locator('main')).toContainText('Bez registrace, bez platební karty, s jasným dalším krokem');
         await expect(page.locator('main')).toContainText('Jak z výkladu získat víc');
         await expect(page.locator('main')).toContainText('Bez osudových jistot');
 
         const structuredData = await page.locator('script[type="application/ld+json"]').first().textContent();
-        expect(structuredData).toContain('symbolický tarotový výklad');
+        expect(structuredData).toContain('symbolický význam');
         expect(structuredData).toContain('bez registrace');
         expect(structuredData).not.toContain('Zkuste tarot výklad zdarma online. Vyberte si kartu a získejte okamžitý výklad.');
 

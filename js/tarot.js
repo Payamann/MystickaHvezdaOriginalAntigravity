@@ -324,6 +324,7 @@ function getRequestedSpreadType() {
     ].filter(Boolean).join(' '));
 
     if (!requested) return null;
+    if (params.get('spread') === 'single_card') return 'Jedna karta';
     if (requested.includes('celtic') || requested.includes('keltsky') || requested.includes('tarot_celtic_cross')) {
         return 'Celtic Cross';
     }
@@ -587,6 +588,17 @@ function initTarot() {
             startReading('Jedna karta');
         });
     });
+
+    // An explicit free-landing CTA can start only the free single-card route.
+    // Consume the start flag before drawing so reload/back cannot redraw it.
+    const entryParams = new URLSearchParams(window.location.search);
+    if (entryParams.get('start') === 'single_card' && entryParams.get('spread') === 'single_card') {
+        entryParams.delete('start');
+        const search = entryParams.toString();
+        window.history.replaceState(window.history.state, '', `${window.location.pathname}${search ? `?${search}` : ''}${window.location.hash}`);
+        const singleCardButton = [...spreadButtons].find(button => button.dataset.spreadType === 'Jedna karta');
+        singleCardButton?.click();
+    }
 }
 
 // Escape HTML to prevent XSS

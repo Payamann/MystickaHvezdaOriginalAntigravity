@@ -295,7 +295,13 @@ function buildDetailPage(name, card, relatedCards = []) {
         ? `<h2>Příklad výkladu karty ${escapeHtml(name)}</h2>
                     <p>${escapeHtml(seo.example)}</p>`
         : '';
-    const extraInsightSections = [reversedSection, exampleSection].filter(Boolean).join('\n\n                    ');
+    const symbolismSection = seo.symbolism
+        ? `<h2>Symboly na kartě ${escapeHtml(name)}</h2><p>${escapeHtml(seo.symbolism)}</p>` : '';
+    const comparisonSection = seo.comparison && /^\/tarot-vyznam\/[a-z0-9-]+\.html$/.test(seo.comparison.path)
+        ? `<h2>${escapeHtml(name)} a ${escapeHtml(seo.comparison.name)}: v čem se liší</h2><p>${escapeHtml(seo.comparison.text)}</p><p><a href="${escapeHtml(seo.comparison.path)}">Význam karty ${escapeHtml(seo.comparison.name)}</a></p>` : '';
+    const sourceSection = seo.sourceUrl && /^https:\/\/sacred-texts\.com\/book\/the-pictorial-key-to-the-tarot\/[a-z-]+$/.test(seo.sourceUrl)
+        ? `<p>Historický podklad k symbolice: <a href="${escapeHtml(seo.sourceUrl)}" rel="noopener">A. E. Waite: The Pictorial Key to the Tarot</a>. Praktické otázky a modelové situace výše jsou redakční zpracování Mystické Hvězdy.</p>` : '';
+    const extraInsightSections = [symbolismSection, reversedSection, exampleSection, comparisonSection, sourceSection].filter(Boolean).join('\n\n                    ');
     const guideSection = seo.guidePath && /^\/blog\/[a-z0-9-]+\.html$/.test(seo.guidePath)
         ? `<p><a href="${escapeHtml(seo.guidePath)}">${escapeHtml(seo.guideLabel || 'Praktický průvodce touto kartou')}</a></p>`
         : '';

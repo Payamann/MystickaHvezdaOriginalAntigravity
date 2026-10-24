@@ -340,3 +340,34 @@ test('free landing offers a direct paid path with the price shown before navigat
     await offer.locator('a').click();
     await expect(page).toHaveURL(/vztahovy-vyklad.html\?source=tarot_free_landing$/);
 });
+
+
+test('free landing CTA draws one anonymous card directly and consumes the start flag', async ({ page }) => {
+    await prepare(page, false);
+    let checkoutRequests = 0;
+    await page.route('**/api/vztahovy-vyklad/checkout', route => {
+        checkoutRequests += 1;
+        return route.abort();
+    });
+    await page.goto('/tarot-zdarma.html');
+    await page.locator('.tarot-hero .btn--primary').click();
+    await expect(page.locator('#tarot-results')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('#tarot-results .tarot-flip-card')).toHaveCount(1);
+    await expect(page.locator('#interpretations-container')).not.toBeEmpty();
+    const destination = new URL(page.url());
+    expect(destination.searchParams.get('source')).toBe('tarot_free_landing');
+    expect(destination.searchParams.get('spread')).toBe('single_card');
+    expect(destination.searchParams.has('start')).toBe(false);
+    expect(checkoutRequests).toBe(0);
+    await page.reload();
+    await expect(page.locator('#tarot-results')).toBeHidden();
+});
+
+test('single-card start flag never auto-starts a paid spread', async ({ page }) => {
+    await prepare(page, false);
+    await page.goto('/tarot.html?spread=three_cards&start=single_card');
+    await expect(page.locator('.spread-trigger').first()).toBeVisible();
+    await expect(page.locator('#tarot-results')).toBeHidden();
+    await expect(page.locator('.t-spread-card.featured [data-spread-type="Tři karty"]')).toBeVisible();
+    expect(new URL(page.url()).pathname).toBe('/tarot.html');
+});
